@@ -7,11 +7,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { UserRule } from './user.rule';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ConfigService } from '@nestjs/config';
 
 describe('UserRule', () => {
 	let service: UserRule;
 	let authorizationHelper: AuthorizationHelper;
 	let injectionService: AuthorizationInjectionService;
+	let configServiceMock: DeepMocked<ConfigService>;
+
 	const grantedPermission = 'a' as Permission;
 	const deniedPermission = 'c' as Permission;
 
@@ -19,12 +23,21 @@ describe('UserRule', () => {
 		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, UserRule, AuthorizationInjectionService],
+			providers: [
+				AuthorizationHelper,
+				UserRule,
+				AuthorizationInjectionService,
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
+			],
 		}).compile();
 
 		service = await module.get(UserRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
 		injectionService = await module.get(AuthorizationInjectionService);
+		configServiceMock = module.get(ConfigService);
 	});
 
 	describe('constructor', () => {
@@ -129,5 +142,38 @@ describe('UserRule', () => {
 			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [deniedPermission] });
 			expect(res).toBe(false);
 		});
+	});
+
+	describe('discoverability setting', () => {
+		describe.each([
+			{ systemSetting: 'enabled', userSetting: undefined, discoverable: true },
+			{ systemSetting: 'enabled', userSetting: true, discoverable: true },
+			{ systemSetting: 'opt-in', userSetting: undefined, discoverable: false },
+			{ systemSetting: 'opt-in', userSetting: true, discoverable: true },
+			{ systemSetting: 'opt-out', userSetting: undefined, discoverable: false },
+			{ systemSetting: 'opt-out', userSetting: true, discoverable: true },
+			{ systemSetting: 'disabled', userSetting: undefined, discoverable: false },
+			{ systemSetting: 'disabled', userSetting: true, discoverable: false },
+		])(
+			"when discoverability system setting is '$systemSetting' and user-setting is '$userSetting'",
+			({ systemSetting, userSetting, discoverable }) => {
+				it(`should return ${discoverable === true ? 'true' : 'false'}`, () => {
+					configServiceMock.get.mockReturnValue(systemSetting);
+
+					const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
+					const userSchool = schoolEntityFactory.buildWithId();
+					const user = userFactory.buildWithId({ roles: [role], school: userSchool });
+
+					const entitySchool = schoolEntityFactory.buildWithId();
+					const userEntity = userDoFactory.buildWithId({ schoolId: entitySchool.id, discoverable: userSetting });
+
+					const res = service.hasPermission(user, userEntity, {
+						action: Action.read,
+						requiredPermissions: [grantedPermission],
+					});
+					expect(res).toBe(discoverable);
+				});
+			}
+		);
 	});
 });
