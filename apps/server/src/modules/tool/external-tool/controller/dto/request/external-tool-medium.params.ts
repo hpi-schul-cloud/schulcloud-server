@@ -15,7 +15,7 @@ export class ExternalToolMediumParams {
 	@IsString()
 	@IsOptional()
 	@IsNotEmpty()
-	@ApiProperty({ type: String, description: 'Id of the medium' })
+	@ApiPropertyOptional({ type: String, description: 'Id of the medium' })
 	public mediumId?: string;
 
 	@IsString()
