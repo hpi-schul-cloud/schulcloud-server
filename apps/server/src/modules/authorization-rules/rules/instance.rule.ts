@@ -40,32 +40,22 @@ export class InstanceRule implements Rule<Instance> {
 	}
 
 	private hasReadAccess(user: User, instance: Instance, context: AuthorizationContext): boolean {
-		/**
-		 * @notImplemented Currently we do not have user relations in instance.
-		 */
-		const hasReadPermission = false;
-
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.INSTANCE_VIEW,
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,
 		]);
 
-		return hasInstanceReadOperationPermission || hasReadPermission;
+		return hasInstanceReadOperationPermission;
 	}
 
 	private hasWriteAccess(user: User, instance: Instance, context: AuthorizationContext): boolean {
-		/**
-		 * @notImplemented Currently we do not have user relations in instance.
-		 */
-		const hasWritePermission = false;
-
 		const hasInstanceWriteOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.INSTANCE_EDIT,
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,
 		]);
 
-		return hasInstanceWriteOperationPermission || hasWritePermission;
+		return hasInstanceWriteOperationPermission;
 	}
 }
