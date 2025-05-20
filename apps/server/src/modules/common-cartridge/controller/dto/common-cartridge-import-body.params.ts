@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CommonCartridgeImportBodyParams {
 	@ApiProperty({
-		type: 'string',
+		type: String,
 		format: 'binary',
 		description: 'The Common Cartridge file to import.',
 	})
