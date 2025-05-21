@@ -10,7 +10,6 @@ import { CommonCartridgeResourceFactory } from './common-cartridge-resource-fact
 import { CommonCartridgeImportUtils } from './utils/common-cartridge-import-utils';
 import { CommonCartridgeManifestNotFoundException } from './utils/common-cartridge-manifest-not-found.exception';
 import { CommonCartridgeResourceNotFoundException } from './utils/common-cartridge-resource-not-found.exception';
-import { CommonCartridgeOrganizationVisitorNode } from './utils/visitor';
 
 export class CommonCartridgeFileParser {
 	private readonly manifestParser: CommonCartridgeManifestParser;
@@ -43,7 +42,7 @@ export class CommonCartridgeFileParser {
 		return title;
 	}
 
-	public getOrganizations(): CommonCartridgeOrganizationVisitorNode[] {
+	public getOrganizations(): CommonCartridgeOrganizationProps[] {
 		const organizations = this.manifestParser.getOrganizations();
 
 		return organizations;
