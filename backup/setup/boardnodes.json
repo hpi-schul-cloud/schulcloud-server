@@ -2118,13 +2118,13 @@
 			"$date": "2025-05-09T13:28:02.327Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-09T14:06:27.320Z"
+			"$date": "2025-05-21T11:48:43.443Z"
 		},
 		"path": ",",
 		"level": 0,
 		"position": 0,
 		"type": "column-board",
-		"title": "Einspaltigenbereich",
+		"title": "Einspaltiger Bereich",
 		"contextType": "course",
 		"context": {
 			"$oid": "681e018089002b0ee99aa0af"
@@ -2307,13 +2307,13 @@
 			"$date": "2025-05-09T13:37:26.584Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-09T14:06:41.868Z"
+			"$date": "2025-05-21T11:46:59.246Z"
 		},
 		"path": ",",
 		"level": 0,
 		"position": 0,
 		"type": "column-board",
-		"title": "Mehrspaltigenbereich",
+		"title": "Mehrspaltiger Bereich",
 		"contextType": "course",
 		"context": {
 			"$oid": "681e018089002b0ee99aa0af"
@@ -2546,13 +2546,13 @@
 			"$date": "2025-05-09T14:08:25.908Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-09T14:08:50.460Z"
+			"$date": "2025-05-21T11:49:24.157Z"
 		},
 		"path": ",",
 		"level": 0,
 		"position": 0,
 		"type": "column-board",
-		"title": "einspaltiger Bereich ohne Inhalt",
+		"title": "Einspaltiger Bereich ohne Inhalt",
 		"contextType": "course",
 		"context": {
 			"$oid": "681e018089002b0ee99aa0af"
@@ -2568,13 +2568,13 @@
 			"$date": "2025-05-09T14:08:58.250Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-09T14:09:20.999Z"
+			"$date": "2025-05-21T11:49:09.978Z"
 		},
 		"path": ",",
 		"level": 0,
 		"position": 0,
 		"type": "column-board",
-		"title": "Mehrsplaltiger Bereich ohne Inhalt",
+		"title": "Mehrspaltiger Bereich ohne Inhalt",
 		"contextType": "course",
 		"context": {
 			"$oid": "681e018089002b0ee99aa0af"
@@ -2695,13 +2695,13 @@
 			"$date": "2025-05-12T11:27:21.392Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-12T11:40:51.895Z"
+			"$date": "2025-05-21T11:48:13.537Z"
 		},
 		"path": ",",
 		"level": 0,
 		"position": 0,
 		"type": "column-board",
-		"title": "Mehrspaltig Bereich2",
+		"title": "Mehrspaltiger Bereich 2",
 		"contextType": "course",
 		"context": {
 			"$oid": "681e018089002b0ee99aa0af"
@@ -3051,13 +3051,13 @@
 			"$date": "2025-05-15T09:40:04.798Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-20T09:38:39.688Z"
+			"$date": "2025-05-21T11:47:38.864Z"
 		},
 		"path": ",681e051689002b0ee99aa298,6825b66ff3d1ca38b1604438,6825b674f3d1ca38b160443a,",
 		"level": 3,
 		"position": 0,
 		"type": "rich-text-element",
-		"text": "<h4>Header 1</h4><h5>Header 2</h5><p> </p><ol><li><strong>Bold Text</strong></li><li><i><strong>Bold Kursive Text </strong></i></li><li><i>Kursive Text</i></li><li><s>durchgestrichen Text</s></li><li><sup>Hochgestellte Text</sup></li><li><sub>Tiefergestellte Text</sub></li><li>Link:<a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://www.google.com/\">https://www.google.com/</a></li></ol><ul><li>₽</li><li>©</li><li>®</li><li>🔚</li></ul><p>Horizontale Linie:</p><hr /><h4>Tabelle:</h4><figure class=\"table\"><table><tbody><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>4</td><td>5</td><td>6</td></tr><tr><td>7</td><td>8</td><td>9</td></tr></tbody></table></figure>",
+		"text": "<h4>Header 1</h4><h5>Header 2</h5><p> </p><ol><li><strong>Bold Text</strong></li><li><i><strong>Bold Kursive Text </strong></i></li><li><i>Kursive Text</i></li><li><s>durchgestrichen Text</s></li><li><sup>Hochgestellte Text</sup></li><li><sub>Tiefergestellte Text</sub></li><li>Link:<a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://www.google.com/\">https://www.google.com/</a></li></ol><ul><li>₽</li><li>©</li><li>®</li><li>🔚</li><li>Tex Formel:<span class=\"math-tex\">\\(\\frac{\\sum_{k=1}^{n} x^k+k!}{a^2−b^2}\\)</span></li></ul><p>Horizontale Linie:</p><hr /><h4>Tabelle:</h4><figure class=\"table\"><table><tbody><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>4</td><td>5</td><td>6</td></tr><tr><td>7</td><td>8</td><td>9</td></tr></tbody></table></figure>",
 		"inputFormat": "richTextCk5"
 	},
 	{
@@ -3068,13 +3068,13 @@
 			"$date": "2025-05-15T09:40:04.798Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-19T14:01:05.022Z"
+			"$date": "2025-05-21T11:47:45.443Z"
 		},
 		"path": ",681e051689002b0ee99aa298,6825b66ff3d1ca38b1604438,",
 		"level": 2,
 		"position": 0,
 		"type": "card",
-		"height": 682,
+		"height": 716,
 		"title": "Text Inhalt Spalte ohne Title "
 	},
 	{
