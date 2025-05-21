@@ -19,6 +19,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-files-svc.yml.j2
+      state: "{{ 'absent' if WITH_FILESTORAGE else 'present'}}"
     tags:
       - service
 
