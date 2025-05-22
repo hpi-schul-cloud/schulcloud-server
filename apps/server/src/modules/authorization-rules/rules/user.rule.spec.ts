@@ -182,5 +182,25 @@ describe('UserRule', () => {
 				});
 			}
 		);
+
+		describe('when discoverability system setting is an unknown value', () => {
+			it('should throw an error', () => {
+				configServiceMock.get.mockReturnValue('unknown-value');
+
+				const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
+				const userSchool = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ roles: [role], school: userSchool });
+
+				const entitySchool = schoolEntityFactory.buildWithId();
+				const userEntity = userDoFactory.buildWithId({ schoolId: entitySchool.id });
+
+				expect(() =>
+					service.hasPermission(user, userEntity, {
+						action: Action.read,
+						requiredPermissions: [grantedPermission],
+					})
+				).toThrowError('Invalid discoverability setting');
+			});
+		});
 	});
 });
