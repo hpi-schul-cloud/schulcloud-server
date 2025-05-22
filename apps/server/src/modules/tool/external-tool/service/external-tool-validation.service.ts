@@ -136,18 +136,13 @@ export class ExternalToolValidationService {
 	}
 
 	private validateToolMedium(medium: ExternalToolMedium): void {
-		const { status, mediaSourceId, mediumId } = medium;
+		const { status, mediumId } = medium;
 
 		const errorPrefix = (s: string): string => `tool_medium_status_${s.toLowerCase()}`;
 
 		switch (status) {
 			case ExternalToolMediumStatus.ACTIVE:
 			case ExternalToolMediumStatus.DRAFT:
-				if (!mediaSourceId) {
-					throw new ValidationError(
-						`${errorPrefix(status)}: This medium is ${status.toLowerCase()} but is missing a media source.`
-					);
-				}
 				if (!mediumId) {
 					throw new ValidationError(
 						`${errorPrefix(status)}: This medium is ${status.toLowerCase()} but is not linked to an external medium.`
