@@ -48,7 +48,7 @@ describe(SystemsSeedDataService.name, () => {
 	});
 
 	describe('import', () => {
-		describe('when the environment is nbc and sanis client id and secret are defined', () => {
+		describe('when the environment is nbc and moin.schule client id and secret are defined', () => {
 			const setup = () => {
 				configService.get.mockReturnValueOnce('n21');
 				configService.get.mockReturnValueOnce('client-id');
@@ -72,7 +72,7 @@ describe(SystemsSeedDataService.name, () => {
 				expect(systemService.save).toHaveBeenCalledWith<[System]>(
 					new System({
 						id: '0000d186816abba584714c93',
-						alias: 'SANIS',
+						alias: 'moin.schule',
 						displayName: 'moin.schule',
 						type: 'oauth',
 						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,

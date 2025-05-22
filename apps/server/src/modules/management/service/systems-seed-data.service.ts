@@ -24,7 +24,7 @@ export class SystemsSeedDataService {
 			await this.systemService.save(
 				new System({
 					id: '0000d186816abba584714c93',
-					alias: 'SANIS',
+					alias: 'moin.schule',
 					displayName: 'moin.schule',
 					type: 'oauth',
 					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
