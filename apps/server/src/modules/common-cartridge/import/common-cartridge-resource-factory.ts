@@ -56,8 +56,7 @@ export class CommonCartridgeResourceFactory {
 		content: string,
 		inputFormat: InputFormat
 	): CommonCartridgeWebContentResourceProps | undefined {
-		const document = load(content);
-		const html = sanitizeRichText(document().html() ?? '', inputFormat);
+		const html = sanitizeRichText(content, inputFormat);
 
 		return {
 			type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
