@@ -1,27 +1,31 @@
 import { CheerioAPI } from 'cheerio';
 import { CommonCartridgeFileParserOptions } from './common-cartridge-import.types';
-import { CommonCartridgeOrganizationVisitor, CommonCartridgeOrganizationVisitorNode } from './utils/visitor';
+import {
+	CommonCartridgeOrganizationVisitor,
+	CommonCartridgeOrganizationVisitorNode,
+} from './utils/common-cartridge-organization-visitor';
 
 export class CommonCartridgeManifestParser {
 	constructor(private readonly manifest: CheerioAPI, private readonly options: CommonCartridgeFileParserOptions) {}
 
-	public getSchema(): string {
-		const result = this.manifest('manifest > metadata > schema').text();
+	public getSchema(): string | undefined {
+		const result = this.manifest('manifest > metadata > schema').text() || undefined;
 
 		return result;
 	}
 
-	public getVersion(): string {
-		const result = this.manifest('manifest > metadata > schemaversion').text();
+	public getVersion(): string | undefined {
+		const result = this.manifest('manifest > metadata > schemaversion').text() || undefined;
 
 		return result;
 	}
 
-	public getTitle(): string {
+	public getTitle(): string | undefined {
 		const pre = this.getLomNamespace();
-		const result = this.manifest(
-			`manifest > metadata > ${pre}\\:lom > ${pre}\\:general > ${pre}\\:title > ${pre}\\:string`
-		).text();
+		const result =
+			this.manifest(
+				`manifest > metadata > ${pre}\\:lom > ${pre}\\:general > ${pre}\\:title > ${pre}\\:string`
+			).text() || undefined;
 
 		return result;
 	}

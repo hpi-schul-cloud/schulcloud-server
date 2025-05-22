@@ -1,134 +1,199 @@
-import { CommonCartridgeFileParserOptions, CommonCartridgeOrganizationProps } from '../common-cartridge-import.types';
+import { CheerioAPI, SelectorType } from 'cheerio';
+import { CommonCartridgeFileParserOptions } from '../common-cartridge-import.types';
 
-type SearchElement = { depth: number; path: string; element: Element };
+export enum CommonCartridgeOrganizationVisitorNodeType {
+	ORGANIZATION = 'organization',
+	RESOURCE = 'resource',
+}
 
-/*
- * `CommonCartridgeOrganizationVisitor` is a class that is used to traverse and extract information from
- * an XML document representing a Common Cartridge package. The class uses a breadth-first search algorithm
- * to visit 'item' elements in the XML document, up to a specified maximum depth.
- *
- * The class is initialized with an XML document and an optional `ManifestParserOptions` object, which can
- * specify the maximum search depth and the path separator to use when constructing paths to elements.
- *
- * The main public method of the class is `findAllOrganizations()`, which returns an array of `OrganizationProps`
- * objects representing all the 'organization' elements in the XML document. Each `OrganizationProps` object
- * includes the path to the element, the identifier of the element, the identifierref of the element, and the
- * title of the element.
- *
- * The class also includes several private helper methods for initializing the search, determining whether to
- * continue the search, visiting an element, and creating an `OrganizationProps` object for an element.
- */
-export class CommonCartridgeOrganizationVisitor {
-	constructor(private readonly document: Document, private readonly options: CommonCartridgeFileParserOptions) {}
+export type CommonCartridgeOrganizationVisitorNodeProps = { identifier: string; title: string; depth: number } & (
+	| { type: CommonCartridgeOrganizationVisitorNodeType.ORGANIZATION }
+	| { type: CommonCartridgeOrganizationVisitorNodeType.RESOURCE; identifierRef: string; path: string }
+);
 
-	public findAllOrganizations(): CommonCartridgeOrganizationProps[] {
-		const organizations = this.search().map((element) => this.createOrganizationProps(element));
+export class CommonCartridgeOrganizationVisitorNode {
+	public readonly props: Readonly<CommonCartridgeOrganizationVisitorNodeProps>;
 
-		return organizations;
+	constructor(
+		identifier: string,
+		identifierRef: string | undefined,
+		depth: number,
+		private readonly document: CheerioAPI,
+		private readonly memo: Map<string, CommonCartridgeOrganizationVisitorNode>
+	) {
+		const title = this.getItemTitle(identifier);
+
+		if (identifierRef) {
+			const path = this.getFilePath(identifierRef);
+
+			this.props = {
+				type: CommonCartridgeOrganizationVisitorNodeType.RESOURCE,
+				identifier,
+				identifierRef,
+				title,
+				depth,
+				path,
+			};
+		} else {
+			this.props = {
+				type: CommonCartridgeOrganizationVisitorNodeType.ORGANIZATION,
+				identifier,
+				title,
+				depth,
+			};
+		}
 	}
 
-	private search(): SearchElement[] {
-		const result = new Array<SearchElement>();
-		const queue = this.initSearch();
+	get parent(): CommonCartridgeOrganizationVisitorNode | null {
+		const parentIdentifier = this.document(`item[identifier="${this.props.identifier}"]`)
+			.parents('item')
+			.attr('identifier');
 
-		while (queue.length > 0) {
-			const current = queue.shift();
+		if (!parentIdentifier) {
+			return null;
+		}
 
-			if (current && this.shouldContinueSearch(current.depth)) {
-				this.visit(current, queue);
-				result.push(current);
+		return this.memo.get(parentIdentifier) ?? null;
+	}
+
+	get children(): CommonCartridgeOrganizationVisitorNode[] {
+		const result = new Array<CommonCartridgeOrganizationVisitorNode>();
+		const elements = this.document(`item[identifier="${this.props.identifier}"] > item`);
+
+		for (const element of elements) {
+			const { identifier } = element.attribs;
+			const node = this.memo.get(identifier);
+
+			if (node) {
+				result.push(node);
 			}
 		}
 
 		return result;
 	}
 
-	private initSearch(): SearchElement[] {
-		const result = new Array<SearchElement>();
-		const root = this.document.querySelectorAll('manifest > organizations > organization > item > item');
+	get organizationPath(): string {
+		const ids: string[] = [this.props.identifier];
+		let org = this.parent;
 
-		root.forEach((element) => {
-			result.push({
-				depth: 0,
-				path: this.getElementIdentifier(element),
-				element,
-			});
-		});
+		while (org !== null) {
+			ids.unshift(org.props.identifier);
+			org = org.parent;
+		}
 
-		return result;
+		return ids.join('/');
 	}
 
-	private shouldContinueSearch(depth: number): boolean {
-		const shouldContinueSearch = depth <= this.options.maxSearchDepth;
+	// The following accessors are for compatibility with the old parser
 
-		return shouldContinueSearch;
+	get path(): string {
+		return this.organizationPath;
 	}
 
-	private visit(element: SearchElement, queue: SearchElement[]): void {
-		element.element.querySelectorAll(':scope > item').forEach((child) => {
-			queue.push({
-				depth: element.depth + 1,
-				path: `${element.path}${this.options.pathSeparator}${this.getElementIdentifier(child)}`,
-				element: child,
-			});
-		});
+	get pathDepth(): number {
+		return this.props.depth;
 	}
 
-	private createOrganizationProps(element: SearchElement): CommonCartridgeOrganizationProps {
-		const title = this.getElementTitle(element.element);
-		const identifier = this.getElementIdentifier(element.element);
-		const identifierRef = this.getElementIdentifierRef(element.element);
-		const isResource = identifierRef !== '';
-		const resourcePath = isResource ? this.getResourcePath(identifierRef) : '';
-		const resourceType = isResource ? this.getResourceType(identifierRef) : '';
-		const isInlined = isResource && !resourcePath;
-
-		return {
-			path: element.path,
-			pathDepth: element.depth,
-			identifier,
-			identifierRef,
-			title,
-			isResource,
-			isInlined,
-			resourcePath,
-			resourceType,
-		};
+	get identifier(): string {
+		return this.props.identifier;
 	}
 
-	private getElementIdentifier(element: Element): string {
-		const identifier = element.getAttribute('identifier') || '';
+	get identifierRef(): string | undefined {
+		if (this.props.type === CommonCartridgeOrganizationVisitorNodeType.RESOURCE) {
+			return this.props.identifierRef;
+		}
 
-		return identifier;
+		return undefined;
 	}
 
-	private getElementIdentifierRef(element: Element): string {
-		const identifierRef = element.getAttribute('identifierref') || '';
-
-		return identifierRef;
+	get title(): string {
+		return this.props.title;
 	}
 
-	private getElementTitle(element: Element): string {
-		const title = element.querySelector('title')?.textContent ?? '';
+	get isResource(): boolean {
+		return this.props.type === CommonCartridgeOrganizationVisitorNodeType.RESOURCE;
+	}
+
+	get isInlined(): boolean {
+		return false;
+	}
+
+	get resourcePath(): string {
+		if (this.props.type === CommonCartridgeOrganizationVisitorNodeType.RESOURCE) {
+			return this.props.path;
+		}
+
+		return '';
+	}
+
+	get resourceType(): string {
+		const idRef = this.identifierRef;
+		if (idRef !== undefined) {
+			const type = this.getResourceType(idRef);
+			return type;
+		}
+
+		return '';
+	}
+
+	private getItemTitle(identifier: string): string {
+		const title = this.document(`item[identifier="${identifier}"] > title`).text();
 
 		return title;
 	}
 
-	private getResourcePath(identifierRef: string): string {
+	private getFilePath(identifierRef: string): string {
 		const path =
-			this.document
-				.querySelector(`manifest > resources > resource[identifier="${identifierRef}"] > file`)
-				?.getAttribute('href') || '';
+			this.document(`manifest > resources > resource[identifier="${identifierRef}"] > file`).attr('href') ?? '';
 
 		return path;
 	}
 
 	private getResourceType(identifierRef: string): string {
-		const type =
-			this.document
-				.querySelector(`manifest > resources > resource[identifier="${identifierRef}"]`)
-				?.getAttribute('type') || '';
+		const type = this.document(`manifest > resources > resource[identifier="${identifierRef}"]`)?.attr('type') || '';
 
 		return type;
+	}
+}
+
+export class CommonCartridgeOrganizationVisitor {
+	private readonly memo: Map<string, CommonCartridgeOrganizationVisitorNode> = new Map();
+
+	constructor(private readonly manifest: CheerioAPI, private readonly options: CommonCartridgeFileParserOptions) {}
+
+	public findAllNodes(): CommonCartridgeOrganizationVisitorNode[] {
+		for (let depth = 0; depth < this.options.maxSearchDepth; depth += 1) {
+			const selector = this.getItemsSelector(depth);
+			const elements = this.manifest(selector);
+
+			if (elements.length === 0) {
+				break;
+			}
+
+			for (const element of elements) {
+				const { identifier, identifierref } = element.attribs;
+				const node = new CommonCartridgeOrganizationVisitorNode(
+					identifier,
+					identifierref,
+					depth,
+					this.manifest,
+					this.memo
+				);
+
+				this.memo.set(identifier, node);
+			}
+		}
+
+		const result = Array.from(this.memo.values());
+
+		return result;
+	}
+
+	private getItemsSelector(depth: number): SelectorType {
+		const rootSelector = 'manifest > organizations > organization > item > item';
+		const depthSelector = ' > item'.repeat(depth);
+		const selector = `${rootSelector}${depthSelector}`;
+
+		return selector as SelectorType;
 	}
 }

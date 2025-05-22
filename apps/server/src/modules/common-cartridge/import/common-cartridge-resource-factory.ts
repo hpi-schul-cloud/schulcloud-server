@@ -45,6 +45,10 @@ export class CommonCartridgeResourceFactory {
 		const document = load(content, { xml: true });
 		const url = document('webLink > url').attr('href') ?? '';
 
+		if (url === '') {
+			return undefined;
+		}
+
 		return {
 			type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
 			title,
@@ -56,11 +60,13 @@ export class CommonCartridgeResourceFactory {
 		content: string,
 		inputFormat: InputFormat
 	): CommonCartridgeWebContentResourceProps | undefined {
-		const html = sanitizeRichText(content, inputFormat);
+		const document = load(content);
+		const unsanitizedHtml = document('body').html()?.trim() || content;
+		const sanitizedHtml = sanitizeRichText(unsanitizedHtml, inputFormat);
 
 		return {
 			type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-			html,
+			html: sanitizedHtml,
 		};
 	}
 }
