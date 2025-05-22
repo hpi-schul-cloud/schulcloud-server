@@ -41,12 +41,11 @@ export class UserRule implements Rule<UserDo> {
 			return true;
 		}
 
-		const isDiscoverableUserSetting = entity.discoverable ?? false;
 		if (discoverabilitySetting === 'opt-in') {
-			return isDiscoverableUserSetting;
+			return entity.discoverable ?? false;
 		}
 		if (discoverabilitySetting === 'opt-out') {
-			return isDiscoverableUserSetting === true;
+			return entity.discoverable ?? true;
 		}
 
 		throw new Error('Invalid discoverability setting');
