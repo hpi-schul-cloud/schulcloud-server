@@ -149,6 +149,7 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
 			deletedAt: entity.deletedAt,
+			discoverable: entity.discoverable,
 			email: entity.email,
 			firstName: entity.firstName,
 			lastName: entity.lastName,

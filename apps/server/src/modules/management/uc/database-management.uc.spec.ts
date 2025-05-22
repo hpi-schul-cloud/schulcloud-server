@@ -38,7 +38,7 @@ describe('DatabaseManagementService', () => {
 		_id: {
 			$oid: '0000d186816abba584714c93',
 		},
-		alias: 'SANIS',
+		alias: 'moin.schule',
 		type: 'oauth',
 		__v: 0,
 		oauthConfig: {
@@ -52,7 +52,7 @@ describe('DatabaseManagementService', () => {
 		_id: {
 			$oid: '0000d186816abba584714c93',
 		},
-		alias: 'SANIS',
+		alias: 'moin.schule',
 		type: 'oauth',
 		__v: 0,
 		oauthConfig: {
