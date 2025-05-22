@@ -33,9 +33,6 @@ jobs:
         uses: supercharge/mongodb-github-action@1.12.0
         with:
           mongodb-version: ${{ env.MONGODB_VERSION }}
-      - name: environment setup
-        run: |
-          sh scripts/unitTestFeathers.sh
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
       - name: feathers:Test - test with coverage
