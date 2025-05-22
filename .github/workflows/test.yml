@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 30
     services:
       rabbitmq:
-        image: rabbitmq:3
+        image: rabbitmq:4
         ports:
           - 5672:5672
     steps:
@@ -44,7 +44,7 @@ jobs:
         shard: [1, 2, 3, 4, 5, 6, 7, 8]
     services:
       rabbitmq:
-        image: rabbitmq:3
+        image: rabbitmq:4
         ports:
           - 5672:5672
     steps:
