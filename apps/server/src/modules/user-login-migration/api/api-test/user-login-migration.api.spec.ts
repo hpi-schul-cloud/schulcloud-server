@@ -76,7 +76,7 @@ describe('UserLoginMigrationController (API)', () => {
 			const setup = async () => {
 				const date: Date = new Date(2023, 5, 4);
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 				});
@@ -141,7 +141,7 @@ describe('UserLoginMigrationController (API)', () => {
 			const setup = async () => {
 				const date: Date = new Date(2023, 5, 4);
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 				});
@@ -237,7 +237,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when current user start the migration successfully', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -322,7 +322,7 @@ describe('UserLoginMigrationController (API)', () => {
 			const setup = async () => {
 				const date: Date = new Date(2023, 5, 4);
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -361,7 +361,7 @@ describe('UserLoginMigrationController (API)', () => {
 			const setup = async () => {
 				const date: Date = new Date(2023, 5, 4);
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -401,7 +401,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when official school number is not set', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 				});
@@ -626,7 +626,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when current User restart the migration successfully', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -725,7 +725,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when migration is already started', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -763,7 +763,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when migration is finally finished', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -806,7 +806,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when migration is set from optional to mandatory', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -858,7 +858,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when migration is set from mandatory to optional', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -910,7 +910,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when migration is not started', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -940,7 +940,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when the migration is closed', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -988,7 +988,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when user has not the required permission', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -1030,7 +1030,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when the user login migration is running', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -1106,7 +1106,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when migration is not started', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -1149,7 +1149,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when the migration is already closed', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -1215,7 +1215,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when the migration is finished', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -1263,7 +1263,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when user has not the required permission', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -1302,7 +1302,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when no user has migrate', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -1349,7 +1349,7 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when the migration wizard is also running', () => {
 			const setup = async () => {
 				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'moin.schule' });
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -1448,7 +1448,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const setup = async () => {
 					const targetSystem: SystemEntity = systemEntityFactory
 						.withOauthConfig()
-						.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
+						.buildWithId({ alias: 'moin.schule', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
 
 					const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
@@ -1560,7 +1560,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const setup = async () => {
 					const targetSystem: SystemEntity = systemEntityFactory
 						.withOauthConfig()
-						.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
+						.buildWithId({ alias: 'moin.schule', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
 
 					const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
@@ -1647,9 +1647,10 @@ describe('UserLoginMigrationController (API)', () => {
 			describe('when forcing a user in a migrated school to migrate', () => {
 				describe('when the provided external school id is valid', () => {
 					const setup = async () => {
-						const targetSystem: SystemEntity = systemEntityFactory
-							.withOauthConfig()
-							.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
+						const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({
+							alias: 'moin.schule',
+							provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						});
 
 						const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
@@ -1723,9 +1724,10 @@ describe('UserLoginMigrationController (API)', () => {
 
 				describe('when the provided external school id is invalid', () => {
 					const setup = async () => {
-						const targetSystem: SystemEntity = systemEntityFactory
-							.withOauthConfig()
-							.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
+						const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({
+							alias: 'moin.schule',
+							provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						});
 
 						const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
@@ -1791,7 +1793,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const setup = async () => {
 					const targetSystem: SystemEntity = systemEntityFactory
 						.withOauthConfig()
-						.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
+						.buildWithId({ alias: 'moin.schule', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
 
 					const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
@@ -1876,7 +1878,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const setup = async () => {
 					const targetSystem: SystemEntity = systemEntityFactory
 						.withOauthConfig()
-						.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
+						.buildWithId({ alias: 'moin.schule', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
 
 					const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
