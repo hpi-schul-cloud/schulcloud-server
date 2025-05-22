@@ -1,7 +1,6 @@
 import { DomainErrorHandler } from '@core/error';
 import { LegacyLogger } from '@core/logger';
 import {
-	AuthorizationBodyParamsReferenceType,
 	AuthorizationClientAdapter,
 	AuthorizationContextBuilder,
 	AuthorizationContextParams,
@@ -91,7 +90,6 @@ export class FilesStorageUC {
 
 	public getPublicConfig(): FilesStorageConfigResponse {
 		const maxFileSize = this.filesStorageService.getMaxFileSize();
-
 		const configResponse = ConfigResponseMapper.mapToResponse(maxFileSize);
 
 		return configResponse;
@@ -99,31 +97,26 @@ export class FilesStorageUC {
 
 	// upload
 	public async upload(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
-		await this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.create);
-
-		await this.checkStorageLocation(params.storageLocation, params.storageLocationId);
+		await Promise.all([
+			this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.create),
+			this.checkStorageLocationCanRead(params.storageLocation, params.storageLocationId),
+		]);
 
 		const fileRecord = await this.uploadFileWithBusboy(userId, params, req);
 
 		return fileRecord;
 	}
 
-	private async checkStorageLocation(storageLocation: StorageLocation, storageLocationId: EntityId): Promise<void> {
-		if (storageLocation === StorageLocation.INSTANCE) {
-			await this.authorizationClientAdapter.checkPermissionsByReference(
-				AuthorizationBodyParamsReferenceType.INSTANCES,
-				storageLocationId,
-				AuthorizationContextBuilder.write([AuthorizationContextParamsRequiredPermissions.INSTANCE_VIEW])
-			);
-		}
-
-		if (storageLocation === StorageLocation.SCHOOL) {
-			await this.authorizationClientAdapter.checkPermissionsByReference(
-				AuthorizationBodyParamsReferenceType.SCHOOLS,
-				storageLocationId,
-				AuthorizationContextBuilder.write([])
-			);
-		}
+	private async checkStorageLocationCanRead(
+		storageLocation: StorageLocation,
+		storageLocationId: EntityId
+	): Promise<void> {
+		const referenceType = FilesStorageMapper.mapToAllowedStorageLocationType(storageLocation);
+		await this.authorizationClientAdapter.checkPermissionsByReference(
+			referenceType,
+			storageLocationId,
+			AuthorizationContextBuilder.read([])
+		);
 	}
 
 	private uploadFileWithBusboy(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
@@ -159,7 +152,7 @@ export class FilesStorageUC {
 	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams): Promise<FileRecord> {
 		await this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.create);
 
-		await this.checkStorageLocation(params.storageLocation, params.storageLocationId);
+		await this.checkStorageLocationCanRead(params.storageLocation, params.storageLocationId);
 
 		const response = await this.getResponse(params);
 
