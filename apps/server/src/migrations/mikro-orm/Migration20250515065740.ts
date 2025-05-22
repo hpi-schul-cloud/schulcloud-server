@@ -36,7 +36,7 @@ export class Migration20250318124252 extends Migration {
 		);
 
 		console.info(
-			'Added permissions INSTANCE_EDIT, CAN_EXECUTE_INSTANCE_OPERATIONS, SCHOOL_VIEW and removed SCHOOL_EDIT_ALL.'
+			'Added permissions INSTANCE_EDIT, CAN_EXECUTE_INSTANCE_OPERATIONS, SCHOOL_VIEW. Removed SCHOOL_EDIT_ALL. Move INSTANCE_VIEW to user.'
 		);
 	}
 
@@ -75,7 +75,7 @@ export class Migration20250318124252 extends Migration {
 		);
 
 		console.info(
-			'Rollback: Added permission SCHOOL_EDIT_ALL and removed INSTANCE_EDIT, CAN_EXECUTE_INSTANCE_OPERATIONS, SCHOOL_VIEW.'
+			'Rollback: Added permission SCHOOL_EDIT_ALL. Removed INSTANCE_EDIT, CAN_EXECUTE_INSTANCE_OPERATIONS, SCHOOL_VIEW. Move INSTANCE_VIEW to shd.'
 		);
 	}
 }

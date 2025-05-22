@@ -1,7 +1,6 @@
 import { DomainErrorHandler } from '@core/error';
 import { LegacyLogger } from '@core/logger';
 import {
-	AuthorizationBodyParamsReferenceType,
 	AuthorizationClientAdapter,
 	AuthorizationContextBuilder,
 	AuthorizationContextParams,
@@ -9,7 +8,7 @@ import {
 } from '@infra/authorization-client';
 import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { HttpService } from '@nestjs/axios';
-import { Injectable, NotFoundException, NotImplementedException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain/types';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
@@ -112,21 +111,12 @@ export class FilesStorageUC {
 		storageLocation: StorageLocation,
 		storageLocationId: EntityId
 	): Promise<void> {
-		if (storageLocation === StorageLocation.INSTANCE) {
-			await this.authorizationClientAdapter.checkPermissionsByReference(
-				AuthorizationBodyParamsReferenceType.INSTANCES,
-				storageLocationId,
-				AuthorizationContextBuilder.read([])
-			);
-		} else if (storageLocation === StorageLocation.SCHOOL) {
-			await this.authorizationClientAdapter.checkPermissionsByReference(
-				AuthorizationBodyParamsReferenceType.SCHOOLS,
-				storageLocationId,
-				AuthorizationContextBuilder.read([])
-			);
-		} else {
-			throw new NotImplementedException(ErrorType.STORAGE_LOCATION_TYPE_NOT_EXISTS);
-		}
+		const referenceType = FilesStorageMapper.mapToAllowedStorageLocationType(storageLocation);
+		await this.authorizationClientAdapter.checkPermissionsByReference(
+			referenceType,
+			storageLocationId,
+			AuthorizationContextBuilder.read([])
+		);
 	}
 
 	private uploadFileWithBusboy(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {

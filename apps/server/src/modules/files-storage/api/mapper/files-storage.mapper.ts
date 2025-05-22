@@ -1,6 +1,6 @@
 import { AuthorizationBodyParamsReferenceType } from '@infra/authorization-client';
 import { NotImplementedException, StreamableFile } from '@nestjs/common';
-import { FileRecord } from '../../domain';
+import { ErrorType, FileRecord } from '../../domain';
 import { FileRecordParentType, GetFileResponse, StorageLocation } from '../../domain/interface';
 import { FileRecordListResponse, FileRecordResponse } from '../dto';
 
@@ -35,7 +35,7 @@ export class FilesStorageMapper {
 		const res = this.storageLocationMap.get(type);
 
 		if (!res) {
-			throw new NotImplementedException();
+			throw new NotImplementedException(ErrorType.STORAGE_LOCATION_TYPE_NOT_EXISTS);
 		}
 
 		return res;
