@@ -44,9 +44,9 @@ export class CommonCartridgeManifestParser {
 		const map = new Map<string, string>();
 		let result = '';
 
-		Object.keys(attributes).forEach((key) => {
-			const value = attributes[key] as string;
-			map.set(value, key);
+		Object.keys(attributes).forEach((attributeName) => {
+			const attributeValue = attributes[attributeName] as string;
+			map.set(attributeValue, attributeName);
 		});
 
 		if (map.has(lomCC11)) {
