@@ -151,12 +151,16 @@ describe('UserRule', () => {
 		describe.each([
 			{ systemSetting: 'enabled', userSetting: undefined, discoverable: true },
 			{ systemSetting: 'enabled', userSetting: true, discoverable: true },
+			{ systemSetting: 'enabled', userSetting: false, discoverable: true },
 			{ systemSetting: 'opt-in', userSetting: undefined, discoverable: false },
 			{ systemSetting: 'opt-in', userSetting: true, discoverable: true },
-			{ systemSetting: 'opt-out', userSetting: undefined, discoverable: false },
+			{ systemSetting: 'opt-in', userSetting: false, discoverable: false },
+			{ systemSetting: 'opt-out', userSetting: undefined, discoverable: true },
 			{ systemSetting: 'opt-out', userSetting: true, discoverable: true },
+			{ systemSetting: 'opt-out', userSetting: false, discoverable: false },
 			{ systemSetting: 'disabled', userSetting: undefined, discoverable: false },
 			{ systemSetting: 'disabled', userSetting: true, discoverable: false },
+			{ systemSetting: 'disabled', userSetting: false, discoverable: false },
 		])(
 			"when discoverability system setting is '$systemSetting' and user-setting is '$userSetting'",
 			({ systemSetting, userSetting, discoverable }) => {
