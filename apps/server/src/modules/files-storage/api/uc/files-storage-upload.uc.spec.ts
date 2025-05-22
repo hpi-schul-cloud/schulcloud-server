@@ -190,7 +190,7 @@ describe('FilesStorageUC upload methods', () => {
 				expect(authorizationClientAdapter.checkPermissionsByReference).toHaveBeenCalledWith(
 					AuthorizableReferenceType.School,
 					uploadFromUrlParams.storageLocationId,
-					AuthorizationContextBuilder.write([])
+					AuthorizationContextBuilder.read([])
 				);
 			});
 
@@ -377,7 +377,7 @@ describe('FilesStorageUC upload methods', () => {
 				expect(authorizationClientAdapter.checkPermissionsByReference).toHaveBeenCalledWith(
 					AuthorizableReferenceType.Instance,
 					params.storageLocationId,
-					AuthorizationContextBuilder.write([])
+					AuthorizationContextBuilder.read([])
 				);
 			});
 
