@@ -90,7 +90,6 @@ export class FilesStorageUC {
 
 	public getPublicConfig(): FilesStorageConfigResponse {
 		const maxFileSize = this.filesStorageService.getMaxFileSize();
-
 		const configResponse = ConfigResponseMapper.mapToResponse(maxFileSize);
 
 		return configResponse;
@@ -98,9 +97,10 @@ export class FilesStorageUC {
 
 	// upload
 	public async upload(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
-		await this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.create);
-
-		await this.checkStorageLocationCanRead(params.storageLocation, params.storageLocationId);
+		await Promise.all([
+			this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.create),
+			this.checkStorageLocationCanRead(params.storageLocation, params.storageLocationId),
+		]);
 
 		const fileRecord = await this.uploadFileWithBusboy(userId, params, req);
 
