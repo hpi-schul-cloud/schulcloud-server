@@ -49,11 +49,7 @@ export class CommonCartridgeOrganizationVisitorNode {
 			.parents('item')
 			.attr('identifier');
 
-		if (!parentIdentifier) {
-			return null;
-		}
-
-		return this.memo.get(parentIdentifier) ?? null;
+		return parentIdentifier !== undefined ? this.memo.get(parentIdentifier) ?? null : null;
 	}
 
 	get children(): CommonCartridgeOrganizationVisitorNode[] {
