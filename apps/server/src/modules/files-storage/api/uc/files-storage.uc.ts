@@ -9,7 +9,7 @@ import {
 } from '@infra/authorization-client';
 import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { HttpService } from '@nestjs/axios';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, NotImplementedException } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain/types';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
@@ -101,28 +101,31 @@ export class FilesStorageUC {
 	public async upload(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
 		await this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.create);
 
-		await this.checkStorageLocation(params.storageLocation, params.storageLocationId);
+		await this.checkStorageLocationCanRead(params.storageLocation, params.storageLocationId);
 
 		const fileRecord = await this.uploadFileWithBusboy(userId, params, req);
 
 		return fileRecord;
 	}
 
-	private async checkStorageLocation(storageLocation: StorageLocation, storageLocationId: EntityId): Promise<void> {
+	private async checkStorageLocationCanRead(
+		storageLocation: StorageLocation,
+		storageLocationId: EntityId
+	): Promise<void> {
 		if (storageLocation === StorageLocation.INSTANCE) {
 			await this.authorizationClientAdapter.checkPermissionsByReference(
 				AuthorizationBodyParamsReferenceType.INSTANCES,
 				storageLocationId,
-				AuthorizationContextBuilder.write([AuthorizationContextParamsRequiredPermissions.INSTANCE_VIEW])
+				AuthorizationContextBuilder.read([])
 			);
-		}
-
-		if (storageLocation === StorageLocation.SCHOOL) {
+		} else if (storageLocation === StorageLocation.SCHOOL) {
 			await this.authorizationClientAdapter.checkPermissionsByReference(
 				AuthorizationBodyParamsReferenceType.SCHOOLS,
 				storageLocationId,
-				AuthorizationContextBuilder.write([])
+				AuthorizationContextBuilder.read([])
 			);
+		} else {
+			throw new NotImplementedException(ErrorType.STORAGE_LOCATION_TYPE_NOT_EXISTS);
 		}
 	}
 
@@ -159,7 +162,7 @@ export class FilesStorageUC {
 	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams): Promise<FileRecord> {
 		await this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.create);
 
-		await this.checkStorageLocation(params.storageLocation, params.storageLocationId);
+		await this.checkStorageLocationCanRead(params.storageLocation, params.storageLocationId);
 
 		const response = await this.getResponse(params);
 

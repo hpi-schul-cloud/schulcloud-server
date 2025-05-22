@@ -7,7 +7,7 @@ export class Migration20250318124252 extends Migration {
 			{
 				$pull: {
 					permissions: {
-						$in: ['SCHOOL_EDIT_ALL'],
+						$in: ['SCHOOL_EDIT_ALL', 'INSTANCE_VIEW'],
 					},
 				},
 			}
@@ -29,7 +29,7 @@ export class Migration20250318124252 extends Migration {
 			{
 				$addToSet: {
 					permissions: {
-						$each: ['SCHOOL_VIEW'],
+						$each: ['SCHOOL_VIEW', 'INSTANCE_VIEW'],
 					},
 				},
 			}
@@ -46,7 +46,7 @@ export class Migration20250318124252 extends Migration {
 			{
 				$pull: {
 					permissions: {
-						$in: ['SCHOOL_VIEW'],
+						$in: ['SCHOOL_VIEW', 'INSTANCE_VIEW'],
 					},
 				},
 			}
@@ -68,7 +68,7 @@ export class Migration20250318124252 extends Migration {
 			{
 				$addToSet: {
 					permissions: {
-						$each: ['SCHOOL_EDIT_ALL'],
+						$each: ['SCHOOL_EDIT_ALL', 'INSTANCE_VIEW'],
 					},
 				},
 			}

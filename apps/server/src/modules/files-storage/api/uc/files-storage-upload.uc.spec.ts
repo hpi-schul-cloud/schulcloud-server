@@ -8,7 +8,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { AxiosHeadersKeyValue, axiosResponseFactory } from '@testing/factory/axios-response.factory';
@@ -287,6 +287,45 @@ describe('FilesStorageUC upload methods', () => {
 	});
 
 	describe('upload is called', () => {
+		describe('WHEN user is authorized and request with unknown storage location type', () => {
+			const setup = () => {
+				const { params, userId, fileRecords } = buildFileRecordsWithParams('_TEST_' as StorageLocation);
+				const fileRecord = fileRecords[0];
+				const request = createRequest();
+				const readable = Readable.from('abc');
+				const fileInfo = {
+					filename: fileRecord.getName(),
+					encoding: '7-bit',
+					mimeType: fileRecord.mimeType,
+				};
+
+				let resolveUploadFile: (value: FileRecord | PromiseLike<FileRecord>) => void;
+				const fileRecordPromise = new Promise<FileRecord>((resolve) => {
+					resolveUploadFile = resolve;
+				});
+				filesStorageService.uploadFile.mockImplementationOnce(() => fileRecordPromise);
+
+				request.pipe.mockImplementation((requestStream) => {
+					requestStream.emit('file', 'file', readable, fileInfo);
+
+					requestStream.emit('finish');
+					resolveUploadFile(fileRecord);
+
+					return requestStream;
+				});
+
+				return { params, userId, request, fileRecord, readable, fileInfo };
+			};
+
+			it('should throw an not implemented error', async () => {
+				const { params, userId, request } = setup();
+
+				await expect(filesStorageUC.upload(userId, params, request)).rejects.toThrowError(
+					new NotImplementedException(ErrorType.STORAGE_LOCATION_TYPE_NOT_EXISTS)
+				);
+			});
+		});
+
 		describe('WHEN user is authorized, busboy emits event and file is uploaded successfully', () => {
 			const setup = () => {
 				const { params, userId, fileRecords } = buildFileRecordsWithParams(StorageLocation.INSTANCE);
@@ -338,7 +377,7 @@ describe('FilesStorageUC upload methods', () => {
 				expect(authorizationClientAdapter.checkPermissionsByReference).toHaveBeenCalledWith(
 					AuthorizableReferenceType.Instance,
 					params.storageLocationId,
-					AuthorizationContextBuilder.write([Permission.INSTANCE_VIEW])
+					AuthorizationContextBuilder.write([])
 				);
 			});
 
