@@ -120,7 +120,7 @@ export class CommonCartridgeOrganizationVisitorNode {
 
 	get resourcePath(): string {
 		if (this.props.type === CommonCartridgeOrganizationVisitorNodeType.RESOURCE) {
-			return this.props.identifierRef;
+			return this.props.path;
 		}
 
 		return '';
