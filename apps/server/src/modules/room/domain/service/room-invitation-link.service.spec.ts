@@ -3,6 +3,7 @@ import { RoomInvitationLinkService } from './room-invitation-link.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { RoomInvitationLinkRepo } from '../../repo';
 import { roomInvitationLinkTestFactory } from '@modules/room/testing/room-invitation-link.test.factory';
+import { RoomDeletedEvent } from '../events/room-deleted.event';
 
 describe('RoomInvitationLinkService', () => {
 	let module: TestingModule;
@@ -149,6 +150,17 @@ describe('RoomInvitationLinkService', () => {
 			await service.deleteLinks([linkId]);
 
 			expect(repo.delete).toHaveBeenCalledWith([linkId]);
+		});
+	});
+
+	describe('handle room deleted event', () => {
+		it('should delete all links', async () => {
+			const roomId = '456';
+			const roomInvitationLinks = roomInvitationLinkTestFactory.buildList(3, { roomId });
+			repo.findByRoomId.mockResolvedValue(roomInvitationLinks);
+			await service.handle(new RoomDeletedEvent(roomId));
+
+			expect(repo.delete).toHaveBeenCalledWith(roomInvitationLinks.map((link) => link.id));
 		});
 	});
 });
