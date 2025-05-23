@@ -101,7 +101,8 @@ describe('save or create H5P content', () => {
 
 				await uc.saveH5pContentGetMetadata(
 					contentId,
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -121,7 +122,8 @@ describe('save or create H5P content', () => {
 
 				await uc.saveH5pContentGetMetadata(
 					contentId,
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -143,7 +145,8 @@ describe('save or create H5P content', () => {
 
 				const result = await uc.saveH5pContentGetMetadata(
 					contentId,
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -169,7 +172,8 @@ describe('save or create H5P content', () => {
 
 				const saveContentPromise = uc.saveH5pContentGetMetadata(
 					contentId,
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -200,7 +204,8 @@ describe('save or create H5P content', () => {
 
 				const saveContentPromise = uc.saveH5pContentGetMetadata(
 					contentId,
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -228,7 +233,8 @@ describe('save or create H5P content', () => {
 				const { parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId } = setup();
 
 				await uc.createH5pContentGetMetadata(
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -247,7 +253,8 @@ describe('save or create H5P content', () => {
 				const { parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId } = setup();
 
 				await uc.createH5pContentGetMetadata(
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -268,7 +275,8 @@ describe('save or create H5P content', () => {
 				const { contentId, parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId } = setup();
 
 				const result = await uc.createH5pContentGetMetadata(
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -293,7 +301,8 @@ describe('save or create H5P content', () => {
 				const { mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId } = setup();
 
 				const saveContentPromise = uc.createH5pContentGetMetadata(
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -323,7 +332,8 @@ describe('save or create H5P content', () => {
 				const { error, mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId } = setup();
 
 				const saveContentPromise = uc.createH5pContentGetMetadata(
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
