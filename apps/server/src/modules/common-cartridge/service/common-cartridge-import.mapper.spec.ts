@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
 import {
+	CommonCartridgeFileResourceProps,
 	CommonCartridgeWebContentResourceProps,
 	CommonCartridgeWebLinkResourceProps,
 } from '../import/common-cartridge-import.types';
@@ -48,6 +49,12 @@ describe('CommonCartridgeImportMapper', () => {
 				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeResourceTypeV1P1.WEB_CONTENT);
 
 				expect(result).toEqual('richText');
+			});
+
+			it('should return file', () => {
+				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeResourceTypeV1P1.FILE);
+
+				expect(result).toEqual('file');
 			});
 		});
 	});
@@ -156,6 +163,36 @@ describe('CommonCartridgeImportMapper', () => {
 				const result = sut.mapResourceToContentBody(resource, cardElementProps, InputFormat.RICH_TEXT_CK4);
 
 				expect(result).toEqual(undefined);
+			});
+		});
+
+		describe('when resource is a file', () => {
+			const setup = () => {
+				const resource: CommonCartridgeFileResourceProps = {
+					type: CommonCartridgeResourceTypeV1P1.FILE,
+					href: 'path/to/resource',
+					fileName: 'resource.jpg',
+					file: new File([''], 'resource.jpg'),
+					description: 'Resource description',
+				};
+				const cardElementProps = commonCartridgeOrganizationPropsFactory.build({
+					resourcePath: 'path/to/resource',
+				});
+
+				return { resource, cardElementProps };
+			};
+
+			it('should return file body', () => {
+				const { resource, cardElementProps } = setup();
+
+				const result = sut.mapResourceToContentBody(resource, cardElementProps, InputFormat.RICH_TEXT_CK4);
+				expect(result).toEqual({
+					type: 'file',
+					content: {
+						caption: 'Resource description',
+						alternativeText: '',
+					},
+				});
 			});
 		});
 	});

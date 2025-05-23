@@ -4,6 +4,7 @@ import AdmZip from 'adm-zip';
 import { JSDOM } from 'jsdom';
 import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
 import {
+	CommonCartridgeFileResourceProps,
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceProps,
 	CommonCartridgeWebContentResourceProps,
@@ -28,7 +29,11 @@ export class CommonCartridgeResourceFactory {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
 				return this.createWebLinkResource(content, title);
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
-				return this.createWebContentResource(content, inputFormat);
+				if (this.isFile(organization.resourcePath)) {
+					return this.createFileContentResource(organization.resourcePath, title);
+				} else {
+					return this.createWebContentResource(content, inputFormat);
+				}
 			default:
 				return undefined;
 		}
@@ -83,5 +88,29 @@ export class CommonCartridgeResourceFactory {
 		} catch (error) {
 			return undefined;
 		}
+	}
+
+	private createFileContentResource(resourcePath: string, title: string): CommonCartridgeFileResourceProps | undefined {
+		const fileName = resourcePath.split('/').pop() ?? 'unnamed';
+		const zipEntry = this.archive.getEntry(resourcePath);
+		const buffer = zipEntry?.getData();
+
+		if (!(buffer instanceof Buffer) || buffer.length === 0) {
+			return undefined;
+		}
+
+		const file = new File([buffer], fileName, {});
+
+		return {
+			type: CommonCartridgeResourceTypeV1P1.FILE,
+			href: resourcePath,
+			fileName,
+			file,
+			description: title,
+		};
+	}
+
+	private isFile(resourcePath: string): boolean {
+		return !resourcePath.endsWith('.html');
 	}
 }

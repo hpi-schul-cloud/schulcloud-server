@@ -9,7 +9,7 @@ import type { Request } from 'express';
 import { from, throwError } from 'rxjs';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
-import { FileApi } from './generated';
+import { FileApi, FileRecordParentType, StorageLocation } from './generated';
 
 describe(FilesStorageClientAdapter.name, () => {
 	let module: TestingModule;
@@ -123,6 +123,66 @@ describe(FilesStorageClientAdapter.name, () => {
 
 				expect(result).toBeNull();
 				expect(errorLoggerMock.error).toBeCalled();
+			});
+		});
+	});
+
+	describe('upload', () => {
+		describe('when upload succeeds', () => {
+			const setup = () => {
+				const storageLocationId = faker.string.uuid();
+				const storageLocation = StorageLocation.SCHOOL;
+				const parentId = faker.string.uuid();
+				const parentType = FileRecordParentType.BOARDNODES;
+				const file = new File([], faker.system.fileName());
+
+				httpServiceMock.post.mockReturnValue(from([axiosResponseFactory.build({ data: { id: faker.string.uuid() } })]));
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
+
+				return {
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					file,
+				};
+			};
+
+			it('should return the response data', async () => {
+				const { storageLocationId, storageLocation, parentId, parentType, file } = setup();
+
+				const result = await sut.upload(storageLocationId, storageLocation, parentId, parentType, file);
+
+				expect(result).toEqual({ id: expect.any(String) });
+			});
+		});
+
+		describe('when upload fails', () => {
+			const setup = () => {
+				const storageLocationId = faker.string.uuid();
+				const storageLocation = StorageLocation.SCHOOL;
+				const parentId = faker.string.uuid();
+				const parentType = FileRecordParentType.BOARDNODES;
+				const file = new File([], faker.system.fileName());
+				const observable = throwError(() => new Error('error'));
+
+				httpServiceMock.post.mockReturnValue(observable);
+
+				return {
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					file,
+				};
+			};
+
+			it('should return null', async () => {
+				const { storageLocationId, storageLocation, parentId, parentType, file } = setup();
+
+				const result = await sut.upload(storageLocationId, storageLocation, parentId, parentType, file);
+
+				expect(result).toBeNull();
 			});
 		});
 	});
