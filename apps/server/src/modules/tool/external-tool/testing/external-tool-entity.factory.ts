@@ -9,6 +9,7 @@ import {
 	LtiPrivacyPermission,
 	ToolConfigType,
 } from '../../common/enum';
+import { ExternalToolMediumStatus } from '../enum';
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
@@ -61,6 +62,7 @@ export const mediumEntityFactory = BaseFactory.define<ExternalToolMediumEntity, 
 	ExternalToolMediumEntity,
 	() => {
 		return {
+			status: ExternalToolMediumStatus.ACTIVE,
 			mediumId: 'mediumId',
 			publisher: 'publisher',
 			mediaSourceId: 'mediaSourceId',
