@@ -8,4 +8,6 @@ export interface ExternalToolSearchQuery {
 	ids?: string[];
 
 	isPreferred?: boolean;
+
+	isActiveOrNoMedium?: boolean;
 }

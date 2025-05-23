@@ -166,6 +166,14 @@ describe('ExternalToolConfigurationUc', () => {
 				return { externalToolsPage };
 			};
 
+			it('should call externalToolService', async () => {
+				setup();
+
+				await uc.getAvailableToolsForSchool('userId', 'schoolId');
+
+				expect(externalToolService.findExternalTools).toHaveBeenCalledWith({ isActiveOrNoMedium: true });
+			});
+
 			it('should call externalToolLogoService', async () => {
 				const { externalToolsPage } = setup();
 
@@ -315,6 +323,14 @@ describe('ExternalToolConfigurationUc', () => {
 					usedContextExternalTool,
 					AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN])
 				);
+			});
+
+			it('should call externalToolService', async () => {
+				setup();
+
+				await uc.getAvailableToolsForContext('userId', 'schoolId', ToolContextType.COURSE);
+
+				expect(externalToolService.findExternalTools).toHaveBeenCalledWith({ isActiveOrNoMedium: true });
 			});
 
 			it('should call externalToolLogoService', async () => {

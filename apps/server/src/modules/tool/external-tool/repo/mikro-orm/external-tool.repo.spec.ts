@@ -2,6 +2,7 @@ import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExternalToolSearchQuery } from '@modules/tool';
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
@@ -220,8 +221,11 @@ describe(ExternalToolRepo.name, () => {
 
 			await em.nativeDelete(ExternalToolEntity, {});
 			const ltiToolA: ExternalToolEntity = externalToolEntityFactory.withName('A').buildWithId();
-			const ltiToolB: ExternalToolEntity = externalToolEntityFactory.withName('B').buildWithId();
-			const ltiToolC: ExternalToolEntity = externalToolEntityFactory.withName('B').buildWithId();
+			const ltiToolB: ExternalToolEntity = externalToolEntityFactory.withName('B').withMedium().buildWithId();
+			const ltiToolC: ExternalToolEntity = externalToolEntityFactory
+				.withName('B')
+				.withMedium({ status: ExternalToolMediumStatus.DRAFT })
+				.buildWithId();
 			const ltiTools: ExternalToolEntity[] = [ltiToolA, ltiToolB, ltiToolC];
 			await em.persistAndFlush([ltiToolA, ltiToolB, ltiToolC]);
 			em.clear();
@@ -296,6 +300,19 @@ describe(ExternalToolRepo.name, () => {
 				it('should return external tools for given ids', async () => {
 					const { options, ltiTools } = await setupFind();
 					const query: ExternalToolSearchQuery = { ids: [ltiTools[0].id, ltiTools[1].id] };
+
+					const page: Page<ExternalTool> = await repo.find(query, options);
+
+					expect(page.data.length).toBe(2);
+					expect(page.data[0].name).toEqual(ltiTools[0].name);
+					expect(page.data[1].name).toEqual(ltiTools[1].name);
+				});
+			});
+
+			describe('by activeOrNoMedium', () => {
+				it('should not return external tool with not active medium status', async () => {
+					const { options, ltiTools } = await setupFind();
+					const query: ExternalToolSearchQuery = { isActiveOrNoMedium: true };
 
 					const page: Page<ExternalTool> = await repo.find(query, options);
 

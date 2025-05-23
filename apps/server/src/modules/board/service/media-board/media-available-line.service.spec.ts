@@ -206,6 +206,7 @@ describe(MediaAvailableLineService.name, () => {
 					createdAt: new Date(2023, 1, 2),
 					restrictToContexts: [],
 				});
+				const validExternalToolMedium: ExternalTool = externalToolFactory.withMedium().buildWithId();
 				const validAndInvalidExternalTools: Page<ExternalTool> = new Page<ExternalTool>(
 					[
 						validExternalToolOld,
@@ -215,8 +216,9 @@ describe(MediaAvailableLineService.name, () => {
 						hiddenExternalTool,
 						contextParameterExternalTool,
 						invalidRestrictedExternalTool,
+						validExternalToolMedium,
 					],
-					7
+					9
 				);
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory
 					.withSchoolId(user.school.id)
@@ -230,6 +232,7 @@ describe(MediaAvailableLineService.name, () => {
 					validExternalToolNew,
 					validExternalToolOld,
 					validRestrictedExternalTool,
+					validExternalToolMedium,
 				];
 
 				return { user, board, schoolExternalTool, expectedExternalTools };
@@ -240,7 +243,10 @@ describe(MediaAvailableLineService.name, () => {
 
 				await service.getAvailableExternalToolsForSchool([schoolExternalTool]);
 
-				expect(externalToolService.findExternalTools).toHaveBeenCalledWith({ ids: [schoolExternalTool.toolId] });
+				expect(externalToolService.findExternalTools).toHaveBeenCalledWith({
+					ids: [schoolExternalTool.toolId],
+					isActiveOrNoMedium: true,
+				});
 			});
 
 			it('should return all available external tools in correct order', async () => {
