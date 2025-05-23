@@ -67,6 +67,7 @@ export class DeletionExecutionService {
 			[ModuleName.USER_CALENDAR]: DomainName.CALENDAR,
 			[ModuleName.USER_REGISTRATIONPIN]: DomainName.REGISTRATIONPIN,
 			[ModuleName.NEWS]: DomainName.NEWS,
+			[ModuleName.ROOM]: DomainName.ROOM,
 		} as const;
 
 		if (mapping[moduleName]) {

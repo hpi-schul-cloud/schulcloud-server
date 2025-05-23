@@ -15,6 +15,8 @@ import {
 } from './controller';
 import { BoardNodePermissionService } from './service';
 import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
+import { SagaModule } from '@modules/saga';
+import { CopyRoomBoardsStep } from './saga';
 
 @Module({
 	imports: [
@@ -25,8 +27,9 @@ import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
 		RoomModule,
 		forwardRef(() => AuthorizationModule),
 		BoardContextApiHelperModule,
+		SagaModule,
 	],
 	controllers: [BoardController, ColumnController, CardController, ElementController, BoardSubmissionController],
-	providers: [BoardUc, BoardNodePermissionService, ColumnUc, CardUc, ElementUc, SubmissionItemUc],
+	providers: [BoardUc, BoardNodePermissionService, ColumnUc, CardUc, ElementUc, SubmissionItemUc, CopyRoomBoardsStep],
 })
 export class BoardApiModule {}
