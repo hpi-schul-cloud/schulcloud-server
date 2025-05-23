@@ -11,6 +11,7 @@ import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { AuthorizationModule } from '../authorization';
+import { H5pEditorClientModule } from '../h5p-editor-client/h5p-editor-client.module';
 import { RoomMembershipModule } from '../room-membership';
 import { BoardNodeRule } from './authorisation/board-node.rule';
 import { BoardNodeFactory } from './domain';
@@ -52,6 +53,7 @@ import {
 		AuthorizationModule,
 		RoomMembershipModule,
 		SagaModule,
+		H5pEditorClientModule,
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
