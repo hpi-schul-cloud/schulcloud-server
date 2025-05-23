@@ -502,5 +502,14 @@
 		"created_at": {
 			"$date": "2025-05-20T14:45:14.470Z"
 		}
+	},
+	{
+		"_id": {
+			"$oid": "681db380e51736fadfae207c"
+		},
+		"name": "MigrationXYZ",
+		"created_at": {
+			"$date": "2025-05-22T01:00:00.000Z"
+		}
 	}
 ]
