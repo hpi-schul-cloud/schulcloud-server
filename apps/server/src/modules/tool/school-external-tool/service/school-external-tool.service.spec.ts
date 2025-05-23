@@ -8,6 +8,7 @@ import { ToolContextType } from '../../common/enum';
 import { CommonToolDeleteService, CommonToolValidationService } from '../../common/service';
 import { ExternalToolService } from '../../external-tool';
 import { type ExternalTool } from '../../external-tool/domain';
+import { ExternalToolMediumStatus } from '../../external-tool/enum';
 import { externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalTool, SchoolExternalToolConfigurationStatus, SchoolExternalToolMedium } from '../domain';
 import { SchoolExternalToolRepo } from '../repo';
@@ -116,11 +117,13 @@ describe(SchoolExternalToolService.name, () => {
 
 		describe('when the tool has a medium with user licenses', () => {
 			const setup = () => {
+				const mediumStatus = ExternalToolMediumStatus.ACTIVE;
 				const mediumId = 'mediumId';
 				const mediaSourceId = 'mediaSourceId';
 				const mediaSourceName = 'mediaSourceName';
 				const externalTool: ExternalTool = externalToolFactory
 					.withMedium({
+						status: mediumStatus,
 						mediumId,
 						mediaSourceId,
 					})
@@ -144,11 +147,12 @@ describe(SchoolExternalToolService.name, () => {
 					mediumId,
 					mediaSourceId,
 					mediaSourceName,
+					mediumStatus,
 				};
 			};
 
 			it('should return the schoolExternalTool with medium data', async () => {
-				const { schoolExternalTool, externalTool, mediumId, mediaSourceId, mediaSourceName } = setup();
+				const { schoolExternalTool, externalTool, mediumId, mediaSourceId, mediaSourceName, mediumStatus } = setup();
 
 				const result = await service.findById(schoolExternalTool.id);
 
@@ -157,6 +161,7 @@ describe(SchoolExternalToolService.name, () => {
 						...schoolExternalTool.getProps(),
 						name: externalTool.name,
 						medium: new SchoolExternalToolMedium({
+							status: mediumStatus,
 							mediumId,
 							mediaSourceId,
 							mediaSourceName,
@@ -173,11 +178,14 @@ describe(SchoolExternalToolService.name, () => {
 
 		describe('when the tool has a medium with school licenses', () => {
 			const setup = () => {
+				const mediumStatus = ExternalToolMediumStatus.ACTIVE;
+
 				const mediumId = 'mediumId';
 				const mediaSourceId = 'mediaSourceId';
 				const mediaSourceName = 'mediaSourceName';
 				const externalTool: ExternalTool = externalToolFactory
 					.withMedium({
+						status: mediumStatus,
 						mediumId,
 						mediaSourceId,
 					})
@@ -201,11 +209,12 @@ describe(SchoolExternalToolService.name, () => {
 					mediumId,
 					mediaSourceId,
 					mediaSourceName,
+					mediumStatus,
 				};
 			};
 
 			it('should return the schoolExternalTool with medium data', async () => {
-				const { schoolExternalTool, externalTool, mediumId, mediaSourceId, mediaSourceName } = setup();
+				const { schoolExternalTool, externalTool, mediumId, mediaSourceId, mediaSourceName, mediumStatus } = setup();
 
 				const result = await service.findById(schoolExternalTool.id);
 
@@ -214,6 +223,7 @@ describe(SchoolExternalToolService.name, () => {
 						...schoolExternalTool.getProps(),
 						name: externalTool.name,
 						medium: new SchoolExternalToolMedium({
+							status: mediumStatus,
 							mediumId,
 							mediaSourceId,
 							mediaSourceName,

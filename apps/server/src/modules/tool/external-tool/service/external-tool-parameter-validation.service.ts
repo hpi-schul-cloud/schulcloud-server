@@ -10,7 +10,7 @@ import { ExternalToolService } from './external-tool.service';
 export class ExternalToolParameterValidationService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
-	async validateCommon(externalTool: ExternalTool): Promise<void> {
+	public async validateCommon(externalTool: ExternalTool): Promise<void> {
 		if (!(await this.isNameUnique(externalTool))) {
 			throw new ValidationError(`tool_name_duplicate: The tool name "${externalTool.name || ''}" is already used.`);
 		}

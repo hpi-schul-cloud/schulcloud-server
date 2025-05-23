@@ -1,12 +1,17 @@
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { MissingMediaLicenseLoggableException } from '@modules/tool/tool-launch/error';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
+import { ExternalToolMediumStatus } from '../../external-tool/enum';
 
 describe(MissingMediaLicenseLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const contextExternalTool = contextExternalToolFactory.buildWithId();
-			const medium: ExternalToolMedium = new ExternalToolMedium({ mediumId: 'mediumId', publisher: 'publisher' });
+			const medium: ExternalToolMedium = new ExternalToolMedium({
+				status: ExternalToolMediumStatus.ACTIVE,
+				mediumId: 'mediumId',
+				publisher: 'publisher',
+			});
 			const userId = 'userId';
 
 			const exception = new MissingMediaLicenseLoggableException(medium, userId, contextExternalTool);

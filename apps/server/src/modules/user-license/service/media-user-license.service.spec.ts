@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ExternalToolMediumStatus } from '../../tool/external-tool/enum';
 import { MediaUserLicense } from '../domain';
 import { MediaUserLicenseRepo } from '../repo';
 import { mediaUserLicenseFactory } from '../testing';
@@ -108,6 +109,7 @@ describe(MediaUserLicenseService.name, () => {
 		describe('when user has license', () => {
 			const setup = () => {
 				const toolMedium: ExternalToolMedium = {
+					status: ExternalToolMediumStatus.ACTIVE,
 					mediumId: 'mediumId',
 					mediaSourceId: 'mediaSourceId',
 				};
@@ -138,6 +140,7 @@ describe(MediaUserLicenseService.name, () => {
 		describe('when user has license without sourceId', () => {
 			const setup = () => {
 				const toolMedium: ExternalToolMedium = {
+					status: ExternalToolMediumStatus.ACTIVE,
 					mediumId: 'mediumId',
 				};
 				const medium = mediaUserLicenseFactory.build({
@@ -164,7 +167,7 @@ describe(MediaUserLicenseService.name, () => {
 
 		describe('when user has not the correct license', () => {
 			const setup = () => {
-				const medium: ExternalToolMedium = { mediumId: 'mediumId' };
+				const medium: ExternalToolMedium = { status: ExternalToolMediumStatus.ACTIVE, mediumId: 'mediumId' };
 				const mediaUserLicenses: MediaUserLicense[] = mediaUserLicenseFactory.buildList(2);
 
 				return {
@@ -184,7 +187,7 @@ describe(MediaUserLicenseService.name, () => {
 
 		describe('when user has no licenses', () => {
 			const setup = () => {
-				const medium: ExternalToolMedium = { mediumId: 'mediumId' };
+				const medium: ExternalToolMedium = { status: ExternalToolMediumStatus.ACTIVE, mediumId: 'mediumId' };
 				const mediaUserLicenses: MediaUserLicense[] = [];
 
 				return {

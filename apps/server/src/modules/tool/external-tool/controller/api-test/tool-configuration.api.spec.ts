@@ -505,6 +505,7 @@ describe('ToolConfigurationController (API)', () => {
 						},
 					],
 					medium: {
+						status: medium.status,
 						mediumId: medium.mediumId,
 						mediaSourceId: medium.mediaSourceId,
 						publisher: medium.publisher,

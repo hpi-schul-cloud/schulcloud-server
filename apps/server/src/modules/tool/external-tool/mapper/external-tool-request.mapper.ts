@@ -142,6 +142,7 @@ export class ExternalToolRequestMapper {
 			return undefined;
 		}
 		const externalToolMedium: ExternalToolMedium = new ExternalToolMedium({
+			status: externalToolMediumParams.status,
 			mediumId: externalToolMediumParams.mediumId,
 			publisher: externalToolMediumParams.publisher,
 			mediaSourceId: externalToolMediumParams.mediaSourceId,

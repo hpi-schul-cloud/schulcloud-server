@@ -86,6 +86,7 @@ export class ExternalToolResponseMapper {
 		}
 
 		return new ExternalToolMediumResponse({
+			status: medium.status,
 			mediumId: medium.mediumId,
 			publisher: medium.publisher,
 			mediaSourceId: medium.mediaSourceId,
