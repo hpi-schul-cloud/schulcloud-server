@@ -2,9 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { RoomInvitationLinkRepo } from '../../repo';
 import { RoomInvitationLink, RoomInvitationLinkDto } from '../do/room-invitation-link.do';
 import { RoomInvitationLinkFactory } from '../factory/room-invitation-link.factory';
+import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { RoomDeletedEvent } from '../events/room-deleted.event';
 
 @Injectable()
-export class RoomInvitationLinkService {
+@EventsHandler(RoomDeletedEvent)
+export class RoomInvitationLinkService implements IEventHandler<RoomDeletedEvent> {
 	constructor(private readonly roomInvitationLinkRepo: RoomInvitationLinkRepo) {}
 
 	public async createLink(props: RoomInvitationLinkDto): Promise<RoomInvitationLink> {
@@ -35,5 +38,10 @@ export class RoomInvitationLinkService {
 	public async findByIds(linkIds: string[]): Promise<RoomInvitationLink[]> {
 		const roomInvitationLinks = await this.roomInvitationLinkRepo.findByIds(linkIds);
 		return roomInvitationLinks;
+	}
+
+	public async handle(event: RoomDeletedEvent): Promise<void> {
+		const roomInvitationLinks = await this.roomInvitationLinkRepo.findByRoomId(event.id);
+		await this.roomInvitationLinkRepo.delete(roomInvitationLinks.map((link) => link.id));
 	}
 }

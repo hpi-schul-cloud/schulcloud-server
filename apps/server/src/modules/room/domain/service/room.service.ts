@@ -6,10 +6,12 @@ import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { RoomRepo } from '../../repo';
 import { Room, RoomCreateProps, RoomProps, RoomUpdateProps } from '../do';
+import { EventBus } from '@nestjs/cqrs';
+import { RoomDeletedEvent } from '../events/room-deleted.event';
 
 @Injectable()
 export class RoomService {
-	constructor(private readonly roomRepo: RoomRepo) {}
+	constructor(private readonly roomRepo: RoomRepo, private readonly eventBus: EventBus) {}
 
 	public async getRooms(findOptions: IFindOptions<Room>): Promise<Page<Room>> {
 		const rooms: Page<Room> = await this.roomRepo.findRooms(findOptions);
@@ -63,6 +65,8 @@ export class RoomService {
 
 	public async deleteRoom(room: Room): Promise<void> {
 		await this.roomRepo.delete(room);
+
+		await this.eventBus.publish(new RoomDeletedEvent(room.id));
 	}
 
 	private validateTimeSpan(props: RoomCreateProps | RoomUpdateProps, roomId: string): void {

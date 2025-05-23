@@ -9,11 +9,14 @@ import { roomFactory } from '../../testing';
 import { Room, RoomCreateProps, RoomUpdateProps } from '../do';
 import { RoomColor } from '../type';
 import { RoomService } from './room.service';
+import { EventBus } from '@nestjs/cqrs';
+import { RoomDeletedEvent } from '../events/room-deleted.event';
 
 describe('RoomService', () => {
 	let module: TestingModule;
 	let service: RoomService;
 	let roomRepo: DeepMocked<RoomRepo>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -23,11 +26,16 @@ describe('RoomService', () => {
 					provide: RoomRepo,
 					useValue: createMock<RoomRepo>(),
 				},
+				{
+					provide: EventBus,
+					useValue: createMock<EventBus>(),
+				},
 			],
 		}).compile();
 
 		service = module.get<RoomService>(RoomService);
 		roomRepo = module.get(RoomRepo);
+		eventBus = module.get(EventBus);
 	});
 
 	afterAll(async () => {
@@ -165,6 +173,14 @@ describe('RoomService', () => {
 			await service.deleteRoom(room);
 
 			expect(roomRepo.delete).toHaveBeenCalledWith(room);
+		});
+
+		it('should send an event', async () => {
+			const room = roomFactory.build();
+
+			await service.deleteRoom(room);
+
+			expect(eventBus.publish).toHaveBeenCalledWith(new RoomDeletedEvent(room.id));
 		});
 	});
 
