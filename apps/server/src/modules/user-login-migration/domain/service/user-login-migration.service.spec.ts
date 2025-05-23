@@ -170,7 +170,7 @@ describe(UserLoginMigrationService.name, () => {
 				const targetSystemId = new ObjectId().toHexString();
 				const system = systemFactory.withOauthConfig().build({
 					id: targetSystemId,
-					alias: 'SANIS',
+					alias: 'moin.schule',
 				});
 
 				const userLoginMigrationDO = userLoginMigrationDOFactory.build({
@@ -222,7 +222,7 @@ describe(UserLoginMigrationService.name, () => {
 				const targetSystemId = new ObjectId().toHexString();
 				const system = systemFactory.withOauthConfig().build({
 					id: targetSystemId,
-					alias: 'SANIS',
+					alias: 'moin.schule',
 				});
 
 				const schoolId = new ObjectId().toHexString();
@@ -264,7 +264,7 @@ describe(UserLoginMigrationService.name, () => {
 				const targetSystemId = new ObjectId().toHexString();
 				const system = systemFactory.withOauthConfig().build({
 					id: targetSystemId,
-					alias: 'SANIS',
+					alias: 'moin.schule',
 				});
 
 				schoolService.getSchoolById.mockResolvedValue(school);
@@ -300,7 +300,7 @@ describe(UserLoginMigrationService.name, () => {
 				const targetSystemId = new ObjectId().toHexString();
 				const system = systemFactory.withOauthConfig().build({
 					id: targetSystemId,
-					alias: 'SANIS',
+					alias: 'moin.schule',
 				});
 
 				schoolService.getSchoolById.mockResolvedValue(school);
@@ -325,7 +325,7 @@ describe(UserLoginMigrationService.name, () => {
 			});
 		});
 
-		describe('when creating a new migration but the SANIS system does not exist', () => {
+		describe('when creating a new migration but the moin.schule system does not exist', () => {
 			const setup = () => {
 				const schoolId = new ObjectId().toHexString();
 				const school = legacySchoolDoFactory.buildWithId(undefined, schoolId);
@@ -348,12 +348,12 @@ describe(UserLoginMigrationService.name, () => {
 			});
 		});
 
-		describe('when creating a new migration but the SANIS system and schools login system are the same', () => {
+		describe('when creating a new migration but the moin.schule system and schools login system are the same', () => {
 			const setup = () => {
 				const targetSystemId = new ObjectId().toHexString();
 				const system = systemFactory.withOauthConfig().build({
 					id: targetSystemId,
-					alias: 'SANIS',
+					alias: 'moin.schule',
 				});
 
 				const schoolId = new ObjectId().toHexString();

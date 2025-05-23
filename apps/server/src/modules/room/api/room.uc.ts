@@ -329,7 +329,7 @@ export class RoomUc {
 		(currentUser: User) =>
 		(user: UserDo): boolean =>
 			this.authorizationService.hasPermission(currentUser, user, {
-				action: Action.write,
+				action: Action.read,
 				requiredPermissions: [],
 			});
 	private userToId = (user: UserDo): string => user.id || '';
