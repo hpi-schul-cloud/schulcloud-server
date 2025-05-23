@@ -38,7 +38,6 @@ describe(H5pEditorProducer.name, () => {
 		describe('when sending a message', () => {
 			const setup = () => {
 				const message: DeleteContentParams = {
-					userId: new ObjectId().toHexString(),
 					contentId: new ObjectId().toHexString(),
 				};
 
