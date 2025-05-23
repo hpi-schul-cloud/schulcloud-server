@@ -1630,7 +1630,7 @@
 		},
 		"FEATURE_ROOM_COPY_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables the rooms feature to duplicate rooms"
 		},
 		"FEATURE_ROOM_INVITATION_LINKS_ENABLED": {
