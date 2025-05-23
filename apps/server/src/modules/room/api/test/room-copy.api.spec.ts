@@ -228,4 +228,56 @@ describe('POST /rooms/:roomId/copy', () => {
 			expect(copiedBoard).toBeDefined();
 		});
 	});
+
+	describe('when the user is from another school', () => {
+		const setup = async () => {
+			const school1 = schoolEntityFactory.buildWithId();
+			const school2 = schoolEntityFactory.buildWithId();
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: school1 });
+
+			const room = roomEntityFactory.build({ name: 'test', schoolId: school2.id });
+			const { roomOwnerRole, roomAdminRole } = RoomRolesTestFactory.createRoomRoles();
+
+			const userGroup = groupEntityFactory.buildWithId({
+				type: GroupEntityTypes.ROOM,
+				users: [{ role: roomAdminRole, user: teacherUser }],
+			});
+
+			const roomMembership = roomMembershipEntityFactory.build({
+				roomId: room.id,
+				userGroupId: userGroup.id,
+				schoolId: teacherUser.school.id,
+			});
+
+			await em.persistAndFlush([
+				school1,
+				school2,
+				room,
+				roomAdminRole,
+				roomOwnerRole,
+				teacherAccount,
+				teacherAccount,
+				teacherUser,
+				userGroup,
+				roomMembership,
+			]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(teacherAccount);
+			return { loggedInClient, room, school1 };
+		};
+
+		it("should copy the room in the user's school", async () => {
+			const { loggedInClient, room, school1 } = await setup();
+
+			const response = await loggedInClient.post(`${room.id}/copy`);
+
+			const copiedRoomId = (response.body as CopyStatus).id;
+
+			const copiedRoom = await em.findOneOrFail(RoomEntity, { id: copiedRoomId });
+
+			expect(copiedRoom.schoolId).toEqual(school1.id);
+			expect(copiedRoom.schoolId).not.toEqual(room.schoolId);
+		});
+	});
 });
