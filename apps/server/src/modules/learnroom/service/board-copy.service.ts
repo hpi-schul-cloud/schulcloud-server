@@ -44,7 +44,7 @@ export class BoardCopyService {
 		private readonly columnBoardNodeRepo: ColumnBoardNodeRepo
 	) {}
 
-	async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
+	public async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
 		const { originalBoard, user, originalCourse, destinationCourse } = params;
 
 		const boardElements: LegacyBoardElement[] = originalBoard.getElements();
@@ -120,11 +120,7 @@ export class BoardCopyService {
 		return statuses;
 	}
 
-	private async copyLesson(
-		originalLesson: LessonEntity,
-		user: User,
-		destinationCourse: CourseEntity
-	): Promise<CopyStatus> {
+	private copyLesson(originalLesson: LessonEntity, user: User, destinationCourse: CourseEntity): Promise<CopyStatus> {
 		return this.lessonCopyService.copyLesson({
 			originalLessonId: originalLesson.id,
 			user,
@@ -132,7 +128,7 @@ export class BoardCopyService {
 		});
 	}
 
-	private async copyTask(originalTask: Task, user: User, destinationCourse: CourseEntity): Promise<CopyStatus> {
+	private copyTask(originalTask: Task, user: User, destinationCourse: CourseEntity): Promise<CopyStatus> {
 		return this.taskCopyService.copyTask({
 			originalTaskId: originalTask.id,
 			user,
@@ -140,7 +136,7 @@ export class BoardCopyService {
 		});
 	}
 
-	private async copyColumnBoard(
+	private copyColumnBoard(
 		columnBoard: ColumnBoardNode,
 		user: User,
 		originalCourse: CourseEntity,

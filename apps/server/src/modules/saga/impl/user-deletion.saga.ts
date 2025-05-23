@@ -4,29 +4,29 @@ import { SagaRegistryService, SagaStepRegistryService } from '../service';
 import { ModuleName, StepReport } from '../type';
 import { Saga } from '../type/saga';
 
+export const UserDeletionSagaExecutionOrder: ModuleName[] = [
+	ModuleName.ACCOUNT,
+	ModuleName.BOARD,
+	ModuleName.CLASS,
+	ModuleName.COURSE,
+	ModuleName.COURSE_COURSEGROUP,
+	ModuleName.LEARNROOM_DASHBOARD,
+	ModuleName.FILES,
+	ModuleName.FILES_STORAGE,
+	ModuleName.LESSON,
+	ModuleName.PSEUDONYM,
+	ModuleName.ROCKETCHATUSER,
+	ModuleName.TASK,
+	ModuleName.TASK_SUBMISSION,
+	ModuleName.TEAM,
+	ModuleName.USER,
+	ModuleName.USER_CALENDAR,
+	ModuleName.USER_REGISTRATIONPIN,
+	ModuleName.NEWS,
+];
+
 @Injectable()
 export class UserDeletionSaga extends Saga<'userDeletion'> {
-	private readonly executionOrder = [
-		ModuleName.ACCOUNT,
-		ModuleName.BOARD,
-		ModuleName.CLASS,
-		ModuleName.COURSE,
-		ModuleName.COURSE_COURSEGROUP,
-		ModuleName.LEARNROOM_DASHBOARD,
-		ModuleName.FILES,
-		ModuleName.FILES_STORAGE,
-		ModuleName.LESSON,
-		ModuleName.PSEUDONYM,
-		ModuleName.ROCKETCHATUSER,
-		ModuleName.TASK,
-		ModuleName.TASK_SUBMISSION,
-		ModuleName.TEAM,
-		ModuleName.USER,
-		ModuleName.USER_CALENDAR,
-		ModuleName.USER_REGISTRATIONPIN,
-		ModuleName.NEWS,
-	];
-
 	constructor(
 		private readonly stepRegistry: SagaStepRegistryService,
 		private readonly sagaRegistry: SagaRegistryService
@@ -36,7 +36,7 @@ export class UserDeletionSaga extends Saga<'userDeletion'> {
 	}
 
 	public async execute(params: { userId: EntityId }): Promise<StepReport[]> {
-		const moduleNames = this.executionOrder;
+		const moduleNames = UserDeletionSagaExecutionOrder;
 
 		this.checkAllStepsRegistered(moduleNames);
 

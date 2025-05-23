@@ -10,6 +10,8 @@ import { MediaBoardController, MediaElementController, MediaLineController } fro
 import { MediaBoardModule } from './media-board.module';
 import { BoardNodePermissionService } from './service';
 import { MediaAvailableLineUc, MediaBoardUc, MediaElementUc, MediaLineUc } from './uc';
+import { SagaModule } from '@modules/saga';
+import { DeleteUserBoardDataStep } from './saga';
 
 @Module({
 	imports: [
@@ -21,8 +23,16 @@ import { MediaAvailableLineUc, MediaBoardUc, MediaElementUc, MediaLineUc } from 
 		ToolModule,
 		UserLicenseModule,
 		SchoolLicenseModule,
+		SagaModule,
 	],
 	controllers: [MediaBoardController, MediaLineController, MediaElementController],
-	providers: [BoardNodePermissionService, MediaBoardUc, MediaLineUc, MediaElementUc, MediaAvailableLineUc],
+	providers: [
+		BoardNodePermissionService,
+		MediaBoardUc,
+		MediaLineUc,
+		MediaElementUc,
+		MediaAvailableLineUc,
+		DeleteUserBoardDataStep,
+	],
 })
 export class MediaBoardApiModule {}
