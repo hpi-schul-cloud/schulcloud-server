@@ -12,6 +12,7 @@ import { Module } from '@nestjs/common';
 import { ShareTokenController } from './controller/share-token.controller';
 import { SharingModule } from './sharing.module';
 import { ShareTokenUC } from './uc';
+import { SagaModule } from '@modules/saga';
 
 @Module({
 	imports: [
@@ -26,6 +27,7 @@ import { ShareTokenUC } from './uc';
 		RoomModule,
 		SchoolModule,
 		LoggerModule,
+		SagaModule,
 	],
 	controllers: [ShareTokenController],
 	providers: [ShareTokenUC],

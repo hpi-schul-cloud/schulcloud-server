@@ -1,6 +1,7 @@
 import { LegacyLogger } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { StorageLocation } from '@infra/files-storage-client';
+import { ConfigService } from '@nestjs/config';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import {
 	BoardExternalReference,
@@ -9,13 +10,14 @@ import {
 	ColumnBoardService,
 } from '@modules/board';
 import { StorageLocationReference } from '@modules/board/service/internal';
-import { CopyStatus } from '@modules/copy-helper';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { CourseCopyService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
-import { RoomService } from '@modules/room';
+import { RoomConfig, RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
+import { SagaService } from '@modules/saga';
 import { SchoolService } from '@modules/school';
 import { TaskCopyService, TaskService } from '@modules/task';
 import { User } from '@modules/user/repo';
@@ -49,6 +51,8 @@ export class ShareTokenUC {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly schoolService: SchoolService,
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
+		private readonly sagaService: SagaService,
+		private readonly configService: ConfigService<RoomConfig, true>,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(ShareTokenUC.name);
@@ -146,6 +150,10 @@ export class ShareTokenUC {
 				}
 				result = await this.copyColumnBoard(user, shareToken.payload.parentId, destinationId, newName);
 				break;
+			case ShareTokenParentType.Room:
+				await this.checkRoomWritePermission(user, shareToken.payload.parentId, [Permission.ROOM_SHARE]);
+				result = await this.copyRoom(user, shareToken.payload.parentId, newName);
+				break;
 		}
 
 		return result;
@@ -221,6 +229,42 @@ export class ShareTokenUC {
 		return copyStatus;
 	}
 
+	private async copyRoom(user: User, roomId: EntityId, copyName?: string): Promise<CopyStatus> {
+		if (!this.configService.get('FEATURE_ROOM_COPY_ENABLED', { infer: true })) {
+			throw new FeatureDisabledLoggableException('FEATURE_ROOM_COPY_ENABLED');
+		}
+
+		const room = await this.roomService.getSingleRoom(roomId);
+		await this.checkRoomWritePermission(user, room.id, [Permission.ROOM_SHARE]);
+
+		const { roomCopied, boardsCopied } = await this.sagaService.executeSaga('roomCopy', {
+			userId: user.id,
+			roomId,
+			newName: copyName,
+		});
+
+		const copyStatus: CopyStatus = {
+			title: roomCopied.name,
+			type: CopyElementType.ROOM,
+			status: CopyStatusEnum.SUCCESS,
+			copyEntity: {
+				id: roomCopied.id,
+			},
+			elements: boardsCopied.map((boardItem) => {
+				return {
+					title: boardItem.title,
+					type: CopyElementType.BOARD,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: {
+						id: boardItem.id,
+					},
+				};
+			}),
+		};
+
+		return copyStatus;
+	}
+
 	private async checkTokenCreatePermission(user: User, payload: ShareTokenPayload) {
 		switch (payload.parentType) {
 			case ShareTokenParentType.Course:
@@ -253,6 +297,7 @@ export class ShareTokenUC {
 	}
 
 	private async checkRoomWritePermission(user: User, roomId: EntityId, permissions: Permission[] = []) {
+		// TODO check FEATURE_ROOMS_ENABLED
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 
 		this.authorizationService.checkPermission(
@@ -321,6 +366,11 @@ export class ShareTokenUC {
 					columnBoard.context.type === BoardExternalReferenceType.Course ? [Permission.COURSE_EDIT] : [];
 				break;
 			}
+			case ShareTokenParentType.Room: {
+				const room = await this.roomService.getSingleRoom(payload.parentId);
+				await this.checkRoomWritePermission(user, room.id, [Permission.ROOM_EDIT]);
+				break;
+			}
 		}
 		this.authorizationService.checkAllPermissions(user, requiredPermissions);
 	}
@@ -355,6 +405,12 @@ export class ShareTokenUC {
 				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get('FEATURE_COLUMN_BOARD_SHARE') as boolean)) {
 					throw new FeatureDisabledLoggableException('FEATURE_COLUMN_BOARD_SHARE');
+				}
+				break;
+			case ShareTokenParentType.Room:
+				// Configuration.get is the deprecated way to read envirment variables
+				if (!(Configuration.get('FEATURE_ROOM_SHARE') as boolean)) {
+					throw new FeatureDisabledLoggableException('FEATURE_ROOM_SHARE');
 				}
 				break;
 			default:
