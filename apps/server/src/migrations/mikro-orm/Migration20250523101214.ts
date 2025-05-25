@@ -84,16 +84,12 @@ export class Migration20250523101214 extends Migration {
 	}
 
 	public async up(): Promise<void> {
-		const promises = this.schoolYears.map((year) => {
-			return this.addSchoolYear(year);
-		});
+		const promises = this.schoolYears.map((year) => this.addSchoolYear(year));
 		await Promise.all(promises);
 	}
 
 	public async down(): Promise<void> {
-		const promises = this.schoolYears.map((year) => {
-			return this.removeSchoolYear(year._id, year.name);
-		});
+		const promises = this.schoolYears.map((year) => this.removeSchoolYear(year._id, year.name));
 		await Promise.all(promises);
 	}
 }
