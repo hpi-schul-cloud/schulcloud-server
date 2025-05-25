@@ -17,6 +17,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { CustomParameterScope, CustomParameterType } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
+import { ExternalToolMediumStatus } from '../../../external-tool/enum/external-tool-medium-status.enum';
 import { ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../repo';
@@ -238,6 +239,7 @@ describe('ToolSchoolController (API)', () => {
 				userId: userWithMissingPermission.id,
 			});
 
+			const mediumStatus = ExternalToolMediumStatus.ACTIVE;
 			const mediumId = 'mediumId';
 			const mediaSourceId = 'mediaSourceId';
 			const mediaSourceName = 'mediaSourceName';
@@ -249,6 +251,7 @@ describe('ToolSchoolController (API)', () => {
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 				parameters: [],
 				medium: {
+					status: mediumStatus,
 					mediumId,
 					mediaSourceId,
 				},
@@ -289,6 +292,7 @@ describe('ToolSchoolController (API)', () => {
 				schoolExternalToolEntity,
 				params,
 				school,
+				mediumStatus,
 				mediumId,
 				mediaSourceId,
 				mediaSourceName,
@@ -309,6 +313,7 @@ describe('ToolSchoolController (API)', () => {
 				schoolExternalToolEntity,
 				externalToolEntity,
 				params,
+				mediumStatus,
 				mediumId,
 				mediaSourceId,
 				mediaSourceName,
@@ -332,6 +337,7 @@ describe('ToolSchoolController (API)', () => {
 								isGloballyDeactivated: true,
 							},
 							medium: {
+								status: mediumStatus,
 								mediumId,
 								mediaSourceId,
 								mediaSourceName,

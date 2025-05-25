@@ -1173,6 +1173,7 @@
 		"name": "VIDIS Test Medium 1",
 		"description": "Available for school numbers: 20202, 40404",
 		"medium": {
+			"status": "active",
 			"mediumId": "1422092",
 			"mediaSourceId": "vidis.fwu.de"
 		},
@@ -1197,6 +1198,7 @@
 		"name": "VIDIS Test Medium 2",
 		"description": "Available for school numbers: 30303, 20202",
 		"medium": {
+			"status": "active",
 			"mediumId": "1454059",
 			"mediaSourceId": "vidis.fwu.de"
 		},
@@ -1221,6 +1223,7 @@
 		"name": "VIDIS Test Medium 3",
 		"description": "Available for school numbers: 30303, 20202",
 		"medium": {
+			"status": "active",
 			"mediumId": "1432766",
 			"mediaSourceId": "vidis.fwu.de"
 		},
