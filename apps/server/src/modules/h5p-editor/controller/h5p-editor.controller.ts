@@ -261,7 +261,7 @@ export class H5PEditorController {
 	})
 	@ApiResponse({
 		status: 201,
-		type: H5PSaveResponse,
+		type: H5PCopyResponse,
 		description: 'Returns the content id of the newly copied content.',
 	})
 	@ApiResponse({ status: 404, description: 'The h5p content with the given content id could not be found.' })

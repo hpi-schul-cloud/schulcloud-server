@@ -3,11 +3,13 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import type { JwtAuthGuardConfig } from '@infra/auth-guard';
 import type { EncryptionConfig } from '@infra/encryption/encryption.config';
 import type { FilesStorageClientConfig } from '@infra/files-storage-client';
+import type { H5pEditorClientConfig } from '@infra/h5p-editor-client';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { TspSyncConfig } from '@infra/sync';
 import type { TspClientConfig } from '@infra/tsp-client';
+import { ValkeyMode } from '@infra/valkey-client';
 import type { AccountConfig } from '@modules/account';
 import type { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
@@ -35,7 +37,6 @@ import type { LanguageType } from '@shared/domain/interface';
 import type { SchulcloudTheme } from '@shared/domain/types';
 import type { Algorithm } from 'jsonwebtoken';
 import type { Timezone } from './types/timezone.enum';
-import { ValkeyMode } from '@infra/valkey-client';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -81,7 +82,8 @@ export interface ServerConfig
 		FilesStorageClientConfig,
 		ManagementMediaSourcesConfig,
 		ManagementServerConfig,
-		RoomMembershipConfig {
+		RoomMembershipConfig,
+		H5pEditorClientConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -378,6 +380,7 @@ const config: ServerConfig = {
 	SESSION_VALKEY__SENTINEL_SERVICE_NAME: Configuration.has('SESSION_VALKEY__URI')
 		? (Configuration.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME') as string)
 		: undefined,
+	H5P_EDITOR__SERVICE_BASE_URL: Configuration.get('H5P_EDITOR__SERVICE_BASE_URL') as string,
 };
 
 export const serverConfig = (): ServerConfig => config;

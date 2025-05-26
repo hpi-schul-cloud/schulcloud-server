@@ -420,6 +420,11 @@
 					"type": "string",
 					"default": "config/h5p-libraries.yaml",
 					"description": "Path to yaml file with list of h5p content type libraries which should be installed"
+				},
+				"SERVICE_BASE_URL": {
+					"type": "string",
+					"default": "http://localhost:4448",
+					"description": "The base URL of the h5p editor api service"
 				}
 			}
 		},

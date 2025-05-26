@@ -146,6 +146,7 @@
 		"pregenerate-client:cards-api": "rimraf ./apps/server/src/infra/cards-client/generated",
 		"generate-client:cards-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key cards-api",
 		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api",
+		"generate-client:h5p-editor-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key h5p-editor-api",
 		"knip": "knip"
 	},
 	"overrides": {
