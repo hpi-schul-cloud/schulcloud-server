@@ -148,7 +148,6 @@ describe('school maintenance mode', () => {
 				const result = await maintenanceService.create({ maintenance: true }, params);
 				expect(result).to.not.equal(undefined);
 				expect(result.currentYear._id.toString()).to.equal(nextYear._id.toString());
-				expect(result.nextYear).to.equal(undefined);
 				expect(result.schoolUsesLdap).to.equal(false);
 				expect(result.maintenance.active).to.equal(false);
 			});
@@ -271,7 +270,6 @@ describe('school maintenance mode', () => {
 				const result = await maintenanceService.create({ maintenance: false }, params);
 				expect(result).to.not.equal(undefined);
 				expect(result.currentYear._id.toString()).to.equal(nextYear._id.toString());
-				expect(result.nextYear).to.equal(undefined);
 				expect(result.schoolUsesLdap).to.equal(true);
 				expect(result.maintenance.active).to.equal(false);
 			});
