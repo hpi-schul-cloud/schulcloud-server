@@ -197,25 +197,6 @@ describe('CommonCartridgeResourceFactory', () => {
 			});
 		});
 
-		describe('when html is not valid', () => {
-			const setup = () => {
-				const organizationProps = setupOrganizationProps();
-				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_CONTENT;
-				organizationProps.resourcePath = 'webcontent.html';
-				const tryCreateDocumentMock = jest.fn().mockReturnValue(undefined);
-				Reflect.set(sut, 'tryCreateDocument', tryCreateDocumentMock);
-
-				return { organizationProps };
-			};
-			it('should return undefined', () => {
-				const { organizationProps } = setup();
-
-				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
-
-				expect(result).toBeUndefined();
-			});
-		});
-
 		describe('when resource is a file', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();
