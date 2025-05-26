@@ -31,12 +31,14 @@ import {
 	SystemResponseMapper,
 	YearsResponseMapper,
 } from './mapper';
+import { MoinSchuleClassService } from '@modules/class-moin-schule/moin-schule-class.service';
 
 @Injectable()
 export class SchoolUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly classService: ClassService,
+		private readonly moinSchuleClassService: MoinSchuleClassService,
 		private readonly schoolService: SchoolService,
 		private readonly schoolYearService: SchoolYearService,
 		private readonly userService: UserService
@@ -193,8 +195,14 @@ export class SchoolUc {
 
 	private async getAllStudentsFromUsersClasses(userId: EntityId, schoolId: EntityId): Promise<Page<UserDo>> {
 		const attendeeIds = await this.getStudentIdsOfUsersClasses(schoolId, userId);
-		const users = await this.userService.findByIds(attendeeIds);
-		const result = { data: users, total: users.length };
+		const moinSchuleAttendeeIds = await this.getStudentIdsOfUsersMoinSchuleClasses(schoolId, userId);
+
+		const students = await this.userService.findBySchoolRole(schoolId, RoleName.STUDENT);
+		const filtered = students.data.filter(
+			(student) => student.id && (attendeeIds.includes(student.id) || moinSchuleAttendeeIds.includes(student.id))
+		);
+
+		const result = { data: filtered, total: filtered.length };
 		return result;
 	}
 
@@ -223,6 +231,15 @@ export class SchoolUc {
 
 		const classesOfSchool = classes.filter((clazz) => clazz.schoolId === schoolId);
 		const attendeeIds = classesOfSchool.flatMap((clazz) => clazz.userIds);
+
+		return attendeeIds;
+	}
+
+	private async getStudentIdsOfUsersMoinSchuleClasses(schoolId: EntityId, userId: EntityId): Promise<EntityId[]> {
+		const classes = await this.moinSchuleClassService.findByUserId(userId);
+
+		const classesOfSchool = classes.filter((clazz) => clazz.organizationId === schoolId);
+		const attendeeIds = classesOfSchool.flatMap((clazz) => clazz.users.map((user) => user.userId));
 
 		return attendeeIds;
 	}

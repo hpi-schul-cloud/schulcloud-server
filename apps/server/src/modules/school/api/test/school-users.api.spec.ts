@@ -1,6 +1,11 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
+import { GroupEntityTypes } from '@modules/group/entity';
+import { groupEntityFactory } from '@modules/group/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
+import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -9,9 +14,6 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { TestConfigHelper } from '@testing/test-config.helper';
 import { SchoolUserListResponse } from '../dto';
-import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { User } from '@modules/user/repo';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;
@@ -318,25 +320,16 @@ describe('School Controller (API)', () => {
 
 			describe('when user is assigned as user in class', () => {
 				it('should return 200 with students from class', async () => {
-					const { loggedInClient, school, studentsOfSchoolInClass, studentsOfSchoolWithoutClass, teacherUser } =
-						await setup(true);
+					const { loggedInClient, school, studentsOfSchoolInClass, studentsOfSchoolWithoutClass } = await setup(true);
 
 					const response = await loggedInClient.get(`${school.id}/students`);
 
 					const body = response.body as SchoolUserListResponse;
 
 					expect(response.status).toEqual(HttpStatus.OK);
-					expect(body.data).toEqual([
-						{
-							id: teacherUser.id,
-							firstName: teacherUser.firstName,
-							lastName: teacherUser.lastName,
-							schoolName: school.name,
-						},
-						...mapUsersWithSchoolName(studentsOfSchoolInClass, school.name),
-					]);
+					expect(body.data).toEqual([...mapUsersWithSchoolName(studentsOfSchoolInClass, school.name)]);
 					expect(body.data).not.toEqual([mapUsersWithSchoolName(studentsOfSchoolWithoutClass, school.name)]);
-					expect(body.data.length).toEqual(studentsOfSchoolInClass.length + 1);
+					expect(body.data.length).toEqual(studentsOfSchoolInClass.length);
 				});
 			});
 
@@ -353,6 +346,69 @@ describe('School Controller (API)', () => {
 					expect(body.data).not.toEqual([...mapUsersWithSchoolName(studentsOfSchoolWithoutClass, school.name)]);
 
 					expect(body.data.length).toEqual(studentsOfSchoolInClass.length);
+				});
+			});
+
+			describe('when user is in moin.schule class', () => {
+				const setupWithMoinSchuleClass = async () => {
+					const school = schoolEntityFactory.build();
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+					const { studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+					const studentRole = studentUser.roles[0];
+					const studentsOfSchoolInMoinSchuleClass = userFactory.buildList(2, { school, roles: [studentRole] });
+					const studentsOfSchoolWithoutClass = userFactory.buildList(4, { school, roles: [studentRole] });
+
+					await em.persistAndFlush([
+						teacherAccount,
+						teacherUser,
+						studentUser,
+						...studentsOfSchoolInMoinSchuleClass,
+						...studentsOfSchoolWithoutClass,
+					]);
+
+					const moinSchuleClass = groupEntityFactory.buildWithId({
+						type: GroupEntityTypes.CLASS,
+						users: [
+							{ user: teacherUser, role: teacherUser.roles[0] },
+							...studentsOfSchoolInMoinSchuleClass.map((user) => {
+								return {
+									user: user,
+									role: studentRole,
+								};
+							}),
+						],
+						organization: school,
+					});
+
+					await em.persistAndFlush([moinSchuleClass]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					return {
+						loggedInClient,
+						school,
+						teacherUser,
+						moinSchuleClass,
+						studentsOfSchoolInMoinSchuleClass,
+						studentsOfSchoolWithoutClass,
+					};
+				};
+
+				it('should return 200 with students from moin.schule class', async () => {
+					const { loggedInClient, school, studentsOfSchoolWithoutClass, studentsOfSchoolInMoinSchuleClass } =
+						await setupWithMoinSchuleClass();
+
+					const response = await loggedInClient.get(`${school.id}/students`);
+
+					const body = response.body as SchoolUserListResponse;
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(body.data).toEqual(
+						expect.arrayContaining([...mapUsersWithSchoolName(studentsOfSchoolInMoinSchuleClass, school.name)])
+					);
+					expect(body.data).not.toEqual([...mapUsersWithSchoolName(studentsOfSchoolWithoutClass, school.name)]);
+					expect(body.data.length).toEqual(studentsOfSchoolInMoinSchuleClass.length);
 				});
 			});
 		});
