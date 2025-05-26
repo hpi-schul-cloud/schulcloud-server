@@ -158,14 +158,20 @@ export class CommonCartridgeImportService {
 		cardId: string,
 		cardElementProps: CommonCartridgeOrganizationProps
 	): Promise<void> {
-		if (!cardElementProps.isResource) return;
+		if (!cardElementProps.isResource) {
+			return;
+		}
 
 		const resource = parser.getResource(cardElementProps);
-		if (!resource) return;
+		if (!resource) {
+			return;
+		}
 
 		const contentElementType = this.commonCartridgeImportMapper.mapResourceTypeToContentElementType(resource.type);
 
-		if (!contentElementType) return;
+		if (!contentElementType) {
+			return;
+		}
 
 		const resourceBody = this.commonCartridgeImportMapper.mapResourceToContentBody(
 			resource,
@@ -173,7 +179,9 @@ export class CommonCartridgeImportService {
 			parser.options.inputFormat
 		);
 
-		if (!resourceBody) return;
+		if (!resourceBody) {
+			return;
+		}
 
 		const contentElement = await this.cardClient.createCardElement(cardId, {
 			type: contentElementType,
