@@ -1,13 +1,13 @@
 import AdmZip from 'adm-zip';
 import { readFile } from 'fs/promises';
-import { JSDOM } from 'jsdom';
+import { load } from 'cheerio';
 import { DEFAULT_FILE_PARSER_OPTIONS } from './common-cartridge-import.types';
 import { CommonCartridgeManifestParser } from './common-cartridge-manifest-parser';
 
 describe('CommonCartridgeManifestParser', () => {
 	const setupFile = async (loadFile: boolean) => {
 		if (!loadFile) {
-			const { document } = new JSDOM('<manifest></manifest>', { contentType: 'text/xml' }).window;
+			const document = load('<manifest></manifest>', { xml: true });
 			const sut = new CommonCartridgeManifestParser(document, DEFAULT_FILE_PARSER_OPTIONS);
 
 			return { sut };
@@ -17,7 +17,7 @@ describe('CommonCartridgeManifestParser', () => {
 			'./apps/server/src/modules/common-cartridge/testing/assets/us_history_since_1877.imscc'
 		);
 		const archive = new AdmZip(buffer);
-		const { document } = new JSDOM(archive.readAsText('imsmanifest.xml'), { contentType: 'text/xml' }).window;
+		const document = load(archive.readAsText('imsmanifest.xml'), { xml: true });
 		const sut = new CommonCartridgeManifestParser(document, DEFAULT_FILE_PARSER_OPTIONS);
 
 		return { sut };
@@ -25,7 +25,7 @@ describe('CommonCartridgeManifestParser', () => {
 
 	describe('getSchema', () => {
 		describe('when schema is present', () => {
-			const setup = async () => setupFile(true);
+			const setup = () => setupFile(true);
 
 			it('should return the schema', async () => {
 				const { sut } = await setup();
@@ -36,7 +36,7 @@ describe('CommonCartridgeManifestParser', () => {
 		});
 
 		describe('when schema is not present', () => {
-			const setup = async () => setupFile(false);
+			const setup = () => setupFile(false);
 
 			it('should return undefined', async () => {
 				const { sut } = await setup();
@@ -49,7 +49,7 @@ describe('CommonCartridgeManifestParser', () => {
 
 	describe('getVersion', () => {
 		describe('when version is present', () => {
-			const setup = async () => setupFile(true);
+			const setup = () => setupFile(true);
 
 			it('should return the version', async () => {
 				const { sut } = await setup();
@@ -60,7 +60,7 @@ describe('CommonCartridgeManifestParser', () => {
 		});
 
 		describe('when version is not present', () => {
-			const setup = async () => setupFile(false);
+			const setup = () => setupFile(false);
 
 			it('should return undefined', async () => {
 				const { sut } = await setup();
@@ -73,7 +73,7 @@ describe('CommonCartridgeManifestParser', () => {
 
 	describe('getTitle', () => {
 		describe('when title is present', () => {
-			const setup = async () => setupFile(true);
+			const setup = () => setupFile(true);
 
 			it('should return the title', async () => {
 				const { sut } = await setup();
@@ -84,7 +84,7 @@ describe('CommonCartridgeManifestParser', () => {
 		});
 
 		describe('when title is not present', () => {
-			const setup = async () => setupFile(false);
+			const setup = () => setupFile(false);
 
 			it('should return null', async () => {
 				const { sut } = await setup();
@@ -97,7 +97,7 @@ describe('CommonCartridgeManifestParser', () => {
 
 	describe('getOrganizations', () => {
 		describe('when organizations are present', () => {
-			const setup = async () => setupFile(true);
+			const setup = () => setupFile(true);
 
 			it('should return the organization', async () => {
 				const { sut } = await setup();
@@ -108,7 +108,7 @@ describe('CommonCartridgeManifestParser', () => {
 		});
 
 		describe('when organizations are not present', () => {
-			const setup = async () => setupFile(false);
+			const setup = () => setupFile(false);
 
 			it('should return empty list', async () => {
 				const { sut } = await setup();
