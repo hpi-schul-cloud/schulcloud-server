@@ -1,13 +1,16 @@
-import { Group, GroupService } from '@modules/group';
+import { Group, GroupService, GroupTypes } from '@modules/group';
 import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 
 @Injectable()
 export class MoinSchuleClassService {
 	constructor(private readonly groupService: GroupService) {}
 
-	public findByUserId(userId: EntityId): Group[] {
-		return [];
-	}
+	public async findByUserId(userId: EntityId): Promise<Group[]> {
+		const filter = { userId, groupTypes: [GroupTypes.CLASS] };
 
-	// Add your service methods here
+		const groups = await this.groupService.findGroups(filter);
+
+		return groups.data;
+	}
 }

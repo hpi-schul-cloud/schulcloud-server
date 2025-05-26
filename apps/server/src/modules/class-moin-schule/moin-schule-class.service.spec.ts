@@ -1,10 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { GroupService, GroupTypes } from '@modules/group';
-import { MoinSchuleClassService } from './moin-schule-class.service';
-import { setupEntities } from '@testing/database';
-import { GroupEntity } from '@modules/group/entity';
 import { groupFactory } from '@modules/group/testing';
+import { userDoFactory } from '@modules/user/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { MoinSchuleClassService } from './moin-schule-class.service';
 
 describe(MoinSchuleClassService.name, () => {
 	let module: TestingModule;
@@ -12,7 +11,6 @@ describe(MoinSchuleClassService.name, () => {
 	let groupService: DeepMocked<GroupService>;
 
 	beforeAll(async () => {
-		await setupEntities([GroupEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				MoinSchuleClassService,
@@ -37,11 +35,16 @@ describe(MoinSchuleClassService.name, () => {
 
 	describe('findByUserId', () => {
 		describe('when the user has groups of type class', () => {
-			const groups = groupFactory.buildList(3, { type: GroupTypes.CLASS });
-		});
+			it('should return the groups of type class for the user', async () => {
+				const user = userDoFactory.buildWithId();
+				const groups = groupFactory.buildList(3, { type: GroupTypes.CLASS });
+				groupService.findGroups.mockResolvedValue({ data: groups, total: groups.length });
 
-		describe('when the user has no groups', () => {
-			// Add your test cases here
+				const result = await service.findByUserId(user.id || '');
+
+				expect(result).toEqual(groups);
+				expect(groupService.findGroups).toHaveBeenCalledWith({ userId: user.id, groupTypes: [GroupTypes.CLASS] });
+			});
 		});
 	});
 });
