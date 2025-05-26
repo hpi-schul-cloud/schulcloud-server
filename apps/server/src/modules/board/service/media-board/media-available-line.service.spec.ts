@@ -206,7 +206,6 @@ describe(MediaAvailableLineService.name, () => {
 					createdAt: new Date(2023, 1, 2),
 					restrictToContexts: [],
 				});
-				const validExternalToolMedium: ExternalTool = externalToolFactory.withMedium().buildWithId();
 				const validAndInvalidExternalTools: Page<ExternalTool> = new Page<ExternalTool>(
 					[
 						validExternalToolOld,
@@ -216,9 +215,8 @@ describe(MediaAvailableLineService.name, () => {
 						hiddenExternalTool,
 						contextParameterExternalTool,
 						invalidRestrictedExternalTool,
-						validExternalToolMedium,
 					],
-					9
+					7
 				);
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory
 					.withSchoolId(user.school.id)
@@ -232,7 +230,6 @@ describe(MediaAvailableLineService.name, () => {
 					validExternalToolNew,
 					validExternalToolOld,
 					validRestrictedExternalTool,
-					validExternalToolMedium,
 				];
 
 				return { user, board, schoolExternalTool, expectedExternalTools };
@@ -245,7 +242,6 @@ describe(MediaAvailableLineService.name, () => {
 
 				expect(externalToolService.findExternalTools).toHaveBeenCalledWith({
 					ids: [schoolExternalTool.toolId],
-					isActiveOrNoMedium: true,
 				});
 			});
 

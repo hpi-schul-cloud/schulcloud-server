@@ -47,7 +47,6 @@ export class MediaAvailableLineService {
 
 		const externalToolsUsedBySchool: Page<ExternalTool> = await this.externalToolService.findExternalTools({
 			ids: externalToolIdsUsedBySchool,
-			isActiveOrNoMedium: true,
 		});
 
 		const availableExternalTools: ExternalTool[] = externalToolsUsedBySchool.data

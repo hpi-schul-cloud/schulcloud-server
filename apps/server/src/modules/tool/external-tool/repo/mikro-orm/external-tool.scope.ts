@@ -39,8 +39,8 @@ export class ExternalToolScope extends Scope<ExternalToolEntity> {
 		return this;
 	}
 
-	byActiveMedium(isActiveOrNoMedium?: boolean): this {
-		if (isActiveOrNoMedium !== undefined) {
+	byTemplateOrDraft(isTemplateOrDraft?: boolean): this {
+		if (isTemplateOrDraft === undefined) {
 			this.addQuery({ $or: [{ medium: { status: ExternalToolMediumStatus.ACTIVE } }, { medium: { $exists: false } }] });
 		}
 		return this;

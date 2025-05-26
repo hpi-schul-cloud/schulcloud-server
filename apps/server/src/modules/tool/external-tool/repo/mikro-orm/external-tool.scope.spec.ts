@@ -69,17 +69,17 @@ describe('ExternalToolScope', () => {
 		});
 	});
 
-	describe('byActiveMedium', () => {
+	describe('byTemplateOrDraft', () => {
 		it('should return scope with added medium status to query', () => {
-			const param = true;
-			scope.byActiveMedium(param);
+			scope.byTemplateOrDraft(undefined);
 			expect(scope.query).toEqual({
 				$or: [{ medium: { status: ExternalToolMediumStatus.ACTIVE } }, { medium: { $exists: false } }],
 			});
 		});
 
 		it('should return scope without added medium status to query', () => {
-			scope.byActiveMedium(undefined);
+			const param = true;
+			scope.byTemplateOrDraft(param);
 			expect(scope.query).toEqual({});
 		});
 	});

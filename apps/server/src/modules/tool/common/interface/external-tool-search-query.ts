@@ -9,5 +9,5 @@ export interface ExternalToolSearchQuery {
 
 	isPreferred?: boolean;
 
-	isActiveOrNoMedium?: boolean;
+	isTemplateOrDraft?: boolean;
 }
