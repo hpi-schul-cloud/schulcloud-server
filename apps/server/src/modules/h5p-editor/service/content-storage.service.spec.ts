@@ -12,7 +12,7 @@ import { H5PContent, H5PContentParentType, H5PContentProperties } from '../entit
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { H5PContentRepo } from '../repo';
 import { H5PContentParentParams, LumiUserWithContentData } from '../types/lumi-types';
-import { ContentStorage } from './contentStorage.service';
+import { ContentStorage } from './content-storage.service';
 
 const helpers = {
 	buildMetadata(

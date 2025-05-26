@@ -1,5 +1,6 @@
 import { ContentParameters, IContentMetadata, IEditorModel, IIntegration } from '@lumieducation/h5p-server';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsMongoId } from 'class-validator';
 import { Readable } from 'stream';
 
 export class H5PEditorModelResponse {
@@ -82,6 +83,16 @@ export class H5PSaveResponse {
 
 	@ApiProperty({ type: H5PContentMetadata })
 	metadata!: H5PContentMetadata;
+}
+
+export class H5PCopyResponse {
+	constructor(id: string) {
+		this.contentId = id;
+	}
+
+	@ApiProperty()
+	@IsMongoId()
+	contentId!: string;
 }
 
 export interface GetFileResponse {

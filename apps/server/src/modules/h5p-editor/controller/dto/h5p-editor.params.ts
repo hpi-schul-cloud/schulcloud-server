@@ -82,3 +82,19 @@ export class PostH5PContentCreateParams {
 	@IsNotEmpty()
 	public library!: string;
 }
+
+export class CopyH5PEditorParams {
+	@ApiProperty()
+	@IsMongoId()
+	public contentId!: string;
+}
+
+export class PostH5PContentCopyParams {
+	@ApiProperty({ enum: H5PContentParentType, enumName: 'H5PContentParentType' })
+	@IsEnum(H5PContentParentType)
+	public parentType!: H5PContentParentType;
+
+	@ApiProperty()
+	@IsMongoId()
+	public parentId!: EntityId;
+}
