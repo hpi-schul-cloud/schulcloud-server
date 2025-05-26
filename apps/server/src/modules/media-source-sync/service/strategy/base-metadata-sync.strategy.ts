@@ -89,7 +89,7 @@ export abstract class BaseMetadataSyncStrategy {
 					statusReports.success.count++;
 
 					return externalTool;
-				} catch (error: unknown) {
+				} catch {
 					statusReports.failure.count++;
 
 					return null;
