@@ -111,7 +111,7 @@
 				"MODE": {
 					"type": "string",
 					"default": "cluster",
-					"enum": ["cluster", "single" ,"in-memory"],
+					"enum": ["cluster", "single", "in-memory"],
 					"description": "Define valkey mode."
 				},
 				"URI": {
@@ -1642,6 +1642,11 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the ability to change permissions of room members"
+		},
+		"FEATURE_ROOM_ADD_STUDENTS_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables adding students to a room"
 		},
 		"FEATURE_ROOM_MEMBERS_TABS_ENABLED": {
 			"type": "boolean",
