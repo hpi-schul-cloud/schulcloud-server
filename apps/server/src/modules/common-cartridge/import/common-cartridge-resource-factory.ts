@@ -1,7 +1,7 @@
 import { sanitizeRichText } from '@shared/controller/transformer';
 import { InputFormat } from '@shared/domain/types';
 import AdmZip from 'adm-zip';
-import { JSDOM } from 'jsdom';
+import { load } from 'cheerio';
 import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
 import {
 	CommonCartridgeFileResourceProps,
@@ -47,13 +47,12 @@ export class CommonCartridgeResourceFactory {
 	}
 
 	private createWebLinkResource(content: string, title: string): CommonCartridgeWebLinkResourceProps | undefined {
-		const document = this.tryCreateDocument(content, 'text/xml');
+		const document = load(content, { xml: true });
+		const url = document('webLink > url').attr('href') ?? '';
 
-		if (!document) {
+		if (url === '') {
 			return undefined;
 		}
-
-		const url = document.querySelector('webLink > url')?.getAttribute('href') ?? '';
 
 		return {
 			type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
@@ -66,28 +65,14 @@ export class CommonCartridgeResourceFactory {
 		content: string,
 		inputFormat: InputFormat
 	): CommonCartridgeWebContentResourceProps | undefined {
-		const document = this.tryCreateDocument(content, 'text/html');
-
-		if (!document) {
-			return undefined;
-		}
-
-		const html = sanitizeRichText(document.body.innerHTML?.trim() ?? '', inputFormat);
+		const document = load(content);
+		const unsanitizedHtml = document('body').html()?.trim() || content;
+		const sanitizedHtml = sanitizeRichText(unsanitizedHtml, inputFormat);
 
 		return {
 			type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-			html,
+			html: sanitizedHtml,
 		};
-	}
-
-	private tryCreateDocument(content: string, contentType: 'text/html' | 'text/xml'): Document | undefined {
-		try {
-			const parser = new JSDOM(content, { contentType }).window.document;
-
-			return parser;
-		} catch (error) {
-			return undefined;
-		}
 	}
 
 	private createFileContentResource(resourcePath: string, title: string): CommonCartridgeFileResourceProps | undefined {

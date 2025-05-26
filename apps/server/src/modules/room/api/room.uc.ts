@@ -5,14 +5,10 @@ import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } 
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo'; // TODO: Auth service should use a different type
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CopyStatus, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { Room, RoomService } from '../domain';
-import { RoomConfig } from '../room.config';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomMemberResponse } from './dto/response/room-member.response';
@@ -20,6 +16,7 @@ import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-r
 import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pass-ownership-to-student.error.loggable';
 import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
 import { UserToAddToRoomNotFoundLoggableException } from './loggables/user-not-found.error.loggable';
+import { RoomPermissionService } from './service';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
@@ -27,16 +24,16 @@ type OwnershipContext = BaseContext & { targetUser: UserDo };
 @Injectable()
 export class RoomUc {
 	constructor(
-		private readonly configService: ConfigService<RoomConfig, true>,
 		private readonly roomService: RoomService,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly userService: UserService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly roomHelperService: RoomPermissionService
 	) {}
 
 	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<Room>> {
-		this.checkFeatureEnabled();
+		this.roomHelperService.checkFeatureRoomsEnabled();
 		const authorizedRoomIds = await this.getAuthorizedRoomIds(userId, Action.read);
 		const rooms = await this.roomService.getRoomsByIds(authorizedRoomIds, findOptions);
 
@@ -44,7 +41,7 @@ export class RoomUc {
 	}
 
 	public async createRoom(userId: EntityId, props: CreateRoomBodyParams): Promise<Room> {
-		this.checkFeatureEnabled();
+		this.roomHelperService.checkFeatureRoomsEnabled();
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const room = await this.roomService.createRoom({ ...props, schoolId: user.school.id });
 
@@ -60,20 +57,24 @@ export class RoomUc {
 	}
 
 	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<{ room: Room; permissions: Permission[] }> {
-		this.checkFeatureEnabled();
+		this.roomHelperService.checkFeatureRoomsEnabled();
 		const room = await this.roomService.getSingleRoom(roomId);
 
-		const roomMembershipAuthorizable = await this.checkRoomAuthorizationByIds(userId, roomId, Action.read);
+		const roomMembershipAuthorizable = await this.roomHelperService.checkRoomAuthorizationByIds(
+			userId,
+			roomId,
+			Action.read
+		);
 		const permissions = this.getPermissions(userId, roomMembershipAuthorizable);
 
 		return { room, permissions };
 	}
 
 	public async getRoomBoards(userId: EntityId, roomId: EntityId): Promise<ColumnBoard[]> {
-		this.checkFeatureEnabled();
+		this.roomHelperService.checkFeatureRoomsEnabled();
 
 		await this.roomService.getSingleRoom(roomId);
-		await this.checkRoomAuthorizationByIds(userId, roomId, Action.read);
+		await this.roomHelperService.checkRoomAuthorizationByIds(userId, roomId, Action.read);
 
 		const boards = await this.columnBoardService.findByExternalReference(
 			{
@@ -91,10 +92,14 @@ export class RoomUc {
 		roomId: EntityId,
 		props: UpdateRoomBodyParams
 	): Promise<{ room: Room; permissions: Permission[] }> {
-		this.checkFeatureEnabled();
+		this.roomHelperService.checkFeatureRoomsEnabled();
 		const room = await this.roomService.getSingleRoom(roomId);
 
-		const roomMembershipAuthorizable = await this.checkRoomAuthorizationByIds(userId, roomId, Action.write);
+		const roomMembershipAuthorizable = await this.roomHelperService.checkRoomAuthorizationByIds(
+			userId,
+			roomId,
+			Action.write
+		);
 
 		const permissions = this.getPermissions(userId, roomMembershipAuthorizable);
 
@@ -104,10 +109,10 @@ export class RoomUc {
 	}
 
 	public async deleteRoom(userId: EntityId, roomId: EntityId): Promise<void> {
-		this.checkFeatureEnabled();
+		this.roomHelperService.checkFeatureRoomsEnabled();
 		const room = await this.roomService.getSingleRoom(roomId);
 
-		await this.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_DELETE]);
+		await this.roomHelperService.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_DELETE]);
 		await this.columnBoardService.deleteByExternalReference({
 			type: BoardExternalReferenceType.Room,
 			id: roomId,
@@ -116,34 +121,8 @@ export class RoomUc {
 		await this.roomMembershipService.deleteRoomMembership(roomId);
 	}
 
-	public async copyRoom(userId: EntityId, roomId: EntityId, schoolId: EntityId): Promise<CopyStatus> {
-		this.checkFeatureEnabled();
-		this.checkFeatureRoomsDuplicationEnabled();
-
-		await this.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_DUPLICATE]);
-
-		const originalRoom = await this.roomService.getSingleRoom(roomId);
-
-		if (schoolId !== originalRoom.schoolId) {
-			// TODO
-		}
-
-		// TODO implement room copy in Saga module
-		const copyStatus: CopyStatus = {
-			id: roomId,
-			title: originalRoom.name,
-			type: CopyElementType.ROOM,
-			status: CopyStatusEnum.SUCCESS,
-			elements: [],
-			copyEntity: originalRoom,
-			originalEntity: originalRoom,
-		};
-
-		return copyStatus;
-	}
-
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
-		this.checkFeatureEnabled();
+		this.roomHelperService.checkFeatureRoomsEnabled();
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkPermission(currentUser, roomMembershipAuthorizable, {
@@ -171,8 +150,10 @@ export class RoomUc {
 		roomId: EntityId,
 		userIds: Array<EntityId>
 	): Promise<RoomRole> {
-		this.checkFeatureEnabled();
-		await this.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_ADD]);
+		this.roomHelperService.checkFeatureRoomsEnabled();
+		await this.roomHelperService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [
+			Permission.ROOM_MEMBERS_ADD,
+		]);
 		await this.checkUsersAccessible(currentUserId, userIds);
 		const roleName = await this.roomMembershipService.addMembersToRoom(roomId, userIds);
 		return roleName;
@@ -184,16 +165,19 @@ export class RoomUc {
 		userIds: Array<EntityId>,
 		roleName: RoleName
 	): Promise<void> {
-		this.checkFeatureEnabled();
-		const roomAuthorizable = await this.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [
-			Permission.ROOM_MEMBERS_CHANGE_ROLE,
-		]);
+		this.roomHelperService.checkFeatureRoomsEnabled();
+		const roomAuthorizable = await this.roomHelperService.checkRoomAuthorizationByIds(
+			currentUserId,
+			roomId,
+			Action.write,
+			[Permission.ROOM_MEMBERS_CHANGE_ROLE]
+		);
 		this.preventChangingOwnersRole(roomAuthorizable, userIds, currentUserId);
 		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, userIds, roleName);
 	}
 
 	public async passOwnership(currentUserId: EntityId, roomId: EntityId, targetUserId: EntityId): Promise<void> {
-		this.checkFeatureEnabled();
+		this.roomHelperService.checkFeatureRoomsEnabled();
 		const ownershipContext = await this.getPassOwnershipContext(roomId, currentUserId, targetUserId);
 
 		this.checkRoomAuthorizationByContext(ownershipContext, Action.write, [Permission.ROOM_CHANGE_OWNER]);
@@ -205,27 +189,19 @@ export class RoomUc {
 	}
 
 	public async leaveRoom(currentUserId: EntityId, roomId: EntityId): Promise<void> {
-		this.checkFeatureEnabled();
-		await this.checkRoomAuthorizationByIds(currentUserId, roomId, Action.read, [Permission.ROOM_LEAVE]);
+		this.roomHelperService.checkFeatureRoomsEnabled();
+		await this.roomHelperService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.read, [
+			Permission.ROOM_LEAVE,
+		]);
 		await this.roomMembershipService.removeMembersFromRoom(roomId, [currentUserId]);
 	}
 
 	public async removeMembersFromRoom(currentUserId: EntityId, roomId: EntityId, userIds: EntityId[]): Promise<void> {
-		this.checkFeatureEnabled();
-		await this.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_REMOVE]);
+		this.roomHelperService.checkFeatureRoomsEnabled();
+		await this.roomHelperService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [
+			Permission.ROOM_MEMBERS_REMOVE,
+		]);
 		await this.roomMembershipService.removeMembersFromRoom(roomId, userIds);
-	}
-
-	private checkFeatureEnabled(): void {
-		if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
-			throw new FeatureDisabledLoggableException('FEATURE_ROOMS_ENABLED');
-		}
-	}
-
-	private checkFeatureRoomsDuplicationEnabled(): void {
-		if (!this.configService.get('FEATURE_ROOMS_DUPLICATION_ENABLED', { infer: true })) {
-			throw new FeatureDisabledLoggableException('FEATURE_ROOMS_DUPLICATION_ENABLED');
-		}
 	}
 
 	private async getPassOwnershipContext(
@@ -322,19 +298,6 @@ export class RoomUc {
 		return authorizedRoomIds.map((item) => item.roomId);
 	}
 
-	private async checkRoomAuthorizationByIds(
-		userId: EntityId,
-		roomId: EntityId,
-		action: Action,
-		requiredPermissions: Permission[] = []
-	): Promise<RoomMembershipAuthorizable> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, { action, requiredPermissions });
-
-		return roomMembershipAuthorizable;
-	}
-
 	private getPermissions(userId: EntityId, roomMembershipAuthorizable: RoomMembershipAuthorizable): Permission[] {
 		const permissions = roomMembershipAuthorizable.members
 			.filter((member) => member.userId === userId)
@@ -366,7 +329,7 @@ export class RoomUc {
 		(currentUser: User) =>
 		(user: UserDo): boolean =>
 			this.authorizationService.hasPermission(currentUser, user, {
-				action: Action.write,
+				action: Action.read,
 				requiredPermissions: [],
 			});
 	private userToId = (user: UserDo): string => user.id || '';

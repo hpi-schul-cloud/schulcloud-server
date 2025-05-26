@@ -1042,14 +1042,20 @@ describe('lesson copy service', () => {
 					course: originalCourse,
 					materials: [originalMaterial],
 				});
+
 				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
+
 				const materialCopy = materialFactory.build({ title: originalMaterial.title });
+				// Fix unstable test that can delay 1ms
+				materialCopy.createdAt = expect.any(Date) as unknown as Date;
+				materialCopy.updatedAt = expect.any(Date) as unknown as Date;
 				const mockedMaterialStatus = {
 					title: materialCopy.title,
 					type: CopyElementType.LERNSTORE_MATERIAL,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: materialCopy,
 				};
+
 				const mockedMaterialGroupStatus = {
 					type: CopyElementType.LERNSTORE_MATERIAL_GROUP,
 					status: CopyStatusEnum.SUCCESS,
@@ -1091,6 +1097,7 @@ describe('lesson copy service', () => {
 				const materialsGroupStatus = copyStatus.elements?.find(
 					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL_GROUP
 				);
+
 				expect(materialsGroupStatus).toBeDefined();
 				expect(materialsGroupStatus).toEqual(mockedMaterialGroupStatus);
 			});

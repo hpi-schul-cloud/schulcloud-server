@@ -23,6 +23,7 @@ import {
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
+import { ExternalToolMediumStatus } from '../../enum';
 import { ExternalToolEntity } from '../../repo';
 import { base64TestLogo, externalToolEntityFactory } from '../../testing';
 import {
@@ -259,6 +260,7 @@ describe('ToolController (API)', () => {
 			url: 'https://link.to-my-tool.com',
 			openNewTab: true,
 			medium: {
+				status: ExternalToolMediumStatus.ACTIVE,
 				mediumId: 'medium:1',
 				mediaSourceId: 'source:1',
 			},
@@ -512,7 +514,9 @@ describe('ToolController (API)', () => {
 			thumbnailUrl: 'https://link.to-my-thumbnail2.com',
 			openNewTab: true,
 			medium: {
+				status: ExternalToolMediumStatus.ACTIVE,
 				mediumId: 'mediumId',
+				mediaSourceId: 'mediaSourceId',
 				publisher: 'publisher',
 			},
 			isPreferred: false,
@@ -592,6 +596,8 @@ describe('ToolController (API)', () => {
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
 					medium: {
+						status: ExternalToolMediumStatus.ACTIVE,
+						mediaSourceId: params.medium?.mediaSourceId ?? '',
 						mediumId: params.medium?.mediumId ?? '',
 						publisher: params.medium?.publisher,
 					},

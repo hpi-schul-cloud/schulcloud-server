@@ -1,8 +1,8 @@
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { ContextExternalToolLaunchable } from '../../context-external-tool/domain';
 
 export class MissingMediaLicenseLoggableException extends BusinessError implements Loggable {
@@ -21,13 +21,14 @@ export class MissingMediaLicenseLoggableException extends BusinessError implemen
 		);
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			type: this.type,
 			message: this.message,
 			stack: this.stack,
 			data: {
 				medium: {
+					status: this.medium.status,
 					mediumId: this.medium.mediumId,
 					publisher: this.medium.publisher,
 				},
