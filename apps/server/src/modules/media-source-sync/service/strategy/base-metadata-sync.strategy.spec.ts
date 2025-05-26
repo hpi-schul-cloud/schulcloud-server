@@ -1,17 +1,19 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ExternalTool, ExternalToolService } from '@modules/tool';
-import { MediumMetadataDto, MediumMetadataService } from '@modules/medium-metadata';
+import { mediumMetadataDtoFactory } from '@modules//medium-metadata/testing';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
+import { MediumMetadataService } from '@modules/medium-metadata';
+import { ExternalToolService, ExternalToolValidationService } from '@modules/tool';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { Injectable } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { MediaSourceSyncReportFactory } from '../../factory';
 import { MediaSourceSyncReport } from '../../interface';
-import { mediaSourceSyncReportFactory } from '../../testing';
+import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
 import { BaseMetadataSyncStrategy } from './base-metadata-sync.strategy';
 
-const mockMediaSourceReport = mediaSourceSyncReportFactory.build();
+const updateExternalToolMetadataMock = jest.fn();
 
 @Injectable()
 class MockMetadataSyncStrategy extends BaseMetadataSyncStrategy {
@@ -19,14 +21,7 @@ class MockMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 		return MediaSourceDataFormat.VIDIS;
 	}
 
-	protected async syncExternalToolMediumMetadata(
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		externalTools: ExternalTool[],
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		metadataItems: MediumMetadataDto[]
-	): Promise<MediaSourceSyncReport> {
-		return await Promise.resolve(mockMediaSourceReport);
-	}
+	updateExternalToolMetadata = updateExternalToolMetadataMock;
 }
 
 describe(BaseMetadataSyncStrategy.name, () => {
@@ -35,6 +30,7 @@ describe(BaseMetadataSyncStrategy.name, () => {
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let mediumMetadataService: DeepMocked<MediumMetadataService>;
+	let externalToolValidationService: DeepMocked<ExternalToolValidationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -48,12 +44,21 @@ describe(BaseMetadataSyncStrategy.name, () => {
 					provide: MediumMetadataService,
 					useValue: createMock<MediumMetadataService>(),
 				},
+				{
+					provide: ExternalToolValidationService,
+					useValue: createMock<ExternalToolValidationService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
 		strategy = module.get(MockMetadataSyncStrategy);
 		externalToolService = module.get(ExternalToolService);
 		mediumMetadataService = module.get(MediumMetadataService);
+		externalToolValidationService = module.get(ExternalToolValidationService);
 	});
 
 	beforeEach(() => {
@@ -96,35 +101,205 @@ describe(BaseMetadataSyncStrategy.name, () => {
 			});
 		});
 
-		describe('when there are external tools with medium from the media source', () => {
+		describe('when there is an external tool with available metadata', () => {
 			const setup = () => {
+				const mediumId = 'medium1';
 				const mediaSource = mediaSourceFactory.withVidis().build();
+				const externalTool = externalToolFactory.withMedium({ mediaSourceId: mediaSource.sourceId, mediumId }).build();
+				const mediumMetadata = mediumMetadataDtoFactory.build({ modifiedAt: undefined, mediumId });
 
-				const externalTools = externalToolFactory.withMedium({ mediaSourceId: mediaSource.sourceId }).buildList(5);
-				const mediumIds = externalTools.map((externalTool: ExternalTool) => externalTool.medium?.mediumId);
-
-				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce(externalTools);
+				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
+				mediumMetadataService.getMetadataItems.mockResolvedValueOnce([mediumMetadata]);
 
 				return {
 					mediaSource,
-					mediumIds,
+					externalTool,
+					mediumMetadata,
 				};
 			};
 
-			it('should return a sync report', async () => {
+			it('should update the external tool data', async () => {
+				const { mediaSource, externalTool, mediumMetadata } = setup();
+
+				await strategy.syncAllMediaMetadata(mediaSource);
+
+				expect(updateExternalToolMetadataMock).toHaveBeenCalledWith(externalTool, mediumMetadata);
+			});
+
+			it('should validate the external tool', async () => {
+				const { mediaSource, externalTool } = setup();
+
+				await strategy.syncAllMediaMetadata(mediaSource);
+
+				expect(externalToolValidationService.validateUpdate).toHaveBeenCalledWith(externalTool.id, externalTool);
+			});
+
+			it('should save the external tool', async () => {
+				const { mediaSource, externalTool } = setup();
+
+				await strategy.syncAllMediaMetadata(mediaSource);
+
+				expect(externalToolService.updateExternalTools).toHaveBeenCalledWith([externalTool]);
+			});
+
+			it('should return a success sync report', async () => {
 				const { mediaSource } = setup();
 
 				const result = await strategy.syncAllMediaMetadata(mediaSource);
 
-				expect(result).toEqual(mockMediaSourceReport);
+				expect(result).toEqual<MediaSourceSyncReport>({
+					totalCount: 1,
+					successCount: 1,
+					failedCount: 0,
+					partialCount: 0,
+					undeliveredCount: 0,
+					operations: [
+						{
+							operation: MediaSourceSyncOperation.UPDATE,
+							status: MediaSourceSyncStatus.SUCCESS,
+							count: 1,
+						},
+					],
+				});
 			});
+		});
 
-			it('should fetch the media metadata', async () => {
-				const { mediaSource, mediumIds } = setup();
+		describe('when there is an external tool without available metadata', () => {
+			const setup = () => {
+				const mediumId = 'medium1';
+				const mediaSource = mediaSourceFactory.withVidis().build();
+				const externalTool = externalToolFactory.withMedium({ mediaSourceId: mediaSource.sourceId, mediumId }).build();
+				const mediumMetadata = mediumMetadataDtoFactory.build({ modifiedAt: undefined, mediumId: 'otherMediumId' });
+
+				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
+				mediumMetadataService.getMetadataItems.mockResolvedValueOnce([mediumMetadata]);
+
+				return {
+					mediaSource,
+				};
+			};
+
+			it('should not update the external tool', async () => {
+				const { mediaSource } = setup();
 
 				await strategy.syncAllMediaMetadata(mediaSource);
 
-				expect(mediumMetadataService.getMetadataItems).toBeCalledWith(mediumIds, mediaSource);
+				expect(externalToolService.updateExternalTools).not.toHaveBeenCalled();
+			});
+
+			it('should return a undelivered sync report', async () => {
+				const { mediaSource } = setup();
+
+				const result = await strategy.syncAllMediaMetadata(mediaSource);
+
+				expect(result).toEqual<MediaSourceSyncReport>({
+					totalCount: 1,
+					successCount: 0,
+					failedCount: 0,
+					partialCount: 0,
+					undeliveredCount: 1,
+					operations: [
+						{
+							operation: MediaSourceSyncOperation.ANY,
+							status: MediaSourceSyncStatus.UNDELIVERED,
+							count: 1,
+						},
+					],
+				});
+			});
+		});
+
+		describe('when there is an external tool with up-to-date metadata', () => {
+			const setup = () => {
+				const mediumId = 'medium1';
+				const modifiedAt = new Date();
+				const mediaSource = mediaSourceFactory.withVidis().build();
+				const externalTool = externalToolFactory
+					.withMedium({ mediaSourceId: mediaSource.sourceId, mediumId, metadataModifiedAt: modifiedAt })
+					.build();
+				const mediumMetadata = mediumMetadataDtoFactory.build({ modifiedAt, mediumId });
+
+				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
+				mediumMetadataService.getMetadataItems.mockResolvedValueOnce([mediumMetadata]);
+
+				return {
+					mediaSource,
+				};
+			};
+
+			it('should not update the external tool', async () => {
+				const { mediaSource } = setup();
+
+				await strategy.syncAllMediaMetadata(mediaSource);
+
+				expect(externalToolService.updateExternalTools).not.toHaveBeenCalled();
+			});
+
+			it('should return a success sync report', async () => {
+				const { mediaSource } = setup();
+
+				const result = await strategy.syncAllMediaMetadata(mediaSource);
+
+				expect(result).toEqual<MediaSourceSyncReport>({
+					totalCount: 1,
+					successCount: 1,
+					failedCount: 0,
+					partialCount: 0,
+					undeliveredCount: 0,
+					operations: [
+						{
+							operation: MediaSourceSyncOperation.UPDATE,
+							status: MediaSourceSyncStatus.SUCCESS,
+							count: 1,
+						},
+					],
+				});
+			});
+		});
+
+		describe('when the validation for an external tool fails', () => {
+			const setup = () => {
+				const mediumId = 'medium1';
+				const mediaSource = mediaSourceFactory.withVidis().build();
+				const externalTool = externalToolFactory.withMedium({ mediaSourceId: mediaSource.sourceId, mediumId }).build();
+				const mediumMetadata = mediumMetadataDtoFactory.build({ modifiedAt: undefined, mediumId });
+
+				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
+				mediumMetadataService.getMetadataItems.mockResolvedValueOnce([mediumMetadata]);
+				externalToolValidationService.validateUpdate.mockRejectedValueOnce(new Error());
+
+				return {
+					mediaSource,
+				};
+			};
+
+			it('should not update the external tool', async () => {
+				const { mediaSource } = setup();
+
+				await strategy.syncAllMediaMetadata(mediaSource);
+
+				expect(externalToolService.updateExternalTools).not.toHaveBeenCalled();
+			});
+
+			it('should return a failed sync report', async () => {
+				const { mediaSource } = setup();
+
+				const result = await strategy.syncAllMediaMetadata(mediaSource);
+
+				expect(result).toEqual<MediaSourceSyncReport>({
+					totalCount: 1,
+					successCount: 0,
+					failedCount: 1,
+					partialCount: 0,
+					undeliveredCount: 0,
+					operations: [
+						{
+							operation: MediaSourceSyncOperation.ANY,
+							status: MediaSourceSyncStatus.FAILED,
+							count: 1,
+						},
+					],
+				});
 			});
 		});
 	});
