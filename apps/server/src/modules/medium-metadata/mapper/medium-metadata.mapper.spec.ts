@@ -77,7 +77,7 @@ describe(MediumMetadataMapper.name, () => {
 			});
 		});
 
-		describe('when the metadata has an offerLogo', () => {
+		describe('when the metadata an invalid offerLogo', () => {
 			it('should return undefined for the logo', () => {
 				const mediumId = 'test-medium-id';
 				const title = 'test-title';
