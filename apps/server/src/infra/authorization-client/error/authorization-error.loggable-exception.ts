@@ -11,7 +11,7 @@ export class AuthorizationErrorLoggableException extends ForbiddenException impl
 	public getLogMessage(): ErrorLogMessage {
 		const error = this.error instanceof Error ? this.error : new Error(JSON.stringify(this.error));
 		const message: ErrorLogMessage = {
-			type: 'INTERNAL_SERVER_ERROR',
+			type: AuthorizationErrorLoggableException.name,
 			error,
 			stack: this.stack,
 			data: {
