@@ -1,18 +1,21 @@
 import { Logger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolSystemOptionsService, SchulConneXProvisioningOptions } from '@modules/legacy-school';
-import { MediumIdentifier } from '@modules/media-source';
+import { MediaSource, MediaSourceService, MediumIdentifier } from '@modules/media-source';
+import { ExternalToolMetadataUpdateService } from '@modules/media-source-sync';
+import { MediumMetadataDto, MediumMetadataService } from '@modules/medium-metadata';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
-import { ExternalToolService } from '@modules/tool';
+import { ExternalToolService, ExternalToolValidationService } from '@modules/tool';
 import { CustomParameter } from '@modules/tool/common/domain';
 import { CustomParameterScope } from '@modules/tool/common/enum';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { SchoolExternalToolCreatedLoggable } from '../../../loggable';
+import { ExternalToolMetadataUpdateFailedLoggable, SchoolExternalToolCreatedLoggable } from '../../../loggable';
 
 @Injectable()
 export class SchulconnexToolProvisioningService {
@@ -22,6 +25,10 @@ export class SchulconnexToolProvisioningService {
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
 		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
 		private readonly schoolSystemOptionsService: SchoolSystemOptionsService,
+		private readonly externalToolValidationService: ExternalToolValidationService,
+		private readonly mediaSourceService: MediaSourceService,
+		private readonly mediumMetadataService: MediumMetadataService,
+		private readonly externalToolMetadataUpdateService: ExternalToolMetadataUpdateService,
 		private readonly logger: Logger
 	) {}
 
@@ -44,12 +51,19 @@ export class SchulconnexToolProvisioningService {
 
 		await Promise.all(
 			mediaLicenses.map(async (license: MediumIdentifier): Promise<void> => {
-				const externalTool: ExternalTool | null = await this.externalToolService.findExternalToolByMedium(
+				let externalTool: ExternalTool | null = await this.externalToolService.findExternalToolByMedium(
 					license.mediumId,
 					license.mediaSource?.sourceId
 				);
 
-				if (!externalTool || !this.hasOnlyGlobalParamters(externalTool)) {
+				if (!externalTool) {
+					externalTool = await this.provisionExternalTool(license);
+				}
+
+				if (
+					externalTool?.medium?.status !== ExternalToolMediumStatus.ACTIVE ||
+					!this.hasOnlyGlobalParamters(externalTool)
+				) {
 					return;
 				}
 
@@ -65,6 +79,58 @@ export class SchulconnexToolProvisioningService {
 				}
 			})
 		);
+	}
+
+	private async provisionExternalTool(medium: MediumIdentifier): Promise<ExternalTool | null> {
+		const template: ExternalTool | null = await this.externalToolService.findTemplate(medium.mediaSource?.sourceId);
+
+		if (!template?.medium) {
+			return null;
+		}
+
+		template.medium.status = ExternalToolMediumStatus.DRAFT;
+		template.medium.mediumId = medium.mediumId;
+
+		await this.updateMetadata(template, medium);
+
+		try {
+			await this.externalToolValidationService.validateCreate(template);
+		} catch {
+			return null;
+		}
+
+		const savedTool: ExternalTool = await this.externalToolService.createExternalTool(template);
+
+		return savedTool;
+	}
+
+	private async updateMetadata(externalTool: ExternalTool, medium: MediumIdentifier): Promise<void> {
+		if (!medium.mediaSource || !externalTool.medium) {
+			return;
+		}
+
+		const mediaSource: MediaSource | null = await this.mediaSourceService.findBySourceId(medium.mediaSource.sourceId);
+
+		if (!mediaSource?.format) {
+			return;
+		}
+
+		try {
+			const metadata: MediumMetadataDto = await this.mediumMetadataService.getMetadataItem(
+				medium.mediumId,
+				medium.mediaSource.sourceId
+			);
+
+			await this.externalToolMetadataUpdateService.updateExternalToolWithMetadata(
+				externalTool,
+				metadata,
+				mediaSource.format
+			);
+
+			externalTool.medium.status = ExternalToolMediumStatus.ACTIVE;
+		} catch (error: unknown) {
+			this.logger.warning(new ExternalToolMetadataUpdateFailedLoggable(externalTool, medium, error));
+		}
 	}
 
 	private hasOnlyGlobalParamters(externalTool: ExternalTool): boolean {
