@@ -11,6 +11,7 @@ export class RoomMembershipRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	public async findByRoomId(roomId: EntityId): Promise<RoomMembership | null> {
+		// TODO bug? why fineOne? should this not be multiple?
 		const roomMembershipEntities = await this.em.findOne(RoomMembershipEntity, { roomId });
 		if (!roomMembershipEntities) return null;
 
