@@ -238,7 +238,9 @@ export class SchoolUc {
 	private async getStudentIdsOfUsersMoinSchuleClasses(userId: EntityId): Promise<EntityId[]> {
 		const classes = await this.moinSchuleClassService.findByUserId(userId);
 
-		const attendeeIds = classes.flatMap((clazz) => clazz.users.map((user) => user.userId));
+		const currentClasses = classes.filter((clazz) => clazz.isCurrentlyInValidPeriod());
+
+		const attendeeIds = currentClasses.flatMap((clazz) => clazz.users.map((user) => user.userId));
 
 		return attendeeIds;
 	}
