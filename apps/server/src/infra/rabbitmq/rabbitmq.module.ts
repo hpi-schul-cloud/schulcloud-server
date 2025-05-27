@@ -5,6 +5,7 @@ import {
 	AntivirusExchange,
 	FilesPreviewExchange,
 	FilesStorageExchange,
+	H5pEditorExchange,
 	HeartBeatIntervalInSeconds,
 	MailSendExchange,
 	RabbitMqURI,
@@ -43,6 +44,10 @@ const imports = [
 			},
 			{
 				name: SchulconnexProvisioningExchange,
+				type: 'direct',
+			},
+			{
+				name: H5pEditorExchange,
 				type: 'direct',
 			},
 		],
