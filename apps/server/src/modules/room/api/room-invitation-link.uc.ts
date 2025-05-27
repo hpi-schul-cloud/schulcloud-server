@@ -93,25 +93,33 @@ export class RoomInvitationLinkUc {
 		this.checkFeatureEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-
 		const [roomInvitationLink] = await this.roomInvitationLinkService.findByIds([linkId]);
-
 		await this.checkValidity(roomInvitationLink, user);
 
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(
 			roomInvitationLink.roomId
 		);
-		const isAlreadyMember = roomMembershipAuthorizable.members.some((member) => member.userId === user.id);
-		if (!isAlreadyMember) {
-			await this.roomMembershipService.addMembersToRoom(roomInvitationLink.roomId, [userId]);
-			await this.roomMembershipService.changeRoleOfRoomMembers(
-				roomInvitationLink.roomId,
-				[userId],
-				roomInvitationLink.startingRole
-			);
+
+		const member = roomMembershipAuthorizable.members.find((member) => member.userId === user.id);
+		if (!member) {
+			await this.addUserToRoom(roomInvitationLink, userId);
+		}
+
+		const roleName = member?.roles[0]?.name ?? roomInvitationLink.startingRole;
+		if (roleName === RoleName.ROOMAPPLICANT) {
+			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.ROOM_APPLICANT_WAITING, HttpStatus.FORBIDDEN);
 		}
 
 		return roomInvitationLink.roomId;
+	}
+
+	private async addUserToRoom(roomInvitationLink: RoomInvitationLink, userId: EntityId): Promise<void> {
+		await this.roomMembershipService.addMembersToRoom(roomInvitationLink.roomId, [userId]);
+		await this.roomMembershipService.changeRoleOfRoomMembers(
+			roomInvitationLink.roomId,
+			[userId],
+			roomInvitationLink.startingRole
+		);
 	}
 
 	private checkFeatureEnabled(): void {
