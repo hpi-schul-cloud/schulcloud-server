@@ -111,7 +111,7 @@
 				"MODE": {
 					"type": "string",
 					"default": "cluster",
-					"enum": ["cluster", "single" ,"in-memory"],
+					"enum": ["cluster", "single", "in-memory"],
 					"description": "Define valkey mode."
 				},
 				"URI": {
@@ -306,7 +306,7 @@
 				"EXCHANGE": {
 					"type": "string",
 					"default": "files-storage",
-					"description": "rabbitmq exchange name for antivirus"
+					"description": "rabbitmq exchange name for files storage"
 				},
 				"USE_STREAM_TO_ANTIVIRUS": {
 					"type": "boolean",
@@ -409,6 +409,11 @@
 					"type": "string",
 					"default": "",
 					"description": "Library Bucket name"
+				},
+				"EXCHANGE": {
+					"type": "string",
+					"default": "h5p-editor",
+					"description": "rabbitmq exchange name for h5p editor"
 				},
 				"INCOMING_REQUEST_TIMEOUT": {
 					"type": "integer",
@@ -1642,6 +1647,11 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the ability to change permissions of room members"
+		},
+		"FEATURE_ROOM_ADD_STUDENTS_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables adding students to a room"
 		},
 		"FEATURE_ROOM_MEMBERS_TABS_ENABLED": {
 			"type": "boolean",
