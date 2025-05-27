@@ -7,6 +7,7 @@ export {
 	MailSendExchange,
 	AntivirusExchange,
 	SchulconnexProvisioningExchange,
+	H5pEditorExchange,
 	RabbitMqURI,
 } from './rabbitmq.config';
 export * from './rabbitmq.module';

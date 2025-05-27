@@ -1,7 +1,7 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
-import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError } from '@lumieducation/h5p-server';
+import { H5PAjaxEndpoint, H5PEditor, H5pError, H5PPlayer } from '@lumieducation/h5p-server';
 import { UserDo, UserService } from '@modules/user';
 import { HttpException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -87,7 +87,7 @@ describe('H5P Ajax', () => {
 			ajaxEndpoint.getAjax.mockResolvedValueOnce(dummyResponse);
 			userService.findById.mockResolvedValueOnce({ language: LanguageType.DE } as UserDo);
 
-			const result = await uc.getAjax({ action: 'content-type-cache' }, userMock);
+			const result = await uc.getAjax({ action: 'content-type-cache' }, userMock.userId);
 
 			expect(result).toBe(dummyResponse);
 			expect(ajaxEndpoint.getAjax).toHaveBeenCalledWith(
@@ -102,7 +102,7 @@ describe('H5P Ajax', () => {
 
 		it('should rethrow H5pError as HttpException', async () => {
 			ajaxEndpoint.getAjax.mockRejectedValueOnce(new Error('Dummy Error'));
-			const getPromise = uc.getAjax({ action: 'content-type-cache' }, userMock);
+			const getPromise = uc.getAjax({ action: 'content-type-cache' }, userMock.userId);
 			await expect(getPromise).rejects.toThrow(HttpException);
 		});
 	});
@@ -135,7 +135,7 @@ describe('H5P Ajax', () => {
 			ajaxEndpoint.postAjax.mockResolvedValueOnce(dummyResponse);
 
 			const result = await uc.postAjax(
-				userMock,
+				userMock.userId,
 				{ action: 'libraries' },
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
 			);
@@ -172,7 +172,7 @@ describe('H5P Ajax', () => {
 			ajaxEndpoint.postAjax.mockResolvedValueOnce(dummyResponse);
 
 			const result = await uc.postAjax(
-				userMock,
+				userMock.userId,
 				{ action: 'libraries' },
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
 				{
@@ -216,7 +216,7 @@ describe('H5P Ajax', () => {
 			ajaxEndpoint.postAjax.mockRejectedValueOnce(new H5pError('dummy-error', { error: 'Dummy Error' }, 400));
 
 			const postPromise = uc.postAjax(
-				userMock,
+				userMock.userId,
 				{ action: 'libraries' },
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
 			);

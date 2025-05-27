@@ -100,7 +100,7 @@ describe('get H5P player', () => {
 			it('should call authorizationClientAdapter.checkPermissionsByReference', async () => {
 				const { content, mockCurrentUser } = setup();
 
-				await uc.getH5pPlayer(mockCurrentUser, content.id);
+				await uc.getH5pPlayer(mockCurrentUser.userId, content.id);
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
 					content.parentType,
@@ -112,7 +112,7 @@ describe('get H5P player', () => {
 			it('should call service with correct params', async () => {
 				const { content, mockCurrentUser } = setup();
 
-				await uc.getH5pPlayer(mockCurrentUser, content.id);
+				await uc.getH5pPlayer(mockCurrentUser.userId, content.id);
 
 				expect(h5pPlayer.render).toHaveBeenCalledWith(
 					content.id,
@@ -125,7 +125,7 @@ describe('get H5P player', () => {
 			it('should return results of service', async () => {
 				const { content, mockCurrentUser, expectedResult } = setup();
 
-				const result = await uc.getH5pPlayer(mockCurrentUser, content.id);
+				const result = await uc.getH5pPlayer(mockCurrentUser.userId, content.id);
 
 				expect(result).toEqual(expectedResult);
 			});
@@ -144,7 +144,7 @@ describe('get H5P player', () => {
 		it('should throw NotFoundException', async () => {
 			const { content, mockCurrentUser } = setup();
 
-			const getPlayerPromise = uc.getH5pPlayer(mockCurrentUser, content.id);
+			const getPlayerPromise = uc.getH5pPlayer(mockCurrentUser.userId, content.id);
 
 			await expect(getPlayerPromise).rejects.toThrow(new NotFoundException());
 
@@ -165,7 +165,7 @@ describe('get H5P player', () => {
 		it('should throw forbidden error', async () => {
 			const { content, mockCurrentUser } = setup();
 
-			const getPlayerPromise = uc.getH5pPlayer(mockCurrentUser, content.id);
+			const getPlayerPromise = uc.getH5pPlayer(mockCurrentUser.userId, content.id);
 
 			await expect(getPlayerPromise).rejects.toThrow(new ForbiddenException());
 
@@ -189,7 +189,7 @@ describe('get H5P player', () => {
 		it('should return error of service', async () => {
 			const { error, content, mockCurrentUser } = setup();
 
-			const getPlayerPromise = uc.getH5pPlayer(mockCurrentUser, content.id);
+			const getPlayerPromise = uc.getH5pPlayer(mockCurrentUser.userId, content.id);
 
 			await expect(getPlayerPromise).rejects.toThrow(error);
 		});

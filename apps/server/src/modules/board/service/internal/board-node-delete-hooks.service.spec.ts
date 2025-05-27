@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { TldrawClientAdapter } from '@infra/tldraw-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
-import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	collaborativeTextEditorFactory,
@@ -25,6 +25,7 @@ describe(BoardNodeDeleteHooksService.name, () => {
 	let drawingElementAdapterService: DeepMocked<TldrawClientAdapter>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let collaborativeTextEditorService: DeepMocked<CollaborativeTextEditorService>;
+	let h5pEditorProducer: DeepMocked<H5pEditorProducer>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -46,6 +47,10 @@ describe(BoardNodeDeleteHooksService.name, () => {
 					provide: CollaborativeTextEditorService,
 					useValue: createMock<CollaborativeTextEditorService>(),
 				},
+				{
+					provide: H5pEditorProducer,
+					useValue: createMock<H5pEditorProducer>(),
+				},
 			],
 		}).compile();
 
@@ -54,6 +59,7 @@ describe(BoardNodeDeleteHooksService.name, () => {
 		drawingElementAdapterService = module.get(TldrawClientAdapter);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		collaborativeTextEditorService = module.get(CollaborativeTextEditorService);
+		h5pEditorProducer = module.get(H5pEditorProducer);
 	});
 
 	afterEach(() => {
@@ -186,10 +192,12 @@ describe(BoardNodeDeleteHooksService.name, () => {
 				};
 			};
 
-			it('should throw not implemented', async () => {
+			it('should delete the linked content', async () => {
 				const { boardNode } = setup();
 
-				await expect(service.afterDelete(boardNode)).rejects.toThrow(NotImplementedException);
+				await service.afterDelete(boardNode);
+
+				expect(h5pEditorProducer.deleteContent).toHaveBeenCalledWith({ contentId: boardNode.contentId });
 			});
 		});
 	});
