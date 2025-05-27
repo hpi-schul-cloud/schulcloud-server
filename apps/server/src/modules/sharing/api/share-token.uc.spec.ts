@@ -332,22 +332,16 @@ describe('ShareTokenUC', () => {
 
 		describe('when restricted to same school', () => {
 			const setup = () => {
-				const schoolEntity = schoolEntityFactory.buildWithId();
-				const user = userFactory.buildWithId({ school: schoolEntity });
-				const course = courseEntityFactory.buildWithId();
-
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				shareTokenPermissionService.checkCourseWritePermission.mockResolvedValueOnce({ course });
-
-				return { user, course };
-			};
-
-			it('should call the service with school context', async () => {
 				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const course = courseEntityFactory.buildWithId();
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 
+				return { user, course, school };
+			};
+
+			it('should call the service with school context', async () => {
+				const { user, course, school } = setup();
 				await uc.createShareToken(
 					user.id,
 					{
