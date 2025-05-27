@@ -1,8 +1,9 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { RoleName } from '@modules/role';
 import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { SchoolService } from '@modules/school';
 import { User } from '@modules/user/repo';
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
@@ -11,7 +12,8 @@ import { RoomInvitationLink, RoomInvitationLinkUpdateProps } from '../domain/do/
 import { RoomInvitationLinkService } from '../domain/service/room-invitation-link.service';
 import { RoomConfig } from '../room.config';
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
-import { RoomInvitationLinkValidationError as RoomInvitationLinkValidationError } from './type/room-invitation-link-validation-error.enum';
+import { RoomInvitationLinkError } from './dto/response/room-invitation-link.error';
+import { RoomInvitationLinkValidationError } from './type/room-invitation-link-validation-error.enum';
 
 @Injectable()
 export class RoomInvitationLinkUc {
@@ -19,7 +21,8 @@ export class RoomInvitationLinkUc {
 		private readonly configService: ConfigService<RoomConfig, true>,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly roomInvitationLinkService: RoomInvitationLinkService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly schoolService: SchoolService
 	) {}
 
 	public async createLink(userId: EntityId, props: CreateRoomInvitationLinkBodyParams): Promise<RoomInvitationLink> {
@@ -46,7 +49,7 @@ export class RoomInvitationLinkUc {
 
 		const roomInvitationLink = await this.roomInvitationLinkService.findById(props.id);
 
-		await this.checkRoomAuthorizationByIds(userId, roomInvitationLink.roomId, Action.write, [
+		await this.checkRoomAuthorizationByIds(userId, [roomInvitationLink.roomId], Action.write, [
 			Permission.ROOM_MEMBERS_ADD,
 		]);
 
@@ -62,22 +65,24 @@ export class RoomInvitationLinkUc {
 		return roomInvitationLink;
 	}
 
-	public async deleteLink(userId: EntityId, linkId: EntityId): Promise<void> {
+	public async deleteLinks(userId: EntityId, linkIds: EntityId[]): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const roomInvitationLink = await this.roomInvitationLinkService.findById(linkId);
+		const roomInvitationLinks = await this.roomInvitationLinkService.findByIds(linkIds);
+		if (roomInvitationLinks.length !== linkIds.length) {
+			throw new NotFoundException();
+		}
 
-		await this.checkRoomAuthorizationByIds(userId, roomInvitationLink.roomId, Action.write, [
-			Permission.ROOM_MEMBERS_ADD,
-		]);
-
-		await this.roomInvitationLinkService.deleteLink(roomInvitationLink.id);
+		const roomIds = roomInvitationLinks.map((link) => link.roomId);
+		const uniqueRoomIds = [...new Set(roomIds)];
+		await this.checkRoomAuthorizationByIds(userId, uniqueRoomIds, Action.write, [Permission.ROOM_MEMBERS_ADD]);
+		await this.roomInvitationLinkService.deleteLinks(linkIds);
 	}
 
 	public async listLinksByRoomId(userId: EntityId, roomId: EntityId): Promise<RoomInvitationLink[]> {
 		this.checkFeatureEnabled();
 
-		await this.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_MEMBERS_ADD]);
+		await this.checkRoomAuthorizationByIds(userId, [roomId], Action.write, [Permission.ROOM_MEMBERS_ADD]);
 
 		const links = await this.roomInvitationLinkService.findLinkByRoomId(roomId);
 
@@ -88,16 +93,23 @@ export class RoomInvitationLinkUc {
 		this.checkFeatureEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomInvitationLink = await this.roomInvitationLinkService.findById(linkId);
+
+		const [roomInvitationLink] = await this.roomInvitationLinkService.findByIds([linkId]);
 
 		await this.checkValidity(roomInvitationLink, user);
 
-		await this.roomMembershipService.addMembersToRoom(roomInvitationLink.roomId, [userId]);
-		await this.roomMembershipService.changeRoleOfRoomMembers(
-			roomInvitationLink.roomId,
-			[userId],
-			roomInvitationLink.startingRole
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(
+			roomInvitationLink.roomId
 		);
+		const isAlreadyMember = roomMembershipAuthorizable.members.some((member) => member.userId === user.id);
+		if (!isAlreadyMember) {
+			await this.roomMembershipService.addMembersToRoom(roomInvitationLink.roomId, [userId]);
+			await this.roomMembershipService.changeRoleOfRoomMembers(
+				roomInvitationLink.roomId,
+				[userId],
+				roomInvitationLink.startingRole
+			);
+		}
 
 		return roomInvitationLink.roomId;
 	}
@@ -108,41 +120,55 @@ export class RoomInvitationLinkUc {
 		}
 	}
 
-	private async checkValidity(roomInvitationLink: RoomInvitationLink, user: User): Promise<void> {
+	private async checkValidity(roomInvitationLink: RoomInvitationLink | undefined, user: User): Promise<void> {
+		if (!roomInvitationLink) {
+			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.INVALID_LINK, HttpStatus.NOT_FOUND);
+		}
+
 		const isTeacher = user.getRoles().some((role) => role.name === RoleName.TEACHER);
 		const isStudent = user.getRoles().some((role) => role.name === RoleName.STUDENT);
 
 		if (roomInvitationLink.activeUntil && roomInvitationLink.activeUntil < new Date()) {
-			throw new BadRequestException(RoomInvitationLinkValidationError.EXPIRED);
+			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.EXPIRED, HttpStatus.BAD_REQUEST);
 		}
 		if (roomInvitationLink.isOnlyForTeachers && isTeacher === false) {
-			throw new ForbiddenException(RoomInvitationLinkValidationError.ONLY_FOR_TEACHERS);
+			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.ONLY_FOR_TEACHERS, HttpStatus.FORBIDDEN);
 		}
+		const creatorSchool = await this.schoolService.getSchoolById(roomInvitationLink.creatorSchoolId);
+
 		if (roomInvitationLink.restrictedToCreatorSchool && user.school.id !== roomInvitationLink.creatorSchoolId) {
-			throw new ForbiddenException(RoomInvitationLinkValidationError.RESTRICTED_TO_CREATOR_SCHOOL);
+			throw new RoomInvitationLinkError(
+				RoomInvitationLinkValidationError.RESTRICTED_TO_CREATOR_SCHOOL,
+				HttpStatus.FORBIDDEN,
+				creatorSchool.getInfo().name
+			);
 		}
 		if (user.school.id !== roomInvitationLink.creatorSchoolId && isStudent) {
-			throw new ForbiddenException(RoomInvitationLinkValidationError.CANT_INVITE_STUDENTS_FROM_OTHER_SCHOOL);
-		}
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(
-			roomInvitationLink.roomId
-		);
-		const isAlreadyMember = roomMembershipAuthorizable.members.some((member) => member.userId === user.id);
-		if (isAlreadyMember) {
-			throw new BadRequestException(RoomInvitationLinkValidationError.ALREADY_MEMBER);
+			const creatorSchool = await this.schoolService.getSchoolById(roomInvitationLink.creatorSchoolId);
+			throw new RoomInvitationLinkError(
+				RoomInvitationLinkValidationError.CANT_INVITE_STUDENTS_FROM_OTHER_SCHOOL,
+				HttpStatus.FORBIDDEN,
+				creatorSchool.getInfo().name
+			);
 		}
 	}
 
 	private async checkRoomAuthorizationByIds(
 		userId: EntityId,
-		roomId: EntityId,
+		roomIds: EntityId[],
 		action: Action,
 		requiredPermissions: Permission[] = []
-	): Promise<RoomMembershipAuthorizable> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+	): Promise<RoomMembershipAuthorizable[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, { action, requiredPermissions });
+		const authorizablePromises = roomIds.map((roomId) =>
+			this.roomMembershipService.getRoomMembershipAuthorizable(roomId)
+		);
+		const roomMembershipAuthorizables = await Promise.all(authorizablePromises);
 
-		return roomMembershipAuthorizable;
+		for (const roomMembershipAuthorizable of roomMembershipAuthorizables) {
+			this.authorizationService.checkPermission(user, roomMembershipAuthorizable, { action, requiredPermissions });
+		}
+
+		return roomMembershipAuthorizables;
 	}
 }

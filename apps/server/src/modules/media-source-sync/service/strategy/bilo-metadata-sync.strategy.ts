@@ -39,8 +39,7 @@ export class BiloMetadataSyncStrategy implements MediaSourceSyncStrategy {
 
 		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaClientAdapter.fetchMediaMetadata(
 			mediumIds,
-			mediaSource,
-			false
+			mediaSource
 		);
 
 		const report: MediaSourceSyncReport = await this.syncExternalToolMediaMetadata(externalTools, metadataItems);
@@ -130,8 +129,8 @@ export class BiloMetadataSyncStrategy implements MediaSourceSyncStrategy {
 	): Promise<ExternalTool> {
 		externalTool.name = metadata.title;
 		externalTool.description = metadata.description;
-		externalTool.logoUrl = metadata.coverSmall.href;
-		externalTool.logo = await this.externalToolLogoService.fetchLogo({ logoUrl: metadata.coverSmall.href });
+		externalTool.logoUrl = metadata.cover.href;
+		externalTool.logo = await this.externalToolLogoService.fetchLogo({ logoUrl: metadata.cover.href });
 
 		if (externalTool.medium) {
 			externalTool.medium.publisher = metadata.publisher;

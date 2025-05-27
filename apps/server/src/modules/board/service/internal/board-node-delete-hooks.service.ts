@@ -1,21 +1,24 @@
+import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { TldrawClientAdapter } from '@infra/tldraw-client';
 import { Utils } from '@mikro-orm/core';
 import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { type ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
 	AnyBoardNode,
 	CollaborativeTextEditorElement,
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	FileFolderElement,
 	H5pElement,
 	isCollaborativeTextEditorElement,
 	isDrawingElement,
 	isExternalToolElement,
 	isFileElement,
+	isFileFolderElement,
 	isH5pElement,
 	isLinkElement,
 	isMediaExternalToolElement,
@@ -29,19 +32,20 @@ export class BoardNodeDeleteHooksService {
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly drawingElementAdapterService: TldrawClientAdapter,
-		private readonly collaborativeTextEditorService: CollaborativeTextEditorService
+		private readonly collaborativeTextEditorService: CollaborativeTextEditorService,
+		private readonly h5pEditorProducer: H5pEditorProducer
 	) {}
 
 	public async afterDelete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
 		const boardNodes = Utils.asArray(boardNode);
 
-		await Promise.all(boardNodes.map(async (bn): Promise<void> => this.singleAfterDelete(bn)));
+		await Promise.all(boardNodes.map(async (bn: AnyBoardNode): Promise<void> => this.singleAfterDelete(bn)));
 	}
 
 	private async singleAfterDelete(boardNode: AnyBoardNode): Promise<void> {
 		// TODO improve this e.g. using exhaustive check or discriminated union
-		if (isFileElement(boardNode)) {
-			await this.afterDeleteFileElement(boardNode);
+		if (isFileElement(boardNode) || isFileFolderElement(boardNode)) {
+			this.afterDeleteFileElement(boardNode);
 		} else if (isLinkElement(boardNode)) {
 			await this.afterDeleteLinkElement(boardNode);
 		} else if (isDrawingElement(boardNode)) {
@@ -57,11 +61,14 @@ export class BoardNodeDeleteHooksService {
 		} else {
 			// noop
 		}
-		await Promise.allSettled(boardNode.children.map(async (child) => this.afterDelete(child)));
+
+		await Promise.allSettled(
+			boardNode.children.map(async (child: AnyBoardNode): Promise<void> => this.afterDelete(child))
+		);
 	}
 
-	public async afterDeleteFileElement(fileElement: FileElement): Promise<void> {
-		await this.filesStorageClientAdapterService.deleteFilesOfParent(fileElement.id);
+	public afterDeleteFileElement(fileElement: FileElement | FileFolderElement): void {
+		void this.filesStorageClientAdapterService.deleteFilesOfParent(fileElement.id);
 	}
 
 	public async afterDeleteLinkElement(linkElement: LinkElement): Promise<void> {
@@ -105,7 +112,7 @@ export class BoardNodeDeleteHooksService {
 
 	public async afterDeleteH5pElement(element: H5pElement): Promise<void> {
 		if (element.contentId) {
-			await Promise.reject(new NotImplementedException());
+			await this.h5pEditorProducer.deleteContent({ contentId: element.contentId });
 		}
 	}
 }

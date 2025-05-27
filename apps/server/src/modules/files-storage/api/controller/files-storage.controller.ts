@@ -39,6 +39,7 @@ import {
 	FileRecordParams,
 	FileRecordResponse,
 	FileUrlParams,
+	MultiFileParams,
 	PreviewParams,
 	RenameFileParams,
 	SingleFileParams,
@@ -247,7 +248,7 @@ export class FilesStorageController {
 		return response;
 	}
 
-	@ApiOperation({ summary: 'Mark a single file for deletion. The files are permanently deleted after a certain time.' })
+	@ApiOperation({ summary: 'Mark a single file for deletion. The file is permanently deleted after a certain time.' })
 	@ApiResponse({ status: 200, type: FileRecordResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
@@ -258,6 +259,21 @@ export class FilesStorageController {
 		const fileRecord = await this.filesStorageUC.deleteOneFile(params);
 
 		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
+
+		return response;
+	}
+
+	@ApiOperation({ summary: 'Mark several files for deletion. The files are permanently deleted after a certain time.' })
+	@ApiResponse({ status: 200, type: FileRecordListResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@Delete('/delete')
+	@UseInterceptors(RequestLoggingInterceptor)
+	public async deleteFiles(@Body() params: MultiFileParams): Promise<FileRecordListResponse> {
+		const [fileRecords, total] = await this.filesStorageUC.deleteMultipleFiles(params);
+
+		const response = FileRecordMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return response;
 	}

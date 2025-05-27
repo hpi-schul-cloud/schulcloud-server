@@ -56,7 +56,7 @@ describe('handleAutoLogout hook', () => {
 		await testObjects.cleanup();
 
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
-		Configuration.set('REDIS_URI', '//validHost:3333');
+		Configuration.set('SESSION_VALKEY_URI', '//validHost:3333');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
 
 		redisHelpers.clearRedis();

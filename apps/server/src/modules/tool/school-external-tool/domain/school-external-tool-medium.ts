@@ -1,7 +1,10 @@
 import { MediaSourceLicenseType } from '@modules/media-source';
+import { ExternalToolMediumStatus } from '../../external-tool/enum';
 
 export class SchoolExternalToolMedium {
-	public mediumId: string;
+	public status: ExternalToolMediumStatus;
+
+	public mediumId?: string;
 
 	public mediaSourceId?: string;
 
@@ -10,6 +13,7 @@ export class SchoolExternalToolMedium {
 	public mediaSourceLicenseType?: MediaSourceLicenseType;
 
 	constructor(props: SchoolExternalToolMedium) {
+		this.status = props.status;
 		this.mediaSourceName = props.mediaSourceName;
 		this.mediumId = props.mediumId;
 		this.mediaSourceId = props.mediaSourceId;

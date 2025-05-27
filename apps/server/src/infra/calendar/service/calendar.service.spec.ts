@@ -1,16 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
-import {
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-} from '@modules/deletion';
 import { HttpService } from '@nestjs/axios';
 import { HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain/types';
 import { Logger } from '@core/logger';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
@@ -176,61 +169,6 @@ describe('CalendarServiceSpec', () => {
 				setup();
 
 				await expect(service.deleteEventsByScopeId('userId')).rejects.toThrow(Error);
-			});
-		});
-
-		describe('when calling the deleteUserEvent events method', () => {
-			const setup = () => {
-				httpService.delete.mockReturnValue(
-					of(
-						axiosResponseFactory.build({
-							data: '',
-							status: HttpStatus.NO_CONTENT,
-							statusText: 'NO_CONTENT',
-						})
-					)
-				);
-
-				const event: CalendarEventId = {
-					data: [{ id: '1' }, { id: '2' }],
-				};
-
-				const axiosResponse: AxiosResponse<CalendarEvent[]> = axiosResponseFactory.build({
-					data: [event],
-				});
-
-				httpService.get.mockReturnValue(of(axiosResponse));
-				calendarMapper.mapEventsToId.mockReturnValueOnce(['1', '2']);
-
-				const userId: EntityId = '1';
-
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
-					DomainOperationReportBuilder.build(OperationType.DELETE, 2, ['1', '2']),
-				]);
-
-				return {
-					expectedResult,
-					userId,
-				};
-			};
-
-			it('should call service.deleteEventsByScopeId with userId', async () => {
-				const { userId } = setup();
-				const spyEvents = jest.spyOn(service, 'getAllEvents');
-				const spyDelete = jest.spyOn(service, 'deleteEventsByScopeId');
-
-				await service.deleteUserData(userId);
-
-				expect(spyEvents).toHaveBeenCalledWith(userId);
-				expect(spyDelete).toHaveBeenCalledWith(userId);
-			});
-
-			it('should return domainOperation object with information about deleted user', async () => {
-				const { expectedResult, userId } = setup();
-
-				const result = await service.deleteUserData(userId);
-
-				expect(result).toEqual(expectedResult);
 			});
 		});
 	});

@@ -1,1 +1,1 @@
-export * from './news.service';
+// empty for now

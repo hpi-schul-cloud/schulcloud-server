@@ -1,5 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { H5pEditorClientModule } from '@infra/h5p-editor-client';
 import { TldrawClientModule } from '@infra/tldraw-client';
 import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
 import { CopyHelperModule } from '@modules/copy-helper';
@@ -21,7 +22,6 @@ import {
 	ColumnBoardService,
 	ContextExternalToolDeletedEventHandlerService,
 	MediaBoardService,
-	BoardUserDeleteService,
 } from './service';
 import {
 	BoardContextService,
@@ -33,7 +33,6 @@ import {
 	ColumnBoardTitleService,
 	ContentElementUpdateService,
 } from './service/internal';
-import { DeletionModule } from '@modules/deletion';
 
 @Module({
 	imports: [
@@ -51,7 +50,7 @@ import { DeletionModule } from '@modules/deletion';
 		CollaborativeTextEditorModule,
 		AuthorizationModule,
 		RoomMembershipModule,
-		DeletionModule,
+		H5pEditorClientModule,
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
@@ -70,7 +69,6 @@ import { DeletionModule } from '@modules/deletion';
 		ColumnBoardLinkService,
 		ColumnBoardReferenceService,
 		ColumnBoardTitleService,
-		BoardUserDeleteService,
 		ContextExternalToolDeletedEventHandlerService,
 		// TODO replace by import of MediaBoardModule (fix dependency cycle)
 		MediaBoardService,

@@ -1,20 +1,4 @@
 import { Logger } from '@core/logger';
-import { CalendarService } from '@infra/calendar';
-import {
-	DataDeletionDomainOperationLoggable,
-	DeletionErrorLoggableException,
-	type DeletionService,
-	type DomainDeletionReport,
-	DomainDeletionReportBuilder,
-	DomainName,
-	type DomainOperationReport,
-	DomainOperationReportBuilder,
-	OperationReportHelper,
-	OperationType,
-	StatusModel,
-	UserDeletionInjectionService,
-} from '@modules/deletion';
-import { RegistrationPinService } from '@modules/registration-pin';
 import { type RoleDto, RoleName, RoleService } from '@modules/role';
 import type { SchoolEntity } from '@modules/school/repo';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
@@ -28,24 +12,20 @@ import type { User } from '../../repo/user.entity';
 import { UserMikroOrmRepo } from '../../repo/user.repo';
 import { USER_DO_REPO, UserDoRepo } from '../interface';
 import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable';
+import { UserMapper } from '../mapper';
 import { UserDiscoverableQuery, type UserQuery } from '../query';
 import type { UserName } from '../type';
-import { UserMapper } from '../mapper';
 
 @Injectable()
-export class UserService implements DeletionService {
+export class UserService {
 	constructor(
 		@Inject(USER_DO_REPO) private readonly userDoRepo: UserDoRepo,
 		private readonly userRepo: UserMikroOrmRepo,
 		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
-		private readonly registrationPinService: RegistrationPinService,
-		private readonly calendarService: CalendarService,
-		private readonly logger: Logger,
-		userDeletionInjectionService: UserDeletionInjectionService
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(UserService.name);
-		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public async getUserEntityWithRoles(userId: EntityId): Promise<User> {
@@ -227,67 +207,6 @@ export class UserService implements DeletionService {
 		return userDeleted;
 	}
 
-	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
-		this.logger.info(
-			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
-		);
-
-		const userToDelete = await this.userRepo.findByIdOrNull(userId, true);
-
-		if (userToDelete === null) {
-			const result = DomainDeletionReportBuilder.build(DomainName.USER, [
-				DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
-			]);
-
-			this.logger.info(
-				new DataDeletionDomainOperationLoggable(
-					'User already deleted',
-					DomainName.USER,
-					userId,
-					StatusModel.FINISHED,
-					0,
-					0
-				)
-			);
-
-			return result;
-		}
-
-		const subdomainOperation: DomainDeletionReport[] = [];
-		const registrationPinDeleted = await this.removeUserRegistrationPin(userId);
-		subdomainOperation.push(registrationPinDeleted);
-
-		if (this.configService.get<boolean>('CALENDAR_SERVICE_ENABLED')) {
-			const calendarEventsDeleted = await this.removeCalendarEvents(userId);
-			subdomainOperation.push(calendarEventsDeleted);
-		}
-
-		const numberOfDeletedUsers = await this.userRepo.deleteUser(userId);
-
-		if (numberOfDeletedUsers === 0) {
-			throw new DeletionErrorLoggableException(`Failed to delete user '${userId}' from User collection`);
-		}
-
-		const result = DomainDeletionReportBuilder.build(
-			DomainName.USER,
-			[DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedUsers, [userId])],
-			subdomainOperation
-		);
-
-		this.logger.info(
-			new DataDeletionDomainOperationLoggable(
-				'Successfully deleted user',
-				DomainName.USER,
-				userId,
-				StatusModel.FINISHED,
-				0,
-				numberOfDeletedUsers
-			)
-		);
-
-		return result;
-	}
-
 	public async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
 		const parentEmails = await this.userRepo.getParentEmailsFromUser(userId);
 
@@ -310,43 +229,12 @@ export class UserService implements DeletionService {
 		await this.userRepo.updateAllUserByLastSyncedAt(userIds);
 	}
 
-	public async removeUserRegistrationPin(userId: EntityId): Promise<DomainDeletionReport> {
-		const userToDeletion = await this.userRepo.findByIdOrNull(userId);
-		const parentEmails = await this.getParentEmailsFromUser(userId);
-		let emailsToDeletion: string[] = [];
-		if (userToDeletion && userToDeletion.email) {
-			emailsToDeletion = [userToDeletion.email, ...parentEmails];
-		}
-
-		let extractedOperationReport: DomainOperationReport[] = [];
-		if (emailsToDeletion.length > 0) {
-			const results = await Promise.all(
-				emailsToDeletion.map((email) => this.registrationPinService.deleteUserData(email))
-			);
-
-			extractedOperationReport = OperationReportHelper.extractOperationReports(results);
-		} else {
-			extractedOperationReport = [DomainOperationReportBuilder.build(OperationType.DELETE, 0, [])];
-		}
-
-		return DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, extractedOperationReport);
-	}
-
 	public async findUnsynchronizedUserIds(unsyncedForMinutes: number): Promise<string[]> {
 		const unsyncedForMiliseconds = unsyncedForMinutes * 60000;
 		const differenceBetweenCurrentDateAndUnsyncedTime = new Date().getTime() - unsyncedForMiliseconds;
 		const dateOfLastSyncToBeLookedFrom = new Date(differenceBetweenCurrentDateAndUnsyncedTime);
 		const userIds = await this.userRepo.findUnsynchronizedUserIds(dateOfLastSyncToBeLookedFrom);
 		return userIds;
-	}
-
-	public async removeCalendarEvents(userId: EntityId): Promise<DomainDeletionReport> {
-		let extractedOperationReport: DomainOperationReport[] = [];
-		const results = await this.calendarService.deleteUserData(userId);
-
-		extractedOperationReport = OperationReportHelper.extractOperationReports([results]);
-
-		return DomainDeletionReportBuilder.build(DomainName.CALENDAR, extractedOperationReport);
 	}
 
 	public findForImportUser(

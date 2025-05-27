@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { BoardResponse, BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import { LessonClientAdapter } from '../common-cartridge-client/lesson-client';
-import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
+import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
 import { LessonContentDto } from '../common-cartridge-client/lesson-client/dto';
@@ -27,6 +27,9 @@ import {
 	LinkElementResponseDto,
 	FileElementResponseDto,
 } from '../common-cartridge-client/card-client/dto';
+import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
+
+type FileMetadataBuffer = { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto };
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -201,40 +204,64 @@ export class CommonCartridgeExportService {
 			title: card.title ?? '',
 			identifier: createIdentifier(card.id),
 		});
+		const fileMetadataBufferArray = await Promise.all(
+			card.elements.map((element) => this.downloadAndStoreFiles(element))
+		).then((array) => array.flat());
 
-		await Promise.all(card.elements.map((element) => this.addCardElementToOrganization(element, cardOrganization)));
+		await Promise.all(
+			card.elements.map((element) =>
+				this.addCardElementToOrganization(element, cardOrganization, fileMetadataBufferArray)
+			)
+		);
 	}
 
-	private async addCardElementToOrganization(
-		element: CardResponseElementsInnerDto,
-		cardOrganization: CommonCartridgeOrganizationNode
-	): Promise<void> {
-		if (RichTextElementResponseDto.isRichTextElement(element)) {
-			const resource = this.mapper.mapRichTextElementToResource(element);
+	private async downloadAndStoreFiles(element: CardResponseElementsInnerDto): Promise<FileMetadataBuffer[]> {
+		const fileMetadataBufferArray: FileMetadataBuffer[] = [];
 
-			cardOrganization.addResource(resource);
-		}
-
-		if (LinkElementResponseDto.isLinkElement(element)) {
-			const resource = this.mapper.mapLinkElementToResource(element);
-
-			cardOrganization.addResource(resource);
-		}
-
-		if (FileElementResponseDto.isFileElement(element)) {
+		if (element.type === ContentElementType.FILE) {
 			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
 
-			await Promise.all(
-				filesMetadata.map(async (fileMetadata) => {
-					const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
+			for (const fileMetadata of filesMetadata) {
+				const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
 
-					if (file) {
-						const resource = this.mapper.mapFileToResource(fileMetadata, file, element);
+				if (file) {
+					fileMetadataBufferArray.push({
+						id: element.id,
+						name: fileMetadata.name,
+						fileBuffer: file,
+						fileDto: fileMetadata,
+					});
+				}
+			}
+		}
+		return fileMetadataBufferArray;
+	}
 
-						cardOrganization.addResource(resource);
+	private addCardElementToOrganization(
+		element: CardResponseElementsInnerDto,
+		cardOrganization: CommonCartridgeOrganizationNode,
+		fileMetadataBufferArray: FileMetadataBuffer[]
+	): void {
+		switch (element.type) {
+			case ContentElementType.RICH_TEXT:
+				const resource = this.mapper.mapRichTextElementToResource(element as RichTextElementResponseDto);
+				cardOrganization.addResource(resource);
+				break;
+			case ContentElementType.LINK:
+				const linkResource = this.mapper.mapLinkElementToResource(element as LinkElementResponseDto);
+				cardOrganization.addResource(linkResource);
+				break;
+			case ContentElementType.FILE:
+				for (const fileMetadata of fileMetadataBufferArray) {
+					const { id, fileBuffer, fileDto } = fileMetadata;
+
+					if (fileBuffer && element.id === id) {
+						const fileResource = this.mapper.mapFileToResource(fileDto, fileBuffer, element as FileElementResponseDto);
+
+						cardOrganization.addResource(fileResource);
 					}
-				})
-			);
+				}
+				break;
 		}
 	}
 
