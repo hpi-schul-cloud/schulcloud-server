@@ -14,24 +14,4 @@ jobs:
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v4
         with:
-          allow-licenses: >
-            AGPL-3.0-only,
-            LGPL-3.0,
-            MIT,
-            MIT-0,
-            BlueOak-1.0.0,
-            Apache-2.0,
-            BSD-2-Clause,
-            BSD-3-Clause,
-            ISC,
-            X11,
-            0BSD,
-            GPL-3.0,
-            Unlicense,
-            CC0-1.0
-          allow-ghsas: 'GHSA-vxvm-qww3-2fh7'
-          # https://github.com/actions/dependency-review-action/issues/868
-          allow-dependencies-licenses: >
-            pkg:npm/%40apidevtools/json-schema-ref-parser@11.7.3,
-            pkg:npm/fishery@2.2.3,
-            pkg:npm/nest-winston@1.10.2
+          config-file: 'hpi-schul-cloud/dependency-review-config/.github/dependency-review-config.yml@bc-9800'
