@@ -1,5 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { H5pEditorClientModule } from '@infra/h5p-editor-client/h5p-editor-client.module';
 import { TldrawClientModule } from '@infra/tldraw-client';
 import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
 import { CopyHelperModule } from '@modules/copy-helper';
@@ -11,7 +12,6 @@ import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { AuthorizationModule } from '../authorization';
-import { H5pEditorClientModule } from '../h5p-editor-client/h5p-editor-client.module';
 import { RoomMembershipModule } from '../room-membership';
 import { BoardNodeRule } from './authorisation/board-node.rule';
 import { BoardNodeFactory } from './domain';
