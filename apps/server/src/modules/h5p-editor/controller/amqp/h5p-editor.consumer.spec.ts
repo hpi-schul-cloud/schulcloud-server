@@ -104,7 +104,7 @@ describe(H5pEditorConsumer.name, () => {
 					})
 				).rejects.toThrow();
 
-				expect(logger.info).not.toHaveBeenCalledWith(new H5pEditorContentDeletionSuccessfulLoggable(contentId));
+				expect(logger.info).not.toHaveBeenCalled();
 			});
 		});
 	});
