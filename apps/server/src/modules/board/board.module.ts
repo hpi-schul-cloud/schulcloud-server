@@ -6,7 +6,6 @@ import { CollaborativeTextEditorModule } from '@modules/collaborative-text-edito
 import { CopyHelperModule } from '@modules/copy-helper';
 import { CourseModule } from '@modules/course';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
-import { SagaModule } from '@modules/saga';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
@@ -16,7 +15,6 @@ import { RoomMembershipModule } from '../room-membership';
 import { BoardNodeRule } from './authorisation/board-node.rule';
 import { BoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
-import { DeleteUserBoardDataStep } from './saga';
 import {
 	BoardCommonToolService,
 	BoardNodeAuthorizableService,
@@ -52,7 +50,6 @@ import {
 		CollaborativeTextEditorModule,
 		AuthorizationModule,
 		RoomMembershipModule,
-		SagaModule,
 		H5pEditorClientModule,
 	],
 	providers: [
@@ -75,7 +72,6 @@ import {
 		ContextExternalToolDeletedEventHandlerService,
 		// TODO replace by import of MediaBoardModule (fix dependency cycle)
 		MediaBoardService,
-		DeleteUserBoardDataStep,
 	],
 	exports: [
 		BoardNodeAuthorizableService,
