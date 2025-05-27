@@ -3,7 +3,9 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
-import { schoolEntityFactory } from '@modules/school/testing';
+import { Role } from '@modules/role/repo';
+import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -286,131 +288,188 @@ describe('School Controller (API)', () => {
 				Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', true);
 			});
 
-			const setup = async (includeTeacherAsStudent = false) => {
+			const setup = async (userRole: 'teacher' | 'student') => {
 				const school = schoolEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-				const { studentUser } = UserAndAccountTestFactory.buildStudent({ school });
-				const studentRole = studentUser.roles[0];
-				const studentsOfSchoolInClass = userFactory.buildList(2, { school, roles: [studentRole] });
-				const studentsOfSchoolWithoutClass = userFactory.buildList(4, { school, roles: [studentRole] });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 
-				await em.persistAndFlush([
-					teacherAccount,
+				await em.persistAndFlush([teacherAccount, teacherUser, studentUser]);
+
+				const { studentIds: studentIdsOfCurrentClass } = await buildClassWithAdditionalStudents({
 					teacherUser,
 					studentUser,
-					...studentsOfSchoolInClass,
-					...studentsOfSchoolWithoutClass,
-				]);
-
-				const studentIdsInClass = studentsOfSchoolInClass.map((student) => student._id);
-				const classUserIds = includeTeacherAsStudent ? [teacherUser._id, ...studentIdsInClass] : studentIdsInClass;
-				const classWithStudents = classEntityFactory.buildWithId({
-					teacherIds: includeTeacherAsStudent ? [] : [teacherUser._id],
-					userIds: classUserIds,
-					schoolId: school.id,
+					school,
 				});
 
-				await em.persistAndFlush([classWithStudents]);
-				em.clear();
+				const { studentIds: studentIdsOfArchivedClass } = await buildClassWithAdditionalStudents({
+					teacherUser,
+					studentUser,
+					school,
+					archived: true,
+				});
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const { studentIds: studentIdsOfMoinSchuleClass } = await buildMoinSchuleClassWithAdditionalStudents({
+					teacherUser,
+					studentUser,
+					school,
+				});
 
-				return { loggedInClient, school, studentsOfSchoolInClass, studentsOfSchoolWithoutClass, teacherUser };
+				const { studentIds: studentIdsOfArchivedMoinSchuleClass } = await buildMoinSchuleClassWithAdditionalStudents({
+					teacherUser,
+					studentUser,
+					school,
+					archived: true,
+				});
+
+				const { userIds: studentIdsOfUsersWithoutClass } = await buildUsersWithoutClass(studentUser.roles[0], school);
+
+				const loggedInClient =
+					userRole === 'teacher'
+						? await testApiClient.login(teacherAccount)
+						: await testApiClient.login(studentAccount);
+
+				return {
+					loggedInClient,
+					school,
+					studentIdsOfArchivedClass,
+					studentIdsOfCurrentClass,
+					studentIdsOfMoinSchuleClass,
+					studentIdsOfArchivedMoinSchuleClass,
+					studentIdsOfUsersWithoutClass,
+				};
 			};
 
-			describe('when user is assigned as user in class', () => {
-				it('should return 200 with students from class', async () => {
-					const { loggedInClient, school, studentsOfSchoolInClass, studentsOfSchoolWithoutClass } = await setup(true);
+			describe('user is teacher', () => {
+				it('should include students from current class', async () => {
+					const { loggedInClient, school, studentIdsOfCurrentClass } = await setup('teacher');
 
 					const response = await loggedInClient.get(`${school.id}/students`);
-
 					const body = response.body as SchoolUserListResponse;
+					const recievedIds = body.data.map((user) => user.id);
 
-					expect(response.status).toEqual(HttpStatus.OK);
-					expect(body.data).toEqual([...mapUsersWithSchoolName(studentsOfSchoolInClass, school.name)]);
-					expect(body.data).not.toEqual([mapUsersWithSchoolName(studentsOfSchoolWithoutClass, school.name)]);
-					expect(body.data.length).toEqual(studentsOfSchoolInClass.length);
+					expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfCurrentClass.map((id) => id.toString())));
 				});
-			});
 
-			describe('when user is teacher of class', () => {
-				it('should return 200 with students from class', async () => {
-					const { loggedInClient, school, studentsOfSchoolInClass, studentsOfSchoolWithoutClass } = await setup(false);
+				it('should not include students from archived class', async () => {
+					const { loggedInClient, school, studentIdsOfArchivedClass } = await setup('teacher');
 
 					const response = await loggedInClient.get(`${school.id}/students`);
-
 					const body = response.body as SchoolUserListResponse;
+					const recievedIds = body.data.map((user) => user.id);
 
-					expect(response.status).toEqual(HttpStatus.OK);
-					expect(body.data).toEqual([...mapUsersWithSchoolName(studentsOfSchoolInClass, school.name)]);
-					expect(body.data).not.toEqual([...mapUsersWithSchoolName(studentsOfSchoolWithoutClass, school.name)]);
-
-					expect(body.data.length).toEqual(studentsOfSchoolInClass.length);
+					expect(recievedIds).not.toEqual(expect.arrayContaining(studentIdsOfArchivedClass.map((id) => id.toString())));
 				});
-			});
-
-			describe('when user is in moin.schule class', () => {
-				const setupWithMoinSchuleClass = async () => {
-					const school = schoolEntityFactory.build();
-					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-					const { studentUser } = UserAndAccountTestFactory.buildStudent({ school });
-					const studentRole = studentUser.roles[0];
-					const studentsOfSchoolInMoinSchuleClass = userFactory.buildList(2, { school, roles: [studentRole] });
-					const studentsOfSchoolWithoutClass = userFactory.buildList(4, { school, roles: [studentRole] });
-
-					await em.persistAndFlush([
-						teacherAccount,
-						teacherUser,
-						studentUser,
-						...studentsOfSchoolInMoinSchuleClass,
-						...studentsOfSchoolWithoutClass,
-					]);
-
-					const moinSchuleClass = groupEntityFactory.buildWithId({
-						type: GroupEntityTypes.CLASS,
-						users: [
-							{ user: teacherUser, role: teacherUser.roles[0] },
-							...studentsOfSchoolInMoinSchuleClass.map((user) => {
-								return {
-									user: user,
-									role: studentRole,
-								};
-							}),
-						],
-						organization: school,
-					});
-
-					await em.persistAndFlush([moinSchuleClass]);
-					em.clear();
-
-					const loggedInClient = await testApiClient.login(teacherAccount);
-
-					return {
-						loggedInClient,
-						school,
-						teacherUser,
-						moinSchuleClass,
-						studentsOfSchoolInMoinSchuleClass,
-						studentsOfSchoolWithoutClass,
-					};
-				};
-
-				it('should return 200 with students from moin.schule class', async () => {
-					const { loggedInClient, school, studentsOfSchoolWithoutClass, studentsOfSchoolInMoinSchuleClass } =
-						await setupWithMoinSchuleClass();
+				it('should include students from moin.schule class', async () => {
+					const { loggedInClient, school, studentIdsOfMoinSchuleClass } = await setup('teacher');
 
 					const response = await loggedInClient.get(`${school.id}/students`);
-
 					const body = response.body as SchoolUserListResponse;
+					const recievedIds = body.data.map((user) => user.id);
 
-					expect(response.status).toEqual(HttpStatus.OK);
-					expect(body.data).toEqual(
-						expect.arrayContaining([...mapUsersWithSchoolName(studentsOfSchoolInMoinSchuleClass, school.name)])
+					expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfMoinSchuleClass.map((id) => id.toString())));
+				});
+				it('should not include students from archived moin.schule class', async () => {
+					const { loggedInClient, school, studentIdsOfArchivedMoinSchuleClass } = await setup('teacher');
+
+					const response = await loggedInClient.get(`${school.id}/students`);
+					const body = response.body as SchoolUserListResponse;
+					const recievedIds = body.data.map((user) => user.id);
+
+					expect(recievedIds).not.toEqual(
+						expect.arrayContaining(studentIdsOfArchivedMoinSchuleClass.map((id) => id.toString()))
 					);
-					expect(body.data).not.toEqual([...mapUsersWithSchoolName(studentsOfSchoolWithoutClass, school.name)]);
-					expect(body.data.length).toEqual(studentsOfSchoolInMoinSchuleClass.length);
+				});
+				it('should not include students not in class', async () => {
+					const { loggedInClient, school, studentIdsOfUsersWithoutClass } = await setup('teacher');
+
+					const response = await loggedInClient.get(`${school.id}/students`);
+					const body = response.body as SchoolUserListResponse;
+					const recievedIds = body.data.map((user) => user.id);
+
+					expect(recievedIds).not.toEqual(
+						expect.arrayContaining(studentIdsOfUsersWithoutClass.map((id) => id.toString()))
+					);
 				});
 			});
+
+			const buildClassWithAdditionalStudents = async (data: {
+				teacherUser: User;
+				studentUser: User;
+				school: SchoolEntity;
+				archived?: boolean;
+			}) => {
+				const studentRole = data.studentUser.roles[0];
+				const studentsOfSchoolInClass = userFactory.buildListWithId(2, { school: data.school, roles: [studentRole] });
+				const studentIds = [data.studentUser._id, ...studentsOfSchoolInClass.map((student) => student._id)];
+				const classYear = data.archived ? schoolYearEntityFactory.buildWithId() : data.school.currentYear;
+				expect(classYear?._id).toBeDefined();
+
+				const createdClass = classEntityFactory.buildWithId({
+					teacherIds: [data.teacherUser._id],
+					userIds: studentIds,
+					schoolId: data.school.id,
+					year: classYear?._id,
+				});
+
+				await em.persistAndFlush([createdClass, ...studentsOfSchoolInClass]);
+
+				return { createdClass, studentIds };
+			};
+
+			const buildMoinSchuleClassWithAdditionalStudents = async (data: {
+				teacherUser: User;
+				studentUser: User;
+				school: SchoolEntity;
+				archived?: boolean;
+			}) => {
+				const studentRole = data.studentUser.roles[0];
+				const teacherRole = data.teacherUser.roles[0];
+
+				const studentsOfSchoolInMoinSchuleClass = userFactory.buildListWithId(2, {
+					school: data.school,
+					roles: [studentRole],
+				});
+
+				const yesterday = new Date(Date.now() - 1000 * 60 * 60 * 24);
+				const lastYear = new Date(Date.now() - 1000 * 60 * 60 * 24 * 365);
+				const tomorrow = new Date(Date.now() + 1000 * 60 * 60 * 24);
+				const validPeriod = { from: lastYear, until: data.archived ? yesterday : tomorrow };
+
+				const moinSchuleClass = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.CLASS,
+					users: [
+						{ user: data.teacherUser, role: teacherRole },
+						{ user: data.studentUser, role: studentRole },
+						...studentsOfSchoolInMoinSchuleClass.map((user) => {
+							return {
+								user: user,
+								role: studentRole,
+							};
+						}),
+					],
+					organization: data.school,
+					validPeriod,
+				});
+
+				const studentIds = [data.studentUser._id, ...studentsOfSchoolInMoinSchuleClass.map((student) => student._id)];
+
+				await em.persistAndFlush([moinSchuleClass, ...studentsOfSchoolInMoinSchuleClass]);
+
+				return { moinSchuleClass, studentIds };
+			};
+
+			const buildUsersWithoutClass = async (role: Role, school: SchoolEntity) => {
+				const users = userFactory.buildList(2, {
+					school: school,
+					roles: [role],
+				});
+
+				await em.persistAndFlush(users);
+
+				const userIds = users.map((user) => user._id);
+
+				return { userIds };
+			};
 		});
 
 		describe('when user has correct permission to view students but is not in the correct school', () => {

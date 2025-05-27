@@ -188,22 +188,22 @@ export class SchoolUc {
 		return responseDto;
 	}
 
-	private async getAllStudentsOfSchool(schoolId: EntityId): Promise<Page<UserDo>> {
-		const result = await this.userService.findBySchoolRole(schoolId, RoleName.STUDENT);
-		return result;
-	}
-
 	private async getAllStudentsFromUsersClasses(userId: EntityId, schoolId: EntityId): Promise<Page<UserDo>> {
 		const [fromclasses, fromMoinSchuleClasses] = await Promise.all([
-			this.getStudentIdsOfUsersClasses(userId),
+			this.getStudentIdsOfUsersClasses(userId, schoolId),
 			this.getStudentIdsOfUsersMoinSchuleClasses(userId),
 		]);
 		const validIds = [...new Set([...fromclasses, ...fromMoinSchuleClasses])];
 
-		const students = await this.userService.findBySchoolRole(schoolId, RoleName.STUDENT);
+		const students = await this.getAllStudentsOfSchool(schoolId);
 		const filtered = students.data.filter((student) => student.id && validIds.includes(student.id));
 
 		const result = { data: filtered, total: filtered.length };
+		return result;
+	}
+
+	private async getAllStudentsOfSchool(schoolId: EntityId): Promise<Page<UserDo>> {
+		const result = await this.userService.findBySchoolRole(schoolId, RoleName.STUDENT);
 		return result;
 	}
 
@@ -227,10 +227,13 @@ export class SchoolUc {
 		return isUserOfSchool;
 	}
 
-	private async getStudentIdsOfUsersClasses(userId: EntityId): Promise<EntityId[]> {
+	private async getStudentIdsOfUsersClasses(userId: EntityId, schoolId: EntityId): Promise<EntityId[]> {
 		const classes = await this.classService.findAllByUserId(userId);
+		const currentYear = await this.schoolService.getCurrentYear(schoolId);
 
-		const attendeeIds = classes.flatMap((clazz) => clazz.userIds);
+		const currentClasses = classes.filter((clazz) => clazz.year === currentYear?.id);
+
+		const attendeeIds = currentClasses.flatMap((clazz) => clazz.userIds);
 
 		return attendeeIds;
 	}
