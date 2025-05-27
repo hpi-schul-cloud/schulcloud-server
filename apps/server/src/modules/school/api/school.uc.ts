@@ -194,13 +194,14 @@ export class SchoolUc {
 	}
 
 	private async getAllStudentsFromUsersClasses(userId: EntityId, schoolId: EntityId): Promise<Page<UserDo>> {
-		const attendeeIds = await this.getStudentIdsOfUsersClasses(schoolId, userId);
-		const moinSchuleAttendeeIds = await this.getStudentIdsOfUsersMoinSchuleClasses(schoolId, userId);
+		const [fromclasses, fromMoinSchuleClasses] = await Promise.all([
+			this.getStudentIdsOfUsersClasses(userId),
+			this.getStudentIdsOfUsersMoinSchuleClasses(userId),
+		]);
+		const validIds = [...new Set([...fromclasses, ...fromMoinSchuleClasses])];
 
 		const students = await this.userService.findBySchoolRole(schoolId, RoleName.STUDENT);
-		const filtered = students.data.filter(
-			(student) => student.id && (attendeeIds.includes(student.id) || moinSchuleAttendeeIds.includes(student.id))
-		);
+		const filtered = students.data.filter((student) => student.id && validIds.includes(student.id));
 
 		const result = { data: filtered, total: filtered.length };
 		return result;
@@ -226,20 +227,18 @@ export class SchoolUc {
 		return isUserOfSchool;
 	}
 
-	private async getStudentIdsOfUsersClasses(schoolId: EntityId, userId: EntityId): Promise<EntityId[]> {
+	private async getStudentIdsOfUsersClasses(userId: EntityId): Promise<EntityId[]> {
 		const classes = await this.classService.findAllByUserId(userId);
 
-		const classesOfSchool = classes.filter((clazz) => clazz.schoolId === schoolId);
-		const attendeeIds = classesOfSchool.flatMap((clazz) => clazz.userIds);
+		const attendeeIds = classes.flatMap((clazz) => clazz.userIds);
 
 		return attendeeIds;
 	}
 
-	private async getStudentIdsOfUsersMoinSchuleClasses(schoolId: EntityId, userId: EntityId): Promise<EntityId[]> {
+	private async getStudentIdsOfUsersMoinSchuleClasses(userId: EntityId): Promise<EntityId[]> {
 		const classes = await this.moinSchuleClassService.findByUserId(userId);
 
-		const classesOfSchool = classes.filter((clazz) => clazz.organizationId === schoolId);
-		const attendeeIds = classesOfSchool.flatMap((clazz) => clazz.users.map((user) => user.userId));
+		const attendeeIds = classes.flatMap((clazz) => clazz.users.map((user) => user.userId));
 
 		return attendeeIds;
 	}
