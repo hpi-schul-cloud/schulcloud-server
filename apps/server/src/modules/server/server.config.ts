@@ -3,7 +3,6 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import type { JwtAuthGuardConfig } from '@infra/auth-guard';
 import type { EncryptionConfig } from '@infra/encryption/encryption.config';
 import type { FilesStorageClientConfig } from '@infra/files-storage-client';
-import type { H5pEditorClientConfig } from '@infra/h5p-editor-client';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
@@ -82,8 +81,7 @@ export interface ServerConfig
 		FilesStorageClientConfig,
 		ManagementMediaSourcesConfig,
 		ManagementServerConfig,
-		RoomMembershipConfig,
-		H5pEditorClientConfig {
+		RoomMembershipConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -380,7 +378,6 @@ const config: ServerConfig = {
 	SESSION_VALKEY__SENTINEL_SERVICE_NAME: Configuration.has('SESSION_VALKEY__URI')
 		? (Configuration.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME') as string)
 		: undefined,
-	H5P_EDITOR__SERVICE_BASE_URL: Configuration.get('H5P_EDITOR__SERVICE_BASE_URL') as string,
 };
 
 export const serverConfig = (): ServerConfig => config;

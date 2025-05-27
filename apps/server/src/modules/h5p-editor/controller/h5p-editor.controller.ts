@@ -34,14 +34,11 @@ import {
 	AjaxPostBodyParams,
 	AjaxPostQueryParams,
 	ContentFileUrlParams,
-	CopyH5PEditorParams,
 	GetH5PContentParams,
 	GetH5PEditorParams,
 	GetH5PEditorParamsCreate,
 	H5PContentResponse,
-	H5PCopyResponse,
 	LibraryFileUrlParams,
-	PostH5PContentCopyParams,
 	PostH5PContentCreateParams,
 	SaveH5PEditorParams,
 } from './dto';
@@ -252,35 +249,6 @@ export class H5PEditorController {
 		const saveResponse = new H5PSaveResponse(response.id, response.metadata);
 
 		return saveResponse;
-	}
-
-	@Post('/copy/:contentId')
-	@ApiOperation({
-		summary:
-			'Copy the h5p content specified by the given content id. Any files used by the source content will also be copied.',
-	})
-	@ApiResponse({
-		status: 201,
-		type: H5PCopyResponse,
-		description: 'Returns the content id of the newly copied content.',
-	})
-	@ApiResponse({ status: 404, description: 'The h5p content with the given content id could not be found.' })
-	@ApiResponse({ status: 500, description: 'The h5p content and/or its files could not be copied.' })
-	public async copyH5pContent(
-		@Body() body: PostH5PContentCopyParams,
-		@Param() params: CopyH5PEditorParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<H5PCopyResponse> {
-		const contentId = await this.h5pEditorUc.copyH5pContent(
-			params.contentId,
-			currentUser,
-			body.parentType,
-			body.parentId
-		);
-
-		const response = new H5PCopyResponse(contentId);
-
-		return response;
 	}
 
 	private static setRangeResponseHeaders(
