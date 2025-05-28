@@ -301,6 +301,45 @@ describe('Room Invitation Link Controller (API)', () => {
 					});
 				});
 			});
+
+			describe('when the user becomes a room-applicant', () => {
+				it('should return 403 and validation error ROOM_APPLICANT_WAITING', async () => {
+					const { loggedInClient, roomInvitationLink } = await setup(
+						{ requiresConfirmation: true },
+						UserRole.TEACHER,
+						UserSchool.SAME_SCHOOL
+					);
+
+					await loggedInClient.post(`/${roomInvitationLink.id}`);
+
+					const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+					const body = response.body as RoomInvitationLinkError;
+
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					expect(body.details?.validationMessage).toEqual(
+						RoomInvitationLinkValidationError.ROOM_APPLICANT_WAITING.toString()
+					);
+				});
+			});
+
+			describe('when the user becomes a room-applicant and uses another link without confirmation requirement', () => {
+				it('should return 201 and validation error ROOM_APPLICANT_WAITING', async () => {
+					const { loggedInClient, roomInvitationLink } = await setup(
+						{ requiresConfirmation: true },
+						UserRole.TEACHER,
+						UserSchool.SAME_SCHOOL
+					);
+
+					await loggedInClient.post(`/${roomInvitationLink.id}`);
+
+					roomInvitationLink.requiresConfirmation = false;
+					await em.persistAndFlush(roomInvitationLink);
+
+					const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+
+					expect(response.status).toBe(HttpStatus.CREATED);
+				});
+			});
 		});
 
 		describe('when link activeUntil is set', () => {
