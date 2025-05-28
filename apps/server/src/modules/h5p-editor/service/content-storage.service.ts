@@ -1,4 +1,4 @@
-import { S3ClientAdapter } from '@infra/s3-client';
+import { CopyFiles, S3ClientAdapter } from '@infra/s3-client';
 import {
 	ContentId,
 	ContentPermission,
@@ -215,6 +215,20 @@ export class ContentStorage implements IContentStorage {
 		const { files } = await this.storageClient.list({ path });
 
 		return files;
+	}
+
+	public async copyAllFiles(sourceContentId: string, targetContentId: string): Promise<void> {
+		const filenames = await this.listFiles(sourceContentId);
+
+		const copyFiles: CopyFiles[] = [];
+		for (const filename of filenames) {
+			copyFiles.push({
+				sourcePath: this.getFilePath(sourceContentId, filename),
+				targetPath: this.getFilePath(targetContentId, filename),
+			});
+		}
+
+		await this.storageClient.copy(copyFiles);
 	}
 
 	private async exists(checkPath: string): Promise<boolean> {

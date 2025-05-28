@@ -1,9 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { StorageLocation } from '@infra/files-storage-client';
+import { H5pEditorProducer } from '@infra/h5p-editor-client';
+import { CopyContentParams } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { CopyFileDto } from '@modules/files-storage-client/dto';
+import { H5PContentParentType } from '@modules/h5p-editor';
 import { CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import {
@@ -68,6 +71,7 @@ describe(BoardNodeCopyService.name, () => {
 	};
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
+	let h5pEditorProducer: DeepMocked<H5pEditorProducer>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -87,12 +91,21 @@ describe(BoardNodeCopyService.name, () => {
 					provide: CopyHelperService,
 					useValue: createMock<CopyHelperService>(),
 				},
+				{
+					provide: H5pEditorProducer,
+					useValue: createMock<H5pEditorProducer>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(BoardNodeCopyService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		copyHelperService = module.get(CopyHelperService);
+		h5pEditorProducer = module.get(H5pEditorProducer);
+	});
+
+	beforeEach(() => {
+		jest.useFakeTimers();
 	});
 
 	afterEach(() => {
@@ -754,29 +767,77 @@ describe(BoardNodeCopyService.name, () => {
 	});
 
 	describe('copy h5p element', () => {
-		const setup = () => {
-			const { copyContext } = setupContext();
-			const h5pElement = h5pElementFactory.build({
-				contentId: new ObjectId().toHexString(),
+		describe('when the h5p element has a content id', () => {
+			const setup = () => {
+				const { copyContext } = setupContext();
+				const h5pElement = h5pElementFactory.build({
+					contentId: new ObjectId().toHexString(),
+				});
+
+				return {
+					copyContext,
+					h5pElement,
+				};
+			};
+
+			it('should copy the node', async () => {
+				const { copyContext, h5pElement } = setup();
+
+				const result = await service.copyH5pElement(h5pElement, copyContext);
+
+				expect(result).toEqual<CopyStatus>({
+					copyEntity: h5pElementFactory.build({
+						...h5pElement.getProps(),
+						contentId: expect.any(String),
+						id: expect.any(String),
+					}),
+					type: CopyElementType.H5P_ELEMENT,
+					status: CopyStatusEnum.SUCCESS,
+					elements: [],
+				});
 			});
 
-			return {
-				copyContext,
-				h5pElement,
+			it('should call the copy method of the h5p editor producer', async () => {
+				const { copyContext, h5pElement } = setup();
+
+				await service.copyH5pElement(h5pElement, copyContext);
+
+				expect(h5pEditorProducer.copyContent).toHaveBeenCalledWith(
+					expect.objectContaining<CopyContentParams>({
+						sourceContentId: h5pElement.contentId as string,
+						copiedContentId: expect.any(String),
+						userId: copyContext.userId,
+						schoolId: copyContext.targetSchoolId,
+						parentType: H5PContentParentType.BoardElement,
+						parentId: expect.any(String),
+					})
+				);
+			});
+		});
+
+		describe('when the h5p element has no content id', () => {
+			const setup = () => {
+				const { copyContext } = setupContext();
+				const h5pElement = h5pElementFactory.build({
+					contentId: undefined,
+				});
+
+				return {
+					copyContext,
+					h5pElement,
+				};
 			};
-		};
 
-		it('should copy the node', async () => {
-			const { copyContext, h5pElement } = setup();
+			it('should return not doing status', async () => {
+				const { copyContext, h5pElement } = setup();
 
-			const result = await service.copyH5pElement(h5pElement, copyContext);
+				const result = await service.copyH5pElement(h5pElement, copyContext);
 
-			const expectedStatus: CopyStatus = {
-				type: CopyElementType.H5P_ELEMENT,
-				status: CopyStatusEnum.NOT_IMPLEMENTED,
-			};
-
-			expect(result).toEqual(expectedStatus);
+				expect(result).toEqual<CopyStatus>({
+					type: CopyElementType.H5P_ELEMENT,
+					status: CopyStatusEnum.NOT_DOING,
+				});
+			});
 		});
 	});
 });

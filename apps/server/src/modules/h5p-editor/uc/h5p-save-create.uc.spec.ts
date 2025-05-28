@@ -6,12 +6,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { H5PContentParentType } from '../entity';
 import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { h5pContentFactory } from '../testing';
-import { LumiUserWithContentData } from '../types/lumi-types';
+import { H5PContentParentType, LumiUserWithContentData } from '../types';
 import { H5PEditorUc } from './h5p.uc';
 
 const createParams = () => {
