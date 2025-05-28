@@ -4,6 +4,9 @@ import { Embeddable, Embedded, Entity, Enum, Index, JsonType, Property } from '@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { isMongoId } from 'class-validator';
+import { H5pEditorContentInvalidIdLoggableException } from '../loggable';
+import { H5PContentParentType } from '../types';
 
 @Embeddable()
 export class ContentMetadata implements IContentMetadata {
@@ -103,12 +106,8 @@ export class ContentMetadata implements IContentMetadata {
 	}
 }
 
-export enum H5PContentParentType {
-	Lesson = 'lessons',
-	BoardElement = 'board-element',
-}
-
 export interface H5PContentProperties {
+	id?: EntityId;
 	creatorId: EntityId;
 	parentType: H5PContentParentType;
 	parentId: EntityId;
@@ -151,15 +150,24 @@ export class H5PContent extends BaseEntityWithTimestamps {
 	@Property({ type: JsonType })
 	content: unknown;
 
-	constructor({ parentType, parentId, creatorId, schoolId, metadata, content }: H5PContentProperties) {
+	constructor(props: H5PContentProperties) {
 		super();
 
-		this.parentType = parentType;
-		this._parentId = new ObjectId(parentId);
-		this._creatorId = new ObjectId(creatorId);
-		this._schoolId = new ObjectId(schoolId);
+		if (props.id) {
+			if (!isMongoId(props.id)) {
+				throw new H5pEditorContentInvalidIdLoggableException(props.id);
+			}
 
-		this.metadata = metadata;
-		this.content = content;
+			this._id = new ObjectId(props.id);
+			this.id = props.id;
+		}
+
+		this.parentType = props.parentType;
+		this._parentId = new ObjectId(props.parentId);
+		this._creatorId = new ObjectId(props.creatorId);
+		this._schoolId = new ObjectId(props.schoolId);
+
+		this.metadata = props.metadata;
+		this.content = props.content;
 	}
 }

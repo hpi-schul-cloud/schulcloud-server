@@ -8,10 +8,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IEntity } from '@shared/domain/interface';
 import { Readable } from 'stream';
 import { GetH5PFileResponse } from '../controller/dto';
-import { H5PContent, H5PContentParentType, H5PContentProperties } from '../entity';
+import { H5PContent, H5PContentProperties } from '../entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { H5PContentRepo } from '../repo';
-import { H5PContentParentParams, LumiUserWithContentData } from '../types/lumi-types';
+import { H5PContentParentType, H5PContentParentParams, LumiUserWithContentData } from '../types';
 import { ContentStorage } from './content-storage.service';
 
 const helpers = {

@@ -32,12 +32,11 @@ import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Request } from 'express';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, H5PContentResponse } from '../controller/dto';
-import { H5PContentParentType } from '../entity';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
 import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
 import { H5PContentRepo } from '../repo';
-import { ContentStorage, LibraryStorage } from '../service';
-import { LumiUserWithContentData } from '../types/lumi-types';
+import { LibraryStorage } from '../service';
+import { H5PContentParentType, LumiUserWithContentData } from '../types';
 import { GetLibraryFile } from './dto/h5p-getLibraryFile';
 
 @Injectable()
@@ -49,8 +48,7 @@ export class H5PEditorUc {
 		private readonly libraryService: LibraryStorage,
 		private readonly userService: UserService,
 		private readonly authorizationClientAdapter: AuthorizationClientAdapter,
-		private readonly h5pContentRepo: H5PContentRepo,
-		private readonly contentStorage: ContentStorage
+		private readonly h5pContentRepo: H5PContentRepo
 	) {}
 
 	private async checkContentPermission(
@@ -358,33 +356,6 @@ export class H5PEditorUc {
 			mainLibraryUbername,
 			user
 		);
-
-		return newContentId;
-	}
-
-	public async copyH5pContent(
-		contentId: string,
-		userId: EntityId,
-		schoolId: EntityId,
-		parentType: H5PContentParentType,
-		parentId: EntityId
-	): Promise<string> {
-		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.read([]));
-		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.write([]));
-
-		const user: LumiUserWithContentData = this.createAugmentedLumiUser(userId, schoolId, parentType, parentId);
-
-		const content: H5PContentResponse = await this.getContentParameters(contentId, userId);
-
-		const newContentId = await this.h5pEditor.saveOrUpdateContent(
-			this.fakeUndefinedAsString(),
-			content.params.params,
-			content.params.metadata,
-			content.library,
-			user
-		);
-
-		await this.contentStorage.copyAllFiles(contentId, newContentId);
 
 		return newContentId;
 	}

@@ -5,7 +5,7 @@ import { SanitizeHtml } from '@shared/controller/transformer';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { IsEnum, IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
-import { H5PContentParentType } from '../../entity';
+import { H5PContentParentType } from '../../types';
 
 export class GetH5PContentParams {
 	@ApiPropertyOptional({ enum: LanguageType, enumName: 'LanguageType' })

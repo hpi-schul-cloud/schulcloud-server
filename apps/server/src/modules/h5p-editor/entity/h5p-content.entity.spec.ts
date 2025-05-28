@@ -1,14 +1,17 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ContentMetadata, H5PContent, H5PContentParentType, H5PContentProperties } from './h5p-content.entity';
+import { EntityId } from '@shared/domain/types';
+import { H5pEditorContentInvalidIdLoggableException } from '../loggable';
+import { H5PContentParentType } from '../types';
+import { ContentMetadata, H5PContent, H5PContentProperties } from './h5p-content.entity';
 
-describe('H5PContent class', () => {
-	describe('when an H5PContent instance is created', () => {
+describe(H5PContent.name, () => {
+	describe('when a H5PContent instance is created', () => {
 		const setup = () => {
-			const dummyH5PContentProperties: H5PContentProperties = {
-				creatorId: '507f1f77bcf86cd799439011',
+			const props: H5PContentProperties = {
+				creatorId: new ObjectId().toHexString(),
 				parentType: H5PContentParentType.Lesson,
-				parentId: '507f1f77bcf86cd799439012',
-				schoolId: '507f1f77bcf86cd799439013',
+				parentId: new ObjectId().toHexString(),
+				schoolId: new ObjectId().toHexString(),
 				metadata: new ContentMetadata({
 					embedTypes: ['iframe'],
 					language: 'en',
@@ -23,20 +26,64 @@ describe('H5PContent class', () => {
 				content: {},
 			};
 
-			const h5pContent = new H5PContent(dummyH5PContentProperties);
-			return { h5pContent, dummyH5PContentProperties };
+			return { props };
 		};
 
-		it('should correctly return the creatorId', () => {
-			const { h5pContent, dummyH5PContentProperties } = setup();
-			const expectedCreatorId = new ObjectId(dummyH5PContentProperties.creatorId).toHexString();
-			expect(h5pContent.creatorId).toBe(expectedCreatorId);
+		it('should create a H5PContent', () => {
+			const { props } = setup();
+
+			const result = new H5PContent(props);
+
+			expect(result).toBeInstanceOf(H5PContent);
+			expect(result).toEqual(expect.objectContaining<Partial<H5PContent>>({ ...props }));
+		});
+	});
+
+	describe('when a H5PContent instance is created with the provided id', () => {
+		const setup = (id: EntityId) => {
+			const props: H5PContentProperties = {
+				id,
+				creatorId: new ObjectId().toHexString(),
+				parentType: H5PContentParentType.BoardElement,
+				parentId: new ObjectId().toHexString(),
+				schoolId: new ObjectId().toHexString(),
+				metadata: new ContentMetadata({
+					embedTypes: ['iframe'],
+					language: 'en',
+					mainLibrary: 'mainLibrary123',
+					defaultLanguage: 'en',
+					license: 'MIT',
+					title: 'Title Example',
+					preloadedDependencies: [],
+					dynamicDependencies: [],
+					editorDependencies: [],
+				}),
+				content: {},
+			};
+
+			return { props };
+		};
+
+		describe('when the id provided is a valid mongo id', () => {
+			it('should create an H5PContent with the provided id', () => {
+				const { props } = setup(new ObjectId().toHexString());
+
+				const result = new H5PContent(props);
+
+				expect(result).toBeInstanceOf(H5PContent);
+				expect(result.id).toEqual(props.id);
+				expect(result._id).toEqual(new ObjectId(props.id));
+				expect(result).toEqual(expect.objectContaining<Partial<H5PContent>>({ ...props }));
+			});
 		});
 
-		it('should correctly return the schoolId', () => {
-			const { h5pContent, dummyH5PContentProperties } = setup();
-			const expectedSchoolId = new ObjectId(dummyH5PContentProperties.schoolId).toHexString();
-			expect(h5pContent.schoolId).toBe(expectedSchoolId);
+		describe('when the id provided is an invalid mongo id', () => {
+			it('should throw an H5pEditorContentInvalidIdLoggableException', () => {
+				const invalidId = 'abc';
+				const { props } = setup(invalidId);
+
+				expect(() => new H5PContent(props)).toThrow(new H5pEditorContentInvalidIdLoggableException(invalidId));
+			});
 		});
 	});
 });
