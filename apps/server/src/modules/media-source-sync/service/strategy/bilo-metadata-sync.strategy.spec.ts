@@ -1,4 +1,3 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
@@ -34,10 +33,6 @@ describe(BiloMetadataSyncStrategy.name, () => {
 				{
 					provide: ExternalToolValidationService,
 					useValue: createMock<ExternalToolValidationService>(),
-				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
 				},
 				{
 					provide: ExternalToolLogoService,
@@ -106,7 +101,7 @@ describe(BiloMetadataSyncStrategy.name, () => {
 				};
 			};
 
-			it('should save fetch the logo', async () => {
+			it('should fetch the logo', async () => {
 				const { mediaSource, mediumMetadata } = setup();
 
 				await strategy.syncAllMediaMetadata(mediaSource);

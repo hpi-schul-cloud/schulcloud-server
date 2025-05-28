@@ -1,4 +1,3 @@
-import { Logger } from '@core/logger';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediumMetadataDto, MediumMetadataService } from '@modules/medium-metadata';
 import { ExternalToolService } from '@modules/tool';
@@ -15,10 +14,9 @@ export class BiloMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 		protected readonly externalToolService: ExternalToolService,
 		protected readonly mediumMetadataService: MediumMetadataService,
 		protected readonly externalToolValidationService: ExternalToolValidationService,
-		protected readonly logger: Logger,
 		private readonly externalToolLogoService: ExternalToolLogoService
 	) {
-		super(externalToolService, mediumMetadataService, externalToolValidationService, logger);
+		super(externalToolService, mediumMetadataService, externalToolValidationService);
 	}
 
 	public override getMediaSourceFormat(): MediaSourceDataFormat {

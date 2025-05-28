@@ -1,4 +1,3 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { mediumMetadataDtoFactory } from '@modules//medium-metadata/testing';
 import { MediaSourceDataFormat } from '@modules/media-source';
@@ -47,10 +46,6 @@ describe(BaseMetadataSyncStrategy.name, () => {
 				{
 					provide: ExternalToolValidationService,
 					useValue: createMock<ExternalToolValidationService>(),
-				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

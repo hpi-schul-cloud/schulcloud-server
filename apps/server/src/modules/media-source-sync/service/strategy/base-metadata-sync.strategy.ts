@@ -1,4 +1,3 @@
-import { Logger } from '@core/logger';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { MediumMetadataDto, MediumMetadataService } from '@modules/medium-metadata';
 import { ExternalTool, ExternalToolService, ExternalToolValidationService } from '@modules/tool';
@@ -15,8 +14,7 @@ export abstract class BaseMetadataSyncStrategy {
 	constructor(
 		protected readonly externalToolService: ExternalToolService,
 		protected readonly mediumMetadataService: MediumMetadataService,
-		protected readonly externalToolValidationService: ExternalToolValidationService,
-		protected readonly logger: Logger
+		protected readonly externalToolValidationService: ExternalToolValidationService
 	) {}
 
 	public abstract getMediaSourceFormat(): MediaSourceDataFormat;
