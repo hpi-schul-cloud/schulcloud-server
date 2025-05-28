@@ -31,12 +31,14 @@ import {
 	SystemResponseMapper,
 	YearsResponseMapper,
 } from './mapper';
+import { MoinSchuleClassService } from '@modules/class-moin-schule/moin-schule-class.service';
 
 @Injectable()
 export class SchoolUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly classService: ClassService,
+		private readonly moinSchuleClassService: MoinSchuleClassService,
 		private readonly schoolService: SchoolService,
 		private readonly schoolYearService: SchoolYearService,
 		private readonly userService: UserService
@@ -186,15 +188,22 @@ export class SchoolUc {
 		return responseDto;
 	}
 
-	private async getAllStudentsOfSchool(schoolId: EntityId): Promise<Page<UserDo>> {
-		const result = await this.userService.findBySchoolRole(schoolId, RoleName.STUDENT);
+	private async getAllStudentsFromUsersClasses(userId: EntityId, schoolId: EntityId): Promise<Page<UserDo>> {
+		const [fromclasses, fromMoinSchuleClasses] = await Promise.all([
+			this.getStudentIdsOfUsersClasses(userId, schoolId),
+			this.getStudentIdsOfUsersMoinSchuleClasses(userId),
+		]);
+		const validIds = [...new Set([...fromclasses, ...fromMoinSchuleClasses])];
+
+		const students = await this.getAllStudentsOfSchool(schoolId);
+		const filtered = students.data.filter((student) => student.id && validIds.includes(student.id));
+
+		const result = { data: filtered, total: filtered.length };
 		return result;
 	}
 
-	private async getAllStudentsFromUsersClasses(userId: EntityId, schoolId: EntityId): Promise<Page<UserDo>> {
-		const attendeeIds = await this.getStudentIdsOfUsersClasses(schoolId, userId);
-		const users = await this.userService.findByIds(attendeeIds);
-		const result = { data: users, total: users.length };
+	private async getAllStudentsOfSchool(schoolId: EntityId): Promise<Page<UserDo>> {
+		const result = await this.userService.findBySchoolRole(schoolId, RoleName.STUDENT);
 		return result;
 	}
 
@@ -218,11 +227,23 @@ export class SchoolUc {
 		return isUserOfSchool;
 	}
 
-	private async getStudentIdsOfUsersClasses(schoolId: EntityId, userId: EntityId): Promise<EntityId[]> {
+	private async getStudentIdsOfUsersClasses(userId: EntityId, schoolId: EntityId): Promise<EntityId[]> {
 		const classes = await this.classService.findAllByUserId(userId);
+		const currentYear = await this.schoolService.getCurrentYear(schoolId);
 
-		const classesOfSchool = classes.filter((clazz) => clazz.schoolId === schoolId);
-		const attendeeIds = classesOfSchool.flatMap((clazz) => clazz.userIds);
+		const currentClasses = classes.filter((clazz) => clazz.year === currentYear?.id);
+
+		const attendeeIds = currentClasses.flatMap((clazz) => clazz.userIds);
+
+		return attendeeIds;
+	}
+
+	private async getStudentIdsOfUsersMoinSchuleClasses(userId: EntityId): Promise<EntityId[]> {
+		const classes = await this.moinSchuleClassService.findByUserId(userId);
+
+		const currentClasses = classes.filter((clazz) => clazz.isCurrentlyInValidPeriod());
+
+		const attendeeIds = currentClasses.flatMap((clazz) => clazz.users.map((user) => user.userId));
 
 		return attendeeIds;
 	}
