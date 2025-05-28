@@ -11,6 +11,7 @@ import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
+import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
 
 jest.mock('../import/common-cartridge-file-parser');
 
@@ -51,6 +52,10 @@ describe(CommonCartridgeImportService.name, () => {
 				{
 					provide: FilesStorageClientAdapter,
 					useValue: createMock<FilesStorageClientAdapter>(),
+				},
+				{
+					provide: CommonCartridgeFileParser,
+					useValue: createMock<CommonCartridgeFileParser>(),
 				},
 			],
 		}).compile();
@@ -105,19 +110,27 @@ describe(CommonCartridgeImportService.name, () => {
 			.build();
 		const element2 = organizationFactory.withIdentifier(elementId1).withParent(card2).build();
 
+		const columnId3 = faker.string.uuid();
+		const column3 = organizationFactory.withIdentifier(columnId3).withParent(board).build();
 		const cardId3 = faker.string.uuid();
-		const card3 = organizationFactory.withIdentifier(cardId3).withParent(column2).withTitle('card three').build();
+		const card3 = organizationFactory.withIdentifier(cardId3).withParent(column3).build();
+		card3.isResource = false;
+		card3.pathDepth = 2;
+		const element3 = organizationFactory.withIdentifier(faker.string.uuid()).withParent(card3).build();
+		element3.isResource = true;
+		element3.pathDepth = 3;
 
 		const currentUser = currentUserFactory.build();
 
-		const orgs = [board, column1, card1, element1, column2, card2, element2, card3];
+		const orgs = [board, column1, card1, element1, column2, card2, element2, column3, card3, element3];
+
 		commonCartridgeFileParser.getOrganizations.mockReturnValue(orgs);
 
 		coursesClientAdapterMock.createCourse.mockResolvedValueOnce({ courseId: faker.string.uuid() });
 
 		boardsClientAdapterMock.createBoard.mockResolvedValueOnce({ id: boardId });
 
-		return { file, currentUser, column1, column2, card1, card2, element1, element2 };
+		return { file, currentUser, column1, column2, card1, card2, element1, element2, board };
 	};
 
 	describe('importFile', () => {
@@ -152,7 +165,7 @@ describe(CommonCartridgeImportService.name, () => {
 				await sut.importFile(file, currentUser);
 
 				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledWith(expect.any(String));
-				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledTimes(2);
+				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledTimes(3);
 			});
 
 			it('should update column title', async () => {
@@ -160,43 +173,47 @@ describe(CommonCartridgeImportService.name, () => {
 
 				await sut.importFile(file, currentUser);
 
-				expect(columnClientAdapterMock.updateBoardColumnTitle).toHaveBeenCalledTimes(2);
+				expect(columnClientAdapterMock.updateBoardColumnTitle).toHaveBeenCalledTimes(3);
 			});
 
 			it('should create cards and update titles', async () => {
-				const { file, currentUser, column1, card1, card2 } = setup();
-
-				boardsClientAdapterMock.createBoardColumn.mockResolvedValueOnce({
-					id: column1.identifier,
-					title: column1.title,
-					cards: [
-						{
-							cardId: card1.identifier,
-							height: 100,
-						},
-						{
-							cardId: card2.identifier,
-							height: 100,
-						},
-					],
-					timestamps: {
-						lastUpdatedAt: new Date().toISOString(),
-						createdAt: new Date().toISOString(),
-						deletedAt: undefined,
-					},
-				});
-
-				await sut.importFile(file, currentUser);
-
-				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(2);
-			});
-
-			it('should create elements and update titles', async () => {
 				const { file, currentUser } = setup();
 
 				await sut.importFile(file, currentUser);
 
-				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(2);
+				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(3);
+			});
+
+			it('should create an element', async () => {
+				const { file, currentUser } = setup();
+
+				await sut.importFile(file, currentUser);
+
+				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(3);
+			});
+
+			it('should upload files', async () => {
+				const { file, currentUser } = setup();
+
+				commonCartridgeFileParser.getResource.mockReturnValue({
+					type: CommonCartridgeResourceTypeV1P1.FILE,
+					href: faker.internet.url(),
+					fileName: faker.system.fileName(),
+					file: new File([''], 'file.pdf', { type: faker.system.mimeType() }),
+					description: faker.lorem.sentence(),
+				});
+
+				await sut.importFile(file, currentUser);
+
+				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalled();
+			});
+
+			it('should create card element without resource', async () => {
+				const { file, currentUser } = setup();
+
+				await sut.importFile(file, currentUser);
+
+				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalled();
 			});
 		});
 

@@ -214,10 +214,7 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		const { schoolId } = currentUser;
 
-		try {
-			await this.fileClient.upload(schoolId, 'school', cardElement.id, 'boardnodes', resource.file);
-		} catch (error) {
-			throw new Error(`Error uploading file: ${String(error)}`);
-		}
+		// should the error be catched and handled differently? try -- catch block
+		await this.fileClient.upload(schoolId, 'school', cardElement.id, 'boardnodes', resource.file);
 	}
 }
