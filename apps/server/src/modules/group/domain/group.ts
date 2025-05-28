@@ -50,6 +50,20 @@ export class Group extends DomainObject<GroupProps> {
 		return this.props.validPeriod;
 	}
 
+	public isCurrentlyInValidPeriod(): boolean {
+		if (!this.validPeriod) {
+			return true;
+		}
+		const now: Date = new Date();
+		if (this.validPeriod.from && this.validPeriod.from > now) {
+			return false;
+		}
+		if (this.validPeriod.until && this.validPeriod.until < now) {
+			return false;
+		}
+		return true;
+	}
+
 	public removeUser(userId: EntityId): void {
 		this.props.users = this.props.users.filter((groupUser: GroupUser): boolean => groupUser.userId !== userId);
 	}

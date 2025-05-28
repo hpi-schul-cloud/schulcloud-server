@@ -4,9 +4,10 @@ import { SchoolController, SchoolUc } from './api';
 import { SchoolModule } from './school.module';
 import { UserModule } from '../user';
 import { ClassModule } from '@modules/class';
+import { MoinSchuleClassModule } from '@modules/class-moin-schule/moin-schule-class.module';
 
 @Module({
-	imports: [SchoolModule, AuthorizationModule, ClassModule, UserModule],
+	imports: [SchoolModule, AuthorizationModule, ClassModule, UserModule, MoinSchuleClassModule],
 	controllers: [SchoolController],
 	providers: [SchoolUc],
 })

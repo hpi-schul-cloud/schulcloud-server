@@ -55,6 +55,7 @@ import { SchoolLicenseApiModule } from '../school-license/school-license-api.mod
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
+import { MoinSchuleClassModule } from '@modules/class-moin-schule/moin-schule-class.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -113,6 +114,7 @@ const serverModules = [
 	RosterModule,
 	ShdApiModule,
 	OAuthApiModule,
+	MoinSchuleClassModule,
 ];
 
 const providers = [ServerUc, { provide: SERVER_CONFIG_TOKEN, useValue: serverConfig() }];

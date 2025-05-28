@@ -101,6 +101,65 @@ describe(Group.name, () => {
 		});
 	});
 
+	describe('isCurrentlyInValidPeriod', () => {
+		const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+		const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+		describe('when group has no valid period', () => {
+			it('should be true', () => {
+				const group = groupFactory.build({ validPeriod: undefined });
+
+				const isInValidPeriod = group.isCurrentlyInValidPeriod();
+
+				expect(isInValidPeriod).toEqual(true);
+			});
+		});
+
+		describe('when group has open ended period', () => {
+			it('should be true after start', () => {
+				const group = groupFactory.build({ validPeriod: { from: yesterday, until: undefined } });
+
+				const isInValidPeriod = group.isCurrentlyInValidPeriod();
+
+				expect(isInValidPeriod).toEqual(true);
+			});
+
+			it('should be false before start', () => {
+				const group = groupFactory.build({ validPeriod: { from: tomorrow, until: undefined } });
+
+				const isInValidPeriod = group.isCurrentlyInValidPeriod();
+
+				expect(isInValidPeriod).toEqual(false);
+			});
+		});
+
+		describe('when group has beginning and end date', () => {
+			it('should be false before period', () => {
+				const group = groupFactory.build({ validPeriod: { from: tomorrow, until: tomorrow } });
+
+				const isInValidPeriod = group.isCurrentlyInValidPeriod();
+
+				expect(isInValidPeriod).toEqual(false);
+			});
+
+			it('should be false after period', () => {
+				const group = groupFactory.build({ validPeriod: { from: yesterday, until: yesterday } });
+
+				const isInValidPeriod = group.isCurrentlyInValidPeriod();
+
+				expect(isInValidPeriod).toEqual(false);
+			});
+
+			it('should be true during period', () => {
+				const group = groupFactory.build({ validPeriod: { from: yesterday, until: tomorrow } });
+
+				const isInValidPeriod = group.isCurrentlyInValidPeriod();
+
+				expect(isInValidPeriod).toEqual(true);
+			});
+		});
+	});
+
 	describe('isEmpty', () => {
 		describe('when no users in group exist', () => {
 			const setup = () => {
