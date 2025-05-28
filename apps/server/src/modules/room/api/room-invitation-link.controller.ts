@@ -28,7 +28,7 @@ import { RoomIdResponse } from './dto/response/room-id.response';
 
 @ApiTags('Room Invitation Link')
 @JwtAuthentication()
-@Controller('rooms/invitation-link')
+@Controller('room-invitation-links')
 export class RoomInvitationLinkController {
 	constructor(private readonly roomInvitationLinkUc: RoomInvitationLinkUc) {}
 
