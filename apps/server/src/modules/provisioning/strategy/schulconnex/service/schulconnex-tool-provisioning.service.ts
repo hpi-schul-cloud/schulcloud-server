@@ -1,7 +1,7 @@
 import { Logger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolSystemOptionsService, SchulConneXProvisioningOptions } from '@modules/legacy-school';
-import { MediaSource, MediaSourceService, MediumIdentifier } from '@modules/media-source';
+import { MediumIdentifier } from '@modules/media-source';
 import { ExternalToolMetadataUpdateService } from '@modules/media-source-sync';
 import { MediumMetadataDto, MediumMetadataService } from '@modules/medium-metadata';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
@@ -26,7 +26,6 @@ export class SchulconnexToolProvisioningService {
 		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
 		private readonly schoolSystemOptionsService: SchoolSystemOptionsService,
 		private readonly externalToolValidationService: ExternalToolValidationService,
-		private readonly mediaSourceService: MediaSourceService,
 		private readonly mediumMetadataService: MediumMetadataService,
 		private readonly externalToolMetadataUpdateService: ExternalToolMetadataUpdateService,
 		private readonly logger: Logger
@@ -84,34 +83,39 @@ export class SchulconnexToolProvisioningService {
 	private async provisionExternalTool(medium: MediumIdentifier): Promise<ExternalTool | null> {
 		const template: ExternalTool | null = await this.externalToolService.findTemplate(medium.mediaSource?.sourceId);
 
-		if (!template?.medium) {
+		if (!template) {
 			return null;
 		}
 
-		template.medium.status = ExternalToolMediumStatus.DRAFT;
-		template.medium.mediumId = medium.mediumId;
+		const externalTool: ExternalTool = new ExternalTool({
+			...template.getProps(),
+			id: new ObjectId().toHexString(),
+			name: `Draft: ${medium.mediaSource?.sourceId ?? '-'} ${medium.mediumId}`,
+			thumbnail: undefined, // Thumbnail reference has to be removed to avoid multiple tools pointing to the same file
+		});
 
-		await this.updateMetadata(template, medium);
+		if (!externalTool.medium) {
+			return null;
+		}
+
+		externalTool.medium.status = ExternalToolMediumStatus.DRAFT;
+		externalTool.medium.mediumId = medium.mediumId;
+
+		await this.updateMetadata(externalTool, medium);
 
 		try {
-			await this.externalToolValidationService.validateCreate(template);
+			await this.externalToolValidationService.validateCreate(externalTool);
+
+			const savedTool: ExternalTool = await this.externalToolService.createExternalTool(externalTool);
+
+			return savedTool;
 		} catch {
 			return null;
 		}
-
-		const savedTool: ExternalTool = await this.externalToolService.createExternalTool(template);
-
-		return savedTool;
 	}
 
 	private async updateMetadata(externalTool: ExternalTool, medium: MediumIdentifier): Promise<void> {
-		if (!medium.mediaSource || !externalTool.medium) {
-			return;
-		}
-
-		const mediaSource: MediaSource | null = await this.mediaSourceService.findBySourceId(medium.mediaSource.sourceId);
-
-		if (!mediaSource?.format) {
+		if (!externalTool.medium || !medium.mediaSource?.format) {
 			return;
 		}
 
@@ -124,7 +128,7 @@ export class SchulconnexToolProvisioningService {
 			await this.externalToolMetadataUpdateService.updateExternalToolWithMetadata(
 				externalTool,
 				metadata,
-				mediaSource.format
+				medium.mediaSource.format
 			);
 
 			externalTool.medium.status = ExternalToolMediumStatus.ACTIVE;

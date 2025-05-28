@@ -103,6 +103,51 @@ describe(ExternalToolMetadataUpdateService.name, () => {
 			});
 		});
 
+		describe('when loading the logo for vidis metadata fails', () => {
+			const setup = () => {
+				const mediumId = 'medium1';
+				const logoData = 'logoData';
+				const initialExternalTool = externalToolFactory
+					.withMedium({
+						mediumId,
+						metadataModifiedAt: undefined,
+						publisher: 'oldPublisher',
+						status: ExternalToolMediumStatus.DRAFT,
+					})
+					.withFileRecordRef()
+					.build({ name: 'oldName', description: 'oldDescription', logoUrl: 'oldLogoUrl' });
+				const externalTool = _.cloneDeep(initialExternalTool);
+				const mediumMetadata = mediumMetadataDtoFactory.build({
+					name: 'newName',
+					logoUrl: 'newLogoUrl',
+					description: 'newDescription',
+					previewLogoUrl: undefined,
+					publisher: undefined,
+					mediumId,
+					modifiedAt: undefined,
+				});
+
+				externalToolLogoService.fetchLogo.mockRejectedValueOnce(new Error());
+
+				return {
+					mediumMetadata,
+					logoData,
+					initialExternalTool,
+					externalTool,
+				};
+			};
+
+			it('should not change the external tool', async () => {
+				const { mediumMetadata, initialExternalTool, externalTool } = setup();
+
+				await expect(
+					service.updateExternalToolWithMetadata(externalTool, mediumMetadata, MediaSourceDataFormat.BILDUNGSLOGIN)
+				).rejects.toThrow();
+
+				expect(externalTool).toEqual(initialExternalTool);
+			});
+		});
+
 		describe('when updating an external tool with bilo metadata', () => {
 			const setup = () => {
 				const mediumId = 'medium1';
@@ -165,6 +210,51 @@ describe(ExternalToolMetadataUpdateService.name, () => {
 						}),
 					})
 				);
+			});
+		});
+
+		describe('when loading the logo for bilo metadata fails', () => {
+			const setup = () => {
+				const mediumId = 'medium1';
+				const logoData = 'logoData';
+				const initialExternalTool = externalToolFactory
+					.withMedium({
+						mediumId,
+						metadataModifiedAt: undefined,
+						publisher: 'oldPublisher',
+						status: ExternalToolMediumStatus.DRAFT,
+					})
+					.withFileRecordRef()
+					.build({ name: 'oldName', description: 'oldDescription', logoUrl: 'oldLogoUrl' });
+				const externalTool = _.cloneDeep(initialExternalTool);
+				const mediumMetadata = mediumMetadataDtoFactory.build({
+					name: 'newName',
+					logoUrl: 'newLogoUrl',
+					description: 'newDescription',
+					previewLogoUrl: 'newPreviewUrl',
+					publisher: 'newPublisher',
+					mediumId,
+					modifiedAt: new Date(),
+				});
+
+				externalToolLogoService.fetchLogo.mockRejectedValueOnce(new Error());
+
+				return {
+					mediumMetadata,
+					logoData,
+					initialExternalTool,
+					externalTool,
+				};
+			};
+
+			it('should not change the external tool', async () => {
+				const { mediumMetadata, initialExternalTool, externalTool } = setup();
+
+				await expect(
+					service.updateExternalToolWithMetadata(externalTool, mediumMetadata, MediaSourceDataFormat.BILDUNGSLOGIN)
+				).rejects.toThrow();
+
+				expect(externalTool).toEqual(initialExternalTool);
 			});
 		});
 
