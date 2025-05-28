@@ -166,7 +166,7 @@
 		"@feathersjs/commons": "^5.0.33",
 		"@feathersjs/configuration": "^5.0.33",
 		"@feathersjs/errors": "^5.0.33",
-		"@feathersjs/express": "^5.0.33",
+		"@feathersjs/express": "^5.0.34",
 		"@feathersjs/feathers": "^5.0.33",
 		"@golevelup/nestjs-rabbitmq": "~5.6.1",
 		"@hendt/xml2json": "^1.0.3",
