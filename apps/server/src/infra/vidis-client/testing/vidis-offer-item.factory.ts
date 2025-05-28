@@ -1,4 +1,5 @@
 import { OfferDTO } from '@infra/vidis-client';
+import { base64TestLogo } from '@modules/tool/external-tool/testing';
 import { Factory } from 'fishery';
 
 export const vidisOfferItemFactory = Factory.define<OfferDTO>(({ sequence }) => {
@@ -13,7 +14,7 @@ export const vidisOfferItemFactory = Factory.define<OfferDTO>(({ sequence }) => 
 		offerTitle: `VIDIS Test ${sequence}`,
 		offerLongTitle: `VIDIS Offer Item Test ${sequence}`,
 		offerVersion: 1,
-		offerLogo: btoa(`VIDIS Test Logo ${sequence}`),
+		offerLogo: base64TestLogo,
 		educationProviderOrganizationName: `Test Provider ${sequence}`,
 	};
 });
