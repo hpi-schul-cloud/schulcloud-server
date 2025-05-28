@@ -6,14 +6,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ImageMimeType } from '@shared/domain/types';
 import { MediumNotFoundLoggableException } from '../loggable';
 import { MediumMetadataMapper } from '../mapper';
-import { MediumMetadataLogoService } from '../service/medium-metadata-logo.service';
 import { VidisStrategy } from './vidis.strategy';
 
 describe(VidisStrategy.name, () => {
 	let module: TestingModule;
 	let strategy: VidisStrategy;
 	let vidisClientAdapter: DeepMocked<VidisClientAdapter>;
-	let mediumMetadataLogoService: DeepMocked<MediumMetadataLogoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -23,16 +21,11 @@ describe(VidisStrategy.name, () => {
 					provide: VidisClientAdapter,
 					useValue: createMock<VidisClientAdapter>(),
 				},
-				{
-					provide: MediumMetadataLogoService,
-					useValue: createMock<MediumMetadataLogoService>(),
-				},
 			],
 		}).compile();
 
 		strategy = module.get(VidisStrategy);
 		vidisClientAdapter = module.get(VidisClientAdapter);
-		mediumMetadataLogoService = module.get(MediumMetadataLogoService);
 	});
 
 	afterAll(async () => {
@@ -88,8 +81,6 @@ describe(VidisStrategy.name, () => {
 
 				vidisClientAdapter.getOfferItemsByRegion.mockResolvedValueOnce(allOfferItems);
 				const mimetype: ImageMimeType = ImageMimeType.PNG;
-
-				mediumMetadataLogoService.detectAndValidateLogoImageType.mockReturnValue(mimetype);
 
 				const expectedLogoUrl = `data:${mimetype};base64,${requestedOfferItem.offerLogo ?? ''}`;
 				expectedMetadata.logoUrl = expectedLogoUrl;
