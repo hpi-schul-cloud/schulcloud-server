@@ -24,7 +24,6 @@ export class ExternalToolMetadataUpdateService {
 		}
 	}
 
-	// TODO update vidis sync with this
 	private async updateExternalToolWithVidisMetadata(
 		externalTool: ExternalTool,
 		metadata: MediumMetadataDto
@@ -39,7 +38,6 @@ export class ExternalToolMetadataUpdateService {
 		externalTool.logo = logo;
 	}
 
-	// TODO update bilo sync with this
 	private async updateExternalToolWithBiloMetadata(
 		externalTool: ExternalTool,
 		metadata: MediumMetadataDto
