@@ -4,3 +4,4 @@ export { MediumMetadataNotFoundLoggableException } from './medium-metadata-not-f
 export { MediumMetadataStrategyNotImplementedLoggableException } from './medium-metadata-strategy-not-implemented-loggable.exception';
 export { MediumNotFoundLoggableException } from './medium-not-found-loggable.exception';
 export { MediumUnprocessableResponseLoggableException } from './medium-unprocessable-response-loggable.exception';
+export { MediumBadRequestLoggableException } from './medium-bad-request-loggable.exception';

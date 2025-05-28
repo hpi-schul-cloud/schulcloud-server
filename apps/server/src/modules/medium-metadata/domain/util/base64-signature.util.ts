@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { ImageMimeType } from '@shared/domain/types';
 
 const base64ImageTypeSignatures: Record<string, ImageMimeType> = {
@@ -8,9 +7,8 @@ const base64ImageTypeSignatures: Record<string, ImageMimeType> = {
 	R0lGODlh: ImageMimeType.GIF,
 };
 
-@Injectable()
-export class MediumMetadataLogoService {
-	public detectAndValidateLogoImageType(base64Image: string): ImageMimeType | undefined {
+export class Base64SignatureUtil {
+	public static detectLogoImageType(base64Image: string): ImageMimeType | undefined {
 		const detectedSignature: string | undefined = Object.keys(base64ImageTypeSignatures).find((signature: string) =>
 			base64Image.startsWith(signature)
 		);

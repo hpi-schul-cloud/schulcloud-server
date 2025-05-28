@@ -9,7 +9,6 @@ export const mediumMetadataDtoFactory = Factory.define<MediumMetadataDto, Medium
 			description: `Medium description ${sequence}`,
 			publisher: `Medium publisher ${sequence}`,
 			logoUrl: `https://logo.com/${sequence}`,
-			logo: btoa(`logo-image-${sequence}`),
 			previewLogoUrl: `https://preview.logo.com/${sequence}`,
 			modifiedAt: new Date(),
 		})
