@@ -20,7 +20,7 @@ export class ShareTokenPermissionService {
 		private readonly schoolService: SchoolService
 	) {}
 
-	public checkFeatureEnabled(parentType: ShareTokenParentType) {
+	public checkFeatureEnabled(parentType: ShareTokenParentType): void {
 		// TODO Configuration.get is the deprecated way to read envirment variables
 		switch (parentType) {
 			case ShareTokenParentType.Course:
@@ -69,7 +69,7 @@ export class ShareTokenPermissionService {
 		};
 	}
 
-	public async checkRoomWritePermission(user: User, roomId: EntityId, permissions: Permission[] = []) {
+	public async checkRoomWritePermission(user: User, roomId: EntityId, permissions: Permission[] = []): Promise<void> {
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 
 		this.authorizationService.checkPermission(

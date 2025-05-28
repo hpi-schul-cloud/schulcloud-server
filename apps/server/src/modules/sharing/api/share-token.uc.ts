@@ -83,7 +83,7 @@ export class ShareTokenUC {
 		return shareTokenInfo;
 	}
 
-	private async checkTokenCreatePermission(user: User, payload: ShareTokenPayload) {
+	private async checkTokenCreatePermission(user: User, payload: ShareTokenPayload): Promise<void> {
 		switch (payload.parentType) {
 			case ShareTokenParentType.Course:
 				await this.shareTokenPermissionService.checkCourseWritePermission(
@@ -111,17 +111,17 @@ export class ShareTokenUC {
 		}
 	}
 
-	private async checkLessonWritePermission(user: User, lessonId: EntityId, permission: Permission) {
+	private async checkLessonWritePermission(user: User, lessonId: EntityId, permission: Permission): Promise<void> {
 		const lesson = await this.lessonService.findById(lessonId);
 		this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([permission]));
 	}
 
-	private async checkTaskWritePermission(user: User, taskId: EntityId, permission: Permission) {
+	private async checkTaskWritePermission(user: User, taskId: EntityId, permission: Permission): Promise<void> {
 		const task = await this.taskService.findById(taskId);
 		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.write([permission]));
 	}
 
-	private async checkColumnBoardSharePermission(user: User, boardNodeId: EntityId) {
+	private async checkColumnBoardSharePermission(user: User, boardNodeId: EntityId): Promise<void> {
 		const columBoard = await this.columnBoardService.findById(boardNodeId, 0);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(columBoard);
 		const permissions = columBoard.context.type === BoardExternalReferenceType.Course ? [Permission.COURSE_EDIT] : [];
@@ -133,7 +133,7 @@ export class ShareTokenUC {
 		);
 	}
 
-	private async checkTokenLookupPermission(userId: EntityId, payload: ShareTokenPayload) {
+	private async checkTokenLookupPermission(userId: EntityId, payload: ShareTokenPayload): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		let requiredPermissions: Permission[] = [];
 		// eslint-disable-next-line default-case
@@ -161,7 +161,7 @@ export class ShareTokenUC {
 		this.authorizationService.checkAllPermissions(user, requiredPermissions);
 	}
 
-	private nowPlusDays(days: number) {
+	private nowPlusDays(days: number): Date {
 		const date = new Date();
 		date.setDate(date.getDate() + days);
 		return date;
