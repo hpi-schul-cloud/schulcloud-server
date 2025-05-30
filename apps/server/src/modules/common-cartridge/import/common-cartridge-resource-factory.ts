@@ -29,11 +29,7 @@ export class CommonCartridgeResourceFactory {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
 				return this.createWebLinkResource(content, title);
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
-				if (this.isFile(organization.resourcePath)) {
-					return this.createFileContentResource(organization.resourcePath, title);
-				} else {
-					return this.createWebContentResource(content, inputFormat);
-				}
+				return this.buildWebContentResourceFromPath(content, organization.resourcePath, inputFormat, title);
 			default:
 				return undefined;
 		}
@@ -93,6 +89,19 @@ export class CommonCartridgeResourceFactory {
 			file,
 			description: title,
 		};
+	}
+
+	private buildWebContentResourceFromPath(
+		content: string,
+		resourcePath: string,
+		inputFormat: InputFormat,
+		title: string
+	): CommonCartridgeResourceProps | undefined {
+		if (this.isFile(resourcePath)) {
+			return this.createFileContentResource(resourcePath, title);
+		} else {
+			return this.createWebContentResource(content, inputFormat);
+		}
 	}
 
 	private isFile(resourcePath: string): boolean {
