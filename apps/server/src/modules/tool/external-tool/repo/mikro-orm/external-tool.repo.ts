@@ -8,6 +8,7 @@ import { Scope } from '@shared/repo/scope';
 import { ToolConfigType } from '../../../common/enum';
 import { ExternalToolSearchQuery } from '../../../common/interface';
 import { ExternalTool } from '../../domain';
+import { ExternalToolMediumStatus } from '../../enum';
 import { ExternalToolEntity, ExternalToolEntityProps } from './external-tool.entity';
 import { ExternalToolScope } from './external-tool.scope';
 import { ExternalToolRepoMapper, ExternalToolSortingMapper } from './mapper';
@@ -99,6 +100,20 @@ export class ExternalToolRepo {
 			return domainObject;
 		}
 		return null;
+	}
+
+	public async findTemplate(mediaSourceId?: string): Promise<ExternalTool | null> {
+		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, {
+			medium: { mediaSourceId, status: ExternalToolMediumStatus.TEMPLATE },
+		});
+
+		if (!entity) {
+			return null;
+		}
+
+		const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
+
+		return domainObject;
 	}
 
 	public async findAllByMediaSource(mediaSourceId: string): Promise<ExternalTool[]> {
