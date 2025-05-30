@@ -282,28 +282,21 @@ describe('POST /rooms/:roomId/copy', () => {
 			const { teacherAccount: teacherAccountOwner, teacherUser: teacherUserOwner } =
 				UserAndAccountTestFactory.buildTeacher({ school: school });
 
-			const userGroupOwner = groupEntityFactory.buildWithId({
-				type: GroupEntityTypes.ROOM,
-				users: [{ role: roomAdminRole, user: teacherUserOwner }],
-			});
-			const roomMembershipOwner = roomMembershipEntityFactory.build({
-				roomId: room.id,
-				userGroupId: userGroupOwner.id,
-				schoolId: teacherUserOwner.school.id,
-			});
-
 			const otherSchool = schoolEntityFactory.buildWithId();
 			const { teacherAccount: teacherAccountExternal, teacherUser: teacherUserExternal } =
-				UserAndAccountTestFactory.buildTeacher({ school: school });
+				UserAndAccountTestFactory.buildTeacher({ school: otherSchool });
 
-			const userGroupExternal = groupEntityFactory.buildWithId({
+			const userGroup = groupEntityFactory.buildWithId({
 				type: GroupEntityTypes.ROOM,
-				users: [{ role: roomOwnerRole, user: teacherUserExternal }],
+				users: [
+					{ role: roomAdminRole, user: teacherUserOwner },
+					{ role: roomOwnerRole, user: teacherUserExternal },
+				],
 			});
-			const roomMembershipExternal = roomMembershipEntityFactory.build({
+			const roomMembership = roomMembershipEntityFactory.build({
 				roomId: room.id,
-				userGroupId: userGroupExternal.id,
-				schoolId: teacherUserExternal.school.id,
+				userGroupId: userGroup.id,
+				schoolId: teacherUserOwner.school.id,
 			});
 
 			await em.persistAndFlush([
@@ -314,12 +307,10 @@ describe('POST /rooms/:roomId/copy', () => {
 				roomOwnerRole,
 				teacherAccountOwner,
 				teacherUserOwner,
-				userGroupOwner,
-				roomMembershipOwner,
+				userGroup,
+				roomMembership,
 				teacherAccountExternal,
 				teacherUserExternal,
-				userGroupExternal,
-				roomMembershipExternal,
 			]);
 			em.clear();
 

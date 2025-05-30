@@ -5,5 +5,9 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
+		new NotFoundException(
+			`The requested ${entityName}: ${
+				typeof where === 'object' ? JSON.stringify(where) : String(where)
+			} has not been found.`
+		),
 };
