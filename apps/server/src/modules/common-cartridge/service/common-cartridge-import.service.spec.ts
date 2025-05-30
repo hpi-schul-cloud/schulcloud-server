@@ -130,6 +130,16 @@ describe(CommonCartridgeImportService.name, () => {
 
 		boardsClientAdapterMock.createBoard.mockResolvedValueOnce({ id: boardId });
 
+		commonCartridgeFileParser.getResource.mockReturnValue({
+			type: CommonCartridgeResourceTypeV1P1.FILE,
+			href: faker.internet.url(),
+			fileName: faker.system.fileName(),
+			file: new File([''], 'file.pdf', { type: faker.system.mimeType() }),
+			description: faker.lorem.sentence(),
+		});
+
+		commonCartridgeFileParser.getTitle.mockReturnValue(undefined);
+
 		return { file, currentUser, column1, column2, card1, card2, element1, element2, board };
 	};
 
@@ -139,7 +149,7 @@ describe(CommonCartridgeImportService.name, () => {
 
 			it('should create a course', async () => {
 				const { file, currentUser } = setup();
-				commonCartridgeFileParser.getTitle.mockReturnValue('test course');
+				commonCartridgeFileParser.getTitle.mockReturnValueOnce('test course');
 
 				await sut.importFile(file, currentUser);
 
@@ -195,14 +205,6 @@ describe(CommonCartridgeImportService.name, () => {
 			it('should upload files', async () => {
 				const { file, currentUser } = setup();
 
-				commonCartridgeFileParser.getResource.mockReturnValue({
-					type: CommonCartridgeResourceTypeV1P1.FILE,
-					href: faker.internet.url(),
-					fileName: faker.system.fileName(),
-					file: new File([''], 'file.pdf', { type: faker.system.mimeType() }),
-					description: faker.lorem.sentence(),
-				});
-
 				await sut.importFile(file, currentUser);
 
 				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalled();
@@ -220,8 +222,6 @@ describe(CommonCartridgeImportService.name, () => {
 		describe('when no title is given', () => {
 			const setup = () => {
 				const { file, currentUser } = setupBase();
-
-				commonCartridgeFileParser.getTitle.mockReturnValueOnce(undefined);
 
 				return { file, currentUser };
 			};
