@@ -1638,6 +1638,11 @@
 			"default": true,
 			"description": "Enables the rooms feature to duplicate rooms"
 		},
+		"FEATURE_ROOM_SHARE": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables the room sharing feature"
+		},
 		"FEATURE_ROOM_INVITATION_LINKS_ENABLED": {
 			"type": "boolean",
 			"default": "true",

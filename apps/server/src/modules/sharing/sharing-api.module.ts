@@ -9,9 +9,11 @@ import { RoomMembershipModule } from '@modules/room-membership';
 import { SchoolModule } from '@modules/school';
 import { TaskModule } from '@modules/task';
 import { Module } from '@nestjs/common';
-import { ShareTokenController } from './controller/share-token.controller';
+import { ShareTokenController } from './api/share-token.controller';
 import { SharingModule } from './sharing.module';
-import { ShareTokenUC } from './uc';
+import { ShareTokenUC, ImportTokenUC } from './api';
+import { ShareTokenPermissionService } from './api/service';
+import { SagaModule } from '@modules/saga';
 
 @Module({
 	imports: [
@@ -26,8 +28,9 @@ import { ShareTokenUC } from './uc';
 		RoomModule,
 		SchoolModule,
 		LoggerModule,
+		SagaModule,
 	],
 	controllers: [ShareTokenController],
-	providers: [ShareTokenUC],
+	providers: [ShareTokenUC, ImportTokenUC, ShareTokenPermissionService],
 })
 export class SharingApiModule {}

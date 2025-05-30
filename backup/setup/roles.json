@@ -636,7 +636,8 @@
 			"ROOM_CHANGE_OWNER",
 			"ROOM_MEMBERS_CHANGE_ROLE",
 			"ROOM_CONTENT_EDIT",
-			"ROOM_COPY"
+			"ROOM_COPY",
+			"ROOM_SHARE"
 		]
 	},
 	{
@@ -652,7 +653,8 @@
 			"ROOM_MEMBERS_CHANGE_ROLE",
 			"ROOM_LEAVE",
 			"ROOM_CONTENT_EDIT",
-			"ROOM_COPY"
+			"ROOM_COPY",
+			"ROOM_SHARE"
 		]
 	},
 	{
