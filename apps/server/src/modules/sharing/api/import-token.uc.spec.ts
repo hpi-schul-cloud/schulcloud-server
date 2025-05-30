@@ -444,24 +444,6 @@ describe('ShareTokenUC', () => {
 				expect(authorizationService.checkOneOfPermissions).toHaveBeenCalledWith(user, [Permission.ROOM_CREATE]);
 			});
 
-			it('should call roomService.getSingleRoom', async () => {
-				const { user, shareToken } = setup();
-
-				await uc.importShareToken(user.id, shareToken.token, 'NewName', 'destination-id');
-
-				expect(roomService.getSingleRoom).toHaveBeenCalledWith(shareToken.payload.parentId);
-			});
-
-			it('should call shareTokenPermissionService.checkRoomWritePermission', async () => {
-				const { user, shareToken, room } = setup();
-
-				await uc.importShareToken(user.id, shareToken.token, 'NewName', 'destination-id');
-
-				expect(shareTokenPermissionService.checkRoomWritePermission).toHaveBeenCalledWith(user, room.id, [
-					Permission.ROOM_SHARE,
-				]);
-			});
-
 			it('should call sagaService.executeSaga', async () => {
 				const { user, shareToken } = setup();
 				const newName = 'NewName';

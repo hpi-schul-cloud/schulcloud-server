@@ -251,10 +251,10 @@ describe('Sharing Controller (API)', () => {
 				return { loggedInClient, token: shareToken.token, room, teacherUserExternal };
 			};
 
-			it('should return a 200', async () => {
+			it('should return a 201', async () => {
 				const { loggedInClient, token } = await setup();
 				const response = await loggedInClient.post(`${token}/import`, { newName: 'NewName' });
-				expect(response.status).toBe(HttpStatus.OK);
+				expect(response.status).toBe(HttpStatus.CREATED);
 			});
 
 			it('should actually create a new room with the imported data', async () => {

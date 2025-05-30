@@ -166,8 +166,6 @@ export class ImportTokenUC {
 
 	private async copyRoom(user: User, roomId: EntityId, copyName?: string): Promise<CopyStatus> {
 		this.authorizationService.checkOneOfPermissions(user, [Permission.ROOM_CREATE]);
-		const room = await this.roomService.getSingleRoom(roomId);
-		await this.shareTokenPermissionService.checkRoomWritePermission(user, room.id, [Permission.ROOM_SHARE]);
 
 		const { roomCopied, boardsCopied } = await this.sagaService.executeSaga('roomCopy', {
 			userId: user.id,
@@ -197,7 +195,7 @@ export class ImportTokenUC {
 		return copyStatus;
 	}
 
-	private async checkBoardContextWritePermission(user: User, boardContext: BoardExternalReference) {
+	private async checkBoardContextWritePermission(user: User, boardContext: BoardExternalReference): Promise<void> {
 		if (boardContext.type === BoardExternalReferenceType.Course) {
 			await this.shareTokenPermissionService.checkCourseWritePermission(user, boardContext.id, Permission.COURSE_EDIT);
 		} else if (boardContext.type === BoardExternalReferenceType.Room) {

@@ -26,7 +26,7 @@ export class ShareTokenService {
 		private readonly roomService: RoomService
 	) {}
 
-	async createToken(
+	public async createToken(
 		payload: ShareTokenPayload,
 		options?: { context?: ShareTokenContext; expiresAt?: Date }
 	): Promise<ShareTokenDO> {
@@ -43,7 +43,7 @@ export class ShareTokenService {
 		return shareToken;
 	}
 
-	async lookupToken(token: ShareTokenString): Promise<ShareTokenDO> {
+	public async lookupToken(token: ShareTokenString): Promise<ShareTokenDO> {
 		const shareToken = await this.shareTokenRepo.findOneByToken(token);
 
 		this.checkExpired(shareToken);
@@ -51,7 +51,9 @@ export class ShareTokenService {
 		return shareToken;
 	}
 
-	async lookupTokenWithParentName(token: ShareTokenString): Promise<{ shareToken: ShareTokenDO; parentName: string }> {
+	public async lookupTokenWithParentName(
+		token: ShareTokenString
+	): Promise<{ shareToken: ShareTokenDO; parentName: string }> {
 		const shareToken = await this.lookupToken(token);
 
 		let parentName = '';
@@ -78,7 +80,7 @@ export class ShareTokenService {
 		return { shareToken, parentName };
 	}
 
-	private checkExpired(shareToken: ShareTokenDO) {
+	private checkExpired(shareToken: ShareTokenDO): void {
 		if (shareToken.expiresAt != null && shareToken.expiresAt < new Date(Date.now())) {
 			throw new Error('Share token expired');
 		}
