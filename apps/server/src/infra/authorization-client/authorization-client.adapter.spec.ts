@@ -1,3 +1,4 @@
+import { AxiosErrorLoggable } from '@core/error/loggable';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -13,6 +14,14 @@ import {
 } from './authorization-api-client';
 import { AuthorizationClientAdapter } from './authorization-client.adapter';
 import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableException } from './error';
+
+jest.mock('@core/error/loggable');
+jest.mock('axios', (): unknown => {
+	return {
+		...jest.requireActual('axios'),
+		isAxiosError: jest.fn(),
+	};
+});
 
 const jwtToken = 'someJwtToken';
 const requiredPermissions: Array<AuthorizationContextParamsRequiredPermissions> = [
@@ -297,6 +306,38 @@ describe(AuthorizationClientAdapter.name, () => {
 				await expect(
 					service.hasPermissionsByReference(params.referenceType, params.referenceId, params.context)
 				).rejects.toThrowError(expectedError);
+			});
+		});
+
+		describe('when isAxiosError returns true', () => {
+			const setup = () => {
+				const params = {
+					context: {
+						action: AuthorizationContextParamsAction.READ,
+						requiredPermissions,
+					},
+					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+					referenceId: 'someReferenceId',
+				};
+
+				const axiosError = new Error('axios error');
+				// eslint-disable-next-line @typescript-eslint/no-var-requires
+				const spyIsAxiosError = jest.spyOn(require('axios'), 'isAxiosError').mockReturnValue(true);
+
+				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(axiosError);
+
+				return { params, axiosError, spyIsAxiosError };
+			};
+
+			it('should wrap the error with AxiosErrorLoggable and throw AuthorizationErrorLoggableException', async () => {
+				const { params, axiosError, spyIsAxiosError } = setup();
+
+				await expect(
+					service.hasPermissionsByReference(params.referenceType, params.referenceId, params.context)
+				).rejects.toThrow(AuthorizationErrorLoggableException);
+
+				expect(spyIsAxiosError).toHaveBeenCalledWith(axiosError);
+				expect(AxiosErrorLoggable).toHaveBeenCalledWith(axiosError, 'AUTHORIZATION_BY_REFERENCE_FAILED');
 			});
 		});
 	});

@@ -1,7 +1,8 @@
+import { AxiosErrorLoggable } from '@core/error/loggable';
 import { Inject, Injectable } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { JwtExtractor } from '@shared/common/utils';
-import { RawAxiosRequestConfig } from 'axios';
+import { isAxiosError, RawAxiosRequestConfig } from 'axios';
 import { Request } from 'express';
 import {
 	AuthorizationApi,
@@ -48,13 +49,16 @@ export class AuthorizationClientAdapter {
 
 			return hasPermission;
 		} catch (error) {
+			if (isAxiosError(error)) {
+				error = new AxiosErrorLoggable(error, 'AUTHORIZATION_BY_REFERENCE_FAILED');
+			}
 			throw new AuthorizationErrorLoggableException(error, params);
 		}
 	}
 
-	private createOptionParams(): RawAxiosRequestConfig<any> {
+	private createOptionParams(): RawAxiosRequestConfig<unknown> {
 		const jwt = this.getJwt();
-		const options: RawAxiosRequestConfig<any> = { headers: { authorization: `Bearer ${jwt}` } };
+		const options: RawAxiosRequestConfig<unknown> = { headers: { authorization: `Bearer ${jwt}` } };
 
 		return options;
 	}
