@@ -828,14 +828,20 @@ describe(BoardNodeCopyService.name, () => {
 				};
 			};
 
-			it('should return not doing status', async () => {
+			it('should copy the h5p element with no content id', async () => {
 				const { copyContext, h5pElement } = setup();
 
 				const result = await service.copyH5pElement(h5pElement, copyContext);
 
 				expect(result).toEqual<CopyStatus>({
+					copyEntity: h5pElementFactory.build({
+						...h5pElement.getProps(),
+						contentId: undefined,
+						id: expect.any(String),
+					}),
 					type: CopyElementType.H5P_ELEMENT,
-					status: CopyStatusEnum.NOT_DOING,
+					status: CopyStatusEnum.SUCCESS,
+					elements: [],
 				});
 			});
 		});

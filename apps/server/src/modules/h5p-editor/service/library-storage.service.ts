@@ -71,7 +71,7 @@ export class LibraryStorage implements ILibraryStorage {
 					data: dataStream,
 				})
 			);
-		} catch (error) {
+		} catch {
 			throw new H5pError(
 				`mongo-s3-library-storage:s3-upload-error`,
 				{ ubername: LibraryName.toUberName(libraryName), filename },
@@ -159,7 +159,7 @@ export class LibraryStorage implements ILibraryStorage {
 		try {
 			await this.s3Client.head(this.getS3Key(libraryName, filename));
 			return true;
-		} catch (error) {
+		} catch {
 			return false;
 		}
 	}

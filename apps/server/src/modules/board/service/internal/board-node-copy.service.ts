@@ -469,33 +469,10 @@ export class BoardNodeCopyService {
 	}
 
 	public async copyH5pElement(original: H5pElement, context: CopyContext): Promise<CopyStatus> {
-		if (!original.contentId) {
-			const failedResult: CopyStatus = {
-				// TODO just copy empty h5p
-				type: CopyElementType.H5P_ELEMENT,
-				status: CopyStatusEnum.NOT_DOING,
-			};
-
-			return failedResult;
-		}
-
-		const copiedContentId = new ObjectId().toHexString();
-
 		const copy = new H5pElement({
 			...original.getProps(),
 			...this.buildSpecificProps([]),
-			contentId: copiedContentId,
 		});
-
-		const copyParams: CopyContentParams = {
-			copiedContentId,
-			sourceContentId: original.contentId,
-			userId: context.userId,
-			schoolId: context.targetSchoolId,
-			parentType: H5PContentParentType.BoardElement,
-			parentId: copy.id,
-		};
-		await this.h5pEditorProducer.copyContent(copyParams);
 
 		const result: CopyStatus = {
 			copyEntity: copy,
@@ -503,6 +480,22 @@ export class BoardNodeCopyService {
 			status: CopyStatusEnum.SUCCESS,
 			elements: [],
 		};
+
+		if (!original.contentId) {
+			return result;
+		}
+
+		copy.contentId = new ObjectId().toHexString();
+
+		const copyParams: CopyContentParams = {
+			copiedContentId: copy.contentId,
+			sourceContentId: original.contentId,
+			userId: context.userId,
+			schoolId: context.targetSchoolId,
+			parentType: H5PContentParentType.BoardElement,
+			parentId: copy.id,
+		};
+		await this.h5pEditorProducer.copyContent(copyParams);
 
 		return result;
 	}
