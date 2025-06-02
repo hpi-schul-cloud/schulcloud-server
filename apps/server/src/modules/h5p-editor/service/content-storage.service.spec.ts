@@ -1,6 +1,7 @@
 import { HeadObjectCommandOutput } from '@aws-sdk/client-s3';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyFiles, S3ClientAdapter } from '@infra/s3-client';
+import { s3ObjectKeysRecursiveFactory } from '@infra/s3-client/testing';
 import { IContentMetadata, ILibraryName, IUser, LibraryName } from '@lumieducation/h5p-server';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
@@ -8,13 +9,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IEntity } from '@shared/domain/interface';
 import { Readable } from 'stream';
 import { GetH5PFileResponse } from '../controller/dto';
-import { H5PContent, H5PContentProperties } from '../entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
-import { H5PContentRepo } from '../repo';
+import { H5PContent, H5PContentProperties, H5PContentRepo } from '../repo';
+import { h5pContentFactory } from '../testing';
 import { H5PContentParentType, H5PContentParentParams, LumiUserWithContentData } from '../types';
 import { ContentStorage } from './content-storage.service';
-import { s3ObjectKeysRecursiveFactory } from '@infra/s3-client/testing';
-import { h5pContentFactory } from '@modules/h5p-editor/testing';
 
 const helpers = {
 	buildMetadata(

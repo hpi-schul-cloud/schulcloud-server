@@ -1,8 +1,6 @@
 import { CopyContentParams } from '@infra/rabbitmq';
 import { Injectable } from '@nestjs/common';
-// TODO dep inversion for repo
-import { H5PContentRepo } from '../repo';
-import { H5PContent } from '../entity';
+import { H5PContent, H5PContentRepo } from '../repo';
 import { ContentStorage } from './content-storage.service';
 
 @Injectable()

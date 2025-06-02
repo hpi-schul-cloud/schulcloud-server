@@ -1,12 +1,13 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { ContentMetadata, H5PContent, H5PContentProperties } from '../entity';
+import { ContentMetadata, H5PContent, H5PContentProperties } from '../repo';
 import { H5PContentParentType } from '../types';
 
 class H5PContentFactory extends BaseFactory<H5PContent, H5PContentProperties> {}
 
 export const h5pContentFactory = H5PContentFactory.define(H5PContent, ({ sequence }) => {
 	const content: H5PContentProperties = {
+		id: new ObjectId().toHexString(),
 		parentType: H5PContentParentType.Lesson,
 		parentId: new ObjectId().toHexString(),
 		creatorId: new ObjectId().toHexString(),

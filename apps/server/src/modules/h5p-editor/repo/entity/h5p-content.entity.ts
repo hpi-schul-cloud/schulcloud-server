@@ -5,8 +5,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { isMongoId } from 'class-validator';
-import { H5pEditorContentInvalidIdLoggableException } from '../loggable';
-import { H5PContentParentType } from '../types';
+import { H5pEditorContentInvalidIdLoggableException } from '../../loggable';
+import { H5PContentParentType } from '../../types';
 
 @Embeddable()
 export class ContentMetadata implements IContentMetadata {

@@ -15,9 +15,8 @@ import mime from 'mime';
 import path from 'node:path/posix';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto';
-import { InstalledLibrary } from '../entity';
 import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
-import { LibraryRepo } from '../repo';
+import { InstalledLibrary, LibraryRepo } from '../repo';
 
 @Injectable()
 export class LibraryStorage implements ILibraryStorage {
