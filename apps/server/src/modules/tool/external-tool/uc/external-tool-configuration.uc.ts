@@ -174,7 +174,9 @@ export class ExternalToolConfigurationUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.CONTEXT_TOOL_ADMIN]);
 
-		const externalTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({ isPreferred: true });
+		const externalTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({
+			isPreferred: true,
+		});
 
 		const schoolExternalTools: SchoolExternalTool[] = (
 			await Promise.all(
