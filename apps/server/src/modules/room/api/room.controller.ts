@@ -1,5 +1,6 @@
 import { ErrorResponse } from '@core/error/dto';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import {
 	Body,
 	Controller,
@@ -17,6 +18,7 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
 import { IFindOptions } from '@shared/domain/interface';
 import { Room } from '../domain';
@@ -37,6 +39,7 @@ import { RoomMemberListResponse } from './dto/response/room-member-list.response
 import { RoomRoleResponse } from './dto/response/room-role.response';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 import { RoomMapper } from './mapper/room.mapper';
+import { RoomCopyUc } from './room-copy.uc';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
 import { RoomUc } from './room.uc';
 
@@ -44,7 +47,11 @@ import { RoomUc } from './room.uc';
 @JwtAuthentication()
 @Controller('rooms')
 export class RoomController {
-	constructor(private readonly roomUc: RoomUc, private readonly roomInvitationLinkUc: RoomInvitationLinkUc) {}
+	constructor(
+		private readonly roomUc: RoomUc,
+		private readonly roomCopyUc: RoomCopyUc,
+		private readonly roomInvitationLinkUc: RoomInvitationLinkUc
+	) {}
 
 	@Get()
 	@ApiOperation({ summary: 'Get a list of rooms.' })
@@ -277,5 +284,31 @@ export class RoomController {
 		const response = new RoomMemberListResponse(members);
 
 		return Promise.resolve(response);
+	}
+
+	@Post(':roomId/copy')
+	@ApiOperation({
+		summary: 'Creates a copy of the given room. Restricted to Room Owner and Admin',
+	})
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Returns the copy status of a duplicated room',
+		type: CopyApiResponse,
+	})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	public async copyRoom(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams
+	): Promise<CopyApiResponse> {
+		const copyStatus = await this.roomCopyUc.copyRoom(currentUser.userId, urlParams.roomId);
+
+		const copyResponse = CopyMapper.mapToResponse(copyStatus);
+
+		return copyResponse;
 	}
 }

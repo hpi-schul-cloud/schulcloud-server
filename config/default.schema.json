@@ -111,7 +111,7 @@
 				"MODE": {
 					"type": "string",
 					"default": "cluster",
-					"enum": ["cluster", "single" ,"in-memory"],
+					"enum": ["cluster", "single", "in-memory"],
 					"description": "Define valkey mode."
 				},
 				"URI": {
@@ -306,7 +306,7 @@
 				"EXCHANGE": {
 					"type": "string",
 					"default": "files-storage",
-					"description": "rabbitmq exchange name for antivirus"
+					"description": "rabbitmq exchange name for files storage"
 				},
 				"USE_STREAM_TO_ANTIVIRUS": {
 					"type": "boolean",
@@ -410,6 +410,11 @@
 					"default": "",
 					"description": "Library Bucket name"
 				},
+				"EXCHANGE": {
+					"type": "string",
+					"default": "h5p-editor",
+					"description": "rabbitmq exchange name for h5p editor"
+				},
 				"INCOMING_REQUEST_TIMEOUT": {
 					"type": "integer",
 					"minimum": 0,
@@ -456,11 +461,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Defines if backend for the FWU content in the Learnstore is enabled."
-		},
-		"FEATURE_H5P_EDITOR_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Defines if backend for the H5P editor is enabled."
 		},
 		"WOPI_MAX_FILE_SIZE": {
 			"type": "integer",
@@ -1633,9 +1633,9 @@
 			"default": "true",
 			"description": "Enables the rooms feature"
 		},
-		"FEATURE_ROOMS_DUPLICATION_ENABLED": {
+		"FEATURE_ROOM_COPY_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables the rooms feature to duplicate rooms"
 		},
 		"FEATURE_ROOM_INVITATION_LINKS_ENABLED": {
@@ -1647,6 +1647,11 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the ability to change permissions of room members"
+		},
+		"FEATURE_ROOM_ADD_STUDENTS_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables adding students to a room"
 		},
 		"FEATURE_ROOM_MEMBERS_TABS_ENABLED": {
 			"type": "boolean",

@@ -30,7 +30,7 @@ export interface GetH5PFileResponse {
 	name: string;
 }
 
-interface H5PContentResponse {
+export interface H5PContentResponse {
 	h5p: IContentMetadata;
 	library: string;
 	params: {

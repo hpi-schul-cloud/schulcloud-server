@@ -393,7 +393,7 @@ export class DatabaseManagementUc {
 		await collection.createIndex(
 			{
 				'medium.mediumId': 1,
-				'medium.mediumSourceId': 1,
+				'medium.mediaSourceId': 1,
 			},
 			{
 				name: indexName,

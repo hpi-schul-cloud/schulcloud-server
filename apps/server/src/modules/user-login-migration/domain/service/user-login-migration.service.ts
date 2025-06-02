@@ -115,7 +115,7 @@ export class UserLoginMigrationService {
 
 	private async createNewMigration(school: LegacySchoolDo): Promise<UserLoginMigrationDO> {
 		const oauthSystems = await this.systemService.find({ types: [SystemType.OAUTH] });
-		const moinSchuleSystem = oauthSystems.find((system: System) => system.alias === 'SANIS');
+		const moinSchuleSystem = oauthSystems.find((system: System) => system.alias === 'moin.schule');
 
 		if (!moinSchuleSystem) {
 			throw new MoinSchuleSystemNotFoundLoggableException();

@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const { ObjectId } = require('mongoose').Types;
 
-const { Forbidden } = require('../../../src/errors');
+const { Forbidden, Unprocessable } = require('../../../src/errors');
 
 const appPromise = require('../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
@@ -12,9 +12,15 @@ const { generateRequestParamsFromUser } = require('../helpers/services/login')(a
 const { create: createUser } = require('../helpers/services/users')(appPromise());
 const { create: createSystem } = require('../helpers/services/testSystem')(appPromise());
 const { create: createYear } = require('../helpers/services/years');
+const { yearModel: Year } = require('../../../src/services/school/model');
+const yearLogic = require('../../../src/services/school/logic/year');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
+
+const createName = (year) => {
+	return `${year}/${String(year + 1).substring(2, 4)}`;
+};
 
 describe('school maintenance mode', () => {
 	let app;
@@ -84,8 +90,18 @@ describe('school maintenance mode', () => {
 
 		describe('for LDAP schools', () => {
 			it('should work as expected', async () => {
-				const currentYear = await createYear();
-				const nextYear = await createYear();
+				const currentYearName = createName(new Date().getFullYear() - 1);
+				const currentYear = await createYear({
+					name: currentYearName,
+					startDate: yearLogic.getDefaultStartDate(currentYearName),
+					endDate: yearLogic.getDefaultEndDate(currentYearName),
+				});
+				const nextYearName = createName(new Date().getFullYear());
+				const nextYear = await createYear({
+					name: nextYearName,
+					startDate: yearLogic.getDefaultStartDate(nextYearName),
+					endDate: yearLogic.getDefaultEndDate(nextYearName),
+				});
 				maintenanceService.years = [currentYear, nextYear];
 				const ldapSystem = await createSystem({
 					type: 'ldap',
@@ -111,8 +127,18 @@ describe('school maintenance mode', () => {
 	describe('transfer route', () => {
 		describe('for non-LDAP schools', () => {
 			it('should directly migrate the school to the next school year', async () => {
-				const currentYear = await createYear();
-				const nextYear = await createYear();
+				const currentYearName = createName(new Date().getFullYear() - 1);
+				const currentYear = await createYear({
+					name: currentYearName,
+					startDate: yearLogic.getDefaultStartDate(currentYearName),
+					endDate: yearLogic.getDefaultEndDate(currentYearName),
+				});
+				const nextYearName = createName(new Date().getFullYear());
+				const nextYear = await createYear({
+					name: nextYearName,
+					startDate: yearLogic.getDefaultStartDate(nextYearName),
+					endDate: yearLogic.getDefaultEndDate(nextYearName),
+				});
 				maintenanceService.years = [currentYear, nextYear];
 				const school = await createSchool({ currentYear });
 				const params = {
@@ -122,14 +148,23 @@ describe('school maintenance mode', () => {
 				const result = await maintenanceService.create({ maintenance: true }, params);
 				expect(result).to.not.equal(undefined);
 				expect(result.currentYear._id.toString()).to.equal(nextYear._id.toString());
-				expect(result.nextYear).to.equal(undefined);
 				expect(result.schoolUsesLdap).to.equal(false);
 				expect(result.maintenance.active).to.equal(false);
 			});
 
 			it('should allow status requests for all users', async () => {
-				const currentYear = await createYear();
-				const nextYear = await createYear();
+				const currentYearName = createName(new Date().getFullYear() - 1);
+				const currentYear = await createYear({
+					name: currentYearName,
+					startDate: yearLogic.getDefaultStartDate(currentYearName),
+					endDate: yearLogic.getDefaultEndDate(currentYearName),
+				});
+				const nextYearName = createName(new Date().getFullYear());
+				const nextYear = await createYear({
+					name: nextYearName,
+					startDate: yearLogic.getDefaultStartDate(nextYearName),
+					endDate: yearLogic.getDefaultEndDate(nextYearName),
+				});
 				maintenanceService.years = [currentYear, nextYear];
 				const school = await createSchool({ currentYear });
 				const user = await createUser({ schoolId: school._id, roles: 'teacher' });
@@ -146,8 +181,18 @@ describe('school maintenance mode', () => {
 			});
 
 			it('should not allow status requests for other schools', async () => {
-				const currentYear = await createYear();
-				const nextYear = await createYear();
+				const currentYearName = createName(new Date().getFullYear() - 1);
+				const currentYear = await createYear({
+					name: currentYearName,
+					startDate: yearLogic.getDefaultStartDate(currentYearName),
+					endDate: yearLogic.getDefaultEndDate(currentYearName),
+				});
+				const nextYearName = createName(new Date().getFullYear());
+				const nextYear = await createYear({
+					name: nextYearName,
+					startDate: yearLogic.getDefaultStartDate(nextYearName),
+					endDate: yearLogic.getDefaultEndDate(nextYearName),
+				});
 				maintenanceService.years = [currentYear, nextYear];
 				const school = await createSchool({ currentYear });
 				const user = await createUser({ schoolId: new ObjectId(), roles: 'teacher' });
@@ -161,8 +206,18 @@ describe('school maintenance mode', () => {
 
 		describe('for LDAP schools', () => {
 			it('should enable administrators to start maintenance mode', async () => {
-				const currentYear = await createYear();
-				const nextYear = await createYear();
+				const currentYearName = createName(new Date().getFullYear() - 1);
+				const currentYear = await createYear({
+					name: currentYearName,
+					startDate: yearLogic.getDefaultStartDate(currentYearName),
+					endDate: yearLogic.getDefaultEndDate(currentYearName),
+				});
+				const nextYearName = createName(new Date().getFullYear());
+				const nextYear = await createYear({
+					name: nextYearName,
+					startDate: yearLogic.getDefaultStartDate(nextYearName),
+					endDate: yearLogic.getDefaultEndDate(nextYearName),
+				});
 				maintenanceService.years = [currentYear, nextYear];
 				const ldapSystem = await createSystem({
 					type: 'ldap',
@@ -184,8 +239,18 @@ describe('school maintenance mode', () => {
 			});
 
 			it('should enable administrators to finish maintenance mode', async () => {
-				const currentYear = await createYear();
-				const nextYear = await createYear();
+				const currentYearName = createName(new Date().getFullYear() - 1);
+				const currentYear = await createYear({
+					name: currentYearName,
+					startDate: yearLogic.getDefaultStartDate(currentYearName),
+					endDate: yearLogic.getDefaultEndDate(currentYearName),
+				});
+				const nextYearName = createName(new Date().getFullYear());
+				const nextYear = await createYear({
+					name: nextYearName,
+					startDate: yearLogic.getDefaultStartDate(nextYearName),
+					endDate: yearLogic.getDefaultEndDate(nextYearName),
+				});
 				maintenanceService.years = [currentYear, nextYear];
 				const ldapSystem = await createSystem({
 					type: 'ldap',
@@ -205,14 +270,23 @@ describe('school maintenance mode', () => {
 				const result = await maintenanceService.create({ maintenance: false }, params);
 				expect(result).to.not.equal(undefined);
 				expect(result.currentYear._id.toString()).to.equal(nextYear._id.toString());
-				expect(result.nextYear).to.equal(undefined);
 				expect(result.schoolUsesLdap).to.equal(true);
 				expect(result.maintenance.active).to.equal(false);
 			});
 
 			it('should only allow administrators to start the new school year', async () => {
-				const currentYear = await createYear();
-				const nextYear = await createYear();
+				const currentYearName = createName(new Date().getFullYear() - 1);
+				const currentYear = await createYear({
+					name: currentYearName,
+					startDate: yearLogic.getDefaultStartDate(currentYearName),
+					endDate: yearLogic.getDefaultEndDate(currentYearName),
+				});
+				const nextYearName = createName(new Date().getFullYear());
+				const nextYear = await createYear({
+					name: nextYearName,
+					startDate: yearLogic.getDefaultStartDate(nextYearName),
+					endDate: yearLogic.getDefaultEndDate(nextYearName),
+				});
 				maintenanceService.years = [currentYear, nextYear];
 				const school = await createSchool({ currentYear });
 
@@ -230,6 +304,71 @@ describe('school maintenance mode', () => {
 
 				await expect(maintenanceService.create({ maintenance: true }, adminParams)).to.eventually.be.fulfilled;
 			}).timeout(5000);
+
+			it('should reject finishing maintenance mode during user migration', async () => {
+				const currentYearName = createName(new Date().getFullYear() - 1);
+				const currentYear = await createYear({
+					name: currentYearName,
+					startDate: yearLogic.getDefaultStartDate(currentYearName),
+					endDate: yearLogic.getDefaultEndDate(currentYearName),
+				});
+				const nextYearName = createName(new Date().getFullYear());
+				const nextYear = await createYear({
+					name: nextYearName,
+					startDate: yearLogic.getDefaultStartDate(nextYearName),
+					endDate: yearLogic.getDefaultEndDate(nextYearName),
+				});
+				maintenanceService.years = [currentYear, nextYear];
+				const ldapSystem = await createSystem({
+					type: 'ldap',
+					ldapConfig: {
+						active: true,
+					},
+				});
+				const school = await createSchool({
+					currentYear,
+					systems: [ldapSystem],
+					inMaintenanceSince: new Date(),
+					inUserMigration: true,
+				});
+				const params = {
+					route: { schoolId: school._id.toString() },
+				};
+
+				await expect(maintenanceService.create({ maintenance: true }, params)).to.be.rejectedWith(Unprocessable);
+			});
+
+			it('should reject finishing maintenance mode when already in the next year', async () => {
+				const currentYearName = createName(new Date().getFullYear());
+				const currentYear = await createYear({
+					name: currentYearName,
+					startDate: yearLogic.getDefaultStartDate(currentYearName),
+					endDate: yearLogic.getDefaultEndDate(currentYearName),
+				});
+				const nextYearName = createName(new Date().getFullYear() + 1);
+				const nextYear = await createYear({
+					name: nextYearName,
+					startDate: yearLogic.getDefaultStartDate(nextYearName),
+					endDate: yearLogic.getDefaultEndDate(nextYearName),
+				});
+				maintenanceService.years = [currentYear, nextYear];
+				const ldapSystem = await createSystem({
+					type: 'ldap',
+					ldapConfig: {
+						active: true,
+					},
+				});
+				const school = await createSchool({
+					currentYear,
+					systems: [ldapSystem],
+					inMaintenanceSince: new Date(),
+				});
+				const params = {
+					route: { schoolId: school._id.toString() },
+				};
+
+				await expect(maintenanceService.create({ maintenance: true }, params)).to.be.rejectedWith(Unprocessable);
+			});
 		});
 	});
 

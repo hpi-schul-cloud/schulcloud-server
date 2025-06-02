@@ -1,4 +1,5 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { ClassService } from '@modules/class';
 import { RoleName } from '@modules/role';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
@@ -8,6 +9,13 @@ import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { School, SchoolQuery, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';
 import {
+	SchoolAlreadyInMaintenanceLoggableException,
+	SchoolAlreadyInNextYearLoggableException,
+	SchoolInUserMigrationLoggableException,
+	SchoolNotInMaintenanceLoggableException,
+} from '../domain/loggable';
+import {
+	MaintenanceResponse,
 	SchoolExistsResponse,
 	SchoolForExternalInviteResponse,
 	SchoolForLdapLoginResponse,
@@ -16,13 +24,21 @@ import {
 	SchoolUpdateBodyParams,
 	SchoolUserListResponse,
 } from './dto';
-import { SchoolResponseMapper, SchoolUserResponseMapper, SystemResponseMapper } from './mapper';
-import { YearsResponseMapper } from './mapper/years.response.mapper';
+import {
+	MaintenanceResponseMapper,
+	SchoolResponseMapper,
+	SchoolUserResponseMapper,
+	SystemResponseMapper,
+	YearsResponseMapper,
+} from './mapper';
+import { MoinSchuleClassService } from '@modules/class-moin-schule/moin-schule-class.service';
 
 @Injectable()
 export class SchoolUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
+		private readonly classService: ClassService,
+		private readonly moinSchuleClassService: MoinSchuleClassService,
 		private readonly schoolService: SchoolService,
 		private readonly schoolYearService: SchoolYearService,
 		private readonly userService: UserService
@@ -141,7 +157,7 @@ export class SchoolUc {
 
 		this.checkHasPermissionToAccessTeachers(user);
 
-		const isUserOfSchool = this.isSchoolInternalUser(user, school, [Permission.TEACHER_LIST]);
+		const isUserOfSchool = this.isSchoolInternalUserWithPermission(user, school, [Permission.TEACHER_LIST]);
 
 		let result: Page<UserDo>;
 		if (isUserOfSchool) {
@@ -155,35 +171,186 @@ export class SchoolUc {
 	}
 
 	public async getSchoolStudents(schoolId: EntityId, userId: EntityId): Promise<SchoolUserListResponse> {
-		const [school, user] = await Promise.all([
-			this.schoolService.getSchoolById(schoolId),
-			this.authorizationService.getUserWithPermissions(userId),
-		]);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const isUserOfSchool = this.isUserOfSchool(user, schoolId);
+		const isAllowedToListStudents = this.hasPermissionToListStudents(user);
 
-		this.checkHasPermissionToAccessStudents(user);
-
-		const isUserOfSchool = this.isSchoolInternalUser(user, school, [Permission.STUDENT_LIST]);
-
-		let result: Page<UserDo> = { data: [], total: 0 };
-		if (isUserOfSchool) {
-			result = await this.userService.findBySchoolRole(schoolId, RoleName.STUDENT);
+		let result: Page<UserDo>;
+		if (isUserOfSchool && isAllowedToListStudents) {
+			result = await this.getAllStudentsOfSchool(schoolId);
+		} else if (isUserOfSchool) {
+			result = await this.getAllStudentsFromUsersClasses(userId, schoolId);
+		} else {
+			result = { data: [], total: 0 };
 		}
 
 		const responseDto = SchoolUserResponseMapper.mapToListResponse(result);
 		return responseDto;
 	}
 
-	private checkHasPermissionToAccessTeachers(user: User) {
+	private async getAllStudentsFromUsersClasses(userId: EntityId, schoolId: EntityId): Promise<Page<UserDo>> {
+		const [fromclasses, fromMoinSchuleClasses] = await Promise.all([
+			this.getStudentIdsOfUsersClasses(userId, schoolId),
+			this.getStudentIdsOfUsersMoinSchuleClasses(userId),
+		]);
+		const validIds = [...new Set([...fromclasses, ...fromMoinSchuleClasses])];
+
+		const students = await this.getAllStudentsOfSchool(schoolId);
+		const filtered = students.data.filter((student) => student.id && validIds.includes(student.id));
+
+		const result = { data: filtered, total: filtered.length };
+		return result;
+	}
+
+	private async getAllStudentsOfSchool(schoolId: EntityId): Promise<Page<UserDo>> {
+		const result = await this.userService.findBySchoolRole(schoolId, RoleName.STUDENT);
+		return result;
+	}
+
+	private checkHasPermissionToAccessTeachers(user: User): void {
 		this.authorizationService.checkAllPermissions(user, [Permission.TEACHER_LIST]);
 	}
 
-	private checkHasPermissionToAccessStudents(user: User) {
-		this.authorizationService.checkAllPermissions(user, [Permission.STUDENT_LIST]);
+	private isUserOfSchool(user: User, schoolId: EntityId): boolean {
+		const isUserOfSchool = user.school.id === schoolId;
+		return isUserOfSchool;
 	}
 
-	private isSchoolInternalUser(user: User, school: School, permissions: Permission[]): boolean {
+	private hasPermissionToListStudents(user: User): boolean {
+		const hasPermission = this.authorizationService.hasAllPermissions(user, [Permission.STUDENT_LIST]);
+		return hasPermission;
+	}
+
+	private isSchoolInternalUserWithPermission(user: User, school: School, permissions: Permission[]): boolean {
 		const authContext = AuthorizationContextBuilder.read(permissions);
 		const isUserOfSchool = this.authorizationService.hasPermission(user, school, authContext);
 		return isUserOfSchool;
+	}
+
+	private async getStudentIdsOfUsersClasses(userId: EntityId, schoolId: EntityId): Promise<EntityId[]> {
+		const classes = await this.classService.findAllByUserId(userId);
+		const currentYear = await this.schoolService.getCurrentYear(schoolId);
+
+		const currentClasses = classes.filter((clazz) => clazz.year === currentYear?.id);
+
+		const attendeeIds = currentClasses.flatMap((clazz) => clazz.userIds);
+
+		return attendeeIds;
+	}
+
+	private async getStudentIdsOfUsersMoinSchuleClasses(userId: EntityId): Promise<EntityId[]> {
+		const classes = await this.moinSchuleClassService.findByUserId(userId);
+
+		const currentClasses = classes.filter((clazz) => clazz.isCurrentlyInValidPeriod());
+
+		const attendeeIds = currentClasses.flatMap((clazz) => clazz.users.map((user) => user.userId));
+
+		return attendeeIds;
+	}
+
+	public async getMaintenanceStatus(schoolId: EntityId, userId: EntityId): Promise<MaintenanceResponse> {
+		const [school, user, schoolYears, schoolUsesLdap] = await Promise.all([
+			this.schoolService.getSchoolById(schoolId),
+			this.authorizationService.getUserWithPermissions(userId),
+			this.schoolYearService.getAllSchoolYears(),
+			this.schoolService.hasLdapSystem(schoolId),
+		]);
+
+		const authContext = AuthorizationContextBuilder.read([]);
+		this.authorizationService.checkPermission(user, school, authContext);
+
+		const maintenanceStatus: MaintenanceResponse = this.mapToMaintenanceResponseDto(
+			school,
+			schoolYears,
+			schoolUsesLdap
+		);
+
+		return maintenanceStatus;
+	}
+
+	public async setMaintenanceStatus(
+		schoolId: EntityId,
+		userId: EntityId,
+		maintenance: boolean
+	): Promise<MaintenanceResponse> {
+		const [school, user, schoolYears, schoolUsesLdap] = await Promise.all([
+			this.schoolService.getSchoolById(schoolId),
+			this.authorizationService.getUserWithPermissions(userId),
+			this.schoolYearService.getAllSchoolYears(),
+			this.schoolService.hasLdapSystem(schoolId),
+		]);
+
+		const authContext = AuthorizationContextBuilder.write([Permission.SCHOOL_EDIT]);
+		this.authorizationService.checkPermission(user, school, authContext);
+
+		if (school.inUserMigration) {
+			throw new SchoolInUserMigrationLoggableException(school);
+		}
+
+		if (this.isSchoolAlreadyInNextYear(school)) {
+			throw new SchoolAlreadyInNextYearLoggableException(school);
+		}
+
+		if (maintenance) {
+			if (school.isInMaintenance()) {
+				throw new SchoolAlreadyInMaintenanceLoggableException(school);
+			}
+
+			if (schoolUsesLdap) {
+				school.inMaintenanceSince = new Date();
+			} else {
+				this.bumpYear(school, schoolYears);
+			}
+		} else {
+			if (!school.isInMaintenance()) {
+				throw new SchoolNotInMaintenanceLoggableException(school);
+			}
+
+			this.bumpYear(school, schoolYears);
+		}
+
+		const savedSchool: School = await this.schoolService.save(school);
+
+		const maintenanceStatus: MaintenanceResponse = this.mapToMaintenanceResponseDto(
+			savedSchool,
+			schoolYears,
+			schoolUsesLdap
+		);
+
+		return maintenanceStatus;
+	}
+
+	private isSchoolAlreadyInNextYear(school: School): boolean {
+		return !!school.currentYear && new Date().getFullYear() <= school.currentYear.startDate.getFullYear();
+	}
+
+	private bumpYear(school: School, schoolYears: SchoolYear[]): void {
+		const { nextYear } = SchoolYearHelper.computeActiveAndLastAndNextYear(school, schoolYears);
+
+		school.currentYear = nextYear;
+		school.inMaintenanceSince = undefined;
+	}
+
+	private mapToMaintenanceResponseDto(
+		school: School,
+		schoolYears: SchoolYear[],
+		schoolUsesLdap: boolean
+	): MaintenanceResponse {
+		const { activeYear, nextYear } = SchoolYearHelper.computeActiveAndLastAndNextYear(school, schoolYears);
+
+		const response: MaintenanceResponse = MaintenanceResponseMapper.mapToResponse(
+			school,
+			schoolUsesLdap,
+			activeYear,
+			nextYear
+		);
+
+		if (school.inUserMigration) {
+			response.schoolUsesLdap = false;
+			response.maintenance.active = false;
+			response.maintenance.startDate = undefined;
+		}
+
+		return response;
 	}
 }
