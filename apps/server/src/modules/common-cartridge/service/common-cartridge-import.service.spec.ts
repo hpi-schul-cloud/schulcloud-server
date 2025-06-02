@@ -222,7 +222,8 @@ describe(CommonCartridgeImportService.name, () => {
 
 		describe('when no title is given', () => {
 			const setup = () => {
-				commonCartridgeFileParser.getTitle.mockReturnValueOnce(undefined)
+				commonCartridgeFileParser.getTitle.mockReturnValueOnce(undefined);
+
 				const { file, currentUser } = setupBase();
 
 				return { file, currentUser };
