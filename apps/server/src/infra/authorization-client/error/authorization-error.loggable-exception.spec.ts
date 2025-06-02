@@ -30,7 +30,7 @@ describe('AuthorizationErrorLoggableException', () => {
 				const result = exception.getLogMessage();
 
 				expect(result).toEqual({
-					type: 'INTERNAL_SERVER_ERROR',
+					type: AuthorizationErrorLoggableException.name,
 					error,
 					stack: expect.any(String),
 					data: {
@@ -72,7 +72,7 @@ describe('AuthorizationErrorLoggableException', () => {
 				const result = exception.getLogMessage();
 
 				expect(result).toEqual({
-					type: 'INTERNAL_SERVER_ERROR',
+					type: AuthorizationErrorLoggableException.name,
 					error: new Error(JSON.stringify(error)),
 					stack: expect.any(String),
 					data: {
