@@ -4,6 +4,7 @@ import AdmZip from 'adm-zip';
 import { load } from 'cheerio';
 import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
 import {
+	CommonCartridgeFileResourceProps,
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceProps,
 	CommonCartridgeWebContentResourceProps,
@@ -28,7 +29,7 @@ export class CommonCartridgeResourceFactory {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
 				return this.createWebLinkResource(content, title);
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
-				return this.createWebContentResource(content, inputFormat);
+				return this.buildWebContentResourceFromPath(content, organization.resourcePath, inputFormat, title);
 			default:
 				return undefined;
 		}
@@ -56,12 +57,49 @@ export class CommonCartridgeResourceFactory {
 		};
 	}
 
+	private buildWebContentResourceFromPath(
+		content: string,
+		resourcePath: string,
+		inputFormat: InputFormat,
+		title: string
+	): CommonCartridgeResourceProps | undefined {
+		if (this.isFile(resourcePath)) {
+			return this.createFileContentResource(resourcePath, title);
+		} else {
+			return this.createWebContentResource(content, inputFormat);
+		}
+	}
+
+	private isFile(resourcePath: string): boolean {
+		return !resourcePath.endsWith('.html');
+	}
+
+	private createFileContentResource(resourcePath: string, title: string): CommonCartridgeFileResourceProps | undefined {
+		const fileName = resourcePath.split('/').pop() ?? 'unnamed';
+		const zipEntry = this.archive.getEntry(resourcePath);
+		const buffer = zipEntry?.getData();
+
+		if (!(buffer instanceof Buffer) || buffer.length === 0) {
+			return undefined;
+		}
+
+		const file = new File([buffer], fileName, {});
+
+		return {
+			type: CommonCartridgeResourceTypeV1P1.FILE,
+			href: resourcePath,
+			fileName,
+			file,
+			description: title,
+		};
+	}
+
 	private createWebContentResource(
 		content: string,
 		inputFormat: InputFormat
 	): CommonCartridgeWebContentResourceProps | undefined {
 		const document = load(content);
-		const unsanitizedHtml = document('body').html()?.trim() || content;
+		const unsanitizedHtml = document('body').html()?.trim() ?? content;
 		const sanitizedHtml = sanitizeRichText(unsanitizedHtml, inputFormat);
 
 		return {

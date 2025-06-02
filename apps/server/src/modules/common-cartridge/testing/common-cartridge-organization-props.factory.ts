@@ -38,6 +38,10 @@ class CommonCartridgeOrganizationPropsFactory extends Factory<
 	public withWebLink(url: string): this {
 		return this.withResource(url, CommonCartridgeResourceTypeV1P1.WEB_LINK);
 	}
+
+	public withFile(name: string): this {
+		return this.withResource(name, CommonCartridgeResourceTypeV1P1.FILE);
+	}
 }
 
 export const commonCartridgeOrganizationPropsFactory = CommonCartridgeOrganizationPropsFactory.define(
