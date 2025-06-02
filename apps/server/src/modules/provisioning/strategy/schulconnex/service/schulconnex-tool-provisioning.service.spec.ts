@@ -612,7 +612,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				expect(externalToolService.createExternalTool).not.toHaveBeenCalled();
 			});
 
-			it('should save save a school external tool', async () => {
+			it('should not save a school external tool', async () => {
 				const { userId, schoolId, systemId } = setup();
 
 				await service.provisionSchoolExternalTools(userId, schoolId, systemId);

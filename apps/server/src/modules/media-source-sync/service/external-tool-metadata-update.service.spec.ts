@@ -61,6 +61,7 @@ describe(ExternalToolMetadataUpdateService.name, () => {
 					mediumId,
 					modifiedAt: undefined,
 				});
+				const savedExternalToolStatus = ExternalToolMediumStatus.ACTIVE;
 
 				externalToolLogoService.fetchLogo.mockResolvedValueOnce(logoData);
 
@@ -69,6 +70,7 @@ describe(ExternalToolMetadataUpdateService.name, () => {
 					logoData,
 					initialExternalTool,
 					externalTool,
+					savedExternalToolStatus,
 				};
 			};
 
@@ -81,7 +83,7 @@ describe(ExternalToolMetadataUpdateService.name, () => {
 			});
 
 			it('should update the external tool', async () => {
-				const { mediumMetadata, logoData, initialExternalTool, externalTool } = setup();
+				const { mediumMetadata, logoData, initialExternalTool, externalTool, savedExternalToolStatus } = setup();
 
 				await service.updateExternalToolWithMetadata(externalTool, mediumMetadata, MediaSourceDataFormat.VIDIS);
 
@@ -94,7 +96,7 @@ describe(ExternalToolMetadataUpdateService.name, () => {
 						thumbnail: initialExternalTool.thumbnail,
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 						medium: expect.objectContaining<Partial<ExternalToolMedium>>({
-							status: initialExternalTool.medium?.status,
+							status: savedExternalToolStatus,
 							publisher: initialExternalTool.medium?.publisher,
 							metadataModifiedAt: undefined,
 						}),
@@ -171,6 +173,7 @@ describe(ExternalToolMetadataUpdateService.name, () => {
 					mediumId,
 					modifiedAt: new Date(),
 				});
+				const savedExternalToolStatus = ExternalToolMediumStatus.ACTIVE;
 
 				externalToolLogoService.fetchLogo.mockResolvedValueOnce(logoData);
 
@@ -179,6 +182,7 @@ describe(ExternalToolMetadataUpdateService.name, () => {
 					logoData,
 					initialExternalTool,
 					externalTool,
+					savedExternalToolStatus,
 				};
 			};
 
@@ -191,7 +195,7 @@ describe(ExternalToolMetadataUpdateService.name, () => {
 			});
 
 			it('should update the external tool', async () => {
-				const { mediumMetadata, logoData, initialExternalTool, externalTool } = setup();
+				const { mediumMetadata, logoData, initialExternalTool, externalTool, savedExternalToolStatus } = setup();
 
 				await service.updateExternalToolWithMetadata(externalTool, mediumMetadata, MediaSourceDataFormat.BILDUNGSLOGIN);
 
@@ -204,7 +208,7 @@ describe(ExternalToolMetadataUpdateService.name, () => {
 						thumbnail: initialExternalTool.thumbnail,
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 						medium: expect.objectContaining<Partial<ExternalToolMedium>>({
-							status: initialExternalTool.medium?.status,
+							status: savedExternalToolStatus,
 							publisher: mediumMetadata.publisher,
 							metadataModifiedAt: mediumMetadata.modifiedAt,
 						}),

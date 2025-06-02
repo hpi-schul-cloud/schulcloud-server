@@ -1,6 +1,7 @@
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediumMetadataDto } from '@modules/medium-metadata';
 import { ExternalTool, ExternalToolLogoService } from '@modules/tool';
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -36,6 +37,10 @@ export class ExternalToolMetadataUpdateService {
 		externalTool.description = metadata.description;
 		externalTool.logoUrl = metadata.logoUrl;
 		externalTool.logo = logo;
+
+		if (externalTool.medium?.status === ExternalToolMediumStatus.DRAFT) {
+			externalTool.medium.status = ExternalToolMediumStatus.ACTIVE;
+		}
 	}
 
 	private async updateExternalToolWithBiloMetadata(
@@ -52,6 +57,10 @@ export class ExternalToolMetadataUpdateService {
 		if (externalTool.medium) {
 			externalTool.medium.publisher = metadata.publisher;
 			externalTool.medium.metadataModifiedAt = metadata.modifiedAt;
+
+			if (externalTool.medium.status === ExternalToolMediumStatus.DRAFT) {
+				externalTool.medium.status = ExternalToolMediumStatus.ACTIVE;
+			}
 		}
 	}
 }
