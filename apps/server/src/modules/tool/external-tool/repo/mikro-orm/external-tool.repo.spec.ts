@@ -2,7 +2,6 @@ import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExternalToolSearchQuery } from '@modules/tool';
-import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
