@@ -4,12 +4,10 @@ import { RoleDto, RoleName, RoleService, RoomRole } from '@modules/role';
 import { RoomService } from '@modules/room';
 import { UserService } from '@modules/user';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
 import { RoomMembershipAuthorizable, UserWithRoomRoles } from '../do/room-membership-authorizable.do';
 import { RoomMembership } from '../do/room-membership.do';
 import { RoomMembershipRepo } from '../repo/room-membership.repo';
-import { RoomMembershipConfig } from '../room-membership-config';
 
 @Injectable()
 export class RoomMembershipService {
@@ -18,8 +16,7 @@ export class RoomMembershipService {
 		private readonly roomMembershipRepo: RoomMembershipRepo,
 		private readonly roleService: RoleService,
 		private readonly roomService: RoomService,
-		private readonly userService: UserService,
-		private readonly configService: ConfigService<RoomMembershipConfig, true>
+		private readonly userService: UserService
 	) {}
 
 	public async createNewRoomMembership(roomId: EntityId, ownerUserId: EntityId): Promise<RoomMembership> {
@@ -81,9 +78,7 @@ export class RoomMembershipService {
 			throw new Error('Room membership not found');
 		}
 
-		const roleName = this.configService.get('FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED')
-			? RoleName.ROOMVIEWER
-			: RoleName.ROOMADMIN;
+		const roleName = RoleName.ROOMVIEWER;
 
 		const userIdsAndRoles = userIds.map((userId) => {
 			return { userId, roleName };
