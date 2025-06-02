@@ -1,11 +1,11 @@
 import { EntityName, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
-import { ToolConfigType } from '../../../common/enum';
 import { ExternalToolSearchQuery } from '../../../common/interface';
 import { ExternalTool } from '../../domain';
 import { ExternalToolMediumStatus } from '../../enum';
@@ -73,15 +73,6 @@ export class ExternalToolRepo {
 		return null;
 	}
 
-	public async findAllByConfigType(type: ToolConfigType): Promise<ExternalTool[]> {
-		const entities: ExternalToolEntity[] = await this.em.find(this.entityName, { config: { type } });
-		const domainObjects: ExternalTool[] = entities.map((entity: ExternalToolEntity): ExternalTool => {
-			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
-			return domainObject;
-		});
-		return domainObjects;
-	}
-
 	public async findByOAuth2ConfigClientId(clientId: string): Promise<ExternalTool | null> {
 		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, { config: { clientId } });
 		if (entity !== null) {
@@ -118,7 +109,7 @@ export class ExternalToolRepo {
 
 	public async findAllByMediaSource(mediaSourceId: string): Promise<ExternalTool[]> {
 		const entities: ExternalToolEntity[] = await this.em.find(this.entityName, {
-			medium: { mediaSourceId },
+			medium: { mediaSourceId, status: { $ne: ExternalToolMediumStatus.TEMPLATE } },
 		});
 
 		const domainObjects: ExternalTool[] = entities.map((entity: ExternalToolEntity): ExternalTool => {
@@ -140,6 +131,7 @@ export class ExternalToolRepo {
 			.byHidden(query.isHidden)
 			.byIds(query.ids)
 			.byPreferred(query.isPreferred)
+			.byTemplateOrDraft(query.isTemplateOrDraft)
 			.allowEmptyQuery(true);
 
 		if (order._id == null) {
