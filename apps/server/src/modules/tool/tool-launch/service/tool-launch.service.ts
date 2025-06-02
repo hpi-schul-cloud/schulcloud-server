@@ -1,3 +1,4 @@
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolConfigurationStatus } from '../../common/domain';
@@ -35,13 +36,17 @@ export class ToolLaunchService {
 		this.strategies.set(ToolConfigType.OAUTH2, oauth2ToolLaunchStrategy);
 	}
 
-	async generateLaunchRequest(
+	public async generateLaunchRequest(
 		userId: EntityId,
 		contextExternalTool: ContextExternalToolLaunchable
 	): Promise<ToolLaunchRequest> {
 		const schoolExternalToolId: EntityId = contextExternalTool.schoolToolRef.schoolToolId;
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
+
+		if (externalTool.medium && externalTool.medium.status !== ExternalToolMediumStatus.ACTIVE) {
+			throw new InternalServerErrorException('Medium is not active');
+		}
 
 		await this.checkToolStatus(userId, externalTool, schoolExternalTool, contextExternalTool);
 

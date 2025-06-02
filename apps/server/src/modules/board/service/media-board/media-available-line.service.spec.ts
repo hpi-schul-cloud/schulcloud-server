@@ -240,7 +240,9 @@ describe(MediaAvailableLineService.name, () => {
 
 				await service.getAvailableExternalToolsForSchool([schoolExternalTool]);
 
-				expect(externalToolService.findExternalTools).toHaveBeenCalledWith({ ids: [schoolExternalTool.toolId] });
+				expect(externalToolService.findExternalTools).toHaveBeenCalledWith({
+					ids: [schoolExternalTool.toolId],
+				});
 			});
 
 			it('should return all available external tools in correct order', async () => {
