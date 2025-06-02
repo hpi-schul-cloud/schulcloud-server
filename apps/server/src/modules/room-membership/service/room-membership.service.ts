@@ -72,13 +72,15 @@ export class RoomMembershipService {
 		await this.roomMembershipRepo.delete(roomMembership);
 	}
 
-	public async addMembersToRoom(roomId: EntityId, userIds: Array<EntityId>): Promise<RoomRole> {
+	public async addMembersToRoom(
+		roomId: EntityId,
+		userIds: Array<EntityId>,
+		roleName: RoomRole = RoleName.ROOMVIEWER
+	): Promise<RoomRole> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) {
 			throw new Error('Room membership not found');
 		}
-
-		const roleName = RoleName.ROOMVIEWER;
 
 		const userIdsAndRoles = userIds.map((userId) => {
 			return { userId, roleName };

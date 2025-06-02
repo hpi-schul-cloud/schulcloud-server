@@ -131,6 +131,16 @@ describe('RoomMembershipService', () => {
 				]);
 			});
 
+			it('should add user to room with specified role', async () => {
+				const { user, room, group } = setup();
+
+				await service.addMembersToRoom(room.id, [user.id], RoleName.ROOMEDITOR);
+
+				expect(groupService.addUsersToGroup).toHaveBeenCalledWith(group.id, [
+					{ userId: user.id, roleName: RoleName.ROOMEDITOR },
+				]);
+			});
+
 			it('should add user to school', async () => {
 				const { user, room } = setup();
 

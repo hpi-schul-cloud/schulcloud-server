@@ -75,6 +75,7 @@ describe('Room Invitation Link Controller (API)', () => {
 		em.clear();
 		config.FEATURE_ROOM_INVITATION_LINKS_ENABLED = true;
 		await em.clearCache('roles-cache-byname-roomviewer');
+		await em.clearCache('roles-cache-bynames-roomviewer');
 		await em.clearCache('roles-cache-byname-roomapplicant');
 	});
 
