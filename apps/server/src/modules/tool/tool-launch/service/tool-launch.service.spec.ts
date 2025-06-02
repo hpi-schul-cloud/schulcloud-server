@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
@@ -252,6 +253,44 @@ describe(ToolLaunchService.name, () => {
 				const result: ToolLaunchRequest = await service.generateLaunchRequest(userId, contextExternalTool);
 
 				expect(result).toEqual(expectedLaunchRequest);
+			});
+		});
+
+		describe('when the tool is a non active medium', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const externalTool = externalToolFactory.withMedium({ status: ExternalToolMediumStatus.DRAFT }).build();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({ toolId: externalTool.id });
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					schoolToolRef: {
+						schoolToolId: schoolExternalTool.id,
+						schoolId: schoolExternalTool.schoolId,
+					},
+				});
+
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+				toolConfigurationStatusService.determineToolConfigurationStatus.mockResolvedValueOnce({
+					isDeactivated: false,
+					isNotLicensed: false,
+					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: false,
+				});
+
+				return {
+					contextExternalTool,
+					userId,
+				};
+			};
+
+			it('should throw InternalServerErrorException', async () => {
+				const { userId, contextExternalTool } = setup();
+
+				await expect(() => service.generateLaunchRequest(userId, contextExternalTool)).rejects.toThrow(
+					new InternalServerErrorException('Medium is not active')
+				);
 			});
 		});
 
