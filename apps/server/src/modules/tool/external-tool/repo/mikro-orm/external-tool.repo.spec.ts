@@ -2,6 +2,7 @@ import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExternalToolSearchQuery } from '@modules/tool';
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
@@ -14,7 +15,6 @@ import {
 	CustomParameterType,
 	LtiMessageType,
 	LtiPrivacyPermission,
-	ToolConfigType,
 } from '../../../common/enum';
 import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../../domain';
 import { ExternalToolMediumStatus } from '../../enum';
@@ -102,22 +102,6 @@ describe(ExternalToolRepo.name, () => {
 			const result: ExternalTool | null = await repo.findByName('notExisting');
 
 			expect(result).toBeNull();
-		});
-	});
-
-	describe('findAllByConfigType', () => {
-		it('should find all external tools with given toolConfigType', async () => {
-			await setup();
-
-			const result: ExternalTool[] = await repo.findAllByConfigType(ToolConfigType.OAUTH2);
-
-			expect(result.length).toEqual(2);
-		});
-
-		it('should return an empty array when no externalTools were found', async () => {
-			const result: ExternalTool[] = await repo.findAllByConfigType(ToolConfigType.LTI11);
-
-			expect(result.length).toEqual(0);
 		});
 	});
 
@@ -221,22 +205,26 @@ describe(ExternalToolRepo.name, () => {
 
 			await em.nativeDelete(ExternalToolEntity, {});
 			const ltiToolA: ExternalToolEntity = externalToolEntityFactory.withName('A').buildWithId();
-			const ltiToolB: ExternalToolEntity = externalToolEntityFactory.withName('B').buildWithId();
-			const ltiToolC: ExternalToolEntity = externalToolEntityFactory.withName('B').buildWithId();
-			const ltiTools: ExternalToolEntity[] = [ltiToolA, ltiToolB, ltiToolC];
-			await em.persistAndFlush([ltiToolA, ltiToolB, ltiToolC]);
+			const ltiToolB: ExternalToolEntity = externalToolEntityFactory.withName('B').withMedium().buildWithId();
+			const ltiToolC: ExternalToolEntity = externalToolEntityFactory.withName('C').withMedium().buildWithId();
+			const ltiToolD: ExternalToolEntity = externalToolEntityFactory
+				.withName('B')
+				.withMedium({ status: ExternalToolMediumStatus.DRAFT })
+				.buildWithId();
+			const ltiTools: ExternalToolEntity[] = [ltiToolA, ltiToolB, ltiToolC, ltiToolD];
+			await em.persistAndFlush([ltiToolA, ltiToolB, ltiToolC, ltiToolD]);
 			em.clear();
 
 			return { queryExternalToolDO, options, ltiTools };
 		};
 
 		describe('pagination', () => {
-			it('should return all external tools when options with pagination is set to undefined', async () => {
+			it('should return all active external tools when options with pagination is set to undefined', async () => {
 				const { queryExternalToolDO, ltiTools } = await setupFind();
 
 				const page: Page<ExternalTool> = await repo.find(queryExternalToolDO, undefined);
 
-				expect(page.data.length).toBe(ltiTools.length);
+				expect(page.data.length).toBe(ltiTools.length - 1);
 			});
 
 			it('should return one external tools when pagination has a limit of 1', async () => {
@@ -303,6 +291,21 @@ describe(ExternalToolRepo.name, () => {
 					expect(page.data.length).toBe(2);
 					expect(page.data[0].name).toEqual(ltiTools[0].name);
 					expect(page.data[1].name).toEqual(ltiTools[1].name);
+				});
+			});
+
+			describe('by template or draft', () => {
+				it('should not return external tool with not active medium status', async () => {
+					const { options, ltiTools } = await setupFind();
+					const query: ExternalToolSearchQuery = { isTemplateOrDraft: true };
+
+					const page: Page<ExternalTool> = await repo.find(query, options);
+
+					expect(page.data.length).toBe(4);
+					expect(page.data[0].name).toEqual(ltiTools[0].name);
+					expect(page.data[1].name).toEqual(ltiTools[1].name);
+					expect(page.data[2].name).toEqual(ltiTools[2].name);
+					expect(page.data[3].name).toEqual(ltiTools[3].name);
 				});
 			});
 		});
@@ -521,21 +524,35 @@ describe(ExternalToolRepo.name, () => {
 					},
 				});
 
-				await em.persistAndFlush([externalToolEntity, otherExternalToolEntity]);
+				const draftExternalToolEntity: ExternalToolEntity = externalToolEntityFactory
+					.withMedium({ status: ExternalToolMediumStatus.DRAFT })
+					.buildWithId();
+
+				const templateExternalToolEntity: ExternalToolEntity = externalToolEntityFactory
+					.withMedium({ status: ExternalToolMediumStatus.TEMPLATE, mediumId: undefined })
+					.buildWithId();
+
+				await em.persistAndFlush([
+					externalToolEntity,
+					otherExternalToolEntity,
+					draftExternalToolEntity,
+					templateExternalToolEntity,
+				]);
 				em.clear();
 
 				return {
 					externalToolEntity,
-					otherExternalToolEntity,
+					draftExternalToolEntity,
 				};
 			};
 
-			it('should find externals tool by mediaSourceId', async () => {
-				const { externalToolEntity } = await localSetup();
+			it('should find external tools by mediaSourceId, but no templates', async () => {
+				const { externalToolEntity, draftExternalToolEntity } = await localSetup();
 
 				const result: ExternalTool[] | null = await repo.findAllByMediaSource('mediaSourceId');
 
 				expect(result[0]?.name).toEqual(externalToolEntity.name);
+				expect(result[1]?.name).toEqual(draftExternalToolEntity.name);
 			});
 		});
 
