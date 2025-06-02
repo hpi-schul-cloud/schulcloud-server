@@ -1,4 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
+import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { StorageLocation } from '@infra/files-storage-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
@@ -54,6 +55,10 @@ describe(BoardNodeCopyService.name, () => {
 				{
 					provide: SchoolExternalToolService,
 					useValue: createMock<SchoolExternalToolService>(),
+				},
+				{
+					provide: H5pEditorProducer,
+					useValue: createMock<H5pEditorProducer>(),
 				},
 			],
 		}).compile();

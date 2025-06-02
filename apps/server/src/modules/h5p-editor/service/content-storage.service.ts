@@ -220,13 +220,14 @@ export class ContentStorage implements IContentStorage {
 	public async copyAllFiles(sourceContentId: string, targetContentId: string): Promise<void> {
 		const filenames = await this.listFiles(sourceContentId);
 
-		const copyFiles: CopyFiles[] = [];
-		for (const filename of filenames) {
-			copyFiles.push({
+		const copyFiles: CopyFiles[] = filenames.map((filename: string) => {
+			const copy: CopyFiles = {
 				sourcePath: this.getFilePath(sourceContentId, filename),
 				targetPath: this.getFilePath(targetContentId, filename),
-			});
-		}
+			};
+
+			return copy;
+		});
 
 		await this.storageClient.copy(copyFiles);
 	}
