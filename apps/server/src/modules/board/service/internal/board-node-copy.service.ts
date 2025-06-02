@@ -469,26 +469,31 @@ export class BoardNodeCopyService {
 	}
 
 	public async copyH5pElement(original: H5pElement, context: CopyContext): Promise<CopyStatus> {
-		const copy = new H5pElement({
-			...original.getProps(),
-			...this.buildSpecificProps([]),
-		});
-
-		const result: CopyStatus = {
-			copyEntity: copy,
-			type: CopyElementType.H5P_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
-			elements: [],
-		};
-
 		if (!original.contentId) {
+			const copy = new H5pElement({
+				...original.getProps(),
+				...this.buildSpecificProps([]),
+			});
+
+			const result: CopyStatus = {
+				copyEntity: copy,
+				type: CopyElementType.H5P_ELEMENT,
+				status: CopyStatusEnum.SUCCESS,
+				elements: [],
+			};
+
 			return result;
 		}
 
-		copy.contentId = new ObjectId().toHexString();
+		const copiedContentId = new ObjectId().toHexString();
+		const copy = new H5pElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+			contentId: copiedContentId,
+		});
 
 		const copyParams: CopyContentParams = {
-			copiedContentId: copy.contentId,
+			copiedContentId: copiedContentId,
 			sourceContentId: original.contentId,
 			userId: context.userId,
 			schoolId: context.targetSchoolId,
@@ -496,6 +501,13 @@ export class BoardNodeCopyService {
 			parentId: copy.id,
 		};
 		await this.h5pEditorProducer.copyContent(copyParams);
+
+		const result: CopyStatus = {
+			copyEntity: copy,
+			type: CopyElementType.H5P_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+			elements: [],
+		};
 
 		return result;
 	}
