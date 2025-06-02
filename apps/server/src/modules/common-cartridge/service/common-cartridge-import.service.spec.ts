@@ -124,6 +124,8 @@ describe(CommonCartridgeImportService.name, () => {
 
 		const orgs = [board, column1, card1, element1, column2, card2, element2, column3, card3, element3];
 
+		commonCartridgeFileParser.getTitle.mockReturnValueOnce('test course');
+
 		commonCartridgeFileParser.getOrganizations.mockReturnValue(orgs);
 
 		coursesClientAdapterMock.createCourse.mockResolvedValueOnce({ courseId: faker.string.uuid() });
@@ -149,7 +151,6 @@ describe(CommonCartridgeImportService.name, () => {
 
 			it('should create a course', async () => {
 				const { file, currentUser } = setup();
-				commonCartridgeFileParser.getTitle.mockReturnValueOnce('test course');
 
 				await sut.importFile(file, currentUser);
 
@@ -221,6 +222,7 @@ describe(CommonCartridgeImportService.name, () => {
 
 		describe('when no title is given', () => {
 			const setup = () => {
+				commonCartridgeFileParser.getTitle.mockReturnValueOnce(undefined)
 				const { file, currentUser } = setupBase();
 
 				return { file, currentUser };

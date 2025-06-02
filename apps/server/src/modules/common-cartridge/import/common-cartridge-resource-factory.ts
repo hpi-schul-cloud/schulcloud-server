@@ -57,18 +57,21 @@ export class CommonCartridgeResourceFactory {
 		};
 	}
 
-	private createWebContentResource(
+	private buildWebContentResourceFromPath(
 		content: string,
-		inputFormat: InputFormat
-	): CommonCartridgeWebContentResourceProps | undefined {
-		const document = load(content);
-		const unsanitizedHtml = document('body').html()?.trim() ?? content;
-		const sanitizedHtml = sanitizeRichText(unsanitizedHtml, inputFormat);
+		resourcePath: string,
+		inputFormat: InputFormat,
+		title: string
+	): CommonCartridgeResourceProps | undefined {
+		if (this.isFile(resourcePath)) {
+			return this.createFileContentResource(resourcePath, title);
+		} else {
+			return this.createWebContentResource(content, inputFormat);
+		}
+	}
 
-		return {
-			type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-			html: sanitizedHtml,
-		};
+	private isFile(resourcePath: string): boolean {
+		return !resourcePath.endsWith('.html');
 	}
 
 	private createFileContentResource(resourcePath: string, title: string): CommonCartridgeFileResourceProps | undefined {
@@ -91,20 +94,17 @@ export class CommonCartridgeResourceFactory {
 		};
 	}
 
-	private buildWebContentResourceFromPath(
+	private createWebContentResource(
 		content: string,
-		resourcePath: string,
-		inputFormat: InputFormat,
-		title: string
-	): CommonCartridgeResourceProps | undefined {
-		if (this.isFile(resourcePath)) {
-			return this.createFileContentResource(resourcePath, title);
-		} else {
-			return this.createWebContentResource(content, inputFormat);
-		}
-	}
+		inputFormat: InputFormat
+	): CommonCartridgeWebContentResourceProps | undefined {
+		const document = load(content);
+		const unsanitizedHtml = document('body').html()?.trim() ?? content;
+		const sanitizedHtml = sanitizeRichText(unsanitizedHtml, inputFormat);
 
-	private isFile(resourcePath: string): boolean {
-		return !resourcePath.endsWith('.html');
+		return {
+			type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+			html: sanitizedHtml,
+		};
 	}
 }
