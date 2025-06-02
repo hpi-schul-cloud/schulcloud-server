@@ -1,5 +1,6 @@
-import { Scope } from '@shared/repo/scope';
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { EntityId } from '@shared/domain/types';
+import { Scope } from '@shared/repo/scope';
 import { ExternalToolEntity } from './external-tool.entity';
 
 export class ExternalToolScope extends Scope<ExternalToolEntity> {
@@ -34,6 +35,13 @@ export class ExternalToolScope extends Scope<ExternalToolEntity> {
 	byPreferred(isPreferred?: boolean): this {
 		if (isPreferred !== undefined) {
 			this.addQuery({ isPreferred });
+		}
+		return this;
+	}
+
+	byTemplateOrDraft(isTemplateOrDraft?: boolean): this {
+		if (isTemplateOrDraft === undefined) {
+			this.addQuery({ $or: [{ medium: { status: ExternalToolMediumStatus.ACTIVE } }, { medium: { $exists: false } }] });
 		}
 		return this;
 	}

@@ -36,9 +36,18 @@ export type CommonCartridgeWebLinkResourceProps = {
 	url: string;
 };
 
+export type CommonCartridgeFileResourceProps = {
+	type: CommonCartridgeResourceTypeV1P1.FILE;
+	href: string;
+	fileName: string;
+	file: File;
+	description: string;
+};
+
 export type CommonCartridgeUnknownResourceProps = { type: CommonCartridgeResourceTypeV1P1.UNKNOWN };
 
 export type CommonCartridgeResourceProps =
 	| CommonCartridgeWebContentResourceProps
 	| CommonCartridgeWebLinkResourceProps
-	| CommonCartridgeUnknownResourceProps;
+	| CommonCartridgeUnknownResourceProps
+	| CommonCartridgeFileResourceProps;
