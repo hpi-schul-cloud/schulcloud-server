@@ -101,12 +101,20 @@ export class SchulconnexToolProvisioningService {
 		externalTool.medium.status = ExternalToolMediumStatus.DRAFT;
 		externalTool.medium.mediumId = medium.mediumId;
 
+		console.error('Bis hierher läufts');
+		console.error('external tool: ', externalTool);
+		console.error('medium: ', medium);
+
 		await this.updateMetadata(externalTool, medium);
 
 		try {
 			await this.externalToolValidationService.validateCreate(externalTool);
 
+			console.error('tool wurde validiert');
+
 			const savedTool: ExternalTool = await this.externalToolService.createExternalTool(externalTool);
+
+			console.error('und gespeichert: ', savedTool);
 
 			return savedTool;
 		} catch {
@@ -119,17 +127,23 @@ export class SchulconnexToolProvisioningService {
 			return;
 		}
 
+		console.error('Durchs erste If durch');
+
 		try {
 			const metadata: MediumMetadataDto = await this.mediumMetadataService.getMetadataItem(
 				medium.mediumId,
 				medium.mediaSource.sourceId
 			);
 
+			console.error('metadaten: ', metadata);
+
 			await this.externalToolMetadataUpdateService.updateExternalToolWithMetadata(
 				externalTool,
 				metadata,
 				medium.mediaSource.format
 			);
+
+			console.error('das upgedatete tool: ', externalTool);
 
 			externalTool.medium.status = ExternalToolMediumStatus.ACTIVE;
 		} catch (error: unknown) {
