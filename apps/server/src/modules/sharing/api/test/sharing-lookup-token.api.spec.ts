@@ -143,7 +143,7 @@ describe(`share token lookup (api)`, () => {
 			expect(response.status).toEqual(HttpStatus.NOT_FOUND);
 			expect(response.body).toEqual({
 				code: 404,
-				message: 'The requested ShareToken: {"token":"invalid_token"} has not been found.',
+				message: 'The requested ShareToken has not been found.',
 				title: 'Not Found',
 				type: 'NOT_FOUND',
 			});
