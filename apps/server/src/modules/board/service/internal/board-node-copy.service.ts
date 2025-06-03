@@ -1,9 +1,8 @@
 import { H5pEditorProducer } from '@infra/h5p-editor-client';
-import { CopyContentParams } from '@infra/rabbitmq';
+import { CopyContentParams, H5PContentParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import type { CopyFileDto } from '@modules/files-storage-client/dto';
-import { H5PContentParentType } from '@modules/h5p-editor';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import {
 	type ContextExternalTool,
