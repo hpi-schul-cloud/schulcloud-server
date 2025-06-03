@@ -8,7 +8,6 @@ import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { TspSyncConfig } from '@infra/sync';
 import type { TspClientConfig } from '@infra/tsp-client';
-import { ValkeyMode } from '@infra/valkey-client';
 import type { AccountConfig } from '@modules/account';
 import type { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
@@ -36,6 +35,7 @@ import type { LanguageType } from '@shared/domain/interface';
 import type { SchulcloudTheme } from '@shared/domain/types';
 import type { Algorithm } from 'jsonwebtoken';
 import type { Timezone } from './types/timezone.enum';
+import { ValkeyMode } from '@infra/valkey-client';
 
 export enum NodeEnvType {
 	TEST = 'test',
