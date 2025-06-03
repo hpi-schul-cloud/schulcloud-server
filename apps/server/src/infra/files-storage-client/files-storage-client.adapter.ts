@@ -9,7 +9,7 @@ import { AxiosError } from 'axios';
 import type { Request } from 'express';
 import { lastValueFrom } from 'rxjs';
 import { FilesStorageClientConfig } from './files-storage-client.config';
-import { FileApi } from './generated';
+import { FileApi, FileRecordParentType, FileRecordResponse, StorageLocation } from './generated';
 
 @Injectable()
 export class FilesStorageClientAdapter {
@@ -52,6 +52,49 @@ export class FilesStorageClientAdapter {
 			return data;
 		} catch (error: unknown) {
 			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.download'));
+
+			return null;
+		}
+	}
+
+	public async upload(
+		storageLocationId: string,
+		storageLocation: StorageLocation,
+		parentId: string,
+		parentType: FileRecordParentType,
+		file: File
+	): Promise<FileRecordResponse | null> {
+		try {
+			// INFO: we need to upload the file to the files storage service without using the generated client,
+			// because the generated client does not support uploading files as FormData. Otherwise files with
+			// binary content would be corrupted like pdfs, zip files, etc.
+
+			const token = JwtExtractor.extractJwtFromRequestOrFail(this.req);
+
+			const formData = new FormData();
+
+			formData.append('storageLocationId', storageLocationId);
+			formData.append('storageLocation', storageLocation);
+			formData.append('parentId', parentId);
+			formData.append('parentType', parentType);
+			formData.append('file', file);
+
+			const url = new URL(
+				`${this.configService.getOrThrow<string>(
+					'FILES_STORAGE__SERVICE_BASE_URL'
+				)}/api/v3/file/upload/${storageLocation}/${storageLocationId}/${parentType}/${parentId}`
+			);
+
+			const observable = this.httpService.post(url.toString(), formData, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			const response = await lastValueFrom(observable);
+
+			return response.data as FileRecordResponse;
+		} catch (error: unknown) {
+			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.upload'));
 
 			return null;
 		}
