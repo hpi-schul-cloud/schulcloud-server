@@ -1,7 +1,7 @@
 import { CopyContentParams } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { H5PContentParentType } from '@modules/h5p-editor';
 import { Factory } from 'fishery';
+import { H5PContentParentType } from '../exchange';
 
 export const h5pEditorCopyContentParamsFactory = Factory.define<CopyContentParams>(() => {
 	const params: CopyContentParams = {
