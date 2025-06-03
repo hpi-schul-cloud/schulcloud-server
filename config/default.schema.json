@@ -1643,11 +1643,6 @@
 			"default": "true",
 			"description": "Enables the room invitation links feature"
 		},
-		"FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED": {
-			"type": "boolean",
-			"default": "false",
-			"description": "Enables the ability to change permissions of room members"
-		},
 		"FEATURE_ROOM_ADD_STUDENTS_ENABLED": {
 			"type": "boolean",
 			"default": "false",
