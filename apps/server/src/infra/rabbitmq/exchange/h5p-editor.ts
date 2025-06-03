@@ -1,5 +1,5 @@
-import { H5PContentParentType } from '@modules/h5p-editor';
 import { EntityId } from '@shared/domain/types';
+import { H5PContentParentType } from './h5p-content-parent-type';
 
 export enum H5pEditorEvents {
 	DELETE_CONTENT = 'delete-content',

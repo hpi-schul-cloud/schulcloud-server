@@ -1,7 +1,7 @@
+import { H5PContentParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { H5pEditorContentInvalidIdLoggableException } from '../../loggable';
-import { H5PContentParentType } from '../../types';
 import { ContentMetadata, H5PContent, H5PContentProperties } from './h5p-content.entity';
 
 describe(H5PContent.name, () => {

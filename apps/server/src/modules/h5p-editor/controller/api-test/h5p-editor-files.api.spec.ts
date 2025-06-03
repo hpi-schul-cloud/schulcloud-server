@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
+import { H5PContentParentType } from '@infra/rabbitmq';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { IFileStats, ILibraryName } from '@lumieducation/h5p-server';
 import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
@@ -14,7 +15,6 @@ import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5
 import { H5PContent, H5PContentProperties } from '../../repo';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from '../../service';
 import { h5pContentFactory } from '../../testing';
-import { H5PContentParentType } from '../../types';
 
 const helpers = {
 	buildMetadata(

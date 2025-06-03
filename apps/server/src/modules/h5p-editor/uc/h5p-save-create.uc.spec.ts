@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
+import { H5PContentParentType } from '@infra/rabbitmq';
 import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
@@ -10,7 +11,7 @@ import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { h5pContentFactory } from '../testing';
-import { H5PContentParentType, LumiUserWithContentData } from '../types';
+import { LumiUserWithContentData } from '../types';
 import { H5PEditorUc } from './h5p.uc';
 
 const createParams = () => {
