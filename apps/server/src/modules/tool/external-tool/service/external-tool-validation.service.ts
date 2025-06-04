@@ -65,6 +65,15 @@ export class ExternalToolValidationService {
 			);
 		}
 
+		if (
+			ExternalTool.isOauth2Config(externalTool.config) &&
+			externalTool.medium?.status === ExternalToolMediumStatus.TEMPLATE
+		) {
+			throw new ValidationError(
+				'tool_template_oauth2_invalid: No templates for tools with OAuth2 configuration allowed.'
+			);
+		}
+
 		this.externalToolLogoService.validateLogoSize(externalTool);
 
 		if (externalTool.isPreferred) {
