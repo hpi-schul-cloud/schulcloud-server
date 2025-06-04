@@ -91,7 +91,9 @@ export class ExternalToolValidationService {
 			}
 
 			if (externalTool.medium?.status === ExternalToolMediumStatus.TEMPLATE) {
-				throw new ValidationError('tool_template_oauth2: A template cannot be configured as an oAuth2 tool.');
+				throw new ValidationError(
+					'tool_template_oauth2_invalid: No templates for tools with OAuth2 configuration allowed.'
+				);
 			}
 		}
 	}

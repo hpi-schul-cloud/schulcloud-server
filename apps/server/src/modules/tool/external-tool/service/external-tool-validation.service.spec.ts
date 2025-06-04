@@ -88,7 +88,9 @@ describe(ExternalToolValidationService.name, () => {
 					const result: Promise<void> = service.validateCreate(externalOauthToolTemplate);
 
 					await expect(result).rejects.toThrow(
-						new ValidationError('tool_template_oauth2: A template cannot be configured as an oAuth2 tool.')
+						new ValidationError(
+							'tool_template_oauth2_invalid: No templates for tools with OAuth2 configuration allowed.'
+						)
 					);
 				});
 			});
