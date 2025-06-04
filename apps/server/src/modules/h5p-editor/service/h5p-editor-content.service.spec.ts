@@ -1,9 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { h5pEditorCopyContentParamsFactory } from '@infra/rabbitmq/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { H5PContentRepo } from '../repo';
-import { h5pContentFactory } from '../testing';
+import { h5pContentFactory, h5pCopyContentParamsFactory } from '../testing';
 import { ContentStorage } from './content-storage.service';
 import { H5pEditorContentService } from './h5p-editor-content.service';
 
@@ -48,18 +47,12 @@ describe(H5pEditorContentService.name, () => {
 		describe('when the copy params are passed', () => {
 			const setup = () => {
 				const sourceContent = h5pContentFactory.build();
-				const params = h5pEditorCopyContentParamsFactory.build({
-					sourceContentId: sourceContent.id,
-					parentType: sourceContent.parentType,
-				});
+				const params = h5pCopyContentParamsFactory.build();
 
 				const copiedContent = h5pContentFactory.buildWithId(
 					{
 						...sourceContent,
-						creatorId: params.userId,
-						schoolId: params.schoolId,
-						parentId: params.parentId,
-						parentType: params.parentType,
+						...params,
 					},
 					params.copiedContentId
 				);
@@ -89,18 +82,12 @@ describe(H5pEditorContentService.name, () => {
 		describe('when the files of the h5p content fail to be copied', () => {
 			const setup = () => {
 				const sourceContent = h5pContentFactory.build();
-				const params = h5pEditorCopyContentParamsFactory.build({
-					sourceContentId: sourceContent.id,
-					parentType: sourceContent.parentType,
-				});
+				const params = h5pCopyContentParamsFactory.build();
 
 				const copiedContent = h5pContentFactory.buildWithId(
 					{
 						...sourceContent,
-						creatorId: params.userId,
-						schoolId: params.schoolId,
-						parentId: params.parentId,
-						parentType: params.parentType,
+						...params,
 					},
 					params.copiedContentId
 				);

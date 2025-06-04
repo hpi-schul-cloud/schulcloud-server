@@ -1,5 +1,5 @@
 import { H5pEditorProducer } from '@infra/h5p-editor-client';
-import { CopyContentParams, H5PContentParentType } from '@infra/rabbitmq';
+import { CopyContentParams, CopyContentParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import type { CopyFileDto } from '@modules/files-storage-client/dto';
@@ -496,7 +496,7 @@ export class BoardNodeCopyService {
 			sourceContentId: original.contentId,
 			userId: context.userId,
 			schoolId: context.targetSchoolId,
-			parentType: H5PContentParentType.BoardElement,
+			parentType: CopyContentParentType.BoardElement,
 			parentId: copy.id,
 		};
 		await this.h5pEditorProducer.copyContent(copyParams);

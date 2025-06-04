@@ -1,14 +1,21 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { h5pEditorCopyContentParamsFactory } from '@infra/rabbitmq/testing';
+import { CopyContentParentType, H5pEditorEvents } from '@infra/rabbitmq';
+import { h5pEditorExchangeCopyContentParamsFactory } from '@infra/rabbitmq/testing';
 import { H5PEditor } from '@lumieducation/h5p-server';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { ENTITIES } from '../../h5p-editor.entity.exports';
-import { H5pEditorContentCopySuccessfulLoggable, H5pEditorContentDeletionSuccessfulLoggable } from '../../loggable';
+import {
+	H5pEditorContentCopySuccessfulLoggable,
+	H5pEditorContentDeletionSuccessfulLoggable,
+	H5pEditorExchangeInvalidParamsLoggableException,
+} from '../../loggable';
 import { H5pEditorContentService } from '../../service';
+import { h5pCopyContentParamsFactory } from '../../testing';
+import { H5PContentParentType } from '../../types';
 import { H5pEditorConsumer } from './h5p-editor.consumer';
 
 describe(H5pEditorConsumer.name, () => {
@@ -120,15 +127,22 @@ describe(H5pEditorConsumer.name, () => {
 	describe('copyContent', () => {
 		describe('when copying a content', () => {
 			it('should call the copy method of the h5p content service', async () => {
-				const payload = h5pEditorCopyContentParamsFactory.build();
+				const payload = h5pEditorExchangeCopyContentParamsFactory.build({
+					parentType: CopyContentParentType.BoardElement,
+				});
+				const params = h5pCopyContentParamsFactory.build({
+					...payload,
+					creatorId: payload.userId,
+					parentType: H5PContentParentType.BoardElement,
+				});
 
 				await consumer.copyContent(payload);
 
-				expect(h5pEditorContentService.copyH5pContent).toHaveBeenCalledWith(payload);
+				expect(h5pEditorContentService.copyH5pContent).toHaveBeenCalledWith(params);
 			});
 
 			it('should log a success info', async () => {
-				const payload = h5pEditorCopyContentParamsFactory.build();
+				const payload = h5pEditorExchangeCopyContentParamsFactory.build();
 
 				await consumer.copyContent(payload);
 
@@ -138,9 +152,21 @@ describe(H5pEditorConsumer.name, () => {
 			});
 		});
 
+		describe('when the parent type from the payload is invalid', () => {
+			it('it should throw an H5pEditorExchangeInvalidParamsLoggableException', async () => {
+				const payload = h5pEditorExchangeCopyContentParamsFactory.build({ parentType: undefined });
+
+				const promise = consumer.copyContent(payload);
+
+				await expect(promise).rejects.toThrow(
+					new H5pEditorExchangeInvalidParamsLoggableException(H5pEditorEvents.COPY_CONTENT, payload)
+				);
+			});
+		});
+
 		describe('when copying fails', () => {
 			const setup = () => {
-				const payload = h5pEditorCopyContentParamsFactory.build();
+				const payload = h5pEditorExchangeCopyContentParamsFactory.build();
 
 				h5pEditorContentService.copyH5pContent.mockRejectedValueOnce(new Error());
 

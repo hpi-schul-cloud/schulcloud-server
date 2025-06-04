@@ -1,7 +1,7 @@
-import { H5PContentParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { ContentMetadata, H5PContent, H5PContentProperties } from '../repo';
+import { H5PContentParentType } from '../types';
 
 class H5PContentFactory extends BaseFactory<H5PContent, H5PContentProperties> {}
 

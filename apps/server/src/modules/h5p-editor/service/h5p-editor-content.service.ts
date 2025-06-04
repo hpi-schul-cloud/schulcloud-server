@@ -1,21 +1,28 @@
-import { CopyContentParams } from '@infra/rabbitmq';
 import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { H5PContent, H5PContentRepo } from '../repo';
+import { H5PContentParentType } from '../types';
 import { ContentStorage } from './content-storage.service';
+
+export type H5pCopyContentParams = {
+	sourceContentId: EntityId;
+	copiedContentId: EntityId;
+	creatorId: EntityId;
+	schoolId: EntityId;
+	parentType: H5PContentParentType;
+	parentId: EntityId;
+};
 
 @Injectable()
 export class H5pEditorContentService {
 	constructor(private readonly h5PContentRepo: H5PContentRepo, private readonly contentStorage: ContentStorage) {}
 
-	public async copyH5pContent(params: CopyContentParams): Promise<void> {
+	public async copyH5pContent(params: H5pCopyContentParams): Promise<void> {
 		const sourceContent: H5PContent = await this.h5PContentRepo.findById(params.sourceContentId);
 		const copiedContent = new H5PContent({
 			...sourceContent,
+			...params,
 			id: params.copiedContentId,
-			creatorId: params.userId,
-			schoolId: params.schoolId,
-			parentId: params.parentId,
-			parentType: params.parentType,
 		});
 
 		await this.h5PContentRepo.save(copiedContent);

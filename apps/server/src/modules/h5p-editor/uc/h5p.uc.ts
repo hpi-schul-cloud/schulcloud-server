@@ -4,7 +4,6 @@ import {
 	AuthorizationContextBuilder,
 	AuthorizationContextParams,
 } from '@infra/authorization-client';
-import { H5PContentParentType } from '@infra/rabbitmq';
 import {
 	AjaxSuccessResponse,
 	H5PAjaxEndpoint,
@@ -37,7 +36,7 @@ import { H5PContentMapper } from '../mapper/h5p-content.mapper';
 import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
-import { LumiUserWithContentData } from '../types';
+import { H5PContentParentType, LumiUserWithContentData } from '../types';
 import { GetLibraryFile } from './dto/h5p-getLibraryFile';
 
 @Injectable()

@@ -1,5 +1,4 @@
 import { EntityId } from '@shared/domain/types';
-import { H5PContentParentType } from './h5p-content-parent-type';
 
 export enum H5pEditorEvents {
 	DELETE_CONTENT = 'delete-content',
@@ -10,11 +9,16 @@ export interface DeleteContentParams {
 	contentId: EntityId;
 }
 
+export enum CopyContentParentType {
+	Lesson = 'lessons',
+	BoardElement = 'board-element',
+}
+
 export interface CopyContentParams {
 	sourceContentId: EntityId;
 	copiedContentId: EntityId;
 	userId: EntityId;
 	schoolId: EntityId;
-	parentType: H5PContentParentType;
+	parentType: CopyContentParentType;
 	parentId: EntityId;
 }

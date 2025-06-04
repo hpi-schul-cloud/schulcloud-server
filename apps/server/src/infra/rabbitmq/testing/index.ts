@@ -1,1 +1,1 @@
-export * from './h5p-editor-copy-content-params.factory';
+export * from './h5p-editor-exchange-copy-content-params.factory';

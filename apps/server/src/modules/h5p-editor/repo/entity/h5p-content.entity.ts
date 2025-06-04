@@ -1,4 +1,3 @@
-import { H5PContentParentType } from '@infra/rabbitmq';
 import { IContentMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { IContentAuthor, IContentChange } from '@lumieducation/h5p-server/build/src/types';
 import { Embeddable, Embedded, Entity, Enum, Index, JsonType, Property } from '@mikro-orm/core';
@@ -7,6 +6,7 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { isMongoId } from 'class-validator';
 import { H5pEditorContentInvalidIdLoggableException } from '../../loggable';
+import { H5PContentParentType } from '../../types';
 
 @Embeddable()
 export class ContentMetadata implements IContentMetadata {

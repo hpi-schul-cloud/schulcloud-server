@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { StorageLocation } from '@infra/files-storage-client';
 import { H5pEditorProducer } from '@infra/h5p-editor-client';
-import { CopyContentParams, H5PContentParentType } from '@infra/rabbitmq';
+import { CopyContentParams, CopyContentParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
@@ -807,7 +807,7 @@ describe(BoardNodeCopyService.name, () => {
 						copiedContentId: expect.any(String),
 						userId: copyContext.userId,
 						schoolId: copyContext.targetSchoolId,
-						parentType: H5PContentParentType.BoardElement,
+						parentType: CopyContentParentType.BoardElement,
 						parentId: expect.any(String),
 					})
 				);

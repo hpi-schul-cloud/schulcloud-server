@@ -1,7 +1,7 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DeleteContentParams, H5pEditorEvents, H5pEditorExchange } from '@infra/rabbitmq';
-import { h5pEditorCopyContentParamsFactory } from '@infra/rabbitmq/testing';
+import { h5pEditorExchangeCopyContentParamsFactory } from '@infra/rabbitmq/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { H5pEditorProducer } from './h5p-editor.producer';
@@ -60,7 +60,7 @@ describe(H5pEditorProducer.name, () => {
 	describe('copyContent', () => {
 		describe('when sending a message', () => {
 			it('should publish the message', async () => {
-				const message = h5pEditorCopyContentParamsFactory.build();
+				const message = h5pEditorExchangeCopyContentParamsFactory.build();
 
 				await producer.copyContent(message);
 
