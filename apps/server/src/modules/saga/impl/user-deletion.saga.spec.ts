@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SagaRegistryService, SagaStepRegistryService } from '../service';
 import { ModuleName, StepOperationType, StepReport } from '../type';
 import { UserDeletionSaga } from './user-deletion.saga';
-
+import { UserDeletionSagaExecutionOrder } from './user-deletion.saga';
 describe(UserDeletionSaga.name, () => {
 	let saga: UserDeletionSaga;
 	let stepRegistry: SagaStepRegistryService;
@@ -59,7 +59,7 @@ describe(UserDeletionSaga.name, () => {
 
 			await saga.execute({ userId: '67a0784ef358f49ca4faf5c4' });
 
-			const numberOfModuleNames = Object.values(ModuleName).length;
+			const numberOfModuleNames = Object.values(UserDeletionSagaExecutionOrder).length;
 			expect(hasStepSpy).toHaveBeenCalledTimes(numberOfModuleNames);
 		});
 

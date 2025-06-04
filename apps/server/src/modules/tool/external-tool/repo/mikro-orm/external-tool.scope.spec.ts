@@ -1,4 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { ExternalToolScope } from './external-tool.scope';
 
 describe('ExternalToolScope', () => {
@@ -64,6 +65,21 @@ describe('ExternalToolScope', () => {
 
 		it('should return scope without added ids to query', () => {
 			scope.byIds(undefined);
+			expect(scope.query).toEqual({});
+		});
+	});
+
+	describe('byTemplateOrDraft', () => {
+		it('should return scope with added medium status to query', () => {
+			scope.byTemplateOrDraft(undefined);
+			expect(scope.query).toEqual({
+				$or: [{ medium: { status: ExternalToolMediumStatus.ACTIVE } }, { medium: { $exists: false } }],
+			});
+		});
+
+		it('should return scope without added medium status to query', () => {
+			const param = true;
+			scope.byTemplateOrDraft(param);
 			expect(scope.query).toEqual({});
 		});
 	});

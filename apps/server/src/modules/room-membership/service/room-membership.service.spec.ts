@@ -10,7 +10,6 @@ import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException } from '@nestjs/common/exceptions';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ObjectId } from 'bson';
@@ -27,7 +26,6 @@ describe('RoomMembershipService', () => {
 	let roleService: DeepMocked<RoleService>;
 	let roomService: DeepMocked<RoomService>;
 	let userService: DeepMocked<UserService>;
-	let configService: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -54,10 +52,6 @@ describe('RoomMembershipService', () => {
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
-				},
 			],
 		}).compile();
 
@@ -67,7 +61,6 @@ describe('RoomMembershipService', () => {
 		roleService = module.get(RoleService);
 		roomService = module.get(RoomService);
 		userService = module.get(UserService);
-		configService = module.get(ConfigService);
 	});
 
 	afterAll(async () => {
@@ -118,11 +111,6 @@ describe('RoomMembershipService', () => {
 					schoolId: school.id,
 				});
 
-				configService.get.mockImplementation((key) => {
-					if (key === 'FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED') return true;
-					return undefined;
-				});
-
 				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 
 				return {
@@ -143,35 +131,22 @@ describe('RoomMembershipService', () => {
 				]);
 			});
 
+			it('should add user to room with specified role', async () => {
+				const { user, room, group } = setup();
+
+				await service.addMembersToRoom(room.id, [user.id], RoleName.ROOMEDITOR);
+
+				expect(groupService.addUsersToGroup).toHaveBeenCalledWith(group.id, [
+					{ userId: user.id, roleName: RoleName.ROOMEDITOR },
+				]);
+			});
+
 			it('should add user to school', async () => {
 				const { user, room } = setup();
 
 				await service.addMembersToRoom(room.id, [user.id]);
 
 				expect(userService.addSecondarySchoolToUsers).toHaveBeenCalledWith([user.id], room.schoolId);
-			});
-
-			describe('when role change is disabled', () => {
-				const setupWithRoleChangeDisabled = () => {
-					const { user, room, group } = setup();
-
-					configService.get.mockImplementation((key) => {
-						if (key === 'FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED') return false;
-						return undefined;
-					});
-
-					return { user, room, group };
-				};
-
-				it('should add user to room as admin', async () => {
-					const { user, room, group } = setupWithRoleChangeDisabled();
-
-					await service.addMembersToRoom(room.id, [user.id]);
-
-					expect(groupService.addUsersToGroup).toHaveBeenCalledWith(group.id, [
-						{ userId: user.id, roleName: RoleName.ROOMADMIN },
-					]);
-				});
 			});
 		});
 	});
