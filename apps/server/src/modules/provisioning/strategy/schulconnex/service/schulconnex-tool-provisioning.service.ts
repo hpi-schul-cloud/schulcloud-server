@@ -32,9 +32,6 @@ export class SchulconnexToolProvisioningService {
 	) {}
 
 	public async provisionSchoolExternalTools(userId: EntityId, schoolId: EntityId, systemId: string): Promise<void> {
-		console.log('sanity test log');
-		console.warn('sanity test warn');
-		console.error('sanity test error');
 		const provisioningOptions: SchulConneXProvisioningOptions =
 			await this.schoolSystemOptionsService.getProvisioningOptions(SchulConneXProvisioningOptions, schoolId, systemId);
 
@@ -104,23 +101,12 @@ export class SchulconnexToolProvisioningService {
 		externalTool.medium.status = ExternalToolMediumStatus.DRAFT;
 		externalTool.medium.mediumId = medium.mediumId;
 
-		this.logger.warning(new ExternalToolMetadataUpdateFailedLoggable(externalTool, medium, 'bis hierher läufts'));
-		console.error('Bis hierher läufts');
-		console.error('external tool: ', externalTool);
-		console.error('medium: ', medium);
-
 		await this.updateMetadata(externalTool, medium);
 
 		try {
 			await this.externalToolValidationService.validateCreate(externalTool);
 
-			this.logger.warning(new ExternalToolMetadataUpdateFailedLoggable(externalTool, medium, 'tool wurde validiert'));
-			console.error('tool wurde validiert');
-
 			const savedTool: ExternalTool = await this.externalToolService.createExternalTool(externalTool);
-
-			this.logger.warning(new ExternalToolMetadataUpdateFailedLoggable(externalTool, medium, 'und gespeichert'));
-			console.error('und gespeichert: ', savedTool);
 
 			return savedTool;
 		} catch {
@@ -130,14 +116,8 @@ export class SchulconnexToolProvisioningService {
 
 	private async updateMetadata(externalTool: ExternalTool, medium: MediumIdentifier): Promise<void> {
 		if (!externalTool.medium || !medium.mediaSource?.format) {
-			this.logger.warning(
-				new ExternalToolMetadataUpdateFailedLoggable(externalTool, medium, 'im ersten if rausgeflogen')
-			);
 			return;
 		}
-
-		this.logger.warning(new ExternalToolMetadataUpdateFailedLoggable(externalTool, medium, 'durchs erste if durch'));
-		console.error('Durchs erste If durch');
 
 		try {
 			const metadata: MediumMetadataDto = await this.mediumMetadataService.getMetadataItem(
@@ -145,17 +125,11 @@ export class SchulconnexToolProvisioningService {
 				medium.mediaSource.sourceId
 			);
 
-			this.logger.warning(new ExternalToolMetadataUpdateFailedLoggable(externalTool, medium, 'metadaten geholt'));
-			console.error('metadaten: ', metadata);
-
 			await this.externalToolMetadataUpdateService.updateExternalToolWithMetadata(
 				externalTool,
 				metadata,
 				medium.mediaSource.format
 			);
-
-			this.logger.warning(new ExternalToolMetadataUpdateFailedLoggable(externalTool, medium, 'nach update'));
-			console.error('das upgedatete tool: ', externalTool);
 
 			externalTool.medium.status = ExternalToolMediumStatus.ACTIVE;
 		} catch (error: unknown) {
