@@ -71,6 +71,28 @@ describe(ExternalToolValidationService.name, () => {
 		});
 
 		describe('when external tool config has oauth config', () => {
+			describe('when external tool is a template', () => {
+				const setup = () => {
+					const externalOauthToolTemplate: ExternalTool = externalToolFactory
+						.withMedium({ status: ExternalToolMediumStatus.TEMPLATE })
+						.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
+						.buildWithId();
+					externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
+
+					return { externalOauthToolTemplate };
+				};
+
+				it('should throw validation error', async () => {
+					const { externalOauthToolTemplate } = setup();
+
+					const result: Promise<void> = service.validateCreate(externalOauthToolTemplate);
+
+					await expect(result).rejects.toThrow(
+						new ValidationError('tool_template_oauth2: A template cannot be configured as an oAuth2 tool.')
+					);
+				});
+			});
+
 			describe('when client id is unique', () => {
 				describe('when tool with oauth2 config not exists', () => {
 					const setup = () => {

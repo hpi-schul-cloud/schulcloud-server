@@ -89,6 +89,10 @@ export class ExternalToolValidationService {
 					`tool_clientId_duplicate: The Client Id of the tool ${externalTool.name || ''} is already used.`
 				);
 			}
+
+			if (externalTool.medium?.status === ExternalToolMediumStatus.TEMPLATE) {
+				throw new ValidationError('tool_template_oauth2: A template cannot be configured as an oAuth2 tool.');
+			}
 		}
 	}
 
