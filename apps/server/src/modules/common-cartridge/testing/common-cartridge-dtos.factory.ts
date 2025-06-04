@@ -61,9 +61,9 @@ export const columnBoardFactory = Factory.define<BoardResponse>(({ sequence }) =
 	};
 });
 
-export const cardResponseFactory = Factory.define<CardResponseDto>(({ sequence }) => {
+export const cardResponseFactory = Factory.define<CardResponseDto>(({ sequence, params }) => {
 	return {
-		id: sequence.toString(),
+		id: params.id ?? sequence.toString(),
 		height: faker.number.int(),
 		elements: [richTextElementFactroy.build(), linkElementFactory.build(), fileElementResponseDtoFactory.build()],
 		visibilitySettings: {
@@ -78,9 +78,33 @@ export const cardResponseFactory = Factory.define<CardResponseDto>(({ sequence }
 	};
 });
 
-export const listOfCardResponseFactory = Factory.define<CardListResponseDto>(() => {
+type CardListResponseDtoFactoryTransientParams = {
+	cardIds: string[];
+};
+
+class CardListResponseDtoFactory extends Factory<CardListResponseDto, CardListResponseDtoFactoryTransientParams> {
+	public withCardIds(cardIds: string[]): this {
+		return this.transient({
+			cardIds,
+		});
+	}
+}
+
+export const listOfCardResponseFactory = CardListResponseDtoFactory.define(({ transientParams }) => {
+	let data: CardResponseDto[] = [];
+
+	if (transientParams.cardIds) {
+		data = transientParams.cardIds.map((cardId) =>
+			cardResponseFactory.build({
+				id: cardId,
+			})
+		);
+	} else {
+		data = [cardResponseFactory.build(), cardResponseFactory.build()];
+	}
+
 	return {
-		data: [cardResponseFactory.build(), cardResponseFactory.build()],
+		data,
 	};
 });
 

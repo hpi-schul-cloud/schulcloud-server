@@ -62,7 +62,11 @@ describe('CommonCartridgeExportService', () => {
 		lesson.courseId = courseMetadata.id;
 
 		const boardSkeleton: BoardResponse = columnBoardFactory.build();
-		const listOfCardsResponse: CardListResponseDto = listOfCardResponseFactory.build();
+		const cardIds = boardSkeleton.columns
+			.map((c) => c.cards)
+			.flat()
+			.map((c) => c.cardId);
+		const listOfCardsResponse: CardListResponseDto = listOfCardResponseFactory.withCardIds(cardIds).build();
 		const boardTask: BoardTaskDto = boardTaskFactory.build();
 		boardTask.courseName = courseMetadata.title;
 
