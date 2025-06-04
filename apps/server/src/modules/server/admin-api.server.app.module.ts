@@ -13,14 +13,13 @@ import { createConfigModuleOptions } from '@shared/common/config-module-options'
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 
-import { AdminApiRegistrationPinModule } from '@modules/registration-pin/admin-api-registration-pin.module';
 import { LegacySchoolAdminApiModule } from '@modules/legacy-school/legacy-school-admin.api-module';
+import { AdminApiRegistrationPinModule } from '@modules/registration-pin/admin-api-registration-pin.module';
 import { ToolAdminApiModule } from '@modules/tool/tool-admin-api.module';
 import { UserAdminApiModule } from '@modules/user/user-admin-api.module';
 
 // needed for deletion module
 import { AccountApiModule } from '@modules/account/account-api.module';
-import { BoardApiModule } from '@modules/board/board-api.module';
 import { ClassModule } from '@modules/class';
 import { CourseApiModule } from '@modules/course/course-api.module';
 import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
@@ -35,6 +34,7 @@ import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamApiModule } from '@modules/team/team-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 
+import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { adminApiServerConfig } from './admin-api-server.config';
 import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
 
@@ -52,7 +52,7 @@ const serverModules = [
 	}),
 	AuthGuardModule.register([AuthGuardOptions.X_API_KEY]),
 	AccountApiModule,
-	BoardApiModule,
+	MediaBoardApiModule,
 	ClassModule,
 	CourseApiModule,
 	FilesModule,
