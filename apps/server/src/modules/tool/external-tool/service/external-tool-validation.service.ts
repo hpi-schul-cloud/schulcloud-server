@@ -65,6 +65,15 @@ export class ExternalToolValidationService {
 			);
 		}
 
+		if (
+			ExternalTool.isOauth2Config(externalTool.config) &&
+			externalTool.medium?.status === ExternalToolMediumStatus.TEMPLATE
+		) {
+			throw new ValidationError(
+				'tool_template_oauth2_invalid: No templates for tools with OAuth2 configuration allowed.'
+			);
+		}
+
 		this.externalToolLogoService.validateLogoSize(externalTool);
 
 		if (externalTool.isPreferred) {
@@ -87,6 +96,12 @@ export class ExternalToolValidationService {
 			if (!(await this.isClientIdUnique(externalTool))) {
 				throw new ValidationError(
 					`tool_clientId_duplicate: The Client Id of the tool ${externalTool.name || ''} is already used.`
+				);
+			}
+
+			if (externalTool.medium?.status === ExternalToolMediumStatus.TEMPLATE) {
+				throw new ValidationError(
+					'tool_template_oauth2_invalid: No templates for tools with OAuth2 configuration allowed.'
 				);
 			}
 		}
