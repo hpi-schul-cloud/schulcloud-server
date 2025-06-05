@@ -416,4 +416,61 @@ describe('ExternalToolParameterValidationService', () => {
 			});
 		});
 	});
+
+	describe('isNameUnique', () => {
+		describe('when there exists no other external tools with the same name', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build({ name: 'test-name' });
+
+				externalToolService.findExternalToolByName.mockResolvedValue(null);
+
+				return { externalTool };
+			};
+
+			it('should return true', async () => {
+				const { externalTool } = setup();
+
+				const result = await service.isNameUnique(externalTool);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when the only external tool with the same name is the tool itself', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build({ name: 'test-name' });
+
+				externalToolService.findExternalToolByName.mockResolvedValue(externalTool);
+
+				return { externalTool };
+			};
+
+			it('should return true', async () => {
+				const { externalTool } = setup();
+
+				const result = await service.isNameUnique(externalTool);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when there exists other external tools with the same name', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build({ name: 'test-name' });
+				const existingExternalTool: ExternalTool = externalToolFactory.build({ name: 'test-name' });
+
+				externalToolService.findExternalToolByName.mockResolvedValue(existingExternalTool);
+
+				return { externalTool };
+			};
+
+			it('should return false', async () => {
+				const { externalTool } = setup();
+
+				const result = await service.isNameUnique(externalTool);
+
+				expect(result).toBe(false);
+			});
+		});
+	});
 });

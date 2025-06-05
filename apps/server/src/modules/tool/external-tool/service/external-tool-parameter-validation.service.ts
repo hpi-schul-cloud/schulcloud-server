@@ -72,11 +72,7 @@ export class ExternalToolParameterValidationService {
 		}
 	}
 
-	private isCustomParameterNameEmpty(param: CustomParameter): boolean {
-		return !param.name || !param.displayName;
-	}
-
-	private async isNameUnique(externalTool: ExternalTool): Promise<boolean> {
+	public async isNameUnique(externalTool: ExternalTool): Promise<boolean> {
 		if (!externalTool.name) {
 			return true;
 		}
@@ -84,6 +80,10 @@ export class ExternalToolParameterValidationService {
 		const duplicate: ExternalTool | null = await this.externalToolService.findExternalToolByName(externalTool.name);
 
 		return duplicate == null || duplicate.id === externalTool.id;
+	}
+
+	private isCustomParameterNameEmpty(param: CustomParameter): boolean {
+		return !param.name || !param.displayName;
 	}
 
 	private hasDuplicateAttributes(customParameter: CustomParameter[]): boolean {

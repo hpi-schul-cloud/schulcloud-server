@@ -1,10 +1,13 @@
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediumMetadataDto, MediumMetadataService } from '@modules/medium-metadata';
-import { ExternalToolService } from '@modules/tool';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
-import { ExternalToolValidationService } from '@modules/tool/external-tool/service';
-import { ExternalToolLogoService } from '@modules/tool/external-tool/service/external-tool-logo.service';
+import {
+	ExternalTool,
+	ExternalToolService,
+	ExternalToolLogoService,
+	ExternalToolMediumStatus,
+	ExternalToolValidationService,
+	ExternalToolParameterValidationService,
+} from '@modules/tool';
 import { Injectable } from '@nestjs/common';
 import { BaseMetadataSyncStrategy } from './base-metadata-sync.strategy';
 
@@ -14,9 +17,15 @@ export class BiloMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 		protected readonly externalToolService: ExternalToolService,
 		protected readonly mediumMetadataService: MediumMetadataService,
 		protected readonly externalToolValidationService: ExternalToolValidationService,
+		protected readonly externalToolParameterValidationService: ExternalToolParameterValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService
 	) {
-		super(externalToolService, mediumMetadataService, externalToolValidationService);
+		super(
+			externalToolService,
+			mediumMetadataService,
+			externalToolValidationService,
+			externalToolParameterValidationService
+		);
 	}
 
 	public override getMediaSourceFormat(): MediaSourceDataFormat {
