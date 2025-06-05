@@ -81,13 +81,13 @@ export class UserScope extends Scope<User> {
 	private checkAlphanumericWithSpaceAndDash(value: string): void {
 		const isValidName = /^[a-zA-Z0-9\s\-']+$/.test(value);
 		if (!isValidName) {
-			throw new Error('Invalid search name format');
+			throw new Error('Invalid search format');
 		}
 	}
 
 	private checkMaxLength(value: string, allowedMaxLength: number): void {
 		if (value.length > allowedMaxLength) {
-			throw new Error('Seached name is too long');
+			throw new Error('Seached value is too long');
 		}
 	}
 
