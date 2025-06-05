@@ -57,32 +57,22 @@ export class UserScope extends Scope<User> {
 
 	public byName(name?: string): UserScope {
 		if (name !== undefined) {
-			this.checkAlphanumericWithSpaceAndDash(name);
 			// To avoid ressource expensive operations with passing unexpected long name.
 			this.checkMaxLength(name, 100);
 
-			const sanitizedAndEscapedName = this.sanitizeAndEscapeString(name);
-			const searchNameRegex = new RegExp(sanitizedAndEscapedName, 'i');
+			const escapedName = this.escapeString(name);
+			const searchNameRegex = new RegExp(escapedName, 'i');
 			this.addQuery({ $or: [{ firstName: searchNameRegex }, { lastName: searchNameRegex }] });
 		}
 
 		return this;
 	}
 
-	private sanitizeAndEscapeString(value: string): string {
-		// Remove dangerous chars
-		const sanitizedName = value.replace(/[$<>]/g, '');
-		const escapedName = sanitizedName.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '');
-		const trimedName = escapedName.trim();
+	private escapeString(value: string): string {
+		const escaped = value.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '');
+		const escapedAndTrimed = escaped.trim();
 
-		return trimedName;
-	}
-
-	private checkAlphanumericWithSpaceAndDash(value: string): void {
-		const isValidName = /^[a-zA-Z0-9\s\-']+$/.test(value);
-		if (!isValidName) {
-			throw new Error('Invalid search format');
-		}
+		return escapedAndTrimed;
 	}
 
 	private checkMaxLength(value: string, allowedMaxLength: number): void {
