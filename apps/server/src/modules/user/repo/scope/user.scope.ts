@@ -71,7 +71,6 @@ export class UserScope extends Scope<User> {
 	}
 
 	private checkAlphanumericWithSpaceAndDash(value: string): void {
-		// Validate to allow only chars including empty char and numbers.
 		const isValidName = /^[a-zA-Z0-9\s\-']+$/.test(value);
 		if (!isValidName) {
 			throw new Error('Invalid search name format');
