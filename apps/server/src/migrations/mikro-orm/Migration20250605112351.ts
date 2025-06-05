@@ -1,6 +1,6 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
-export class Migration20250508133018 extends Migration {
+export class Migration20250605112351 extends Migration {
 	private async addPermission(roleName: string, permission: string): Promise<void> {
 		const roleUpdate = await this.getCollection('roles').updateOne(
 			{ name: roleName },
@@ -36,12 +36,16 @@ export class Migration20250508133018 extends Migration {
 	}
 
 	public async up(): Promise<void> {
-		await this.addPermission('roomowner', 'ROOM_DUPLICATE');
-		await this.addPermission('roomadmin', 'ROOM_DUPLICATE');
+		await this.removePermission('roomowner', 'ROOM_DUPLICATE');
+		await this.removePermission('roomadmin', 'ROOM_DUPLICATE');
+		await this.addPermission('roomowner', 'ROOM_COPY');
+		await this.addPermission('roomadmin', 'ROOM_COPY');
 	}
 
 	public async down(): Promise<void> {
-		await this.removePermission('roomowner', 'ROOM_DUPLICATE');
-		await this.removePermission('roomadmin', 'ROOM_DUPLICATE');
+		await this.removePermission('roomowner', 'ROOM_COPY');
+		await this.removePermission('roomadmin', 'ROOM_COPY');
+		await this.addPermission('roomowner', 'ROOM_DUPLICATE');
+		await this.addPermission('roomadmin', 'ROOM_DUPLICATE');
 	}
 }
