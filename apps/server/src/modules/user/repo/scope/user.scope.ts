@@ -51,10 +51,38 @@ export class UserScope extends Scope<User> {
 
 	public byName(name?: string): UserScope {
 		if (name !== undefined) {
-			const escapedName = name.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
-			this.addQuery({ $or: [{ firstName: new RegExp(escapedName, 'i') }, { lastName: new RegExp(escapedName, 'i') }] });
+			this.checkAlphanumericWithSpaceAndDash(name);
+			this.checkMaxLength(name, 100);
+
+			const sanitizedAndEscapedName = this.sanitizeAndEscapeString(name);
+			const searchNameRegex = new RegExp(sanitizedAndEscapedName, 'i');
+			this.addQuery({ $or: [{ firstName: searchNameRegex }, { lastName: searchNameRegex }] });
 		}
 		return this;
+	}
+
+	private sanitizeAndEscapeString(value: string): string {
+		// Remove dangerous chars
+		const sanitizedName = value.replace(/[$<>]/g, '');
+		const escapedName = sanitizedName.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '');
+		const trimedName = escapedName.trim();
+
+		return trimedName;
+	}
+
+	private checkAlphanumericWithSpaceAndDash(value: string): void {
+		// Validate to allow only chars including empty char and numbers.
+		const isValidName = /^[a-zA-Z0-9\s\-']+$/.test(value);
+		if (!isValidName) {
+			throw new Error('Invalid search name format');
+		}
+	}
+
+	private checkMaxLength(value: string, length: number): void {
+		// To avoid ressource expensive operations with passing unexpected long names it is fixed to 100.
+		if (value.length > length) {
+			throw new Error('Seached name is too long');
+		}
 	}
 
 	public withDiscoverableTrue(query?: UserDiscoverableQuery): UserScope {
