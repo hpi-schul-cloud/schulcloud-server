@@ -1,20 +1,29 @@
 import { StringValidator } from '.';
 
-// TODO: Rewrite me
 describe('StringValidator', () => {
 	describe('isString', () => {
-		it('should resolve true for string values', () => {
-			expect(StringValidator.isString('sample string value')).toEqual(true);
+		it('should return false for null', () => {
+			expect(StringValidator.isString(null as unknown as string)).toEqual(false);
 		});
 
-		it('should resolve false for other types', () => {
-			expect(StringValidator.isString(0 as unknown as string)).toEqual(false);
-			expect(StringValidator.isString(1 as unknown as string)).toEqual(false);
-			expect(StringValidator.isString(false as unknown as string)).toEqual(false);
-			expect(StringValidator.isString(true as unknown as string)).toEqual(false);
-			expect(StringValidator.isString({} as unknown as string)).toEqual(false);
-			expect(StringValidator.isString(null as unknown as string)).toEqual(false);
+		it('should return false for undefined', () => {
 			expect(StringValidator.isString(undefined)).toEqual(false);
+		});
+
+		it('should return true for a valid string', () => {
+			expect(StringValidator.isString('hello')).toEqual(true);
+		});
+
+		it('should return false for a number', () => {
+			expect(StringValidator.isString(123 as unknown as string)).toEqual(false);
+		});
+
+		it('should return false for an object', () => {
+			expect(StringValidator.isString({} as unknown as string)).toEqual(false);
+		});
+
+		it('should return false for an array', () => {
+			expect(StringValidator.isString([] as unknown as string)).toEqual(false);
 		});
 	});
 
