@@ -181,15 +181,7 @@ export class BoardNodeCopyService {
 			...this.buildSpecificProps([]),
 		});
 
-		const fileCopy = await context.copyFilesOfParent(original.id, copy.id);
-
-		const fileCopyStatus = fileCopy.map((copyFileDto) => {
-			return {
-				type: CopyElementType.FILE,
-				status: copyFileDto.id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
-				title: copyFileDto.name ?? `(old fileid: ${copyFileDto.sourceId})`,
-			};
-		});
+		const fileCopyStatus = await this.copyFilesOfParent(original, context, copy);
 
 		const result: CopyStatus = {
 			copyEntity: copy,
@@ -199,6 +191,42 @@ export class BoardNodeCopyService {
 		};
 
 		return result;
+	}
+
+	public async copyFileFolderElement(original: FileFolderElement, context: CopyContext): Promise<CopyStatus> {
+		const copy = new FileFolderElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
+		const fileCopyStatus = await this.copyFilesOfParent(original, context, copy);
+
+		const result: CopyStatus = {
+			copyEntity: copy,
+			type: CopyElementType.FILE_FOLDER_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+			elements: fileCopyStatus,
+		};
+
+		return result;
+	}
+
+	private async copyFilesOfParent(
+		original: FileElement | LinkElement | FileFolderElement,
+		context: CopyContext,
+		copy: FileFolderElement | FileElement
+	): Promise<CopyStatus[]> {
+		const fileCopy = await context.copyFilesOfParent(original.id, copy.id);
+
+		const copyStatus = fileCopy.map((copyFileDto) => {
+			return {
+				type: CopyElementType.FILE,
+				status: copyFileDto.id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
+				title: copyFileDto.name ?? `(old fileid: ${copyFileDto.sourceId})`,
+			};
+		});
+
+		return copyStatus;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -441,23 +469,6 @@ export class BoardNodeCopyService {
 			copyEntity: copy,
 			type: CopyElementType.DELETED_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
-		};
-
-		return Promise.resolve(result);
-	}
-
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public copyFileFolderElement(original: FileFolderElement, context: CopyContext): Promise<CopyStatus> {
-		const copy = new FileFolderElement({
-			...original.getProps(),
-			...this.buildSpecificProps([]),
-		});
-
-		const result: CopyStatus = {
-			copyEntity: copy,
-			type: CopyElementType.FILE_FOLDER_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
-			elements: [],
 		};
 
 		return Promise.resolve(result);
