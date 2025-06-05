@@ -9,6 +9,7 @@ export class UserScope extends Scope<User> {
 		if (isOutdated !== undefined) {
 			this.addQuery({ outdatedSince: { $exists: isOutdated } });
 		}
+
 		return this;
 	}
 
@@ -16,6 +17,7 @@ export class UserScope extends Scope<User> {
 		if (date) {
 			this.addQuery({ $or: [{ lastLoginSystemChange: { $lt: date } }, { lastLoginSystemChange: { $exists: false } }] });
 		}
+
 		return this;
 	}
 
@@ -25,6 +27,7 @@ export class UserScope extends Scope<User> {
 				lastLoginSystemChange: { $gte: startDate, $lt: endDate },
 			});
 		}
+
 		return this;
 	}
 
@@ -32,6 +35,7 @@ export class UserScope extends Scope<User> {
 		if (date) {
 			this.addQuery({ outdatedSince: { $eq: date } });
 		}
+
 		return this;
 	}
 
@@ -39,6 +43,7 @@ export class UserScope extends Scope<User> {
 		if (schoolId !== undefined) {
 			this.addQuery({ school: schoolId });
 		}
+
 		return this;
 	}
 
@@ -46,18 +51,21 @@ export class UserScope extends Scope<User> {
 		if (roleId !== undefined) {
 			this.addQuery({ roles: roleId });
 		}
+
 		return this;
 	}
 
 	public byName(name?: string): UserScope {
 		if (name !== undefined) {
 			this.checkAlphanumericWithSpaceAndDash(name);
+			// To avoid ressource expensive operations with passing unexpected long name.
 			this.checkMaxLength(name, 100);
 
 			const sanitizedAndEscapedName = this.sanitizeAndEscapeString(name);
 			const searchNameRegex = new RegExp(sanitizedAndEscapedName, 'i');
 			this.addQuery({ $or: [{ firstName: searchNameRegex }, { lastName: searchNameRegex }] });
 		}
+
 		return this;
 	}
 
@@ -77,9 +85,8 @@ export class UserScope extends Scope<User> {
 		}
 	}
 
-	private checkMaxLength(value: string, length: number): void {
-		// To avoid ressource expensive operations with passing unexpected long names it is fixed to 100.
-		if (value.length > length) {
+	private checkMaxLength(value: string, allowedMaxLength: number): void {
+		if (value.length > allowedMaxLength) {
 			throw new Error('Seached name is too long');
 		}
 	}
@@ -88,9 +95,11 @@ export class UserScope extends Scope<User> {
 		if (query === UserDiscoverableQuery.TRUE) {
 			this.addQuery({ discoverable: true });
 		}
+
 		if (query === UserDiscoverableQuery.NOT_FALSE) {
 			this.addQuery({ discoverable: { $ne: false } });
 		}
+
 		return this;
 	}
 
@@ -98,6 +107,7 @@ export class UserScope extends Scope<User> {
 		if (!deleted) {
 			this.addQuery({ $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] });
 		}
+
 		return this;
 	}
 }
