@@ -21,7 +21,6 @@ import type { OauthConfig } from '@modules/oauth';
 import type { ProvisioningConfig } from '@modules/provisioning';
 import type { RocketChatUserConfig } from '@modules/rocketchat-user';
 import type { RoomConfig } from '@modules/room';
-import type { RoomMembershipConfig } from '@modules/room-membership';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import type { ShdConfig } from '@modules/shd';
@@ -80,8 +79,7 @@ export interface ServerConfig
 		EncryptionConfig,
 		FilesStorageClientConfig,
 		ManagementMediaSourcesConfig,
-		ManagementServerConfig,
-		RoomMembershipConfig {
+		ManagementServerConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -133,7 +131,6 @@ export interface ServerConfig
 	FEATURE_AI_TUTOR_ENABLED: boolean;
 	FEATURE_ROOMS_ENABLED: boolean;
 	FEATURE_ROOM_INVITATION_LINKS_ENABLED: boolean;
-	FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED: boolean;
 	FEATURE_ROOM_ADD_STUDENTS_ENABLED: boolean;
 	FEATURE_ROOM_MEMBERS_TABS_ENABLED: boolean;
 	FEATURE_ROOM_COPY_ENABLED: boolean;
@@ -324,7 +321,6 @@ const config: ServerConfig = {
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
 	FEATURE_ROOMS_ENABLED: Configuration.get('FEATURE_ROOMS_ENABLED') as boolean,
 	FEATURE_ROOM_INVITATION_LINKS_ENABLED: Configuration.get('FEATURE_ROOM_INVITATION_LINKS_ENABLED') as boolean,
-	FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED: Configuration.get('FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED') as boolean,
 	FEATURE_ROOM_ADD_STUDENTS_ENABLED: Configuration.get('FEATURE_ROOM_ADD_STUDENTS_ENABLED') as boolean,
 	FEATURE_ROOM_MEMBERS_TABS_ENABLED: Configuration.get('FEATURE_ROOM_MEMBERS_TABS_ENABLED') as boolean,
 	FEATURE_ROOM_COPY_ENABLED: Configuration.get('FEATURE_ROOM_COPY_ENABLED') as boolean,

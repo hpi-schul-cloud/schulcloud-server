@@ -92,6 +92,10 @@ describe('ShareTokenPermissionService', () => {
 			jest.spyOn(Configuration, 'get').mockReturnValue(true);
 
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Course)).not.toThrow();
+			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Lesson)).not.toThrow();
+			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Task)).not.toThrow();
+			expect(() => service.checkFeatureEnabled(ShareTokenParentType.ColumnBoard)).not.toThrow();
+			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Room)).not.toThrow();
 		});
 
 		it('should throw NotImplementedException for unsupported parent types', () => {

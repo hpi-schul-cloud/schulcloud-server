@@ -428,12 +428,14 @@ describe('ShareTokenUC', () => {
 				const shareToken = shareTokenDOFactory.build({ payload });
 				service.lookupToken.mockResolvedValueOnce(shareToken);
 
+				const board = columnBoardFactory.build();
+
 				sagaService.executeSaga.mockResolvedValueOnce({
 					roomCopied: { id: room.id, name: 'copy' },
-					boardsCopied: [],
+					boardsCopied: [board],
 				});
 
-				return { user, school, shareToken, room };
+				return { user, school, shareToken, room, board };
 			};
 
 			it('should check permission to create room', async () => {
@@ -458,7 +460,7 @@ describe('ShareTokenUC', () => {
 			});
 
 			it('should return the result', async () => {
-				const { user, shareToken, room } = setup();
+				const { user, shareToken, room, board } = setup();
 				const status: CopyStatus = {
 					type: CopyElementType.ROOM,
 					status: CopyStatusEnum.SUCCESS,
@@ -466,7 +468,16 @@ describe('ShareTokenUC', () => {
 						id: room.id,
 					},
 					title: 'copy',
-					elements: [],
+					elements: [
+						{
+							title: board.title,
+							type: CopyElementType.BOARD,
+							status: CopyStatusEnum.SUCCESS,
+							copyEntity: {
+								id: board.id,
+							},
+						},
+					],
 				};
 
 				const newName = 'NewName';

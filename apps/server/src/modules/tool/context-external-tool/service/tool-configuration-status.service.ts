@@ -110,7 +110,7 @@ export class ToolConfigurationStatusService {
 			);
 
 			const externalToolMedium = externalTool.medium;
-			if (externalToolMedium) {
+			if (externalToolMedium?.mediumId) {
 				const isLicensed = this.mediaUserLicenseService.hasLicenseForExternalTool(
 					externalToolMedium,
 					mediaUserLicenses
@@ -128,7 +128,7 @@ export class ToolConfigurationStatusService {
 				await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
 
 			const externalToolMedium = externalTool.medium;
-			if (externalToolMedium) {
+			if (externalToolMedium?.mediumId) {
 				const isLicensed = this.mediaSchoolLicenseService.hasLicenseForExternalTool(
 					externalToolMedium,
 					mediaSchoolLicenses

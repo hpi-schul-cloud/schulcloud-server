@@ -5,6 +5,7 @@ import { CommonCartridgeExportService } from '../service/common-cartridge-export
 import { CommonCartridgeUc } from './common-cartridge.uc';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeImportService } from '../service';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
 
 describe('CommonCartridgeUc', () => {
 	let module: TestingModule;
@@ -71,16 +72,17 @@ describe('CommonCartridgeUc', () => {
 	describe('importCourse', () => {
 		const setup = () => {
 			const file = Buffer.from(faker.lorem.paragraphs());
+			const currentUser = currentUserFactory.build();
 
-			return { file };
+			return { file, currentUser };
 		};
 
-		it('should class the import service', async () => {
-			const { file } = setup();
+		it('should call the import service', async () => {
+			const { file, currentUser } = setup();
 
-			await sut.importCourse(file);
+			await sut.importCourse(file, currentUser);
 
-			expect(commonCartridgeImportServiceMock.importFile).toHaveBeenCalledWith(file);
+			expect(commonCartridgeImportServiceMock.importFile).toHaveBeenCalledWith(file, currentUser);
 		});
 	});
 });
