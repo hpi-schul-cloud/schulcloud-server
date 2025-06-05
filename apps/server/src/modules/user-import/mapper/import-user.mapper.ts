@@ -14,7 +14,7 @@ import { RoleNameMapper } from './role-name.mapper';
 import { UserMatchMapper } from './user-match.mapper';
 
 export class ImportUserMapper {
-	static mapSortingQueryToDomain(sortingQuery: SortImportUserParams): SortOrderMap<ImportUser> | undefined {
+	public static mapSortingQueryToDomain(sortingQuery: SortImportUserParams): SortOrderMap<ImportUser> | undefined {
 		const { sortBy } = sortingQuery;
 		if (sortBy == null) return undefined;
 		const result: SortOrderMap<ImportUser> = {};
@@ -29,7 +29,7 @@ export class ImportUserMapper {
 		return result;
 	}
 
-	static mapToResponse(importUser: ImportUser): ImportUserResponse {
+	public static mapToResponse(importUser: ImportUser): ImportUserResponse {
 		const dto = new ImportUserResponse({
 			importUserId: importUser.id,
 			loginName: importUser.loginName || '',
@@ -47,7 +47,7 @@ export class ImportUserMapper {
 		return dto;
 	}
 
-	static mapImportUserFilterQueryToDomain(query: FilterImportUserParams): ImportUserFilter {
+	public static mapImportUserFilterQueryToDomain(query: FilterImportUserParams): ImportUserFilter {
 		const dto: ImportUserFilter = {};
 		if (StringValidator.isNotEmptyString(query.firstName)) dto.firstName = query.firstName;
 		if (StringValidator.isNotEmptyString(query.lastName)) dto.lastName = query.lastName;

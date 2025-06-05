@@ -25,14 +25,15 @@ export class Scope<T> {
 			return EmptyResultQuery as FilterQuery<T>;
 		}
 		const query = this._queries.length > 1 ? { [this._operator]: this._queries } : this._queries[0];
+
 		return query as FilterQuery<T>;
 	}
 
-	addQuery(query: FilterQuery<T> | EmptyResultQueryType): void {
+	public addQuery(query: FilterQuery<T> | EmptyResultQueryType): void {
 		this._queries.push(query);
 	}
 
-	allowEmptyQuery(isEmptyQueryAllowed: boolean): this {
+	public allowEmptyQuery(isEmptyQueryAllowed: boolean): this {
 		this._allowEmptyQuery = isEmptyQueryAllowed;
 
 		return this;
