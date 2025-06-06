@@ -33,7 +33,7 @@ import {
 	RichTextElement,
 	SubmissionContainerElement,
 	type SubmissionItem,
-	type VideoConferenceElement,
+	VideoConferenceElement,
 } from '../../domain';
 
 export interface CopyContext {
@@ -383,9 +383,15 @@ export class BoardNodeCopyService {
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public copyVideoConferenceElement(original: VideoConferenceElement, context: CopyContext): Promise<CopyStatus> {
+		const copy = new VideoConferenceElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
 		const result: CopyStatus = {
+			copyEntity: copy,
 			type: CopyElementType.VIDEO_CONFERENCE_ELEMENT,
-			status: CopyStatusEnum.NOT_DOING,
+			status: CopyStatusEnum.SUCCESS,
 		};
 
 		return Promise.resolve(result);
