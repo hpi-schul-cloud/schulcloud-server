@@ -22,7 +22,9 @@ import {
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	FileElementFactory,
 	FileFolderElement,
+	FileFolderElementFactory,
 	getBoardNodeType,
 	H5pElement,
 	handleNonExhaustiveSwitch,
@@ -176,7 +178,7 @@ export class BoardNodeCopyService {
 	}
 
 	public async copyFileElement(original: FileElement, context: CopyContext): Promise<CopyStatus> {
-		const copy = new FileElement({
+		const copy = FileElementFactory.build({
 			...original.getProps(),
 			...this.buildSpecificProps([]),
 		});
@@ -194,7 +196,7 @@ export class BoardNodeCopyService {
 	}
 
 	public async copyFileFolderElement(original: FileFolderElement, context: CopyContext): Promise<CopyStatus> {
-		const copy = new FileFolderElement({
+		const copy = FileFolderElementFactory.build({
 			...original.getProps(),
 			...this.buildSpecificProps([]),
 		});
