@@ -191,9 +191,18 @@ export class CommonCartridgeExportService {
 		if (column.cards.length) {
 			const cardsIds = column.cards.map((card) => card.cardId);
 			const listOfCards: CardListResponseDto = await this.cardClientAdapter.getAllBoardCardsByIds(cardsIds);
+			const sortedCards = this.sortCardsAfterRetrieval(cardsIds, listOfCards.data);
 
-			await Promise.all(listOfCards.data.map((card) => this.addCardToOrganization(card, columnOrganization)));
+			await Promise.all(sortedCards.map((card) => this.addCardToOrganization(card, columnOrganization)));
 		}
+	}
+
+	private sortCardsAfterRetrieval(cardsIds: string[], retrievedCards: CardResponseDto[]): CardResponseDto[] {
+		const retrievedCardsById = new Map<string, CardResponseDto>();
+		retrievedCards.forEach((retrievedCard) => retrievedCardsById.set(retrievedCard.id, retrievedCard));
+
+		const sortedCards = cardsIds.map((id) => retrievedCardsById.get(id)).filter((element) => !!element);
+		return sortedCards;
 	}
 
 	private async addCardToOrganization(
