@@ -11,9 +11,10 @@ import { ExternalToolImageSanitizationLoggableException } from '../loggable';
 
 @Injectable()
 export class ExternalToolImageSanitizerService {
-	constructor(private readonly logger: Logger, private readonly sanitizer: DOMPurify) {
-		const { window } = new JSDOM('<!DOCTYPE html>');
+	private readonly sanitizer: DOMPurify;
 
+	constructor(private readonly logger: Logger) {
+		const { window } = new JSDOM('<!DOCTYPE html>');
 		this.sanitizer = createDOMPurify(window);
 	}
 
