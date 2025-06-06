@@ -3,9 +3,15 @@ import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediumMetadataService } from '@modules/medium-metadata';
 import { mediumMetadataDtoFactory } from '@modules/medium-metadata/testing';
-import { ExternalTool, ExternalToolMedium, ExternalToolService } from '@modules/tool';
-import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
-import { ExternalToolLogoService, ExternalToolValidationService } from '@modules/tool/external-tool/service';
+import {
+	ExternalTool,
+	ExternalToolService,
+	ExternalToolLogoService,
+	ExternalToolMedium,
+	ExternalToolMediumStatus,
+	ExternalToolValidationService,
+	ExternalToolParameterValidationService,
+} from '@modules/tool';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BiloMetadataSyncStrategy } from './bilo-metadata-sync.strategy';
@@ -17,6 +23,7 @@ describe(BiloMetadataSyncStrategy.name, () => {
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let mediumMetadataService: DeepMocked<MediumMetadataService>;
 	let externalToolLogoService: DeepMocked<ExternalToolLogoService>;
+	let externalToolParameterValidationService: DeepMocked<ExternalToolParameterValidationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -35,6 +42,10 @@ describe(BiloMetadataSyncStrategy.name, () => {
 					useValue: createMock<ExternalToolValidationService>(),
 				},
 				{
+					provide: ExternalToolParameterValidationService,
+					useValue: createMock<ExternalToolParameterValidationService>(),
+				},
+				{
 					provide: ExternalToolLogoService,
 					useValue: createMock<ExternalToolLogoService>(),
 				},
@@ -45,6 +56,7 @@ describe(BiloMetadataSyncStrategy.name, () => {
 		externalToolService = module.get(ExternalToolService);
 		mediumMetadataService = module.get(MediumMetadataService);
 		externalToolLogoService = module.get(ExternalToolLogoService);
+		externalToolParameterValidationService = module.get(ExternalToolParameterValidationService);
 	});
 
 	afterAll(async () => {
@@ -92,6 +104,7 @@ describe(BiloMetadataSyncStrategy.name, () => {
 				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
 				mediumMetadataService.getMetadataItems.mockResolvedValueOnce([mediumMetadata]);
 				externalToolLogoService.fetchLogo.mockResolvedValueOnce(logoData);
+				externalToolParameterValidationService.isNameUnique.mockResolvedValueOnce(true);
 
 				return {
 					mediaSource,

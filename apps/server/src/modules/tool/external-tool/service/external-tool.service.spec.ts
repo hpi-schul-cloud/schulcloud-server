@@ -712,4 +712,31 @@ describe(ExternalToolService.name, () => {
 			expect(result).toEqual([externalTool]);
 		});
 	});
+
+	describe('findExternalToolsByName', () => {
+		const setup = () => {
+			const name = 'test-tool';
+			const externalTool = externalToolFactory.build({ name });
+
+			externalToolRepo.findAllByName.mockResolvedValue([externalTool]);
+
+			return { name, externalTool };
+		};
+
+		it('should find the external tools by name', async () => {
+			const { name } = setup();
+
+			await service.findExternalToolsByName(name);
+
+			expect(externalToolRepo.findAllByName).toBeCalledWith(name);
+		});
+
+		it('should return the found external tools', async () => {
+			const { name, externalTool } = setup();
+
+			const result = await service.findExternalToolsByName(name);
+
+			expect(result).toEqual([externalTool]);
+		});
+	});
 });
