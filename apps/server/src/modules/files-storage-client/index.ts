@@ -1,6 +1,7 @@
 export { FileDto } from './dto';
-export { FilesStorageClientModule } from './files-storage-client.module';
+export { CopyFileDto } from './dto/copy-file.dto';
 export { FilesStorageClientConfig } from './files-storage-client-config';
-export { FileParamBuilder } from './mapper';
+export { FilesStorageClientModule } from './files-storage-client.module';
 export { FileUrlReplacement } from './interfaces';
-export { FilesStorageClientAdapterService, CopyFilesService } from './service';
+export { FileParamBuilder } from './mapper';
+export { CopyFilesService, FilesStorageClientAdapterService } from './service';
