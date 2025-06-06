@@ -115,7 +115,7 @@ describe(BaseMetadataSyncStrategy.name, () => {
 
 				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
 				mediumMetadataService.getMetadataItems.mockResolvedValueOnce([mediumMetadata]);
-				externalToolParameterValidationService.isNameUnique.mockResolvedValueOnce(false);
+				externalToolParameterValidationService.isNameUnique.mockResolvedValueOnce(true);
 
 				return {
 					mediaSource,
@@ -272,7 +272,7 @@ describe(BaseMetadataSyncStrategy.name, () => {
 
 				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
 				mediumMetadataService.getMetadataItems.mockResolvedValueOnce([mediumMetadata]);
-				externalToolParameterValidationService.isNameUnique.mockResolvedValueOnce(false);
+				externalToolParameterValidationService.isNameUnique.mockResolvedValueOnce(true);
 				externalToolValidationService.validateUpdate.mockRejectedValueOnce(new Error());
 
 				return {
@@ -319,15 +319,18 @@ describe(BaseMetadataSyncStrategy.name, () => {
 
 				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
 				mediumMetadataService.getMetadataItems.mockResolvedValueOnce([mediumMetadata]);
-				externalToolParameterValidationService.isNameUnique.mockResolvedValueOnce(true);
+				externalToolParameterValidationService.isNameUnique.mockResolvedValueOnce(false);
 
-				const modifiedName = `${externalTool.name} - [${mediumId}]`;
+				const modifiedExternalTool = externalToolFactory.build({
+					...externalTool.getProps(),
+					name: `${externalTool.name} - [${mediumId}]`,
+				});
 
 				return {
 					mediaSource,
 					externalTool,
 					mediumMetadata,
-					modifiedName,
+					modifiedExternalTool,
 				};
 			};
 
@@ -348,12 +351,11 @@ describe(BaseMetadataSyncStrategy.name, () => {
 			});
 
 			it('should save the external tool with a modified name', async () => {
-				const { mediaSource, externalTool, modifiedName } = setup();
+				const { mediaSource, modifiedExternalTool } = setup();
 
 				await strategy.syncAllMediaMetadata(mediaSource);
 
-				externalTool.name = modifiedName;
-				expect(externalToolService.updateExternalTools).toHaveBeenCalledWith([externalTool]);
+				expect(externalToolService.updateExternalTools).toHaveBeenCalledWith([modifiedExternalTool]);
 			});
 
 			it('should return a success sync report', async () => {

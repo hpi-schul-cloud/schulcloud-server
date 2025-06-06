@@ -1,6 +1,5 @@
 import { EntityName, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination, SortOrder } from '@shared/domain/interface';
@@ -8,6 +7,7 @@ import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
 import { ExternalToolSearchQuery } from '../../../common/interface';
 import { ExternalTool } from '../../domain';
+import { ExternalToolMediumStatus } from '../../enum';
 import { ExternalToolEntity, ExternalToolEntityProps } from './external-tool.entity';
 import { ExternalToolScope } from './external-tool.scope';
 import { ExternalToolRepoMapper, ExternalToolSortingMapper } from './mapper';
@@ -96,6 +96,17 @@ export class ExternalToolRepo {
 		const entities: ExternalToolEntity[] = await this.em.find(this.entityName, {
 			medium: { mediaSourceId, status: { $ne: ExternalToolMediumStatus.TEMPLATE } },
 		});
+
+		const domainObjects: ExternalTool[] = entities.map((entity: ExternalToolEntity): ExternalTool => {
+			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
+			return domainObject;
+		});
+
+		return domainObjects;
+	}
+
+	public async findAllByName(name: string): Promise<ExternalTool[]> {
+		const entities: ExternalToolEntity[] = await this.em.find(this.entityName, { name });
 
 		const domainObjects: ExternalTool[] = entities.map((entity: ExternalToolEntity): ExternalTool => {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);

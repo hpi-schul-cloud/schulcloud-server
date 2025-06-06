@@ -7,7 +7,7 @@ import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../domain';
 import { customParameterFactory, externalToolFactory } from '../testing';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
-import { ExternalToolService } from './index';
+import { ExternalToolService } from './external-tool.service';
 
 describe('ExternalToolParameterValidationService', () => {
 	let module: TestingModule;
@@ -48,7 +48,7 @@ describe('ExternalToolParameterValidationService', () => {
 				const externalTool: ExternalTool = externalToolFactory
 					.withCustomParameters(1, { default: 'test', regex: '[t]', regexComment: 'testComment' })
 					.buildWithId();
-				externalToolService.findExternalToolByName.mockResolvedValue(externalTool);
+				externalToolService.findExternalToolsByName.mockResolvedValue([externalTool]);
 
 				const result: Promise<void> = service.validateCommon(externalTool);
 
@@ -60,7 +60,7 @@ describe('ExternalToolParameterValidationService', () => {
 			it('should throw an exception when name already exists', async () => {
 				const externalTool: ExternalTool = externalToolFactory.build({ name: 'sameName' });
 				const existingExternalToolDO: ExternalTool = externalToolFactory.buildWithId({ name: 'sameName' });
-				externalToolService.findExternalToolByName.mockResolvedValue(existingExternalToolDO);
+				externalToolService.findExternalToolsByName.mockResolvedValue([existingExternalToolDO]);
 
 				const result: Promise<void> = service.validateCommon(externalTool);
 
@@ -85,7 +85,7 @@ describe('ExternalToolParameterValidationService', () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
 					parameters: [customParameterFactory.build({ name: '' })],
 				});
-				externalToolService.findExternalToolByName.mockResolvedValue(null);
+				externalToolService.findExternalToolsByName.mockResolvedValue([]);
 
 				const func = () => service.validateCommon(externalTool);
 
@@ -103,7 +103,7 @@ describe('ExternalToolParameterValidationService', () => {
 						customParameterFactory.build({ name: 'paramEqual' }),
 					],
 				});
-				externalToolService.findExternalToolByName.mockResolvedValue(null);
+				externalToolService.findExternalToolsByName.mockResolvedValue([]);
 
 				const func = () => service.validateCommon(externalTool);
 
@@ -121,7 +121,7 @@ describe('ExternalToolParameterValidationService', () => {
 						customParameterFactory.build({ name: 'Param1casesensitive' }),
 					],
 				});
-				externalToolService.findExternalToolByName.mockResolvedValue(null);
+				externalToolService.findExternalToolsByName.mockResolvedValue([]);
 
 				const result: Promise<void> = service.validateCommon(externalTool);
 
@@ -138,7 +138,7 @@ describe('ExternalToolParameterValidationService', () => {
 				const externalTool: ExternalTool = externalToolFactory
 					.withCustomParameters(1, { regex: '[', regexComment: 'not a regex' })
 					.build();
-				externalToolService.findExternalToolByName.mockResolvedValue(null);
+				externalToolService.findExternalToolsByName.mockResolvedValue([]);
 
 				const func = () => service.validateCommon(externalTool);
 
@@ -157,7 +157,7 @@ describe('ExternalToolParameterValidationService', () => {
 				const externalTool: ExternalTool = externalToolFactory
 					.withCustomParameters(1, { default: 'es', regex: '[t]', regexComment: 'mockComment' })
 					.buildWithId();
-				externalToolService.findExternalToolByName.mockResolvedValue(null);
+				externalToolService.findExternalToolsByName.mockResolvedValue([]);
 
 				const func = () => service.validateCommon(externalTool);
 
@@ -170,7 +170,7 @@ describe('ExternalToolParameterValidationService', () => {
 				const externalTool: ExternalTool = externalToolFactory
 					.withCustomParameters(1, { regex: '.', scope: CustomParameterScope.SCHOOL })
 					.build();
-				externalToolService.findExternalToolByName.mockResolvedValue(null);
+				externalToolService.findExternalToolsByName.mockResolvedValue([]);
 
 				const result: Promise<void> = service.validateCommon(externalTool);
 
@@ -194,7 +194,7 @@ describe('ExternalToolParameterValidationService', () => {
 						})
 						.build();
 
-					externalToolService.findExternalToolByName.mockResolvedValue(null);
+					externalToolService.findExternalToolsByName.mockResolvedValue([]);
 
 					return {
 						externalTool,
@@ -219,7 +219,7 @@ describe('ExternalToolParameterValidationService', () => {
 						})
 						.build();
 
-					externalToolService.findExternalToolByName.mockResolvedValue(null);
+					externalToolService.findExternalToolsByName.mockResolvedValue([]);
 
 					return {
 						externalTool,
@@ -250,7 +250,7 @@ describe('ExternalToolParameterValidationService', () => {
 						})
 						.build();
 
-					externalToolService.findExternalToolByName.mockResolvedValue(null);
+					externalToolService.findExternalToolsByName.mockResolvedValue([]);
 
 					return {
 						externalTool,
@@ -282,7 +282,7 @@ describe('ExternalToolParameterValidationService', () => {
 						})
 						.build();
 
-					externalToolService.findExternalToolByName.mockResolvedValue(null);
+					externalToolService.findExternalToolsByName.mockResolvedValue([]);
 
 					return {
 						externalTool,
@@ -308,7 +308,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [parameter] });
 
-				externalToolService.findExternalToolByName.mockResolvedValue(null);
+				externalToolService.findExternalToolsByName.mockResolvedValue([]);
 
 				return {
 					externalTool,
@@ -334,7 +334,7 @@ describe('ExternalToolParameterValidationService', () => {
 				const parameter = customParameterFactory.buildWithId({ default: 'test', type: CustomParameterType.NUMBER });
 				const externalTool: ExternalTool = externalToolFactory.buildWithId({ parameters: [parameter] });
 
-				externalToolService.findExternalToolByName.mockResolvedValue(externalTool);
+				externalToolService.findExternalToolsByName.mockResolvedValue([externalTool]);
 
 				return {
 					externalTool,
@@ -367,7 +367,7 @@ describe('ExternalToolParameterValidationService', () => {
 						medium: undefined,
 					});
 
-					externalToolService.findExternalToolByName.mockResolvedValue(externalTool);
+					externalToolService.findExternalToolsByName.mockResolvedValue([externalTool]);
 
 					return {
 						externalTool,
@@ -398,7 +398,7 @@ describe('ExternalToolParameterValidationService', () => {
 						parameters: [parameter],
 					});
 
-					externalToolService.findExternalToolByName.mockResolvedValue(externalTool);
+					externalToolService.findExternalToolsByName.mockResolvedValue([externalTool]);
 
 					return {
 						externalTool,
@@ -422,7 +422,7 @@ describe('ExternalToolParameterValidationService', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.build({ name: 'test-name' });
 
-				externalToolService.findExternalToolByName.mockResolvedValue(null);
+				externalToolService.findExternalToolsByName.mockResolvedValue([]);
 
 				return { externalTool };
 			};
@@ -440,7 +440,7 @@ describe('ExternalToolParameterValidationService', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.build({ name: 'test-name' });
 
-				externalToolService.findExternalToolByName.mockResolvedValue(externalTool);
+				externalToolService.findExternalToolsByName.mockResolvedValue([externalTool]);
 
 				return { externalTool };
 			};
@@ -459,7 +459,7 @@ describe('ExternalToolParameterValidationService', () => {
 				const externalTool: ExternalTool = externalToolFactory.build({ name: 'test-name' });
 				const existingExternalTool: ExternalTool = externalToolFactory.build({ name: 'test-name' });
 
-				externalToolService.findExternalToolByName.mockResolvedValue(existingExternalTool);
+				externalToolService.findExternalToolsByName.mockResolvedValue([externalTool, existingExternalTool]);
 
 				return { externalTool };
 			};

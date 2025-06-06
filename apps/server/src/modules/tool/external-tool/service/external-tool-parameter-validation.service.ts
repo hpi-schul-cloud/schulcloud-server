@@ -77,9 +77,17 @@ export class ExternalToolParameterValidationService {
 			return true;
 		}
 
-		const duplicate: ExternalTool | null = await this.externalToolService.findExternalToolByName(externalTool.name);
+		const duplicates: ExternalTool[] = await this.externalToolService.findExternalToolsByName(externalTool.name);
+		if (duplicates.length === 0) {
+			return true;
+		}
 
-		return duplicate == null || duplicate.id === externalTool.id;
+		if (duplicates.length > 1) {
+			return false;
+		}
+
+		const isDuplicateSelf = duplicates[0].id === externalTool.id;
+		return isDuplicateSelf;
 	}
 
 	private isCustomParameterNameEmpty(param: CustomParameter): boolean {
