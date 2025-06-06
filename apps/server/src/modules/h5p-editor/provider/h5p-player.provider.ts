@@ -1,9 +1,9 @@
 import { H5PPlayer, ITranslationFunction } from '@lumieducation/h5p-server';
 
 import { h5pConfig, h5pUrlGenerator } from '../service/config/h5p-service-config';
-import { ContentStorage } from '../service/contentStorage.service';
+import { ContentStorage } from '../service/content-storage.service';
 import { Translator } from '../service/h5p-translator.service';
-import { LibraryStorage } from '../service/libraryStorage.service';
+import { LibraryStorage } from '../service/library-storage.service';
 
 export const H5PPlayerProvider = {
 	provide: H5PPlayer,

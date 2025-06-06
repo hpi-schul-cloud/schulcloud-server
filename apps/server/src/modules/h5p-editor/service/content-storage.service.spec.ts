@@ -1,6 +1,7 @@
 import { HeadObjectCommandOutput } from '@aws-sdk/client-s3';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { S3ClientAdapter } from '@infra/s3-client';
+import { CopyFiles, S3ClientAdapter } from '@infra/s3-client';
+import { s3ObjectKeysRecursiveFactory } from '@infra/s3-client/testing';
 import { IContentMetadata, ILibraryName, IUser, LibraryName } from '@lumieducation/h5p-server';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
@@ -8,11 +9,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IEntity } from '@shared/domain/interface';
 import { Readable } from 'stream';
 import { GetH5PFileResponse } from '../controller/dto';
-import { H5PContent, H5PContentParentType, H5PContentProperties } from '../entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
-import { H5PContentRepo } from '../repo';
-import { H5PContentParentParams, LumiUserWithContentData } from '../types/lumi-types';
-import { ContentStorage } from './contentStorage.service';
+import { H5PContent, H5PContentProperties, H5PContentRepo } from '../repo';
+import { h5pContentFactory } from '../testing';
+import { H5PContentParentParams, H5PContentParentType, LumiUserWithContentData } from '../types';
+import { ContentStorage } from './content-storage.service';
 
 const helpers = {
 	buildMetadata(
@@ -916,6 +917,35 @@ describe('ContentStorage', () => {
 
 				const startsWithSlash = service.deleteFile('id', '/example.txt');
 				await expect(startsWithSlash).rejects.toThrow(HttpException);
+			});
+		});
+	});
+
+	describe('copyAllFiles', () => {
+		describe('when source and target content id are passed', () => {
+			const setup = () => {
+				const [sourceContent, targetContent] = h5pContentFactory.buildList(2);
+				const listedFiles = s3ObjectKeysRecursiveFactory.build();
+
+				const filesToBeCopied: CopyFiles[] = listedFiles.files.map((filename) => {
+					return {
+						sourcePath: `h5p-content/${sourceContent.id}/${filename}`,
+						targetPath: `h5p-content/${targetContent.id}/${filename}`,
+					};
+				});
+
+				contentRepo.existsOne.mockResolvedValueOnce(true);
+				s3ClientAdapter.list.mockResolvedValueOnce(listedFiles);
+
+				return { sourceContentId: sourceContent.id, targetContentId: targetContent.id, filesToBeCopied };
+			};
+
+			it('should copy all the files from the source to the target content storage', async () => {
+				const { sourceContentId, targetContentId, filesToBeCopied } = setup();
+
+				await service.copyAllFiles(sourceContentId, targetContentId);
+
+				expect(s3ClientAdapter.copy).toHaveBeenCalledWith(filesToBeCopied);
 			});
 		});
 	});
