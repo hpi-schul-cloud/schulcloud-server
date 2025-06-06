@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyElementType, CopyHelperService, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyElementType, CopyHelperService, CopyMapper, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import type { CopyFileDto } from '@modules/files-storage-client/dto';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import {
@@ -218,15 +218,8 @@ export class BoardNodeCopyService {
 		context: CopyContext,
 		copy: FileFolderElement | FileElement
 	): Promise<CopyStatus[]> {
-		const fileCopy = await context.copyFilesOfParent(original.id, copy.id);
-
-		const copyStatus = fileCopy.map((copyFileDto) => {
-			return {
-				type: CopyElementType.FILE,
-				status: copyFileDto.id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
-				title: copyFileDto.name ?? `(old fileid: ${copyFileDto.sourceId})`,
-			};
-		});
+		const fileCopies = await context.copyFilesOfParent(original.id, copy.id);
+		const copyStatus = CopyMapper.mapFileDtosToCopyStatus(fileCopies);
 
 		return copyStatus;
 	}
