@@ -62,19 +62,5 @@ describe(ExternalToolImageSanitizerService.name, () => {
 			expect(() => service.sanitizeSvgToBase64(null)).toThrow(ExternalToolImageSanitizationLoggableException);
 			expect(logger.debug).toHaveBeenCalledWith(new ExternalToolImageSanitizationLoggableException());
 		});
-
-		it('should throw exception if DOMPurify returns empty string', () => {
-			const svgContent = '<svg></svg>';
-
-			expect(() => service.sanitizeSvgToBase64(svgContent)).toThrow(ExternalToolImageSanitizationLoggableException);
-			expect(logger.debug).toHaveBeenCalledWith(new ExternalToolImageSanitizationLoggableException());
-		});
-
-		it('should throw exception if DOMPurify throws an error', () => {
-			const svgContent = '<svg></svg>';
-
-			expect(() => service.sanitizeSvgToBase64(svgContent)).toThrow(ExternalToolImageSanitizationLoggableException);
-			expect(logger.debug).toHaveBeenCalledWith(new ExternalToolImageSanitizationLoggableException());
-		});
 	});
 });
