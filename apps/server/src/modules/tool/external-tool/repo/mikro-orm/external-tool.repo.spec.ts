@@ -1,9 +1,12 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
+import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExternalToolSearchQuery } from '@modules/tool';
 import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationError } from '@shared/common/error';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -123,75 +126,140 @@ describe(ExternalToolRepo.name, () => {
 	});
 
 	describe('save', () => {
-		const setupDO = (config: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig) => {
-			const domainObject: ExternalTool = externalToolFactory.build({
-				name: 'name',
-				url: 'url',
-				logoUrl: 'logoUrl',
-				config,
-				parameters: [
-					new CustomParameter({
-						name: 'name',
-						regex: 'regex',
-						displayName: 'displayName',
-						description: 'description',
-						type: CustomParameterType.NUMBER,
-						scope: CustomParameterScope.SCHOOL,
-						default: 'default',
-						location: CustomParameterLocation.BODY,
-						regexComment: 'mockComment',
-						isOptional: false,
-						isProtected: false,
-					}),
-				],
-				isHidden: true,
-				openNewTab: true,
-				isDeactivated: false,
-			});
+		describe('when valid tool has to be saved', () => {
+			const setupDO = (config: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig) => {
+				const domainObject: ExternalTool = externalToolFactory.build({
+					name: 'name',
+					url: 'url',
+					logoUrl: 'logoUrl',
+					config,
+					parameters: [
+						new CustomParameter({
+							name: 'name',
+							regex: 'regex',
+							displayName: 'displayName',
+							description: 'description',
+							type: CustomParameterType.NUMBER,
+							scope: CustomParameterScope.SCHOOL,
+							default: 'default',
+							location: CustomParameterLocation.BODY,
+							regexComment: 'mockComment',
+							isOptional: false,
+							isProtected: false,
+						}),
+					],
+					isHidden: true,
+					openNewTab: true,
+					isDeactivated: false,
+				});
 
-			return {
-				domainObject,
+				return {
+					domainObject,
+				};
 			};
-		};
 
-		it('should save an basic tool correctly', async () => {
-			const config: BasicToolConfig = new BasicToolConfig({
-				baseUrl: 'baseUrl',
+			it('should save an basic tool correctly', async () => {
+				const config: BasicToolConfig = new BasicToolConfig({
+					baseUrl: 'baseUrl',
+				});
+				const { domainObject } = setupDO(config);
+
+				const result: ExternalTool = await repo.save(domainObject);
+
+				expect(result).toMatchObject({
+					...domainObject.getProps(),
+					id: expect.any(String),
+					createdAt: expect.any(Date),
+				});
 			});
-			const { domainObject } = setupDO(config);
 
-			const result: ExternalTool = await repo.save(domainObject);
+			it('should save an oauth2 tool correctly', async () => {
+				const config: Oauth2ToolConfig = new Oauth2ToolConfig({
+					baseUrl: 'baseUrl',
+					clientId: 'clientId',
+					skipConsent: true,
+				});
+				const { domainObject } = setupDO(config);
 
-			expect(result).toMatchObject({ ...domainObject.getProps(), id: expect.any(String), createdAt: expect.any(Date) });
+				const result: ExternalTool = await repo.save(domainObject);
+
+				expect(result).toMatchObject({
+					...domainObject.getProps(),
+					id: expect.any(String),
+					createdAt: expect.any(Date),
+				});
+			});
+
+			it('should save an lti11 tool correctly', async () => {
+				const config: Lti11ToolConfig = new Lti11ToolConfig({
+					baseUrl: 'baseUrl',
+					secret: 'secret',
+					key: 'key',
+					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+					privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
+					launch_presentation_locale: 'de-DE',
+				});
+				const { domainObject } = setupDO(config);
+
+				const result: ExternalTool = await repo.save(domainObject);
+
+				expect(result).toMatchObject({
+					...domainObject.getProps(),
+					id: expect.any(String),
+					createdAt: expect.any(Date),
+				});
+			});
 		});
 
-		it('should save an oauth2 tool correctly', async () => {
-			const config: Oauth2ToolConfig = new Oauth2ToolConfig({
-				baseUrl: 'baseUrl',
-				clientId: 'clientId',
-				skipConsent: true,
+		describe('when a duplication error occurs during em.flush()', () => {
+			afterEach(async () => {
+				await em.flush();
 			});
-			const { domainObject } = setupDO(config);
 
-			const result: ExternalTool = await repo.save(domainObject);
+			const setupTemplate = () => {
+				const error: Error = new Error();
+				jest.spyOn(em, 'flush').mockImplementationOnce(() => {
+					throw new UniqueConstraintViolationException(error);
+				});
 
-			expect(result).toMatchObject({ ...domainObject.getProps(), id: expect.any(String), createdAt: expect.any(Date) });
+				const templateToSave = externalToolFactory
+					.withMedium({
+						status: ExternalToolMediumStatus.TEMPLATE,
+						mediumId: undefined,
+					})
+					.withBasicConfig()
+					.build();
+
+				return { templateToSave };
+			};
+
+			it('should throw a Validation Error', async () => {
+				const { templateToSave } = setupTemplate();
+
+				await expect(repo.save(templateToSave)).rejects.toThrow(ValidationError);
+			});
 		});
 
-		it('should save an lti11 tool correctly', async () => {
-			const config: Lti11ToolConfig = new Lti11ToolConfig({
-				baseUrl: 'baseUrl',
-				secret: 'secret',
-				key: 'key',
-				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-				privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
-				launch_presentation_locale: 'de-DE',
+		describe('when an unexpected error occurs during em.flush()', () => {
+			afterEach(async () => {
+				await em.flush();
 			});
-			const { domainObject } = setupDO(config);
 
-			const result: ExternalTool = await repo.save(domainObject);
+			const setupTemplate = () => {
+				jest.spyOn(em, 'flush').mockImplementationOnce(() => {
+					throw new Error('test');
+				});
 
-			expect(result).toMatchObject({ ...domainObject.getProps(), id: expect.any(String), createdAt: expect.any(Date) });
+				const templateToSave = externalToolFactory.build();
+
+				return { templateToSave };
+			};
+
+			it('should throw an internal server error', async () => {
+				const { templateToSave } = setupTemplate();
+
+				await expect(repo.save(templateToSave)).rejects.toThrow(InternalServerErrorException);
+			});
 		});
 	});
 
