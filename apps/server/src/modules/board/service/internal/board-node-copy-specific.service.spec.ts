@@ -3,7 +3,6 @@ import { StorageLocation } from '@infra/files-storage-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { CopyFileDto } from '@modules/files-storage-client/dto';
 import { CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import {
@@ -14,6 +13,7 @@ import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { copyFileDtoFactory } from '@modules/files-storage-client/testing';
 import {
 	Card,
 	CollaborativeTextEditorElement,
@@ -228,11 +228,7 @@ describe(BoardNodeCopyService.name, () => {
 			const setup = () => {
 				const { copyContext } = setupContext();
 				const fileElement = fileElementFactory.build();
-				const fileCopyStatus: CopyFileDto = {
-					name: 'bird.jpg',
-					id: new ObjectId().toHexString(),
-					sourceId: new ObjectId().toHexString(),
-				};
+				const fileCopyStatus = copyFileDtoFactory.build();
 				jest.spyOn(copyContext, 'copyFilesOfParent').mockResolvedValueOnce([fileCopyStatus]);
 
 				return { copyContext, fileElement, fileCopyStatus };
@@ -260,9 +256,8 @@ describe(BoardNodeCopyService.name, () => {
 			const setup = () => {
 				const { copyContext } = setupContext();
 				const fileElement = fileElementFactory.build();
-				const fileCopyStatus: CopyFileDto = {
-					sourceId: new ObjectId().toHexString(),
-				} as CopyFileDto;
+				const fileCopyStatus = copyFileDtoFactory.build({ id: undefined, name: undefined });
+
 				jest.spyOn(copyContext, 'copyFilesOfParent').mockResolvedValueOnce([fileCopyStatus]);
 
 				return { copyContext, fileElement, fileCopyStatus };
@@ -287,11 +282,7 @@ describe(BoardNodeCopyService.name, () => {
 				const { copyContext } = setupContext();
 				const fileFolderElement = fileFolderElementFactory.build();
 
-				const fileCopyStatus: CopyFileDto = {
-					name: 'bird.jpg',
-					id: new ObjectId().toHexString(),
-					sourceId: new ObjectId().toHexString(),
-				};
+				const fileCopyStatus = copyFileDtoFactory.build();
 				jest.spyOn(copyContext, 'copyFilesOfParent').mockResolvedValueOnce([fileCopyStatus]);
 
 				return { copyContext, fileFolderElement, fileCopyStatus };
@@ -322,10 +313,9 @@ describe(BoardNodeCopyService.name, () => {
 				const { copyContext } = setupContext();
 				const fileFolderElement = fileFolderElementFactory.build();
 
-				const fileCopyStatus: CopyFileDto = {
-					sourceId: new ObjectId().toHexString(),
-				} as CopyFileDto;
+				const fileCopyStatus = copyFileDtoFactory.build({ id: undefined, name: undefined });
 				jest.spyOn(copyContext, 'copyFilesOfParent').mockResolvedValueOnce([fileCopyStatus]);
+
 				return { copyContext, fileFolderElement, fileCopyStatus };
 			};
 
@@ -346,19 +336,17 @@ describe(BoardNodeCopyService.name, () => {
 		const setup = () => {
 			const { copyContext } = setupContext();
 			const sourceId = new ObjectId().toHexString();
+			const linkElementFileName = `bird.jpg`;
 			const linkElement = linkElementFactory.build({
 				id: sourceId,
-				imageUrl: `https://example.com/${sourceId}/bird.jpg`,
+				imageUrl: `https://example.com/${sourceId}/${linkElementFileName}`,
 			});
 			const linkElementWithoutId = linkElementFactory.build({
 				id: sourceId,
 				imageUrl: `https://example.com/plane.jpg`,
 			});
-			const fileCopyStatus: CopyFileDto = {
-				name: 'bird.jpg',
-				id: new ObjectId().toHexString(),
-				sourceId,
-			};
+			const fileCopyStatus = copyFileDtoFactory.build({ sourceId, name: linkElementFileName });
+
 			jest.spyOn(copyContext, 'copyFilesOfParent').mockResolvedValueOnce([fileCopyStatus]);
 
 			return { copyContext, linkElement, linkElementWithoutId, fileCopyStatus };
@@ -396,7 +384,9 @@ describe(BoardNodeCopyService.name, () => {
 				const result = await service.copyLinkElement(linkElement, copyContext);
 
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				expect((result.copyEntity as LinkElement).imageUrl).toBe(`https://example.com/${fileCopyStatus.id}/bird.jpg`);
+				expect((result.copyEntity as LinkElement).imageUrl).toBe(
+					`https://example.com/${fileCopyStatus.id}/${fileCopyStatus.name}`
+				);
 			});
 		});
 
