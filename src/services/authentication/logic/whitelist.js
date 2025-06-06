@@ -103,7 +103,7 @@ const isTokenWhitelisted = async (redisIdentifier) => {
  * @returns
  */
 const ensureTokenIsWhitelisted = async ({ accountId, jti, privateDevice }) => {
-	if (redisClientExists()) {
+	if (redisClientExists() && getRedisClient().constructor.name !== 'InMemoryClient') {
 		const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
 		const redisData = getRedisData({ privateDevice });
 		const { expirationInSeconds } = redisData;
