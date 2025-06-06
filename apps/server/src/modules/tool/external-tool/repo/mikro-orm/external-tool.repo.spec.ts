@@ -51,13 +51,8 @@ describe(ExternalToolRepo.name, () => {
 		await module.close();
 	});
 
-	beforeEach(() => {
-		jest.clearAllMocks();
-	});
-
 	afterEach(async () => {
 		await cleanupCollections(em);
-		jest.restoreAllMocks();
 	});
 
 	const setup = async () => {
@@ -217,6 +212,10 @@ describe(ExternalToolRepo.name, () => {
 		});
 
 		describe('when a duplication error occurs during em.flush()', () => {
+			afterEach(async () => {
+				await em.flush();
+			});
+
 			const setupTemplate = () => {
 				const error: Error = new Error();
 				jest.spyOn(em, 'flush').mockImplementationOnce(() => {
@@ -242,11 +241,14 @@ describe(ExternalToolRepo.name, () => {
 		});
 
 		describe('when an unexpected error occurs during em.flush()', () => {
+			afterEach(async () => {
+				await em.flush();
+			});
+
 			const setupTemplate = () => {
 				jest.spyOn(em, 'flush').mockImplementationOnce(() => {
 					throw new Error('test');
 				});
-				jest.spyOn(em, 'findOne').mockImplementationOnce(() => Promise.resolve(null));
 
 				const templateToSave = externalToolFactory.build();
 
