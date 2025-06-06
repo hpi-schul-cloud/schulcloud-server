@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { isMongoId } from 'class-validator';
+import { H5pEditorContentInvalidIdLoggableException } from '../loggable';
 import { H5PContent, H5PContentRepo } from '../repo';
 import { H5PContentParentType } from '../types';
 import { ContentStorage } from './content-storage.service';
@@ -18,6 +20,10 @@ export class H5pEditorContentService {
 	constructor(private readonly h5PContentRepo: H5PContentRepo, private readonly contentStorage: ContentStorage) {}
 
 	public async copyH5pContent(params: H5pCopyContentParams): Promise<void> {
+		if (!isMongoId(params.copiedContentId)) {
+			throw new H5pEditorContentInvalidIdLoggableException(params.copiedContentId);
+		}
+
 		const sourceContent: H5PContent = await this.h5PContentRepo.findById(params.sourceContentId);
 		const copiedContent = new H5PContent({
 			...sourceContent,

@@ -4,8 +4,6 @@ import { Embeddable, Embedded, Entity, Enum, Index, JsonType, Property } from '@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { isMongoId } from 'class-validator';
-import { H5pEditorContentInvalidIdLoggableException } from '../../loggable';
 import { H5PContentParentType } from '../../types';
 
 @Embeddable()
@@ -154,10 +152,6 @@ export class H5PContent extends BaseEntityWithTimestamps {
 		super();
 
 		if (props.id) {
-			if (!isMongoId(props.id)) {
-				throw new H5pEditorContentInvalidIdLoggableException(props.id);
-			}
-
 			this._id = new ObjectId(props.id);
 			this.id = props.id;
 		}

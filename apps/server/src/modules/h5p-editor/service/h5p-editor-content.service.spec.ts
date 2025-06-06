@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { H5pEditorContentInvalidIdLoggableException } from '../loggable';
 import { H5PContentRepo } from '../repo';
 import { h5pContentFactory, h5pCopyContentParamsFactory } from '../testing';
 import { ContentStorage } from './content-storage.service';
@@ -115,6 +116,16 @@ describe(H5pEditorContentService.name, () => {
 
 				await expect(promise).rejects.toThrow();
 				expect(h5PContentRepo.deleteContent).toHaveBeenCalledWith(copiedContent);
+			});
+		});
+
+		describe('when the copied content id in the params is an invalid mongo id', () => {
+			it('should throw an H5pEditorContentInvalidIdLoggableException', async () => {
+				const params = h5pCopyContentParamsFactory.build({ copiedContentId: 'abc' });
+
+				const promise = service.copyH5pContent(params);
+
+				await expect(promise).rejects.toThrow(new H5pEditorContentInvalidIdLoggableException(params.copiedContentId));
 			});
 		});
 	});
