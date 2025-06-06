@@ -370,10 +370,10 @@ const config: ServerConfig = {
 	SESSION_VALKEY__SENTINEL_NAME: Configuration.has('SESSION_VALKEY__SENTINEL_NAME')
 		? (Configuration.get('SESSION_VALKEY__SENTINEL_NAME') as string)
 		: undefined,
-	SESSION_VALKEY__SENTINEL_PASSWORD: Configuration.has('SESSION_VALKEY__URI')
+	SESSION_VALKEY__SENTINEL_PASSWORD: Configuration.has('SESSION_VALKEY__SENTINEL_PASSWORD')
 		? (Configuration.get('SESSION_VALKEY__SENTINEL_PASSWORD') as string)
 		: undefined,
-	SESSION_VALKEY__SENTINEL_SERVICE_NAME: Configuration.has('SESSION_VALKEY__URI')
+	SESSION_VALKEY__SENTINEL_SERVICE_NAME: Configuration.has('SESSION_VALKEY__SENTINEL_SERVICE_NAME')
 		? (Configuration.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME') as string)
 		: undefined,
 };
