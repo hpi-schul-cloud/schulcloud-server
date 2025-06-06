@@ -18,13 +18,16 @@ import {
 } from '../loggable';
 import { ExternalToolService } from './external-tool.service';
 
+import { ExternalToolImageSanitizerService } from './external-tool-image-sanitizer.service';
+
 @Injectable()
 export class ExternalToolLogoService {
 	constructor(
 		private readonly configService: ConfigService<ToolConfig, true>,
 		private readonly logger: Logger,
 		private readonly httpService: HttpService,
-		private readonly externalToolService: ExternalToolService
+		private readonly externalToolService: ExternalToolService,
+		private readonly imageSanitizerService: ExternalToolImageSanitizerService
 	) {}
 
 	public buildLogoUrl(externalTool: ExternalTool): string | undefined {
@@ -73,22 +76,20 @@ export class ExternalToolLogoService {
 			this.logger.debug(new ExternalToolLogoFetchedLoggable(logoUrl));
 
 			const buffer: Buffer = Buffer.from(response.data);
-
-			const logoBase64: string = buffer.toString('base64');
-
-			let contentType: string | undefined;
-			if (logoUrl.startsWith('data:')) {
-				const [header] = logoUrl.split(';', 1);
-
-				contentType = header.substring(5);
-			} else {
-				contentType = response.headers['content-type'] as string | undefined;
-			}
+			const contentType: string | undefined = logoUrl.startsWith('data:')
+				? logoUrl.split(';', 1)[0].substring(5)
+				: (response.headers['content-type'] as string | undefined);
 
 			if (!contentType || !Object.values(ImageMimeType).includes(contentType as ImageMimeType)) {
 				throw new ExternalToolLogoWrongFileTypeLoggableException();
 			}
 
+			if (contentType === ImageMimeType.SVG) {
+				const svgContent = buffer.toString('utf-8');
+				return this.imageSanitizerService.sanitizeSvgToBase64(svgContent);
+			}
+
+			const logoBase64: string = buffer.toString('base64');
 			return `data:${contentType};base64,${logoBase64}`;
 		} catch (error) {
 			if (error instanceof ExternalToolLogoWrongFileTypeLoggableException) {
