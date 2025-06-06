@@ -27,6 +27,7 @@ import {
 	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
+	VideoConferenceElement,
 } from '../../domain';
 import {
 	cardFactory,
@@ -744,12 +745,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyVideoConferenceElement(videoConferenceElement, copyContext);
 
-			const expectedStatus: CopyStatus = {
-				type: CopyElementType.VIDEO_CONFERENCE_ELEMENT,
-				status: CopyStatusEnum.NOT_DOING,
-			};
-
-			expect(result).toEqual(expectedStatus);
+			expect(result.copyEntity).toBeInstanceOf(VideoConferenceElement);
 		});
 	});
 
