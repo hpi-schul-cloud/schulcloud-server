@@ -10,17 +10,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MediaSourceSyncReportFactory } from '../../factory';
 import { MediaSourceSyncReport } from '../../interface';
 import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
+import { ExternalToolMetadataUpdateService } from '../external-tool-metadata-update.service';
 import { BaseMetadataSyncStrategy } from './base-metadata-sync.strategy';
-
-const updateExternalToolMetadataMock = jest.fn();
 
 @Injectable()
 class MockMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 	getMediaSourceFormat(): MediaSourceDataFormat {
 		return MediaSourceDataFormat.VIDIS;
 	}
-
-	updateExternalToolMetadata = updateExternalToolMetadataMock;
 }
 
 describe(BaseMetadataSyncStrategy.name, () => {
@@ -30,6 +27,7 @@ describe(BaseMetadataSyncStrategy.name, () => {
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let mediumMetadataService: DeepMocked<MediumMetadataService>;
 	let externalToolValidationService: DeepMocked<ExternalToolValidationService>;
+	let externalToolMetadataUpdateService: DeepMocked<ExternalToolMetadataUpdateService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -47,6 +45,10 @@ describe(BaseMetadataSyncStrategy.name, () => {
 					provide: ExternalToolValidationService,
 					useValue: createMock<ExternalToolValidationService>(),
 				},
+				{
+					provide: ExternalToolMetadataUpdateService,
+					useValue: createMock<ExternalToolMetadataUpdateService>(),
+				},
 			],
 		}).compile();
 
@@ -54,6 +56,7 @@ describe(BaseMetadataSyncStrategy.name, () => {
 		externalToolService = module.get(ExternalToolService);
 		mediumMetadataService = module.get(MediumMetadataService);
 		externalToolValidationService = module.get(ExternalToolValidationService);
+		externalToolMetadataUpdateService = module.get(ExternalToolMetadataUpdateService);
 	});
 
 	beforeEach(() => {
@@ -118,7 +121,11 @@ describe(BaseMetadataSyncStrategy.name, () => {
 
 				await strategy.syncAllMediaMetadata(mediaSource);
 
-				expect(updateExternalToolMetadataMock).toHaveBeenCalledWith(externalTool, mediumMetadata);
+				expect(externalToolMetadataUpdateService.updateExternalToolWithMetadata).toHaveBeenCalledWith(
+					externalTool,
+					mediumMetadata,
+					MediaSourceDataFormat.VIDIS
+				);
 			});
 
 			it('should validate the external tool', async () => {

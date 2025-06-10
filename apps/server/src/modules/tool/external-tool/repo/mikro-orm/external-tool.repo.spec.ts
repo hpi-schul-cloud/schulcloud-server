@@ -2,7 +2,6 @@ import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExternalToolSearchQuery } from '@modules/tool';
-import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
@@ -17,6 +16,7 @@ import {
 	LtiPrivacyPermission,
 } from '../../../common/enum';
 import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../../domain';
+import { ExternalToolMediumStatus } from '../../enum';
 import { externalToolEntityFactory, externalToolFactory } from '../../testing';
 import { ExternalToolEntity } from './external-tool.entity';
 import { ExternalToolRepo } from './external-tool.repo';
@@ -400,6 +400,86 @@ describe(ExternalToolRepo.name, () => {
 				await setup2();
 
 				const result: ExternalTool | null = await repo.findByMedium('notExisting');
+
+				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('findTemplate', () => {
+		describe('when the external tool is found', () => {
+			const setup2 = async () => {
+				const mediaSourceId = 'mediaSourceId';
+				const entity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					medium: {
+						mediaSourceId: mediaSourceId,
+						status: ExternalToolMediumStatus.TEMPLATE,
+					},
+				});
+
+				await em.persistAndFlush([entity]);
+				em.clear();
+
+				return {
+					entity,
+					mediaSourceId,
+				};
+			};
+
+			it('should return the tool', async () => {
+				const { entity, mediaSourceId } = await setup2();
+
+				const result: ExternalTool | null = await repo.findTemplate(mediaSourceId);
+
+				expect(result).toEqual(repo.mapEntityToDomainObject(entity));
+			});
+		});
+
+		describe('when the external tool is not a template', () => {
+			const setup2 = async () => {
+				const mediaSourceId = 'mediaSourceId';
+				const entity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					medium: {
+						mediaSourceId: mediaSourceId,
+						status: ExternalToolMediumStatus.DRAFT,
+					},
+				});
+
+				await em.persistAndFlush([entity]);
+				em.clear();
+
+				return {
+					entity,
+					mediaSourceId,
+				};
+			};
+
+			it('should return null', async () => {
+				const { mediaSourceId } = await setup2();
+
+				const result: ExternalTool | null = await repo.findTemplate(mediaSourceId);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when the external tool is not found', () => {
+			const setup2 = async () => {
+				const entity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					medium: {
+						mediaSourceId: 'mediaSourceId',
+						status: ExternalToolMediumStatus.TEMPLATE,
+					},
+				});
+
+				await em.persistAndFlush(entity);
+				em.clear();
+			};
+
+			it('should return null', async () => {
+				await setup2();
+
+				const result: ExternalTool | null = await repo.findTemplate();
 
 				expect(result).toBeNull();
 			});
