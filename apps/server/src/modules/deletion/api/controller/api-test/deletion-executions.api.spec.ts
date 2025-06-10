@@ -5,7 +5,32 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
-import { EntityManager } from '@mikro-orm/mongodb';
+
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { classEntityFactory } from '@modules/class/entity/testing';
+import { courseEntityFactory } from '@modules/course/testing';
+import { courseGroupEntityFactory } from '@modules/course/testing';
+import { schoolNewsFactory } from '@modules/news/testing';
+import { ComponentProperties, ComponentType } from '@modules/lesson/repo';
+import { lessonFactory } from '@modules/lesson/testing';
+import { externalToolPseudonymEntityFactory } from '@modules/pseudonym/testing';
+import { SchoolEntity } from '@modules/school/repo';
+import { CourseEntity } from '@modules/course/repo';
+import { mediaBoardEntityFactory } from '@modules/board/testing';
+import { BoardExternalReferenceType } from '@modules/board';
+import { BoardNodeEntity } from '@modules/board/repo';
+import { taskFactory, submissionFactory } from '@modules/task/testing';
+import { Submission, Task } from '@modules/task/repo';
+import { ExternalToolPseudonymEntity } from '../../../../pseudonym/entity';
+import { AccountEntity } from '../../../../account/repo';
+import { User } from '../../../../user/repo';
+import { registrationPinEntityFactory } from '../../../../registration-pin/entity/testing';
+import { fileEntityFactory } from '../../../../files/entity/testing';
+import { FileOwnerModel } from '../../../../files/domain';
+import { RegistrationPinEntity } from '../../../../registration-pin/entity';
+import { FileEntity } from '../../../../files/entity';
 
 const baseRouteName = '/deletionExecutions';
 
@@ -88,6 +113,229 @@ describe(`deletionExecution (api)`, () => {
 
 				expect(response.status).toEqual(401);
 			});
+		});
+
+		describe('when deleting users with full data', () => {
+			const setup = async () => {
+				testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
+
+				const school = schoolEntityFactory.buildWithId();
+				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
+
+				const course = courseEntityFactory.buildWithId({ teachers: [teacherUser], students: [studentUser] });
+				const courseGroup = courseGroupEntityFactory.buildWithId({ course, students: [studentUser] });
+
+				const schoolClass = classEntityFactory.buildWithId({
+					schoolId: school.id,
+					teacherIds: [new ObjectId(teacherUser.id)],
+					userIds: [new ObjectId(studentUser.id)],
+				});
+
+				const file = fileEntityFactory.buildWithId({
+					ownerId: studentUser.id,
+					refOwnerModel: FileOwnerModel.USER,
+				});
+
+				const lessonContent: ComponentProperties = {
+					title: 'title',
+					hidden: false,
+					user: new ObjectId(teacherUser.id),
+					component: ComponentType.TEXT,
+					content: { text: 'test of content' },
+				};
+				const lesson = lessonFactory.buildWithId({ contents: [lessonContent] });
+				const news = schoolNewsFactory.buildWithId({ creator: teacherUser, school: school.id });
+				const pseudonym = externalToolPseudonymEntityFactory.buildWithId({ userId: studentUser.id });
+
+				const mediaBoard = mediaBoardEntityFactory.build({
+					context: {
+						id: studentUser.id,
+						type: BoardExternalReferenceType.User,
+					},
+				});
+
+				const task = taskFactory.buildWithId({
+					creator: teacherUser,
+					school,
+				});
+
+				const submission = submissionFactory.buildWithId({
+					student: studentUser,
+					teamMembers: [studentUser],
+					school,
+				});
+
+				const groupSubmission = submissionFactory.buildWithId({
+					school,
+					teamMembers: [studentUser],
+				});
+
+				const registrationPin = registrationPinEntityFactory.build({
+					email: studentUser.email,
+				});
+
+				// TODO 3rd party services
+				// file storage
+				// rocket chat user
+				// calendar
+
+				await em.persistAndFlush([
+					school,
+					teacherUser,
+					teacherAccount,
+					studentUser,
+					studentAccount,
+					course,
+					schoolClass,
+					courseGroup,
+					file,
+					lesson,
+					news,
+					pseudonym,
+					mediaBoard,
+					task,
+					submission,
+					groupSubmission,
+					registrationPin,
+				]);
+				em.clear();
+
+				const deletionRequestsTeacher = deletionRequestEntityFactory.build({
+					targetRefId: teacherUser.id,
+				});
+
+				const deletionRequestsStudent = deletionRequestEntityFactory.build({
+					targetRefId: studentUser.id,
+				});
+
+				await em.persistAndFlush([deletionRequestsTeacher, deletionRequestsStudent]);
+
+				const deletionRequestIds = [deletionRequestsTeacher.id, deletionRequestsStudent.id];
+
+				return {
+					deletionRequestIds,
+					teacherUser,
+					teacherAccount,
+					studentUser,
+					studentAccount,
+					course,
+					courseGroup,
+					schoolClass,
+					lesson,
+					news,
+					pseudonym,
+					mediaBoard,
+					task,
+					submission,
+					groupSubmission,
+					registrationPin,
+					file,
+				};
+			};
+
+			it('should remove user and any user references and return status 204', async () => {
+				const {
+					deletionRequestIds,
+					teacherUser,
+					teacherAccount,
+					course,
+					studentUser,
+					studentAccount,
+					news,
+					courseGroup,
+					lesson,
+					schoolClass,
+					mediaBoard,
+					pseudonym,
+					task,
+					submission,
+					groupSubmission,
+				} = await setup();
+
+				const teacherId = new ObjectId(teacherUser.id);
+				const studentId = new ObjectId(studentUser.id);
+				const whereAccountTeacher = { id: teacherAccount.id, userId: teacherId };
+				const whereAccountStudent = { id: studentAccount.id, userId: studentId };
+				const whereCourseTeacher = { id: course.id, teacherIds: { $in: [teacherId] } };
+				const whereCourseStudent = { id: course.id, userIds: { $in: [studentId] } };
+				const whereCourseGroup = { id: courseGroup.id, studentIds: { $in: [studentId] } };
+				const whereSchoolClass = { id: schoolClass.id, teacherIds: { $in: [teacherId] } };
+				const whereLesson = { id: lesson.id, contents: { $elemMatch: { user: teacherId } } };
+				const whereNews = { id: news.id, creator: teacherId };
+				const wherePseudonym = { id: pseudonym.id, userId: studentId };
+				const whereTask = { id: task.id, creator: teacherId };
+				const whereSubmission = { id: submission.id, studentId };
+				const whereGroupSubmission = {
+					id: groupSubmission.id,
+					teamMembers: { $in: [studentId] },
+				};
+				const whereRegistrationPin = {
+					email: studentUser.email,
+				};
+				const whereFile = {
+					ownerId: studentUser.id,
+					refOwnerModel: FileOwnerModel.USER,
+				};
+
+				const checkcourseBefore = await em.findOne(CourseEntity, whereCourseTeacher);
+				expect(checkcourseBefore).not.toBeNull();
+
+				const response = await testApiClient.post('', {
+					ids: deletionRequestIds,
+				});
+
+				expect(response.status).toEqual(204);
+
+				const checkAccountTeacher = await em.findOne(AccountEntity, whereAccountTeacher);
+				expect(checkAccountTeacher).toBeNull();
+
+				const checkAccountStudent = await em.findOne(AccountEntity, whereAccountStudent);
+				expect(checkAccountStudent).toBeNull();
+
+				const checkCourseTeacher = await em.findOne(CourseEntity, whereCourseTeacher);
+				expect(checkCourseTeacher).toBeNull();
+				const checkCourseStudent = await em.findOne(CourseEntity, whereCourseStudent);
+				expect(checkCourseStudent).toBeNull();
+
+				const checkCourseGroup = await em.findOne(CourseEntity, whereCourseGroup);
+				expect(checkCourseGroup).toBeNull();
+
+				const checkSchoolClass = await em.findOne(SchoolEntity, whereSchoolClass);
+				expect(checkSchoolClass).toBeNull();
+
+				const checkNews = await em.findOne(SchoolEntity, whereNews);
+				expect(checkNews).toBeNull();
+
+				const checkLesson = await em.findOne(CourseEntity, whereLesson);
+				expect(checkLesson).toBeNull();
+
+				const checkMediaBoard = await em.findOne(BoardNodeEntity, mediaBoard.id);
+				expect(checkMediaBoard).toBeNull();
+
+				const checkPseudonym = await em.findOne(ExternalToolPseudonymEntity, wherePseudonym);
+				expect(checkPseudonym).toBeNull();
+
+				const checkTask = await em.findOne(Task, whereTask);
+				expect(checkTask).toBeNull();
+
+				const checkSubmission = await em.findOne(Submission, whereSubmission);
+				expect(checkSubmission).toBeNull();
+
+				const checkGroupSubmission = await em.findOne(Submission, whereGroupSubmission);
+				expect(checkGroupSubmission).toBeNull();
+
+				const checkTeacherUser = await em.findOne(User, teacherUser.id);
+				expect(checkTeacherUser).toBeNull();
+				const checkStudentUser = await em.findOne(User, studentUser.id);
+				expect(checkStudentUser).toBeNull();
+
+				const checkRegistrationPin = await em.findOne(RegistrationPinEntity, whereRegistrationPin);
+				expect(checkRegistrationPin).toBeNull();
+
+				const checkFile = await em.findOne(FileEntity, whereFile);
+				expect(checkFile).toBeNull();
+			}, 30000);
 		});
 	});
 
