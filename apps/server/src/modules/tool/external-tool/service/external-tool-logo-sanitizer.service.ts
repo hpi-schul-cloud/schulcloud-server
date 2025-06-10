@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Logger } from '@core/logger';
 import { Injectable } from '@nestjs/common';
 
@@ -13,26 +11,23 @@ export class ExternalToolLogoSanitizerService {
 	private readonly sanitizer: DOMPurify;
 
 	constructor(private readonly logger: Logger) {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
 		const { window } = new JSDOM('<!DOCTYPE html>');
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		this.sanitizer = createDOMPurify(window);
 	}
 
 	public sanitizeSvg(svgContent: string): string {
-		if (typeof svgContent !== 'string' || svgContent.trim() === '') {
-			throw new ExternalToolLogoSanitizationLoggableException('SVG cannot be sanized because it is empty or invalid.');
+		if (svgContent.trim() === '') {
+			throw new ExternalToolLogoSanitizationLoggableException('SVG cannot be sanized because it is empty.');
 		}
 
-		try {
-			const sanitizedSvg = this.sanitizer.sanitize(svgContent, { USE_PROFILES: { svg: true }, FORBID_TAGS: ['image'] });
+		const sanitizedSvg = this.sanitizer.sanitize(svgContent, { USE_PROFILES: { svg: true }, FORBID_TAGS: ['image'] });
 
-			if (!sanitizedSvg || typeof sanitizedSvg !== 'string' || sanitizedSvg.trim() === '') {
-				throw new ExternalToolLogoSanitizationLoggableException('Sanitized SVG is empty or invalid.');
-			}
-
-			return sanitizedSvg;
-		} catch {
-			throw new ExternalToolLogoSanitizationLoggableException('SVG sanitization failed');
+		if (!sanitizedSvg || typeof sanitizedSvg !== 'string' || sanitizedSvg.trim() === '') {
+			throw new ExternalToolLogoSanitizationLoggableException('Sanitized SVG is empty or invalid.');
 		}
+
+		return sanitizedSvg;
 	}
 }

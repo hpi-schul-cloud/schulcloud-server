@@ -18,6 +18,14 @@ import {
 	ExternalToolLogoWrongFormatLoggableException,
 } from '../loggable';
 import { base64TestLogo, externalToolFactory } from '../testing';
+import {
+	invalidSvgTestLogo,
+	invalidSvgTestLogoBase64,
+	sanitizedInvalidSvgTestLogo,
+	sanitizedInvalidSvgTestLogoBase64,
+	validSvgTestLogo,
+	validSvgTestLogoBase64,
+} from '../testing/svg-test-logos';
 import { ExternalToolLogoSanitizerService } from './external-tool-logo-sanitizer.service';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolService } from './external-tool.service';
@@ -237,6 +245,93 @@ describe(ExternalToolLogoService.name, () => {
 				const logo: string | undefined = await service.fetchLogo(externalTool);
 
 				expect(logo).toBe(`data:image/png;base64,${base64TestLogo}`);
+			});
+		});
+
+		describe('when tool has a svg logo url', () => {
+			const setup = () => {
+				const logoUrl = 'https://test.com/logo.svg';
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					logoUrl,
+				});
+				const logoBuffer: Buffer = Buffer.from(validSvgTestLogoBase64, 'base64');
+
+				httpService.get.mockReturnValue(
+					of(
+						axiosResponseFactory.build({
+							data: logoBuffer,
+							status: HttpStatus.OK,
+							statusText: 'OK',
+							headers: {
+								'content-type': 'image/svg+xml',
+							},
+						})
+					)
+				);
+				externalToolImageSanitizerService.sanitizeSvg.mockReturnValue(validSvgTestLogo);
+				return {
+					externalTool,
+					logoUrl,
+				};
+			};
+			it('should call sanitizer service', async () => {
+				const { externalTool } = setup();
+
+				await service.fetchLogo(externalTool);
+
+				expect(externalToolImageSanitizerService.sanitizeSvg).toHaveBeenCalledWith(validSvgTestLogo);
+			});
+
+			it('should return base64 encoded logo', async () => {
+				const { externalTool } = setup();
+
+				const logo: string | undefined = await service.fetchLogo(externalTool);
+
+				expect(logo).toBe(`data:image/svg+xml;base64,${validSvgTestLogoBase64}`);
+			});
+		});
+
+		describe('when tool has a corrupt svg logo', () => {
+			const setup = () => {
+				const logoUrl = 'https://test.com/logo.svg';
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					logoUrl,
+				});
+				const logoBuffer: Buffer = Buffer.from(invalidSvgTestLogoBase64, 'base64');
+
+				httpService.get.mockReturnValue(
+					of(
+						axiosResponseFactory.build({
+							data: logoBuffer,
+							status: HttpStatus.OK,
+							statusText: 'OK',
+							headers: {
+								'content-type': 'image/svg+xml',
+							},
+						})
+					)
+				);
+				externalToolImageSanitizerService.sanitizeSvg.mockReturnValue(sanitizedInvalidSvgTestLogo);
+				return {
+					externalTool,
+					logoUrl,
+				};
+			};
+
+			it('should call sanitizer service', async () => {
+				const { externalTool } = setup();
+
+				await service.fetchLogo(externalTool);
+
+				expect(externalToolImageSanitizerService.sanitizeSvg).toHaveBeenCalledWith(invalidSvgTestLogo);
+			});
+
+			it('should return sanitized base64 encoded logo', async () => {
+				const { externalTool } = setup();
+
+				const logo: string | undefined = await service.fetchLogo(externalTool);
+
+				expect(logo).toBe(`data:image/svg+xml;base64,${sanitizedInvalidSvgTestLogoBase64}`);
 			});
 		});
 
