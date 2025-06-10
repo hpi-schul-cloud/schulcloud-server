@@ -1,16 +1,13 @@
-import { Readable } from 'stream';
-
 import { HeadObjectCommandOutput, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { H5pError, ILibraryMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-
 import { S3ClientAdapter } from '@infra/s3-client';
-import { FileMetadata, InstalledLibrary } from '../entity/library.entity';
+import { Readable } from 'stream';
 import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
-import { LibraryRepo } from '../repo/library.repo';
-import { LibraryStorage } from './libraryStorage.service';
+import { FileMetadata, InstalledLibrary, LibraryRepo } from '../repo';
+import { LibraryStorage } from './library-storage.service';
 
 async function readStream(stream: Readable): Promise<string> {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

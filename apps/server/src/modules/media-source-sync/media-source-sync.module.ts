@@ -5,7 +5,7 @@ import { MediumMetadataModule } from '@modules/medium-metadata';
 import { OauthAdapterModule } from '@modules/oauth-adapter';
 import { ExternalToolModule } from '@modules/tool';
 import { Module } from '@nestjs/common';
-import { MediaMetadataSyncService } from './service';
+import { ExternalToolMetadataUpdateService, MediaMetadataSyncService } from './service';
 import { BiloMetadataSyncStrategy, VidisMetadataSyncStrategy } from './service/strategy';
 
 @Module({
@@ -17,7 +17,12 @@ import { BiloMetadataSyncStrategy, VidisMetadataSyncStrategy } from './service/s
 		ExternalToolModule,
 		MediumMetadataModule,
 	],
-	providers: [MediaMetadataSyncService, BiloMetadataSyncStrategy, VidisMetadataSyncStrategy],
-	exports: [MediaMetadataSyncService],
+	providers: [
+		MediaMetadataSyncService,
+		BiloMetadataSyncStrategy,
+		VidisMetadataSyncStrategy,
+		ExternalToolMetadataUpdateService,
+	],
+	exports: [MediaMetadataSyncService, ExternalToolMetadataUpdateService],
 })
 export class MediaSourceSyncModule {}
