@@ -23,6 +23,7 @@ export class LogoutController {
 	@ApiOkResponse({ description: 'Logout was successful.' })
 	@ApiUnauthorizedResponse({ description: 'There has been an error while logging out.' })
 	async logout(@JWT() jwt: string): Promise<void> {
+		console.log('<<<<<<<<<<<<<<<<<< Standard log out of SVS.');
 		await this.logoutUc.logout(jwt);
 	}
 
