@@ -4,7 +4,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 
 import { ILibraryMetadata } from '@lumieducation/h5p-server';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { FileMetadata, InstalledLibrary } from '../entity';
+import { FileMetadata, InstalledLibrary } from './entity';
 import { LibraryRepo } from './library.repo';
 
 describe('LibraryRepo', () => {
