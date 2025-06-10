@@ -53,6 +53,7 @@ describe(ExternalToolRepo.name, () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
+		jest.clearAllMocks();
 	});
 
 	const setup = async () => {
