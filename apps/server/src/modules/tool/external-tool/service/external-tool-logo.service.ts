@@ -27,7 +27,7 @@ export class ExternalToolLogoService {
 		private readonly logger: Logger,
 		private readonly httpService: HttpService,
 		private readonly externalToolService: ExternalToolService,
-		private readonly imageSanitizerService: ExternalToolLogoSanitizerService
+		private readonly externalToolLogoSanitizerService: ExternalToolLogoSanitizerService
 	) {}
 
 	public buildLogoUrl(externalTool: ExternalTool): string | undefined {
@@ -85,8 +85,10 @@ export class ExternalToolLogoService {
 			}
 
 			if (contentType === ImageMimeType.SVG) {
-				const svgContent = buffer.toString('utf-8');
-				return this.imageSanitizerService.sanitizeSvgToBase64(svgContent);
+				const svgContent = buffer.toString();
+				const sanitizedSvg = this.externalToolLogoSanitizerService.sanitizeSvg(svgContent);
+				const sanitizedSvgBase64 = Buffer.from(sanitizedSvg).toString('base64');
+				return `data:${contentType};base64,${sanitizedSvgBase64}`;
 			}
 
 			const logoBase64: string = buffer.toString('base64');
