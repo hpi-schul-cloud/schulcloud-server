@@ -18,6 +18,7 @@ import {
 	ExternalToolLogoWrongFormatLoggableException,
 } from '../loggable';
 import { base64TestLogo, externalToolFactory } from '../testing';
+import { ExternalToolLogoSanitizerService } from './external-tool-logo-sanitizer.service';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolService } from './external-tool.service';
 
@@ -29,6 +30,7 @@ describe(ExternalToolLogoService.name, () => {
 	let logger: DeepMocked<Logger>;
 	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
 	let externalToolService: DeepMocked<ExternalToolService>;
+	let externalToolImageSanitizerService: DeepMocked<ExternalToolLogoSanitizerService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -50,6 +52,10 @@ describe(ExternalToolLogoService.name, () => {
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
 				},
+				{
+					provide: ExternalToolLogoSanitizerService,
+					useValue: createMock<ExternalToolLogoSanitizerService>(),
+				},
 			],
 		}).compile();
 
@@ -58,6 +64,7 @@ describe(ExternalToolLogoService.name, () => {
 		logger = module.get(Logger);
 		configService = module.get(ConfigService);
 		externalToolService = module.get(ExternalToolService);
+		externalToolImageSanitizerService = module.get(ExternalToolLogoSanitizerService);
 	});
 
 	afterAll(async () => {

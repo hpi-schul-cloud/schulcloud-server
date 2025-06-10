@@ -10,7 +10,7 @@ import { JSDOM } from 'jsdom';
 import { ExternalToolImageSanitizationLoggableException } from '../loggable';
 
 @Injectable()
-export class ExternalToolImageSanitizerService {
+export class ExternalToolLogoSanitizerService {
 	private readonly sanitizer: DOMPurify;
 
 	constructor(private readonly logger: Logger) {

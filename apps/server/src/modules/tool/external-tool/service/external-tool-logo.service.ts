@@ -18,7 +18,7 @@ import {
 } from '../loggable';
 import { ExternalToolService } from './external-tool.service';
 
-import { ExternalToolImageSanitizerService } from './external-tool-image-sanitizer.service';
+import { ExternalToolLogoSanitizerService } from './external-tool-logo-sanitizer.service';
 
 @Injectable()
 export class ExternalToolLogoService {
@@ -27,7 +27,7 @@ export class ExternalToolLogoService {
 		private readonly logger: Logger,
 		private readonly httpService: HttpService,
 		private readonly externalToolService: ExternalToolService,
-		private readonly imageSanitizerService: ExternalToolImageSanitizerService
+		private readonly imageSanitizerService: ExternalToolLogoSanitizerService
 	) {}
 
 	public buildLogoUrl(externalTool: ExternalTool): string | undefined {

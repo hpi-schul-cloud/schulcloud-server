@@ -2,18 +2,18 @@ import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalToolImageSanitizationLoggableException } from '../loggable';
-import { ExternalToolImageSanitizerService } from './external-tool-image-sanitizer.service';
+import { ExternalToolLogoSanitizerService } from './external-tool-logo-sanitizer.service';
 
-describe(ExternalToolImageSanitizerService.name, () => {
+describe(ExternalToolLogoSanitizerService.name, () => {
 	let module: TestingModule;
-	let service: ExternalToolImageSanitizerService;
+	let service: ExternalToolLogoSanitizerService;
 
 	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				ExternalToolImageSanitizerService,
+				ExternalToolLogoSanitizerService,
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
@@ -21,7 +21,7 @@ describe(ExternalToolImageSanitizerService.name, () => {
 			],
 		}).compile();
 
-		service = module.get(ExternalToolImageSanitizerService);
+		service = module.get(ExternalToolLogoSanitizerService);
 		logger = module.get(Logger);
 	});
 

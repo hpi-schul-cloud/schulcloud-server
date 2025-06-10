@@ -14,8 +14,8 @@ import {
 	DatasheetPdfService,
 	ExternalToolAuthorizableService,
 	ExternalToolConfigurationService,
-	ExternalToolImageSanitizerService,
 	ExternalToolImageService,
+	ExternalToolLogoSanitizerService,
 	ExternalToolLogoService,
 	ExternalToolParameterValidationService,
 	ExternalToolService,
@@ -47,7 +47,7 @@ import {
 		ExternalToolAuthorizableService,
 		ExternalToolImageService,
 		ExternalToolRule,
-		ExternalToolImageSanitizerService,
+		ExternalToolLogoSanitizerService,
 	],
 	exports: [
 		ExternalToolService,
@@ -56,7 +56,7 @@ import {
 		ExternalToolLogoService,
 		DatasheetPdfService,
 		ExternalToolImageService,
-		ExternalToolImageSanitizerService,
+		ExternalToolLogoSanitizerService,
 	],
 })
 export class ExternalToolModule {}
