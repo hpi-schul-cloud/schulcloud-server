@@ -406,6 +406,86 @@ describe(ExternalToolRepo.name, () => {
 		});
 	});
 
+	describe('findTemplate', () => {
+		describe('when the external tool is found', () => {
+			const setup2 = async () => {
+				const mediaSourceId = 'mediaSourceId';
+				const entity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					medium: {
+						mediaSourceId: mediaSourceId,
+						status: ExternalToolMediumStatus.TEMPLATE,
+					},
+				});
+
+				await em.persistAndFlush([entity]);
+				em.clear();
+
+				return {
+					entity,
+					mediaSourceId,
+				};
+			};
+
+			it('should return the tool', async () => {
+				const { entity, mediaSourceId } = await setup2();
+
+				const result: ExternalTool | null = await repo.findTemplate(mediaSourceId);
+
+				expect(result).toEqual(repo.mapEntityToDomainObject(entity));
+			});
+		});
+
+		describe('when the external tool is not a template', () => {
+			const setup2 = async () => {
+				const mediaSourceId = 'mediaSourceId';
+				const entity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					medium: {
+						mediaSourceId: mediaSourceId,
+						status: ExternalToolMediumStatus.DRAFT,
+					},
+				});
+
+				await em.persistAndFlush([entity]);
+				em.clear();
+
+				return {
+					entity,
+					mediaSourceId,
+				};
+			};
+
+			it('should return null', async () => {
+				const { mediaSourceId } = await setup2();
+
+				const result: ExternalTool | null = await repo.findTemplate(mediaSourceId);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when the external tool is not found', () => {
+			const setup2 = async () => {
+				const entity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					medium: {
+						mediaSourceId: 'mediaSourceId',
+						status: ExternalToolMediumStatus.TEMPLATE,
+					},
+				});
+
+				await em.persistAndFlush(entity);
+				em.clear();
+			};
+
+			it('should return null', async () => {
+				await setup2();
+
+				const result: ExternalTool | null = await repo.findTemplate();
+
+				expect(result).toBeNull();
+			});
+		});
+	});
+
 	describe('deleteById', () => {
 		const setup2 = async () => {
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();

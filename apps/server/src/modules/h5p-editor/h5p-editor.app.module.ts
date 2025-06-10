@@ -16,7 +16,7 @@ import { authorizationClientConfig, config, s3ConfigContent, s3ConfigLibraries }
 import { ENTITIES } from './h5p-editor.entity.exports';
 import { H5PAjaxEndpointProvider, H5PEditorProvider, H5PPlayerProvider } from './provider';
 import { H5PContentRepo, LibraryRepo } from './repo';
-import { ContentStorage, LibraryStorage, TemporaryFileStorage } from './service';
+import { ContentStorage, H5pEditorContentService, LibraryStorage, TemporaryFileStorage } from './service';
 import { H5PEditorUc } from './uc';
 
 const imports = [
@@ -53,6 +53,7 @@ const providers = [
 	LibraryStorage,
 	TemporaryFileStorage,
 	H5pEditorConsumer,
+	H5pEditorContentService,
 ];
 
 @Module({

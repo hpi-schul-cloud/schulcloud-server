@@ -1,15 +1,15 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ProviderOauthClient } from '@modules/oauth-provider/domain';
+import { OauthProviderService, ProviderOauthClient } from '@modules/oauth-provider/domain';
+import { providerOauthClientFactory } from '@modules/oauth-provider/testing';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
-import { OauthProviderService } from '../../../oauth-provider/domain/service/oauth-provider.service';
-import { providerOauthClientFactory } from '../../../oauth-provider/testing';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolDeleteService } from '../../common/service';
 import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import { ExternalToolMediumStatus } from '../enum';
 import { ExternalToolRepo } from '../repo';
 import { externalToolFactory, lti11ToolConfigFactory, oauth2ToolConfigFactory } from '../testing';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
@@ -497,6 +497,58 @@ describe(ExternalToolService.name, () => {
 				setup();
 
 				const result: ExternalTool | null = await service.findExternalToolByMedium('mediumId');
+
+				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('findTemplate', () => {
+		describe('when the tool was found', () => {
+			const setup = () => {
+				const mediaSourceId = 'mediaSourceId';
+
+				const externalTool = externalToolFactory.build({
+					medium: {
+						mediaSourceId,
+						status: ExternalToolMediumStatus.TEMPLATE,
+					},
+				});
+
+				externalToolRepo.findTemplate.mockResolvedValue(externalTool);
+
+				return {
+					mediaSourceId,
+					externalTool,
+				};
+			};
+
+			it('should search the tool', async () => {
+				const { mediaSourceId } = setup();
+
+				await service.findTemplate(mediaSourceId);
+
+				expect(externalToolRepo.findTemplate).toHaveBeenCalledWith(mediaSourceId);
+			});
+
+			it('should return the tool', async () => {
+				const { mediaSourceId, externalTool } = setup();
+
+				const result = await service.findTemplate(mediaSourceId);
+
+				expect(result).toEqual(externalTool);
+			});
+		});
+
+		describe('when the tool was not found', () => {
+			const setup = () => {
+				externalToolRepo.findTemplate.mockResolvedValue(null);
+			};
+
+			it('should return null', async () => {
+				setup();
+
+				const result = await service.findTemplate('mediaSourceId');
 
 				expect(result).toBeNull();
 			});

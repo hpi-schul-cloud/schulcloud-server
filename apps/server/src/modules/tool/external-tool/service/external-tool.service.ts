@@ -108,6 +108,12 @@ export class ExternalToolService {
 		return externalTool;
 	}
 
+	public findTemplate(mediaSourceId?: string): Promise<ExternalTool | null> {
+		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findTemplate(mediaSourceId);
+
+		return externalTool;
+	}
+
 	public findExternalToolsByMediaSource(mediaSourceId: string): Promise<ExternalTool[]> {
 		const externalTools: Promise<ExternalTool[]> = this.externalToolRepo.findAllByMediaSource(mediaSourceId);
 

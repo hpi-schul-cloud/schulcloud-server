@@ -1,3 +1,4 @@
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
 import { CustomParameter } from '../../common/domain';
@@ -167,7 +168,11 @@ export class ExternalToolParameterValidationService {
 	}
 
 	private isAutoParameterMediumIdValid(customParameter: CustomParameter, externalTool: ExternalTool) {
-		if (customParameter.type === CustomParameterType.AUTO_MEDIUMID && !externalTool.medium?.mediumId) {
+		if (
+			customParameter.type === CustomParameterType.AUTO_MEDIUMID &&
+			externalTool.medium?.status !== ExternalToolMediumStatus.TEMPLATE &&
+			!externalTool.medium?.mediumId
+		) {
 			return false;
 		}
 

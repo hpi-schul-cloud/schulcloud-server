@@ -92,6 +92,20 @@ export class ExternalToolRepo {
 		return null;
 	}
 
+	public async findTemplate(mediaSourceId?: string): Promise<ExternalTool | null> {
+		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, {
+			medium: { mediaSourceId, status: ExternalToolMediumStatus.TEMPLATE },
+		});
+
+		if (!entity) {
+			return null;
+		}
+
+		const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
+
+		return domainObject;
+	}
+
 	public async findAllByMediaSource(mediaSourceId: string): Promise<ExternalTool[]> {
 		const entities: ExternalToolEntity[] = await this.em.find(this.entityName, {
 			medium: { mediaSourceId, status: { $ne: ExternalToolMediumStatus.TEMPLATE } },
