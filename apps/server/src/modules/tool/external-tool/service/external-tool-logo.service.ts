@@ -12,6 +12,7 @@ import {
 	ExternalToolLogoFetchedLoggable,
 	ExternalToolLogoFetchFailedLoggableException,
 	ExternalToolLogoNotFoundLoggableException,
+	ExternalToolLogoSanitizationLoggableException,
 	ExternalToolLogoSizeExceededLoggableException,
 	ExternalToolLogoWrongFileTypeLoggableException,
 	ExternalToolLogoWrongFormatLoggableException,
@@ -95,6 +96,8 @@ export class ExternalToolLogoService {
 			return `data:${contentType};base64,${logoBase64}`;
 		} catch (error) {
 			if (error instanceof ExternalToolLogoWrongFileTypeLoggableException) {
+				throw error;
+			} else if (error instanceof ExternalToolLogoSanitizationLoggableException) {
 				throw error;
 			} else if (error instanceof HttpException) {
 				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());

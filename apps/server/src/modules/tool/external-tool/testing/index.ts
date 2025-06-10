@@ -22,6 +22,8 @@ export {
 export { fileRecordRefFactory } from './file-record-ref.factory';
 export {
 	invalidSvgTestLogo,
+	invalidSvgTestLogoNotSvg,
+	invalidSvgTestLogoNotSvgBase64,
 	sanitizedInvalidSvgTestLogo,
 	validSvgTestLogo,
 	validSvgTestLogoBase64,

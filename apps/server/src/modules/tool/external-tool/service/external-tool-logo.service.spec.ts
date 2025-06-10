@@ -13,6 +13,7 @@ import {
 	ExternalToolLogoFetchedLoggable,
 	ExternalToolLogoFetchFailedLoggableException,
 	ExternalToolLogoNotFoundLoggableException,
+	ExternalToolLogoSanitizationLoggableException,
 	ExternalToolLogoSizeExceededLoggableException,
 	ExternalToolLogoWrongFileTypeLoggableException,
 	ExternalToolLogoWrongFormatLoggableException,
@@ -21,6 +22,7 @@ import { base64TestLogo, externalToolFactory } from '../testing';
 import {
 	invalidSvgTestLogo,
 	invalidSvgTestLogoBase64,
+	invalidSvgTestLogoNotSvgBase64,
 	sanitizedInvalidSvgTestLogo,
 	sanitizedInvalidSvgTestLogoBase64,
 	validSvgTestLogo,
@@ -414,6 +416,84 @@ describe(ExternalToolLogoService.name, () => {
 				const { externalTool } = setup();
 
 				await expect(service.fetchLogo(externalTool)).rejects.toThrow(ExternalToolLogoWrongFileTypeLoggableException);
+			});
+		});
+
+		describe('when error occurs on fetching svg logo because fetched svg is empty', () => {
+			const setup = () => {
+				const logoUrl = 'https://test.com/logo.svg';
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					logoUrl,
+				});
+				const logoBuffer: Buffer = Buffer.from('', 'base64');
+
+				jest.spyOn(externalToolImageSanitizerService, 'sanitizeSvg').mockImplementation(() => {
+					throw new ExternalToolLogoSanitizationLoggableException('SVG cannot be sanized because it is empty.');
+				});
+				httpService.get.mockReturnValue(
+					of(
+						axiosResponseFactory.build({
+							data: logoBuffer,
+							status: HttpStatus.OK,
+							statusText: 'OK',
+							headers: {
+								'content-type': 'image/svg+xml',
+							},
+						})
+					)
+				);
+
+				return {
+					externalTool,
+					logoUrl,
+				};
+			};
+
+			it('should throw error', async () => {
+				const { externalTool } = setup();
+
+				await expect(service.fetchLogo(externalTool)).rejects.toEqual(
+					new ExternalToolLogoSanitizationLoggableException('SVG cannot be sanized because it is empty.')
+				);
+			});
+		});
+
+		describe('when error occurs on fetching svg logo because sanitized logo is empty', () => {
+			const setup = () => {
+				const logoUrl = 'https://test.com/logo.svg';
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					logoUrl,
+				});
+				const logoBuffer: Buffer = Buffer.from(invalidSvgTestLogoNotSvgBase64, 'base64');
+
+				httpService.get.mockReturnValue(
+					of(
+						axiosResponseFactory.build({
+							data: logoBuffer,
+							status: HttpStatus.OK,
+							statusText: 'OK',
+							headers: {
+								'content-type': 'image/svg+xml',
+							},
+						})
+					)
+				);
+
+				jest.spyOn(externalToolImageSanitizerService, 'sanitizeSvg').mockImplementation(() => {
+					throw new ExternalToolLogoSanitizationLoggableException('Sanitized SVG is empty or invalid.');
+				});
+				return {
+					externalTool,
+					logoUrl,
+				};
+			};
+
+			it('should throw error', async () => {
+				const { externalTool } = setup();
+
+				await expect(service.fetchLogo(externalTool)).rejects.toEqual(
+					new ExternalToolLogoSanitizationLoggableException('Sanitized SVG is empty or invalid.')
+				);
 			});
 		});
 

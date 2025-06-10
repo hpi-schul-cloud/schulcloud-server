@@ -1,3 +1,5 @@
+export const invalidSvgTestLogoNotSvg = '<?xml version="1.0" standalone="no"?>';
+export const invalidSvgTestLogoNotSvgBase64 = 'PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pg==';
 export const invalidSvgTestLogo =
 	'<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg width="400" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><rect x="10" y="10" width="100" height="100" fill="blue" /><image x="120" y="10" width="100" height="100" xlink:href="http://example.com/image.png" /><script type="text/javascript">alert("This is a script!");</script><circle cx="300" cy="60" r="50" fill="red" onclick="alert()" /><foreignObject x="10" y="120" width="300" height="60"><body xmlns="http://www.w3.org/1999/xhtml"><p>This is a foreignObject with HTML content.</p></body></foreignObject></svg>';
 export const invalidSvgTestLogoBase64 =
