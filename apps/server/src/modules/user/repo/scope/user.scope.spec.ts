@@ -266,19 +266,19 @@ describe('UserScope', () => {
 			});
 		});
 
-		describe('when a name contains "ß"', () => {
+		describe('when a user name contains one of the special characters "áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒß"', () => {
 			const setup = () => {
 				const scope = new UserScope();
-				const name = 'Beißner';
+				const name = 'A0_áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒß-B9';
 
 				return { scope, name };
 			};
 
-			it('should not escape the ß', () => {
+			it('should not escape them', () => {
 				const { scope, name } = setup();
 
 				const result = scope.byName(name);
-				const expectedRegex = new RegExp('Beißner', 'i');
+				const expectedRegex = new RegExp('A0_áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒß-B9', 'i');
 
 				expect(result.query).toEqual({
 					$or: [{ firstName: expectedRegex }, { lastName: expectedRegex }],
