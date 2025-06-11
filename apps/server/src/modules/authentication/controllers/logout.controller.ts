@@ -37,6 +37,7 @@ export class LogoutController {
 	@ApiOkResponse({ description: 'Logout was successful.' })
 	@ApiUnauthorizedResponse({ description: 'There has been an error while logging out.' })
 	async logoutOidc(@Body() body: OidcLogoutBodyParams): Promise<void> {
+		console.log('<<<<<<<<<<<<<<<<<< Backchannel logout from external system.');
 		await this.logoutUc.logoutOidc(body.logout_token);
 	}
 
