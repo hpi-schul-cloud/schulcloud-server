@@ -11,6 +11,8 @@ import { lessonFactory } from '@modules/lesson/testing';
 import { TaskService } from '@modules/task';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
+import { RoomService } from '@modules/room';
+import { roomFactory } from '@modules/room/testing';
 import { User } from '@modules/user/repo';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -32,6 +34,7 @@ describe('ShareTokenService', () => {
 	let lessonService: DeepMocked<LessonService>;
 	let taskService: DeepMocked<TaskService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
+	let roomService: DeepMocked<RoomService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -61,6 +64,10 @@ describe('ShareTokenService', () => {
 					provide: ColumnBoardService,
 					useValue: createMock<ColumnBoardService>(),
 				},
+				{
+					provide: RoomService,
+					useValue: createMock<RoomService>(),
+				},
 			],
 		}).compile();
 
@@ -71,6 +78,7 @@ describe('ShareTokenService', () => {
 		lessonService = await module.get(LessonService);
 		taskService = await module.get(TaskService);
 		columnBoardService = await module.get(ColumnBoardService);
+		roomService = await module.get(RoomService);
 		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
 	});
 
@@ -213,6 +221,25 @@ describe('ShareTokenService', () => {
 
 				const result = await service.lookupTokenWithParentName(shareToken.token);
 				expect(result).toEqual({ shareToken, parentName: columnBoard.title });
+			});
+		});
+
+		describe('when parent is room', () => {
+			const setup = () => {
+				const room = roomFactory.build();
+				roomService.getSingleRoom.mockResolvedValue(room);
+
+				const payload = { parentId: room.id, parentType: ShareTokenParentType.Room };
+				const shareToken = shareTokenDOFactory.build({ payload });
+				repo.findOneByToken.mockResolvedValue(shareToken);
+
+				return { room, shareToken };
+			};
+			it('should return shareToken and parent name', async () => {
+				const { room, shareToken } = setup();
+
+				const result = await service.lookupTokenWithParentName(shareToken.token);
+				expect(result).toEqual({ shareToken, parentName: room.name });
 			});
 		});
 
