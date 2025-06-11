@@ -1,6 +1,6 @@
 import { AuthorizationBodyParamsReferenceType } from '@infra/authorization-client';
 import { NotImplementedException } from '@nestjs/common';
-import { H5PContentParentType } from '../entity';
+import { H5PContentParentType } from '../types';
 
 export class H5PContentMapper {
 	public static mapToAllowedAuthorizationEntityType(type: H5PContentParentType): AuthorizationBodyParamsReferenceType {

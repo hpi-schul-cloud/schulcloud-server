@@ -1,6 +1,5 @@
 import { EntityName, QueryOrderMap, UniqueConstraintViolationException } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ValidationError } from '@shared/common/error';
@@ -10,6 +9,7 @@ import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
 import { ExternalToolSearchQuery } from '../../../common/interface';
 import { ExternalTool } from '../../domain';
+import { ExternalToolMediumStatus } from '../../enum';
 import { ExternalToolEntity, ExternalToolEntityProps } from './external-tool.entity';
 import { ExternalToolScope } from './external-tool.scope';
 import { ExternalToolRepoMapper, ExternalToolSortingMapper } from './mapper';
@@ -101,6 +101,20 @@ export class ExternalToolRepo {
 			return domainObject;
 		}
 		return null;
+	}
+
+	public async findTemplate(mediaSourceId?: string): Promise<ExternalTool | null> {
+		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, {
+			medium: { mediaSourceId, status: ExternalToolMediumStatus.TEMPLATE },
+		});
+
+		if (!entity) {
+			return null;
+		}
+
+		const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
+
+		return domainObject;
 	}
 
 	public async findAllByMediaSource(mediaSourceId: string): Promise<ExternalTool[]> {
