@@ -8,10 +8,15 @@ export class SchoolYear extends DomainObject<SchoolYearProps> {
 	get startDate(): Date {
 		return this.props.startDate;
 	}
+
+	get courseCreationInNextYear(): boolean {
+		return this.props.courseCreationInNextYear;
+	}
 }
 
 export interface SchoolYearProps extends AuthorizableObject {
 	name: string;
 	startDate: Date;
 	endDate: Date;
+	courseCreationInNextYear: boolean;
 }
