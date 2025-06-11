@@ -55,10 +55,10 @@ export class UserScope extends Scope<User> {
 		return this;
 	}
 
-	public byName(name?: string): UserScope {
+	public byName(name?: string, allowedMaxLength = 100): UserScope {
 		if (name !== undefined) {
 			// To avoid ressource expensive operations with passing unexpected long name.
-			this.checkMaxLength(name, 100);
+			this.checkMaxLength(name, allowedMaxLength);
 
 			const escapedName = this.escapeString(name);
 			const searchNameRegex = new RegExp(escapedName, 'i');
