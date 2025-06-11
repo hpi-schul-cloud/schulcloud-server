@@ -55,6 +55,7 @@ export class HydraAdapter extends OauthProviderService {
 	}
 
 	public async acceptLogoutRequest(challenge: string): Promise<ProviderRedirectResponse> {
+		console.log('<<<<<<<<<<<<<<<<<< Hydra log out of SVS.');
 		const response: ProviderRedirectResponse = await this.put<ProviderRedirectResponse>('logout', 'accept', challenge);
 
 		return response;
