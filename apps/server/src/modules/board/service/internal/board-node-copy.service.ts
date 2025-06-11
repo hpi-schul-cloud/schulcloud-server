@@ -1,7 +1,7 @@
 import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { CopyContentParams, CopyContentParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyElementType, CopyHelperService, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyElementType, CopyHelperService, CopyMapper, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import type { CopyFileDto } from '@modules/files-storage-client/dto';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import {
@@ -24,7 +24,9 @@ import {
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	FileElementFactory,
 	FileFolderElement,
+	FileFolderElementFactory,
 	getBoardNodeType,
 	H5pElement,
 	handleNonExhaustiveSwitch,
@@ -180,20 +182,12 @@ export class BoardNodeCopyService {
 	}
 
 	public async copyFileElement(original: FileElement, context: CopyContext): Promise<CopyStatus> {
-		const copy = new FileElement({
+		const copy = FileElementFactory.build({
 			...original.getProps(),
 			...this.buildSpecificProps([]),
 		});
 
-		const fileCopy = await context.copyFilesOfParent(original.id, copy.id);
-
-		const fileCopyStatus = fileCopy.map((copyFileDto) => {
-			return {
-				type: CopyElementType.FILE,
-				status: copyFileDto.id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
-				title: copyFileDto.name ?? `(old fileid: ${copyFileDto.sourceId})`,
-			};
-		});
+		const fileCopyStatus = await this.copyFilesOfParent(original, context, copy);
 
 		const result: CopyStatus = {
 			copyEntity: copy,
@@ -203,6 +197,35 @@ export class BoardNodeCopyService {
 		};
 
 		return result;
+	}
+
+	public async copyFileFolderElement(original: FileFolderElement, context: CopyContext): Promise<CopyStatus> {
+		const copy = FileFolderElementFactory.build({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
+		const fileCopyStatus = await this.copyFilesOfParent(original, context, copy);
+
+		const result: CopyStatus = {
+			copyEntity: copy,
+			type: CopyElementType.FILE_FOLDER_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+			elements: fileCopyStatus,
+		};
+
+		return result;
+	}
+
+	private async copyFilesOfParent(
+		original: FileElement | LinkElement | FileFolderElement,
+		context: CopyContext,
+		copy: FileFolderElement | FileElement
+	): Promise<CopyStatus[]> {
+		const fileCopies = await context.copyFilesOfParent(original.id, copy.id);
+		const copyStatus = CopyMapper.mapFileDtosToCopyStatus(fileCopies);
+
+		return copyStatus;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -451,23 +474,6 @@ export class BoardNodeCopyService {
 			copyEntity: copy,
 			type: CopyElementType.DELETED_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
-		};
-
-		return Promise.resolve(result);
-	}
-
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public copyFileFolderElement(original: FileFolderElement, context: CopyContext): Promise<CopyStatus> {
-		const copy = new FileFolderElement({
-			...original.getProps(),
-			...this.buildSpecificProps([]),
-		});
-
-		const result: CopyStatus = {
-			copyEntity: copy,
-			type: CopyElementType.FILE_FOLDER_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
-			elements: [],
 		};
 
 		return Promise.resolve(result);
