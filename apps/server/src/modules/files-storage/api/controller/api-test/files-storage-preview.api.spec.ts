@@ -194,7 +194,7 @@ describe('File Controller (API) - preview', () => {
 						.query(defaultQueryParameters);
 					const result = response.body as ApiValidationError;
 
-					expect(result.message).toEqual('The requested FileRecordEntity: [object Object] has not been found.');
+					expect(result.message).toEqual('The requested FileRecordEntity has not been found.');
 					expect(response.status).toEqual(404);
 				});
 			});
