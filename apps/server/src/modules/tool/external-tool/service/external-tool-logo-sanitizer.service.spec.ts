@@ -32,48 +32,28 @@ describe(ExternalToolLogoSanitizerService.name, () => {
 	});
 
 	describe('sanitizeSvg', () => {
-		const setup = () => {
-			return {
-				invalidSvgTestLogo,
-				validSvgTestLogo,
-			};
-		};
-
 		it('should return sanitized SVG for valid input', () => {
-			const { validSvgTestLogo } = setup();
 			const result = service.sanitizeSvg(validSvgTestLogo);
 			expect(result).toContain('<svg');
 		});
 
 		it('should sanitize and remove image tag from malicious SVG', () => {
-			const { invalidSvgTestLogo } = setup();
-
 			const result = service.sanitizeSvg(invalidSvgTestLogo);
-
 			expect(result).not.toContain('<image');
 		});
 
 		it('should sanitize and remove script tag from malicious SVG', () => {
-			const { invalidSvgTestLogo } = setup();
-
 			const result = service.sanitizeSvg(invalidSvgTestLogo);
-
 			expect(result).not.toContain('<script');
 		});
 
 		it('should sanitize and remove onlick action from malicious SVG', () => {
-			const { invalidSvgTestLogo } = setup();
-
 			const result = service.sanitizeSvg(invalidSvgTestLogo);
-
 			expect(result).not.toContain('onclick');
 		});
 
 		it('should sanitize and remove foreignObject from malicious SVG', () => {
-			const { invalidSvgTestLogo } = setup();
-
 			const result = service.sanitizeSvg(invalidSvgTestLogo);
-
 			expect(result).not.toContain('<foreignObject');
 		});
 

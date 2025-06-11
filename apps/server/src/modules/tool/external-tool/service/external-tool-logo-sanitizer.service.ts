@@ -19,13 +19,15 @@ export class ExternalToolLogoSanitizerService {
 
 	public sanitizeSvg(svgContent: string): string {
 		if (svgContent.trim() === '') {
-			throw new ExternalToolLogoSanitizationLoggableException('SVG cannot be sanized because it is empty.');
+			throw new ExternalToolLogoSanitizationLoggableException(
+				'SVG sanitization falied: SVG to be sanitized is invalid.'
+			);
 		}
 
 		const sanitizedSvg = this.sanitizer.sanitize(svgContent, { USE_PROFILES: { svg: true }, FORBID_TAGS: ['image'] });
 
 		if (!sanitizedSvg || typeof sanitizedSvg !== 'string' || sanitizedSvg.trim() === '') {
-			throw new ExternalToolLogoSanitizationLoggableException('Sanitized SVG is empty or invalid.');
+			throw new ExternalToolLogoSanitizationLoggableException('SVG sanitization falied: Sanitized SVG is invalid.');
 		}
 
 		return sanitizedSvg;

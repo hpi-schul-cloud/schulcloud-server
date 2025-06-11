@@ -428,7 +428,9 @@ describe(ExternalToolLogoService.name, () => {
 				const logoBuffer: Buffer = Buffer.from('', 'base64');
 
 				jest.spyOn(externalToolImageSanitizerService, 'sanitizeSvg').mockImplementation(() => {
-					throw new ExternalToolLogoSanitizationLoggableException('SVG cannot be sanized because it is empty.');
+					throw new ExternalToolLogoSanitizationLoggableException(
+						'SVG sanitization falied: SVG to be sanitized is invalid.'
+					);
 				});
 				httpService.get.mockReturnValue(
 					of(
@@ -453,7 +455,7 @@ describe(ExternalToolLogoService.name, () => {
 				const { externalTool } = setup();
 
 				await expect(service.fetchLogo(externalTool)).rejects.toEqual(
-					new ExternalToolLogoSanitizationLoggableException('SVG cannot be sanized because it is empty.')
+					new ExternalToolLogoSanitizationLoggableException('SVG sanitization falied: SVG to be sanitized is invalid.')
 				);
 			});
 		});
@@ -480,7 +482,7 @@ describe(ExternalToolLogoService.name, () => {
 				);
 
 				jest.spyOn(externalToolImageSanitizerService, 'sanitizeSvg').mockImplementation(() => {
-					throw new ExternalToolLogoSanitizationLoggableException('Sanitized SVG is empty or invalid.');
+					throw new ExternalToolLogoSanitizationLoggableException('SVG sanitization falied: Sanitized SVG is invalid.');
 				});
 				return {
 					externalTool,
@@ -492,7 +494,7 @@ describe(ExternalToolLogoService.name, () => {
 				const { externalTool } = setup();
 
 				await expect(service.fetchLogo(externalTool)).rejects.toEqual(
-					new ExternalToolLogoSanitizationLoggableException('Sanitized SVG is empty or invalid.')
+					new ExternalToolLogoSanitizationLoggableException('SVG sanitization falied: Sanitized SVG is invalid.')
 				);
 			});
 		});
