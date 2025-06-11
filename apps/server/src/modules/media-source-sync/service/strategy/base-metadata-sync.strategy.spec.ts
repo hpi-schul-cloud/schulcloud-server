@@ -346,7 +346,11 @@ describe(BaseMetadataSyncStrategy.name, () => {
 
 				await strategy.syncAllMediaMetadata(mediaSource);
 
-				expect(externalToolMetadataUpdateService).toHaveBeenCalledWith(externalTool, mediumMetadata);
+				expect(externalToolMetadataUpdateService.updateExternalToolWithMetadata).toHaveBeenCalledWith(
+					externalTool,
+					mediumMetadata,
+					mediaSource.format
+				);
 			});
 
 			it('should validate the external tool', async () => {

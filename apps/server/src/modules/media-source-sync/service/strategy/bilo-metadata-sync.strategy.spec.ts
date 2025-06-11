@@ -37,7 +37,7 @@ describe(BiloMetadataSyncStrategy.name, () => {
 				{
 					provide: ExternalToolParameterValidationService,
 					useValue: createMock<ExternalToolParameterValidationService>(),
-				}
+				},
 			],
 		}).compile();
 
