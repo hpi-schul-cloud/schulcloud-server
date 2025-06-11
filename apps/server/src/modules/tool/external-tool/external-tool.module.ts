@@ -50,6 +50,7 @@ import {
 	exports: [
 		ExternalToolService,
 		ExternalToolValidationService,
+		ExternalToolParameterValidationService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
 		DatasheetPdfService,
