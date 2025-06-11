@@ -1,4 +1,4 @@
-import { S3ClientAdapter } from '@infra/s3-client';
+import { CopyFiles, S3ClientAdapter } from '@infra/s3-client';
 import {
 	ContentId,
 	ContentPermission,
@@ -21,10 +21,9 @@ import {
 import { ErrorUtils } from '@core/error/utils';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto/h5p-file.dto';
-import { H5PContent } from '../entity';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
-import { H5PContentRepo } from '../repo';
-import { LumiUserWithContentData } from '../types/lumi-types';
+import { H5PContent, H5PContentRepo } from '../repo';
+import { LumiUserWithContentData } from '../types';
 
 @Injectable()
 export class ContentStorage implements IContentStorage {
@@ -215,6 +214,21 @@ export class ContentStorage implements IContentStorage {
 		const { files } = await this.storageClient.list({ path });
 
 		return files;
+	}
+
+	public async copyAllFiles(sourceContentId: string, targetContentId: string): Promise<void> {
+		const filenames = await this.listFiles(sourceContentId);
+
+		const copyFiles: CopyFiles[] = filenames.map((filename: string) => {
+			const copy: CopyFiles = {
+				sourcePath: this.getFilePath(sourceContentId, filename),
+				targetPath: this.getFilePath(targetContentId, filename),
+			};
+
+			return copy;
+		});
+
+		await this.storageClient.copy(copyFiles);
 	}
 
 	private async exists(checkPath: string): Promise<boolean> {
