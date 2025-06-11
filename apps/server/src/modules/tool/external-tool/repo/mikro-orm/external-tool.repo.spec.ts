@@ -2,7 +2,6 @@ import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExternalToolSearchQuery } from '@modules/tool';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
@@ -18,6 +17,7 @@ import {
 	LtiMessageType,
 	LtiPrivacyPermission,
 } from '../../../common/enum';
+import { ExternalToolSearchQuery } from '../../../common/interface';
 import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../../domain';
 import { ExternalToolMediumStatus } from '../../enum';
 import { externalToolEntityFactory, externalToolFactory } from '../../testing';
@@ -756,6 +756,30 @@ describe(ExternalToolRepo.name, () => {
 
 				expect(result).toEqual(expect.arrayContaining(things));
 			});
+		});
+	});
+
+	describe('findAllByName', () => {
+		const localSetup = async () => {
+			const name = 'test-tool';
+			const entities: ExternalToolEntity[] = externalToolEntityFactory.buildList(3, { name });
+
+			await em.persistAndFlush(entities);
+
+			const domainObjects: ExternalTool[] = entities.map((entity: ExternalToolEntity) =>
+				repo.mapEntityToDomainObject(entity)
+			);
+
+			return { name, domainObjects };
+		};
+
+		it('should find external tools with the given name', async () => {
+			const { name, domainObjects } = await localSetup();
+
+			const result: ExternalTool[] = await repo.findAllByName(name);
+
+			expect(result.length).toEqual(domainObjects.length);
+			expect(result).toEqual(expect.arrayContaining(domainObjects));
 		});
 	});
 });

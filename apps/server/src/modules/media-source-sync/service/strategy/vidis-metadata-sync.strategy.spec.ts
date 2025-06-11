@@ -1,8 +1,11 @@
 import { createMock } from '@golevelup/ts-jest';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediumMetadataService } from '@modules/medium-metadata';
-import { ExternalToolService } from '@modules/tool';
-import { ExternalToolValidationService } from '@modules/tool/external-tool';
+import {
+	ExternalToolService,
+	ExternalToolValidationService,
+	ExternalToolParameterValidationService,
+} from '@modules/tool';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalToolMetadataUpdateService } from '../external-tool-metadata-update.service';
 import { VidisMetadataSyncStrategy } from './vidis-metadata-sync.strategy';
@@ -30,6 +33,10 @@ describe(VidisMetadataSyncStrategy.name, () => {
 				{
 					provide: ExternalToolMetadataUpdateService,
 					useValue: createMock<ExternalToolMetadataUpdateService>(),
+				},
+				{
+					provide: ExternalToolParameterValidationService,
+					useValue: createMock<ExternalToolParameterValidationService>(),
 				},
 			],
 		}).compile();

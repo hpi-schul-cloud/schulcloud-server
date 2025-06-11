@@ -1,6 +1,11 @@
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { MediumMetadataDto, MediumMetadataService } from '@modules/medium-metadata';
-import { ExternalTool, ExternalToolService, ExternalToolValidationService } from '@modules/tool';
+import {
+	ExternalTool,
+	ExternalToolService,
+	ExternalToolValidationService,
+	ExternalToolParameterValidationService,
+} from '@modules/tool';
 import { Injectable } from '@nestjs/common';
 import {
 	MediaSourceSyncOperationReportFactory as OperationReportFactory,
@@ -16,7 +21,8 @@ export abstract class BaseMetadataSyncStrategy {
 		protected readonly externalToolService: ExternalToolService,
 		protected readonly mediumMetadataService: MediumMetadataService,
 		protected readonly externalToolValidationService: ExternalToolValidationService,
-		protected readonly externalToolMetadataUpdateService: ExternalToolMetadataUpdateService
+		protected readonly externalToolMetadataUpdateService: ExternalToolMetadataUpdateService,
+		protected readonly externalToolParameterValidationService: ExternalToolParameterValidationService
 	) {}
 
 	public abstract getMediaSourceFormat(): MediaSourceDataFormat;
@@ -87,6 +93,10 @@ export abstract class BaseMetadataSyncStrategy {
 						fetchedMetadata,
 						this.getMediaSourceFormat()
 					);
+
+					if (!(await this.externalToolParameterValidationService.isNameUnique(externalTool))) {
+						externalTool.name = `${externalTool.name} - [${fetchedMetadata.mediumId}]`;
+					}
 
 					await this.externalToolValidationService.validateUpdate(externalTool.id, externalTool);
 
