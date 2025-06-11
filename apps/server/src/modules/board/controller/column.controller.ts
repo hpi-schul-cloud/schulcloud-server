@@ -17,12 +17,17 @@ import { BoardUc, ColumnUc } from '../uc';
 import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
 import { CreateCardBodyParams } from './dto/card/create-card.body.params';
 import { CardResponseMapper } from './mapper';
+import { CardContentUc } from '../uc/card-content.uc';
 
 @ApiTags('Board Column')
 @JwtAuthentication()
 @Controller('columns')
 export class ColumnController {
-	constructor(private readonly boardUc: BoardUc, private readonly columnUc: ColumnUc) {}
+	constructor(
+		private readonly boardUc: BoardUc,
+		private readonly columnUc: ColumnUc,
+		private readonly cardContentUc: CardContentUc
+	) {}
 
 	@ApiOperation({ summary: 'Move a single column.' })
 	@ApiResponse({ status: 204 })
@@ -79,6 +84,30 @@ export class ColumnController {
 	): Promise<CardResponse> {
 		const { requiredEmptyElements } = createCardBodyParams || {};
 		const card = await this.columnUc.createCard(currentUser.userId, urlParams.columnId, requiredEmptyElements);
+
+		const response = CardResponseMapper.mapToResponse(card);
+
+		return response;
+	}
+
+	@ApiOperation({ summary: 'Create a new card on a column with content.' })
+	@ApiResponse({ status: 201, type: CardResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiBody({ required: false, type: CreateCardBodyParams })
+	@Post(':columnId/cardsContent')
+	public async createCardWithContent(
+		@Param() urlParams: ColumnUrlParams,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() createCardBodyParams?: CreateCardBodyParams
+	): Promise<CardResponse> {
+		const { requiredEmptyElements } = createCardBodyParams || {};
+		const card = await this.cardContentUc.createCardWithContent(
+			currentUser.userId,
+			urlParams.columnId,
+			requiredEmptyElements
+		);
 
 		const response = CardResponseMapper.mapToResponse(card);
 
