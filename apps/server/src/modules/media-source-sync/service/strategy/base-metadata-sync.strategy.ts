@@ -8,13 +8,15 @@ import {
 } from '../../factory';
 import { MediaSourceSyncReport } from '../../interface';
 import { MediaSourceSyncOperation } from '../../types';
+import { ExternalToolMetadataUpdateService } from '../external-tool-metadata-update.service';
 
 @Injectable()
 export abstract class BaseMetadataSyncStrategy {
 	constructor(
 		protected readonly externalToolService: ExternalToolService,
 		protected readonly mediumMetadataService: MediumMetadataService,
-		protected readonly externalToolValidationService: ExternalToolValidationService
+		protected readonly externalToolValidationService: ExternalToolValidationService,
+		protected readonly externalToolMetadataUpdateService: ExternalToolMetadataUpdateService
 	) {}
 
 	public abstract getMediaSourceFormat(): MediaSourceDataFormat;
@@ -80,7 +82,11 @@ export abstract class BaseMetadataSyncStrategy {
 				}
 
 				try {
-					await this.updateExternalToolMetadata(externalTool, fetchedMetadata);
+					await this.externalToolMetadataUpdateService.updateExternalToolWithMetadata(
+						externalTool,
+						fetchedMetadata,
+						this.getMediaSourceFormat()
+					);
 
 					await this.externalToolValidationService.validateUpdate(externalTool.id, externalTool);
 
@@ -123,6 +129,4 @@ export abstract class BaseMetadataSyncStrategy {
 
 		return isUpToDate;
 	}
-
-	protected abstract updateExternalToolMetadata(externalTool: ExternalTool, metadata: MediumMetadataDto): Promise<void>;
 }
