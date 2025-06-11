@@ -8,9 +8,9 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { H5PContentParentType } from '../../entity';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
+import { H5PContentParentType } from '../../types';
 import { PostH5PContentCreateParams } from '../dto';
 
 describe('H5PEditor Controller (api)', () => {
