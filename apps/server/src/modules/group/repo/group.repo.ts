@@ -67,7 +67,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		}
 
 		const escapedName = filter.nameQuery?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
-		if (StringValidator.isNotEmptyString(escapedName, true)) {
+		if (StringValidator.isNotEmptyStringWhenTrimed(escapedName)) {
 			scope.byNameQuery(escapedName);
 		}
 
