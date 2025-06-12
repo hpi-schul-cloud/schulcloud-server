@@ -95,9 +95,10 @@ export class ExternalToolLogoService {
 			const logoBase64: string = buffer.toString('base64');
 			return `data:${contentType};base64,${logoBase64}`;
 		} catch (error) {
-			if (error instanceof ExternalToolLogoWrongFileTypeLoggableException) {
-				throw error;
-			} else if (error instanceof ExternalToolLogoSanitizationLoggableException) {
+			if (
+				error instanceof ExternalToolLogoWrongFileTypeLoggableException ||
+				error instanceof ExternalToolLogoSanitizationLoggableException
+			) {
 				throw error;
 			} else if (error instanceof HttpException) {
 				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());

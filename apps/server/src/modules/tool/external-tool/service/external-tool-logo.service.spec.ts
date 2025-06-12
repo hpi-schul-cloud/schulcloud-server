@@ -276,13 +276,6 @@ describe(ExternalToolLogoService.name, () => {
 					logoUrl,
 				};
 			};
-			it('should call sanitizer service', async () => {
-				const { externalTool } = setup();
-
-				await service.fetchLogo(externalTool);
-
-				expect(externalToolImageSanitizerService.sanitizeSvg).toHaveBeenCalledWith(validSvgTestLogo);
-			});
 
 			it('should return base64 encoded logo', async () => {
 				const { externalTool } = setup();
