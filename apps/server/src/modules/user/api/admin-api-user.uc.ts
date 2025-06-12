@@ -44,6 +44,7 @@ export class AdminApiUserUc {
 	}
 }
 
+
 export type CreateddUserAndAccount = {
 	userId: EntityId;
 	accountId: EntityId;
