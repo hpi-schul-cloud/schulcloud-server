@@ -1,3 +1,4 @@
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
 import { CustomParameter } from '../../common/domain';
@@ -72,18 +73,26 @@ export class ExternalToolParameterValidationService {
 		}
 	}
 
-	private isCustomParameterNameEmpty(param: CustomParameter): boolean {
-		return !param.name || !param.displayName;
-	}
-
-	private async isNameUnique(externalTool: ExternalTool): Promise<boolean> {
+	public async isNameUnique(externalTool: ExternalTool): Promise<boolean> {
 		if (!externalTool.name) {
 			return true;
 		}
 
-		const duplicate: ExternalTool | null = await this.externalToolService.findExternalToolByName(externalTool.name);
+		const duplicates: ExternalTool[] = await this.externalToolService.findExternalToolsByName(externalTool.name);
+		if (duplicates.length === 0) {
+			return true;
+		}
 
-		return duplicate == null || duplicate.id === externalTool.id;
+		if (duplicates.length > 1) {
+			return false;
+		}
+
+		const isDuplicateSelf = duplicates[0].id === externalTool.id;
+		return isDuplicateSelf;
+	}
+
+	private isCustomParameterNameEmpty(param: CustomParameter): boolean {
+		return !param.name || !param.displayName;
 	}
 
 	private hasDuplicateAttributes(customParameter: CustomParameter[]): boolean {
@@ -159,7 +168,11 @@ export class ExternalToolParameterValidationService {
 	}
 
 	private isAutoParameterMediumIdValid(customParameter: CustomParameter, externalTool: ExternalTool) {
-		if (customParameter.type === CustomParameterType.AUTO_MEDIUMID && !externalTool.medium?.mediumId) {
+		if (
+			customParameter.type === CustomParameterType.AUTO_MEDIUMID &&
+			externalTool.medium?.status !== ExternalToolMediumStatus.TEMPLATE &&
+			!externalTool.medium?.mediumId
+		) {
 			return false;
 		}
 

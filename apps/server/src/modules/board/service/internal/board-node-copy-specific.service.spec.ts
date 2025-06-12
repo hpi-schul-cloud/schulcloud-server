@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { StorageLocation } from '@infra/files-storage-client';
+import { H5pEditorProducer } from '@infra/h5p-editor-client';
+import { CopyContentParams, CopyContentParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { CopyFileDto } from '@modules/files-storage-client/dto';
 import { CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import {
@@ -14,6 +15,7 @@ import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { copyFileDtoFactory } from '@modules/files-storage-client/testing';
 import {
 	Card,
 	CollaborativeTextEditorElement,
@@ -68,6 +70,7 @@ describe(BoardNodeCopyService.name, () => {
 	};
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
+	let h5pEditorProducer: DeepMocked<H5pEditorProducer>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -87,12 +90,21 @@ describe(BoardNodeCopyService.name, () => {
 					provide: CopyHelperService,
 					useValue: createMock<CopyHelperService>(),
 				},
+				{
+					provide: H5pEditorProducer,
+					useValue: createMock<H5pEditorProducer>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(BoardNodeCopyService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		copyHelperService = module.get(CopyHelperService);
+		h5pEditorProducer = module.get(H5pEditorProducer);
+	});
+
+	beforeEach(() => {
+		jest.useFakeTimers();
 	});
 
 	afterEach(() => {
@@ -224,51 +236,111 @@ describe(BoardNodeCopyService.name, () => {
 	});
 
 	describe('copy file element', () => {
-		const setup = () => {
-			const { copyContext } = setupContext();
-			const fileElement = fileElementFactory.build();
-			const fileCopyStatus: CopyFileDto = {
-				name: 'bird.jpg',
-				id: new ObjectId().toHexString(),
-				sourceId: new ObjectId().toHexString(),
+		describe('when copying is successful', () => {
+			const setup = () => {
+				const { copyContext } = setupContext();
+				const fileElement = fileElementFactory.build();
+				const fileCopyStatus = copyFileDtoFactory.build();
+				jest.spyOn(copyContext, 'copyFilesOfParent').mockResolvedValueOnce([fileCopyStatus]);
+
+				return { copyContext, fileElement, fileCopyStatus };
 			};
-			jest.spyOn(copyContext, 'copyFilesOfParent').mockResolvedValueOnce([fileCopyStatus]);
 
-			return { copyContext, fileElement, fileCopyStatus };
-		};
+			it('should copy the node', async () => {
+				const { copyContext, fileElement } = setup();
 
-		it('should copy the node', async () => {
-			const { copyContext, fileElement } = setup();
+				const result = await service.copyFileElement(fileElement, copyContext);
 
-			const result = await service.copyFileElement(fileElement, copyContext);
+				expect(result.copyEntity).toBeInstanceOf(FileElement);
+			});
 
-			expect(result.copyEntity).toBeInstanceOf(FileElement);
+			it('should copy the files', async () => {
+				const { copyContext, fileElement, fileCopyStatus } = setup();
+
+				const result = await service.copyFileElement(fileElement, copyContext);
+
+				expect(copyContext.copyFilesOfParent).toHaveBeenCalledWith(fileElement.id, result.copyEntity?.id);
+				expect(result.elements).toEqual([expect.objectContaining({ title: fileCopyStatus.name })]);
+			});
 		});
 
-		it('should copy the files', async () => {
-			const { copyContext, fileElement, fileCopyStatus } = setup();
+		describe('when copying is not successful', () => {
+			const setup = () => {
+				const { copyContext } = setupContext();
+				const fileElement = fileElementFactory.build();
+				const fileCopyStatus = copyFileDtoFactory.build({ id: undefined, name: undefined });
 
-			const result = await service.copyFileElement(fileElement, copyContext);
+				jest.spyOn(copyContext, 'copyFilesOfParent').mockResolvedValueOnce([fileCopyStatus]);
 
-			expect(copyContext.copyFilesOfParent).toHaveBeenCalledWith(fileElement.id, result.copyEntity?.id);
-			expect(result.elements ?? []).toEqual([expect.objectContaining({ title: fileCopyStatus.name })]);
+				return { copyContext, fileElement, fileCopyStatus };
+			};
+
+			it('should return the node with failed status and default title', async () => {
+				const { copyContext, fileElement, fileCopyStatus } = setup();
+
+				const result = await service.copyFileElement(fileElement, copyContext);
+
+				expect(copyContext.copyFilesOfParent).toHaveBeenCalledWith(fileElement.id, result.copyEntity?.id);
+				expect(result.elements).toEqual([
+					expect.objectContaining({ title: `(old fileid: ${fileCopyStatus.sourceId})`, status: CopyStatusEnum.FAIL }),
+				]);
+			});
 		});
 	});
 
 	describe('copy file folder element', () => {
-		const setup = () => {
-			const { copyContext } = setupContext();
-			const fileFolderElement = fileFolderElementFactory.build();
+		describe('when copying is successfull', () => {
+			const setup = () => {
+				const { copyContext } = setupContext();
+				const fileFolderElement = fileFolderElementFactory.build();
 
-			return { copyContext, fileFolderElement };
-		};
+				const fileCopyStatus = copyFileDtoFactory.build();
+				jest.spyOn(copyContext, 'copyFilesOfParent').mockResolvedValueOnce([fileCopyStatus]);
 
-		it('should copy the node', async () => {
-			const { copyContext, fileFolderElement } = setup();
+				return { copyContext, fileFolderElement, fileCopyStatus };
+			};
 
-			const result = await service.copyFileFolderElement(fileFolderElement, copyContext);
+			it('should copy the node', async () => {
+				const { copyContext, fileFolderElement } = setup();
 
-			expect(result.copyEntity).toBeInstanceOf(FileFolderElement);
+				const result = await service.copyFileFolderElement(fileFolderElement, copyContext);
+
+				expect(result.copyEntity).toBeInstanceOf(FileFolderElement);
+			});
+
+			it('should copy the files', async () => {
+				const { copyContext, fileFolderElement, fileCopyStatus } = setup();
+
+				const result = await service.copyFileFolderElement(fileFolderElement, copyContext);
+
+				expect(copyContext.copyFilesOfParent).toHaveBeenCalledWith(fileFolderElement.id, result.copyEntity?.id);
+				expect(result.elements).toEqual([
+					expect.objectContaining({ title: fileCopyStatus.name, status: CopyStatusEnum.SUCCESS }),
+				]);
+			});
+		});
+
+		describe('when copying is not successfull', () => {
+			const setup = () => {
+				const { copyContext } = setupContext();
+				const fileFolderElement = fileFolderElementFactory.build();
+
+				const fileCopyStatus = copyFileDtoFactory.build({ id: undefined, name: undefined });
+				jest.spyOn(copyContext, 'copyFilesOfParent').mockResolvedValueOnce([fileCopyStatus]);
+
+				return { copyContext, fileFolderElement, fileCopyStatus };
+			};
+
+			it('should return the node with failed status and default title', async () => {
+				const { copyContext, fileFolderElement, fileCopyStatus } = setup();
+
+				const result = await service.copyFileFolderElement(fileFolderElement, copyContext);
+
+				expect(copyContext.copyFilesOfParent).toHaveBeenCalledWith(fileFolderElement.id, result.copyEntity?.id);
+				expect(result.elements).toEqual([
+					expect.objectContaining({ title: `(old fileid: ${fileCopyStatus.sourceId})`, status: CopyStatusEnum.FAIL }),
+				]);
+			});
 		});
 	});
 
@@ -276,19 +348,17 @@ describe(BoardNodeCopyService.name, () => {
 		const setup = () => {
 			const { copyContext } = setupContext();
 			const sourceId = new ObjectId().toHexString();
+			const linkElementFileName = `bird.jpg`;
 			const linkElement = linkElementFactory.build({
 				id: sourceId,
-				imageUrl: `https://example.com/${sourceId}/bird.jpg`,
+				imageUrl: `https://example.com/${sourceId}/${linkElementFileName}`,
 			});
 			const linkElementWithoutId = linkElementFactory.build({
 				id: sourceId,
 				imageUrl: `https://example.com/plane.jpg`,
 			});
-			const fileCopyStatus: CopyFileDto = {
-				name: 'bird.jpg',
-				id: new ObjectId().toHexString(),
-				sourceId,
-			};
+			const fileCopyStatus = copyFileDtoFactory.build({ sourceId, name: linkElementFileName });
+
 			jest.spyOn(copyContext, 'copyFilesOfParent').mockResolvedValueOnce([fileCopyStatus]);
 
 			return { copyContext, linkElement, linkElementWithoutId, fileCopyStatus };
@@ -325,8 +395,10 @@ describe(BoardNodeCopyService.name, () => {
 
 				const result = await service.copyLinkElement(linkElement, copyContext);
 
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				expect((result.copyEntity as LinkElement).imageUrl).toBe(`https://example.com/${fileCopyStatus.id}/bird.jpg`);
+				expect((result.copyEntity as LinkElement).imageUrl).toBe(
+					// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+					`https://example.com/${fileCopyStatus.id}/${fileCopyStatus.name ?? ''}`
+				);
 			});
 		});
 
@@ -754,29 +826,83 @@ describe(BoardNodeCopyService.name, () => {
 	});
 
 	describe('copy h5p element', () => {
-		const setup = () => {
-			const { copyContext } = setupContext();
-			const h5pElement = h5pElementFactory.build({
-				contentId: new ObjectId().toHexString(),
+		describe('when the h5p element has a content id', () => {
+			const setup = () => {
+				const { copyContext } = setupContext();
+				const h5pElement = h5pElementFactory.build({
+					contentId: new ObjectId().toHexString(),
+				});
+
+				return {
+					copyContext,
+					h5pElement,
+				};
+			};
+
+			it('should copy the node', async () => {
+				const { copyContext, h5pElement } = setup();
+
+				const result = await service.copyH5pElement(h5pElement, copyContext);
+
+				expect(result).toEqual<CopyStatus>({
+					copyEntity: h5pElementFactory.build({
+						...h5pElement.getProps(),
+						contentId: expect.any(String),
+						id: expect.any(String),
+					}),
+					type: CopyElementType.H5P_ELEMENT,
+					status: CopyStatusEnum.SUCCESS,
+					elements: [],
+				});
 			});
 
-			return {
-				copyContext,
-				h5pElement,
+			it('should call the copy method of the h5p editor producer', async () => {
+				const { copyContext, h5pElement } = setup();
+
+				await service.copyH5pElement(h5pElement, copyContext);
+
+				expect(h5pEditorProducer.copyContent).toHaveBeenCalledWith(
+					expect.objectContaining<CopyContentParams>({
+						sourceContentId: h5pElement.contentId as string,
+						copiedContentId: expect.any(String),
+						userId: copyContext.userId,
+						schoolId: copyContext.targetSchoolId,
+						parentType: CopyContentParentType.BoardElement,
+						parentId: expect.any(String),
+					})
+				);
+			});
+		});
+
+		describe('when the h5p element has no content id', () => {
+			const setup = () => {
+				const { copyContext } = setupContext();
+				const h5pElement = h5pElementFactory.build({
+					contentId: undefined,
+				});
+
+				return {
+					copyContext,
+					h5pElement,
+				};
 			};
-		};
 
-		it('should copy the node', async () => {
-			const { copyContext, h5pElement } = setup();
+			it('should copy the h5p element with no content id', async () => {
+				const { copyContext, h5pElement } = setup();
 
-			const result = await service.copyH5pElement(h5pElement, copyContext);
+				const result = await service.copyH5pElement(h5pElement, copyContext);
 
-			const expectedStatus: CopyStatus = {
-				type: CopyElementType.H5P_ELEMENT,
-				status: CopyStatusEnum.NOT_IMPLEMENTED,
-			};
-
-			expect(result).toEqual(expectedStatus);
+				expect(result).toEqual<CopyStatus>({
+					copyEntity: h5pElementFactory.build({
+						...h5pElement.getProps(),
+						contentId: undefined,
+						id: expect.any(String),
+					}),
+					type: CopyElementType.H5P_ELEMENT,
+					status: CopyStatusEnum.SUCCESS,
+					elements: [],
+				});
+			});
 		});
 	});
 });
