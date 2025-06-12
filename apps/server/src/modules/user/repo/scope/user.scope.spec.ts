@@ -159,7 +159,6 @@ describe('UserScope', () => {
 				return { scope, name };
 			};
 
-			// TODO: Wie soll sich das hier eigentlich verhalten.
 			it('should use the default query', () => {
 				const { scope, name } = setup();
 
