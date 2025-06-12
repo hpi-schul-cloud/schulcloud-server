@@ -17,8 +17,14 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 	}
 
 	public hasPermission(user: User, object: RoomMembershipAuthorizable, context: AuthorizationContext): boolean {
-		if (!this.hasAccessToSchool(user, object.schoolId)) {
-			return false;
+		// Copy and Share Room are allowed when user has permission but belongs to external school
+		if (
+			!context.requiredPermissions.includes(Permission.ROOM_SHARE) &&
+			!context.requiredPermissions.includes(Permission.ROOM_COPY)
+		) {
+			if (!this.hasAccessToSchool(user, object.schoolId)) {
+				return false;
+			}
 		}
 
 		if (!this.hasRequiredRoomPermissions(user, object, context.requiredPermissions)) {
@@ -42,7 +48,10 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 		const secondarySchools = user.secondarySchools ?? [];
 		const secondarySchoolIds = secondarySchools.map(({ school }) => school.id);
 
-		return [primarySchoolId, ...secondarySchoolIds].includes(schoolId);
+		const allSchools = [primarySchoolId, ...secondarySchoolIds];
+		const includesSchool = allSchools.includes(schoolId);
+
+		return includesSchool;
 	}
 
 	private hasRequiredRoomPermissions(
