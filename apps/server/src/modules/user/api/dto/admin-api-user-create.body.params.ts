@@ -1,7 +1,7 @@
 import { RoleName } from '@modules/role';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
-import { IsEmail, IsEnum, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class AdminApiUserCreateBodyParams {
 	@IsEmail()
@@ -10,7 +10,7 @@ export class AdminApiUserCreateBodyParams {
 		required: true,
 		nullable: false,
 	})
-	email!: string;
+	public email!: string;
 
 	@IsString()
 	@ApiProperty({
@@ -18,7 +18,7 @@ export class AdminApiUserCreateBodyParams {
 		required: true,
 		nullable: false,
 	})
-	firstName!: string;
+	public firstName!: string;
 
 	@IsString()
 	@ApiProperty({
@@ -26,7 +26,7 @@ export class AdminApiUserCreateBodyParams {
 		required: true,
 		nullable: false,
 	})
-	lastName!: string;
+	public lastName!: string;
 
 	@IsEnum(RoleName, { each: true })
 	@IsNotEmpty()
@@ -38,7 +38,7 @@ export class AdminApiUserCreateBodyParams {
 		nullable: false,
 		enumName: 'RoleName',
 	})
-	roleNames!: RoleName[];
+	public roleNames!: RoleName[];
 
 	@IsMongoId()
 	@ApiProperty({
@@ -46,5 +46,12 @@ export class AdminApiUserCreateBodyParams {
 		required: true,
 		nullable: false,
 	})
-	schoolId!: EntityId;
+	public schoolId!: EntityId;
+
+	@IsMongoId()
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Id of the course the user should be assigned to',
+	})
+	public courseId?: EntityId;
 }
