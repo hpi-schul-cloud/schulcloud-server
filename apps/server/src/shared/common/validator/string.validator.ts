@@ -1,17 +1,15 @@
 export class StringValidator {
-	static isString(value?: string): value is string {
-		const result = value != null && typeof value === 'string';
-		if (result === true) {
-			return true;
-		}
-		return false;
+	public static isString(value?: string): value is string {
+		const isString = value != null && typeof value === 'string';
+
+		return isString;
 	}
 
-	static isNotEmptyString(value?: string, trim = false): boolean {
-		if (StringValidator.isString(value)) {
-			const result = trim ? value.trim().length > 0 : value.length > 0;
-			return result;
-		}
-		return false;
+	public static isNotEmptyString(value?: string): boolean {
+		return StringValidator.isString(value) && value.length > 0;
+	}
+
+	public static isNotEmptyStringWhenTrimed(value?: string): boolean {
+		return StringValidator.isString(value) && value.trim().length > 0;
 	}
 }
