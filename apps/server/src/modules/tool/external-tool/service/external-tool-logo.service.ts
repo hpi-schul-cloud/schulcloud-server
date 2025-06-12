@@ -12,11 +12,14 @@ import {
 	ExternalToolLogoFetchedLoggable,
 	ExternalToolLogoFetchFailedLoggableException,
 	ExternalToolLogoNotFoundLoggableException,
+	ExternalToolLogoSanitizationLoggableException,
 	ExternalToolLogoSizeExceededLoggableException,
 	ExternalToolLogoWrongFileTypeLoggableException,
 	ExternalToolLogoWrongFormatLoggableException,
 } from '../loggable';
 import { ExternalToolService } from './external-tool.service';
+
+import { ExternalToolLogoSanitizerService } from './external-tool-logo-sanitizer.service';
 
 @Injectable()
 export class ExternalToolLogoService {
@@ -24,7 +27,8 @@ export class ExternalToolLogoService {
 		private readonly configService: ConfigService<ToolConfig, true>,
 		private readonly logger: Logger,
 		private readonly httpService: HttpService,
-		private readonly externalToolService: ExternalToolService
+		private readonly externalToolService: ExternalToolService,
+		private readonly externalToolLogoSanitizerService: ExternalToolLogoSanitizerService
 	) {}
 
 	public buildLogoUrl(externalTool: ExternalTool): string | undefined {
@@ -73,25 +77,28 @@ export class ExternalToolLogoService {
 			this.logger.debug(new ExternalToolLogoFetchedLoggable(logoUrl));
 
 			const buffer: Buffer = Buffer.from(response.data);
-
-			const logoBase64: string = buffer.toString('base64');
-
-			let contentType: string | undefined;
-			if (logoUrl.startsWith('data:')) {
-				const [header] = logoUrl.split(';', 1);
-
-				contentType = header.substring(5);
-			} else {
-				contentType = response.headers['content-type'] as string | undefined;
-			}
+			const contentType: string | undefined = logoUrl.startsWith('data:')
+				? logoUrl.split(';', 1)[0].substring(5)
+				: (response.headers['content-type'] as string | undefined);
 
 			if (!contentType || !Object.values(ImageMimeType).includes(contentType as ImageMimeType)) {
 				throw new ExternalToolLogoWrongFileTypeLoggableException();
 			}
 
+			if (contentType === ImageMimeType.SVG) {
+				const svgContent = buffer.toString();
+				const sanitizedSvg = this.externalToolLogoSanitizerService.sanitizeSvg(svgContent);
+				const sanitizedSvgBase64 = Buffer.from(sanitizedSvg).toString('base64');
+				return `data:${contentType};base64,${sanitizedSvgBase64}`;
+			}
+
+			const logoBase64: string = buffer.toString('base64');
 			return `data:${contentType};base64,${logoBase64}`;
 		} catch (error) {
-			if (error instanceof ExternalToolLogoWrongFileTypeLoggableException) {
+			if (
+				error instanceof ExternalToolLogoWrongFileTypeLoggableException ||
+				error instanceof ExternalToolLogoSanitizationLoggableException
+			) {
 				throw error;
 			} else if (error instanceof HttpException) {
 				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());
