@@ -15,7 +15,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from '../mapper';
-import { ShareTokenUC } from '../uc';
+import { ShareTokenUC, ImportTokenUC } from './index';
 import {
 	ShareTokenBodyParams,
 	ShareTokenImportBodyParams,
@@ -23,12 +23,17 @@ import {
 	ShareTokenResponse,
 	ShareTokenUrlParams,
 } from './dto';
+import { ShareTokenPermissionService } from './service';
 
 @ApiTags('ShareToken')
 @JwtAuthentication()
 @Controller('sharetoken')
 export class ShareTokenController {
-	constructor(private readonly shareTokenUC: ShareTokenUC) {}
+	constructor(
+		private readonly shareTokenUC: ShareTokenUC,
+		private readonly importTokenUc: ImportTokenUC,
+		private readonly shareTokenPermissionService: ShareTokenPermissionService
+	) {}
 
 	@ApiOperation({ summary: 'Create a share token.' })
 	@ApiResponse({ status: 201, type: ShareTokenResponse })
@@ -87,7 +92,7 @@ export class ShareTokenController {
 		@Param() urlParams: ShareTokenUrlParams,
 		@Body() body: ShareTokenImportBodyParams
 	): Promise<CopyApiResponse> {
-		const copyStatus = await this.shareTokenUC.importShareToken(
+		const copyStatus = await this.importTokenUc.importShareToken(
 			currentUser.userId,
 			urlParams.token,
 			body.newName,
