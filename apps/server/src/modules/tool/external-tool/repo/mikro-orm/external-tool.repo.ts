@@ -130,6 +130,17 @@ export class ExternalToolRepo {
 		return domainObjects;
 	}
 
+	public async findAllByName(name: string): Promise<ExternalTool[]> {
+		const entities: ExternalToolEntity[] = await this.em.find(this.entityName, { name });
+
+		const domainObjects: ExternalTool[] = entities.map((entity: ExternalToolEntity): ExternalTool => {
+			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
+			return domainObject;
+		});
+
+		return domainObjects;
+	}
+
 	public async find(query: ExternalToolSearchQuery, options?: IFindOptions<ExternalTool>): Promise<Page<ExternalTool>> {
 		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<ExternalToolEntity> = ExternalToolSortingMapper.mapDOSortOrderToQueryOrder(

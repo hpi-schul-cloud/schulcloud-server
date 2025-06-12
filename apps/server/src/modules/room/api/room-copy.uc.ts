@@ -8,13 +8,16 @@ import { RoomPermissionService } from './service/room-permission.service';
 
 @Injectable()
 export class RoomCopyUc {
-	constructor(private readonly roomHelperService: RoomPermissionService, private readonly sagaService: SagaService) {}
+	constructor(
+		private readonly roomPermissionService: RoomPermissionService,
+		private readonly sagaService: SagaService
+	) {}
 
 	public async copyRoom(userId: EntityId, roomId: EntityId): Promise<CopyStatus> {
-		this.roomHelperService.checkFeatureRoomsEnabled();
-		this.roomHelperService.checkFeatureRoomCopyEnabled();
+		this.roomPermissionService.checkFeatureRoomsEnabled();
+		this.roomPermissionService.checkFeatureRoomCopyEnabled();
 
-		await this.roomHelperService.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_COPY]);
+		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_COPY]);
 
 		const { roomCopied, boardsCopied } = await this.sagaService.executeSaga('roomCopy', { userId, roomId });
 

@@ -41,7 +41,9 @@ export class CopyRoomStep extends SagaStep<'copyRoom'> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const originalRoom = await this.roomService.getSingleRoom(roomId);
 
-		const copyName = newName ?? (await this.deriveCopyName(userId, originalRoom.name));
+		const name = newName ?? originalRoom.name;
+		const copyName = await this.deriveCopyName(userId, name);
+
 		const roomCopied = await this.roomService.createRoom({
 			name: copyName,
 			color: originalRoom.color,
