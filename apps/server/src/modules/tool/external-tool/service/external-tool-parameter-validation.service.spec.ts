@@ -459,9 +459,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 					await expect(result).rejects.toThrow(
 						new ValidationError(
-							`tool_param_multiple_anchor_parameters: The tool ${
-								externalTool.name || ''
-							} contains multiple anchor (URI fragment) custom parameters.`
+							`tool_param_multiple_anchor_parameters: The tool ${externalTool.name} contains multiple anchor (URI fragment) custom parameters.`
 						)
 					);
 				});
