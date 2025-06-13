@@ -31,6 +31,7 @@ const locationMapping: Record<CustomParameterLocation, CustomParameterLocationPa
 	[CustomParameterLocation.PATH]: CustomParameterLocationParams.PATH,
 	[CustomParameterLocation.QUERY]: CustomParameterLocationParams.QUERY,
 	[CustomParameterLocation.BODY]: CustomParameterLocationParams.BODY,
+	[CustomParameterLocation.FRAGMENT]: CustomParameterLocationParams.FRAGMENT,
 };
 
 const typeMapping: Record<CustomParameterType, CustomParameterTypeParams> = {
