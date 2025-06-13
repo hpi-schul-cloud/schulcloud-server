@@ -10,8 +10,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { classEntityFactory } from '@modules/class/entity/testing';
-import { courseEntityFactory } from '@modules/course/testing';
-import { courseGroupEntityFactory } from '@modules/course/testing';
+import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { schoolNewsFactory } from '@modules/news/testing';
 import { ComponentProperties, ComponentType } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
@@ -21,7 +20,7 @@ import { CourseEntity } from '@modules/course/repo';
 import { mediaBoardEntityFactory } from '@modules/board/testing';
 import { BoardExternalReferenceType } from '@modules/board';
 import { BoardNodeEntity } from '@modules/board/repo';
-import { taskFactory, submissionFactory } from '@modules/task/testing';
+import { submissionFactory, taskFactory } from '@modules/task/testing';
 import { Submission, Task } from '@modules/task/repo';
 import { ExternalToolPseudonymEntity } from '../../../../pseudonym/entity';
 import { AccountEntity } from '../../../../account/repo';
@@ -31,6 +30,13 @@ import { fileEntityFactory } from '../../../../files/entity/testing';
 import { FileOwnerModel } from '../../../../files/domain';
 import { RegistrationPinEntity } from '../../../../registration-pin/entity';
 import { FileEntity } from '../../../../files/entity';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { FilesStorageProducer } from '@modules/files-storage-client/service';
+import { CalendarService } from '@infra/calendar';
+import { RocketChatService } from '@modules/rocketchat/rocket-chat.service';
+import { FileDO, FileRecordParentType, ScanStatus } from '@infra/rabbitmq';
+import { rocketChatUserEntityFactory } from '../../../../rocketchat-user/entity/testing';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 const baseRouteName = '/deletionExecutions';
 
@@ -39,6 +45,9 @@ describe(`deletionExecution (api)`, () => {
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
 	const API_KEY = 'someotherkey';
+	let filesStorageProducer: DeepMocked<FilesStorageProducer>;
+	let calendarService: DeepMocked<CalendarService>;
+	let rocketChatService: DeepMocked<RocketChatService>;
 
 	beforeAll(async () => {
 		const config = adminApiServerConfig();
@@ -46,11 +55,22 @@ describe(`deletionExecution (api)`, () => {
 
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(FilesStorageProducer)
+			.useValue(createMock<FilesStorageProducer>())
+			.overrideProvider(CalendarService)
+			.useValue(createMock<CalendarService>())
+			.overrideProvider(RocketChatService)
+			.useValue(createMock<RocketChatService>())
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
+
+		filesStorageProducer = module.get(FilesStorageProducer);
+		calendarService = module.get(CalendarService);
+		rocketChatService = module.get(RocketChatService);
 	});
 
 	afterAll(async () => {
@@ -116,9 +136,9 @@ describe(`deletionExecution (api)`, () => {
 		});
 
 		describe('when deleting users with full data', () => {
-			const setup = async () => {
-				testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
+			Configuration.set('CALENDAR_SERVICE_ENABLED', true);
 
+			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
@@ -175,10 +195,22 @@ describe(`deletionExecution (api)`, () => {
 					email: studentUser.email,
 				});
 
-				// TODO 3rd party services
-				// file storage
-				// rocket chat user
-				// calendar
+				// 3rd party services
+				calendarService.getAllEvents.mockResolvedValue(['event1', 'event2']);
+				calendarService.deleteEventsByScopeId.mockResolvedValue();
+
+				const mockFileStorage: FileDO = {
+					id: 'foo',
+					name: 'foo',
+					parentId: 'foo',
+					securityCheckStatus: ScanStatus.VERIFIED,
+					size: 123,
+					mimeType: 'foo',
+					parentType: FileRecordParentType.User,
+				};
+				filesStorageProducer.removeCreatorIdFromFileRecords.mockResolvedValueOnce([mockFileStorage]);
+
+				const rocketChatUser = rocketChatUserEntityFactory.buildWithId({ userId: studentUser.id });
 
 				await em.persistAndFlush([
 					school,
@@ -198,6 +230,7 @@ describe(`deletionExecution (api)`, () => {
 					submission,
 					groupSubmission,
 					registrationPin,
+					rocketChatUser,
 				]);
 				em.clear();
 
@@ -212,6 +245,8 @@ describe(`deletionExecution (api)`, () => {
 				await em.persistAndFlush([deletionRequestsTeacher, deletionRequestsStudent]);
 
 				const deletionRequestIds = [deletionRequestsTeacher.id, deletionRequestsStudent.id];
+
+				testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 
 				return {
 					deletionRequestIds,
@@ -231,6 +266,7 @@ describe(`deletionExecution (api)`, () => {
 					groupSubmission,
 					registrationPin,
 					file,
+					rocketChatUser,
 				};
 			};
 
@@ -251,6 +287,7 @@ describe(`deletionExecution (api)`, () => {
 					task,
 					submission,
 					groupSubmission,
+					rocketChatUser,
 				} = await setup();
 
 				const teacherId = new ObjectId(teacherUser.id);
@@ -335,6 +372,14 @@ describe(`deletionExecution (api)`, () => {
 
 				const checkFile = await em.findOne(FileEntity, whereFile);
 				expect(checkFile).toBeNull();
+
+				expect(rocketChatService.deleteUser).toHaveBeenCalledWith(rocketChatUser.username);
+
+				expect(filesStorageProducer.removeCreatorIdFromFileRecords).toHaveBeenCalledWith(studentUser.id);
+				expect(filesStorageProducer.removeCreatorIdFromFileRecords).toHaveBeenCalledWith(teacherUser.id);
+
+				expect(calendarService.deleteEventsByScopeId).toHaveBeenCalledWith(studentUser.id);
+				expect(calendarService.deleteEventsByScopeId).toHaveBeenCalledWith(teacherUser.id);
 			}, 30000);
 		});
 	});
