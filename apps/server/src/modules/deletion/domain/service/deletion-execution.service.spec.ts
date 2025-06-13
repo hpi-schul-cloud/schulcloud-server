@@ -1,9 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ModuleName, SagaService, StepOperationType } from '@modules/saga';
+import { Logger } from '@core/logger';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ModuleName, SagaService, StepOperationType } from '@modules/saga';
 import { DeletionLogService, DeletionRequestService } from '.';
 import { DeletionRequest } from '../do';
 import { DomainName, StatusModel } from '../types';
+import { DeletionErrorLoggableException } from '../loggable-exception';
 import { DeletionExecutionService } from './deletion-execution.service';
 
 describe(DeletionExecutionService.name, () => {
@@ -11,6 +13,7 @@ describe(DeletionExecutionService.name, () => {
 	let sagaService: DeepMocked<SagaService>;
 	let deletionRequestService: DeepMocked<DeletionRequestService>;
 	let deletionLogService: DeepMocked<DeletionLogService>;
+	let logger: DeepMocked<Logger>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -28,6 +31,10 @@ describe(DeletionExecutionService.name, () => {
 					provide: DeletionLogService,
 					useValue: createMock<DeletionLogService>(),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
@@ -35,6 +42,7 @@ describe(DeletionExecutionService.name, () => {
 		sagaService = module.get(SagaService);
 		deletionRequestService = module.get(DeletionRequestService);
 		deletionLogService = module.get(DeletionLogService);
+		logger = module.get(Logger);
 	});
 
 	describe('executeDeletionRequest', () => {
@@ -122,11 +130,30 @@ describe(DeletionExecutionService.name, () => {
 		it('should mark the deletion request as failed if any service fails', async () => {
 			const { deletionRequest } = setup();
 
-			sagaService.executeSaga.mockRejectedValue(new Error('Service failed'));
+			sagaService.executeSaga.mockRejectedValueOnce(new Error('Service failed'));
 
-			await service.executeDeletionRequest(deletionRequest);
+			try {
+				await service.executeDeletionRequest(deletionRequest);
+			} catch (error) {
+				expect(deletionRequestService.markDeletionRequestAsFailed).toHaveBeenCalledWith(deletionRequest.id);
+			}
+		});
 
-			expect(deletionRequestService.markDeletionRequestAsFailed).toHaveBeenCalledWith(deletionRequest.id);
+		it('should log DeletionErrorLoggableException if an error occurs', async () => {
+			const { deletionRequest } = setup();
+
+			const error = new Error('Service failed');
+			sagaService.executeSaga.mockRejectedValueOnce(error);
+			try {
+				await service.executeDeletionRequest(deletionRequest);
+			} catch (error) {
+				expect(logger.warning).toHaveBeenCalledWith(
+					new DeletionErrorLoggableException(
+						`An error occurred during deletion execution ${deletionRequest.id}`,
+						error as Error
+					)
+				);
+			}
 		});
 
 		it('should mark the deletion request as executed if all services succeed', async () => {
