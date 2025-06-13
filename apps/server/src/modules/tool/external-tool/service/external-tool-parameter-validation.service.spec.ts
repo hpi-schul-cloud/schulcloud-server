@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
 import { CustomParameter } from '../../common/domain';
-import { CustomParameterScope, CustomParameterType } from '../../common/enum';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../common/enum';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../domain';
 import { customParameterFactory, externalToolFactory } from '../testing';
@@ -412,6 +412,56 @@ describe('ExternalToolParameterValidationService', () => {
 					const result: Promise<void> = service.validateCommon(externalTool);
 
 					await expect(result).resolves.not.toThrow();
+				});
+			});
+		});
+
+		describe('when there is parameter with fragment location', () => {
+			describe('when there is only one parameter with fragment location', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.buildWithId({
+						parameters: customParameterFactory.buildList(1, { location: CustomParameterLocation.FRAGMENT }),
+					});
+
+					externalToolService.findExternalToolsByName.mockResolvedValue([externalTool]);
+
+					return {
+						externalTool,
+					};
+				};
+
+				it('should not throw any exception', async () => {
+					const { externalTool } = setup();
+
+					const result = service.validateCommon(externalTool);
+
+					await expect(result).resolves.not.toThrow();
+				});
+			});
+
+			describe('when there are multiple parameters with fragment location', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.buildWithId({
+						parameters: customParameterFactory.buildList(2, { location: CustomParameterLocation.FRAGMENT }),
+					});
+
+					externalToolService.findExternalToolsByName.mockResolvedValue([externalTool]);
+
+					return {
+						externalTool,
+					};
+				};
+
+				it('should throw an ValidationError', async () => {
+					const { externalTool } = setup();
+
+					const result = service.validateCommon(externalTool);
+
+					await expect(result).rejects.toThrow(
+						new ValidationError(
+							`tool_param_multiple_anchor_parameters: The tool ${externalTool.name} contains multiple anchor (URI fragment) custom parameters.`
+						)
+					);
 				});
 			});
 		});

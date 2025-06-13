@@ -30,9 +30,9 @@ import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
 
 const concreteConfigParameter: PropertyData = {
-	location: PropertyLocation.BODY,
 	name: 'concreteParam',
 	value: 'test',
+	location: PropertyLocation.BODY,
 };
 
 const launchMethod = LaunchRequestMethod.GET;
@@ -181,6 +181,11 @@ describe(AbstractLaunchStrategy.name, () => {
 					name: 'autoGroupExternalUuidParam',
 					type: CustomParameterType.AUTO_GROUP_EXTERNALUUID,
 				});
+				const fragmentLocationCustomParameter = customParameterFactory.build({
+					scope: CustomParameterScope.CONTEXT,
+					location: CustomParameterLocation.FRAGMENT,
+					type: CustomParameterType.STRING,
+				});
 
 				const mediumId = 'medium:xyz';
 				const externalTool: ExternalTool = externalToolFactory
@@ -198,6 +203,7 @@ describe(AbstractLaunchStrategy.name, () => {
 							autoContextNameCustomParameter,
 							autoMediumIdCustomParameter,
 							autoGroupExternalUuidCustomParameter,
+							fragmentLocationCustomParameter,
 						],
 						medium: {
 							mediumId,
@@ -210,6 +216,7 @@ describe(AbstractLaunchStrategy.name, () => {
 					name: schoolCustomParameter.name,
 					value: 'true',
 				});
+
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					parameters: [schoolParameterEntry],
 					schoolId,
@@ -218,12 +225,20 @@ describe(AbstractLaunchStrategy.name, () => {
 				// Context External Tool
 				const contextId = new ObjectId().toHexString();
 				const contextParameterValue = '123';
+
 				const contextParameterEntry: CustomParameterEntry = new CustomParameterEntry({
 					name: contextCustomParameter.name,
 					value: contextParameterValue,
 				});
+
+				const fragmentValue = 'test-anchor';
+				const fragmentParameterEntry: CustomParameterEntry = new CustomParameterEntry({
+					name: fragmentLocationCustomParameter.name,
+					value: fragmentValue,
+				});
+
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
-					parameters: [contextParameterEntry],
+					parameters: [contextParameterEntry, fragmentParameterEntry],
 					contextRef: {
 						id: contextId,
 						type: ToolContextType.COURSE,
@@ -255,6 +270,7 @@ describe(AbstractLaunchStrategy.name, () => {
 				expectedUrl.searchParams.set(contextCustomParameter.name, contextParameterEntry.value as string);
 				expectedUrl.searchParams.set(autoMediumIdCustomParameter.name, mediumId);
 				expectedUrl.searchParams.set(autoGroupExternalUuidCustomParameter.name, groupExternalUuid);
+				expectedUrl.hash = fragmentValue;
 
 				const expectedProperties: PropertyData[] = [
 					{
@@ -271,6 +287,11 @@ describe(AbstractLaunchStrategy.name, () => {
 						name: contextParameterEntry.name,
 						value: contextParameterEntry.value as string,
 						location: PropertyLocation.QUERY,
+					},
+					{
+						name: fragmentParameterEntry.name,
+						value: fragmentParameterEntry.value as string,
+						location: PropertyLocation.FRAGMENT,
 					},
 					{
 						name: autoSchoolIdCustomParameter.name,
@@ -303,9 +324,9 @@ describe(AbstractLaunchStrategy.name, () => {
 						location: PropertyLocation.QUERY,
 					},
 					{
-						location: concreteConfigParameter.location,
 						name: concreteConfigParameter.name,
 						value: concreteConfigParameter.value,
+						location: concreteConfigParameter.location,
 					},
 				];
 
@@ -476,6 +497,77 @@ describe(AbstractLaunchStrategy.name, () => {
 					});
 
 				await expect(func).rejects.toThrow(ParameterTypeNotImplementedLoggableException);
+			});
+		});
+
+		describe('when a parameter has fragment location', () => {
+			const setup = () => {
+				const parameter = customParameterFactory.build({
+					type: CustomParameterType.STRING,
+					scope: CustomParameterScope.SCHOOL,
+					location: CustomParameterLocation.FRAGMENT,
+				});
+
+				const baseUrl = 'https://test.com/';
+				const externalTool: ExternalTool = externalToolFactory.withBasicConfig({ baseUrl }).build({
+					parameters: [parameter],
+					url: baseUrl,
+				});
+
+				const fragmentValue = 'test-anchor';
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					parameters: [
+						new CustomParameterEntry({
+							name: parameter.name,
+							value: fragmentValue,
+						}),
+					],
+				});
+
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					parameters: [],
+				});
+
+				const expectedUrl = `${baseUrl}#${fragmentValue}`;
+
+				const expectedProperties: PropertyData[] = [
+					{
+						name: parameter.name,
+						value: fragmentValue,
+						location: PropertyLocation.FRAGMENT,
+					},
+					{
+						name: concreteConfigParameter.name,
+						value: concreteConfigParameter.value,
+						location: concreteConfigParameter.location,
+					},
+				];
+
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					expectedUrl,
+					expectedProperties,
+				};
+			};
+
+			it('should return a launch request with correct values', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool, expectedUrl, expectedProperties } = setup();
+
+				const result = await strategy.createLaunchRequest(new ObjectId().toHexString(), {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				});
+
+				expect(result).toEqual<ToolLaunchRequest>({
+					url: expectedUrl.toString(),
+					method: strategy.determineLaunchRequestMethod(expectedProperties),
+					openNewTab: false,
+					payload: strategy.buildToolLaunchRequestPayload(expectedUrl.toString(), expectedProperties),
+					launchType: strategy.determineLaunchType(),
+				});
 			});
 		});
 	});

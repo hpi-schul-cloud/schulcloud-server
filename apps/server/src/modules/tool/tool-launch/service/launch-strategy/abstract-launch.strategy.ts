@@ -103,6 +103,9 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 		const queryProperties: PropertyData[] = toolLaunchDataDO.properties.filter(
 			(property: PropertyData) => property.location === PropertyLocation.QUERY
 		);
+		const fragmentProperty: PropertyData | undefined = toolLaunchDataDO.properties.find(
+			(property: PropertyData) => property.location === PropertyLocation.FRAGMENT
+		);
 
 		const url = new URL(baseUrl);
 
@@ -115,6 +118,10 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 			queryProperties.forEach((property: PropertyData) => queryParams.append(property.name, property.value));
 
 			url.search += queryParams.toString();
+		}
+
+		if (fragmentProperty) {
+			url.hash = fragmentProperty.value;
 		}
 
 		return url.toString();

@@ -6,6 +6,7 @@ const customToParameterLocationMapping: Record<CustomParameterLocation, Property
 	[CustomParameterLocation.PATH]: PropertyLocation.PATH,
 	[CustomParameterLocation.BODY]: PropertyLocation.BODY,
 	[CustomParameterLocation.QUERY]: PropertyLocation.QUERY,
+	[CustomParameterLocation.FRAGMENT]: PropertyLocation.FRAGMENT,
 };
 
 const toolConfigTypeToToolLaunchDataTypeMapping: Record<ToolConfigType, ToolLaunchDataType> = {
@@ -15,19 +16,19 @@ const toolConfigTypeToToolLaunchDataTypeMapping: Record<ToolConfigType, ToolLaun
 };
 
 export class ToolLaunchMapper {
-	static mapToParameterLocation(location: CustomParameterLocation): PropertyLocation {
+	public static mapToParameterLocation(location: CustomParameterLocation): PropertyLocation {
 		const mappedLocation = customToParameterLocationMapping[location];
 
 		return mappedLocation;
 	}
 
-	static mapToToolLaunchDataType(configType: ToolConfigType): ToolLaunchDataType {
+	public static mapToToolLaunchDataType(configType: ToolConfigType): ToolLaunchDataType {
 		const mappedType = toolConfigTypeToToolLaunchDataTypeMapping[configType];
 
 		return mappedType;
 	}
 
-	static mapToToolLaunchRequestResponse(toolLaunchRequest: ToolLaunchRequest): ToolLaunchRequestResponse {
+	public static mapToToolLaunchRequestResponse(toolLaunchRequest: ToolLaunchRequest): ToolLaunchRequestResponse {
 		const response = new ToolLaunchRequestResponse(toolLaunchRequest);
 
 		return response;
