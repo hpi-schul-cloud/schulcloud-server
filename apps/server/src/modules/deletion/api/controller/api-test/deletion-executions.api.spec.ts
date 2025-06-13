@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
-
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -36,7 +35,6 @@ import { CalendarService } from '@infra/calendar';
 import { RocketChatService } from '@modules/rocketchat/rocket-chat.service';
 import { FileDO, FileRecordParentType, ScanStatus } from '@infra/rabbitmq';
 import { rocketChatUserEntityFactory } from '@modules/rocketchat-user/entity/testing';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 const baseRouteName = '/deletionExecutions';
 
@@ -52,6 +50,7 @@ describe(`deletionExecution (api)`, () => {
 	beforeAll(async () => {
 		const config = adminApiServerConfig();
 		config.ADMIN_API__ALLOWED_API_KEYS = [API_KEY];
+		config.CALENDAR_SERVICE_ENABLED = true;
 
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
@@ -136,9 +135,9 @@ describe(`deletionExecution (api)`, () => {
 		});
 
 		describe('when deleting users with full data', () => {
-			Configuration.set('CALENDAR_SERVICE_ENABLED', true);
 
 			const setup = async () => {
+
 				const school = schoolEntityFactory.buildWithId();
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
