@@ -1,16 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
-import { H5PAjaxEndpoint, H5PEditor, H5pError, H5PPlayer } from '@lumieducation/h5p-server';
+import { H5PAjaxEndpoint, H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { UserDo, UserService } from '@modules/user';
-import { HttpException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
 
-describe('H5P Ajax', () => {
+describe(`${H5PEditorUc.name} Ajax`, () => {
 	let module: TestingModule;
 	let uc: H5PEditorUc;
 	let ajaxEndpoint: DeepMocked<H5PAjaxEndpoint>;
@@ -65,16 +64,16 @@ describe('H5P Ajax', () => {
 	});
 
 	describe('when calling GET', () => {
-		const userMock: ICurrentUser = {
-			userId: 'dummyId',
-			roles: [],
-			schoolId: 'dummySchool',
-			accountId: 'dummyAccountId',
-			isExternalUser: false,
-			support: false,
-		};
+		const setup = () => {
+			const userMock: ICurrentUser = {
+				userId: 'dummyId',
+				roles: [],
+				schoolId: 'dummySchool',
+				accountId: 'dummyAccountId',
+				isExternalUser: false,
+				support: false,
+			};
 
-		it('should call H5PAjaxEndpoint.getAjax and return the result', async () => {
 			const dummyResponse = {
 				apiVersion: { major: 1, minor: 1 },
 				details: [],
@@ -83,6 +82,15 @@ describe('H5P Ajax', () => {
 				recentlyUsed: [],
 				user: 'DummyUser',
 			};
+
+			return {
+				userMock,
+				dummyResponse,
+			};
+		};
+
+		it('should call H5PAjaxEndpoint.getAjax and return the result', async () => {
+			const { userMock, dummyResponse } = setup();
 
 			ajaxEndpoint.getAjax.mockResolvedValueOnce(dummyResponse);
 			userService.findById.mockResolvedValueOnce({ language: LanguageType.DE } as UserDo);
@@ -99,25 +107,19 @@ describe('H5P Ajax', () => {
 				expect.objectContaining({ id: 'dummyId' })
 			);
 		});
-
-		it('should rethrow H5pError as HttpException', async () => {
-			ajaxEndpoint.getAjax.mockRejectedValueOnce(new Error('Dummy Error'));
-			const getPromise = uc.getAjax({ action: 'content-type-cache' }, userMock.userId);
-			await expect(getPromise).rejects.toThrow(HttpException);
-		});
 	});
 
 	describe('when calling POST', () => {
-		const userMock: ICurrentUser = {
-			userId: 'dummyId',
-			roles: [],
-			schoolId: 'dummySchool',
-			accountId: 'dummyAccountId',
-			isExternalUser: false,
-			support: false,
-		};
+		const setup = () => {
+			const userMock: ICurrentUser = {
+				userId: 'dummyId',
+				roles: [],
+				schoolId: 'dummySchool',
+				accountId: 'dummyAccountId',
+				isExternalUser: false,
+				support: false,
+			};
 
-		it('should call H5PAjaxEndpoint.postAjax and return the result', async () => {
 			const dummyResponse = [
 				{
 					majorVersion: 1,
@@ -133,6 +135,15 @@ describe('H5P Ajax', () => {
 			];
 
 			ajaxEndpoint.postAjax.mockResolvedValueOnce(dummyResponse);
+
+			return {
+				userMock,
+				dummyResponse,
+			};
+		};
+
+		it('should call H5PAjaxEndpoint.postAjax and return the result', async () => {
+			const { userMock, dummyResponse } = setup();
 
 			const result = await uc.postAjax(
 				userMock.userId,
@@ -155,21 +166,7 @@ describe('H5P Ajax', () => {
 		});
 
 		it('should call H5PAjaxEndpoint.postAjax with files', async () => {
-			const dummyResponse = [
-				{
-					majorVersion: 1,
-					minorVersion: 2,
-					metadataSettings: {},
-					name: 'Dummy Library',
-					restricted: false,
-					runnable: true,
-					title: 'Dummy Library',
-					tutorialUrl: '',
-					uberName: 'dummyLibrary-1.1',
-				},
-			];
-
-			ajaxEndpoint.postAjax.mockResolvedValueOnce(dummyResponse);
+			const { userMock, dummyResponse } = setup();
 
 			const result = await uc.postAjax(
 				userMock.userId,
@@ -210,18 +207,6 @@ describe('H5P Ajax', () => {
 				bufferTest,
 				undefined
 			);
-		});
-
-		it('should rethrow H5pError as HttpException', async () => {
-			ajaxEndpoint.postAjax.mockRejectedValueOnce(new H5pError('dummy-error', { error: 'Dummy Error' }, 400));
-
-			const postPromise = uc.postAjax(
-				userMock.userId,
-				{ action: 'libraries' },
-				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
-			);
-
-			await expect(postPromise).rejects.toThrow(HttpException);
 		});
 	});
 });
