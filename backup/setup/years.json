@@ -9,7 +9,9 @@
 		},
 		"startDate": {
 			"$date": "2017-08-31T22:00:00Z"
-		}
+		},
+		"courseCreationInNextYear": false,
+		"__v": 0
 	},
 	{
 		"_id": {
@@ -21,20 +23,23 @@
 		},
 		"startDate": {
 			"$date": "2018-07-31T22:00:00Z"
-		}
+		},
+		"courseCreationInNextYear": false,
+		"__v": 0
 	},
 	{
 		"_id": {
 			"$oid": "5d2ee323d14ce9844e33f51e"
 		},
 		"name": "2019/20",
-		"__v": 0,
 		"endDate": {
 			"$date": "2020-07-31T00:00:00Z"
 		},
 		"startDate": {
 			"$date": "2019-08-01T00:00:00Z"
-		}
+		},
+		"courseCreationInNextYear": false,
+		"__v": 0
 	},
 	{
 		"_id": {
@@ -47,6 +52,7 @@
 		"endDate": {
 			"$date": "2021-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	},
 	{
@@ -60,6 +66,7 @@
 		"endDate": {
 			"$date": "2022-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	},
 	{
@@ -73,6 +80,7 @@
 		"endDate": {
 			"$date": "2023-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	},
 	{
@@ -86,6 +94,7 @@
 		"endDate": {
 			"$date": "2024-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	},
 	{
@@ -99,6 +108,7 @@
 		"endDate": {
 			"$date": "2025-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	},
 	{
@@ -112,6 +122,7 @@
 		"endDate": {
 			"$date": "2026-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	},
 	{
@@ -125,7 +136,7 @@
 		"endDate": {
 			"$date": "2027-07-31T00:00:00Z"
 		},
-		"__v": 0
+		"courseCreationInNextYear": false
 	},
 	{
 		"_id": {
@@ -138,6 +149,7 @@
 		"endDate": {
 			"$date": "2028-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	},
 	{
@@ -151,6 +163,7 @@
 		"endDate": {
 			"$date": "2029-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	},
 	{
@@ -164,6 +177,7 @@
 		"endDate": {
 			"$date": "2030-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	},
 	{
@@ -177,6 +191,7 @@
 		"endDate": {
 			"$date": "2031-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	},
 	{
@@ -190,6 +205,7 @@
 		"endDate": {
 			"$date": "2032-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	},
 	{
@@ -203,6 +219,7 @@
 		"endDate": {
 			"$date": "2033-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	},
 	{
@@ -216,6 +233,7 @@
 		"endDate": {
 			"$date": "2034-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	},
 	{
@@ -229,6 +247,7 @@
 		"endDate": {
 			"$date": "2035-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	},
 	{
@@ -242,6 +261,7 @@
 		"endDate": {
 			"$date": "2036-07-31T00:00:00Z"
 		},
+		"courseCreationInNextYear": false,
 		"__v": 0
 	}
 ]
