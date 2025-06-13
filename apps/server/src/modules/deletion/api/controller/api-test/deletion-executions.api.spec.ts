@@ -135,7 +135,6 @@ describe(`deletionExecution (api)`, () => {
 		});
 
 		describe('when deleting users with full data', () => {
-
 			const setup = async () => {
 
 				const school = schoolEntityFactory.buildWithId();
