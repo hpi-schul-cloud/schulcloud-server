@@ -59,7 +59,8 @@ export class UserMikroOrmRepo extends BaseRepo<User> {
 		const { id: schoolId } = school;
 		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');
 
-		const scope: UserScope = new UserScope().bySchoolId(schoolId).byName(userName).withDeleted(false);
+		const allowedMaxLength = 100;
+		const scope: UserScope = new UserScope().bySchoolId(schoolId).byName(userName, allowedMaxLength).withDeleted(false);
 
 		const countedUsers = await this._em.findAndCount(User, scope.query, {
 			offset: pagination?.skip,
