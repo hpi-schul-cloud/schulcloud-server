@@ -5,6 +5,7 @@ export interface SchoolYearProperties {
 	name: string;
 	startDate: Date;
 	endDate: Date;
+	courseCreationInNextYear: boolean;
 }
 
 @Entity({ tableName: 'years' })
@@ -18,10 +19,14 @@ export class SchoolYearEntity extends BaseEntity implements SchoolYearProperties
 	@Property()
 	endDate: Date;
 
+	@Property()
+	courseCreationInNextYear: boolean;
+
 	constructor(props: SchoolYearProperties) {
 		super();
 		this.name = props.name;
 		this.startDate = props.startDate;
 		this.endDate = props.endDate;
+		this.courseCreationInNextYear = props.courseCreationInNextYear;
 	}
 }
