@@ -14,4 +14,5 @@ export interface SchoolYearProps extends AuthorizableObject {
 	name: string;
 	startDate: Date;
 	endDate: Date;
+	courseCreationInNextYear: boolean;
 }

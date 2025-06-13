@@ -27,6 +27,7 @@ export const schoolYearEntityFactory = SchoolYearFactory.define(SchoolYearEntity
 	const name = `${startYear}/${(startYear + 1).toString().slice(-2)}`;
 	const startDate = new Date(`${startYear}-08-01`);
 	const endDate = new Date(`${startYear + 1}-07-31`);
+	const courseCreationInNextYear = false;
 
-	return { name, startDate, endDate };
+	return { name, startDate, endDate, courseCreationInNextYear };
 });
