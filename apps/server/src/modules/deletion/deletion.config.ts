@@ -7,6 +7,7 @@ import { NewsConfig } from '@modules/news';
 import { PseudonymConfig } from '@modules/pseudonym';
 import { RocketChatUserConfig } from '@modules/rocketchat-user';
 import { TeamConfig } from '@modules/team';
+import { UserConfig } from '@modules/user';
 
 export interface DeletionConfig
 	extends LoggerConfig,
@@ -17,6 +18,7 @@ export interface DeletionConfig
 		PseudonymConfig,
 		FilesConfig,
 		RocketChatUserConfig,
+		UserConfig,
 		XApiKeyAuthGuardConfig {
 	ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS: number;
 	ADMIN_API__DELETION_EXECUTION_BATCH_NUMBER: number;

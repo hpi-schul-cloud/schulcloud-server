@@ -43,6 +43,7 @@ const config: IdpConsoleConfig = {
 		'SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS'
 	) as number,
 	RABBITMQ_URI: Configuration.get('RABBITMQ_URI') as string,
+	CALENDAR_SERVICE_ENABLED: Configuration.get('CALENDAR_SERVICE_ENABLED') as boolean,
 };
 
 export const idpConsoleConfigConfig = () => config;
