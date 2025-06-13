@@ -59,7 +59,7 @@ export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
 			?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '')
 			.trim();
 
-		if (StringValidator.isNotEmptyString(escapedName, true)) {
+		if (StringValidator.isNotEmptyStringWhenTrimed(escapedName)) {
 			this.pipeline.push({ $match: { name: { $regex: escapedName, $options: 'i' } } });
 		}
 

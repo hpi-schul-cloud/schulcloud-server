@@ -23,6 +23,7 @@ export class RoomRolesTestFactory {
 				Permission.ROOM_DELETE,
 				Permission.ROOM_CHANGE_OWNER,
 				Permission.ROOM_COPY,
+				Permission.ROOM_SHARE,
 			],
 		});
 		const roomAdminRole = roleFactory.buildWithId({
@@ -36,6 +37,7 @@ export class RoomRolesTestFactory {
 				Permission.ROOM_MEMBERS_CHANGE_ROLE,
 				Permission.ROOM_LEAVE,
 				Permission.ROOM_COPY,
+				Permission.ROOM_SHARE,
 			],
 		});
 		const roomEditorRole = roleFactory.buildWithId({
