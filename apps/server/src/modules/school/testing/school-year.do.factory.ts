@@ -30,6 +30,7 @@ export const schoolYearDoFactory = SchoolYearDoFactory.define(SchoolYear, ({ tra
 	const name = `${startYear}/${(startYear + 1).toString().slice(-2)}`;
 	const startDate = new Date(`${startYear}-08-01`);
 	const endDate = new Date(`${startYear + 1}-07-31`);
+	const courseCreationInNextYear = false;
 
-	return { id, name, startDate, endDate };
+	return { id, name, startDate, endDate, courseCreationInNextYear };
 });
