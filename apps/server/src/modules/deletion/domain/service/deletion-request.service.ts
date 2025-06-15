@@ -22,6 +22,24 @@ export class DeletionRequestService {
 		this.thresholdNewer = this.configService.get<number>('ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS');
 	}
 
+	public async createDeletionRequestBatch(
+		targetRefIds: EntityId[],
+		targetRefDomain: DomainName,
+		deleteAfter: Date
+	): Promise<void> {
+		const deletionRequests = targetRefIds.map((targetRefId) => {
+			return new DeletionRequest({
+				id: new ObjectId().toHexString(),
+				targetRefDomain,
+				deleteAfter,
+				targetRefId,
+				status: StatusModel.REGISTERED,
+			});
+		});
+
+		await this.deletionRequestRepo.create(deletionRequests);
+	}
+
 	public async createDeletionRequest(
 		targetRefId: EntityId,
 		targetRefDomain: DomainName,
