@@ -26,6 +26,7 @@ import { ApiValidationError } from '@shared/common/error';
 import {
 	MaintenanceResponse,
 	SchoolExistsResponse,
+	SchoolForExternalInviteListResponse,
 	SchoolForExternalInviteResponse,
 	SchoolForLdapLoginResponse,
 	SchoolQueryParams,
@@ -38,6 +39,7 @@ import {
 } from './dto';
 import { MaintenanceParams } from './dto/maintenance.params';
 import { SchoolUc } from './school.uc';
+import { Page } from '@shared/domain/domainobject';
 
 @ApiTags('School')
 @Controller('school')
@@ -60,7 +62,7 @@ export class SchoolController {
 	public async getSchoolListForExternalInvite(
 		@Query() query: SchoolQueryParams,
 		@CurrentUser() user: ICurrentUser
-	): Promise<SchoolForExternalInviteResponse[]> {
+	): Promise<SchoolForExternalInviteListResponse> {
 		const res = await this.schoolUc.getSchoolListForExternalInvite(query, user.schoolId);
 
 		return res;

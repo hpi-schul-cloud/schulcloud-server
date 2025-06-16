@@ -210,7 +210,7 @@ describe('School Controller (API)', () => {
 
 		describe('when a user is logged in', () => {
 			const setup = async () => {
-				const schools = schoolEntityFactory.buildList(3);
+				const schools = schoolEntityFactory.buildList(40);
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				await em.persistAndFlush([...schools, studentAccount, studentUser]);
 
@@ -233,7 +233,8 @@ describe('School Controller (API)', () => {
 				const response = await loggedInClient.get('list-for-external-invite');
 
 				expect(response.status).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual(expectedResponse);
+				console.log(response.body);
+				expect(response.body.data).toEqual(expectedResponse);
 			});
 		});
 	});
