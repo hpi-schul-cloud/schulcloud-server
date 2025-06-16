@@ -11,7 +11,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { classEntityFactory } from '@modules/class/entity/testing';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { schoolNewsFactory } from '@modules/news/testing';
-import { ComponentProperties, ComponentType } from '@modules/lesson/repo';
+import { ComponentProperties, ComponentType, LessonEntity } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { externalToolPseudonymEntityFactory } from '@modules/pseudonym/testing';
 import { SchoolEntity } from '@modules/school/repo';
@@ -35,6 +35,10 @@ import { CalendarService } from '@infra/calendar';
 import { RocketChatService } from '@modules/rocketchat/rocket-chat.service';
 import { FileDO, FileRecordParentType, ScanStatus } from '@infra/rabbitmq';
 import { rocketChatUserEntityFactory } from '@modules/rocketchat-user/entity/testing';
+import { DASHBOARD_REPO, IDashboardRepo } from '@modules/learnroom/repo/mikro-orm/dashboard.repo';
+import { DashboardEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
+import { teamFactory, teamUserFactory } from '../../../../team/testing';
+import { TeamEntity } from '../../../../team/repo';
 
 const baseRouteName = '/deletionExecutions';
 
@@ -46,6 +50,7 @@ describe(`deletionExecution (api)`, () => {
 	let filesStorageProducer: DeepMocked<FilesStorageProducer>;
 	let calendarService: DeepMocked<CalendarService>;
 	let rocketChatService: DeepMocked<RocketChatService>;
+	let dashboardRepo: IDashboardRepo;
 
 	beforeAll(async () => {
 		const config = adminApiServerConfig();
@@ -70,6 +75,7 @@ describe(`deletionExecution (api)`, () => {
 		filesStorageProducer = module.get(FilesStorageProducer);
 		calendarService = module.get(CalendarService);
 		rocketChatService = module.get(RocketChatService);
+		dashboardRepo = app.get(DASHBOARD_REPO);
 	});
 
 	afterAll(async () => {
@@ -162,8 +168,9 @@ describe(`deletionExecution (api)`, () => {
 					content: { text: 'test of content' },
 				};
 				const lesson = lessonFactory.buildWithId({ contents: [lessonContent] });
+
+
 				const news = schoolNewsFactory.buildWithId({ creator: teacherUser, school: school.id });
-				const pseudonym = externalToolPseudonymEntityFactory.buildWithId({ userId: studentUser.id });
 
 				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
@@ -172,10 +179,15 @@ describe(`deletionExecution (api)`, () => {
 					},
 				});
 
+				const pseudonym = externalToolPseudonymEntityFactory.buildWithId({ userId: studentUser.id });
+
 				const task = taskFactory.buildWithId({
 					creator: teacherUser,
 					school,
 				});
+
+				const teamUser = teamUserFactory.buildWithId({ user: studentUser });
+				const team = teamFactory.withTeamUser([teamUser]).build();
 
 				const submission = submissionFactory.buildWithId({
 					student: studentUser,
@@ -224,6 +236,7 @@ describe(`deletionExecution (api)`, () => {
 					pseudonym,
 					mediaBoard,
 					task,
+					team,
 					submission,
 					groupSubmission,
 					registrationPin,
@@ -231,16 +244,15 @@ describe(`deletionExecution (api)`, () => {
 				]);
 				em.clear();
 
+				const dashboard = await dashboardRepo.getUsersDashboard(teacherUser.id);
+
 				const deletionRequestsTeacher = deletionRequestEntityFactory.build({
 					targetRefId: teacherUser.id,
 				});
-
 				const deletionRequestsStudent = deletionRequestEntityFactory.build({
 					targetRefId: studentUser.id,
 				});
-
 				await em.persistAndFlush([deletionRequestsTeacher, deletionRequestsStudent]);
-
 				const deletionRequestIds = [deletionRequestsTeacher.id, deletionRequestsStudent.id];
 
 				testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
@@ -255,14 +267,16 @@ describe(`deletionExecution (api)`, () => {
 					courseGroup,
 					schoolClass,
 					lesson,
-					news,
+					file,
+					dashboard,
 					pseudonym,
 					mediaBoard,
+					news,
 					task,
+					team,
 					submission,
 					groupSubmission,
 					registrationPin,
-					file,
 					rocketChatUser,
 				};
 			};
@@ -272,16 +286,18 @@ describe(`deletionExecution (api)`, () => {
 					deletionRequestIds,
 					teacherUser,
 					teacherAccount,
-					course,
 					studentUser,
 					studentAccount,
-					news,
+					course,
 					courseGroup,
+					dashboard,
 					lesson,
 					schoolClass,
 					mediaBoard,
+					news,
 					pseudonym,
 					task,
+					team,
 					submission,
 					groupSubmission,
 					rocketChatUser,
@@ -295,10 +311,11 @@ describe(`deletionExecution (api)`, () => {
 				const whereCourseStudent = { id: course.id, userIds: { $in: [studentId] } };
 				const whereCourseGroup = { id: courseGroup.id, studentIds: { $in: [studentId] } };
 				const whereSchoolClass = { id: schoolClass.id, teacherIds: { $in: [teacherId] } };
-				const whereLesson = { id: lesson.id, contents: { $elemMatch: { user: teacherId } } };
+				const whereDashboard = { id: dashboard.id, userIds: { $in: [teacherId] } };
 				const whereNews = { id: news.id, creator: teacherId };
 				const wherePseudonym = { id: pseudonym.id, userId: studentId };
 				const whereTask = { id: task.id, creator: teacherId };
+				const whereTeam = { id: team.id, userIds: { userId: studentId } };
 				const whereSubmission = { id: submission.id, studentId };
 				const whereGroupSubmission = {
 					id: groupSubmission.id,
@@ -312,8 +329,8 @@ describe(`deletionExecution (api)`, () => {
 					refOwnerModel: FileOwnerModel.USER,
 				};
 
-				const checkcourseBefore = await em.findOne(CourseEntity, whereCourseTeacher);
-				expect(checkcourseBefore).not.toBeNull();
+				const checkCourseBefore = await em.findOne(CourseEntity, whereCourseTeacher);
+				expect(checkCourseBefore).not.toBeNull();
 
 				const response = await testApiClient.post('', {
 					ids: deletionRequestIds,
@@ -338,20 +355,27 @@ describe(`deletionExecution (api)`, () => {
 				const checkSchoolClass = await em.findOne(SchoolEntity, whereSchoolClass);
 				expect(checkSchoolClass).toBeNull();
 
-				const checkNews = await em.findOne(SchoolEntity, whereNews);
-				expect(checkNews).toBeNull();
+				const checkDashboard = await em.findOne(DashboardEntity, whereDashboard);
+				expect(checkDashboard).toBeNull();
 
-				const checkLesson = await em.findOne(CourseEntity, whereLesson);
-				expect(checkLesson).toBeNull();
+				const checkLesson = await em.findOne(LessonEntity, lesson.id);
+				const lessonContents = checkLesson?.contents[0];
+				expect(lessonContents?.user).toBeUndefined();
 
 				const checkMediaBoard = await em.findOne(BoardNodeEntity, mediaBoard.id);
 				expect(checkMediaBoard).toBeNull();
+
+				const checkNews = await em.findOne(SchoolEntity, whereNews);
+				expect(checkNews).toBeNull();
 
 				const checkPseudonym = await em.findOne(ExternalToolPseudonymEntity, wherePseudonym);
 				expect(checkPseudonym).toBeNull();
 
 				const checkTask = await em.findOne(Task, whereTask);
 				expect(checkTask).toBeNull();
+
+				const checkTeam = await em.findOne(TeamEntity, whereTeam);
+				expect(checkTeam).toBeNull();
 
 				const checkSubmission = await em.findOne(Submission, whereSubmission);
 				expect(checkSubmission).toBeNull();
