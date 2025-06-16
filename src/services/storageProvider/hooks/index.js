@@ -7,9 +7,7 @@ const { isSuperHero } = require('../../../hooks');
 
 const encryptSecret = (context) => {
 	if (context.data.secretAccessKey) {
-		const encrptedSecretAccessKey = encryptAES(context.data.secretAccessKey, Configuration.get('S3_KEY'));
-
-		context.data.secretAccessKey = encrptedSecretAccessKey;
+		context.data.secretAccessKey = encryptAES(context.data.secretAccessKey, Configuration.get('S3_KEY'));
 	}
 	return context;
 };
