@@ -25,9 +25,9 @@ export class H5pAjaxErrorResponseFilter implements ExceptionFilter {
 			status = exception.getStatus();
 			message = exception.name;
 			details = exception.message;
-		} else {
-			this.domainErrorHandler.execHttpContext(exception, host.switchToHttp());
 		}
+
+		this.domainErrorHandler.execHttpContext(exception, host.switchToHttp());
 
 		const ajaxErrorResponse = new AjaxErrorResponse(clientErrorCode, status, message, details);
 

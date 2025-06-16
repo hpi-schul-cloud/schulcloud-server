@@ -93,6 +93,14 @@ describe(H5pAjaxErrorResponseFilter.name, () => {
 
 			expect(mockedResponse.status).toHaveBeenCalledWith(exception.httpStatusCode);
 		});
+
+		it('should handle and log the unknown error', () => {
+			const { exception, mockedArgumentsHost } = setup();
+
+			filter.catch(exception, mockedArgumentsHost);
+
+			expect(domainErrorHandler.execHttpContext).toHaveBeenCalledWith(exception, mockedArgumentsHost.switchToHttp());
+		});
 	});
 
 	describe('when the filtered error is an HttpException', () => {
@@ -127,6 +135,14 @@ describe(H5pAjaxErrorResponseFilter.name, () => {
 
 			expect(mockedResponse.status).toHaveBeenCalledWith(exception.getStatus());
 		});
+
+		it('should handle and log the unknown error', () => {
+			const { exception, mockedArgumentsHost } = setup();
+
+			filter.catch(exception, mockedArgumentsHost);
+
+			expect(domainErrorHandler.execHttpContext).toHaveBeenCalledWith(exception, mockedArgumentsHost.switchToHttp());
+		});
 	});
 
 	describe('when the filtered error is an unknown error', () => {
@@ -160,7 +176,7 @@ describe(H5pAjaxErrorResponseFilter.name, () => {
 			expect(mockedResponse.status).toHaveBeenCalledWith(500);
 		});
 
-		it('should handle the unknown error', () => {
+		it('should handle and log the unknown error', () => {
 			const { exception, mockedArgumentsHost } = setup();
 
 			filter.catch(exception, mockedArgumentsHost);
