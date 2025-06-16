@@ -1,6 +1,8 @@
-import { EntityName, QueryOrderMap } from '@mikro-orm/core';
+import { EntityName, QueryOrderMap, UniqueConstraintViolationException } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { ValidationError } from '@shared/common/error';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -31,7 +33,16 @@ export class ExternalToolRepo {
 		} else {
 			this.em.persist(entity);
 		}
-		await this.em.flush();
+
+		try {
+			await this.em.flush();
+		} catch (e: unknown) {
+			if (e instanceof UniqueConstraintViolationException) {
+				throw new ValidationError(e.toString());
+			} else {
+				throw new InternalServerErrorException(e);
+			}
+		}
 
 		const savedDomainObject: ExternalTool = this.mapEntityToDomainObject(entity);
 
@@ -110,6 +121,17 @@ export class ExternalToolRepo {
 		const entities: ExternalToolEntity[] = await this.em.find(this.entityName, {
 			medium: { mediaSourceId, status: { $ne: ExternalToolMediumStatus.TEMPLATE } },
 		});
+
+		const domainObjects: ExternalTool[] = entities.map((entity: ExternalToolEntity): ExternalTool => {
+			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
+			return domainObject;
+		});
+
+		return domainObjects;
+	}
+
+	public async findAllByName(name: string): Promise<ExternalTool[]> {
+		const entities: ExternalToolEntity[] = await this.em.find(this.entityName, { name });
 
 		const domainObjects: ExternalTool[] = entities.map((entity: ExternalToolEntity): ExternalTool => {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);

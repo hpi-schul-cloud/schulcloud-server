@@ -2,51 +2,72 @@ import { StringValidator } from '.';
 
 describe('StringValidator', () => {
 	describe('isString', () => {
-		it('should resolve true for string values', () => {
-			expect(StringValidator.isString('sample string value')).toEqual(true);
-		});
-		it('should resolve false for other types', () => {
-			expect(StringValidator.isString(0 as unknown as string)).toEqual(false);
-			expect(StringValidator.isString(1 as unknown as string)).toEqual(false);
-			expect(StringValidator.isString(false as unknown as string)).toEqual(false);
-			expect(StringValidator.isString(true as unknown as string)).toEqual(false);
-			expect(StringValidator.isString({} as unknown as string)).toEqual(false);
+		it('should return false for null', () => {
 			expect(StringValidator.isString(null as unknown as string)).toEqual(false);
+		});
+
+		it('should return false for undefined', () => {
 			expect(StringValidator.isString(undefined)).toEqual(false);
 		});
-	});
-	describe('isNotEmptyString', () => {
-		describe('when trim is disabled', () => {
-			it('should resolve true for given string with', () => {
-				expect(StringValidator.isNotEmptyString('hello world')).toEqual(true);
-			});
-			it('should resolve false for empty string', () => {
-				expect(StringValidator.isNotEmptyString('')).toEqual(false);
-			});
-			it('should resolve true for whitespace string', () => {
-				expect(StringValidator.isNotEmptyString(' ')).toEqual(true);
-				expect(StringValidator.isNotEmptyString('\n', false)).toEqual(true);
-				expect(StringValidator.isNotEmptyString('\n')).toEqual(true);
-			});
-			it('should resolve false for undefined string', () => {
-				expect(StringValidator.isNotEmptyString(undefined, false)).toEqual(false);
-			});
+
+		it('should return true for a valid string', () => {
+			expect(StringValidator.isString('hello')).toEqual(true);
 		});
-		describe('when trim is enabled', () => {
-			it('should resolve true for given string with', () => {
-				expect(StringValidator.isNotEmptyString('hello world', true)).toEqual(true);
-			});
-			it('should resolve false for empty string', () => {
-				expect(StringValidator.isNotEmptyString('', true)).toEqual(false);
-			});
-			it('should resolve false for whitespace string', () => {
-				expect(StringValidator.isNotEmptyString(' ', true)).toEqual(false);
-				expect(StringValidator.isNotEmptyString('\n', true)).toEqual(false);
-				expect(StringValidator.isNotEmptyString('\t', true)).toEqual(false);
-			});
-			it('should resolve false for undefined string', () => {
-				expect(StringValidator.isNotEmptyString(undefined, true)).toEqual(false);
-			});
+
+		it('should return false for a number', () => {
+			expect(StringValidator.isString(123 as unknown as string)).toEqual(false);
+		});
+
+		it('should return false for an object', () => {
+			expect(StringValidator.isString({} as unknown as string)).toEqual(false);
+		});
+
+		it('should return false for an array', () => {
+			expect(StringValidator.isString([] as unknown as string)).toEqual(false);
+		});
+	});
+
+	describe('isNotEmptyString', () => {
+		it('should return true for a non-empty string', () => {
+			expect(StringValidator.isNotEmptyString('hello')).toBe(true);
+		});
+
+		it('should return false for an empty string', () => {
+			expect(StringValidator.isNotEmptyString('')).toBe(false);
+		});
+
+		it('should return false for undefined', () => {
+			expect(StringValidator.isNotEmptyString(undefined)).toBe(false);
+		});
+
+		it('should return false for null', () => {
+			expect(StringValidator.isNotEmptyString(null as unknown as string)).toBe(false);
+		});
+	});
+
+	describe('isNotEmptyStringWhenTrimed', () => {
+		it('should return true for a non-empty string with no leading or trailing spaces', () => {
+			expect(StringValidator.isNotEmptyStringWhenTrimed('hello')).toBe(true);
+		});
+
+		it('should return true for a string with leading or trailing spaces that is non-empty after trimming', () => {
+			expect(StringValidator.isNotEmptyStringWhenTrimed('   hello   ')).toBe(true);
+		});
+
+		it('should return false for a string that is empty after trimming', () => {
+			expect(StringValidator.isNotEmptyStringWhenTrimed('   ')).toBe(false);
+		});
+
+		it('should return false for an empty string', () => {
+			expect(StringValidator.isNotEmptyStringWhenTrimed('')).toBe(false);
+		});
+
+		it('should return false for undefined', () => {
+			expect(StringValidator.isNotEmptyStringWhenTrimed(undefined)).toBe(false);
+		});
+
+		it('should return false for null', () => {
+			expect(StringValidator.isNotEmptyStringWhenTrimed(null as unknown as string)).toBe(false);
 		});
 	});
 });
