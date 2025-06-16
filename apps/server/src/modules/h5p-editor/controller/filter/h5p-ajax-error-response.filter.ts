@@ -19,7 +19,7 @@ export class H5pAjaxErrorResponseFilter implements ExceptionFilter {
 		if (exception instanceof H5pError) {
 			status = exception.httpStatusCode;
 			clientErrorCode = exception.clientErrorId ?? '';
-			message = exception.name;
+			message = this.mapErrorMessageFromH5pError(exception);
 			details = exception.message;
 		} else if (exception instanceof HttpException) {
 			status = exception.getStatus();
@@ -36,5 +36,14 @@ export class H5pAjaxErrorResponseFilter implements ExceptionFilter {
 		const ajaxErrorResponse = new AjaxErrorResponse(clientErrorCode, status, message, details);
 
 		response.status(status).json(ajaxErrorResponse);
+	}
+
+	private mapErrorMessageFromH5pError(error: H5pError): string {
+		switch (error.errorId) {
+			case 'install-missing-libraries':
+				return 'Error - File contains one or more missing libraries';
+			default:
+				return error.name;
+		}
 	}
 }

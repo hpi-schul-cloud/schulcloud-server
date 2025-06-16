@@ -55,51 +55,102 @@ describe(H5pAjaxErrorResponseFilter.name, () => {
 	};
 
 	describe('when the filtered error is an H5pError', () => {
-		const setup = () => {
-			const { mockedArgumentsHost, mockedResponse } = setupArgsHost();
+		describe('when the H5pError has error id "install-missing-libraries"', () => {
+			const setup = () => {
+				const { mockedArgumentsHost, mockedResponse } = setupArgsHost();
 
-			const exception = new H5pError('error-id');
-			exception.httpStatusCode = 500;
-			exception.clientErrorId = 'test-client-error-id';
-			exception.name = 'test-error-title';
-			exception.message = 'test-error-description';
+				const exception = new H5pError('install-missing-libraries');
+				exception.httpStatusCode = 500;
+				exception.clientErrorId = 'test-client-error-id';
+				exception.name = 'test-error-title';
+				exception.message = 'test-error-description';
 
-			return {
-				exception,
-				mockedArgumentsHost,
-				mockedResponse,
+				return {
+					exception,
+					mockedArgumentsHost,
+					mockedResponse,
+				};
 			};
-		};
 
-		it('should set an AjaxErrorResponse in the response body', () => {
-			const { exception, mockedArgumentsHost, mockedResponse } = setup();
+			it('should set an AjaxErrorResponse in the response body', () => {
+				const { exception, mockedArgumentsHost, mockedResponse } = setup();
 
-			filter.catch(exception, mockedArgumentsHost);
+				filter.catch(exception, mockedArgumentsHost);
 
-			expect(mockedResponse.json).toHaveBeenCalledWith(
-				new AjaxErrorResponse(
-					exception.clientErrorId as string,
-					exception.httpStatusCode,
-					exception.name,
-					exception.message
-				)
-			);
+				expect(mockedResponse.json).toHaveBeenCalledWith(
+					new AjaxErrorResponse(
+						exception.clientErrorId as string,
+						exception.httpStatusCode,
+						'Error - File contains one or more missing libraries',
+						exception.message
+					)
+				);
+			});
+
+			it('should set the correct response status', () => {
+				const { exception, mockedArgumentsHost, mockedResponse } = setup();
+
+				filter.catch(exception, mockedArgumentsHost);
+
+				expect(mockedResponse.status).toHaveBeenCalledWith(exception.httpStatusCode);
+			});
+
+			it('should handle and log the unknown error', () => {
+				const { exception, mockedArgumentsHost } = setup();
+
+				filter.catch(exception, mockedArgumentsHost);
+
+				expect(domainErrorHandler.execHttpContext).toHaveBeenCalledWith(exception, mockedArgumentsHost.switchToHttp());
+			});
 		});
 
-		it('should set the correct response status', () => {
-			const { exception, mockedArgumentsHost, mockedResponse } = setup();
+		describe('when the H5pError has another error id', () => {
+			const setup = () => {
+				const { mockedArgumentsHost, mockedResponse } = setupArgsHost();
 
-			filter.catch(exception, mockedArgumentsHost);
+				const exception = new H5pError('error-id');
+				exception.httpStatusCode = 500;
+				exception.clientErrorId = 'test-client-error-id';
+				exception.name = 'test-error-title';
+				exception.message = 'test-error-description';
 
-			expect(mockedResponse.status).toHaveBeenCalledWith(exception.httpStatusCode);
-		});
+				return {
+					exception,
+					mockedArgumentsHost,
+					mockedResponse,
+				};
+			};
 
-		it('should handle and log the unknown error', () => {
-			const { exception, mockedArgumentsHost } = setup();
+			it('should set an AjaxErrorResponse in the response body', () => {
+				const { exception, mockedArgumentsHost, mockedResponse } = setup();
 
-			filter.catch(exception, mockedArgumentsHost);
+				filter.catch(exception, mockedArgumentsHost);
 
-			expect(domainErrorHandler.execHttpContext).toHaveBeenCalledWith(exception, mockedArgumentsHost.switchToHttp());
+				expect(mockedResponse.json).toHaveBeenCalledWith(
+					new AjaxErrorResponse(
+						exception.clientErrorId as string,
+						exception.httpStatusCode,
+						exception.name,
+						exception.message
+					)
+				);
+			});
+
+			it('should set the correct response status', () => {
+				const { exception, mockedArgumentsHost, mockedResponse } = setup();
+
+				filter.catch(exception, mockedArgumentsHost);
+
+				expect(mockedResponse.status).toHaveBeenCalledWith(exception.httpStatusCode);
+			});
+
+			it('should handle and log the unknown error', () => {
+				const { exception, mockedArgumentsHost } = setup();
+
+				filter.catch(exception, mockedArgumentsHost);
+
+				expect(domainErrorHandler.execHttpContext).toHaveBeenCalledWith(exception, mockedArgumentsHost.switchToHttp());
+			});
 		});
 	});
 
