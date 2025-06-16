@@ -26,9 +26,12 @@ export class DeletionRequestRepo {
 		return mapped;
 	}
 
-	public async create(deletionRequest: DeletionRequest): Promise<void> {
-		const deletionRequestEntity = DeletionRequestMapper.mapToEntity(deletionRequest);
-		this.em.persist(deletionRequestEntity);
+	public async create(deletionRequests: DeletionRequest | DeletionRequest[]): Promise<void> {
+		const deletionRequestEntities = Array.isArray(deletionRequests)
+			? deletionRequests.map((deletionRequest) => DeletionRequestMapper.mapToEntity(deletionRequest))
+			: [DeletionRequestMapper.mapToEntity(deletionRequests)];
+
+		await this.em.upsertMany(deletionRequestEntities);
 		await this.em.flush();
 	}
 
