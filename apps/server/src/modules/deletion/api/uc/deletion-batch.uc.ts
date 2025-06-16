@@ -61,7 +61,15 @@ export class DeletionBatchUc {
 		targetRefIds: EntityId[]
 	): Promise<{ validUserIds: EntityId[]; invalidUserIds: EntityId[]; skippedUserIds: EntityId[] }> {
 		// TODO move this in config
-		const allowedUserRoles = [RoleName.STUDENT];
+		const allowedUserRoles = [
+			RoleName.STUDENT,
+			RoleName.TEACHER,
+			RoleName.ADMINISTRATOR,
+			RoleName.COURSETEACHER,
+			RoleName.COURSESUBSTITUTIONTEACHER,
+			RoleName.COURSESTUDENT,
+			RoleName.COURSEADMINISTRATOR,
+		];
 
 		const validUserIds: EntityId[] = [];
 		const invalidUserIds: EntityId[] = [];
