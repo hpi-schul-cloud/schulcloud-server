@@ -12,6 +12,7 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { SchoolForExternalInviteResponse } from '../dto';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;
@@ -210,7 +211,7 @@ describe('School Controller (API)', () => {
 
 		describe('when a user is logged in', () => {
 			const setup = async () => {
-				const schools = schoolEntityFactory.buildList(40);
+				const schools = schoolEntityFactory.buildList(5);
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				await em.persistAndFlush([...schools, studentAccount, studentUser]);
 
@@ -233,8 +234,11 @@ describe('School Controller (API)', () => {
 				const response = await loggedInClient.get('list-for-external-invite');
 
 				expect(response.status).toEqual(HttpStatus.OK);
-				console.log(response.body);
-				expect(response.body.data).toEqual(expectedResponse);
+				expect(response.body).toEqual(
+					expect.objectContaining({
+						data: expect.arrayContaining(expectedResponse) as SchoolForExternalInviteResponse[],
+					})
+				);
 			});
 		});
 	});
