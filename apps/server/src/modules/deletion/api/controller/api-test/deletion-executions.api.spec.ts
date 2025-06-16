@@ -37,8 +37,8 @@ import { FileDO, FileRecordParentType, ScanStatus } from '@infra/rabbitmq';
 import { rocketChatUserEntityFactory } from '@modules/rocketchat-user/entity/testing';
 import { DASHBOARD_REPO, IDashboardRepo } from '@modules/learnroom/repo/mikro-orm/dashboard.repo';
 import { DashboardEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
-import { teamFactory, teamUserFactory } from '../../../../team/testing';
-import { TeamEntity } from '../../../../team/repo';
+import { teamFactory, teamUserFactory } from '@modules/team/testing';
+import { TeamEntity } from '@modules/team/repo';
 
 const baseRouteName = '/deletionExecutions';
 
@@ -168,7 +168,6 @@ describe(`deletionExecution (api)`, () => {
 					content: { text: 'test of content' },
 				};
 				const lesson = lessonFactory.buildWithId({ contents: [lessonContent] });
-
 
 				const news = schoolNewsFactory.buildWithId({ creator: teacherUser, school: school.id });
 
