@@ -27,7 +27,6 @@ import {
 	MaintenanceResponse,
 	SchoolExistsResponse,
 	SchoolForExternalInviteListResponse,
-	SchoolForExternalInviteResponse,
 	SchoolForLdapLoginResponse,
 	SchoolQueryParams,
 	SchoolRemoveSystemUrlParams,
@@ -39,7 +38,6 @@ import {
 } from './dto';
 import { MaintenanceParams } from './dto/maintenance.params';
 import { SchoolUc } from './school.uc';
-import { Page } from '@shared/domain/domainobject';
 
 @ApiTags('School')
 @Controller('school')
