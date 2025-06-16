@@ -110,6 +110,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	)
 	userLoginMigration?: UserLoginMigrationEntity;
 
+	@Index()
 	@ManyToOne(() => FederalStateEntity)
 	federalState: FederalStateEntity;
 
