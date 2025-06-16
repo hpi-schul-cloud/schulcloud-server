@@ -11,10 +11,10 @@ export class H5pAjaxErrorResponseFilter implements ExceptionFilter {
 		const ctx = host.switchToHttp();
 		const response = ctx.getResponse<Response>();
 
-		let status = 500;
+		let status: number;
 		let clientErrorCode = '';
-		let message = 'Internal Server Error';
-		let details = 'An unexpected error had occurred.';
+		let message: string;
+		let details: string;
 
 		if (exception instanceof H5pError) {
 			status = exception.httpStatusCode;
@@ -25,6 +25,10 @@ export class H5pAjaxErrorResponseFilter implements ExceptionFilter {
 			status = exception.getStatus();
 			message = exception.name;
 			details = exception.message;
+		} else {
+			status = 500;
+			message = 'Internal Server Error';
+			details = 'An unexpected error had occurred.';
 		}
 
 		this.domainErrorHandler.execHttpContext(exception, host.switchToHttp());
