@@ -27,15 +27,16 @@ export class DeletionRequestService {
 		targetRefDomain: DomainName,
 		deleteAfter: Date
 	): Promise<void> {
-		const deletionRequests = targetRefIds.map((targetRefId) => {
-			return new DeletionRequest({
-				id: new ObjectId().toHexString(),
-				targetRefDomain,
-				deleteAfter,
-				targetRefId,
-				status: StatusModel.REGISTERED,
-			});
-		});
+		const deletionRequests = targetRefIds.map(
+			(targetRefId) =>
+				new DeletionRequest({
+					id: new ObjectId().toHexString(),
+					targetRefDomain,
+					deleteAfter,
+					targetRefId,
+					status: StatusModel.REGISTERED,
+				})
+		);
 
 		await this.deletionRequestRepo.create(deletionRequests);
 	}
@@ -80,7 +81,7 @@ export class DeletionRequestService {
 		return deletionRequests;
 	}
 
-	public async findByStatusAndTargetRefId(status: StatusModel, targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
+	public findByStatusAndTargetRefId(status: StatusModel, targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
 		switch (status) {
 			case StatusModel.REGISTERED:
 				return this.deletionRequestRepo.findRegisteredByTargetRefId(targetRefIds);
@@ -91,7 +92,7 @@ export class DeletionRequestService {
 			case StatusModel.SUCCESS:
 				return this.deletionRequestRepo.findSuccessfulByTargetRefId(targetRefIds);
 			default:
-				return [];
+				return Promise.resolve([]);
 		}
 	}
 
