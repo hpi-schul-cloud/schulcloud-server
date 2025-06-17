@@ -1,10 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { H5PAjaxEndpoint, H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
-import { UserDo, UserService } from '@modules/user';
+import { IHubInfo, IUser as LumiIUser } from '@lumieducation/h5p-server/build/src/types';
+import { UserService } from '@modules/user';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
@@ -65,16 +67,12 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 
 	describe('when calling GET', () => {
 		const setup = () => {
-			const userMock: ICurrentUser = {
-				userId: 'dummyId',
-				roles: [],
-				schoolId: 'dummySchool',
-				accountId: 'dummyAccountId',
-				isExternalUser: false,
-				support: false,
-			};
+			const user = currentUserFactory.build();
 
-			const dummyResponse = {
+			const language = LanguageType.DE;
+			const userDo = userDoFactory.build({ id: user.userId, language });
+
+			const mockedResponse: IHubInfo = {
 				apiVersion: { major: 1, minor: 1 },
 				details: [],
 				libraries: [],
@@ -83,44 +81,41 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 				user: 'DummyUser',
 			};
 
+			ajaxEndpoint.getAjax.mockResolvedValueOnce(mockedResponse);
+			userService.findById.mockResolvedValueOnce(userDo);
+
 			return {
-				userMock,
-				dummyResponse,
+				user,
+				language,
+				mockedResponse,
 			};
 		};
 
 		it('should call H5PAjaxEndpoint.getAjax and return the result', async () => {
-			const { userMock, dummyResponse } = setup();
+			const { user, language, mockedResponse } = setup();
 
-			ajaxEndpoint.getAjax.mockResolvedValueOnce(dummyResponse);
-			userService.findById.mockResolvedValueOnce({ language: LanguageType.DE } as UserDo);
+			const result = await uc.getAjax({ action: 'content-type-cache' }, user.userId);
 
-			const result = await uc.getAjax({ action: 'content-type-cache' }, userMock.userId);
-
-			expect(result).toBe(dummyResponse);
+			expect(result).toBe(mockedResponse);
 			expect(ajaxEndpoint.getAjax).toHaveBeenCalledWith(
 				'content-type-cache',
 				undefined, // MachineName
 				undefined, // MajorVersion
 				undefined, // MinorVersion
-				'de',
-				expect.objectContaining({ id: 'dummyId' })
+				language.valueOf(),
+				expect.objectContaining({ id: user.userId })
 			);
 		});
 	});
 
 	describe('when calling POST', () => {
 		const setup = () => {
-			const userMock: ICurrentUser = {
-				userId: 'dummyId',
-				roles: [],
-				schoolId: 'dummySchool',
-				accountId: 'dummyAccountId',
-				isExternalUser: false,
-				support: false,
-			};
+			const user = currentUserFactory.build();
 
-			const dummyResponse = [
+			const language = LanguageType.DE;
+			const userDo = userDoFactory.build({ id: user.userId, language });
+
+			const mockedResponse = [
 				{
 					majorVersion: 1,
 					minorVersion: 2,
@@ -130,34 +125,43 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 					runnable: true,
 					title: 'Dummy Library',
 					tutorialUrl: '',
-					uberName: 'dummyLibrary-1.1',
+					uberName: 'dummyLibrary-1.0',
 				},
 			];
 
-			ajaxEndpoint.postAjax.mockResolvedValueOnce(dummyResponse);
+			const mockedLumiUser: LumiIUser = {
+				email: '',
+				id: user.userId,
+				name: '',
+				type: '',
+			};
+
+			ajaxEndpoint.postAjax.mockResolvedValueOnce(mockedResponse);
+			userService.findById.mockResolvedValueOnce(userDo);
 
 			return {
-				userMock,
-				dummyResponse,
+				user,
+				language,
+				mockedLumiUser,
+				mockedResponse,
 			};
 		};
 
 		it('should call H5PAjaxEndpoint.postAjax and return the result', async () => {
-			const { userMock, dummyResponse } = setup();
+			const { user, language, mockedLumiUser, mockedResponse } = setup();
 
 			const result = await uc.postAjax(
-				userMock.userId,
+				user.userId,
 				{ action: 'libraries' },
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
 			);
 
-			expect(result).toBe(dummyResponse);
+			expect(result).toBe(mockedResponse);
 			expect(ajaxEndpoint.postAjax).toHaveBeenCalledWith(
 				'libraries',
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
-				'de',
-				expect.objectContaining({ id: 'dummyId' }),
-				undefined,
+				language.valueOf(),
+				mockedLumiUser,
 				undefined,
 				undefined,
 				undefined,
@@ -166,10 +170,10 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 		});
 
 		it('should call H5PAjaxEndpoint.postAjax with files', async () => {
-			const { userMock, dummyResponse } = setup();
+			const { user, language, mockedLumiUser, mockedResponse } = setup();
 
 			const result = await uc.postAjax(
-				userMock.userId,
+				user.userId,
 				{ action: 'libraries' },
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
 				{
@@ -195,17 +199,16 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 				size: 0,
 			};
 
-			expect(result).toBe(dummyResponse);
+			expect(result).toBe(mockedResponse);
 			expect(ajaxEndpoint.postAjax).toHaveBeenCalledWith(
 				'libraries',
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
-				'de',
-				expect.objectContaining({ id: 'dummyId' }),
+				language.valueOf(),
+				mockedLumiUser,
 				bufferTest,
 				undefined,
 				undefined,
-				bufferTest,
-				undefined
+				bufferTest
 			);
 		});
 	});

@@ -158,15 +158,6 @@ describe('H5PEditor Controller (api)', () => {
 				await em.persistAndFlush([studentUser]);
 				em.clear();
 
-				return { loggedInClient, studentUser };
-			};
-
-			it('should call H5PAjaxEndpoint', async () => {
-				const {
-					loggedInClient,
-					studentUser: { id },
-				} = await setup();
-
 				const dummyResponse = [
 					{
 						majorVersion: 1,
@@ -185,6 +176,17 @@ describe('H5PEditor Controller (api)', () => {
 
 				ajaxEndpoint.postAjax.mockResolvedValueOnce(dummyResponse);
 
+				return { loggedInClient, studentUser, dummyResponse, dummyBody };
+			};
+
+			it('should call H5PAjaxEndpoint', async () => {
+				const {
+					loggedInClient,
+					studentUser: { id },
+					dummyResponse,
+					dummyBody,
+				} = await setup();
+
 				const response = await loggedInClient.post(`ajax?action=libraries`, dummyBody);
 
 				expect(response.statusCode).toEqual(HttpStatus.CREATED);
@@ -194,7 +196,6 @@ describe('H5PEditor Controller (api)', () => {
 					dummyBody,
 					'de',
 					expect.objectContaining({ id }),
-					undefined,
 					undefined,
 					undefined,
 					undefined,

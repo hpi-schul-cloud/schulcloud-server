@@ -41,7 +41,7 @@ export class H5pAjaxErrorResponseFilter implements ExceptionFilter {
 	private mapErrorMessageFromH5pError(error: H5pError): string {
 		switch (error.errorId) {
 			case 'install-missing-libraries':
-				return 'Error - File contains one or more missing libraries';
+				return 'Error - File contains one or more not supported libraries';
 			default:
 				return error.name;
 		}

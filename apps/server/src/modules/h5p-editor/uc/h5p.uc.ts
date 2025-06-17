@@ -150,8 +150,7 @@ export class H5PEditorUc {
 				mimetype: h5pFile.mimetype,
 				name: h5pFile.originalname,
 				size: h5pFile.size,
-			},
-			undefined // TODO: HubID?
+			}
 		);
 
 		return result;
