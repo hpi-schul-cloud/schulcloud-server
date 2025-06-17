@@ -81,7 +81,7 @@ describe(H5pAjaxErrorResponseFilter.name, () => {
 					new AjaxErrorResponse(
 						exception.clientErrorId as string,
 						exception.httpStatusCode,
-						'Error - File contains one or more missing libraries',
+						'Error - File contains one or more not supported libraries',
 						exception.message
 					)
 				);
