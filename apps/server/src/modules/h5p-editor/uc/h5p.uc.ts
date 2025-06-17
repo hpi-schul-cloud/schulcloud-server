@@ -33,7 +33,6 @@ import { EntityId } from '@shared/domain/types';
 import { Request } from 'express';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, H5PContentResponse } from '../controller/dto';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
-import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PContentParentType, LumiUserWithContentData } from '../types';
@@ -101,22 +100,16 @@ export class H5PEditorUc {
 	): Promise<IHubInfo | ILibraryDetailedDataForClient | IAjaxResponse | undefined> {
 		const user = this.changeUserType(userId);
 		const language = await this.getUserLanguage(userId);
-		const h5pErrorMapper = new H5PErrorMapper();
 
-		try {
-			const result = await this.h5pAjaxEndpoint.getAjax(
-				query.action,
-				query.machineName,
-				query.majorVersion,
-				query.minorVersion,
-				language,
-				user
-			);
-			return result;
-		} catch (err) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			throw h5pErrorMapper.mapH5pError(err);
-		}
+		const result = await this.h5pAjaxEndpoint.getAjax(
+			query.action,
+			query.machineName,
+			query.majorVersion,
+			query.minorVersion,
+			language,
+			user
+		);
+		return result;
 	}
 
 	public async postAjax(
@@ -138,36 +131,29 @@ export class H5PEditorUc {
 	> {
 		const user = this.changeUserType(userId);
 		const language = await this.getUserLanguage(userId);
-		const h5pErrorMapper = new H5PErrorMapper();
 
-		try {
-			const result = await this.h5pAjaxEndpoint.postAjax(
-				query.action,
-				body,
-				language,
-				user,
-				contentFile && {
-					data: contentFile.buffer,
-					mimetype: contentFile.mimetype,
-					name: contentFile.originalname,
-					size: contentFile.size,
-				},
-				query.id,
-				undefined,
-				h5pFile && {
-					data: h5pFile.buffer,
-					mimetype: h5pFile.mimetype,
-					name: h5pFile.originalname,
-					size: h5pFile.size,
-				},
-				undefined // TODO: HubID?
-			);
+		const result = await this.h5pAjaxEndpoint.postAjax(
+			query.action,
+			body,
+			language,
+			user,
+			contentFile && {
+				data: contentFile.buffer,
+				mimetype: contentFile.mimetype,
+				name: contentFile.originalname,
+				size: contentFile.size,
+			},
+			query.id,
+			undefined,
+			h5pFile && {
+				data: h5pFile.buffer,
+				mimetype: h5pFile.mimetype,
+				name: h5pFile.originalname,
+				size: h5pFile.size,
+			}
+		);
 
-			return result;
-		} catch (err) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			throw h5pErrorMapper.mapH5pError(err);
-		}
+		return result;
 	}
 
 	public async getContentParameters(contentId: string, userId: EntityId): Promise<H5PContentResponse> {

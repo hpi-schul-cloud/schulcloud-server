@@ -21,6 +21,7 @@ import {
 	Res,
 	StreamableFile,
 	UploadedFiles,
+	UseFilters,
 	UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -46,6 +47,7 @@ import {
 	SaveH5PEditorParams,
 } from './dto';
 import { AjaxPostBodyParamsTransformPipe } from './dto/ajax/post.body.params.transform-pipe';
+import { H5pAjaxErrorResponseFilter } from './filter';
 
 @ApiTags('h5p-editor')
 @JwtAuthentication()
@@ -135,6 +137,7 @@ export class H5PEditorController {
 	}
 
 	@Get('ajax')
+	@UseFilters(H5pAjaxErrorResponseFilter)
 	public async getAjax(
 		@Query() query: AjaxGetQueryParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -145,6 +148,7 @@ export class H5PEditorController {
 	}
 
 	@Post('ajax')
+	@UseFilters(H5pAjaxErrorResponseFilter)
 	@UseInterceptors(
 		FileFieldsInterceptor([
 			{ name: 'file', maxCount: 1 },
