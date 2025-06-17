@@ -243,24 +243,6 @@
     tags:
       - configmap
 
-  - name: Data deletion trigger failed CronJob
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: data-deletion-trigger-failed-cronjob.yml.j2
-    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
-    tags:
-      - cronjob
-
-  - name: Data deletion trigger failed CronJob ConfigMap
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: data-deletion-trigger-failed-cronjob-configmap.yml.j2
-    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
-    tags:
-      - configmap
-
   - name: amqp files storage Deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
