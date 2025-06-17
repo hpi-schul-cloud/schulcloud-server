@@ -322,7 +322,11 @@ describe('DeletionBatchService', () => {
 
 			await service.requestDeletionForBatch(batch, new Date());
 
-			expect(deletionRequestService.createDeletionRequest).toHaveBeenCalledTimes(batch.targetRefIds.length);
+			expect(deletionRequestService.createDeletionRequestBatch).toHaveBeenCalledWith(
+				batch.targetRefIds,
+				batch.targetRefDomain,
+				expect.any(Date)
+			);
 		});
 
 		it('should call repo to update status', async () => {
