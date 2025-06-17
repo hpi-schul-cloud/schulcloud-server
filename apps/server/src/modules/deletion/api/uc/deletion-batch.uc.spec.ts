@@ -84,9 +84,9 @@ describe('DeletionBatchUc', () => {
 
 				expect(deletionBatchService.createDeletionBatch).toHaveBeenCalledWith(
 					createDeletionBatchParams,
-					[student.id],
+					[student.id, teacher.id],
 					[invalidId],
-					[teacher.id]
+					[]
 				);
 			});
 		});
