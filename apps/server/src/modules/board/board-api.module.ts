@@ -15,6 +15,7 @@ import {
 } from './controller';
 import { BoardNodePermissionService } from './service';
 import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
+import { CardContentUc } from './uc/card-content.uc';
 
 @Module({
 	imports: [
@@ -27,6 +28,6 @@ import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
 		BoardContextApiHelperModule,
 	],
 	controllers: [BoardController, ColumnController, CardController, ElementController, BoardSubmissionController],
-	providers: [BoardUc, BoardNodePermissionService, ColumnUc, CardUc, ElementUc, SubmissionItemUc],
+	providers: [BoardUc, BoardNodePermissionService, ColumnUc, CardUc, ElementUc, SubmissionItemUc, CardContentUc],
 })
 export class BoardApiModule {}
