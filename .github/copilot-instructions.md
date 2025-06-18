@@ -15,6 +15,11 @@ Wenn du Code vorschläge machst, bitte beachte die folgenden Konvensionen aus de
 
 ## Code Style
 
+### Style 
+Wir geben niemals direkt das Ergebnis eines Funktions- oder Methodenaufrufs zurück. Stattdessen speichern wir das Ergebnis immer in einer Konstante mit einem aussagekräftigen Namen. Das macht den Code besser lesbar und leichter zu debuggen.
+
+Nach der letzten Konstante in einem Block kommt immer eine Leerzeile, um den Code zu strukturieren und die Lesbarkeit zu verbessern.
+
 ### Tests
 Wir verwenden jest (siehe: https://jestjs.io/) als Testframework.
 
@@ -23,10 +28,11 @@ Wir verwenden @golevelup/ts-jest (siehe: https://github.com/golevelup/nestjs#rea
 Beachte das erste describe enthält den Namen der Klasse, oder Funktion die getestet werden soll.
 Ein tiefer geschachteltes describe enthält die Methode der Klasse die getestet werden soll.
 Hierbei beachte das die Struktur der Test für die Methode unterteilt ist mit describe('when
-Welches jeweils eine Ausgangslage beschreibt, die in der Funktion const setup darunter definiert wird und in den it Blöcken danach verwendet.
+Welches jeweils eine Ausgangslage beschreibt, die in der Funktion const setup darunter definiert wird und in den it Blöcken danach verwendet. 
+Die setup Funktion ist immer eine arrow function. Die Setup Funktion returned ein Objekt, mit allem was für die Tests benötigt wird. 
 Es darf mehre it Blöcke geben die einzelne Teile testen.
 
-Mocks sind immer Teil der setup Methode.
+Mocks sind immer Teil der setup Funktion.
 
 Spy kann im setup, oder im it Block verwendet werden.
 
@@ -36,9 +42,14 @@ Zwischen jedem it kommt eine Leerzeile.
 Wir verwenden Once bei den mocks. Wird ein mock mehrfach aufgerufen soll mehrfach der Mock mit Once gesetzt werden. Zum Beispiel mockResolveValueOnce anstatt mockResolveValue.
 
 Mocks werden bei uns immer durch das hinzufügen von afterEach und jest.resetAllMocks(); zurück gesetzt, welches einmalig pro File so gesetzt wird, das es alle Test betrifft.
+afterEach und beforeEach werden nur für den Aufruf von jest.resetAllMocks(); verwendet. Die Vorbereitung der Tests erfolgt in der setup Funktion.
 
 Sollte die Klasse für die du Test erstellst mit einem Decorator von Nest versehen sein zum Beispiel @Injectable(). Dann erstelle nach dem ersten describe ein beforeAll mit module = await Test.createTestingModule welches mit compile() initalisiert wird.
 Alle im constructor der zu testenden Klasse injecteten Klassen sollen for dem beforeAll als let <name> mit einem golevelup mock hinterlegt werden und nach dem compile() im beforeAll zugewiesen werden mit module.get(<name>)
+
+Verwende in Tests immer eine Entity, Domain- oder Value Object Factory, um Entitäten, Domain- oder Value Objects zu erstellen. Rufe den Konstruktor nicht direkt auf. So wird sichergestellt, dass die Struktur, Standardwerte und Konsistenz in allen Tests gewährleistet sind.
+
+Im Assert Teil des Tests werden immer Werte aus den generierten Testdaten aus der setup Funktion verwendet. Es werden keine hardcodierten Werte verwendet, um die Tests konsistent und wartbar zu halten.
 
 ### Cleancode
 Wir folgen den Prinzipien von Clean Code, um lesbaren, wartbaren und erweiterbaren Code zu schreiben. Beachte dabei die folgenden Punkte:
