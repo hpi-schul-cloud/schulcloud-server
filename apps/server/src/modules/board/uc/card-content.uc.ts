@@ -21,14 +21,13 @@ export class CardContentUc {
 		columnId: EntityId,
 		requiredEmptyElements: ContentElementType[] = []
 	): Promise<Card> {
-		this.logger.debug({ action: 'createCardWithContent' });
+		this.logger.debug({ action: 'createCardWithContent', userId, columnId });
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
+
 		await this.boardNodePermissionService.checkPermission(userId, column, Action.write);
 
 		const elements = requiredEmptyElements.map((type) => this.boardNodeFactory.buildContentElement(type));
 		const card = this.boardNodeFactory.buildCard(elements);
-		const element = this.boardNodeFactory.buildContentElement(type);
-
 		await this.boardNodeService.addToParent(column, card);
 
 		return card;
