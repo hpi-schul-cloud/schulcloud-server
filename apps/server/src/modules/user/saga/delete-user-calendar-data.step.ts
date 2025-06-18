@@ -20,6 +20,7 @@ import { UserConfig } from '../domain';
 @Injectable()
 export class DeleteUserCalendarDataStep extends SagaStep<'deleteUserData'> {
 	private readonly moduleName = ModuleName.USER_CALENDAR;
+	private featureEnabled = false;
 
 	constructor(
 		private readonly sagaService: SagaService,
@@ -30,6 +31,7 @@ export class DeleteUserCalendarDataStep extends SagaStep<'deleteUserData'> {
 		super('deleteUserData');
 		this.logger.setContext(DeleteUserCalendarDataStep.name);
 		this.sagaService.registerStep(this.moduleName, this);
+		this.featureEnabled = this.configService.get<boolean>('CALENDAR_SERVICE_ENABLED');
 	}
 
 	public async execute(params: { userId: EntityId }): Promise<StepReport> {
@@ -37,7 +39,7 @@ export class DeleteUserCalendarDataStep extends SagaStep<'deleteUserData'> {
 
 		const operations: StepOperationReport[] = [];
 
-		if (this.configService.get<boolean>('CALENDAR_SERVICE_ENABLED')) {
+		if (this.featureEnabled) {
 			const calendarEventsDeleted = await this.deleteCalendarEvents(userId);
 			operations.push(calendarEventsDeleted);
 		}
