@@ -179,7 +179,7 @@ describe('CommonCartridgeImportService', () => {
 					expect.any(RichTextElement)
 				);
 				expect(boardNodeServiceMock.updateContent).toHaveBeenCalledTimes(6);
-
+				/* these tests should be deleted later with the old common cartridge import */
 				// expect(boardNodeServiceMock.updateContent).toHaveBeenCalledWith(expect.any(RichTextElement), {
 				// 	text: '<h1>Test Text</h1><p></p><p>Dies ist ein Textinhalt.</p><p></p>',
 				// 	inputFormat: InputFormat.RICH_TEXT_CK5,
