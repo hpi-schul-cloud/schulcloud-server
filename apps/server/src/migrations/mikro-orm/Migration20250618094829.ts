@@ -8,8 +8,9 @@ type System = {
 		issuer: string;
 	};
 };
+
 export class Migration20250618094829 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		const moinSchule = await this.getCollection<System>('systems').findOne({ alias: 'moin.schule' });
 
 		if (!moinSchule) {
@@ -22,12 +23,12 @@ export class Migration20250618094829 extends Migration {
 
 		await this.getCollection('systems').updateOne(
 			{ alias: 'moin.schule' },
-			{ $set: { oauthConfig: { endSessionEndpoint: url } } }
+			{ $set: { 'oauthConfig.endSessionEndpoint': url } }
 		);
 		console.log('Moin.schule system has been updated - endSessionEndpoint has been added.');
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		const moinSchule = await this.getCollection<System>('systems').findOne({ alias: 'moin.schule' });
 
 		if (!moinSchule) {
@@ -37,7 +38,7 @@ export class Migration20250618094829 extends Migration {
 
 		await this.getCollection('systems').updateOne(
 			{ alias: 'moin.schule' },
-			{ $unset: { oauthConfig: { endSessionEndpoint: true } } }
+			{ $unset: { 'oauthConfig.endSessionEndpoint': true } }
 		);
 		console.log('Moin.schule system has been updated - endSessionEndpoint has been removed');
 	}
