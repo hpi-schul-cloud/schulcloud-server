@@ -1692,6 +1692,11 @@
 			"type": "number",
 			"default": 864000,
 			"description": "Number of seconds for a course synchronization history from schulconnex provisioning to expire."
+		},
+		"RELEASE_NOTES_REPO_URL": {
+			"type": "string",
+			"default": "https://api.github.com/repos/hpi-schul-cloud/RELEASE-NOTES/releases",
+			"description": "URL of the GitHub repository from which release notes are fetched. Used for testing and overriding the default release notes source."
 		}
 	},
 	"required": []
