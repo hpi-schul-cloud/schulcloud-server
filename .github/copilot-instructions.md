@@ -19,6 +19,11 @@ Wenn du Code vorschläge machst, bitte beachte die folgenden Konvensionen aus de
 ## Code Style
 
 ### Style 
+
+Eine Unit Test Datei endet immer mit .spec.ts.
+Ein Api Test Datei endet immer mit .api.spec.ts.
+Ein Integrationtest endet immer mit .integration.spec.ts.
+
 Wir geben niemals direkt das Ergebnis eines Funktions- oder Methodenaufrufs zurück. Stattdessen speichern wir das Ergebnis immer in einer Konstante mit einem aussagekräftigen Namen. Das macht den Code besser lesbar und leichter zu debuggen.
 
 Nach der letzten Konstante in einem Block kommt immer eine Leerzeile, um den Code zu strukturieren und die Lesbarkeit zu verbessern.
