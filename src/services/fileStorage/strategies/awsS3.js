@@ -1,5 +1,5 @@
 const { promisify } = require('es6-promisify');
-const CryptoJS = require('crypto-js');
+const { decryptAES } = require('@raisinten/aes-crypto-js');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const aws = require('aws-sdk');
 const mongoose = require('mongoose');
@@ -65,16 +65,14 @@ const chooseProvider = async (schoolId) => {
 
 const getS3 = (storageProvider, awsClientHelper) => {
 	const S3_KEY = Configuration.get('S3_KEY');
-	storageProvider.secretAccessKey = CryptoJS.AES.decrypt(storageProvider.secretAccessKey, S3_KEY).toString(
-		CryptoJS.enc.Utf8
-	);
+	const decryptedSecretAcceessKey = decryptAES(storageProvider.secretAccessKey, S3_KEY);
 
 	const config = new awsClientHelper.Config({
 		signatureVersion: 'v4',
 		s3ForcePathStyle: true,
 		sslEnabled: true,
 		accessKeyId: storageProvider.accessKeyId,
-		secretAccessKey: storageProvider.secretAccessKey,
+		secretAccessKey: decryptedSecretAcceessKey,
 		region: storageProvider.region,
 		endpointUrl: storageProvider.endpointUrl,
 	});
