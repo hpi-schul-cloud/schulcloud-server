@@ -10,7 +10,7 @@ export type CommonCartridgeFileParserOptions = {
 export const DEFAULT_FILE_PARSER_OPTIONS: CommonCartridgeFileParserOptions = {
 	maxSearchDepth: 5,
 	pathSeparator: '/',
-	inputFormat: InputFormat.RICH_TEXT_CK4,
+	inputFormat: InputFormat.RICH_TEXT_CK5,
 };
 
 export type CommonCartridgeOrganizationProps = {
