@@ -247,8 +247,7 @@
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: data-deletion-trigger-failed-cronjob.yml.j2
-    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+      state: absent
     tags:
       - cronjob
 
@@ -256,8 +255,7 @@
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: data-deletion-trigger-failed-cronjob-configmap.yml.j2
-    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+      state: absent
     tags:
       - configmap
 
