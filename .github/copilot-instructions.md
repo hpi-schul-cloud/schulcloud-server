@@ -1,13 +1,16 @@
 # Copilot Instructions
 
+Prüfe bitte ob es unter <root>/.github/ ein copilot-instruction-local.md.
+Sollte dies existieren haben die Anweisungen vorrang vor diesem File, es sollen aber beide beachtet werden.
+
 ## Grundlagen Technologie
-Wir nutzen nodejs mit typescript. Prüfe hierbei die in der package.json angegebenen Versionen und beachte diese bei den Code vorschlägen.
+Wir nutzen nodejs mit typescript. Prüfe hierbei die in der <root>/package.json angegebenen Versionen und beachte diese bei den Code vorschlägen.
 
 Unser Framework ist nestjs, siehe dazu https://docs.nestjs.com/.
 
 Als Anbindung an eine MongoDB Datenbank verwenden wir mikroORM, siehe dazu https://mikro-orm.io/docs/guide.
 
-Zum tracken der Änderungen verwenden wir Jira.
+Zum tracken der Änderungen verwenden wir Jira, wenn du gebeten wirst ein Text für Jira zu genieren, dann verwende für Listen die Notation - -- ---.
 
 ## Allgemeine Informationen
 
