@@ -162,7 +162,6 @@ describe(`deletionExecution (api)`, () => {
 					refOwnerModel: FileOwnerModel.USER,
 				});
 
-
 				const group = groupEntityFactory.buildWithId({
 					users: [
 						{

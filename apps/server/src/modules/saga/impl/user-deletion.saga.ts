@@ -20,10 +20,10 @@ export const UserDeletionSagaExecutionOrder: ModuleName[] = [
 	ModuleName.TASK,
 	ModuleName.TASK_SUBMISSION,
 	ModuleName.TEAM,
+	ModuleName.USER,
 	ModuleName.USER_CALENDAR,
 	ModuleName.USER_REGISTRATIONPIN,
 	ModuleName.NEWS,
-	ModuleName.USER,
 ];
 
 @Injectable()

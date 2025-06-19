@@ -60,7 +60,7 @@ export class DeleteUserGroupDataStep extends SagaStep<'deleteUserData'> {
 
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
-				`Removed user from ${numberOfUpdatedGroups} groups`,
+				`Removed user from groups`,
 				this.moduleName,
 				userId,
 				StepStatus.FINISHED,

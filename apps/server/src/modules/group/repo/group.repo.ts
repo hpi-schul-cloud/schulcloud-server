@@ -115,7 +115,9 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		const scope: GroupScope = new GroupScope();
 		scope.byUserId(userId);
 
-		const count = await this.em.nativeDelete(GroupEntity, scope.query);
+		const count = await this.em.nativeUpdate(GroupEntity, scope.query, {
+			$pull: { users: { user: new ObjectId(userId) } },
+		} as Partial<GroupEntity>);
 		return count;
 	}
 }

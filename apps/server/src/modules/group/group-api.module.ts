@@ -11,7 +11,6 @@ import { Module } from '@nestjs/common';
 import { GroupController } from './controller';
 import { GroupModule } from './group.module';
 import { ClassGroupUc, GroupUc } from './uc';
-import { SagaModule } from '@modules/saga';
 
 @Module({
 	imports: [
@@ -22,7 +21,6 @@ import { SagaModule } from '@modules/saga';
 		LegacySchoolModule,
 		SchoolModule,
 		AuthorizationModule,
-		SagaModule,
 		SystemModule,
 		LoggerModule,
 		CourseModule,
