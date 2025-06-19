@@ -214,7 +214,6 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		const { schoolId } = currentUser;
 
-		// should the error be catched and handled differently? try -- catch block
 		await this.fileClient.upload(schoolId, 'school', cardElement.id, 'boardnodes', resource.file);
 	}
 }
