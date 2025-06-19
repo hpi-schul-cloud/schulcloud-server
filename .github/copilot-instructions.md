@@ -1,7 +1,7 @@
 # Copilot Instructions
 
-Prüfe bitte ob es unter <root>/.github/ ein copilot-instruction-local.md.
-Sollte dies existieren haben die Anweisungen vorrang vor diesem File, es sollen aber beide beachtet werden.
+Prüfe bitte ob es unter <root>/.github/ eine copilot-instruction-local.md Datei gibt.
+Sollte dies existieren dann haben die Anweisungen in copilot-instruction-local.md vorrang vor der copilot-instruction.md Datei.
 
 ## Grundlagen Technologie
 Wir nutzen nodejs mit typescript. Prüfe hierbei die in der <root>/package.json angegebenen Versionen und beachte diese bei den Code vorschlägen.
