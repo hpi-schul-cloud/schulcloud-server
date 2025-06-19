@@ -18,7 +18,6 @@ import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams }
 import { CreateCardBodyParams } from './dto/card/create-card.body.params';
 import { CardResponseMapper } from './mapper';
 import { CardContentUc } from '../uc/card-content.uc';
-import { CardImportParams } from './dto/card/card-import.params';
 import { CardImportResponse } from './dto/card/card-import.response';
 
 @ApiTags('Board Column')
@@ -103,7 +102,7 @@ export class ColumnController {
 		@Param() urlParams: ColumnUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() createCardBodyParams?: CreateCardBodyParams
-	): Promise<{ cardResponse: CardResponse; cardImportParams: CardImportParams }> {
+	): Promise<CardImportResponse> {
 		const { requiredEmptyElements } = createCardBodyParams || {};
 		const { cardResponse, cardImportParams } = await this.cardContentUc.createCardWithContent(
 			currentUser.userId,

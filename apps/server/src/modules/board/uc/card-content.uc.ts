@@ -18,7 +18,6 @@ import { EntityId } from '@shared/domain/types';
 import { BoardNodePermissionService, BoardNodeService } from '../service';
 import { Action } from '@modules/authorization';
 import { CardImportParams } from '../controller/dto/card/card-import.params';
-import { CardElementParams } from '../controller/dto/card/card-element.params';
 import { CardResponseMapper } from '../controller/mapper';
 import { CardImportResponse } from '../controller/dto/card/card-import.response';
 
@@ -53,15 +52,11 @@ export class CardContentUc {
 		};
 	}
 
-	private createCardImportParams(cardId: string, elements: AnyContentElement[]): CardImportParams {
-		return new CardImportParams(cardId, this.createCardElementParams(cardId, elements));
-	}
-
-	private createCardElementParams(cardId: string, elements: AnyContentElement[]): CardElementParams[] {
+	private createCardImportParams(cardId: string, elements: AnyContentElement[]): CardImportParams[] {
 		let position = 0;
 		return elements.map(
 			(element) =>
-				new CardElementParams(
+				new CardImportParams(
 					cardId,
 					this.determineContentElementType(element),
 					element,

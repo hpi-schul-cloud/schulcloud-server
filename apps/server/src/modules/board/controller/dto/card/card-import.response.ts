@@ -12,9 +12,9 @@ export class CardImportResponse {
 		description: 'Parameters for importing data into the card.',
 		type: CardImportParams,
 	})
-	public cardImportParams: CardImportParams;
+	public cardImportParams: CardImportParams[];
 
-	constructor(cardResponse: CardResponse, cardImportParams: CardImportParams) {
+	constructor(cardResponse: CardResponse, cardImportParams: CardImportParams[]) {
 		this.cardResponse = cardResponse;
 		this.cardImportParams = cardImportParams;
 	}
