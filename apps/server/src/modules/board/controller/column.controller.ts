@@ -18,6 +18,8 @@ import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams }
 import { CreateCardBodyParams } from './dto/card/create-card.body.params';
 import { CardResponseMapper } from './mapper';
 import { CardContentUc } from '../uc/card-content.uc';
+import { CardImportParams } from './dto/card/card-import.params';
+import { CardImportResponse } from './dto/card/card-import.response';
 
 @ApiTags('Board Column')
 @JwtAuthentication()
@@ -91,7 +93,7 @@ export class ColumnController {
 	}
 
 	@ApiOperation({ summary: 'Create a new card on a column with content.' })
-	@ApiResponse({ status: 201, type: CardResponse })
+	@ApiResponse({ status: 201, type: CardImportResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
@@ -101,16 +103,14 @@ export class ColumnController {
 		@Param() urlParams: ColumnUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() createCardBodyParams?: CreateCardBodyParams
-	): Promise<CardResponse> {
+	): Promise<{ cardResponse: CardResponse; cardImportParams: CardImportParams }> {
 		const { requiredEmptyElements } = createCardBodyParams || {};
-		const card = await this.cardContentUc.createCardWithContent(
+		const { cardResponse, cardImportParams } = await this.cardContentUc.createCardWithContent(
 			currentUser.userId,
 			urlParams.columnId,
 			requiredEmptyElements
 		);
 
-		const response = CardResponseMapper.mapToResponse(card);
-
-		return response;
+		return { cardResponse: cardResponse, cardImportParams: cardImportParams };
 	}
 }
