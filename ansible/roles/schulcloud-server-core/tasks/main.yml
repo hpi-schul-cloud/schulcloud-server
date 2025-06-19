@@ -243,6 +243,22 @@
     tags:
       - configmap
 
+  - name: Data deletion trigger failed CronJob
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      state: absent
+    tags:
+      - cronjob
+
+  - name: Data deletion trigger failed CronJob ConfigMap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      state: absent
+    tags:
+      - configmap
+
   - name: amqp files storage Deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
