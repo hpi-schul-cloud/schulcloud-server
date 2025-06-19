@@ -95,6 +95,7 @@ describe(CloseUserLoginMigrationUc.name, () => {
 				return {
 					user,
 					schoolId,
+					school,
 					userLoginMigration,
 					closedUserLoginMigration,
 				};
@@ -118,6 +119,17 @@ describe(CloseUserLoginMigrationUc.name, () => {
 				await uc.closeMigration(user.id, schoolId);
 
 				expect(userLoginMigrationService.closeMigration).toHaveBeenCalledWith(userLoginMigration);
+			});
+
+			it('should remove sourceSystem of school', async () => {
+				const { user, schoolId, school, closedUserLoginMigration } = setup();
+
+				await uc.closeMigration(user.id, schoolId);
+
+				expect(schoolMigrationService.removeSourceSystemOfSchool).toHaveBeenCalledWith(
+					school,
+					closedUserLoginMigration
+				);
 			});
 
 			it('should mark all un-migrated users as outdated', async () => {
@@ -205,6 +217,14 @@ describe(CloseUserLoginMigrationUc.name, () => {
 				expect(userLoginMigrationRevertService.revertUserLoginMigration).toHaveBeenCalledWith(closedUserLoginMigration);
 			});
 
+			it('should not remove source system of school', async () => {
+				const { user, schoolId } = setup();
+
+				await uc.closeMigration(user.id, schoolId);
+
+				expect(schoolMigrationService.markUnmigratedUsersAsOutdated).not.toHaveBeenCalled();
+			});
+
 			it('should not mark all un-migrated users as outdated', async () => {
 				const { user, schoolId } = setup();
 
@@ -243,6 +263,7 @@ describe(CloseUserLoginMigrationUc.name, () => {
 				return {
 					user,
 					schoolId,
+					school,
 					userLoginMigration,
 					closedUserLoginMigration,
 				};
@@ -254,6 +275,17 @@ describe(CloseUserLoginMigrationUc.name, () => {
 				await uc.closeMigration(user.id, schoolId);
 
 				expect(userLoginMigrationRevertService.revertUserLoginMigration).not.toHaveBeenCalled();
+			});
+
+			it('should mark all un-migrated users as outdated', async () => {
+				const { user, schoolId, school, closedUserLoginMigration } = setup();
+
+				await uc.closeMigration(user.id, schoolId);
+
+				expect(schoolMigrationService.removeSourceSystemOfSchool).toHaveBeenCalledWith(
+					school,
+					closedUserLoginMigration
+				);
 			});
 
 			it('should mark all un-migrated users as outdated', async () => {
