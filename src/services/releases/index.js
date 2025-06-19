@@ -5,12 +5,13 @@ const path = require('path');
 
 const release = require('./release-model');
 const hooks = require('./hooks/index');
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 
 class ReleaseFetchService {
 	async find() {
 		const options = {
 			method: 'get',
-			url: 'https://api.github.com/repos/hpi-schul-cloud/RELEASE-NOTES/releases',
+			url: Configuration.get('RELEASE_NOTES_REPO_URL'),
 		};
 
 		let releases = null;
