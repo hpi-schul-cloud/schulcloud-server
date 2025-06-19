@@ -1,9 +1,8 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@core/logger';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DeleteUserCalendarDataStep } from './delete-user-calendar-data.step';
-import { CalendarService } from '@infra/calendar';
 import { ConfigService } from '@nestjs/config';
+import { CalendarService } from '@infra/calendar';
 import {
 	ModuleName,
 	SagaService,
@@ -11,6 +10,8 @@ import {
 	StepOperationType,
 	StepReportBuilder,
 } from '@modules/saga';
+import { UserConfig } from '..';
+import { DeleteUserCalendarDataStep } from './delete-user-calendar-data.step';
 
 describe(DeleteUserCalendarDataStep.name, () => {
 	let module: TestingModule;
@@ -28,7 +29,7 @@ describe(DeleteUserCalendarDataStep.name, () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					useValue: createMock<ConfigService<UserConfig, true>>(),
 				},
 				{
 					provide: CalendarService,
@@ -40,6 +41,7 @@ describe(DeleteUserCalendarDataStep.name, () => {
 				},
 			],
 		}).compile();
+
 		step = module.get(DeleteUserCalendarDataStep);
 
 		config = module.get(ConfigService);
@@ -47,7 +49,11 @@ describe(DeleteUserCalendarDataStep.name, () => {
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
+		jest.resetAllMocks();
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('step registration', () => {
@@ -65,13 +71,10 @@ describe(DeleteUserCalendarDataStep.name, () => {
 					if (key === 'CALENDAR_SERVICE_ENABLED') {
 						return false;
 					}
-					return true;
 				});
 			};
 
 			it('should call config to check flag CALENDAR_SERVICE_ENABLED', async () => {
-				setup();
-
 				await step.execute({ userId: 'test-user-id' });
 
 				expect(config.get).toHaveBeenCalledWith('CALENDAR_SERVICE_ENABLED');

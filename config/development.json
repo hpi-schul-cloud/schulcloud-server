@@ -107,5 +107,6 @@
 	"FEATURE_ROOM_SHARE": true,
 	"SESSION_VALKEY": {
 		"MODE": "in-memory"
-	}
+	},
+	"CALENDAR_SERVICE_ENABLED": false
 }

@@ -6,7 +6,7 @@ import { Saga } from '../type/saga';
 
 export const UserDeletionSagaExecutionOrder: ModuleName[] = [
 	ModuleName.ACCOUNT,
-	ModuleName.BOARD,
+	ModuleName.MEDIA_BOARD,
 	ModuleName.CLASS,
 	ModuleName.COURSE,
 	ModuleName.COURSE_COURSEGROUP,
