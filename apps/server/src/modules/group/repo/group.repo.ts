@@ -54,7 +54,10 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return domainObject;
 	}
 
-	public async findGroups(filter: GroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+	public async findGroupsByFilter(
+		filter: GroupFilter,
+		options?: IFindOptions<Group>
+	): Promise<{ domainObjects: Group[]; total: number }> {
 		const scope: GroupScope = new GroupScope();
 		scope.byUserId(filter.userId);
 		scope.byUserIds(filter.userIds);
@@ -79,6 +82,11 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 
 		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
+		return { domainObjects, total };
+	}
+
+	public async findGroups(filter: GroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+		const { domainObjects, total } = await this.findGroupsByFilter(filter, options);
 		const page: Page<Group> = new Page<Group>(domainObjects, total);
 
 		return page;
@@ -101,5 +109,13 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		const page: Page<Group> = new Page<Group>(domainObjects, total);
 
 		return page;
+	}
+
+	public async removeUserReference(userId: EntityId): Promise<number> {
+		const scope: GroupScope = new GroupScope();
+		scope.byUserId(userId);
+
+		const count = await this.em.nativeDelete(GroupEntity, scope.query);
+		return count;
 	}
 }

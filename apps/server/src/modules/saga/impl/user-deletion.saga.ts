@@ -10,6 +10,7 @@ export const UserDeletionSagaExecutionOrder: ModuleName[] = [
 	ModuleName.CLASS,
 	ModuleName.COURSE,
 	ModuleName.COURSE_COURSEGROUP,
+	ModuleName.GROUP,
 	ModuleName.LEARNROOM_DASHBOARD,
 	ModuleName.FILES,
 	ModuleName.FILES_STORAGE,
@@ -19,10 +20,10 @@ export const UserDeletionSagaExecutionOrder: ModuleName[] = [
 	ModuleName.TASK,
 	ModuleName.TASK_SUBMISSION,
 	ModuleName.TEAM,
-	ModuleName.USER,
 	ModuleName.USER_CALENDAR,
 	ModuleName.USER_REGISTRATIONPIN,
 	ModuleName.NEWS,
+	ModuleName.USER,
 ];
 
 @Injectable()

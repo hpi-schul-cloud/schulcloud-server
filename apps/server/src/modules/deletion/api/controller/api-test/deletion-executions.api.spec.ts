@@ -39,6 +39,8 @@ import { DASHBOARD_REPO, IDashboardRepo } from '@modules/learnroom/repo/mikro-or
 import { DashboardEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
 import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { TeamEntity } from '@modules/team/repo';
+import { groupEntityFactory } from '@modules/group/testing';
+import { GroupEntity } from '@modules/group/entity';
 
 const baseRouteName = '/deletionExecutions';
 
@@ -160,6 +162,17 @@ describe(`deletionExecution (api)`, () => {
 					refOwnerModel: FileOwnerModel.USER,
 				});
 
+
+				const group = groupEntityFactory.buildWithId({
+					users: [
+						{
+							user: teacherUser,
+							role: teacherUser.roles[0],
+						},
+					],
+					organization: school,
+				});
+
 				const lessonContent: ComponentProperties = {
 					title: 'title',
 					hidden: false,
@@ -230,6 +243,7 @@ describe(`deletionExecution (api)`, () => {
 					schoolClass,
 					courseGroup,
 					file,
+					group,
 					lesson,
 					news,
 					pseudonym,
@@ -265,6 +279,7 @@ describe(`deletionExecution (api)`, () => {
 					course,
 					courseGroup,
 					schoolClass,
+					group,
 					lesson,
 					file,
 					dashboard,
@@ -290,6 +305,7 @@ describe(`deletionExecution (api)`, () => {
 					course,
 					courseGroup,
 					dashboard,
+					group,
 					lesson,
 					schoolClass,
 					mediaBoard,
@@ -311,6 +327,7 @@ describe(`deletionExecution (api)`, () => {
 				const whereCourseGroup = { id: courseGroup.id, studentIds: { $in: [studentId] } };
 				const whereSchoolClass = { id: schoolClass.id, teacherIds: { $in: [teacherId] } };
 				const whereDashboard = { id: dashboard.id, userIds: { $in: [teacherId] } };
+				const whereGroup = { id: group.id, userIds: { $in: [teacherId] } };
 				const whereNews = { id: news.id, creator: teacherId };
 				const wherePseudonym = { id: pseudonym.id, userId: studentId };
 				const whereTask = { id: task.id, creator: teacherId };
@@ -356,6 +373,9 @@ describe(`deletionExecution (api)`, () => {
 
 				const checkDashboard = await em.findOne(DashboardEntity, whereDashboard);
 				expect(checkDashboard).toBeNull();
+
+				const checkGroup = await em.findOne(GroupEntity, whereGroup);
+				expect(checkGroup).toBeNull();
 
 				const checkLesson = await em.findOne(LessonEntity, lesson.id);
 				const lessonContents = checkLesson?.contents[0];
