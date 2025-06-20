@@ -38,6 +38,8 @@ export class RestartUserLoginMigrationUc {
 			userLoginMigration
 		);
 
+		await this.schoolMigrationService.restoreSourceSystemOfSchool(schoolId, updatedUserLoginMigration);
+
 		await this.schoolMigrationService.unmarkOutdatedUsers(updatedUserLoginMigration);
 
 		this.logger.info(new UserLoginMigrationStartLoggable(userId, updatedUserLoginMigration.id));
