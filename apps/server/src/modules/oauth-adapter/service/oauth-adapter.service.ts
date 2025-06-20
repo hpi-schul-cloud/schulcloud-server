@@ -56,7 +56,8 @@ export class OauthAdapterService {
 			if (isAxiosError(error)) {
 				throw new TokenRequestLoggableException(error);
 			}
-			throw 'error';
+			// this?
+			throw error;
 		}
 
 		const tokenDto: OAuthTokenDto = TokenRequestMapper.mapTokenResponseToDto(responseToken.data);
