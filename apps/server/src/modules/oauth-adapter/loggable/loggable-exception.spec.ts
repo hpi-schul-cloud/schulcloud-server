@@ -25,7 +25,7 @@ describe(OAuthAdapterErrorLoggableException.name, () => {
 			const result = exception.getLogMessage();
 
 			expect(result).toEqual({
-				type: 'DELETION_ERROR',
+				type: 'O_AUTH_ADAPTER_ERROR',
 				stack: expect.any(String),
 				data: {
 					errorMessage: message,
