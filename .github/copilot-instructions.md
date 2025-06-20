@@ -1,102 +1,55 @@
 # Copilot Instructions
 
-Prüfe bitte ob es unter <root>/.github/ eine copilot-instruction-local.md Datei gibt.
-Sollte dies existieren dann haben die Anweisungen in copilot-instruction-local.md vorrang vor der copilot-instruction.md Datei.
+Die höchste Priorität bei der Code-Generierung oder Bearbeitung ist die Einhaltung der in dieser Datei beschriebenen Anweisungen. Alle anderen Überlegungen sind nachrangig.
+Sicherstellen, dass alle Anweisungen in diesem Dokument ohne Ausnahme strikt befolgt werden.
+Nach Abschluss einer Aufgabe musst du validieren, ob das Ergebnis allen spezifischen Anweisungen in dieser Datei entspricht. Erst dann ist die Aufgabe als abgeschlossen zu betrachten.
 
-## Grundlagen Technologie
-Wir nutzen nodejs mit typescript. Prüfe hierbei die in der <root>/package.json angegebenen Versionen und beachte diese bei den Code vorschlägen.
+## Allgemeiner Code Style
 
-Unser Framework ist nestjs, siehe dazu https://docs.nestjs.com/.
+Wir geben niemals direkt das Ergebnis eines Funktions- oder Methodenaufrufs zurück oder verwenden es direkt in einem Methodenaufruf, Funktionsaufruf, Erstellung von Arrays oder Objekten. Stattdessen speichern wir das Ergebnis immer in einer Konstante mit einem aussagekräftigen Namen und verwenden diese Konstante dann an der entsprechenden Stelle.
 
-Als Anbindung an eine MongoDB Datenbank verwenden wir mikroORM, siehe dazu https://mikro-orm.io/docs/guide.
+Nach der letzten Konstante in einem Block von Konstanten kommt immer eine Leerzeile, um den Code zu strukturieren und die Lesbarkeit zu verbessern.
 
-Zum tracken der Änderungen verwenden wir Jira, wenn du gebeten wirst ein Text für Jira zu genieren, dann verwende für Listen die Notation - -- ---.
+## Tests
 
-## Allgemeine Informationen
+Wir verwenden jest als Testframework.
 
-Wenn du Code vorschläge machst, bitte beachte die folgenden Konvensionen aus dem Bereich ## Code Style.
-
-## Code Style
-
-### Style 
+Wir verwenden @golevelup/ts-jest, für das Erstellen der Mocks soll es immer bevorzugt vor jest verwendet werden.
 
 Eine Unit Test Datei endet immer mit .spec.ts.
 Ein Api Test Datei endet immer mit .api.spec.ts.
 Ein Integrationtest endet immer mit .integration.spec.ts.
 
-Wir geben niemals direkt das Ergebnis eines Funktions- oder Methodenaufrufs zurück. Stattdessen speichern wir das Ergebnis immer in einer Konstante mit einem aussagekräftigen Namen. Das macht den Code besser lesbar und leichter zu debuggen.
+Beachte, dass das erste describe den Namen der Klasse oder Funktion enthält, die getestet werden soll.
+Ein tiefer geschachteltes describe enthält die Methode der Klasse, die getestet werden soll.
+Achte darauf, dass die Struktur der Tests für die Methode so aufgebaut ist, dass ein describe-Block jeweils eine Ausgangslage beschreibt, die in einer Funktion const setup darunter definiert wird und in den it-Blöcken danach verwendet wird.
+Die setup-Funktion ist immer eine Arrow Function. Die setup-Funktion returned ein Objekt mit allem, was für die Tests benötigt wird.
 
-Nach der letzten Konstante in einem Block kommt immer eine Leerzeile, um den Code zu strukturieren und die Lesbarkeit zu verbessern.
+Ein it-Block sollte niemals ohne einen umgebenden describe-Block existieren, der das Szenario beschreibt. Der describe-Block sollte klar angeben, unter welchen Bedingungen der Testfall ausgeführt wird.
 
-### Tests
-Wir verwenden jest (siehe: https://jestjs.io/) als Testframework.
+Sämtlicher Code in Tests sollte sich innerhalb des äußeren describe-Blocks befinden, es sei denn, es ist ausnahmsweise nicht anders möglich.
 
-Wir verwenden @golevelup/ts-jest (siehe: https://github.com/golevelup/nestjs#readme), für das Erstellen der Mocks soll es immer bevorzugt vor jest verwendet werden.
-
-Beachte das erste describe enthält den Namen der Klasse, oder Funktion die getestet werden soll.
-Ein tiefer geschachteltes describe enthält die Methode der Klasse die getestet werden soll.
-Hierbei beachte das die Struktur der Test für die Methode unterteilt ist mit describe('when
-Welches jeweils eine Ausgangslage beschreibt, die in der Funktion const setup darunter definiert wird und in den it Blöcken danach verwendet. 
-Die setup Funktion ist immer eine arrow function. Die Setup Funktion returned ein Objekt, mit allem was für die Tests benötigt wird. 
-Es darf mehre it Blöcke geben die einzelne Teile testen.
-
-Mocks sind immer Teil der setup Funktion.
-
-Spy kann im setup, oder im it Block verwendet werden.
+Mocks sind immer Teil der setup-Funktion und nicht im it-Block.
 
 Zwischen Arrange Act Assert im it Block haben wir immer eine Leerzeile.
 Zwischen jedem it kommt eine Leerzeile.
 
 Wir verwenden Once bei den mocks. Wird ein mock mehrfach aufgerufen soll mehrfach der Mock mit Once gesetzt werden. Zum Beispiel mockResolveValueOnce anstatt mockResolveValue.
 
-Mocks werden bei uns immer durch das hinzufügen von afterEach und jest.resetAllMocks(); zurück gesetzt, welches einmalig pro File so gesetzt wird, das es alle Test betrifft.
-afterEach und beforeEach werden nur für den Aufruf von jest.resetAllMocks(); verwendet. Die Vorbereitung der Tests erfolgt in der setup Funktion.
+Mocks werden bei uns immer durch das Hinzufügen von afterEach und jest.resetAllMocks(); zurückgesetzt. Dies wird einmalig pro Datei so gesetzt, dass es alle Tests betrifft. Die Rücksetzung erfolgt in einem afterEach-Block, der wie folgt aussieht:
 
-Sollte die Klasse für die du Test erstellst mit einem Decorator von Nest versehen sein zum Beispiel @Injectable(). Dann erstelle nach dem ersten describe ein beforeAll mit module = await Test.createTestingModule welches mit compile() initalisiert wird.
-Alle im constructor der zu testenden Klasse injecteten Klassen sollen for dem beforeAll als let <name> mit einem golevelup mock hinterlegt werden und nach dem compile() im beforeAll zugewiesen werden mit module.get(<name>)
+afterEach(() => {
+jest.resetAllMocks();
+});
 
-Verwende in Tests immer eine Entity, Domain- oder Value Object Factory, um Entitäten, Domain- oder Value Objects zu erstellen. Rufe den Konstruktor nicht direkt auf. So wird sichergestellt, dass die Struktur, Standardwerte und Konsistenz in allen Tests gewährleistet sind.
+Sollten weitere globale Aufräumarbeiten notwendig sein, können diese ebenfalls in diesem afterEach-Block ergänzt werden. beforeEach und afterEach werden ausschließlich für das Zurücksetzen und Aufräumen verwendet; die Vorbereitung der Tests erfolgt in der setup Funktion.
+
+Sollte die Klasse, für die du Tests erstellst, mit einem Decorator von Nest versehen sein (zum Beispiel @Injectable()), dann erstelle nach dem ersten describe einen beforeAll-Block, in dem das TestingModule mit await Test.createTestingModule und compile() initialisiert wird.
+Alle im Konstruktor der zu testenden Klasse injizierten Abhängigkeiten sollen vor dem beforeAll als let <name> mit einem golevelup-Mock (createMock) deklariert werden. Im createTestingModule werden diese Abhängigkeiten über das providers-Array mit useValue und dem jeweiligen Mock eingebunden.
+Nach dem compile() im beforeAll werden die Instanzen der zu testenden Klasse sowie aller Abhängigkeiten mit module.get(<Name>) zugewiesen.
+Falls das TestingModule Ressourcen hält, wird nach allen Tests ein afterAll-Block ergänzt, in dem await module.close() aufgerufen wird, um das Modul sauber zu schließen.
+Verwende in Tests immer eine Entity, Domain- oder Value Object Factory, um Entitäten, Domain- oder Value Objects zu erstellen. Ein loses Object wie zb const object = {}; oder der direkte Aufruf des Konstruktor einer Klasse ist nicht erlaubt. Suche im gesamten repo nach den passenden Factories. Die Dateien enden auf "factory.ts". Wenn du eine Factory nicht finden kannst dann Frage bei mir nach. Eine Factory ist immer in einer seperaten Datei und liegt in der Ordnerstruktur auf gleicher Ebene wie das Objekt welches damit erstellt wird. Es ist nicht erlaubt, eine Factory in der Testdatei zu erstellen.
 
 Im Assert Teil des Tests werden immer Werte aus den generierten Testdaten aus der setup Funktion verwendet. Es werden keine hardcodierten Werte verwendet, um die Tests konsistent und wartbar zu halten.
 
-### Cleancode
-Wir folgen den Prinzipien von Clean Code, um lesbaren, wartbaren und erweiterbaren Code zu schreiben. Beachte dabei die folgenden Punkte:
-
-- **Lesbarkeit**:
-  - Schreibe Code, der leicht verständlich ist, auch für Entwickler, die ihn nicht geschrieben haben.
-  - Verwende aussagekräftige Namen für Variablen, Funktionen und Klassen.
-
-- **Einfachheit**:
-  - Vermeide unnötige Komplexität.
-  - Schreibe Code, der das Problem direkt und klar löst.
-
-- **Konsistenz**:
-  - Halte dich an einheitliche Namenskonventionen, Formatierungen und Strukturen.
-  - Verwende einheitliche Muster und Prinzipien im gesamten Code.
-
-- **Kapselung**:
-  - Verstecke Implementierungsdetails und stelle nur das bereit, was für die Nutzung notwendig ist.
-  - Vermeide globale Zustände und Abhängigkeiten.
-
-- **DRY (Don't Repeat Yourself)**:
-  - Vermeide Duplikationen im Code.
-  - Teile wiederverwendbare Logik in Funktionen, Klassen oder Modulen auf.
-
-- **Single Responsibility Principle (SRP)**:
-  - Jede Klasse, Funktion oder Methode sollte nur eine einzige Verantwortung haben.
-  - Dies erleichtert das Testen, Verstehen und Ändern des Codes.
-
-- **Testbarkeit**:
-  - Schreibe Code, der leicht getestet werden kann.
-  - Nutze Unit-Tests, Integrationstests und andere Testmethoden, um die Qualität sicherzustellen.
-
-- **Kommentare sparsam verwenden**:
-  - Schreibe Code, der sich selbst erklärt, anstatt viele Kommentare zu verwenden.
-  - Kommentare sollten nur verwendet werden, wenn sie zusätzlichen Kontext bieten.
-
-- **Fehlerbehandlung**:
-  - Behandle Fehler klar und konsistent.
-  - Logge Fehler und stelle sicher, dass sie nachvollziehbar sind.
-
-- **Vermeide magische Zahlen und Strings**:
-  - Verwende Konstanten mit aussagekräftigen Namen, um den Code verständlicher zu machen.
+Wenn eine asynchrone Methode oder Funktion gemockt wird, sollte immer mockResolvedValueOnce oder mockRejectedValueOnce verwendet werden, um die asynchrone Natur zu berücksichtigen. Dies stellt sicher, dass der Test korrekt auf die asynchrone Ausführung reagiert. Diese beiden Fälle werden jeweils in einem eigenen describe-Block behandelt.
