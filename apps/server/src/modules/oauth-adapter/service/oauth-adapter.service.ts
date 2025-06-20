@@ -1,16 +1,16 @@
-import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
+import { AxiosResponse } from 'axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
-import { AxiosResponse, isAxiosError } from 'axios';
 import {
 	AuthenticationCodeGrantTokenRequest,
 	ClientCredentialsGrantTokenRequest,
 	OAuthTokenDto,
 	OauthTokenResponse,
 } from '../dto';
-import { TokenRequestLoggableException } from '../loggable';
+import { OAuthAdapterErrorLoggableException } from '../loggable/loggable-exception';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 
 @Injectable()
@@ -53,10 +53,7 @@ export class OauthAdapterService {
 		try {
 			responseToken = await lastValueFrom(observable);
 		} catch (error: unknown) {
-			if (isAxiosError(error)) {
-				throw new TokenRequestLoggableException(error);
-			}
-			throw error;
+			throw new OAuthAdapterErrorLoggableException(String(error));
 		}
 
 		const tokenDto: OAuthTokenDto = TokenRequestMapper.mapTokenResponseToDto(responseToken.data);
