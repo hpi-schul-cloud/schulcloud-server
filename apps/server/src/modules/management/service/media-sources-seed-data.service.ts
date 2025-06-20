@@ -15,8 +15,8 @@ export class MediaSourcesSeedDataService {
 	public async import(): Promise<number> {
 		const mediaSources: MediaSource[] = [];
 
-		const vidisUserName: string | undefined = 'some_user'; //this.configService.get<string>('MEDIA_SOURCE_VIDIS_USERNAME');
-		const vidisPassword: string | undefined = 'some_pass'; //this.configService.get<string>('MEDIA_SOURCE_VIDIS_PASSWORD');
+		const vidisUserName: string | undefined = this.configService.get<string>('MEDIA_SOURCE_VIDIS_USERNAME');
+		const vidisPassword: string | undefined = this.configService.get<string>('MEDIA_SOURCE_VIDIS_PASSWORD');
 		if (vidisUserName && vidisPassword) {
 			const encryptedVidisUserName: string = this.defaultEncryptionService.encrypt(vidisUserName);
 			const encryptedVidisPassword: string = this.defaultEncryptionService.encrypt(vidisPassword);
