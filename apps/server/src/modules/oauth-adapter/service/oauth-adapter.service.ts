@@ -56,7 +56,7 @@ export class OauthAdapterService {
 			if (isAxiosError(error)) {
 				throw new TokenRequestLoggableException(error);
 			}
-			// this?
+			// could be the problem
 			throw error;
 		}
 
