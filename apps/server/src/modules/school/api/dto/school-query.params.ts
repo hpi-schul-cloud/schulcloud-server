@@ -10,6 +10,6 @@ export class SchoolQueryParams extends PaginationParams {
 	federalStateId?: EntityId;
 
 	@IsInt()
-	@ApiPropertyOptional({ description: 'Page limit, defaults to 500.' })
+	@ApiPropertyOptional({ description: 'Page limit.' })
 	override limit?: number;
 }
