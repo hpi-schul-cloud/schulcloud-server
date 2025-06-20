@@ -38,8 +38,8 @@ export class MediaSourcesSeedDataService {
 			);
 		}
 
-		const biloClientId: string | undefined = 'some_client_id'; //this.configService.get<string>('MEDIA_SOURCE_BILO_CLIENT_ID');
-		const biloClientSecret: string | undefined = 'some_client_secret'; //this.configService.get<string>('MEDIA_SOURCE_BILO_CLIENT_SECRET');
+		const biloClientId: string | undefined = this.configService.get<string>('MEDIA_SOURCE_BILO_CLIENT_ID');
+		const biloClientSecret: string | undefined = this.configService.get<string>('MEDIA_SOURCE_BILO_CLIENT_SECRET');
 		if (biloClientId && biloClientSecret) {
 			const encryptedBiloClientSecret: string = this.defaultEncryptionService.encrypt(biloClientSecret);
 
