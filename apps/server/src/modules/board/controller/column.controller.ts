@@ -110,6 +110,6 @@ export class ColumnController {
 			requiredEmptyElements
 		);
 
-		return { cardResponse: cardResponse, cardImportParams: cardImportParams };
+		return new CardImportResponse(cardResponse, cardImportParams);
 	}
 }

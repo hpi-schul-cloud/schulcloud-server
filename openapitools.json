@@ -59,7 +59,7 @@
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
-					"FILTER": "operationId:ColumnController_createCard|ColumnController_updateColumnTitle"
+					"FILTER": "operationId:ColumnController_createCard|ColumnController_updateColumnTitle|ColumnController_createCardWithContent"
 				},
 				"globalProperty": {
 					"models": "CreateCardBodyParams:CardResponse:RenameBodyParams:CardImportResponse:CardImportParams",
