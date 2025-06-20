@@ -16,6 +16,8 @@ Wir verwenden jest als Testframework.
 
 Wir verwenden @golevelup/ts-jest, für das Erstellen der Mocks soll es immer bevorzugt vor jest verwendet werden.
 
+Eine Testdatei liegt in der Ordnerstruktur immer auf gleicher Ebene direkt neben der Datei die getestet wird.
+
 Eine Unit Test Datei endet immer mit .spec.ts.
 Ein Api Test Datei endet immer mit .api.spec.ts.
 Ein Integrationtest endet immer mit .integration.spec.ts.
