@@ -1,6 +1,5 @@
 .gitignore
 .npmignore
-.openapi-generator-ignore
 api.ts
 api/board-column-api.ts
 base.ts
@@ -8,6 +7,7 @@ common.ts
 configuration.ts
 git_push.sh
 index.ts
+models/card-import-response.ts
 models/card-response.ts
 models/create-card-body-params.ts
 models/index.ts

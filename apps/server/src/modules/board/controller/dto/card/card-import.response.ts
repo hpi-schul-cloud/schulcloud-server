@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { CardImportParams } from './card-import.params';
 import { CardResponse } from './card.response';
 
@@ -9,8 +9,11 @@ export class CardImportResponse {
 	})
 	public cardResponse: CardResponse;
 	@ApiProperty({
-		description: 'Parameters for importing data into the card.',
-		type: CardImportParams,
+		description: 'array of parameters for importing data into the card.',
+		type: 'array',
+		items: {
+			$ref: getSchemaPath(CardImportParams),
+		},
 	})
 	public cardImportParams: CardImportParams[];
 

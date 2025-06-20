@@ -37,7 +37,9 @@ export const CreateCardBodyParamsRequiredEmptyElements = {
     EXTERNAL_TOOL: 'externalTool',
     COLLABORATIVE_TEXT_EDITOR: 'collaborativeTextEditor',
     VIDEO_CONFERENCE: 'videoConference',
-    DELETED: 'deleted'
+    FILE_FOLDER: 'fileFolder',
+    DELETED: 'deleted',
+    H5P: 'h5p'
 } as const;
 
 export type CreateCardBodyParamsRequiredEmptyElements = typeof CreateCardBodyParamsRequiredEmptyElements[keyof typeof CreateCardBodyParamsRequiredEmptyElements];

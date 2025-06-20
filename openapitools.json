@@ -55,14 +55,14 @@
 			"columns-api": {
 				"generatorName": "typescript-axios",
 				"inputSpec": "http://localhost:3030/api/v3/docs-json",
-				"output": "./apps/server/src/infra/columns-client/generated",
+				"output": "./apps/server/src/infra/column-client/generated",
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
 					"FILTER": "operationId:ColumnController_createCard|ColumnController_updateColumnTitle"
 				},
 				"globalProperty": {
-					"models": "CreateCardBodyParams:CardResponse:RenameBodyParams",
+					"models": "CreateCardBodyParams:CardResponse:RenameBodyParams:CardImportResponse:CardImportParams",
 					"apis": "",
 					"supportingFiles": ""
 				},
