@@ -325,7 +325,7 @@ describe('SchoolService', () => {
 				jest.spyOn(schools[0], 'isEligibleForExternalInvite').mockReturnValueOnce(true);
 				jest.spyOn(schools[1], 'isEligibleForExternalInvite').mockReturnValueOnce(false);
 
-				schoolRepo.getSchoolsCounted.mockResolvedValueOnce({ schools, count: 1 });
+				schoolRepo.getExternalSchools.mockResolvedValueOnce({ schools, count: 1 });
 
 				return { query, schools };
 			};

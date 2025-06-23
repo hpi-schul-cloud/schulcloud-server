@@ -10,10 +10,12 @@ export class SchoolQueryParams extends PaginationParams {
 	public federalStateId?: EntityId;
 
 	@IsInt()
+	@IsOptional()
 	@ApiPropertyOptional({ description: 'Page limit.' })
-	public override limit?: number;
+	public override limit?: number | undefined = undefined;
 
 	@IsInt()
+	@IsOptional()
 	@ApiPropertyOptional({ description: 'Schools to skip from the beginning (for pagination)' })
 	public override skip?: number;
 }
