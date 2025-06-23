@@ -17,8 +17,7 @@ import { EntityId } from '@shared/domain/types';
 import { BoardNodePermissionService, BoardNodeService } from '../service';
 import { Action } from '@modules/authorization';
 import { CardResponseMapper } from '../controller/mapper';
-import { CardImportResponse } from '../controller/dto/card/card-import.response';
-import { AnyContentElementResponse } from '../controller/dto';
+import { AnyContentElementResponse, CardResponse } from '../controller/dto';
 
 @Injectable()
 export class CardContentUc {
@@ -35,7 +34,7 @@ export class CardContentUc {
 		userId: EntityId,
 		columnId: EntityId,
 		requiredEmptyElements: ContentElementType[] = []
-	): Promise<CardImportResponse> {
+	): Promise<CardResponse> {
 		this.logger.debug({ action: 'createCardWithContent', userId, columnId });
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
 
@@ -47,14 +46,10 @@ export class CardContentUc {
 
 		const cardResponse = CardResponseMapper.mapToResponse(card);
 
-		return new CardImportResponse(
-			cardResponse,
-			cardResponse.elements.map((element) => this.determineContentElementType(element)),
-			cardResponse.elements
-		);
+		return cardResponse;
 	}
 
-	private determineContentElementType(element: AnyContentElementResponse): ContentElementType {
+	public static determineContentElementType(element: AnyContentElementResponse): ContentElementType {
 		if (element instanceof ExternalToolElement) {
 			return ContentElementType.EXTERNAL_TOOL;
 		} else if (element instanceof FileElement) {

@@ -16,9 +16,6 @@
 // May contain unused imports in some cases
 // @ts-ignore
 import type { CardResponse } from './card-response';
-// May contain unused imports in some cases
-// @ts-ignore
-import type { CardResponseElementsInner } from './card-response-elements-inner';
 
 /**
  * 
@@ -32,12 +29,6 @@ export interface CardImportResponse {
      * @memberof CardImportResponse
      */
     'cardResponse': CardResponse;
-    /**
-     * The content element to be added to the card.
-     * @type {Array<CardResponseElementsInner>}
-     * @memberof CardImportResponse
-     */
-    'contentElements': Array<CardResponseElementsInner>;
     /**
      * The types of content elements that were imported into the card.
      * @type {Array<string>}

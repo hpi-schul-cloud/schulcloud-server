@@ -11,15 +11,42 @@ import {
 	Post,
 	Put,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { BoardUc, ColumnUc } from '../uc';
 import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
+import {
+	ExternalToolElementResponse,
+	FileElementResponse,
+	LinkElementResponse,
+	RichTextElementResponse,
+	SubmissionContainerElementResponse,
+	DrawingElementResponse,
+	CollaborativeTextEditorElementResponse,
+	DeletedElementResponse,
+	VideoConferenceElementResponse,
+	FileFolderElementResponse,
+	H5pElementResponse,
+} from './dto/element';
 import { CreateCardBodyParams } from './dto/card/create-card.body.params';
 import { CardResponseMapper } from './mapper';
 import { CardContentUc } from '../uc/card-content.uc';
 import { CardImportResponse } from './dto/card/card-import.response';
 
+@ApiExtraModels(
+	ExternalToolElementResponse,
+	FileElementResponse,
+	LinkElementResponse,
+	RichTextElementResponse,
+	SubmissionContainerElementResponse,
+	DrawingElementResponse,
+	CollaborativeTextEditorElementResponse,
+	DeletedElementResponse,
+	VideoConferenceElementResponse,
+	FileFolderElementResponse,
+	H5pElementResponse,
+	CardImportResponse
+)
 @ApiTags('Board Column')
 @JwtAuthentication()
 @Controller('columns')
@@ -104,12 +131,15 @@ export class ColumnController {
 		@Body() createCardBodyParams?: CreateCardBodyParams
 	): Promise<CardImportResponse> {
 		const { requiredEmptyElements } = createCardBodyParams || {};
-		const result = await this.cardContentUc.createCardWithContent(
+		const response = await this.cardContentUc.createCardWithContent(
 			currentUser.userId,
 			urlParams.columnId,
 			requiredEmptyElements
 		);
 
-		return result;
+		return new CardImportResponse(
+			response,
+			response.elements.map((element) => CardContentUc.determineContentElementType(element))
+		);
 	}
 }
