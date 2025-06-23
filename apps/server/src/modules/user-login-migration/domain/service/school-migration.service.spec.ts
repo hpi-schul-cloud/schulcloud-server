@@ -667,20 +667,24 @@ describe(SchoolMigrationService.name, () => {
 					startedAt: new Date('2023-05-01'),
 				});
 
+				const schoolToSave = _.cloneDeep(school);
+				schoolToSave.systems = [userLoginMigration.sourceSystemId!];
+
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 
 				return {
 					schoolId,
+					schoolToSave,
 					userLoginMigration,
 				};
 			};
 
-			it('should not throw error', async () => {
-				const { schoolId, userLoginMigration } = setup();
+			it('should save school with source system', async () => {
+				const { schoolId, schoolToSave, userLoginMigration } = setup();
 
 				await service.restoreSourceSystemOfSchool(schoolId, userLoginMigration);
 
-				expect(schoolService.save).toHaveBeenCalled();
+				expect(schoolService.save).toHaveBeenCalledWith(schoolToSave);
 			});
 		});
 

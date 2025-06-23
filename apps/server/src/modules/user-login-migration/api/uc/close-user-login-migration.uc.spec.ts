@@ -277,7 +277,7 @@ describe(CloseUserLoginMigrationUc.name, () => {
 				expect(userLoginMigrationRevertService.revertUserLoginMigration).not.toHaveBeenCalled();
 			});
 
-			it('should mark all un-migrated users as outdated', async () => {
+			it('shouldremove sourceSystem of school', async () => {
 				const { user, schoolId, school, closedUserLoginMigration } = setup();
 
 				await uc.closeMigration(user.id, schoolId);
