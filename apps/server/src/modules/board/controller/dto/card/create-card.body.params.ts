@@ -10,5 +10,5 @@ export class CreateCardBodyParams {
 		isArray: true,
 		enum: ContentElementType,
 	})
-	requiredEmptyElements?: ContentElementType[];
+	public requiredEmptyElements?: ContentElementType[];
 }

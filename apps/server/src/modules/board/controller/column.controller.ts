@@ -104,12 +104,12 @@ export class ColumnController {
 		@Body() createCardBodyParams?: CreateCardBodyParams
 	): Promise<CardImportResponse> {
 		const { requiredEmptyElements } = createCardBodyParams || {};
-		const { cardResponse, cardImportParams } = await this.cardContentUc.createCardWithContent(
+		const result = await this.cardContentUc.createCardWithContent(
 			currentUser.userId,
 			urlParams.columnId,
 			requiredEmptyElements
 		);
 
-		return new CardImportResponse(cardResponse, cardImportParams);
+		return result;
 	}
 }

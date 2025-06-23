@@ -15,10 +15,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import type { CardImportParams } from './card-import-params';
+import type { CardResponse } from './card-response';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { CardResponse } from './card-response';
+import type { CardResponseElementsInner } from './card-response-elements-inner';
 
 /**
  * 
@@ -33,10 +33,33 @@ export interface CardImportResponse {
      */
     'cardResponse': CardResponse;
     /**
-     * array of parameters for importing data into the card.
-     * @type {Array<CardImportParams>}
+     * The content element to be added to the card.
+     * @type {Array<CardResponseElementsInner>}
      * @memberof CardImportResponse
      */
-    'cardImportParams': Array<CardImportParams>;
+    'contentElements': Array<CardResponseElementsInner>;
+    /**
+     * The types of content elements that were imported into the card.
+     * @type {Array<string>}
+     * @memberof CardImportResponse
+     */
+    'contentElementTypes': Array<CardImportResponseContentElementTypes>;
 }
+
+export const CardImportResponseContentElementTypes = {
+    FILE: 'file',
+    DRAWING: 'drawing',
+    LINK: 'link',
+    RICH_TEXT: 'richText',
+    SUBMISSION_CONTAINER: 'submissionContainer',
+    EXTERNAL_TOOL: 'externalTool',
+    COLLABORATIVE_TEXT_EDITOR: 'collaborativeTextEditor',
+    VIDEO_CONFERENCE: 'videoConference',
+    FILE_FOLDER: 'fileFolder',
+    DELETED: 'deleted',
+    H5P: 'h5p'
+} as const;
+
+export type CardImportResponseContentElementTypes = typeof CardImportResponseContentElementTypes[keyof typeof CardImportResponseContentElementTypes];
+
 

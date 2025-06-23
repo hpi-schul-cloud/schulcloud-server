@@ -9,6 +9,17 @@ git_push.sh
 index.ts
 models/card-import-response.ts
 models/card-response.ts
+models/collaborative-text-editor-element-response.ts
 models/create-card-body-params.ts
+models/deleted-element-response.ts
+models/drawing-element-response.ts
+models/external-tool-element-response.ts
+models/file-element-response.ts
+models/file-folder-element-response.ts
+models/h5p-element-response.ts
 models/index.ts
+models/link-element-response.ts
 models/rename-body-params.ts
+models/rich-text-element-response.ts
+models/submission-container-element-response.ts
+models/video-conference-element-response.ts

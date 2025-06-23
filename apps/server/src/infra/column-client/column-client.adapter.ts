@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BoardColumnApi, CardResponse, CreateCardBodyParams, RenameBodyParams } from './generated';
+import { BoardColumnApi, CardImportResponse, CardResponse, CreateCardBodyParams, RenameBodyParams } from './generated';
 
 @Injectable()
 export class ColumnClientAdapter {
@@ -12,5 +12,10 @@ export class ColumnClientAdapter {
 	public async createCard(columnId: string, cardParams: CreateCardBodyParams): Promise<CardResponse> {
 		const { data: cardResponse } = await this.columnApi.columnControllerCreateCard(columnId, cardParams);
 		return cardResponse;
+	}
+
+	public async createCardWithContent(columnId: string, cardParams: CreateCardBodyParams): Promise<CardImportResponse> {
+		const { data: cardImportResponse } = await this.columnApi.columnControllerCreateCardWithContent(columnId, cardParams);
+		return cardImportResponse;
 	}
 }

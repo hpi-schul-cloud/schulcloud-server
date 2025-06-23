@@ -1,7 +1,6 @@
 import { LegacyLogger } from '@core/logger';
 import { Injectable } from '@nestjs/common';
 import {
-	AnyContentElement,
 	BoardNodeFactory,
 	CollaborativeTextEditorElement,
 	Column,
@@ -17,9 +16,9 @@ import {
 import { EntityId } from '@shared/domain/types';
 import { BoardNodePermissionService, BoardNodeService } from '../service';
 import { Action } from '@modules/authorization';
-import { CardImportParams } from '../controller/dto/card/card-import.params';
 import { CardResponseMapper } from '../controller/mapper';
 import { CardImportResponse } from '../controller/dto/card/card-import.response';
+import { AnyContentElementResponse } from '../controller/dto';
 
 @Injectable()
 export class CardContentUc {
@@ -46,26 +45,16 @@ export class CardContentUc {
 		const card = this.boardNodeFactory.buildCard(elements);
 		await this.boardNodeService.addToParent(column, card);
 
-		return {
-			cardResponse: CardResponseMapper.mapToResponse(card),
-			cardImportParams: this.createCardImportParams(card.id, elements),
-		};
-	}
+		const cardResponse = CardResponseMapper.mapToResponse(card);
 
-	private createCardImportParams(cardId: string, elements: AnyContentElement[]): CardImportParams[] {
-		let position = 0;
-		return elements.map(
-			(element) =>
-				new CardImportParams(
-					cardId,
-					this.determineContentElementType(element),
-					element,
-					position === 0 ? position : ++position
-				)
+		return new CardImportResponse(
+			cardResponse,
+			cardResponse.elements.map((element) => this.determineContentElementType(element)),
+			cardResponse.elements
 		);
 	}
 
-	private determineContentElementType(element: AnyContentElement): ContentElementType {
+	private determineContentElementType(element: AnyContentElementResponse): ContentElementType {
 		if (element instanceof ExternalToolElement) {
 			return ContentElementType.EXTERNAL_TOOL;
 		} else if (element instanceof FileElement) {
