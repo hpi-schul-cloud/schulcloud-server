@@ -38,7 +38,7 @@ export class SystemsSeedDataService {
 						responseType: 'code',
 						redirectUri: '',
 						authEndpoint: 'https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/auth',
-						provider: 'sanis',
+						provider: 'moin.schule',
 						jwksEndpoint: 'https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/certs',
 						issuer: 'https://auth.stage.niedersachsen-login.schule/realms/SANIS',
 						endSessionEndpoint:
