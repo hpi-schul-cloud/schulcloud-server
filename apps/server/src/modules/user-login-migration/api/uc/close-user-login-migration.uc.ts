@@ -56,6 +56,8 @@ export class CloseUserLoginMigrationUc {
 			return undefined;
 		}
 
+		await this.schoolMigrationService.removeSourceSystemOfSchool(school, updatedUserLoginMigration);
+
 		await this.schoolMigrationService.markUnmigratedUsersAsOutdated(updatedUserLoginMigration);
 
 		return updatedUserLoginMigration;
