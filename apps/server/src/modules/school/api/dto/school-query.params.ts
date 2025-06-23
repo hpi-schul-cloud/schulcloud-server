@@ -7,9 +7,13 @@ export class SchoolQueryParams extends PaginationParams {
 	@IsMongoId()
 	@IsOptional()
 	@ApiPropertyOptional()
-	federalStateId?: EntityId;
+	public federalStateId?: EntityId;
 
 	@IsInt()
 	@ApiPropertyOptional({ description: 'Page limit.' })
-	override limit?: number;
+	public override limit?: number;
+
+	@IsInt()
+	@ApiPropertyOptional({ description: 'Schools to skip from the beginning (for pagination)' })
+	public override skip?: number;
 }

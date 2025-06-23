@@ -44,11 +44,17 @@ export class SchoolResponseMapper {
 
 	public static mapToListForExternalInviteResponses(
 		schools: School[],
-		pagination?: PaginationParams
+		pagination?: PaginationParams,
+		total?: number
 	): SchoolForExternalInviteListResponse {
 		const data = schools.map((school) => SchoolResponseMapper.mapToExternalInviteResponse(school));
 
-		const dtos = new SchoolForExternalInviteListResponse(data, schools.length, pagination?.skip, pagination?.limit);
+		const dtos = new SchoolForExternalInviteListResponse(
+			data,
+			total ?? schools.length,
+			pagination?.skip,
+			pagination?.limit
+		);
 
 		return dtos;
 	}

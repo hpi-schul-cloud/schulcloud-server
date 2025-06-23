@@ -47,16 +47,27 @@ export class SchoolService {
 		return schools;
 	}
 
+	public async getSchoolsCounted(
+		query: SchoolQuery = {},
+		options?: IFindOptions<SchoolProps>
+	): Promise<{ schools: School[]; count: number }> {
+		const result = await this.schoolRepo.getSchoolsCounted(query, options);
+
+		const schools = result.schools.map((school) => this.addInstanceFeatures(school));
+
+		return { schools, count: result.count };
+	}
+
 	public async getSchoolsForExternalInvite(
 		query: SchoolQuery,
 		ownSchoolId: EntityId,
 		options?: IFindOptions<SchoolProps>
-	): Promise<School[]> {
-		const schools = await this.getSchools(query, options);
+	): Promise<{ schools: School[]; count: number }> {
+		const { schools, count } = await this.getSchoolsCounted(query, options);
 
 		const schoolsForExternalInvite = schools.filter((school) => school.isEligibleForExternalInvite(ownSchoolId));
 
-		return schoolsForExternalInvite;
+		return { schools: schoolsForExternalInvite, count };
 	}
 
 	public async getCurrentYear(schoolId: EntityId) {

@@ -60,10 +60,12 @@ export class SchoolController {
 	public async getSchoolListForExternalInvite(
 		@Query() query: SchoolQueryParams,
 		@CurrentUser() user: ICurrentUser
-	): Promise<SchoolForExternalInviteListResponse> {
-		const res = await this.schoolUc.getSchoolListForExternalInvite(query, user.schoolId);
-
-		return res;
+	): Promise<SchoolForExternalInviteListResponse | undefined> {
+		const dto = await this.schoolUc.getSchoolListForExternalInvite(query, user.schoolId, {
+			limit: query.limit,
+			skip: query.skip,
+		});
+		return dto;
 	}
 
 	@Get('/exists/id/:schoolId')

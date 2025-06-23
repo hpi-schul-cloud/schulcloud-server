@@ -6,6 +6,11 @@ import { SchoolQuery } from '../query';
 export interface SchoolRepo {
 	getSchools(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School[]>;
 
+	getSchoolsCounted(
+		query: SchoolQuery,
+		options?: IFindOptions<SchoolProps>
+	): Promise<{ schools: School[]; count: number }>;
+
 	getSchoolById(schoolId: EntityId): Promise<School>;
 
 	getSchoolByOfficialSchoolNumber(officialSchoolNumber: string): Promise<School | null>;

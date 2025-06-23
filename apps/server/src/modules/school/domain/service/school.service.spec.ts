@@ -325,7 +325,7 @@ describe('SchoolService', () => {
 				jest.spyOn(schools[0], 'isEligibleForExternalInvite').mockReturnValueOnce(true);
 				jest.spyOn(schools[1], 'isEligibleForExternalInvite').mockReturnValueOnce(false);
 
-				schoolRepo.getSchools.mockResolvedValueOnce(schools);
+				schoolRepo.getSchoolsCounted.mockResolvedValueOnce({ schools, count: 1 });
 
 				return { query, schools };
 			};
@@ -335,7 +335,8 @@ describe('SchoolService', () => {
 
 				const result = await service.getSchoolsForExternalInvite(query, 'ownSchoolId');
 
-				expect(result).toEqual([schools[0]]);
+				const expected = { schools: [schools[0]], count: 1 };
+				expect(result).toEqual(expected);
 			});
 		});
 	});

@@ -21,5 +21,5 @@ export class SchoolForExternalInviteListResponse extends PaginationResponse<Scho
 	}
 
 	@ApiProperty({ type: [SchoolForExternalInviteResponse] })
-	data: SchoolForExternalInviteResponse[];
+	public data: SchoolForExternalInviteResponse[];
 }

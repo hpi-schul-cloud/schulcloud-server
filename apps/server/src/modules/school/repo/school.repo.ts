@@ -32,6 +32,28 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		return schools;
 	}
 
+	public async getSchoolsCounted(
+		query: SchoolQuery,
+		options?: IFindOptions<SchoolProps>
+	): Promise<{ schools: School[]; count: number }> {
+		const scope = new SchoolScope();
+		scope.allowEmptyQuery(true);
+		scope.byFederalState(query.federalStateId);
+		scope.byExternalId(query.externalId);
+		scope.bySystemId(query.systemId);
+
+		const findOptions = this.mapToMikroOrmOptions(options, ['federalState', 'currentYear']);
+
+		const [entities, count] = await this.em.findAndCount(
+			SchoolEntity,
+			scope.query,
+			// { purpose: { $nin: [SchoolPurpose.EXPERT, SchoolPurpose.TOMBSTONE] } },
+			findOptions
+		);
+		const schools = SchoolEntityMapper.mapToDos(entities);
+		return { schools, count };
+	}
+
 	public async getSchoolById(schoolId: EntityId): Promise<School> {
 		const entity = await this.em.findOneOrFail(
 			SchoolEntity,

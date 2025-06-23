@@ -79,18 +79,24 @@ export class SchoolUc {
 	public async getSchoolListForExternalInvite(
 		query: SchoolQuery,
 		ownSchoolId: EntityId,
-		options?: PaginationParams
+		paginationParams: PaginationParams
 	): Promise<SchoolForExternalInviteListResponse> {
 		const findOptions = {
 			order: {
 				name: SortOrder.asc,
 			},
-			...options,
+			pagination: paginationParams,
 		};
 
-		const schools = await this.schoolService.getSchoolsForExternalInvite(query, ownSchoolId, findOptions);
-
-		const dtos = SchoolResponseMapper.mapToListForExternalInviteResponses(schools, options);
+		const { schools, count } = await this.schoolService.getSchoolsForExternalInvite(query, ownSchoolId, findOptions);
+		const dtos = SchoolResponseMapper.mapToListForExternalInviteResponses(
+			schools,
+			{
+				skip: paginationParams.skip,
+				limit: paginationParams.limit,
+			},
+			count
+		);
 
 		return dtos;
 	}
