@@ -7,6 +7,7 @@ import { UserDo, UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
+import _ from 'lodash';
 import { UserLoginMigrationRepo } from '../../repo';
 import { userLoginMigrationDOFactory } from '../../testing';
 import { UserLoginMigrationDO } from '../do';
@@ -59,6 +60,10 @@ describe(SchoolMigrationService.name, () => {
 		userService = module.get(UserService);
 		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
 		logger = module.get(Logger);
+	});
+
+	beforeEach(() => {
+		jest.clearAllMocks();
 	});
 
 	afterAll(async () => {
@@ -530,6 +535,193 @@ describe(SchoolMigrationService.name, () => {
 				const result = service.hasSchoolMigratedInMigrationPhase(school, userLoginMigration);
 
 				expect(result).toEqual(true);
+			});
+		});
+	});
+
+	describe('removeSourceSystemOfSchool', () => {
+		describe('when migrated school was a local school', () => {
+			const setup = () => {
+				const school = legacySchoolDoFactory.buildWithId({
+					systems: ['newSystem'],
+				});
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					schoolId: school.id,
+					targetSystemId: new ObjectId().toHexString(),
+					startedAt: new Date('2023-05-01'),
+					closedAt: new Date('2023-05-03'),
+				});
+
+				return {
+					school,
+					userLoginMigration,
+				};
+			};
+
+			it('should return without saving', async () => {
+				const { school, userLoginMigration } = setup();
+
+				await service.removeSourceSystemOfSchool(school, userLoginMigration);
+
+				expect(schoolService.save).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when migrated school has no systems', () => {
+			const setup = () => {
+				const school = legacySchoolDoFactory.buildWithId();
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					schoolId: school.id,
+					targetSystemId: new ObjectId().toHexString(),
+					startedAt: new Date('2023-05-01'),
+					closedAt: new Date('2023-05-03'),
+				});
+
+				return {
+					school,
+					userLoginMigration,
+				};
+			};
+
+			it('should return without saving', async () => {
+				const { school, userLoginMigration } = setup();
+
+				await service.removeSourceSystemOfSchool(school, userLoginMigration);
+
+				expect(schoolService.save).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when migrated school has source and target system', () => {
+			const setup = () => {
+				const oldSystem = new ObjectId().toHexString();
+				const newSystem = new ObjectId().toHexString();
+				const school = legacySchoolDoFactory.buildWithId({
+					systems: [oldSystem, newSystem],
+				});
+				const schoolWithoutOldSystem = _.cloneDeep(school);
+				schoolWithoutOldSystem.systems = [newSystem];
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					schoolId: school.id,
+					sourceSystemId: oldSystem,
+					targetSystemId: newSystem,
+					startedAt: new Date('2023-05-01'),
+					closedAt: new Date('2023-05-03'),
+				});
+
+				return {
+					school,
+					schoolWithoutOldSystem,
+					userLoginMigration,
+				};
+			};
+
+			it('should save school without source system', async () => {
+				const { school, schoolWithoutOldSystem, userLoginMigration } = setup();
+
+				await service.removeSourceSystemOfSchool(school, userLoginMigration);
+
+				expect(schoolService.save).toHaveBeenCalledWith(schoolWithoutOldSystem);
+			});
+		});
+	});
+
+	describe('restoreSourceSystemOfSchool', () => {
+		describe('when migrated school was a local school', () => {
+			const setup = () => {
+				const schoolId = new ObjectId().toHexString();
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					schoolId: schoolId,
+					targetSystemId: new ObjectId().toHexString(),
+					startedAt: new Date('2023-05-01'),
+				});
+
+				return {
+					schoolId,
+					userLoginMigration,
+				};
+			};
+
+			it('should return without saving', async () => {
+				const { schoolId, userLoginMigration } = setup();
+
+				await service.restoreSourceSystemOfSchool(schoolId, userLoginMigration);
+
+				expect(schoolService.save).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when migrated school has no systems attribute', () => {
+			const setup = () => {
+				const schoolId = new ObjectId().toHexString();
+				const school = legacySchoolDoFactory.buildWithId({ id: schoolId, systems: undefined });
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					schoolId: school.id,
+					sourceSystemId: new ObjectId().toHexString(),
+					targetSystemId: new ObjectId().toHexString(),
+					startedAt: new Date('2023-05-01'),
+				});
+
+				const schoolToSave = _.cloneDeep(school);
+				schoolToSave.systems = [userLoginMigration.sourceSystemId!];
+
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+
+				return {
+					schoolId,
+					schoolToSave,
+					userLoginMigration,
+				};
+			};
+
+			it('should save school with source system', async () => {
+				const { schoolId, schoolToSave, userLoginMigration } = setup();
+
+				await service.restoreSourceSystemOfSchool(schoolId, userLoginMigration);
+
+				expect(schoolService.save).toHaveBeenCalledWith(schoolToSave);
+			});
+		});
+
+		describe('when migrated school has target system', () => {
+			const setup = () => {
+				const schoolId = new ObjectId().toHexString();
+				const oldSystem = new ObjectId().toHexString();
+				const newSystem = new ObjectId().toHexString();
+				const school = legacySchoolDoFactory.buildWithId({
+					id: schoolId,
+					systems: [newSystem],
+				});
+				const schoolWithOldSystem = _.cloneDeep(school);
+				schoolWithOldSystem.systems = [newSystem, oldSystem];
+
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					schoolId: school.id,
+					sourceSystemId: oldSystem,
+					targetSystemId: newSystem,
+					startedAt: new Date('2023-05-01'),
+				});
+
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+
+				return {
+					schoolId,
+					schoolWithOldSystem,
+					userLoginMigration,
+				};
+			};
+
+			it('should save school with source system', async () => {
+				const { schoolId, schoolWithOldSystem, userLoginMigration } = setup();
+
+				await service.restoreSourceSystemOfSchool(schoolId, userLoginMigration);
+
+				expect(schoolService.save).toHaveBeenCalledWith(schoolWithOldSystem);
 			});
 		});
 	});

@@ -3,6 +3,7 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { performance } from 'perf_hooks';
 import { UserLoginMigrationRepo } from '../../repo';
 import { UserLoginMigrationDO } from '../do';
@@ -167,5 +168,38 @@ export class SchoolMigrationService {
 		}
 
 		return false;
+	}
+
+	public async removeSourceSystemOfSchool(
+		school: LegacySchoolDo,
+		userLoginMigration: UserLoginMigrationDO
+	): Promise<void> {
+		if (!userLoginMigration.sourceSystemId) {
+			return;
+		}
+
+		if (school.systems?.length) {
+			school.systems = school.systems.filter((system: EntityId) => system !== userLoginMigration.sourceSystemId);
+
+			await this.schoolService.save(school);
+		}
+	}
+
+	public async restoreSourceSystemOfSchool(
+		schoolId: EntityId,
+		userLoginMigration: UserLoginMigrationDO
+	): Promise<void> {
+		if (!userLoginMigration.sourceSystemId) {
+			return;
+		}
+
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
+
+		if (!school.systems) {
+			school.systems = [];
+		}
+
+		school.systems.push(userLoginMigration.sourceSystemId);
+		await this.schoolService.save(school);
 	}
 }
