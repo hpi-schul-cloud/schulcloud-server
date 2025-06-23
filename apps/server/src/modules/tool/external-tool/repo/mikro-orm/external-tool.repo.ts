@@ -152,7 +152,8 @@ export class ExternalToolRepo {
 			.byHidden(query.isHidden)
 			.byIds(query.ids)
 			.byPreferred(query.isPreferred)
-			.byTemplateOrDraft(query.isTemplateOrDraft)
+			.allowTemplateAndDraft(query.isTemplateAndDraftAllowed)
+			.allowTemplate(query.isTemplateAllowed)
 			.allowEmptyQuery(true);
 
 		if (order._id == null) {

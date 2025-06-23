@@ -42,7 +42,10 @@ export class ExternalToolConfigurationUc {
 	}
 
 	public async getAvailableToolsForSchool(userId: EntityId, schoolId: EntityId): Promise<ExternalTool[]> {
-		const externalTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({});
+		const externalTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({
+			isTemplateAndDraftAllowed: true,
+			isTemplateAllowed: true,
+		});
 
 		const schoolExternalToolsInUse: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools(
 			{

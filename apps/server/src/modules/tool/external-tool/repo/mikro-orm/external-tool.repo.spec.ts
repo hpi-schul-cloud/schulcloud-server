@@ -357,7 +357,7 @@ describe(ExternalToolRepo.name, () => {
 			describe('by template or draft', () => {
 				it('should not return external tool with not active medium status', async () => {
 					const { options, ltiTools } = await setupFind();
-					const query: ExternalToolSearchQuery = { isTemplateOrDraft: true };
+					const query: ExternalToolSearchQuery = { isTemplateAndDraftAllowed: true };
 
 					const page: Page<ExternalTool> = await repo.find(query, options);
 

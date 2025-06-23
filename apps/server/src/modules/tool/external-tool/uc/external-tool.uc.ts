@@ -174,7 +174,7 @@ export class ExternalToolUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
-		query.isTemplateOrDraft = true;
+		query.isTemplateAndDraftAllowed = true;
 
 		const tools: Page<ExternalTool> = await this.externalToolService.findExternalTools(query, options);
 
