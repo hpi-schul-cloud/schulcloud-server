@@ -9,12 +9,12 @@ export class OAuthAdapterErrorLoggableException extends InternalServerErrorExcep
 	}
 
 	public getLogMessage(): ErrorLogMessage {
-		let { error } = this;
-		if (isAxiosError(this.error)) {
-			error = new AxiosErrorLoggable(this.error, 'O_AUTH_ADAP_3RD_PARTY_ERROR');
-		}
+		const error = isAxiosError(this.error)
+			? new AxiosErrorLoggable(this.error, 'OAUTH_ADAP_3RD_PARTY_ERROR')
+			: this.error;
+
 		const message: ErrorLogMessage = {
-			type: 'O_AUTH_ADAPTER_ERROR',
+			type: 'OAUTH_ADAPTER_ERROR',
 			stack: this.stack,
 			data: {
 				errorMessage: this.errorMessage,

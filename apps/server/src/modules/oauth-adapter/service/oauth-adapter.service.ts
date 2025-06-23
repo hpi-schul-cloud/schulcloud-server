@@ -10,7 +10,7 @@ import {
 	OAuthTokenDto,
 	OauthTokenResponse,
 } from '../dto';
-import { OAuthAdapterErrorLoggableException } from '../loggable/loggable-exception';
+import { OAuthAdapterErrorLoggableException } from '../loggable/oauth-adapter-error.loggable-exception';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 
 @Injectable()
@@ -53,7 +53,7 @@ export class OauthAdapterService {
 		try {
 			responseToken = await lastValueFrom(observable);
 		} catch (error: unknown) {
-			throw new OAuthAdapterErrorLoggableException(String(error));
+			throw new OAuthAdapterErrorLoggableException('Failed to resolve token request', error as Error);
 		}
 
 		const tokenDto: OAuthTokenDto = TokenRequestMapper.mapTokenResponseToDto(responseToken.data);

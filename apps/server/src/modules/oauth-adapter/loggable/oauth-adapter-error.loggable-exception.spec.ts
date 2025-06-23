@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { OAuthAdapterErrorLoggableException } from './loggable-exception';
+import { OAuthAdapterErrorLoggableException } from './oauth-adapter-error.loggable-exception';
 
 describe(OAuthAdapterErrorLoggableException.name, () => {
 	describe('getLogMessage', () => {
@@ -25,7 +25,7 @@ describe(OAuthAdapterErrorLoggableException.name, () => {
 			const result = exception.getLogMessage();
 
 			expect(result).toEqual({
-				type: 'O_AUTH_ADAPTER_ERROR',
+				type: 'OAUTH_ADAPTER_ERROR',
 				stack: expect.any(String),
 				data: {
 					errorMessage: message,
@@ -34,7 +34,7 @@ describe(OAuthAdapterErrorLoggableException.name, () => {
 				error: expect.objectContaining({
 					name: 'AxiosErrorLoggable',
 					status: 500,
-					type: 'O_AUTH_ADAP_3RD_PARTY_ERROR',
+					type: 'OAUTH_ADAP_3RD_PARTY_ERROR',
 				} as Partial<AxiosError>),
 			});
 		});
@@ -46,7 +46,7 @@ describe(OAuthAdapterErrorLoggableException.name, () => {
 			const result = exception.getLogMessage();
 
 			expect(result).toEqual({
-				type: 'DELETION_ERROR',
+				type: 'OAUTH_ADAPTER_ERROR',
 				stack: expect.any(String),
 				data: {
 					errorMessage: message,
