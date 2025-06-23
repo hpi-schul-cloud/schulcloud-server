@@ -15,7 +15,11 @@ export class ColumnClientAdapter {
 	}
 
 	public async createCardWithContent(columnId: string, cardParams: CreateCardBodyParams): Promise<CardImportResponse> {
-		const { data: cardImportResponse } = await this.columnApi.columnControllerCreateCardWithContent(columnId, cardParams);
+		const { data: cardImportResponse } = await this.columnApi.columnControllerCreateCardWithContent(
+			columnId,
+			cardParams
+		);
+
 		return cardImportResponse;
 	}
 }
