@@ -1,5 +1,6 @@
 export * from './card-import-response';
 export * from './card-response';
+export * from './card-response-elements-inner';
 export * from './collaborative-text-editor-element-response';
 export * from './create-card-body-params';
 export * from './deleted-element-response';

@@ -8,6 +8,7 @@ configuration.ts
 git_push.sh
 index.ts
 models/card-import-response.ts
+models/card-response-elements-inner.ts
 models/card-response.ts
 models/collaborative-text-editor-element-response.ts
 models/create-card-body-params.ts

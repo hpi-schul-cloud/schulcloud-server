@@ -62,7 +62,7 @@
 					"FILTER": "operationId:ColumnController_createCard|ColumnController_updateColumnTitle|ColumnController_createCardWithContent"
 				},
 				"globalProperty": {
-					"models": "CreateCardBodyParams:CardResponse:RenameBodyParams:CardImportResponse:AnyContentElementResponse:ExternalToolElementResponse:FileElementResponse:LinkElementResponse:RichTextElementResponse:SubmissionContainerElementResponse:DrawingElementResponse:CollaborativeTextEditorElementResponse:DeletedElementResponse:VideoConferenceElementResponse:FileFolderElementResponse:H5pElementResponse:AnyContentElementResponseWrapper:CardResponseElementsInner",
+					"models": "CreateCardBodyParams:CardResponse:RenameBodyParams:CardImportResponse:AnyContentElementResponse:ExternalToolElementResponse:FileElementResponse:LinkElementResponse:RichTextElementResponse:SubmissionContainerElementResponse:DrawingElementResponse:CollaborativeTextEditorElementResponse:DeletedElementResponse:VideoConferenceElementResponse:FileFolderElementResponse:H5pElementResponse:CardResponseElementsInner:CardResponse_elements_inner",
 					"apis": "",
 					"supportingFiles": ""
 				},
