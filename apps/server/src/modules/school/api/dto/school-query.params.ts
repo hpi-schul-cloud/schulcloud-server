@@ -12,7 +12,7 @@ export class SchoolQueryParams extends PaginationParams {
 	@IsInt()
 	@IsOptional()
 	@ApiPropertyOptional({ description: 'Page limit.' })
-	public override limit?: number | undefined = undefined;
+	public override limit?: number = 1000000;
 
 	@IsInt()
 	@IsOptional()
