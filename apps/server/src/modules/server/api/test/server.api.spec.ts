@@ -111,6 +111,7 @@ describe('Server Controller (API)', () => {
 				'LICENSE_SUMMARY_URL',
 				'FEATURE_COLUMN_BOARD_H5P_ENABLED',
 				'ROOM_MEMBER_INFO_URL',
+				'FEATURE_HIDE_OLD_ADMIN_PAGE_LINK',
 			];
 
 			expect(response.status).toEqual(HttpStatus.OK);

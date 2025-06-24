@@ -1697,6 +1697,11 @@
 			"type": "string",
 			"default": "https://api.github.com/repos/hpi-schul-cloud/RELEASE-NOTES/releases",
 			"description": "URL of the GitHub repository from which release notes are fetched. Used for testing and overriding the default release notes source."
+		},
+		"FEATURE_HIDE_OLD_ADMIN_PAGE_LINK": {
+			"type": "boolean",
+			"default": false,
+			"description": "Hides the link that refers to the old school administration page"
 		}
 	},
 	"required": []
