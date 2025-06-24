@@ -7,7 +7,7 @@ import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { School, SchoolQuery, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';
+import { School, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';
 import {
 	SchoolAlreadyInMaintenanceLoggableException,
 	SchoolAlreadyInNextYearLoggableException,
