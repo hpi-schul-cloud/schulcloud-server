@@ -104,6 +104,17 @@ describe(RestartUserLoginMigrationUc.name, () => {
 				expect(userLoginMigrationService.restartMigration).toHaveBeenCalledWith(migrationBeforeRestart);
 			});
 
+			it('should restore source system of school', async () => {
+				const { user, migrationAfterRestart } = setup();
+
+				await uc.restartMigration(user.id, user.school.id);
+
+				expect(schoolMigrationService.restoreSourceSystemOfSchool).toHaveBeenCalledWith(
+					user.school.id,
+					migrationAfterRestart
+				);
+			});
+
 			it('should unmark outdated users', async () => {
 				const { user, migrationAfterRestart } = setup();
 
