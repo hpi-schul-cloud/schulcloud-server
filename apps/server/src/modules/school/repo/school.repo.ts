@@ -33,8 +33,8 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 	}
 
 	public async getExternalSchools(
-		query: SchoolQuery,
 		ownSchoolId: EntityId,
+		query: SchoolQuery,
 		options?: IFindOptions<SchoolProps>
 	): Promise<{ schools: School[]; count: number }> {
 		const scope = new SchoolScope();

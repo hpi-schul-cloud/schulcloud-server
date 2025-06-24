@@ -333,7 +333,7 @@ describe('SchoolService', () => {
 			it('should return these schools', async () => {
 				const { query, schools } = setup();
 
-				const result = await service.getSchoolsForExternalInvite(query, 'ownSchoolId');
+				const result = await service.getSchoolsForExternalInvite('ownSchoolId', query);
 
 				const expected = { schools: [schools[0]], count: 1 };
 				expect(result).toEqual(expected);

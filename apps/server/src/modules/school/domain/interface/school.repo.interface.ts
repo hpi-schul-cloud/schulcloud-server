@@ -7,9 +7,9 @@ export interface SchoolRepo {
 	getSchools(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School[]>;
 
 	getExternalSchools(
-		query: SchoolQuery,
 		ownSchoolId: EntityId,
-		options?: IFindOptions<SchoolProps>
+		query: SchoolQuery,
+		options: IFindOptions<SchoolProps>
 	): Promise<{ schools: School[]; count: number }>;
 
 	getSchoolById(schoolId: EntityId): Promise<School>;
