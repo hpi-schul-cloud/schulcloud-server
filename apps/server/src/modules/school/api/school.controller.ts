@@ -61,7 +61,7 @@ export class SchoolController {
 		@Query() query: SchoolQueryParams,
 		@CurrentUser() user: ICurrentUser
 	): Promise<SchoolForExternalInviteListResponse | undefined> {
-		const dto = await this.schoolUc.getSchoolListForExternalInvite(query, user.schoolId, {
+		const dto = await this.schoolUc.getSchoolListForExternalInvite(user.schoolId, query, {
 			limit: query.limit,
 			skip: query.skip,
 		});
