@@ -6,8 +6,6 @@
 # Files
 
 - Unit test files: end with `.spec.ts`
-- API test files: end with `.api.spec.ts`
-- Integration test files: end with `.integration.spec.ts`
 - Test files must be in the same directory as the file under test.
 
 # Code Style
