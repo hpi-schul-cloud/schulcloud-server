@@ -175,7 +175,7 @@ describe('SchoolMikroOrmRepo', () => {
 					},
 				};
 
-				const { schools, count } = await repo.getExternalSchools('ownSchoolId', {}, options);
+				const { schools, count } = await repo.getExternalSchools('ownSchoolId', options);
 
 				expect(count).toEqual(entities.length);
 				expect(schools.length).toEqual(1);
@@ -204,7 +204,7 @@ describe('SchoolMikroOrmRepo', () => {
 					},
 				};
 
-				const { schools, count } = await repo.getExternalSchools('ownSchoolId', {}, options);
+				const { schools, count } = await repo.getExternalSchools('ownSchoolId', options);
 
 				const schoolIds = schools.map((school) => school.id);
 				const expectedOrder = [entity2.id, entity1.id, entity3.id];

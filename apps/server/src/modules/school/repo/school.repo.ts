@@ -34,14 +34,12 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 
 	public async getExternalSchools(
 		ownSchoolId: EntityId,
-		query: SchoolQuery,
-		options?: IFindOptions<SchoolProps>
+		options?: IFindOptions<SchoolProps>,
+		federalStateId?: EntityId
 	): Promise<{ schools: School[]; count: number }> {
 		const scope = new SchoolScope();
 		scope.allowEmptyQuery(true);
-		scope.byFederalState(query.federalStateId);
-		scope.byExternalId(query.externalId);
-		scope.bySystemId(query.systemId);
+		scope.byFederalState(federalStateId);
 		scope.addQuery({ purpose: { $nin: [SchoolPurpose.EXPERT, SchoolPurpose.TOMBSTONE] } });
 		scope.addQuery({ id: { $ne: ownSchoolId } });
 

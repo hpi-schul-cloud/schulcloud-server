@@ -49,10 +49,10 @@ export class SchoolService {
 
 	public async getExternalSchools(
 		ownSchoolId: EntityId,
-		query: SchoolQuery = {},
-		options: IFindOptions<SchoolProps> = {}
+		options: IFindOptions<SchoolProps> = {},
+		federalStateId?: EntityId
 	): Promise<{ schools: School[]; count: number }> {
-		const result = await this.schoolRepo.getExternalSchools(ownSchoolId, query, options);
+		const result = await this.schoolRepo.getExternalSchools(ownSchoolId, options, federalStateId);
 
 		const schools = result.schools.map((school) => this.addInstanceFeatures(school));
 
@@ -61,10 +61,10 @@ export class SchoolService {
 
 	public async getSchoolsForExternalInvite(
 		ownSchoolId: EntityId,
-		query: SchoolQuery,
-		options: IFindOptions<SchoolProps> = {}
+		options: IFindOptions<SchoolProps> = {},
+		federalStateId?: EntityId
 	): Promise<{ schools: School[]; count: number }> {
-		const { schools, count } = await this.getExternalSchools(ownSchoolId, query, options);
+		const { schools, count } = await this.getExternalSchools(ownSchoolId, options, federalStateId);
 
 		const schoolsForExternalInvite = schools.filter((school) => school.isEligibleForExternalInvite(ownSchoolId));
 

@@ -8,8 +8,8 @@ export interface SchoolRepo {
 
 	getExternalSchools(
 		ownSchoolId: EntityId,
-		query: SchoolQuery,
-		options: IFindOptions<SchoolProps>
+		options: IFindOptions<SchoolProps>,
+		federalStateId?: EntityId
 	): Promise<{ schools: School[]; count: number }>;
 
 	getSchoolById(schoolId: EntityId): Promise<School>;

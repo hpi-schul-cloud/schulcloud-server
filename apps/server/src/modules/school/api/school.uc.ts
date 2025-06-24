@@ -78,8 +78,8 @@ export class SchoolUc {
 
 	public async getSchoolListForExternalInvite(
 		ownSchoolId: EntityId,
-		query: SchoolQuery,
-		paginationParams: PaginationParams
+		paginationParams: PaginationParams,
+		federalStateId?: EntityId
 	): Promise<SchoolForExternalInviteListResponse> {
 		const findOptions = {
 			order: {
@@ -88,7 +88,11 @@ export class SchoolUc {
 			pagination: paginationParams,
 		};
 
-		const { schools, count } = await this.schoolService.getSchoolsForExternalInvite(ownSchoolId, query, findOptions);
+		const { schools, count } = await this.schoolService.getSchoolsForExternalInvite(
+			ownSchoolId,
+			findOptions,
+			federalStateId
+		);
 		const dtos = SchoolResponseMapper.mapToListForExternalInviteResponses(
 			schools,
 			{
