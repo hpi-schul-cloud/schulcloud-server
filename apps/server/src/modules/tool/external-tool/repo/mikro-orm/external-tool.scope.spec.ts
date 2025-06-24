@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
+import { ExternalToolMediumStatus } from '../../enum';
 import { ExternalToolScope } from './external-tool.scope';
 
 describe('ExternalToolScope', () => {
@@ -97,7 +97,7 @@ describe('ExternalToolScope', () => {
 			it('should return scope which forbids templates and allows non-medium tools', () => {
 				scope.allowTemplate(undefined);
 				expect(scope.query).toEqual({
-					$or: [{ medium: { status: { $not: ExternalToolMediumStatus.TEMPLATE } } }, { medium: { $exists: false } }],
+					$or: [{ medium: { status: { $ne: ExternalToolMediumStatus.TEMPLATE } } }, { medium: { $exists: false } }],
 				});
 			});
 		});
@@ -115,7 +115,7 @@ describe('ExternalToolScope', () => {
 			it('should return scope which forbids drafts and allows non-medium tools', () => {
 				scope.allowDraft(undefined);
 				expect(scope.query).toEqual({
-					$or: [{ medium: { status: { $not: ExternalToolMediumStatus.DRAFT } } }, { medium: { $exists: false } }],
+					$or: [{ medium: { status: { $ne: ExternalToolMediumStatus.DRAFT } } }, { medium: { $exists: false } }],
 				});
 			});
 		});
