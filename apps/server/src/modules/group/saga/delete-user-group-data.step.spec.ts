@@ -12,12 +12,12 @@ import {
 import { InternalServerErrorException } from '@nestjs/common';
 import { groupFactory } from '../testing';
 import { DeleteUserGroupDataStep } from './delete-user-group-data.step';
-import { GroupRepo } from '../repo';
+import { GroupService } from '../service';
 
 describe(DeleteUserGroupDataStep.name, () => {
 	let module: TestingModule;
 	let step: DeleteUserGroupDataStep;
-	let groupRepo: DeepMocked<GroupRepo>;
+	let groupService: DeepMocked<GroupService>;
 	let logger: DeepMocked<Logger>;
 
 	afterAll(async () => {
@@ -33,8 +33,8 @@ describe(DeleteUserGroupDataStep.name, () => {
 					useValue: createMock<SagaService>(),
 				},
 				{
-					provide: GroupRepo,
-					useValue: createMock<GroupRepo>(),
+					provide: GroupService,
+					useValue: createMock<GroupService>(),
 				},
 				{
 					provide: Logger,
@@ -44,7 +44,7 @@ describe(DeleteUserGroupDataStep.name, () => {
 		}).compile();
 
 		step = module.get(DeleteUserGroupDataStep);
-		groupRepo = module.get(GroupRepo);
+		groupService = module.get(GroupService);
 		logger = module.get(Logger);
 	});
 
@@ -55,7 +55,7 @@ describe(DeleteUserGroupDataStep.name, () => {
 	describe('step registration', () => {
 		it('should register the step with the saga service', () => {
 			const sagaService = createMock<SagaService>();
-			const step = new DeleteUserGroupDataStep(sagaService, createMock<GroupRepo>(), createMock<Logger>());
+			const step = new DeleteUserGroupDataStep(sagaService, createMock<GroupService>(), createMock<Logger>());
 
 			expect(sagaService.registerStep).toHaveBeenCalledWith(ModuleName.GROUP, step);
 		});
@@ -78,26 +78,26 @@ describe(DeleteUserGroupDataStep.name, () => {
 					StepOperationReportBuilder.build(StepOperationType.UPDATE, 1, [group.id]),
 				]);
 
-				groupRepo.findGroupsByFilter.mockResolvedValue({ domainObjects: [group], total: 1 });
+				groupService.findAllGroupsForUser.mockResolvedValue([group]);
 
 				return { expectedResult, group, userId };
 			};
 
-			it('should call groupRepo.findGroupsByFilter with userId', async () => {
+			it('should call groupService.findAllGroupsForUser with userId', async () => {
 				const { userId } = setup();
 				await step.execute({ userId });
 
-				expect(groupRepo.findGroupsByFilter).toHaveBeenCalledWith({ userId });
+				expect(groupService.findAllGroupsForUser).toHaveBeenCalledWith(userId);
 			});
 
-			it('should call groupRepo.removeUserReference with userId', async () => {
+			it('should call groupService.removeUserReference with userId', async () => {
 				const { userId } = setup();
 				await step.execute({ userId });
 
-				expect(groupRepo.removeUserReference).toHaveBeenCalledWith(userId);
+				expect(groupService.removeUserReference).toHaveBeenCalledWith(userId);
 			});
 
-			it('should retur nthe DomainDeletionReport', async () => {
+			it('should return the DomainDeletionReport', async () => {
 				const { expectedResult, userId } = setup();
 				const result = await step.execute({ userId });
 

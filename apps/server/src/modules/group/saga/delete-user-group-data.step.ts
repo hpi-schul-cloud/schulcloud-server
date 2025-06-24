@@ -14,7 +14,7 @@ import {
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Group } from '../domain';
-import { GroupRepo } from '../repo';
+import { GroupService } from '../service';
 
 @Injectable()
 export class DeleteUserGroupDataStep extends SagaStep<'deleteUserData'> {
@@ -22,7 +22,7 @@ export class DeleteUserGroupDataStep extends SagaStep<'deleteUserData'> {
 
 	constructor(
 		private readonly sagaService: SagaService,
-		private readonly groupRepo: GroupRepo,
+		private readonly groupService: GroupService,
 		private readonly logger: Logger
 	) {
 		super('deleteUserData');
@@ -49,8 +49,8 @@ export class DeleteUserGroupDataStep extends SagaStep<'deleteUserData'> {
 			throw new InternalServerErrorException('User id is missing');
 		}
 
-		const { domainObjects: groups } = await this.groupRepo.findGroupsByFilter({ userId });
-		const numberOfUpdatedGroups = await this.groupRepo.removeUserReference(userId);
+		const groups = await this.groupService.findAllGroupsForUser(userId);
+		const numberOfUpdatedGroups = await this.groupService.removeUserReference(userId);
 
 		const result = StepOperationReportBuilder.build(
 			StepOperationType.UPDATE,

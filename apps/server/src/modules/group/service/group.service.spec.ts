@@ -660,4 +660,63 @@ describe('GroupService', () => {
 			});
 		});
 	});
+
+	describe('removeUserReference', () => {
+		const setup = () => {
+			const userId: EntityId = new ObjectId().toHexString();
+			const numberOfUpdatedGroups = 3;
+			groupRepo.removeUserReference.mockResolvedValue(numberOfUpdatedGroups);
+
+			return {
+				userId,
+				numberOfUpdatedGroups,
+			};
+		};
+
+		it('should call groupRepo.removeUserReference with userId', async () => {
+			const { userId } = setup();
+
+			await service.removeUserReference(userId);
+
+			expect(groupRepo.removeUserReference).toHaveBeenCalledWith(userId);
+		});
+
+		it('should return the number of updated groups', async () => {
+			const { userId, numberOfUpdatedGroups } = setup();
+
+			const result: number = await service.removeUserReference(userId);
+
+			expect(result).toEqual(numberOfUpdatedGroups);
+		});
+	});
+
+	describe('findAllGroupsForUser', () => {
+		const setup = () => {
+			const userId: EntityId = new ObjectId().toHexString();
+			const groups: Group[] = groupFactory.buildList(2);
+
+			groupRepo.findGroupsByFilter.mockResolvedValue({ domainObjects: groups, total: groups.length });
+
+			return {
+				userId,
+				groups,
+			};
+		};
+
+		it('should call groupRepo.findGroupsByFilter with userId', async () => {
+			const { userId } = setup();
+
+			await service.findAllGroupsForUser(userId);
+
+			expect(groupRepo.findGroupsByFilter).toHaveBeenCalledWith({ userId });
+		});
+
+		it('should return the groups for the user', async () => {
+			const { userId, groups } = setup();
+
+			const result: Group[] = await service.findAllGroupsForUser(userId);
+
+			expect(result).toEqual(groups);
+		});
+	});
 });
