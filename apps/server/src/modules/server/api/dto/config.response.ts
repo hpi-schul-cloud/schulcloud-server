@@ -251,6 +251,9 @@ export class ConfigResponse {
 	@ApiProperty({ type: String, nullable: true })
 	ROOM_MEMBER_INFO_URL: string | null;
 
+	@ApiProperty()
+	FEATURE_HIDE_OLD_ADMIN_PAGE_LINK: boolean;
+
 	constructor(config: ServerConfig) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -333,5 +336,6 @@ export class ConfigResponse {
 		this.LICENSE_SUMMARY_URL = config.LICENSE_SUMMARY_URL;
 		this.ROOM_MEMBER_INFO_URL = config.ROOM_MEMBER_INFO_URL;
 		this.FEATURE_COLUMN_BOARD_H5P_ENABLED = config.FEATURE_COLUMN_BOARD_H5P_ENABLED;
+		this.FEATURE_HIDE_OLD_ADMIN_PAGE_LINK = config.FEATURE_HIDE_OLD_ADMIN_PAGE_LINK;
 	}
 }
