@@ -289,7 +289,12 @@ describe(ExternalToolRepo.name, () => {
 
 				const page: Page<ExternalTool> = await repo.find(queryExternalToolDO, undefined);
 
-				expect(page.data.length).toBe(ltiTools.length - 1);
+				const expectTools = ltiTools.filter(
+					(tool: ExternalToolEntity) =>
+						tool.medium === undefined || tool.medium?.status === ExternalToolMediumStatus.ACTIVE
+				);
+
+				expect(page.data.length).toBe(expectTools.length);
 			});
 
 			it('should return one external tools when pagination has a limit of 1', async () => {
