@@ -34,21 +34,28 @@
 # Injectables
 
 - For Nest classes (e.g., with `@Injectable()`):
-  - Declare all injected dependencies as `let <name>` with golevelup `createMock` before `beforeAll`.
-  - The type of variables created with createMock is DeepMocked.
   - In `beforeAll`, use `Test.createTestingModule` and `compile()` to initialize.
-  - Provide dependencies via `providers` with `useValue` and the mock.
-  - After `compile()`, assign instances with `module.get(<Name>)`.
-  - If the module holds resources, add `afterAll` with `await module.close()`.
+  - Store the module in a variable.
+  - Module variable must be accessible in `afterAll`.
+  - Type of module variable is TestingModule
+  - Provide dependencies via `providers` with `useValue`.
+  - Use golevelups `createMock` function to provide a value for `useValue`.
+  - Declare all injected dependencies as `let <name>` with golevelup `createMock` before `beforeAll`.
+  - Type variables as DeepMocked.
+  - After `compile()`, assign instances with `module.get(<Name>)` to variables.
+  - Add `afterAll` with `await module.close()`.
 
 # Factories
 
-- Never create objects as test data.
+- Always use a Entity/Domain/ValueObject factories to create test data.
+- Never create objects as test data directly.
+- Castings of objects with the `as` keywoard are forbidden.
 - Never call a constructor to create test data.
-- Always use a Entity/Domain/ValueObject Factory to create test data.
+
 - Create factory if it's not already existing.
 - Factories are created in seperate files.
 - Use factories directly.
+- Use .build method of factory.
 - Don't wrap in extra function.
 
 # Assertions
@@ -57,4 +64,6 @@
 
 # Scenarios
 
-- Create seperate scenarios for the resolved and rejected case of a mocked async function.
+- Create seperate describe blocks for the resolved and rejected case of a mocked async function.
+- Description for successfull case must be `when <method> resolves`
+- Description for error case must be `when <method> rejects`
