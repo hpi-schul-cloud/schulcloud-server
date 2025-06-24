@@ -39,17 +39,20 @@ export class ExternalToolScope extends Scope<ExternalToolEntity> {
 		return this;
 	}
 
-	// TODO decompose this?
-	public allowTemplateAndDraft(isTemplateAndDraftAllowed?: boolean): this {
-		if (isTemplateAndDraftAllowed) {
-			this.addQuery({ $or: [{ medium: { status: ExternalToolMediumStatus.ACTIVE } }, { medium: { $exists: false } }] });
+	public allowTemplate(isTemplateAllowed?: boolean): this {
+		if (!isTemplateAllowed) {
+			this.addQuery({
+				$or: [{ medium: { status: { $ne: ExternalToolMediumStatus.TEMPLATE } } }, { medium: { $exists: false } }],
+			});
 		}
 		return this;
 	}
 
-	public allowTemplate(isTemplateAllowed?: boolean): this {
-		if (!isTemplateAllowed) {
-			this.addQuery({ medium: { status: { $not: ExternalToolMediumStatus.TEMPLATE } } });
+	public allowDraft(isDraftAllowed?: boolean): this {
+		if (!isDraftAllowed) {
+			this.addQuery({
+				$or: [{ medium: { status: { $ne: ExternalToolMediumStatus.DRAFT } } }, { medium: { $exists: false } }],
+			});
 		}
 		return this;
 	}

@@ -69,18 +69,55 @@ describe('ExternalToolScope', () => {
 		});
 	});
 
-	describe('byTemplateOrDraft', () => {
-		it('should return scope with added medium status to query', () => {
-			scope.allowTemplateAndDraft(undefined);
-			expect(scope.query).toEqual({
-				$or: [{ medium: { status: ExternalToolMediumStatus.ACTIVE } }, { medium: { $exists: false } }],
+	describe('byPreferred', () => {
+		describe('when the param flag is set to true', () => {
+			it('should return scope with added isPreferred to query', () => {
+				scope.byPreferred(true);
+				expect(scope.query).toEqual({ isPreferred: true });
 			});
 		});
 
-		it('should return scope without added medium status to query', () => {
-			const param = true;
-			scope.allowTemplateAndDraft(param);
-			expect(scope.query).toEqual({});
+		describe('when the param flag is set to undefined', () => {
+			it('should return scope without added isPreferred to query', () => {
+				scope.byPreferred(undefined);
+				expect(scope.query).toEqual({});
+			});
+		});
+	});
+
+	describe('allowTemplate', () => {
+		describe('when the param flag is set to true', () => {
+			it('should return scope which allows medium templates', () => {
+				scope.allowTemplate(true);
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when the param flag is set to falsy', () => {
+			it('should return scope which forbids templates and allows non-medium tools', () => {
+				scope.allowTemplate(undefined);
+				expect(scope.query).toEqual({
+					$or: [{ medium: { status: { $not: ExternalToolMediumStatus.TEMPLATE } } }, { medium: { $exists: false } }],
+				});
+			});
+		});
+	});
+
+	describe('allowDraft', () => {
+		describe('when the param flag is set to true', () => {
+			it('should return scope which allows medium drafts', () => {
+				scope.allowDraft(true);
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when the param flag is set to falsy', () => {
+			it('should return scope which forbids drafts and allows non-medium tools', () => {
+				scope.allowDraft(undefined);
+				expect(scope.query).toEqual({
+					$or: [{ medium: { status: { $not: ExternalToolMediumStatus.DRAFT } } }, { medium: { $exists: false } }],
+				});
+			});
 		});
 	});
 });
