@@ -140,6 +140,7 @@ export interface ServerConfig
 	LICENSE_SUMMARY_URL: string | undefined;
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: boolean;
 	ROOM_MEMBER_INFO_URL: string | null;
+	FEATURE_HIDE_OLD_ADMIN_PAGE_LINK: boolean;
 }
 
 const config: ServerConfig = {
@@ -378,6 +379,7 @@ const config: ServerConfig = {
 	SESSION_VALKEY__SENTINEL_SERVICE_NAME: Configuration.has('SESSION_VALKEY__SENTINEL_SERVICE_NAME')
 		? (Configuration.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME') as string)
 		: undefined,
+	FEATURE_HIDE_OLD_ADMIN_PAGE_LINK: Configuration.get('FEATURE_HIDE_OLD_ADMIN_PAGE_LINK') as boolean,
 };
 
 export const serverConfig = (): ServerConfig => config;
