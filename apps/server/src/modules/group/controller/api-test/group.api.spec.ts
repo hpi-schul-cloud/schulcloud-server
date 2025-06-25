@@ -50,6 +50,7 @@ describe('Group (API)', () => {
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
+				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
 				const teacherUser = userFactory.buildWithId({ school, roles: [teacherRole] });
 				const system = systemEntityFactory.buildWithId();
 				const classEntity = classEntityFactory.buildWithId({
@@ -81,6 +82,7 @@ describe('Group (API)', () => {
 					adminAccount,
 					adminUser,
 					teacherRole,
+					studentRole,
 					teacherUser,
 					system,
 					classEntity,
