@@ -46,31 +46,66 @@ describe(UserDeletionSaga.name, () => {
 				],
 			};
 			const executeStepSpy = jest.spyOn(stepRegistry, 'executeStep').mockResolvedValue(stepReport);
+			const numberOfModuleNames = Object.values(UserDeletionSagaExecutionOrder).length;
 
 			return {
 				hasStepSpy,
 				stepReport,
 				executeStepSpy,
+				numberOfModuleNames,
 			};
 		};
 
 		it('should check step registration', async () => {
-			const { hasStepSpy } = setup();
+			const { hasStepSpy, numberOfModuleNames } = setup();
 
 			await saga.execute({ userId: '67a0784ef358f49ca4faf5c4' });
 
-			const numberOfModuleNames = Object.values(UserDeletionSagaExecutionOrder).length;
 			expect(hasStepSpy).toHaveBeenCalledTimes(numberOfModuleNames + 1);
 		});
 
-		it('should execute step', async () => {
+		it('should execute all steps', async () => {
+			const { executeStepSpy, numberOfModuleNames } = setup();
+
+			await saga.execute({ userId: '67a0784ef358f49ca4faf5c4' });
+
+			expect(executeStepSpy).toHaveBeenCalledTimes(numberOfModuleNames + 1);
+		});
+
+		it('should execute user deletion step', async () => {
 			const { executeStepSpy } = setup();
 
 			await saga.execute({ userId: '67a0784ef358f49ca4faf5c4' });
 
-			expect(executeStepSpy).toHaveBeenCalledWith(ModuleName.ACCOUNT, 'deleteUserData', {
+			expect(executeStepSpy).toHaveBeenCalledWith(ModuleName.USER, 'deleteUserData', {
 				userId: '67a0784ef358f49ca4faf5c4',
 			});
+		});
+
+		it('should throw an error if any step fails', async () => {
+			const { executeStepSpy } = setup();
+			executeStepSpy.mockRejectedValueOnce(new Error('test step failed'));
+
+			await expect(saga.execute({ userId: '67a0784ef358f49ca4faf5c4' })).rejects.toThrow(
+				'Some steps failed: Error: test step failed'
+			);
+		});
+
+		it('should throw an error if user deletion step fails', async () => {
+			setup();
+			jest.spyOn(stepRegistry, 'executeStep').mockImplementation((moduleName, saga) => {
+				if (moduleName === ModuleName.USER && saga === 'deleteUserData') {
+					return Promise.reject(new Error('this is a test error'));
+				}
+				return Promise.resolve({
+					moduleName,
+					operations: [],
+				});
+			});
+
+			await expect(saga.execute({ userId: '67a0784ef358f49ca4faf5c4' })).rejects.toThrow(
+				'Step failed: Failed to delete user data in USER module: this is a test error'
+			);
 		});
 
 		it('should return step reports', async () => {

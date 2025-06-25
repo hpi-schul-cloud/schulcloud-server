@@ -48,8 +48,10 @@ export class UserDeletionSaga extends Saga<'userDeletion'> {
 			)
 		);
 
-		const isRejected = (result: PromiseSettledResult<StepReport>) => result.status === 'rejected';
-		const failedSteps = results.filter(isRejected);
+		const isRejectedStep = (result: PromiseSettledResult<StepReport>) => result.status === 'rejected';
+		const isSuccessStep = (result: PromiseSettledResult<StepReport>) => result.status === 'fulfilled';
+		const failedSteps = results.filter(isRejectedStep);
+
 		if (failedSteps.length > 0) {
 			throw new Error(
 				`Some steps failed: ${failedSteps.map((r: PromiseRejectedResult) => r.reason as string).join(', ')}`
@@ -57,14 +59,11 @@ export class UserDeletionSaga extends Saga<'userDeletion'> {
 		}
 
 		const successReports: StepReport[] = [];
-		for (const result of results) {
-			if (result.status === 'rejected') {
-				continue; // Already handled above
-			}
+		const successSteps = results.filter(isSuccessStep);
+		for (const result of successSteps) {
 			const reports = Array.isArray(result.value) ? result.value : [result.value];
 			successReports.push(...reports);
 		}
-
 		try {
 			const userStepResult = await this.stepRegistry.executeStep(ModuleName.USER, 'deleteUserData', {
 				userId: params.userId,
@@ -72,7 +71,7 @@ export class UserDeletionSaga extends Saga<'userDeletion'> {
 			successReports.push(userStepResult);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
-			throw new Error(`Failed to delete user data in USER module: ${message}`);
+			throw new Error(`Step failed: Failed to delete user data in USER module: ${message}`);
 		}
 
 		return successReports;
