@@ -1,4 +1,3 @@
-import { Class } from '@modules/class';
 import { EntityId } from '@shared/domain/types';
 import { Group } from '../../domain';
 import { ClassRootType } from './class-root-type';
@@ -44,9 +43,5 @@ export class InternalClassDto<T> {
 
 	public isGroup(): this is InternalClassDto<Group> {
 		return this.type === ClassRootType.GROUP;
-	}
-
-	public isClass(): this is InternalClassDto<Class> {
-		return this.type === ClassRootType.CLASS;
 	}
 }

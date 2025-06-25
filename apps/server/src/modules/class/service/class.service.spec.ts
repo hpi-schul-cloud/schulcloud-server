@@ -7,7 +7,7 @@ import { setupEntities } from '@testing/database';
 import { Class } from '../domain';
 import { classFactory } from '../domain/testing';
 import { ClassEntity } from '../entity';
-import { ClassesRepo } from '../repo';
+import { ClassesRepo, ClassScope } from '../repo';
 import { ClassService } from './class.service';
 
 describe(ClassService.name, () => {
@@ -42,6 +42,38 @@ describe(ClassService.name, () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('find', () => {
+		describe('when the school has classes', () => {
+			const setup = () => {
+				const scope = new ClassScope();
+				const classes: Class[] = classFactory.buildList(3);
+
+				classesRepo.find.mockResolvedValueOnce(classes);
+
+				return {
+					classes,
+					scope,
+				};
+			};
+
+			it('should call the repo', async () => {
+				const { scope } = setup();
+
+				await service.find(scope);
+
+				expect(classesRepo.find).toHaveBeenCalledWith(scope);
+			});
+
+			it('should return the classes', async () => {
+				const { scope, classes } = setup();
+
+				const result: Class[] = await service.find(scope);
+
+				expect(result).toEqual(classes);
+			});
+		});
 	});
 
 	describe('findClassesForSchool', () => {

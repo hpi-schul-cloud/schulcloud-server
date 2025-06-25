@@ -25,12 +25,12 @@ export class ClassGroupUc {
 	constructor(
 		private readonly groupService: GroupService,
 		private readonly classService: ClassService,
+		private readonly roleService: RoleService,
 		private readonly systemService: SystemService,
 		private readonly schoolService: SchoolService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolYearService: SchoolYearService,
 		private readonly courseService: CourseDoService,
-		private readonly roleService: RoleService,
 		private readonly configService: ConfigService<ProvisioningConfig, true>
 	) {}
 

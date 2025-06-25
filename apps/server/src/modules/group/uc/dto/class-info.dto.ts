@@ -1,6 +1,6 @@
+import { Course } from '@modules/course';
 import { EntityId } from '@shared/domain/types';
 import { ClassRootType } from './class-root-type';
-import { CourseInfoDto } from './course-info.dto';
 
 export class ClassInfoDto {
 	public id: EntityId;
@@ -19,7 +19,7 @@ export class ClassInfoDto {
 
 	public studentCount: number;
 
-	public synchronizedCourses?: CourseInfoDto[];
+	public synchronizedCourses?: Course[];
 
 	constructor(props: ClassInfoDto) {
 		this.id = props.id;

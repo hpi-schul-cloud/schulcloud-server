@@ -14,7 +14,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { GroupEntityTypes } from '../../entity';
 import { groupEntityFactory } from '../../testing';
-import { ClassRootType } from '../../uc/dto/class-root-type';
+import { ClassRootType } from '../../uc/dto';
 import { ClassInfoSearchListResponse } from '../dto';
 import { ClassSortQueryType } from '../dto/interface';
 

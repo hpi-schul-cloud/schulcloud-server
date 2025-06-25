@@ -1,6 +1,7 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { ClassRootType, CourseInfoDto } from '../uc/dto';
+import { Course } from '../../course';
+import { ClassRootType } from '../uc/dto';
 
 export interface ClassGroupProps extends AuthorizableObject {
 	id: EntityId;
@@ -19,7 +20,7 @@ export interface ClassGroupProps extends AuthorizableObject {
 
 	studentCount: number;
 
-	synchronizedCourses?: CourseInfoDto[];
+	synchronizedCourses?: Course[];
 }
 
 export class ClassGroup extends DomainObject<ClassGroupProps> {}
