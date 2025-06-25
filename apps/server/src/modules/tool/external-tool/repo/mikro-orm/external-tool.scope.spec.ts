@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
+import { ExternalToolMediumStatus } from '../../enum';
 import { ExternalToolScope } from './external-tool.scope';
 
 describe('ExternalToolScope', () => {
@@ -66,6 +66,22 @@ describe('ExternalToolScope', () => {
 		it('should return scope without added ids to query', () => {
 			scope.byIds(undefined);
 			expect(scope.query).toEqual({});
+		});
+	});
+
+	describe('byPreferred', () => {
+		describe('when the param flag is set to true', () => {
+			it('should return scope with added isPreferred to query', () => {
+				scope.byPreferred(true);
+				expect(scope.query).toEqual({ isPreferred: true });
+			});
+		});
+
+		describe('when the param flag is set to undefined', () => {
+			it('should return scope without added isPreferred to query', () => {
+				scope.byPreferred(undefined);
+				expect(scope.query).toEqual({});
+			});
 		});
 	});
 
