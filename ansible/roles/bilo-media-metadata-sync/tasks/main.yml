@@ -21,7 +21,7 @@
       state: absent
       kind: CronJob
       namespace: "{{ NAMESPACE }}"
-      name: media-metadata-sync-cronjob
+      name: media-metadata-sync-cronjob-configmap
    tags:
     - cronjob
 
