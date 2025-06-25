@@ -49,7 +49,7 @@ import { SyncUc } from './uc/sync.uc';
 					AccountModule,
 			  ]
 			: []),
-		...((Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean)
+		...((Configuration.get('FEATURE_BILO_MEDIA_METADATA_SYNC_ENABLED') as boolean)
 			? [MediaSourceSyncModule, RabbitMQWrapperModule]
 			: []),
 	],
@@ -62,7 +62,7 @@ import { SyncUc } from './uc/sync.uc';
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [TspSyncStrategy, TspSchoolService, TspOauthDataMapper, TspFetchService]
 			: []),
-		...((Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean) ? [MediaMetadataSyncStrategy] : []),
+		...((Configuration.get('FEATURE_BILO_MEDIA_METADATA_SYNC_ENABLED') as boolean) ? [MediaMetadataSyncStrategy] : []),
 	],
 	exports: [SyncConsole],
 })
