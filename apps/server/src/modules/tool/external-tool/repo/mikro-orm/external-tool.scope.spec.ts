@@ -85,39 +85,18 @@ describe('ExternalToolScope', () => {
 		});
 	});
 
-	describe('allowTemplate', () => {
-		describe('when the param flag is set to true', () => {
-			it('should return scope which allows medium templates', () => {
-				scope.allowTemplate(true);
-				expect(scope.query).toEqual({});
+	describe('byTemplateOrDraft', () => {
+		it('should return scope with added medium status to query', () => {
+			scope.byTemplateOrDraft(undefined);
+			expect(scope.query).toEqual({
+				$or: [{ medium: { status: ExternalToolMediumStatus.ACTIVE } }, { medium: { $exists: false } }],
 			});
 		});
 
-		describe('when the param flag is set to falsy', () => {
-			it('should return scope which forbids templates and allows non-medium tools', () => {
-				scope.allowTemplate(undefined);
-				expect(scope.query).toEqual({
-					$or: [{ medium: { status: { $ne: ExternalToolMediumStatus.TEMPLATE } } }, { medium: { $exists: false } }],
-				});
-			});
-		});
-	});
-
-	describe('allowDraft', () => {
-		describe('when the param flag is set to true', () => {
-			it('should return scope which allows medium drafts', () => {
-				scope.allowDraft(true);
-				expect(scope.query).toEqual({});
-			});
-		});
-
-		describe('when the param flag is set to falsy', () => {
-			it('should return scope which forbids drafts and allows non-medium tools', () => {
-				scope.allowDraft(undefined);
-				expect(scope.query).toEqual({
-					$or: [{ medium: { status: { $ne: ExternalToolMediumStatus.DRAFT } } }, { medium: { $exists: false } }],
-				});
-			});
+		it('should return scope without added medium status to query', () => {
+			const param = true;
+			scope.byTemplateOrDraft(param);
+			expect(scope.query).toEqual({});
 		});
 	});
 });

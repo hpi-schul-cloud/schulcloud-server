@@ -364,83 +364,14 @@ describe(ExternalToolRepo.name, () => {
 				});
 			});
 
-			describe('when only templates are allowed', () => {
-				it('should only return non-medium or medium status template or active tools', async () => {
+			describe('by template or draft', () => {
+				it('should not return external tool with not active medium status', async () => {
 					const { options, ltiTools } = await setupFind();
+					const query: ExternalToolSearchQuery = { isTemplateOrDraft: true };
 
-					const page: Page<ExternalTool> = await repo.find({ isTemplateAllowed: true }, options);
-
-					const filteredExpectedEntities = ltiTools.filter(
-						(tool: ExternalToolEntity) =>
-							tool.medium === undefined ||
-							tool.medium.status === ExternalToolMediumStatus.TEMPLATE ||
-							tool.medium.status === ExternalToolMediumStatus.ACTIVE
-					);
-
-					const expectedTools = filteredExpectedEntities.map((entity: ExternalToolEntity) =>
-						ExternalToolRepoMapper.mapEntityToDO(entity)
-					);
-
-					expect(page.data.length).toBe(expectedTools.length);
-					expect(page.data).toEqual(expect.arrayContaining(expectedTools));
-				});
-			});
-
-			describe('when only drafts are allowed', () => {
-				it('should only return non-medium or medium status draft or active tools', async () => {
-					const { options, ltiTools } = await setupFind();
-
-					const page: Page<ExternalTool> = await repo.find({ isDraftAllowed: true }, options);
-
-					const filteredExpectedEntities = ltiTools.filter(
-						(tool: ExternalToolEntity) =>
-							tool.medium === undefined ||
-							tool.medium.status === ExternalToolMediumStatus.DRAFT ||
-							tool.medium.status === ExternalToolMediumStatus.ACTIVE
-					);
-
-					const expectedTools = filteredExpectedEntities.map((entity: ExternalToolEntity) =>
-						ExternalToolRepoMapper.mapEntityToDO(entity)
-					);
-
-					expect(page.data.length).toBe(expectedTools.length);
-					expect(page.data).toEqual(expect.arrayContaining(expectedTools));
-				});
-			});
-
-			describe('when both templates and drafts are allowed', () => {
-				it('should return all tools', async () => {
-					const { options, ltiTools } = await setupFind();
-
-					const page: Page<ExternalTool> = await repo.find(
-						{
-							isDraftAllowed: true,
-							isTemplateAllowed: true,
-						},
-						options
-					);
+					const page: Page<ExternalTool> = await repo.find(query, options);
 
 					const expectedTools = ltiTools.map((entity: ExternalToolEntity) =>
-						ExternalToolRepoMapper.mapEntityToDO(entity)
-					);
-
-					expect(page.data.length).toBe(ltiTools.length);
-					expect(page.data).toEqual(expect.arrayContaining(expectedTools));
-				});
-			});
-
-			describe('when neither templates nor drafts are allowed', () => {
-				it('should only return non-medium or medium status active tools', async () => {
-					const { options, ltiTools } = await setupFind();
-
-					const page: Page<ExternalTool> = await repo.find({}, options);
-
-					const filteredExpectedEntities = ltiTools.filter(
-						(tool: ExternalToolEntity) =>
-							tool.medium === undefined || tool.medium.status === ExternalToolMediumStatus.ACTIVE
-					);
-
-					const expectedTools = filteredExpectedEntities.map((entity: ExternalToolEntity) =>
 						ExternalToolRepoMapper.mapEntityToDO(entity)
 					);
 

@@ -9,7 +9,5 @@ export interface ExternalToolSearchQuery {
 
 	isPreferred?: boolean;
 
-	isTemplateAllowed?: boolean;
-
-	isDraftAllowed?: boolean;
+	isTemplateOrDraft?: boolean;
 }
