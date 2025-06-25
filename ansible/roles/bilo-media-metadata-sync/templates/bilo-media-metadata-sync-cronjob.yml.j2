@@ -3,27 +3,27 @@ kind: CronJob
 metadata:
   namespace: {{ NAMESPACE }}
   labels:
-    app: media-metadata-sync-cronjob
+    app: bilo-media-metadata-sync-cronjob
     app.kubernetes.io/part-of: schulcloud-verbund
     app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-    app.kubernetes.io/name: media-metadata-sync-cronjob
+    app.kubernetes.io/name: bilo-media-metadata-sync-cronjob
     app.kubernetes.io/component: sync
     app.kubernetes.io/managed-by: ansible
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
-  name: media-metadata-sync-cronjob
+  name: bilo-media-metadata-sync-cronjob
 spec:
-  schedule: {{ SERVER_MEDIA_METADATA_SYNC_CRONJOB_SCHEDULE|default("30 2 * * *", true) }}
+  schedule: {{ SERVER_BILO_MEDIA_METADATA_SYNC_CRONJOB_SCHEDULE|default("30 2 * * *", true) }}
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       template:
         metadata:
           labels:
-            app: media-metadata-sync-cronjob
+            app: bilo-media-metadata-sync-cronjob
             app.kubernetes.io/part-of: schulcloud-verbund
             app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-            app.kubernetes.io/name: media-metadata-sync-cronjob
+            app.kubernetes.io/name: bilo-media-metadata-sync-cronjob
             app.kubernetes.io/component: sync
             app.kubernetes.io/managed-by: ansible
             git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
@@ -32,7 +32,7 @@ spec:
           os:
             name: linux
           containers:
-          - name: media-metadata-sync-cronjob
+          - name: bilo-media-metadata-sync-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
             envFrom:
             - configMapRef:
@@ -40,16 +40,16 @@ spec:
             - secretRef:
                 name: api-secret
             - configMapRef:
-                name: media-metadata-sync-cronjob-configmap
+                name: bilo-media-metadata-sync-cronjob-configmap
             command: ['/bin/sh','-c']
             args: ['npm run nest:start:sync:media-metadata:prod']
             resources:
               limits:
-                cpu: {{ MEDIA_METADATA_SYNC_CPU_LIMITS|default("2000m", true) }}
-                memory: {{ MEDIA_METADATA_SYNC_MEMORY_LIMITS|default("2Gi", true) }}
+                cpu: {{ BILO_MEDIA_METADATA_SYNC_CPU_LIMITS|default("2000m", true) }}
+                memory: {{ BILO_MEDIA_METADATA_SYNC_MEMORY_LIMITS|default("2Gi", true) }}
               requests:
-                cpu: {{ MEDIA_METADATA_SYNC_CPU_REQUESTS|default("100m", true) }}
-                memory: {{ MEDIA_METADATA_SYNC_MEMORY_REQUESTS|default("150Mi", true) }}
+                cpu: {{ BILO_MEDIA_METADATA_SYNC_CPU_REQUESTS|default("100m", true) }}
+                memory: {{ BILO_MEDIA_METADATA_SYNC_MEMORY_REQUESTS|default("150Mi", true) }}
           restartPolicy: OnFailure
 {% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
           affinity:
