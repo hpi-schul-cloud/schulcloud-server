@@ -3,7 +3,7 @@
      state: absent
      kind: ConfigMap
      namespace: "{{ NAMESPACE }}"
-     name: media-metadata-sync-cronjob-configmap
+     name:  "{{ NAMESPACE }}-media-metadata-sync-cronjob-configmap"
    tags:
     - configmap
 
@@ -21,7 +21,7 @@
       state: absent
       kind: CronJob
       namespace: "{{ NAMESPACE }}"
-      name: media-metadata-sync-cronjob-configmap
+      name:  "{{ NAMESPACE }}-media-metadata-sync-cronjob"
    tags:
     - cronjob
 
