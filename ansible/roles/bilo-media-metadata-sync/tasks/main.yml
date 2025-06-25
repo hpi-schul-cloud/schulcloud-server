@@ -1,3 +1,10 @@
+-  name: media metadata sync CronJob ConfigMap remove
+   kubernetes.core.k8s:
+     state: absent
+     kind: CronJob
+     namespace: "{{ NAMESPACE }}"
+     name:  "{{ NAMESPACE }}-media-metadata-sync-cronjob-configmap"
+
 - name: bilo media metadata sync CronJob ConfigMap
   kubernetes.core.k8s:
     kubeconfig: ~/.kube/config
@@ -7,7 +14,14 @@
   tags:
     - configmap
 
-- name: bilo media metadata sync sync CronJob
+-  name: media metadata sync remove
+   kubernetes.core.k8s:
+      state: absent
+      kind: CronJob
+      namespace: "{{ NAMESPACE }}"
+      name:  "{{ NAMESPACE }}-media-metadata-sync-cronjob"
+
+- name: bilo media metadata sync CronJob
   kubernetes.core.k8s:
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
