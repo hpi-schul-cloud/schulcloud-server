@@ -55,7 +55,6 @@ export class DeletionRequestService {
 		});
 
 		await this.deletionRequestRepo.create(newDeletionRequest);
-
 		return { requestId: newDeletionRequest.id, deletionPlannedAt: newDeletionRequest.deleteAfter };
 	}
 
