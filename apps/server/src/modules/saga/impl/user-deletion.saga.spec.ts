@@ -60,7 +60,7 @@ describe(UserDeletionSaga.name, () => {
 			await saga.execute({ userId: '67a0784ef358f49ca4faf5c4' });
 
 			const numberOfModuleNames = Object.values(UserDeletionSagaExecutionOrder).length;
-			expect(hasStepSpy).toHaveBeenCalledTimes(numberOfModuleNames);
+			expect(hasStepSpy).toHaveBeenCalledTimes(numberOfModuleNames + 1);
 		});
 
 		it('should execute step', async () => {
