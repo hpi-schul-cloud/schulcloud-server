@@ -6,3 +6,4 @@ export { GroupDeletedEvent } from './event';
 export { GroupFilter } from './interface';
 export { GroupAggregateScope } from './group-aggregate.scope';
 export { GroupVisibilityPermission } from './group-visibility-permission.enum';
+export { ClassGroupProps, ClassGroup } from './class-group';

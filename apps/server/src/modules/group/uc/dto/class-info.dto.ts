@@ -3,23 +3,23 @@ import { ClassRootType } from './class-root-type';
 import { CourseInfoDto } from './course-info.dto';
 
 export class ClassInfoDto {
-	id: EntityId;
+	public id: EntityId;
 
-	type: ClassRootType;
+	public type: ClassRootType;
 
-	name: string;
+	public name: string;
 
-	externalSourceName?: string;
+	public externalSourceName?: string;
 
-	teacherNames: string[];
+	public teacherNames: string[];
 
-	schoolYear?: string;
+	public schoolYear?: string;
 
-	isUpgradable?: boolean;
+	public isUpgradable?: boolean;
 
-	studentCount: number;
+	public studentCount: number;
 
-	synchronizedCourses?: CourseInfoDto[];
+	public synchronizedCourses?: CourseInfoDto[];
 
 	constructor(props: ClassInfoDto) {
 		this.id = props.id;
