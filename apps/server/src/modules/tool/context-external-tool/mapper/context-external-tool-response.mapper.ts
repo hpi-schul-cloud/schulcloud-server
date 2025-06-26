@@ -60,6 +60,7 @@ export class ContextExternalToolResponseMapper {
 			contextToolId: toolReference.contextToolId,
 			description: toolReference.description,
 			displayName: toolReference.displayName,
+			domain: toolReference.domain,
 			logoUrl: toolReference.logoUrl,
 			thumbnailUrl: toolReference.thumbnailUrl,
 			openInNewTab: toolReference.openInNewTab,

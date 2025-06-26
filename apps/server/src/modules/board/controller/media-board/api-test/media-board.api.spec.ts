@@ -380,6 +380,7 @@ describe('Media Board (API)', () => {
 						{
 							schoolExternalToolId: unusedSchoolExternalTool.id,
 							name: unusedExternalTool.name,
+							domain: new URL(unusedExternalTool.config.baseUrl).hostname,
 							description: unusedExternalTool.description,
 							thumbnailUrl: `/api/v3/file/preview/${fileRecordId.toHexString()}/${encodeURIComponent(fileName)}`,
 						},
@@ -608,6 +609,7 @@ describe('Media Board (API)', () => {
 						{
 							schoolExternalToolId: licensedUnusedSchoolExternalTool.id,
 							name: licensedUnusedExternalTool.name,
+							domain: new URL(licensedUnusedExternalTool.config.baseUrl).hostname,
 							description: licensedUnusedExternalTool.description,
 							thumbnailUrl: `/api/v3/file/preview/${fileRecordId.toHexString()}/${encodeURIComponent(fileName)}`,
 						},

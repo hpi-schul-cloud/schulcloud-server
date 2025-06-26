@@ -12,6 +12,8 @@ export class ToolReference {
 
 	displayName: string;
 
+	domain: string;
+
 	openInNewTab: boolean;
 
 	status: ContextExternalToolConfigurationStatus;
@@ -26,6 +28,7 @@ export class ToolReference {
 		this.logoUrl = toolReference.logoUrl;
 		this.thumbnailUrl = toolReference.thumbnailUrl;
 		this.displayName = toolReference.displayName;
+		this.domain = toolReference.domain;
 		this.openInNewTab = toolReference.openInNewTab;
 		this.status = toolReference.status;
 		this.isLtiDeepLinkingTool = toolReference.isLtiDeepLinkingTool;

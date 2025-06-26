@@ -7,6 +7,9 @@ export class MediaAvailableLineElementResponse {
 	@ApiProperty({ description: 'Name of the media available line element' })
 	name: string;
 
+	@ApiProperty({ description: 'Domain of the tool url' })
+	domain: string;
+
 	@ApiPropertyOptional({ description: 'Description of the media available line element' })
 	description?: string;
 
@@ -22,5 +25,6 @@ export class MediaAvailableLineElementResponse {
 		this.description = props.description;
 		this.logoUrl = props.logoUrl;
 		this.thumbnailUrl = props.thumbnailUrl;
+		this.domain = props.domain;
 	}
 }

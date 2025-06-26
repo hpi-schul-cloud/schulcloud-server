@@ -8,6 +8,7 @@ export const mediaAvailableLineElementFactory = BaseFactory.define<
 >(MediaAvailableLineElement, () => {
 	return {
 		name: 'Element',
+		domain: 'test.com',
 		description: 'Element description',
 		logoUrl: 'https://logo.com',
 		schoolExternalToolId: new ObjectId().toHexString(),

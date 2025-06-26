@@ -22,6 +22,9 @@ export class ToolReferenceResponse {
 	@ApiProperty({ description: 'The display name of the tool' })
 	displayName: string;
 
+	@ApiProperty({ description: 'The domain of the tool url' })
+	domain: string;
+
 	@ApiProperty({ description: 'Whether the tool should be opened in a new tab' })
 	openInNewTab: boolean;
 
@@ -47,5 +50,6 @@ export class ToolReferenceResponse {
 		this.status = toolReferenceResponse.status;
 		this.isLtiDeepLinkingTool = toolReferenceResponse.isLtiDeepLinkingTool;
 		this.ltiDeepLink = toolReferenceResponse.ltiDeepLink;
+		this.domain = toolReferenceResponse.domain;
 	}
 }
