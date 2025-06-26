@@ -6,9 +6,10 @@ import { TestingModule } from '@nestjs/testing/testing-module';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { randomUUID } from 'crypto';
+import { ClassEntity } from '../entity';
+import { ClassScope } from './class.scope';
 import { ClassesRepo } from './classes.repo';
 import { ClassMapper } from './mapper';
-import { ClassEntity } from '../entity';
 
 describe(ClassesRepo.name, () => {
 	let module: TestingModule;
@@ -31,6 +32,38 @@ describe(ClassesRepo.name, () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
+	});
+
+	describe('find', () => {
+		describe('when school has no class', () => {
+			it('should return empty array', async () => {
+				const result = await repo.find(new ClassScope().allowEmptyQuery(true));
+
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when school has classes', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const classes = classEntityFactory.buildListWithId(3, { schoolId: school.id });
+
+				await em.persistAndFlush(classes);
+				em.clear();
+
+				return {
+					school,
+				};
+			};
+
+			it('should find classes with particular schoolId', async () => {
+				const { school } = await setup();
+
+				const result = await repo.find(new ClassScope().bySchoolId(school.id));
+
+				expect(result.length).toEqual(3);
+			});
+		});
 	});
 
 	describe('findAllBySchoolId', () => {
@@ -56,7 +89,7 @@ describe(ClassesRepo.name, () => {
 				};
 			};
 
-			it('should find classes with particular userId', async () => {
+			it('should find classes with particular schoolId', async () => {
 				const { school } = await setup();
 
 				const result = await repo.findAllBySchoolId(school.id);

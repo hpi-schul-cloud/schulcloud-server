@@ -3,11 +3,20 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Class } from '../domain';
 import { ClassEntity } from '../entity';
+import { ClassScope } from './class.scope';
 import { ClassMapper } from './mapper';
 
 @Injectable()
 export class ClassesRepo {
 	constructor(private readonly em: EntityManager) {}
+
+	public async find(scope: ClassScope): Promise<Class[]> {
+		const classes: ClassEntity[] = await this.em.find(ClassEntity, scope.query);
+
+		const mapped: Class[] = ClassMapper.mapToDOs(classes);
+
+		return mapped;
+	}
 
 	public async findAllBySchoolId(schoolId: EntityId): Promise<Class[]> {
 		const classes: ClassEntity[] = await this.em.find(ClassEntity, { schoolId: new ObjectId(schoolId) });

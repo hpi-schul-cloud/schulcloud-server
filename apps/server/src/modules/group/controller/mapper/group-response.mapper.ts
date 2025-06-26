@@ -1,6 +1,7 @@
+import { Course } from '@modules/course';
 import { Page } from '@shared/domain/domainobject';
 import { GroupTypes } from '../../domain';
-import { ClassInfoDto, CourseInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../../uc/dto';
+import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../../uc/dto';
 import {
 	ClassInfoResponse,
 	ClassInfoSearchListResponse,
@@ -52,7 +53,7 @@ export class GroupResponseMapper {
 			isUpgradable: classInfo.isUpgradable,
 			studentCount: classInfo.studentCount,
 			synchronizedCourses: classInfo.synchronizedCourses?.map(
-				(synchronizedCourse: CourseInfoDto): CourseInfoResponse => new CourseInfoResponse(synchronizedCourse)
+				(synchronizedCourse: Course): CourseInfoResponse => new CourseInfoResponse(synchronizedCourse)
 			),
 		});
 
