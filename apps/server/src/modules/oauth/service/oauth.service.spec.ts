@@ -373,7 +373,7 @@ describe('OAuthService', () => {
 				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
-						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
 					externalUser: externalUserDtoFactory.build({
@@ -424,7 +424,7 @@ describe('OAuthService', () => {
 				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
-						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
 					externalUser: externalUserDtoFactory.build({
@@ -471,7 +471,7 @@ describe('OAuthService', () => {
 				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
-						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
 					externalUser: externalUserDtoFactory.build({
@@ -539,7 +539,7 @@ describe('OAuthService', () => {
 				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
-						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
 					externalUser: externalUserDtoFactory.build({
@@ -607,7 +607,7 @@ describe('OAuthService', () => {
 				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
-						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
 					externalUser: externalUserDtoFactory.build({
@@ -670,7 +670,7 @@ describe('OAuthService', () => {
 				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
-						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
 					externalUser: externalUserDtoFactory.build({
@@ -732,7 +732,7 @@ describe('OAuthService', () => {
 				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
-						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
 					externalUser: externalUserDtoFactory.build({
@@ -799,7 +799,7 @@ describe('OAuthService', () => {
 				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
-						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 						provisioningUrl: 'https://mock.person-info.de/',
 					},
 					externalUser: externalUserDtoFactory.build({

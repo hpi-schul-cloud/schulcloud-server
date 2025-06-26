@@ -123,7 +123,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 		describe('when a new object is provided', () => {
 			const setup = async () => {
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId({
-					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 				});
 				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId({ systems: [systemEntity] });
 
@@ -170,7 +170,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 		describe('when an entity exists', () => {
 			const setup = async () => {
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId({
-					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 				});
 				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId({ systems: [systemEntity] });
 				const schoolSystemOptionsEntity: SchoolSystemOptionsEntity = schoolSystemOptionsEntityFactory.buildWithId({

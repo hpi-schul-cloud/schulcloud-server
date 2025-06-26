@@ -3,10 +3,10 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { ProvisioningSystemDto } from '../dto';
 import { ProvisioningSystemInputMapper } from './provisioning-system-input.mapper';
 
-describe('SchoolUcMapper', () => {
+describe(ProvisioningSystemInputMapper.name, () => {
 	describe('mapToInternal', () => {
 		it('should map provisioningStrategy', () => {
-			const provisioningStrategy = SystemProvisioningStrategy.SCHULCONNEX_LEGACY;
+			const provisioningStrategy = SystemProvisioningStrategy.SCHULCONNEX_ASYNC;
 			const system = systemFactory.build({
 				provisioningStrategy,
 				provisioningUrl: 'https://prov.url',

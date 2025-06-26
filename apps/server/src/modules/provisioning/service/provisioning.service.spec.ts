@@ -9,18 +9,17 @@ import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningS
 import {
 	OidcMockProvisioningStrategy,
 	SchulconnexAsyncProvisioningStrategy,
-	SchulconnexSyncProvisioningStrategy,
+	TspProvisioningStrategy,
 } from '../strategy';
-import { TspProvisioningStrategy } from '../strategy/tsp/tsp.strategy';
-import { provisioningSystemDtoFactory } from '../testing/provisioning-system-dto.factory';
+import { provisioningSystemDtoFactory } from '../testing';
 import { ProvisioningService } from './provisioning.service';
 
-describe('ProvisioningService', () => {
+describe(ProvisioningService.name, () => {
 	let module: TestingModule;
 	let service: ProvisioningService;
 
 	let systemService: DeepMocked<SystemService>;
-	let provisioningStrategy: DeepMocked<SchulconnexSyncProvisioningStrategy>;
+	let provisioningStrategy: DeepMocked<SchulconnexAsyncProvisioningStrategy>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -29,14 +28,6 @@ describe('ProvisioningService', () => {
 				{
 					provide: SystemService,
 					useValue: createMock<SystemService>(),
-				},
-				{
-					provide: SchulconnexSyncProvisioningStrategy,
-					useValue: createMock<SchulconnexSyncProvisioningStrategy>({
-						getType(): SystemProvisioningStrategy {
-							return SystemProvisioningStrategy.SCHULCONNEX_LEGACY;
-						},
-					}),
 				},
 				{
 					provide: SchulconnexAsyncProvisioningStrategy,
@@ -67,7 +58,7 @@ describe('ProvisioningService', () => {
 
 		service = module.get(ProvisioningService);
 		systemService = module.get(SystemService);
-		provisioningStrategy = module.get(SchulconnexSyncProvisioningStrategy);
+		provisioningStrategy = module.get(SchulconnexAsyncProvisioningStrategy);
 	});
 
 	afterAll(async () => {
@@ -81,12 +72,12 @@ describe('ProvisioningService', () => {
 	const setupSystemData = () => {
 		const system: System = systemFactory.withOauthConfig().build({
 			provisioningUrl: 'https://api.moin.schule/',
-			provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+			provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 		});
 		const provisioningSystemDto: ProvisioningSystemDto = provisioningSystemDtoFactory.build({
 			systemId: system.id,
 			provisioningUrl: 'https://api.moin.schule/',
-			provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+			provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 		});
 		const oauthDataDto: OauthDataDto = oauthDataDtoFactory.build({
 			system: provisioningSystemDto,

@@ -5,7 +5,7 @@ describe(ProvisioningStrategyNoOptionsLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		it('should log the correct message', () => {
 			const exception = new ProvisioningStrategyNoOptionsLoggableException(
-				SystemProvisioningStrategy.SCHULCONNEX_LEGACY
+				SystemProvisioningStrategy.SCHULCONNEX_ASYNC
 			);
 
 			const result = exception.getLogMessage();
@@ -15,7 +15,7 @@ describe(ProvisioningStrategyNoOptionsLoggableException.name, () => {
 				message: expect.any(String),
 				stack: expect.any(String),
 				data: {
-					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 				},
 			});
 		});
