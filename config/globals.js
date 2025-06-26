@@ -18,7 +18,6 @@ const globals = {
 	MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE: 5 * 1024 * 1024, // 5MB
 	MONGOOSE_CONNECTION_POOL_SIZE: parseInt(process.env.MONGOOSE_CONNECTION_POOL_SIZE || '10', 10),
 
-	SC_DOMAIN: Configuration.get('SC_DOMAIN'),
 	SC_THEME: Configuration.get('SC_THEME'),
 	SC_TITLE: Configuration.get('SC_TITLE'),
 	SMTP_SENDER: Configuration.get('SMTP_SENDER'),
