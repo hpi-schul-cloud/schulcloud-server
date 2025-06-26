@@ -364,6 +364,7 @@ describe(MediaAvailableLineService.name, () => {
 					{
 						schoolExternalToolId: schoolExternalTool1.id,
 						name: externalTool1.name,
+						domain: new URL(externalTool1.config.baseUrl).hostname,
 						description: externalTool1.description,
 						logoUrl,
 						thumbnailUrl: externalTool1.thumbnail?.getPreviewUrl(),
@@ -371,6 +372,7 @@ describe(MediaAvailableLineService.name, () => {
 					{
 						schoolExternalToolId: schoolExternalTool2.id,
 						name: externalTool2.name,
+						domain: new URL(externalTool2.config.baseUrl).hostname,
 						description: externalTool2.description,
 						logoUrl: undefined,
 					},

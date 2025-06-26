@@ -138,8 +138,9 @@ export interface ServerConfig
 	FEATURE_TSP_SYNC_ENABLED: boolean;
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
-	FEATURE_MEDIA_METADATA_SYNC_ENABLED: boolean;
+	FEATURE_BILO_MEDIA_METADATA_SYNC_ENABLED: boolean;
 	ROOM_MEMBER_INFO_URL: string | null;
+	FEATURE_HIDE_OLD_ADMIN_PAGE_LINK: boolean;
 }
 
 const config: ServerConfig = {
@@ -357,7 +358,7 @@ const config: ServerConfig = {
 	LICENSE_SUMMARY_URL: Configuration.has('LICENSE_SUMMARY_URL')
 		? (Configuration.get('LICENSE_SUMMARY_URL') as string)
 		: undefined,
-	FEATURE_MEDIA_METADATA_SYNC_ENABLED: Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean,
+	FEATURE_BILO_MEDIA_METADATA_SYNC_ENABLED: Configuration.get('FEATURE_BILO_MEDIA_METADATA_SYNC_ENABLED') as boolean,
 	ROOM_MEMBER_INFO_URL:
 		Configuration.get('ROOM_MEMBER_INFO_URL') === null
 			? (Configuration.get('ROOM_MEMBER_INFO_URL') as null)
@@ -378,6 +379,7 @@ const config: ServerConfig = {
 	SESSION_VALKEY__SENTINEL_SERVICE_NAME: Configuration.has('SESSION_VALKEY__SENTINEL_SERVICE_NAME')
 		? (Configuration.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME') as string)
 		: undefined,
+	FEATURE_HIDE_OLD_ADMIN_PAGE_LINK: Configuration.get('FEATURE_HIDE_OLD_ADMIN_PAGE_LINK') as boolean,
 };
 
 export const serverConfig = (): ServerConfig => config;
