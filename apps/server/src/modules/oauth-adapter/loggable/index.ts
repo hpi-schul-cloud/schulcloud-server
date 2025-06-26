@@ -1,1 +1,1 @@
-export { TokenRequestLoggableException } from './token-request-loggable-exception';
+export { OAuthAdapterErrorLoggableException } from './oauth-adapter-error.loggable-exception';
