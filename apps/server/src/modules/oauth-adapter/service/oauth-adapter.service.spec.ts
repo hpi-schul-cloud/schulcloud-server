@@ -1,13 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosError } from 'axios';
 import { of, throwError } from 'rxjs';
-import { OAuthGrantType } from '../types';
 import { AuthenticationCodeGrantTokenRequest, OAuthTokenDto, OauthTokenResponse } from '../dto';
-import { TokenRequestLoggableException } from '../loggable';
+import { OAuthAdapterErrorLoggableException } from '../loggable';
+import { OAuthGrantType } from '../types';
 import { OauthAdapterService } from './oauth-adapter.service';
 
 const publicKey = 'publicKey';
@@ -96,64 +95,33 @@ describe('OauthAdapterServive', () => {
 		});
 
 		describe('when no token got returned', () => {
-			const setup = () => {
-				const error = new Error('unknown error');
+			const setup = (errorType: { isAxios: boolean }) => {
+				const error = errorType.isAxios ? new AxiosError() : new Error('unknown error');
 				httpService.post.mockReturnValueOnce(throwError(() => error));
-
-				return {
-					error,
-				};
 			};
-
-			it('should throw an error', async () => {
-				const { error } = setup();
-
-				const resp = service.sendTokenRequest('tokenEndpoint', testPayload);
-
-				await expect(resp).rejects.toEqual(error);
-			});
-		});
-
-		describe('when error got returned', () => {
-			describe('when error is a unknown error', () => {
-				const setup = () => {
-					const error = new Error('unknown error');
-					httpService.post.mockReturnValueOnce(throwError(() => error));
-
-					return {
-						error,
-					};
-				};
-
-				it('should throw the default sso error', async () => {
-					const { error } = setup();
+			describe('and error is not an axios error', () => {
+				it('should throw an OAuthAdapterErrorLoggableException', async () => {
+					setup({ isAxios: false });
 
 					const resp = service.sendTokenRequest('tokenEndpoint', testPayload);
 
-					await expect(resp).rejects.toEqual(error);
+					await expect(resp).rejects.toThrowError(OAuthAdapterErrorLoggableException);
+					await expect(resp).rejects.toMatchObject({
+						errorMessage: expect.any(String),
+						error: expect.any(Error),
+					});
 				});
 			});
-
-			describe('when error is a axios error', () => {
-				const setup = () => {
-					const error = {
-						error: 'invalid_request',
-					};
-					const axiosError: AxiosError = axiosErrorFactory.withError(error).build();
-
-					httpService.post.mockReturnValueOnce(throwError(() => axiosError));
-
-					return {
-						axiosError,
-					};
-				};
-
-				it('should throw an error', async () => {
-					const { axiosError } = setup();
+			describe('and error is an axios error', () => {
+				it('should throw an AxiosErrorLoggable', async () => {
+					setup({ isAxios: true });
 
 					const resp = service.sendTokenRequest('tokenEndpoint', testPayload);
-
-					await expect(resp).rejects.toEqual(new TokenRequestLoggableException(axiosError));
+					await expect(resp).rejects.toThrowError(OAuthAdapterErrorLoggableException);
+					await expect(resp).rejects.toMatchObject({
+						errorMessage: expect.any(String),
+						error: expect.any(AxiosError),
+					});
 				});
 			});
 		});
