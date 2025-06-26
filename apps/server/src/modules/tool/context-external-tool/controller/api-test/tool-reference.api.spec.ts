@@ -186,6 +186,7 @@ describe('ToolReferenceController (API)', () => {
 							contextToolId: contextExternalToolEntity.id,
 							description: externalToolEntity.description,
 							displayName: contextExternalToolEntity.displayName as string,
+							domain: new URL(externalToolEntity.config.baseUrl).hostname,
 							status: contextExternalToolConfigurationStatusResponseFactory.build({
 								isOutdatedOnScopeSchool: false,
 								isOutdatedOnScopeContext: false,
@@ -343,6 +344,7 @@ describe('ToolReferenceController (API)', () => {
 					contextToolId: contextExternalToolEntity.id,
 					description: externalToolEntity.description,
 					displayName: contextExternalToolEntity.displayName as string,
+					domain: new URL(externalToolEntity.config.baseUrl).hostname,
 					status: contextExternalToolConfigurationStatusResponseFactory.build({
 						isOutdatedOnScopeSchool: false,
 						isOutdatedOnScopeContext: false,
