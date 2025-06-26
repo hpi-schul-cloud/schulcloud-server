@@ -16,15 +16,7 @@ describe(GroupAggregateScope.name, () => {
 				const result = new GroupAggregateScope().byAvailableForSync(true).build();
 
 				expect(result).toEqual([
-					{
-						$match: {
-							$or: [
-								{ type: { $eq: GroupTypes.CLASS } },
-								{ type: { $eq: GroupTypes.COURSE } },
-								{ type: { $eq: GroupTypes.OTHER } },
-							],
-						},
-					},
+					{ $match: { type: { $in: [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER] } } },
 					{
 						$lookup: {
 							from: 'courses',
