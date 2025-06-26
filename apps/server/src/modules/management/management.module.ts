@@ -13,6 +13,7 @@ import { ExternalToolModule } from '@modules/tool';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
+import { InstanceModule } from '../instance';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';
@@ -35,6 +36,7 @@ const baseImports = [
 	SystemModule,
 	ExternalToolModule,
 	OauthProviderServiceModule,
+	InstanceModule,
 ];
 
 const imports = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
