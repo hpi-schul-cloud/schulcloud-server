@@ -4,6 +4,8 @@
      kind: ConfigMap
      namespace: "{{ NAMESPACE }}"
      name:  "{{ NAMESPACE }}-media-metadata-sync-cronjob-configmap"
+   tags:
+    - configmap
 
 - name: bilo media metadata sync CronJob ConfigMap
   kubernetes.core.k8s:
@@ -20,6 +22,8 @@
       kind: CronJob
       namespace: "{{ NAMESPACE }}"
       name:  "{{ NAMESPACE }}-media-metadata-sync-cronjob"
+   tags:
+    - cronjob
 
 - name: bilo media metadata sync CronJob
   kubernetes.core.k8s:
