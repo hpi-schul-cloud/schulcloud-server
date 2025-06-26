@@ -267,12 +267,17 @@ describe(ExternalToolRepo.name, () => {
 			const ltiToolA: ExternalToolEntity = externalToolEntityFactory.withName('A').buildWithId();
 			const ltiToolB: ExternalToolEntity = externalToolEntityFactory.withName('B').withMedium().buildWithId();
 			const ltiToolC: ExternalToolEntity = externalToolEntityFactory.withName('C').withMedium().buildWithId();
-			const ltiToolD: ExternalToolEntity = externalToolEntityFactory
-				.withName('B')
+			const ltiDraftTool: ExternalToolEntity = externalToolEntityFactory
+				.withName('draft')
 				.withMedium({ status: ExternalToolMediumStatus.DRAFT })
 				.buildWithId();
-			const ltiTools: ExternalToolEntity[] = [ltiToolA, ltiToolB, ltiToolC, ltiToolD];
-			await em.persistAndFlush([ltiToolA, ltiToolB, ltiToolC, ltiToolD]);
+			const ltiTemplateTool: ExternalToolEntity = externalToolEntityFactory
+				.withName('template')
+				.withMedium({ status: ExternalToolMediumStatus.TEMPLATE })
+				.buildWithId();
+			const ltiTools: ExternalToolEntity[] = [ltiToolA, ltiToolB, ltiToolC, ltiDraftTool, ltiTemplateTool];
+
+			await em.persistAndFlush(ltiTools);
 			em.clear();
 
 			return { queryExternalToolDO, options, ltiTools };
@@ -284,7 +289,12 @@ describe(ExternalToolRepo.name, () => {
 
 				const page: Page<ExternalTool> = await repo.find(queryExternalToolDO, undefined);
 
-				expect(page.data.length).toBe(ltiTools.length - 1);
+				const expectTools = ltiTools.filter(
+					(tool: ExternalToolEntity) =>
+						tool.medium === undefined || tool.medium?.status === ExternalToolMediumStatus.ACTIVE
+				);
+
+				expect(page.data.length).toBe(expectTools.length);
 			});
 
 			it('should return one external tools when pagination has a limit of 1', async () => {
@@ -361,11 +371,12 @@ describe(ExternalToolRepo.name, () => {
 
 					const page: Page<ExternalTool> = await repo.find(query, options);
 
-					expect(page.data.length).toBe(4);
-					expect(page.data[0].name).toEqual(ltiTools[0].name);
-					expect(page.data[1].name).toEqual(ltiTools[1].name);
-					expect(page.data[2].name).toEqual(ltiTools[2].name);
-					expect(page.data[3].name).toEqual(ltiTools[3].name);
+					const expectedTools = ltiTools.map((entity: ExternalToolEntity) =>
+						ExternalToolRepoMapper.mapEntityToDO(entity)
+					);
+
+					expect(page.data.length).toBe(expectedTools.length);
+					expect(page.data).toEqual(expect.arrayContaining(expectedTools));
 				});
 			});
 		});
