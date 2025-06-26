@@ -16,7 +16,12 @@ import { createConfigModuleOptions } from '@shared/common/config-module-options'
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';
-import { ExternalToolsSeedDataService, MediaSourcesSeedDataService, SystemsSeedDataService } from './service';
+import {
+	ExternalToolsSeedDataService,
+	InstancesSeedDataService,
+	MediaSourcesSeedDataService,
+	SystemsSeedDataService,
+} from './service';
 import { DatabaseManagementService } from './service/database-management.service';
 import { DatabaseManagementUc } from './uc/database-management.uc';
 
@@ -48,6 +53,7 @@ const providers = [
 	MediaSourcesSeedDataService,
 	SystemsSeedDataService,
 	ExternalToolsSeedDataService,
+	InstancesSeedDataService,
 ];
 
 const controllers = [DatabaseManagementController];
