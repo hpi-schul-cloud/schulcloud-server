@@ -70,7 +70,6 @@
 	"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": true,
 	"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": true,
 	"NEST_LOG_LEVEL": "debug",
-	"SESSION_SECRET": "dev-session-secret",
 	"FEATURE_COURSE_SHARE": true,
 	"FEATURE_LESSON_SHARE": true,
 	"FEATURE_TASK_SHARE": true,
@@ -107,5 +106,6 @@
 	"FEATURE_ROOM_SHARE": true,
 	"SESSION_VALKEY": {
 		"MODE": "in-memory"
-	}
+	},
+	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud"
 }
