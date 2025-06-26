@@ -286,7 +286,7 @@ describe(UserLoginMigrationUc.name, () => {
 				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 					}),
 					externalUser: externalUserDtoFactory.build(),
 				});
@@ -355,7 +355,7 @@ describe(UserLoginMigrationUc.name, () => {
 			const setup = () => {
 				const sourceSystem = systemEntityFactory
 					.withOauthConfig()
-					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC });
 
 				const schoolDO = legacySchoolDoFactory.buildWithId({
 					systems: [sourceSystem.id],
@@ -366,7 +366,7 @@ describe(UserLoginMigrationUc.name, () => {
 				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 					}),
 					externalUser: externalUserDtoFactory.build(),
 					externalSchool: new ExternalSchoolDto({
@@ -429,7 +429,7 @@ describe(UserLoginMigrationUc.name, () => {
 				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 					}),
 					externalUser: externalUserDtoFactory.build(),
 					externalSchool: new ExternalSchoolDto({
@@ -476,7 +476,7 @@ describe(UserLoginMigrationUc.name, () => {
 				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 					}),
 					externalUser: externalUserDtoFactory.build(),
 				});
@@ -515,7 +515,7 @@ describe(UserLoginMigrationUc.name, () => {
 				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 					}),
 					externalUser: externalUserDtoFactory.build(),
 					externalSchool: new ExternalSchoolDto({

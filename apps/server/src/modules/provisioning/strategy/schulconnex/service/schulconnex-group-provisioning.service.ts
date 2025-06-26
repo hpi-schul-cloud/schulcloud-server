@@ -165,57 +165,6 @@ export class SchulconnexGroupProvisioningService {
 		return groupUser;
 	}
 
-	public async removeExternalGroupsAndAffiliation(
-		externalUserId: string,
-		externalGroups: ExternalGroupDto[],
-		systemId: EntityId
-	): Promise<Group[]> {
-		const user = await this.userService.findByExternalId(externalUserId, systemId);
-
-		if (!user?.id) {
-			throw new NotFoundLoggableException(UserDo.name, { externalId: externalUserId });
-		}
-		const userId = user.id;
-
-		const filter = { userId };
-		const existingGroupsOfUser = await this.groupService.findGroups(filter);
-
-		const groupsFromSystem = existingGroupsOfUser.data.filter(
-			(existingGroup: Group) => existingGroup.externalSource?.systemId === systemId
-		);
-
-		const groupsWithoutUser = groupsFromSystem.filter((existingGroupFromSystem: Group) => {
-			const isUserInGroup = externalGroups.some(
-				(externalGroup: ExternalGroupDto) =>
-					externalGroup.externalId === existingGroupFromSystem.externalSource?.externalId
-			);
-
-			return !isUserInGroup;
-		});
-
-		const groupRemovePromises = groupsWithoutUser.map(async (group: Group): Promise<Group | null> => {
-			group.removeUser(userId);
-
-			if (group.isEmpty()) {
-				const courses = await this.courseService.findBySyncedGroup(group);
-
-				if (courses.length > 0) {
-					await this.schulconnexCourseSyncService.desyncCoursesAndCreateHistories(group, courses);
-				}
-
-				await this.groupService.delete(group);
-				return null;
-			}
-
-			return this.groupService.save(group);
-		});
-
-		const deletedAndModifiedGroups = await Promise.all(groupRemovePromises);
-		const remainingGroups = deletedAndModifiedGroups.filter((group: Group | null): group is Group => !!group);
-
-		return remainingGroups;
-	}
-
 	public async removeUserFromGroup(userId: EntityId, groupId: EntityId): Promise<Group | null> {
 		const group = await this.groupService.findById(groupId);
 
