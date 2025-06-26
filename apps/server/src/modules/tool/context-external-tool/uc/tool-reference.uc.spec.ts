@@ -65,6 +65,7 @@ describe('ToolReferenceUc', () => {
 					logoUrl: externalTool.logoUrl,
 					contextToolId: contextExternalTool.id,
 					displayName: contextExternalTool.displayName as string,
+					domain: new URL(externalTool.config.baseUrl).hostname,
 					status: toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeSchool: false,
 						isOutdatedOnScopeContext: false,
@@ -155,6 +156,7 @@ describe('ToolReferenceUc', () => {
 					logoUrl: externalTool.logoUrl,
 					contextToolId: contextExternalTool.id,
 					displayName: contextExternalTool.displayName as string,
+					domain: new URL(externalTool.config.baseUrl).hostname,
 					status: toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeSchool: false,
 						isOutdatedOnScopeContext: false,
