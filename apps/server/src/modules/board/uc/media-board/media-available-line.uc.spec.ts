@@ -237,6 +237,7 @@ describe(MediaAvailableLineUc.name, () => {
 						{
 							schoolExternalToolId: mediaAvailableLineElement.schoolExternalToolId,
 							name: mediaAvailableLineElement.name,
+							domain: mediaAvailableLineElement.domain,
 							description: mediaAvailableLineElement.description,
 							logoUrl: mediaAvailableLineElement.logoUrl,
 						},
@@ -311,6 +312,7 @@ describe(MediaAvailableLineUc.name, () => {
 							{
 								schoolExternalToolId: mediaAvailableLineElement.schoolExternalToolId,
 								name: mediaAvailableLineElement.name,
+								domain: mediaAvailableLineElement.domain,
 								description: mediaAvailableLineElement.description,
 								logoUrl: mediaAvailableLineElement.logoUrl,
 							},
@@ -383,6 +385,7 @@ describe(MediaAvailableLineUc.name, () => {
 							{
 								schoolExternalToolId: mediaAvailableLineElement.schoolExternalToolId,
 								name: mediaAvailableLineElement.name,
+								domain: mediaAvailableLineElement.domain,
 								description: mediaAvailableLineElement.description,
 								logoUrl: mediaAvailableLineElement.logoUrl,
 							},
@@ -499,6 +502,7 @@ describe(MediaAvailableLineUc.name, () => {
 							{
 								schoolExternalToolId: mediaAvailableLineElement.schoolExternalToolId,
 								name: mediaAvailableLineElement.name,
+								domain: mediaAvailableLineElement.domain,
 								description: mediaAvailableLineElement.description,
 								logoUrl: mediaAvailableLineElement.logoUrl,
 							},
@@ -570,6 +574,7 @@ describe(MediaAvailableLineUc.name, () => {
 							{
 								schoolExternalToolId: mediaAvailableLineElement.schoolExternalToolId,
 								name: mediaAvailableLineElement.name,
+								domain: mediaAvailableLineElement.domain,
 								description: mediaAvailableLineElement.description,
 								logoUrl: mediaAvailableLineElement.logoUrl,
 							},
