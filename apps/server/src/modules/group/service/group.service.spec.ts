@@ -268,6 +268,39 @@ describe('GroupService', () => {
 		});
 	});
 
+	describe('findByScope', () => {
+		describe('when the school has groups', () => {
+			const setup = () => {
+				const scope = new GroupAggregateScope();
+				const groups: Group[] = groupFactory.buildList(2);
+				const page: Page<Group> = new Page<Group>(groups, groups.length);
+
+				groupRepo.findGroupsForScope.mockResolvedValueOnce(page);
+
+				return {
+					page,
+					scope,
+				};
+			};
+
+			it('should call the repo', async () => {
+				const { scope } = setup();
+
+				await service.findByScope(scope);
+
+				expect(groupRepo.findGroupsForScope).toHaveBeenCalledWith(scope);
+			});
+
+			it('should return the groups', async () => {
+				const { scope, page } = setup();
+
+				const result = await service.findByScope(scope);
+
+				expect(result).toEqual(page);
+			});
+		});
+	});
+
 	describe('findGroupsForUser', () => {
 		describe('when available groups exist and the feature is enabled', () => {
 			const setup = () => {
