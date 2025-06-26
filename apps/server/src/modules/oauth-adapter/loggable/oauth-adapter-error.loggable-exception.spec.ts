@@ -1,17 +1,15 @@
 import { AxiosError } from 'axios';
 import { OAuthAdapterErrorLoggableException } from './oauth-adapter-error.loggable-exception';
 
+type ErrorType = {
+	axiosError: boolean;
+};
+
 describe(OAuthAdapterErrorLoggableException.name, () => {
 	describe('getLogMessage', () => {
-		const setup = (axiosError = false) => {
+		const setup = (errorType: ErrorType = { axiosError: false }) => {
 			const message = 'Error during deletion process';
-			let error: Error | AxiosError | undefined;
-			if (axiosError) {
-				error = new AxiosError(message);
-			} else {
-				error = new Error(message);
-			}
-
+			const error = errorType.axiosError ? new AxiosError() : new Error(message);
 			return {
 				message,
 				error,
@@ -19,7 +17,7 @@ describe(OAuthAdapterErrorLoggableException.name, () => {
 		};
 
 		it('should log the correct message for AxiosError', () => {
-			const { message, error } = setup(true);
+			const { message, error } = setup({ axiosError: true });
 
 			const exception = new OAuthAdapterErrorLoggableException(message, error);
 			const result = exception.getLogMessage();
