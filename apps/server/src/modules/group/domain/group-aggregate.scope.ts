@@ -9,16 +9,9 @@ import { GroupTypes } from './group-types';
 export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
 	public byAvailableForSync(value: boolean | undefined): this {
 		if (value) {
+			this.byType([GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]);
+
 			this.pipeline.push(
-				{
-					$match: {
-						$or: [
-							{ type: { $eq: GroupTypes.CLASS } },
-							{ type: { $eq: GroupTypes.COURSE } },
-							{ type: { $eq: GroupTypes.OTHER } },
-						],
-					},
-				},
 				{
 					$lookup: {
 						from: 'courses',
@@ -61,6 +54,14 @@ export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
 
 		if (StringValidator.isNotEmptyStringWhenTrimed(escapedName)) {
 			this.pipeline.push({ $match: { name: { $regex: escapedName, $options: 'i' } } });
+		}
+
+		return this;
+	}
+
+	public byType(groupTypes: GroupTypes[] | undefined): this {
+		if (groupTypes) {
+			this.pipeline.push({ $match: { type: { $in: groupTypes } } });
 		}
 
 		return this;

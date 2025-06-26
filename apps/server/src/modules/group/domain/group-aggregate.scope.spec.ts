@@ -16,15 +16,7 @@ describe(GroupAggregateScope.name, () => {
 				const result = new GroupAggregateScope().byAvailableForSync(true).build();
 
 				expect(result).toEqual([
-					{
-						$match: {
-							$or: [
-								{ type: { $eq: GroupTypes.CLASS } },
-								{ type: { $eq: GroupTypes.COURSE } },
-								{ type: { $eq: GroupTypes.OTHER } },
-							],
-						},
-					},
+					{ $match: { type: { $in: [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER] } } },
 					{
 						$lookup: {
 							from: 'courses',
@@ -109,6 +101,26 @@ describe(GroupAggregateScope.name, () => {
 		describe('when no value was given', () => {
 			it('should not include the query in the result', () => {
 				const result = new GroupAggregateScope().byName(undefined).build();
+
+				expect(result).toEqual([defaultFacetQuery]);
+			});
+		});
+	});
+
+	describe('byType', () => {
+		describe('when filtering for a group type', () => {
+			it('should build the correct query', () => {
+				const testType = GroupTypes.CLASS;
+
+				const result = new GroupAggregateScope().byType([testType]).build();
+
+				expect(result).toEqual([{ $match: { type: { $in: [testType] } } }, defaultFacetQuery]);
+			});
+		});
+
+		describe('when no value was given', () => {
+			it('should not include the query in the result', () => {
+				const result = new GroupAggregateScope().byType(undefined).build();
 
 				expect(result).toEqual([defaultFacetQuery]);
 			});
