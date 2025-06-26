@@ -39,6 +39,7 @@
 		"ADMIN_USER": "dbildungscloud",
 		"ADMIN_PASSWORD": "dBildungscloud"
 	},
+	"LOG_LEVEL" : "emerg",
 	"NEST_LOG_LEVEL": "error",
 	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",
