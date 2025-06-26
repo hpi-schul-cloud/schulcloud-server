@@ -3,7 +3,7 @@ import { ExternalTool } from '../../external-tool/domain';
 import { ContextExternalTool, ToolReference } from '../domain';
 
 export class ToolReferenceMapper {
-	static mapToToolReference(
+	public static mapToToolReference(
 		externalTool: ExternalTool,
 		contextExternalTool: ContextExternalTool,
 		status: ContextExternalToolConfigurationStatus
@@ -14,6 +14,7 @@ export class ToolReferenceMapper {
 			logoUrl: externalTool.logoUrl,
 			thumbnailUrl: externalTool.thumbnail?.getPreviewUrl(),
 			displayName: contextExternalTool.displayName ?? externalTool.name,
+			domain: new URL(externalTool.config.baseUrl).hostname,
 			status,
 			openInNewTab: externalTool.openNewTab,
 			isLtiDeepLinkingTool: externalTool.isLtiDeepLinkingTool(),
