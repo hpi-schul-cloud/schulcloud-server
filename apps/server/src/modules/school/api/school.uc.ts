@@ -78,7 +78,6 @@ export class SchoolUc {
 	}
 
 	public async getSchoolList(
-		ownSchoolId: EntityId,
 		paginationParams: PaginationParams,
 		federalStateId?: EntityId
 	): Promise<SchoolListResponse> {
@@ -89,7 +88,7 @@ export class SchoolUc {
 			pagination: paginationParams,
 		};
 
-		const { schools, count } = await this.schoolService.getSchoolList(ownSchoolId, findOptions, federalStateId);
+		const { schools, count } = await this.schoolService.getSchoolList(findOptions, federalStateId);
 		const dtos = SchoolResponseMapper.mapToSchoolListResponse(
 			schools,
 			{

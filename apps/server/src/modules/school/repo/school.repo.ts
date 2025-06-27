@@ -33,7 +33,6 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 	}
 
 	public async getSchoolList(
-		ownSchoolId: EntityId,
 		options?: IFindOptions<SchoolProps>,
 		federalStateId?: EntityId
 	): Promise<{ schools: School[]; count: number }> {
@@ -41,7 +40,6 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		scope.allowEmptyQuery(true);
 		scope.byFederalState(federalStateId);
 		scope.addQuery({ purpose: { $nin: [SchoolPurpose.EXPERT, SchoolPurpose.TOMBSTONE] } });
-		scope.addQuery({ id: { $ne: ownSchoolId } });
 
 		const findOptions = this.mapToMikroOrmOptions(options, ['federalState', 'currentYear']);
 

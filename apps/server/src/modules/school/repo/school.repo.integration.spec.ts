@@ -138,7 +138,7 @@ describe('SchoolMikroOrmRepo', () => {
 		});
 	});
 
-	describe('getExternalSchools', () => {
+	describe('getSchoolList', () => {
 		describe('when no options are given', () => {
 			const setup = async () => {
 				const entities = schoolEntityFactory.buildList(3);
@@ -151,7 +151,7 @@ describe('SchoolMikroOrmRepo', () => {
 			it('should return the count of all schools', async () => {
 				const { entities } = await setup();
 
-				const { count } = await repo.getExternalSchools('ownSchoolId', {});
+				const { count } = await repo.getSchoolList({});
 
 				expect(count).toEqual(entities.length);
 			});
@@ -175,7 +175,7 @@ describe('SchoolMikroOrmRepo', () => {
 					},
 				};
 
-				const { schools, count } = await repo.getExternalSchools('ownSchoolId', options);
+				const { schools, count } = await repo.getSchoolList(options);
 
 				expect(count).toEqual(entities.length);
 				expect(schools.length).toEqual(1);
@@ -204,7 +204,7 @@ describe('SchoolMikroOrmRepo', () => {
 					},
 				};
 
-				const { schools, count } = await repo.getExternalSchools('ownSchoolId', options);
+				const { schools, count } = await repo.getSchoolList(options);
 
 				const schoolIds = schools.map((school) => school.id);
 				const expectedOrder = [entity2.id, entity1.id, entity3.id];

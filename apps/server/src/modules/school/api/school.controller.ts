@@ -47,12 +47,8 @@ export class SchoolController {
 
 	@Get()
 	@JwtAuthentication()
-	public async getSchoolList(
-		@Query() query: SchoolQueryParams,
-		@CurrentUser() user: ICurrentUser
-	): Promise<SchoolListResponse | undefined> {
+	public async getSchoolList(@Query() query: SchoolQueryParams): Promise<SchoolListResponse | undefined> {
 		const dto = await this.schoolUc.getSchoolList(
-			user.schoolId,
 			{
 				limit: query.limit,
 				skip: query.skip,

@@ -7,7 +7,6 @@ export interface SchoolRepo {
 	getSchools(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School[]>;
 
 	getSchoolList(
-		ownSchoolId: EntityId,
 		options: IFindOptions<SchoolProps>,
 		federalStateId?: EntityId
 	): Promise<{ schools: School[]; count: number }>;

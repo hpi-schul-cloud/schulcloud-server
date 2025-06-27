@@ -356,9 +356,9 @@ describe('SchoolService', () => {
 			it('should return these schools', async () => {
 				const { query, schools } = setup();
 
-				const result = await service.getSchoolList('ownSchoolId', query);
+				const result = await service.getSchoolList(query);
 
-				const expected = { schools: [schools[0]], count: 1 };
+				const expected = { schools, count: 1 };
 				expect(result).toEqual(expected);
 			});
 		});
