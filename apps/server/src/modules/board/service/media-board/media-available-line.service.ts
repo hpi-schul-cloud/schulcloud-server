@@ -143,6 +143,7 @@ export class MediaAvailableLineService {
 		const element: MediaAvailableLineElement = new MediaAvailableLineElement({
 			schoolExternalToolId: schoolExternalTool.id ?? '',
 			name: externalTool.name,
+			domain: new URL(externalTool.config.baseUrl).hostname,
 			description: externalTool.description,
 			logoUrl,
 			thumbnailUrl: externalTool.thumbnail?.getPreviewUrl(),
