@@ -50,8 +50,11 @@ export class CalendarService {
 		}
 	}
 
-	public async getAllEvents(userId: EntityId): Promise<string[]> {
+	public async getAllEvents(userId: EntityId, scopeId?: EntityId): Promise<string[]> {
 		const params = new URLSearchParams();
+		if (scopeId) {
+			params.append('scope-id', scopeId);
+		}
 		try {
 			const resp = await firstValueFrom(
 				this.get<CalendarEventId>('/events', params, {

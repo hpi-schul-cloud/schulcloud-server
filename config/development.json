@@ -107,5 +107,6 @@
 	"SESSION_VALKEY": {
 		"MODE": "in-memory"
 	},
+	"CALENDAR_SERVICE_ENABLED": false,
 	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud"
 }
