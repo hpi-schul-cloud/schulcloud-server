@@ -3,11 +3,18 @@ import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain/types';
 import { Class } from '../domain';
-import { ClassesRepo } from '../repo';
+import { ClassesRepo, ClassScope } from '../repo';
+
 @Injectable()
 export class ClassService {
 	constructor(private readonly classesRepo: ClassesRepo, private readonly logger: Logger) {
 		this.logger.setContext(ClassService.name);
+	}
+
+	public async find(scope: ClassScope): Promise<Class[]> {
+		const classes: Class[] = await this.classesRepo.find(scope);
+
+		return classes;
 	}
 
 	public async findClassesForSchool(schoolId: EntityId): Promise<Class[]> {
