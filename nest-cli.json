@@ -81,33 +81,6 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
-		"files-storage": {
-			"type": "application",
-			"root": "apps/server",
-			"entryFile": "apps/files-storage.app",
-			"sourceRoot": "apps/server/src",
-			"compilerOptions": {
-				"tsConfigPath": "apps/server/tsconfig.app.json"
-			}
-		},
-		"files-storage-amqp": {
-			"type": "application",
-			"root": "apps/server",
-			"entryFile": "apps/files-storage-consumer.app",
-			"sourceRoot": "apps/server/src",
-			"compilerOptions": {
-				"tsConfigPath": "apps/server/tsconfig.app.json"
-			}
-		},
-		"preview-generator-amqp": {
-			"type": "application",
-			"root": "apps/server",
-			"entryFile": "apps/preview-generator-consumer.app",
-			"sourceRoot": "apps/server/src",
-			"compilerOptions": {
-				"tsConfigPath": "apps/server/tsconfig.app.json"
-			}
-		},
 		"schulconnex-group-provisioning-amqp": {
 			"type": "application",
 			"root": "apps/server",
@@ -166,15 +139,6 @@
 			"type": "application",
 			"root": "apps/server",
 			"entryFile": "apps/admin-api-server.app",
-			"sourceRoot": "apps/server/src",
-			"compilerOptions": {
-				"tsConfigPath": "apps/server/tsconfig.app.json"
-			}
-		},
-		"tldraw": {
-			"type": "application",
-			"root": "apps/server",
-			"entryFile": "apps/tldraw.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
