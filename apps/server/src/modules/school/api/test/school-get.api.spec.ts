@@ -12,7 +12,7 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { SchoolForExternalInviteResponse } from '../dto';
+import { SchoolItemResponse } from '../dto';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;
@@ -204,6 +204,40 @@ describe('School Controller (API)', () => {
 		describe('when no user is logged in', () => {
 			it('should return 401', async () => {
 				const response = await testApiClient.get('list-for-external-invite');
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when a user is logged in', () => {
+			const setup = async () => {
+				const schools = schoolEntityFactory.buildList(3);
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				await em.persistAndFlush([...schools, studentAccount, studentUser]);
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+				const expectedResponse = schools.map((school) => {
+					return {
+						id: school.id,
+						name: school.name,
+						purpose: school.purpose,
+					};
+				});
+				return { loggedInClient, expectedResponse };
+			};
+			it('should return school list for external invite', async () => {
+				const { loggedInClient, expectedResponse } = await setup();
+				const response = await loggedInClient.get('list-for-external-invite');
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual(expectedResponse);
+			});
+		});
+	});
+
+	describe('getSchoolList', () => {
+		describe('when no user is logged in', () => {
+			it('should return 401', async () => {
+				const response = await testApiClient.get();
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -228,15 +262,15 @@ describe('School Controller (API)', () => {
 				return { loggedInClient, expectedResponse };
 			};
 
-			it('should return school list for external invite', async () => {
+			it('should return school list', async () => {
 				const { loggedInClient, expectedResponse } = await setup();
 
-				const response = await loggedInClient.get('list-for-external-invite');
+				const response = await loggedInClient.get();
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual(
 					expect.objectContaining({
-						data: expect.arrayContaining(expectedResponse) as SchoolForExternalInviteResponse[],
+						data: expect.arrayContaining(expectedResponse) as SchoolItemResponse[],
 					})
 				);
 			});
