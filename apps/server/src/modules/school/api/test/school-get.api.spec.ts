@@ -224,6 +224,7 @@ describe('School Controller (API)', () => {
 				});
 				return { loggedInClient, expectedResponse };
 			};
+
 			it('should return school list for external invite', async () => {
 				const { loggedInClient, expectedResponse } = await setup();
 				const response = await loggedInClient.get('list-for-external-invite');
@@ -255,7 +256,6 @@ describe('School Controller (API)', () => {
 					return {
 						id: school.id,
 						name: school.name,
-						purpose: school.purpose,
 					};
 				});
 
