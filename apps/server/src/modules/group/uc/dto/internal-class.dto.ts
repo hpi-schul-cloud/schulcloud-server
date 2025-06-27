@@ -1,8 +1,19 @@
-import { Course } from '@modules/course';
 import { EntityId } from '@shared/domain/types';
+import { Group } from '../../domain';
 import { ClassRootType } from './class-root-type';
 
-export class ClassInfoDto {
+export interface InternalClassDtoProps<T> {
+	id: EntityId;
+	type: ClassRootType;
+	name: string;
+	externalSourceName?: string;
+	schoolYear?: string;
+	isUpgradable?: boolean;
+	studentCount: number;
+	original: T;
+}
+
+export class InternalClassDto<T> {
 	public id: EntityId;
 
 	public type: ClassRootType;
@@ -11,25 +22,26 @@ export class ClassInfoDto {
 
 	public externalSourceName?: string;
 
-	public teacherNames: string[];
-
 	public schoolYear?: string;
 
 	public isUpgradable?: boolean;
 
 	public studentCount: number;
 
-	public synchronizedCourses?: Course[];
+	public original: T;
 
-	constructor(props: ClassInfoDto) {
+	constructor(props: InternalClassDtoProps<T>) {
 		this.id = props.id;
 		this.type = props.type;
 		this.name = props.name;
 		this.externalSourceName = props.externalSourceName;
-		this.teacherNames = props.teacherNames;
 		this.schoolYear = props.schoolYear;
 		this.isUpgradable = props.isUpgradable;
 		this.studentCount = props.studentCount;
-		this.synchronizedCourses = props.synchronizedCourses;
+		this.original = props.original;
+	}
+
+	public isGroup(): this is InternalClassDto<Group> {
+		return this.type === ClassRootType.GROUP;
 	}
 }
