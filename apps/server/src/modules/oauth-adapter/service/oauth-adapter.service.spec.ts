@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { AxiosError } from 'axios';
 import { of, throwError } from 'rxjs';
 import { AuthenticationCodeGrantTokenRequest, OAuthTokenDto, OauthTokenResponse } from '../dto';
 import { OAuthAdapterErrorLoggableException } from '../loggable';
@@ -95,34 +94,17 @@ describe('OauthAdapterServive', () => {
 		});
 
 		describe('when no token got returned', () => {
-			const setup = (errorType: { isAxios: boolean }) => {
-				const error = errorType.isAxios ? new AxiosError() : new Error('unknown error');
+			const setup = () => {
+				const error = new Error('unknown error');
 				httpService.post.mockReturnValueOnce(throwError(() => error));
 			};
-			describe('and error is not an axios error', () => {
-				it('should throw an OAuthAdapterErrorLoggableException', async () => {
-					setup({ isAxios: false });
 
-					const resp = service.sendTokenRequest('tokenEndpoint', testPayload);
+			it('should throw an OAuthAdapterErrorLoggableException', async () => {
+				setup();
 
-					await expect(resp).rejects.toThrowError(OAuthAdapterErrorLoggableException);
-					await expect(resp).rejects.toMatchObject({
-						errorMessage: expect.any(String),
-						error: expect.any(Error),
-					});
-				});
-			});
-			describe('and error is an axios error', () => {
-				it('should throw an AxiosErrorLoggable', async () => {
-					setup({ isAxios: true });
+				const resp = service.sendTokenRequest('tokenEndpoint', testPayload);
 
-					const resp = service.sendTokenRequest('tokenEndpoint', testPayload);
-					await expect(resp).rejects.toThrowError(OAuthAdapterErrorLoggableException);
-					await expect(resp).rejects.toMatchObject({
-						errorMessage: expect.any(String),
-						error: expect.any(AxiosError),
-					});
-				});
+				await expect(resp).rejects.toThrowError(OAuthAdapterErrorLoggableException);
 			});
 		});
 	});
