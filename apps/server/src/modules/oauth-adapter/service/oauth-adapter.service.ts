@@ -53,7 +53,7 @@ export class OauthAdapterService {
 		try {
 			responseToken = await lastValueFrom(observable);
 		} catch (error: unknown) {
-			throw new OAuthAdapterErrorLoggableException('Failed to resolve token request', error as Error);
+			throw new OAuthAdapterErrorLoggableException('Failed to resolve token request', error as Error).getLogMessage();
 		}
 
 		const tokenDto: OAuthTokenDto = TokenRequestMapper.mapTokenResponseToDto(responseToken.data);
