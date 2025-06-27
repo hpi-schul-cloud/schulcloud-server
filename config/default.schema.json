@@ -877,6 +877,14 @@
 			"default": "http://nextcloud.localhost:9090",
 			"description": "API URI for Nextcloud"
 		},
+		"NEXTCLOUD_CLIENT_ID": {
+			"type": "string",
+			"description": "Client id for Nextcloud"
+		},
+		"NEXTCLOUD_CLIENT_SECRET": {
+			"type": "string",
+			"description": "Client secret for Nextcloud"
+		},
 		"NEXTCLOUD_ADMIN_USER": {
 			"type": "string",
 			"default": "admin",
@@ -896,6 +904,22 @@
 			"type:": "string",
 			"default": "SchulcloudNextcloud",
 			"description": "Internal name of schulcloud oidc provider of nextcloud's social login app"
+		},
+		"MEDIA_SOURCE_VIDIS_USERNAME": {
+			"type:": "string",
+			"description": "Username for VIDIS api"
+		},
+		"MEDIA_SOURCE_VIDIS_PASSWORD": {
+			"type:": "string",
+			"description": "Password for VIDIS api"
+		},
+		"MEDIA_SOURCE_BILO_CLIENT_ID": {
+			"type:": "string",
+			"description": "Client id for Bildungslogin api"
+		},
+		"MEDIA_SOURCE_BILO_CLIENT_SECRET": {
+			"type:": "string",
+			"description": "Client secret for Bildungslogin api"
 		},
 		"HYDRA_PUBLIC_URI": {
 			"type:": "string",
