@@ -11,7 +11,12 @@ import { ConfigService } from '@nestjs/config';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generate-seed-data';
-import { ExternalToolsSeedDataService, MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
+import {
+	ExternalToolsSeedDataService,
+	InstancesSeedDataService,
+	MediaSourcesSeedDataService,
+	SystemsSeedDataService,
+} from '../service';
 import { DatabaseManagementService } from '../service/database-management.service';
 
 export interface CollectionFilePath {
@@ -42,7 +47,8 @@ export class DatabaseManagementUc {
 		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: EncryptionService,
 		private readonly mediaSourcesSeedDataService: MediaSourcesSeedDataService,
 		private readonly systemsSeedDataService: SystemsSeedDataService,
-		private readonly externalToolsSeedDataService: ExternalToolsSeedDataService
+		private readonly externalToolsSeedDataService: ExternalToolsSeedDataService,
+		private readonly instancesSeedDataService: InstancesSeedDataService
 	) {
 		this.logger.setContext(DatabaseManagementUc.name);
 	}
@@ -258,6 +264,14 @@ export class DatabaseManagementUc {
 			seededCollectionsWithAmount.set(
 				'external-tools',
 				externalToolsCount + (seededCollectionsWithAmount.get('external-tools') ?? 0)
+			);
+		}
+
+		if (collections === undefined || collections.includes('instances')) {
+			const instancesCount: number = await this.instancesSeedDataService.import();
+			seededCollectionsWithAmount.set(
+				'instances',
+				instancesCount + (seededCollectionsWithAmount.get('instances') ?? 0)
 			);
 		}
 

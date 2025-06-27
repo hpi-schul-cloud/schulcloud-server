@@ -12,13 +12,19 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generate-seed-data';
-import { ExternalToolsSeedDataService, MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
+import {
+	ExternalToolsSeedDataService,
+	InstancesSeedDataService,
+	MediaSourcesSeedDataService,
+	SystemsSeedDataService,
+} from '../service';
 import { DatabaseManagementService } from '../service/database-management.service';
 import { DatabaseManagementUc } from './database-management.uc';
 
 describe('DatabaseManagementService', () => {
 	let module: TestingModule;
 	let uc: DatabaseManagementUc;
+
 	let fileSystemAdapter: DeepMocked<FileSystemAdapter>;
 	let dbService: DeepMocked<DatabaseManagementService>;
 	let configService: DeepMocked<ConfigService>;
@@ -28,6 +34,8 @@ describe('DatabaseManagementService', () => {
 	let mediaSourcesSeedDataService: DeepMocked<MediaSourcesSeedDataService>;
 	let systemsSeedDataService: DeepMocked<SystemsSeedDataService>;
 	let externalToolsSeedDataService: DeepMocked<ExternalToolsSeedDataService>;
+	let instancesSeedDataService: DeepMocked<InstancesSeedDataService>;
+
 	let bsonConverter: BsonConverter;
 	const configGetSpy = jest.spyOn(Configuration, 'get');
 	const configHasSpy = jest.spyOn(Configuration, 'has');
@@ -186,6 +194,7 @@ describe('DatabaseManagementService', () => {
 				{ provide: MediaSourcesSeedDataService, useValue: createMock<MediaSourcesSeedDataService>() },
 				{ provide: SystemsSeedDataService, useValue: createMock<SystemsSeedDataService>() },
 				{ provide: ExternalToolsSeedDataService, useValue: createMock<ExternalToolsSeedDataService>() },
+				{ provide: InstancesSeedDataService, useValue: createMock<InstancesSeedDataService>() },
 				{
 					provide: FileSystemAdapter,
 					useValue: createMock<FileSystemAdapter>({
@@ -263,6 +272,7 @@ describe('DatabaseManagementService', () => {
 		mediaSourcesSeedDataService = module.get(MediaSourcesSeedDataService);
 		systemsSeedDataService = module.get(SystemsSeedDataService);
 		externalToolsSeedDataService = module.get(ExternalToolsSeedDataService);
+		instancesSeedDataService = module.get(InstancesSeedDataService);
 		await setupEntities([SchoolEntity, Role]);
 	});
 
@@ -436,6 +446,7 @@ describe('DatabaseManagementService', () => {
 			mediaSourcesSeedDataService.import.mockResolvedValue(1);
 			systemsSeedDataService.import.mockResolvedValue(1);
 			externalToolsSeedDataService.import.mockResolvedValue(1);
+			instancesSeedDataService.import.mockResolvedValue(1);
 		});
 		afterAll(() => {
 			configService.get.mockReset();
@@ -450,6 +461,7 @@ describe('DatabaseManagementService', () => {
 				'storageproviders:1',
 				'media-sources:1',
 				'external-tools:1',
+				'instances:1',
 			]);
 		});
 		it('should seed all collections from filesystem for empty filter and return collectionnames with document counts', async () => {
