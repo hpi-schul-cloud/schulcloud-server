@@ -60,7 +60,7 @@ export class SchoolResponseMapper {
 		return dtos;
 	}
 
-	public static mapToExternalInviteResponse(school: School): SchoolForExternalInviteResponse {
+	private static mapToExternalInviteResponse(school: School): SchoolForExternalInviteResponse {
 		const schoolProps = school.getProps();
 
 		const dto = new SchoolForExternalInviteResponse({
