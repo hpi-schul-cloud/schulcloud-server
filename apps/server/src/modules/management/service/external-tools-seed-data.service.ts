@@ -67,7 +67,7 @@ export class ExternalToolsSeedDataService {
 		if (onlineDiaDeutschSecret) {
 			externalTools.push(
 				new ExternalTool({
-					id: '65f958bdd8b35469f14032b1',
+					id: '65fc1488e519d4a3b71193e4',
 					name: 'Product Test Onlinediagnose Grundschule - Deutsch',
 					url: 'https://onlinediagnose.westermann.de/',
 					config: new Lti11ToolConfig({
