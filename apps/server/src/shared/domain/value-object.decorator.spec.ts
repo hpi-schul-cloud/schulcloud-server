@@ -35,7 +35,7 @@ describe('ValueObject Decorator', () => {
 	describe('when creating an invalid Value Object', () => {
 		it('should throw validation errors', () => {
 			const props = { a: 1, b: 123 };
-			//@ts-expect-error
+			//@ts-expect-error testing invalid type
 			expect(() => new TestVO(props)).toThrow('isString');
 		});
 	});
