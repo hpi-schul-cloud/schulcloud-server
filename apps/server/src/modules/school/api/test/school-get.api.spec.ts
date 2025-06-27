@@ -204,6 +204,7 @@ describe('School Controller (API)', () => {
 		describe('when no user is logged in', () => {
 			it('should return 401', async () => {
 				const response = await testApiClient.get('list-for-external-invite');
+
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
@@ -215,6 +216,7 @@ describe('School Controller (API)', () => {
 				await em.persistAndFlush([...schools, studentAccount, studentUser]);
 
 				const loggedInClient = await testApiClient.login(studentAccount);
+
 				const expectedResponse = schools.map((school) => {
 					return {
 						id: school.id,
@@ -222,11 +224,13 @@ describe('School Controller (API)', () => {
 						purpose: school.purpose,
 					};
 				});
+
 				return { loggedInClient, expectedResponse };
 			};
 
 			it('should return school list for external invite', async () => {
 				const { loggedInClient, expectedResponse } = await setup();
+
 				const response = await loggedInClient.get('list-for-external-invite');
 
 				expect(response.status).toEqual(HttpStatus.OK);
