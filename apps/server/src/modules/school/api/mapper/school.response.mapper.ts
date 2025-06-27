@@ -3,9 +3,9 @@ import { School, SchoolForLdapLogin } from '../../domain';
 import {
 	YearsResponse,
 	SchoolResponse,
+	SchoolListResponse,
 	SchoolForExternalInviteResponse,
 	SchoolForLdapLoginResponse,
-	SchoolForExternalInviteListResponse,
 } from '../dto';
 import { CountyResponseMapper } from './county.response.mapper';
 import { FederalStateResponseMapper } from './federal-state.response.mapper';
@@ -42,19 +42,20 @@ export class SchoolResponseMapper {
 		return dto;
 	}
 
-	public static mapToListForExternalInviteResponses(
+	public static mapToSchoolListResponses(
 		schools: School[],
 		pagination?: PaginationParams,
 		total?: number
-	): SchoolForExternalInviteListResponse {
+	): SchoolListResponse {
 		const data = schools.map((school) => SchoolResponseMapper.mapToExternalInviteResponse(school));
 
-		const dtos = new SchoolForExternalInviteListResponse(
-			data,
-			total ?? schools.length,
-			pagination?.skip,
-			pagination?.limit
-		);
+		const dtos = new SchoolListResponse(data, total ?? schools.length, pagination?.skip, pagination?.limit);
+
+		return dtos;
+	}
+
+	public static mapToListForExternalInviteResponses(schools: School[]): SchoolForExternalInviteResponse[] {
+		const dtos = schools.map((school) => SchoolResponseMapper.mapToExternalInviteResponse(school));
 
 		return dtos;
 	}

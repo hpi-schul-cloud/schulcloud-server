@@ -27,11 +27,11 @@ import {
 	MaintenanceResponse,
 	SchoolExistsResponse,
 	SchoolForExternalInviteResponse,
-	SchoolForExternalInviteListResponse,
 	SchoolForLdapLoginResponse,
 	SchoolQueryParams,
 	SchoolRemoveSystemUrlParams,
 	SchoolResponse,
+	SchoolListResponse,
 	SchoolSystemResponse,
 	SchoolUpdateBodyParams,
 	SchoolUrlParams,
@@ -50,7 +50,7 @@ export class SchoolController {
 	public async getSchoolList(
 		@Query() query: SchoolQueryParams,
 		@CurrentUser() user: ICurrentUser
-	): Promise<SchoolForExternalInviteListResponse | undefined> {
+	): Promise<SchoolListResponse | undefined> {
 		const dto = await this.schoolUc.getSchoolList(
 			user.schoolId,
 			{

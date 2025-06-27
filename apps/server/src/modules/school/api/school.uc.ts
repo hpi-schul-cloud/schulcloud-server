@@ -18,7 +18,7 @@ import {
 	MaintenanceResponse,
 	SchoolExistsResponse,
 	SchoolForExternalInviteResponse,
-	SchoolForExternalInviteListResponse,
+	SchoolListResponse,
 	SchoolForLdapLoginResponse,
 	SchoolResponse,
 	SchoolSystemResponse,
@@ -81,7 +81,7 @@ export class SchoolUc {
 		ownSchoolId: EntityId,
 		paginationParams: PaginationParams,
 		federalStateId?: EntityId
-	): Promise<SchoolForExternalInviteListResponse> {
+	): Promise<SchoolListResponse> {
 		const findOptions = {
 			order: {
 				name: SortOrder.asc,
@@ -90,7 +90,7 @@ export class SchoolUc {
 		};
 
 		const { schools, count } = await this.schoolService.getSchoolList(ownSchoolId, findOptions, federalStateId);
-		const dtos = SchoolResponseMapper.mapToListForExternalInviteResponses(
+		const dtos = SchoolResponseMapper.mapToSchoolListResponses(
 			schools,
 			{
 				skip: paginationParams.skip,
@@ -114,7 +114,7 @@ export class SchoolUc {
 
 		const schools = await this.schoolService.getSchoolsForExternalInvite(query, ownSchoolId, findOptions);
 
-		const dtos = schools.map((school) => SchoolResponseMapper.mapToExternalInviteResponse(school));
+		const dtos = SchoolResponseMapper.mapToListForExternalInviteResponses(schools);
 
 		return dtos;
 	}
