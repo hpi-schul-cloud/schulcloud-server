@@ -1,1 +1,0 @@
-export { MediaMetadataSyncStrategy } from './strategy';

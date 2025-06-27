@@ -42,7 +42,7 @@ spec:
             - configMapRef:
                 name: bilo-media-metadata-sync-cronjob-configmap
             command: ['/bin/sh','-c']
-            args: ['npm run nest:start:sync:media-metadata:prod']
+            args: ['npm run nest:start:sync-console:media:metadata:bilo:prod']
             resources:
               limits:
                 cpu: {{ BILO_MEDIA_METADATA_SYNC_CPU_LIMITS|default("2000m", true) }}

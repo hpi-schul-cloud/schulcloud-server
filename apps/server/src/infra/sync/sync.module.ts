@@ -9,7 +9,6 @@ import { VidisClientModule } from '@infra/vidis-client';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { MediaSourceModule } from '@modules/media-source';
-import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { ProvisioningModule } from '@modules/provisioning';
 import { SchoolModule } from '@modules/school';
 import { SchoolLicenseModule } from '@modules/school-license/school-license.module';
@@ -18,7 +17,6 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { SyncConsole } from './console/sync.console';
 import { VidisSyncService, VidisSyncStrategy } from './media-licenses';
-import { MediaMetadataSyncStrategy } from './media-metadata';
 import { SyncService } from './service/sync.service';
 import { TspFetchService } from './strategy/tsp/tsp-fetch.service';
 import { TspOauthDataMapper } from './strategy/tsp/tsp-oauth-data.mapper';
@@ -49,9 +47,6 @@ import { SyncUc } from './uc/sync.uc';
 					AccountModule,
 			  ]
 			: []),
-		...((Configuration.get('FEATURE_BILO_MEDIA_METADATA_SYNC_ENABLED') as boolean)
-			? [MediaSourceSyncModule, RabbitMQWrapperModule]
-			: []),
 	],
 	providers: [
 		SyncConsole,
@@ -62,7 +57,6 @@ import { SyncUc } from './uc/sync.uc';
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [TspSyncStrategy, TspSchoolService, TspOauthDataMapper, TspFetchService]
 			: []),
-		...((Configuration.get('FEATURE_BILO_MEDIA_METADATA_SYNC_ENABLED') as boolean) ? [MediaMetadataSyncStrategy] : []),
 	],
 	exports: [SyncConsole],
 })

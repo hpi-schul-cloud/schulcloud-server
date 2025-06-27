@@ -1,8 +1,8 @@
 import { ConsoleWriterService } from '@infra/console';
-import { MediaMetadataSyncUc } from '@modules/media-sync-console/uc/media-metadata-sync.uc';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { Console, Command } from 'nestjs-console';
 import { MediaMetadataSyncOptions } from '../types';
+import { MediaMetadataSyncUc } from '../uc';
 
 @Console({
 	command: 'media',
