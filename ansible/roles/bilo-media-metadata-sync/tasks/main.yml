@@ -1,0 +1,35 @@
+-  name: media metadata sync CronJob ConfigMap remove
+   kubernetes.core.k8s:
+     state: absent
+     kind: ConfigMap
+     namespace: "{{ NAMESPACE }}"
+     name:  "media-metadata-sync-cronjob-configmap"
+   tags:
+    - configmap
+
+- name: bilo media metadata sync CronJob ConfigMap
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: bilo-media-metadata-sync-cronjob-configmap.yml.j2
+    state: "{{ 'present' if WITH_BILO_MEDIA_METADATA_SYNC is defined and WITH_BILO_MEDIA_METADATA_SYNC|bool else 'absent'}}"
+  tags:
+    - configmap
+
+-  name: media metadata sync remove
+   kubernetes.core.k8s:
+      state: absent
+      kind: CronJob
+      namespace: "{{ NAMESPACE }}"
+      name:  "media-metadata-sync-cronjob"
+   tags:
+    - cronjob
+
+- name: bilo media metadata sync CronJob
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: bilo-media-metadata-sync-cronjob.yml.j2
+    state: "{{ 'present' if WITH_BILO_MEDIA_METADATA_SYNC is defined and WITH_BILO_MEDIA_METADATA_SYNC|bool else 'absent'}}"
+  tags:
+    - cronjob

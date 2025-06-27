@@ -43,7 +43,7 @@ describe('School (API)', () => {
 		describe('when an admin requests the configured options for a system at their school', () => {
 			const setup = async () => {
 				const system = systemEntityFactory.buildWithId({
-					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 				});
 				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
@@ -90,7 +90,7 @@ describe('School (API)', () => {
 		describe('when the user is unauthorized', () => {
 			const setup = async () => {
 				const system = systemEntityFactory.buildWithId({
-					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 				});
 				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
@@ -134,7 +134,7 @@ describe('School (API)', () => {
 		describe('when an admin creates new school system options', () => {
 			const setup = async () => {
 				const system = systemEntityFactory.buildWithId({
-					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 				});
 				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
@@ -196,7 +196,7 @@ describe('School (API)', () => {
 		describe('when an admin updates the school system options', () => {
 			const setup = async () => {
 				const system = systemEntityFactory.buildWithId({
-					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 				});
 				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
@@ -268,7 +268,7 @@ describe('School (API)', () => {
 		describe('when the user is unauthorized', () => {
 			const setup = async () => {
 				const system = systemEntityFactory.buildWithId({
-					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 				});
 				const school = schoolEntityFactory.buildWithId({
 					systems: [system],

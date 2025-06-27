@@ -1081,12 +1081,6 @@
 			"default": true,
 			"description": "By default, the application is terminated after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to false."
 		},
-		"SYSTEM_LOG_LEVEL": {
-			"type": "string",
-			"default": "requestError",
-			"description": "Special logs.",
-			"enum": ["requestError", "systemLogs", "request", "sendRequests"]
-		},
 		"SYNC_QUEUE_NAME": {
 			"type": "string",
 			"default": "sync_ldap",
@@ -1678,7 +1672,7 @@
 			"default": "",
 			"description": "URL for SBOM summary for SVS"
 		},
-		"FEATURE_MEDIA_METADATA_SYNC_ENABLED": {
+		"FEATURE_BILO_MEDIA_METADATA_SYNC_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Feature toggle for media metadata sync."
@@ -1702,6 +1696,23 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Hides the link that refers to the old school administration page"
+		},
+		"DB_URL": {
+			"type": "string",
+			"description": "Mongodb url, may contain user and password"
+		},
+		"DB_USERNAME": {
+			"type": "string",
+			"description": "Mongodb user"
+		},
+		"DB_PASSWORD": {
+			"type": "string",
+			"description": "Mongodb password"
+		},
+		"SMTP_SENDER": {
+			"type": "string",
+			"default": "noreply@dbildungscloud.de",
+			"description": "sender address used to send mails with"
 		}
 	},
 	"required": []
