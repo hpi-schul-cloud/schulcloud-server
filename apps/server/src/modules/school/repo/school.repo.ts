@@ -32,7 +32,7 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		return schools;
 	}
 
-	public async getExternalSchools(
+	public async getSchoolList(
 		ownSchoolId: EntityId,
 		options?: IFindOptions<SchoolProps>,
 		federalStateId?: EntityId

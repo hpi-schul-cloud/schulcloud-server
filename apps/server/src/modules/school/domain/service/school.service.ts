@@ -47,19 +47,31 @@ export class SchoolService {
 		return schools;
 	}
 
-	public async getExternalSchools(
+	public async getSchoolsForExternalInvite(
+		query: SchoolQuery,
+		ownSchoolId: EntityId,
+		options?: IFindOptions<SchoolProps>
+	): Promise<School[]> {
+		const schools = await this.getSchools(query, options);
+
+		const schoolsForExternalInvite = schools.filter((school) => school.isEligibleForExternalInvite(ownSchoolId));
+
+		return schoolsForExternalInvite;
+	}
+
+	private async getExternalSchools(
 		ownSchoolId: EntityId,
 		options: IFindOptions<SchoolProps> = {},
 		federalStateId?: EntityId
 	): Promise<{ schools: School[]; count: number }> {
-		const result = await this.schoolRepo.getExternalSchools(ownSchoolId, options, federalStateId);
+		const result = await this.schoolRepo.getSchoolList(ownSchoolId, options, federalStateId);
 
 		const schools = result.schools.map((school) => this.addInstanceFeatures(school));
 
 		return { schools, count: result.count };
 	}
 
-	public async getSchoolsForExternalInvite(
+	public async getSchoolList(
 		ownSchoolId: EntityId,
 		options: IFindOptions<SchoolProps> = {},
 		federalStateId?: EntityId

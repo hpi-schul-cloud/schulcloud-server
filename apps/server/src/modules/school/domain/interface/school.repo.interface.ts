@@ -6,7 +6,7 @@ import { SchoolQuery } from '../query';
 export interface SchoolRepo {
 	getSchools(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School[]>;
 
-	getExternalSchools(
+	getSchoolList(
 		ownSchoolId: EntityId,
 		options: IFindOptions<SchoolProps>,
 		federalStateId?: EntityId

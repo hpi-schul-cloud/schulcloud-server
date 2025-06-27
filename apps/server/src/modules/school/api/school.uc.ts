@@ -7,7 +7,7 @@ import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { School, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';
+import { School, SchoolQuery, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';
 import {
 	SchoolAlreadyInMaintenanceLoggableException,
 	SchoolAlreadyInNextYearLoggableException,
@@ -17,6 +17,7 @@ import {
 import {
 	MaintenanceResponse,
 	SchoolExistsResponse,
+	SchoolForExternalInviteResponse,
 	SchoolForExternalInviteListResponse,
 	SchoolForLdapLoginResponse,
 	SchoolResponse,
@@ -76,7 +77,7 @@ export class SchoolUc {
 		return responseDto;
 	}
 
-	public async getSchoolListForExternalInvite(
+	public async getSchoolList(
 		ownSchoolId: EntityId,
 		paginationParams: PaginationParams,
 		federalStateId?: EntityId
@@ -88,11 +89,7 @@ export class SchoolUc {
 			pagination: paginationParams,
 		};
 
-		const { schools, count } = await this.schoolService.getSchoolsForExternalInvite(
-			ownSchoolId,
-			findOptions,
-			federalStateId
-		);
+		const { schools, count } = await this.schoolService.getSchoolList(ownSchoolId, findOptions, federalStateId);
 		const dtos = SchoolResponseMapper.mapToListForExternalInviteResponses(
 			schools,
 			{
@@ -101,6 +98,23 @@ export class SchoolUc {
 			},
 			count
 		);
+
+		return dtos;
+	}
+
+	public async getSchoolListForExternalInvite(
+		query: SchoolQuery,
+		ownSchoolId: EntityId
+	): Promise<SchoolForExternalInviteResponse[]> {
+		const findOptions = {
+			order: {
+				name: SortOrder.asc,
+			},
+		};
+
+		const schools = await this.schoolService.getSchoolsForExternalInvite(query, ownSchoolId, findOptions);
+
+		const dtos = schools.map((school) => SchoolResponseMapper.mapToExternalInviteResponse(school));
 
 		return dtos;
 	}

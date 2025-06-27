@@ -26,6 +26,7 @@ import { ApiValidationError } from '@shared/common/error';
 import {
 	MaintenanceResponse,
 	SchoolExistsResponse,
+	SchoolForExternalInviteResponse,
 	SchoolForExternalInviteListResponse,
 	SchoolForLdapLoginResponse,
 	SchoolQueryParams,
@@ -44,6 +45,23 @@ import { SchoolUc } from './school.uc';
 export class SchoolController {
 	constructor(private readonly schoolUc: SchoolUc) {}
 
+	@Get()
+	@JwtAuthentication()
+	public async getSchoolList(
+		@Query() query: SchoolQueryParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise<SchoolForExternalInviteListResponse | undefined> {
+		const dto = await this.schoolUc.getSchoolList(
+			user.schoolId,
+			{
+				limit: query.limit,
+				skip: query.skip,
+			},
+			query.federalStateId
+		);
+		return dto;
+	}
+
 	@Get('/id/:schoolId')
 	@JwtAuthentication()
 	public async getSchoolById(
@@ -60,16 +78,10 @@ export class SchoolController {
 	public async getSchoolListForExternalInvite(
 		@Query() query: SchoolQueryParams,
 		@CurrentUser() user: ICurrentUser
-	): Promise<SchoolForExternalInviteListResponse | undefined> {
-		const dto = await this.schoolUc.getSchoolListForExternalInvite(
-			user.schoolId,
-			{
-				limit: query.limit,
-				skip: query.skip,
-			},
-			query.federalStateId
-		);
-		return dto;
+	): Promise<SchoolForExternalInviteResponse[]> {
+		const res = await this.schoolUc.getSchoolListForExternalInvite(query, user.schoolId);
+
+		return res;
 	}
 
 	@Get('/exists/id/:schoolId')
