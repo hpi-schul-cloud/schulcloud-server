@@ -4,7 +4,6 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InvalidTargetLoggable } from '../errors/invalid-target.loggable';
 import { VidisSyncStrategy } from '../media-licenses';
-import { MediaMetadataSyncStrategy } from '../media-metadata';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { TspSyncStrategy } from '../strategy/tsp/tsp-sync.strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
@@ -15,7 +14,6 @@ describe(SyncService.name, () => {
 	let service: SyncService;
 	let tspSyncStrategy: TspSyncStrategy;
 	let vidisSyncStrategy: VidisSyncStrategy;
-	let mediaMedataSyncStrategy: MediaMetadataSyncStrategy;
 	let logger: Logger;
 
 	beforeAll(async () => {
@@ -45,17 +43,6 @@ describe(SyncService.name, () => {
 					}),
 				},
 				{
-					provide: MediaMetadataSyncStrategy,
-					useValue: createMock<MediaMetadataSyncStrategy>({
-						getType(): SyncStrategyTarget {
-							return SyncStrategyTarget.MEDIA_METADATA;
-						},
-						sync(): Promise<void> {
-							return Promise.resolve();
-						},
-					}),
-				},
-				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -65,7 +52,6 @@ describe(SyncService.name, () => {
 		service = module.get(SyncService);
 		tspSyncStrategy = module.get(TspSyncStrategy);
 		vidisSyncStrategy = module.get(VidisSyncStrategy);
-		mediaMedataSyncStrategy = module.get(MediaMetadataSyncStrategy);
 		logger = module.get(Logger);
 	});
 
@@ -101,7 +87,6 @@ describe(SyncService.name, () => {
 				const strategyMap = new Map<SyncStrategyTarget, SyncStrategy>([
 					[SyncStrategyTarget.TSP, tspSyncStrategy],
 					[SyncStrategyTarget.VIDIS, vidisSyncStrategy],
-					[SyncStrategyTarget.MEDIA_METADATA, mediaMedataSyncStrategy],
 				]);
 
 				Reflect.set(service, 'strategies', strategyMap);
@@ -109,7 +94,7 @@ describe(SyncService.name, () => {
 				return { strategyMap };
 			};
 
-			it.each([SyncStrategyTarget.TSP, SyncStrategyTarget.VIDIS, SyncStrategyTarget.MEDIA_METADATA])(
+			it.each([SyncStrategyTarget.TSP, SyncStrategyTarget.VIDIS])(
 				'call sync method of %s',
 				async (strategyTarget: SyncStrategyTarget) => {
 					const { strategyMap } = setup();
