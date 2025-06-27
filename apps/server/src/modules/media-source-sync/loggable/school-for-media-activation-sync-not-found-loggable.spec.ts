@@ -1,10 +1,10 @@
-import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from './school-for-school-media-license-sync-not-found.loggable';
+import { SchoolForMediaActivationSyncNotFoundLoggable } from './school-for-media-activation-sync-not-found-loggable';
 
-describe(SchoolForSchoolMediaLicenseSyncNotFoundLoggable.name, () => {
+describe(SchoolForMediaActivationSyncNotFoundLoggable.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const officialSchoolNumber = '00100';
-			const exception = new SchoolForSchoolMediaLicenseSyncNotFoundLoggable(officialSchoolNumber);
+			const exception = new SchoolForMediaActivationSyncNotFoundLoggable(officialSchoolNumber);
 
 			return { exception, officialSchoolNumber };
 		};
@@ -15,7 +15,7 @@ describe(SchoolForSchoolMediaLicenseSyncNotFoundLoggable.name, () => {
 			const logMessage = exception.getLogMessage();
 
 			expect(logMessage).toEqual({
-				message: 'Unable to sync media school license, because school cannot be found.',
+				message: 'Unable to sync media activations because school could not be found.',
 				data: {
 					officialSchoolNumber,
 				},

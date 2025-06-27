@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MediaSourceDataFormat } from '@modules/media-source';
-import { MediaMetadataSyncService } from '@modules/media-source-sync';
+import { MediaSourceSyncService } from '@modules/media-source-sync';
 import { MediaMetadataSyncReportLoggable } from '@modules/media-sync-console/loggable';
 import { mediaSourceSyncReportFactory } from '@modules/media-source-sync/testing';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
@@ -11,7 +11,7 @@ import { MediaMetadataSyncStrategy } from './media-metadata-sync.strategy';
 describe(MediaMetadataSyncStrategy.name, () => {
 	let module: TestingModule;
 	let strategy: MediaMetadataSyncStrategy;
-	let syncService: DeepMocked<MediaMetadataSyncService>;
+	let syncService: DeepMocked<MediaSourceSyncService>;
 	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
@@ -19,8 +19,8 @@ describe(MediaMetadataSyncStrategy.name, () => {
 			providers: [
 				MediaMetadataSyncStrategy,
 				{
-					provide: MediaMetadataSyncService,
-					useValue: createMock<MediaMetadataSyncService>(),
+					provide: MediaSourceSyncService,
+					useValue: createMock<MediaSourceSyncService>(),
 				},
 				{
 					provide: Logger,
@@ -30,7 +30,7 @@ describe(MediaMetadataSyncStrategy.name, () => {
 		}).compile();
 
 		strategy = module.get(MediaMetadataSyncStrategy);
-		syncService = module.get(MediaMetadataSyncService);
+		syncService = module.get(MediaSourceSyncService);
 		logger = module.get(Logger);
 	});
 

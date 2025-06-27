@@ -1,1 +1,1 @@
-export { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from './school-for-school-media-license-sync-not-found.loggable';
+export { SchoolForMediaActivationSyncNotFoundLoggable } from '@modules/media-source-sync/loggable/school-for-media-activation-sync-not-found-loggable';

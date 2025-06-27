@@ -1,6 +1,6 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '@infra/sync/media-licenses/loggable';
+import { SchoolForMediaActivationSyncNotFoundLoggable } from '@infra/sync/media-licenses/loggable';
 import { OfferDTO, SchoolActivationDTO } from '@infra/vidis-client';
 import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { MediaSource } from '@modules/media-source';
@@ -183,14 +183,14 @@ describe(VidisSyncService.name, () => {
 					};
 				};
 
-				it('should log a SchoolForSchoolMediaLicenseSyncNotFoundLoggable', async () => {
+				it('should log a SchoolForMediaActivationSyncNotFoundLoggable', async () => {
 					const { mediaSource, items, missingSchoolNumbers } = setup();
 
 					await service.syncMediaSchoolLicenses(mediaSource, items);
 
 					missingSchoolNumbers.forEach((schoolActivation: SchoolActivationDTO) => {
 						expect(logger.info).toHaveBeenCalledWith(
-							new SchoolForSchoolMediaLicenseSyncNotFoundLoggable(schoolActivation.regionName)
+							new SchoolForMediaActivationSyncNotFoundLoggable(schoolActivation.regionName)
 						);
 					});
 				});

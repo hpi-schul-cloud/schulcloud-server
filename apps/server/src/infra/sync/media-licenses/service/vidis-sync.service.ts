@@ -5,7 +5,7 @@ import { MediaSource } from '@modules/media-source';
 import { School, SchoolService } from '@modules/school';
 import { MediaSchoolLicense, MediaSchoolLicenseService, SchoolLicenseType } from '@modules/school-license';
 import { Injectable } from '@nestjs/common';
-import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '../loggable';
+import { SchoolForMediaActivationSyncNotFoundLoggable } from '../loggable';
 
 @Injectable()
 export class VidisSyncService {
@@ -49,7 +49,7 @@ export class VidisSyncService {
 		const school: School | null = await this.schoolService.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
 
 		if (!school) {
-			this.logger.info(new SchoolForSchoolMediaLicenseSyncNotFoundLoggable(officialSchoolNumber));
+			this.logger.info(new SchoolForMediaActivationSyncNotFoundLoggable(officialSchoolNumber));
 			return null;
 		}
 
