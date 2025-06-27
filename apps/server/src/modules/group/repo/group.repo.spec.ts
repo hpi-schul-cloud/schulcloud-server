@@ -738,4 +738,61 @@ describe(GroupRepo.name, () => {
 			});
 		});
 	});
+
+	describe('removeUserReference', () => {
+		const setup = async () => {
+			const user = userFactory.buildWithId();
+			const otherUser = userFactory.buildWithId();
+			const role = roleFactory.buildWithId({ name: RoleName.ROOMOWNER });
+			const group = groupEntityFactory.buildWithId({
+				users: [
+					new GroupUserEmbeddable({
+						user,
+						role,
+					}),
+					new GroupUserEmbeddable({
+						user: otherUser,
+						role,
+					}),
+				],
+			});
+
+			await em.persistAndFlush([user, otherUser, role, group]);
+			em.clear();
+
+			return {
+				userId: user.id,
+				otherUserId: otherUser.id,
+				group,
+			};
+		};
+
+		it('should actually remove the user reference from the group', async () => {
+			const { userId, otherUserId, group } = await setup();
+
+			await repo.removeUserReference(userId);
+
+			const updatedGroup = await em.findOne(GroupEntity, group.id);
+			expect(updatedGroup?.users).toHaveLength(1);
+			expect(updatedGroup?.users[0].user.id).toEqual(otherUserId);
+		});
+
+		it('should return count of 1 group updated', async () => {
+			const { userId } = await setup();
+
+			const numberOfUpdatedGroups = await repo.removeUserReference(userId);
+
+			expect(numberOfUpdatedGroups).toEqual(1);
+		});
+
+		it('should not affect other users having the same group', async () => {
+			const { userId, otherUserId, group } = await setup();
+
+			await repo.removeUserReference(userId);
+
+			const updatedGroup = await em.findOne(GroupEntity, group.id);
+			expect(updatedGroup?.users).toHaveLength(1);
+			expect(updatedGroup?.users[0].user.id).toEqual(otherUserId);
+		});
+	});
 });
