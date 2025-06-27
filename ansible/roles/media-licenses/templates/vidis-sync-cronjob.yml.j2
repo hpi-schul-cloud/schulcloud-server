@@ -42,7 +42,7 @@ spec:
             - configMapRef:
                 name: vidis-sync-cronjob-configmap
             command: ['/bin/sh','-c']
-            args: ['npm run nest:start:sync:vidis:prod']
+            args: ['npm run nest:start:sync-console:media:activations:vidis:prod']
             resources:
               limits:
                 cpu: {{ MEDIA_ACTIVATION_CPU_LIMITS|default("2000m", true) }}

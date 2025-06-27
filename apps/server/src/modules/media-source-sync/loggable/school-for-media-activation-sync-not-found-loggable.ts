@@ -1,11 +1,11 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
-export class SchoolForSchoolMediaLicenseSyncNotFoundLoggable implements Loggable {
+export class SchoolForMediaActivationSyncNotFoundLoggable implements Loggable {
 	constructor(private readonly officialSchoolNumber: string) {}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: 'Unable to sync media school license, because school cannot be found.',
+			message: 'Unable to sync media activations because school could not be found.',
 			data: {
 				officialSchoolNumber: this.officialSchoolNumber,
 			},

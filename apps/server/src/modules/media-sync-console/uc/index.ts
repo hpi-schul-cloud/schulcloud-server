@@ -1,1 +1,1 @@
-export { MediaMetadataSyncUc } from './media-metadata-sync.uc';
+export { MediaSourceSyncUc } from './media-source-sync.uc';

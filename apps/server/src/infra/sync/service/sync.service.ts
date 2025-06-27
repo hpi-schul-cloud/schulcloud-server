@@ -1,7 +1,6 @@
 import { Logger } from '@core/logger';
 import { Injectable, Optional } from '@nestjs/common';
 import { InvalidTargetLoggable } from '../errors/invalid-target.loggable';
-import { VidisSyncStrategy } from '../media-licenses';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { TspSyncStrategy } from '../strategy/tsp/tsp-sync.strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
@@ -10,14 +9,9 @@ import { SyncStrategyTarget } from '../sync-strategy.types';
 export class SyncService {
 	private strategies: Map<SyncStrategyTarget, SyncStrategy> = new Map<SyncStrategyTarget, SyncStrategy>();
 
-	constructor(
-		private readonly logger: Logger,
-		@Optional() private readonly tspSyncStrategy?: TspSyncStrategy,
-		@Optional() private readonly vidisSyncStrategy?: VidisSyncStrategy
-	) {
+	constructor(private readonly logger: Logger, @Optional() private readonly tspSyncStrategy?: TspSyncStrategy) {
 		this.logger.setContext(SyncService.name);
 		this.registerStrategy(tspSyncStrategy);
-		this.registerStrategy(vidisSyncStrategy);
 	}
 
 	protected registerStrategy(strategy?: SyncStrategy): void {

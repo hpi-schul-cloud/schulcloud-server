@@ -1,2 +1,2 @@
-export { MediaMetadataSyncService } from './media-metadata-sync.service';
+export { MediaSourceSyncService } from './media-source-sync.service';
 export { ExternalToolMetadataUpdateService } from './external-tool-metadata-update.service';
