@@ -4,7 +4,7 @@ import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediaSourceSyncService } from '@modules/media-source-sync';
 import { mediaSourceSyncReportFactory } from '@modules/media-source-sync/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MediaMetadataSyncReportLoggable } from '../loggable';
+import { MediaActivationsSyncReportLoggable, MediaMetadataSyncReportLoggable } from '../loggable';
 import { MediaSourceSyncUc } from './media-source-sync.uc';
 
 describe(MediaSourceSyncUc.name, () => {
@@ -88,17 +88,18 @@ describe(MediaSourceSyncUc.name, () => {
 			it('should start the sync of media activations', async () => {
 				const { dataFormat } = setup();
 
-				await uc.syncAllMediaMetadata(dataFormat);
+				await uc.syncAllMediaActivations(dataFormat);
 
-				expect(mediaSourceSyncService.syncAllMediaMetadata).toBeCalledWith(dataFormat);
+				expect(mediaSourceSyncService.syncAllMediaActivations).toBeCalledWith(dataFormat);
 			});
 
 			it('should log the report after the media activations', async () => {
 				const { dataFormat, report } = setup();
 
-				await uc.syncAllMediaMetadata(dataFormat);
+				await uc.syncAllMediaActivations(dataFormat);
 
-				const loggable = new MediaMetadataSyncReportLoggable(report, dataFormat);
+				const loggable = new MediaActivationsSyncReportLoggable(report, dataFormat);
+
 				expect(logger.info).toBeCalledWith(loggable);
 			});
 		});
