@@ -42,7 +42,7 @@ export class SchoolResponseMapper {
 		return dto;
 	}
 
-	public static mapToSchoolListResponses(
+	public static mapToSchoolListResponse(
 		schools: School[],
 		pagination?: PaginationParams,
 		total?: number

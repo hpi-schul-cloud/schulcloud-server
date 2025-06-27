@@ -90,7 +90,7 @@ export class SchoolUc {
 		};
 
 		const { schools, count } = await this.schoolService.getSchoolList(ownSchoolId, findOptions, federalStateId);
-		const dtos = SchoolResponseMapper.mapToSchoolListResponses(
+		const dtos = SchoolResponseMapper.mapToSchoolListResponse(
 			schools,
 			{
 				skip: paginationParams.skip,
