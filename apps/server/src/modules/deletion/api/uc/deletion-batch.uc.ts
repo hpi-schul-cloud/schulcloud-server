@@ -63,12 +63,14 @@ export class DeletionBatchUc {
 		// TODO move this in config
 		const allowedUserRoles = [
 			RoleName.STUDENT,
+			/*
 			RoleName.TEACHER,
 			RoleName.ADMINISTRATOR,
 			RoleName.COURSETEACHER,
 			RoleName.COURSESUBSTITUTIONTEACHER,
 			RoleName.COURSESTUDENT,
 			RoleName.COURSEADMINISTRATOR,
+			 */
 		];
 
 		const validUserIds: EntityId[] = [];
