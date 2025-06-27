@@ -57,7 +57,7 @@ export class DeleteUserCalendarDataStep extends SagaStep<'deleteUserData'> {
 			)
 		);
 
-		const eventIds = await this.calendarService.getAllEvents(userId);
+		const eventIds = await this.calendarService.getAllEvents(userId, userId);
 
 		await this.calendarService.deleteEventsByScopeId(userId);
 

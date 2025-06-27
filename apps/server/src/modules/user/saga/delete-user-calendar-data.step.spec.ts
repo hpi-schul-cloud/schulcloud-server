@@ -102,12 +102,12 @@ describe(DeleteUserCalendarDataStep.name, () => {
 				calendarService.getAllEvents.mockResolvedValueOnce(eventIds);
 			};
 
-			it('should call calendar service getAllEvents', async () => {
+			it('should call calendar service getAllEvents with userId as scopeId', async () => {
 				setup();
 
 				await step.execute({ userId: 'test-user-id' });
 
-				expect(calendarService.getAllEvents).toHaveBeenCalledWith('test-user-id');
+				expect(calendarService.getAllEvents).toHaveBeenCalledWith('test-user-id', 'test-user-id');
 			});
 
 			it('should call calendar service deleteEventsByScopeId', async () => {
