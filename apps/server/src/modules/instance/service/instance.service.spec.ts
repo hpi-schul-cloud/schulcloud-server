@@ -76,4 +76,26 @@ describe(InstanceService.name, () => {
 			});
 		});
 	});
+
+	describe('save', () => {
+		describe('when saving an instance', () => {
+			const setup = () => {
+				const instance = instanceFactory.build();
+
+				instanceRepo.save.mockResolvedValue(instance);
+
+				return {
+					instance,
+				};
+			};
+
+			it('should return the instance', async () => {
+				const { instance } = setup();
+
+				const result = await service.save(instance);
+
+				expect(result).toEqual(instance);
+			});
+		});
+	});
 });
