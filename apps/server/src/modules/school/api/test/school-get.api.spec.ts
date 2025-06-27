@@ -12,7 +12,6 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { SchoolItemResponse } from '../dto';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;
@@ -274,7 +273,7 @@ describe('School Controller (API)', () => {
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual(
 					expect.objectContaining({
-						data: expect.arrayContaining(expectedResponse) as SchoolItemResponse[],
+						data: expect.arrayContaining(expectedResponse) as unknown,
 					})
 				);
 			});
