@@ -1,1 +1,1 @@
-export { MediaMetadataSyncOptions } from './media-metadata-sync-options';
+export { MediaSourceSyncOptions } from './media-source-sync-options';

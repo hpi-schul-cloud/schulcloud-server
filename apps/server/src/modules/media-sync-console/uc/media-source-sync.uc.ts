@@ -2,20 +2,24 @@ import { Logger } from '@core/logger';
 import { MediaSourceSyncReport, MediaSourceSyncService } from '@modules/media-source-sync';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { Injectable } from '@nestjs/common';
-import { MediaMetadataSyncReportLoggable } from '../loggable';
+import { MediaMetadataSyncReportLoggable, MediaActivationsSyncReportLoggable } from '../loggable';
 
 @Injectable()
-export class MediaMetadataSyncUc {
+export class MediaSourceSyncUc {
 	constructor(private readonly logger: Logger, private readonly mediaSourceSyncService: MediaSourceSyncService) {}
 
 	public async syncAllMediaMetadata(dataFormat: MediaSourceDataFormat): Promise<void> {
 		const syncReport: MediaSourceSyncReport = await this.mediaSourceSyncService.syncAllMediaMetadata(dataFormat);
 
-		this.logSyncReport(syncReport, dataFormat);
+		const loggable = new MediaMetadataSyncReportLoggable(syncReport, dataFormat);
+
+		this.logger.info(loggable);
 	}
 
-	private logSyncReport(report: MediaSourceSyncReport, mediaSourceDataFormat: MediaSourceDataFormat): void {
-		const loggable = new MediaMetadataSyncReportLoggable(report, mediaSourceDataFormat);
+	public async syncAllMediaActivations(dataFormat: MediaSourceDataFormat): Promise<void> {
+		const syncReport: MediaSourceSyncReport = await this.mediaSourceSyncService.syncAllMediaActivations(dataFormat);
+
+		const loggable = new MediaActivationsSyncReportLoggable(syncReport, dataFormat);
 
 		this.logger.info(loggable);
 	}
