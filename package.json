@@ -232,7 +232,7 @@
 		"moment": "^2.30.1",
 		"mongodb": "^5.9.2",
 		"mongodb-uri": "^0.9.7",
-		"mongoose": "^6.13.8",
+		"mongoose": "^8.16.1",
 		"mongoose-delete": "^0.5.4",
 		"mongoose-lean-virtuals": "^0.8.1",
 		"mongoose-shortid-nodeps": "git://github.com/leeroybrun/mongoose-shortid-nodeps.git",
