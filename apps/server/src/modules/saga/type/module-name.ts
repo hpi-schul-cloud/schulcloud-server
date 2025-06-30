@@ -5,6 +5,7 @@ export const ModuleName = {
 	CLASS: 'class',
 	COURSE: 'course',
 	COURSE_COURSEGROUP: 'courseGroup',
+	GROUP: 'group',
 	LEARNROOM_DASHBOARD: 'dashboard',
 	FILES: 'file',
 	FILES_STORAGE: 'fileRecords',

@@ -69,6 +69,7 @@ export class DeletionExecutionService {
 			[ModuleName.LEARNROOM_DASHBOARD]: DomainName.DASHBOARD,
 			[ModuleName.FILES]: DomainName.FILE,
 			[ModuleName.FILES_STORAGE]: DomainName.FILERECORDS,
+			[ModuleName.GROUP]: DomainName.GROUP,
 			[ModuleName.LESSON]: DomainName.LESSONS,
 			[ModuleName.PSEUDONYM]: DomainName.PSEUDONYMS,
 			[ModuleName.ROCKETCHATUSER]: DomainName.ROCKETCHATUSER,

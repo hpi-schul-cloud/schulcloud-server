@@ -8,6 +8,7 @@ export enum DomainName {
 	DASHBOARD = 'dashboard',
 	FILE = 'file',
 	FILERECORDS = 'fileRecords',
+	GROUP = 'group',
 	LESSONS = 'lessons',
 	PSEUDONYMS = 'pseudonyms',
 	REGISTRATIONPIN = 'registrationPin',
