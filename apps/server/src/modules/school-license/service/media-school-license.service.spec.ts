@@ -1,5 +1,6 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { VidisClientAdapter } from '@infra/vidis-client';
 import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
@@ -14,7 +15,6 @@ import { SchoolLicenseType } from '../enum';
 import { BuildMediaSchoolLicenseFailedLoggable, SchoolNumberNotFoundLoggableException } from '../loggable';
 import { MEDIA_SCHOOL_LICENSE_REPO, MediaSchoolLicenseRepo } from '../repo';
 import { mediaSchoolLicenseFactory } from '../testing';
-import { MediaSchoolLicenseFetchService } from './media-school-license-fetch.service';
 import { MediaSchoolLicenseService } from './media-school-license.service';
 
 describe(MediaSchoolLicenseService.name, () => {
@@ -24,7 +24,7 @@ describe(MediaSchoolLicenseService.name, () => {
 	let schoolService: DeepMocked<SchoolService>;
 	let logger: DeepMocked<Logger>;
 	let mediaSourceService: DeepMocked<MediaSourceService>;
-	let mediaSchoolLicenseFetchService: DeepMocked<MediaSchoolLicenseFetchService>;
+	let vidisClientAdapter: DeepMocked<VidisClientAdapter>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -47,8 +47,8 @@ describe(MediaSchoolLicenseService.name, () => {
 					useValue: createMock<MediaSourceService>(),
 				},
 				{
-					provide: MediaSchoolLicenseFetchService,
-					useValue: createMock<MediaSchoolLicenseFetchService>(),
+					provide: VidisClientAdapter,
+					useValue: createMock<VidisClientAdapter>(),
 				},
 			],
 		}).compile();
@@ -58,7 +58,7 @@ describe(MediaSchoolLicenseService.name, () => {
 		schoolService = module.get(SchoolService);
 		logger = module.get(Logger);
 		mediaSourceService = module.get(MediaSourceService);
-		mediaSchoolLicenseFetchService = module.get(MediaSchoolLicenseFetchService);
+		vidisClientAdapter = module.get(VidisClientAdapter);
 	});
 
 	afterAll(async () => {
@@ -306,7 +306,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
-				mediaSchoolLicenseFetchService.fetchOffersForSchoolFromVidis.mockResolvedValue(offersFromMediaSource);
+				vidisClientAdapter.getOfferItemsBySchoolName.mockResolvedValue(offersFromMediaSource);
 				mediaSchoolLicenseRepo.deleteAllBySchoolAndMediaSource.mockImplementation();
 				mediaSchoolLicenseRepo.saveAll.mockImplementation();
 
@@ -335,7 +335,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
-				mediaSchoolLicenseFetchService.fetchOffersForSchoolFromVidis.mockResolvedValue(offersFromMediaSource);
+				vidisClientAdapter.getOfferItemsBySchoolName.mockResolvedValue(offersFromMediaSource);
 
 				return {
 					school,
@@ -392,15 +392,12 @@ describe(MediaSchoolLicenseService.name, () => {
 				};
 			};
 
-			it('should call mediaSchoolLicenseFetchService', async () => {
+			it('should get offer items by school name', async () => {
 				const { school, mediaSource, schoolName } = setup();
 
 				await mediaSchoolLicenseService.updateMediaSchoolLicenses(school.id);
 
-				expect(mediaSchoolLicenseFetchService.fetchOffersForSchoolFromVidis).toHaveBeenCalledWith(
-					mediaSource,
-					schoolName
-				);
+				expect(vidisClientAdapter.getOfferItemsBySchoolName).toHaveBeenCalledWith(mediaSource, schoolName);
 			});
 		});
 
@@ -412,7 +409,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
-				mediaSchoolLicenseFetchService.fetchOffersForSchoolFromVidis.mockResolvedValue(offersFromMediaSource);
+				vidisClientAdapter.getOfferItemsBySchoolName.mockResolvedValue(offersFromMediaSource);
 				mediaSchoolLicenseRepo.deleteAllBySchoolAndMediaSource.mockImplementation();
 				mediaSchoolLicenseRepo.saveAll.mockImplementation();
 
@@ -446,7 +443,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
-				mediaSchoolLicenseFetchService.fetchOffersForSchoolFromVidis.mockResolvedValue(offersFromMediaSource);
+				vidisClientAdapter.getOfferItemsBySchoolName.mockResolvedValue(offersFromMediaSource);
 				mediaSchoolLicenseRepo.deleteAllBySchoolAndMediaSource.mockImplementation();
 				mediaSchoolLicenseRepo.saveAll.mockImplementation();
 
@@ -493,7 +490,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
-				mediaSchoolLicenseFetchService.fetchOffersForSchoolFromVidis.mockResolvedValue(offersFromMediaSource);
+				vidisClientAdapter.getOfferItemsBySchoolName.mockResolvedValue(offersFromMediaSource);
 				mediaSchoolLicenseRepo.deleteAllBySchoolAndMediaSource.mockImplementation();
 				mediaSchoolLicenseRepo.saveAll.mockImplementation();
 

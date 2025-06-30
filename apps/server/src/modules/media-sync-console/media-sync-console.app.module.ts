@@ -12,7 +12,7 @@ import { ConsoleModule } from 'nestjs-console';
 import { MediaSyncConsole } from './api/media-sync-console';
 import { mediaSyncConsoleConfig } from './media-sync-console.config';
 import { ENTITIES } from './media-sync-console.entity.imports';
-import { MediaMetadataSyncUc } from './uc';
+import { MediaSourceSyncUc } from './uc';
 
 @Module({
 	imports: [
@@ -33,6 +33,6 @@ import { MediaMetadataSyncUc } from './uc';
 		ConsoleWriterModule,
 		ConsoleModule,
 	],
-	providers: [MediaSyncConsole, MediaMetadataSyncUc],
+	providers: [MediaSyncConsole, MediaSourceSyncUc],
 })
 export class MediaSyncConsoleAppModule {}

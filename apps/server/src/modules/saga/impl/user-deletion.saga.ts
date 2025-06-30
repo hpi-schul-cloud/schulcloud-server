@@ -10,6 +10,7 @@ export const UserDeletionSagaExecutionOrder: ModuleName[] = [
 	ModuleName.CLASS,
 	ModuleName.COURSE,
 	ModuleName.COURSE_COURSEGROUP,
+	ModuleName.GROUP,
 	ModuleName.LEARNROOM_DASHBOARD,
 	ModuleName.FILES,
 	ModuleName.FILES_STORAGE,
