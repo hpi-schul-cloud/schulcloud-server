@@ -25,6 +25,7 @@ import { CourseApiModule } from '@modules/course/course-api.module';
 import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
 import { FilesModule } from '@modules/files';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
+import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
 import { NewsModule } from '@modules/news';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
@@ -57,6 +58,7 @@ const serverModules = [
 	CourseApiModule,
 	FilesModule,
 	FilesStorageClientModule,
+	GroupApiModule,
 	LearnroomApiModule,
 	NewsModule,
 	PseudonymApiModule,
