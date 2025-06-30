@@ -55,7 +55,7 @@ describe('CalendarServiceSpec', () => {
 		jest.clearAllMocks();
 	});
 
-	describe('findEvents', () => {
+	describe('findEvent', () => {
 		it('should successfully find an event', async () => {
 			// Arrange
 			const title = 'eventTitle';
@@ -112,6 +112,23 @@ describe('CalendarServiceSpec', () => {
 			expect(result.length).toEqual(2);
 			expect(result[0]).toEqual('1');
 			expect(result[1]).toEqual('2');
+		});
+
+		it('should call httpService.get with with scopeId', async () => {
+			const event: CalendarEventId = {
+				data: [{ id: '1' }, { id: '2' }],
+			};
+			const axiosResponse: AxiosResponse<CalendarEvent[]> = axiosResponseFactory.build({
+				data: [event],
+			});
+			httpService.get.mockReturnValue(of(axiosResponse));
+			calendarMapper.mapEventsToId.mockReturnValueOnce(['1', '2']);
+			await service.getAllEvents('userId', 'scopeId');
+
+			expect(httpService.get).toHaveBeenCalledWith(
+				expect.stringContaining('/events?scope-id=scopeId'),
+				expect.any(Object)
+			);
 		});
 
 		it('should throw if event cannot be found, because of invalid parameters', async () => {

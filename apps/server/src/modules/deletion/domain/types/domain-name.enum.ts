@@ -1,6 +1,7 @@
 export enum DomainName {
 	ACCOUNT = 'account',
 	BOARD = 'board',
+	MEDIA_BOARD = 'media-board',
 	CLASS = 'class',
 	COURSEGROUP = 'courseGroup',
 	COURSE = 'course',

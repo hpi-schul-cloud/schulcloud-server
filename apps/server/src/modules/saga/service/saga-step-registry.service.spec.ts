@@ -34,7 +34,7 @@ describe(SagaStepRegistryService.name, () => {
 	describe('executeStep', () => {
 		describe('when module is not registered', () => {
 			it('should throw an error', async () => {
-				const moduleName = ModuleName.BOARD;
+				const moduleName = ModuleName.MEDIA_BOARD;
 
 				const executeFunction = async () => {
 					await stepRegistry.executeStep(moduleName, 'deleteUserData', { userId: '67a0784ef358f49ca4faf5c3' });
