@@ -91,6 +91,3 @@ build
 
 # Docker
 docker-compose.yml
-
-#github
-.github/copilot-instructions-local.md
