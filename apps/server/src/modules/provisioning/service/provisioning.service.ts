@@ -7,7 +7,6 @@ import {
 	OidcMockProvisioningStrategy,
 	ProvisioningStrategy,
 	SchulconnexAsyncProvisioningStrategy,
-	SchulconnexSyncProvisioningStrategy,
 	TspProvisioningStrategy,
 } from '../strategy';
 
@@ -20,12 +19,10 @@ export class ProvisioningService {
 
 	constructor(
 		private readonly systemService: SystemService,
-		private readonly schulconnexSyncProvisioningStrategy: SchulconnexSyncProvisioningStrategy,
 		private readonly schulconnexAsyncProvisioningStrategy: SchulconnexAsyncProvisioningStrategy,
 		private readonly oidcMockStrategy: OidcMockProvisioningStrategy,
 		private readonly tspStrategy: TspProvisioningStrategy
 	) {
-		this.registerStrategy(schulconnexSyncProvisioningStrategy);
 		this.registerStrategy(schulconnexAsyncProvisioningStrategy);
 		this.registerStrategy(oidcMockStrategy);
 		this.registerStrategy(tspStrategy);

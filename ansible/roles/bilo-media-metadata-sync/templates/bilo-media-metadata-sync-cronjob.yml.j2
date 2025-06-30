@@ -3,56 +3,53 @@ kind: CronJob
 metadata:
   namespace: {{ NAMESPACE }}
   labels:
-    app: data-deletion-trigger-failed
+    app: bilo-media-metadata-sync-cronjob
     app.kubernetes.io/part-of: schulcloud-verbund
     app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-    app.kubernetes.io/name: data-deletion-trigger-failed
-    app.kubernetes.io/component: data-deletion
+    app.kubernetes.io/name: bilo-media-metadata-sync-cronjob
+    app.kubernetes.io/component: sync
     app.kubernetes.io/managed-by: ansible
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
-  name: data-deletion-trigger-failed-cronjob
+  name: bilo-media-metadata-sync-cronjob
 spec:
+  schedule: {{ SERVER_BILO_MEDIA_METADATA_SYNC_CRONJOB_SCHEDULE|default("30 2 * * *", true) }}
   concurrencyPolicy: Forbid
-  schedule: "{{ SERVER_DATA_DELETION_TRIGGER_FAILED_CRONJOB_SCHEDULE|default("@daily", true) }}"
   jobTemplate:
-    metadata:
-      labels:
-        app: data-deletion-trigger-failed
-        app.kubernetes.io/part-of: schulcloud-verbund
-        app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-        app.kubernetes.io/name: data-deletion-trigger-failed
-        app.kubernetes.io/component: data-deletion
-        app.kubernetes.io/managed-by: ansible
-        git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
-        git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       template:
+        metadata:
+          labels:
+            app: bilo-media-metadata-sync-cronjob
+            app.kubernetes.io/part-of: schulcloud-verbund
+            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            app.kubernetes.io/name: bilo-media-metadata-sync-cronjob
+            app.kubernetes.io/component: sync
+            app.kubernetes.io/managed-by: ansible
+            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
         spec:
-          securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
-            fsGroup: 1000
-            runAsNonRoot: true
+          os:
+            name: linux
           containers:
-          - name: data-deletion-trigger-failed-cronjob
+          - name: bilo-media-metadata-sync-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
             envFrom:
             - configMapRef:
-                name: data-deletion-trigger-failed-cronjob-configmap
+                name: api-configmap
             - secretRef:
-                name: admin-api-client-secret
-            - secretRef:
-                name: api-files-secret
-            command: ['/bin/sh', '-c']
-            args: ['npm run nest:start:deletion-console:prod -- execution trigger -f true']
+                name: api-secret
+            - configMapRef:
+                name: bilo-media-metadata-sync-cronjob-configmap
+            command: ['/bin/sh','-c']
+            args: ['npm run nest:start:sync-console:media:metadata:bilo:prod']
             resources:
               limits:
-                cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
-                memory: {{ API_MEMORY_LIMITS|default("2Gi", true) }}
+                cpu: {{ BILO_MEDIA_METADATA_SYNC_CPU_LIMITS|default("2000m", true) }}
+                memory: {{ BILO_MEDIA_METADATA_SYNC_MEMORY_LIMITS|default("2Gi", true) }}
               requests:
-                cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
-                memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
+                cpu: {{ BILO_MEDIA_METADATA_SYNC_CPU_REQUESTS|default("100m", true) }}
+                memory: {{ BILO_MEDIA_METADATA_SYNC_MEMORY_REQUESTS|default("150Mi", true) }}
           restartPolicy: OnFailure
 {% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
           affinity:
@@ -99,13 +96,4 @@ spec:
                   topologyKey: "kubernetes.io/hostname"
                   namespaceSelector: {}
 {% endif %}
-        metadata:
-          labels:
-            app: data-deletion-trigger-failed
-            app.kubernetes.io/part-of: schulcloud-verbund
-            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-            app.kubernetes.io/name: data-deletion-trigger-failed
-            app.kubernetes.io/component: data-deletion
-            app.kubernetes.io/managed-by: ansible
-            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
-            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+

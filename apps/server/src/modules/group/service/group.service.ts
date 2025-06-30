@@ -60,6 +60,12 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		return groups;
 	}
 
+	public async findByScope(scope: GroupAggregateScope): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findGroupsForScope(scope);
+
+		return groups;
+	}
+
 	public async findGroupsForUser(
 		user: User,
 		permission: GroupVisibilityPermission,
@@ -67,6 +73,7 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		nameQuery?: string,
 		options?: IFindOptions<Group>
 	): Promise<Page<Group>> {
+		// TODO this should be moved to repo
 		const scope = new GroupAggregateScope(options)
 			.byName(nameQuery)
 			.byAvailableForSync(
@@ -162,5 +169,17 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		await this.save(group);
 
 		return group;
+	}
+
+	public async removeUserReference(userId: EntityId): Promise<number> {
+		const numberOfUpdatedGroups = await this.groupRepo.removeUserReference(userId);
+
+		return numberOfUpdatedGroups;
+	}
+
+	public async findAllGroupsForUser(userId: EntityId): Promise<Group[]> {
+		const { domainObjects } = await this.groupRepo.findGroupsByFilter({ userId });
+
+		return domainObjects;
 	}
 }
