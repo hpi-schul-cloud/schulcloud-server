@@ -4,7 +4,6 @@ import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@core/logger';
-import { ErrorLogMessage } from '@core/logger/types';
 import { AccountService } from '@modules/account';
 import { StartSynchronizationLoggable, SucessSynchronizationLoggable } from './loggable';
 import {
@@ -13,6 +12,7 @@ import {
 	SynchronizationUnknownErrorLoggableException,
 } from './loggable-exception';
 import { IdpConsoleConfig } from '../idp-console.config';
+import { AxiosErrorLoggable } from '@core/error/loggable';
 
 @Injectable()
 export class SynchronizationUc {
@@ -45,7 +45,8 @@ export class SynchronizationUc {
 		} catch (error) {
 			const loggable =
 				error instanceof NoUsersToSynchronizationLoggableException ||
-				error instanceof FailedUpdateLastSyncedAtLoggableException
+				error instanceof FailedUpdateLastSyncedAtLoggableException ||
+				error instanceof AxiosErrorLoggable
 					? error
 					: new SynchronizationUnknownErrorLoggableException(systemId);
 
@@ -53,8 +54,9 @@ export class SynchronizationUc {
 				synchronizationId,
 				SynchronizationStatusModel.FAILED,
 				0,
-				loggable.getLogMessage()
+				JSON.stringify(loggable.getLogMessage())
 			);
+			throw loggable;
 		}
 	}
 
@@ -92,13 +94,13 @@ export class SynchronizationUc {
 		synchronizationId: string,
 		status: SynchronizationStatusModel,
 		userSyncCount: number,
-		error?: ErrorLogMessage
+		errorMessage?: string
 	): Promise<void> {
 		const newSynchronization = new Synchronization({
 			id: synchronizationId,
 			status,
 			count: userSyncCount,
-			failureCause: error ? `${error?.data?.errorMessage as string}: ${error?.data?.systemId as string}` : undefined,
+			failureCause: errorMessage ? errorMessage : undefined,
 		});
 
 		await this.synchronizationService.update(newSynchronization);
