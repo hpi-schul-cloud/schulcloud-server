@@ -1,3 +1,4 @@
+import util from 'util';
 import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { Synchronization, SynchronizationService, SynchronizationStatusModel } from '@modules/synchronization';
 import { UserService } from '@modules/user';
@@ -54,7 +55,7 @@ export class SynchronizationUc {
 				synchronizationId,
 				SynchronizationStatusModel.FAILED,
 				0,
-				JSON.stringify(loggable.getLogMessage())
+				util.inspect(loggable.getLogMessage())
 			);
 			throw loggable;
 		}
