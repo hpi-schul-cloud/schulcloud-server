@@ -2,8 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConsoleWriterService } from '@infra/console';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MediaMetadataSyncOptions } from '../types';
-import { MediaMetadataSyncUc } from '../uc';
+import { MediaSourceSyncOptions } from '../types';
+import { MediaSourceSyncUc } from '../uc';
 import { MediaSyncConsole } from './media-sync-console';
 
 describe(MediaSyncConsole.name, () => {
@@ -11,7 +11,7 @@ describe(MediaSyncConsole.name, () => {
 	let console: MediaSyncConsole;
 
 	let consoleWriterService: DeepMocked<ConsoleWriterService>;
-	let mediaMetadataSyncUc: DeepMocked<MediaMetadataSyncUc>;
+	let mediaSourceSyncUc: DeepMocked<MediaSourceSyncUc>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -22,15 +22,15 @@ describe(MediaSyncConsole.name, () => {
 					useValue: createMock<ConsoleWriterService>(),
 				},
 				{
-					provide: MediaMetadataSyncUc,
-					useValue: createMock<MediaMetadataSyncUc>(),
+					provide: MediaSourceSyncUc,
+					useValue: createMock<MediaSourceSyncUc>(),
 				},
 			],
 		}).compile();
 
 		console = module.get(MediaSyncConsole);
 		consoleWriterService = module.get(ConsoleWriterService);
-		mediaMetadataSyncUc = module.get(MediaMetadataSyncUc);
+		mediaSourceSyncUc = module.get(MediaSourceSyncUc);
 	});
 
 	beforeEach(() => {
@@ -45,33 +45,70 @@ describe(MediaSyncConsole.name, () => {
 		describe('when the options passed have a valid media source data format', () => {
 			it('should start the media metadata sync', async () => {
 				const dataFormat = MediaSourceDataFormat.VIDIS;
-				const options: MediaMetadataSyncOptions = {
+				const options: MediaSourceSyncOptions = {
 					dataFormat: dataFormat.valueOf(),
 				};
 
 				await console.syncAllMediaMetadata(options);
 
-				expect(mediaMetadataSyncUc.syncAllMediaMetadata).toBeCalledWith(dataFormat);
+				expect(mediaSourceSyncUc.syncAllMediaMetadata).toBeCalledWith(dataFormat);
 			});
 		});
 
 		describe('when the options passed have an invalid media source data format', () => {
 			it('should not start the media metadata sync', async () => {
-				const options: MediaMetadataSyncOptions = {
+				const options: MediaSourceSyncOptions = {
 					dataFormat: 'Vidis',
 				};
 
 				await console.syncAllMediaMetadata(options);
 
-				expect(mediaMetadataSyncUc.syncAllMediaMetadata).not.toBeCalled();
+				expect(mediaSourceSyncUc.syncAllMediaMetadata).not.toBeCalled();
 			});
 
 			it('should log the invalid data format', async () => {
-				const options: MediaMetadataSyncOptions = {
-					dataFormat: 'Vidis',
+				const options: MediaSourceSyncOptions = {
+					dataFormat: 'bi lo',
 				};
 
 				await console.syncAllMediaMetadata(options);
+
+				expect(consoleWriterService.error).toBeCalledWith(`Unknown media source data format "${options.dataFormat}"`);
+			});
+		});
+	});
+
+	describe('syncAllMediaActivations', () => {
+		describe('when the options passed have a valid media source data format', () => {
+			it('should start the media activations sync', async () => {
+				const dataFormat = MediaSourceDataFormat.VIDIS;
+				const options: MediaSourceSyncOptions = {
+					dataFormat: dataFormat.valueOf(),
+				};
+
+				await console.syncAllMediaActivations(options);
+
+				expect(mediaSourceSyncUc.syncAllMediaActivations).toBeCalledWith(dataFormat);
+			});
+		});
+
+		describe('when the options passed have an invalid media source data format', () => {
+			it('should not start the media activations sync', async () => {
+				const options: MediaSourceSyncOptions = {
+					dataFormat: 'viDis',
+				};
+
+				await console.syncAllMediaActivations(options);
+
+				expect(mediaSourceSyncUc.syncAllMediaActivations).not.toBeCalled();
+			});
+
+			it('should log the invalid data format', async () => {
+				const options: MediaSourceSyncOptions = {
+					dataFormat: 'unknown',
+				};
+
+				await console.syncAllMediaActivations(options);
 
 				expect(consoleWriterService.error).toBeCalledWith(`Unknown media source data format "${options.dataFormat}"`);
 			});
