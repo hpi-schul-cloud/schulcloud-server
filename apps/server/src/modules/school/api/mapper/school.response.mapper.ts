@@ -58,7 +58,7 @@ export class SchoolResponseMapper {
 	public static mapToSchoolItemResponse(school: School): SchoolItemResponse {
 		const schoolProps = school.getProps();
 
-		const dto = new SchoolForExternalInviteResponse({
+		const dto = new SchoolItemResponse({
 			id: school.id,
 			name: schoolProps.name,
 		});
