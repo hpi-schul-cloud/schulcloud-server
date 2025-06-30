@@ -49,7 +49,6 @@
 - Never create objects as test data directly.
 - Castings of objects with the `as` keywoard are forbidden.
 - Never call a constructor to create test data.
-
 - Create factory if it's not already existing.
 - Factories are created in seperate files.
 - Use factories directly.
