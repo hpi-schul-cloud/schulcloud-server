@@ -69,7 +69,3 @@
 - Add a successfull scenario
   - Add const loggedInClient by calling login with account on testapiclient.
   - Add validation of operation on database level to assert
-
-# Factories
-
-- Use buildWithId method from factory for id property usage
