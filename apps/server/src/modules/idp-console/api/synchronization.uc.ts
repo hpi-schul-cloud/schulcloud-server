@@ -14,6 +14,7 @@ import {
 } from './loggable-exception';
 import { IdpConsoleConfig } from '../idp-console.config';
 import { AxiosErrorLoggable } from '@core/error/loggable';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 @Injectable()
 export class SynchronizationUc {
@@ -35,12 +36,26 @@ export class SynchronizationUc {
 
 		try {
 			const usersToCheck = await this.findUsersToSynchronize(systemId);
+			this.logger.info(
+				new (class implements Loggable {
+					getLogMessage(): LoggableMessage {
+						return { message: `usersToCheck length: ${usersToCheck.length}` };
+					}
+				})()
+			);
 			const chunkSize = this.configService.get('SYNCHRONIZATION_CHUNK', { infer: true });
 			const chunks = this.chunkArray(usersToCheck, chunkSize);
 			const promises = chunks.map((chunk) => this.updateLastSyncedAt(chunk, systemId));
 			const results = await Promise.all(promises);
 			const userSyncCount = results.reduce((acc, curr) => +acc + +curr, 0);
 
+			this.logger.info(
+				new (class implements Loggable {
+					getLogMessage(): LoggableMessage {
+						return { message: `userSyncCount: ${userSyncCount}` };
+					}
+				})()
+			);
 			await this.updateSynchronization(synchronizationId, SynchronizationStatusModel.SUCCESS, userSyncCount);
 			this.logger.info(new SucessSynchronizationLoggable(systemId, userSyncCount));
 		} catch (error) {
@@ -49,7 +64,7 @@ export class SynchronizationUc {
 				error instanceof FailedUpdateLastSyncedAtLoggableException ||
 				error instanceof AxiosErrorLoggable
 					? error
-					: new SynchronizationUnknownErrorLoggableException(systemId);
+					: new SynchronizationUnknownErrorLoggableException(systemId, error as Error);
 
 			await this.updateSynchronization(
 				synchronizationId,
@@ -83,8 +98,8 @@ export class SynchronizationUc {
 			await this.userService.updateLastSyncedAt(verifiedUsers);
 
 			return verifiedUsers.length;
-		} catch {
-			throw new FailedUpdateLastSyncedAtLoggableException(systemId);
+		} catch (error) {
+			throw new FailedUpdateLastSyncedAtLoggableException(systemId, error as Error);
 		}
 	}
 
