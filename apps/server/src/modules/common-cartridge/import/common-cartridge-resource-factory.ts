@@ -26,7 +26,7 @@ export class CommonCartridgeResourceFactory {
 		const { title } = organization;
 
 		switch (organization.resourceType) {
-			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
+			case CommonCartridgeResourceTypeV1P1.WEB_LINK_v1:
 				return this.createWebLinkResource(content, title);
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
 				return this.buildWebContentResourceFromPath(content, organization.resourcePath, inputFormat, title);
@@ -51,7 +51,7 @@ export class CommonCartridgeResourceFactory {
 		}
 
 		return {
-			type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
+			type: CommonCartridgeResourceTypeV1P1.WEB_LINK_v1,
 			title,
 			url,
 		};

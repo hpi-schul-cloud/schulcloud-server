@@ -40,7 +40,7 @@ describe('CommonCartridgeImportMapper', () => {
 			});
 
 			it('should return link', () => {
-				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeResourceTypeV1P1.WEB_LINK);
+				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeResourceTypeV1P1.WEB_LINK_v1);
 
 				expect(result).toEqual('link');
 			});
@@ -63,7 +63,7 @@ describe('CommonCartridgeImportMapper', () => {
 		describe('when resource is webLink', () => {
 			const setup = () => {
 				const resource: CommonCartridgeWebLinkResourceProps = {
-					type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
+					type: CommonCartridgeResourceTypeV1P1.WEB_LINK_v1,
 					url: 'https://example.com',
 					title: '',
 				};

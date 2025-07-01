@@ -31,7 +31,7 @@ export type CommonCartridgeWebContentResourceProps = {
 };
 
 export type CommonCartridgeWebLinkResourceProps = {
-	type: CommonCartridgeResourceTypeV1P1.WEB_LINK;
+	type: CommonCartridgeResourceTypeV1P1.WEB_LINK_v1 | CommonCartridgeResourceTypeV1P1.WEB_LINK_v3;
 	title: string;
 	url: string;
 };

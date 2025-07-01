@@ -72,7 +72,7 @@ describe('CommonCartridgeResourceFactory', () => {
 				webLinkXml = await setupWebLinkXml();
 				const organizationProps = setupOrganizationProps();
 
-				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_LINK;
+				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_LINK_v1;
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue(webLinkXml);
 
@@ -85,7 +85,7 @@ describe('CommonCartridgeResourceFactory', () => {
 				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
 
 				expect(result).toStrictEqual<CommonCartridgeWebLinkResourceProps>({
-					type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
+					type: CommonCartridgeResourceTypeV1P1.WEB_LINK_v1,
 					title: organizationProps.title,
 					url: 'http://www.example.tld',
 				});
@@ -96,7 +96,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();
 
-				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_LINK;
+				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_LINK_v1;
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue(faker.lorem.sentence());
 

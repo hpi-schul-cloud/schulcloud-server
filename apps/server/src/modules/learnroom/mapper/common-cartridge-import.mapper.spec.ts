@@ -122,7 +122,7 @@ describe('CommonCartridgeImportMapper', () => {
 			});
 
 			it('should return link', () => {
-				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeResourceTypeV1P1.WEB_LINK);
+				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeResourceTypeV1P1.WEB_LINK_v1);
 
 				expect(result).toEqual(ContentElementType.LINK);
 			});
@@ -139,7 +139,7 @@ describe('CommonCartridgeImportMapper', () => {
 		describe('when known resource type is provided', () => {
 			it('should return link content element body', () => {
 				const resource: CommonCartridgeImportResourceProps = {
-					type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
+					type: CommonCartridgeResourceTypeV1P1.WEB_LINK_v1,
 					title: faker.lorem.words(3),
 					url: faker.internet.url(),
 				};

@@ -21,7 +21,8 @@ export class CommonCartridgeImportMapper {
 		resourceType: CommonCartridgeResourceTypeV1P1 | undefined
 	): ContentElementType | undefined {
 		switch (resourceType) {
-			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
+			case CommonCartridgeResourceTypeV1P1.WEB_LINK_v1:
+			case CommonCartridgeResourceTypeV1P1.WEB_LINK_v3:
 				return 'link';
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
 				return 'richText';
@@ -37,7 +38,10 @@ export class CommonCartridgeImportMapper {
 		cardElementProps: CommonCartridgeImportOrganizationProps,
 		inputFormat: InputFormat
 	): LinkElementContentBody | RichTextElementContentBody | FileElementContentBody | undefined {
-		if (resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK) {
+		if (
+			resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK_v1 ||
+			resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK_v3
+		) {
 			const linkContentBody = this.createLinkFromResource(resource);
 
 			return linkContentBody;

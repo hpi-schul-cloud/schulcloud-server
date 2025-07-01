@@ -38,7 +38,7 @@ export class CommonCartridgeImportMapper {
 		resourceType: CommonCartridgeResourceTypeV1P1 | undefined
 	): ContentElementType | undefined {
 		switch (resourceType) {
-			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
+			case CommonCartridgeResourceTypeV1P1.WEB_LINK_v1:
 				return ContentElementType.LINK;
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
 				return ContentElementType.RICH_TEXT;
@@ -49,7 +49,7 @@ export class CommonCartridgeImportMapper {
 
 	public mapResourceToContentElementBody(resource: CommonCartridgeImportResourceProps): AnyElementContentBody {
 		switch (resource.type) {
-			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
+			case CommonCartridgeResourceTypeV1P1.WEB_LINK_v1:
 				return this.createLinkContentElementBody(resource);
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
 				return this.createWebContentElementBody(resource);
