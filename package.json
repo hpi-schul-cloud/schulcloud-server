@@ -189,7 +189,7 @@
 		"@nestjs/platform-socket.io": "^10.4.15",
 		"@nestjs/swagger": "^8.1.1",
 		"@nestjs/websockets": "^10.4.15",
-		"@raisinten/aes-crypto-js": "^0.0.2",
+		"@raisinten/aes-crypto-js": "^0.1.0",
 		"@socket.io/mongo-adapter": "^0.3.2",
 		"@socket.io/redis-adapter": "^8.3.0",
 		"adm-zip": "^0.5.16",
