@@ -14,6 +14,7 @@ import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-impo
 import {
 	CommonCartridgeFileResourceProps,
 	CommonCartridgeWebLinkResourceProps,
+	CommonCartridgeWebLinkResourceV3Props,
 } from '../import/common-cartridge-import.types';
 
 export class CommonCartridgeImportMapper {
@@ -38,11 +39,14 @@ export class CommonCartridgeImportMapper {
 		cardElementProps: CommonCartridgeImportOrganizationProps,
 		inputFormat: InputFormat
 	): LinkElementContentBody | RichTextElementContentBody | FileElementContentBody | undefined {
-		if (
-			resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK_v1 ||
-			resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK_v3
-		) {
-			const linkContentBody = this.createLinkFromResource(resource);
+		if (resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK_v1) {
+			const linkContentBody = this.createLinkFromResourceV1(resource);
+
+			return linkContentBody;
+		}
+
+		if (resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK_v3) {
+			const linkContentBody = this.createLinkFromResourceV3(resource);
 
 			return linkContentBody;
 		}
@@ -80,7 +84,22 @@ export class CommonCartridgeImportMapper {
 		return richTextBody;
 	}
 
-	private createLinkFromResource(resource: CommonCartridgeWebLinkResourceProps): LinkElementContentBody {
+	private createLinkFromResourceV1(resource: CommonCartridgeWebLinkResourceProps): LinkElementContentBody {
+		const linkBody: LinkElementContentBody = {
+			content: {
+				title: resource.title ?? resource.url,
+				url: resource.url,
+				description: '',
+				imageUrl: '',
+				originalImageUrl: '',
+			},
+			type: 'link',
+		};
+
+		return linkBody;
+	}
+
+	private createLinkFromResourceV3(resource: CommonCartridgeWebLinkResourceV3Props): LinkElementContentBody {
 		const linkBody: LinkElementContentBody = {
 			content: {
 				title: resource.title ?? resource.url,

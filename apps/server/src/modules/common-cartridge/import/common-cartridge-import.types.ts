@@ -31,7 +31,13 @@ export type CommonCartridgeWebContentResourceProps = {
 };
 
 export type CommonCartridgeWebLinkResourceProps = {
-	type: CommonCartridgeResourceTypeV1P1.WEB_LINK_v1 | CommonCartridgeResourceTypeV1P1.WEB_LINK_v3;
+	type: CommonCartridgeResourceTypeV1P1.WEB_LINK_v1;
+	title: string;
+	url: string;
+};
+
+export type CommonCartridgeWebLinkResourceV3Props = {
+	type: CommonCartridgeResourceTypeV1P1.WEB_LINK_v3;
 	title: string;
 	url: string;
 };
@@ -49,5 +55,6 @@ export type CommonCartridgeUnknownResourceProps = { type: CommonCartridgeResourc
 export type CommonCartridgeResourceProps =
 	| CommonCartridgeWebContentResourceProps
 	| CommonCartridgeWebLinkResourceProps
+	| CommonCartridgeWebLinkResourceV3Props
 	| CommonCartridgeUnknownResourceProps
 	| CommonCartridgeFileResourceProps;
