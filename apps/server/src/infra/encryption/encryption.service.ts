@@ -1,7 +1,6 @@
-import CryptoJs from 'crypto-js';
-
-import { Injectable } from '@nestjs/common';
 import { LegacyLogger } from '@core/logger';
+import { Injectable } from '@nestjs/common';
+import { decryptAES, encryptAES } from '@raisinten/aes-crypto-js';
 import { EncryptionService } from './encryption.interface';
 
 @Injectable()
@@ -17,7 +16,7 @@ export class SymmetricKeyEncryptionService implements EncryptionService {
 			this.logger.warn('No AES key defined. Will return plain text');
 			return data;
 		}
-		return CryptoJs.AES.encrypt(data, this.key).toString();
+		return encryptAES(data, this.key);
 	}
 
 	public decrypt(data: string): string {
@@ -25,6 +24,6 @@ export class SymmetricKeyEncryptionService implements EncryptionService {
 			this.logger.warn('No AES key defined. Will return plain text');
 			return data;
 		}
-		return CryptoJs.AES.decrypt(data, this.key).toString(CryptoJs.enc.Utf8);
+		return decryptAES(data, this.key);
 	}
 }

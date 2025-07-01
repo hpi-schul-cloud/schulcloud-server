@@ -1,5 +1,5 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
-import CryptoJs from 'crypto-js';
+import { decryptAES, encryptAES } from '@raisinten/aes-crypto-js';
 
 export class Migration20240926205656 extends Migration {
 	public async up(): Promise<void> {
@@ -18,7 +18,7 @@ export class Migration20240926205656 extends Migration {
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 						{ _id: tool._id },
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-						{ $set: { config_secret: CryptoJs.AES.encrypt(tool.config_secret, AES_KEY).toString() } }
+						{ $set: { config_secret: encryptAES(tool.config_secret, AES_KEY) } }
 					);
 				}
 			}
@@ -43,7 +43,7 @@ export class Migration20240926205656 extends Migration {
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 						{ _id: tool._id },
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-						{ $set: { config_secret: CryptoJs.AES.decrypt(tool.config_secret, AES_KEY).toString(CryptoJs.enc.Utf8) } }
+						{ $set: { config_secret: decryptAES(tool.config_secret, AES_KEY) } }
 					);
 				}
 			}

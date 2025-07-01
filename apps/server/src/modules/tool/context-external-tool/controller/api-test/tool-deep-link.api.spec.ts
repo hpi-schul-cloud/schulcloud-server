@@ -6,7 +6,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import crypto from 'crypto-js';
+import { encryptAES } from '@raisinten/aes-crypto-js';
 import { externalToolEntityFactory, lti11ToolConfigEntityFactory } from '../../../external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalToolEntity, ContextExternalToolType, LtiDeepLinkEmbeddable } from '../../repo';
@@ -25,7 +25,7 @@ describe('ToolDeepLinkController (API)', () => {
 
 	const basePath = '/tools/context-external-tools';
 	const decryptedSecret = 'secret';
-	const encryptedSecret = crypto.AES.encrypt(decryptedSecret, Configuration.get('AES_KEY') as string).toString();
+	const encryptedSecret = encryptAES(decryptedSecret, Configuration.get('AES_KEY') as string);
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
