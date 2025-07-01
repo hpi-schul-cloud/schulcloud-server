@@ -62,6 +62,7 @@ export class DeletionExecutionService {
 		const mapping: Record<ModuleName, DomainName> = {
 			[ModuleName.ACCOUNT]: DomainName.ACCOUNT,
 			[ModuleName.BOARD]: DomainName.BOARD,
+			[ModuleName.MEDIA_BOARD]: DomainName.MEDIA_BOARD,
 			[ModuleName.CLASS]: DomainName.CLASS,
 			[ModuleName.COURSE]: DomainName.COURSE,
 			[ModuleName.COURSE_COURSEGROUP]: DomainName.COURSEGROUP,
