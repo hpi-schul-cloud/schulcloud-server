@@ -1,9 +1,0 @@
-galaxy_info:
-  role_name: media-metadata-sync
-  author: Schul-Cloud Verbund
-  description: media-metadata-sync role for the media metadata synchronization purposes
-  company: Schul-Cloud Verbund
-  license: license (AGPLv3)
-  min_ansible_version: 2.8
-  galaxy_tags: []
-dependencies: []

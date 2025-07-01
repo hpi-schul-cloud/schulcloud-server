@@ -1,28 +1,31 @@
 import { LoggerModule } from '@core/logger';
-import { BiloClientModule } from '@infra/bilo-client';
+import { VidisClientModule } from '@infra/vidis-client';
 import { MediaSourceModule } from '@modules/media-source';
 import { MediumMetadataModule } from '@modules/medium-metadata';
-import { OauthAdapterModule } from '@modules/oauth-adapter';
+import { SchoolModule } from '@modules/school';
+import { SchoolLicenseModule } from '@modules/school-license';
 import { ExternalToolModule } from '@modules/tool';
 import { Module } from '@nestjs/common';
-import { ExternalToolMetadataUpdateService, MediaMetadataSyncService } from './service';
-import { BiloMetadataSyncStrategy, VidisMetadataSyncStrategy } from './service/strategy';
+import { ExternalToolMetadataUpdateService, MediaSourceSyncService } from './service';
+import { BiloMetadataSyncStrategy, VidisActivationSyncStrategy, VidisMetadataSyncStrategy } from './service/strategy';
 
 @Module({
 	imports: [
-		BiloClientModule,
 		LoggerModule,
 		MediaSourceModule,
-		OauthAdapterModule,
 		ExternalToolModule,
 		MediumMetadataModule,
+		SchoolLicenseModule,
+		VidisClientModule,
+		SchoolModule,
 	],
 	providers: [
-		MediaMetadataSyncService,
+		MediaSourceSyncService,
 		BiloMetadataSyncStrategy,
+		VidisActivationSyncStrategy,
 		VidisMetadataSyncStrategy,
 		ExternalToolMetadataUpdateService,
 	],
-	exports: [MediaMetadataSyncService, ExternalToolMetadataUpdateService],
+	exports: [MediaSourceSyncService, ExternalToolMetadataUpdateService],
 })
 export class MediaSourceSyncModule {}

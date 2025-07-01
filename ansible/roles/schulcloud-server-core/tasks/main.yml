@@ -243,21 +243,23 @@
     tags:
       - configmap
 
-  - name: Data deletion trigger failed CronJob
+  - name: Data deletion trigger failed CronJob Remove
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: data-deletion-trigger-failed-cronjob.yml.j2
-    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+      state: absent
+      kind: CronJob
+      name: "{{ NAMESPACE }}-data-deletion-trigger-cronjob"
     tags:
       - cronjob
 
-  - name: Data deletion trigger failed CronJob ConfigMap
+  - name: Data deletion trigger failed CronJob ConfigMap Remove
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: data-deletion-trigger-failed-cronjob-configmap.yml.j2
-    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+      state: absent
+      kind: ConfigMap
+      name: "{{ NAMESPACE }}-data-deletion-trigger-cronjob-configmap"
     tags:
       - configmap
 

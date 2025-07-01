@@ -473,7 +473,7 @@ describe('UserLoginMigrationController (API)', () => {
 			const setup = async () => {
 				const targetSystem: SystemEntity = systemEntityFactory
 					.withOauthConfig()
-					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC });
 
 				const query: Oauth2MigrationParams = new Oauth2MigrationParams();
 				query.code = 'code';
@@ -541,7 +541,7 @@ describe('UserLoginMigrationController (API)', () => {
 			const setup = async () => {
 				const targetSystem: SystemEntity = systemEntityFactory
 					.withOauthConfig()
-					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC });
 
 				const query: Oauth2MigrationParams = new Oauth2MigrationParams();
 				query.code = 'code';
@@ -1448,7 +1448,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const setup = async () => {
 					const targetSystem: SystemEntity = systemEntityFactory
 						.withOauthConfig()
-						.buildWithId({ alias: 'moin.schule', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
+						.buildWithId({ alias: 'moin.schule', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC });
 
 					const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
@@ -1560,7 +1560,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const setup = async () => {
 					const targetSystem: SystemEntity = systemEntityFactory
 						.withOauthConfig()
-						.buildWithId({ alias: 'moin.schule', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
+						.buildWithId({ alias: 'moin.schule', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC });
 
 					const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
@@ -1649,7 +1649,7 @@ describe('UserLoginMigrationController (API)', () => {
 					const setup = async () => {
 						const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({
 							alias: 'moin.schule',
-							provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+							provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 						});
 
 						const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
@@ -1726,7 +1726,7 @@ describe('UserLoginMigrationController (API)', () => {
 					const setup = async () => {
 						const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({
 							alias: 'moin.schule',
-							provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+							provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 						});
 
 						const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
@@ -1793,7 +1793,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const setup = async () => {
 					const targetSystem: SystemEntity = systemEntityFactory
 						.withOauthConfig()
-						.buildWithId({ alias: 'moin.schule', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
+						.buildWithId({ alias: 'moin.schule', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC });
 
 					const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
@@ -1878,7 +1878,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const setup = async () => {
 					const targetSystem: SystemEntity = systemEntityFactory
 						.withOauthConfig()
-						.buildWithId({ alias: 'moin.schule', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
+						.buildWithId({ alias: 'moin.schule', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC });
 
 					const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 

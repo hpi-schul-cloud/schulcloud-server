@@ -132,7 +132,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 			const setup = () => {
 				const user = userFactory.asAdmin().buildWithId();
 				const system: System = systemFactory.build({
-					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 				});
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
 					systemId: system.id,
@@ -223,7 +223,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 			const setup = () => {
 				const user = userFactory.asAdmin().buildWithId();
 				const system: System = systemFactory.build({
-					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 				});
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
 					systemId: system.id,
@@ -363,7 +363,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 			const setup = () => {
 				const user = userFactory.asStudent().buildWithId();
 				const system: System = systemFactory.build({
-					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 				});
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
 					systemId: system.id,

@@ -3,11 +3,12 @@ import { MediaSource, MediaSourceService } from '@modules/media-source';
 import { MediaSourceAuthMethod, MediaSourceDataFormat } from '@modules/media-source/enum';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ManagementSeedDataConfig } from '../config';
 
 @Injectable()
 export class MediaSourcesSeedDataService {
 	constructor(
-		private readonly configService: ConfigService,
+		private readonly configService: ConfigService<ManagementSeedDataConfig, true>,
 		private readonly mediaSourceService: MediaSourceService,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService
 	) {}
