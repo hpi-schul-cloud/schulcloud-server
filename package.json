@@ -233,7 +233,7 @@
 		"mongodb": "^5.9.2",
 		"mongodb-uri": "^0.9.7",
 		"mongoose": "^6.13.8",
-		"mongoose-delete": "^0.5.4",
+		"mongoose-delete": "^1.0.2",
 		"mongoose-lean-virtuals": "^0.8.1",
 		"mongoose-shortid-nodeps": "git://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"nanoid": "^3.3.11",
