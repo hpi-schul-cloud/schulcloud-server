@@ -877,6 +877,14 @@
 			"default": "http://nextcloud.localhost:9090",
 			"description": "API URI for Nextcloud"
 		},
+		"NEXTCLOUD_CLIENT_ID": {
+			"type": "string",
+			"description": "Client id for Nextcloud"
+		},
+		"NEXTCLOUD_CLIENT_SECRET": {
+			"type": "string",
+			"description": "Client secret for Nextcloud"
+		},
 		"NEXTCLOUD_ADMIN_USER": {
 			"type": "string",
 			"default": "admin",
@@ -896,6 +904,22 @@
 			"type:": "string",
 			"default": "SchulcloudNextcloud",
 			"description": "Internal name of schulcloud oidc provider of nextcloud's social login app"
+		},
+		"MEDIA_SOURCE_VIDIS_USERNAME": {
+			"type:": "string",
+			"description": "Username for VIDIS api"
+		},
+		"MEDIA_SOURCE_VIDIS_PASSWORD": {
+			"type:": "string",
+			"description": "Password for VIDIS api"
+		},
+		"MEDIA_SOURCE_BILO_CLIENT_ID": {
+			"type:": "string",
+			"description": "Client id for Bildungslogin api"
+		},
+		"MEDIA_SOURCE_BILO_CLIENT_SECRET": {
+			"type:": "string",
+			"description": "Client secret for Bildungslogin api"
 		},
 		"HYDRA_PUBLIC_URI": {
 			"type:": "string",
@@ -1080,12 +1104,6 @@
 			"type": "boolean",
 			"default": true,
 			"description": "By default, the application is terminated after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to false."
-		},
-		"SYSTEM_LOG_LEVEL": {
-			"type": "string",
-			"default": "requestError",
-			"description": "Special logs.",
-			"enum": ["requestError", "systemLogs", "request", "sendRequests"]
 		},
 		"SYNC_QUEUE_NAME": {
 			"type": "string",
@@ -1625,7 +1643,7 @@
 		},
 		"CALENDAR_SERVICE_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables calender service"
 		},
 		"FEATURE_ROOMS_ENABLED": {
@@ -1638,15 +1656,15 @@
 			"default": true,
 			"description": "Enables the rooms feature to duplicate rooms"
 		},
+		"FEATURE_ROOM_SHARE": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables the room sharing feature"
+		},
 		"FEATURE_ROOM_INVITATION_LINKS_ENABLED": {
 			"type": "boolean",
 			"default": "true",
 			"description": "Enables the room invitation links feature"
-		},
-		"FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED": {
-			"type": "boolean",
-			"default": "false",
-			"description": "Enables the ability to change permissions of room members"
 		},
 		"FEATURE_ROOM_ADD_STUDENTS_ENABLED": {
 			"type": "boolean",
@@ -1678,11 +1696,6 @@
 			"default": "",
 			"description": "URL for SBOM summary for SVS"
 		},
-		"FEATURE_MEDIA_METADATA_SYNC_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Feature toggle for media metadata sync."
-		},
 		"ROOM_MEMBER_INFO_URL": {
 			"type": "string",
 			"default": null,
@@ -1692,6 +1705,33 @@
 			"type": "number",
 			"default": 864000,
 			"description": "Number of seconds for a course synchronization history from schulconnex provisioning to expire."
+		},
+		"RELEASE_NOTES_REPO_URL": {
+			"type": "string",
+			"default": "https://api.github.com/repos/hpi-schul-cloud/RELEASE-NOTES/releases",
+			"description": "URL of the GitHub repository from which release notes are fetched. Used for testing and overriding the default release notes source."
+		},
+		"FEATURE_HIDE_OLD_ADMIN_PAGE_LINK": {
+			"type": "boolean",
+			"default": false,
+			"description": "Hides the link that refers to the old school administration page"
+		},
+		"DB_URL": {
+			"type": "string",
+			"description": "Mongodb url, may contain user and password"
+		},
+		"DB_USERNAME": {
+			"type": "string",
+			"description": "Mongodb user"
+		},
+		"DB_PASSWORD": {
+			"type": "string",
+			"description": "Mongodb password"
+		},
+		"SMTP_SENDER": {
+			"type": "string",
+			"default": "noreply@dbildungscloud.de",
+			"description": "sender address used to send mails with"
 		}
 	},
 	"required": []

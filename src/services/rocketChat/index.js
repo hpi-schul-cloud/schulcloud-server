@@ -2,21 +2,21 @@ const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
 const logger = require('../../logger');
-const { ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID } = require('../../../config/globals');
 const { rocketChatUserHooks, rocketChatLoginHooks, rocketChatLogoutHooks, rocketChatChannelHooks } = require('./hooks');
 
 const RocketChatUser = require('./services/rocketChatUser');
 const RocketChatLogin = require('./services/rocketChatLogin');
 const RocketChatLogout = require('./services/rocketChatLogout');
 const RocketChatChannel = require('./services/rocketChatChannel');
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 
-if (ROCKET_CHAT_URI === undefined) {
+if (!Configuration.has('ROCKET_CHAT_URI')) {
 	logger.warning('please set the environment variable ROCKET_CHAT_URI');
 }
-if (ROCKET_CHAT_ADMIN_TOKEN === undefined) {
+if (!Configuration.has('ROCKET_CHAT_ADMIN_TOKEN')) {
 	logger.warning('please set the environment variable ROCKET_CHAT_ADMIN_TOKEN');
 }
-if (ROCKET_CHAT_ADMIN_ID === undefined) {
+if (!Configuration.has('ROCKET_CHAT_ADMIN_ID')) {
 	logger.warning('please set the environment variable ROCKET_CHAT_ADMIN_ID');
 }
 

@@ -1,17 +1,20 @@
 export class MediaAvailableLineElement {
-	schoolExternalToolId: string;
+	public schoolExternalToolId: string;
 
-	name: string;
+	public name: string;
 
-	description?: string;
+	public domain: string;
 
-	logoUrl?: string;
+	public description?: string;
 
-	thumbnailUrl?: string;
+	public logoUrl?: string;
+
+	public thumbnailUrl?: string;
 
 	constructor(props: MediaAvailableLineElementProps) {
 		this.schoolExternalToolId = props.schoolExternalToolId;
 		this.name = props.name;
+		this.domain = props.domain;
 		this.description = props.description;
 		this.logoUrl = props.logoUrl;
 		this.thumbnailUrl = props.thumbnailUrl;
@@ -21,6 +24,7 @@ export class MediaAvailableLineElement {
 export interface MediaAvailableLineElementProps {
 	schoolExternalToolId: string;
 	name: string;
+	domain: string;
 	description?: string;
 	logoUrl?: string;
 	thumbnailUrl?: string;

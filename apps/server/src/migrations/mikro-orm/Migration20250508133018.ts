@@ -36,12 +36,12 @@ export class Migration20250508133018 extends Migration {
 	}
 
 	public async up(): Promise<void> {
-		await this.addPermission('roomowner', 'ROOM_COPY');
-		await this.addPermission('roomadmin', 'ROOM_COPY');
+		await this.addPermission('roomowner', 'ROOM_DUPLICATE');
+		await this.addPermission('roomadmin', 'ROOM_DUPLICATE');
 	}
 
 	public async down(): Promise<void> {
-		await this.removePermission('roomowner', 'ROOM_COPY');
-		await this.removePermission('roomadmin', 'ROOM_COPY');
+		await this.removePermission('roomowner', 'ROOM_DUPLICATE');
+		await this.removePermission('roomadmin', 'ROOM_DUPLICATE');
 	}
 }
