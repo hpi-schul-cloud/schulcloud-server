@@ -9,6 +9,7 @@ import {
 	CommonCartridgeResourceProps,
 	CommonCartridgeWebContentResourceProps,
 	CommonCartridgeWebLinkResourceProps,
+	CommonCartridgeWebLinkResourceV3Props,
 } from './common-cartridge-import.types';
 
 export class CommonCartridgeResourceFactory {
@@ -27,7 +28,8 @@ export class CommonCartridgeResourceFactory {
 
 		switch (organization.resourceType) {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK_v1:
-				return this.createWebLinkResource(content, title);
+			case CommonCartridgeResourceTypeV1P1.WEB_LINK_v3:
+				return this.createWebLinkResource(content, title, organization.resourceType);
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
 				return this.buildWebContentResourceFromPath(content, organization.resourcePath, inputFormat, title);
 			default:
@@ -42,7 +44,11 @@ export class CommonCartridgeResourceFactory {
 		return isValidOrganization;
 	}
 
-	private createWebLinkResource(content: string, title: string): CommonCartridgeWebLinkResourceProps | undefined {
+	private createWebLinkResource(
+		content: string,
+		title: string,
+		version: string
+	): CommonCartridgeWebLinkResourceProps | CommonCartridgeWebLinkResourceV3Props | undefined {
 		const document = load(content, { xml: true });
 		const url = document('webLink > url').attr('href') ?? '';
 
@@ -50,11 +56,19 @@ export class CommonCartridgeResourceFactory {
 			return undefined;
 		}
 
-		return {
-			type: CommonCartridgeResourceTypeV1P1.WEB_LINK_v1,
-			title,
-			url,
-		};
+		if (version === CommonCartridgeResourceTypeV1P1.WEB_LINK_v3) {
+			return {
+				type: CommonCartridgeResourceTypeV1P1.WEB_LINK_v3,
+				title,
+				url,
+			};
+		} else {
+			return {
+				type: CommonCartridgeResourceTypeV1P1.WEB_LINK_v1,
+				title,
+				url,
+			};
+		}
 	}
 
 	private buildWebContentResourceFromPath(
