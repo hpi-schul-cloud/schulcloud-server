@@ -289,69 +289,6 @@ data:
 
     # ========== End of the Bettermarks tool configuration section.
 
-    # ========== Start of the CTL seed data configuration section.
-    echo "Inserting ctl seed data secrets to external-tools..."
-
-    if [ -n "$CTL_SEED_SECRET_ONLINE_DIA_MATHE" ]; then
-         # Encrypt secrets of external tools that contain an lti11 config.
-         CTL_SEED_SECRET_ONLINE_DIA_MATHE=$(get_secret $CTL_SEED_SECRET_ONLINE_DIA_MATHE)
-         mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
-                {
-                  "name": "Product Test Onlinediagnose Grundschule - Mathematik",
-                },
-                { $set: {
-                  "config_secret": "'$CTL_SEED_SECRET_ONLINE_DIA_MATHE'",
-                } },
-                {
-                  "upsert": true
-                }
-            );'
-    fi
-    if [ -n "$CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH" ]; then
-         # Encrypt secrets of external tools that contain an lti11 config.
-         CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH=$(get_secret $CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH)
-         mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
-                {
-                  "name": "Product Test Onlinediagnose Grundschule - Deutsch",
-                },
-                { $set: {
-                  "config_secret": "'$CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH'",
-                } },
-                {
-                  "upsert": true
-                }
-            );'
-    fi
-    if [ -n "$CTL_SEED_SECRET_MERLIN" ]; then
-         # Encrypt secrets of external tools that contain an lti11 config.
-         CTL_SEED_SECRET_MERLIN=$(get_secret $CTL_SEED_SECRET_MERLIN)
-         mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
-                {
-                  "name": "Merlin Bibliothek",
-                },
-                { $set: {
-                  "config_secret": "'$CTL_SEED_SECRET_MERLIN'",
-                } },
-                {
-                  "upsert": true
-                }
-            );'
-    fi
-    echo "Inserted ctl seed data secrets to external-tools."
-
-    # ========== End of the CTL seed data configuration section.
-
-    # ========== Start of the Instance seed data configuration section.
-        echo "Removing instance seed data that does not belong to '$SC_SHORTNAME'..."
-        mongosh $DATABASE__URL --quiet --eval 'db.getCollection("instances").deleteMany(
-                 {
-                   "name": { $ne: "'$SC_SHORTNAME'" },
-                 }
-             );'
-        echo "Removed all inapplicable instances from the seed data."
-
-        # ========== End of the Instance seed data configuration section.
-
     # ========== Start of TSP system creation
     if [[ $SC_THEME == "thr" ]]; then
       echo "Adding TSP system to systems collection"

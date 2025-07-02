@@ -88,7 +88,7 @@ describe(DeleteUserBoardDataStep.name, () => {
 				const result = await service.execute({ userId });
 
 				expect(result).toEqual(
-					StepReportBuilder.build(ModuleName.BOARD, [
+					StepReportBuilder.build(ModuleName.MEDIA_BOARD, [
 						StepOperationReportBuilder.build(StepOperationType.DELETE, 1, [board.id]),
 					])
 				);
