@@ -249,7 +249,7 @@
       namespace: "{{ NAMESPACE }}"
       state: absent
       kind: CronJob
-      name: "{{ NAMESPACE }}-data-deletion-trigger-failed-cronjob"
+      name: "data-deletion-trigger-failed-cronjob"
     tags:
       - cronjob
 
@@ -259,7 +259,7 @@
       namespace: "{{ NAMESPACE }}"
       state: absent
       kind: ConfigMap
-      name: "{{ NAMESPACE }}-data-deletion-trigger-failed-cronjob-configmap"
+      name: "data-deletion-trigger-failed-cronjob-configmap"
     tags:
       - configmap
 
