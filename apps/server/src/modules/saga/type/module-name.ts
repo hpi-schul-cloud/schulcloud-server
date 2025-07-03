@@ -1,9 +1,11 @@
 export const ModuleName = {
 	ACCOUNT: 'account',
 	BOARD: 'board',
+	MEDIA_BOARD: 'media-board',
 	CLASS: 'class',
 	COURSE: 'course',
 	COURSE_COURSEGROUP: 'courseGroup',
+	GROUP: 'group',
 	LEARNROOM_DASHBOARD: 'dashboard',
 	FILES: 'file',
 	FILES_STORAGE: 'fileRecords',
