@@ -669,8 +669,7 @@ describe(S3ClientAdapter.name, () => {
 				const { pathToFile } = createParameter();
 				const filePath = 'directory/test.txt';
 				const error = new Error('testError');
-
-				// @ts-ignore
+				// @ts-expect-error Testcase
 				client.send.mockRejectedValueOnce(error);
 
 				const expectedError = new InternalServerErrorException(
@@ -702,7 +701,7 @@ describe(S3ClientAdapter.name, () => {
 				// @ts-expect-error ignore parameter type of mock function
 				client.send.mockResolvedValueOnce(expectedResponse);
 
-				// @ts-ignore
+				// @ts-expect-error Testcase
 				client.send.mockRejectedValueOnce();
 
 				const expectedError = new InternalServerErrorException(
