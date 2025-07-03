@@ -5,7 +5,7 @@ import { SagaService } from '@modules/saga';
 import { RoomService } from '@modules/room';
 import { ColumnBoardService } from '../service';
 import { CopyRoomBoardsStep } from './copy-room-boards.step';
-import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
 import { columnBoardFactory } from '../testing';
 import { roomFactory } from '@modules/room/testing';
 
@@ -13,6 +13,7 @@ describe('CopyRoomBoardsStep', () => {
 	let module: TestingModule;
 	let step: CopyRoomBoardsStep;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
+	let copyHelperService: DeepMocked<CopyHelperService>;
 	let roomService: DeepMocked<RoomService>;
 
 	beforeAll(async () => {
@@ -22,6 +23,7 @@ describe('CopyRoomBoardsStep', () => {
 				{ provide: SagaService, useValue: createMock<SagaService>() },
 				{ provide: RoomService, useValue: createMock<RoomService>() },
 				{ provide: ColumnBoardService, useValue: createMock<ColumnBoardService>() },
+				{ provide: CopyHelperService, useValue: createMock<CopyHelperService>() },
 				{ provide: Logger, useValue: createMock<Logger>() },
 			],
 		}).compile();
@@ -29,6 +31,7 @@ describe('CopyRoomBoardsStep', () => {
 		step = module.get(CopyRoomBoardsStep);
 		columnBoardService = module.get(ColumnBoardService);
 		roomService = module.get(RoomService);
+		copyHelperService = module.get(CopyHelperService);
 	});
 
 	afterAll(async () => {

@@ -93,6 +93,7 @@ export class CopyRoomBoardsStep extends SagaStep<'copyRoomBoards'> {
 		return copyStatuses;
 	}
 
+	// TODO similar method already in learnroom module, consider refactoring for keeping DRY
 	private async swapLinkedIdsInBoards(copyStatus: CopyStatus): Promise<CopyStatus> {
 		const map = new Map<EntityId, EntityId>();
 		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
