@@ -1,11 +1,11 @@
 import { Logger } from '@core/logger';
 import { StorageLocation } from '@infra/files-storage-client';
-import { CopyStatus } from '@modules/copy-helper';
+import { CopyElementType, CopyStatus, CopyHelperService } from '@modules/copy-helper';
 import { RoomService } from '@modules/room';
 import { ModuleName, SagaService, SagaStep } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { BoardExternalReferenceType, type ColumnBoard } from '../domain';
+import { BoardExternalReferenceType, ColumnBoard } from '../domain';
 import { ColumnBoardService } from '../service';
 
 @Injectable()
@@ -16,6 +16,7 @@ export class CopyRoomBoardsStep extends SagaStep<'copyRoomBoards'> {
 		private readonly sagaService: SagaService,
 		private readonly roomService: RoomService,
 		private readonly columnBoardService: ColumnBoardService,
+		private readonly copyHelperService: CopyHelperService,
 		private readonly logger: Logger
 	) {
 		super('copyRoomBoards');
@@ -78,6 +79,41 @@ export class CopyRoomBoardsStep extends SagaStep<'copyRoomBoards'> {
 			copyStatuses.push(copyStatus);
 		}
 
+		const status: CopyStatus = {
+			title: 'board',
+			type: CopyElementType.ROOM,
+			status: this.copyHelperService.deriveStatusFromElements(copyStatuses),
+			copyEntity: targetRoom,
+			originalEntity: sourceRoom,
+			elements: copyStatuses,
+		};
+
+		await this.swapLinkedIdsInBoards(status);
+
 		return copyStatuses;
+	}
+
+	private async swapLinkedIdsInBoards(copyStatus: CopyStatus): Promise<CopyStatus> {
+		const map = new Map<EntityId, EntityId>();
+		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
+		copyDict.forEach((value, key) => map.set(key, value.id));
+
+		if (copyStatus.copyEntity instanceof ColumnBoard && copyStatus.originalEntity instanceof ColumnBoard) {
+			if (copyStatus.originalEntity.context.type === BoardExternalReferenceType.Room) {
+				map.set(copyStatus.originalEntity.context.id, copyStatus.copyEntity.context.id);
+			}
+		}
+
+		const elements = copyStatus.elements ?? [];
+		const updatedElements: CopyStatus[] = [];
+		for (const el of elements) {
+			if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {
+				el.copyEntity = await this.columnBoardService.swapLinkedIds(el.copyEntity?.id, map);
+			}
+			updatedElements.push(el);
+		}
+
+		copyStatus.elements = updatedElements;
+		return copyStatus;
 	}
 }
