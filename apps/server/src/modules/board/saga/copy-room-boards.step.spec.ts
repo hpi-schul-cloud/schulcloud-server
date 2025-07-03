@@ -13,7 +13,7 @@ describe('CopyRoomBoardsStep', () => {
 	let module: TestingModule;
 	let step: CopyRoomBoardsStep;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
-	let copyHelperService: DeepMocked<CopyHelperService>;
+	// let copyHelperService: DeepMocked<CopyHelperService>;
 	let roomService: DeepMocked<RoomService>;
 
 	beforeAll(async () => {
@@ -30,8 +30,8 @@ describe('CopyRoomBoardsStep', () => {
 
 		step = module.get(CopyRoomBoardsStep);
 		columnBoardService = module.get(ColumnBoardService);
+		// copyHelperService = module.get(CopyHelperService);
 		roomService = module.get(RoomService);
-		copyHelperService = module.get(CopyHelperService);
 	});
 
 	afterAll(async () => {
