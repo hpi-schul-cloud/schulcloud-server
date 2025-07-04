@@ -17,9 +17,11 @@ import { BoardNodePermissionService } from './service';
 import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
 import { SagaModule } from '@modules/saga';
 import { CopyRoomBoardsStep } from './saga';
+import { CopyHelperModule } from '@modules/copy-helper';
 
 @Module({
 	imports: [
+		CopyHelperModule,
 		CourseModule,
 		BoardModule,
 		LoggerModule,
