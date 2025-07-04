@@ -60,7 +60,7 @@ describe(FailedUpdateLastSyncedAtLoggableException.name, () => {
 
 		describe('when axios error is provided', () => {
 			it('should return AxiosErrorLoggable', () => {
-				const { exception, systemId } = setup(true);
+				const { exception, expectedErrorLogMessage, systemId } = setup(true);
 
 				const logMessage = exception.getLogMessage();
 
@@ -68,7 +68,7 @@ describe(FailedUpdateLastSyncedAtLoggableException.name, () => {
 				expect(logMessage.data?.errorMessage).toBe(
 					'Failed to update lastSyncedAt field for users provisioned by system'
 				);
-				expect(logMessage.type).toBe('SYNCHRONIZATION_ERROR');
+				expect(logMessage.type).toBe(expectedErrorLogMessage.type);
 				expect(logMessage.data?.systemId).toBe(systemId);
 			});
 		});
