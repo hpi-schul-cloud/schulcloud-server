@@ -260,6 +260,18 @@ describe(SynchronizationUc.name, () => {
 				expect(uc.chunkArray(array, 1).length).toBe(3);
 			});
 
+			it('should split array to 2 chunks', () => {
+				const array = ['a', 'b', 'c'];
+
+				expect(uc.chunkArray(array, 2).length).toBe(2);
+			});
+
+			it('should split array to 1 chunk', () => {
+				const array = ['a', 'b', 'c'];
+
+				expect(uc.chunkArray(array, 4).length).toBe(1);
+			});
+
 			it('should return users to synchronization', async () => {
 				const { systemId, externalUserData } = setup();
 
