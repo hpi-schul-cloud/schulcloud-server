@@ -59,9 +59,6 @@ export class CopyRoomBoardsStep extends SagaStep<'copyRoomBoards'> {
 		const sourceRoom = await this.roomService.getSingleRoom(sourceRoomId);
 		const targetRoom = await this.roomService.getSingleRoom(targetRoomId);
 
-		const sourceStorageLocationReference = { id: sourceRoom.schoolId, type: StorageLocation.SCHOOL };
-		const targetStorageLocationReference = { id: targetRoom.schoolId, type: StorageLocation.SCHOOL };
-
 		const copyStatuses: CopyStatus[] = [];
 		for (const board of boards) {
 			const copyStatus = await this.columnBoardService.copyColumnBoard({
@@ -70,8 +67,8 @@ export class CopyRoomBoardsStep extends SagaStep<'copyRoomBoards'> {
 					type: BoardExternalReferenceType.Room,
 					id: targetRoomId,
 				},
-				sourceStorageLocationReference,
-				targetStorageLocationReference,
+				sourceStorageLocationReference: { id: sourceRoom.schoolId, type: StorageLocation.SCHOOL },
+				targetStorageLocationReference: { id: targetRoom.schoolId, type: StorageLocation.SCHOOL },
 				userId,
 				targetSchoolId: targetRoom.schoolId,
 				copyTitle: board.title,
