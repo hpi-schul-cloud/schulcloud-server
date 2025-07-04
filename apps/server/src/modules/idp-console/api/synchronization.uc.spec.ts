@@ -107,7 +107,7 @@ describe(SynchronizationUc.name, () => {
 
 				await uc.updateSystemUsersLastSyncedAt(systemId);
 
-				expect(spyUpdateLastSyncedAt).toHaveBeenCalledWith([usersToCheck[0]], systemId);
+				expect(spyUpdateLastSyncedAt).toHaveBeenCalledWith(0, [usersToCheck[0]], systemId);
 				expect(spyUpdateLastSyncedAt).toHaveBeenCalledTimes(1);
 			});
 
@@ -367,7 +367,7 @@ describe(SynchronizationUc.name, () => {
 			it('should call the userService.findMultipleByExternalIds to get array of users to sync', async () => {
 				const { systemId, usersToCheck } = setup();
 
-				await uc.updateLastSyncedAt(usersToCheck, systemId);
+				await uc.updateLastSyncedAt(0, usersToCheck, systemId);
 
 				expect(userService.findMultipleByExternalIds).toHaveBeenCalledWith(usersToCheck);
 			});
@@ -375,7 +375,7 @@ describe(SynchronizationUc.name, () => {
 			it('should call the accountService.findByUserIdsAndSystemId confirm users', async () => {
 				const { systemId, usersToCheck, usersFound } = setup();
 
-				await uc.updateLastSyncedAt(usersToCheck, systemId);
+				await uc.updateLastSyncedAt(0, usersToCheck, systemId);
 
 				expect(accountService.findByUserIdsAndSystemId).toHaveBeenCalledWith(usersFound, systemId);
 			});
@@ -383,7 +383,7 @@ describe(SynchronizationUc.name, () => {
 			it('should call the userService.updateLastSyncedAt to update users', async () => {
 				const { systemId, usersToCheck, usersToSync } = setup();
 
-				await uc.updateLastSyncedAt(usersToCheck, systemId);
+				await uc.updateLastSyncedAt(0, usersToCheck, systemId);
 
 				expect(userService.updateLastSyncedAt).toHaveBeenCalledWith(usersToSync);
 			});
@@ -391,7 +391,7 @@ describe(SynchronizationUc.name, () => {
 			it('should return number of user with updateLastCyncedAt', async () => {
 				const { systemId, usersToCheck, userSyncCount } = setup();
 
-				const result = await uc.updateLastSyncedAt(usersToCheck, systemId);
+				const result = await uc.updateLastSyncedAt(0, usersToCheck, systemId);
 
 				expect(result).toEqual(userSyncCount);
 			});
@@ -421,7 +421,7 @@ describe(SynchronizationUc.name, () => {
 			it('should throw an error', async () => {
 				const { expectedError, usersToCheck, systemId } = setup();
 
-				await expect(uc.updateLastSyncedAt(usersToCheck, systemId)).rejects.toThrowError(expectedError);
+				await expect(uc.updateLastSyncedAt(0, usersToCheck, systemId)).rejects.toThrowError(expectedError);
 			});
 		});
 	});
