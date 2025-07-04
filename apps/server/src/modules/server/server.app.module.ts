@@ -14,6 +14,8 @@ import { AuthorizationReferenceApiModule } from '@modules/authorization-referenc
 import { AuthorizationRulesModule } from '@modules/authorization-rules';
 import { BoardApiModule } from '@modules/board/board-api.module';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
+import { MoinSchuleClassModule } from '@modules/class-moin-schule/moin-schule-class.module';
+import { CollaboraProxyModule } from '@modules/collabora-proxy/collabora-proxy.module';
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
 import { CourseApiModule } from '@modules/course/course-api.module';
@@ -26,8 +28,8 @@ import { MeApiModule } from '@modules/me/me-api.module';
 import { MediumMetadataApiModule } from '@modules/medium-metadata';
 import { MetaTagExtractorApiModule, MetaTagExtractorModule } from '@modules/meta-tag-extractor';
 import { NewsModule } from '@modules/news';
-import { OAuthApiModule } from '@modules/oauth/oauth-api.module';
 import { OauthProviderApiModule } from '@modules/oauth-provider/oauth-provider-api.module';
+import { OAuthApiModule } from '@modules/oauth/oauth-api.module';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
 import { RocketChatModule } from '@modules/rocketchat';
 import { RoomApiModule } from '@modules/room/room-api.module';
@@ -55,7 +57,6 @@ import { SchoolLicenseApiModule } from '../school-license/school-license-api.mod
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
-import { MoinSchuleClassModule } from '@modules/class-moin-schule/moin-schule-class.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -115,6 +116,7 @@ const serverModules = [
 	ShdApiModule,
 	OAuthApiModule,
 	MoinSchuleClassModule,
+	CollaboraProxyModule,
 ];
 
 const providers = [ServerUc, { provide: SERVER_CONFIG_TOKEN, useValue: serverConfig() }];
