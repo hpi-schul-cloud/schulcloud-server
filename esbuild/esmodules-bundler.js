@@ -11,27 +11,6 @@ const options = [
 		outdir: 'node_modules/@keycloak/keycloak-admin-client-cjs',
 	},
 	{
-		name: 'file-type-lib',
-		entryPoint: ['esbuild/content/file-type-cjs-index.ts'],
-		outdir: 'node_modules/file-type-cjs',
-	},
-	{
-		// Path to file containing the resolution-mode="require" declaration.
-		pathToResolutionModeError: 'node_modules/peek-readable/lib/StreamReader.d.ts',
-	},
-	{
-		pathToResolutionModeError: 'node_modules/strtok3/lib/ReadStreamTokenizer.d.ts',
-	},
-	{
-		pathToResolutionModeError: 'node_modules/strtok3/lib/core.d.ts',
-	},
-	{
-		pathToResolutionModeError: 'node_modules/strtok3/lib/index.d.ts',
-	},
-	{
-		pathToResolutionModeError: 'node_modules/strtok3/lib/types.d.ts',
-	},
-	{
 		noExportedMember: 'node_modules/@feathersjs/express/lib/declarations.d.ts',
 	},
 ];

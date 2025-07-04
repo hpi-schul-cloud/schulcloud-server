@@ -15,21 +15,22 @@ import {
 import { Upload } from '@aws-sdk/lib-storage';
 import { DomainErrorHandler } from '@core/error';
 import { ErrorUtils } from '@core/error/utils';
-import { LegacyLogger } from '@core/logger';
+import { Logger } from '@core/logger';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
-import { Readable } from 'stream';
+import { PassThrough, Readable } from 'stream';
 import { CopyFiles, File, GetFile, ListFiles, ObjectKeysRecursive, S3Config } from './interface';
+import { S3ClientActionLoggable } from './loggable';
 
 export class S3ClientAdapter {
-	private deletedFolderName = 'trash';
-	private S3_MAX_DEFAULT_VALUE_FOR_KEYS = 1000;
+	private readonly deletedFolderName = 'trash';
+	private readonly S3_MAX_DEFAULT_VALUE_FOR_KEYS = 1000;
 
 	constructor(
 		private readonly client: S3Client,
 		private readonly config: S3Config,
-		private logger: LegacyLogger,
-		private errorHandler: DomainErrorHandler
+		private readonly logger: Logger,
+		private readonly errorHandler: DomainErrorHandler
 	) {
 		this.logger.setContext(`${S3ClientAdapter.name}:${config.connectionName}`);
 	}
@@ -37,13 +38,15 @@ export class S3ClientAdapter {
 	// is public but only used internally
 	public async createBucket(): Promise<void> {
 		try {
-			this.logger.debug({ action: 'create bucket', params: { bucket: this.config.bucket } });
+			this.logger.debug(
+				new S3ClientActionLoggable('Start create bucket', { action: 'get', bucket: this.config.bucket })
+			);
 
 			const req = new CreateBucketCommand({ Bucket: this.config.bucket });
 			await this.client.send(req);
 		} catch (err) {
 			if (TypeGuard.isError(err)) {
-				this.logger.error(`${err.message} "${this.config.bucket}"`);
+				this.errorHandler.exec(`${err.message} "${this.config.bucket}"`);
 			}
 			throw new InternalServerErrorException(
 				'S3ClientAdapter:createBucket',
@@ -54,7 +57,9 @@ export class S3ClientAdapter {
 
 	public async get(path: string, bytesRange?: string): Promise<GetFile> {
 		try {
-			this.logger.debug({ action: 'get', params: { path, bucket: this.config.bucket } });
+			this.logger.debug(
+				new S3ClientActionLoggable('Start get file', { action: 'get', objectPath: path, bucket: this.config.bucket })
+			);
 
 			const req = new GetObjectCommand({
 				Bucket: this.config.bucket,
@@ -64,11 +69,12 @@ export class S3ClientAdapter {
 
 			const data = await this.client.send(req);
 			const stream = data.Body as Readable;
+			const passthrough = stream.pipe(new PassThrough());
 
 			this.checkStreamResponsive(stream, path);
 
 			return {
-				data: stream,
+				data: passthrough,
 				contentType: data.ContentType,
 				contentLength: data.ContentLength,
 				contentRange: data.ContentRange,
@@ -76,7 +82,13 @@ export class S3ClientAdapter {
 			};
 		} catch (err: unknown) {
 			if (TypeGuard.getValueFromObjectKey(err, 'Code') === 'NoSuchKey') {
-				this.logger.warn(`Could not get file with id ${path}`);
+				this.logger.warning(
+					new S3ClientActionLoggable('Could not get file with id', {
+						action: 'get',
+						objectPath: path,
+						bucket: this.config.bucket,
+					})
+				);
 				throw new NotFoundException('NoSuchKey', ErrorUtils.createHttpExceptionOptions(err));
 			} else {
 				throw new InternalServerErrorException('S3ClientAdapter:get', ErrorUtils.createHttpExceptionOptions(err));
@@ -86,7 +98,13 @@ export class S3ClientAdapter {
 
 	public async create(path: string, file: File): Promise<ServiceOutputTypes> {
 		try {
-			this.logger.debug({ action: 'create', params: { path, bucket: this.config.bucket } });
+			this.logger.debug(
+				new S3ClientActionLoggable('Start upload of files', {
+					action: 'create',
+					objectPath: path,
+					bucket: this.config.bucket,
+				})
+			);
 
 			const req: PutObjectCommandInput = {
 				Body: file.data,
@@ -134,7 +152,13 @@ export class S3ClientAdapter {
 
 	public async moveDirectoryToTrash(path: string, nextMarker?: string): Promise<void> {
 		try {
-			this.logger.debug({ action: 'moveDirectoryToTrash', params: { path, bucket: this.config.bucket } });
+			this.logger.debug(
+				new S3ClientActionLoggable('Start move directory to trash', {
+					action: 'moveDirectoryToTrash',
+					objectPath: path,
+					bucket: this.config.bucket,
+				})
+			);
 
 			const data = await this.listObjects(path, nextMarker);
 			const filteredPathObjects = this.filterValidPathKeys(data);
@@ -154,7 +178,13 @@ export class S3ClientAdapter {
 
 	public async restore(paths: string[]): Promise<CopyObjectCommandOutput[]> {
 		try {
-			this.logger.debug({ action: 'restore', params: { paths, bucket: this.config.bucket } });
+			this.logger.debug(
+				new S3ClientActionLoggable('Start restore of files', {
+					action: 'restore',
+					objectPath: paths,
+					bucket: this.config.bucket,
+				})
+			);
 
 			const copyPaths = paths.map((path) => {
 				return { sourcePath: `${this.deletedFolderName}/${path}`, targetPath: path };
@@ -175,7 +205,9 @@ export class S3ClientAdapter {
 
 	public async copy(paths: CopyFiles[]): Promise<CopyObjectCommandOutput[]> {
 		try {
-			this.logger.debug({ action: 'copy', params: { paths, bucket: this.config.bucket } });
+			this.logger.debug(
+				new S3ClientActionLoggable('Start copy of files', { action: 'copy', bucket: this.config.bucket })
+			);
 
 			const copyRequests = paths.map(async (path) => {
 				const req = new CopyObjectCommand({
@@ -212,7 +244,14 @@ export class S3ClientAdapter {
 
 	public async delete(paths: string[]): Promise<void> {
 		try {
-			this.logger.debug({ action: 'delete', params: { paths, bucket: this.config.bucket } });
+			this.logger.debug(
+				new S3ClientActionLoggable('Start delete of files', {
+					action: 'delete',
+					objectPath: paths,
+					bucket: this.config.bucket,
+				})
+			);
+
 			if (paths.length === 0) return;
 
 			const pathObjects = paths.map((p) => {
@@ -231,7 +270,13 @@ export class S3ClientAdapter {
 
 	public async list(params: ListFiles): Promise<ObjectKeysRecursive> {
 		try {
-			this.logger.debug({ action: 'list', params });
+			this.logger.debug(
+				new S3ClientActionLoggable('Start list of files', {
+					action: 'list',
+					objectPath: params.path,
+					bucket: this.config.bucket,
+				})
+			);
 
 			const result = await this.listObjectKeysRecursive(params);
 
@@ -243,14 +288,14 @@ export class S3ClientAdapter {
 
 	private async listObjectKeysRecursive(params: ListFiles): Promise<ObjectKeysRecursive> {
 		const { path, maxKeys, nextMarker } = params;
-		let files: string[] = params.files ? params.files : [];
+		let files: string[] = params.files ?? [];
 		const MaxKeys = maxKeys && maxKeys - files.length;
 
 		const data = await this.listObjects(path, nextMarker, MaxKeys);
 
 		const returnedFiles =
-			data?.Contents?.filter((o) => o.Key)
-				.map((o) => o.Key as string) // Can not be undefined because of filter above
+			data?.Contents?.filter((o): o is { Key: string } => typeof o.Key === 'string')
+				.map((o) => o.Key)
 				.map((key) => key.substring(path.length)) ?? [];
 
 		files = files.concat(returnedFiles);
@@ -266,7 +311,13 @@ export class S3ClientAdapter {
 
 	public async head(path: string): Promise<HeadObjectCommandOutput> {
 		try {
-			this.logger.debug({ action: 'head', params: { path, bucket: this.config.bucket } });
+			this.logger.debug(
+				new S3ClientActionLoggable('Start get metadata of file', {
+					action: 'head',
+					objectPath: path,
+					bucket: this.config.bucket,
+				})
+			);
 
 			const req = new HeadObjectCommand({
 				Bucket: this.config.bucket,
@@ -278,7 +329,13 @@ export class S3ClientAdapter {
 			return headResponse;
 		} catch (err) {
 			if (TypeGuard.getValueFromObjectKey(err, 'message') === 'NoSuchKey') {
-				this.logger.warn(`could not find the file for head with id ${path}`);
+				this.logger.warning(
+					new S3ClientActionLoggable('could not find the file', {
+						action: 'head',
+						objectPath: path,
+						bucket: this.config.bucket,
+					})
+				);
 				throw new NotFoundException(null, ErrorUtils.createHttpExceptionOptions(err, 'NoSuchKey'));
 			}
 			throw new InternalServerErrorException(null, ErrorUtils.createHttpExceptionOptions(err, 'S3ClientAdapter:head'));
@@ -287,7 +344,13 @@ export class S3ClientAdapter {
 
 	public async deleteDirectory(path: string, nextMarker?: string): Promise<void> {
 		try {
-			this.logger.debug({ action: 'deleteDirectory', params: { path, bucket: this.config.bucket } });
+			this.logger.warning(
+				new S3ClientActionLoggable('Start delete directory', {
+					action: 'deleteDirectory',
+					objectPath: path,
+					bucket: this.config.bucket,
+				})
+			);
 
 			const data = await this.listObjects(path, nextMarker);
 			const filteredPathObjects = this.filterValidPathKeys(data);
@@ -340,7 +403,15 @@ export class S3ClientAdapter {
 		const refreshTimeout = (): void => {
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => {
-				this.logger.log(`Stream unresponsive: S3 object key ${context}`);
+				if (stream.destroyed) return;
+
+				this.logger.info(
+					new S3ClientActionLoggable('Stream unresponsive: S3 object key', {
+						action: 'checkStreamResponsive',
+						objectPath: context,
+						bucket: this.config.bucket,
+					})
+				);
 				stream.destroy();
 			}, 60 * 1000);
 		};

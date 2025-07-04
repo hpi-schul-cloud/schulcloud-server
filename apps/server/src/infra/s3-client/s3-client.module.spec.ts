@@ -1,4 +1,4 @@
-import { LegacyLogger } from '@core/logger';
+import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { Inject } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -44,8 +44,8 @@ describe('S3ClientModule', () => {
 			],
 			providers: [
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 				OneService,
 			],

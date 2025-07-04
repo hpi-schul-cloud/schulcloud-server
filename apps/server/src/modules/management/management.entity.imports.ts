@@ -5,7 +5,6 @@ import { CourseEntity } from '@modules/course/repo/course.entity';
 import { CourseGroupEntity } from '@modules/course/repo/coursegroup.entity';
 import { DeletionLogEntity } from '@modules/deletion/repo/entity/deletion-log.entity';
 import { DeletionRequestEntity } from '@modules/deletion/repo/entity/deletion-request.entity';
-import { FileRecordEntity } from '@modules/files-storage/repo';
 import { FileEntity } from '@modules/files/entity';
 import { GroupEntity } from '@modules/group/entity';
 import { InstanceEntity } from '@modules/instance';
@@ -71,7 +70,6 @@ export const ENTITIES = [
 	DashboardEntity,
 	ExternalToolEntity,
 	FileEntity,
-	FileRecordEntity,
 	FederalStateEntity,
 	ImportUser,
 	LessonEntity,

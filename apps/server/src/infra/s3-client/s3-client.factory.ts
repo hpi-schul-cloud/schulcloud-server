@@ -1,7 +1,7 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { ConfiguredRetryStrategy, RETRY_MODES } from '@aws-sdk/util-retry';
 import { DomainErrorHandler } from '@core/error';
-import { LegacyLogger } from '@core/logger';
+import { Logger } from '@core/logger';
 import { S3Config } from './interface';
 import { S3ClientAdapter } from './s3-client.adapter';
 
@@ -9,7 +9,7 @@ const MAXIMUM_ATTEMPTS = 3;
 const BACKOFF_DELAY_TIME_MS = 5000;
 
 export class S3ClientFactory {
-	public build(config: S3Config, legacyLogger: LegacyLogger, domainErrorHandler: DomainErrorHandler): S3ClientAdapter {
+	public build(config: S3Config, logger: Logger, domainErrorHandler: DomainErrorHandler): S3ClientAdapter {
 		const { region, accessKeyId, secretAccessKey, endpoint } = config;
 		const retryStrategy = new ConfiguredRetryStrategy(
 			MAXIMUM_ATTEMPTS,
@@ -29,6 +29,6 @@ export class S3ClientFactory {
 			retryStrategy,
 		});
 
-		return new S3ClientAdapter(s3Client, config, legacyLogger, domainErrorHandler);
+		return new S3ClientAdapter(s3Client, config, logger, domainErrorHandler);
 	}
 }
