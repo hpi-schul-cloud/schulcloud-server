@@ -1,18 +1,23 @@
+import util from 'util';
 import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { Synchronization, SynchronizationService, SynchronizationStatusModel } from '@modules/synchronization';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@core/logger';
-import { ErrorLogMessage } from '@core/logger/types';
 import { AccountService } from '@modules/account';
-import { StartSynchronizationLoggable, SucessSynchronizationLoggable } from './loggable';
+import {
+	StartSynchronizationLoggable,
+	SucessSynchronizationLoggable,
+	ProgressSynchronizationLoggable,
+} from './loggable';
 import {
 	FailedUpdateLastSyncedAtLoggableException,
 	NoUsersToSynchronizationLoggableException,
 	SynchronizationUnknownErrorLoggableException,
 } from './loggable-exception';
 import { IdpConsoleConfig } from '../idp-console.config';
+import { AxiosErrorLoggable } from '@core/error/loggable';
 
 @Injectable()
 export class SynchronizationUc {
@@ -36,7 +41,7 @@ export class SynchronizationUc {
 			const usersToCheck = await this.findUsersToSynchronize(systemId);
 			const chunkSize = this.configService.get('SYNCHRONIZATION_CHUNK', { infer: true });
 			const chunks = this.chunkArray(usersToCheck, chunkSize);
-			const promises = chunks.map((chunk) => this.updateLastSyncedAt(chunk, systemId));
+			const promises = chunks.map((chunk, index) => this.updateLastSyncedAt(index, chunk, systemId));
 			const results = await Promise.all(promises);
 			const userSyncCount = results.reduce((acc, curr) => +acc + +curr, 0);
 
@@ -45,16 +50,18 @@ export class SynchronizationUc {
 		} catch (error) {
 			const loggable =
 				error instanceof NoUsersToSynchronizationLoggableException ||
-				error instanceof FailedUpdateLastSyncedAtLoggableException
+				error instanceof FailedUpdateLastSyncedAtLoggableException ||
+				error instanceof AxiosErrorLoggable
 					? error
-					: new SynchronizationUnknownErrorLoggableException(systemId);
+					: new SynchronizationUnknownErrorLoggableException(systemId, error as Error);
 
 			await this.updateSynchronization(
 				synchronizationId,
 				SynchronizationStatusModel.FAILED,
 				0,
-				loggable.getLogMessage()
+				util.inspect(loggable.getLogMessage())
 			);
+			throw loggable;
 		}
 	}
 
@@ -62,7 +69,7 @@ export class SynchronizationUc {
 	// Every parts that need be tested and only avaible from intern,
 	// need to be passed from outside by constructor or public methods.
 	public async findUsersToSynchronize(systemId: string): Promise<string[]> {
-		const usersDownloaded = await this.schulconnexRestClient.getPersonenInfo({});
+		const usersDownloaded = await this.schulconnexRestClient.getPersonenInfo({ vollstaendig: ['personen'] });
 
 		if (usersDownloaded.length === 0) {
 			throw new NoUsersToSynchronizationLoggableException(systemId);
@@ -72,16 +79,39 @@ export class SynchronizationUc {
 		return usersToCheck;
 	}
 
-	public async updateLastSyncedAt(usersToCheck: string[], systemId: string): Promise<number> {
+	public async updateLastSyncedAt(index: number, usersToCheck: string[], systemId: string): Promise<number> {
 		try {
+			this.logger.info(
+				new ProgressSynchronizationLoggable({
+					chunkIndex: index,
+					externalUserIdCount: usersToCheck.length,
+				})
+			);
+
 			const foundUsers = await this.userService.findMultipleByExternalIds(usersToCheck);
+			this.logger.info(
+				new ProgressSynchronizationLoggable({
+					chunkIndex: index,
+					externalUserIdCount: usersToCheck.length,
+					userWithOneExternalIdCount: foundUsers.length,
+				})
+			);
+
 			const verifiedUsers = await this.accountService.findByUserIdsAndSystemId(foundUsers, systemId);
+			this.logger.info(
+				new ProgressSynchronizationLoggable({
+					chunkIndex: index,
+					externalUserIdCount: usersToCheck.length,
+					userWithOneExternalIdCount: foundUsers.length,
+					usersWithAccountAndSystem: verifiedUsers.length,
+				})
+			);
 
 			await this.userService.updateLastSyncedAt(verifiedUsers);
 
 			return verifiedUsers.length;
-		} catch {
-			throw new FailedUpdateLastSyncedAtLoggableException(systemId);
+		} catch (error) {
+			throw new FailedUpdateLastSyncedAtLoggableException(systemId, error as Error);
 		}
 	}
 
@@ -92,13 +122,13 @@ export class SynchronizationUc {
 		synchronizationId: string,
 		status: SynchronizationStatusModel,
 		userSyncCount: number,
-		error?: ErrorLogMessage
+		errorMessage?: string
 	): Promise<void> {
 		const newSynchronization = new Synchronization({
 			id: synchronizationId,
 			status,
 			count: userSyncCount,
-			failureCause: error ? `${error?.data?.errorMessage as string}: ${error?.data?.systemId as string}` : undefined,
+			failureCause: errorMessage ? errorMessage : undefined,
 		});
 
 		await this.synchronizationService.update(newSynchronization);
