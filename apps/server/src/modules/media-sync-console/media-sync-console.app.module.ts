@@ -1,7 +1,8 @@
+import { ErrorModule } from '@core/error';
 import { LoggerModule } from '@core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { ConsoleWriterModule } from '@infra/console';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { Module } from '@nestjs/common';
@@ -32,6 +33,7 @@ import { MediaSourceSyncUc } from './uc';
 		RabbitMQWrapperModule,
 		ConsoleWriterModule,
 		ConsoleModule,
+		ErrorModule,
 	],
 	providers: [MediaSyncConsole, MediaSourceSyncUc],
 })
