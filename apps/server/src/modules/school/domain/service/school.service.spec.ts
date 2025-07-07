@@ -340,6 +340,30 @@ describe('SchoolService', () => {
 		});
 	});
 
+	describe('getSchoolList', () => {
+		describe('when some schools exist that are eligible for external invite', () => {
+			const setup = () => {
+				const query = {};
+				const schools = schoolFactory.buildList(2);
+				jest.spyOn(schools[0], 'isEligibleForExternalInvite').mockReturnValueOnce(true);
+				jest.spyOn(schools[1], 'isEligibleForExternalInvite').mockReturnValueOnce(false);
+
+				schoolRepo.getSchoolList.mockResolvedValueOnce({ schools, count: 1 });
+
+				return { query, schools };
+			};
+
+			it('should return these schools', async () => {
+				const { query, schools } = setup();
+
+				const result = await service.getSchoolList(query);
+
+				const expected = { schools, count: 1 };
+				expect(result).toEqual(expected);
+			});
+		});
+	});
+
 	describe('doesSchoolExist', () => {
 		describe('when school exists', () => {
 			const setup = () => {
