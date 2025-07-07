@@ -275,6 +275,9 @@
 					"default": 600000,
 					"description": "Timeout for incoming requests to the file storage service in milliseconds."
 				}
+			},
+			"default": {
+				"SERVICE_BASE_URL": "http://localhost:4444"
 			}
 		},
 		"FWU_CONTENT": {
