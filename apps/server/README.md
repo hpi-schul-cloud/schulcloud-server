@@ -66,13 +66,6 @@ Beside existing [scripts](/), for the nestJS application the following scripts h
 - `nest:start:debug` run application in dev-mode with hot-reload and debug port opened on port :9229
 - `nest:start:prod` start applicaiton in production mode, requires `nest:build` to be executed beforehand
 
-#### It exist a **file storage** module. It is started as a microservice on port :4444
-
-- `nest:start:files-storage` starts the nest **file storage**
-- `nest:start:files-storage:dev` run **file storage** without build from sources in dev-mode with hot-reload
-- `nest:start:files-storage:debug` run **file storage** in dev-mode with hot-reload and debug port opened on port :9229
-- `nest:start:files-storage:prod` start **file storage** in production mode, requires `nest:build` to be executed beforehand
-
 #### How to start the server console
 
 The console offers management capabilities of the application.

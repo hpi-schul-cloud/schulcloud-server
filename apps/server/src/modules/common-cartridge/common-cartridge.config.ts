@@ -1,6 +1,7 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { LoggerConfig } from '@core/logger';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { JwtAuthGuardConfig } from '@infra/auth-guard';
+import { AuthorizationClientConfig } from '@infra/authorization-client';
 import { CoursesClientConfig } from '@infra/courses-client';
 import { Algorithm } from 'jsonwebtoken';
 
@@ -8,6 +9,10 @@ export interface CommonCartridgeConfig extends LoggerConfig, JwtAuthGuardConfig,
 	INCOMING_REQUEST_TIMEOUT: number;
 	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: number;
 }
+
+export const authorizationClientConfig: AuthorizationClientConfig = {
+	basePath: `${Configuration.get('API_HOST') as string}/v3/`,
+};
 
 const commonCartridgeConfig: CommonCartridgeConfig = {
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
