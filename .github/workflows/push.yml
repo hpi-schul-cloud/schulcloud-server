@@ -176,7 +176,7 @@ jobs:
       security-events: write
     steps:
       - name: run trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@0.31.0
         with:
           image-ref: 'ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}'
           format: 'sarif'
