@@ -209,4 +209,22 @@ describe('RoomService', () => {
 			expect(result.data[2].id).toBe('3');
 		});
 	});
+
+	describe('canEditorManageVideoconferences', () => {
+		it('should return true if correct feature is present', async () => {
+			const room = roomFactory.build();
+
+			const result = service.canEditorManageVideoconferences(room);
+
+			expect(result).toEqual(true);
+		});
+
+		it('should return false if correct feature is present', async () => {
+			const room = roomFactory.build({ features: undefined });
+
+			const result = service.canEditorManageVideoconferences(room);
+
+			expect(result).toEqual(false);
+		});
+	});
 });

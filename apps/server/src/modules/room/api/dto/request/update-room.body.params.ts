@@ -1,5 +1,5 @@
 import { RoomUpdateProps } from '@modules/room/domain';
-import { RoomColor } from '@modules/room/domain/type';
+import { RoomColor, RoomFeatures } from '@modules/room/domain/type';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { NullToUndefined, SanitizeHtml } from '@shared/controller/transformer';
 import { IsDate, IsEnum, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
@@ -42,4 +42,14 @@ export class UpdateRoomBodyParams implements RoomUpdateProps {
 		type: Date,
 	})
 	endDate?: Date;
+
+	@IsOptional()
+	@NullToUndefined()
+	@ApiPropertyOptional({
+		description: 'The features of the room',
+		enum: RoomFeatures,
+		enumName: 'RoomFeatures',
+	})
+	@IsEnum(RoomFeatures)
+	features?: RoomFeatures[];
 }

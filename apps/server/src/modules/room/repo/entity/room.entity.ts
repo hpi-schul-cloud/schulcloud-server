@@ -1,9 +1,9 @@
-import { Entity, Index, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { ObjectIdType } from '@shared/repo/types/object-id.type';
 import { Room, RoomProps } from '../../domain/do/room.do';
-import { RoomColor } from '../../domain/type';
+import { RoomColor, RoomFeatures } from '../../domain/type';
 
 @Entity({ tableName: 'rooms' })
 export class RoomEntity extends BaseEntityWithTimestamps implements RoomProps {
@@ -25,4 +25,7 @@ export class RoomEntity extends BaseEntityWithTimestamps implements RoomProps {
 
 	@Property({ persist: false })
 	domainObject: Room | undefined;
+
+	@Enum({ nullable: true, array: true })
+	features?: RoomFeatures[];
 }

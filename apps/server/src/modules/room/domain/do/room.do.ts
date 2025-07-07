@@ -1,6 +1,6 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { RoomColor } from '../type';
+import { RoomColor, RoomFeatures } from '../type';
 
 export interface RoomProps extends AuthorizableObject {
 	id: EntityId;
@@ -9,11 +9,12 @@ export interface RoomProps extends AuthorizableObject {
 	startDate?: Date;
 	endDate?: Date;
 	schoolId: EntityId;
+	features?: RoomFeatures[];
 	createdAt: Date;
 	updatedAt: Date;
 }
 
-export type RoomCreateProps = Pick<RoomProps, 'name' | 'color' | 'startDate' | 'endDate' | 'schoolId'>;
+export type RoomCreateProps = Pick<RoomProps, 'name' | 'color' | 'startDate' | 'endDate' | 'schoolId' | 'features'>;
 export type RoomUpdateProps = Omit<RoomCreateProps, 'schoolId'>;
 
 export class Room extends DomainObject<RoomProps> {
@@ -73,5 +74,13 @@ export class Room extends DomainObject<RoomProps> {
 
 	get updatedAt(): Date {
 		return this.props.updatedAt;
+	}
+
+	get features(): RoomFeatures[] | undefined {
+		return this.props.features;
+	}
+
+	set features(value: RoomFeatures[] | undefined) {
+		this.props.features = value;
 	}
 }
