@@ -10,6 +10,7 @@ index.ts
 models/card-response-elements-inner.ts
 models/card-response.ts
 models/collaborative-text-editor-element-response.ts
+models/content-element-type.ts
 models/create-card-body-params.ts
 models/create-card-import-body-params.ts
 models/deleted-element-response.ts
