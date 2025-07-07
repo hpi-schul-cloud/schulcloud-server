@@ -18,6 +18,7 @@ import {
 	MaintenanceResponse,
 	SchoolExistsResponse,
 	SchoolForExternalInviteResponse,
+	SchoolListResponse,
 	SchoolForLdapLoginResponse,
 	SchoolResponse,
 	SchoolSystemResponse,
@@ -32,6 +33,7 @@ import {
 	YearsResponseMapper,
 } from './mapper';
 import { MoinSchuleClassService } from '@modules/class-moin-schule/moin-schule-class.service';
+import { PaginationParams } from '@shared/controller/dto';
 
 @Injectable()
 export class SchoolUc {
@@ -73,6 +75,30 @@ export class SchoolUc {
 		const responseDto = SystemResponseMapper.mapToSchoolSystemResponse(systems);
 
 		return responseDto;
+	}
+
+	public async getSchoolList(
+		paginationParams: PaginationParams,
+		federalStateId?: EntityId
+	): Promise<SchoolListResponse> {
+		const findOptions = {
+			order: {
+				name: SortOrder.asc,
+			},
+			pagination: paginationParams,
+		};
+
+		const { schools, count } = await this.schoolService.getSchoolList(findOptions, federalStateId);
+		const dtos = SchoolResponseMapper.mapToSchoolListResponse(
+			schools,
+			{
+				skip: paginationParams.skip,
+				limit: paginationParams.limit,
+			},
+			count
+		);
+
+		return dtos;
 	}
 
 	public async getSchoolListForExternalInvite(

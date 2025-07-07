@@ -27,8 +27,6 @@ spec:
             name: api-configmap
         - secretRef:
             name: api-secret
-        - secretRef:
-            name: api-files-secret
         command: ['/bin/sh','-c']
         args: ['npm run ensureIndexes:prod && npm run migration:up:prod']
         resources:
