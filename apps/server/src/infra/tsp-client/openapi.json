@@ -4728,7 +4728,8 @@
 				"lehrerTitel": { "type": "string" },
 				"lehrerVorname": { "type": "string" },
 				"lehrerNachname": { "type": "string" },
-				"schuleNummer": { "type": "string" }
+				"schuleNummer": { "type": "string" },
+				"lehrerRollen": { "type": "string" }
 			}
 		},
 		"RobjExportSchuelerMigration": {
