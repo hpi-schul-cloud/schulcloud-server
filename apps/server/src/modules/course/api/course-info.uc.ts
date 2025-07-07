@@ -27,6 +27,7 @@ export class CourseInfoUc {
 		schoolId: EntityId,
 		sortByField: CourseSortProps = CourseSortProps.NAME,
 		courseStatusQueryType?: CourseStatus,
+		withoutTeachers?: boolean,
 		pagination?: Pagination,
 		sortOrder: SortOrder = SortOrder.asc
 	): Promise<Page<CourseInfoDto>> {
@@ -40,7 +41,7 @@ export class CourseInfoUc {
 		);
 
 		const order = { [sortByField]: sortOrder };
-		const filter = { schoolId, status: courseStatusQueryType };
+		const filter = { schoolId, status: courseStatusQueryType, withoutTeachers };
 		const options = { pagination, order };
 		const courses = await this.courseDoService.getCourseInfo(filter, options);
 
@@ -55,7 +56,10 @@ export class CourseInfoUc {
 		const courseInfos = await Promise.all(
 			courses.map(async (course) => {
 				const groupName = course.syncedWithGroup ? await this.getSyncedGroupName(course.syncedWithGroup) : undefined;
-				const teacherNames = await this.getCourseTeacherFullNames(course.teachers);
+				let teacherNames: string[] = [];
+				if (course.teachers) {
+					teacherNames = await this.getCourseTeacherFullNames(course.teachers);
+				}
 				const classNames = await this.getCourseClassNamaes(course.classes);
 				const groupNames = await this.getCourseGroupNames(course.groups);
 

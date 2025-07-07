@@ -47,10 +47,15 @@ export class CourseScope extends Scope<CourseEntity> {
 		return this;
 	}
 
-	bySchoolId(schoolId: EntityId | undefined): this {
+	public bySchoolId(schoolId: EntityId | undefined): this {
 		if (schoolId) {
 			this.addQuery({ school: schoolId });
 		}
+		return this;
+	}
+
+	public byWithoutTeacher(): this {
+		this.addQuery({ teachers: { $eq: [] } });
 		return this;
 	}
 

@@ -151,28 +151,12 @@ describe(CourseScope.name, () => {
 		});
 	});
 
-	describe('bySchoolId', () => {
-		describe('when id is defined', () => {
-			const setup = () => {
-				const schoolId = new ObjectId().toHexString();
-
-				return { schoolId };
-			};
-
+	describe('byWithoutTeacher', () => {
+		describe('when called', () => {
 			it('should add query', () => {
-				const { schoolId } = setup();
+				scope.byWithoutTeacher();
 
-				scope.bySchoolId(schoolId);
-
-				expect(scope.query).toEqual({ school: schoolId });
-			});
-		});
-
-		describe('when id is not defined', () => {
-			it('should add query', () => {
-				scope.bySchoolId(undefined);
-
-				expect(scope.query).toEqual({});
+				expect(scope.query).toEqual({ teachers: { $eq: [] } });
 			});
 		});
 	});

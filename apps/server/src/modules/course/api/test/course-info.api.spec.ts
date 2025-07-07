@@ -58,13 +58,18 @@ describe('Course Info Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId({});
 
 				const currentCourses = courseEntityFactory.buildList(5, {
+					teachers: [teacher.user],
 					school,
 					untilDate: new Date('2045-07-31T23:59:59'),
 				});
 				const archivedCourses = courseEntityFactory.buildList(10, {
+					teachers: [teacher.user],
 					school,
 					untilDate: new Date('2024-07-31T23:59:59'),
 				});
+
+				currentCourses[0].teachers.removeAll();
+				archivedCourses[0].teachers.removeAll();
 
 				admin.user.school = school;
 				await em.persistAndFlush(school);
@@ -95,6 +100,28 @@ describe('Course Info Controller (API)', () => {
 				expect(response.body).toHaveProperty('skip');
 				expect(response.body).toHaveProperty('limit');
 				expect(response.body).toHaveProperty('total');
+			});
+
+			it('should return active courses without teachers', async () => {
+				const { admin } = await setup();
+				const query = { withoutTeachers: true, status: CourseStatus.CURRENT };
+
+				const loggedInClient = await testApiClient.login(admin.account);
+				const response = await loggedInClient.get().query(query);
+
+				const { data } = response.body as CourseInfoListResponse;
+				expect(data.length).toBe(1);
+			});
+
+			it('should return archive courses without teachers', async () => {
+				const { admin } = await setup();
+				const query = { withoutTeachers: true, status: CourseStatus.ARCHIVE };
+
+				const loggedInClient = await testApiClient.login(admin.account);
+				const response = await loggedInClient.get().query(query);
+
+				const { data } = response.body as CourseInfoListResponse;
+				expect(data.length).toBe(1);
 			});
 
 			it('should return archived courses in pages', async () => {
