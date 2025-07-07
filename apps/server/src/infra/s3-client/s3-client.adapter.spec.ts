@@ -2,10 +2,10 @@ import { S3Client, S3ServiceException } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { DomainErrorHandler } from '@core/error';
 import { ErrorUtils } from '@core/error/utils';
-import { LegacyLogger } from '@core/logger';
+import { Logger } from '@core/logger';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Readable } from 'node:stream';
+import { PassThrough, Readable } from 'node:stream';
 import { File, S3Config } from './interface';
 import { S3ClientAdapter } from './s3-client.adapter';
 import { createListObjectsV2CommandOutput } from './testing';
@@ -13,6 +13,7 @@ import { createListObjectsV2CommandOutput } from './testing';
 const createParameter = () => {
 	const bucket = 'test-bucket';
 	const config = {
+		connectionName: 'test-connection',
 		endpoint: '',
 		region: '',
 		bucket,
@@ -33,7 +34,7 @@ describe(S3ClientAdapter.name, () => {
 	beforeAll(() => {
 		const { config } = createParameter();
 
-		const logger = createMock<LegacyLogger>();
+		const logger = createMock<Logger>();
 		const configuration = createMock<S3Config>(config);
 		const errorHandler = createMock<DomainErrorHandler>();
 		client = createMock<S3Client>({
@@ -68,7 +69,7 @@ describe(S3ClientAdapter.name, () => {
 
 				await service.createBucket();
 
-				expect(client.send).toBeCalledWith(
+				expect(client.send).toHaveBeenCalledWith(
 					expect.objectContaining({
 						input: { Bucket: config.bucket },
 					})
@@ -96,7 +97,7 @@ describe(S3ClientAdapter.name, () => {
 			const setup = () => {
 				const { pathToFile, config, bytesRange } = createParameter();
 				const resultObj = {
-					Body: { on: () => true },
+					Body: new PassThrough(),
 					ContentType: 'data.ContentType',
 					ContentLength: 'data.ContentLength',
 					ContentRange: 'data.ContentRange',
@@ -114,7 +115,7 @@ describe(S3ClientAdapter.name, () => {
 
 				await service.get(pathToFile);
 
-				expect(client.send).toBeCalledWith(
+				expect(client.send).toHaveBeenCalledWith(
 					expect.objectContaining({
 						input: { Bucket: config.bucket, Key: pathToFile },
 					})
@@ -126,7 +127,7 @@ describe(S3ClientAdapter.name, () => {
 
 				await service.get(pathToFile, bytesRange);
 
-				expect(client.send).toBeCalledWith(
+				expect(client.send).toHaveBeenCalledWith(
 					expect.objectContaining({
 						input: { Bucket: config.bucket, Key: pathToFile, Range: bytesRange },
 					})
@@ -280,7 +281,7 @@ describe(S3ClientAdapter.name, () => {
 
 				await service.moveToTrash([pathToFile]);
 
-				expect(client.send).toBeCalledWith(
+				expect(client.send).toHaveBeenCalledWith(
 					expect.objectContaining({
 						input: { Bucket: bucket, CopySource: `${bucket}/test/text.txt`, Key: 'trash/test/text.txt' },
 					})
@@ -292,7 +293,7 @@ describe(S3ClientAdapter.name, () => {
 
 				await service.moveToTrash([pathToFile]);
 
-				expect(client.send).toBeCalledWith(
+				expect(client.send).toHaveBeenCalledWith(
 					expect.objectContaining({
 						input: { Bucket: bucket, Delete: { Objects: [{ Key: 'test/text.txt' }] } },
 					})
@@ -348,7 +349,7 @@ describe(S3ClientAdapter.name, () => {
 					const spyMoveToTrash = jest.spyOn(service, 'moveToTrash');
 					await service.moveDirectoryToTrash(directory);
 
-					expect(spyMoveToTrash).toBeCalledWith([pathToFile]);
+					expect(spyMoveToTrash).toHaveBeenCalledWith([pathToFile]);
 					expect(spyMoveToTrash).toHaveBeenCalledTimes(1);
 				});
 			});
@@ -407,8 +408,8 @@ describe(S3ClientAdapter.name, () => {
 
 					await service.moveDirectoryToTrash(directory);
 
-					expect(spyMoveToTrash).toBeCalledWith([filePath]);
-					expect(spyMoveToTrash).toBeCalledWith([nextFilePath]);
+					expect(spyMoveToTrash).toHaveBeenCalledWith([filePath]);
+					expect(spyMoveToTrash).toHaveBeenCalledWith([nextFilePath]);
 				});
 			});
 
@@ -432,7 +433,7 @@ describe(S3ClientAdapter.name, () => {
 					const spyMoveToTrash = jest.spyOn(service, 'moveToTrash');
 					await service.moveDirectoryToTrash(pathToFile);
 
-					expect(spyMoveToTrash).toBeCalledWith([]);
+					expect(spyMoveToTrash).toHaveBeenCalledWith([]);
 				});
 			});
 
@@ -481,7 +482,7 @@ describe(S3ClientAdapter.name, () => {
 
 				await service.delete([pathToFile]);
 
-				expect(client.send).toBeCalledWith(
+				expect(client.send).toHaveBeenCalledWith(
 					expect.objectContaining({
 						input: { Bucket: bucket, Delete: { Objects: [{ Key: 'test/text.txt' }] } },
 					})
@@ -523,7 +524,7 @@ describe(S3ClientAdapter.name, () => {
 					const spyMoveToTrash = jest.spyOn(service, 'delete');
 					await service.deleteDirectory(directory);
 
-					expect(spyMoveToTrash).toBeCalledWith([]);
+					expect(spyMoveToTrash).toHaveBeenCalledWith([]);
 				});
 			});
 
@@ -620,8 +621,8 @@ describe(S3ClientAdapter.name, () => {
 
 					await service.deleteDirectory(directory);
 
-					expect(spyDelete).toBeCalledWith([filePath]);
-					expect(spyDelete).toBeCalledWith([nextFilePath]);
+					expect(spyDelete).toHaveBeenCalledWith([filePath]);
+					expect(spyDelete).toHaveBeenCalledWith([nextFilePath]);
 				});
 			});
 
@@ -668,8 +669,7 @@ describe(S3ClientAdapter.name, () => {
 				const { pathToFile } = createParameter();
 				const filePath = 'directory/test.txt';
 				const error = new Error('testError');
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
+				// @ts-expect-error Testcase
 				client.send.mockRejectedValueOnce(error);
 
 				const expectedError = new InternalServerErrorException(
@@ -701,8 +701,7 @@ describe(S3ClientAdapter.name, () => {
 				// @ts-expect-error ignore parameter type of mock function
 				client.send.mockResolvedValueOnce(expectedResponse);
 
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
+				// @ts-expect-error Testcase
 				client.send.mockRejectedValueOnce();
 
 				const expectedError = new InternalServerErrorException(
@@ -733,7 +732,7 @@ describe(S3ClientAdapter.name, () => {
 
 			await service.restore([pathToFile]);
 
-			expect(client.send).toBeCalledWith(
+			expect(client.send).toHaveBeenCalledWith(
 				expect.objectContaining({
 					input: {
 						Bucket: bucket,
@@ -749,7 +748,7 @@ describe(S3ClientAdapter.name, () => {
 
 			await service.restore([pathToFile]);
 
-			expect(client.send).toBeCalledWith(
+			expect(client.send).toHaveBeenCalledWith(
 				expect.objectContaining({
 					input: { Bucket: bucket, Delete: { Objects: [{ Key: 'trash/test/text.txt' }] } },
 				})
@@ -780,7 +779,7 @@ describe(S3ClientAdapter.name, () => {
 
 			await service.copy(pathsToCopy);
 
-			expect(client.send).toBeCalledWith(
+			expect(client.send).toHaveBeenCalledWith(
 				expect.objectContaining({
 					input: {
 						Bucket: bucket,
@@ -810,7 +809,7 @@ describe(S3ClientAdapter.name, () => {
 
 				await service.head(pathToFile);
 
-				expect(client.send).toBeCalledWith(
+				expect(client.send).toHaveBeenCalledWith(
 					expect.objectContaining({
 						input: { Bucket: 'test-bucket', Key: pathToFile },
 					})
@@ -874,7 +873,7 @@ describe(S3ClientAdapter.name, () => {
 
 				expect(resultKeys.files).toEqual(keys.slice(0, 500));
 
-				expect(client.send).toBeCalledWith(
+				expect(client.send).toHaveBeenCalledWith(
 					expect.objectContaining({
 						input: {
 							Bucket: 'test-bucket',
