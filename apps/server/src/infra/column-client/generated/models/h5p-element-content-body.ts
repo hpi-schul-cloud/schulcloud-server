@@ -15,28 +15,30 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import type { CardResponse } from './card-response';
+import type { ContentElementType } from './content-element-type';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { ContentElementData } from './content-element-data';
+import type { H5pContentBody } from './h5p-content-body';
 
 /**
  * 
  * @export
- * @interface CardImportResponse
+ * @interface H5pElementContentBody
  */
-export interface CardImportResponse {
+export interface H5pElementContentBody {
     /**
-     * The response containing the card details after import.
-     * @type {CardResponse}
-     * @memberof CardImportResponse
+     * the type of the updated element
+     * @type {ContentElementType}
+     * @memberof H5pElementContentBody
      */
-    'cardResponse': CardResponse;
+    'type': ContentElementType;
     /**
-     * The types of content elements that were imported into the card.
-     * @type {Array<ContentElementData>}
-     * @memberof CardImportResponse
+     * 
+     * @type {H5pContentBody}
+     * @memberof H5pElementContentBody
      */
-    'contentElementTypes': Array<ContentElementData>;
+    'content': H5pContentBody;
 }
+
+
 

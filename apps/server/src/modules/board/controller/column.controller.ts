@@ -27,11 +27,31 @@ import {
 	VideoConferenceElementResponse,
 	FileFolderElementResponse,
 	H5pElementResponse,
+	UpdateElementContentBodyParams,
+	DrawingElementContentBody,
+	ExternalToolElementContentBody,
+	FileElementContentBody,
+	FileFolderElementContentBody,
+	H5pElementContentBody,
+	LinkElementContentBody,
+	RichTextElementContentBody,
+	SubmissionContainerElementContentBody,
+	VideoConferenceElementContentBody,
+	DrawingContentBody,
+	ExternalToolContentBody,
+	FileContentBody,
+	FileFolderContentBody,
+	H5pContentBody,
+	LinkContentBody,
+	RichTextContentBody,
+	SubmissionContainerContentBody,
+	VideoConferenceContentBody,
 } from './dto/element';
 import { CreateCardBodyParams } from './dto/card/create-card.body.params';
 import { CardResponseMapper } from './mapper';
 import { CardContentUc } from '../uc/card-content.uc';
-import { CardImportResponse } from './dto/card/card-import.response';
+
+import { CreateCardImportBodyParams } from './dto/card/create-card.import.body.params';
 
 @ApiExtraModels(
 	ExternalToolElementResponse,
@@ -45,7 +65,25 @@ import { CardImportResponse } from './dto/card/card-import.response';
 	VideoConferenceElementResponse,
 	FileFolderElementResponse,
 	H5pElementResponse,
-	CardImportResponse
+	UpdateElementContentBodyParams,
+	FileElementContentBody,
+	LinkElementContentBody,
+	RichTextElementContentBody,
+	SubmissionContainerElementContentBody,
+	ExternalToolElementContentBody,
+	VideoConferenceElementContentBody,
+	FileFolderElementContentBody,
+	H5pElementContentBody,
+	DrawingElementContentBody,
+	FileContentBody,
+	DrawingContentBody,
+	LinkContentBody,
+	RichTextContentBody,
+	SubmissionContainerContentBody,
+	ExternalToolContentBody,
+	VideoConferenceContentBody,
+	FileFolderContentBody,
+	H5pContentBody
 )
 @ApiTags('Board Column')
 @JwtAuthentication()
@@ -119,27 +157,25 @@ export class ColumnController {
 	}
 
 	@ApiOperation({ summary: 'Create a new card on a column with content.' })
-	@ApiResponse({ status: 201, type: CardImportResponse })
+	@ApiResponse({ status: 201, type: CardResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@ApiBody({ required: false, type: CreateCardBodyParams })
+	@ApiBody({ required: false, type: CreateCardImportBodyParams })
 	@Post(':columnId/cardsContent')
 	public async createCardWithContent(
 		@Param() urlParams: ColumnUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() createCardBodyParams?: CreateCardBodyParams
-	): Promise<CardImportResponse> {
-		const { requiredEmptyElements } = createCardBodyParams || {};
+		@Body() createCardBodyParams: CreateCardImportBodyParams
+	): Promise<CardResponse> {
+		const { cardElements, cardTitle } = createCardBodyParams;
 		const response = await this.cardContentUc.createCardWithContent(
 			currentUser.userId,
 			urlParams.columnId,
-			requiredEmptyElements
+			cardElements,
+			cardTitle
 		);
 
-		return new CardImportResponse(
-			response,
-			response.elements.map((element) => CardContentUc.determineContentElementType(element))
-		);
+		return response;
 	}
 }

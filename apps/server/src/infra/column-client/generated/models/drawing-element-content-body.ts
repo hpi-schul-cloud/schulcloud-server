@@ -15,28 +15,30 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import type { CardResponse } from './card-response';
+import type { ContentElementType } from './content-element-type';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { ContentElementData } from './content-element-data';
+import type { DrawingContentBody } from './drawing-content-body';
 
 /**
  * 
  * @export
- * @interface CardImportResponse
+ * @interface DrawingElementContentBody
  */
-export interface CardImportResponse {
+export interface DrawingElementContentBody {
     /**
-     * The response containing the card details after import.
-     * @type {CardResponse}
-     * @memberof CardImportResponse
+     * the type of the updated element
+     * @type {ContentElementType}
+     * @memberof DrawingElementContentBody
      */
-    'cardResponse': CardResponse;
+    'type': ContentElementType;
     /**
-     * The types of content elements that were imported into the card.
-     * @type {Array<ContentElementData>}
-     * @memberof CardImportResponse
+     * 
+     * @type {DrawingContentBody}
+     * @memberof DrawingElementContentBody
      */
-    'contentElementTypes': Array<ContentElementData>;
+    'content': DrawingContentBody;
 }
+
+
 

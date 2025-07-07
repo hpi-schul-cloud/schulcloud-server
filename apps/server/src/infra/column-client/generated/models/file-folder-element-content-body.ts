@@ -15,28 +15,30 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import type { CardResponse } from './card-response';
+import type { ContentElementType } from './content-element-type';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { ContentElementData } from './content-element-data';
+import type { FileFolderContentBody } from './file-folder-content-body';
 
 /**
  * 
  * @export
- * @interface CardImportResponse
+ * @interface FileFolderElementContentBody
  */
-export interface CardImportResponse {
+export interface FileFolderElementContentBody {
     /**
-     * The response containing the card details after import.
-     * @type {CardResponse}
-     * @memberof CardImportResponse
+     * the type of the updated element
+     * @type {ContentElementType}
+     * @memberof FileFolderElementContentBody
      */
-    'cardResponse': CardResponse;
+    'type': ContentElementType;
     /**
-     * The types of content elements that were imported into the card.
-     * @type {Array<ContentElementData>}
-     * @memberof CardImportResponse
+     * 
+     * @type {FileFolderContentBody}
+     * @memberof FileFolderElementContentBody
      */
-    'contentElementTypes': Array<ContentElementData>;
+    'content': FileFolderContentBody;
 }
+
+
 
