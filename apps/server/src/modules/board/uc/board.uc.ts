@@ -231,6 +231,10 @@ export class BoardUc {
 
 	private getPermissions(userId: EntityId, boardNodeAuthorizable: BoardNodeAuthorizable): Permission[] {
 		const user = boardNodeAuthorizable.users.find((user) => user.userId === userId);
+		if (user?.roles.includes(BoardRoles.ADMIN)) {
+			return [Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE_VIDEOCONFERENCE];
+		}
+
 		if (user?.roles.includes(BoardRoles.EDITOR)) {
 			return [Permission.BOARD_EDIT, Permission.BOARD_VIEW];
 		}

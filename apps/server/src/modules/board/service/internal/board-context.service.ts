@@ -4,11 +4,14 @@ import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode, BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
+import { RoomService } from '@modules/room';
+import { RoomFeatures } from '@modules/room/domain/type';
 
 @Injectable()
 export class BoardContextService {
 	constructor(
 		private readonly courseService: CourseService,
+		private readonly roomService: RoomService,
 		private readonly roomMembershipService: RoomMembershipService
 	) {}
 
@@ -33,9 +36,10 @@ export class BoardContextService {
 	}
 
 	private async getFromRoom(roomId: EntityId): Promise<UserWithBoardRoles[]> {
+		const roomFeatures = await this.getFeaturesForRoom(roomId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const usersWithRoles: UserWithBoardRoles[] = roomMembershipAuthorizable.members.map((member) => {
-			const roles = this.getBoardRolesFromRoomMembership(member);
+			const roles = this.getBoardRolesFromRoomMembership(member, roomFeatures);
 			return {
 				userId: member.userId,
 				roles,
@@ -52,7 +56,7 @@ export class BoardContextService {
 					userId: user.id,
 					firstName: user.firstName,
 					lastName: user.lastName,
-					roles: [BoardRoles.EDITOR],
+					roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
 				};
 			}),
 			...course.getSubstitutionTeachersList().map((user) => {
@@ -60,7 +64,7 @@ export class BoardContextService {
 					userId: user.id,
 					firstName: user.firstName,
 					lastName: user.lastName,
-					roles: [BoardRoles.EDITOR],
+					roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
 				};
 			}),
 			...course.getStudentsList().map((user) => {
@@ -80,17 +84,28 @@ export class BoardContextService {
 		const usersWithRoles: UserWithBoardRoles[] = [
 			{
 				userId,
-				roles: [BoardRoles.EDITOR],
+				roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
 			},
 		];
 
 		return usersWithRoles;
 	}
 
-	private getBoardRolesFromRoomMembership(member: UserWithRoomRoles): BoardRoles[] {
+	private getBoardRolesFromRoomMembership(
+		member: UserWithRoomRoles,
+		roomFeatures: RoomFeatures[] | undefined
+	): BoardRoles[] {
 		const isReader = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_VIEW);
 		const isEditor = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_CONTENT_EDIT);
 
+		const isRoomAdmin = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_MEMBERS_ADD);
+		const isRoomOwner = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_CHANGE_OWNER);
+		const isBoardAdmin =
+			(isEditor && roomFeatures?.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE)) || isRoomAdmin || isRoomOwner;
+
+		if (isBoardAdmin) {
+			return [BoardRoles.EDITOR, BoardRoles.ADMIN];
+		}
 		if (isEditor) {
 			return [BoardRoles.EDITOR];
 		}
@@ -98,5 +113,12 @@ export class BoardContextService {
 			return [BoardRoles.READER];
 		}
 		return [];
+	}
+
+	private async getFeaturesForRoom(roomId: EntityId): Promise<RoomFeatures[] | undefined> {
+		const room = await this.roomService.getSingleRoom(roomId);
+		const roomFeatures = room.features;
+
+		return roomFeatures;
 	}
 }

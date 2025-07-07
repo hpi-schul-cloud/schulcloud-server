@@ -5,6 +5,7 @@ import { AnyBoardNode } from './types';
 export enum BoardRoles {
 	EDITOR = 'editor',
 	READER = 'reader',
+	ADMIN = 'admin',
 }
 
 export interface UserWithBoardRoles {
