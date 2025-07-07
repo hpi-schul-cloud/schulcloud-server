@@ -3,7 +3,7 @@ import { RoomMembershipService, UserWithRoomRoles } from '@modules/room-membersh
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { AnyBoardNode, BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
+import { AnyBoardNode, BoardExternalReferenceType, BoardRoles, BoardSettings, UserWithBoardRoles } from '../../domain';
 import { RoomService } from '@modules/room';
 import { RoomFeatures } from '@modules/room/domain/type';
 
@@ -35,11 +35,33 @@ export class BoardContextService {
 		return usersWithRoles;
 	}
 
+	public async getBoardSettings(rootNode: AnyBoardNode): Promise<BoardSettings> {
+		if (!('context' in rootNode)) {
+			return { features: [] };
+		}
+
+		if (rootNode.context.type === BoardExternalReferenceType.Room) {
+			const roomFeatures = (await this.getFeaturesForRoom(rootNode.context.id)) ?? [];
+			return {
+				features: roomFeatures,
+			};
+		} else if (rootNode.context.type === BoardExternalReferenceType.Course) {
+			return {
+				features: [],
+			};
+		} else if (rootNode.context.type === BoardExternalReferenceType.User) {
+			return {
+				features: [],
+			};
+		} else {
+			throw new Error(`Unknown context type: '${rootNode.context.type as string}'`);
+		}
+	}
+
 	private async getFromRoom(roomId: EntityId): Promise<UserWithBoardRoles[]> {
-		const roomFeatures = await this.getFeaturesForRoom(roomId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const usersWithRoles: UserWithBoardRoles[] = roomMembershipAuthorizable.members.map((member) => {
-			const roles = this.getBoardRolesFromRoomMembership(member, roomFeatures);
+			const roles = this.getBoardRolesFromRoomMembership(member);
 			return {
 				userId: member.userId,
 				roles,
@@ -91,17 +113,13 @@ export class BoardContextService {
 		return usersWithRoles;
 	}
 
-	private getBoardRolesFromRoomMembership(
-		member: UserWithRoomRoles,
-		roomFeatures: RoomFeatures[] | undefined
-	): BoardRoles[] {
+	private getBoardRolesFromRoomMembership(member: UserWithRoomRoles): BoardRoles[] {
 		const isReader = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_VIEW);
 		const isEditor = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_CONTENT_EDIT);
 
 		const isRoomAdmin = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_MEMBERS_ADD);
 		const isRoomOwner = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_CHANGE_OWNER);
-		const isBoardAdmin =
-			(isEditor && roomFeatures?.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE)) || isRoomAdmin || isRoomOwner;
+		const isBoardAdmin = isRoomAdmin || isRoomOwner;
 
 		if (isBoardAdmin) {
 			return [BoardRoles.EDITOR, BoardRoles.ADMIN];

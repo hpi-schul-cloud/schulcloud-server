@@ -28,6 +28,7 @@ import {
 	ColumnBoardService,
 } from '../service';
 import { StorageLocationReference } from '../service/internal';
+import { RoomFeatures } from '@modules/room/domain/type';
 
 @Injectable()
 export class BoardUc {
@@ -236,7 +237,11 @@ export class BoardUc {
 		}
 
 		if (user?.roles.includes(BoardRoles.EDITOR)) {
-			return [Permission.BOARD_EDIT, Permission.BOARD_VIEW];
+			const permissions: Permission[] = [Permission.BOARD_VIEW, Permission.BOARD_EDIT];
+			if (boardNodeAuthorizable.boardSettings.features.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE)) {
+				permissions.push(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
+			}
+			return permissions;
 		}
 
 		if (user?.roles.includes(BoardRoles.READER)) {

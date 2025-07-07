@@ -36,6 +36,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 		const rootNode = await this.boardNodeService.findRoot(boardNode, 1);
 		const parentNode = await this.boardNodeService.findParent(boardNode, 1);
 		const users = await this.boardContextService.getUsersWithBoardRoles(rootNode);
+		const boardSettings = await this.boardContextService.getBoardSettings(rootNode);
 
 		const boardNodeAuthorizable = new BoardNodeAuthorizable({
 			users,
@@ -43,6 +44,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 			boardNode,
 			rootNode,
 			parentNode,
+			boardSettings,
 		});
 
 		return boardNodeAuthorizable;
@@ -64,16 +66,18 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 			return acc;
 		}, {} as Record<EntityId, UserWithBoardRoles[]>);
 
-		const boardNodeAuthorizables = boardNodes.map((boardNode) => {
+		const boardNodeAuthorizables = boardNodes.map(async (boardNode) => {
 			const rootNode = boardNodeMap[boardNode.rootId];
 			const parentNode = boardNode.parentId ? boardNodeMap[boardNode.parentId] : undefined;
 			const users = usersMap[boardNode.id];
+			const boardSettings = await this.boardContextService.getBoardSettings(rootNode);
 			const boardNodeAuthorizable = new BoardNodeAuthorizable({
 				users,
 				id: boardNode.id,
 				boardNode,
 				rootNode,
 				parentNode,
+				boardSettings,
 			});
 			return boardNodeAuthorizable;
 		});

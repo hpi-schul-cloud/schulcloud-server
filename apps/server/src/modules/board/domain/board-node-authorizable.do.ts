@@ -21,6 +21,11 @@ export interface BoardNodeAuthorizableProps extends AuthorizableObject {
 	boardNode: AnyBoardNode;
 	rootNode: AnyBoardNode;
 	parentNode?: AnyBoardNode;
+	boardSettings: BoardSettings;
+}
+
+export interface BoardSettings {
+	features: string[];
 }
 
 export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizableProps> {
@@ -48,5 +53,9 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 
 	get rootNode(): AnyBoardNode {
 		return this.props.rootNode;
+	}
+
+	get boardSettings(): BoardSettings {
+		return this.props.boardSettings;
 	}
 }
