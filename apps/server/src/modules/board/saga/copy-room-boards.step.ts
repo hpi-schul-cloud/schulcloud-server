@@ -96,12 +96,6 @@ export class CopyRoomBoardsStep extends SagaStep<'copyRoomBoards'> {
 		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
 		copyDict.forEach((value, key) => map.set(key, value.id));
 
-		if (copyStatus.copyEntity instanceof ColumnBoard && copyStatus.originalEntity instanceof ColumnBoard) {
-			if (copyStatus.originalEntity.context.type === BoardExternalReferenceType.Room) {
-				map.set(copyStatus.originalEntity.context.id, copyStatus.copyEntity.context.id);
-			}
-		}
-
 		const elements = copyStatus.elements ?? [];
 		const updatedElements: CopyStatus[] = [];
 		for (const el of elements) {

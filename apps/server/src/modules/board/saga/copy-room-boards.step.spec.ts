@@ -10,6 +10,7 @@ import { columnBoardFactory } from '../testing';
 import { roomFactory } from '@modules/room/testing';
 import { EntityId } from '@shared/domain/types';
 import { AuthorizableObject } from '@shared/domain/domain-object';
+import { BoardExternalReferenceType } from '../domain';
 
 describe('CopyRoomBoardsStep', () => {
 	let module: TestingModule;
@@ -87,7 +88,13 @@ describe('CopyRoomBoardsStep', () => {
 				const targetRoom = roomFactory.build();
 				roomService.getSingleRoom.mockResolvedValueOnce(sourceRoom).mockResolvedValueOnce(targetRoom);
 
-				const boardCopy = columnBoardFactory.build({ title: 'Copied Board' });
+				const boardCopy = columnBoardFactory.build({
+					title: 'Copied Board',
+					context: {
+						type: BoardExternalReferenceType.Room,
+						id: targetRoom.id,
+					},
+				});
 				const copyStatus: CopyStatus = {
 					type: CopyElementType.COLUMNBOARD,
 					status: CopyStatusEnum.SUCCESS,
