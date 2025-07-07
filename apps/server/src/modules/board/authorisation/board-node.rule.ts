@@ -19,6 +19,8 @@ import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { isVideoConferenceElement } from '../domain';
+import { RoomFeatures } from '@modules/room/domain/type';
 
 @Injectable()
 export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
@@ -66,11 +68,19 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 			return this.hasPermissionForDrawingElement(userWithBoardRoles, context);
 		}
 
+		if (this.shouldProcessVideoConferenceElement(object)) {
+			return this.hasPermissionForVideoConferenceElement(userWithBoardRoles, context, object);
+		}
+
 		if (context.action === Action.write) {
 			return this.isBoardEditor(userWithBoardRoles);
 		}
 
 		return this.isBoardReader(userWithBoardRoles);
+	}
+
+	private isBoardAdmin(userWithBoardRoles: UserWithBoardRoles): boolean {
+		return userWithBoardRoles.roles.includes(BoardRoles.ADMIN);
 	}
 
 	private isBoardEditor(userWithBoardRoles: UserWithBoardRoles): boolean {
@@ -185,5 +195,27 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 
 	private isSubmissionItemCreator(userId: EntityId, submissionItem: SubmissionItem): boolean {
 		return submissionItem.userId === userId;
+	}
+
+	private shouldProcessVideoConferenceElement(boardNodeAuthorizable: BoardNodeAuthorizable): boolean {
+		return isVideoConferenceElement(boardNodeAuthorizable.boardNode);
+	}
+
+	private hasPermissionForVideoConferenceElement(
+		userWithBoardRoles: UserWithBoardRoles,
+		context: AuthorizationContext,
+		object: BoardNodeAuthorizable
+	): boolean {
+		if (context.action === Action.write) {
+			const isEditorAllowedToManageVideoConference = object.boardSettings.features.includes(
+				RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE
+			);
+			if (isEditorAllowedToManageVideoConference && this.isBoardEditor(userWithBoardRoles)) {
+				return true;
+			}
+			return this.isBoardAdmin(userWithBoardRoles);
+		}
+
+		return this.isBoardReader(userWithBoardRoles);
 	}
 }

@@ -23,6 +23,7 @@ import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
 import { ScopeInfo, VideoConferenceState } from '../uc/dto';
 import { VideoConferenceConfig } from '../video-conference-config';
+import { RoomFeatures } from '@modules/room/domain/type';
 
 type ConferenceResource = CourseEntity | Room | TeamEntity | VideoConferenceElement;
 
@@ -140,6 +141,12 @@ export class VideoConferenceService {
 			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
 
 			if (boardAuthorisedUser) {
+				const isEditorAllowedToManageVideoConference = boardDoAuthorizable.boardSettings.features.includes(
+					RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE
+				);
+				if (isEditorAllowedToManageVideoConference && boardAuthorisedUser?.roles.includes(BoardRoles.EDITOR)) {
+					return true;
+				}
 				return boardAuthorisedUser?.roles.includes(BoardRoles.ADMIN);
 			}
 
