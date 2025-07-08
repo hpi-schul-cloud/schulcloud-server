@@ -22,12 +22,7 @@
 	"SYNC_QUEUE_NAME": "test_ldap_queue",
 	"S3_KEY": "abcdefghijklmnop",
 	"FILES_STORAGE": {
-		"S3_ENDPOINT": "http://localhost:4568",
-		"S3_ACCESS_KEY_ID": "S3RVER",
-		"S3_SECRET_ACCESS_KEY": "S3RVER",
-		"S3_BUCKET": "schulcloud",
-		"S3_REGION": "eu-central-1",
-		"EXCHANGE": "files-storage"
+		"SERVICE_BASE_URL": "http://localhost:4444"
 	},
 	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
 	"IDENTITY_MANAGEMENT": {
@@ -39,6 +34,7 @@
 		"ADMIN_USER": "dbildungscloud",
 		"ADMIN_PASSWORD": "dBildungscloud"
 	},
+	"LOG_LEVEL" : "emerg",
 	"NEST_LOG_LEVEL": "error",
 	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",

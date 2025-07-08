@@ -137,6 +137,7 @@ describe('School Controller (API)', () => {
 						name: schoolYear.name,
 						startDate: schoolYear.startDate.toISOString(),
 						endDate: schoolYear.endDate.toISOString(),
+						courseCreationInNextYear: schoolYear.courseCreationInNextYear,
 					};
 				});
 
@@ -233,6 +234,48 @@ describe('School Controller (API)', () => {
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual(expectedResponse);
+			});
+		});
+	});
+
+	describe('getSchoolList', () => {
+		describe('when no user is logged in', () => {
+			it('should return 401', async () => {
+				const response = await testApiClient.get();
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when a user is logged in', () => {
+			const setup = async () => {
+				const schools = schoolEntityFactory.buildList(5);
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				await em.persistAndFlush([...schools, studentAccount, studentUser]);
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				const expectedResponse = schools.map((school) => {
+					return {
+						id: school.id,
+						name: school.name,
+					};
+				});
+
+				return { loggedInClient, expectedResponse };
+			};
+
+			it('should return school list', async () => {
+				const { loggedInClient, expectedResponse } = await setup();
+
+				const response = await loggedInClient.get();
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual(
+					expect.objectContaining({
+						data: expect.arrayContaining(expectedResponse) as unknown,
+					})
+				);
 			});
 		});
 	});

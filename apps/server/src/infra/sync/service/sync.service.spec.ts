@@ -3,8 +3,6 @@ import { faker } from '@faker-js/faker';
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InvalidTargetLoggable } from '../errors/invalid-target.loggable';
-import { VidisSyncStrategy } from '../media-licenses';
-import { MediaMetadataSyncStrategy } from '../media-metadata';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { TspSyncStrategy } from '../strategy/tsp/tsp-sync.strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
@@ -14,8 +12,6 @@ describe(SyncService.name, () => {
 	let module: TestingModule;
 	let service: SyncService;
 	let tspSyncStrategy: TspSyncStrategy;
-	let vidisSyncStrategy: VidisSyncStrategy;
-	let mediaMedataSyncStrategy: MediaMetadataSyncStrategy;
 	let logger: Logger;
 
 	beforeAll(async () => {
@@ -34,28 +30,6 @@ describe(SyncService.name, () => {
 					}),
 				},
 				{
-					provide: VidisSyncStrategy,
-					useValue: createMock<VidisSyncStrategy>({
-						getType(): SyncStrategyTarget {
-							return SyncStrategyTarget.VIDIS;
-						},
-						sync(): Promise<void> {
-							return Promise.resolve();
-						},
-					}),
-				},
-				{
-					provide: MediaMetadataSyncStrategy,
-					useValue: createMock<MediaMetadataSyncStrategy>({
-						getType(): SyncStrategyTarget {
-							return SyncStrategyTarget.MEDIA_METADATA;
-						},
-						sync(): Promise<void> {
-							return Promise.resolve();
-						},
-					}),
-				},
-				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -64,8 +38,6 @@ describe(SyncService.name, () => {
 
 		service = module.get(SyncService);
 		tspSyncStrategy = module.get(TspSyncStrategy);
-		vidisSyncStrategy = module.get(VidisSyncStrategy);
-		mediaMedataSyncStrategy = module.get(MediaMetadataSyncStrategy);
 		logger = module.get(Logger);
 	});
 
@@ -98,28 +70,21 @@ describe(SyncService.name, () => {
 
 		describe('when provided target is valid and synchronization is activated', () => {
 			const setup = () => {
-				const strategyMap = new Map<SyncStrategyTarget, SyncStrategy>([
-					[SyncStrategyTarget.TSP, tspSyncStrategy],
-					[SyncStrategyTarget.VIDIS, vidisSyncStrategy],
-					[SyncStrategyTarget.MEDIA_METADATA, mediaMedataSyncStrategy],
-				]);
+				const strategyMap = new Map<SyncStrategyTarget, SyncStrategy>([[SyncStrategyTarget.TSP, tspSyncStrategy]]);
 
 				Reflect.set(service, 'strategies', strategyMap);
 
 				return { strategyMap };
 			};
 
-			it.each([SyncStrategyTarget.TSP, SyncStrategyTarget.VIDIS, SyncStrategyTarget.MEDIA_METADATA])(
-				'call sync method of %s',
-				async (strategyTarget: SyncStrategyTarget) => {
-					const { strategyMap } = setup();
-					await service.startSync(strategyTarget);
+			it.each([SyncStrategyTarget.TSP])('call sync method of %s', async (strategyTarget: SyncStrategyTarget) => {
+				const { strategyMap } = setup();
+				await service.startSync(strategyTarget);
 
-					const strategy = strategyMap.get(strategyTarget) as SyncStrategy;
+				const strategy = strategyMap.get(strategyTarget) as SyncStrategy;
 
-					expect(strategy.sync).toHaveBeenCalled();
-				}
-			);
+				expect(strategy.sync).toHaveBeenCalled();
+			});
 		});
 	});
 });

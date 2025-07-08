@@ -13,10 +13,16 @@ import { ExternalToolModule } from '@modules/tool';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
+import { InstanceModule } from '../instance';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';
-import { ExternalToolsSeedDataService, MediaSourcesSeedDataService, SystemsSeedDataService } from './service';
+import {
+	ExternalToolsSeedDataService,
+	InstancesSeedDataService,
+	MediaSourcesSeedDataService,
+	SystemsSeedDataService,
+} from './service';
 import { DatabaseManagementService } from './service/database-management.service';
 import { DatabaseManagementUc } from './uc/database-management.uc';
 
@@ -30,6 +36,7 @@ const baseImports = [
 	SystemModule,
 	ExternalToolModule,
 	OauthProviderServiceModule,
+	InstanceModule,
 ];
 
 const imports = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
@@ -48,6 +55,7 @@ const providers = [
 	MediaSourcesSeedDataService,
 	SystemsSeedDataService,
 	ExternalToolsSeedDataService,
+	InstancesSeedDataService,
 ];
 
 const controllers = [DatabaseManagementController];

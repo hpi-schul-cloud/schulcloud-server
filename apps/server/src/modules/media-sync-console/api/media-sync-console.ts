@@ -1,8 +1,8 @@
 import { ConsoleWriterService } from '@infra/console';
-import { MediaMetadataSyncUc } from '@modules/media-sync-console/uc/media-metadata-sync.uc';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { Console, Command } from 'nestjs-console';
-import { MediaMetadataSyncOptions } from '../types';
+import { MediaSourceSyncOptions } from '../types';
+import { MediaSourceSyncUc } from '../uc';
 
 @Console({
 	command: 'media',
@@ -11,7 +11,7 @@ import { MediaMetadataSyncOptions } from '../types';
 export class MediaSyncConsole {
 	constructor(
 		private readonly consoleWriter: ConsoleWriterService,
-		private readonly mediaMetadataSyncUc: MediaMetadataSyncUc
+		private readonly mediaSourceSyncUc: MediaSourceSyncUc
 	) {}
 
 	@Command({
@@ -25,7 +25,7 @@ export class MediaSyncConsole {
 			},
 		],
 	})
-	public async syncAllMediaMetadata(options: MediaMetadataSyncOptions): Promise<void> {
+	public async syncAllMediaMetadata(options: MediaSourceSyncOptions): Promise<void> {
 		let verifiedDataFormat: MediaSourceDataFormat;
 		if (this.isMediaSourceDataFormatValue(options.dataFormat)) {
 			verifiedDataFormat = MediaSourceDataFormat[options.dataFormat];
@@ -36,9 +36,36 @@ export class MediaSyncConsole {
 
 		this.consoleWriter.info(`Media metadata sync started for "${verifiedDataFormat}" media source`);
 
-		await this.mediaMetadataSyncUc.syncAllMediaMetadata(options.dataFormat);
+		await this.mediaSourceSyncUc.syncAllMediaMetadata(options.dataFormat);
 
 		this.consoleWriter.info(`Media metadata sync ended for "${verifiedDataFormat}" media source`);
+	}
+
+	@Command({
+		command: 'activations',
+		description: 'Start the media activations synchronization for the specified media source.',
+		options: [
+			{
+				flags: '-df, --dataFormat <value>',
+				description: 'Media source data format of the media to be synced',
+				required: true,
+			},
+		],
+	})
+	public async syncAllMediaActivations(options: MediaSourceSyncOptions): Promise<void> {
+		let verifiedDataFormat: MediaSourceDataFormat;
+		if (this.isMediaSourceDataFormatValue(options.dataFormat)) {
+			verifiedDataFormat = MediaSourceDataFormat[options.dataFormat];
+		} else {
+			this.consoleWriter.error(`Unknown media source data format "${options.dataFormat}"`);
+			return;
+		}
+
+		this.consoleWriter.info(`Media activations sync started for "${verifiedDataFormat}" media source`);
+
+		await this.mediaSourceSyncUc.syncAllMediaActivations(options.dataFormat);
+
+		this.consoleWriter.info(`Media activations sync ended for "${verifiedDataFormat}" media source`);
 	}
 
 	private isMediaSourceDataFormatValue(value: string): value is MediaSourceDataFormat {

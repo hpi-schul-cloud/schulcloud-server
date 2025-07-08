@@ -1,5 +1,5 @@
 import { DomainErrorHandler, ErrorModule } from '@core/error';
-import { LegacyLogger, LoggerModule } from '@core/logger';
+import { Logger, LoggerModule } from '@core/logger';
 import { DynamicModule, Module } from '@nestjs/common';
 import { S3Config } from './interface';
 import { S3ClientFactory } from './s3-client.factory';
@@ -10,12 +10,9 @@ export class S3ClientModule {
 		const providers = configs.flatMap((config) => [
 			{
 				provide: config.connectionName,
-				useFactory: (
-					clientFactory: S3ClientFactory,
-					legacyLogger: LegacyLogger,
-					domainErrorHandler: DomainErrorHandler
-				) => clientFactory.build(config, legacyLogger, domainErrorHandler),
-				inject: [S3ClientFactory, LegacyLogger, DomainErrorHandler],
+				useFactory: (clientFactory: S3ClientFactory, logger: Logger, domainErrorHandler: DomainErrorHandler) =>
+					clientFactory.build(config, logger, domainErrorHandler),
+				inject: [S3ClientFactory, Logger, DomainErrorHandler],
 			},
 		]);
 

@@ -11,24 +11,27 @@ import { ImportUserMatchCreatorScope } from '../domain/interface';
 import { ImportUser } from '../entity';
 
 export class ImportUserScope extends Scope<ImportUser> {
-	bySchool(school: SchoolEntity): ImportUserScope {
-		const schoolId = school._id;
-		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');
+	public bySchool(school: SchoolEntity): ImportUserScope {
+		if (!ObjectId.isValid(school._id)) throw new Error('invalid school id');
+
 		this.addQuery({ school });
+
 		return this;
 	}
 
-	byUserMatch(user: User): ImportUserScope {
-		const userId = user._id;
-		if (!ObjectId.isValid(userId)) throw new Error('invalid user match id');
+	public byUserMatch(user: User): ImportUserScope {
+		if (!ObjectId.isValid(user._id)) throw new Error('invalid user match id');
+
 		this.addQuery({ user });
+
 		return this;
 	}
 
-	byFirstName(firstName: string): ImportUserScope {
+	public byFirstName(firstName: string): ImportUserScope {
 		const escapedFirstName = firstName.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+
 		// TODO make db agnostic
-		if (StringValidator.isNotEmptyString(escapedFirstName, true))
+		if (StringValidator.isNotEmptyStringWhenTrimed(escapedFirstName))
 			this.addQuery({
 				firstName: {
 					// @ts-ignore
@@ -36,14 +39,16 @@ export class ImportUserScope extends Scope<ImportUser> {
 					$options: 'i',
 				},
 			});
+
 		return this;
 	}
 
-	byLastName(lastName: string): ImportUserScope {
+	public byLastName(lastName: string): ImportUserScope {
 		// TODO filter does not find café when searching with cafe
 		const escapedLastName = lastName.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+
 		// TODO make db agnostic
-		if (StringValidator.isNotEmptyString(escapedLastName, true))
+		if (StringValidator.isNotEmptyStringWhenTrimed(escapedLastName))
 			this.addQuery({
 				lastName: {
 					// @ts-ignore
@@ -51,15 +56,17 @@ export class ImportUserScope extends Scope<ImportUser> {
 					$options: 'i',
 				},
 			});
+
 		return this;
 	}
 
 	/** filters the login name case insensitive for contains which is part of the dn */
-	byLoginName(loginName: string): ImportUserScope {
+	public byLoginName(loginName: string): ImportUserScope {
 		// TODO filter does not find café when searching with cafe
 		const escapedLoginName = loginName.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+
 		// TODO make db agnostic
-		if (StringValidator.isNotEmptyString(escapedLoginName, true))
+		if (StringValidator.isNotEmptyStringWhenTrimed(escapedLoginName))
 			this.addQuery({
 				ldapDn: {
 					// @ts-ignore
@@ -67,10 +74,11 @@ export class ImportUserScope extends Scope<ImportUser> {
 					$options: 'i',
 				},
 			});
+
 		return this;
 	}
 
-	byRole(roleName: RoleName): ImportUserScope {
+	public byRole(roleName: RoleName): ImportUserScope {
 		switch (roleName) {
 			case RoleName.ADMINISTRATOR:
 				this.addQuery({ roleNames: { $in: [RoleName.ADMINISTRATOR] } });
@@ -84,13 +92,15 @@ export class ImportUserScope extends Scope<ImportUser> {
 			default:
 				throw new Error('unexpected role name');
 		}
+
 		return this;
 	}
 
-	byClasses(classes: string): ImportUserScope {
+	public byClasses(classes: string): ImportUserScope {
 		const escapedClasses = classes.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+
 		// TODO make db agnostic
-		if (StringValidator.isNotEmptyString(escapedClasses, true))
+		if (StringValidator.isNotEmptyStringWhenTrimed(escapedClasses))
 			this.addQuery({
 				classNames: {
 					// @ts-ignore
@@ -98,10 +108,11 @@ export class ImportUserScope extends Scope<ImportUser> {
 					$options: 'i',
 				},
 			});
+
 		return this;
 	}
 
-	byMatches(matches: ImportUserMatchCreatorScope[]) {
+	public byMatches(matches: ImportUserMatchCreatorScope[]): ImportUserScope {
 		const queries = matches
 			.map((match) => {
 				if (match === ImportUserMatchCreatorScope.MANUAL) return { matchedBy: 'admin' };
@@ -110,12 +121,15 @@ export class ImportUserScope extends Scope<ImportUser> {
 				return null;
 			})
 			.filter((match) => match != null);
+
 		if (queries.length > 0) this.addQuery({ $or: queries as FilterQuery<ImportUser>[] });
+
 		return this;
 	}
 
-	isFlagged(flagged = true) {
+	public isFlagged(flagged = true): ImportUserScope {
 		if (flagged === true) this.addQuery({ flagged: true });
+
 		return this;
 	}
 }
