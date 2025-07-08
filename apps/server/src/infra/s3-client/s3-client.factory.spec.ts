@@ -1,7 +1,7 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { ConfiguredRetryStrategy, RETRY_MODES } from '@aws-sdk/util-retry';
 import { DomainErrorHandler } from '@core/error';
-import { LegacyLogger } from '@core/logger';
+import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { S3Config } from './interface';
 import { S3ClientAdapter } from './s3-client.adapter';
@@ -20,7 +20,7 @@ const setup = () => {
 		accessKeyId: '',
 		secretAccessKey: '',
 	};
-	const logger = createMock<LegacyLogger>();
+	const logger = createMock<Logger>();
 	const configuration = createMock<S3Config>();
 	const errorHandler = createMock<DomainErrorHandler>();
 	const client = createMock<S3Client>();

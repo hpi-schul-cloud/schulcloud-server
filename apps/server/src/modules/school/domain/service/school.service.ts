@@ -59,6 +59,26 @@ export class SchoolService {
 		return schoolsForExternalInvite;
 	}
 
+	public async getSchoolList(
+		options: IFindOptions<SchoolProps> = {},
+		federalStateId?: EntityId
+	): Promise<{ schools: School[]; count: number }> {
+		const { schools, count } = await this.getExternalSchools(options, federalStateId);
+
+		return { schools, count };
+	}
+
+	private async getExternalSchools(
+		options: IFindOptions<SchoolProps> = {},
+		federalStateId?: EntityId
+	): Promise<{ schools: School[]; count: number }> {
+		const result = await this.schoolRepo.getSchoolList(options, federalStateId);
+
+		const schools = result.schools.map((school) => this.addInstanceFeatures(school));
+
+		return { schools, count: result.count };
+	}
+
 	public async getCurrentYear(schoolId: EntityId) {
 		const school = await this.getSchoolById(schoolId);
 		return school.currentYear;
