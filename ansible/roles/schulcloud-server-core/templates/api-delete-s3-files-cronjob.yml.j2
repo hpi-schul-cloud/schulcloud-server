@@ -33,8 +33,6 @@ spec:
                 name: api-configmap
             - secretRef:
                 name: api-secret
-            - secretRef:
-                name: api-files-secret
             command: ['/bin/sh', '-c']
             args: ['npm run nest:start:console:prod -- files cleanup-job 7']
             resources:
