@@ -1,5 +1,5 @@
 import { Logger } from '@core/logger';
-import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '@infra/tsp-client';
+import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler, RobjExportSchule } from '@infra/tsp-client';
 import { ExternalClassDto, OauthDataDto } from '@modules/provisioning';
 import { BadDataLoggableException } from '@modules/provisioning/loggable';
 import { TspProvisioningService } from '@modules/provisioning/service/tsp-provisioning.service';
@@ -36,11 +36,21 @@ type TspSchoolData = {
 	tspClasses: RobjExportKlasse[];
 };
 
+type RobjExportSchuleValid = RobjExportSchule & {
+	schuleNummer: string;
+};
+
+type SchoolSyncResult = { school: School; created: boolean };
+
+function isRobjExportSchuleValid(school: RobjExportSchule): school is RobjExportSchuleValid {
+	return typeof school.schuleName === 'string';
+}
+
 @Injectable()
 export class TspSyncStrategy extends SyncStrategy {
 	constructor(
 		private readonly logger: Logger,
-		private readonly tspSyncService: TspSchoolService,
+		private readonly tspSchoolService: TspSchoolService,
 		private readonly tspFetchService: TspFetchService,
 		private readonly tspOauthDataMapper: TspOauthDataMapper,
 		private readonly configService: ConfigService<TspSyncConfig, true>,
@@ -61,54 +71,75 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		await this.syncTspSchools(system);
 
-		const schools = await this.tspSyncService.findAllSchoolsForSystem(system);
-
-		await this.syncDataOfSyncedTspSchools(system, schools);
+		await this.syncUsersAndClasses(system);
 	}
 
-	private async syncTspSchools(system: System): Promise<School[]> {
+	private async syncTspSchools(system: System): Promise<void> {
 		const schoolDaysToFetch = this.configService.getOrThrow('TSP_SYNC_SCHOOL_DAYS_TO_FETCH', { infer: true });
 		const tspSchools = await this.tspFetchService.fetchTspSchools(system, schoolDaysToFetch);
 		this.logger.info(new TspSchoolsFetchedLoggable(tspSchools.length, schoolDaysToFetch));
 
-		const schoolLimit = this.configService.getOrThrow('TSP_SYNC_SCHOOL_LIMIT', { infer: true });
-		const schoolLimitFn = pLimit(schoolLimit);
+		const validSchools = this.filterValidTspSchools(tspSchools);
 
-		const schoolPromises = tspSchools.map((tspSchool) =>
-			schoolLimitFn(async () => {
-				if (!tspSchool.schuleNummer) {
-					this.logger.warning(new TspSchulnummerMissingLoggable(tspSchool.schuleName));
-					return null;
-				}
+		const schoolResults = await this.updateOrCreateSchoolsBatched(validSchools, system);
 
-				const existingSchool = await this.tspSyncService.findSchool(system, tspSchool.schuleNummer);
-
-				if (existingSchool) {
-					const updatedSchool = await this.tspSyncService.updateSchool(existingSchool, tspSchool.schuleName);
-					return { school: updatedSchool, created: false };
-				}
-
-				const createdSchool = await this.tspSyncService.createSchool(
-					system,
-					tspSchool.schuleNummer,
-					tspSchool.schuleName ?? ''
-				);
-				return { school: createdSchool, created: true };
-			})
-		);
-
-		const scSchools = await Promise.all(schoolPromises);
-
-		const total = tspSchools.length;
-		const totalProcessed = scSchools.filter((scSchool) => scSchool != null).length;
-		const createdSchools = scSchools.filter((scSchool) => scSchool != null && scSchool.created).length;
-		const updatedSchools = scSchools.filter((scSchool) => scSchool != null && !scSchool.created).length;
-		this.logger.info(new TspSchoolsSyncedLoggable(total, totalProcessed, createdSchools, updatedSchools));
-
-		return scSchools.filter((scSchool) => scSchool != null).map((scSchool) => scSchool.school);
+		this.logMetrics(tspSchools, schoolResults);
 	}
 
-	private async syncDataOfSyncedTspSchools(system: System, schools: School[]): Promise<void> {
+	private filterValidTspSchools(tspSchools: RobjExportSchule[]): RobjExportSchuleValid[] {
+		const withoutSchulnummer = tspSchools.filter((tspSchool) => !tspSchool.schuleNummer);
+		withoutSchulnummer.forEach((tspSchool) => {
+			this.logger.warning(new TspSchulnummerMissingLoggable(tspSchool.schuleName));
+		});
+
+		const validSchools = tspSchools.filter(isRobjExportSchuleValid);
+
+		return validSchools;
+	}
+
+	private async updateOrCreateSchoolsBatched(
+		tspSchools: RobjExportSchuleValid[],
+		system: System
+	): Promise<SchoolSyncResult[]> {
+		const schoolLimit = this.configService.getOrThrow('TSP_SYNC_SCHOOL_LIMIT', { infer: true });
+		const promiseLimiter = pLimit(schoolLimit);
+
+		const schoolPromises = tspSchools.map((tspSchool) =>
+			promiseLimiter(() => this.updateOrCreateSchool(tspSchool, system))
+		);
+		const schools = await Promise.all(schoolPromises);
+
+		return schools;
+	}
+
+	private async updateOrCreateSchool(tspSchool: RobjExportSchuleValid, system: System): Promise<SchoolSyncResult> {
+		const existingSchool = await this.tspSchoolService.findSchool(system, tspSchool.schuleNummer);
+
+		if (existingSchool) {
+			const updatedSchool = await this.tspSchoolService.updateSchool(existingSchool, tspSchool.schuleName);
+			return { school: updatedSchool, created: false };
+		}
+
+		const createdSchool = await this.tspSchoolService.createSchool(
+			system,
+			tspSchool.schuleNummer,
+			tspSchool.schuleName ?? ''
+		);
+
+		return { school: createdSchool, created: true };
+	}
+
+	private logMetrics(tspSchools: RobjExportSchule[], scSchools: SchoolSyncResult[]): void {
+		const total = tspSchools.length;
+		const totalProcessed = scSchools.length;
+		const createdSchools = scSchools.filter((scSchool) => scSchool.created).length;
+		const updatedSchools = scSchools.filter((scSchool) => !scSchool.created).length;
+
+		this.logger.info(new TspSchoolsSyncedLoggable(total, totalProcessed, createdSchools, updatedSchools));
+	}
+
+	private async syncUsersAndClasses(system: System): Promise<void> {
+		const schools = await this.tspSchoolService.findAllSchoolsForSystem(system);
 		const { tspTeachers, tspStudents, tspClasses } = await this.fetchSchoolData(system);
 
 		const schoolsByExternalId = new Map<string, School>();
