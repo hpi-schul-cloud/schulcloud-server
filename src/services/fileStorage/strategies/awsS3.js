@@ -65,14 +65,14 @@ const chooseProvider = async (schoolId) => {
 
 const getS3 = (storageProvider, awsClientHelper) => {
 	const S3_KEY = Configuration.get('S3_KEY');
-	const decryptedSecretAcceessKey = decryptAES(storageProvider.secretAccessKey, S3_KEY);
+	storageProvider.secretAccessKey = decryptAES(storageProvider.secretAccessKey, S3_KEY);
 
 	const config = new awsClientHelper.Config({
 		signatureVersion: 'v4',
 		s3ForcePathStyle: true,
 		sslEnabled: true,
 		accessKeyId: storageProvider.accessKeyId,
-		secretAccessKey: decryptedSecretAcceessKey,
+		secretAccessKey: storageProvider.secretAccessKey,
 		region: storageProvider.region,
 		endpointUrl: storageProvider.endpointUrl,
 	});
