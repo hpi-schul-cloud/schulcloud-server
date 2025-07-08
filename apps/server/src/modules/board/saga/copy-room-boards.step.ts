@@ -5,7 +5,7 @@ import { RoomService } from '@modules/room';
 import { ModuleName, SagaService, SagaStep } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { BoardExternalReferenceType, ColumnBoard } from '../domain';
+import { BoardExternalReferenceType, type ColumnBoard } from '../domain';
 import { ColumnBoardService } from '../service';
 
 @Injectable()
@@ -85,27 +85,11 @@ export class CopyRoomBoardsStep extends SagaStep<'copyRoomBoards'> {
 			elements: copyStatuses,
 		};
 
-		await this.swapLinkedIdsInBoards(status);
+		await this.columnBoardService.swapLinkedIdsInBoards(status);
 
 		return copyStatuses;
 	}
 
 	// TODO similar method already in learnroom module, consider refactoring for keeping DRY
-	private async swapLinkedIdsInBoards(copyStatus: CopyStatus): Promise<CopyStatus> {
-		const map = new Map<EntityId, EntityId>();
-		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
-		copyDict.forEach((value, key) => map.set(key, value.id));
 
-		const elements = copyStatus.elements ?? [];
-		const updatedElements: CopyStatus[] = [];
-		for (const el of elements) {
-			if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {
-				el.copyEntity = await this.columnBoardService.swapLinkedIds(el.copyEntity?.id, map);
-			}
-			updatedElements.push(el);
-		}
-
-		copyStatus.elements = updatedElements;
-		return copyStatus;
-	}
 }

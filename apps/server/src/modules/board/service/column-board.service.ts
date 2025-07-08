@@ -1,6 +1,7 @@
-import { CopyStatus } from '@modules/copy-helper';
+import { CopyElementType, CopyStatus } from '@modules/copy-helper';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { CopyHelperService } from '@modules/copy-helper';
 import {
 	AnyBoardNode,
 	BoardExternalReference,
@@ -19,7 +20,8 @@ export class ColumnBoardService {
 		private readonly boardNodeRepo: BoardNodeRepo,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly columnBoardCopyService: ColumnBoardCopyService,
-		private readonly columnBoardLinkService: ColumnBoardLinkService
+		private readonly columnBoardLinkService: ColumnBoardLinkService,
+		private readonly copyHelperService: CopyHelperService
 	) {}
 
 	public async findById(id: EntityId, depth?: number): Promise<ColumnBoard> {
@@ -60,10 +62,25 @@ export class ColumnBoardService {
 		return copyStatus;
 	}
 
-	public async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>): Promise<ColumnBoard> {
-		const board = await this.columnBoardLinkService.swapLinkedIds(boardId, idMap);
+	public async swapLinkedIdsInBoards(copyStatus: CopyStatus, map?: Map<EntityId, EntityId>): Promise<CopyStatus> {
+		if (!map) {
+			map = new Map<EntityId, EntityId>();
+		}
+		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
+		copyDict.forEach((value, key) => map.set(key, value.id));
 
-		return board;
+		const elements = copyStatus.elements ?? [];
+		const updatedElements = await Promise.all(
+			elements.map(async (el) => {
+				if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {
+					el.copyEntity = await this.swapLinkedIds(el.copyEntity?.id, map);
+				}
+				return el;
+			})
+		);
+
+		copyStatus.elements = updatedElements;
+		return copyStatus;
 	}
 
 	public async createColumnBoard(props: ColumnBoardProps): Promise<ColumnBoard> {
@@ -72,5 +89,11 @@ export class ColumnBoardService {
 		await this.boardNodeRepo.save(columnBoard);
 
 		return columnBoard;
+	}
+
+	public async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>): Promise<ColumnBoard> {
+		const board = await this.columnBoardLinkService.swapLinkedIds(boardId, idMap);
+
+		return board;
 	}
 }
