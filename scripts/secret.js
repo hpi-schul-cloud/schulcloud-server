@@ -1,10 +1,10 @@
-const crypto = require('crypto-js');
+const { decryptAES, encryptAES } = require('@raisinten/aes-crypto-js');
 const args = require('args');
 
 args
 	.option('secret', 'the secret environment variable')
 	.option('encrypt', 'the payload (to encrypt)')
-	.option('decrypt', 'the encrypted payload (to decrypt)')
+	.option('decrypt', 'the encrypted payload (to decrypt)');
 
 const options = args.parse(process.argv);
 
@@ -14,7 +14,7 @@ if (!options.secret || !(options.encrypt || options.decrypt)) {
 }
 
 if (options.encrypt) {
-	console.log(crypto.AES.encrypt(options.e, options.s).toString())
+	console.log(encryptAES(options.e, options.s));
 } else {
-	console.log(crypto.AES.decrypt(options.d, options.s).toString(crypto.enc.Utf8))
+	console.log(decryptAES(options.d, options.s));
 }
