@@ -40,7 +40,7 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 		if (action === Action.read) {
 			return permissionsThisUserHas.includes(Permission.ROOM_LIST_CONTENT);
 		}
-		return permissionsThisUserHas.includes(Permission.ROOM_CONTENT_EDIT);
+		return permissionsThisUserHas.includes(Permission.ROOM_EDIT_CONTENT);
 	}
 
 	private hasAccessToSchool(user: User, schoolId: string): boolean {

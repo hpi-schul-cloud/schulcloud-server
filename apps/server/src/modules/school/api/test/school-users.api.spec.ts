@@ -16,6 +16,8 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { TestConfigHelper } from '@testing/test-config.helper';
 import { SchoolUserListResponse } from '../dto';
+import { roleFactory } from '@modules/role/testing';
+import { RoleName } from '@modules/role';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;
@@ -155,26 +157,50 @@ describe('School Controller (API)', () => {
 		});
 
 		describe('when user has no permission to view teachers', () => {
-			const setup = async () => {
-				const school = schoolEntityFactory.build();
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
-				const teacherRole = studentUser.roles[0];
-				const teachersOfSchool = userFactory.buildList(3, { school, roles: [teacherRole] });
+			const setup = async (config: { sameSchool: boolean }) => {
+				const teachersSchool = schoolEntityFactory.build();
+				const userSchool = config.sameSchool ? teachersSchool : schoolEntityFactory.build();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({
+					school: userSchool,
+				});
+				const studentRole = studentUser.roles[0];
+				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
+				const teachersOfSchool = userFactory.buildList(3, { school: teachersSchool, roles: [studentRole] });
 
-				await em.persistAndFlush([studentAccount, studentUser, ...teachersOfSchool]);
+				await em.persistAndFlush([
+					studentAccount,
+					studentUser,
+					...teachersOfSchool,
+					studentRole,
+					teacherRole,
+					teachersSchool,
+					userSchool,
+				]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
-				return { loggedInClient, studentUser, teachersOfSchool, school };
+				return { loggedInClient, studentUser, teachersOfSchool, school: teachersSchool };
 			};
 
-			it('should return 403', async () => {
-				const { loggedInClient, school } = await setup();
+			describe('when user is from different school', () => {
+				it('should return 401', async () => {
+					const { loggedInClient, school } = await setup({ sameSchool: false });
 
-				const response = await loggedInClient.get(`${school.id}/teachers`);
+					const response = await loggedInClient.get(`${school.id}/teachers`);
 
-				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+					expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				});
+			});
+
+			describe('when user is from same school', () => {
+				it('should return 200', async () => {
+					const { loggedInClient, school } = await setup({ sameSchool: true });
+
+					const response = await loggedInClient.get(`${school.id}/teachers`);
+
+					expect(response.status).toEqual(HttpStatus.OK);
+				});
 			});
 		});
 

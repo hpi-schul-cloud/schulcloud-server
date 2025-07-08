@@ -107,6 +107,7 @@ export const teacherPermissions = [
 	Permission.CONTEXT_TOOL_ADMIN,
 	Permission.SCHOOL_CREATE_ROOM,
 	Permission.TEACHER_LIST,
+	Permission.SCHOOL_LIST_DISCOVERABLE_TEACHERS,
 ];
 
 export const adminPermissions = [
