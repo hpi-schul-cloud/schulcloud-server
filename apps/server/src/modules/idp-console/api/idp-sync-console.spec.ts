@@ -1,9 +1,7 @@
+import { createMock } from '@golevelup/ts-jest';
+import { ConsoleWriterService } from '@infra/console';
 import { Test, TestingModule } from '@nestjs/testing';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ObjectId } from 'bson';
-import { IdpConsoleModule } from '../idp-console.app.module';
-import { TEST_ENTITIES } from '../idp.entity.imports';
 import { UsersSyncOptionsBuilder } from '../testing';
 import { IdpSyncConsole } from './idp-sync-console';
 import { SystemType } from './interface';
@@ -17,11 +15,21 @@ describe(IdpSyncConsole.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				IdpConsoleModule,
-				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
+			providers: [
+				IdpSyncConsole,
+				{
+					provide: ConsoleWriterService,
+					useValue: createMock<ConsoleWriterService>(),
+				},
+				{
+					provide: SynchronizationUc,
+					useValue: createMock<SynchronizationUc>(),
+				},
 			],
 		}).compile();
+
+		const app = module.createNestApplication();
+		await app.init();
 
 		console = module.get(IdpSyncConsole);
 		synchronizationUc = module.get(SynchronizationUc);
