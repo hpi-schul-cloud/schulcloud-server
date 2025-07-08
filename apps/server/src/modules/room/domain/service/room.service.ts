@@ -32,7 +32,7 @@ export class RoomService {
 			name: props.name,
 			color: props.color,
 			schoolId: props.schoolId,
-			features: props.features ?? undefined,
+			features: props.features,
 			// make sure that the dates are not null at runtime
 			startDate: props.startDate ?? undefined,
 			endDate: props.endDate ?? undefined,
@@ -58,7 +58,7 @@ export class RoomService {
 
 		room.name = props.name;
 		room.color = props.color;
-		room.features = props.features ?? undefined;
+		room.features = props.features;
 		// make sure that the dates are not null at runtime
 		room.startDate = props.startDate ?? undefined;
 		room.endDate = props.endDate ?? undefined;
@@ -73,7 +73,7 @@ export class RoomService {
 	}
 
 	public canEditorManageVideoconferences(room: Room): boolean {
-		return room.features?.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE) ?? false;
+		return room.features.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE);
 	}
 
 	private validateTimeSpan(props: RoomCreateProps | RoomUpdateProps, roomId: string): void {

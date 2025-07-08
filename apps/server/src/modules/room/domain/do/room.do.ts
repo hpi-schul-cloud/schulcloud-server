@@ -9,7 +9,7 @@ export interface RoomProps extends AuthorizableObject {
 	startDate?: Date;
 	endDate?: Date;
 	schoolId: EntityId;
-	features?: RoomFeatures[];
+	features: RoomFeatures[];
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -76,11 +76,11 @@ export class Room extends DomainObject<RoomProps> {
 		return this.props.updatedAt;
 	}
 
-	get features(): RoomFeatures[] | undefined {
+	get features(): RoomFeatures[] {
 		return this.props.features;
 	}
 
-	set features(value: RoomFeatures[] | undefined) {
+	set features(value: RoomFeatures[]) {
 		this.props.features = value;
 	}
 }

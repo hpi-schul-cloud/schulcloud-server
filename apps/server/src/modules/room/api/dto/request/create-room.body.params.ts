@@ -43,13 +43,11 @@ export class CreateRoomBodyParams implements Omit<RoomCreateProps, 'schoolId'> {
 	})
 	endDate?: Date;
 
-	@IsOptional()
-	@NullToUndefined()
-	@ApiPropertyOptional({
+	@ApiProperty({
 		description: 'The features of the room',
 		enum: RoomFeatures,
 		enumName: 'RoomFeatures',
+		isArray: true,
 	})
-	@IsEnum(RoomFeatures)
-	features?: RoomFeatures[];
+	features!: RoomFeatures[];
 }

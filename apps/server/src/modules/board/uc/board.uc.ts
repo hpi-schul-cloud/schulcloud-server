@@ -28,7 +28,6 @@ import {
 	ColumnBoardService,
 } from '../service';
 import { StorageLocationReference } from '../service/internal';
-import { RoomFeatures } from '@modules/room/domain/type';
 
 @Injectable()
 export class BoardUc {

@@ -50,7 +50,7 @@ export class CopyRoomStep extends SagaStep<'copyRoom'> {
 			startDate: originalRoom.startDate,
 			endDate: originalRoom.endDate,
 			schoolId: user.school.id,
-			features: undefined,
+			features: [],
 		});
 		await this.roomMembershipService.createNewRoomMembership(roomCopied.id, userId);
 

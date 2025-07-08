@@ -26,6 +26,6 @@ export class RoomEntity extends BaseEntityWithTimestamps implements RoomProps {
 	@Property({ persist: false })
 	domainObject: Room | undefined;
 
-	@Enum({ nullable: true, array: true })
-	features?: RoomFeatures[];
+	@Property({ nullable: false })
+	features!: RoomFeatures[];
 }

@@ -41,7 +41,7 @@ export class BoardContextService {
 		}
 
 		if (rootNode.context.type === BoardExternalReferenceType.Room) {
-			const roomFeatures = (await this.getFeaturesForRoom(rootNode.context.id)) ?? [];
+			const roomFeatures = await this.getFeaturesForRoom(rootNode.context.id);
 			const canRoomEditorManageVideoconference = roomFeatures.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE);
 			return {
 				canRoomEditorManageVideoconference,
@@ -130,10 +130,9 @@ export class BoardContextService {
 		return [];
 	}
 
-	private async getFeaturesForRoom(roomId: EntityId): Promise<RoomFeatures[] | undefined> {
+	private async getFeaturesForRoom(roomId: EntityId): Promise<RoomFeatures[]> {
 		const room = await this.roomService.getSingleRoom(roomId);
-		const roomFeatures = room.features;
 
-		return roomFeatures;
+		return room.features;
 	}
 }
