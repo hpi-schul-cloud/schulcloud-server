@@ -87,7 +87,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	private isBoardReader(userWithBoardRoles: UserWithBoardRoles): boolean {
-		return userWithBoardRoles.roles.includes(BoardRoles.READER) || userWithBoardRoles.roles.includes(BoardRoles.EDITOR);
+		return [BoardRoles.READER, BoardRoles.EDITOR].some((role) => userWithBoardRoles.roles.includes(role));
 	}
 
 	private shouldProcessDrawingElementFile(
