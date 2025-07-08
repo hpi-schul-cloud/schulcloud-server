@@ -20,7 +20,6 @@ import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { isVideoConferenceElement } from '../domain';
-import { RoomFeatures } from '@modules/room/domain/type';
 
 @Injectable()
 export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
@@ -31,45 +30,45 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		authorisationInjectionService.injectAuthorizationRule(this);
 	}
 
-	public isApplicable(user: User, object: unknown): boolean {
+	public isApplicable(object: unknown): boolean {
 		const isMatched = object instanceof BoardNodeAuthorizable;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, object: BoardNodeAuthorizable, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, authorizable: BoardNodeAuthorizable, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		if (!hasPermission) {
 			return false;
 		}
 
-		const userWithBoardRoles = object.users.find(({ userId }) => userId === user.id);
+		const userWithBoardRoles = authorizable.users.find(({ userId }) => userId === user.id);
 		if (!userWithBoardRoles) {
 			return false;
 		}
 
 		if (
-			object.rootNode instanceof ColumnBoard &&
-			!object.rootNode.isVisible &&
+			authorizable.rootNode instanceof ColumnBoard &&
+			!authorizable.rootNode.isVisible &&
 			!this.isBoardEditor(userWithBoardRoles)
 		) {
 			return false;
 		}
 
-		if (this.shouldProcessSubmissionItem(object)) {
-			return this.hasPermissionForSubmissionItem(user, userWithBoardRoles, object, context);
+		if (this.shouldProcessSubmissionItem(authorizable)) {
+			return this.hasPermissionForSubmissionItem(userWithBoardRoles, authorizable, context);
 		}
 
-		if (this.shouldProcessDrawingElementFile(object, context)) {
+		if (this.shouldProcessDrawingElementFile(authorizable, context)) {
 			return this.hasPermissionForDrawingElementFile(userWithBoardRoles);
 		}
 
-		if (this.shouldProcessDrawingElement(object)) {
+		if (this.shouldProcessDrawingElement(authorizable)) {
 			return this.hasPermissionForDrawingElement(userWithBoardRoles, context);
 		}
 
-		if (this.shouldProcessVideoConferenceElement(object)) {
-			return this.hasPermissionForVideoConferenceElement(userWithBoardRoles, context, object);
+		if (this.shouldProcessVideoConferenceElement(authorizable)) {
+			return this.hasPermissionForVideoConferenceElement(userWithBoardRoles, context, authorizable);
 		}
 
 		if (context.action === Action.write) {
@@ -129,7 +128,6 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	private hasPermissionForSubmissionItem(
-		user: User,
 		userWithBoardRoles: UserWithBoardRoles,
 		boardNodeAuthorizable: BoardNodeAuthorizable,
 		context: AuthorizationContext
@@ -204,16 +202,14 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	private hasPermissionForVideoConferenceElement(
 		userWithBoardRoles: UserWithBoardRoles,
 		context: AuthorizationContext,
-		object: BoardNodeAuthorizable
+		authorizable: BoardNodeAuthorizable
 	): boolean {
 		if (context.action === Action.write) {
-			const isEditorAllowedToManageVideoConference = object.boardSettings.features.includes(
-				RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE
+			const canRoomEditorManageVideoconference = authorizable.boardSettings.canRoomEditorManageVideoconference ?? false;
+			return (
+				(canRoomEditorManageVideoconference && this.isBoardEditor(userWithBoardRoles)) ||
+				this.isBoardAdmin(userWithBoardRoles)
 			);
-			if (isEditorAllowedToManageVideoConference && this.isBoardEditor(userWithBoardRoles)) {
-				return true;
-			}
-			return this.isBoardAdmin(userWithBoardRoles);
 		}
 
 		return this.isBoardReader(userWithBoardRoles);

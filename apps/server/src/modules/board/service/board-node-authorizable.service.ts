@@ -66,7 +66,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 			return acc;
 		}, {} as Record<EntityId, UserWithBoardRoles[]>);
 
-		const boardNodeAuthorizables = boardNodes.map(async (boardNode) => {
+		const boardNodeAuthorizablesPromises = boardNodes.map(async (boardNode) => {
 			const rootNode = boardNodeMap[boardNode.rootId];
 			const parentNode = boardNode.parentId ? boardNodeMap[boardNode.parentId] : undefined;
 			const users = usersMap[boardNode.id];
@@ -82,6 +82,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 			return boardNodeAuthorizable;
 		});
 
+		const boardNodeAuthorizables = await Promise.all(boardNodeAuthorizablesPromises);
 		return boardNodeAuthorizables;
 	}
 

@@ -25,7 +25,7 @@ export interface BoardNodeAuthorizableProps extends AuthorizableObject {
 }
 
 export interface BoardSettings {
-	features: string[];
+	canRoomEditorManageVideoconference?: boolean;
 }
 
 export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizableProps> {

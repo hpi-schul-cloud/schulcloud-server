@@ -238,7 +238,9 @@ export class BoardUc {
 
 		if (user?.roles.includes(BoardRoles.EDITOR)) {
 			const permissions: Permission[] = [Permission.BOARD_VIEW, Permission.BOARD_EDIT];
-			if (boardNodeAuthorizable.boardSettings.features.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE)) {
+			const canRoomEditorManageVideoconference =
+				boardNodeAuthorizable.boardSettings.canRoomEditorManageVideoconference ?? false;
+			if (canRoomEditorManageVideoconference) {
 				permissions.push(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
 			}
 			return permissions;

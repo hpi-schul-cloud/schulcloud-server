@@ -37,22 +37,19 @@ export class BoardContextService {
 
 	public async getBoardSettings(rootNode: AnyBoardNode): Promise<BoardSettings> {
 		if (!('context' in rootNode)) {
-			return { features: [] };
+			return {};
 		}
 
 		if (rootNode.context.type === BoardExternalReferenceType.Room) {
 			const roomFeatures = (await this.getFeaturesForRoom(rootNode.context.id)) ?? [];
+			const canRoomEditorManageVideoconference = roomFeatures.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE);
 			return {
-				features: roomFeatures,
+				canRoomEditorManageVideoconference,
 			};
 		} else if (rootNode.context.type === BoardExternalReferenceType.Course) {
-			return {
-				features: [],
-			};
+			return {};
 		} else if (rootNode.context.type === BoardExternalReferenceType.User) {
-			return {
-				features: [],
-			};
+			return {};
 		} else {
 			throw new Error(`Unknown context type: '${rootNode.context.type as string}'`);
 		}

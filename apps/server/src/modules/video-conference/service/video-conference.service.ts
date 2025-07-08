@@ -23,7 +23,6 @@ import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
 import { ScopeInfo, VideoConferenceState } from '../uc/dto';
 import { VideoConferenceConfig } from '../video-conference-config';
-import { RoomFeatures } from '@modules/room/domain/type';
 
 type ConferenceResource = CourseEntity | Room | TeamEntity | VideoConferenceElement;
 
@@ -141,13 +140,11 @@ export class VideoConferenceService {
 			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
 
 			if (boardAuthorisedUser) {
-				const isEditorAllowedToManageVideoConference = boardDoAuthorizable.boardSettings.features.includes(
-					RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE
-				);
-				if (isEditorAllowedToManageVideoConference && boardAuthorisedUser?.roles.includes(BoardRoles.EDITOR)) {
-					return true;
-				}
-				return boardAuthorisedUser?.roles.includes(BoardRoles.ADMIN);
+				const canRoomEditorManageVideoconference =
+					boardDoAuthorizable.boardSettings.canRoomEditorManageVideoconference ?? false;
+				const isBoardEditor = boardAuthorisedUser.roles.includes(BoardRoles.EDITOR);
+				const isBoardAdmin = boardAuthorisedUser.roles.includes(BoardRoles.ADMIN);
+				return (canRoomEditorManageVideoconference && isBoardEditor) || isBoardAdmin;
 			}
 
 			return false;
@@ -174,10 +171,8 @@ export class VideoConferenceService {
 			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
 
 			if (boardAuthorisedUser) {
-				return (
-					boardAuthorisedUser?.roles.includes(BoardRoles.READER) ||
-					boardAuthorisedUser?.roles.includes(BoardRoles.EDITOR)
-				);
+				const boardUserRoles = boardAuthorisedUser.roles;
+				return [BoardRoles.READER, BoardRoles.EDITOR].some((role) => boardUserRoles.includes(role));
 			}
 
 			return false;
