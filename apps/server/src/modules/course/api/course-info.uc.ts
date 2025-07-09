@@ -27,7 +27,7 @@ export class CourseInfoUc {
 		schoolId: EntityId,
 		sortByField: CourseSortProps = CourseSortProps.NAME,
 		courseStatusQueryType?: CourseStatus,
-		withoutTeachers?: boolean,
+		withoutTeacher?: boolean,
 		pagination?: Pagination,
 		sortOrder: SortOrder = SortOrder.asc
 	): Promise<Page<CourseInfoDto>> {
@@ -41,7 +41,7 @@ export class CourseInfoUc {
 		);
 
 		const order = { [sortByField]: sortOrder };
-		const filter = { schoolId, status: courseStatusQueryType, withoutTeachers };
+		const filter = { schoolId, status: courseStatusQueryType, withoutTeacher };
 		const options = { pagination, order };
 		const courses = await this.courseDoService.getCourseInfo(filter, options);
 

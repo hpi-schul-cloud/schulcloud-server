@@ -4,5 +4,5 @@ import { CourseStatus } from './course-status.enum';
 export interface CourseFilter {
 	schoolId?: EntityId;
 	status?: CourseStatus;
-	withoutTeachers?: boolean;
+	withoutTeacher?: boolean;
 }

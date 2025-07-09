@@ -12,5 +12,5 @@ export class CourseFilterParams {
 	@IsBoolean()
 	@StringToBoolean()
 	@ApiPropertyOptional()
-	public withoutTeachers?: boolean = false;
+	public withoutTeacher?: boolean = false;
 }

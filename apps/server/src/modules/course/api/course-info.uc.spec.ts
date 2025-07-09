@@ -185,7 +185,7 @@ describe('CourseInfoUc', () => {
 
 			it('should call with non-default options and filter', async () => {
 				const { school, adminUser } = setup();
-				const filter: CourseFilter = { schoolId: school.id, status: CourseStatus.ARCHIVE, withoutTeachers: true };
+				const filter: CourseFilter = { schoolId: school.id, status: CourseStatus.ARCHIVE, withoutTeacher: true };
 				const options: IFindOptions<Course> = {
 					order: {
 						name: SortOrder.asc,

@@ -54,7 +54,7 @@ export class CourseScope extends Scope<CourseEntity> {
 		return this;
 	}
 
-	public byWithoutTeacher(): this {
+	public withoutTeacher(): this {
 		this.addQuery({ teachers: { $eq: [] } });
 		return this;
 	}

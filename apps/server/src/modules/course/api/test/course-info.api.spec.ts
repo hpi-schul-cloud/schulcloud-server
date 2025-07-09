@@ -104,7 +104,7 @@ describe('Course Info Controller (API)', () => {
 
 			it('should return active courses without teachers', async () => {
 				const { admin } = await setup();
-				const query = { withoutTeachers: true, status: CourseStatus.CURRENT };
+				const query = { withoutTeacher: true, status: CourseStatus.CURRENT };
 
 				const loggedInClient = await testApiClient.login(admin.account);
 				const response = await loggedInClient.get().query(query);
@@ -115,7 +115,7 @@ describe('Course Info Controller (API)', () => {
 
 			it('should return archive courses without teachers', async () => {
 				const { admin } = await setup();
-				const query = { withoutTeachers: true, status: CourseStatus.ARCHIVE };
+				const query = { withoutTeacher: true, status: CourseStatus.ARCHIVE };
 
 				const loggedInClient = await testApiClient.login(admin.account);
 				const response = await loggedInClient.get().query(query);

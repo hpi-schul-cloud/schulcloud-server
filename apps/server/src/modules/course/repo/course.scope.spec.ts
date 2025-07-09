@@ -154,7 +154,7 @@ describe(CourseScope.name, () => {
 	describe('byWithoutTeacher', () => {
 		describe('when called', () => {
 			it('should add query', () => {
-				scope.byWithoutTeacher();
+				scope.withoutTeacher();
 
 				expect(scope.query).toEqual({ teachers: { $eq: [] } });
 			});

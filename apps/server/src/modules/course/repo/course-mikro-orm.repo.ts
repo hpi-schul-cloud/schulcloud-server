@@ -52,8 +52,8 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 		const scope = new CourseScope();
 		scope.bySchoolId(filter.schoolId);
 
-		if (filter.withoutTeachers) {
-			scope.byWithoutTeacher();
+		if (filter.withoutTeacher) {
+			scope.withoutTeacher();
 		}
 		if (filter.status === CourseStatus.CURRENT) {
 			scope.forActiveCourses();
