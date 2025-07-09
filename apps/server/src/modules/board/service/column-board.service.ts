@@ -61,19 +61,26 @@ export class ColumnBoardService {
 
 		return copyStatus;
 	}
+	public async createColumnBoard(props: ColumnBoardProps): Promise<ColumnBoard> {
+		const columnBoard = new ColumnBoard(props);
 
-	public async swapLinkedIdsInBoards(copyStatus: CopyStatus, map?: Map<EntityId, EntityId>): Promise<CopyStatus> {
-		if (!map) {
-			map = new Map<EntityId, EntityId>();
+		await this.boardNodeRepo.save(columnBoard);
+
+		return columnBoard;
+	}
+
+	public async swapLinkedIdsInBoards(copyStatus: CopyStatus, idMap?: Map<EntityId, EntityId>): Promise<CopyStatus> {
+		if (!idMap) {
+			idMap = new Map<EntityId, EntityId>();
 		}
 		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
-		copyDict.forEach((value, key) => map.set(key, value.id));
+		copyDict.forEach((value, key) => idMap.set(key, value.id));
 
 		const elements = copyStatus.elements ?? [];
 		const updatedElements = await Promise.all(
 			elements.map(async (el) => {
 				if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {
-					el.copyEntity = await this.swapLinkedIds(el.copyEntity?.id, map);
+					el.copyEntity = await this.swapLinkedIds(el.copyEntity?.id, idMap);
 				}
 				return el;
 			})
@@ -81,14 +88,6 @@ export class ColumnBoardService {
 
 		copyStatus.elements = updatedElements;
 		return copyStatus;
-	}
-
-	public async createColumnBoard(props: ColumnBoardProps): Promise<ColumnBoard> {
-		const columnBoard = new ColumnBoard(props);
-
-		await this.boardNodeRepo.save(columnBoard);
-
-		return columnBoard;
 	}
 
 	public async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>): Promise<ColumnBoard> {

@@ -102,19 +102,24 @@ describe('CopyRoomBoardsStep', () => {
 				};
 				columnBoardService.copyColumnBoard.mockResolvedValueOnce(copyStatus);
 
-				const copyDict = new Map<EntityId, AuthorizableObject>().set(board.id, boardCopy);
-				copyHelperService.buildCopyEntityDict.mockReturnValueOnce(copyDict);
-				const idsMap = new Map<EntityId, EntityId>().set(board.id, boardCopy.id);
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
 
-				return { userId, sourceRoomId: sourceRoom.id, targetRoomId: targetRoom.id, boardCopy, idsMap };
+				return { userId, sourceRoom, targetRoom, copyStatus };
 			};
 
 			it('should call columnBoardService.swapLinkedIds', async () => {
-				const { userId, sourceRoomId, targetRoomId, boardCopy, idsMap } = setup();
+				const { userId, sourceRoom, targetRoom, copyStatus } = setup();
 
-				await step.execute({ userId, sourceRoomId, targetRoomId });
+				await step.execute({ userId, sourceRoomId: sourceRoom.id, targetRoomId: targetRoom.id });
 
-				expect(columnBoardService.swapLinkedIds).toHaveBeenCalledWith(boardCopy.id, idsMap);
+				expect(columnBoardService.swapLinkedIdsInBoards).toHaveBeenCalledWith({
+					title: 'board',
+					type: CopyElementType.ROOM,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: targetRoom,
+					originalEntity: sourceRoom,
+					elements: [copyStatus],
+				});
 			});
 		});
 	});
