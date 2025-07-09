@@ -1,14 +1,12 @@
 export * from './error.mapper';
 export * from './exchange';
 export {
-	RabbitMqConfig,
-	FilesPreviewExchange,
 	FilesStorageExchange,
-	MailSendExchange,
-	AntivirusExchange,
-	SchulconnexProvisioningExchange,
 	H5pEditorExchange,
+	MailSendExchange,
+	RabbitMqConfig,
 	RabbitMqURI,
+	SchulconnexProvisioningExchange,
 } from './rabbitmq.config';
 export * from './rabbitmq.module';
 export * from './rpc-message';
