@@ -14,7 +14,6 @@ import { UserModule } from '@modules/user';
 import { SagaModule } from '@modules/saga';
 import { forwardRef, Module } from '@nestjs/common';
 import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
-import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
 import {
 	ColumnBoardNodeRepo,
 	DashboardElementRepo,
@@ -24,7 +23,7 @@ import {
 } from './repo';
 import { DASHBOARD_REPO } from './repo/mikro-orm/dashboard.repo';
 import { DeleteUserDashboardDataStep } from './saga';
-import { BoardCopyService, CommonCartridgeImportService, CourseCopyService, CourseRoomsService } from './service';
+import { BoardCopyService, CourseCopyService, CourseRoomsService } from './service';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future
@@ -53,8 +52,6 @@ import { BoardCopyService, CommonCartridgeImportService, CourseCopyService, Cour
 		},
 		BoardCopyService,
 		CommonCartridgeFileValidatorPipe,
-		CommonCartridgeImportService,
-		CommonCartridgeImportMapper,
 		CourseCopyService,
 		DashboardElementRepo,
 		DashboardModelMapper,
@@ -63,6 +60,6 @@ import { BoardCopyService, CommonCartridgeImportService, CourseCopyService, Cour
 		ColumnBoardNodeRepo,
 		DeleteUserDashboardDataStep,
 	],
-	exports: [CourseCopyService, CourseRoomsService, CommonCartridgeImportService],
+	exports: [CourseCopyService, CourseRoomsService],
 })
 export class LearnroomModule {}
