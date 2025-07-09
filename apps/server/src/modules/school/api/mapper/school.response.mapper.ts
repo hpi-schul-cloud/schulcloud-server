@@ -1,5 +1,13 @@
+import { PaginationParams } from '@shared/controller/dto';
 import { School, SchoolForLdapLogin } from '../../domain';
-import { YearsResponse, SchoolResponse, SchoolForExternalInviteResponse, SchoolForLdapLoginResponse } from '../dto';
+import {
+	YearsResponse,
+	SchoolResponse,
+	SchoolItemResponse,
+	SchoolListResponse,
+	SchoolForExternalInviteResponse,
+	SchoolForLdapLoginResponse,
+} from '../dto';
 import { CountyResponseMapper } from './county.response.mapper';
 import { FederalStateResponseMapper } from './federal-state.response.mapper';
 import { SystemResponseMapper } from './school-systems.response.mapper';
@@ -30,6 +38,29 @@ export class SchoolResponseMapper {
 			isExternal: school.isExternal(),
 			years,
 			instanceFeatures,
+		});
+
+		return dto;
+	}
+
+	public static mapToSchoolListResponse(
+		schools: School[],
+		pagination?: PaginationParams,
+		total?: number
+	): SchoolListResponse {
+		const data = schools.map((school) => SchoolResponseMapper.mapToSchoolItemResponse(school));
+
+		const dtos = new SchoolListResponse(data, total ?? schools.length, pagination?.skip, pagination?.limit);
+
+		return dtos;
+	}
+
+	public static mapToSchoolItemResponse(school: School): SchoolItemResponse {
+		const schoolProps = school.getProps();
+
+		const dto = new SchoolItemResponse({
+			id: school.id,
+			name: schoolProps.name,
 		});
 
 		return dto;
