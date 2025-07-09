@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Type } from '@mikro-orm/core';
-import { encryptAES, decryptAES } from '@raisinten/aes-crypto-js';
+import { encryptAES, decryptAES } from '@shared/common/utils';
 
 /**
  * Serialization type to transparent encrypt string values in database.

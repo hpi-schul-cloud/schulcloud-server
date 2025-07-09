@@ -1,5 +1,5 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const { decryptAES, encryptAES } = require('@raisinten/aes-crypto-js');
+const { decryptAES, encryptAES } = require('../../../utils/aes-encryption');
 
 const encryptSecret = (context) => {
 	if (context.data.ldapConfig && context.data.ldapConfig.searchUserPassword) {

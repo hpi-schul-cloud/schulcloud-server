@@ -1,6 +1,6 @@
 import { LegacyLogger } from '@core/logger';
 import { Injectable } from '@nestjs/common';
-import { decryptAES, encryptAES } from '@raisinten/aes-crypto-js';
+import { decryptAES, encryptAES } from '@shared/common/utils';
 import { EncryptionService } from './encryption.interface';
 
 @Injectable()

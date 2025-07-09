@@ -1,5 +1,5 @@
 const { promisify } = require('es6-promisify');
-const { decryptAES } = require('@raisinten/aes-crypto-js');
+const { decryptAES } = require('../../../utils/aes-encryption');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const aws = require('aws-sdk');
 const mongoose = require('mongoose');

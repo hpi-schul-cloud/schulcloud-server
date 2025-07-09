@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const { decryptAES } = require('@raisinten/aes-crypto-js');
+const { decryptAES } = require('../../../src/utils/aes-encryption');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
 

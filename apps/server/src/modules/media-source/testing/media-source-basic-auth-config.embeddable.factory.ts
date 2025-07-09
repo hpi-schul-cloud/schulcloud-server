@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { encryptAES } from '@shared/common/utils';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { encryptAES } from '@raisinten/aes-crypto-js';
 import { MediaSourceVidisConfigEmbeddable } from '../entity';
 
 export const mediaSourceVidisConfigEmbeddableFactory = BaseFactory.define<

@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const { encryptAES } = require('@raisinten/aes-crypto-js');
+const { encryptAES } = require('../../../utils/aes-encryption');
 const { discard, iff, isProvider } = require('feathers-hooks-common');
 
 const { isSuperHero } = require('../../../hooks');

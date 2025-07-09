@@ -1,5 +1,5 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
-import { decryptAES, encryptAES } from '@raisinten/aes-crypto-js';
+import { decryptAES, encryptAES } from '@shared/common/utils';
 
 export class Migration20240926205656 extends Migration {
 	public async up(): Promise<void> {

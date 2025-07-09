@@ -1,4 +1,4 @@
-const { decryptAES, encryptAES } = require('@raisinten/aes-crypto-js');
+const { decryptAES, encryptAES } = require('../src/utils/aes-encryption');
 const args = require('args');
 
 args
