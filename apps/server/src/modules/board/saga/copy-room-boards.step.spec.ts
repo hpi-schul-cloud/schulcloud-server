@@ -8,8 +8,6 @@ import { CopyRoomBoardsStep } from './copy-room-boards.step';
 import { CopyElementType, CopyHelperService, CopyStatusEnum, CopyStatus } from '@modules/copy-helper';
 import { columnBoardFactory } from '../testing';
 import { roomFactory } from '@modules/room/testing';
-import { EntityId } from '@shared/domain/types';
-import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BoardExternalReferenceType } from '../domain';
 
 describe('CopyRoomBoardsStep', () => {
