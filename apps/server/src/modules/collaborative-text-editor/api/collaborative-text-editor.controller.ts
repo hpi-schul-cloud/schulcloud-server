@@ -33,6 +33,7 @@ export class CollaborativeTextEditorController {
 		res.cookie('sessionID', textEditor.sessionId, {
 			expires: textEditor.sessionExpiryDate,
 			secure: true,
+			httpOnly: true,
 			path: textEditor.path,
 		});
 
