@@ -367,7 +367,7 @@ describe('Course Controller (API)', () => {
 		it('should create course', async () => {
 			const { loggedInClient } = await setup();
 
-			const response = await loggedInClient.post().send({ title: faker.lorem.words() });
+			const response = await loggedInClient.post().send({ name: faker.lorem.words() });
 
 			expect(response.statusCode).toEqual(201);
 		});
