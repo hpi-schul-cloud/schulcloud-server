@@ -68,7 +68,6 @@ const config = {
 			'ROOM_CHANGE_ROLES',
 			'ROOM_LIST_CONTENT',
 			'ROOM_LIST_DRAFTS',
-			'ROOM_MANAGE_VIDEOCONFERENCES',
 		],
 	},
 	teacher: {
