@@ -43,7 +43,7 @@ type RobjExportSchuleWithNummer = RobjExportSchule & {
 type SchoolSyncResult = { school: School; created: boolean };
 
 function isRobjExportSchuleWithNummer(school: RobjExportSchule): school is RobjExportSchuleWithNummer {
-	return typeof school.schuleName === 'string';
+	return !!school.schuleNummer;
 }
 
 @Injectable()
