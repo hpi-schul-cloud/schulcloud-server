@@ -200,10 +200,8 @@ export class SchoolUc {
 		let result: Page<UserDo>;
 		if (isUserOfSchool) {
 			result = await this.getAllStudentsOfSchool(schoolId);
-		} else if (isUserOfSchool) {
-			result = await this.getAllStudentsFromUsersClasses(userId, schoolId);
 		} else {
-			result = { data: [], total: 0 };
+			result = await this.getAllStudentsFromUsersClasses(userId, schoolId);
 		}
 
 		const responseDto = SchoolUserResponseMapper.mapToListResponse(result);
