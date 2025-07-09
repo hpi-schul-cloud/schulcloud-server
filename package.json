@@ -253,7 +253,7 @@
 		"uuid": "^11.1.0",
 		"winston": "^3.17.0",
 		"xml2js": "^0.6.2",
-		"yaml": "^2.7.1"
+		"yaml": "^2.8.0"
 	},
 	"devDependencies": {
 		"@faker-js/faker": "^9.6.0",
