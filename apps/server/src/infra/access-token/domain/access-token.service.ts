@@ -33,7 +33,7 @@ export class AccessTokenService {
 			throw new Error(`Token ${token} not found`);
 		}
 
-		await this.persistTokenData(token, value);
+		await this.renewTokenTimeout(token, value);
 
 		try {
 			const payload = JSON.parse(value) as T;
@@ -50,5 +50,9 @@ export class AccessTokenService {
 
 	private async persistTokenData(token: string, value: string): Promise<void> {
 		await this.storageClient.set(token, value, 'EX', this.TOKEN_TTL_IN_SECONDS);
+	}
+
+	private async renewTokenTimeout(token: string, value: string): Promise<void> {
+		await this.persistTokenData(token, value);
 	}
 }
