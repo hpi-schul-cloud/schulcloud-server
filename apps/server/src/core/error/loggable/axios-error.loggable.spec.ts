@@ -12,7 +12,6 @@ describe(AxiosErrorLoggable.name, () => {
 			const axiosError: AxiosError = axiosErrorFactory.withError(error).build();
 
 			const axiosErrorLoggable = new AxiosErrorLoggable(axiosError, type);
-			axiosErrorLoggable.stack = 'mockStack';
 
 			return { axiosErrorLoggable, error, axiosError };
 		};
