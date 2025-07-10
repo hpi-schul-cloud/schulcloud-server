@@ -1,7 +1,6 @@
-import { CopyElementType, CopyStatus } from '@modules/copy-helper';
+import { CopyElementType, CopyStatus, CopyHelperService } from '@modules/copy-helper';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { CopyHelperService } from '@modules/copy-helper';
 import {
 	AnyBoardNode,
 	BoardExternalReference,

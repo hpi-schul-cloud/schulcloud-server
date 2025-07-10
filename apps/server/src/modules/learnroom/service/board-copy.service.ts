@@ -63,17 +63,15 @@ export class BoardCopyService {
 		};
 
 		status = this.updateCopiedEmbeddedTasksOfLessons(status);
-		if (status.copyEntity) {
-			boardCopy = status.copyEntity as LegacyBoard;
-		}
 
-		const map = new Map<EntityId, EntityId>();
-		if (status.copyEntity instanceof LegacyBoard && status.originalEntity instanceof LegacyBoard) {
-			map.set(status.originalEntity.course.id, status.copyEntity.course.id);
+		if (status.elements && status.elements.length > 0) {
+			status = await this.swapLinks(status);
 		}
-		status = await this.columnBoardService.swapLinkedIdsInBoards(status, map);
 
 		try {
+			if (status.copyEntity) {
+				boardCopy = status.copyEntity as LegacyBoard;
+			}
 			await this.boardRepo.save(boardCopy);
 		} catch (err) {
 			this.logger.warn(err);
@@ -201,5 +199,15 @@ export class BoardCopyService {
 		const sortByPos = sortBy(resolved, ([pos]) => pos);
 		const statuses = sortByPos.map(([, status]) => status);
 		return statuses;
+	}
+
+	private async swapLinks(status: CopyStatus): Promise<CopyStatus> {
+		const map = new Map<EntityId, EntityId>();
+		if (status.copyEntity instanceof LegacyBoard && status.originalEntity instanceof LegacyBoard) {
+			map.set(status.originalEntity.course.id, status.copyEntity.course.id);
+		}
+		status = await this.columnBoardService.swapLinkedIdsInBoards(status, map);
+
+		return status;
 	}
 }
