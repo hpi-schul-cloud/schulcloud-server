@@ -32,11 +32,11 @@ export abstract class BaseMetadataSyncStrategy {
 			mediaSource.sourceId
 		);
 
-		// if (!externalTools.length) {
-		// 	const emptyReport: MediaSourceSyncReport = ReportFactory.buildEmptyReport();
+		if (!externalTools.length) {
+			const emptyReport: MediaSourceSyncReport = ReportFactory.buildEmptyReport();
 
-		// 	return emptyReport;
-		// }
+			return emptyReport;
+		}
 
 		const metadataItems: MediumMetadataDto[] = await this.getMediaMetadata(externalTools, mediaSource);
 
