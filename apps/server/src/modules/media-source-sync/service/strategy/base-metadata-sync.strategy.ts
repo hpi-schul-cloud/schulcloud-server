@@ -2,9 +2,9 @@ import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { MediumMetadataDto, MediumMetadataService } from '@modules/medium-metadata';
 import {
 	ExternalTool,
+	ExternalToolParameterValidationService,
 	ExternalToolService,
 	ExternalToolValidationService,
-	ExternalToolParameterValidationService,
 } from '@modules/tool';
 import { Injectable } from '@nestjs/common';
 import {
@@ -32,11 +32,11 @@ export abstract class BaseMetadataSyncStrategy {
 			mediaSource.sourceId
 		);
 
-		if (!externalTools.length) {
-			const emptyReport: MediaSourceSyncReport = ReportFactory.buildEmptyReport();
+		// if (!externalTools.length) {
+		// 	const emptyReport: MediaSourceSyncReport = ReportFactory.buildEmptyReport();
 
-			return emptyReport;
-		}
+		// 	return emptyReport;
+		// }
 
 		const metadataItems: MediumMetadataDto[] = await this.getMediaMetadata(externalTools, mediaSource);
 
