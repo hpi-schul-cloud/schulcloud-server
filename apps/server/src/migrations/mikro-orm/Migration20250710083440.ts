@@ -3,6 +3,10 @@ import { FindCursor, WithId } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { AesEncryptionHelper } from '@shared/common/utils';
 import CryptoJS from 'crypto-js';
 
+const storageProvidersCollectionName = 'storageproviders';
+const systemsCollectionName = 'systems';
+const externalToolsCollectionName = 'external-tools';
+
 // Update all AES encrypted secrets with new encryption function.
 export class Migration20250710083440 extends Migration {
 	public async up(): Promise<void> {
@@ -15,13 +19,13 @@ export class Migration20250710083440 extends Migration {
 			return;
 		}
 
-		const storageProviders = this.getCollection('storageproviders').find({});
+		const storageProviders = this.getCollection(storageProvidersCollectionName).find({});
 
 		const numberOfUpdatedStorageProviders = await this.updateSecrets(
 			storageProviders,
 			['secretAccessKey'],
 			S3_KEY,
-			'storageproviders'
+			storageProvidersCollectionName
 		);
 
 		console.info(
@@ -39,7 +43,7 @@ export class Migration20250710083440 extends Migration {
 			return;
 		}
 
-		const ldapSystems = this.getCollection('systems').find({
+		const ldapSystems = this.getCollection(systemsCollectionName).find({
 			'ldapConfig.searchUserPassword': { $ne: undefined },
 		});
 
@@ -47,7 +51,7 @@ export class Migration20250710083440 extends Migration {
 			ldapSystems,
 			['ldapConfig', 'searchUserPassword'],
 			LDAP_PASSWORD_ENCRYPTION_KEY,
-			'systems'
+			systemsCollectionName
 		);
 
 		console.info(
@@ -65,7 +69,7 @@ export class Migration20250710083440 extends Migration {
 			return;
 		}
 
-		const oauthSystems = this.getCollection('systems').find({
+		const oauthSystems = this.getCollection(systemsCollectionName).find({
 			'oauthConfig.clientSecret': { $ne: undefined },
 		});
 
@@ -73,7 +77,7 @@ export class Migration20250710083440 extends Migration {
 			oauthSystems,
 			['oauthConfig', 'clientSecret'],
 			AES_KEY,
-			'systems'
+			systemsCollectionName
 		);
 
 		console.info(`Updated OAuth clientSecret of ${numberOfUpdatedOauthSystems} systems with new encryption function.`);
@@ -81,7 +85,7 @@ export class Migration20250710083440 extends Migration {
 		// ----------------------------------------------------------------------------------
 
 		// --- Update secret in LTI 1.1 tools ---
-		const lti11Tools = this.getCollection('external-tools').find({
+		const lti11Tools = this.getCollection(externalToolsCollectionName).find({
 			config_type: 'lti11',
 			config_secret: { $ne: undefined },
 		});
@@ -90,7 +94,7 @@ export class Migration20250710083440 extends Migration {
 			lti11Tools,
 			['config_secret'],
 			AES_KEY,
-			'external-tools'
+			externalToolsCollectionName
 		);
 
 		console.info(`Updated LTI 1.1 tool secrets of ${numberOfUpdatedLti11Tools} tools with new encryption function.`);
@@ -106,13 +110,13 @@ export class Migration20250710083440 extends Migration {
 			return;
 		}
 
-		const storageProviders = this.getCollection('storageproviders').find({});
+		const storageProviders = this.getCollection(storageProvidersCollectionName).find({});
 
 		const numberOfUpdatedStorageProviders = await this.revertUpdateOfSecrets(
 			storageProviders,
 			['secretAccessKey'],
 			S3_KEY,
-			'storageproviders'
+			storageProvidersCollectionName
 		);
 
 		console.info(`Reverted update of secretAccessKey of ${numberOfUpdatedStorageProviders} storage providers.`);
@@ -128,7 +132,7 @@ export class Migration20250710083440 extends Migration {
 			return;
 		}
 
-		const ldapSystems = this.getCollection('systems').find({
+		const ldapSystems = this.getCollection(systemsCollectionName).find({
 			'ldapConfig.searchUserPassword': { $ne: undefined },
 		});
 
@@ -136,7 +140,7 @@ export class Migration20250710083440 extends Migration {
 			ldapSystems,
 			['ldapConfig', 'searchUserPassword'],
 			LDAP_PASSWORD_ENCRYPTION_KEY,
-			'systems'
+			systemsCollectionName
 		);
 
 		console.info(`Reverted update of LDAP searchUserPassword of ${numberOfUpdatedLdapSystems} systems.`);
@@ -152,7 +156,7 @@ export class Migration20250710083440 extends Migration {
 			return;
 		}
 
-		const oauthSystems = this.getCollection('systems').find({
+		const oauthSystems = this.getCollection(systemsCollectionName).find({
 			'oauthConfig.clientSecret': { $ne: undefined },
 		});
 
@@ -160,7 +164,7 @@ export class Migration20250710083440 extends Migration {
 			oauthSystems,
 			['oauthConfig', 'clientSecret'],
 			AES_KEY,
-			'systems'
+			systemsCollectionName
 		);
 
 		console.info(`Reverted update of OAuth clientSecret of ${numberOfUpdatedOauthSystems} systems.`);
@@ -168,7 +172,7 @@ export class Migration20250710083440 extends Migration {
 		// ----------------------------------------------------------------------------------
 
 		// --- Revert update of secret in LTI 1.1 tools ---
-		const lti11Tools = this.getCollection('external-tools').find({
+		const lti11Tools = this.getCollection(externalToolsCollectionName).find({
 			config_type: 'lti11',
 			config_secret: { $ne: undefined },
 		});
@@ -177,7 +181,7 @@ export class Migration20250710083440 extends Migration {
 			lti11Tools,
 			['config_secret'],
 			AES_KEY,
-			'external-tools'
+			externalToolsCollectionName
 		);
 
 		console.info(`Reverted update of LTI 1.1 tool secrets of ${numberOfUpdatedLti11Tools} tools.`);
