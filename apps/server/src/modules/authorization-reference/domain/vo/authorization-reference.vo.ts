@@ -1,4 +1,4 @@
-import { AccessTokenPayload } from '@infra/access-token';
+import { CustomPayload } from '@infra/access-token';
 import { AuthorizableReferenceType } from '@modules/authorization';
 import { EntityId } from '@shared/domain/types';
 import { ValueObject } from '@shared/domain/value-object.decorator';
@@ -13,7 +13,7 @@ export class TokenPayload {
 		this.referenceType = props.referenceType;
 		this.referenceId = props.referenceId;
 		this.userId = props.userId;
-		this.payload = props.payload || {};
+		this.customPayload = props.customPayload || {};
 	}
 
 	@ValidateNested()
@@ -31,5 +31,5 @@ export class TokenPayload {
 
 	@IsObject()
 	@IsOptional()
-	public readonly payload: AccessTokenPayload;
+	public readonly customPayload: CustomPayload;
 }

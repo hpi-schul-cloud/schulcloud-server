@@ -19,7 +19,7 @@ export class AuthorizationReferenceMapper {
 			referenceType,
 			referenceId,
 			userId,
-			payload: payload || {},
+			customPayload: payload || {},
 		});
 
 		return referenceVo;

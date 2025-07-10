@@ -63,12 +63,12 @@ export class AuthorizationReferenceUc {
 			result.referenceType,
 			result.referenceId,
 			result.userId,
-			result.payload
+			result.customPayload
 		);
 
 		await this.checkPermissionsForReference(authorizationReference);
 
-		const payloadResponse = AuthorizationResponseMapper.mapToAccessTokenPayload(authorizationReference.payload);
+		const payloadResponse = AuthorizationResponseMapper.mapToAccessTokenPayload(authorizationReference.customPayload);
 
 		return payloadResponse;
 	}

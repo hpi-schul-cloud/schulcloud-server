@@ -1,2 +1,2 @@
 export { AccessTokenModule } from './access-token.module';
-export { AccessTokenPayload, AccessTokenService } from './domain';
+export { AccessTokenService, CustomPayload } from './domain';

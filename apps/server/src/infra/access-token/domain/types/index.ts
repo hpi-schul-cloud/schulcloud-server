@@ -1,1 +1,1 @@
-export * from './access-token-payload';
+export * from './custom-payload';
