@@ -2,7 +2,7 @@ import { AccessTokenPayload } from '@infra/access-token';
 import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { EntityId } from '@shared/domain/types';
 import { AuthorizationContextVO } from '../vo/authorization-context.vo';
-import { AuthorizationReferenceVO } from '../vo/authorization-reference.vo';
+import { TokenPayload } from '../vo/authorization-reference.vo';
 
 export class AuthorizationReferenceMapper {
 	public static mapToReferenceVo(
@@ -11,10 +11,10 @@ export class AuthorizationReferenceMapper {
 		referenceId: EntityId,
 		userId: EntityId,
 		payload: AccessTokenPayload
-	): AuthorizationReferenceVO {
+	): TokenPayload {
 		const context = new AuthorizationContextVO(authorizationContext);
 
-		const referenceVo = new AuthorizationReferenceVO({
+		const referenceVo = new TokenPayload({
 			context,
 			referenceType,
 			referenceId,

@@ -2,7 +2,7 @@ import { AccessTokenService } from '@infra/access-token';
 import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { AuthorizationReferenceMapper, AuthorizationReferenceService, AuthorizationReferenceVO } from '../domain';
+import { AuthorizationReferenceMapper, AuthorizationReferenceService, TokenPayload } from '../domain';
 import {
 	AccessTokenParams,
 	AccessTokenPayloadResponse,
@@ -56,7 +56,7 @@ export class AuthorizationReferenceUc {
 	}
 
 	public async resolveToken(accessToken: AccessTokenParams): Promise<AccessTokenPayloadResponse> {
-		const result = await this.accessTokenService.resolveToken<AuthorizationReferenceVO>(accessToken);
+		const result = await this.accessTokenService.resolveToken<TokenPayload>(accessToken);
 
 		const authorizationReference = AuthorizationReferenceMapper.mapToReferenceVo(
 			result.context,
@@ -73,7 +73,7 @@ export class AuthorizationReferenceUc {
 		return payloadResponse;
 	}
 
-	private async checkPermissionsForReference(authorizationReference: AuthorizationReferenceVO): Promise<void> {
+	private async checkPermissionsForReference(authorizationReference: TokenPayload): Promise<void> {
 		await this.authorizationReferenceService.checkPermissionByReferences(
 			authorizationReference.userId,
 			authorizationReference.referenceType,
