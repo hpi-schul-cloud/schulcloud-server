@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { encryptAES } from '@shared/common/utils';
+import { AesEncryptionHelper } from '@shared/common/utils';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { MediaSourceOauthConfigEmbeddable } from '../entity';
 import { MediaSourceAuthMethod } from '../enum';
@@ -11,7 +11,7 @@ export const mediaSourceOAuthConfigEmbeddableFactory = BaseFactory.define<
 	const key = Configuration.get('AES_KEY') as string;
 	const embeddable: MediaSourceOauthConfigEmbeddable = {
 		clientId: `media-source-client-id-${sequence}`,
-		clientSecret: encryptAES(`media-source-client-secret-${sequence}`, key),
+		clientSecret: AesEncryptionHelper.encrypt(`media-source-client-secret-${sequence}`, key),
 		authEndpoint: `https://oauth-token-url.com/test-${sequence}`,
 		method: MediaSourceAuthMethod.CLIENT_CREDENTIALS,
 		baseUrl: `https://oauth-base-url.com/test-${sequence}`,

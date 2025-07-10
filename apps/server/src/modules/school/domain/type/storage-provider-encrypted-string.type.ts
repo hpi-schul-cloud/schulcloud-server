@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Type } from '@mikro-orm/core';
-import { encryptAES, decryptAES } from '@shared/common/utils';
+import { AesEncryptionHelper } from '@shared/common/utils';
 
 /**
  * Serialization type to transparent encrypt string values in database.
@@ -27,7 +27,7 @@ export class StorageProviderEncryptedStringType extends Type<string, string> {
 		if (value.length === 0) {
 			return '';
 		}
-		const encryptedString = encryptAES(value, this.key);
+		const encryptedString = AesEncryptionHelper.encrypt(value, this.key);
 
 		return encryptedString;
 	}
@@ -43,7 +43,7 @@ export class StorageProviderEncryptedStringType extends Type<string, string> {
 			return '';
 		}
 
-		const decryptedString = decryptAES(value, this.key);
+		const decryptedString = AesEncryptionHelper.decrypt(value, this.key);
 
 		return decryptedString;
 	}
