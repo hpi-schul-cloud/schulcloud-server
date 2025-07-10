@@ -23,6 +23,12 @@ type OauthSystem = {
 	};
 };
 
+type Lti11Tool = {
+	_id: ObjectId;
+	config_type: string;
+	config_secret: string;
+};
+
 // Update all AES encrypted secrets with new encryption function.
 export class Migration20250710083440 extends Migration {
 	public async up(): Promise<void> {
@@ -97,6 +103,23 @@ export class Migration20250710083440 extends Migration {
 		);
 
 		console.info(`Updated OAuth clientSecret of ${numberOfUpdatedOauthSystems} systems with new encryption function.`);
+
+		// ----------------------------------------------------------------------------------
+
+		// --- Update secret in LTI 1.1 tools ---
+		const lti11Tools = this.getCollection<Lti11Tool>('external-tools').find({
+			config_type: 'lti11',
+			config_secret: { $ne: undefined },
+		});
+
+		const numberOfUpdatedLti11Tools = await this.updateSecrets(
+			lti11Tools,
+			['config_secret'],
+			AES_KEY,
+			'external-tools'
+		);
+
+		console.info(`Updated LTI 1.1 tool secrets of ${numberOfUpdatedLti11Tools} tools with new encryption function.`);
 	}
 
 	public async down(): Promise<void> {
@@ -167,6 +190,23 @@ export class Migration20250710083440 extends Migration {
 		);
 
 		console.info(`Reverted update of OAuth clientSecret of ${numberOfUpdatedOauthSystems} systems.`);
+
+		// ----------------------------------------------------------------------------------
+
+		// --- Revert update of secret in LTI 1.1 tools ---
+		const lti11Tools = this.getCollection('external-tools').find<Lti11Tool>({
+			config_type: 'lti11',
+			config_secret: { $ne: undefined },
+		});
+
+		const numberOfUpdatedLti11Tools = await this.revertUpdateOfSecrets(
+			lti11Tools,
+			['config_secret'],
+			AES_KEY,
+			'external-tools'
+		);
+
+		console.info(`Reverted update of LTI 1.1 tool secrets of ${numberOfUpdatedLti11Tools} tools.`);
 	}
 
 	private async updateSecrets<T>(
