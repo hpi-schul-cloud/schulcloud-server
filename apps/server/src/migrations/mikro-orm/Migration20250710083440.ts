@@ -47,7 +47,6 @@ export class Migration20250710083440 extends Migration {
 		console.info(
 			`Updated secretAccessKey of ${numberOfUpdatedStorageProviders} storage providers with new encryption function.`
 		);
-		// --- End of update secretAccessKey of storage providers ---
 
 		// ----------------------------------------------------------------------------------
 
@@ -74,11 +73,10 @@ export class Migration20250710083440 extends Migration {
 		console.info(
 			`Updated LDAP searchUserPassword of ${numberOfUpdatedLdapSystems} systems with new encryption function.`
 		);
-		// --- End of update searchUserPassword of LDAP systems ---
 
 		// ----------------------------------------------------------------------------------
 
-		// Update clientSecret of OAuth systems ---
+		// --- Update clientSecret of OAuth systems ---
 		// eslint-disable-next-line no-process-env
 		const { AES_KEY } = process.env;
 
@@ -99,11 +97,10 @@ export class Migration20250710083440 extends Migration {
 		);
 
 		console.info(`Updated OAuth clientSecret of ${numberOfUpdatedOauthSystems} systems with new encryption function.`);
-		// --- End of update clientSecret of OAuth systems ---
 	}
 
 	public async down(): Promise<void> {
-		// Revert update of secretAccessKey of storage providers ---
+		// --- Revert update of secretAccessKey of storage providers ---
 		// eslint-disable-next-line no-process-env
 		const { S3_KEY } = process.env;
 
@@ -122,11 +119,10 @@ export class Migration20250710083440 extends Migration {
 		);
 
 		console.info(`Reverted update of secretAccessKey of ${numberOfUpdatedStorageProviders} storage providers.`);
-		// --- End of revert update of secretAccessKey of storage providers ---
 
 		// ----------------------------------------------------------------------------------
 
-		// Revert update of searchUserPassword of LDAP systems ---
+		// --- Revert update of searchUserPassword of LDAP systems ---
 		// eslint-disable-next-line no-process-env
 		const { LDAP_PASSWORD_ENCRYPTION_KEY } = process.env;
 
@@ -147,7 +143,6 @@ export class Migration20250710083440 extends Migration {
 		);
 
 		console.info(`Reverted update of LDAP searchUserPassword of ${numberOfUpdatedLdapSystems} systems.`);
-		// --- End of revert update of searchUserPassword of LDAP systems ---
 
 		// ----------------------------------------------------------------------------------
 
@@ -172,7 +167,6 @@ export class Migration20250710083440 extends Migration {
 		);
 
 		console.info(`Reverted update of OAuth clientSecret of ${numberOfUpdatedOauthSystems} systems.`);
-		// --- End of revert update of clientSecret of OAuth systems ---
 	}
 
 	private async updateSecrets<T>(
