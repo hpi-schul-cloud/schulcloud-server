@@ -88,9 +88,9 @@ export class TspSyncStrategy extends SyncStrategy {
 
 	private filterValidTspSchools(tspSchools: RobjExportSchule[]): RobjExportSchuleWithNummer[] {
 		const withoutSchulnummer = tspSchools.filter((tspSchool) => !tspSchool.schuleNummer);
-		withoutSchulnummer.forEach((tspSchool) => {
-			this.logger.warning(new TspSchulnummerMissingLoggable(tspSchool.schuleName));
-		});
+		if (withoutSchulnummer.length > 0) {
+			this.logger.warning(new TspSchulnummerMissingLoggable(withoutSchulnummer));
+		}
 
 		const validSchools = tspSchools.filter(isRobjExportSchuleWithNummer);
 
