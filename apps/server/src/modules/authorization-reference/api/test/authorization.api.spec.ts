@@ -12,7 +12,7 @@ import { Permission } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { AuthorizationBodyParams } from '../dto';
-import { AuthorizationReponseMapper } from '../mapper';
+import { AuthorizationResponseMapper } from '../mapper';
 
 const createExamplePostData = (userId: string): AuthorizationBodyParams => {
 	const referenceType = AuthorizableReferenceType.User;
@@ -198,7 +198,7 @@ describe('Authorization Controller (API)', () => {
 				const loggedInClient = await testApiClient.login(teacherAccount);
 				const postData = createExamplePostData(otherUser.id);
 				postData.context.requiredPermissions = [Permission.ADMIN_EDIT];
-				const expectedResult = AuthorizationReponseMapper.mapToResponse(teacherUser.id, false);
+				const expectedResult = AuthorizationResponseMapper.mapToResponse(teacherUser.id, false);
 
 				return {
 					loggedInClient,
@@ -226,7 +226,7 @@ describe('Authorization Controller (API)', () => {
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 				const postData = createExamplePostData(teacherUser.id);
-				const expectedResult = AuthorizationReponseMapper.mapToResponse(teacherUser.id, true);
+				const expectedResult = AuthorizationResponseMapper.mapToResponse(teacherUser.id, true);
 
 				return {
 					loggedInClient,

@@ -1,20 +1,30 @@
-import { EntityId } from '@shared/domain/types';
+import { AccessTokenService } from '@infra/access-token';
+import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { AuthorizationContext, AuthorizableReferenceType } from '@modules/authorization';
-import { AuthorizedReponse } from './dto';
-import { AuthorizationReponseMapper } from './mapper';
-import { AuthorizationReferenceService } from '../domain';
+import { EntityId } from '@shared/domain/types';
+import { AuthorizationReferenceMapper, AuthorizationReferenceService, AuthorizationReferenceVO } from '../domain';
+import {
+	AccessTokenParams,
+	AccessTokenPayloadResponse,
+	AccessTokenResponse,
+	AuthorizedResponse,
+	CreateAccessTokenParams,
+} from './dto';
+import { AuthorizationResponseMapper } from './mapper';
 
 @Injectable()
 export class AuthorizationReferenceUc {
-	constructor(private readonly authorizationReferenceService: AuthorizationReferenceService) {}
+	constructor(
+		private readonly authorizationReferenceService: AuthorizationReferenceService,
+		private readonly accessTokenService: AccessTokenService
+	) {}
 
 	public async authorizeByReference(
 		userId: EntityId,
 		authorizableReferenceType: AuthorizableReferenceType,
 		authorizableReferenceId: EntityId,
 		context: AuthorizationContext
-	): Promise<AuthorizedReponse> {
+	): Promise<AuthorizedResponse> {
 		const hasPermission = await this.authorizationReferenceService.hasPermissionByReferences(
 			userId,
 			authorizableReferenceType,
@@ -22,8 +32,53 @@ export class AuthorizationReferenceUc {
 			context
 		);
 
-		const authorizationReponse = AuthorizationReponseMapper.mapToResponse(userId, hasPermission);
+		const authorizationResponse = AuthorizationResponseMapper.mapToResponse(userId, hasPermission);
 
-		return authorizationReponse;
+		return authorizationResponse;
+	}
+
+	public async createToken(userId: EntityId, params: CreateAccessTokenParams): Promise<AccessTokenResponse> {
+		const authorizationReference = AuthorizationReferenceMapper.mapToReferenceVo(
+			params.context,
+			params.referenceType,
+			params.referenceId,
+			userId,
+			params.payload
+		);
+
+		await this.checkPermissionsForReference(authorizationReference);
+
+		const { token } = await this.accessTokenService.createToken(authorizationReference);
+
+		const accessTokenResponse = AuthorizationResponseMapper.mapToAccessTokenResponse(token);
+
+		return accessTokenResponse;
+	}
+
+	public async resolveToken(accessToken: AccessTokenParams): Promise<AccessTokenPayloadResponse> {
+		const result = await this.accessTokenService.resolveToken<AuthorizationReferenceVO>(accessToken);
+
+		const authorizationReference = AuthorizationReferenceMapper.mapToReferenceVo(
+			result.context,
+			result.referenceType,
+			result.referenceId,
+			result.userId,
+			result.payload
+		);
+
+		await this.checkPermissionsForReference(authorizationReference);
+
+		const payloadResponse = AuthorizationResponseMapper.mapToAccessTokenPayload(authorizationReference.payload);
+
+		return payloadResponse;
+	}
+
+	private async checkPermissionsForReference(authorizationReference: AuthorizationReferenceVO): Promise<void> {
+		await this.authorizationReferenceService.checkPermissionByReferences(
+			authorizationReference.userId,
+			authorizationReference.referenceType,
+			authorizationReference.referenceId,
+			authorizationReference.context
+		);
 	}
 }

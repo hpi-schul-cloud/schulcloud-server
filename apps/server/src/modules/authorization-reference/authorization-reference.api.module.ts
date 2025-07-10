@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AuthorizationReferenceUc, AuthorizationReferenceController } from './api';
+import { AuthorizationReferenceController, AuthorizationReferenceUc } from './api';
 import { AuthorizationReferenceModule } from './authorization-reference.module';
+import { AccessTokenModule } from '@infra/access-token';
 
 @Module({
-	imports: [AuthorizationReferenceModule],
+	imports: [AuthorizationReferenceModule, AccessTokenModule],
 	providers: [AuthorizationReferenceUc],
 	controllers: [AuthorizationReferenceController],
 })
