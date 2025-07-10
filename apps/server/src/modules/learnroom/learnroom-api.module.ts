@@ -10,7 +10,6 @@ import { SchoolModule } from '@modules/school';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { CourseRoomsController } from './controller/course-rooms.controller';
-import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { LearnroomModule } from './learnroom.module';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
@@ -18,7 +17,6 @@ import { DashboardModelMapper, DashboardRepo, LegacyBoardRepo } from './repo';
 import { DASHBOARD_REPO } from './repo/mikro-orm/dashboard.repo';
 import {
 	CourseCopyUC,
-	CourseImportUc,
 	CourseRoomsAuthorisationService,
 	CourseRoomsUc,
 	DashboardUc,
@@ -44,7 +42,7 @@ import {
 		ClassModule,
 		CourseModule,
 	],
-	controllers: [DashboardController, CourseRoomsController, CourseController],
+	controllers: [DashboardController, CourseRoomsController],
 	providers: [
 		DashboardUc,
 		CourseRoomsUc,
@@ -53,7 +51,6 @@ import {
 		LessonCopyUC,
 		CourseCopyUC,
 		CourseRoomsAuthorisationService,
-		CourseImportUc,
 		// FIXME Refactor UCs to use services and remove these imports
 		{
 			provide: DASHBOARD_REPO,

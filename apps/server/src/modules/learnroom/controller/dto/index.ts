@@ -1,5 +1,4 @@
 export { CourseExportBodyParams } from './course-export.body.params';
-export { CourseImportBodyParams } from './course-import.body.params';
 export { CourseRoomElementUrlParams } from './course-room-element.url.params';
 export { CourseRoomUrlParams } from './course-room.url.params';
 export { DashboardGridElementResponse, DashboardGridSubElementResponse, DashboardResponse } from './dashboard.response';
