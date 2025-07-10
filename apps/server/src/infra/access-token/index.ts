@@ -1,2 +1,2 @@
-export * from './acsess-token.module';
+export * from './access-token.module';
 export * from './domain';
