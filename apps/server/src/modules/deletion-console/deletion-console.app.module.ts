@@ -10,19 +10,35 @@ import { createConfigModuleOptions } from '@shared/common/config-module-options'
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ConsoleModule } from 'nestjs-console';
 import { DeletionClient } from './deletion-client';
-import { ENTITIES } from './deletion-console.entity.imports';
+import { ENTITIES, TEST_ENTITIES } from './deletion-console.entity.imports';
 import { DeletionExecutionConsole } from './deletion-execution.console';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { deletionConsoleConfig } from './deletion.config';
 import { BatchDeletionService } from './services';
 import { BatchDeletionUc, DeletionExecutionUc } from './uc';
+import { MongoMemoryDatabaseModule } from '@testing/database';
+import path from 'path';
 
+const deletionConsoleModules = [
+	ConsoleModule,
+	ConsoleWriterModule,
+	UserModule,
+	ConfigModule.forRoot(createConfigModuleOptions(deletionConsoleConfig)),
+	AccountModule,
+	HttpModule,
+];
+
+const providers = [
+	DeletionClient,
+	DeletionQueueConsole,
+	BatchDeletionUc,
+	BatchDeletionService,
+	DeletionExecutionConsole,
+	DeletionExecutionUc,
+];
 @Module({
 	imports: [
-		ConsoleModule,
-		ConsoleWriterModule,
-		UserModule,
-		ConfigModule.forRoot(createConfigModuleOptions(deletionConsoleConfig)),
+		...deletionConsoleModules,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
@@ -33,16 +49,18 @@ import { BatchDeletionUc, DeletionExecutionUc } from './uc';
 			entities: ENTITIES,
 			// debug: true, // use it for locally debugging of queries
 		}),
-		AccountModule,
-		HttpModule,
 	],
-	providers: [
-		DeletionClient,
-		DeletionQueueConsole,
-		BatchDeletionUc,
-		BatchDeletionService,
-		DeletionExecutionConsole,
-		DeletionExecutionUc,
-	],
+	providers,
 })
 export class DeletionConsoleModule {}
+
+@Module({
+	imports: [
+		...deletionConsoleModules,
+		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
+	],
+	providers,
+})
+export class DeletionConsoleTestModule {}
+
+export const projectRoot = path.resolve(__dirname, '../../../../..');
