@@ -38,6 +38,7 @@ describe('board copy service', () => {
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let boardRepo: DeepMocked<LegacyBoardRepo>;
+	let columnBoardNodeRepo: DeepMocked<ColumnBoardNodeRepo>;
 
 	afterAll(async () => {
 		await module.close();
@@ -96,7 +97,8 @@ describe('board copy service', () => {
 		copyHelperService = module.get(CopyHelperService);
 		columnBoardService = module.get(ColumnBoardService);
 		boardRepo = module.get(LegacyBoardRepo);
-		boardRepo.save = jest.fn();
+		columnBoardNodeRepo = module.get(ColumnBoardNodeRepo);
+		jest.spyOn(boardRepo, 'save').mockImplementation();
 	});
 
 	beforeEach(() => {
@@ -257,7 +259,7 @@ describe('board copy service', () => {
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: lessonCopy,
 				});
-				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
+				jest.spyOn(lessonCopyService, 'updateCopiedEmbeddedTasks').mockImplementation((status: CopyStatus) => status);
 
 				return { destinationCourse, originalBoard, user, originalLesson };
 			};
@@ -371,28 +373,32 @@ describe('board copy service', () => {
 			});
 		});
 
-		describe('when different elements have been copied', () => {
+		describe('swap link ids when different elements have been copied', () => {
 			const setup = () => {
 				const originalTask = taskFactory.buildWithId();
 				const taskElement = taskBoardElementFactory.buildWithId({ target: originalTask });
+
 				const taskCopy = taskFactory.buildWithId({ name: originalTask.name });
-				taskCopyService.copyTask.mockResolvedValue({
+				const taskCopyStatus: CopyStatus = {
 					title: taskCopy.name,
 					type: CopyElementType.TASK,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: taskCopy,
-				});
+				};
+				taskCopyService.copyTask.mockResolvedValue(taskCopyStatus);
 
 				const originalLesson = lessonFactory.buildWithId();
 				const lessonElement = lessonBoardElementFactory.buildWithId({ target: originalLesson });
+
 				const lessonCopy = lessonFactory.buildWithId({ name: originalLesson.name });
-				lessonCopyService.copyLesson.mockResolvedValue({
+				const lessonCopyStatus: CopyStatus = {
 					title: originalLesson.name,
 					type: CopyElementType.LESSON,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: lessonCopy,
-				});
-				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
+				};
+				lessonCopyService.copyLesson.mockResolvedValue(lessonCopyStatus);
+				lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(lessonCopyStatus);
 
 				const originalColumnBoard = columnBoardFactory.build();
 				const columnBoardTarget = columnBoardNodeFactory.build({
@@ -400,21 +406,26 @@ describe('board copy service', () => {
 				});
 				columnBoardTarget.id = originalColumnBoard.id;
 				const columnBoardElement = columnboardBoardElementFactory.buildWithId({ target: columnBoardTarget });
+
 				const columnBoardCopy = columnBoardFactory.build();
-				columnBoardService.copyColumnBoard.mockResolvedValue({
+				const columnBoardCopyStatus: CopyStatus = {
 					type: CopyElementType.COLUMNBOARD,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: columnBoardCopy,
 					originalEntity: originalColumnBoard,
 					title: columnBoardCopy.title,
-				});
+				};
+				columnBoardService.copyColumnBoard.mockResolvedValue(columnBoardCopyStatus);
+				const mockedColumnBoardNode = columnBoardNodeFactory.build();
+				columnBoardNodeRepo.findById.mockResolvedValue(mockedColumnBoardNode);
 
+				/*
 				const copyDict = new Map<EntityId, AuthorizableObject>()
 					.set(originalLesson.id, lessonCopy)
 					.set(originalTask.id, taskCopy)
 					.set(originalColumnBoard.id, columnBoardCopy);
 				copyHelperService.buildCopyEntityDict.mockReturnValue(copyDict);
-
+				*/
 				const originalCourse = courseEntityFactory.buildWithId();
 				const destinationCourse = courseEntityFactory.buildWithId();
 				const originalBoard = boardFactory.buildWithId({
@@ -422,6 +433,25 @@ describe('board copy service', () => {
 					course: originalCourse,
 				});
 				const user = userFactory.buildWithId();
+
+				const status: CopyStatus = {
+					title: 'board',
+					type: CopyElementType.BOARD,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: new LegacyBoard({ references: [], course: destinationCourse }),
+					originalEntity: originalBoard,
+					elements: [taskCopyStatus, lessonCopyStatus, columnBoardCopyStatus],
+				};
+
+				// Create a valid mapping
+				const copyMap = new Map<EntityId, EntityId>();
+				copyMap.set(originalTask.id, taskCopy.id);
+				copyMap.set(originalLesson.id, lessonCopy.id);
+				copyMap.set(originalColumnBoard.id, columnBoardCopy.id);
+				copyMap.set(originalBoard.course.id, destinationCourse.id);
+
+				// Mock the helper service to return the correct status
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
 
 				return {
 					originalCourse,
@@ -433,9 +463,22 @@ describe('board copy service', () => {
 					originalTask,
 					taskCopy,
 					originalLesson,
+					taskCopyStatus,
+					lessonCopyStatus,
+					columnBoardCopyStatus,
+					status,
+					copyMap,
 				};
 			};
 
+			it('should call columnBoardService.swapLinkedIdsInBoards', async () => {
+				const { destinationCourse, originalBoard, user, status, copyMap } = setup();
+
+				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
+
+				expect(columnBoardService.swapLinkedIdsInBoards).toHaveBeenCalledWith(status, copyMap);
+			});
+			/*
 			it('should trigger swapping ids for board', async () => {
 				const { destinationCourse, originalBoard, user, columnBoardCopy } = setup();
 				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
@@ -466,6 +509,8 @@ describe('board copy service', () => {
 				const map = columnBoardService.swapLinkedIds.mock.calls[0][1];
 				expect(map.get(originalCourse.id)).toEqual(destinationCourse.id);
 			});
+
+ */
 		});
 
 		describe('derive status from elements', () => {
@@ -528,7 +573,7 @@ describe('board copy service', () => {
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: lessonCopy,
 				});
-				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
+				jest.spyOn(lessonCopyService, 'updateCopiedEmbeddedTasks').mockImplementation((status: CopyStatus) => status);
 
 				return { destinationCourse, originalBoard, user, originalLesson };
 			};
@@ -563,7 +608,7 @@ describe('board copy service', () => {
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: lessonCopy,
 				});
-				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
+				jest.spyOn(lessonCopyService, 'updateCopiedEmbeddedTasks').mockImplementation((status: CopyStatus) => status);
 				boardRepo.save.mockRejectedValue(new Error());
 
 				return { destinationCourse, originalBoard, user, originalLesson };
