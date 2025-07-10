@@ -17,7 +17,6 @@ import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthorizableObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
@@ -478,39 +477,6 @@ describe('board copy service', () => {
 
 				expect(columnBoardService.swapLinkedIdsInBoards).toHaveBeenCalledWith(status, copyMap);
 			});
-			/*
-			it('should trigger swapping ids for board', async () => {
-				const { destinationCourse, originalBoard, user, columnBoardCopy } = setup();
-				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
-
-				expect(columnBoardService.swapLinkedIds).toHaveBeenCalledWith(columnBoardCopy.id, expect.anything());
-			});
-
-			it('should pass task for swapping ids', async () => {
-				const { destinationCourse, originalBoard, user, originalTask, taskCopy } = setup();
-				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
-
-				const map = columnBoardService.swapLinkedIds.mock.calls[0][1];
-				expect(map.get(originalTask.id)).toEqual(taskCopy.id);
-			});
-
-			it('should pass lesson for swapping ids', async () => {
-				const { destinationCourse, originalBoard, user, originalLesson, lessonCopy } = setup();
-				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
-
-				const map = columnBoardService.swapLinkedIds.mock.calls[0][1];
-				expect(map.get(originalLesson.id)).toEqual(lessonCopy.id);
-			});
-
-			it('should pass course for swapping ids', async () => {
-				const { originalCourse, destinationCourse, originalBoard, user } = setup();
-				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
-
-				const map = columnBoardService.swapLinkedIds.mock.calls[0][1];
-				expect(map.get(originalCourse.id)).toEqual(destinationCourse.id);
-			});
-
- */
 		});
 
 		describe('derive status from elements', () => {
