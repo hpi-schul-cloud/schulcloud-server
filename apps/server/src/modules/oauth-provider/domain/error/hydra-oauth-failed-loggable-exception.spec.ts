@@ -11,7 +11,6 @@ describe(HydraOauthFailedLoggableException.name, () => {
 			const axiosError: AxiosError = axiosErrorFactory.withError(error).build();
 
 			const exception = new HydraOauthFailedLoggableException(axiosError);
-			(exception as HydraOauthFailedLoggableException & { stack: string }).stack = 'mockedStack';
 
 			return {
 				exception,
@@ -28,7 +27,7 @@ describe(HydraOauthFailedLoggableException.name, () => {
 			expect(message).toEqual({
 				type: 'HYDRA_OAUTH_FAILED',
 				message: 'message: Bad Request code: 400',
-				stack: 'mockedStack',
+				stack: exception.stack,
 				data: JSON.stringify(error),
 			});
 		});
