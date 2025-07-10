@@ -9,7 +9,7 @@ import { AuthorizationContextVO } from './authorization-context.vo';
 @ValueObject()
 export class TokenPayload {
 	constructor(props: TokenPayload) {
-		this.context = props.context;
+		this.authorizationContext = props.authorizationContext;
 		this.referenceType = props.referenceType;
 		this.referenceId = props.referenceId;
 		this.userId = props.userId;
@@ -18,7 +18,7 @@ export class TokenPayload {
 
 	@ValidateNested()
 	@Type(() => AuthorizationContextVO)
-	public readonly context: AuthorizationContextVO;
+	public readonly authorizationContext: AuthorizationContextVO;
 
 	@IsEnum(AuthorizableReferenceType)
 	public readonly referenceType: AuthorizableReferenceType;

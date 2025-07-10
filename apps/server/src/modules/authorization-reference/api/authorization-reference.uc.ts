@@ -59,7 +59,7 @@ export class AuthorizationReferenceUc {
 		const result = await this.accessTokenService.resolveToken<TokenPayload>(accessToken);
 
 		const authorizationReference = AuthorizationReferenceMapper.mapToReferenceVo(
-			result.context,
+			result.authorizationContext,
 			result.referenceType,
 			result.referenceId,
 			result.userId,
@@ -78,7 +78,7 @@ export class AuthorizationReferenceUc {
 			authorizationReference.userId,
 			authorizationReference.referenceType,
 			authorizationReference.referenceId,
-			authorizationReference.context
+			authorizationReference.authorizationContext
 		);
 	}
 }

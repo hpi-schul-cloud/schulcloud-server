@@ -15,7 +15,7 @@ export class AuthorizationReferenceMapper {
 		const context = new AuthorizationContextVO(authorizationContext);
 
 		const referenceVo = new TokenPayload({
-			context,
+			authorizationContext: context,
 			referenceType,
 			referenceId,
 			userId,
