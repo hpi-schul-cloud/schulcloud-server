@@ -1,4 +1,4 @@
-import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { CurrentUser, ICurrentUser, JWT, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -50,9 +50,10 @@ export class AuthorizationReferenceController {
 	@Post('createToken')
 	public async createToken(
 		@Body() body: CreateAccessTokenParams,
-		@CurrentUser() user: ICurrentUser
+		@CurrentUser() user: ICurrentUser,
+		@JWT() jwt: string
 	): Promise<AccessTokenResponse> {
-		const response = await this.authorizationReferenceUc.createToken(user.userId, body);
+		const response = await this.authorizationReferenceUc.createToken(user.userId, body, jwt);
 
 		return response;
 	}

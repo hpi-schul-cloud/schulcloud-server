@@ -1,10 +1,11 @@
+import { AccessTokenModule } from '@infra/access-token';
+import { AuthGuardModule } from '@infra/auth-guard';
 import { Module } from '@nestjs/common';
 import { AuthorizationReferenceController, AuthorizationReferenceUc } from './api';
 import { AuthorizationReferenceModule } from './authorization-reference.module';
-import { AccessTokenModule } from '@infra/access-token';
 
 @Module({
-	imports: [AuthorizationReferenceModule, AccessTokenModule],
+	imports: [AuthorizationReferenceModule, AccessTokenModule, AuthGuardModule.register([])],
 	providers: [AuthorizationReferenceUc],
 	controllers: [AuthorizationReferenceController],
 })
