@@ -23,7 +23,7 @@ import { PassThrough, Readable } from 'stream';
 import { CopyFiles, File, GetFile, ListFiles, ObjectKeysRecursive, S3Config } from './interface';
 import { S3ClientActionLoggable } from './loggable';
 
-const limit = pLimit(50); // Limit concurrency to 50
+const limit = pLimit(40); // Limit concurrency to 40
 
 export class S3ClientAdapter {
 	private readonly deletedFolderName = 'trash';
@@ -248,31 +248,29 @@ export class S3ClientAdapter {
 	}
 
 	public async delete(paths: string[]): Promise<void> {
-		return limit(async () => {
-			try {
-				this.logger.debug(
-					new S3ClientActionLoggable('Start delete of files', {
-						action: 'delete',
-						objectPath: paths,
-						bucket: this.config.bucket,
-					})
-				);
+		try {
+			this.logger.debug(
+				new S3ClientActionLoggable('Start delete of files', {
+					action: 'delete',
+					objectPath: paths,
+					bucket: this.config.bucket,
+				})
+			);
 
-				if (paths.length === 0) return;
+			if (paths.length === 0) return;
 
-				const pathObjects = paths.map((p) => {
-					return { Key: p };
-				});
-				const req = new DeleteObjectsCommand({
-					Bucket: this.config.bucket,
-					Delete: { Objects: pathObjects },
-				});
+			const pathObjects = paths.map((p) => {
+				return { Key: p };
+			});
+			const req = new DeleteObjectsCommand({
+				Bucket: this.config.bucket,
+				Delete: { Objects: pathObjects },
+			});
 
-				await this.client.send(req);
-			} catch (err) {
-				throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
-			}
-		});
+			await this.client.send(req);
+		} catch (err) {
+			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
+		}
 	}
 
 	public async list(params: ListFiles): Promise<ObjectKeysRecursive> {
