@@ -1,5 +1,5 @@
 import { StorageClient } from '@infra/valkey-client';
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ACCESS_TOKEN_VALKEY_CLIENT, AccessTokenConfig } from '../access-token.config';
 import { AccessToken } from './access-token.vo';
@@ -40,7 +40,7 @@ export class AccessTokenService {
 
 			return payload;
 		} catch (error) {
-			throw new Error(`Invalid payload for token ${token}`);
+			throw new InternalServerErrorException(`Invalid payload for token ${token}`, { cause: error });
 		}
 	}
 
