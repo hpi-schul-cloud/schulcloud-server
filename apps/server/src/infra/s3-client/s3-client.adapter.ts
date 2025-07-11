@@ -18,9 +18,12 @@ import { ErrorUtils } from '@core/error/utils';
 import { Logger } from '@core/logger';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
+import pLimit from 'p-limit';
 import { PassThrough, Readable } from 'stream';
 import { CopyFiles, File, GetFile, ListFiles, ObjectKeysRecursive, S3Config } from './interface';
 import { S3ClientActionLoggable } from './loggable';
+
+const limit = pLimit(50); // Limit concurrency to 50
 
 export class S3ClientAdapter {
 	private readonly deletedFolderName = 'trash';
@@ -97,39 +100,41 @@ export class S3ClientAdapter {
 	}
 
 	public async create(path: string, file: File): Promise<ServiceOutputTypes> {
-		try {
-			this.logger.debug(
-				new S3ClientActionLoggable('Start upload of files', {
-					action: 'create',
-					objectPath: path,
-					bucket: this.config.bucket,
-				})
-			);
+		return limit(async () => {
+			try {
+				this.logger.debug(
+					new S3ClientActionLoggable('Start upload of files', {
+						action: 'create',
+						objectPath: path,
+						bucket: this.config.bucket,
+					})
+				);
 
-			const req: PutObjectCommandInput = {
-				Body: file.data,
-				Bucket: this.config.bucket,
-				Key: path,
-				ContentType: file.mimeType,
-			};
+				const req: PutObjectCommandInput = {
+					Body: file.data,
+					Bucket: this.config.bucket,
+					Key: path,
+					ContentType: file.mimeType,
+				};
 
-			const upload = new Upload({
-				client: this.client,
-				params: req,
-			});
+				const upload = new Upload({
+					client: this.client,
+					params: req,
+				});
 
-			const commandOutput = await upload.done();
+				const commandOutput = await upload.done();
 
-			return commandOutput;
-		} catch (err: unknown) {
-			if (TypeGuard.getValueFromObjectKey(err, 'Code') === 'NoSuchBucket') {
-				await this.createBucket();
+				return commandOutput;
+			} catch (err: unknown) {
+				if (TypeGuard.getValueFromObjectKey(err, 'Code') === 'NoSuchBucket') {
+					await this.createBucket();
 
-				return await this.create(path, file);
+					return await this.create(path, file);
+				}
+
+				throw new InternalServerErrorException('S3ClientAdapter:create', ErrorUtils.createHttpExceptionOptions(err));
 			}
-
-			throw new InternalServerErrorException('S3ClientAdapter:create', ErrorUtils.createHttpExceptionOptions(err));
-		}
+		});
 	}
 
 	public async moveToTrash(paths: string[]): Promise<void> {
@@ -243,29 +248,31 @@ export class S3ClientAdapter {
 	}
 
 	public async delete(paths: string[]): Promise<void> {
-		try {
-			this.logger.debug(
-				new S3ClientActionLoggable('Start delete of files', {
-					action: 'delete',
-					objectPath: paths,
-					bucket: this.config.bucket,
-				})
-			);
+		return limit(async () => {
+			try {
+				this.logger.debug(
+					new S3ClientActionLoggable('Start delete of files', {
+						action: 'delete',
+						objectPath: paths,
+						bucket: this.config.bucket,
+					})
+				);
 
-			if (paths.length === 0) return;
+				if (paths.length === 0) return;
 
-			const pathObjects = paths.map((p) => {
-				return { Key: p };
-			});
-			const req = new DeleteObjectsCommand({
-				Bucket: this.config.bucket,
-				Delete: { Objects: pathObjects },
-			});
+				const pathObjects = paths.map((p) => {
+					return { Key: p };
+				});
+				const req = new DeleteObjectsCommand({
+					Bucket: this.config.bucket,
+					Delete: { Objects: pathObjects },
+				});
 
-			await this.client.send(req);
-		} catch (err) {
-			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
-		}
+				await this.client.send(req);
+			} catch (err) {
+				throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
+			}
+		});
 	}
 
 	public async list(params: ListFiles): Promise<ObjectKeysRecursive> {
