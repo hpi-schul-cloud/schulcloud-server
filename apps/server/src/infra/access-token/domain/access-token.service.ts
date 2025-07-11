@@ -44,10 +44,6 @@ export class AccessTokenService {
 		}
 	}
 
-	public async deleteToken(token: AccessToken): Promise<void> {
-		await this.storageClient.del(token.token);
-	}
-
 	private async persistTokenData(token: string, value: string): Promise<void> {
 		await this.storageClient.set(token, value, 'EX', this.TOKEN_TTL_IN_SECONDS);
 	}
