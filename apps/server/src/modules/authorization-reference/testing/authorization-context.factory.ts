@@ -5,7 +5,7 @@ import { AuthorizationContext } from '../domain';
 
 export const authorizationContextFactory = BaseFactory.define<AuthorizationContext, AuthorizationContext>(
 	AuthorizationContext,
-	({}) => {
+	() => {
 		const authorizationContext = {
 			action: Action.read,
 			requiredPermissions: [Permission.ACCOUNT_CREATE],

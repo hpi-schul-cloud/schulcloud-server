@@ -4,7 +4,7 @@ import { ObjectId } from 'bson';
 import { TokenMetadata } from '../domain';
 import { authorizationContextFactory } from './authorization-context.factory';
 
-export const tokenMetadataFactory = BaseFactory.define<TokenMetadata, TokenMetadata>(TokenMetadata, ({}) => {
+export const tokenMetadataFactory = BaseFactory.define<TokenMetadata, TokenMetadata>(TokenMetadata, () => {
 	const tokenMetadata = {
 		authorizationContext: authorizationContextFactory.build(),
 		referenceType: AuthorizableReferenceType.School,
