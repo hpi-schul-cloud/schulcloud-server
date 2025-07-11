@@ -32,7 +32,7 @@ export class AuthorizationReferenceUc {
 			context
 		);
 
-		const authorizationResponse = AuthorizationResponseMapper.mapToResponse(userId, hasPermission);
+		const authorizationResponse = AuthorizationResponseMapper.mapToAuthorizedResponse(userId, hasPermission);
 
 		return authorizationResponse;
 	}

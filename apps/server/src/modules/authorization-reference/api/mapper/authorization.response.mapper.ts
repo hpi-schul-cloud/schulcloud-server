@@ -2,7 +2,7 @@ import { EntityId } from '@shared/domain/types';
 import { AccessTokenPayloadResponse, AccessTokenResponse, AuthorizedResponse } from '../dto/authorization.reponse';
 
 export class AuthorizationResponseMapper {
-	public static mapToResponse(userId: EntityId, isAuthorized: boolean): AuthorizedResponse {
+	public static mapToAuthorizedResponse(userId: EntityId, isAuthorized: boolean): AuthorizedResponse {
 		const authorizationResponse = new AuthorizedResponse({
 			userId,
 			isAuthorized,

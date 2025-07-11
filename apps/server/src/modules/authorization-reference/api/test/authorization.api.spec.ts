@@ -198,7 +198,7 @@ describe('Authorization Controller (API)', () => {
 				const loggedInClient = await testApiClient.login(teacherAccount);
 				const postData = createExamplePostData(otherUser.id);
 				postData.context.requiredPermissions = [Permission.ADMIN_EDIT];
-				const expectedResult = AuthorizationResponseMapper.mapToResponse(teacherUser.id, false);
+				const expectedResult = AuthorizationResponseMapper.mapToAuthorizedResponse(teacherUser.id, false);
 
 				return {
 					loggedInClient,
@@ -226,7 +226,7 @@ describe('Authorization Controller (API)', () => {
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 				const postData = createExamplePostData(teacherUser.id);
-				const expectedResult = AuthorizationResponseMapper.mapToResponse(teacherUser.id, true);
+				const expectedResult = AuthorizationResponseMapper.mapToAuthorizedResponse(teacherUser.id, true);
 
 				return {
 					loggedInClient,
