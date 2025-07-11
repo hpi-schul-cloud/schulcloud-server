@@ -7,8 +7,8 @@ import { IsEnum, IsMongoId, IsObject, IsOptional, ValidateNested } from 'class-v
 import { AuthorizationContextVO } from './authorization-context.vo';
 
 @ValueObject()
-export class TokenPayload {
-	constructor(props: TokenPayload) {
+export class TokenMetadata {
+	constructor(props: TokenMetadata) {
 		this.authorizationContext = props.authorizationContext;
 		this.referenceType = props.referenceType;
 		this.referenceId = props.referenceId;

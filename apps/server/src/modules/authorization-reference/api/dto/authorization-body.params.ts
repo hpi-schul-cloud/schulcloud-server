@@ -1,4 +1,4 @@
-import { AccessTokenPayload } from '@infra/access-token';
+import { CustomPayload } from '@infra/access-token';
 import { Action, AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { ApiProperty } from '@nestjs/swagger';
 import { Permission } from '@shared/domain/interface';
@@ -53,7 +53,7 @@ export class CreateAccessTokenParams extends AuthorizationBodyParams {
 	@ApiProperty({ description: 'The payload of the access token.' })
 	@IsObject()
 	@IsOptional()
-	public payload: AccessTokenPayload = {};
+	public payload: CustomPayload = {};
 }
 
 export class AccessTokenParams {

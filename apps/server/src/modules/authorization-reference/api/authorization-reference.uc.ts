@@ -2,7 +2,7 @@ import { AccessTokenService } from '@infra/access-token';
 import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { AuthorizationReferenceMapper, AuthorizationReferenceService, TokenPayload } from '../domain';
+import { AuthorizationReferenceService, TokenMetadata, TokenMetadataMapper } from '../domain';
 import {
 	AccessTokenParams,
 	AccessTokenPayloadResponse,
@@ -38,27 +38,25 @@ export class AuthorizationReferenceUc {
 	}
 
 	public async createToken(userId: EntityId, params: CreateAccessTokenParams): Promise<AccessTokenResponse> {
-		const authorizationReference = AuthorizationReferenceMapper.mapToReferenceVo(
+		const authorizationReference = TokenMetadataMapper.mapToTokenMetadata(
 			params.context,
 			params.referenceType,
 			params.referenceId,
 			userId,
 			params.payload
 		);
-
 		await this.checkPermissionsForReference(authorizationReference);
 
 		const { token } = await this.accessTokenService.createToken(authorizationReference);
-
 		const accessTokenResponse = AuthorizationResponseMapper.mapToAccessTokenResponse(token);
 
 		return accessTokenResponse;
 	}
 
 	public async resolveToken(accessToken: AccessTokenParams): Promise<AccessTokenPayloadResponse> {
-		const result = await this.accessTokenService.resolveToken<TokenPayload>(accessToken);
+		const result = await this.accessTokenService.resolveToken<TokenMetadata>(accessToken);
 
-		const authorizationReference = AuthorizationReferenceMapper.mapToReferenceVo(
+		const authorizationReference = TokenMetadataMapper.mapToTokenMetadata(
 			result.authorizationContext,
 			result.referenceType,
 			result.referenceId,
@@ -73,7 +71,7 @@ export class AuthorizationReferenceUc {
 		return payloadResponse;
 	}
 
-	private async checkPermissionsForReference(authorizationReference: TokenPayload): Promise<void> {
+	private async checkPermissionsForReference(authorizationReference: TokenMetadata): Promise<void> {
 		await this.authorizationReferenceService.checkPermissionByReferences(
 			authorizationReference.userId,
 			authorizationReference.referenceType,

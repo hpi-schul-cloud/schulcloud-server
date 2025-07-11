@@ -1,4 +1,4 @@
-import { AccessTokenPayload } from '@infra/access-token';
+import { CustomPayload } from '@infra/access-token';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthorizedResponse {
@@ -25,9 +25,9 @@ export class AccessTokenResponse {
 
 export class AccessTokenPayloadResponse {
 	@ApiProperty()
-	payload: AccessTokenPayload;
+	payload: CustomPayload;
 
-	constructor(props: AccessTokenPayload) {
+	constructor(props: CustomPayload) {
 		this.payload = props;
 	}
 }

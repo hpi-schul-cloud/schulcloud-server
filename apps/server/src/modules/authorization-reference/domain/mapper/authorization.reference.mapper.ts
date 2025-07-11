@@ -1,20 +1,20 @@
-import { AccessTokenPayload } from '@infra/access-token';
+import { CustomPayload } from '@infra/access-token';
 import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { EntityId } from '@shared/domain/types';
 import { AuthorizationContextVO } from '../vo/authorization-context.vo';
-import { TokenPayload } from '../vo/authorization-reference.vo';
+import { TokenMetadata } from '../vo/token-metadata';
 
-export class AuthorizationReferenceMapper {
-	public static mapToReferenceVo(
+export class TokenMetadataMapper {
+	public static mapToTokenMetadata(
 		authorizationContext: AuthorizationContext,
 		referenceType: AuthorizableReferenceType,
 		referenceId: EntityId,
 		userId: EntityId,
-		payload: AccessTokenPayload
-	): TokenPayload {
+		payload: CustomPayload
+	): TokenMetadata {
 		const context = new AuthorizationContextVO(authorizationContext);
 
-		const referenceVo = new TokenPayload({
+		const referenceVo = new TokenMetadata({
 			authorizationContext: context,
 			referenceType,
 			referenceId,
