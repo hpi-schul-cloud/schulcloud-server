@@ -1,5 +1,5 @@
 import { StorageClient } from '@infra/valkey-client';
-import { Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ACCESS_TOKEN_VALKEY_CLIENT, AccessTokenConfig } from '../access-token.config';
 import { AccessToken } from './access-token.vo';
@@ -30,7 +30,7 @@ export class AccessTokenService {
 		const value = await this.storageClient.get(token);
 
 		if (!value) {
-			throw new Error(`Token ${token} not found`);
+			throw new ForbiddenException(`Token ${token} not found`);
 		}
 
 		await this.renewTokenTimeout(token, value);
