@@ -51,7 +51,7 @@ export class AuthorizationReferenceUc {
 
 		await this.checkPermissionsForReference(authorizationReference);
 
-		const { token } = await this.accessTokenService.createToken(authorizationReference);
+		const { token } = await this.accessTokenService.createToken(authorizationReference, params.tokenTtl);
 		const accessTokenResponse = AuthorizationResponseMapper.mapToAccessTokenResponse(token);
 
 		return accessTokenResponse;

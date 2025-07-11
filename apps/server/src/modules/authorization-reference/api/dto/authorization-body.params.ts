@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsMongoId, IsObject, IsOptional, IsUUID, ValidateNested } from 'class-validator';
+import { IsArray, IsEnum, IsMongoId, IsNumber, IsObject, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 
 class AuthorizationContextParams implements AuthorizationContext {
 	@IsEnum(Action)
@@ -50,6 +50,10 @@ export class AuthorizationBodyParams {
 }
 
 export class CreateAccessTokenParams extends AuthorizationBodyParams {
+	@ApiProperty({ description: 'Lifetime of token' })
+	@IsNumber()
+	public tokenTtl!: number;
+
 	@ApiProperty({ description: 'The payload of the access token.' })
 	@IsObject()
 	@IsOptional()
@@ -57,6 +61,10 @@ export class CreateAccessTokenParams extends AuthorizationBodyParams {
 }
 
 export class AccessTokenParams {
+	@ApiProperty({ description: 'Lifetime of token' })
+	@IsNumber()
+	public tokenTtl!: number;
+
 	@ApiProperty({ description: 'The access token to be resolved.' })
 	@IsUUID()
 	public token!: string;
