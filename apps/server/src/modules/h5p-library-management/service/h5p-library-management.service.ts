@@ -105,7 +105,6 @@ export class H5PLibraryManagementService {
 			!wantedLibraries.includes(librariesToCheck[lastPositionLibrariesToCheckArray].machineName) &&
 			librariesToCheck[lastPositionLibrariesToCheckArray].dependentsCount === 0
 		) {
-			console.log(librariesToCheck[lastPositionLibrariesToCheckArray], 'is not wanted anymore, uninstalling');
 			// force removal, don't let content prevent it, therefore use libraryStorage directly
 			// also to avoid conflicts, remove one-by-one, not using for-await:
 			await this.libraryStorage.deleteLibrary(librariesToCheck[lastPositionLibrariesToCheckArray]);
@@ -147,24 +146,10 @@ export class H5PLibraryManagementService {
 		try {
 			await this.contentTypeRepo.installContentType(librariesToInstall[lastPositionLibrariesToInstallArray], user);
 		} catch (error: unknown) {
-			console.log(
-				'Failed to install content type',
-				{
-					library: librariesToInstall[lastPositionLibrariesToInstallArray],
-					error: error instanceof Error ? error.message : String(error),
-				},
-				'Reverting installation!'
-			);
-
-			// const libraryToBeRemoved: ILibraryName = {
-			// 	machineName: contentType[0].machineName,
-			// 	majorVersion: contentType[0].majorVersion,
-			// 	minorVersion: contentType[0].minorVersion,
-			// };
-
-			// console.log('Removing library:', libraryToBeRemoved);
-
-			// await this.libraryStorage.deleteMetadata(libraryToBeRemoved);
+			console.log('Failed to install content type', {
+				library: librariesToInstall[lastPositionLibrariesToInstallArray],
+				error: error instanceof Error ? error.message : String(error),
+			});
 		}
 
 		await this.installLibraries(librariesToInstall.slice(0, lastPositionLibrariesToInstallArray));
