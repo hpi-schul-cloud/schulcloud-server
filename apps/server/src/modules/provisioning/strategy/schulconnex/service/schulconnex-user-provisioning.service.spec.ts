@@ -7,13 +7,11 @@ import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import CryptoJS from 'crypto-js';
+import crypto from 'node:crypto';
 import { ExternalUserDto } from '../../../dto';
 import { SchoolMissingLoggableException, UserRoleUnknownLoggableException } from '../../../loggable';
 import { externalUserDtoFactory } from '../../../testing';
 import { SchulconnexUserProvisioningService } from './schulconnex-user-provisioning.service';
-
-jest.mock('crypto-js');
 
 describe(SchulconnexUserProvisioningService.name, () => {
 	let module: TestingModule;
@@ -106,18 +104,9 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				id: new ObjectId().toHexString(),
 				name: RoleName.USER,
 			});
-			const hash = 'hash';
 
 			roleService.findByNames.mockResolvedValue([userRole]);
 			userService.save.mockResolvedValue(savedUser);
-			jest.spyOn(CryptoJS, 'SHA256').mockReturnValue({
-				toString: jest.fn().mockReturnValue(hash),
-				words: [],
-				sigBytes: 0,
-				concat: jest.fn(),
-				clamp: jest.fn(),
-				clone: jest.fn(),
-			});
 
 			return {
 				existingUser,
@@ -127,7 +116,6 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				userRole,
 				schoolId,
 				systemId,
-				hash,
 			};
 		};
 
@@ -179,10 +167,10 @@ describe(SchulconnexUserProvisioningService.name, () => {
 			});
 
 			it('should create a new account', async () => {
-				const { externalUser, schoolId, systemId, hash } = setupUser();
+				const { externalUser, schoolId, systemId } = setupUser();
 				const account = {
 					userId: 'userId',
-					username: hash,
+					username: crypto.createHash('sha256').update('userId').digest('base64'),
 					systemId,
 					activated: true,
 				} as AccountSave;
