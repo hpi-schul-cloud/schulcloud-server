@@ -339,7 +339,7 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @returns an array of filenames
 	 */
 	public async listFiles(libraryName: ILibraryName, withMetadata = true): Promise<string[]> {
-		const prefix = this.getS3Key(libraryName, 'language');
+		const prefix = this.getS3Key(libraryName, '');
 
 		const { files } = await this.s3Client.list({ path: prefix });
 
