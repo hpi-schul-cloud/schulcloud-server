@@ -142,7 +142,7 @@ export class Migration20250710083440 extends Migration {
 			'vidisConfig.username': { $ne: undefined },
 		});
 
-		const numberOfUpdatedMediaSourceVidisConfigs = await this.updateSecrets(
+		const numberOfUpdatedMediaSourceVidisUsernames = await this.updateSecrets(
 			mediaSourcesVidisWithUsername,
 			['vidisConfig', 'username'],
 			AES_KEY,
@@ -150,7 +150,7 @@ export class Migration20250710083440 extends Migration {
 		);
 
 		console.info(
-			`Updated Vidis username of ${numberOfUpdatedMediaSourceVidisConfigs} media sources with new encryption function.`
+			`Updated Vidis username of ${numberOfUpdatedMediaSourceVidisUsernames} media sources with new encryption function.`
 		);
 
 		// ----------------------------------------------------------------------------------
@@ -160,7 +160,7 @@ export class Migration20250710083440 extends Migration {
 			'vidisConfig.password': { $ne: undefined },
 		});
 
-		const numberOfUpdatedMediaSourceVidisPasswordConfigs = await this.updateSecrets(
+		const numberOfUpdatedMediaSourceVidisPasswords = await this.updateSecrets(
 			mediaSourcesVidisWithPassword,
 			['vidisConfig', 'password'],
 			AES_KEY,
@@ -168,7 +168,7 @@ export class Migration20250710083440 extends Migration {
 		);
 
 		console.info(
-			`Updated Vidis password of ${numberOfUpdatedMediaSourceVidisPasswordConfigs} media sources with new encryption function.`
+			`Updated Vidis password of ${numberOfUpdatedMediaSourceVidisPasswords} media sources with new encryption function.`
 		);
 	}
 
@@ -297,14 +297,14 @@ export class Migration20250710083440 extends Migration {
 			'vidisConfig.username': { $ne: undefined },
 		});
 
-		const numberOfUpdatedMediaSourceVidisConfigs = await this.revertUpdateOfSecrets(
+		const numberOfUpdatedMediaSourceVidisUsernames = await this.revertUpdateOfSecrets(
 			mediaSourcesVidisWithUsername,
 			['vidisConfig', 'username'],
 			AES_KEY,
 			mediaSourcesCollectionName
 		);
 
-		console.info(`Reverted update of Vidis username of ${numberOfUpdatedMediaSourceVidisConfigs} media sources.`);
+		console.info(`Reverted update of Vidis username of ${numberOfUpdatedMediaSourceVidisUsernames} media sources.`);
 
 		// ----------------------------------------------------------------------------------
 
@@ -313,16 +313,14 @@ export class Migration20250710083440 extends Migration {
 			'vidisConfig.password': { $ne: undefined },
 		});
 
-		const numberOfUpdatedMediaSourceVidisPasswordConfigs = await this.revertUpdateOfSecrets(
+		const numberOfUpdatedMediaSourceVidisPasswords = await this.revertUpdateOfSecrets(
 			mediaSourcesVidisWithPassword,
 			['vidisConfig', 'password'],
 			AES_KEY,
 			mediaSourcesCollectionName
 		);
 
-		console.info(
-			`Reverted update of Vidis password of ${numberOfUpdatedMediaSourceVidisPasswordConfigs} media sources.`
-		);
+		console.info(`Reverted update of Vidis password of ${numberOfUpdatedMediaSourceVidisPasswords} media sources.`);
 	}
 
 	private async updateSecrets<T>(
