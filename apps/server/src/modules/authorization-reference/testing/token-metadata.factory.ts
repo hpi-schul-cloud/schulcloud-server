@@ -1,7 +1,7 @@
 import { AuthorizableReferenceType } from '@modules/authorization';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { ObjectId } from 'bson';
-import { TokenMetadata } from '../domain/vo/token-metadata';
+import { TokenMetadata } from '../domain';
 import { authorizationContextFactory } from './authorization-context.factory';
 
 export const tokenMetadataFactory = BaseFactory.define<TokenMetadata, TokenMetadata>(TokenMetadata, ({}) => {

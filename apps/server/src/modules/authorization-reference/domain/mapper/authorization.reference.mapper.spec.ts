@@ -2,7 +2,7 @@ import { AuthorizableReferenceType } from '@modules/authorization';
 import { ObjectId } from 'bson';
 import { tokenMetadataFactory } from '../../testing';
 import { TokenMetadataMapper } from '../mapper/authorization.reference.mapper';
-import { TokenMetadata } from '../vo/token-metadata';
+import { TokenMetadata } from '../vo';
 
 describe('TokenMetadataMapper', () => {
 	afterEach(() => {

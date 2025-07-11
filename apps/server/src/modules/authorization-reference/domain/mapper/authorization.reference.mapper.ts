@@ -1,6 +1,6 @@
 import { TypeGuard } from '@shared/common/guards';
+import { TokenMetadata } from '../vo';
 import { AuthorizationContextVO } from '../vo/authorization-context.vo';
-import { TokenMetadata } from '../vo/token-metadata';
 
 export class TokenMetadataMapper {
 	public static mapToTokenMetadata(props: unknown): TokenMetadata {

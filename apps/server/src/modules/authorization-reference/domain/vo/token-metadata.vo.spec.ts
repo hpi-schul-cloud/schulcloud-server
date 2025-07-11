@@ -1,7 +1,7 @@
 import { AuthorizableReferenceType } from '@modules/authorization';
 import { ObjectId } from 'bson';
 import { authorizationContextFactory } from '../../testing';
-import { TokenMetadata } from './token-metadata';
+import { TokenMetadata } from './token-metadata.vo';
 
 describe('TokenMetadata', () => {
 	afterEach(() => {
