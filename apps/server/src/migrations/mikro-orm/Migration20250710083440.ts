@@ -6,6 +6,7 @@ import CryptoJS from 'crypto-js';
 const storageProvidersCollectionName = 'storageproviders';
 const systemsCollectionName = 'systems';
 const externalToolsCollectionName = 'external-tools';
+const mediaSourcesCollectionName = 'media-sources';
 
 // Update all AES encrypted secrets with new encryption function.
 export class Migration20250710083440 extends Migration {
@@ -98,6 +99,60 @@ export class Migration20250710083440 extends Migration {
 		);
 
 		console.info(`Updated LTI 1.1 tool secrets of ${numberOfUpdatedLti11Tools} tools with new encryption function.`);
+
+		// ----------------------------------------------------------------------------------
+
+		// --- Update secret of media-source-oauth-config ---
+		const mediaSources = this.getCollection(mediaSourcesCollectionName).find({
+			'oauthConfig.clientSecret': { $ne: undefined },
+		});
+
+		const numberOfUpdatedMediaSourceOauthConfigs = await this.updateSecrets(
+			mediaSources,
+			['oauthConfig', 'clientSecret'],
+			AES_KEY,
+			mediaSourcesCollectionName
+		);
+
+		console.info(
+			`Updated OAuth clientSecret of ${numberOfUpdatedMediaSourceOauthConfigs} media sources with new encryption function.`
+		);
+
+		// ----------------------------------------------------------------------------------
+
+		// --- Update username of media-source-vidis-config ---
+		const mediaSourcesVidisWithUsername = this.getCollection(mediaSourcesCollectionName).find({
+			'vidisConfig.username': { $ne: undefined },
+		});
+
+		const numberOfUpdatedMediaSourceVidisConfigs = await this.updateSecrets(
+			mediaSourcesVidisWithUsername,
+			['vidisConfig', 'username'],
+			AES_KEY,
+			mediaSourcesCollectionName
+		);
+
+		console.info(
+			`Updated Vidis username of ${numberOfUpdatedMediaSourceVidisConfigs} media sources with new encryption function.`
+		);
+
+		// ----------------------------------------------------------------------------------
+
+		// --- Update password of media-source-vidis-config ---
+		const mediaSourcesVidisWithPassword = this.getCollection(mediaSourcesCollectionName).find({
+			'vidisConfig.password': { $ne: undefined },
+		});
+
+		const numberOfUpdatedMediaSourceVidisPasswordConfigs = await this.updateSecrets(
+			mediaSourcesVidisWithPassword,
+			['vidisConfig', 'password'],
+			AES_KEY,
+			mediaSourcesCollectionName
+		);
+
+		console.info(
+			`Updated Vidis password of ${numberOfUpdatedMediaSourceVidisPasswordConfigs} media sources with new encryption function.`
+		);
 	}
 
 	public async down(): Promise<void> {
@@ -185,6 +240,56 @@ export class Migration20250710083440 extends Migration {
 		);
 
 		console.info(`Reverted update of LTI 1.1 tool secrets of ${numberOfUpdatedLti11Tools} tools.`);
+
+		// ----------------------------------------------------------------------------------
+
+		// --- Revert update of secret of media-source-oauth-config ---
+		const mediaSources = this.getCollection(mediaSourcesCollectionName).find({
+			'oauthConfig.clientSecret': { $ne: undefined },
+		});
+
+		const numberOfUpdatedMediaSourceOauthConfigs = await this.revertUpdateOfSecrets(
+			mediaSources,
+			['oauthConfig', 'clientSecret'],
+			AES_KEY,
+			mediaSourcesCollectionName
+		);
+
+		console.info(`Reverted update of OAuth clientSecret of ${numberOfUpdatedMediaSourceOauthConfigs} media sources.`);
+
+		// ----------------------------------------------------------------------------------
+
+		// --- Revert update of username of media-source-vidis-config ---
+		const mediaSourcesVidisWithUsername = this.getCollection(mediaSourcesCollectionName).find({
+			'vidisConfig.username': { $ne: undefined },
+		});
+
+		const numberOfUpdatedMediaSourceVidisConfigs = await this.revertUpdateOfSecrets(
+			mediaSourcesVidisWithUsername,
+			['vidisConfig', 'username'],
+			AES_KEY,
+			mediaSourcesCollectionName
+		);
+
+		console.info(`Reverted update of Vidis username of ${numberOfUpdatedMediaSourceVidisConfigs} media sources.`);
+
+		// ----------------------------------------------------------------------------------
+
+		// --- Revert update of password of media-source-vidis-config ---
+		const mediaSourcesVidisWithPassword = this.getCollection(mediaSourcesCollectionName).find({
+			'vidisConfig.password': { $ne: undefined },
+		});
+
+		const numberOfUpdatedMediaSourceVidisPasswordConfigs = await this.revertUpdateOfSecrets(
+			mediaSourcesVidisWithPassword,
+			['vidisConfig', 'password'],
+			AES_KEY,
+			mediaSourcesCollectionName
+		);
+
+		console.info(
+			`Reverted update of Vidis password of ${numberOfUpdatedMediaSourceVidisPasswordConfigs} media sources.`
+		);
 	}
 
 	private async updateSecrets<T>(
