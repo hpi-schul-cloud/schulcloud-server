@@ -55,7 +55,7 @@ describe(CoursesClientAdapter.name, () => {
 	describe('createCourse', () => {
 		const setup = () => {
 			const params: CreateCourseBodyParams = {
-				title: faker.word.noun(),
+				name: faker.word.noun(),
 			};
 
 			return { params };

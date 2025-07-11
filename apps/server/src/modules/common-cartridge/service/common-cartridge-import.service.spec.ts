@@ -154,7 +154,7 @@ describe(CommonCartridgeImportService.name, () => {
 
 				await sut.importFile(file, currentUser);
 
-				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ title: 'test course' });
+				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ name: 'test course', color: '#455B6A' });
 			});
 
 			it('should create a board', async () => {
@@ -234,7 +234,10 @@ describe(CommonCartridgeImportService.name, () => {
 
 				await sut.importFile(file, currentUser);
 
-				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ title: 'Untitled Course' });
+				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({
+					name: 'Untitled Course',
+					color: '#455B6A',
+				});
 			});
 		});
 	});
