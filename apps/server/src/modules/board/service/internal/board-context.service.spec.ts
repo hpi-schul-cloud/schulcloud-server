@@ -17,17 +17,23 @@ import { setupEntities } from '@testing/database';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
 import { columnBoardFactory, columnFactory } from '../../testing';
 import { BoardContextService } from './board-context.service';
+import { RoomService } from '@modules/room';
 
 describe(BoardContextService.name, () => {
 	let module: TestingModule;
 	let service: BoardContextService;
 	let courseService: DeepMocked<CourseService>;
+	let roomService: DeepMocked<RoomService>;
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BoardContextService,
+				{
+					provide: RoomService,
+					useValue: createMock<RoomService>(),
+				},
 				{
 					provide: RoomMembershipService,
 					useValue: createMock<RoomMembershipService>(),
@@ -40,6 +46,7 @@ describe(BoardContextService.name, () => {
 		}).compile();
 
 		service = module.get(BoardContextService);
+		roomService = module.get(RoomService);
 		roomMembershipService = module.get(RoomMembershipService);
 		courseService = module.get(CourseService);
 

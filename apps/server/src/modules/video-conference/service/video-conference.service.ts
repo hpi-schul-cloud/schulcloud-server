@@ -129,6 +129,7 @@ export class VideoConferenceService {
 			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
+				// TODO: ROOMEDITOR still consistent after change ??? is this whole scenario even planed?
 				return roomMember.roles.some((role) => role.name === RoleName.ROOMEDITOR);
 			}
 
@@ -139,7 +140,11 @@ export class VideoConferenceService {
 			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
 
 			if (boardAuthorisedUser) {
-				return boardAuthorisedUser?.roles.includes(BoardRoles.EDITOR);
+				const canRoomEditorManageVideoconference =
+					boardDoAuthorizable.boardSettings.canRoomEditorManageVideoconference ?? false;
+				const isBoardEditor = boardAuthorisedUser.roles.includes(BoardRoles.EDITOR);
+				const isBoardAdmin = boardAuthorisedUser.roles.includes(BoardRoles.ADMIN);
+				return (canRoomEditorManageVideoconference && isBoardEditor) || isBoardAdmin;
 			}
 
 			return false;
@@ -166,7 +171,8 @@ export class VideoConferenceService {
 			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
 
 			if (boardAuthorisedUser) {
-				return boardAuthorisedUser?.roles.includes(BoardRoles.READER);
+				const boardUserRoles = boardAuthorisedUser.roles;
+				return [BoardRoles.READER, BoardRoles.EDITOR].some((role) => boardUserRoles.includes(role));
 			}
 
 			return false;

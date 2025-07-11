@@ -5,6 +5,7 @@ import { TldrawClientModule } from '@infra/tldraw-client';
 import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { CourseModule } from '@modules/course';
+import { RoomModule } from '@modules/room';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
@@ -49,6 +50,7 @@ import {
 		}),
 		CollaborativeTextEditorModule,
 		AuthorizationModule,
+		RoomModule,
 		RoomMembershipModule,
 		H5pEditorClientModule,
 	],

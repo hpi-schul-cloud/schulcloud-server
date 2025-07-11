@@ -519,7 +519,7 @@ describe(VideoConferenceService.name, () => {
 			});
 		});
 
-		describe('when user has editor role in video conference node', () => {
+		describe('when user has admin role in video conference node', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const element = videoConferenceElementFactory.build();
@@ -528,7 +528,7 @@ describe(VideoConferenceService.name, () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				const boardNodeAuthorizable = new BoardNodeAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+					users: [{ userId: user.id, roles: [BoardRoles.ADMIN] }],
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
@@ -701,6 +701,51 @@ describe(VideoConferenceService.name, () => {
 				const { userId, conferenceScope, roomId } = setup();
 
 				const result = await service.determineBbbRole(userId, roomId, conferenceScope);
+
+				expect(result).toBe(BBBRole.VIEWER);
+			});
+		});
+
+		describe('when user has editor role in video conference node', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const element = videoConferenceElementFactory.build();
+				const conferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+					id: element.id,
+					boardNode: element,
+					rootNode: columnBoardFactory.build(),
+				});
+				boardNodeAuthorizableService.getBoardAuthorizable
+					.mockResolvedValueOnce(boardNodeAuthorizable)
+					.mockResolvedValueOnce(boardNodeAuthorizable);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
+
+				return {
+					user,
+					userId: user.id,
+					element,
+					elementId: element.id,
+					conferenceScope,
+				};
+			};
+
+			it('should call the correct service', async () => {
+				const { userId, conferenceScope, element, elementId } = setup();
+
+				await service.determineBbbRole(userId, elementId, conferenceScope);
+
+				expect(boardNodeAuthorizableService.getBoardAuthorizable).toHaveBeenCalledWith(element);
+			});
+
+			it('should return BBBRole.VIEWER', async () => {
+				const { userId, conferenceScope, elementId } = setup();
+
+				const result = await service.determineBbbRole(userId, elementId, conferenceScope);
 
 				expect(result).toBe(BBBRole.VIEWER);
 			});
