@@ -22,6 +22,7 @@ const h5pConfig = new H5PConfig(undefined, {
 	baseUrl: '/api/v3/h5p-editor',
 	contentUserStateSaveInterval: false,
 	setFinishedEnabled: false,
+	installLibraryLockMaxOccupationTime: 30000,
 });
 
 interface LibrariesContentType {
@@ -104,6 +105,7 @@ export class H5PLibraryManagementService {
 			!wantedLibraries.includes(librariesToCheck[lastPositionLibrariesToCheckArray].machineName) &&
 			librariesToCheck[lastPositionLibrariesToCheckArray].dependentsCount === 0
 		) {
+			console.log(librariesToCheck[lastPositionLibrariesToCheckArray], 'is not wanted anymore, uninstalling');
 			// force removal, don't let content prevent it, therefore use libraryStorage directly
 			// also to avoid conflicts, remove one-by-one, not using for-await:
 			await this.libraryStorage.deleteLibrary(librariesToCheck[lastPositionLibrariesToCheckArray]);
@@ -142,7 +144,29 @@ export class H5PLibraryManagementService {
 
 		const user = this.createDefaultIUser();
 
-		await this.contentTypeRepo.installContentType(librariesToInstall[lastPositionLibrariesToInstallArray], user);
+		try {
+			await this.contentTypeRepo.installContentType(librariesToInstall[lastPositionLibrariesToInstallArray], user);
+		} catch (error: unknown) {
+			console.log(
+				'Failed to install content type',
+				{
+					library: librariesToInstall[lastPositionLibrariesToInstallArray],
+					error: error instanceof Error ? error.message : String(error),
+				},
+				'Reverting installation!'
+			);
+
+			// const libraryToBeRemoved: ILibraryName = {
+			// 	machineName: contentType[0].machineName,
+			// 	majorVersion: contentType[0].majorVersion,
+			// 	minorVersion: contentType[0].minorVersion,
+			// };
+
+			// console.log('Removing library:', libraryToBeRemoved);
+
+			// await this.libraryStorage.deleteMetadata(libraryToBeRemoved);
+		}
+
 		await this.installLibraries(librariesToInstall.slice(0, lastPositionLibrariesToInstallArray));
 	}
 
