@@ -15,8 +15,6 @@ function encryptAES(plainText, secret) {
 		cipher.final(),
 	]).toString('base64');
 
-	console.log(cipherText.length);
-
 	return cipherText;
 }
 
