@@ -60,6 +60,9 @@ describe(S3ClientFactory.name, () => {
 				tls: true,
 				retryMode: RETRY_MODES.STANDARD,
 				retryStrategy: expect.any(ConfiguredRetryStrategy),
+				requestHandler: {
+					requestTimeout: 60000,
+				},
 			});
 		});
 
