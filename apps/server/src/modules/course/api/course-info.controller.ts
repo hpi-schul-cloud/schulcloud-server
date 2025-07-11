@@ -32,6 +32,7 @@ export class CourseInfoController {
 			currentUser.schoolId,
 			sortingQuery.sortBy,
 			filterParams.status,
+			filterParams.withoutTeacher,
 			pagination,
 			sortingQuery.sortOrder
 		);

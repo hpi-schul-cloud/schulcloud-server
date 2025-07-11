@@ -1415,7 +1415,7 @@
 		},
 		"FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables the new course list view"
 		},
 		"FEATURE_GROUPS_IN_COURSE_ENABLED": {

@@ -51,6 +51,10 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 	public async getCourseInfo(filter: CourseFilter, options?: IFindOptions<Course>): Promise<Page<Course>> {
 		const scope = new CourseScope();
 		scope.bySchoolId(filter.schoolId);
+
+		if (filter.withoutTeacher) {
+			scope.withoutTeacher();
+		}
 		if (filter.status === CourseStatus.CURRENT) {
 			scope.forActiveCourses();
 		} else {
