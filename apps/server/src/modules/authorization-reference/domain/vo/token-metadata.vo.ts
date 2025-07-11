@@ -4,7 +4,7 @@ import { EntityId } from '@shared/domain/types';
 import { ValueObject } from '@shared/domain/value-object.decorator';
 import { Type } from 'class-transformer';
 import { IsEnum, IsMongoId, IsObject, IsOptional, ValidateNested } from 'class-validator';
-import { AuthorizationContextVO } from './authorization-context.vo';
+import { AuthorizationContext } from './authorization-context.vo';
 
 @ValueObject()
 export class TokenMetadata {
@@ -19,8 +19,8 @@ export class TokenMetadata {
 	}
 
 	@ValidateNested()
-	@Type(() => AuthorizationContextVO)
-	public readonly authorizationContext: AuthorizationContextVO;
+	@Type(() => AuthorizationContext)
+	public readonly authorizationContext: AuthorizationContext;
 
 	@IsEnum(AuthorizableReferenceType)
 	public readonly referenceType: AuthorizableReferenceType;

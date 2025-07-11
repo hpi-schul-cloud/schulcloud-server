@@ -1,10 +1,10 @@
 import { Action } from '@modules/authorization';
 import { Permission } from '@shared/domain/interface';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { AuthorizationContextVO } from '../domain';
+import { AuthorizationContext } from '../domain';
 
-export const authorizationContextFactory = BaseFactory.define<AuthorizationContextVO, AuthorizationContextVO>(
-	AuthorizationContextVO,
+export const authorizationContextFactory = BaseFactory.define<AuthorizationContext, AuthorizationContext>(
+	AuthorizationContext,
 	({}) => {
 		const authorizationContext = {
 			action: Action.read,

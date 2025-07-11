@@ -1,9 +1,9 @@
 import { Action } from '@modules/authorization';
 import { Permission } from '@shared/domain/interface';
 import { authorizationContextFactory } from '../../testing';
-import { AuthorizationContextVO } from './authorization-context.vo';
+import { AuthorizationContext } from './authorization-context.vo';
 
-describe('AuthorizationContextVO', () => {
+describe('AuthorizationContext', () => {
 	describe('constructor', () => {
 		afterEach(() => {
 			jest.resetAllMocks();
@@ -13,7 +13,7 @@ describe('AuthorizationContextVO', () => {
 			it('should assign action and requiredPermissions', () => {
 				const authorizationContextProps = authorizationContextFactory.build();
 
-				const vo = new AuthorizationContextVO(authorizationContextProps);
+				const vo = new AuthorizationContext(authorizationContextProps);
 
 				expect(vo.action).toBe(authorizationContextProps.action);
 				expect(vo.requiredPermissions).toEqual(authorizationContextProps.requiredPermissions);
@@ -30,7 +30,7 @@ describe('AuthorizationContextVO', () => {
 			it('should throw when action is missing', () => {
 				const { props } = setup();
 
-				expect(() => new AuthorizationContextVO(props)).toThrow();
+				expect(() => new AuthorizationContext(props)).toThrow();
 			});
 		});
 
@@ -44,7 +44,7 @@ describe('AuthorizationContextVO', () => {
 			it('should throw when props is null', () => {
 				const { props } = setup();
 
-				expect(() => new AuthorizationContextVO(props)).toThrow();
+				expect(() => new AuthorizationContext(props)).toThrow();
 			});
 		});
 
@@ -58,21 +58,21 @@ describe('AuthorizationContextVO', () => {
 			it('should throw when props is undefined', () => {
 				const { props } = setup();
 
-				expect(() => new AuthorizationContextVO(props)).toThrow();
+				expect(() => new AuthorizationContext(props)).toThrow();
 			});
 		});
 
 		describe('when props is a primitive', () => {
 			it('should throw when props is a string', () => {
-				expect(() => new AuthorizationContextVO('invalid')).toThrow();
+				expect(() => new AuthorizationContext('invalid')).toThrow();
 			});
 
 			it('should throw when props is a number', () => {
-				expect(() => new AuthorizationContextVO(123)).toThrow();
+				expect(() => new AuthorizationContext(123)).toThrow();
 			});
 
 			it('should throw when props is a boolean', () => {
-				expect(() => new AuthorizationContextVO(true)).toThrow();
+				expect(() => new AuthorizationContext(true)).toThrow();
 			});
 		});
 
@@ -80,13 +80,13 @@ describe('AuthorizationContextVO', () => {
 			it('should throw when action is undefined', () => {
 				const props = { requiredPermissions: [Permission.ACCOUNT_CREATE] };
 
-				expect(() => new AuthorizationContextVO(props)).toThrow();
+				expect(() => new AuthorizationContext(props)).toThrow();
 			});
 
 			it('should throw when action is not a valid enum value', () => {
 				const props = { action: 'invalid', requiredPermissions: [Permission.ACCOUNT_CREATE] };
 
-				expect(() => new AuthorizationContextVO(props)).toThrow();
+				expect(() => new AuthorizationContext(props)).toThrow();
 			});
 		});
 
@@ -94,19 +94,19 @@ describe('AuthorizationContextVO', () => {
 			it('should throw when requiredPermissions is undefined', () => {
 				const props = { action: Action.read };
 
-				expect(() => new AuthorizationContextVO(props)).toThrow();
+				expect(() => new AuthorizationContext(props)).toThrow();
 			});
 
 			it('should throw when requiredPermissions is not an array', () => {
 				const props = { action: Action.read, requiredPermissions: 'not-an-array' };
 
-				expect(() => new AuthorizationContextVO(props)).toThrow();
+				expect(() => new AuthorizationContext(props)).toThrow();
 			});
 
 			it('should throw when requiredPermissions contains invalid values', () => {
 				const props = { action: Action.read, requiredPermissions: ['invalid'] };
 
-				expect(() => new AuthorizationContextVO(props)).toThrow();
+				expect(() => new AuthorizationContext(props)).toThrow();
 			});
 		});
 	});
