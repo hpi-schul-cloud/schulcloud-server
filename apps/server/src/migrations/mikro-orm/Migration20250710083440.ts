@@ -85,6 +85,23 @@ export class Migration20250710083440 extends Migration {
 
 		// ----------------------------------------------------------------------------------
 
+		// --- Update clientSecret of OIDC systems ---
+
+		const oidcSystems = this.getCollection(systemsCollectionName).find({
+			'oidcConfig.clientSecret': { $ne: undefined },
+		});
+
+		const numberOfUpdatedOidcSystems = await this.updateSecrets(
+			oidcSystems,
+			['oidcConfig', 'clientSecret'],
+			AES_KEY,
+			systemsCollectionName
+		);
+
+		console.info(`Updated OIDC clientSecret of ${numberOfUpdatedOidcSystems} systems with new encryption function.`);
+
+		// ----------------------------------------------------------------------------------
+
 		// --- Update secret in LTI 1.1 tools ---
 		const lti11Tools = this.getCollection(externalToolsCollectionName).find({
 			config_type: 'lti11',
@@ -223,6 +240,22 @@ export class Migration20250710083440 extends Migration {
 		);
 
 		console.info(`Reverted update of OAuth clientSecret of ${numberOfUpdatedOauthSystems} systems.`);
+
+		// ----------------------------------------------------------------------------------
+
+		// --- Revert update of clientSecret of OIDC systems ---
+		const oidcSystems = this.getCollection(systemsCollectionName).find({
+			'oidcConfig.clientSecret': { $ne: undefined },
+		});
+
+		const numberOfUpdatedOidcSystems = await this.revertUpdateOfSecrets(
+			oidcSystems,
+			['oidcConfig', 'clientSecret'],
+			AES_KEY,
+			systemsCollectionName
+		);
+
+		console.info(`Reverted update of OIDC clientSecret of ${numberOfUpdatedOidcSystems} systems.`);
 
 		// ----------------------------------------------------------------------------------
 
