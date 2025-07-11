@@ -38,13 +38,7 @@ export class AuthorizationReferenceUc {
 	}
 
 	public async createToken(userId: EntityId, params: CreateAccessTokenParams): Promise<AccessTokenResponse> {
-		const authorizationReference = TokenMetadataMapper.mapToTokenMetadata(
-			params.context,
-			params.referenceType,
-			params.referenceId,
-			userId,
-			params.payload
-		);
+		const authorizationReference = TokenMetadataMapper.mapToTokenMetadata({ ...params, userId });
 		await this.checkPermissionsForReference(authorizationReference);
 
 		const { token } = await this.accessTokenService.createToken(authorizationReference);
@@ -54,15 +48,9 @@ export class AuthorizationReferenceUc {
 	}
 
 	public async resolveToken(accessToken: AccessTokenParams): Promise<AccessTokenPayloadResponse> {
-		const result = await this.accessTokenService.resolveToken<TokenMetadata>(accessToken);
+		const tokenMetadata = await this.accessTokenService.resolveToken(accessToken);
 
-		const authorizationReference = TokenMetadataMapper.mapToTokenMetadata(
-			result.authorizationContext,
-			result.referenceType,
-			result.referenceId,
-			result.userId,
-			result.customPayload
-		);
+		const authorizationReference = TokenMetadataMapper.mapToTokenMetadata(tokenMetadata);
 
 		await this.checkPermissionsForReference(authorizationReference);
 

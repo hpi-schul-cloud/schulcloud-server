@@ -8,12 +8,14 @@ import { AuthorizationContextVO } from './authorization-context.vo';
 
 @ValueObject()
 export class TokenMetadata {
-	constructor(props: TokenMetadata) {
-		this.authorizationContext = props.authorizationContext;
-		this.referenceType = props.referenceType;
-		this.referenceId = props.referenceId;
-		this.userId = props.userId;
-		this.customPayload = props.customPayload || {};
+	constructor(props: unknown) {
+		const tokenMetadataProps = props as TokenMetadata;
+
+		this.authorizationContext = tokenMetadataProps.authorizationContext;
+		this.referenceType = tokenMetadataProps.referenceType;
+		this.referenceId = tokenMetadataProps.referenceId;
+		this.userId = tokenMetadataProps.userId;
+		this.customPayload = tokenMetadataProps.customPayload || {};
 	}
 
 	@ValidateNested()

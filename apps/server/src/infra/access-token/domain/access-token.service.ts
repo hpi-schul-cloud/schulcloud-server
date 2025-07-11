@@ -25,7 +25,7 @@ export class AccessTokenService {
 		return token;
 	}
 
-	public async resolveToken<T>(params: AccessToken): Promise<T> {
+	public async resolveToken(params: AccessToken): Promise<unknown> {
 		const { token } = params;
 		const value = await this.storageClient.get(token);
 
@@ -36,7 +36,7 @@ export class AccessTokenService {
 		await this.renewTokenTimeout(token, value);
 
 		try {
-			const payload = JSON.parse(value) as T;
+			const payload = JSON.parse(value) as unknown;
 
 			return payload;
 		} catch (error) {
