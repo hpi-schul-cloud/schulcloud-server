@@ -32,7 +32,7 @@ export class RoomInvitationLinkUc {
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(props.roomId);
 		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, {
 			action: Action.write,
-			requiredPermissions: [Permission.ROOM_MEMBERS_ADD],
+			requiredPermissions: [Permission.ROOM_ADD_MEMBERS],
 		});
 
 		const roomInvitationLink = await this.roomInvitationLinkService.createLink({
@@ -50,7 +50,7 @@ export class RoomInvitationLinkUc {
 		const roomInvitationLink = await this.roomInvitationLinkService.findById(props.id);
 
 		await this.checkRoomAuthorizationByIds(userId, [roomInvitationLink.roomId], Action.write, [
-			Permission.ROOM_MEMBERS_ADD,
+			Permission.ROOM_ADD_MEMBERS,
 		]);
 
 		roomInvitationLink.title = props.title ?? roomInvitationLink.title;
@@ -75,14 +75,14 @@ export class RoomInvitationLinkUc {
 
 		const roomIds = roomInvitationLinks.map((link) => link.roomId);
 		const uniqueRoomIds = [...new Set(roomIds)];
-		await this.checkRoomAuthorizationByIds(userId, uniqueRoomIds, Action.write, [Permission.ROOM_MEMBERS_ADD]);
+		await this.checkRoomAuthorizationByIds(userId, uniqueRoomIds, Action.write, [Permission.ROOM_ADD_MEMBERS]);
 		await this.roomInvitationLinkService.deleteLinks(linkIds);
 	}
 
 	public async listLinksByRoomId(userId: EntityId, roomId: EntityId): Promise<RoomInvitationLink[]> {
 		this.checkFeatureEnabled();
 
-		await this.checkRoomAuthorizationByIds(userId, [roomId], Action.write, [Permission.ROOM_MEMBERS_ADD]);
+		await this.checkRoomAuthorizationByIds(userId, [roomId], Action.write, [Permission.ROOM_ADD_MEMBERS]);
 
 		const links = await this.roomInvitationLinkService.findLinkByRoomId(roomId);
 

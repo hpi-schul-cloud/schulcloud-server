@@ -90,7 +90,7 @@ describe(RoomMembershipRule.name, () => {
 			describe('when user has view permission for room', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
-					const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_VIEW] });
+					const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
 					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
 						'',
 						[{ roles: [roleDto], userId: user.id }],
@@ -175,7 +175,7 @@ describe(RoomMembershipRule.name, () => {
 						secondarySchools: [{ school: otherSchool, role: guestTeacherRole }],
 					});
 					const room = roomFactory.build({ schoolId: otherSchool.id });
-					const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_VIEW] });
+					const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
 					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
 						room.id,
 						[{ roles: [roleDto], userId: user.id }],

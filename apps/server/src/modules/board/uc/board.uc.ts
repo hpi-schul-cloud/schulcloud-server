@@ -193,7 +193,7 @@ export class BoardUc {
 
 			this.authorizationService.checkPermission(user, roomMembershipAuthorizable, {
 				action: Action.write,
-				requiredPermissions: [Permission.ROOM_CONTENT_EDIT],
+				requiredPermissions: [Permission.ROOM_EDIT_CONTENT],
 			});
 		} else {
 			throw new Error(`Unsupported context type ${context.type as string}`);

@@ -443,7 +443,7 @@ describe('ShareTokenUC', () => {
 
 				await uc.importShareToken(user.id, shareToken.token, 'NewName', 'destination-id');
 
-				expect(authorizationService.checkOneOfPermissions).toHaveBeenCalledWith(user, [Permission.ROOM_CREATE]);
+				expect(authorizationService.checkOneOfPermissions).toHaveBeenCalledWith(user, [Permission.SCHOOL_CREATE_ROOM]);
 			});
 
 			it('should call sagaService.executeSaga', async () => {

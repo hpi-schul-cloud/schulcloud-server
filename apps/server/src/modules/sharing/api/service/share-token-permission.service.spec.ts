@@ -141,7 +141,7 @@ describe('ShareTokenPermissionService', () => {
 	describe('checkRoomWritePermission', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const permissions = [Permission.ROOM_EDIT];
+			const permissions = [Permission.ROOM_EDIT_ROOM];
 
 			const roleDto: RoleDto = {
 				id: 'role-id',
