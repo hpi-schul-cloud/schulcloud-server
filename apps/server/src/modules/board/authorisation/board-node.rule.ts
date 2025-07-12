@@ -30,7 +30,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		authorisationInjectionService.injectAuthorizationRule(this);
 	}
 
-	public isApplicable(object: unknown): boolean {
+	public isApplicable(user: User, object: unknown): boolean {
 		const isMatched = object instanceof BoardNodeAuthorizable;
 
 		return isMatched;
@@ -56,7 +56,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		}
 
 		if (this.shouldProcessSubmissionItem(authorizable)) {
-			return this.hasPermissionForSubmissionItem(userWithBoardRoles, authorizable, context);
+			return this.hasPermissionForSubmissionItem(user, userWithBoardRoles, authorizable, context);
 		}
 
 		if (this.shouldProcessDrawingElementFile(authorizable, context)) {
@@ -128,6 +128,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	private hasPermissionForSubmissionItem(
+		user: User,
 		userWithBoardRoles: UserWithBoardRoles,
 		boardNodeAuthorizable: BoardNodeAuthorizable,
 		context: AuthorizationContext
