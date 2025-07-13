@@ -293,7 +293,7 @@ describe('VideoConferenceController (API)', () => {
 				});
 			});
 
-			describe('when user has not the required permission', () => {
+			describe('when user has not the required permission as room viewer', () => {
 				const setup = async () => {
 					const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 					const room = roomEntityFactory.build({
@@ -357,7 +357,71 @@ describe('VideoConferenceController (API)', () => {
 				});
 			});
 
-			describe('when user has the required permission in room scope', () => {
+			describe('when user has not the required permission as room editor', () => {
+				const setup = async () => {
+					const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+					const room = roomEntityFactory.build({
+						schoolId: school.id,
+						startDate: new Date('2024-10-01'),
+						endDate: new Date('2025-10-20'),
+					});
+					const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+					const userGroup = groupEntityFactory.buildWithId({
+						organization: school,
+						users: [{ role: roomEditorRole, user: teacherUser }],
+					});
+					const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+
+					const columnBoardNode = columnBoardEntityFactory.build({
+						context: { id: room.id, type: BoardExternalReferenceType.Room },
+					});
+					const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+					const cardNode = cardEntityFactory.withParent(columnNode).build();
+					const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
+
+					await em.persistAndFlush([
+						columnBoardNode,
+						columnNode,
+						cardNode,
+						elementNode,
+						room,
+						roomMembership,
+						school,
+						teacherAccount,
+						teacherUser,
+						userGroup,
+						roomEditorRole,
+						roomViewerRole,
+					]);
+					em.clear();
+
+					const params: VideoConferenceCreateParams = {
+						everyAttendeeJoinsMuted: true,
+						everybodyJoinsAsModerator: true,
+						moderatorMustApproveJoinRequests: true,
+					};
+
+					const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+					const scopeId: string = elementNode.id;
+
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
+					mockBbbMeetingInfoFailed(scopeId);
+
+					return { loggedInClient, scope, scopeId, params };
+				};
+
+				it('should return forbidden', async () => {
+					const { loggedInClient, params, scope, scopeId } = await setup();
+
+					const response: Response = await loggedInClient.put(`${scope}/${scopeId}/start`, params);
+
+					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				});
+			});
+
+			describe('when user has the required permission in room scope as room editor', () => {
 				const setup = async () => {
 					const config = serverConfig();
 					config.FEATURE_VIDEOCONFERENCE_ENABLED = true;
@@ -396,6 +460,76 @@ describe('VideoConferenceController (API)', () => {
 						teacherAccount,
 						teacherUser,
 						userGroup,
+						roomEditorRole,
+						roomViewerRole,
+					]);
+					em.clear();
+
+					const params: VideoConferenceCreateParams = {
+						everyAttendeeJoinsMuted: true,
+						everybodyJoinsAsModerator: true,
+						moderatorMustApproveJoinRequests: true,
+					};
+
+					const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+					const scopeId: string = elementNode.id;
+
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+					mockBbbMeetingInfoFailed(scopeId);
+					mockBbbCreateSuccess(scopeId);
+
+					return { loggedInClient, scope, scopeId, params };
+				};
+
+				it('should create the conference successfully and return with ok', async () => {
+					const { loggedInClient, params, scope, scopeId } = await setup();
+
+					const response: Response = await loggedInClient.put(`${scope}/${scopeId}/start`, params);
+
+					expect(response.status).toEqual(HttpStatus.OK);
+				});
+			});
+
+			describe('when user has the required permission in room scope as room admin', () => {
+				const setup = async () => {
+					const config = serverConfig();
+					config.FEATURE_VIDEOCONFERENCE_ENABLED = true;
+					config.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+
+					const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+
+					const room = roomEntityFactory.build({
+						schoolId: school.id,
+						startDate: new Date('2024-10-01'),
+						endDate: new Date('2024-10-20'),
+						features: [RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE],
+					});
+					const { roomAdminRole, roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+					const userGroup = groupEntityFactory.buildWithId({
+						organization: school,
+						users: [{ role: roomAdminRole, user: teacherUser }],
+					});
+					const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+
+					const columnBoardNode = columnBoardEntityFactory.build({
+						context: { id: room.id, type: BoardExternalReferenceType.Room },
+					});
+					const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+					const cardNode = cardEntityFactory.withParent(columnNode).build();
+					const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
+					await em.persistAndFlush([
+						columnBoardNode,
+						columnNode,
+						cardNode,
+						elementNode,
+						room,
+						roomMembership,
+						school,
+						teacherAccount,
+						teacherUser,
+						userGroup,
+						roomAdminRole,
 						roomEditorRole,
 						roomViewerRole,
 					]);
@@ -1095,7 +1229,7 @@ describe('VideoConferenceController (API)', () => {
 					});
 				});
 
-				describe('when a user without required permission wants to end a conference', () => {
+				describe('when a user without required permission wants to end a conference as room viewer', () => {
 					const setup = async () => {
 						const config = serverConfig();
 						config.FEATURE_VIDEOCONFERENCE_ENABLED = true;
@@ -1165,7 +1299,77 @@ describe('VideoConferenceController (API)', () => {
 					});
 				});
 
-				describe('when a user with required permission wants to end a conference', () => {
+				describe('when a user without required permission wants to end a conference as room editor', () => {
+					const setup = async () => {
+						const config = serverConfig();
+						config.FEATURE_VIDEOCONFERENCE_ENABLED = true;
+						config.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+
+						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+
+						const room = roomEntityFactory.build({
+							schoolId: school.id,
+							startDate: new Date('2024-10-01'),
+							endDate: new Date('2024-10-20'),
+						});
+						const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+						const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+						const userGroup = groupEntityFactory.buildWithId({
+							organization: school,
+							users: [{ role: roomEditorRole, user: teacherUser }],
+						});
+						const roomMembership = roomMembershipEntityFactory.build({
+							roomId: room.id,
+							userGroupId: userGroup.id,
+						});
+
+						const columnBoardNode = columnBoardEntityFactory.build({
+							context: { id: room.id, type: BoardExternalReferenceType.Room },
+						});
+						const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+						const cardNode = cardEntityFactory.withParent(columnNode).build();
+						const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
+
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
+							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
+							target: elementNode.id,
+						});
+
+						await em.persistAndFlush([
+							columnBoardNode,
+							columnNode,
+							cardNode,
+							elementNode,
+							room,
+							roomMembership,
+							school,
+							teacherAccount,
+							teacherUser,
+							userGroup,
+							roomEditorRole,
+							roomViewerRole,
+							videoConference,
+						]);
+						em.clear();
+
+						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+						const scopeId: string = elementNode.id;
+
+						const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
+						return { loggedInClient, scope, scopeId };
+					};
+
+					it('should return forbidden', async () => {
+						const { loggedInClient, scope, scopeId } = await setup();
+
+						const response: Response = await loggedInClient.get(`${scope}/${scopeId}/end`);
+
+						expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+					});
+				});
+
+				describe('when a user with required permission wants to end a conference as room editor', () => {
 					const setup = async () => {
 						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
@@ -1209,6 +1413,75 @@ describe('VideoConferenceController (API)', () => {
 							teacherAccount,
 							teacherUser,
 							userGroup,
+							roomEditorRole,
+							roomViewerRole,
+							videoConference,
+						]);
+						em.clear();
+
+						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+						const scopeId: string = elementNode.id;
+
+						const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
+						mockBbbEndSuccess(scopeId);
+
+						return { loggedInClient, scope, scopeId };
+					};
+
+					it('should return ok', async () => {
+						const { loggedInClient, scope, scopeId } = await setup();
+
+						const response: Response = await loggedInClient.get(`${scope}/${scopeId}/end`);
+
+						expect(response.status).toEqual(HttpStatus.OK);
+					});
+				});
+
+				describe('when a user with required permission wants to end a conference as room admin', () => {
+					const setup = async () => {
+						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+
+						const room = roomEntityFactory.build({
+							schoolId: school.id,
+							startDate: new Date('2024-10-01'),
+							endDate: new Date('2024-10-20'),
+						});
+						const { roomAdminRole, roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+						const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+						const userGroup = groupEntityFactory.buildWithId({
+							organization: school,
+							users: [{ role: roomAdminRole, user: teacherUser }],
+						});
+						const roomMembership = roomMembershipEntityFactory.build({
+							roomId: room.id,
+							userGroupId: userGroup.id,
+						});
+
+						const columnBoardNode = columnBoardEntityFactory.build({
+							context: { id: room.id, type: BoardExternalReferenceType.Room },
+						});
+						const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+						const cardNode = cardEntityFactory.withParent(columnNode).build();
+						const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
+
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
+							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
+							target: elementNode.id,
+						});
+
+						await em.persistAndFlush([
+							columnBoardNode,
+							columnNode,
+							cardNode,
+							elementNode,
+							room,
+							roomMembership,
+							school,
+							teacherAccount,
+							teacherUser,
+							userGroup,
+							roomAdminRole,
 							roomEditorRole,
 							roomViewerRole,
 							videoConference,
