@@ -237,7 +237,12 @@ describe(BoardUc.name, () => {
 	});
 
 	describe('findBoard', () => {
-		const setupAuthorizable = (user: User, board: ColumnBoard, roles = [BoardRoles.EDITOR]) => {
+		const setupAuthorizable = (
+			user: User,
+			board: ColumnBoard,
+			roles = [BoardRoles.EDITOR],
+			canRoomEditorManageVideoconference?: boolean
+		) => {
 			const boardAuthorizable = boardNodeAuthorizableFactory.build({
 				boardNode: board,
 				users: [
@@ -246,6 +251,7 @@ describe(BoardUc.name, () => {
 						userId: user.id,
 					},
 				],
+				boardSettings: { canRoomEditorManageVideoconference },
 			});
 			boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardAuthorizable);
 
@@ -293,19 +299,56 @@ describe(BoardUc.name, () => {
 			expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT] });
 		});
 
-		describe('when user is board-editor ', () => {
-			it('should return an empty permissions array', async () => {
+		describe('when user is board-admin', () => {
+			it('should return correct permissions array', async () => {
 				const { user, board } = globalSetup();
-				setupAuthorizable(user, board, [BoardRoles.EDITOR]);
+				setupAuthorizable(user, board, [BoardRoles.ADMIN]);
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 				const result = await uc.findBoard(user.id, board.id);
 
-				expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT] });
+				expect(result).toEqual({
+					board,
+					features: [],
+					permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE_VIDEOCONFERENCE],
+				});
 			});
 		});
 
-		describe('when user is board-reader ', () => {
+		describe('when user is board-editor', () => {
+			describe('when canRoomEditorManageVideoconference is true', () => {
+				it('should return correct permissions array', async () => {
+					const { user, board } = globalSetup();
+					setupAuthorizable(user, board, [BoardRoles.EDITOR], true);
+					boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+
+					const result = await uc.findBoard(user.id, board.id);
+
+					expect(result).toEqual({
+						board,
+						features: [],
+						permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE_VIDEOCONFERENCE],
+					});
+				});
+			});
+			describe('when canRoomEditorManageVideoconference is false', () => {
+				it('should return correct permissions array', async () => {
+					const { user, board } = globalSetup();
+					setupAuthorizable(user, board, [BoardRoles.EDITOR], false);
+					boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+
+					const result = await uc.findBoard(user.id, board.id);
+
+					expect(result).toEqual({
+						board,
+						features: [],
+						permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT],
+					});
+				});
+			});
+		});
+
+		describe('when user is board-reader', () => {
 			it('should return an empty permissions array', async () => {
 				const { user, board } = globalSetup();
 				setupAuthorizable(user, board, [BoardRoles.READER]);
