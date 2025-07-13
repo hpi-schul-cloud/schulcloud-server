@@ -30,6 +30,7 @@ import { VideoConferenceScope } from '../../domain';
 import { VideoConferenceEntity, VideoConferenceTargetModels } from '../../repo';
 import { videoConferenceFactory } from '../../testing';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
+import { RoomFeatures } from '@modules/room/domain/type';
 
 describe('VideoConferenceController (API)', () => {
 	let app: INestApplication;
@@ -368,6 +369,7 @@ describe('VideoConferenceController (API)', () => {
 						schoolId: school.id,
 						startDate: new Date('2024-10-01'),
 						endDate: new Date('2024-10-20'),
+						features: [RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE],
 					});
 					const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -1171,6 +1173,7 @@ describe('VideoConferenceController (API)', () => {
 							schoolId: school.id,
 							startDate: new Date('2024-10-01'),
 							endDate: new Date('2024-10-20'),
+							features: [RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE],
 						});
 						const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 						const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });

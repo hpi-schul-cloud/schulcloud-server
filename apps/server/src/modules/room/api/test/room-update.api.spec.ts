@@ -131,7 +131,7 @@ describe('Room Controller (API)', () => {
 			describe('when the required parameters are given', () => {
 				it('should update the room', async () => {
 					const { loggedInClient, room } = await setup();
-					const params = { name: 'Room #101', color: 'green' };
+					const params = { name: 'Room #101', color: 'green', features: [] };
 
 					const response = await loggedInClient.put(room.id, params);
 

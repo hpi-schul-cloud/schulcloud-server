@@ -64,6 +64,7 @@ describe('RoomDomainMapper', () => {
 				endDate: new Date('2023-12-31'),
 				createdAt: new Date('2023-01-01'),
 				updatedAt: new Date('2023-01-01'),
+				features: [],
 			});
 			expect(result.getProps().id).toBe('1');
 			expect(result.getProps().id).not.toBe(roomEntity.id);
