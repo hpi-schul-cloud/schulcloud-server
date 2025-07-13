@@ -38,6 +38,7 @@ describe('RoomDomainMapper', () => {
 				endDate: new Date('2023-12-31'),
 				createdAt: new Date('2023-01-01'),
 				updatedAt: new Date('2023-01-01'),
+				features: [],
 			});
 
 			const roomEntity = {
@@ -109,6 +110,7 @@ describe('RoomDomainMapper', () => {
 					endDate: new Date('2023-12-31'),
 					createdAt: new Date('2024-10-1'),
 					updatedAt: new Date('2024-10-1'),
+					features: [],
 				};
 				const room = new Room(roomEntity);
 

@@ -290,7 +290,7 @@ describe(BoardUc.name, () => {
 
 			const result = await uc.findBoard(user.id, board.id);
 
-			expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_EDIT, Permission.BOARD_VIEW] });
+			expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT] });
 		});
 
 		it('should return the column board object + features', async () => {
@@ -300,7 +300,7 @@ describe(BoardUc.name, () => {
 
 			const result = await uc.findBoard(user.id, board.id);
 
-			expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_EDIT, Permission.BOARD_VIEW] });
+			expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT] });
 		});
 
 		describe('when user is board-editor ', () => {
@@ -311,7 +311,7 @@ describe(BoardUc.name, () => {
 
 				const result = await uc.findBoard(user.id, board.id);
 
-				expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_EDIT, Permission.BOARD_VIEW] });
+				expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT] });
 			});
 		});
 

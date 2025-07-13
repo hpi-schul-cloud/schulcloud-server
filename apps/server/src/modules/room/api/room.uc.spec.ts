@@ -121,7 +121,7 @@ describe('RoomUc', () => {
 		it('should cleanup room if room members throws error', async () => {
 			const { user, room } = setup();
 
-			await expect(uc.createRoom(user.id, { color: RoomColor.BLUE, name: 'test' })).rejects.toThrow();
+			await expect(uc.createRoom(user.id, { color: RoomColor.BLUE, name: 'test', features: [] })).rejects.toThrow();
 
 			expect(roomService.deleteRoom).toHaveBeenCalledWith(room);
 		});

@@ -80,6 +80,7 @@ describe('RoomService', () => {
 				name: 'room #1',
 				color: RoomColor.ORANGE,
 				schoolId: new ObjectId().toHexString(),
+				features: [],
 			};
 			return { props };
 		};
@@ -136,6 +137,7 @@ describe('RoomService', () => {
 			const props: RoomUpdateProps = {
 				name: 'updated name',
 				color: RoomColor.BLUE_GREY,
+				features: [],
 			};
 
 			return { props, room };
@@ -219,8 +221,8 @@ describe('RoomService', () => {
 			expect(result).toEqual(true);
 		});
 
-		it('should return false if correct feature is present', async () => {
-			const room = roomFactory.build({ features: undefined });
+		it('should return false if feature is not present', async () => {
+			const room = roomFactory.build({ features: [] });
 
 			const result = service.canEditorManageVideoconferences(room);
 

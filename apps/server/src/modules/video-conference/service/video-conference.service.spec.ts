@@ -532,6 +532,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
+					boardSettings: {},
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizable);
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
@@ -719,6 +720,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
+					boardSettings: {},
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable
 					.mockResolvedValueOnce(boardNodeAuthorizable)
@@ -764,6 +766,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
+					boardSettings: {},
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable
 					.mockResolvedValueOnce(boardNodeAuthorizable)
@@ -929,6 +932,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
+					boardSettings: {},
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable
 					.mockResolvedValueOnce(boardNodeAuthorizable)
@@ -966,6 +970,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
+					boardSettings: {},
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable
 					.mockResolvedValueOnce(boardNodeAuthorizable)
@@ -1166,6 +1171,7 @@ describe(VideoConferenceService.name, () => {
 				id: element.id,
 				boardNode: element,
 				rootNode: columnBoardFactory.build(),
+				boardSettings: {},
 			});
 			boardNodeAuthorizableService.getBoardAuthorizable
 				.mockResolvedValueOnce(boardNodeAuthorizable)

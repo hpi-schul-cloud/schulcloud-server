@@ -12,6 +12,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
+import { feathers } from '@feathersjs/feathers';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -121,6 +122,7 @@ describe('Room Controller (API)', () => {
 					createdAt: room.createdAt.toISOString(),
 					updatedAt: room.updatedAt.toISOString(),
 					permissions: [Permission.ROOM_VIEW, Permission.ROOM_LEAVE],
+					features: room.features,
 				};
 
 				return { loggedInClient, room, expectedResponse };
