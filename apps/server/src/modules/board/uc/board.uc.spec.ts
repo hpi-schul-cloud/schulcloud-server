@@ -293,16 +293,6 @@ describe(BoardUc.name, () => {
 			expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT] });
 		});
 
-		it('should return the column board object + features', async () => {
-			const { user, board } = globalSetup();
-			setupAuthorizable(user, board);
-			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
-
-			const result = await uc.findBoard(user.id, board.id);
-
-			expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT] });
-		});
-
 		describe('when user is board-editor ', () => {
 			it('should return an empty permissions array', async () => {
 				const { user, board } = globalSetup();
