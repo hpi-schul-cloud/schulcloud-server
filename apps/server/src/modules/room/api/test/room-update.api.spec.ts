@@ -11,7 +11,6 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomEntity } from '../../repo';
 import { roomEntityFactory } from '../../testing';
-import { features } from 'process';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;

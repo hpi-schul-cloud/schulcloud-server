@@ -5,7 +5,6 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode, BoardExternalReferenceType, BoardRoles, BoardSettings, UserWithBoardRoles } from '../../domain';
 import { RoomService } from '@modules/room';
-import { RoomFeatures } from '@modules/room/domain/type';
 
 @Injectable()
 export class BoardContextService {

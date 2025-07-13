@@ -213,7 +213,7 @@ describe('RoomService', () => {
 	});
 
 	describe('canEditorManageVideoconferences', () => {
-		it('should return true if correct feature is present', async () => {
+		it('should return true if correct feature is present', () => {
 			const room = roomFactory.build();
 
 			const result = service.canEditorManageVideoconferences(room);
@@ -221,7 +221,7 @@ describe('RoomService', () => {
 			expect(result).toEqual(true);
 		});
 
-		it('should return false if feature is not present', async () => {
+		it('should return false if feature is not present', () => {
 			const room = roomFactory.build({ features: [] });
 
 			const result = service.canEditorManageVideoconferences(room);

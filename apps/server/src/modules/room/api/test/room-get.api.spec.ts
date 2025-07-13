@@ -12,7 +12,6 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
-import { feathers } from '@feathersjs/feathers';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
