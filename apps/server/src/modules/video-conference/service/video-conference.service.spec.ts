@@ -575,7 +575,7 @@ describe(VideoConferenceService.name, () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 					id: element.id,
 					boardNode: element,
