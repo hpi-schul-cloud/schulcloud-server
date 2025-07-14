@@ -1,9 +1,9 @@
 import { StorageClient } from '@infra/valkey-client';
 import { ForbiddenException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ACCESS_TOKEN_VALKEY_CLIENT } from '../access-token.config';
-import { AccessToken } from './access-token.vo';
 import { AccessTokenBuilder } from './builder';
 import { ResolveTokenParams } from './types';
+import { AccessToken } from './vo';
 
 @Injectable()
 export class AccessTokenService {

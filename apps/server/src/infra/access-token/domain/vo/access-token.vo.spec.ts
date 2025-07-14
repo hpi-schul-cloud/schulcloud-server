@@ -1,4 +1,4 @@
-import { AccessToken } from './access-token.vo';
+import { AccessToken } from '../access-token.vo';
 
 describe('AccessToken', () => {
 	describe('constructor', () => {
