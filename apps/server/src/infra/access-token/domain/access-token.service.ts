@@ -1,7 +1,7 @@
 import { StorageClient } from '@infra/valkey-client';
 import { ForbiddenException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ACCESS_TOKEN_VALKEY_CLIENT } from '../access-token.config';
-import { AccessTokenBuilder } from './builder';
+import { AccessTokenFactory } from './factory';
 import { ResolveTokenParams } from './types';
 import { AccessToken } from './vo';
 
@@ -10,7 +10,7 @@ export class AccessTokenService {
 	constructor(@Inject(ACCESS_TOKEN_VALKEY_CLIENT) private readonly storageClient: StorageClient) {}
 
 	public async createToken<T>(payload: T, tokenTtl: number): Promise<AccessToken> {
-		const token = AccessTokenBuilder.build();
+		const token = AccessTokenFactory.build();
 		const value = JSON.stringify(payload);
 
 		await this.persistTokenData(token.token, value, tokenTtl);

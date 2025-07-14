@@ -1,10 +1,11 @@
 import { ValueObject } from '@shared/domain/value-object.decorator';
 import { IsUUID } from 'class-validator';
+import { randomUUID } from 'crypto';
 
 @ValueObject()
 export class AccessToken {
-	constructor(token: string) {
-		this.token = token;
+	constructor() {
+		this.token = randomUUID();
 	}
 
 	@IsUUID()
