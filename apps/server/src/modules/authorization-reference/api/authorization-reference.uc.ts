@@ -1,10 +1,10 @@
 import { AccessTokenService } from '@infra/access-token';
-import { JwtValidationAdapter } from '@infra/auth-guard';
+import { JwtPayloadVoFactory, JwtValidationAdapter } from '@infra/auth-guard';
 import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import jwt from 'jsonwebtoken';
-import { AuthorizationReferenceService, CustomJwtPayload, TokenMetadata, TokenMetadataMapper } from '../domain';
+import { AuthorizationReferenceService, TokenMetadata, TokenMetadataMapper } from '../domain';
 import {
 	AccessTokenParams,
 	AccessTokenPayloadResponse,
@@ -45,9 +45,9 @@ export class AuthorizationReferenceUc {
 		params: CreateAccessTokenParams,
 		jwtToken: string
 	): Promise<AccessTokenResponse> {
-		const jwtPayload = jwt.decode(jwtToken, { json: true });
-		const customJwtPayload = new CustomJwtPayload(jwtPayload);
-		const authorizationReference = TokenMetadataMapper.mapToTokenMetadata({ ...params, ...customJwtPayload, userId });
+		const result = jwt.decode(jwtToken, { json: true });
+		const jwtPayload = JwtPayloadVoFactory.build(result);
+		const authorizationReference = TokenMetadataMapper.mapToTokenMetadata({ ...params, ...jwtPayload, userId });
 
 		await this.checkPermissionsForReference(authorizationReference);
 
@@ -60,9 +60,9 @@ export class AuthorizationReferenceUc {
 	public async resolveToken(accessToken: AccessTokenParams): Promise<AccessTokenPayloadResponse> {
 		const result = await this.accessTokenService.resolveToken(accessToken);
 		const tokenMetadata = TokenMetadataMapper.mapToTokenMetadata(result);
-		const customJwtPayload = new CustomJwtPayload(tokenMetadata.customPayload);
+		const jwtPayload = JwtPayloadVoFactory.build(tokenMetadata.customPayload);
 
-		await this.jwtValidationAdapter.isWhitelisted(customJwtPayload.accountId, customJwtPayload.jti);
+		await this.jwtValidationAdapter.isWhitelisted(jwtPayload.accountId, jwtPayload.jti);
 		await this.checkPermissionsForReference(tokenMetadata);
 
 		const payloadResponse = AuthorizationResponseMapper.mapToAccessTokenPayload(tokenMetadata.customPayload);
