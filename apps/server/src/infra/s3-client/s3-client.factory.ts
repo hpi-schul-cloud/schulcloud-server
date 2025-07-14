@@ -27,9 +27,6 @@ export class S3ClientFactory {
 			tls: true,
 			retryMode: RETRY_MODES.STANDARD,
 			retryStrategy,
-			requestHandler: {
-				requestTimeout: 60000,
-			},
 		});
 
 		return new S3ClientAdapter(s3Client, config, logger, domainErrorHandler);
