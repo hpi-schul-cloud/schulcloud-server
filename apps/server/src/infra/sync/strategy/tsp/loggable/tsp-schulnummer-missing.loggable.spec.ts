@@ -1,25 +1,29 @@
 import { faker } from '@faker-js/faker';
 import { TspSchulnummerMissingLoggable } from './tsp-schulnummer-missing.loggable';
+import { robjExportSchuleFactory } from '@infra/tsp-client/testing';
 
 describe(TspSchulnummerMissingLoggable.name, () => {
 	describe('getLogMessage is called', () => {
 		const setup = () => {
-			const schulName = faker.company.name();
+			const tspSchool = robjExportSchuleFactory.build({
+				schuleNummer: undefined,
+				schuleName: faker.company.name(),
+			});
 
 			const expected = {
-				message: `The TSP school '${schulName}' is missing a Schulnummer. This school is skipped.`,
+				message: `The following TSP schools are missing a Schulnummer and are skipped.`,
 				data: {
-					schulName,
+					schulNames: tspSchool.schuleName,
 				},
 			};
 
-			return { schulName, expected };
+			return { tspSchool, expected };
 		};
 
 		it('should return a log message', () => {
-			const { schulName, expected } = setup();
+			const { tspSchool, expected } = setup();
 
-			const loggable = new TspSchulnummerMissingLoggable(schulName);
+			const loggable = new TspSchulnummerMissingLoggable([tspSchool]);
 
 			expect(loggable.getLogMessage()).toEqual(expected);
 		});
