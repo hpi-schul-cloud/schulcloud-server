@@ -129,8 +129,7 @@ export class VideoConferenceService {
 			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
-				// TODO: ROOMEDITOR still consistent after change ??? is this whole scenario even planed?
-				return roomMember.roles.some((role) => role.name === RoleName.ROOMEDITOR);
+				return roomMember.roles.some((role) => role.name === RoleName.ROOMADMIN);
 			}
 
 			return false;
@@ -161,7 +160,10 @@ export class VideoConferenceService {
 			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
-				return roomMember.roles.some((role) => role.name === RoleName.ROOMVIEWER);
+				return (
+					roomMember.roles.some((role) => role.name === RoleName.ROOMVIEWER) ||
+					roomMember.roles.some((role) => role.name === RoleName.ROOMEDITOR)
+				);
 			}
 
 			return false;

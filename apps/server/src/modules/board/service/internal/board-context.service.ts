@@ -5,7 +5,6 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode, BoardExternalReferenceType, BoardRoles, BoardSettings, UserWithBoardRoles } from '../../domain';
 import { RoomService } from '@modules/room';
-import { RoomFeatures } from '@modules/room/domain/type';
 
 @Injectable()
 export class BoardContextService {
@@ -41,8 +40,8 @@ export class BoardContextService {
 		}
 
 		if (rootNode.context.type === BoardExternalReferenceType.Room) {
-			const roomFeatures = await this.getFeaturesForRoom(rootNode.context.id);
-			const canRoomEditorManageVideoconference = roomFeatures.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE);
+			const room = await this.roomService.getSingleRoom(rootNode.context.id);
+			const canRoomEditorManageVideoconference = this.roomService.canEditorManageVideoconferences(room);
 			return {
 				canRoomEditorManageVideoconference,
 			};
@@ -128,11 +127,5 @@ export class BoardContextService {
 			return [BoardRoles.READER];
 		}
 		return [];
-	}
-
-	private async getFeaturesForRoom(roomId: EntityId): Promise<RoomFeatures[]> {
-		const room = await this.roomService.getSingleRoom(roomId);
-
-		return room.features;
 	}
 }
