@@ -1,4 +1,5 @@
 /* istanbul ignore file */
+import { DomainErrorHandler } from '@core/error';
 import { MediaSyncConsoleAppModule } from '@modules/media-sync-console/media-sync-console.app.module';
 import { BootstrapConsole } from 'nestjs-console';
 
@@ -16,8 +17,8 @@ async function run(): Promise<void> {
 		// Execute console application with provided arguments.
 		await bootstrap.boot();
 	} catch (err) {
-		// eslint-disable-next-line no-console, @typescript-eslint/no-unsafe-call
-		console.error(err);
+		const domainErrorHandler = app.get(DomainErrorHandler);
+		domainErrorHandler.exec(err);
 
 		// Set the exit code to 1 to indicate a console app failure.
 		process.exitCode = 1;
