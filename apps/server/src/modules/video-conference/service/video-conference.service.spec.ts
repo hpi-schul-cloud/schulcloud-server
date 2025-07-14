@@ -2,9 +2,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CalendarService } from '@infra/calendar';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
+import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
 import { VideoConferenceElement } from '@modules/board/domain';
-import { columnBoardFactory, videoConferenceElementFactory } from '@modules/board/testing';
+import {
+	boardNodeAuthorizableFactory,
+	columnBoardFactory,
+	videoConferenceElementFactory,
+} from '@modules/board/testing';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
@@ -527,7 +531,7 @@ describe(VideoConferenceService.name, () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 					users: [{ userId: user.id, roles: [BoardRoles.ADMIN] }],
 					id: element.id,
 					boardNode: element,
@@ -714,7 +718,7 @@ describe(VideoConferenceService.name, () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 					id: element.id,
 					boardNode: element,
@@ -759,7 +763,7 @@ describe(VideoConferenceService.name, () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 					users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 					id: element.id,
 					boardNode: element,
@@ -924,7 +928,7 @@ describe(VideoConferenceService.name, () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 					users: [{ userId: 'anotherUserId', roles: [] }],
 					id: element.id,
 					boardNode: element,
@@ -961,7 +965,7 @@ describe(VideoConferenceService.name, () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 					users: [{ userId: user.id, roles: [] }],
 					id: element.id,
 					boardNode: element,
@@ -1161,7 +1165,7 @@ describe(VideoConferenceService.name, () => {
 				});
 
 			const element = videoConferenceElementFactory.build();
-			const boardNodeAuthorizable = new BoardNodeAuthorizable({
+			const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 				users: [{ userId: roomUser.id, roles: [BoardRoles.READER] }],
 				id: element.id,
 				boardNode: element,

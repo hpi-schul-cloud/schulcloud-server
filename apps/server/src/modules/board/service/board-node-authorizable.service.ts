@@ -9,6 +9,7 @@ import { AnyBoardNode, BoardNodeAuthorizable, UserWithBoardRoles } from '../doma
 import { BoardNodeRepo } from '../repo';
 import { BoardContextService } from './internal/board-context.service';
 import { BoardNodeService } from './board-node.service';
+import { boardNodeAuthorizableFactory } from '../testing';
 
 @Injectable()
 export class BoardNodeAuthorizableService implements AuthorizationLoaderService {
@@ -38,7 +39,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 		const users = await this.boardContextService.getUsersWithBoardRoles(rootNode);
 		const boardSettings = await this.boardContextService.getBoardSettings(rootNode);
 
-		const boardNodeAuthorizable = new BoardNodeAuthorizable({
+		const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 			users,
 			id: boardNode.id,
 			boardNode,
@@ -71,7 +72,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 			const parentNode = boardNode.parentId ? boardNodeMap[boardNode.parentId] : undefined;
 			const users = usersMap[boardNode.id];
 			const boardSettings = await this.boardContextService.getBoardSettings(rootNode);
-			const boardNodeAuthorizable = new BoardNodeAuthorizable({
+			const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 				users,
 				id: boardNode.id,
 				boardNode,
