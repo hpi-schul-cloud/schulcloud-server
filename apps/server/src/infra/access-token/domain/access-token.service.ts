@@ -1,9 +1,9 @@
 import { StorageClient } from '@infra/valkey-client';
-import { AccessTokenParams } from '@modules/authorization-reference/api/dto';
 import { ForbiddenException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ACCESS_TOKEN_VALKEY_CLIENT } from '../access-token.config';
 import { AccessToken } from './access-token.vo';
 import { AccessTokenBuilder } from './builder';
+import { ResolveTokenParams } from './types';
 
 @Injectable()
 export class AccessTokenService {
@@ -18,7 +18,7 @@ export class AccessTokenService {
 		return token;
 	}
 
-	public async resolveToken(params: AccessTokenParams): Promise<unknown> {
+	public async resolveToken(params: ResolveTokenParams): Promise<unknown> {
 		const { token, tokenTtl } = params;
 		const value = await this.storageClient.get(token);
 
