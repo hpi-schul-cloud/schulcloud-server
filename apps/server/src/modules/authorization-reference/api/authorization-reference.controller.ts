@@ -58,7 +58,7 @@ export class AuthorizationReferenceController {
 		return response;
 	}
 
-	@Get('resolveToken/:token')
+	@Get('resolveToken/:token/ttl/:tokenTtl')
 	public async resolveToken(@Param() params: AccessTokenParams): Promise<AccessTokenPayloadResponse> {
 		const payload = await this.authorizationReferenceUc.resolveToken(params);
 
