@@ -1,6 +1,5 @@
-import { RoleName } from '@modules/role';
 import { ValueObject } from '@shared/domain/value-object.decorator';
-import { IsArray, IsBoolean, IsEnum, IsMongoId, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsMongoId, IsNumber, IsOptional, IsString } from 'class-validator';
 
 @ValueObject()
 export class JwtPayload {
@@ -33,8 +32,8 @@ export class JwtPayload {
 	public readonly schoolId: string;
 
 	@IsArray()
-	@IsEnum(RoleName, { each: true })
-	public readonly roles: RoleName[];
+	@IsMongoId({ each: true })
+	public readonly roles: string[];
 
 	@IsBoolean()
 	public readonly support: boolean;
