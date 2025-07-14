@@ -45,7 +45,11 @@ export class AuthorizationReferenceUc {
 		jwtToken: string
 	): Promise<AccessTokenResponse> {
 		const jwtPayload = JwtPayloadVoFactory.build(jwtToken);
-		const authorizationReference = TokenMetadataMapper.mapToTokenMetadata({ ...params, ...jwtPayload, userId });
+		const authorizationReference = TokenMetadataMapper.mapFromParamsToTokenMetadata({
+			...params,
+			...jwtPayload,
+			userId,
+		});
 
 		await this.checkPermissionsForReference(authorizationReference);
 
@@ -57,7 +61,7 @@ export class AuthorizationReferenceUc {
 
 	public async resolveToken(accessToken: AccessTokenParams): Promise<AccessTokenPayloadResponse> {
 		const result = await this.accessTokenService.resolveToken(accessToken);
-		const tokenMetadata = TokenMetadataMapper.mapToTokenMetadata(result);
+		const tokenMetadata = TokenMetadataMapper.mapFromServiceResponseToTokenMetadata(result);
 
 		await this.jwtValidationAdapter.isWhitelisted(tokenMetadata.accountId, tokenMetadata.jti);
 		await this.checkPermissionsForReference(tokenMetadata);
