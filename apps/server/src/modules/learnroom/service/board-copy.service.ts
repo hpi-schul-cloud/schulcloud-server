@@ -63,13 +63,15 @@ export class BoardCopyService {
 		};
 
 		status = this.updateCopiedEmbeddedTasksOfLessons(status);
-		if (status.copyEntity) {
-			boardCopy = status.copyEntity as LegacyBoard;
+
+		if (status.elements && status.elements.length > 0) {
+			status = await this.swapLinks(status);
 		}
 
-		status = await this.swapLinkedIdsInBoards(status);
-
 		try {
+			if (status.copyEntity) {
+				boardCopy = status.copyEntity as LegacyBoard;
+			}
 			await this.boardRepo.save(boardCopy);
 		} catch (err) {
 			this.logger.warn(err);
@@ -193,32 +195,19 @@ export class BoardCopyService {
 		return boardStatus;
 	}
 
-	private async swapLinkedIdsInBoards(copyStatus: CopyStatus): Promise<CopyStatus> {
-		const map = new Map<EntityId, EntityId>();
-		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
-		copyDict.forEach((value, key) => map.set(key, value.id));
-
-		if (copyStatus.copyEntity instanceof LegacyBoard && copyStatus.originalEntity instanceof LegacyBoard) {
-			map.set(copyStatus.originalEntity.course.id, copyStatus.copyEntity.course.id);
-		}
-
-		const elements = copyStatus.elements ?? [];
-		const updatedElements = await Promise.all(
-			elements.map(async (el) => {
-				if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {
-					el.copyEntity = await this.columnBoardService.swapLinkedIds(el.copyEntity?.id, map);
-				}
-				return el;
-			})
-		);
-
-		copyStatus.elements = updatedElements;
-		return copyStatus;
-	}
-
 	private sortByOriginalOrder(resolved: [number, CopyStatus][]): CopyStatus[] {
 		const sortByPos = sortBy(resolved, ([pos]) => pos);
 		const statuses = sortByPos.map(([, status]) => status);
 		return statuses;
+	}
+
+	private async swapLinks(status: CopyStatus): Promise<CopyStatus> {
+		const map = new Map<EntityId, EntityId>();
+		if (status.copyEntity instanceof LegacyBoard && status.originalEntity instanceof LegacyBoard) {
+			map.set(status.originalEntity.course.id, status.copyEntity.course.id);
+		}
+		status = await this.columnBoardService.swapLinkedIdsInBoards(status, map);
+
+		return status;
 	}
 }
