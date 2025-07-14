@@ -1,9 +1,8 @@
 import { AccessTokenService } from '@infra/access-token';
-import { JwtPayloadVoFactory, JwtValidationAdapter } from '@infra/auth-guard';
+import { decodeJwt, JwtPayloadVoFactory, JwtValidationAdapter } from '@infra/auth-guard';
 import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import jwt from 'jsonwebtoken';
 import { AuthorizationReferenceService, TokenMetadata, TokenMetadataMapper } from '../domain';
 import {
 	AccessTokenParams,
@@ -45,7 +44,7 @@ export class AuthorizationReferenceUc {
 		params: CreateAccessTokenParams,
 		jwtToken: string
 	): Promise<AccessTokenResponse> {
-		const result = jwt.decode(jwtToken, { json: true });
+		const result = decodeJwt(jwtToken);
 		const jwtPayload = JwtPayloadVoFactory.build(result);
 		const authorizationReference = TokenMetadataMapper.mapToTokenMetadata({ ...params, ...jwtPayload, userId });
 
