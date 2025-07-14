@@ -13,6 +13,7 @@ import {
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import mime from 'mime';
 import path from 'node:path/posix';
+import pLimit from 'p-limit';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto';
 import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
@@ -20,6 +21,8 @@ import { InstalledLibrary, LibraryRepo } from '../repo';
 
 @Injectable()
 export class LibraryStorage implements ILibraryStorage {
+	private promiseLimiter = pLimit(40);
+
 	/**
 	 * @param libraryRepo
 	 * @param s3Client
@@ -63,13 +66,15 @@ export class LibraryStorage implements ILibraryStorage {
 		const s3Key = this.getS3Key(libraryName, filename);
 
 		try {
-			await this.s3Client.create(
-				s3Key,
-				new H5pFileDto({
-					name: s3Key,
-					mimeType: 'application/octet-stream',
-					data: dataStream,
-				})
+			await this.promiseLimiter(() =>
+				this.s3Client.create(
+					s3Key,
+					new H5pFileDto({
+						name: s3Key,
+						mimeType: 'application/octet-stream',
+						data: dataStream,
+					})
+				)
 			);
 		} catch {
 			throw new H5pError(
