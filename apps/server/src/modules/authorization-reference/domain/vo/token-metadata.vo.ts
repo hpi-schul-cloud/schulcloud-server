@@ -3,7 +3,7 @@ import { AuthorizableReferenceType } from '@modules/authorization';
 import { EntityId } from '@shared/domain/types';
 import { ValueObject } from '@shared/domain/value-object.decorator';
 import { Type } from 'class-transformer';
-import { IsEnum, IsMongoId, IsObject, IsOptional, ValidateNested } from 'class-validator';
+import { IsEnum, IsMongoId, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { AuthorizationContext } from './authorization-context.vo';
 
 @ValueObject()
@@ -15,6 +15,8 @@ export class TokenMetadata {
 		this.referenceType = tokenMetadataProps.referenceType;
 		this.referenceId = tokenMetadataProps.referenceId;
 		this.userId = tokenMetadataProps.userId;
+		this.accountId = tokenMetadataProps.accountId;
+		this.jti = tokenMetadataProps.jti;
 		this.customPayload = tokenMetadataProps.customPayload || {};
 	}
 
@@ -30,6 +32,12 @@ export class TokenMetadata {
 
 	@IsMongoId()
 	public readonly userId: EntityId;
+
+	@IsMongoId()
+	public readonly accountId: EntityId;
+
+	@IsString()
+	public readonly jti: string;
 
 	@IsObject()
 	@IsOptional()

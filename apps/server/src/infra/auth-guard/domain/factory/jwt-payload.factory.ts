@@ -1,7 +1,10 @@
+import jwt from 'jsonwebtoken';
 import { JwtPayload } from '../vo';
 
 export class JwtPayloadVoFactory {
-	public static build(props: unknown): JwtPayload {
-		return new JwtPayload(props);
+	public static build(token: string): JwtPayload {
+		const decodedJwt = jwt.decode(token, { json: true });
+
+		return new JwtPayload(decodedJwt);
 	}
 }

@@ -1,5 +1,5 @@
 import { AccessTokenService } from '@infra/access-token';
-import { decodeJwt, JwtPayloadVoFactory, JwtValidationAdapter } from '@infra/auth-guard';
+import { JwtPayloadVoFactory, JwtValidationAdapter } from '@infra/auth-guard';
 import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -44,8 +44,7 @@ export class AuthorizationReferenceUc {
 		params: CreateAccessTokenParams,
 		jwtToken: string
 	): Promise<AccessTokenResponse> {
-		const result = decodeJwt(jwtToken);
-		const jwtPayload = JwtPayloadVoFactory.build(result);
+		const jwtPayload = JwtPayloadVoFactory.build(jwtToken);
 		const authorizationReference = TokenMetadataMapper.mapToTokenMetadata({ ...params, ...jwtPayload, userId });
 
 		await this.checkPermissionsForReference(authorizationReference);
@@ -59,9 +58,8 @@ export class AuthorizationReferenceUc {
 	public async resolveToken(accessToken: AccessTokenParams): Promise<AccessTokenPayloadResponse> {
 		const result = await this.accessTokenService.resolveToken(accessToken);
 		const tokenMetadata = TokenMetadataMapper.mapToTokenMetadata(result);
-		const jwtPayload = JwtPayloadVoFactory.build(tokenMetadata.customPayload);
 
-		await this.jwtValidationAdapter.isWhitelisted(jwtPayload.accountId, jwtPayload.jti);
+		await this.jwtValidationAdapter.isWhitelisted(tokenMetadata.accountId, tokenMetadata.jti);
 		await this.checkPermissionsForReference(tokenMetadata);
 
 		const payloadResponse = AuthorizationResponseMapper.mapToAccessTokenPayload(tokenMetadata.customPayload);
