@@ -61,11 +61,11 @@ export class CreateAccessTokenParams extends AuthorizationBodyParams {
 }
 
 export class AccessTokenParams {
-	@ApiProperty({ description: 'Lifetime of token' })
-	@IsNumber()
-	public tokenTtl!: number;
-
 	@ApiProperty({ description: 'The access token to be resolved.' })
 	@IsUUID()
 	public token!: string;
+
+	@ApiProperty({ description: 'Lifetime of token' })
+	@IsNumber()
+	public tokenTtl!: number;
 }
