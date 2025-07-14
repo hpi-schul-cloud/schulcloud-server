@@ -24,9 +24,6 @@ export class Migration20250713222324 extends Migration {
 				features: {
 					$exists: true,
 				},
-				'features.0': {
-					$exists: false,
-				},
 			},
 			{
 				$unset: {
