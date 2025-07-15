@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { IHubContentType, ILibraryAdministrationOverviewItem } from '@lumieducation/h5p-server/build/src/types';
 import { ContentStorage, LibraryStorage } from '@modules/h5p-editor/service';
@@ -44,6 +45,10 @@ describe('H5PLibraryManagementService', () => {
 					useValue: createMock<ConfigService<IH5PLibraryManagementConfig, true>>({
 						get: () => 'config/h5p-libraries.yaml',
 					}),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
