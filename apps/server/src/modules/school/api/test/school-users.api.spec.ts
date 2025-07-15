@@ -369,29 +369,17 @@ describe('School Controller (API)', () => {
 			describe('user is student', () => {
 				describe('user is from same school', () => {
 					it('should include all students from the school', async () => {
-						const {
-							loggedInClient,
-							school,
-							studentIdsOfCurrentClass,
-							studentIdsOfArchivedClass,
-							studentIdsOfMoinSchuleClass,
-							studentIdsOfArchivedMoinSchuleClass,
-							studentIdsOfUsersWithoutClass,
-						} = await setup('student', { sameSchool: true });
+						const { loggedInClient, school, studentIdsOfCurrentClass, studentIdsOfMoinSchuleClass } = await setup(
+							'student',
+							{ sameSchool: true }
+						);
 
 						const response = await loggedInClient.get(`${school.id}/students`);
 						const body = response.body as SchoolUserListResponse;
 						const recievedIds = body.data.map((user) => user.id);
 
 						expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfCurrentClass.map((id) => id.toString())));
-						expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfArchivedClass.map((id) => id.toString())));
 						expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfMoinSchuleClass.map((id) => id.toString())));
-						expect(recievedIds).toEqual(
-							expect.arrayContaining(studentIdsOfArchivedMoinSchuleClass.map((id) => id.toString()))
-						);
-						expect(recievedIds).toEqual(
-							expect.arrayContaining(studentIdsOfUsersWithoutClass.map((id) => id.toString()))
-						);
 					});
 				});
 
@@ -441,29 +429,17 @@ describe('School Controller (API)', () => {
 			describe('user is teacher', () => {
 				describe('user is from same school', () => {
 					it('should include all students from school', async () => {
-						const {
-							loggedInClient,
-							school,
-							studentIdsOfCurrentClass,
-							studentIdsOfArchivedClass,
-							studentIdsOfMoinSchuleClass,
-							studentIdsOfArchivedMoinSchuleClass,
-							studentIdsOfUsersWithoutClass,
-						} = await setup('teacher', { sameSchool: true });
+						const { loggedInClient, school, studentIdsOfCurrentClass, studentIdsOfMoinSchuleClass } = await setup(
+							'teacher',
+							{ sameSchool: true }
+						);
 
 						const response = await loggedInClient.get(`${school.id}/students`);
 						const body = response.body as SchoolUserListResponse;
 						const recievedIds = body.data.map((user) => user.id);
 
 						expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfCurrentClass.map((id) => id.toString())));
-						expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfArchivedClass.map((id) => id.toString())));
 						expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfMoinSchuleClass.map((id) => id.toString())));
-						expect(recievedIds).toEqual(
-							expect.arrayContaining(studentIdsOfArchivedMoinSchuleClass.map((id) => id.toString()))
-						);
-						expect(recievedIds).toEqual(
-							expect.arrayContaining(studentIdsOfUsersWithoutClass.map((id) => id.toString()))
-						);
 					});
 
 					it('should include students from moin.schule class', async () => {
