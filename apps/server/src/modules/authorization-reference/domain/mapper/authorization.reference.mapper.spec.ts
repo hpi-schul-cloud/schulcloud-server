@@ -12,7 +12,7 @@ describe('TokenMetadataMapper', () => {
 	/* describe('mapToTokenMetadata', () => {
 		describe('when called with valid props', () => {
 			it('should map props to a valid TokenMetadata instance', () => {
-				const tokenMetadataProps = tokenMetadataFactory.build();
+				const tokenMetadataProps = tokenMetadataTestFactory.build();
 
 				const result = TokenMetadataMapper.mapToTokenMetadata(tokenMetadataProps);
 
