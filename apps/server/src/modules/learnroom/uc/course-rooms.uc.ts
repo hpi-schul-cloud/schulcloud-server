@@ -7,6 +7,7 @@ import { CourseRoomsService } from '../service/course-rooms.service';
 import { RoomBoardDTO } from '../types';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
+import { LockedCourseLoggableException } from '../loggable';
 
 @Injectable()
 export class CourseRoomsUc {
@@ -23,6 +24,11 @@ export class CourseRoomsUc {
 		const user = await this.userService.getUserEntityWithRoles(userId);
 		// TODO no authorisation check here?
 		const course = await this.courseService.findOneForUser(roomId, userId);
+
+		if (course.teachers.length === 0) {
+			throw new LockedCourseLoggableException('course is locked');
+		}
+
 		const legacyBoard = await this.legacyBoardRepo.findByCourseId(roomId);
 
 		// TODO this must be rewritten. Board auto-creation must be treated separately
