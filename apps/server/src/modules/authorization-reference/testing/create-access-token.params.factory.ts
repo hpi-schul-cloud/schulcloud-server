@@ -1,24 +1,24 @@
-import { Action, AuthorizableReferenceType } from '@modules/authorization';
-import { Permission } from '@shared/domain/interface';
-import { BaseFactory } from '@testing/factory/base.factory';
+import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization';
 import { ObjectId } from 'bson';
 import { CreateAccessTokenParams } from '../api/dto';
-import { authorizationContextFactory } from './authorization-context.factory';
 
-export const createAccessTokenParamsFactory = BaseFactory.define<CreateAccessTokenParams, CreateAccessTokenParams>(
-	CreateAccessTokenParams,
-	() => {
-		const createAccessTokenParams = {
-			action: Action.read,
-			requiredPermissions: [Permission.ACCOUNT_CREATE],
-			referenceType: AuthorizableReferenceType.School,
-			referenceId: new ObjectId().toHexString(),
-			tokenTtl: 3600,
-			payload: { foo: 'bar' },
-			userId: 'user-id-123',
-			context: authorizationContextFactory.build(),
-		};
+class CreateAccessTokenParamsTestFactory {
+	private props: CreateAccessTokenParams = {
+		referenceId: new ObjectId().toHexString(),
+		referenceType: AuthorizableReferenceType.User,
+		context: AuthorizationContextBuilder.read([]),
+		payload: {},
+		tokenTtl: 3600, // Default TTL of 1 hour
+	};
 
-		return createAccessTokenParams;
+	public build(referenceId?: string): CreateAccessTokenParams {
+		if (referenceId) {
+			this.props.referenceId = referenceId;
+		}
+
+		return this.props;
 	}
-);
+}
+
+export const createAccessTokenParamsTestFactory = (): CreateAccessTokenParamsTestFactory =>
+	new CreateAccessTokenParamsTestFactory();
