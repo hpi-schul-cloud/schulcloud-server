@@ -45,11 +45,7 @@ export class AuthorizationReferenceUc {
 		jwtToken: string
 	): Promise<AccessTokenResponse> {
 		const jwtPayload = JwtPayloadVoFactory.build(jwtToken);
-		const authorizationReference = TokenMetadataMapper.mapFromParamsToTokenMetadata({
-			...params,
-			...jwtPayload,
-			userId,
-		});
+		const authorizationReference = TokenMetadataMapper.mapFromParamsToTokenMetadata(params, userId, jwtPayload);
 
 		await this.checkPermissionsForReference(authorizationReference);
 
