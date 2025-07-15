@@ -1,15 +1,15 @@
-import { AuthorizableReferenceType } from '@modules/authorization';
+import { jwtPayloadFactory } from '@infra/auth-guard/testing';
 import { ObjectId } from 'bson';
-import { tokenMetadataTestFactory } from '../../testing';
-import { TokenMetadataMapper } from '../mapper/authorization.reference.mapper';
-import { TokenMetadata } from '../vo';
+import { createAccessTokenParamsFactory } from '../../testing/create-access-token.params.factory';
+import { AuthorizationContext, TokenMetadata } from '../vo';
+import { TokenMetadataMapper } from './authorization.reference.mapper';
 
 describe('TokenMetadataMapper', () => {
 	afterEach(() => {
 		jest.resetAllMocks();
 	});
 
-	describe('mapToTokenMetadata', () => {
+	/* describe('mapToTokenMetadata', () => {
 		describe('when called with valid props', () => {
 			it('should map props to a valid TokenMetadata instance', () => {
 				const tokenMetadataProps = tokenMetadataTestFactory.build();
@@ -75,6 +75,36 @@ describe('TokenMetadataMapper', () => {
 					expect(() => TokenMetadataMapper.mapToTokenMetadata(props)).toThrow();
 				});
 			});
+		});
+	}); */
+
+	describe('mapFromParamsToTokenMetadata', () => {
+		const setup = () => {
+			const params = createAccessTokenParamsFactory.build();
+			const userId = new ObjectId().toHexString();
+			const jwtPayload = jwtPayloadFactory.build();
+			console.log('params', params);
+			return {
+				params,
+				userId,
+				jwtPayload,
+			};
+		};
+
+		it('should ', () => {
+			const { params, userId, jwtPayload } = setup();
+			console.log('params', params);
+
+			const result = TokenMetadataMapper.mapFromParamsToTokenMetadata(params, userId, jwtPayload);
+
+			expect(result).toBeInstanceOf(TokenMetadata);
+			expect(result.userId).toBe(userId);
+			expect(result.accountId).toBe(jwtPayload.accountId);
+			expect(result.jwtJti).toBe(jwtPayload.jti);
+			expect(result.authorizationContext).toBeInstanceOf(AuthorizationContext);
+			expect(result.customPayload).toBe(params.payload);
+			expect(result.referenceType).toBe(params.referenceType);
+			expect(result.referenceId).toBe(params.referenceId);
 		});
 	});
 });

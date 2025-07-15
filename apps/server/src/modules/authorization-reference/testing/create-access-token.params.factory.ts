@@ -1,6 +1,6 @@
 import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization';
-import { CreateAccessTokenParams } from '../api/dto';
 import { ObjectId } from 'bson';
+import { CreateAccessTokenParams } from '../api/dto';
 
 class CreateAccessTokenParamsTestBuilder {
 	private props: CreateAccessTokenParams = {
@@ -17,9 +17,13 @@ class CreateAccessTokenParamsTestBuilder {
 		return this;
 	}
 
-	public build(referenceId: string): CreateAccessTokenParams {
+	public withReferenceId(referenceId: string): this {
 		this.props.referenceId = referenceId;
 
+		return this;
+	}
+
+	public build(): CreateAccessTokenParams {
 		return this.props;
 	}
 }
