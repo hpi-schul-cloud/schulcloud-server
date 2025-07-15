@@ -13,7 +13,6 @@ import { UserModule } from '@modules/user';
 
 import { SagaModule } from '@modules/saga';
 import { forwardRef, Module } from '@nestjs/common';
-import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
 import {
 	ColumnBoardNodeRepo,
 	DashboardElementRepo,
@@ -51,7 +50,6 @@ import { BoardCopyService, CourseCopyService, CourseRoomsService } from './servi
 			useClass: DashboardRepo,
 		},
 		BoardCopyService,
-		CommonCartridgeFileValidatorPipe,
 		CourseCopyService,
 		DashboardElementRepo,
 		DashboardModelMapper,
