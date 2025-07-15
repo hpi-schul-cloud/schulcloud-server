@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import {
 	cacheImplementations,
 	ContentTypeCache,
@@ -17,6 +18,7 @@ import { readFileSync } from 'fs';
 import { parse } from 'yaml';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
 import LibraryManagementPermissionSystem from './library-management-permission-system';
+import { H5PLibraryManagementLoggable } from '../loggable/h5p-library-management.loggable';
 
 const h5pConfig = new H5PConfig(undefined, {
 	baseUrl: '/api/v3/h5p-editor',
@@ -64,7 +66,8 @@ export class H5PLibraryManagementService {
 	constructor(
 		private readonly libraryStorage: LibraryStorage,
 		private readonly contentStorage: ContentStorage,
-		private readonly configService: ConfigService<IH5PLibraryManagementConfig, true>
+		private readonly configService: ConfigService<IH5PLibraryManagementConfig, true>,
+		private readonly logger: Logger
 	) {
 		const kvCache = new cacheImplementations.CachedKeyValueStorage('kvcache');
 		this.contentTypeCache = new ContentTypeCache(h5pConfig, kvCache);
@@ -91,6 +94,8 @@ export class H5PLibraryManagementService {
 		const librariesYamlContent = readFileSync(filePath, { encoding: 'utf-8' });
 		const librariesContentType = castToLibrariesContentType(parse(librariesYamlContent));
 		this.libraryWishList = librariesContentType.h5p_libraries;
+
+		this.logger.setContext(H5PLibraryManagementService.name);
 	}
 
 	public async uninstallUnwantedLibraries(
@@ -146,10 +151,9 @@ export class H5PLibraryManagementService {
 		try {
 			await this.contentTypeRepo.installContentType(librariesToInstall[lastPositionLibrariesToInstallArray], user);
 		} catch (error: unknown) {
-			console.log('Failed to install content type', {
-				library: librariesToInstall[lastPositionLibrariesToInstallArray],
-				error: error instanceof Error ? error.message : String(error),
-			});
+			this.logger.warning(
+				new H5PLibraryManagementLoggable(librariesToInstall[lastPositionLibrariesToInstallArray], error)
+			);
 		}
 
 		await this.installLibraries(librariesToInstall.slice(0, lastPositionLibrariesToInstallArray));
