@@ -15,5 +15,6 @@ export const boardNodeAuthorizableFactory = DomainObjectFactory.define<
 		users: [],
 		boardNode,
 		rootNode,
+		boardSettings: {},
 	};
 });
