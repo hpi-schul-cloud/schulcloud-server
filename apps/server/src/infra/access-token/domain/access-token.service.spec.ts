@@ -87,18 +87,36 @@ describe('AccessTokenService', () => {
 					const value = JSON.stringify(payload);
 
 					storageClient.get.mockResolvedValueOnce(value);
+					const buildMock = jest.fn<object, [object]>().mockImplementation((data: object): object => {
+						return { ...data };
+					});
 
-					return { token, tokenTtl, payload, value };
+					return { token, tokenTtl, payload, value, buildMock };
 				};
 
 				it('should return the parsed payload and renew the token timeout', async () => {
-					const { token, tokenTtl, payload } = setup();
+					const { token, tokenTtl, payload, buildMock } = setup();
 
-					const result = await service.resolveToken({ token, tokenTtl });
+					const result = await service.resolveToken({ token, tokenTtl }, buildMock);
 
 					expect(storageClient.get).toHaveBeenCalledWith(token);
-					expect(storageClient.set).toHaveBeenCalledWith(expect.any(String), JSON.stringify(payload), 'EX', tokenTtl);
 					expect(result).toEqual(payload);
+				});
+
+				it('should renew the token timeout', async () => {
+					const { token, tokenTtl, payload, buildMock } = setup();
+
+					await service.resolveToken({ token, tokenTtl }, buildMock);
+
+					expect(storageClient.set).toHaveBeenCalledWith(expect.any(String), JSON.stringify(payload), 'EX', tokenTtl);
+				});
+
+				it('should call build with the parsed payload', async () => {
+					const { token, tokenTtl, payload, buildMock } = setup();
+
+					await service.resolveToken({ token, tokenTtl }, buildMock);
+
+					expect(buildMock).toHaveBeenCalledWith(payload);
 				});
 			});
 
@@ -107,16 +125,19 @@ describe('AccessTokenService', () => {
 					const token = 'token-uuid';
 					const tokenTtl = 1234;
 					const error = new ForbiddenException(`Token ${token} not found`);
+					const buildMock = jest.fn<object, [object]>().mockImplementation((data: object): object => {
+						return { ...data };
+					});
 
 					storageClient.get.mockResolvedValueOnce(null);
 
-					return { token, tokenTtl, error };
+					return { token, tokenTtl, error, buildMock };
 				};
 
 				it('should throw ForbiddenException', async () => {
-					const { token, tokenTtl, error } = setup();
+					const { token, tokenTtl, error, buildMock } = setup();
 
-					await expect(service.resolveToken({ token, tokenTtl })).rejects.toThrow(error);
+					await expect(service.resolveToken({ token, tokenTtl }, buildMock)).rejects.toThrow(error);
 					expect(storageClient.get).toHaveBeenCalledWith(token);
 				});
 			});
@@ -127,17 +148,22 @@ describe('AccessTokenService', () => {
 					const tokenTtl = 1234;
 					const value = 'not-json';
 					const jsonError = new Error(`Unexpected token 'o', \"not-json\" is not valid JSON`);
-					const error = new InternalServerErrorException(`Invalid payload for token ${token}`, { cause: jsonError });
+					const error = new InternalServerErrorException(`Failed to parse token payload for token ${token}`, {
+						cause: jsonError,
+					});
+					const buildMock = jest.fn<object, [object]>().mockImplementation((data: object): object => {
+						return { ...data };
+					});
 
 					storageClient.get.mockResolvedValueOnce(value);
 
-					return { token, tokenTtl, value, error };
+					return { token, tokenTtl, value, error, buildMock };
 				};
 
 				it('should throw InternalServerErrorException', async () => {
-					const { token, tokenTtl, error } = setup();
+					const { token, tokenTtl, error, buildMock } = setup();
 
-					await expect(service.resolveToken({ token, tokenTtl })).rejects.toThrowError(error);
+					await expect(service.resolveToken({ token, tokenTtl }, buildMock)).rejects.toThrowError(error);
 					expect(storageClient.get).toHaveBeenCalledWith(token);
 				});
 			});
@@ -149,14 +175,17 @@ describe('AccessTokenService', () => {
 				const tokenTtl = 1234;
 				const error = new Error('Storage error');
 				storageClient.get.mockRejectedValueOnce(error);
+				const buildMock = jest.fn<object, [object]>().mockImplementation((data: object): object => {
+					return { ...data };
+				});
 
-				return { token, tokenTtl, error };
+				return { token, tokenTtl, error, buildMock };
 			};
 
 			it('should throw an error', async () => {
-				const { token, tokenTtl, error } = setup();
+				const { token, tokenTtl, error, buildMock } = setup();
 
-				await expect(service.resolveToken({ token, tokenTtl })).rejects.toThrow(error);
+				await expect(service.resolveToken({ token, tokenTtl }, buildMock)).rejects.toThrow(error);
 				expect(storageClient.get).toHaveBeenCalledWith(token);
 			});
 		});

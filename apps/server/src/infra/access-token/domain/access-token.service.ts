@@ -20,21 +20,31 @@ export class AccessTokenService {
 
 	public async resolveToken<T>(params: ResolveTokenParams, build: (data: T) => T): Promise<T> {
 		const { token, tokenTtl } = params;
-		const value = await this.storageClient.get(token);
 
+		const valueResponse = await this.storageClient.get(token);
+		const value = this.checkTokenExists(valueResponse, token);
+
+		await this.renewTokenTimeout(token, value, tokenTtl);
+
+		const payload = this.parsePayload(value, token);
+		const validatedPayload = build(payload as T);
+
+		return validatedPayload;
+	}
+
+	private checkTokenExists(value: string | null, token: string): string {
 		if (!value) {
 			throw new ForbiddenException(`Token ${token} not found`);
 		}
 
-		await this.renewTokenTimeout(token, value, tokenTtl);
+		return value;
+	}
 
+	private parsePayload(value: string, token: string): unknown {
 		try {
-			const payload = JSON.parse(value) as T;
-			const validatedPayload = build(payload);
-
-			return validatedPayload;
+			return JSON.parse(value);
 		} catch (error) {
-			throw new InternalServerErrorException(`Invalid payload for token ${token}`, { cause: error });
+			throw new InternalServerErrorException(`Failed to parse token payload for token ${token}`, { cause: error });
 		}
 	}
 
