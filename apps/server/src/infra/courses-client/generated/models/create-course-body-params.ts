@@ -27,7 +27,7 @@ export interface CreateCourseBodyParams {
      */
     'name': string;
     /**
-     * The title of the course
+     * The color of the course icon
      * @type {string}
      * @memberof CreateCourseBodyParams
      */
