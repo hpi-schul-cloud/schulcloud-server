@@ -6,9 +6,19 @@ import { Type } from 'class-transformer';
 import { IsEnum, IsMongoId, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { AuthorizationContext } from './authorization-context.vo';
 
+interface TokenMetadataProps {
+	authorizationContext: AuthorizationContext;
+	referenceType: AuthorizableReferenceType;
+	referenceId: EntityId;
+	userId: EntityId;
+	accountId: EntityId;
+	jwtJti: string;
+	customPayload?: CustomPayload;
+}
+
 @ValueObject()
 export class TokenMetadata {
-	constructor(props: TokenMetadata) {
+	constructor(props: TokenMetadataProps) {
 		this.authorizationContext = props.authorizationContext;
 		this.referenceType = props.referenceType;
 		this.referenceId = props.referenceId;

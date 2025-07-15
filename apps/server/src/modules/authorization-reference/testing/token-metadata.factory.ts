@@ -10,6 +10,8 @@ export const tokenMetadataFactory = BaseFactory.define<TokenMetadata, TokenMetad
 		referenceType: AuthorizableReferenceType.School,
 		referenceId: new ObjectId().toHexString(),
 		userId: new ObjectId().toHexString(),
+		accountId: new ObjectId().toHexString(),
+		jwtJti: 'jti-12345',
 		customPayload: { foo: 'bar' },
 	};
 

@@ -15,6 +15,8 @@ describe('TokenMetadata', () => {
 				const referenceType = AuthorizableReferenceType.School;
 				const referenceId = new ObjectId().toHexString();
 				const userId = new ObjectId().toHexString();
+				const accountId = new ObjectId().toHexString();
+				const jwtJti = 'jti-12345';
 				const customPayload = { foo: 'bar' };
 
 				const props = {
@@ -23,6 +25,8 @@ describe('TokenMetadata', () => {
 					referenceId,
 					userId,
 					customPayload,
+					accountId,
+					jwtJti,
 				};
 
 				return {
@@ -32,7 +36,7 @@ describe('TokenMetadata', () => {
 
 			it('should assign all properties correctly', () => {
 				const { props } = setup();
-				const { authorizationContext, referenceType, referenceId, userId, customPayload } = props;
+				const { authorizationContext, referenceType, referenceId, userId, customPayload, accountId, jwtJti } = props;
 
 				const tokenMetadata = new TokenMetadata(props);
 
@@ -40,6 +44,8 @@ describe('TokenMetadata', () => {
 				expect(tokenMetadata.referenceType).toBe(referenceType);
 				expect(tokenMetadata.referenceId).toBe(referenceId);
 				expect(tokenMetadata.userId).toBe(userId);
+				expect(tokenMetadata.accountId).toBe(accountId);
+				expect(tokenMetadata.jwtJti).toBe(jwtJti);
 				expect(tokenMetadata.customPayload).toBe(customPayload);
 			});
 		});
@@ -50,12 +56,16 @@ describe('TokenMetadata', () => {
 				const referenceType = AuthorizableReferenceType.School;
 				const referenceId = new ObjectId().toHexString();
 				const userId = new ObjectId().toHexString();
+				const accountId = new ObjectId().toHexString();
+				const jwtJti = 'jti-12345';
 
 				const props = {
 					authorizationContext,
 					referenceType,
 					referenceId,
 					userId,
+					accountId,
+					jwtJti,
 				};
 
 				return {
@@ -79,6 +89,8 @@ describe('TokenMetadata', () => {
 						authorizationContext: undefined,
 						referenceType: undefined,
 						referenceId: undefined,
+						accountId: undefined,
+						jwtJti: undefined,
 						userId: undefined,
 						customPayload: undefined,
 					};
@@ -89,7 +101,7 @@ describe('TokenMetadata', () => {
 				it('should throw an error', () => {
 					const { props } = setup();
 
-					expect(() => new TokenMetadata(props)).toThrow();
+					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
 				});
 			});
 
@@ -105,7 +117,7 @@ describe('TokenMetadata', () => {
 				it('should throw an error', () => {
 					const { props } = setup();
 
-					expect(() => new TokenMetadata(props)).toThrow();
+					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
 				});
 			});
 
@@ -115,12 +127,16 @@ describe('TokenMetadata', () => {
 					const referenceType = AuthorizableReferenceType.School;
 					const referenceId = null;
 					const userId = new ObjectId().toHexString();
+					const accountId = new ObjectId().toHexString();
+					const jwtJti = 'jti-12345';
 
 					const props = {
 						authorizationContext,
 						referenceType,
 						referenceId,
 						userId,
+						accountId,
+						jwtJti,
 					};
 
 					return { props };
@@ -129,7 +145,7 @@ describe('TokenMetadata', () => {
 				it('should throw an error', () => {
 					const { props } = setup();
 
-					expect(() => new TokenMetadata(props)).toThrow();
+					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
 				});
 			});
 
@@ -139,12 +155,16 @@ describe('TokenMetadata', () => {
 					const referenceType = 'INVALID_ENUM';
 					const referenceId = new ObjectId().toHexString();
 					const userId = new ObjectId().toHexString();
+					const accountId = new ObjectId().toHexString();
+					const jwtJti = 'jti-12345';
 
 					const props = {
 						authorizationContext,
 						referenceType,
 						referenceId,
 						userId,
+						accountId,
+						jwtJti,
 					};
 
 					return { props };
@@ -153,7 +173,7 @@ describe('TokenMetadata', () => {
 				it('should throw an error', () => {
 					const { props } = setup();
 
-					expect(() => new TokenMetadata(props)).toThrow();
+					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
 				});
 			});
 
@@ -163,12 +183,16 @@ describe('TokenMetadata', () => {
 					const referenceType = AuthorizableReferenceType.School;
 					const referenceId = 'not-a-mongoid';
 					const userId = new ObjectId().toHexString();
+					const accountId = new ObjectId().toHexString();
+					const jwtJti = 'jti-12345';
 
 					const props = {
 						authorizationContext,
 						referenceType,
 						referenceId,
 						userId,
+						accountId,
+						jwtJti,
 					};
 
 					return { props };
@@ -177,7 +201,7 @@ describe('TokenMetadata', () => {
 				it('should throw an error', () => {
 					const { props } = setup();
 
-					expect(() => new TokenMetadata(props)).toThrow();
+					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
 				});
 			});
 
@@ -187,12 +211,16 @@ describe('TokenMetadata', () => {
 					const referenceType = AuthorizableReferenceType.School;
 					const referenceId = new ObjectId().toHexString();
 					const userId = 'not-a-mongoid';
+					const accountId = new ObjectId().toHexString();
+					const jwtJti = 'jti-12345';
 
 					const props = {
 						authorizationContext,
 						referenceType,
 						referenceId,
 						userId,
+						accountId,
+						jwtJti,
 					};
 
 					return { props };
@@ -201,7 +229,7 @@ describe('TokenMetadata', () => {
 				it('should throw an error', () => {
 					const { props } = setup();
 
-					expect(() => new TokenMetadata(props)).toThrow();
+					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
 				});
 			});
 
@@ -212,6 +240,8 @@ describe('TokenMetadata', () => {
 					const referenceId = new ObjectId().toHexString();
 					const userId = new ObjectId().toHexString();
 					const customPayload = 42;
+					const accountId = new ObjectId().toHexString();
+					const jwtJti = 'jti-12345';
 
 					const props = {
 						authorizationContext,
@@ -219,6 +249,8 @@ describe('TokenMetadata', () => {
 						referenceId,
 						userId,
 						customPayload,
+						accountId,
+						jwtJti,
 					};
 
 					return { props };
@@ -227,7 +259,63 @@ describe('TokenMetadata', () => {
 				it('should throw an error', () => {
 					const { props } = setup();
 
-					expect(() => new TokenMetadata(props)).toThrow();
+					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
+				});
+			});
+
+			describe('when accountId is not a valid MongoId', () => {
+				const setup = () => {
+					const authorizationContext = authorizationContextFactory.build();
+					const referenceType = AuthorizableReferenceType.School;
+					const referenceId = new ObjectId().toHexString();
+					const userId = new ObjectId().toHexString();
+					const accountId = 'not-a-mongoid';
+					const jwtJti = 'jti-12345';
+
+					const props = {
+						authorizationContext,
+						referenceType,
+						referenceId,
+						userId,
+						accountId,
+						jwtJti,
+					};
+
+					return { props };
+				};
+
+				it('should throw an error', () => {
+					const { props } = setup();
+
+					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
+				});
+			});
+
+			describe('when jwtJti is not a string', () => {
+				const setup = () => {
+					const authorizationContext = authorizationContextFactory.build();
+					const referenceType = AuthorizableReferenceType.School;
+					const referenceId = new ObjectId().toHexString();
+					const userId = new ObjectId().toHexString();
+					const accountId = new ObjectId().toHexString();
+					const jwtJti = 12345;
+
+					const props = {
+						authorizationContext,
+						referenceType,
+						referenceId,
+						userId,
+						accountId,
+						jwtJti,
+					};
+
+					return { props };
+				};
+
+				it('should throw an error', () => {
+					const { props } = setup();
+
+					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
 				});
 			});
 		});
