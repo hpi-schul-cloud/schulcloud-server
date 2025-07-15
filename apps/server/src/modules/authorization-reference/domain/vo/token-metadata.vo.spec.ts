@@ -318,6 +318,35 @@ describe('TokenMetadata', () => {
 					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
 				});
 			});
+
+			describe('when authorizationContext is not an instance of AuthorizationContext', () => {
+				const setup = () => {
+					const referenceType = AuthorizableReferenceType.School;
+					const referenceId = new ObjectId().toHexString();
+					const userId = new ObjectId().toHexString();
+					const accountId = new ObjectId().toHexString();
+					const jwtJti = 'jti-12345';
+					const customPayload = { foo: 'bar' };
+
+					const props = {
+						authorizationContext: {},
+						referenceType,
+						referenceId,
+						userId,
+						accountId,
+						jwtJti,
+						customPayload,
+					};
+
+					return { props };
+				};
+
+				it('should throw an error', () => {
+					const { props } = setup();
+
+					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
+				});
+			});
 		});
 	});
 });
