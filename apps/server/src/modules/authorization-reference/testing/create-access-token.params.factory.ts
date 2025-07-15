@@ -2,7 +2,7 @@ import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules
 import { CreateAccessTokenParams } from '../api/dto';
 import { ObjectId } from 'bson';
 
-class CreateAccessTokenParamsTestFactory {
+class CreateAccessTokenParamsTestBuilder {
 	private props: CreateAccessTokenParams = {
 		referenceId: new ObjectId().toHexString(),
 		referenceType: AuthorizableReferenceType.User,
@@ -11,6 +11,12 @@ class CreateAccessTokenParamsTestFactory {
 		tokenTtl: 3600, // Default TTL of 1 hour
 	};
 
+	public withWriteAccess(): this {
+		this.props.context = AuthorizationContextBuilder.write([]);
+
+		return this;
+	}
+
 	public build(referenceId: string): CreateAccessTokenParams {
 		this.props.referenceId = referenceId;
 
@@ -18,5 +24,5 @@ class CreateAccessTokenParamsTestFactory {
 	}
 }
 
-export const createAccessTokenParamsTestFactory = (): CreateAccessTokenParamsTestFactory =>
-	new CreateAccessTokenParamsTestFactory();
+export const createAccessTokenParamsTestFactory = (): CreateAccessTokenParamsTestBuilder =>
+	new CreateAccessTokenParamsTestBuilder();
