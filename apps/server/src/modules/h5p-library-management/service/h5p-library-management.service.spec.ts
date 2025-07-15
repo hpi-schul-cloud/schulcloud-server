@@ -5,6 +5,7 @@ import { ContentStorage, LibraryStorage } from '@modules/h5p-editor/service';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { H5PLibraryManagementLoggable } from '../loggable/h5p-library-management.loggable';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
 import { H5PLibraryManagementService, castToLibrariesContentType } from './h5p-library-management.service';
 
@@ -225,6 +226,29 @@ describe('H5PLibraryManagementService', () => {
 					.spyOn(service.contentTypeCache, 'get')
 					.mockResolvedValueOnce(undefined as unknown as Promise<IHubContentType[]>);
 				await expect(service.installLibraries([nonExistentLibrary])).rejects.toThrow('this library does not exist');
+			});
+		});
+
+		describe('when contentTypeRepo.installContentType rejects with an error', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+				const logger = module.get(Logger);
+
+				const library = 'mock-library';
+				const error = new Error('Mock installation error');
+
+				jest.spyOn(service.contentTypeCache, 'get').mockResolvedValueOnce([]);
+				jest.spyOn(service.contentTypeRepo, 'installContentType').mockRejectedValueOnce(error);
+
+				return { service, logger, library, error };
+			};
+
+			it('should log the error using H5PLibraryManagementLoggable', async () => {
+				const { service, logger, library, error } = setup();
+
+				await service.installLibraries([library]);
+
+				expect(logger.warning).toHaveBeenCalledWith(new H5PLibraryManagementLoggable(library, error));
 			});
 		});
 	});
