@@ -21,58 +21,40 @@ describe('AuthorizationContext', () => {
 		});
 
 		describe('when props are missing required fields', () => {
-			const setup = () => {
+			it('should throw when action is missing', () => {
 				const props = {};
 
-				return { props };
-			};
-
-			it('should throw when action is missing', () => {
-				const { props } = setup();
-
-				expect(() => new AuthorizationContext(props)).toThrow();
+				expect(() => new AuthorizationContext(props as AuthorizationContext)).toThrow();
 			});
 		});
 
 		describe('when props are not an object', () => {
-			const setup = () => {
+			it('should throw when props is null', () => {
 				const props = null;
 
-				return { props };
-			};
-
-			it('should throw when props is null', () => {
-				const { props } = setup();
-
-				expect(() => new AuthorizationContext(props)).toThrow();
+				expect(() => new AuthorizationContext(props as unknown as AuthorizationContext)).toThrow();
 			});
 		});
 
 		describe('when props is undefined', () => {
-			const setup = () => {
+			it('should throw when props is undefined', () => {
 				const props = undefined;
 
-				return { props };
-			};
-
-			it('should throw when props is undefined', () => {
-				const { props } = setup();
-
-				expect(() => new AuthorizationContext(props)).toThrow();
+				expect(() => new AuthorizationContext(props as unknown as AuthorizationContext)).toThrow();
 			});
 		});
 
 		describe('when props is a primitive', () => {
 			it('should throw when props is a string', () => {
-				expect(() => new AuthorizationContext('invalid')).toThrow();
+				expect(() => new AuthorizationContext('invalid' as unknown as AuthorizationContext)).toThrow();
 			});
 
 			it('should throw when props is a number', () => {
-				expect(() => new AuthorizationContext(123)).toThrow();
+				expect(() => new AuthorizationContext(123 as unknown as AuthorizationContext)).toThrow();
 			});
 
 			it('should throw when props is a boolean', () => {
-				expect(() => new AuthorizationContext(true)).toThrow();
+				expect(() => new AuthorizationContext(true as unknown as AuthorizationContext)).toThrow();
 			});
 		});
 
@@ -80,13 +62,13 @@ describe('AuthorizationContext', () => {
 			it('should throw when action is undefined', () => {
 				const props = { requiredPermissions: [Permission.ACCOUNT_CREATE] };
 
-				expect(() => new AuthorizationContext(props)).toThrow();
+				expect(() => new AuthorizationContext(props as AuthorizationContext)).toThrow();
 			});
 
 			it('should throw when action is not a valid enum value', () => {
 				const props = { action: 'invalid', requiredPermissions: [Permission.ACCOUNT_CREATE] };
 
-				expect(() => new AuthorizationContext(props)).toThrow();
+				expect(() => new AuthorizationContext(props as AuthorizationContext)).toThrow();
 			});
 		});
 
@@ -94,19 +76,19 @@ describe('AuthorizationContext', () => {
 			it('should throw when requiredPermissions is undefined', () => {
 				const props = { action: Action.read };
 
-				expect(() => new AuthorizationContext(props)).toThrow();
+				expect(() => new AuthorizationContext(props as AuthorizationContext)).toThrow();
 			});
 
 			it('should throw when requiredPermissions is not an array', () => {
 				const props = { action: Action.read, requiredPermissions: 'not-an-array' };
 
-				expect(() => new AuthorizationContext(props)).toThrow();
+				expect(() => new AuthorizationContext(props as unknown as AuthorizationContext)).toThrow();
 			});
 
 			it('should throw when requiredPermissions contains invalid values', () => {
 				const props = { action: Action.read, requiredPermissions: ['invalid'] };
 
-				expect(() => new AuthorizationContext(props)).toThrow();
+				expect(() => new AuthorizationContext(props as AuthorizationContext)).toThrow();
 			});
 		});
 	});
