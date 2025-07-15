@@ -80,18 +80,21 @@ describe(CardUc.name, () => {
 						id: cards[0].id,
 						boardNode: cards[0],
 						rootNode: columnBoardFactory.build(),
+						boardSettings: {},
 					}),
 					new BoardNodeAuthorizable({
 						users: [],
 						id: cards[1].id,
 						boardNode: cards[1],
 						rootNode: columnBoardFactory.build(),
+						boardSettings: {},
 					}),
 					new BoardNodeAuthorizable({
 						users: [],
 						id: cards[2].id,
 						boardNode: cards[2],
 						rootNode: columnBoardFactory.build(),
+						boardSettings: {},
 					}),
 				]);
 				authorizationService.hasPermission.mockReturnValue(true);
