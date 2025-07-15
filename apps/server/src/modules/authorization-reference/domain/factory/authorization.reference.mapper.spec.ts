@@ -1,8 +1,8 @@
 import { jwtPayloadFactory } from '@infra/auth-guard/testing';
 import { ObjectId } from 'bson';
-import { createAccessTokenParamsFactory } from '../../testing/create-access-token.params.factory';
+import { createAccessTokenParamsTestFactory } from '../../testing';
 import { AuthorizationContext, TokenMetadata } from '../vo';
-import { TokenMetadataMapper } from './authorization.reference.mapper';
+import { TokenMetadataMapper } from './token-metadata.factory';
 
 describe('TokenMetadataMapper', () => {
 	afterEach(() => {
@@ -80,7 +80,7 @@ describe('TokenMetadataMapper', () => {
 
 	describe('mapFromParamsToTokenMetadata', () => {
 		const setup = () => {
-			const params = createAccessTokenParamsFactory.build();
+			const params = createAccessTokenParamsTestFactory().build();
 			const userId = new ObjectId().toHexString();
 			const jwtPayload = jwtPayloadFactory.build();
 			console.log('params', params);

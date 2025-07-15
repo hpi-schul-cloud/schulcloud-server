@@ -18,7 +18,7 @@ export class AccessTokenService {
 		return token;
 	}
 
-	public async resolveToken<T>(params: ResolveTokenParams, validate: (data: T) => T): Promise<T> {
+	public async resolveToken<T>(params: ResolveTokenParams, build: (data: T) => T): Promise<T> {
 		const { token, tokenTtl } = params;
 		const value = await this.storageClient.get(token);
 
@@ -30,7 +30,7 @@ export class AccessTokenService {
 
 		try {
 			const payload = JSON.parse(value) as T;
-			const validatedPayload = validate(payload);
+			const validatedPayload = build(payload);
 
 			return validatedPayload;
 		} catch (error) {

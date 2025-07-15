@@ -3,7 +3,7 @@ import { JwtPayloadVoFactory, JwtValidationAdapter } from '@infra/auth-guard';
 import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { AuthorizationReferenceService, TokenMetadata, TokenMetadataMapper } from '../domain';
+import { AuthorizationReferenceService, TokenMetadata, TokenMetadataFactory } from '../domain';
 import {
 	AccessTokenParams,
 	AccessTokenPayloadResponse,
@@ -45,20 +45,19 @@ export class AuthorizationReferenceUc {
 		jwtToken: string
 	): Promise<AccessTokenResponse> {
 		const jwtPayload = JwtPayloadVoFactory.build(jwtToken);
-		const authorizationReference = TokenMetadataMapper.mapFromParamsToTokenMetadata(params, userId, jwtPayload);
+		const tokenMetadata = TokenMetadataFactory.buildFromCreateAccessTokenParams(params, userId, jwtPayload);
 
-		await this.checkPermissionsForReference(authorizationReference);
+		await this.checkPermissionsForReference(tokenMetadata);
 
-		const { token } = await this.accessTokenService.createToken(authorizationReference, params.tokenTtl);
+		const { token } = await this.accessTokenService.createToken(tokenMetadata, params.tokenTtl);
 		const accessTokenResponse = AuthorizationResponseMapper.mapToAccessTokenResponse(token);
 
 		return accessTokenResponse;
 	}
 
 	public async resolveToken(accessToken: AccessTokenParams): Promise<AccessTokenPayloadResponse> {
-		const validateCallback = (tokenMetadata: TokenMetadata): TokenMetadata =>
-			TokenMetadataMapper.mapFromServiceResponseToTokenMetadata(tokenMetadata);
-		const tokenMetadata = await this.accessTokenService.resolveToken<TokenMetadata>(accessToken, validateCallback);
+		const factoryCallback = (tokenMetadata: TokenMetadata): TokenMetadata => TokenMetadataFactory.build(tokenMetadata);
+		const tokenMetadata = await this.accessTokenService.resolveToken<TokenMetadata>(accessToken, factoryCallback);
 
 		await this.jwtValidationAdapter.isWhitelisted(tokenMetadata.accountId, tokenMetadata.jwtJti);
 		await this.checkPermissionsForReference(tokenMetadata);
