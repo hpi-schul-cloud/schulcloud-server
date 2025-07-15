@@ -25,7 +25,7 @@ describe(AxiosErrorLoggable.name, () => {
 				type: 'mockType',
 				message: 'message: Bad Request code: 400',
 				data: JSON.stringify(error),
-				stack: 'mockStack',
+				stack: axiosErrorLoggable.stack,
 			});
 		});
 	});
