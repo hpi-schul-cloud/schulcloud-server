@@ -194,7 +194,10 @@ export class SchoolUc {
 	}
 
 	public async getSchoolStudents(schoolId: EntityId, userId: EntityId): Promise<SchoolUserListResponse> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const [user] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.schoolService.getSchoolById(schoolId), // ensure school exists
+		]);
 		const isUserOfSchool = this.isUserOfSchool(user, schoolId);
 		const isAllowedToListStudents = this.hasPermissionToListStudents(user);
 

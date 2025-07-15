@@ -298,10 +298,7 @@ describe('School Controller (API)', () => {
 
 				const response = await loggedInClient.get(`/${someId}/students`);
 
-				const body = response.body as SchoolUserListResponse;
-
-				expect(response.status).toEqual(HttpStatus.OK);
-				expect(body.data.length).toEqual(0);
+				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
 			});
 		});
 
