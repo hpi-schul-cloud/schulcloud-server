@@ -61,7 +61,7 @@ describe('Room Controller (API)', () => {
 
 			it('should return a 403 error', async () => {
 				const { loggedInClient } = await setup();
-				const params = { name: 'Room #1', color: 'red' };
+				const params = { name: 'Room #1', color: 'red', features: [] };
 				const response = await loggedInClient.post(undefined, params);
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -82,7 +82,7 @@ describe('Room Controller (API)', () => {
 			describe('when the required parameters are given', () => {
 				it('should create the room', async () => {
 					const { loggedInClient } = await setup();
-					const params = { name: 'Room #1', color: 'red' };
+					const params = { name: 'Room #1', color: 'red', features: [] };
 
 					const response = await loggedInClient.post(undefined, params);
 					const roomId = (response.body as { id: string }).id;
@@ -93,7 +93,7 @@ describe('Room Controller (API)', () => {
 				it('should have room creator as room editor', async () => {
 					const { loggedInClient, teacherUser } = await setup();
 
-					const params = { name: 'Room #1', color: 'red' };
+					const params = { name: 'Room #1', color: 'red', features: [] };
 
 					const response = await loggedInClient.post(undefined, params);
 					const roomId = (response.body as { id: string }).id;
@@ -114,7 +114,7 @@ describe('Room Controller (API)', () => {
 				it('should create the room', async () => {
 					const { loggedInClient } = await setup();
 
-					const params = { name: 'Room #1', color: 'red', startDate: '2024-10-01' };
+					const params = { name: 'Room #1', color: 'red', startDate: '2024-10-01', features: [] };
 					const response = await loggedInClient.post(undefined, params);
 					const roomId = (response.body as { id: string }).id;
 
@@ -138,7 +138,7 @@ describe('Room Controller (API)', () => {
 			describe('when an end date is given', () => {
 				it('should create the room', async () => {
 					const { loggedInClient } = await setup();
-					const params = { name: 'Room #1', color: 'red', endDate: '2024-10-20' };
+					const params = { name: 'Room #1', color: 'red', endDate: '2024-10-20', features: [] };
 
 					const response = await loggedInClient.post(undefined, params);
 					const roomId = (response.body as { id: string }).id;
@@ -168,6 +168,7 @@ describe('Room Controller (API)', () => {
 						color: 'red',
 						startDate: '2024-10-01',
 						endDate: '2024-10-20',
+						features: [],
 					};
 
 					const response = await loggedInClient.post(undefined, params);
@@ -213,7 +214,7 @@ describe('Room Controller (API)', () => {
 			describe('when the required parameters are given', () => {
 				it('should not create the room', async () => {
 					const { loggedInClient } = await setup();
-					const params = { name: 'Room #1', color: 'red' };
+					const params = { name: 'Room #1', color: 'red', features: [] };
 
 					const response = await loggedInClient.post(undefined, params);
 					expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
