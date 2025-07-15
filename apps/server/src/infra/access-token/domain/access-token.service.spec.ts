@@ -78,7 +78,7 @@ describe('AccessTokenService', () => {
 	});
 
 	describe('resolveToken', () => {
-		describe('when storageClient.get resolves', () => {
+		describe('given storageClient.get resolves', () => {
 			describe('when token exists and is valid JSON', () => {
 				const setup = () => {
 					const token = randomUUID();
@@ -143,7 +143,7 @@ describe('AccessTokenService', () => {
 			});
 		});
 
-		describe('when storageClient.get rejects', () => {
+		describe('given storageClient.get rejects', () => {
 			const setup = () => {
 				const token = randomUUID();
 				const tokenTtl = 1234;
