@@ -3,23 +3,21 @@ import { IsArray, IsBoolean, IsMongoId, IsNumber, IsOptional, IsString } from 'c
 
 @ValueObject()
 export class JwtPayload {
-	constructor(props: unknown) {
-		const jwtPayloadProps = props as JwtPayload;
-
-		this.accountId = jwtPayloadProps.accountId;
-		this.userId = jwtPayloadProps.userId;
-		this.schoolId = jwtPayloadProps.schoolId;
-		this.roles = jwtPayloadProps.roles;
-		this.support = jwtPayloadProps.support;
-		this.systemId = jwtPayloadProps.systemId;
-		this.supportUserId = jwtPayloadProps.supportUserId;
-		this.isExternalUser = jwtPayloadProps.isExternalUser;
-		this.aud = jwtPayloadProps.aud;
-		this.exp = jwtPayloadProps.exp;
-		this.iat = jwtPayloadProps.iat;
-		this.iss = jwtPayloadProps.iss;
-		this.jti = jwtPayloadProps.jti;
-		this.sub = jwtPayloadProps.sub;
+	constructor(props: JwtPayload) {
+		this.accountId = props.accountId;
+		this.userId = props.userId;
+		this.schoolId = props.schoolId;
+		this.roles = props.roles;
+		this.support = props.support;
+		this.systemId = props.systemId;
+		this.supportUserId = props.supportUserId;
+		this.isExternalUser = props.isExternalUser;
+		this.aud = props.aud;
+		this.exp = props.exp;
+		this.iat = props.iat;
+		this.iss = props.iss;
+		this.jti = props.jti;
+		this.sub = props.sub;
 	}
 
 	@IsMongoId()
