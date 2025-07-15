@@ -610,7 +610,7 @@ describe('LibraryStorage', () => {
 			});
 
 			describe('promiseLimiter', () => {
-				describe('when promiseLimiter resolves', () => {
+				describe('when s3ClientAdapter.create resolves', () => {
 					const setup = () => {
 						const mockDataStream = createMock<Readable>();
 						const mockLibraryName: ILibraryName = {
@@ -626,7 +626,7 @@ describe('LibraryStorage', () => {
 						return { mockDataStream, mockS3Key, mockLibraryName, mockFilename };
 					};
 
-					it('should limit the number of concurrent promises', async () => {
+					it('should resolve promiseLimiter too', async () => {
 						const { mockDataStream, mockS3Key, mockLibraryName, mockFilename } = setup();
 
 						const promiseLimiterSpy = jest.spyOn(storage, 'promiseLimiter');
@@ -645,7 +645,7 @@ describe('LibraryStorage', () => {
 					});
 				});
 
-				describe('when promiseLimiter rejects', () => {
+				describe('when s3ClientAdapter.create rejects', () => {
 					const setup = () => {
 						const mockDataStream = createMock<Readable>();
 						const mockLibraryName: ILibraryName = {
@@ -674,6 +674,56 @@ describe('LibraryStorage', () => {
 								data: mockDataStream,
 							})
 						);
+					});
+				});
+
+				describe('when calling addFile 100 times in parallel', () => {
+					const setup = () => {
+						jest.useRealTimers();
+
+						const mockDataStream = createMock<Readable>();
+						const mockLibraryName: ILibraryName = {
+							machineName: 'mock.library',
+							majorVersion: 1,
+							minorVersion: 0,
+						};
+						const mockFilename = 'mock-file.txt';
+
+						const numberOfTasks = 100;
+						const concurrencyLimit = 40;
+						let activeCount = 0;
+						let maxObservedConcurrency = 0;
+
+						const delay = (ms: number) =>
+							new Promise((resolve) => {
+								setTimeout(resolve, ms);
+							});
+
+						s3ClientAdapter.create.mockImplementation(async () => {
+							activeCount++;
+							maxObservedConcurrency = Math.max(maxObservedConcurrency, activeCount);
+							await delay(50 + Math.random() * 50); // Simulate async work
+							activeCount--;
+
+							return {} as ServiceOutputTypes;
+						});
+
+						const tasks = Array.from({ length: numberOfTasks }, () => async () => {
+							await storage.addFile(mockLibraryName, mockFilename, mockDataStream);
+						});
+
+						return { concurrencyLimit, maxObservedConcurrency, tasks };
+					};
+
+					it('should limit the number of concurrent promises to 40', async () => {
+						const { concurrencyLimit, maxObservedConcurrency, tasks } = setup();
+
+						const promiseLimiterSpy = jest.spyOn(storage, 'promiseLimiter');
+
+						await Promise.all(tasks.map((task) => task()));
+
+						expect(promiseLimiterSpy).toHaveBeenCalledTimes(100);
+						expect(maxObservedConcurrency).toBeLessThanOrEqual(concurrencyLimit);
 					});
 				});
 			});
