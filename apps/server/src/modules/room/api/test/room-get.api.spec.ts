@@ -121,6 +121,7 @@ describe('Room Controller (API)', () => {
 					createdAt: room.createdAt.toISOString(),
 					updatedAt: room.updatedAt.toISOString(),
 					permissions: [Permission.ROOM_LIST_CONTENT, Permission.ROOM_LEAVE_ROOM],
+					features: room.features,
 				};
 
 				return { loggedInClient, room, expectedResponse };

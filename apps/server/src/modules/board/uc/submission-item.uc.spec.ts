@@ -90,6 +90,7 @@ describe(SubmissionItemUc.name, () => {
 						id: submissionContainerEl.id,
 						boardNode: submissionContainerEl,
 						rootNode: columnBoardFactory.build(),
+						boardSettings: {},
 					})
 				);
 
@@ -142,6 +143,7 @@ describe(SubmissionItemUc.name, () => {
 						id: submissionContainerEl.id,
 						boardNode: submissionContainerEl,
 						rootNode: columnBoardFactory.build(),
+						boardSettings: {},
 					})
 				);
 
@@ -283,6 +285,7 @@ describe(SubmissionItemUc.name, () => {
 						id: submissionItem.id,
 						boardNode: submissionItem,
 						rootNode: columnBoardFactory.build(),
+						boardSettings: {},
 					})
 				);
 
@@ -361,6 +364,7 @@ describe(SubmissionItemUc.name, () => {
 						id: submissionItem.id,
 						boardNode: submissionItem,
 						rootNode: columnBoardFactory.build(),
+						boardSettings: {},
 					})
 				);
 
@@ -395,6 +399,7 @@ describe(SubmissionItemUc.name, () => {
 						id: submissionItem.id,
 						boardNode: submissionItem,
 						rootNode: columnBoardFactory.build(),
+						boardSettings: {},
 					})
 				);
 
