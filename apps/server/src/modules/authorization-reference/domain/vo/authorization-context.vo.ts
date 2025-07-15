@@ -5,11 +5,9 @@ import { IsArray, IsEnum } from 'class-validator';
 
 @ValueObject()
 export class AuthorizationContext implements AuthorizationContextParams {
-	constructor(props: unknown) {
-		const authorizationContext = props as AuthorizationContext;
-
-		this.action = authorizationContext.action;
-		this.requiredPermissions = authorizationContext.requiredPermissions;
+	constructor(props: AuthorizationContext) {
+		this.action = props.action;
+		this.requiredPermissions = props.requiredPermissions;
 	}
 
 	@IsEnum(Action)

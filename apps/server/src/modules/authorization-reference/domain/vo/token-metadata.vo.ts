@@ -8,16 +8,14 @@ import { AuthorizationContext } from './authorization-context.vo';
 
 @ValueObject()
 export class TokenMetadata {
-	constructor(props: unknown) {
-		const tokenMetadataProps = props as TokenMetadata;
-
-		this.authorizationContext = tokenMetadataProps.authorizationContext;
-		this.referenceType = tokenMetadataProps.referenceType;
-		this.referenceId = tokenMetadataProps.referenceId;
-		this.userId = tokenMetadataProps.userId;
-		this.accountId = tokenMetadataProps.accountId;
-		this.jti = tokenMetadataProps.jti;
-		this.customPayload = tokenMetadataProps.customPayload || {};
+	constructor(props: TokenMetadata) {
+		this.authorizationContext = props.authorizationContext;
+		this.referenceType = props.referenceType;
+		this.referenceId = props.referenceId;
+		this.userId = props.userId;
+		this.accountId = props.accountId;
+		this.jwtJti = props.jwtJti;
+		this.customPayload = props.customPayload || {};
 	}
 
 	@ValidateNested()
@@ -37,7 +35,7 @@ export class TokenMetadata {
 	public readonly accountId: EntityId;
 
 	@IsString()
-	public readonly jti: string;
+	public readonly jwtJti: string;
 
 	@IsObject()
 	@IsOptional()

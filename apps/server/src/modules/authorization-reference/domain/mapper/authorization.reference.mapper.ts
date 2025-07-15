@@ -1,7 +1,6 @@
 import { JwtPayload } from '@infra/auth-guard';
-import { CreateAccessTokenParams } from '@modules/authorization-reference/api/dto';
-import { TypeGuard } from '@shared/common/guards';
 import { EntityId } from '@shared/domain/types';
+import { CreateAccessTokenParams } from '../../api/dto';
 import { AuthorizationContext, TokenMetadata } from '../vo';
 
 export class TokenMetadataMapper {
@@ -25,17 +24,14 @@ export class TokenMetadataMapper {
 		return tokenMetadata;
 	}
 
-	public static mapFromServiceResponseToTokenMetadata(props: unknown): TokenMetadata {
-		const definedObject = TypeGuard.checkDefinedObject(props);
-		const authorizationContext = TypeGuard.checkKeyInObject(definedObject, 'authorizationContext');
+	public static mapFromServiceResponseToTokenMetadata(tokenMetadataProps: TokenMetadata): TokenMetadata {
+		const context = new AuthorizationContext(tokenMetadataProps.authorizationContext);
 
-		const context = new AuthorizationContext(authorizationContext);
-
-		const referenceVo = new TokenMetadata({
-			...definedObject,
+		const tokenMetadata = new TokenMetadata({
+			...tokenMetadataProps,
 			authorizationContext: context,
 		});
 
-		return referenceVo;
+		return tokenMetadata;
 	}
 }

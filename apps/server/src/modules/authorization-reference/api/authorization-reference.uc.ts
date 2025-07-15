@@ -56,10 +56,11 @@ export class AuthorizationReferenceUc {
 	}
 
 	public async resolveToken(accessToken: AccessTokenParams): Promise<AccessTokenPayloadResponse> {
-		const result = await this.accessTokenService.resolveToken(accessToken);
-		const tokenMetadata = TokenMetadataMapper.mapFromServiceResponseToTokenMetadata(result);
+		const validateCallback = (tokenMetadata: TokenMetadata): TokenMetadata =>
+			TokenMetadataMapper.mapFromServiceResponseToTokenMetadata(tokenMetadata);
+		const tokenMetadata = await this.accessTokenService.resolveToken<TokenMetadata>(accessToken, validateCallback);
 
-		await this.jwtValidationAdapter.isWhitelisted(tokenMetadata.accountId, tokenMetadata.jti);
+		await this.jwtValidationAdapter.isWhitelisted(tokenMetadata.accountId, tokenMetadata.jwtJti);
 		await this.checkPermissionsForReference(tokenMetadata);
 
 		const payloadResponse = AuthorizationResponseMapper.mapToAccessTokenPayload(tokenMetadata.customPayload);

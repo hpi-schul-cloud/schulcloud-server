@@ -18,7 +18,7 @@ export class AccessTokenService {
 		return token;
 	}
 
-	public async resolveToken(params: ResolveTokenParams): Promise<unknown> {
+	public async resolveToken<T>(params: ResolveTokenParams, validate: (data: T) => T): Promise<T> {
 		const { token, tokenTtl } = params;
 		const value = await this.storageClient.get(token);
 
@@ -29,9 +29,10 @@ export class AccessTokenService {
 		await this.renewTokenTimeout(token, value, tokenTtl);
 
 		try {
-			const payload = JSON.parse(value) as unknown;
+			const payload = JSON.parse(value) as T;
+			const validatedPayload = validate(payload);
 
-			return payload;
+			return validatedPayload;
 		} catch (error) {
 			throw new InternalServerErrorException(`Invalid payload for token ${token}`, { cause: error });
 		}
