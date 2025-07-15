@@ -21,7 +21,7 @@ import { InstalledLibrary, LibraryRepo } from '../repo';
 
 @Injectable()
 export class LibraryStorage implements ILibraryStorage {
-	private promiseLimiter = pLimit(40);
+	public promiseLimiter = pLimit(40);
 
 	/**
 	 * @param libraryRepo

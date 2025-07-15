@@ -1,9 +1,9 @@
 import { HeadObjectCommandOutput, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { H5pError, ILibraryMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { Readable } from 'stream';
 import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
 import { FileMetadata, InstalledLibrary, LibraryRepo } from '../repo';
@@ -48,7 +48,7 @@ describe('LibraryStorage', () => {
 	});
 
 	beforeEach(() => {
-		jest.resetAllMocks();
+		jest.restoreAllMocks();
 
 		const installedLibs: InstalledLibrary[] = [];
 
@@ -606,6 +606,75 @@ describe('LibraryStorage', () => {
 					return expect(addFile).rejects.toThrow(
 						new H5pError(`mongo-s3-library-storage:s3-upload-error (ubername: testing-1.2, filename: test/abc.json)`)
 					);
+				});
+			});
+
+			describe('promiseLimiter', () => {
+				describe('when promiseLimiter resolves', () => {
+					const setup = () => {
+						const mockDataStream = createMock<Readable>();
+						const mockLibraryName: ILibraryName = {
+							machineName: 'mock.library',
+							majorVersion: 1,
+							minorVersion: 0,
+						};
+						const mockFilename = 'mock-file.txt';
+						const mockS3Key = `h5p-libraries/${mockLibraryName.machineName}-${mockLibraryName.majorVersion}.${mockLibraryName.minorVersion}/${mockFilename}`;
+
+						s3ClientAdapter.create.mockResolvedValueOnce({} as ServiceOutputTypes);
+
+						return { mockDataStream, mockS3Key, mockLibraryName, mockFilename };
+					};
+
+					it('should limit the number of concurrent promises', async () => {
+						const { mockDataStream, mockS3Key, mockLibraryName, mockFilename } = setup();
+
+						const promiseLimiterSpy = jest.spyOn(storage, 'promiseLimiter');
+
+						await storage.addFile(mockLibraryName, mockFilename, mockDataStream);
+
+						expect(promiseLimiterSpy).toHaveBeenCalledTimes(1);
+						expect(s3ClientAdapter.create).toHaveBeenCalledWith(
+							mockS3Key,
+							expect.objectContaining({
+								name: mockS3Key,
+								mimeType: 'application/octet-stream',
+								data: mockDataStream,
+							})
+						);
+					});
+				});
+
+				describe('when promiseLimiter rejects', () => {
+					const setup = () => {
+						const mockDataStream = createMock<Readable>();
+						const mockLibraryName: ILibraryName = {
+							machineName: 'mock.library',
+							majorVersion: 1,
+							minorVersion: 0,
+						};
+						const mockFilename = 'mock-file.txt';
+						const mockS3Key = `h5p-libraries/${mockLibraryName.machineName}-${mockLibraryName.majorVersion}.${mockLibraryName.minorVersion}/${mockFilename}`;
+
+						s3ClientAdapter.create.mockRejectedValueOnce(new Error('S3 upload failed'));
+
+						return { mockDataStream, mockS3Key, mockLibraryName, mockFilename };
+					};
+
+					it('should throw an H5pError', async () => {
+						const { mockDataStream, mockS3Key, mockLibraryName, mockFilename } = setup();
+
+						await expect(storage.addFile(mockLibraryName, mockFilename, mockDataStream)).rejects.toThrow(H5pError);
+
+						expect(s3ClientAdapter.create).toHaveBeenCalledWith(
+							mockS3Key,
+							expect.objectContaining({
+								name: mockS3Key,
+								mimeType: 'application/octet-stream',
+								data: mockDataStream,
+							})
+						);
+					});
 				});
 			});
 		});
