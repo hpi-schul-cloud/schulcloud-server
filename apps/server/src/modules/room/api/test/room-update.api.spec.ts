@@ -65,7 +65,7 @@ describe('Room Controller (API)', () => {
 			it('should return a 403 error', async () => {
 				const { loggedInClient } = await setup();
 				const someId = new ObjectId().toHexString();
-				const params = { name: 'Room #101', color: 'green' };
+				const params = { name: 'Room #101', color: 'green', features: [] };
 				const response = await loggedInClient.put(someId, params);
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -120,7 +120,7 @@ describe('Room Controller (API)', () => {
 				it('should return a 404 error', async () => {
 					const { loggedInClient } = await setup();
 					const someId = new ObjectId().toHexString();
-					const params = { name: 'Room #101', color: 'green' };
+					const params = { name: 'Room #101', color: 'green', features: [] };
 
 					const response = await loggedInClient.put(someId, params);
 
@@ -131,7 +131,7 @@ describe('Room Controller (API)', () => {
 			describe('when the required parameters are given', () => {
 				it('should update the room', async () => {
 					const { loggedInClient, room } = await setup();
-					const params = { name: 'Room #101', color: 'green' };
+					const params = { name: 'Room #101', color: 'green', features: [] };
 
 					const response = await loggedInClient.put(room.id, params);
 
@@ -140,6 +140,7 @@ describe('Room Controller (API)', () => {
 						id: room.id,
 						name: 'Room #101',
 						color: 'green',
+						features: [],
 					});
 				});
 
@@ -181,7 +182,7 @@ describe('Room Controller (API)', () => {
 				it('should update the room', async () => {
 					const { loggedInClient, room } = await setup();
 
-					const params = { name: 'Room #101', color: 'green', startDate: '2024-10-02' };
+					const params = { name: 'Room #101', color: 'green', startDate: '2024-10-02', features: [] };
 					const response = await loggedInClient.put(room.id, params);
 
 					expect(response.status).toBe(HttpStatus.OK);
@@ -203,7 +204,7 @@ describe('Room Controller (API)', () => {
 				describe('when the date is null', () => {
 					it('should unset the property', async () => {
 						const { loggedInClient, room } = await setup();
-						const params = { name: 'Room #101', color: 'green', startDate: null };
+						const params = { name: 'Room #101', color: 'green', startDate: null, features: [] };
 
 						const response = await loggedInClient.put(room.id, params);
 
@@ -217,7 +218,7 @@ describe('Room Controller (API)', () => {
 			describe('when the startDate is omitted', () => {
 				it('should unset the property', async () => {
 					const { loggedInClient, room } = await setup();
-					const params = { name: 'Room #101', color: 'green' };
+					const params = { name: 'Room #101', color: 'green', features: [] };
 
 					const response = await loggedInClient.put(room.id, params);
 
@@ -231,7 +232,7 @@ describe('Room Controller (API)', () => {
 			describe('when an end date is given', () => {
 				it('should update the room', async () => {
 					const { loggedInClient, room } = await setup();
-					const params = { name: 'Room #101', color: 'green', endDate: '2024-10-18' };
+					const params = { name: 'Room #101', color: 'green', endDate: '2024-10-18', features: [] };
 
 					const response = await loggedInClient.put(room.id, params);
 
@@ -254,7 +255,7 @@ describe('Room Controller (API)', () => {
 				describe('when the date is null', () => {
 					it('should unset the property', async () => {
 						const { loggedInClient, room } = await setup();
-						const params = { name: 'Room #101', color: 'green', startDate: '2024-10-02', endDate: null };
+						const params = { name: 'Room #101', color: 'green', startDate: '2024-10-02', endDate: null, features: [] };
 
 						const response = await loggedInClient.put(room.id, params);
 
@@ -269,7 +270,7 @@ describe('Room Controller (API)', () => {
 			describe('when the endDate is omitted', () => {
 				it('should unset the property', async () => {
 					const { loggedInClient, room } = await setup();
-					const params = { name: 'Room #101', color: 'green', startDate: '2024-10-02' };
+					const params = { name: 'Room #101', color: 'green', startDate: '2024-10-02', features: [] };
 
 					const response = await loggedInClient.put(room.id, params);
 
@@ -288,6 +289,7 @@ describe('Room Controller (API)', () => {
 						color: 'green',
 						startDate: '2024-10-05',
 						endDate: '2024-10-18',
+						features: [],
 					};
 
 					const response = await loggedInClient.put(room.id, params);
@@ -337,7 +339,7 @@ describe('Room Controller (API)', () => {
 				it('should return a 404 error', async () => {
 					const { loggedInClient } = await setup();
 					const someId = new ObjectId().toHexString();
-					const params = { name: 'Room #101', color: 'green' };
+					const params = { name: 'Room #101', color: 'green', features: [] };
 
 					const response = await loggedInClient.put(someId, params);
 
@@ -348,7 +350,7 @@ describe('Room Controller (API)', () => {
 			describe('when the required parameters are given', () => {
 				it('should return a 403 error', async () => {
 					const { loggedInClient, room } = await setup();
-					const params = { name: 'Room #101', color: 'green' };
+					const params = { name: 'Room #101', color: 'green', features: [] };
 
 					const response = await loggedInClient.put(room.id, params);
 

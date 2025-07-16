@@ -142,7 +142,7 @@ describe('CourseUc', () => {
 			it('should create a course', async () => {
 				const { currentUser, courseTitle } = setup();
 
-				await expect(uc.createCourse(currentUser, courseTitle)).resolves.not.toThrow();
+				await expect(uc.createCourse(currentUser, { name: courseTitle })).resolves.not.toThrow();
 				expect(courseService.create).toHaveBeenCalled();
 			});
 		});
@@ -163,7 +163,7 @@ describe('CourseUc', () => {
 			it('should throw an error', async () => {
 				const { currentUser, courseTitle } = setup();
 
-				await expect(uc.createCourse(currentUser, courseTitle)).rejects.toThrow();
+				await expect(uc.createCourse(currentUser, { name: courseTitle })).rejects.toThrow();
 				expect(courseService.create).not.toHaveBeenCalled();
 			});
 		});

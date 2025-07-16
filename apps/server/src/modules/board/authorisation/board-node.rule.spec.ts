@@ -1,14 +1,22 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
-import { BoardNodeAuthorizable, BoardRoles } from '@modules/board';
+import { BoardRoles } from '@modules/board';
 import { roleFactory } from '@modules/role/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { columnBoardFactory, drawingElementFactory, fileElementFactory, submissionItemFactory } from '../testing';
+import {
+	boardNodeAuthorizableFactory,
+	columnBoardFactory,
+	drawingElementFactory,
+	fileElementFactory,
+	submissionItemFactory,
+	videoConferenceElementFactory,
+} from '../testing';
 import { BoardNodeRule } from './board-node.rule';
+import { BoardSettings } from '../domain';
 
 describe(BoardNodeRule.name, () => {
 	let service: BoardNodeRule;
@@ -39,17 +47,18 @@ describe(BoardNodeRule.name, () => {
 				const user = userFactory.build();
 				const anyBoardNode = fileElementFactory.build();
 				const columnBoard = columnBoardFactory.build();
-				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 					users: [],
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
+					boardSettings: {},
 				});
 				return { user, boardNodeAuthorizable };
 			};
 
 			it('should return true', () => {
-				const { user, boardNodeAuthorizable } = setup();
+				const { boardNodeAuthorizable, user } = setup();
 
 				const result = service.isApplicable(user, boardNodeAuthorizable);
 
@@ -82,11 +91,12 @@ describe(BoardNodeRule.name, () => {
 				const user = userFactory.buildWithId({ roles: [role] });
 				const anyBoardNode = fileElementFactory.build();
 				const columnBoard = columnBoardFactory.build();
-				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
+					boardSettings: {},
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -119,11 +129,12 @@ describe(BoardNodeRule.name, () => {
 				const user = userFactory.buildWithId();
 				const anyBoardNode = fileElementFactory.build();
 				const columnBoard = columnBoardFactory.build();
-				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 					users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
+					boardSettings: {},
 				});
 
 				return { user, permissionA, boardNodeAuthorizable };
@@ -148,11 +159,12 @@ describe(BoardNodeRule.name, () => {
 				const userWithoutPermision = userFactory.buildWithId({ roles: [role] });
 				const anyBoardNode = fileElementFactory.build();
 				const columnBoard = columnBoardFactory.build();
-				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
+					boardSettings: {},
 				});
 
 				return { userWithoutPermision, boardNodeAuthorizable };
@@ -175,11 +187,12 @@ describe(BoardNodeRule.name, () => {
 				const user = userFactory.buildWithId();
 				const anyBoardNode = fileElementFactory.build();
 				const columnBoard = columnBoardFactory.build();
-				const boardNodeAuthorizable = new BoardNodeAuthorizable({
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 					users: [{ userId: user.id, roles: [] }],
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
+					boardSettings: {},
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -203,11 +216,12 @@ describe(BoardNodeRule.name, () => {
 					const user = userFactory.buildWithId();
 					const anyBoardNode = fileElementFactory.build();
 					const columnBoard = columnBoardFactory.build({ isVisible: false });
-					const boardNodeAuthorizable = new BoardNodeAuthorizable({
+					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 						id: new ObjectId().toHexString(),
 						boardNode: anyBoardNode,
 						rootNode: columnBoard,
+						boardSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -238,11 +252,12 @@ describe(BoardNodeRule.name, () => {
 					const user = userFactory.buildWithId();
 					const anyBoardNode = fileElementFactory.build();
 					const columnBoard = columnBoardFactory.build({ isVisible: false });
-					const boardNodeAuthorizable = new BoardNodeAuthorizable({
+					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 						id: new ObjectId().toHexString(),
 						boardNode: anyBoardNode,
 						rootNode: columnBoard,
+						boardSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -276,11 +291,12 @@ describe(BoardNodeRule.name, () => {
 					const user = userFactory.buildWithId();
 					const submissionItem = submissionItemFactory.build();
 					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = new BoardNodeAuthorizable({
+					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
+						boardSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -311,11 +327,12 @@ describe(BoardNodeRule.name, () => {
 					const user = userFactory.buildWithId();
 					const submissionItem = submissionItemFactory.build({ userId: user.id });
 					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = new BoardNodeAuthorizable({
+					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
+						boardSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -346,11 +363,12 @@ describe(BoardNodeRule.name, () => {
 					const user = userFactory.buildWithId();
 					const submissionItem = submissionItemFactory.build({ userId: new ObjectId().toHexString() });
 					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = new BoardNodeAuthorizable({
+					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
+						boardSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -385,12 +403,13 @@ describe(BoardNodeRule.name, () => {
 					const submissionItem = submissionItemFactory.build();
 					const fileElement = fileElementFactory.build();
 					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = new BoardNodeAuthorizable({
+					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 						id: new ObjectId().toHexString(),
 						boardNode: fileElement,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
+						boardSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -422,12 +441,13 @@ describe(BoardNodeRule.name, () => {
 					const submissionItem = submissionItemFactory.build({ userId: user.id });
 					const fileElement = fileElementFactory.build();
 					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = new BoardNodeAuthorizable({
+					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 						id: new ObjectId().toHexString(),
 						boardNode: fileElement,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
+						boardSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -459,12 +479,13 @@ describe(BoardNodeRule.name, () => {
 					const anyBoardDo = fileElementFactory.build();
 					const submissionItem = submissionItemFactory.build({ userId: new ObjectId().toHexString() });
 					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = new BoardNodeAuthorizable({
+					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 						id: new ObjectId().toHexString(),
 						boardNode: anyBoardDo,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
+						boardSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -502,12 +523,13 @@ describe(BoardNodeRule.name, () => {
 					const { user, submissionItem } = setup();
 					const anyBoardDo = fileElementFactory.build();
 					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = new BoardNodeAuthorizable({
+					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 						id: new ObjectId().toHexString(),
 						boardNode: anyBoardDo,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
+						boardSettings: {},
 					});
 
 					const res = service.hasPermission(user, boardNodeAuthorizable, {
@@ -521,12 +543,13 @@ describe(BoardNodeRule.name, () => {
 				it('when boardDo is not allowed type, it should return false', () => {
 					const { user, submissionItem, notAllowedChildElement } = setup();
 					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = new BoardNodeAuthorizable({
+					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 						id: new ObjectId().toHexString(),
 						parentNode: submissionItem,
 						boardNode: notAllowedChildElement,
 						rootNode: columnBoard,
+						boardSettings: {},
 					});
 
 					const res = service.hasPermission(user, boardNodeAuthorizable, {
@@ -539,18 +562,19 @@ describe(BoardNodeRule.name, () => {
 			});
 		});
 
-		describe('when boardDoAuthorizable.board is a drawingElement', () => {
+		describe('when boardDoAuthorizable.boardDo is a drawingElement', () => {
 			describe('when required permissions do not include FILESTORAGE_CREATE or FILESTORAGE_VIEW or FILESTORAGE_REMOVE', () => {
 				describe('when user is Editor', () => {
 					const setup = () => {
 						const user = userFactory.buildWithId();
 						const drawingElement = drawingElementFactory.build();
 						const columnBoard = columnBoardFactory.build();
-						const boardNodeAuthorizable = new BoardNodeAuthorizable({
+						const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 							users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
+							boardSettings: {},
 						});
 
 						return { user, boardNodeAuthorizable };
@@ -581,11 +605,12 @@ describe(BoardNodeRule.name, () => {
 						const user = userFactory.buildWithId();
 						const drawingElement = drawingElementFactory.build();
 						const columnBoard = columnBoardFactory.build();
-						const boardNodeAuthorizable = new BoardNodeAuthorizable({
+						const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 							users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
+							boardSettings: {},
 						});
 
 						return { user, boardNodeAuthorizable };
@@ -618,11 +643,12 @@ describe(BoardNodeRule.name, () => {
 						const user = userFactory.asTeacher().buildWithId();
 						const drawingElement = drawingElementFactory.build();
 						const columnBoard = columnBoardFactory.build();
-						const boardNodeAuthorizable = new BoardNodeAuthorizable({
+						const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 							users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
+							boardSettings: {},
 						});
 
 						return { user, boardNodeAuthorizable };
@@ -663,11 +689,12 @@ describe(BoardNodeRule.name, () => {
 						const user = userFactory.asStudent().buildWithId();
 						const drawingElement = drawingElementFactory.build();
 						const columnBoard = columnBoardFactory.build();
-						const boardNodeAuthorizable = new BoardNodeAuthorizable({
+						const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
 							users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
+							boardSettings: {},
 						});
 
 						return { user, boardNodeAuthorizable };
@@ -691,6 +718,192 @@ describe(BoardNodeRule.name, () => {
 						});
 
 						expect(res).toBe(true);
+					});
+				});
+			});
+		});
+
+		describe('when boardDoAuthorizable.boardDo is a videoConferenceElement', () => {
+			describe('when user is Admin', () => {
+				const setup = (boardSettings: BoardSettings) => {
+					const user = userFactory.asTeacher().buildWithId();
+					const videoConferenceElement = videoConferenceElementFactory.build();
+					const columnBoard = columnBoardFactory.build();
+					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+						users: [{ userId: user.id, roles: [BoardRoles.EDITOR, BoardRoles.ADMIN] }],
+						id: new ObjectId().toHexString(),
+						boardNode: videoConferenceElement,
+						rootNode: columnBoard,
+						boardSettings,
+					});
+
+					return { user, boardNodeAuthorizable };
+				};
+				describe('when board settings allow editors to create video conferences', () => {
+					it('should return true if trying to "read"', () => {
+						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true });
+
+						const res = service.hasPermission(user, boardNodeAuthorizable, {
+							action: Action.read,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(true);
+					});
+					it('should return true if trying to "write" ', () => {
+						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true });
+
+						const res = service.hasPermission(user, boardNodeAuthorizable, {
+							action: Action.write,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(true);
+					});
+				});
+
+				describe('when board settings prohibit editors to create video conferences', () => {
+					it('should return true if trying to "read"', () => {
+						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false });
+
+						const res = service.hasPermission(user, boardNodeAuthorizable, {
+							action: Action.read,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(true);
+					});
+					it('should return true if trying to "write" ', () => {
+						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false });
+
+						const res = service.hasPermission(user, boardNodeAuthorizable, {
+							action: Action.write,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(true);
+					});
+				});
+			});
+			describe('when user is Editor', () => {
+				const setup = (boardSettings: BoardSettings) => {
+					const user = userFactory.asTeacher().buildWithId();
+					const videoConferenceElement = videoConferenceElementFactory.build();
+					const columnBoard = columnBoardFactory.build();
+					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+						id: new ObjectId().toHexString(),
+						boardNode: videoConferenceElement,
+						rootNode: columnBoard,
+						boardSettings,
+					});
+
+					return { user, boardNodeAuthorizable };
+				};
+				describe('when board settings allow editors to create video conferences', () => {
+					it('should return true if trying to "read"', () => {
+						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true });
+
+						const res = service.hasPermission(user, boardNodeAuthorizable, {
+							action: Action.read,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(true);
+					});
+					it('should return true if trying to "write" ', () => {
+						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true });
+
+						const res = service.hasPermission(user, boardNodeAuthorizable, {
+							action: Action.write,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(true);
+					});
+				});
+
+				describe('when board settings prohibit editors to create video conferences', () => {
+					it('should return true if trying to "read"', () => {
+						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false });
+
+						const res = service.hasPermission(user, boardNodeAuthorizable, {
+							action: Action.read,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(true);
+					});
+					it('should return false if trying to "write" ', () => {
+						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false });
+
+						const res = service.hasPermission(user, boardNodeAuthorizable, {
+							action: Action.write,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(false);
+					});
+				});
+			});
+			describe('when user is Reader', () => {
+				const setup = (boardSettings: BoardSettings) => {
+					const user = userFactory.asTeacher().buildWithId();
+					const videoConferenceElement = videoConferenceElementFactory.build();
+					const columnBoard = columnBoardFactory.build();
+					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
+						id: new ObjectId().toHexString(),
+						boardNode: videoConferenceElement,
+						rootNode: columnBoard,
+						boardSettings,
+					});
+
+					return { user, boardNodeAuthorizable };
+				};
+				describe('when board settings allow editors to create video conferences', () => {
+					it('should return true if trying to "read"', () => {
+						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true });
+
+						const res = service.hasPermission(user, boardNodeAuthorizable, {
+							action: Action.read,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(true);
+					});
+					it('should return false if trying to "write" ', () => {
+						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true });
+
+						const res = service.hasPermission(user, boardNodeAuthorizable, {
+							action: Action.write,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(false);
+					});
+				});
+
+				describe('when board settings prohibit editors to create video conferences', () => {
+					it('should return true if trying to "read"', () => {
+						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false });
+
+						const res = service.hasPermission(user, boardNodeAuthorizable, {
+							action: Action.read,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(true);
+					});
+					it('should return false if trying to "write" ', () => {
+						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false });
+
+						const res = service.hasPermission(user, boardNodeAuthorizable, {
+							action: Action.write,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(false);
 					});
 				});
 			});
