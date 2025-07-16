@@ -184,15 +184,11 @@ export class TspOauthDataMapper {
 			.map((tspTeacher) => {
 				TypeGuard.requireKeys(tspTeacher, ['lehrerUid']);
 
-				const roles: RoleName[] = [];
-				if (tspTeacher.lehrerRollen?.includes('Lehrer')) roles.push(RoleName.TEACHER);
-				if (tspTeacher.lehrerRollen?.includes('Admin')) roles.push(RoleName.ADMINISTRATOR);
-
 				const externalUser = new ExternalUserDto({
 					externalId: tspTeacher.lehrerUid,
 					firstName: tspTeacher.lehrerVorname,
 					lastName: tspTeacher.lehrerNachname,
-					roles,
+					roles: [RoleName.TEACHER],
 				});
 
 				const classIds = classesOfTeachers.get(tspTeacher.lehrerUid) ?? [];
