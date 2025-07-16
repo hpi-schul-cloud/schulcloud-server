@@ -5,7 +5,7 @@ import { ContentStorage, LibraryStorage } from '@modules/h5p-editor/service';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { H5PLibraryManagementLoggable } from '../loggable/h5p-library-management.loggable';
+import { H5PLibraryManagementErrorLoggable } from '../loggable/h5p-library-management-error.loggable';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
 import { H5PLibraryManagementService, castToLibrariesContentType } from './h5p-library-management.service';
 
@@ -248,7 +248,7 @@ describe('H5PLibraryManagementService', () => {
 
 				await service.installLibraries([library]);
 
-				expect(logger.warning).toHaveBeenCalledWith(new H5PLibraryManagementLoggable(library, error));
+				expect(logger.warning).toHaveBeenCalledWith(new H5PLibraryManagementErrorLoggable(library, error));
 			});
 		});
 	});
@@ -262,8 +262,8 @@ describe('H5PLibraryManagementService', () => {
 			};
 			it('should trigger uninstallUnwantedLibraries and installLibraries', async () => {
 				const { service } = setup();
-				const uninstallSpy = jest.spyOn(service, 'uninstallUnwantedLibraries').mockResolvedValueOnce(undefined);
-				const installSpy = jest.spyOn(service, 'installLibraries').mockResolvedValueOnce(undefined);
+				const uninstallSpy = jest.spyOn(service, 'uninstallUnwantedLibraries').mockResolvedValueOnce(['a', 'b', 'c']);
+				const installSpy = jest.spyOn(service, 'installLibraries').mockResolvedValueOnce(['d', 'e']);
 
 				await service.run();
 

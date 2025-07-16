@@ -10,15 +10,19 @@ import {
 } from '@lumieducation/h5p-server';
 import ContentManager from '@lumieducation/h5p-server/build/src/ContentManager';
 import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/src/ContentTypeInformationRepository';
-import { IHubContentType } from '@lumieducation/h5p-server/build/src/types';
+import { IHubContentType, ILibraryInstallResult } from '@lumieducation/h5p-server/build/src/types';
 import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { readFileSync } from 'fs';
 import { parse } from 'yaml';
+import {
+	H5PLibraryManagementErrorLoggable,
+	H5PLibraryManagementLoggable,
+	H5PLibraryManagementMetricsLoggable,
+} from '../loggable';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
 import LibraryManagementPermissionSystem from './library-management-permission-system';
-import { H5PLibraryManagementLoggable } from '../loggable/h5p-library-management.loggable';
 
 const h5pConfig = new H5PConfig(undefined, {
 	baseUrl: '/api/v3/h5p-editor',
@@ -101,23 +105,34 @@ export class H5PLibraryManagementService {
 	public async uninstallUnwantedLibraries(
 		wantedLibraries: string[],
 		librariesToCheck: ILibraryAdministrationOverviewItem[]
-	): Promise<void> {
+	): Promise<string[]> {
 		if (librariesToCheck.length === 0) {
-			return;
+			return [];
 		}
+
 		const lastPositionLibrariesToCheckArray = librariesToCheck.length - 1;
-		if (
-			!wantedLibraries.includes(librariesToCheck[lastPositionLibrariesToCheckArray].machineName) &&
-			librariesToCheck[lastPositionLibrariesToCheckArray].dependentsCount === 0
-		) {
+		const libraryToBeUninstalled = librariesToCheck[lastPositionLibrariesToCheckArray];
+		const libraryCanBeUninstalled =
+			!wantedLibraries.includes(libraryToBeUninstalled.machineName) && libraryToBeUninstalled.dependentsCount === 0;
+		if (libraryCanBeUninstalled) {
 			// force removal, don't let content prevent it, therefore use libraryStorage directly
 			// also to avoid conflicts, remove one-by-one, not using for-await:
-			await this.libraryStorage.deleteLibrary(librariesToCheck[lastPositionLibrariesToCheckArray]);
+			await this.libraryStorage.deleteLibrary(libraryToBeUninstalled);
 		}
-		await this.uninstallUnwantedLibraries(
+
+		const uninstalledLibraries = await this.uninstallUnwantedLibraries(
 			this.libraryWishList,
 			librariesToCheck.slice(0, lastPositionLibrariesToCheckArray)
 		);
+
+		if (!libraryCanBeUninstalled) {
+			return uninstalledLibraries;
+		}
+
+		const changes = `${libraryToBeUninstalled.machineName}-${libraryToBeUninstalled.majorVersion}.${libraryToBeUninstalled.minorVersion}.${libraryToBeUninstalled.patchVersion} (delete)`;
+		const result = [changes, ...uninstalledLibraries];
+
+		return result;
 	}
 
 	private checkContentTypeExists(contentType: IHubContentType[]): void {
@@ -137,31 +152,67 @@ export class H5PLibraryManagementService {
 		return user;
 	}
 
-	public async installLibraries(librariesToInstall: string[]): Promise<void> {
+	public async installLibraries(librariesToInstall: string[]): Promise<string[]> {
 		if (librariesToInstall.length === 0) {
-			return;
+			return [];
 		}
 		const lastPositionLibrariesToInstallArray = librariesToInstall.length - 1;
+		const libraryToBeInstalled = librariesToInstall[lastPositionLibrariesToInstallArray];
 		// avoid conflicts, install one-by-one:
-		const contentType = await this.contentTypeCache.get(librariesToInstall[lastPositionLibrariesToInstallArray]);
+		const contentType = await this.contentTypeCache.get(libraryToBeInstalled);
 		this.checkContentTypeExists(contentType);
 
 		const user = this.createDefaultIUser();
 
+		let results: ILibraryInstallResult[] = [];
+
 		try {
-			await this.contentTypeRepo.installContentType(librariesToInstall[lastPositionLibrariesToInstallArray], user);
+			results = await this.contentTypeRepo.installContentType(libraryToBeInstalled, user);
 		} catch (error: unknown) {
-			this.logger.warning(
-				new H5PLibraryManagementLoggable(librariesToInstall[lastPositionLibrariesToInstallArray], error)
-			);
+			this.logger.warning(new H5PLibraryManagementErrorLoggable(libraryToBeInstalled, error));
 		}
 
-		await this.installLibraries(librariesToInstall.slice(0, lastPositionLibrariesToInstallArray));
+		const installedLibraries = await this.installLibraries(
+			librariesToInstall.slice(0, lastPositionLibrariesToInstallArray)
+		);
+
+		const changes = results.map((r) => {
+			let result = '';
+			if (r.type === 'new') {
+				result = `${r.newVersion?.machineName ?? ''}-${r.newVersion?.majorVersion ?? ''}.${
+					r.newVersion?.minorVersion ?? ''
+				}.${r.newVersion?.patchVersion ?? ''} (new)`;
+			}
+			if (r.type === 'patch') {
+				result = `${r.oldVersion?.machineName ?? ''}-${r.oldVersion?.majorVersion ?? ''}.${
+					r.oldVersion?.minorVersion ?? ''
+				}.${r.oldVersion?.patchVersion ?? ''} -> ${r.newVersion?.machineName ?? ''}-${
+					r.newVersion?.majorVersion ?? ''
+				}.${r.newVersion?.minorVersion ?? ''}.${r.newVersion?.patchVersion ?? ''} (patch)`;
+			}
+
+			return result;
+		});
+
+		const result = [...changes, ...installedLibraries];
+
+		return result;
 	}
 
 	public async run(): Promise<void> {
-		const installedLibraries = await this.libraryAdministration.getLibraries();
-		await this.uninstallUnwantedLibraries(this.libraryWishList, installedLibraries);
-		await this.installLibraries(this.libraryWishList);
+		this.logger.info(new H5PLibraryManagementLoggable('Starting H5P library management job...'));
+		const availableLibraries = await this.libraryAdministration.getLibraries();
+		const uninstalledLibraries = await this.uninstallUnwantedLibraries(this.libraryWishList, availableLibraries);
+		const installedLibraries = await this.installLibraries(this.libraryWishList);
+		this.logger.info(new H5PLibraryManagementLoggable('Finished H5P library management job!'));
+		this.logger.info(
+			new H5PLibraryManagementMetricsLoggable(
+				`Removed ${uninstalledLibraries.length} libraries. Added/updated ${installedLibraries.length} libraries.`,
+				{
+					uninstalledLibraries: uninstalledLibraries.join(', '),
+					installedLibraries: installedLibraries.join(', '),
+				}
+			)
+		);
 	}
 }

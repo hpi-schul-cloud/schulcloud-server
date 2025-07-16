@@ -1,22 +1,13 @@
 import { Loggable } from '@core/logger';
-import { ErrorLogMessage } from '@core/logger/types';
-import { InternalServerErrorException } from '@nestjs/common';
-import { Error } from 'ldapjs';
+import { LogMessage } from '@core/logger/types';
 
-export class H5PLibraryManagementLoggable extends InternalServerErrorException implements Loggable {
-	constructor(private readonly library: string, private readonly error: unknown) {
-		super();
-	}
+export class H5PLibraryManagementLoggable implements Loggable {
+	constructor(private readonly message: string) {}
 
 	// istanbul ignore next
-	public getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LogMessage {
 		const logMessage = {
-			error: this.error as Error,
-			data: {
-				library: this.library,
-			},
-			stack: this.stack,
-			type: 'Install H5P Content Type Error',
+			message: this.message,
 		};
 
 		return logMessage;
