@@ -47,7 +47,7 @@ export class AuthorizationReferenceController {
 	}
 
 	@JwtAuthentication()
-	@Post('createToken')
+	@Post('create-token')
 	public async createToken(
 		@Body() body: CreateAccessTokenParams,
 		@CurrentUser() user: ICurrentUser,
@@ -58,7 +58,7 @@ export class AuthorizationReferenceController {
 		return response;
 	}
 
-	@Get('resolveToken/:token/ttl/:tokenTtl')
+	@Get('resolve-token/:token/ttl/:tokenTtl')
 	public async resolveToken(@Param() params: AccessTokenParams): Promise<AccessTokenPayloadResponse> {
 		const payload = await this.authorizationReferenceUc.resolveToken(params);
 
