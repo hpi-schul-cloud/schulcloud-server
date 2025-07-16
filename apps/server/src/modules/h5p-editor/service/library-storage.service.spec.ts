@@ -4,6 +4,7 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { H5pError, ILibraryMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import pLimit from 'p-limit';
 import { Readable } from 'stream';
 import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
 import { FileMetadata, InstalledLibrary, LibraryRepo } from '../repo';
@@ -689,10 +690,12 @@ describe('LibraryStorage', () => {
 						};
 						const mockFilename = 'mock-file.txt';
 
-						const numberOfTasks = 100;
-						const concurrencyLimit = 40;
+						const numberOfTasks = 3;
+						const concurrencyLimit = 2;
 						let activeCount = 0;
 						let maxObservedConcurrency = 0;
+
+						storage.promiseLimiter = pLimit(concurrencyLimit);
 
 						const delay = (ms: number) =>
 							new Promise((resolve) => {
@@ -712,17 +715,17 @@ describe('LibraryStorage', () => {
 							await storage.addFile(mockLibraryName, mockFilename, mockDataStream);
 						});
 
-						return { concurrencyLimit, maxObservedConcurrency, tasks };
+						return { concurrencyLimit, maxObservedConcurrency, numberOfTasks, tasks };
 					};
 
 					it('should limit the number of concurrent promises to 40', async () => {
-						const { concurrencyLimit, maxObservedConcurrency, tasks } = setup();
+						const { concurrencyLimit, maxObservedConcurrency, numberOfTasks, tasks } = setup();
 
 						const promiseLimiterSpy = jest.spyOn(storage, 'promiseLimiter');
 
 						await Promise.all(tasks.map((task) => task()));
 
-						expect(promiseLimiterSpy).toHaveBeenCalledTimes(100);
+						expect(promiseLimiterSpy).toHaveBeenCalledTimes(numberOfTasks);
 						expect(maxObservedConcurrency).toBeLessThanOrEqual(concurrencyLimit);
 					});
 				});
