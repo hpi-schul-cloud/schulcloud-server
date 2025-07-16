@@ -1,7 +1,6 @@
-import { Action } from '@modules/authorization';
+import { Action, AuthorizationContext } from '@modules/authorization';
+import { authorizationContextFactory } from '@modules/authorization/testing';
 import { Permission } from '@shared/domain/interface';
-import { authorizationContextFactory } from '../../testing';
-import { AuthorizationContext } from './authorization-context.vo';
 
 describe('AuthorizationContext', () => {
 	describe('constructor', () => {

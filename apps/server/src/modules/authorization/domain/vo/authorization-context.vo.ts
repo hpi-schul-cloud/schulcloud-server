@@ -1,7 +1,7 @@
-import { Action, AuthorizationContext as AuthorizationContextParams } from '@modules/authorization';
 import { Permission } from '@shared/domain/interface';
 import { ValueObject } from '@shared/domain/value-object.decorator';
 import { IsArray, IsEnum } from 'class-validator';
+import { Action, AuthorizationContext as AuthorizationContextParams } from '../../domain';
 
 @ValueObject()
 export class AuthorizationContext implements AuthorizationContextParams {

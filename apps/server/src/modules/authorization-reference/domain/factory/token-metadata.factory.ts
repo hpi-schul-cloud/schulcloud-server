@@ -1,7 +1,8 @@
 import { JwtPayload } from '@infra/auth-guard';
+import { AuthorizationContext } from '@modules/authorization';
 import { EntityId } from '@shared/domain/types';
 import { CreateAccessTokenParams } from '../../api/dto';
-import { AuthorizationContext, TokenMetadata } from '../vo';
+import { TokenMetadata } from '../vo';
 
 export class TokenMetadataFactory {
 	public static build(tokenMetadataProps: TokenMetadata): TokenMetadata {

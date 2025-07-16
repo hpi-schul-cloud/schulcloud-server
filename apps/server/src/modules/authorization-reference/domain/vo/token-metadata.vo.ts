@@ -1,10 +1,9 @@
 import { CustomPayload } from '@infra/access-token';
-import { AuthorizableReferenceType } from '@modules/authorization';
+import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { EntityId } from '@shared/domain/types';
 import { ValueObject } from '@shared/domain/value-object.decorator';
 import { Type } from 'class-transformer';
 import { IsEnum, IsMongoId, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { AuthorizationContext } from './authorization-context.vo';
 
 interface TokenMetadataProps {
 	authorizationContext: AuthorizationContext;
