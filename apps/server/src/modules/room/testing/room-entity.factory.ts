@@ -15,5 +15,6 @@ export const roomEntityFactory = EntityFactory.define<RoomEntity, RoomProps>(Roo
 		endDate: inOneWeek,
 		createdAt: new Date(),
 		updatedAt: new Date(),
+		features: [],
 	};
 });

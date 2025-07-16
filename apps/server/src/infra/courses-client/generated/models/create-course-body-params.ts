@@ -21,10 +21,16 @@
  */
 export interface CreateCourseBodyParams {
     /**
-     * The title of the course
+     * The name of the course
      * @type {string}
      * @memberof CreateCourseBodyParams
      */
-    'title': string;
+    'name': string;
+    /**
+     * The color of the course icon
+     * @type {string}
+     * @memberof CreateCourseBodyParams
+     */
+    'color'?: string;
 }
 
