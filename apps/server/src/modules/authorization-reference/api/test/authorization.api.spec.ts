@@ -427,4 +427,39 @@ describe('Authorization Controller (API)', () => {
 			});
 		});
 	});
+
+	// TODO: How to test the line isWitelisted?
+	// TODO: How to test if user is not logged in?
+	// TODO: TTL
+	describe('resolveToken', () => {
+		describe('When token exists', () => {
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				await em.persistAndFlush([teacherAccount, teacherUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+				const postData = createAccessTokenParamsTestFactory().withReferenceId(teacherUser.id).withWriteAccess().build();
+				const response = await loggedInClient.post('create-token', postData);
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				const token = response.body.token as string;
+				const tokenTtl = 3600;
+
+				return { token, tokenTtl };
+			};
+
+			it('should response ok', async () => {
+				const { token, tokenTtl } = await setup();
+
+				const response = await testApiClient.get(`resolve-token/${token}/ttl/${tokenTtl.toString()}`);
+
+				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual({
+					payload: {},
+				});
+			});
+		});
+	});
 });
