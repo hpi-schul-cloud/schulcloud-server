@@ -1,7 +1,7 @@
 import { jwtPayloadFactory } from '@infra/auth-guard/testing';
-import { createAccessTokenParamsTestFactory } from '@modules/authorization-reference/testing';
-import { tokenMetadataTestFactory } from '../../testing/token-metadata.factory';
-import { AuthorizationContext, TokenMetadata } from '../vo';
+import { AuthorizationContext } from '@modules/authorization';
+import { createAccessTokenParamsTestFactory, tokenMetadataTestFactory } from '../../testing';
+import { TokenMetadata } from '../vo';
 import { TokenMetadataFactory } from './token-metadata.factory';
 
 describe('TokenMetadataFactory', () => {
