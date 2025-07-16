@@ -1,5 +1,5 @@
 import AdmZip from 'adm-zip';
-import { JSDOM } from 'jsdom';
+import { CheerioAPI, load } from 'cheerio';
 import {
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceProps,
@@ -20,7 +20,7 @@ export class CommonCartridgeFileParser {
 
 	constructor(file: Buffer, public readonly options = DEFAULT_FILE_PARSER_OPTIONS) {
 		this.archive = new AdmZip(file);
-		this.manifestParser = new CommonCartridgeManifestParser(this.getManifestAsDocument(), this.options);
+		this.manifestParser = new CommonCartridgeManifestParser(this.getManifestFromArchive(), this.options);
 		this.resourceFactory = new CommonCartridgeResourceFactory(this.archive);
 	}
 
@@ -64,12 +64,16 @@ export class CommonCartridgeFileParser {
 		return resource;
 	}
 
-	private getManifestAsDocument(): Document {
+	private getManifestFromArchive(): CheerioAPI {
 		try {
 			const manifestString = CommonCartridgeImportUtils.getManifestFileAsString(this.archive);
-			const manifestDocument = new JSDOM(manifestString as string, { contentType: 'text/xml' }).window.document;
+			if (!manifestString) {
+				throw new CommonCartridgeManifestNotFoundException();
+			}
 
-			return manifestDocument;
+			const manifest = load(manifestString, { xml: true });
+
+			return manifest;
 		} catch (error) {
 			throw new CommonCartridgeManifestNotFoundException();
 		}

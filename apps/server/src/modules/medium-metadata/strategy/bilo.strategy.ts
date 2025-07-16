@@ -8,11 +8,10 @@ import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { Injectable } from '@nestjs/common';
 import { MediumMetadataDto } from '../dto';
 import {
-	MediumMetadataStrategyNotImplementedLoggableException,
+	MediumBadRequestLoggableException,
 	MediumNotFoundLoggableException,
 	MediumUnprocessableResponseLoggableException,
 } from '../loggable';
-import { MediumBadRequestLoggableException } from '../loggable/medium-bad-request-loggable.exception';
 import { MediumMetadataMapper } from '../mapper';
 import { MediumMetadataStrategy } from './interface';
 
@@ -48,8 +47,17 @@ export class BiloStrategy implements MediumMetadataStrategy {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars,require-await,@typescript-eslint/require-await
 	public async getMediumMetadataItems(mediumIds: string[], mediaSource: MediaSource): Promise<MediumMetadataDto[]> {
-		throw new MediumMetadataStrategyNotImplementedLoggableException(MediaSourceDataFormat.BILDUNGSLOGIN);
+		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaClientAdapter.fetchMediaMetadata(
+			mediumIds,
+			mediaSource
+		);
+
+		const mediumMetadataDtos: MediumMetadataDto[] = metadataItems.map(
+			(item: BiloMediaQueryDataResponse): MediumMetadataDto =>
+				MediumMetadataMapper.mapBiloMediumMetadataToMediumMetadata(item)
+		);
+
+		return mediumMetadataDtos;
 	}
 }

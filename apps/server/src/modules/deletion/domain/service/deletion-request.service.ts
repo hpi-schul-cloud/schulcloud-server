@@ -22,6 +22,25 @@ export class DeletionRequestService {
 		this.thresholdNewer = this.configService.get<number>('ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS');
 	}
 
+	public async createDeletionRequestBatch(
+		targetRefIds: EntityId[],
+		targetRefDomain: DomainName,
+		deleteAfter: Date
+	): Promise<void> {
+		const deletionRequests = targetRefIds.map(
+			(targetRefId) =>
+				new DeletionRequest({
+					id: new ObjectId().toHexString(),
+					targetRefDomain,
+					deleteAfter,
+					targetRefId,
+					status: StatusModel.REGISTERED,
+				})
+		);
+
+		await this.deletionRequestRepo.create(deletionRequests);
+	}
+
 	public async createDeletionRequest(
 		targetRefId: EntityId,
 		targetRefDomain: DomainName,
@@ -36,7 +55,6 @@ export class DeletionRequestService {
 		});
 
 		await this.deletionRequestRepo.create(newDeletionRequest);
-
 		return { requestId: newDeletionRequest.id, deletionPlannedAt: newDeletionRequest.deleteAfter };
 	}
 
@@ -62,7 +80,7 @@ export class DeletionRequestService {
 		return deletionRequests;
 	}
 
-	public async findByStatusAndTargetRefId(status: StatusModel, targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
+	public findByStatusAndTargetRefId(status: StatusModel, targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
 		switch (status) {
 			case StatusModel.REGISTERED:
 				return this.deletionRequestRepo.findRegisteredByTargetRefId(targetRefIds);
@@ -73,7 +91,7 @@ export class DeletionRequestService {
 			case StatusModel.SUCCESS:
 				return this.deletionRequestRepo.findSuccessfulByTargetRefId(targetRefIds);
 			default:
-				return [];
+				return Promise.resolve([]);
 		}
 	}
 

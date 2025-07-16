@@ -37,6 +37,14 @@ class ShareTokenFactory extends BaseFactory<ShareToken, ShareTokenProperties> {
 
 		return this.params(params);
 	}
+
+	wwithParentTypeRoom(): this {
+		const parentType = ShareTokenParentType.Room;
+		const parentId = new ObjectId().toHexString();
+		const params: DeepPartial<ShareTokenProperties> = { parentType, parentId };
+
+		return this.params(params);
+	}
 }
 
 export const shareTokenFactory = ShareTokenFactory.define(ShareToken, () => {

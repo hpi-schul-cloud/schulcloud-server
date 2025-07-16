@@ -1,0 +1,25 @@
+export const ModuleName = {
+	ACCOUNT: 'account',
+	BOARD: 'board',
+	MEDIA_BOARD: 'media-board',
+	CLASS: 'class',
+	COURSE: 'course',
+	COURSE_COURSEGROUP: 'courseGroup',
+	GROUP: 'group',
+	LEARNROOM_DASHBOARD: 'dashboard',
+	FILES: 'file',
+	FILES_STORAGE: 'fileRecords',
+	LESSON: 'lessons',
+	PSEUDONYM: 'pseudonyms',
+	ROCKETCHATUSER: 'rocketChatUser',
+	TASK: 'task',
+	TASK_SUBMISSION: 'submissions',
+	TEAM: 'teams',
+	USER: 'user',
+	USER_CALENDAR: 'calendar',
+	USER_REGISTRATIONPIN: 'registrationPin',
+	NEWS: 'news',
+	ROOM: 'room',
+} as const;
+
+export type ModuleName = (typeof ModuleName)[keyof typeof ModuleName];

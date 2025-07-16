@@ -1,7 +1,8 @@
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
 import { CustomParameter } from '../../common/domain';
-import { autoParameters, CustomParameterScope, CustomParameterType } from '../../common/enum';
+import { autoParameters, CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../common/enum';
 import { ToolParameterTypeValidationUtil } from '../../common/service';
 import { ExternalTool } from '../domain';
 import { ExternalToolService } from './external-tool.service';
@@ -10,7 +11,7 @@ import { ExternalToolService } from './external-tool.service';
 export class ExternalToolParameterValidationService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
-	async validateCommon(externalTool: ExternalTool): Promise<void> {
+	public async validateCommon(externalTool: ExternalTool): Promise<void> {
 		if (!(await this.isNameUnique(externalTool))) {
 			throw new ValidationError(`tool_name_duplicate: The tool name "${externalTool.name || ''}" is already used.`);
 		}
@@ -19,6 +20,14 @@ export class ExternalToolParameterValidationService {
 			if (this.hasDuplicateAttributes(externalTool.parameters)) {
 				throw new ValidationError(
 					`tool_param_duplicate: The tool ${externalTool.name || ''} contains multiple of the same custom parameters.`
+				);
+			}
+
+			if (this.hasMultipleFragmentLocationParameter(externalTool.parameters)) {
+				throw new ValidationError(
+					`tool_param_multiple_anchor_parameters: The tool ${
+						externalTool.name || ''
+					} contains multiple anchor (URI fragment) custom parameters.`
 				);
 			}
 
@@ -72,18 +81,27 @@ export class ExternalToolParameterValidationService {
 		}
 	}
 
-	private isCustomParameterNameEmpty(param: CustomParameter): boolean {
-		return !param.name || !param.displayName;
-	}
-
-	private async isNameUnique(externalTool: ExternalTool): Promise<boolean> {
+	public async isNameUnique(externalTool: ExternalTool): Promise<boolean> {
 		if (!externalTool.name) {
 			return true;
 		}
 
-		const duplicate: ExternalTool | null = await this.externalToolService.findExternalToolByName(externalTool.name);
+		const duplicates: ExternalTool[] = await this.externalToolService.findExternalToolsByName(externalTool.name);
+		if (duplicates.length === 0) {
+			return true;
+		}
 
-		return duplicate == null || duplicate.id === externalTool.id;
+		if (duplicates.length > 1) {
+			return false;
+		}
+
+		const isDuplicateSelf = duplicates[0].id === externalTool.id;
+
+		return isDuplicateSelf;
+	}
+
+	private isCustomParameterNameEmpty(param: CustomParameter): boolean {
+		return !param.name || !param.displayName;
 	}
 
 	private hasDuplicateAttributes(customParameter: CustomParameter[]): boolean {
@@ -158,11 +176,25 @@ export class ExternalToolParameterValidationService {
 		return isGlobal;
 	}
 
-	private isAutoParameterMediumIdValid(customParameter: CustomParameter, externalTool: ExternalTool) {
-		if (customParameter.type === CustomParameterType.AUTO_MEDIUMID && !externalTool.medium?.mediumId) {
+	private isAutoParameterMediumIdValid(customParameter: CustomParameter, externalTool: ExternalTool): boolean {
+		if (
+			customParameter.type === CustomParameterType.AUTO_MEDIUMID &&
+			externalTool.medium?.status !== ExternalToolMediumStatus.TEMPLATE &&
+			!externalTool.medium?.mediumId
+		) {
 			return false;
 		}
 
 		return true;
+	}
+
+	private hasMultipleFragmentLocationParameter(customParameters: CustomParameter[]): boolean {
+		const anchorLocationParams = customParameters.filter(
+			(customParameter: CustomParameter) => customParameter.location === CustomParameterLocation.FRAGMENT
+		);
+
+		const hasMultiple = anchorLocationParams.length > 1;
+
+		return hasMultiple;
 	}
 }

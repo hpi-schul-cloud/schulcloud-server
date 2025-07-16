@@ -1,5 +1,7 @@
+import { H5pEditorProducer } from '@infra/h5p-editor-client';
+import { CopyContentParams, CopyContentParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyElementType, CopyHelperService, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyElementType, CopyHelperService, CopyMapper, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import type { CopyFileDto } from '@modules/files-storage-client/dto';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import {
@@ -22,7 +24,9 @@ import {
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	FileElementFactory,
 	FileFolderElement,
+	FileFolderElementFactory,
 	getBoardNodeType,
 	H5pElement,
 	handleNonExhaustiveSwitch,
@@ -33,11 +37,12 @@ import {
 	RichTextElement,
 	SubmissionContainerElement,
 	type SubmissionItem,
-	type VideoConferenceElement,
+	VideoConferenceElement,
 } from '../../domain';
 
 export interface CopyContext {
 	targetSchoolId: EntityId;
+	userId: EntityId;
 	copyFilesOfParent(sourceParentId: EntityId, targetParentId: EntityId): Promise<CopyFileDto[]>;
 }
 
@@ -46,7 +51,8 @@ export class BoardNodeCopyService {
 	constructor(
 		private readonly configService: ConfigService<ToolConfig, true>,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly copyHelperService: CopyHelperService
+		private readonly copyHelperService: CopyHelperService,
+		private readonly h5pEditorProducer: H5pEditorProducer
 	) {}
 
 	public async copy(boardNode: AnyBoardNode, context: CopyContext): Promise<CopyStatus> {
@@ -176,20 +182,12 @@ export class BoardNodeCopyService {
 	}
 
 	public async copyFileElement(original: FileElement, context: CopyContext): Promise<CopyStatus> {
-		const copy = new FileElement({
+		const copy = FileElementFactory.build({
 			...original.getProps(),
 			...this.buildSpecificProps([]),
 		});
 
-		const fileCopy = await context.copyFilesOfParent(original.id, copy.id);
-
-		const fileCopyStatus = fileCopy.map((copyFileDto) => {
-			return {
-				type: CopyElementType.FILE,
-				status: copyFileDto.id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
-				title: copyFileDto.name ?? `(old fileid: ${copyFileDto.sourceId})`,
-			};
-		});
+		const fileCopyStatus = await this.copyFilesOfParent(original, context, copy);
 
 		const result: CopyStatus = {
 			copyEntity: copy,
@@ -199,6 +197,35 @@ export class BoardNodeCopyService {
 		};
 
 		return result;
+	}
+
+	public async copyFileFolderElement(original: FileFolderElement, context: CopyContext): Promise<CopyStatus> {
+		const copy = FileFolderElementFactory.build({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
+		const fileCopyStatus = await this.copyFilesOfParent(original, context, copy);
+
+		const result: CopyStatus = {
+			copyEntity: copy,
+			type: CopyElementType.FILE_FOLDER_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+			elements: fileCopyStatus,
+		};
+
+		return result;
+	}
+
+	private async copyFilesOfParent(
+		original: FileElement | LinkElement | FileFolderElement,
+		context: CopyContext,
+		copy: FileFolderElement | FileElement
+	): Promise<CopyStatus[]> {
+		const fileCopies = await context.copyFilesOfParent(original.id, copy.id);
+		const copyStatus = CopyMapper.mapFileDtosToCopyStatus(fileCopies);
+
+		return copyStatus;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -242,7 +269,7 @@ export class BoardNodeCopyService {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async copyRichTextElement(original: RichTextElement, context: CopyContext): Promise<CopyStatus> {
+	public copyRichTextElement(original: RichTextElement, context: CopyContext): Promise<CopyStatus> {
 		const copy = new RichTextElement({
 			...original.getProps(),
 			...this.buildSpecificProps([]),
@@ -258,7 +285,7 @@ export class BoardNodeCopyService {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async copyDrawingElement(original: DrawingElement, context: CopyContext): Promise<CopyStatus> {
+	public copyDrawingElement(original: DrawingElement, context: CopyContext): Promise<CopyStatus> {
 		const copy = new DrawingElement({
 			...original.getProps(),
 			...this.buildSpecificProps([]),
@@ -295,7 +322,7 @@ export class BoardNodeCopyService {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async copySubmissionItem(original: SubmissionItem, context: CopyContext): Promise<CopyStatus> {
+	public copySubmissionItem(original: SubmissionItem, context: CopyContext): Promise<CopyStatus> {
 		const result: CopyStatus = {
 			type: CopyElementType.SUBMISSION_ITEM,
 			status: CopyStatusEnum.NOT_DOING,
@@ -363,7 +390,7 @@ export class BoardNodeCopyService {
 		return Promise.resolve(result);
 	}
 
-	public async copyCollaborativeTextEditorElement(
+	public copyCollaborativeTextEditorElement(
 		original: CollaborativeTextEditorElement,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		context: CopyContext
@@ -382,10 +409,16 @@ export class BoardNodeCopyService {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async copyVideoConferenceElement(original: VideoConferenceElement, context: CopyContext): Promise<CopyStatus> {
+	public copyVideoConferenceElement(original: VideoConferenceElement, context: CopyContext): Promise<CopyStatus> {
+		const copy = new VideoConferenceElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
 		const result: CopyStatus = {
+			copyEntity: copy,
 			type: CopyElementType.VIDEO_CONFERENCE_ELEMENT,
-			status: CopyStatusEnum.NOT_DOING,
+			status: CopyStatusEnum.SUCCESS,
 		};
 
 		return Promise.resolve(result);
@@ -416,7 +449,7 @@ export class BoardNodeCopyService {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async copyMediaExternalToolElement(
+	public copyMediaExternalToolElement(
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		original: MediaExternalToolElement,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -444,6 +477,50 @@ export class BoardNodeCopyService {
 		};
 
 		return Promise.resolve(result);
+	}
+
+	public async copyH5pElement(original: H5pElement, context: CopyContext): Promise<CopyStatus> {
+		if (!original.contentId) {
+			const copy = new H5pElement({
+				...original.getProps(),
+				...this.buildSpecificProps([]),
+			});
+
+			const result: CopyStatus = {
+				copyEntity: copy,
+				type: CopyElementType.H5P_ELEMENT,
+				status: CopyStatusEnum.SUCCESS,
+				elements: [],
+			};
+
+			return result;
+		}
+
+		const copiedContentId = new ObjectId().toHexString();
+		const copy = new H5pElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+			contentId: copiedContentId,
+		});
+
+		const copyParams: CopyContentParams = {
+			copiedContentId: copiedContentId,
+			sourceContentId: original.contentId,
+			userId: context.userId,
+			schoolId: context.targetSchoolId,
+			parentType: CopyContentParentType.BoardElement,
+			parentId: copy.id,
+		};
+		await this.h5pEditorProducer.copyContent(copyParams);
+
+		const result: CopyStatus = {
+			copyEntity: copy,
+			type: CopyElementType.H5P_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+			elements: [],
+		};
+
+		return result;
 	}
 
 	private async copyChildrenOf(boardNode: AnyBoardNode, context: CopyContext): Promise<CopyStatus[]> {
@@ -486,32 +563,5 @@ export class BoardNodeCopyService {
 			updatedAt: new Date(),
 			children: childrenResults.map((r) => r.copyEntity).filter((c) => c !== undefined) as AnyBoardNode[],
 		};
-	}
-
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public copyFileFolderElement(original: FileFolderElement, context: CopyContext): Promise<CopyStatus> {
-		const copy = new FileFolderElement({
-			...original.getProps(),
-			...this.buildSpecificProps([]),
-		});
-
-		const result: CopyStatus = {
-			copyEntity: copy,
-			type: CopyElementType.FILE_FOLDER_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
-			elements: [],
-		};
-
-		return Promise.resolve(result);
-	}
-
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public copyH5pElement(original: H5pElement, context: CopyContext): Promise<CopyStatus> {
-		const result: CopyStatus = {
-			type: CopyElementType.H5P_ELEMENT,
-			status: CopyStatusEnum.NOT_IMPLEMENTED,
-		};
-
-		return Promise.resolve(result);
 	}
 }

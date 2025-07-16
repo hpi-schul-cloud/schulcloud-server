@@ -21,13 +21,14 @@ import {
 	Res,
 	StreamableFile,
 	UploadedFiles,
+	UseFilters,
 	UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { Request, Response } from 'express';
-import { H5PEditorUc } from '../uc/h5p.uc';
+import { H5PEditorUc } from '../uc';
 
 import {
 	AjaxGetQueryParams,
@@ -38,12 +39,15 @@ import {
 	GetH5PEditorParams,
 	GetH5PEditorParamsCreate,
 	H5PContentResponse,
+	H5PEditorModelContentResponse,
+	H5PEditorModelResponse,
+	H5PSaveResponse,
 	LibraryFileUrlParams,
 	PostH5PContentCreateParams,
 	SaveH5PEditorParams,
 } from './dto';
 import { AjaxPostBodyParamsTransformPipe } from './dto/ajax/post.body.params.transform-pipe';
-import { H5PEditorModelContentResponse, H5PEditorModelResponse, H5PSaveResponse } from './dto/h5p-editor.response';
+import { H5pAjaxErrorResponseFilter } from './filter';
 
 @ApiTags('h5p-editor')
 @JwtAuthentication()
@@ -61,7 +65,7 @@ export class H5PEditorController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: GetH5PContentParams
 	): Promise<IPlayerModel> {
-		return this.h5pEditorUc.getH5pPlayer(currentUser, params.contentId);
+		return this.h5pEditorUc.getH5pPlayer(currentUser.userId, params.contentId);
 	}
 
 	// Other Endpoints (incomplete list), paths not final
@@ -86,7 +90,7 @@ export class H5PEditorController {
 		@Param('id') id: string,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<H5PContentResponse> {
-		const content: H5PContentResponse = await this.h5pEditorUc.getContentParameters(id, currentUser);
+		const content: H5PContentResponse = await this.h5pEditorUc.getContentParameters(id, currentUser.userId);
 
 		return content;
 	}
@@ -102,7 +106,7 @@ export class H5PEditorController {
 			params.id,
 			params.filename,
 			req,
-			currentUser
+			currentUser.userId
 		);
 
 		H5PEditorController.setRangeResponseHeaders(res, contentLength, contentRange);
@@ -122,7 +126,7 @@ export class H5PEditorController {
 		const { data, contentType, contentLength, contentRange } = await this.h5pEditorUc.getTemporaryFile(
 			file,
 			req,
-			currentUser
+			currentUser.userId
 		);
 
 		H5PEditorController.setRangeResponseHeaders(res, contentLength, contentRange);
@@ -133,16 +137,18 @@ export class H5PEditorController {
 	}
 
 	@Get('ajax')
+	@UseFilters(H5pAjaxErrorResponseFilter)
 	public async getAjax(
 		@Query() query: AjaxGetQueryParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<IHubInfo | ILibraryDetailedDataForClient | IAjaxResponse | undefined> {
-		const response = this.h5pEditorUc.getAjax(query, currentUser);
+		const response = this.h5pEditorUc.getAjax(query, currentUser.userId);
 
 		return response;
 	}
 
 	@Post('ajax')
+	@UseFilters(H5pAjaxErrorResponseFilter)
 	@UseInterceptors(
 		FileFieldsInterceptor([
 			{ name: 'file', maxCount: 1 },
@@ -168,7 +174,7 @@ export class H5PEditorController {
 		const contentFile = files?.file?.[0];
 		const h5pFile = files?.h5p?.[0];
 
-		const result = await this.h5pEditorUc.postAjax(currentUser, query, body, contentFile, h5pFile);
+		const result = await this.h5pEditorUc.postAjax(currentUser.userId, query, body, contentFile, h5pFile);
 
 		return result;
 	}
@@ -178,7 +184,7 @@ export class H5PEditorController {
 		@Param() params: GetH5PContentParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<boolean> {
-		const deleteSuccessfull: boolean = await this.h5pEditorUc.deleteH5pContent(currentUser, params.contentId);
+		const deleteSuccessfull: boolean = await this.h5pEditorUc.deleteH5pContent(currentUser.userId, params.contentId);
 
 		return deleteSuccessfull;
 	}
@@ -189,7 +195,7 @@ export class H5PEditorController {
 		@Param() params: GetH5PEditorParamsCreate,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<H5PEditorModelResponse> {
-		const editorModel: IEditorModel = await this.h5pEditorUc.getEmptyH5pEditor(currentUser, params.language);
+		const editorModel: IEditorModel = await this.h5pEditorUc.getEmptyH5pEditor(currentUser.userId, params.language);
 
 		return new H5PEditorModelResponse(editorModel);
 	}
@@ -201,7 +207,7 @@ export class H5PEditorController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<H5PEditorModelContentResponse> {
 		const { editorModel, content } = await this.h5pEditorUc.getH5pEditor(
-			currentUser,
+			currentUser.userId,
 			params.contentId,
 			params.language
 		);
@@ -216,7 +222,8 @@ export class H5PEditorController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<H5PSaveResponse> {
 		const response = await this.h5pEditorUc.createH5pContentGetMetadata(
-			currentUser,
+			currentUser.userId,
+			currentUser.schoolId,
 			body.params.params,
 			body.params.metadata,
 			body.library,
@@ -238,7 +245,8 @@ export class H5PEditorController {
 	): Promise<H5PSaveResponse> {
 		const response = await this.h5pEditorUc.saveH5pContentGetMetadata(
 			params.contentId,
-			currentUser,
+			currentUser.userId,
+			currentUser.schoolId,
 			body.params.params,
 			body.params.metadata,
 			body.library,

@@ -19,13 +19,16 @@ export type BoardNodeCopyContextProps = {
 };
 
 export class BoardNodeCopyContext implements CopyContext {
-	readonly targetSchoolId: EntityId;
+	public readonly targetSchoolId: EntityId;
+
+	public readonly userId: EntityId;
 
 	constructor(private readonly props: BoardNodeCopyContextProps) {
 		this.targetSchoolId = props.targetSchoolId;
+		this.userId = props.userId;
 	}
 
-	copyFilesOfParent(sourceParentId: EntityId, targetParentId: EntityId): Promise<CopyFileDto[]> {
+	public copyFilesOfParent(sourceParentId: EntityId, targetParentId: EntityId): Promise<CopyFileDto[]> {
 		return this.props.filesStorageClientAdapterService.copyFilesOfParent({
 			source: {
 				parentId: sourceParentId,

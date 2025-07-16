@@ -11,13 +11,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { H5PEditorController } from './controller';
+import { H5pEditorConsumer, H5PEditorController } from './controller';
 import { authorizationClientConfig, config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { ENTITIES } from './h5p-editor.entity.exports';
 import { H5PAjaxEndpointProvider, H5PEditorProvider, H5PPlayerProvider } from './provider';
 import { H5PContentRepo, LibraryRepo } from './repo';
-import { ContentStorage, LibraryStorage, TemporaryFileStorage } from './service';
-import { H5PEditorUc } from './uc/h5p.uc';
+import { ContentStorage, H5pEditorContentService, LibraryStorage, TemporaryFileStorage } from './service';
+import { H5PEditorUc } from './uc';
 
 const imports = [
 	AuthorizationClientModule.register(authorizationClientConfig),
@@ -52,6 +52,8 @@ const providers = [
 	ContentStorage,
 	LibraryStorage,
 	TemporaryFileStorage,
+	H5pEditorConsumer,
+	H5pEditorContentService,
 ];
 
 @Module({

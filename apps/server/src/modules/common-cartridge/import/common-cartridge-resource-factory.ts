@@ -1,9 +1,10 @@
 import { sanitizeRichText } from '@shared/controller/transformer';
 import { InputFormat } from '@shared/domain/types';
 import AdmZip from 'adm-zip';
-import { JSDOM } from 'jsdom';
+import { load } from 'cheerio';
 import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
 import {
+	CommonCartridgeFileResourceProps,
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceProps,
 	CommonCartridgeWebContentResourceProps,
@@ -28,7 +29,7 @@ export class CommonCartridgeResourceFactory {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
 				return this.createWebLinkResource(content, title);
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
-				return this.createWebContentResource(content, inputFormat);
+				return this.buildWebContentResourceFromPath(content, organization.resourcePath, inputFormat, title);
 			default:
 				return undefined;
 		}
@@ -42,13 +43,12 @@ export class CommonCartridgeResourceFactory {
 	}
 
 	private createWebLinkResource(content: string, title: string): CommonCartridgeWebLinkResourceProps | undefined {
-		const document = this.tryCreateDocument(content, 'text/xml');
+		const document = load(content, { xml: true });
+		const url = document('webLink > url').attr('href') ?? '';
 
-		if (!document) {
+		if (url === '') {
 			return undefined;
 		}
-
-		const url = document.querySelector('webLink > url')?.getAttribute('href') ?? '';
 
 		return {
 			type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
@@ -57,31 +57,54 @@ export class CommonCartridgeResourceFactory {
 		};
 	}
 
+	private buildWebContentResourceFromPath(
+		content: string,
+		resourcePath: string,
+		inputFormat: InputFormat,
+		title: string
+	): CommonCartridgeResourceProps | undefined {
+		if (this.isFile(resourcePath)) {
+			return this.createFileContentResource(resourcePath, title);
+		} else {
+			return this.createWebContentResource(content, inputFormat);
+		}
+	}
+
+	private isFile(resourcePath: string): boolean {
+		return !resourcePath.endsWith('.html');
+	}
+
+	private createFileContentResource(resourcePath: string, title: string): CommonCartridgeFileResourceProps | undefined {
+		const fileName = resourcePath.split('/').pop() ?? 'unnamed';
+		const zipEntry = this.archive.getEntry(resourcePath);
+		const buffer = zipEntry?.getData();
+
+		if (!(buffer instanceof Buffer) || buffer.length === 0) {
+			return undefined;
+		}
+
+		const file = new File([buffer], fileName, {});
+
+		return {
+			type: CommonCartridgeResourceTypeV1P1.FILE,
+			href: resourcePath,
+			fileName,
+			file,
+			description: title,
+		};
+	}
+
 	private createWebContentResource(
 		content: string,
 		inputFormat: InputFormat
 	): CommonCartridgeWebContentResourceProps | undefined {
-		const document = this.tryCreateDocument(content, 'text/html');
-
-		if (!document) {
-			return undefined;
-		}
-
-		const html = sanitizeRichText(document.body.innerHTML?.trim() ?? '', inputFormat);
+		const document = load(content);
+		const unsanitizedHtml = document('body').html()?.trim() ?? content;
+		const sanitizedHtml = sanitizeRichText(unsanitizedHtml, inputFormat);
 
 		return {
 			type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-			html,
+			html: sanitizedHtml,
 		};
-	}
-
-	private tryCreateDocument(content: string, contentType: 'text/html' | 'text/xml'): Document | undefined {
-		try {
-			const parser = new JSDOM(content, { contentType }).window.document;
-
-			return parser;
-		} catch (error) {
-			return undefined;
-		}
 	}
 }

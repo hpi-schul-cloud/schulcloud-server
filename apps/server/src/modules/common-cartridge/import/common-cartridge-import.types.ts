@@ -10,7 +10,7 @@ export type CommonCartridgeFileParserOptions = {
 export const DEFAULT_FILE_PARSER_OPTIONS: CommonCartridgeFileParserOptions = {
 	maxSearchDepth: 5,
 	pathSeparator: '/',
-	inputFormat: InputFormat.RICH_TEXT_CK4,
+	inputFormat: InputFormat.RICH_TEXT_CK5,
 };
 
 export type CommonCartridgeOrganizationProps = {
@@ -36,9 +36,18 @@ export type CommonCartridgeWebLinkResourceProps = {
 	url: string;
 };
 
+export type CommonCartridgeFileResourceProps = {
+	type: CommonCartridgeResourceTypeV1P1.FILE;
+	href: string;
+	fileName: string;
+	file: File;
+	description: string;
+};
+
 export type CommonCartridgeUnknownResourceProps = { type: CommonCartridgeResourceTypeV1P1.UNKNOWN };
 
 export type CommonCartridgeResourceProps =
 	| CommonCartridgeWebContentResourceProps
 	| CommonCartridgeWebLinkResourceProps
-	| CommonCartridgeUnknownResourceProps;
+	| CommonCartridgeUnknownResourceProps
+	| CommonCartridgeFileResourceProps;

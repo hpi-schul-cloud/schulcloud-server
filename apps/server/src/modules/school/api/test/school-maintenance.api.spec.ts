@@ -138,6 +138,7 @@ describe('School Controller (API)', () => {
 						name: schoolYear.name,
 						startDate: schoolYear.startDate.toISOString(),
 						endDate: schoolYear.endDate.toISOString(),
+						courseCreationInNextYear: schoolYear.courseCreationInNextYear,
 					};
 				});
 
@@ -187,6 +188,7 @@ describe('School Controller (API)', () => {
 						name: schoolYear.name,
 						startDate: schoolYear.startDate.toISOString(),
 						endDate: schoolYear.endDate.toISOString(),
+						courseCreationInNextYear: schoolYear.courseCreationInNextYear,
 					};
 				});
 
@@ -235,6 +237,7 @@ describe('School Controller (API)', () => {
 						name: schoolYear.name,
 						startDate: schoolYear.startDate.toISOString(),
 						endDate: schoolYear.endDate.toISOString(),
+						courseCreationInNextYear: schoolYear.courseCreationInNextYear,
 					};
 				});
 
@@ -288,6 +291,7 @@ describe('School Controller (API)', () => {
 						name: schoolYear.name,
 						startDate: schoolYear.startDate.toISOString(),
 						endDate: schoolYear.endDate.toISOString(),
+						courseCreationInNextYear: schoolYear.courseCreationInNextYear,
 					};
 				});
 
@@ -480,6 +484,7 @@ describe('School Controller (API)', () => {
 						name: schoolYear.name,
 						startDate: schoolYear.startDate.toISOString(),
 						endDate: schoolYear.endDate.toISOString(),
+						courseCreationInNextYear: schoolYear.courseCreationInNextYear,
 					};
 				});
 
@@ -528,6 +533,7 @@ describe('School Controller (API)', () => {
 						name: schoolYear.name,
 						startDate: schoolYear.startDate.toISOString(),
 						endDate: schoolYear.endDate.toISOString(),
+						courseCreationInNextYear: schoolYear.courseCreationInNextYear,
 					};
 				});
 
@@ -611,6 +617,7 @@ describe('School Controller (API)', () => {
 						name: schoolYear.name,
 						startDate: schoolYear.startDate.toISOString(),
 						endDate: schoolYear.endDate.toISOString(),
+						courseCreationInNextYear: schoolYear.courseCreationInNextYear,
 					};
 				});
 

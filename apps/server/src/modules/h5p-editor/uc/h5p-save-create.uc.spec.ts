@@ -6,12 +6,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { H5PContentParentType } from '../entity';
 import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { h5pContentFactory } from '../testing';
-import { LumiUserWithContentData } from '../types/lumi-types';
+import { H5PContentParentType, LumiUserWithContentData } from '../types';
 import { H5PEditorUc } from './h5p.uc';
 
 const createParams = () => {
@@ -101,7 +100,8 @@ describe('save or create H5P content', () => {
 
 				await uc.saveH5pContentGetMetadata(
 					contentId,
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -121,7 +121,8 @@ describe('save or create H5P content', () => {
 
 				await uc.saveH5pContentGetMetadata(
 					contentId,
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -143,7 +144,8 @@ describe('save or create H5P content', () => {
 
 				const result = await uc.saveH5pContentGetMetadata(
 					contentId,
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -169,7 +171,8 @@ describe('save or create H5P content', () => {
 
 				const saveContentPromise = uc.saveH5pContentGetMetadata(
 					contentId,
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -200,7 +203,8 @@ describe('save or create H5P content', () => {
 
 				const saveContentPromise = uc.saveH5pContentGetMetadata(
 					contentId,
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -228,7 +232,8 @@ describe('save or create H5P content', () => {
 				const { parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId } = setup();
 
 				await uc.createH5pContentGetMetadata(
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -247,7 +252,8 @@ describe('save or create H5P content', () => {
 				const { parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId } = setup();
 
 				await uc.createH5pContentGetMetadata(
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -268,7 +274,8 @@ describe('save or create H5P content', () => {
 				const { contentId, parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId } = setup();
 
 				const result = await uc.createH5pContentGetMetadata(
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -293,7 +300,8 @@ describe('save or create H5P content', () => {
 				const { mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId } = setup();
 
 				const saveContentPromise = uc.createH5pContentGetMetadata(
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,
@@ -323,7 +331,8 @@ describe('save or create H5P content', () => {
 				const { error, mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId } = setup();
 
 				const saveContentPromise = uc.createH5pContentGetMetadata(
-					mockCurrentUser,
+					mockCurrentUser.userId,
+					mockCurrentUser.schoolId,
 					parameters,
 					metadata,
 					mainLibraryUbername,

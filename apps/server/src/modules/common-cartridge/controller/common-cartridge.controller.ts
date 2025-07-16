@@ -59,7 +59,7 @@ export class CommonCartridgeController {
 	@Post('import')
 	@UseInterceptors(FileInterceptor('file'))
 	@ApiOperation({ summary: 'Imports a course from a Common Cartridge file.' })
-	@ApiConsumes('application/octet-stream')
+	@ApiConsumes('multipart/form-data')
 	@ApiProduces('application/json')
 	@ApiBody({ type: CommonCartridgeImportBodyParams, required: true })
 	@ApiCreatedResponse({ description: 'Course was successfully imported.' })
@@ -71,6 +71,6 @@ export class CommonCartridgeController {
 		@UploadedFile(CommonCartridgeFileValidatorPipe)
 		file: Express.Multer.File
 	): Promise<void> {
-		await this.commonCartridgeUC.importCourse(file.buffer);
+		await this.commonCartridgeUC.importCourse(file.buffer, currentUser);
 	}
 }

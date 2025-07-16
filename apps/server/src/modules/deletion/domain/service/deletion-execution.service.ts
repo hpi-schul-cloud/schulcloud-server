@@ -1,18 +1,22 @@
 import { Injectable } from '@nestjs/common';
-
+import { Logger } from '@core/logger';
 import { ModuleName, SagaService, StepOperationReport, StepOperationType, StepReport } from '@modules/saga';
 import { DeletionRequest } from '../do';
 import { DomainDeletionReport, DomainOperationReport } from '../interface';
 import { DomainName, OperationType } from '../types';
 import { DeletionLogEntry, DeletionLogService, DeletionRequestService } from './';
+import { DeletionErrorLoggableException } from '../loggable-exception';
 
 @Injectable()
 export class DeletionExecutionService {
 	constructor(
 		private readonly sagaService: SagaService,
 		private readonly deletionRequestService: DeletionRequestService,
-		private readonly deletionLogService: DeletionLogService
-	) {}
+		private readonly deletionLogService: DeletionLogService,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(DeletionExecutionService.name);
+	}
 
 	public async executeDeletionRequest(deletionRequest: DeletionRequest): Promise<void> {
 		await this.deletionRequestService.markDeletionRequestAsPending(deletionRequest.id);
@@ -35,6 +39,13 @@ export class DeletionExecutionService {
 			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
 		} catch (error) {
 			await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
+
+			this.logger.warning(
+				new DeletionErrorLoggableException(
+					`An error occurred during deletion execution ${deletionRequest.id}`,
+					error as Error
+				)
+			);
 		}
 	}
 
@@ -51,12 +62,14 @@ export class DeletionExecutionService {
 		const mapping: Record<ModuleName, DomainName> = {
 			[ModuleName.ACCOUNT]: DomainName.ACCOUNT,
 			[ModuleName.BOARD]: DomainName.BOARD,
+			[ModuleName.MEDIA_BOARD]: DomainName.MEDIA_BOARD,
 			[ModuleName.CLASS]: DomainName.CLASS,
 			[ModuleName.COURSE]: DomainName.COURSE,
 			[ModuleName.COURSE_COURSEGROUP]: DomainName.COURSEGROUP,
 			[ModuleName.LEARNROOM_DASHBOARD]: DomainName.DASHBOARD,
 			[ModuleName.FILES]: DomainName.FILE,
 			[ModuleName.FILES_STORAGE]: DomainName.FILERECORDS,
+			[ModuleName.GROUP]: DomainName.GROUP,
 			[ModuleName.LESSON]: DomainName.LESSONS,
 			[ModuleName.PSEUDONYM]: DomainName.PSEUDONYMS,
 			[ModuleName.ROCKETCHATUSER]: DomainName.ROCKETCHATUSER,
@@ -67,6 +80,7 @@ export class DeletionExecutionService {
 			[ModuleName.USER_CALENDAR]: DomainName.CALENDAR,
 			[ModuleName.USER_REGISTRATIONPIN]: DomainName.REGISTRATIONPIN,
 			[ModuleName.NEWS]: DomainName.NEWS,
+			[ModuleName.ROOM]: DomainName.ROOM,
 		} as const;
 
 		if (mapping[moduleName]) {

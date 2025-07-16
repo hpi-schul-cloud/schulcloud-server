@@ -1,6 +1,7 @@
 import type { CoreModuleConfig } from '@core/core.config';
 import type { LoggerConfig } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import type { EncryptionConfig } from '@infra/encryption/encryption.config';
 import type { RabbitMqConfig } from '@infra/rabbitmq';
 import type { CourseSynchronizationHistoryConfig } from '@modules/course-synchronization-history';
 import type { GroupConfig } from '@modules/group';
@@ -29,7 +30,8 @@ export interface SchulconnexProvisioningConfig
 		UserLicenseConfig,
 		MediaSourceConfig,
 		ToolConfig,
-		CourseSynchronizationHistoryConfig {}
+		CourseSynchronizationHistoryConfig,
+		EncryptionConfig {}
 
 const config: SchulconnexProvisioningConfig = {
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
@@ -81,6 +83,8 @@ const config: SchulconnexProvisioningConfig = {
 	SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS: Configuration.get(
 		'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
 	) as number,
+	AES_KEY: Configuration.get('AES_KEY') as string,
+	CALENDAR_SERVICE_ENABLED: Configuration.get('CALENDAR_SERVICE_ENABLED') as boolean,
 };
 
 export const schulconnexProvisioningConfig = () => config;

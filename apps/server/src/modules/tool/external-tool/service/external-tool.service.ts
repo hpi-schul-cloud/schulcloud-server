@@ -92,6 +92,11 @@ export class ExternalToolService {
 		return externalTool;
 	}
 
+	public findExternalToolsByName(name: string): Promise<ExternalTool[]> {
+		const externalTools: Promise<ExternalTool[]> = this.externalToolRepo.findAllByName(name);
+		return externalTools;
+	}
+
 	public findExternalToolByOAuth2ConfigClientId(clientId: string): Promise<ExternalTool | null> {
 		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findByOAuth2ConfigClientId(clientId);
 		return externalTool;
@@ -99,6 +104,12 @@ export class ExternalToolService {
 
 	public findExternalToolByMedium(mediumId: string, mediaSourceId?: string): Promise<ExternalTool | null> {
 		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findByMedium(mediumId, mediaSourceId);
+
+		return externalTool;
+	}
+
+	public findTemplate(mediaSourceId?: string): Promise<ExternalTool | null> {
+		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findTemplate(mediaSourceId);
 
 		return externalTool;
 	}
@@ -127,7 +138,7 @@ export class ExternalToolService {
 		return updatedExternalTools;
 	}
 
-	private async updateOauth2ToolConfig(toUpdate: ExternalTool) {
+	private async updateOauth2ToolConfig(toUpdate: ExternalTool): Promise<void> {
 		if (ExternalTool.isOauth2Config(toUpdate.config)) {
 			const toUpdateOauthClient: Partial<ProviderOauthClient> = this.mapper.mapDoToProviderOauthClient(
 				toUpdate.name,
@@ -144,7 +155,7 @@ export class ExternalToolService {
 		loadedOauthClient: ProviderOauthClient,
 		toUpdateOauthClient: Partial<ProviderOauthClient>,
 		toUpdate: ExternalTool
-	) {
+	): Promise<void> {
 		if (loadedOauthClient && loadedOauthClient.client_id) {
 			await this.oauthProviderService.updateOAuth2Client(loadedOauthClient.client_id, toUpdateOauthClient);
 		} else {
@@ -152,7 +163,7 @@ export class ExternalToolService {
 		}
 	}
 
-	private async addExternalOauth2DataToConfig(config: Oauth2ToolConfig) {
+	private async addExternalOauth2DataToConfig(config: Oauth2ToolConfig): Promise<void> {
 		const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(config.clientId);
 
 		config.scope = oauthClient.scope;

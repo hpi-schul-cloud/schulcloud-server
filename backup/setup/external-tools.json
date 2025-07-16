@@ -513,142 +513,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "65fc1488e519d4a3b71193e4"
-		},
-		"createdAt": {
-			"$date": "2024-03-21T11:05:44.780Z"
-		},
-		"updatedAt": {
-			"$date": "2024-03-21T11:05:44.780Z"
-		},
-		"name": "Product Test Onlinediagnose Grundschule - Deutsch",
-		"url": "https://onlinediagnose.westermann.de/",
-		"config_type": "lti11",
-		"config_baseUrl": "https://route-resolver.test.services.bildungslogin.de/api/v1/lti11/launch/7ce9a5aa-e603-4abc-9c45-7bc454cc093a",
-		"config_key": "https://route-resolver.test.services.bildungslogin.de/api/v1/lti11/launch/7ce9a5aa-e603-4abc-9c45-7bc454cc093a",
-		"config_lti_message_type": "basic-lti-launch-request",
-		"config_privacy_permission": "anonymous",
-		"config_launch_presentation_locale": "de-DE",
-		"parameters": [
-			{
-				"name": "context_id",
-				"displayName": "Kontext",
-				"description": "",
-				"scope": "global",
-				"location": "body",
-				"type": "auto_contextid",
-				"isOptional": false,
-				"isProtected": false
-			},
-			{
-				"name": "context_title",
-				"displayName": "Kontext",
-				"description": "",
-				"scope": "global",
-				"location": "body",
-				"type": "auto_contextname",
-				"isOptional": false,
-				"isProtected": false
-			},
-			{
-				"name": "context_type",
-				"displayName": "Kontext",
-				"description": "",
-				"default": "Group",
-				"scope": "global",
-				"location": "body",
-				"type": "string",
-				"isOptional": false,
-				"isProtected": false
-			},
-			{
-				"name": "custom_product_id",
-				"displayName": "Kontext",
-				"description": "",
-				"default": "urn:bilo:medium:WEB-507-08040",
-				"scope": "global",
-				"location": "body",
-				"type": "string",
-				"isOptional": false,
-				"isProtected": false
-			}
-		],
-		"isHidden": false,
-		"isDeactivated": false,
-		"openNewTab": true,
-		"isPreferred": false,
-		"restrictToContexts": []
-	},
-	{
-		"_id": {
-			"$oid": "65fc15b5e519d4a3b71193e5"
-		},
-		"createdAt": {
-			"$date": "2024-03-21T11:10:45.098Z"
-		},
-		"updatedAt": {
-			"$date": "2024-03-21T11:10:45.098Z"
-		},
-		"name": "Product Test Onlinediagnose Grundschule - Mathematik",
-		"url": "https://onlinediagnose.westermann.de/",
-		"config_type": "lti11",
-		"config_baseUrl": "https://route-resolver.test.services.bildungslogin.de/api/v1/lti11/launch/7ce9a5aa-e603-4abc-9c45-7bc454cc093a",
-		"config_key": "7ce9a5aa-e603-4abc-9c45-7bc454cc093a",
-		"config_lti_message_type": "basic-lti-launch-request",
-		"config_privacy_permission": "anonymous",
-		"config_launch_presentation_locale": "de-DE",
-		"parameters": [
-			{
-				"name": "context_id",
-				"displayName": "Kontext",
-				"description": "",
-				"scope": "global",
-				"location": "body",
-				"type": "auto_contextid",
-				"isOptional": false,
-				"isProtected": false
-			},
-			{
-				"name": "context_title",
-				"displayName": "Kontext",
-				"description": "",
-				"scope": "global",
-				"location": "body",
-				"type": "auto_contextname",
-				"isOptional": false,
-				"isProtected": false
-			},
-			{
-				"name": "context_type",
-				"displayName": "Kontext",
-				"description": "",
-				"default": "Group",
-				"scope": "global",
-				"location": "body",
-				"type": "string",
-				"isOptional": false,
-				"isProtected": false
-			},
-			{
-				"name": "custom_product_id",
-				"displayName": "Kontext",
-				"description": "",
-				"default": "urn:bilo:medium:WEB-507-08041",
-				"scope": "global",
-				"location": "body",
-				"type": "string",
-				"isOptional": false,
-				"isProtected": false
-			}
-		],
-		"isHidden": false,
-		"isDeactivated": false,
-		"openNewTab": true,
-		"isPreferred": false,
-		"restrictToContexts": []
-	},
-	{
-		"_id": {
 			"$oid": "65fd9736cb3d21d77bee50a6"
 		},
 		"createdAt": {
@@ -1079,32 +943,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "667e52a4162707ce02b9ac06"
-		},
-		"createdAt": {
-			"$date": "2024-10-25T02:16:42.959Z"
-		},
-		"updatedAt": {
-			"$date": "2024-10-25T02:16:42.959Z"
-		},
-		"name": "Merlin Bibliothek",
-		"url": "https://nds.edupool.de",
-		"config_type": "lti11",
-		"config_baseUrl": "https://nds.edupool.de",
-		"config_key": "xvD0eMHxEPsKI198",
-		"config_lti_message_type": "ContentItemSelectionRequest",
-		"config_privacy_permission": "anonymous",
-		"config_launch_presentation_locale": "de-DE",
-		"parameters": [],
-		"isHidden": false,
-		"isDeactivated": false,
-		"openNewTab": true,
-		"restrictToContexts": ["board-element", "course"],
-		"isPreferred": true,
-		"iconName": "mdiMovieRoll"
-	},
-	{
-		"_id": {
 			"$oid": "6734b4777dc1e30ef752ce2d"
 		},
 		"createdAt": {
@@ -1173,6 +1011,7 @@
 		"name": "VIDIS Test Medium 1",
 		"description": "Available for school numbers: 20202, 40404",
 		"medium": {
+			"status": "active",
 			"mediumId": "1422092",
 			"mediaSourceId": "vidis.fwu.de"
 		},
@@ -1197,6 +1036,7 @@
 		"name": "VIDIS Test Medium 2",
 		"description": "Available for school numbers: 30303, 20202",
 		"medium": {
+			"status": "active",
 			"mediumId": "1454059",
 			"mediaSourceId": "vidis.fwu.de"
 		},
@@ -1221,6 +1061,7 @@
 		"name": "VIDIS Test Medium 3",
 		"description": "Available for school numbers: 30303, 20202",
 		"medium": {
+			"status": "active",
 			"mediumId": "1432766",
 			"mediaSourceId": "vidis.fwu.de"
 		},

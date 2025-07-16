@@ -2,9 +2,8 @@ import { AmqpConnectionManager, RabbitMQModule } from '@golevelup/nestjs-rabbitm
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Global, Module, OnModuleDestroy } from '@nestjs/common';
 import {
-	AntivirusExchange,
-	FilesPreviewExchange,
 	FilesStorageExchange,
+	H5pEditorExchange,
 	HeartBeatIntervalInSeconds,
 	MailSendExchange,
 	RabbitMqURI,
@@ -30,19 +29,15 @@ const imports = [
 				type: 'direct',
 			},
 			{
-				name: AntivirusExchange,
-				type: 'direct',
-			},
-			{
 				name: FilesStorageExchange,
 				type: 'direct',
 			},
 			{
-				name: FilesPreviewExchange,
+				name: SchulconnexProvisioningExchange,
 				type: 'direct',
 			},
 			{
-				name: SchulconnexProvisioningExchange,
+				name: H5pEditorExchange,
 				type: 'direct',
 			},
 		],

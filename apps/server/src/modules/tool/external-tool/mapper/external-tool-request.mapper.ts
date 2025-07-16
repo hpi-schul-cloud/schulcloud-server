@@ -46,6 +46,7 @@ const locationMapping: Record<CustomParameterLocationParams, CustomParameterLoca
 	[CustomParameterLocationParams.PATH]: CustomParameterLocation.PATH,
 	[CustomParameterLocationParams.QUERY]: CustomParameterLocation.QUERY,
 	[CustomParameterLocationParams.BODY]: CustomParameterLocation.BODY,
+	[CustomParameterLocationParams.FRAGMENT]: CustomParameterLocation.FRAGMENT,
 };
 
 const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
@@ -142,6 +143,7 @@ export class ExternalToolRequestMapper {
 			return undefined;
 		}
 		const externalToolMedium: ExternalToolMedium = new ExternalToolMedium({
+			status: externalToolMediumParams.status,
 			mediumId: externalToolMediumParams.mediumId,
 			publisher: externalToolMediumParams.publisher,
 			mediaSourceId: externalToolMediumParams.mediaSourceId,

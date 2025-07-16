@@ -3,12 +3,12 @@ import { OauthConfig, System, SystemService } from '@modules/system';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ManagementServerConfig } from '../config';
+import { ManagementSeedDataConfig } from '../config';
 
 @Injectable()
 export class SystemsSeedDataService {
 	constructor(
-		private readonly configService: ConfigService<ManagementServerConfig, true>,
+		private readonly configService: ConfigService<ManagementSeedDataConfig, true>,
 		private readonly systemService: SystemService,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService
 	) {}
@@ -38,7 +38,7 @@ export class SystemsSeedDataService {
 						responseType: 'code',
 						redirectUri: '',
 						authEndpoint: 'https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/auth',
-						provider: 'sanis',
+						provider: 'moin.schule',
 						jwksEndpoint: 'https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/certs',
 						issuer: 'https://auth.stage.niedersachsen-login.schule/realms/SANIS',
 						endSessionEndpoint:

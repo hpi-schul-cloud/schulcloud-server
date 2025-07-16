@@ -6,6 +6,7 @@ import { CourseModule } from '@modules/course';
 import { CourseSynchronizationHistoryModule } from '@modules/course-synchronization-history';
 import { GroupModule } from '@modules/group';
 import { LegacySchoolModule } from '@modules/legacy-school';
+import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { RoleModule } from '@modules/role';
 import { SchoolModule } from '@modules/school';
@@ -16,6 +17,7 @@ import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
 import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
+import { MediumMetadataModule } from '../medium-metadata';
 import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from './amqp';
 import { ProvisioningService } from './service/provisioning.service';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
@@ -23,7 +25,6 @@ import {
 	OidcMockProvisioningStrategy,
 	SchulconnexAsyncProvisioningStrategy,
 	SchulconnexResponseMapper,
-	SchulconnexSyncProvisioningStrategy,
 	TspProvisioningStrategy,
 } from './strategy';
 import {
@@ -54,6 +55,8 @@ import {
 		SchoolModule,
 		ClassModule,
 		CourseSynchronizationHistoryModule,
+		MediumMetadataModule,
+		MediaSourceSyncModule,
 	],
 	providers: [
 		ProvisioningService,
@@ -64,7 +67,6 @@ import {
 		SchulconnexCourseSyncService,
 		SchulconnexLicenseProvisioningService,
 		SchulconnexToolProvisioningService,
-		SchulconnexSyncProvisioningStrategy,
 		SchulconnexAsyncProvisioningStrategy,
 		OidcMockProvisioningStrategy,
 		TspProvisioningStrategy,

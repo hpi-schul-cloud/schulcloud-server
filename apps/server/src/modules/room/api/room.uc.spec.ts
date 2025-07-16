@@ -1,13 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { ColumnBoardService } from '@modules/board';
-import { RoomMembershipRepo, RoomMembershipService } from '@modules/room-membership';
+import { RoomMembershipService } from '@modules/room-membership';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -15,6 +14,7 @@ import { Room, RoomService } from '../domain';
 import { RoomColor } from '../domain/type';
 import { roomFactory } from '../testing';
 import { RoomUc } from './room.uc';
+import { RoomPermissionService } from './service';
 
 describe('RoomUc', () => {
 	let module: TestingModule;
@@ -44,16 +44,16 @@ describe('RoomUc', () => {
 					useValue: createMock<ColumnBoardService>(),
 				},
 				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
+				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: RoomMembershipRepo,
-					useValue: createMock<RoomMembershipRepo>(),
-				},
-				{
-					provide: UserService,
-					useValue: createMock<UserService>(),
+					provide: RoomPermissionService,
+					useValue: createMock<RoomPermissionService>(),
 				},
 			],
 		}).compile();
@@ -87,11 +87,6 @@ describe('RoomUc', () => {
 				paginatedRooms,
 			};
 		};
-		it('should throw FeatureDisabledLoggableException when feature is disabled', async () => {
-			configService.get.mockReturnValue(false);
-
-			await expect(uc.getRooms('userId', {})).rejects.toThrow(FeatureDisabledLoggableException);
-		});
 
 		it('should call roomService.getRooms with findOptions', async () => {
 			const { findOptions } = setup();
@@ -126,7 +121,7 @@ describe('RoomUc', () => {
 		it('should cleanup room if room members throws error', async () => {
 			const { user, room } = setup();
 
-			await expect(uc.createRoom(user.id, { color: RoomColor.BLUE, name: 'test' })).rejects.toThrow();
+			await expect(uc.createRoom(user.id, { color: RoomColor.BLUE, name: 'test', features: [] })).rejects.toThrow();
 
 			expect(roomService.deleteRoom).toHaveBeenCalledWith(room);
 		});
