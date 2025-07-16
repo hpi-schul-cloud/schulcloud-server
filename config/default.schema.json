@@ -808,10 +808,6 @@
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
 				},
-				"OLD_PAD_URI": {
-					"type": "string",
-					"description": "The etherpad api version uri."
-				},
 				"API_KEY": {
 					"type": "string",
 					"description": "The etherpad api key for sending requests."
