@@ -1,4 +1,3 @@
-import { RoleName } from '@modules/role';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { ObjectId } from 'bson';
 import { JwtPayload } from '../domain';
@@ -8,7 +7,7 @@ export const jwtPayloadVoFactory = BaseFactory.define<JwtPayload, JwtPayload>(Jw
 		accountId: new ObjectId().toHexString(),
 		userId: new ObjectId().toHexString(),
 		schoolId: new ObjectId().toHexString(),
-		roles: [RoleName.ADMINISTRATOR, RoleName.TEACHER],
+		roles: [new ObjectId().toHexString(), new ObjectId().toHexString()],
 		support: false,
 		systemId: undefined,
 		supportUserId: undefined,
