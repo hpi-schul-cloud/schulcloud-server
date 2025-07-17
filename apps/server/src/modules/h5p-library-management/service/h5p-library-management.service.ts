@@ -105,7 +105,7 @@ export class H5PLibraryManagementService {
 	public async uninstallUnwantedLibraries(
 		wantedLibraries: string[],
 		librariesToCheck: ILibraryAdministrationOverviewItem[]
-	): Promise<string[]> {
+	): Promise<ILibraryAdministrationOverviewItem[]> {
 		if (librariesToCheck.length === 0) {
 			return [];
 		}
@@ -129,8 +129,7 @@ export class H5PLibraryManagementService {
 			return uninstalledLibraries;
 		}
 
-		const changes = `${libraryToBeUninstalled.machineName}-${libraryToBeUninstalled.majorVersion}.${libraryToBeUninstalled.minorVersion}.${libraryToBeUninstalled.patchVersion} (delete)`;
-		const result = [changes, ...uninstalledLibraries];
+		const result = [libraryToBeUninstalled, ...uninstalledLibraries];
 
 		return result;
 	}
@@ -152,7 +151,7 @@ export class H5PLibraryManagementService {
 		return user;
 	}
 
-	public async installLibraries(librariesToInstall: string[]): Promise<string[]> {
+	public async installLibraries(librariesToInstall: string[]): Promise<ILibraryInstallResult[]> {
 		if (librariesToInstall.length === 0) {
 			return [];
 		}
@@ -164,10 +163,10 @@ export class H5PLibraryManagementService {
 
 		const user = this.createDefaultIUser();
 
-		let results: ILibraryInstallResult[] = [];
+		let installResults: ILibraryInstallResult[] = [];
 
 		try {
-			results = await this.contentTypeRepo.installContentType(libraryToBeInstalled, user);
+			installResults = await this.contentTypeRepo.installContentType(libraryToBeInstalled, user);
 		} catch (error: unknown) {
 			this.logger.warning(new H5PLibraryManagementErrorLoggable(libraryToBeInstalled, error));
 		}
@@ -176,25 +175,7 @@ export class H5PLibraryManagementService {
 			librariesToInstall.slice(0, lastPositionLibrariesToInstallArray)
 		);
 
-		const changes = results.map((r) => {
-			let result = '';
-			if (r.type === 'new') {
-				result = `${r.newVersion?.machineName ?? ''}-${r.newVersion?.majorVersion ?? ''}.${
-					r.newVersion?.minorVersion ?? ''
-				}.${r.newVersion?.patchVersion ?? ''} (new)`;
-			}
-			if (r.type === 'patch') {
-				result = `${r.oldVersion?.machineName ?? ''}-${r.oldVersion?.majorVersion ?? ''}.${
-					r.oldVersion?.minorVersion ?? ''
-				}.${r.oldVersion?.patchVersion ?? ''} -> ${r.newVersion?.machineName ?? ''}-${
-					r.newVersion?.majorVersion ?? ''
-				}.${r.newVersion?.minorVersion ?? ''}.${r.newVersion?.patchVersion ?? ''} (patch)`;
-			}
-
-			return result;
-		});
-
-		const result = [...changes, ...installedLibraries];
+		const result = [...installResults, ...installedLibraries];
 
 		return result;
 	}
@@ -206,13 +187,7 @@ export class H5PLibraryManagementService {
 		const installedLibraries = await this.installLibraries(this.libraryWishList);
 		this.logger.info(new H5PLibraryManagementLoggable('Finished H5P library management job!'));
 		this.logger.info(
-			new H5PLibraryManagementMetricsLoggable(
-				`Removed ${uninstalledLibraries.length} libraries. Added/updated ${installedLibraries.length} libraries.`,
-				{
-					uninstalledLibraries: uninstalledLibraries.join(', '),
-					installedLibraries: installedLibraries.join(', '),
-				}
-			)
+			new H5PLibraryManagementMetricsLoggable(availableLibraries, uninstalledLibraries, installedLibraries)
 		);
 	}
 }
