@@ -14,6 +14,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { AuthorizationBodyParams } from '../dto';
 import { AuthorizationResponseMapper } from '../mapper';
 import { createAccessTokenParamsTestFactory } from '../../testing';
+import { title } from 'node:process';
 
 const createExamplePostData = (userId: string): AuthorizationBodyParams => {
 	const referenceType = AuthorizableReferenceType.User;
@@ -265,7 +266,7 @@ describe('Authorization Controller (API)', () => {
 			it('should response with unauthorized exception', async () => {
 				const { postData } = await setup();
 
-				const response = await testApiClient.post(`createToken`, postData);
+				const response = await testApiClient.post('create-token', postData);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -298,7 +299,7 @@ describe('Authorization Controller (API)', () => {
 				const invalidReferenceType = 'abc' as AuthorizableReferenceType;
 				postData.referenceType = invalidReferenceType;
 
-				const response = await loggedInClient.post(`/createToken`, postData);
+				const response = await loggedInClient.post(`/create-token`, postData);
 
 				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body).toEqual({
@@ -315,7 +316,7 @@ describe('Authorization Controller (API)', () => {
 				const invalidReferenceId = 'abc';
 				postData.referenceId = invalidReferenceId;
 
-				const response = await loggedInClient.post(`/createToken`, postData);
+				const response = await loggedInClient.post(`/create-token`, postData);
 
 				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body).toEqual({
@@ -332,7 +333,7 @@ describe('Authorization Controller (API)', () => {
 				const invalidActionContext = { requiredPermissions: [] } as unknown as AuthorizationContext;
 				postData.context = invalidActionContext;
 
-				const response = await loggedInClient.post(`createToken`, postData);
+				const response = await loggedInClient.post(`create-token`, postData);
 
 				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body).toEqual({
@@ -349,7 +350,7 @@ describe('Authorization Controller (API)', () => {
 				const invalidRequiredPermissionContext = { action: Action.read } as unknown as AuthorizationContext;
 				postData.context = invalidRequiredPermissionContext;
 
-				const response = await loggedInClient.post(`createToken`, postData);
+				const response = await loggedInClient.post(`create-token`, postData);
 
 				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body).toEqual({
@@ -378,22 +379,25 @@ describe('Authorization Controller (API)', () => {
 				const loggedInClient = await testApiClient.login(teacherAccount);
 				const postData = createAccessTokenParamsTestFactory().withReferenceId(otherUser.id).withWriteAccess().build();
 				postData.context.requiredPermissions = [Permission.ADMIN_EDIT];
-				const expectedResult = AuthorizationResponseMapper.mapToAuthorizedResponse(teacherUser.id, false);
 
 				return {
 					loggedInClient,
-					expectedResult,
 					postData,
 				};
 			};
 
-			it('should response with unsuccess authorisation response', async () => {
-				const { loggedInClient, expectedResult, postData } = await setup();
+			it('should response with forbidden', async () => {
+				const { loggedInClient, postData } = await setup();
 
-				const response = await loggedInClient.post('createToken', postData);
+				const response = await loggedInClient.post('create-token', postData);
 
-				expect(response.statusCode).toEqual(HttpStatus.CREATED);
-				expect(response.body).toEqual(expectedResult);
+				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
+				expect(response.body).toEqual({
+					code: 403,
+					message: 'Forbidden',
+					title: 'Forbidden',
+					type: 'FORBIDDEN',
+				});
 			});
 		});
 
@@ -406,22 +410,55 @@ describe('Authorization Controller (API)', () => {
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 				const postData = createAccessTokenParamsTestFactory().withReferenceId(teacherUser.id).withWriteAccess().build();
-				const expectedResult = AuthorizationResponseMapper.mapToAuthorizedResponse(teacherUser.id, true);
 
 				return {
 					loggedInClient,
-					expectedResult,
 					postData,
 				};
 			};
 
 			it('should response with success authorisation response', async () => {
-				const { loggedInClient, expectedResult, postData } = await setup();
+				const { loggedInClient, postData } = await setup();
 
-				const response = await loggedInClient.post('createToken', postData);
+				const response = await loggedInClient.post('create-token', postData);
 
 				expect(response.statusCode).toEqual(HttpStatus.CREATED);
-				expect(response.body).toEqual(expectedResult);
+				expect(response.body).toEqual({ token: expect.any(String) });
+			});
+		});
+	});
+
+	// TODO: How to test the line isWitelisted?
+	// TODO: How to test if user is not logged in?
+	// TODO: TTL
+	describe('resolveToken', () => {
+		describe('When token exists', () => {
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				await em.persistAndFlush([teacherAccount, teacherUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+				const postData = createAccessTokenParamsTestFactory().withReferenceId(teacherUser.id).withWriteAccess().build();
+				const response = await loggedInClient.post('create-token', postData);
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				const token = response.body.token as string;
+				const tokenTtl = 3600;
+
+				return { token, tokenTtl };
+			};
+
+			it('should response ok', async () => {
+				const { token, tokenTtl } = await setup();
+
+				const response = await testApiClient.get(`resolve-token/${token}/ttl/${tokenTtl.toString()}`);
+
+				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual({
+					payload: {},
+				});
 			});
 		});
 	});
