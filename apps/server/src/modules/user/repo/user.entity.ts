@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
+	BeforeCreate, BeforeUpdate,
 	Collection,
 	Embeddable,
 	Embedded,
@@ -9,7 +10,7 @@ import {
 	ManyToOne,
 	Property,
 	Unique,
-	wrap,
+	wrap
 } from '@mikro-orm/core';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
@@ -169,6 +170,27 @@ export class User extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	@Index()
 	source?: string;
+
+	@Property({ nullable: false })
+	allSearchableStrings = '';
+
+	@BeforeCreate()
+	public beforeCreate(): Promise<void> {
+		console.log('--- User.beforeCreate()');
+		this.updateAllSearchableFields();
+		return Promise.resolve();
+	}
+
+	@BeforeUpdate()
+	public beforeUpdate(): Promise<void> {
+		console.log('--- User.beforeUpdate()');
+		this.updateAllSearchableFields();
+		return Promise.resolve();
+	}
+
+	private updateAllSearchableFields(): void {
+		this.allSearchableStrings = `${this.firstName} ${this.lastName} ${this.email}`;
+	}
 
 	constructor(props: UserProperties) {
 		super();
