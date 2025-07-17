@@ -185,7 +185,7 @@ export class SchoolUc {
 		if (this.isUserOfSchool(user, schoolId)) {
 			result = await this.userService.findBySchoolRole(schoolId, RoleName.TEACHER);
 		} else {
-			this.checkHasPermissionToAccessTeachers(user);
+			this.checkHasPermissionToAccessPublicTeachers(user);
 			result = await this.userService.findPublicTeachersBySchool(schoolId);
 		}
 
@@ -231,7 +231,7 @@ export class SchoolUc {
 		return result;
 	}
 
-	private checkHasPermissionToAccessTeachers(user: User): void {
+	private checkHasPermissionToAccessPublicTeachers(user: User): void {
 		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_LIST_DISCOVERABLE_TEACHERS]);
 	}
 

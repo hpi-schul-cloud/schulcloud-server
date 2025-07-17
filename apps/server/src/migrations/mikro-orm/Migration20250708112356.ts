@@ -7,13 +7,7 @@ const config = {
 	},
 	roomeditor: {
 		old: ['ROOM_VIEW', 'ROOM_CONTENT_EDIT', 'ROOM_LEAVE'],
-		new: [
-			'ROOM_EDIT_CONTENT',
-			'ROOM_LEAVE_ROOM',
-			'ROOM_LIST_CONTENT',
-			'ROOM_LIST_DRAFTS',
-			'ROOM_MANAGE_VIDEOCONFERENCES',
-		],
+		new: ['ROOM_EDIT_CONTENT', 'ROOM_LEAVE_ROOM', 'ROOM_LIST_CONTENT', 'ROOM_LIST_DRAFTS'],
 	},
 	roomadmin: {
 		old: [
@@ -68,6 +62,7 @@ const config = {
 			'ROOM_CHANGE_ROLES',
 			'ROOM_LIST_CONTENT',
 			'ROOM_LIST_DRAFTS',
+			'ROOM_MANAGE_VIDEOCONFERENCES',
 		],
 	},
 	teacher: {
