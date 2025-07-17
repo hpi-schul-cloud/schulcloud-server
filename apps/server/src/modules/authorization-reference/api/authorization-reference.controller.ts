@@ -50,10 +50,10 @@ export class AuthorizationReferenceController {
 	@Post('create-token')
 	public async createToken(
 		@Body() body: CreateAccessTokenParams,
-		@CurrentUser() user: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser,
 		@JWT() jwt: string
 	): Promise<AccessTokenResponse> {
-		const response = await this.authorizationReferenceUc.createToken(user.userId, body, jwt);
+		const response = await this.authorizationReferenceUc.createToken(currentUser, body, jwt);
 
 		return response;
 	}

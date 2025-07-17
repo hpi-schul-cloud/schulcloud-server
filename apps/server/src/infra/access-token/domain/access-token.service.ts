@@ -18,10 +18,7 @@ export class AccessTokenService {
 		return token;
 	}
 
-	public async resolveToken<T>(
-		params: ResolveTokenParams,
-		build: (data: T, token: string, tokenTtlInSeconds: number) => T
-	): Promise<T> {
+	public async resolveToken<T>(params: ResolveTokenParams, build: (data: T) => T): Promise<T> {
 		const { token, tokenTtlInSeconds } = params;
 
 		const valueResponse = await this.storageClient.get(token);
@@ -30,7 +27,7 @@ export class AccessTokenService {
 		await this.renewTokenTimeout(token, value, tokenTtlInSeconds);
 
 		const payload = this.parsePayload(value, token);
-		const validatedPayload = build(payload as T, token, tokenTtlInSeconds);
+		const validatedPayload = build(payload as T);
 
 		return validatedPayload;
 	}

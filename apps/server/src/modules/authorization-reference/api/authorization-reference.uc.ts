@@ -1,5 +1,5 @@
 import { AccessTokenService } from '@infra/access-token';
-import { JwtPayloadVoFactory, JwtValidationAdapter } from '@infra/auth-guard';
+import { ICurrentUser, JwtPayloadVoFactory, JwtValidationAdapter } from '@infra/auth-guard';
 import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -40,12 +40,12 @@ export class AuthorizationReferenceUc {
 	}
 
 	public async createToken(
-		userId: EntityId,
+		currentUser: ICurrentUser,
 		params: CreateAccessTokenParams,
 		jwtToken: string
 	): Promise<AccessTokenResponse> {
 		const jwtPayload = JwtPayloadVoFactory.build(jwtToken);
-		const tokenMetadata = TokenMetadataFactory.buildFromCreateAccessTokenParams(params, userId, jwtPayload);
+		const tokenMetadata = TokenMetadataFactory.buildFromCreateAccessTokenParams(params, currentUser, jwtPayload.jti);
 
 		await this.checkPermissionsForReference(tokenMetadata);
 
@@ -55,19 +55,15 @@ export class AuthorizationReferenceUc {
 		return accessTokenResponse;
 	}
 
-	private getFactoryCallback(): (
-		tokenMetadata: TokenMetadata,
-		token: string,
-		tokenTtlInSeconds: number
-	) => TokenMetadata {
-		return (tokenMetadata: TokenMetadata, token: string, tokenTtlInSeconds: number): TokenMetadata =>
-			TokenMetadataFactory.buildFromTokenService(tokenMetadata, tokenTtlInSeconds);
+	private getFactoryCallback(accessToken: AccessTokenParams): (tokenMetadata: TokenMetadata) => TokenMetadata {
+		return (tokenMetadata: TokenMetadata): TokenMetadata =>
+			TokenMetadataFactory.buildFromAccessTokenParams(tokenMetadata, accessToken.tokenTtlInSeconds);
 	}
 
 	public async resolveToken(accessToken: AccessTokenParams): Promise<AccessTokenPayloadResponse> {
 		const tokenMetadata = await this.accessTokenService.resolveToken<TokenMetadata>(
 			accessToken,
-			this.getFactoryCallback()
+			this.getFactoryCallback(accessToken)
 		);
 
 		await this.jwtValidationAdapter.isWhitelisted(tokenMetadata.accountId, tokenMetadata.jwtJti);

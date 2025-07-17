@@ -1,8 +1,7 @@
-import { JwtPayload } from '@infra/auth-guard';
 import { AuthorizationContext } from '@modules/authorization';
-import { EntityId } from '@shared/domain/types';
 import { CreateAccessTokenParams } from '../../api/dto';
 import { TokenMetadata } from '../vo';
+import { ICurrentUser } from '@infra/auth-guard';
 
 export class TokenMetadataFactory {
 	public static build(tokenMetadataProps: TokenMetadata): TokenMetadata {
@@ -16,7 +15,7 @@ export class TokenMetadataFactory {
 		return tokenMetadata;
 	}
 
-	public static buildFromTokenService(tokenMetadata: TokenMetadata, tokenTtlInSeconds: number): TokenMetadata {
+	public static buildFromAccessTokenParams(tokenMetadata: TokenMetadata, tokenTtlInSeconds: number): TokenMetadata {
 		return TokenMetadataFactory.build({
 			...tokenMetadata,
 			tokenTtlInSeconds,
@@ -25,13 +24,13 @@ export class TokenMetadataFactory {
 
 	public static buildFromCreateAccessTokenParams(
 		params: CreateAccessTokenParams,
-		userId: EntityId,
-		jwtPayload: JwtPayload
+		currentUser: ICurrentUser,
+		jwtJti: string
 	): TokenMetadata {
 		const tokenMetadata = TokenMetadataFactory.build({
-			userId,
-			accountId: jwtPayload.accountId,
-			jwtJti: jwtPayload.jti,
+			userId: currentUser.userId,
+			accountId: currentUser.accountId,
+			jwtJti,
 			authorizationContext: params.context,
 			customPayload: params.payload,
 			referenceType: params.referenceType,
