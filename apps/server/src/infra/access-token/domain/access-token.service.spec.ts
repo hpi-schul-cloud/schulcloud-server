@@ -139,20 +139,22 @@ describe('AccessTokenService', () => {
 				const setup = () => {
 					const token = 'token-uuid';
 					const tokenTtlInSeconds = 1234;
-					const error = new ForbiddenException(`Token ${token} not found`);
+
 					const buildMock = jest.fn<object, [object]>().mockImplementation((data: object): object => {
 						return { ...data };
 					});
 
 					storageClient.get.mockResolvedValueOnce(null);
 
-					return { token, tokenTtlInSeconds, error, buildMock };
+					return { token, tokenTtlInSeconds, buildMock };
 				};
 
 				it('should throw ForbiddenException', async () => {
-					const { token, tokenTtlInSeconds, error, buildMock } = setup();
+					const { token, tokenTtlInSeconds, buildMock } = setup();
 
-					await expect(service.resolveToken({ token, tokenTtlInSeconds }, buildMock)).rejects.toThrow(error);
+					await expect(service.resolveToken({ token, tokenTtlInSeconds }, buildMock)).rejects.toThrow(
+						new ForbiddenException()
+					);
 					expect(storageClient.get).toHaveBeenCalledWith(token);
 				});
 			});

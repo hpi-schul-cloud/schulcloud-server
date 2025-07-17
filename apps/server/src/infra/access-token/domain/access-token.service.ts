@@ -22,7 +22,7 @@ export class AccessTokenService {
 		const { token, tokenTtlInSeconds } = params;
 
 		const valueResponse = await this.storageClient.get(token);
-		const value = this.checkTokenExists(valueResponse, token);
+		const value = this.checkTokenExists(valueResponse);
 
 		await this.renewTokenTimeout(token, value, tokenTtlInSeconds);
 
@@ -32,9 +32,9 @@ export class AccessTokenService {
 		return validatedPayload;
 	}
 
-	private checkTokenExists(value: string | null, token: string): string {
+	private checkTokenExists(value: string | null): string {
 		if (!value) {
-			throw new ForbiddenException(`Token ${token} not found`);
+			throw new ForbiddenException();
 		}
 
 		return value;
