@@ -55,14 +55,28 @@ export class AuthorizationReferenceUc {
 		return accessTokenResponse;
 	}
 
+	private getFactoryCallback(): (
+		tokenMetadata: TokenMetadata,
+		token: string,
+		tokenTtlInSeconds: number
+	) => TokenMetadata {
+		return (tokenMetadata: TokenMetadata, token: string, tokenTtlInSeconds: number): TokenMetadata =>
+			TokenMetadataFactory.buildFromTokenService(tokenMetadata, tokenTtlInSeconds);
+	}
+
 	public async resolveToken(accessToken: AccessTokenParams): Promise<AccessTokenPayloadResponse> {
-		const factoryCallback = (tokenMetadata: TokenMetadata): TokenMetadata => TokenMetadataFactory.build(tokenMetadata);
-		const tokenMetadata = await this.accessTokenService.resolveToken<TokenMetadata>(accessToken, factoryCallback);
+		const tokenMetadata = await this.accessTokenService.resolveToken<TokenMetadata>(
+			accessToken,
+			this.getFactoryCallback()
+		);
 
 		await this.jwtValidationAdapter.isWhitelisted(tokenMetadata.accountId, tokenMetadata.jwtJti);
 		await this.checkPermissionsForReference(tokenMetadata);
 
-		const payloadResponse = AuthorizationResponseMapper.mapToAccessTokenPayload(tokenMetadata.customPayload);
+		const payloadResponse = AuthorizationResponseMapper.mapToAccessTokenPayload(
+			tokenMetadata.customPayload,
+			tokenMetadata.tokenTtlInSeconds
+		);
 
 		return payloadResponse;
 	}

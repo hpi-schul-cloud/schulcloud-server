@@ -16,12 +16,19 @@ export class TokenMetadataFactory {
 		return tokenMetadata;
 	}
 
+	public static buildFromTokenService(tokenMetadata: TokenMetadata, tokenTtlInSeconds: number): TokenMetadata {
+		return TokenMetadataFactory.build({
+			...tokenMetadata,
+			tokenTtlInSeconds,
+		});
+	}
+
 	public static buildFromCreateAccessTokenParams(
 		params: CreateAccessTokenParams,
 		userId: EntityId,
 		jwtPayload: JwtPayload
 	): TokenMetadata {
-		const tokenMetadata = this.build({
+		const tokenMetadata = TokenMetadataFactory.build({
 			userId,
 			accountId: jwtPayload.accountId,
 			jwtJti: jwtPayload.jti,
@@ -29,6 +36,7 @@ export class TokenMetadataFactory {
 			customPayload: params.payload,
 			referenceType: params.referenceType,
 			referenceId: params.referenceId,
+			tokenTtlInSeconds: params.tokenTtlInSeconds,
 		});
 
 		return tokenMetadata;

@@ -15,7 +15,7 @@ export class InMemoryClient extends EventEmitter implements StorageClient {
 		this.store[key] = value;
 		const ex = args.indexOf('EX');
 		if (ex >= 0) {
-			this.ttlStore[key] = Number(args[ex + 1]);
+			this.ttlStore[key] = Date.now() + Number(args[ex + 1]) * 1000;
 		}
 
 		this.logger.warning(new InMemoryLoggable(`SET - Key: ${key} - Value: ${value}`));
@@ -25,6 +25,10 @@ export class InMemoryClient extends EventEmitter implements StorageClient {
 
 	public get(key: string): Promise<string | null> {
 		this.logger.warning(new InMemoryLoggable(`GET - Key: ${key} - Value: ${this.store[key]}`));
+
+		if (this.ttlStore[key] < Date.now()) {
+			return Promise.resolve(null);
+		}
 
 		return Promise.resolve(this.store[key] ?? null);
 	}

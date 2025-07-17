@@ -459,9 +459,8 @@ describe('Authorization Controller (API)', () => {
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual({
 					payload: {},
+					ttl: 3600,
 				});
-				// TODO: der TTL wird nicht ausgeliefert und daher kann er hier bisher nicht geprüft werden.
-				// expect(response.body.ttl >= tokenTtl).toEqual(true);
 			});
 		});
 
@@ -535,14 +534,11 @@ describe('Authorization Controller (API)', () => {
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
-				const postData = createAccessTokenParamsTestFactory().alwaysExpire().withReferenceId(teacherUser.id).build();
-				console.log('postData', postData); // TODO: Remove this log after debugging
+				const postData = createAccessTokenParamsTestFactory().expired().withReferenceId(teacherUser.id).build();
 				const response = await loggedInClient.post('create-token', postData);
 				const body = response.body as { token: string };
 
 				const tokenTtl = 3600;
-
-				await new Promise((resolve) => setTimeout(resolve, 1000)); // TODO Should not necessarily wait because the token is already expired!
 
 				return { token: body.token, tokenTtl };
 			};

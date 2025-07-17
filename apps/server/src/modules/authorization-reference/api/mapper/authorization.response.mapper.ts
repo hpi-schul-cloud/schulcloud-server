@@ -17,8 +17,11 @@ export class AuthorizationResponseMapper {
 		return accessTokenResponse;
 	}
 
-	public static mapToAccessTokenPayload(payload: Record<string, unknown>): AccessTokenPayloadResponse {
-		const accessTokenPayloadResponse = new AccessTokenPayloadResponse(payload);
+	public static mapToAccessTokenPayload(
+		payload: Record<string, unknown>,
+		tokenTtlInSeconds: number
+	): AccessTokenPayloadResponse {
+		const accessTokenPayloadResponse = new AccessTokenPayloadResponse(payload, tokenTtlInSeconds);
 
 		return accessTokenPayloadResponse;
 	}

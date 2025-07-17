@@ -3,10 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthorizedResponse {
 	@ApiProperty()
-	userId: string;
+	public userId: string;
 
 	@ApiProperty()
-	isAuthorized: boolean;
+	public isAuthorized: boolean;
 
 	constructor(props: AuthorizedResponse) {
 		this.userId = props.userId;
@@ -16,7 +16,7 @@ export class AuthorizedResponse {
 
 export class AccessTokenResponse {
 	@ApiProperty()
-	token!: string;
+	public token!: string;
 
 	constructor(token: string) {
 		this.token = token;
@@ -25,9 +25,12 @@ export class AccessTokenResponse {
 
 export class AccessTokenPayloadResponse {
 	@ApiProperty()
-	payload: CustomPayload;
+	public payload: CustomPayload;
 
-	constructor(props: CustomPayload) {
+	public ttl: number;
+
+	constructor(props: CustomPayload, ttl: number) {
 		this.payload = props;
+		this.ttl = ttl;
 	}
 }

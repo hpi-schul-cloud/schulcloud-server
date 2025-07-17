@@ -17,7 +17,7 @@ class CreateAccessTokenParamsTestBuilder {
 		return this;
 	}
 
-	public alwaysExpire(): this {
+	public expired(): this {
 		this.props.tokenTtlInSeconds = 0;
 
 		return this;

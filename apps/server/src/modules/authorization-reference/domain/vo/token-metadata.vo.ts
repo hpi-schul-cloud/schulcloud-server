@@ -3,7 +3,7 @@ import { AuthorizableReferenceType, AuthorizationContext } from '@modules/author
 import { EntityId } from '@shared/domain/types';
 import { ValueObject } from '@shared/domain/value-object.decorator';
 import { Type } from 'class-transformer';
-import { IsEnum, IsMongoId, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsEnum, IsMongoId, IsNumber, IsObject, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
 
 interface TokenMetadataProps {
 	authorizationContext: AuthorizationContext;
@@ -13,7 +13,10 @@ interface TokenMetadataProps {
 	accountId: EntityId;
 	jwtJti: string;
 	customPayload?: CustomPayload;
+	tokenTtlInSeconds: number;
 }
+
+const sevenDaysInSeconds = 604800;
 
 @ValueObject()
 export class TokenMetadata {
@@ -25,6 +28,7 @@ export class TokenMetadata {
 		this.accountId = props.accountId;
 		this.jwtJti = props.jwtJti;
 		this.customPayload = props.customPayload || {};
+		this.tokenTtlInSeconds = props.tokenTtlInSeconds;
 	}
 
 	@ValidateNested()
@@ -49,4 +53,9 @@ export class TokenMetadata {
 	@IsObject()
 	@IsOptional()
 	public readonly customPayload: CustomPayload;
+
+	@IsNumber()
+	@Min(0)
+	@Max(sevenDaysInSeconds)
+	public readonly tokenTtlInSeconds: number;
 }
