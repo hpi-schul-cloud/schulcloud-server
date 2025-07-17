@@ -1261,6 +1261,11 @@
 					"default": false,
 					"description": "Value for cookies httpOnly property"
 				},
+				"JWT_HTTP_ONLY": {
+					"type": "boolean",
+					"default": false,
+					"description": "Value for cookies httpOnly property"
+				},
 				"HOST_ONLY": {
 					"type": "boolean",
 					"default": true,
@@ -1277,7 +1282,7 @@
 					"description": "Expiration in seconds from now"
 				}
 			},
-			"required": ["SAME_SITE", "HTTP_ONLY", "HOST_ONLY", "SECURE", "EXPIRES_SECONDS"],
+			"required": ["SAME_SITE", "HTTP_ONLY", "JWT_HTTP_ONLY", "HOST_ONLY", "SECURE", "EXPIRES_SECONDS"],
 			"allOf": [
 				{
 					"$ref": "#/properties/COOKIE/definitions/SAME_SITE_SECURE_VALID"
