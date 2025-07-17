@@ -389,10 +389,6 @@ export const createMultiDocumentAggregation = ({
 		});
 	}
 
-	if (searchQuery && searchFilterGate) {
-		stageFilterSearch(aggregation, searchFilterGate);
-	}
-
 	if (select) {
 		stageAddSelectProjectWithConsentCreate(aggregation, select.concat(selectSortDiff));
 		stageLookupClasses(aggregation, match.schoolId, schoolYearId);

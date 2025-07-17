@@ -121,15 +121,6 @@ export class User extends BaseEntityWithTimestamps {
 	importHash?: string;
 
 	@Property({ nullable: true })
-	firstNameSearchValues?: string[];
-
-	@Property({ nullable: true })
-	lastNameSearchValues?: string[];
-
-	@Property({ nullable: true })
-	emailSearchValues?: string[];
-
-	@Property({ nullable: true })
 	language?: LanguageType;
 
 	@Property({ nullable: true })
@@ -169,6 +160,10 @@ export class User extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	@Index()
 	source?: string;
+
+	@Property({ nullable: false })
+	@Index({ name: 'userSearchIndex2', type: 'text' })
+	allSearchableStrings: string[] = [];
 
 	constructor(props: UserProperties) {
 		super();
@@ -227,7 +222,7 @@ export class User extends BaseEntityWithTimestamps {
 		const schoolPermissions = this.school.permissions;
 		let setOfPermissions = new Set(permissions);
 
-		// This exclusion is necessary because of possible double roles (e.g. admin and teacher). Then the higher role should keep its permissions.
+		// This exclusion is necessary because of possible double roles (e.g., admin and teacher). Then the higher role should keep its permissions.
 		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR || role.name === RoleName.SUPERHERO)) {
 			return setOfPermissions;
 		}

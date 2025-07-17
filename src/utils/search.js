@@ -4,22 +4,31 @@
  * + first two letters combination
  * to increase the quality
  *
- * @param {*} string
  * @returns [Array]
  */
-const splitForSearchIndexes = (...searchTexts) => {
-	const arr = [];
-	searchTexts.forEach((item) => {
-		item.split(/[\s-]/g).forEach((it) => {
-			// eslint-disable-next-line no-plusplus
-			if (it.length === 0) return;
+const createEdgeNGrams = (input) => {
+	const result = [];
 
-			arr.push(it.slice(0, 1));
-			if (it.length > 1) arr.push(it.slice(0, 2));
-			for (let i = 0; i < it.length - 2; i += 1) arr.push(it.slice(i, i + 3));
-		});
-	});
-	return arr;
+	for (const word of input.split(/[\s-]/)) {
+		if (!word) continue;
+
+		const codePoints = Array.from(word);
+
+		for (let start = 0; start < codePoints.length; start++) {
+			let current = '';
+			for (let end = start; end < codePoints.length; end++) {
+				current += codePoints[end];
+				result.push(current);
+			}
+		}
+	}
+
+	return result;
+};
+
+// Example usage:
+const splitForSearchIndexes = (...searchTexts) => {
+	return searchTexts.flatMap((text) => createEdgeNGrams(text));
 };
 
 module.exports = {
