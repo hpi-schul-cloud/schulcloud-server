@@ -98,25 +98,6 @@ class EtherpadClient {
 	}
 
 	createOrGetGroupPad(params) {
-		if (params.oldPadId) {
-			const newPadId = `${params.groupID}$${params.padName}`;
-			const copyParams = {
-				sourceID: params.oldPadId,
-				destinationID: newPadId,
-			};
-			const options = this.createOptions('copyPad', copyParams);
-			return axios(options)
-				.then((res) => {
-					const response = this.handleEtherpadResponse(res);
-					response.data = {
-						padID: newPadId,
-					};
-					return response;
-				})
-				.catch((err) => {
-					throw new BadRequest(this.err.copyOldPadToGroupPad, err);
-				});
-		}
 		const options = this.createOptions('createGroupPad', params);
 		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
