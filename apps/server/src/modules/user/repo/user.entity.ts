@@ -1,6 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
-	BeforeCreate, BeforeUpdate,
 	Collection,
 	Embeddable,
 	Embedded,
@@ -10,7 +9,7 @@ import {
 	ManyToOne,
 	Property,
 	Unique,
-	wrap
+	wrap,
 } from '@mikro-orm/core';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
@@ -122,15 +121,6 @@ export class User extends BaseEntityWithTimestamps {
 	importHash?: string;
 
 	@Property({ nullable: true })
-	firstNameSearchValues?: string[];
-
-	@Property({ nullable: true })
-	lastNameSearchValues?: string[];
-
-	@Property({ nullable: true })
-	emailSearchValues?: string[];
-
-	@Property({ nullable: true })
 	language?: LanguageType;
 
 	@Property({ nullable: true })
@@ -172,25 +162,8 @@ export class User extends BaseEntityWithTimestamps {
 	source?: string;
 
 	@Property({ nullable: false })
-	allSearchableStrings = '';
-
-	@BeforeCreate()
-	public beforeCreate(): Promise<void> {
-		console.log('--- User.beforeCreate()');
-		this.updateAllSearchableFields();
-		return Promise.resolve();
-	}
-
-	@BeforeUpdate()
-	public beforeUpdate(): Promise<void> {
-		console.log('--- User.beforeUpdate()');
-		this.updateAllSearchableFields();
-		return Promise.resolve();
-	}
-
-	private updateAllSearchableFields(): void {
-		this.allSearchableStrings = `${this.firstName} ${this.lastName} ${this.email}`;
-	}
+	@Index({ name: 'userSearchIndex2', type: 'text' })
+	allSearchableStrings: string[] = [];
 
 	constructor(props: UserProperties) {
 		super();
@@ -249,7 +222,7 @@ export class User extends BaseEntityWithTimestamps {
 		const schoolPermissions = this.school.permissions;
 		let setOfPermissions = new Set(permissions);
 
-		// This exclusion is necessary because of possible double roles (e.g. admin and teacher). Then the higher role should keep its permissions.
+		// This exclusion is necessary because of possible double roles (e.g., admin and teacher). Then the higher role should keep its permissions.
 		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR || role.name === RoleName.SUPERHERO)) {
 			return setOfPermissions;
 		}
