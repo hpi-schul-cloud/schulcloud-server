@@ -14,7 +14,8 @@ import { TestApiClient } from '@testing/test-api-client';
 import { AuthorizationBodyParams } from '../dto';
 import { AuthorizationResponseMapper } from '../mapper';
 import { createAccessTokenParamsTestFactory } from '../../testing';
-import { title } from 'node:process';
+import { ObjectId } from 'bson';
+import { randomUUID } from 'crypto';
 
 const createExamplePostData = (userId: string): AuthorizationBodyParams => {
 	const referenceType = AuthorizableReferenceType.User;
@@ -42,6 +43,7 @@ describe('Authorization Controller (API)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
+
 		testApiClient = new TestApiClient(app, 'authorization');
 	});
 
@@ -428,10 +430,10 @@ describe('Authorization Controller (API)', () => {
 		});
 	});
 
-	// TODO: How to test the line isWitelisted?
-	// TODO: How to test if user is not logged in?
-	// TODO: TTL
 	describe('resolveToken', () => {
+		/***
+		 * Please note that resolve-token endpoint need no jwt authentication.
+		 ***/
 		describe('When token exists', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
@@ -440,14 +442,13 @@ describe('Authorization Controller (API)', () => {
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
-				const postData = createAccessTokenParamsTestFactory().withReferenceId(teacherUser.id).withWriteAccess().build();
+				const postData = createAccessTokenParamsTestFactory().withReferenceId(teacherUser.id).build();
 				const response = await loggedInClient.post('create-token', postData);
+				const body = response.body as { token: string };
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				const token = response.body.token as string;
 				const tokenTtl = 3600;
 
-				return { token, tokenTtl };
+				return { token: body.token, tokenTtl };
 			};
 
 			it('should response ok', async () => {
@@ -458,6 +459,105 @@ describe('Authorization Controller (API)', () => {
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual({
 					payload: {},
+				});
+				// TODO: der TTL wird nicht ausgeliefert und daher kann er hier bisher nicht geprüft werden.
+				// expect(response.body.ttl >= tokenTtl).toEqual(true);
+			});
+		});
+
+		describe('When token has bad format', () => {
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				await em.persistAndFlush([teacherAccount, teacherUser]);
+				em.clear();
+
+				const fakeToken = new ObjectId().toHexString();
+				const tokenTtl = 3600;
+
+				return { token: fakeToken, tokenTtl };
+			};
+
+			it('should response with validation error', async () => {
+				const { token, tokenTtl } = await setup();
+
+				const response = await testApiClient.get(`resolve-token/${token}/ttl/${tokenTtl.toString()}`);
+
+				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+				expect(response.body).toEqual({
+					code: 400,
+					message: 'API validation failed, see validationErrors for details',
+					title: 'API Validation Error',
+					type: 'API_VALIDATION_ERROR',
+					validationErrors: [
+						{
+							errors: ['token must be a UUID'],
+							field: ['token'],
+						},
+					],
+				});
+			});
+		});
+
+		describe('When token not exists', () => {
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				await em.persistAndFlush([teacherAccount, teacherUser]);
+				em.clear();
+
+				const notExistingToken = randomUUID();
+				const tokenTtl = 3600;
+
+				return { token: notExistingToken, tokenTtl };
+			};
+
+			it('should response with forbidden', async () => {
+				const { token, tokenTtl } = await setup();
+
+				const response = await testApiClient.get(`resolve-token/${token}/ttl/${tokenTtl.toString()}`);
+
+				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
+				expect(response.body).toEqual({
+					code: 403,
+					message: 'Forbidden',
+					title: 'Forbidden',
+					type: 'FORBIDDEN',
+				});
+			});
+		});
+
+		describe('When token is already expired', () => {
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				await em.persistAndFlush([teacherAccount, teacherUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+				const postData = createAccessTokenParamsTestFactory().alwaysExpire().withReferenceId(teacherUser.id).build();
+				console.log('postData', postData); // TODO: Remove this log after debugging
+				const response = await loggedInClient.post('create-token', postData);
+				const body = response.body as { token: string };
+
+				const tokenTtl = 3600;
+
+				await new Promise((resolve) => setTimeout(resolve, 1000)); // TODO Should not necessarily wait because the token is already expired!
+
+				return { token: body.token, tokenTtl };
+			};
+
+			it('should response with forbidden', async () => {
+				const { token, tokenTtl } = await setup();
+
+				const response = await testApiClient.get(`resolve-token/${token}/ttl/${tokenTtl.toString()}`);
+
+				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
+				expect(response.body).toEqual({
+					code: 403,
+					message: 'Forbidden',
+					title: 'Forbidden',
+					type: 'FORBIDDEN',
 				});
 			});
 		});
