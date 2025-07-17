@@ -52,7 +52,7 @@ export class AuthorizationBodyParams {
 export class CreateAccessTokenParams extends AuthorizationBodyParams {
 	@ApiProperty({ description: 'Lifetime of token' })
 	@IsNumber()
-	public tokenTtl!: number;
+	public tokenTtlInSeconds!: number;
 
 	@ApiProperty({ description: 'The payload of the access token.' })
 	@IsObject()
@@ -67,5 +67,5 @@ export class AccessTokenParams {
 
 	@ApiProperty({ description: 'Lifetime of token' })
 	@IsNumber()
-	public tokenTtl!: number;
+	public tokenTtlInSeconds!: number;
 }

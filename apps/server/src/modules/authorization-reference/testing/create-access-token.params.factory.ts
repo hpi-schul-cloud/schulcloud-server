@@ -8,7 +8,7 @@ class CreateAccessTokenParamsTestBuilder {
 		referenceType: AuthorizableReferenceType.User,
 		context: AuthorizationContextBuilder.read([]),
 		payload: {},
-		tokenTtl: 3600, // Default TTL of 1 hour
+		tokenTtlInSeconds: 3600, // Default TTL of 1 hour
 	};
 
 	public withWriteAccess(): this {

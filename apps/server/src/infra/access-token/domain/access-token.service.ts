@@ -9,22 +9,22 @@ import { AccessToken } from './vo';
 export class AccessTokenService {
 	constructor(@Inject(ACCESS_TOKEN_VALKEY_CLIENT) private readonly storageClient: StorageClient) {}
 
-	public async createToken<T>(payload: T, tokenTtl: number): Promise<AccessToken> {
+	public async createToken<T>(payload: T, tokenTtlInSeconds: number): Promise<AccessToken> {
 		const token = AccessTokenFactory.build();
 		const value = JSON.stringify(payload);
 
-		await this.persistTokenData(token.token, value, tokenTtl);
+		await this.persistTokenData(token.token, value, tokenTtlInSeconds);
 
 		return token;
 	}
 
 	public async resolveToken<T>(params: ResolveTokenParams, build: (data: T) => T): Promise<T> {
-		const { token, tokenTtl } = params;
+		const { token, tokenTtlInSeconds } = params;
 
 		const valueResponse = await this.storageClient.get(token);
 		const value = this.checkTokenExists(valueResponse, token);
 
-		await this.renewTokenTimeout(token, value, tokenTtl);
+		await this.renewTokenTimeout(token, value, tokenTtlInSeconds);
 
 		const payload = this.parsePayload(value, token);
 		const validatedPayload = build(payload as T);
@@ -48,11 +48,11 @@ export class AccessTokenService {
 		}
 	}
 
-	private async persistTokenData(token: string, value: string, tokenTtl: number): Promise<void> {
-		await this.storageClient.set(token, value, 'EX', tokenTtl);
+	private async persistTokenData(token: string, value: string, tokenTtlInSeconds: number): Promise<void> {
+		await this.storageClient.set(token, value, 'EX', tokenTtlInSeconds);
 	}
 
-	private async renewTokenTimeout(token: string, value: string, tokenTtl: number): Promise<void> {
-		await this.persistTokenData(token, value, tokenTtl);
+	private async renewTokenTimeout(token: string, value: string, tokenTtlInSeconds: number): Promise<void> {
+		await this.persistTokenData(token, value, tokenTtlInSeconds);
 	}
 }

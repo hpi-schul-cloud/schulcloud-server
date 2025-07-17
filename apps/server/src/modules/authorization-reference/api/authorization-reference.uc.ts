@@ -49,7 +49,7 @@ export class AuthorizationReferenceUc {
 
 		await this.checkPermissionsForReference(tokenMetadata);
 
-		const { token } = await this.accessTokenService.createToken(tokenMetadata, params.tokenTtl);
+		const { token } = await this.accessTokenService.createToken(tokenMetadata, params.tokenTtlInSeconds);
 		const accessTokenResponse = AuthorizationResponseMapper.mapToAccessTokenResponse(token);
 
 		return accessTokenResponse;
