@@ -2,12 +2,12 @@ import { CourseService } from '@modules/course';
 import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { LockedCourseLoggableException } from '../loggable';
 import { LegacyBoardRepo } from '../repo';
 import { CourseRoomsService } from '../service/course-rooms.service';
 import { RoomBoardDTO } from '../types';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
-import { LockedCourseLoggableException } from '../loggable';
 
 @Injectable()
 export class CourseRoomsUc {
@@ -26,7 +26,7 @@ export class CourseRoomsUc {
 		const course = await this.courseService.findOneForUser(roomId, userId);
 
 		if (course.teachers.length === 0) {
-			throw new LockedCourseLoggableException('course is locked');
+			throw new LockedCourseLoggableException(course.name);
 		}
 
 		const legacyBoard = await this.legacyBoardRepo.findByCourseId(roomId);
