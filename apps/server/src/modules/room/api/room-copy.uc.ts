@@ -17,7 +17,9 @@ export class RoomCopyUc {
 		this.roomPermissionService.checkFeatureRoomsEnabled();
 		this.roomPermissionService.checkFeatureRoomCopyEnabled();
 
-		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_COPY]);
+		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write, [
+			Permission.ROOM_COPY_ROOM,
+		]);
 
 		const { roomCopied, boardsCopied } = await this.sagaService.executeSaga('roomCopy', { userId, roomId });
 

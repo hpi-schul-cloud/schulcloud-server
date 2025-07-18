@@ -165,7 +165,7 @@ export class ImportTokenUC {
 	}
 
 	private async copyRoom(user: User, roomId: EntityId, copyName?: string): Promise<CopyStatus> {
-		this.authorizationService.checkOneOfPermissions(user, [Permission.ROOM_CREATE]);
+		this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_CREATE_ROOM]);
 
 		const { roomCopied, boardsCopied } = await this.sagaService.executeSaga('roomCopy', {
 			userId: user.id,
