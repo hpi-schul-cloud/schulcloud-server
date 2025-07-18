@@ -2,7 +2,6 @@ import { CustomPayload } from '@infra/access-token';
 import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { EntityId } from '@shared/domain/types';
 import { ValueObject } from '@shared/domain/value-object.decorator';
-import { Type } from 'class-transformer';
 import { IsEnum, IsMongoId, IsNumber, IsObject, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
 
 interface TokenMetadataProps {
@@ -32,7 +31,6 @@ export class TokenMetadata {
 	}
 
 	@ValidateNested()
-	@Type(() => AuthorizationContext)
 	public readonly authorizationContext: AuthorizationContext;
 
 	@IsEnum(AuthorizableReferenceType)
