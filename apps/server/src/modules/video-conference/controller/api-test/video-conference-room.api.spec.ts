@@ -265,7 +265,7 @@ describe('VideoConferenceController (API)', () => {
 				});
 			});
 
-			describe('when user has not the required permission', () => {
+			describe('when user has not the required permission as room viewer', () => {
 				const setup = async () => {
 					const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 					const room = roomEntityFactory.build({
@@ -316,7 +316,58 @@ describe('VideoConferenceController (API)', () => {
 				});
 			});
 
-			describe('when user has the required permission in room scope', () => {
+			describe('when user has not the required permission as room editor', () => {
+				const setup = async () => {
+					const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+					const room = roomEntityFactory.build({
+						startDate: new Date('2024-10-01'),
+						endDate: new Date('2025-10-20'),
+					});
+					const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+					const userGroup = groupEntityFactory.buildWithId({
+						organization: school,
+						users: [{ role: roomEditorRole, user: studentUser }],
+					});
+					const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+					await em.persistAndFlush([
+						room,
+						roomMembership,
+						school,
+						studentAccount,
+						studentUser,
+						userGroup,
+						roomEditorRole,
+						roomViewerRole,
+					]);
+					em.clear();
+
+					const params: VideoConferenceCreateParams = {
+						everyAttendeeJoinsMuted: true,
+						everybodyJoinsAsModerator: true,
+						moderatorMustApproveJoinRequests: true,
+					};
+
+					const scope: VideoConferenceScope = VideoConferenceScope.ROOM;
+					const scopeId: string = room.id;
+
+					const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
+
+					mockBbbMeetingInfoFailed(scopeId);
+
+					return { loggedInClient, scope, scopeId, params };
+				};
+
+				it('should return forbidden', async () => {
+					const { loggedInClient, params, scope, scopeId } = await setup();
+
+					const response: Response = await loggedInClient.put(`${scope}/${scopeId}/start`, params);
+
+					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				});
+			});
+
+			describe('when user has the required permission in room scope as room admin', () => {
 				const setup = async () => {
 					const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
@@ -324,11 +375,11 @@ describe('VideoConferenceController (API)', () => {
 						startDate: new Date('2024-10-01'),
 						endDate: new Date('2024-10-20'),
 					});
-					const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+					const { roomAdminRole, roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 					const userGroup = groupEntityFactory.buildWithId({
 						organization: school,
-						users: [{ role: roomEditorRole, user: teacherUser }],
+						users: [{ role: roomAdminRole, user: teacherUser }],
 					});
 					const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 					await em.persistAndFlush([
@@ -338,6 +389,7 @@ describe('VideoConferenceController (API)', () => {
 						teacherAccount,
 						teacherUser,
 						userGroup,
+						roomAdminRole,
 						roomEditorRole,
 						roomViewerRole,
 					]);
@@ -925,7 +977,7 @@ describe('VideoConferenceController (API)', () => {
 						const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 						const userGroup = groupEntityFactory.buildWithId({
 							organization: school,
-							users: [{ role: roomViewerRole, user: studentUser }],
+							users: [{ role: roomEditorRole, user: studentUser }],
 						});
 						const roomMembership = roomMembershipEntityFactory.build({
 							roomId: room.id,
@@ -974,11 +1026,11 @@ describe('VideoConferenceController (API)', () => {
 							startDate: new Date('2024-10-01'),
 							endDate: new Date('2024-10-20'),
 						});
-						const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+						const { roomAdminRole, roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 						const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 						const userGroup = groupEntityFactory.buildWithId({
 							organization: school,
-							users: [{ role: roomEditorRole, user: teacherUser }],
+							users: [{ role: roomAdminRole, user: teacherUser }],
 						});
 						const roomMembership = roomMembershipEntityFactory.build({
 							roomId: room.id,
@@ -996,6 +1048,7 @@ describe('VideoConferenceController (API)', () => {
 							teacherAccount,
 							teacherUser,
 							userGroup,
+							roomAdminRole,
 							roomEditorRole,
 							roomViewerRole,
 

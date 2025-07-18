@@ -18,6 +18,8 @@ const DEPTH_COLUMN = 1;
 const DEPTH_CARD = 2;
 const DEPTH_CARD_ELEMENTS = 3;
 
+const DEFAULT_NEW_COURSE_COLOR = '#455B6A';
+
 @Injectable()
 export class CommonCartridgeImportService {
 	constructor(
@@ -38,7 +40,7 @@ export class CommonCartridgeImportService {
 	private async createCourse(parser: CommonCartridgeFileParser, currentUser: ICurrentUser): Promise<void> {
 		const courseName = parser.getTitle() ?? 'Untitled Course';
 
-		const course = await this.coursesClient.createCourse({ title: courseName });
+		const course = await this.coursesClient.createCourse({ name: courseName, color: DEFAULT_NEW_COURSE_COLOR });
 
 		await this.createBoards(course.courseId, parser, currentUser);
 	}

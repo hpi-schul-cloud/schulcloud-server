@@ -76,6 +76,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 					boardNode: column,
 					rootNode: columnBoard,
 					users: [],
+					boardSettings: {},
 				});
 
 				return { columnBoard, column, authorizable };
@@ -116,8 +117,10 @@ describe(BoardNodeAuthorizableService.name, () => {
 				},
 			];
 			boardContextService.getUsersWithBoardRoles.mockResolvedValue(usersWithRoles);
+			const boardSettings = { canRoomEditorManageVideoconference: true };
+			boardContextService.getBoardSettings.mockResolvedValueOnce(boardSettings);
 
-			return { columnBoard, column, usersWithRoles };
+			return { boardSettings, columnBoard, column, usersWithRoles };
 		};
 
 		it('should call the service to get the parent node', async () => {
@@ -137,7 +140,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 		});
 
 		it('should return an authorizable of the root context', async () => {
-			const { column, columnBoard, usersWithRoles } = setup();
+			const { boardSettings, column, columnBoard, usersWithRoles } = setup();
 
 			const result = await service.getBoardAuthorizable(column);
 			const expected = new BoardNodeAuthorizable({
@@ -146,6 +149,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 				boardNode: column,
 				rootNode: columnBoard,
 				parentNode: columnBoard,
+				boardSettings,
 			});
 
 			expect(result).toEqual(expected);

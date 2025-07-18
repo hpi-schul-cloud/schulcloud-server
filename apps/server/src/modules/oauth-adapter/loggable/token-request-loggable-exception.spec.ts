@@ -10,6 +10,7 @@ describe(TokenRequestLoggableException.name, () => {
 			};
 			const axiosError: AxiosError = axiosErrorFactory.withError(error).build();
 			const exception = new TokenRequestLoggableException(axiosError);
+			exception.stack = 'mockedStack';
 
 			return {
 				axiosError,
@@ -19,7 +20,7 @@ describe(TokenRequestLoggableException.name, () => {
 		};
 
 		it('should return the correct log message', () => {
-			const { axiosError, exception, error } = setup();
+			const { exception, error } = setup();
 
 			const logMessage = exception.getLogMessage();
 
@@ -27,7 +28,7 @@ describe(TokenRequestLoggableException.name, () => {
 				type: 'OAUTH_TOKEN_REQUEST_ERROR',
 				message: 'message: Bad Request code: 400',
 				data: JSON.stringify(error),
-				stack: axiosError.stack,
+				stack: exception.stack,
 			});
 		});
 	});
