@@ -1263,7 +1263,7 @@
 				},
 				"JWT_HTTP_ONLY": {
 					"type": "boolean",
-					"default": false,
+					"default": true,
 					"description": "Value for cookies httpOnly property"
 				},
 				"HOST_ONLY": {
