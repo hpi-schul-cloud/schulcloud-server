@@ -178,7 +178,7 @@ export class SchoolUc {
 	public async getSchoolTeachers(schoolId: EntityId, userId: EntityId): Promise<SchoolUserListResponse> {
 		const [user] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
-			this.schoolService.getSchoolById(schoolId), // ensure school exists
+			this.ensureSchoolExists(schoolId),
 		]);
 
 		let result: Page<UserDo>;
@@ -196,7 +196,7 @@ export class SchoolUc {
 	public async getSchoolStudents(schoolId: EntityId, userId: EntityId): Promise<SchoolUserListResponse> {
 		const [user] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
-			this.schoolService.getSchoolById(schoolId), // ensure school exists
+			this.ensureSchoolExists(schoolId),
 		]);
 		const isUserOfSchool = this.isUserOfSchool(user, schoolId);
 		const isAllowedToListStudents = this.hasPermissionToListStudents(user);
@@ -204,12 +204,18 @@ export class SchoolUc {
 		let result: Page<UserDo>;
 		if (isUserOfSchool && isAllowedToListStudents) {
 			result = await this.getAllStudentsOfSchool(schoolId);
-		} else {
+		} else if (isUserOfSchool) {
 			result = await this.getAllStudentsFromUsersClasses(userId, schoolId);
+		} else {
+			result = { data: [], total: 0 };
 		}
 
 		const responseDto = SchoolUserResponseMapper.mapToListResponse(result);
 		return responseDto;
+	}
+
+	private async ensureSchoolExists(schoolId: EntityId): Promise<void> {
+		await this.schoolService.getSchoolById(schoolId);
 	}
 
 	private async getAllStudentsFromUsersClasses(userId: EntityId, schoolId: EntityId): Promise<Page<UserDo>> {

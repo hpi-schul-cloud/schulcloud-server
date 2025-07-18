@@ -156,7 +156,7 @@ describe('School Controller (API)', () => {
 			});
 		});
 
-		describe('when user has no permission to view teachers', () => {
+		describe('when user is a student', () => {
 			const setup = async (config: { sameSchool: boolean }) => {
 				const teachersSchool = schoolEntityFactory.build();
 				const userSchool = config.sameSchool ? teachersSchool : schoolEntityFactory.build();
@@ -204,7 +204,7 @@ describe('School Controller (API)', () => {
 			});
 		});
 
-		describe('when user has permission to view teachers', () => {
+		describe('when user is a teacher', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -365,7 +365,7 @@ describe('School Controller (API)', () => {
 
 			describe('user is student', () => {
 				describe('user is from same school', () => {
-					it('should include all students from the school', async () => {
+					it('should include all students from users classes', async () => {
 						const { loggedInClient, school, studentIdsOfCurrentClass, studentIdsOfMoinSchuleClass } = await setup(
 							'student',
 							{ sameSchool: true }
@@ -377,34 +377,6 @@ describe('School Controller (API)', () => {
 
 						expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfCurrentClass.map((id) => id.toString())));
 						expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfMoinSchuleClass.map((id) => id.toString())));
-					});
-				});
-
-				describe('user is from different school', () => {
-					it('should not include students from archived class', async () => {
-						const { loggedInClient, school, studentIdsOfArchivedClass } = await setup('student', { sameSchool: false });
-
-						const response = await loggedInClient.get(`${school.id}/students`);
-						const body = response.body as SchoolUserListResponse;
-						const recievedIds = body.data.map((user) => user.id);
-
-						expect(recievedIds).not.toEqual(
-							expect.arrayContaining(studentIdsOfArchivedClass.map((id) => id.toString()))
-						);
-					});
-
-					it('should not include students from archived moin.schule class', async () => {
-						const { loggedInClient, school, studentIdsOfArchivedMoinSchuleClass } = await setup('student', {
-							sameSchool: false,
-						});
-
-						const response = await loggedInClient.get(`${school.id}/students`);
-						const body = response.body as SchoolUserListResponse;
-						const recievedIds = body.data.map((user) => user.id);
-
-						expect(recievedIds).not.toEqual(
-							expect.arrayContaining(studentIdsOfArchivedMoinSchuleClass.map((id) => id))
-						);
 					});
 
 					it('should not include students not in class', async () => {
@@ -419,6 +391,38 @@ describe('School Controller (API)', () => {
 						expect(recievedIds).not.toEqual(
 							expect.arrayContaining(studentIdsOfUsersWithoutClass.map((id) => id.toString()))
 						);
+					});
+
+					it('should not include students from archived classes', async () => {
+						const { loggedInClient, school, studentIdsOfArchivedMoinSchuleClass, studentIdsOfArchivedClass } =
+							await setup('student', {
+								sameSchool: false,
+							});
+
+						const response = await loggedInClient.get(`${school.id}/students`);
+						const body = response.body as SchoolUserListResponse;
+						const recievedIds = body.data.map((user) => user.id);
+
+						expect(recievedIds).not.toEqual(
+							expect.arrayContaining(studentIdsOfArchivedClass.map((id) => id.toString()))
+						);
+						expect(recievedIds).not.toEqual(
+							expect.arrayContaining(studentIdsOfArchivedMoinSchuleClass.map((id) => id))
+						);
+					});
+				});
+
+				describe('user is from different school', () => {
+					it('should return no students', async () => {
+						const { loggedInClient, school } = await setup('student', {
+							sameSchool: false,
+						});
+
+						const response = await loggedInClient.get(`${school.id}/students`);
+						const body = response.body as SchoolUserListResponse;
+						const recievedIds = body.data.map((user) => user.id);
+
+						expect(recievedIds.length).toEqual(0);
 					});
 				});
 			});
@@ -453,20 +457,8 @@ describe('School Controller (API)', () => {
 				});
 
 				describe('user is from different school', () => {
-					it('should not include students from archived class', async () => {
-						const { loggedInClient, school, studentIdsOfArchivedClass } = await setup('teacher', { sameSchool: false });
-
-						const response = await loggedInClient.get(`${school.id}/students`);
-						const body = response.body as SchoolUserListResponse;
-						const recievedIds = body.data.map((user) => user.id);
-
-						expect(recievedIds).not.toEqual(
-							expect.arrayContaining(studentIdsOfArchivedClass.map((id) => id.toString()))
-						);
-					});
-
-					it('should not include students from archived moin.schule class', async () => {
-						const { loggedInClient, school, studentIdsOfArchivedMoinSchuleClass } = await setup('teacher', {
+					it('should return no students', async () => {
+						const { loggedInClient, school } = await setup('student', {
 							sameSchool: false,
 						});
 
@@ -474,23 +466,7 @@ describe('School Controller (API)', () => {
 						const body = response.body as SchoolUserListResponse;
 						const recievedIds = body.data.map((user) => user.id);
 
-						expect(recievedIds).not.toEqual(
-							expect.arrayContaining(studentIdsOfArchivedMoinSchuleClass.map((id) => id.toString()))
-						);
-					});
-
-					it('should not include students not in class', async () => {
-						const { loggedInClient, school, studentIdsOfUsersWithoutClass } = await setup('teacher', {
-							sameSchool: false,
-						});
-
-						const response = await loggedInClient.get(`${school.id}/students`);
-						const body = response.body as SchoolUserListResponse;
-						const recievedIds = body.data.map((user) => user.id);
-
-						expect(recievedIds).not.toEqual(
-							expect.arrayContaining(studentIdsOfUsersWithoutClass.map((id) => id.toString()))
-						);
+						expect(recievedIds.length).toEqual(0);
 					});
 				});
 			});
