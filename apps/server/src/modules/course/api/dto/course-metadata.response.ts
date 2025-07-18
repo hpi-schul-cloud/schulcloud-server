@@ -9,6 +9,7 @@ export class CourseMetadataResponse {
 		title: string,
 		shortTitle: string,
 		displayColor: string,
+		isLocked: boolean,
 		startDate?: Date,
 		untilDate?: Date,
 		copyingSince?: Date
@@ -17,6 +18,7 @@ export class CourseMetadataResponse {
 		this.title = title;
 		this.shortTitle = shortTitle;
 		this.displayColor = displayColor;
+		this.isLocked = isLocked;
 		this.startDate = startDate;
 		this.untilDate = untilDate;
 		this.copyingSince = copyingSince;
@@ -42,6 +44,11 @@ export class CourseMetadataResponse {
 		description: 'Color of the Grid element',
 	})
 	displayColor: string;
+
+	@ApiProperty({
+		description: 'Indicates if the course is locked and cannot be accessed.',
+	})
+	isLocked: boolean;
 
 	@ApiPropertyOptional({
 		description: 'Start date of the course',

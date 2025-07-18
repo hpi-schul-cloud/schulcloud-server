@@ -26,6 +26,7 @@ export interface CourseMetadata {
 	untilDate?: Date;
 	copyingSince?: Date;
 	isSynchronized: boolean;
+	isLocked: boolean;
 }
 
 export interface CourseProperties {
@@ -245,6 +246,7 @@ export class CourseEntity extends BaseEntityWithTimestamps implements TaskParent
 			title: this.name,
 			shortTitle: this.getShortTitle(),
 			displayColor: this.color,
+			isLocked: this.teachers.length === 0,
 			untilDate: this.untilDate,
 			startDate: this.startDate,
 			copyingSince: this.copyingSince,

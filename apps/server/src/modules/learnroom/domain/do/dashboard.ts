@@ -33,6 +33,7 @@ export type GridElementContent = {
 	groupId?: string;
 	copyingSince?: Date;
 	isSynchronized: boolean;
+	isLocked: boolean;
 };
 
 export class GridElement implements IGridElement {
@@ -134,6 +135,7 @@ export class GridElement implements IGridElement {
 			displayColor: 'exampleColor',
 			group: groupData,
 			isSynchronized: false,
+			isLocked: false,
 		};
 		return groupMetadata;
 	}

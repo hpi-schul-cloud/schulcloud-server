@@ -52,21 +52,33 @@ describe('Course Controller (API)', () => {
 	});
 
 	describe('[GET] /courses/', () => {
-		const setup = () => {
+		const setup = async () => {
 			const student = createStudent();
 			const teacher = createTeacher();
 			const course = courseEntityFactory.buildWithId({
 				teachers: [teacher.user],
 				students: [student.user],
 			});
+			const courseWithoutTeacher = courseEntityFactory.buildWithId({
+				teachers: [],
+				students: [student.user],
+			});
 
-			return { student, course, teacher };
+			await em.persistAndFlush([
+				teacher.account,
+				teacher.user,
+				student.account,
+				student.user,
+				course,
+				courseWithoutTeacher,
+			]);
+			em.clear();
+
+			return { student, course, courseWithoutTeacher, teacher };
 		};
 
 		it('should find courses as student', async () => {
-			const { student, course } = setup();
-			await em.persistAndFlush([student.account, student.user, course]);
-			em.clear();
+			const { student, course } = await setup();
 
 			const loggedInClient = await testApiClient.login(student.account);
 			const response = await loggedInClient.get();
@@ -79,9 +91,7 @@ describe('Course Controller (API)', () => {
 		});
 
 		it('should find courses as teacher', async () => {
-			const { teacher, course } = setup();
-			await em.persistAndFlush([teacher.account, teacher.user, course]);
-			em.clear();
+			const { teacher, course } = await setup();
 
 			const loggedInClient = await testApiClient.login(teacher.account);
 			const response = await loggedInClient.get();
@@ -91,6 +101,19 @@ describe('Course Controller (API)', () => {
 			expect(typeof data[0].title).toBe('string');
 			expect(data[0].startDate).toBe(course.startDate);
 			expect(data[0].untilDate).toBe(course.untilDate);
+		});
+
+		it('should return locked=true if course has no teachers', async () => {
+			const { student, courseWithoutTeacher } = await setup();
+
+			const loggedInClient = await testApiClient.login(student.account);
+			const response = await loggedInClient.get();
+
+			const { data } = response.body as CourseMetadataListResponse;
+			const responseCourseWithoutTeacher = data.find((c) => c.id === courseWithoutTeacher.id);
+			const responseCourseHavingTeacher = data.find((c) => c.id !== courseWithoutTeacher.id);
+			expect(responseCourseWithoutTeacher?.isLocked).toBe(true);
+			expect(responseCourseHavingTeacher?.isLocked).toBe(false);
 		});
 	});
 
