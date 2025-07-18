@@ -4,7 +4,7 @@ import { AuthorizableReferenceType, AuthorizationContext } from '@modules/author
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import jwt from 'jsonwebtoken';
-import { AuthorizationReferenceService, TokenMetadata, TokenMetadataFactory } from '../domain';
+import { AuthorizationReferenceService } from '../domain';
 import {
 	AccessTokenParams,
 	AccessTokenPayloadResponse,
@@ -13,6 +13,8 @@ import {
 	CreateAccessTokenParams,
 } from './dto';
 import { AuthorizationResponseMapper } from './mapper';
+import { TokenMetadataFactory } from './factory';
+import { TokenMetadata } from './vo';
 
 @Injectable()
 export class AuthorizationReferenceUc {
