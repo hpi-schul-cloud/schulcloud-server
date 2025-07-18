@@ -1,5 +1,5 @@
-import { jwtPayloadFactory } from '@infra/auth-guard/testing';
 import { AuthorizationContext } from '@modules/authorization';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { createAccessTokenParamsTestFactory, tokenMetadataTestFactory } from '../../testing';
 import { TokenMetadata } from '../vo';
 import { TokenMetadataFactory } from './token-metadata.factory';
@@ -25,25 +25,24 @@ describe('TokenMetadataFactory', () => {
 	});
 
 	describe('buildFromCreateAccessTokenParams', () => {
-		describe('when called with valid params, userId, and jwtPayload', () => {
+		describe('when called with valid props', () => {
 			describe('should return a TokenMetadata instance', () => {
 				const setup = () => {
-					const tokenMeta = tokenMetadataTestFactory.build();
 					const params = createAccessTokenParamsTestFactory().build();
-					const { userId } = tokenMeta;
-					const jwtPayload = jwtPayloadFactory.build();
+					const currentUser = currentUserFactory.build();
+					const jti = 'jti-12345';
 
 					return {
 						params,
-						userId,
-						jwtPayload,
+						currentUser,
+						jti,
 					};
 				};
 
 				it('returns a TokenMetadata with expected values', () => {
-					const { params, userId, jwtPayload } = setup();
+					const { params, currentUser, jti } = setup();
 
-					const result = TokenMetadataFactory.buildFromCreateAccessTokenParams(params, userId, jwtPayload);
+					const result = TokenMetadataFactory.buildFromCreateAccessTokenParams(params, currentUser, jti);
 
 					expect(result).toBeInstanceOf(TokenMetadata);
 					expect(result.authorizationContext).toBeInstanceOf(AuthorizationContext);

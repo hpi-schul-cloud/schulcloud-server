@@ -13,6 +13,7 @@ export const tokenMetadataTestFactory = BaseFactory.define<TokenMetadata, TokenM
 		accountId: new ObjectId().toHexString(),
 		jwtJti: 'jti-12345',
 		customPayload: { foo: 'bar' },
+		tokenTtlInSeconds: 3600,
 	};
 
 	return tokenMetadata;

@@ -18,6 +18,7 @@ describe('TokenMetadata', () => {
 				const accountId = new ObjectId().toHexString();
 				const jwtJti = 'jti-12345';
 				const customPayload = { foo: 'bar' };
+				const tokenTtlInSeconds = 3600;
 
 				const props = {
 					authorizationContext,
@@ -27,6 +28,7 @@ describe('TokenMetadata', () => {
 					customPayload,
 					accountId,
 					jwtJti,
+					tokenTtlInSeconds,
 				};
 
 				return {
@@ -58,6 +60,7 @@ describe('TokenMetadata', () => {
 				const userId = new ObjectId().toHexString();
 				const accountId = new ObjectId().toHexString();
 				const jwtJti = 'jti-12345';
+				const tokenTtlInSeconds = 3600;
 
 				const props = {
 					authorizationContext,
@@ -66,6 +69,7 @@ describe('TokenMetadata', () => {
 					userId,
 					accountId,
 					jwtJti,
+					tokenTtlInSeconds,
 				};
 
 				return {
@@ -93,6 +97,7 @@ describe('TokenMetadata', () => {
 						jwtJti: undefined,
 						userId: undefined,
 						customPayload: undefined,
+						tokenTtlInSeconds: undefined,
 					};
 
 					return { props };
@@ -129,6 +134,7 @@ describe('TokenMetadata', () => {
 					const userId = new ObjectId().toHexString();
 					const accountId = new ObjectId().toHexString();
 					const jwtJti = 'jti-12345';
+					const tokenTtlInSeconds = 3600;
 
 					const props = {
 						authorizationContext,
@@ -137,6 +143,7 @@ describe('TokenMetadata', () => {
 						userId,
 						accountId,
 						jwtJti,
+						tokenTtlInSeconds,
 					};
 
 					return { props };
@@ -157,6 +164,7 @@ describe('TokenMetadata', () => {
 					const userId = new ObjectId().toHexString();
 					const accountId = new ObjectId().toHexString();
 					const jwtJti = 'jti-12345';
+					const tokenTtlInSeconds = 3600;
 
 					const props = {
 						authorizationContext,
@@ -165,6 +173,7 @@ describe('TokenMetadata', () => {
 						userId,
 						accountId,
 						jwtJti,
+						tokenTtlInSeconds,
 					};
 
 					return { props };
@@ -185,6 +194,7 @@ describe('TokenMetadata', () => {
 					const userId = new ObjectId().toHexString();
 					const accountId = new ObjectId().toHexString();
 					const jwtJti = 'jti-12345';
+					const tokenTtlInSeconds = 3600;
 
 					const props = {
 						authorizationContext,
@@ -193,6 +203,7 @@ describe('TokenMetadata', () => {
 						userId,
 						accountId,
 						jwtJti,
+						tokenTtlInSeconds,
 					};
 
 					return { props };
@@ -213,6 +224,7 @@ describe('TokenMetadata', () => {
 					const userId = 'not-a-mongoid';
 					const accountId = new ObjectId().toHexString();
 					const jwtJti = 'jti-12345';
+					const tokenTtlInSeconds = 3600;
 
 					const props = {
 						authorizationContext,
@@ -221,6 +233,7 @@ describe('TokenMetadata', () => {
 						userId,
 						accountId,
 						jwtJti,
+						tokenTtlInSeconds,
 					};
 
 					return { props };
@@ -242,6 +255,7 @@ describe('TokenMetadata', () => {
 					const customPayload = 42;
 					const accountId = new ObjectId().toHexString();
 					const jwtJti = 'jti-12345';
+					const tokenTtlInSeconds = 3600;
 
 					const props = {
 						authorizationContext,
@@ -251,6 +265,7 @@ describe('TokenMetadata', () => {
 						customPayload,
 						accountId,
 						jwtJti,
+						tokenTtlInSeconds,
 					};
 
 					return { props };
@@ -271,6 +286,7 @@ describe('TokenMetadata', () => {
 					const userId = new ObjectId().toHexString();
 					const accountId = 'not-a-mongoid';
 					const jwtJti = 'jti-12345';
+					const tokenTtlInSeconds = 3600;
 
 					const props = {
 						authorizationContext,
@@ -279,6 +295,7 @@ describe('TokenMetadata', () => {
 						userId,
 						accountId,
 						jwtJti,
+						tokenTtlInSeconds,
 					};
 
 					return { props };
@@ -299,6 +316,7 @@ describe('TokenMetadata', () => {
 					const userId = new ObjectId().toHexString();
 					const accountId = new ObjectId().toHexString();
 					const jwtJti = 12345;
+					const tokenTtlInSeconds = 3600;
 
 					const props = {
 						authorizationContext,
@@ -307,6 +325,7 @@ describe('TokenMetadata', () => {
 						userId,
 						accountId,
 						jwtJti,
+						tokenTtlInSeconds,
 					};
 
 					return { props };
@@ -327,6 +346,7 @@ describe('TokenMetadata', () => {
 					const accountId = new ObjectId().toHexString();
 					const jwtJti = 'jti-12345';
 					const customPayload = { foo: 'bar' };
+					const tokenTtlInSeconds = 3600;
 
 					const props = {
 						authorizationContext: {},
@@ -336,6 +356,135 @@ describe('TokenMetadata', () => {
 						accountId,
 						jwtJti,
 						customPayload,
+						tokenTtlInSeconds,
+					};
+
+					return { props };
+				};
+
+				it('should throw an error', () => {
+					const { props } = setup();
+
+					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
+				});
+			});
+
+			describe('when tokenTtlInSeconds is undefined', () => {
+				const setup = () => {
+					const authorizationContext = authorizationContextFactory.build();
+					const referenceType = AuthorizableReferenceType.School;
+					const referenceId = new ObjectId().toHexString();
+					const userId = new ObjectId().toHexString();
+					const accountId = new ObjectId().toHexString();
+					const jwtJti = 'jti-12345';
+					const customPayload = { foo: 'bar' };
+					const tokenTtlInSeconds = undefined;
+
+					const props = {
+						authorizationContext,
+						referenceType,
+						referenceId,
+						userId,
+						accountId,
+						jwtJti,
+						customPayload,
+						tokenTtlInSeconds,
+					};
+
+					return { props };
+				};
+
+				it('should throw an error', () => {
+					const { props } = setup();
+
+					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
+				});
+			});
+
+			describe('when tokenTtlInSeconds is not a number', () => {
+				const setup = () => {
+					const authorizationContext = authorizationContextFactory.build();
+					const referenceType = AuthorizableReferenceType.School;
+					const referenceId = new ObjectId().toHexString();
+					const userId = new ObjectId().toHexString();
+					const accountId = new ObjectId().toHexString();
+					const jwtJti = 'jti-12345';
+					const customPayload = { foo: 'bar' };
+					const tokenTtlInSeconds = 'not-a-number';
+
+					const props = {
+						authorizationContext,
+						referenceType,
+						referenceId,
+						userId,
+						accountId,
+						jwtJti,
+						customPayload,
+						tokenTtlInSeconds,
+					};
+
+					return { props };
+				};
+
+				it('should throw an error', () => {
+					const { props } = setup();
+
+					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
+				});
+			});
+
+			describe('when tokenTtlInSeconds is less than 0', () => {
+				const setup = () => {
+					const authorizationContext = authorizationContextFactory.build();
+					const referenceType = AuthorizableReferenceType.School;
+					const referenceId = new ObjectId().toHexString();
+					const userId = new ObjectId().toHexString();
+					const accountId = new ObjectId().toHexString();
+					const jwtJti = 'jti-12345';
+					const customPayload = { foo: 'bar' };
+					const tokenTtlInSeconds = -1;
+
+					const props = {
+						authorizationContext,
+						referenceType,
+						referenceId,
+						userId,
+						accountId,
+						jwtJti,
+						customPayload,
+						tokenTtlInSeconds,
+					};
+
+					return { props };
+				};
+
+				it('should throw an error', () => {
+					const { props } = setup();
+
+					expect(() => new TokenMetadata(props as unknown as TokenMetadata)).toThrow();
+				});
+			});
+
+			describe('when tokenTtlInSeconds is greater than seven days', () => {
+				const setup = () => {
+					const authorizationContext = authorizationContextFactory.build();
+					const referenceType = AuthorizableReferenceType.School;
+					const referenceId = new ObjectId().toHexString();
+					const userId = new ObjectId().toHexString();
+					const accountId = new ObjectId().toHexString();
+					const jwtJti = 'jti-12345';
+					const customPayload = { foo: 'bar' };
+					const tokenTtlInSeconds = 604801; // 7 days + 1 second
+
+					const props = {
+						authorizationContext,
+						referenceType,
+						referenceId,
+						userId,
+						accountId,
+						jwtJti,
+						customPayload,
+						tokenTtlInSeconds,
 					};
 
 					return { props };
