@@ -165,31 +165,57 @@ export class LibraryStorage implements ILibraryStorage {
 	}
 
 	/**
+	 * Removes circular dependencies from the library metadata
+	 * @param libraries
+	 */
+	private removeCircularDependencies(libraries: ILibraryMetadata[]): void {
+		const dependencyTypes: ('preloadedDependencies' | 'editorDependencies' | 'dynamicDependencies')[] = [
+			'preloadedDependencies',
+			'editorDependencies',
+			'dynamicDependencies',
+		];
+		const libraryMap = new Map(libraries.map((library) => [LibraryName.toUberName(library), library]));
+
+		for (const library of libraries) {
+			const queue: ILibraryMetadata[] = [library];
+
+			while (queue.length > 0) {
+				const currentLibrary = queue.shift()!;
+
+				for (const dependencyType of dependencyTypes) {
+					for (const dependency of currentLibrary[dependencyType] ?? []) {
+						const ubername = LibraryName.toUberName(dependency);
+						const dependencyMetadata = libraryMap.get(ubername);
+
+						if (dependencyMetadata) {
+							for (const otherDependencyType of dependencyTypes) {
+								if (dependencyMetadata[otherDependencyType]) {
+									const index = dependencyMetadata[otherDependencyType].findIndex((libName) =>
+										LibraryName.equal(libName, currentLibrary)
+									);
+
+									if (index >= 0) {
+										dependencyMetadata[otherDependencyType].splice(index, 1);
+									}
+								}
+							}
+
+							queue.push(dependencyMetadata);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * Counts how often libraries are listed in the dependencies of other libraries and returns a list of the number.
 	 * @returns an object with ubernames as key.
 	 */
 	public async getAllDependentsCount(): Promise<{ [ubername: string]: number }> {
 		const libraries = await this.libraryRepo.getAll();
-		const libraryMap = new Map(libraries.map((library) => [LibraryName.toUberName(library), library]));
 
-		// Remove circular dependencies
-		for (const library of libraries) {
-			for (const dependency of library.editorDependencies ?? []) {
-				const ubername = LibraryName.toUberName(dependency);
-
-				const dependencyMetadata = libraryMap.get(ubername);
-
-				if (dependencyMetadata?.preloadedDependencies) {
-					const index = dependencyMetadata.preloadedDependencies.findIndex((libName) =>
-						LibraryName.equal(libName, library)
-					);
-
-					if (index >= 0) {
-						dependencyMetadata.preloadedDependencies.splice(index, 1);
-					}
-				}
-			}
-		}
+		this.removeCircularDependencies(libraries);
 
 		// Count dependencies
 		const dependencies: { [ubername: string]: number } = {};
