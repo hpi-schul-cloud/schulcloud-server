@@ -87,7 +87,7 @@
         spec:
           suspend: true
       merge_type:
-        - strategic
+        - strategic-merge
         - merge
     when:
       - WITH_TSP_SYNC
