@@ -77,11 +77,12 @@
   # to avoid potential database overload in dev environments.
   # Developers can still trigger it manually via kubectl if needed.
   - name: Suspend the API TSP Sync CronJob (conditionally)
-    community.kubernetes.k8s:
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
       api_version: batch/v1
       kind: CronJob
       name: api-tsp-sync-cronjob
-      namespace: "{{ NAMESPACE }}"
       definition:
         spec:
           suspend: true
