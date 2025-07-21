@@ -171,12 +171,8 @@ export class LibraryStorage implements ILibraryStorage {
 		}
 	}
 
-	/**
-	 * Removes circular dependencies from the library metadata
-	 * @param libraries
-	 */
-	private removeCircularDependenciesFromGraph(libraries: ILibraryMetadata[]): void {
-		const libraryMap = new Map(libraries.map((library) => [LibraryName.toUberName(library), library]));
+	private enqueueCircularDependencies(libraries: ILibraryMetadata[]): void {
+		const libraryMap = new Map(libraries.map((library) => [LibraryName.toUberName(library), library])); // const!
 
 		for (const library of libraries) {
 			const queue: ILibraryMetadata[] = [library];
@@ -184,15 +180,15 @@ export class LibraryStorage implements ILibraryStorage {
 			while (queue.length > 0) {
 				const currentLibrary = queue.shift();
 				if (currentLibrary !== undefined) {
-					this.newMethod('preloadedDependencies', currentLibrary, libraryMap, queue);
-					this.newMethod('editorDependencies', currentLibrary, libraryMap, queue);
-					this.newMethod('dynamicDependencies', currentLibrary, libraryMap, queue);
+					this.enqueueCircularDependenciesForSingleLibrary('preloadedDependencies', currentLibrary, libraryMap, queue);
+					this.enqueueCircularDependenciesForSingleLibrary('editorDependencies', currentLibrary, libraryMap, queue);
+					this.enqueueCircularDependenciesForSingleLibrary('dynamicDependencies', currentLibrary, libraryMap, queue);
 				}
 			}
 		}
 	}
 
-	private newMethod(
+	private enqueueCircularDependenciesForSingleLibrary(
 		procssingType: DependencyProcessing,
 		currentLibrary: ILibraryMetadata,
 		libraryMap: Map<string, ILibraryMetadata>,
@@ -203,19 +199,26 @@ export class LibraryStorage implements ILibraryStorage {
 			const dependencyMetadata = libraryMap.get(ubername);
 
 			if (dependencyMetadata) {
-				for (const otherDependencyType of procssingType) {
-					if (dependencyMetadata[otherDependencyType]) {
-						const index = dependencyMetadata[otherDependencyType].findIndex((libName) =>
-							LibraryName.equal(libName, currentLibrary)
-						);
-
-						if (index >= 0) {
-							dependencyMetadata[otherDependencyType].splice(index, 1);
-						}
-					}
-				}
+				this.removeDependencyReference(dependencyMetadata, 'preloadedDependencies', currentLibrary);
+				this.removeDependencyReference(dependencyMetadata, 'editorDependencies', currentLibrary);
+				this.removeDependencyReference(dependencyMetadata, 'dynamicDependencies', currentLibrary);
 
 				queue.push(dependencyMetadata);
+			}
+		}
+	}
+
+	private removeDependencyReference(
+		dependencyMetadata: ILibraryMetadata,
+		processingType: DependencyProcessing,
+		currentLibrary: ILibraryMetadata
+	): void {
+		const processBasedDependencyMetadata = dependencyMetadata[processingType];
+		if (processBasedDependencyMetadata) {
+			const index = processBasedDependencyMetadata.findIndex((libName) => LibraryName.equal(libName, currentLibrary));
+
+			if (index >= 0) {
+				processBasedDependencyMetadata.splice(index, 1);
 			}
 		}
 	}
@@ -227,7 +230,7 @@ export class LibraryStorage implements ILibraryStorage {
 	public async getAllDependentsCount(): Promise<{ [ubername: string]: number }> {
 		const libraries = await this.libraryRepo.getAll();
 
-		this.removeCircularDependenciesFromGraph(libraries);
+		this.enqueueCircularDependencies(libraries);
 
 		// Count dependencies
 		const dependencies: { [ubername: string]: number } = {};
