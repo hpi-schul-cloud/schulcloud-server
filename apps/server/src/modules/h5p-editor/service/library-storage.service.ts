@@ -176,7 +176,11 @@ export class LibraryStorage implements ILibraryStorage {
 	}
 
 	private removeCircularDependencies(libraries: ILibraryMetadata[]): void {
-		const libraryMap = new Map(libraries.map((library) => [LibraryName.toUberName(library), library])); // const!
+		const libraryEntries = libraries.map<[string, ILibraryMetadata]>((library) => [
+			LibraryName.toUberName(library),
+			library,
+		]);
+		const libraryMap = new Map<string, ILibraryMetadata>(libraryEntries);
 
 		for (const library of libraries) {
 			const queue: ILibraryMetadata[] = [library];
@@ -219,18 +223,18 @@ export class LibraryStorage implements ILibraryStorage {
 
 			if (dependencyMetadata) {
 				this.removeDependencyReferenceForCurrentType(
-					dependencyMetadata,
 					LibraryDependencyType.PreloadedDependencies,
+					dependencyMetadata,
 					currentLibrary
 				);
 				this.removeDependencyReferenceForCurrentType(
-					dependencyMetadata,
 					LibraryDependencyType.EditorDependencies,
+					dependencyMetadata,
 					currentLibrary
 				);
 				this.removeDependencyReferenceForCurrentType(
-					dependencyMetadata,
 					LibraryDependencyType.DynamicDependencies,
+					dependencyMetadata,
 					currentLibrary
 				);
 
@@ -240,8 +244,8 @@ export class LibraryStorage implements ILibraryStorage {
 	}
 
 	private removeDependencyReferenceForCurrentType(
-		dependencyMetadata: ILibraryMetadata,
 		processingType: LibraryDependencyType,
+		dependencyMetadata: ILibraryMetadata,
 		currentLibrary: ILibraryMetadata
 	): void {
 		const currentDependencies = dependencyMetadata[processingType];
