@@ -17,19 +17,19 @@
 /**
  * 
  * @export
- * @interface AuthorizedReponse
+ * @interface AuthorizedResponse
  */
-export interface AuthorizedReponse {
+export interface AuthorizedResponse {
     /**
      * 
      * @type {string}
-     * @memberof AuthorizedReponse
+     * @memberof AuthorizedResponse
      */
     'userId': string;
     /**
      * 
      * @type {boolean}
-     * @memberof AuthorizedReponse
+     * @memberof AuthorizedResponse
      */
     'isAuthorized': boolean;
 }

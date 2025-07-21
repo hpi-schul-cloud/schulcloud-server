@@ -1,14 +1,36 @@
+import { CustomPayload } from '@infra/access-token';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class AuthorizedReponse {
+export class AuthorizedResponse {
 	@ApiProperty()
-	userId: string;
+	public userId: string;
 
 	@ApiProperty()
-	isAuthorized: boolean;
+	public isAuthorized: boolean;
 
-	constructor(props: AuthorizedReponse) {
+	constructor(props: AuthorizedResponse) {
 		this.userId = props.userId;
 		this.isAuthorized = props.isAuthorized;
+	}
+}
+
+export class AccessTokenResponse {
+	@ApiProperty()
+	public token!: string;
+
+	constructor(token: string) {
+		this.token = token;
+	}
+}
+
+export class AccessTokenPayloadResponse {
+	@ApiProperty()
+	public payload: CustomPayload;
+
+	public ttl: number;
+
+	constructor(props: CustomPayload, ttl: number) {
+		this.payload = props;
+		this.ttl = ttl;
 	}
 }
