@@ -10,7 +10,7 @@ import {
 	AuthorizationBodyParamsReferenceType,
 	AuthorizationContextParamsAction,
 	AuthorizationContextParamsRequiredPermissions,
-	AuthorizedReponse,
+	AuthorizedResponse,
 } from './authorization-api-client';
 import { AuthorizationClientAdapter } from './authorization-client.adapter';
 import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableException } from './error';
@@ -81,7 +81,7 @@ describe(AuthorizationClientAdapter.name, () => {
 					referenceId: 'someReferenceId',
 				};
 
-				const response = createMock<AxiosResponse<AuthorizedReponse>>({
+				const response = createMock<AxiosResponse<AuthorizedResponse>>({
 					data: {
 						isAuthorized: props.isAuthorized,
 						userId: 'userId',
@@ -169,7 +169,7 @@ describe(AuthorizationClientAdapter.name, () => {
 					referenceId: 'someReferenceId',
 				};
 
-				const response = createMock<AxiosResponse<AuthorizedReponse>>({
+				const response = createMock<AxiosResponse<AuthorizedResponse>>({
 					data: {
 						isAuthorized: true,
 						userId: 'userId',
@@ -217,7 +217,7 @@ describe(AuthorizationClientAdapter.name, () => {
 					referenceId: 'someReferenceId',
 				};
 
-				const response = createMock<AxiosResponse<AuthorizedReponse>>({
+				const response = createMock<AxiosResponse<AuthorizedResponse>>({
 					data: {
 						isAuthorized: true,
 						userId: 'userId',
