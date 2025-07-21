@@ -19,6 +19,8 @@ import { H5pFileDto } from '../controller/dto';
 import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
 import { InstalledLibrary, LibraryRepo } from '../repo';
 
+type DependencyProcessing = 'preloadedDependencies' | 'editorDependencies' | 'dynamicDependencies';
+
 @Injectable()
 export class LibraryStorage implements ILibraryStorage {
 	public promiseLimiter = pLimit(40);
@@ -173,42 +175,47 @@ export class LibraryStorage implements ILibraryStorage {
 	 * Removes circular dependencies from the library metadata
 	 * @param libraries
 	 */
-	private removeCircularDependencies(libraries: ILibraryMetadata[]): void {
-		const dependencyTypes: ('preloadedDependencies' | 'editorDependencies' | 'dynamicDependencies')[] = [
-			'preloadedDependencies',
-			'editorDependencies',
-			'dynamicDependencies',
-		];
+	private removeCircularDependenciesFromGraph(libraries: ILibraryMetadata[]): void {
 		const libraryMap = new Map(libraries.map((library) => [LibraryName.toUberName(library), library]));
 
 		for (const library of libraries) {
 			const queue: ILibraryMetadata[] = [library];
 
 			while (queue.length > 0) {
-				const currentLibrary = queue.shift()!;
+				const currentLibrary = queue.shift();
+				if (currentLibrary !== undefined) {
+					this.newMethod('preloadedDependencies', currentLibrary, libraryMap, queue);
+					this.newMethod('editorDependencies', currentLibrary, libraryMap, queue);
+					this.newMethod('dynamicDependencies', currentLibrary, libraryMap, queue);
+				}
+			}
+		}
+	}
 
-				for (const dependencyType of dependencyTypes) {
-					for (const dependency of currentLibrary[dependencyType] ?? []) {
-						const ubername = LibraryName.toUberName(dependency);
-						const dependencyMetadata = libraryMap.get(ubername);
+	private newMethod(
+		procssingType: DependencyProcessing,
+		currentLibrary: ILibraryMetadata,
+		libraryMap: Map<string, ILibraryMetadata>,
+		queue: ILibraryMetadata[]
+	): void {
+		for (const dependency of currentLibrary[procssingType] ?? []) {
+			const ubername = LibraryName.toUberName(dependency);
+			const dependencyMetadata = libraryMap.get(ubername);
 
-						if (dependencyMetadata) {
-							for (const otherDependencyType of dependencyTypes) {
-								if (dependencyMetadata[otherDependencyType]) {
-									const index = dependencyMetadata[otherDependencyType].findIndex((libName) =>
-										LibraryName.equal(libName, currentLibrary)
-									);
+			if (dependencyMetadata) {
+				for (const otherDependencyType of procssingType) {
+					if (dependencyMetadata[otherDependencyType]) {
+						const index = dependencyMetadata[otherDependencyType].findIndex((libName) =>
+							LibraryName.equal(libName, currentLibrary)
+						);
 
-									if (index >= 0) {
-										dependencyMetadata[otherDependencyType].splice(index, 1);
-									}
-								}
-							}
-
-							queue.push(dependencyMetadata);
+						if (index >= 0) {
+							dependencyMetadata[otherDependencyType].splice(index, 1);
 						}
 					}
 				}
+
+				queue.push(dependencyMetadata);
 			}
 		}
 	}
@@ -220,7 +227,7 @@ export class LibraryStorage implements ILibraryStorage {
 	public async getAllDependentsCount(): Promise<{ [ubername: string]: number }> {
 		const libraries = await this.libraryRepo.getAll();
 
-		this.removeCircularDependencies(libraries);
+		this.removeCircularDependenciesFromGraph(libraries);
 
 		// Count dependencies
 		const dependencies: { [ubername: string]: number } = {};
