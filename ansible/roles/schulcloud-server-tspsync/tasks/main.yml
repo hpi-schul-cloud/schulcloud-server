@@ -91,5 +91,4 @@
         - merge
     when:
       - WITH_TSP_SYNC
-      - api_tsp_sync_init_present.resources|length == 1
       - NAMESPACE != "main"
