@@ -16,6 +16,8 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { TestConfigHelper } from '@testing/test-config.helper';
 import { SchoolUserListResponse } from '../dto';
+import { roleFactory } from '@modules/role/testing';
+import { RoleName } from '@modules/role';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;
@@ -154,31 +156,55 @@ describe('School Controller (API)', () => {
 			});
 		});
 
-		describe('when user has no permission to view teachers', () => {
-			const setup = async () => {
-				const school = schoolEntityFactory.build();
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
-				const teacherRole = studentUser.roles[0];
-				const teachersOfSchool = userFactory.buildList(3, { school, roles: [teacherRole] });
+		describe('when user is a student', () => {
+			const setup = async (config: { sameSchool: boolean }) => {
+				const teachersSchool = schoolEntityFactory.build();
+				const userSchool = config.sameSchool ? teachersSchool : schoolEntityFactory.build();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({
+					school: userSchool,
+				});
+				const studentRole = studentUser.roles[0];
+				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
+				const teachersOfSchool = userFactory.buildList(3, { school: teachersSchool, roles: [studentRole] });
 
-				await em.persistAndFlush([studentAccount, studentUser, ...teachersOfSchool]);
+				await em.persistAndFlush([
+					studentAccount,
+					studentUser,
+					...teachersOfSchool,
+					studentRole,
+					teacherRole,
+					teachersSchool,
+					userSchool,
+				]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
-				return { loggedInClient, studentUser, teachersOfSchool, school };
+				return { loggedInClient, studentUser, teachersOfSchool, school: teachersSchool };
 			};
 
-			it('should return 403', async () => {
-				const { loggedInClient, school } = await setup();
+			describe('when user is from different school', () => {
+				it('should return 401', async () => {
+					const { loggedInClient, school } = await setup({ sameSchool: false });
 
-				const response = await loggedInClient.get(`${school.id}/teachers`);
+					const response = await loggedInClient.get(`${school.id}/teachers`);
 
-				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+					expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				});
+			});
+
+			describe('when user is from same school', () => {
+				it('should return 200', async () => {
+					const { loggedInClient, school } = await setup({ sameSchool: true });
+
+					const response = await loggedInClient.get(`${school.id}/teachers`);
+
+					expect(response.status).toEqual(HttpStatus.OK);
+				});
 			});
 		});
 
-		describe('when user has permission to view teachers', () => {
+		describe('when user is a teacher', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -272,10 +298,7 @@ describe('School Controller (API)', () => {
 
 				const response = await loggedInClient.get(`/${someId}/students`);
 
-				const body = response.body as SchoolUserListResponse;
-
-				expect(response.status).toEqual(HttpStatus.OK);
-				expect(body.data.length).toEqual(0);
+				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
 			});
 		});
 
@@ -288,12 +311,13 @@ describe('School Controller (API)', () => {
 				Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', true);
 			});
 
-			const setup = async (userRole: 'teacher' | 'student') => {
+			const setup = async (userRole: 'teacher' | 'student', config: { sameSchool?: boolean }) => {
 				const school = schoolEntityFactory.build();
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+				const userSchool = config.sameSchool ? school : schoolEntityFactory.build();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: userSchool });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school: userSchool });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, studentUser, studentAccount]);
+				await em.persistAndFlush([teacherAccount, teacherUser, studentUser, studentAccount, userSchool, school]);
 
 				const { studentIds: studentIdsOfCurrentClass } = await buildClassWithAdditionalStudents({
 					teacherUser,
@@ -340,112 +364,110 @@ describe('School Controller (API)', () => {
 			};
 
 			describe('user is student', () => {
-				it('should include students from current class', async () => {
-					const { loggedInClient, school, studentIdsOfCurrentClass } = await setup('student');
+				describe('user is from same school', () => {
+					it('should include all students from users classes', async () => {
+						const { loggedInClient, school, studentIdsOfCurrentClass, studentIdsOfMoinSchuleClass } = await setup(
+							'student',
+							{ sameSchool: true }
+						);
 
-					const response = await loggedInClient.get(`${school.id}/students`);
-					const body = response.body as SchoolUserListResponse;
-					const recievedIds = body.data.map((user) => user.id);
+						const response = await loggedInClient.get(`${school.id}/students`);
+						const body = response.body as SchoolUserListResponse;
+						const recievedIds = body.data.map((user) => user.id);
 
-					expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfCurrentClass.map((id) => id.toString())));
+						expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfCurrentClass.map((id) => id.toString())));
+						expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfMoinSchuleClass.map((id) => id.toString())));
+					});
+
+					it('should not include students not in class', async () => {
+						const { loggedInClient, school, studentIdsOfUsersWithoutClass } = await setup('student', {
+							sameSchool: false,
+						});
+
+						const response = await loggedInClient.get(`${school.id}/students`);
+						const body = response.body as SchoolUserListResponse;
+						const recievedIds = body.data.map((user) => user.id);
+
+						expect(recievedIds).not.toEqual(
+							expect.arrayContaining(studentIdsOfUsersWithoutClass.map((id) => id.toString()))
+						);
+					});
+
+					it('should not include students from archived classes', async () => {
+						const { loggedInClient, school, studentIdsOfArchivedMoinSchuleClass, studentIdsOfArchivedClass } =
+							await setup('student', {
+								sameSchool: false,
+							});
+
+						const response = await loggedInClient.get(`${school.id}/students`);
+						const body = response.body as SchoolUserListResponse;
+						const recievedIds = body.data.map((user) => user.id);
+
+						expect(recievedIds).not.toEqual(
+							expect.arrayContaining(studentIdsOfArchivedClass.map((id) => id.toString()))
+						);
+						expect(recievedIds).not.toEqual(
+							expect.arrayContaining(studentIdsOfArchivedMoinSchuleClass.map((id) => id))
+						);
+					});
 				});
 
-				it('should not include students from archived class', async () => {
-					const { loggedInClient, school, studentIdsOfArchivedClass } = await setup('student');
+				describe('user is from different school', () => {
+					it('should return no students', async () => {
+						const { loggedInClient, school } = await setup('student', {
+							sameSchool: false,
+						});
 
-					const response = await loggedInClient.get(`${school.id}/students`);
-					const body = response.body as SchoolUserListResponse;
-					const recievedIds = body.data.map((user) => user.id);
+						const response = await loggedInClient.get(`${school.id}/students`);
+						const body = response.body as SchoolUserListResponse;
+						const recievedIds = body.data.map((user) => user.id);
 
-					expect(recievedIds).not.toEqual(expect.arrayContaining(studentIdsOfArchivedClass.map((id) => id.toString())));
-				});
-
-				it('should include students from moin.schule class', async () => {
-					const { loggedInClient, school, studentIdsOfMoinSchuleClass } = await setup('student');
-
-					const response = await loggedInClient.get(`${school.id}/students`);
-					const body = response.body as SchoolUserListResponse;
-					const recievedIds = body.data.map((user) => user.id);
-
-					expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfMoinSchuleClass.map((id) => id.toString())));
-				});
-
-				it('should not include students from archived moin.schule class', async () => {
-					const { loggedInClient, school, studentIdsOfArchivedMoinSchuleClass } = await setup('student');
-
-					const response = await loggedInClient.get(`${school.id}/students`);
-					const body = response.body as SchoolUserListResponse;
-					const recievedIds = body.data.map((user) => user.id);
-
-					expect(recievedIds).not.toEqual(expect.arrayContaining(studentIdsOfArchivedMoinSchuleClass.map((id) => id)));
-				});
-
-				it('should not include students not in class', async () => {
-					const { loggedInClient, school, studentIdsOfUsersWithoutClass } = await setup('student');
-
-					const response = await loggedInClient.get(`${school.id}/students`);
-					const body = response.body as SchoolUserListResponse;
-					const recievedIds = body.data.map((user) => user.id);
-
-					expect(recievedIds).not.toEqual(
-						expect.arrayContaining(studentIdsOfUsersWithoutClass.map((id) => id.toString()))
-					);
+						expect(recievedIds.length).toEqual(0);
+					});
 				});
 			});
 
 			describe('user is teacher', () => {
-				it('should include students from current class', async () => {
-					const { loggedInClient, school, studentIdsOfCurrentClass } = await setup('teacher');
+				describe('user is from same school', () => {
+					it('should include all students from school', async () => {
+						const { loggedInClient, school, studentIdsOfCurrentClass, studentIdsOfMoinSchuleClass } = await setup(
+							'teacher',
+							{ sameSchool: true }
+						);
 
-					const response = await loggedInClient.get(`${school.id}/students`);
-					const body = response.body as SchoolUserListResponse;
-					const recievedIds = body.data.map((user) => user.id);
+						const response = await loggedInClient.get(`${school.id}/students`);
+						const body = response.body as SchoolUserListResponse;
+						const recievedIds = body.data.map((user) => user.id);
 
-					expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfCurrentClass.map((id) => id.toString())));
+						expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfCurrentClass.map((id) => id.toString())));
+						expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfMoinSchuleClass.map((id) => id.toString())));
+					});
+
+					it('should include students from moin.schule class', async () => {
+						const { loggedInClient, school, studentIdsOfMoinSchuleClass } = await setup('teacher', {
+							sameSchool: true,
+						});
+
+						const response = await loggedInClient.get(`${school.id}/students`);
+						const body = response.body as SchoolUserListResponse;
+						const recievedIds = body.data.map((user) => user.id);
+
+						expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfMoinSchuleClass.map((id) => id.toString())));
+					});
 				});
 
-				it('should not include students from archived class', async () => {
-					const { loggedInClient, school, studentIdsOfArchivedClass } = await setup('teacher');
+				describe('user is from different school', () => {
+					it('should return no students', async () => {
+						const { loggedInClient, school } = await setup('student', {
+							sameSchool: false,
+						});
 
-					const response = await loggedInClient.get(`${school.id}/students`);
-					const body = response.body as SchoolUserListResponse;
-					const recievedIds = body.data.map((user) => user.id);
+						const response = await loggedInClient.get(`${school.id}/students`);
+						const body = response.body as SchoolUserListResponse;
+						const recievedIds = body.data.map((user) => user.id);
 
-					expect(recievedIds).not.toEqual(expect.arrayContaining(studentIdsOfArchivedClass.map((id) => id.toString())));
-				});
-
-				it('should include students from moin.schule class', async () => {
-					const { loggedInClient, school, studentIdsOfMoinSchuleClass } = await setup('teacher');
-
-					const response = await loggedInClient.get(`${school.id}/students`);
-					const body = response.body as SchoolUserListResponse;
-					const recievedIds = body.data.map((user) => user.id);
-
-					expect(recievedIds).toEqual(expect.arrayContaining(studentIdsOfMoinSchuleClass.map((id) => id.toString())));
-				});
-
-				it('should not include students from archived moin.schule class', async () => {
-					const { loggedInClient, school, studentIdsOfArchivedMoinSchuleClass } = await setup('teacher');
-
-					const response = await loggedInClient.get(`${school.id}/students`);
-					const body = response.body as SchoolUserListResponse;
-					const recievedIds = body.data.map((user) => user.id);
-
-					expect(recievedIds).not.toEqual(
-						expect.arrayContaining(studentIdsOfArchivedMoinSchuleClass.map((id) => id.toString()))
-					);
-				});
-
-				it('should not include students not in class', async () => {
-					const { loggedInClient, school, studentIdsOfUsersWithoutClass } = await setup('teacher');
-
-					const response = await loggedInClient.get(`${school.id}/students`);
-					const body = response.body as SchoolUserListResponse;
-					const recievedIds = body.data.map((user) => user.id);
-
-					expect(recievedIds).not.toEqual(
-						expect.arrayContaining(studentIdsOfUsersWithoutClass.map((id) => id.toString()))
-					);
+						expect(recievedIds.length).toEqual(0);
+					});
 				});
 			});
 

@@ -110,10 +110,10 @@ export class BoardContextService {
 	}
 
 	private getBoardRolesFromRoomMembership(member: UserWithRoomRoles): BoardRoles[] {
-		const isReader = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_VIEW);
-		const isEditor = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_CONTENT_EDIT);
+		const isReader = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_LIST_CONTENT);
+		const isEditor = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_EDIT_CONTENT);
 
-		const isRoomAdmin = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_MEMBERS_ADD);
+		const isRoomAdmin = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_ADD_MEMBERS);
 		const isRoomOwner = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_CHANGE_OWNER);
 		const isBoardAdmin = isRoomAdmin || isRoomOwner;
 

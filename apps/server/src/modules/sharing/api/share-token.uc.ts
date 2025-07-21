@@ -103,7 +103,7 @@ export class ShareTokenUC {
 				break;
 			case ShareTokenParentType.Room:
 				await this.shareTokenPermissionService.checkRoomWritePermission(user, payload.parentId, [
-					Permission.ROOM_SHARE,
+					Permission.ROOM_SHARE_ROOM,
 				]);
 				break;
 			default:
@@ -154,7 +154,7 @@ export class ShareTokenUC {
 				break;
 			}
 			case ShareTokenParentType.Room: {
-				requiredPermissions = [Permission.ROOM_CREATE];
+				requiredPermissions = [Permission.SCHOOL_CREATE_ROOM];
 				break;
 			}
 		}
