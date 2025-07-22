@@ -120,7 +120,7 @@ describe('Room Controller (API)', () => {
 					endDate: room.endDate?.toISOString(),
 					createdAt: room.createdAt.toISOString(),
 					updatedAt: room.updatedAt.toISOString(),
-					permissions: [Permission.ROOM_VIEW, Permission.ROOM_LEAVE],
+					permissions: [Permission.ROOM_LIST_CONTENT, Permission.ROOM_LEAVE_ROOM],
 					features: room.features,
 				};
 

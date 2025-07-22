@@ -507,7 +507,7 @@ describe('LibraryStorage', () => {
 			await setup();
 
 			const dependencies = await storage.getAllDependentsCount();
-			expect(dependencies).toEqual({ 'circular_a-1.2': 1, 'testing-1.2': 2, 'fake-2.3': 1 });
+			expect(dependencies).toEqual({ 'circular_b-1.2': 1, 'testing-1.2': 2, 'fake-2.3': 1 });
 		});
 
 		it('should count dependents for single library', async () => {
