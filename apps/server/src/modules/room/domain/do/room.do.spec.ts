@@ -16,6 +16,7 @@ describe('Room', () => {
 		schoolId: new ObjectId().toHexString(),
 		createdAt: new Date('2024-01-01'),
 		updatedAt: new Date('2024-01-01'),
+		features: [],
 	};
 
 	beforeEach(() => {

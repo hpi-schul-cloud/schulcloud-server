@@ -5,6 +5,7 @@ import { AnyBoardNode } from './types';
 export enum BoardRoles {
 	EDITOR = 'editor',
 	READER = 'reader',
+	ADMIN = 'admin',
 }
 
 export interface UserWithBoardRoles {
@@ -20,6 +21,11 @@ export interface BoardNodeAuthorizableProps extends AuthorizableObject {
 	boardNode: AnyBoardNode;
 	rootNode: AnyBoardNode;
 	parentNode?: AnyBoardNode;
+	boardSettings: BoardSettings;
+}
+
+export interface BoardSettings {
+	canRoomEditorManageVideoconference?: boolean;
 }
 
 export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizableProps> {
@@ -47,5 +53,9 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 
 	get rootNode(): AnyBoardNode {
 		return this.props.rootNode;
+	}
+
+	get boardSettings(): BoardSettings {
+		return this.props.boardSettings;
 	}
 }

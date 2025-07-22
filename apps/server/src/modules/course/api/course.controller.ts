@@ -23,6 +23,7 @@ import {
 	CreateCourseResponse,
 } from './dto';
 import { CourseMapper } from './mapper';
+import { CreateCourseDto } from './dto/create-course.dto';
 
 @ApiTags('Courses')
 @JwtAuthentication()
@@ -54,7 +55,7 @@ export class CourseController {
 		@CurrentUser() user: ICurrentUser,
 		@Body() body: CreateCourseBodyParams
 	): Promise<CreateCourseResponse> {
-		const course = await this.courseUc.createCourse(user, body.title);
+		const course = await this.courseUc.createCourse(user, new CreateCourseDto(body));
 		const response = CourseMapper.mapToCreateCourseResponse(course);
 
 		return response;

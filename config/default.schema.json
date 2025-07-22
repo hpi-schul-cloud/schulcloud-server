@@ -227,11 +227,6 @@
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
-		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Feature toggle for automatic consent during TSP sync."
-		},
 		"FEATURE_VIDEOCONFERENCE_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -410,6 +405,12 @@
 					"type": "string",
 					"default": "",
 					"description": "Library Bucket name"
+				},
+				"LOG_LEVEL": {
+					"type": "string",
+					"default": "info",
+					"description": "Log level for H5P library manager.",
+					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 				}
 			}
 		},
@@ -808,10 +809,6 @@
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
 				},
-				"OLD_PAD_URI": {
-					"type": "string",
-					"description": "The etherpad api version uri."
-				},
 				"API_KEY": {
 					"type": "string",
 					"description": "The etherpad api key for sending requests."
@@ -1133,12 +1130,12 @@
 		},
 		"FEATURE_COLUMN_BOARD_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Toggle for activating the column board."
 		},
 		"FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enable file folder elements in column board."
 		},
 		"FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED": {
@@ -1153,17 +1150,17 @@
 		},
 		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enable link elements in column board."
 		},
 		"FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enable video conference elements in column board."
 		},
 		"FEATURE_COLUMN_BOARD_H5P_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables h5p on the column board"
 		},
 		"FEATURE_COLUMN_BOARD_COLLABORA_ENABLED": {
@@ -1175,10 +1172,6 @@
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
 			"description": "link to userfacing documentation of the column board feature"
-		},
-		"COLUMN_BOARD_FEEDBACK_LINK": {
-			"type": "string",
-			"description": "link to a page that gathers feedback about the column board feature"
 		},
 		"FEATURE_COURSE_SHARE": {
 			"type": "boolean",
@@ -1207,7 +1200,7 @@
 		},
 		"FEATURE_BOARD_LAYOUT_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Toggle for the column board layout feature."
 		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
@@ -1420,7 +1413,7 @@
 		},
 		"FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables the new course list view"
 		},
 		"FEATURE_GROUPS_IN_COURSE_ENABLED": {
