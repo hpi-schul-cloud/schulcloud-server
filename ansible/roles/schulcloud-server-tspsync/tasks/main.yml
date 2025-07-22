@@ -91,4 +91,6 @@
         - merge
     when:
       - WITH_TSP_SYNC
-      - NAMESPACE != "main"
+      - (TSP_SYNC_CRONJOB_RESTRICTED_TO_MAIN | default(false)) and NAMESPACE != "main"
+    tags:
+      - job
