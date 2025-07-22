@@ -91,6 +91,7 @@
         - merge
     when:
       - WITH_TSP_SYNC
-      - (TSP_SYNC_CRONJOB_RESTRICTED_TO_MAIN | default(false)) and NAMESPACE != "main"
+      - TSP_SYNC_CRONJOB_RESTRICTED_TO_MAIN | default(false)
+      - NAMESPACE != "main"
     tags:
       - job
