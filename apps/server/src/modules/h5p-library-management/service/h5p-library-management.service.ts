@@ -102,19 +102,15 @@ export class H5PLibraryManagementService {
 		this.logger.setContext(H5PLibraryManagementService.name);
 	}
 
-	public async uninstallUnwantedLibraries(
-		wantedLibraries: string[],
-		librariesToCheck: ILibraryAdministrationOverviewItem[]
-	): Promise<ILibraryAdministrationOverviewItem[]> {
-		let allUninstalledLibraries: ILibraryAdministrationOverviewItem[] = [];
+	public async uninstallUnwantedLibraries(wantedLibraries: string[]): Promise<ILibraryAdministrationOverviewItem[]> {
+		let librariesToCheck: ILibraryAdministrationOverviewItem[] = [];
 		let uninstalledLibraries: ILibraryAdministrationOverviewItem[];
+		let allUninstalledLibraries: ILibraryAdministrationOverviewItem[] = [];
 
 		do {
+			librariesToCheck = await this.libraryAdministration.getLibraries();
 			uninstalledLibraries = await this.uninstallUnwantedLibrariesOnce(wantedLibraries, librariesToCheck);
 			allUninstalledLibraries = [...allUninstalledLibraries, ...uninstalledLibraries];
-
-			// Update librariesToCheck by removing the uninstalled libraries
-			librariesToCheck = librariesToCheck.filter((library) => !uninstalledLibraries.includes(library));
 		} while (uninstalledLibraries.length > 0);
 
 		return allUninstalledLibraries;
@@ -202,7 +198,7 @@ export class H5PLibraryManagementService {
 	public async run(): Promise<void> {
 		this.logger.info(new H5PLibraryManagementLoggable('Starting H5P library management job...'));
 		const availableLibraries = await this.libraryAdministration.getLibraries();
-		const uninstalledLibraries = await this.uninstallUnwantedLibraries(this.libraryWishList, availableLibraries);
+		const uninstalledLibraries = await this.uninstallUnwantedLibraries(this.libraryWishList);
 		const installedLibraries = await this.installLibraries(this.libraryWishList);
 		this.logger.info(new H5PLibraryManagementLoggable('Finished H5P library management job!'));
 		this.logger.info(
