@@ -106,6 +106,24 @@ export class H5PLibraryManagementService {
 		wantedLibraries: string[],
 		librariesToCheck: ILibraryAdministrationOverviewItem[]
 	): Promise<ILibraryAdministrationOverviewItem[]> {
+		let allUninstalledLibraries: ILibraryAdministrationOverviewItem[] = [];
+		let uninstalledLibraries: ILibraryAdministrationOverviewItem[];
+
+		do {
+			uninstalledLibraries = await this.uninstallUnwantedLibrariesOnce(wantedLibraries, librariesToCheck);
+			allUninstalledLibraries = [...allUninstalledLibraries, ...uninstalledLibraries];
+
+			// Update librariesToCheck by removing the uninstalled libraries
+			librariesToCheck = librariesToCheck.filter((library) => !uninstalledLibraries.includes(library));
+		} while (uninstalledLibraries.length > 0);
+
+		return allUninstalledLibraries;
+	}
+
+	private async uninstallUnwantedLibrariesOnce(
+		wantedLibraries: string[],
+		librariesToCheck: ILibraryAdministrationOverviewItem[]
+	): Promise<ILibraryAdministrationOverviewItem[]> {
 		if (librariesToCheck.length === 0) {
 			return [];
 		}
@@ -114,14 +132,15 @@ export class H5PLibraryManagementService {
 		const libraryToBeUninstalled = librariesToCheck[lastPositionLibrariesToCheckArray];
 		const libraryCanBeUninstalled =
 			!wantedLibraries.includes(libraryToBeUninstalled.machineName) && libraryToBeUninstalled.dependentsCount === 0;
+
 		if (libraryCanBeUninstalled) {
 			// force removal, don't let content prevent it, therefore use libraryStorage directly
 			// also to avoid conflicts, remove one-by-one, not using for-await:
 			await this.libraryStorage.deleteLibrary(libraryToBeUninstalled);
 		}
 
-		const uninstalledLibraries = await this.uninstallUnwantedLibraries(
-			this.libraryWishList,
+		const uninstalledLibraries = await this.uninstallUnwantedLibrariesOnce(
+			wantedLibraries,
 			librariesToCheck.slice(0, lastPositionLibrariesToCheckArray)
 		);
 
@@ -189,5 +208,10 @@ export class H5PLibraryManagementService {
 		this.logger.info(
 			new H5PLibraryManagementMetricsLoggable(availableLibraries, uninstalledLibraries, installedLibraries)
 		);
+
+		// FEATURE FLAG!!!
+		// ... Logging
+		// library-1.0 already exits
+		// start installation of library-2.0 ... finished installation of library-2.0
 	}
 }
