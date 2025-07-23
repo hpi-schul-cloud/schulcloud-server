@@ -261,7 +261,7 @@
 		"@feathersjs/adapter-tests": "^5.0.33",
 		"@golevelup/ts-jest": "0.5.0",
 		"@nestjs/cli": "^10.4.9",
-		"@nestjs/schematics": "^10.2.3",
+		"@nestjs/schematics": "^11.0.5",
 		"@nestjs/testing": "^10.4.15",
 		"@openapitools/openapi-generator-cli": "^2.19.1",
 		"@types/adm-zip": "^0.5.7",
