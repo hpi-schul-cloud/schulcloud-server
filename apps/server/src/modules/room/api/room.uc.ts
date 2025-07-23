@@ -17,6 +17,9 @@ import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pa
 import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
 import { UserToAddToRoomNotFoundLoggableException } from './loggables/user-not-found.error.loggable';
 import { RoomPermissionService } from './service';
+import { School, SchoolService } from '@modules/school';
+import { RoomStats } from './type/room-stats.type';
+import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
@@ -29,7 +32,8 @@ export class RoomUc {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly userService: UserService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly roomHelperService: RoomPermissionService
+		private readonly roomHelperService: RoomPermissionService,
+		private readonly schoolService: SchoolService
 	) {}
 
 	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<Room>> {
@@ -38,6 +42,40 @@ export class RoomUc {
 		const rooms = await this.roomService.getRoomsByIds(authorizedRoomIds, findOptions);
 
 		return rooms;
+	}
+
+	public async getRoomStats(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomStats>> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		// TODO: ensure is role administrator (=> add permission SCHOOL_ADMINISTRATE_ROOMS)
+		// this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_ADMINISTRATE_ROOMS]);
+
+		const roomMembershipStats = await this.roomMembershipService.getRoomMembershipsByUsersSchoolId(
+			user.school.id,
+			findOptions.pagination
+		);
+		const roomIds = roomMembershipStats.data.flatMap((membership) => membership.roomId).filter((id) => id);
+		const rooms = await this.roomService.getRoomsByIds(roomIds, { pagination: { skip: 0, limit: 100000 } });
+
+		const schoolIds = rooms.data.map((room) => room.schoolId);
+		const schools = await this.schoolService.getSchoolsByIds(schoolIds);
+
+		const roomStats = this.mapRoomStats(roomMembershipStats, rooms, schools);
+
+		return { data: roomStats, total: roomMembershipStats.total };
+	}
+
+	private mapRoomStats(membershipStats: Page<RoomMembershipStats>, rooms: Page<Room>, schools: School[]): RoomStats[] {
+		return membershipStats.data.map((membership) => {
+			const room = rooms.data.find((r) => r.id === membership.roomId);
+			const school = schools.find((s) => s.id === room?.schoolId);
+			return {
+				...membership,
+				name: room?.name ?? '',
+				schoolName: school?.getProps().name ?? '',
+				createdAt: room?.createdAt ?? new Date(),
+				updatedAt: room?.updatedAt ?? new Date(),
+			};
+		});
 	}
 
 	public async createRoom(userId: EntityId, props: CreateRoomBodyParams): Promise<Room> {
