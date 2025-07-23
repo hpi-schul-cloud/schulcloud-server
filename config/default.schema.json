@@ -1681,6 +1681,11 @@
 			"type": "string",
 			"default": "noreply@dbildungscloud.de",
 			"description": "sender address used to send mails with"
+		},
+		"INCLUDE_MAIL_IN_USER_FULL_TEXT_INDEX": {
+			"type": "boolean",
+			"default": true,
+			"description": "if user.email shall be included in the full text index"
 		}
 	},
 	"required": []

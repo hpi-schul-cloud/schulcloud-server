@@ -2,9 +2,10 @@ import { Migration } from '@mikro-orm/migrations-mongodb';
 import { splitForSearchIndexes } from '../../../../../src/utils/search.js';
 import { AnyBulkWriteOperation } from 'mongodb';
 import { ObjectId } from 'mongodb';
+import process from 'node:process';
 
 export class Migration20250717145035 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		console.log(
 			'Start migration to remove the old user search indexes and introduce the new allSearchableStrings field.'
 		);
@@ -22,7 +23,11 @@ export class Migration20250717145035 extends Migration {
 		while (await cursor.hasNext()) {
 			const user = await cursor.next();
 			if (user) {
-				const allSearchableStrings = splitForSearchIndexes(user.firstName, user.lastName, user.email);
+				const allSearchableStrings =
+					// eslint-disable-next-line no-process-env
+					process.env.INCLUDE_MAIL_IN_USER_FULL_TEXT_INDEX !== 'false'
+						? splitForSearchIndexes(user.firstName, user.lastName, user.email)
+						: splitForSearchIndexes(user.firstName, user.lastName);
 
 				batch.push({
 					updateOne: {
