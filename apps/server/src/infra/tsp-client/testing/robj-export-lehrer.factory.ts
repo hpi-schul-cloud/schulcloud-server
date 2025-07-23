@@ -9,6 +9,5 @@ export const robjExportLehrerFactory = Factory.define<RobjExportLehrer, RobjExpo
 		lehrerVorname: `lehrerVorname ${sequence}`,
 		lehrerNachname: `lehrerNachname ${sequence}`,
 		schuleNummer: `schuleNummer ${sequence}`,
-		lehrerRollen: 'Lehrer',
 	};
 });
