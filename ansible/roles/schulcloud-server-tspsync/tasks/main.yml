@@ -71,3 +71,27 @@
     when: not WITH_TSP_SYNC
     tags:
       - job
+
+  # --- Very hacky and shall not be copied anywhere, looking forward to BC-6900 and friends for a cleaner solution. ---
+  # This disables the sync CronJob in all namespaces except "main"
+  # to avoid potential database overload in dev environments.
+  # Developers can still trigger it manually via kubectl if needed.
+  - name: Suspend the API TSP Sync CronJob (conditionally)
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      api_version: batch/v1
+      kind: CronJob
+      name: api-tsp-sync-cronjob
+      definition:
+        spec:
+          suspend: true
+      merge_type:
+        - strategic-merge
+        - merge
+    when:
+      - WITH_TSP_SYNC
+      - TSP_SYNC_CRONJOB_RESTRICTED_TO_MAIN | default(false)
+      - NAMESPACE != "main"
+    tags:
+      - job

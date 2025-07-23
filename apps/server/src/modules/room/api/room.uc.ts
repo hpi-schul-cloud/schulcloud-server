@@ -45,7 +45,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const room = await this.roomService.createRoom({ ...props, schoolId: user.school.id });
 
-		this.authorizationService.checkOneOfPermissions(user, [Permission.ROOM_CREATE]);
+		this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_CREATE_ROOM]);
 
 		try {
 			await this.roomMembershipService.createNewRoomMembership(room.id, userId);
@@ -112,7 +112,9 @@ export class RoomUc {
 		this.roomHelperService.checkFeatureRoomsEnabled();
 		const room = await this.roomService.getSingleRoom(roomId);
 
-		await this.roomHelperService.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_DELETE]);
+		await this.roomHelperService.checkRoomAuthorizationByIds(userId, roomId, Action.write, [
+			Permission.ROOM_DELETE_ROOM,
+		]);
 		await this.columnBoardService.deleteByExternalReference({
 			type: BoardExternalReferenceType.Room,
 			id: roomId,
@@ -152,7 +154,7 @@ export class RoomUc {
 	): Promise<RoomRole> {
 		this.roomHelperService.checkFeatureRoomsEnabled();
 		await this.roomHelperService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [
-			Permission.ROOM_MEMBERS_ADD,
+			Permission.ROOM_ADD_MEMBERS,
 		]);
 		await this.checkUsersAccessible(currentUserId, userIds);
 		const roleName = await this.roomMembershipService.addMembersToRoom(roomId, userIds);
@@ -170,7 +172,7 @@ export class RoomUc {
 			currentUserId,
 			roomId,
 			Action.write,
-			[Permission.ROOM_MEMBERS_CHANGE_ROLE]
+			[Permission.ROOM_CHANGE_ROLES]
 		);
 		this.preventChangingOwnersRole(roomAuthorizable, userIds, currentUserId);
 		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, userIds, roleName);
@@ -191,7 +193,7 @@ export class RoomUc {
 	public async leaveRoom(currentUserId: EntityId, roomId: EntityId): Promise<void> {
 		this.roomHelperService.checkFeatureRoomsEnabled();
 		await this.roomHelperService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.read, [
-			Permission.ROOM_LEAVE,
+			Permission.ROOM_LEAVE_ROOM,
 		]);
 		await this.roomMembershipService.removeMembersFromRoom(roomId, [currentUserId]);
 	}
@@ -199,7 +201,7 @@ export class RoomUc {
 	public async removeMembersFromRoom(currentUserId: EntityId, roomId: EntityId, userIds: EntityId[]): Promise<void> {
 		this.roomHelperService.checkFeatureRoomsEnabled();
 		await this.roomHelperService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [
-			Permission.ROOM_MEMBERS_REMOVE,
+			Permission.ROOM_REMOVE_MEMBERS,
 		]);
 		await this.roomMembershipService.removeMembersFromRoom(roomId, userIds);
 	}
