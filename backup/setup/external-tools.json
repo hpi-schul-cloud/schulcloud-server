@@ -136,7 +136,7 @@
 		"config_type": "lti11",
 		"config_baseUrl": "https://saltire.lti.app/tool",
 		"config_key": "12345",
-		"config_secret": "U2FsdGVkX188+4Kh4t/eADwUS7hh0mwOjCOAIbd64Og=",
+		"config_secret": "U2FsdGVkX19vm86S5rj1naMiS+XgUABOzXo1B2ZbIdpEBBZ7nvpZGQ==",
 		"config_lti_message_type": "basic-lti-launch-request",
 		"config_privacy_permission": "name",
 		"config_launch_presentation_locale": "de-DE",
