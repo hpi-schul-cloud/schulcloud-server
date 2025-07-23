@@ -6,7 +6,9 @@ import { ObjectId } from 'mongodb';
 export class Migration20250717145035 extends Migration {
 	async up(): Promise<void> {
 		const userCollection = this.getCollection('users');
-		await userCollection.dropIndex('userSearchIndex');
+		if (await userCollection.indexExists('userSearchIndex')) {
+			await userCollection.dropIndex('userSearchIndex');
+		}
 
 		const cursor = userCollection.find();
 		const batchSize = 1000;
@@ -15,7 +17,7 @@ export class Migration20250717145035 extends Migration {
 		while (await cursor.hasNext()) {
 			const user = await cursor.next();
 			if (user) {
-				const allSearchableStrings = splitForSearchIndexes(user.firstName, user.lastName, user.email);
+				const allSearchableStrings = splitForSearchIndexes(user.firstName, user.lastName, user.email) as string[];
 
 				batch.push({
 					updateOne: {

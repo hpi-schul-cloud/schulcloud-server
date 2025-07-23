@@ -6,7 +6,7 @@
  *
  * @returns [Array]
  */
-const createEdgeNGrams = (input) => {
+const createAllSubstrings = (input, minLength) => {
 	const result = [];
 
 	for (const word of input.split(/[\s-]/)) {
@@ -18,7 +18,9 @@ const createEdgeNGrams = (input) => {
 			let current = '';
 			for (let end = start; end < codePoints.length; end++) {
 				current += codePoints[end];
-				result.push(current);
+				if (current.length >= minLength) {
+					result.push(current);
+				}
 			}
 		}
 	}
@@ -26,9 +28,14 @@ const createEdgeNGrams = (input) => {
 	return result;
 };
 
-// Example usage:
+// Explicit minLength version
+const splitForSearchIndexesWithMinLength = (minLength, ...searchTexts) => {
+	return searchTexts.flatMap((text) => createAllSubstrings(text, minLength));
+};
+
+// Default version with minLength = 3
 const splitForSearchIndexes = (...searchTexts) => {
-	return searchTexts.flatMap((text) => createEdgeNGrams(text));
+	return splitForSearchIndexesWithMinLength(3, ...searchTexts);
 };
 
 module.exports = {
