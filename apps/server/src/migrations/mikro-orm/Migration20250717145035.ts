@@ -17,7 +17,7 @@ export class Migration20250717145035 extends Migration {
 		while (await cursor.hasNext()) {
 			const user = await cursor.next();
 			if (user) {
-				const allSearchableStrings = splitForSearchIndexes(user.firstName, user.lastName, user.email) as string[];
+				const allSearchableStrings = splitForSearchIndexes(user.firstName, user.lastName, user.email);
 
 				batch.push({
 					updateOne: {
