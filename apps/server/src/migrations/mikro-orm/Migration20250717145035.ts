@@ -5,14 +5,19 @@ import { ObjectId } from 'mongodb';
 
 export class Migration20250717145035 extends Migration {
 	async up(): Promise<void> {
+		console.log(
+			'Start migration to remove the old user search indexes and introduce the new allSearchableStrings field.'
+		);
 		const userCollection = this.getCollection('users');
 		if (await userCollection.indexExists('userSearchIndex')) {
+			console.log('Found and dropping existing userSearchIndex.');
 			await userCollection.dropIndex('userSearchIndex');
 		}
 
 		const cursor = userCollection.find();
 		const batchSize = 1000;
 		let batch: AnyBulkWriteOperation[] = [];
+		let processedUsers = 0;
 
 		while (await cursor.hasNext()) {
 			const user = await cursor.next();
@@ -34,6 +39,8 @@ export class Migration20250717145035 extends Migration {
 				});
 
 				if (batch.length === batchSize) {
+					processedUsers += batch.length;
+					console.log(`Updating a batch of ${batch.length} users. (${processedUsers} users processed so far)`);
 					// @ts-ignore
 					await userCollection.bulkWrite(batch);
 					batch = [];
@@ -42,8 +49,11 @@ export class Migration20250717145035 extends Migration {
 		}
 
 		if (batch.length > 0) {
+			processedUsers += batch.length;
+			console.log(`Updating the last batch of ${batch.length} users. (${processedUsers} users processed in total)`);
 			// @ts-ignore
 			await userCollection.bulkWrite(batch);
 		}
+		console.log('Finished migration to remove the old user search indexes.');
 	}
 }
