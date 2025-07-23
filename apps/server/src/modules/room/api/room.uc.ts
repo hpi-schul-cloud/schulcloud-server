@@ -46,8 +46,7 @@ export class RoomUc {
 
 	public async getRoomStats(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomStats>> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		// TODO: ensure is role administrator (=> add permission SCHOOL_ADMINISTRATE_ROOMS)
-		// this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_ADMINISTRATE_ROOMS]);
+		this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_ADMINISTRATE_ROOMS]);
 
 		const roomMembershipStats = await this.roomMembershipService.getRoomMembershipsByUsersSchoolId(
 			user.school.id,
