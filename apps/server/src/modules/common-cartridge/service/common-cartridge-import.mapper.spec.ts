@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
-import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
+import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 import {
 	CommonCartridgeFileResourceProps,
 	CommonCartridgeWebContentResourceProps,
@@ -39,20 +39,26 @@ describe('CommonCartridgeImportMapper', () => {
 				expect(result).toBeUndefined();
 			});
 
-			it('should return link', () => {
-				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeResourceTypeV1P1.WEB_LINK);
+			it('should return link for CC 1.1', () => {
+				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeXmlResourceType.WEB_LINK_CC11);
+
+				expect(result).toEqual('link');
+			});
+
+			it('should return link for CC 1.3', () => {
+				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeXmlResourceType.WEB_LINK_CC13);
 
 				expect(result).toEqual('link');
 			});
 
 			it('should return rich text', () => {
-				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeResourceTypeV1P1.WEB_CONTENT);
+				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeXmlResourceType.WEB_CONTENT);
 
 				expect(result).toEqual('richText');
 			});
 
 			it('should return file', () => {
-				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeResourceTypeV1P1.FILE);
+				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeXmlResourceType.FILE);
 
 				expect(result).toEqual('file');
 			});
@@ -63,7 +69,7 @@ describe('CommonCartridgeImportMapper', () => {
 		describe('when resource is webLink', () => {
 			const setup = () => {
 				const resource: CommonCartridgeWebLinkResourceProps = {
-					type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
+					type: CommonCartridgeXmlResourceType.WEB_LINK_CC11,
 					url: 'https://example.com',
 					title: '',
 				};
@@ -103,7 +109,7 @@ describe('CommonCartridgeImportMapper', () => {
 		describe('when resource is webContent', () => {
 			const setup = () => {
 				const resource: CommonCartridgeWebContentResourceProps = {
-					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+					type: CommonCartridgeXmlResourceType.WEB_CONTENT,
 					html: '<p>Test</p>',
 				};
 
@@ -139,7 +145,7 @@ describe('CommonCartridgeImportMapper', () => {
 		describe('when resource is webContent with non-html path', () => {
 			const setup = () => {
 				const resource: CommonCartridgeWebContentResourceProps = {
-					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+					type: CommonCartridgeXmlResourceType.WEB_CONTENT,
 					html: '<p>Test</p>',
 				};
 
@@ -169,7 +175,7 @@ describe('CommonCartridgeImportMapper', () => {
 		describe('when resource is a file', () => {
 			const setup = () => {
 				const resource: CommonCartridgeFileResourceProps = {
-					type: CommonCartridgeResourceTypeV1P1.FILE,
+					type: CommonCartridgeXmlResourceType.FILE,
 					href: 'path/to/resource',
 					fileName: 'resource.jpg',
 					file: new File([''], 'resource.jpg'),

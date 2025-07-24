@@ -2,7 +2,7 @@ import { sanitizeRichText } from '@shared/controller/transformer';
 import { InputFormat } from '@shared/domain/types';
 import AdmZip from 'adm-zip';
 import { load } from 'cheerio';
-import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
+import { CommonCartridgeXmlResourceType } from './common-cartridge-import.enums';
 import {
 	CommonCartridgeFileResourceProps,
 	CommonCartridgeOrganizationProps,
@@ -25,10 +25,13 @@ export class CommonCartridgeResourceFactory {
 		const content = this.archive.readAsText(organization.resourcePath);
 		const { title } = organization;
 
+		console.log(organization.resourceType);
+
 		switch (organization.resourceType) {
-			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
-				return this.createWebLinkResource(content, title);
-			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
+			case CommonCartridgeXmlResourceType.WEB_LINK_CC11:
+			case CommonCartridgeXmlResourceType.WEB_LINK_CC13:
+				return this.createWebLinkResource(content, title, organization.resourceType);
+			case CommonCartridgeXmlResourceType.WEB_CONTENT:
 				return this.buildWebContentResourceFromPath(content, organization.resourcePath, inputFormat, title);
 			default:
 				return undefined;
@@ -42,7 +45,11 @@ export class CommonCartridgeResourceFactory {
 		return isValidOrganization;
 	}
 
-	private createWebLinkResource(content: string, title: string): CommonCartridgeWebLinkResourceProps | undefined {
+	private createWebLinkResource(
+		content: string,
+		title: string,
+		type: CommonCartridgeXmlResourceType.WEB_LINK_CC11 | CommonCartridgeXmlResourceType.WEB_LINK_CC13
+	): CommonCartridgeWebLinkResourceProps | undefined {
 		const document = load(content, { xml: true });
 		const url = document('webLink > url').attr('href') ?? '';
 
@@ -50,8 +57,10 @@ export class CommonCartridgeResourceFactory {
 			return undefined;
 		}
 
+		console.log('created');
+
 		return {
-			type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
+			type,
 			title,
 			url,
 		};
@@ -86,7 +95,7 @@ export class CommonCartridgeResourceFactory {
 		const file = new File([buffer], fileName, {});
 
 		return {
-			type: CommonCartridgeResourceTypeV1P1.FILE,
+			type: CommonCartridgeXmlResourceType.FILE,
 			href: resourcePath,
 			fileName,
 			file,
@@ -103,7 +112,7 @@ export class CommonCartridgeResourceFactory {
 		const sanitizedHtml = sanitizeRichText(unsanitizedHtml, inputFormat);
 
 		return {
-			type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+			type: CommonCartridgeXmlResourceType.WEB_CONTENT,
 			html: sanitizedHtml,
 		};
 	}
