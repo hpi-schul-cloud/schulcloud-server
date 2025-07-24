@@ -25,8 +25,6 @@ export class CommonCartridgeResourceFactory {
 		const content = this.archive.readAsText(organization.resourcePath);
 		const { title } = organization;
 
-		console.log(organization.resourceType);
-
 		switch (organization.resourceType) {
 			case CommonCartridgeXmlResourceType.WEB_LINK_CC11:
 			case CommonCartridgeXmlResourceType.WEB_LINK_CC13:
@@ -56,8 +54,6 @@ export class CommonCartridgeResourceFactory {
 		if (url === '') {
 			return undefined;
 		}
-
-		console.log('created');
 
 		return {
 			type,
