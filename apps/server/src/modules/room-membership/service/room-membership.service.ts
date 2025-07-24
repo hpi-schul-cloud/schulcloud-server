@@ -147,7 +147,7 @@ export class RoomMembershipService {
 		return roomMembershipAuthorizables;
 	}
 
-	public async getRoomMembershipsByUsersSchoolId(
+	public async getRoomMembershipStatsByUsersSchoolId(
 		schoolId: EntityId,
 		pagination?: Pagination
 	): Promise<Page<RoomMembershipStats>> {
@@ -158,6 +158,40 @@ export class RoomMembershipService {
 
 		const page = new Page<RoomMembershipStats>(result, total);
 		return page;
+	}
+
+	public async getRoomMembershipAuthorizable(roomId: EntityId): Promise<RoomMembershipAuthorizable> {
+		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
+		if (roomMembership === null) {
+			const room = await this.roomService.getSingleRoom(roomId);
+			return new RoomMembershipAuthorizable(roomId, [], room.schoolId);
+		}
+		const group = await this.groupService.findById(roomMembership.userGroupId);
+		const roleSet = await this.roleService.findByIds(group.users.map((groupUser) => groupUser.roleId));
+
+		const members = group.users.map((groupUser): UserWithRoomRoles => {
+			const roleDto = roleSet.find((role) => role.id === groupUser.roleId);
+			if (roleDto === undefined) throw new BadRequestException('Role not found');
+			return {
+				roles: [roleDto],
+				userId: groupUser.userId,
+			};
+		});
+
+		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(roomId, members, roomMembership.schoolId);
+
+		return roomMembershipAuthorizable;
+	}
+
+	private async ensureOwnerIsNotRemoved(group: Group, userIds: EntityId[]): Promise<void> {
+		const role = await this.roleService.findByName(RoleName.ROOMOWNER);
+		const includedOwner = group.users
+			.filter((groupUser) => userIds.includes(groupUser.userId))
+			.find((groupUser) => groupUser.roleId === role.id);
+
+		if (includedOwner) {
+			throw new BadRequestException('Cannot remove owner from room');
+		}
 	}
 
 	private async getStats(groupsOnPage: Group[], schoolId: string): Promise<RoomMembershipStats[]> {
@@ -204,41 +238,6 @@ export class RoomMembershipService {
 		);
 		return groupIdOwnerMap;
 	}
-
-	public async getRoomMembershipAuthorizable(roomId: EntityId): Promise<RoomMembershipAuthorizable> {
-		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
-		if (roomMembership === null) {
-			const room = await this.roomService.getSingleRoom(roomId);
-			return new RoomMembershipAuthorizable(roomId, [], room.schoolId);
-		}
-		const group = await this.groupService.findById(roomMembership.userGroupId);
-		const roleSet = await this.roleService.findByIds(group.users.map((groupUser) => groupUser.roleId));
-
-		const members = group.users.map((groupUser): UserWithRoomRoles => {
-			const roleDto = roleSet.find((role) => role.id === groupUser.roleId);
-			if (roleDto === undefined) throw new BadRequestException('Role not found');
-			return {
-				roles: [roleDto],
-				userId: groupUser.userId,
-			};
-		});
-
-		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(roomId, members, roomMembership.schoolId);
-
-		return roomMembershipAuthorizable;
-	}
-
-	private async ensureOwnerIsNotRemoved(group: Group, userIds: EntityId[]): Promise<void> {
-		const role = await this.roleService.findByName(RoleName.ROOMOWNER);
-		const includedOwner = group.users
-			.filter((groupUser) => userIds.includes(groupUser.userId))
-			.find((groupUser) => groupUser.roleId === role.id);
-
-		if (includedOwner) {
-			throw new BadRequestException('Cannot remove owner from room');
-		}
-	}
-
 	private async getRoomMemberstatsForGroups<T extends Group>(
 		schoolId: EntityId,
 		groups: T[]
