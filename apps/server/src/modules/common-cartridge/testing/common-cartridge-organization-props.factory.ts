@@ -1,7 +1,7 @@
 import { Factory } from 'fishery';
 import { CommonCartridgeOrganizationProps } from '../import/common-cartridge-import.types';
 import { faker } from '@faker-js/faker/.';
-import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
+import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 
 type CcOrgFactoryTransientParams = {
 	parent: CommonCartridgeOrganizationProps;
@@ -32,15 +32,15 @@ class CommonCartridgeOrganizationPropsFactory extends Factory<
 	}
 
 	public withWebContent(name: string): this {
-		return this.withResource(name, CommonCartridgeResourceTypeV1P1.WEB_CONTENT);
+		return this.withResource(name, CommonCartridgeXmlResourceType.WEB_CONTENT);
 	}
 
 	public withWebLink(url: string): this {
-		return this.withResource(url, CommonCartridgeResourceTypeV1P1.WEB_LINK);
+		return this.withResource(url, CommonCartridgeXmlResourceType.WEB_LINK_CC11);
 	}
 
 	public withFile(name: string): this {
-		return this.withResource(name, CommonCartridgeResourceTypeV1P1.FILE);
+		return this.withResource(name, CommonCartridgeXmlResourceType.FILE);
 	}
 }
 
