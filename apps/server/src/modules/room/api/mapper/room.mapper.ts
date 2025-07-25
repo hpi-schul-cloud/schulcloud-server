@@ -45,6 +45,7 @@ export class RoomMapper {
 			createdAt: room.createdAt,
 			updatedAt: room.updatedAt,
 			permissions,
+			features: room.features,
 		});
 
 		return response;

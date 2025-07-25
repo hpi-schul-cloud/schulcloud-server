@@ -129,7 +129,7 @@ export class VideoConferenceService {
 			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
-				return roomMember.roles.some((role) => role.name === RoleName.ROOMEDITOR);
+				return roomMember.roles.some((role) => role.name === RoleName.ROOMADMIN);
 			}
 
 			return false;
@@ -139,7 +139,11 @@ export class VideoConferenceService {
 			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
 
 			if (boardAuthorisedUser) {
-				return boardAuthorisedUser?.roles.includes(BoardRoles.EDITOR);
+				const canRoomEditorManageVideoconference =
+					boardDoAuthorizable.boardSettings.canRoomEditorManageVideoconference ?? false;
+				const isBoardEditor = boardAuthorisedUser.roles.includes(BoardRoles.EDITOR);
+				const isBoardAdmin = boardAuthorisedUser.roles.includes(BoardRoles.ADMIN);
+				return (canRoomEditorManageVideoconference && isBoardEditor) || isBoardAdmin;
 			}
 
 			return false;
@@ -156,7 +160,10 @@ export class VideoConferenceService {
 			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
-				return roomMember.roles.some((role) => role.name === RoleName.ROOMVIEWER);
+				return (
+					roomMember.roles.some((role) => role.name === RoleName.ROOMVIEWER) ||
+					roomMember.roles.some((role) => role.name === RoleName.ROOMEDITOR)
+				);
 			}
 
 			return false;
@@ -166,7 +173,8 @@ export class VideoConferenceService {
 			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
 
 			if (boardAuthorisedUser) {
-				return boardAuthorisedUser?.roles.includes(BoardRoles.READER);
+				const boardUserRoles = boardAuthorisedUser.roles;
+				return [BoardRoles.READER, BoardRoles.EDITOR].some((role) => boardUserRoles.includes(role));
 			}
 
 			return false;

@@ -286,7 +286,7 @@ describe('ShareTokenUC', () => {
 				});
 
 				expect(shareTokenPermissionService.checkRoomWritePermission).toHaveBeenCalledWith(user, room.id, [
-					Permission.ROOM_SHARE,
+					Permission.ROOM_SHARE_ROOM,
 				]);
 			});
 
@@ -601,7 +601,7 @@ describe('ShareTokenUC', () => {
 				const { user, shareToken } = setup();
 				await uc.lookupShareToken(user.id, shareToken.token);
 
-				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.ROOM_CREATE]);
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.SCHOOL_CREATE_ROOM]);
 			});
 
 			it('should return the result', async () => {

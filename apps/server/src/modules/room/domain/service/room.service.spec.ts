@@ -80,6 +80,7 @@ describe('RoomService', () => {
 				name: 'room #1',
 				color: RoomColor.ORANGE,
 				schoolId: new ObjectId().toHexString(),
+				features: [],
 			};
 			return { props };
 		};
@@ -136,6 +137,7 @@ describe('RoomService', () => {
 			const props: RoomUpdateProps = {
 				name: 'updated name',
 				color: RoomColor.BLUE_GREY,
+				features: [],
 			};
 
 			return { props, room };
@@ -207,6 +209,24 @@ describe('RoomService', () => {
 			expect(result.data[0].id).toBe('1');
 			expect(result.data[1].id).toBe('2');
 			expect(result.data[2].id).toBe('3');
+		});
+	});
+
+	describe('canEditorManageVideoconferences', () => {
+		it('should return true if correct feature is present', () => {
+			const room = roomFactory.build();
+
+			const result = service.canEditorManageVideoconferences(room);
+
+			expect(result).toEqual(true);
+		});
+
+		it('should return false if feature is not present', () => {
+			const room = roomFactory.build({ features: [] });
+
+			const result = service.canEditorManageVideoconferences(room);
+
+			expect(result).toEqual(false);
 		});
 	});
 });

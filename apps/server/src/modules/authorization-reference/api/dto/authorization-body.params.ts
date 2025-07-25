@@ -1,8 +1,10 @@
+import { CustomPayload } from '@infra/access-token';
+import { Action, AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { ApiProperty } from '@nestjs/swagger';
 import { Permission } from '@shared/domain/interface';
-import { Action, AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
+import { EntityId } from '@shared/domain/types';
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsMongoId, ValidateNested } from 'class-validator';
+import { IsArray, IsEnum, IsMongoId, IsNumber, IsObject, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 
 class AuthorizationContextParams implements AuthorizationContext {
 	@IsEnum(Action)
@@ -12,7 +14,7 @@ class AuthorizationContextParams implements AuthorizationContext {
 		description: 'Define for which action the operation should be performend.',
 		example: Action.read,
 	})
-	action!: Action;
+	public action!: Action;
 
 	@IsArray()
 	@IsEnum(Permission, { each: true })
@@ -23,7 +25,7 @@ class AuthorizationContextParams implements AuthorizationContext {
 		description: 'User permissions that are needed to execute the operation.',
 		example: [Permission.USER_UPDATE],
 	})
-	requiredPermissions!: Permission[];
+	public requiredPermissions!: Permission[];
 }
 
 export class AuthorizationBodyParams {
@@ -32,7 +34,7 @@ export class AuthorizationBodyParams {
 	@ApiProperty({
 		type: AuthorizationContextParams,
 	})
-	context!: AuthorizationContextParams;
+	public context!: AuthorizationContextParams;
 
 	@IsEnum(AuthorizableReferenceType)
 	@ApiProperty({
@@ -40,9 +42,30 @@ export class AuthorizationBodyParams {
 		description: 'The entity or domain object the operation should be performed on.',
 		example: AuthorizableReferenceType.User,
 	})
-	referenceType!: AuthorizableReferenceType;
+	public referenceType!: AuthorizableReferenceType;
 
 	@IsMongoId()
 	@ApiProperty({ description: 'The id of the entity/domain object of the defined referenceType.' })
-	referenceId!: string;
+	public referenceId!: EntityId;
+}
+
+export class CreateAccessTokenParams extends AuthorizationBodyParams {
+	@ApiProperty({ description: 'Lifetime of token' })
+	@IsNumber()
+	public tokenTtlInSeconds!: number;
+
+	@ApiProperty({ description: 'The payload of the access token.' })
+	@IsObject()
+	@IsOptional()
+	public payload: CustomPayload = {};
+}
+
+export class AccessTokenParams {
+	@ApiProperty({ description: 'The access token to be resolved.' })
+	@IsUUID()
+	public token!: string;
+
+	@ApiProperty({ description: 'Lifetime of token' })
+	@IsNumber()
+	public tokenTtlInSeconds!: number;
 }

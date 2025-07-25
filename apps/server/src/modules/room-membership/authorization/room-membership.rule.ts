@@ -19,8 +19,8 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 	public hasPermission(user: User, object: RoomMembershipAuthorizable, context: AuthorizationContext): boolean {
 		// Copy and Share Room are allowed when user has permission but belongs to external school
 		if (
-			!context.requiredPermissions.includes(Permission.ROOM_SHARE) &&
-			!context.requiredPermissions.includes(Permission.ROOM_COPY)
+			!context.requiredPermissions.includes(Permission.ROOM_SHARE_ROOM) &&
+			!context.requiredPermissions.includes(Permission.ROOM_COPY_ROOM)
 		) {
 			if (!this.hasAccessToSchool(user, object.schoolId)) {
 				return false;
@@ -38,9 +38,9 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 			.flatMap((role) => role.permissions ?? []);
 
 		if (action === Action.read) {
-			return permissionsThisUserHas.includes(Permission.ROOM_VIEW);
+			return permissionsThisUserHas.includes(Permission.ROOM_LIST_CONTENT);
 		}
-		return permissionsThisUserHas.includes(Permission.ROOM_CONTENT_EDIT);
+		return permissionsThisUserHas.includes(Permission.ROOM_EDIT_CONTENT);
 	}
 
 	private hasAccessToSchool(user: User, schoolId: string): boolean {

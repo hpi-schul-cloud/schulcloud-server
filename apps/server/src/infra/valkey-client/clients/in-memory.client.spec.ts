@@ -29,27 +29,78 @@ describe(InMemoryClient.name, () => {
 	});
 
 	describe('GET', () => {
-		const setup = async () => {
-			const key = 'key1';
-			const value = 'value1';
-			await client.set(key, value);
+		describe('when the key is without ttl', () => {
+			const setup = async () => {
+				const key = 'key1';
+				const value = 'value1';
+				await client.set(key, value);
 
-			return { key, value };
-		};
+				return { key, value };
+			};
 
-		it('should set and get a value', async () => {
-			const { key, value } = await setup();
+			it('should set and get a value', async () => {
+				const { key, value } = await setup();
 
-			const result = await client.get(key);
+				const result = await client.get(key);
 
-			expect(result).toBe(value);
-			expect(logger.warning).toHaveBeenCalledWith(expect.anything());
+				expect(result).toBe(value);
+				expect(logger.warning).toHaveBeenCalledWith(expect.anything());
+			});
+
+			it('should return null for a non-existent key', async () => {
+				const value = await client.get('nonExistentKey');
+
+				expect(value).toBeNull();
+			});
 		});
 
-		it('should return null for a non-existent key', async () => {
-			const value = await client.get('nonExistentKey');
+		describe('when the key has a ttl', () => {
+			describe('when the key is not expired', () => {
+				const setup = async () => {
+					const key = 'key1';
+					const value = 'value1';
+					const ttlInSeconds = 60;
 
-			expect(value).toBeNull();
+					await client.set(key, value, 'EX', ttlInSeconds);
+
+					return { key, value };
+				};
+
+				it('should return the value if the key has not expired', async () => {
+					const { key, value } = await setup();
+
+					const result = await client.get(key);
+
+					expect(result).toBe(value);
+				});
+			});
+
+			describe('when the key is expired', () => {
+				const setup = async () => {
+					const key = 'key1';
+					const value = 'value1';
+					const ttlInSeconds = 60;
+
+					const originalDateNow = Date.now;
+					let now = originalDateNow();
+					jest.spyOn(Date, 'now').mockImplementation(() => now);
+
+					await client.set(key, value, 'EX', ttlInSeconds);
+
+					now += ttlInSeconds * 1000 + 1000;
+
+					return { key, value, restore: () => (Date.now = originalDateNow) };
+				};
+
+				it('should return null if the key has expired', async () => {
+					const { key, restore } = await setup();
+
+					const result = await client.get(key);
+					expect(result).toBeNull();
+
+					restore();
+				});
+			});
 		});
 	});
 
@@ -104,6 +155,7 @@ describe(InMemoryClient.name, () => {
 			const keyWithTTL = 'keyWithTTL';
 
 			await client.set(keyWithTTL, 'value', 'EX', 60);
+
 			return { keyWithTTL };
 		};
 
