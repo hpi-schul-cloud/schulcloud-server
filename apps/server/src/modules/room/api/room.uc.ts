@@ -45,6 +45,7 @@ export class RoomUc {
 	}
 
 	public async getRoomStats(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomStats>> {
+		this.roomHelperService.checkFeatureAdministrateRoomsEnabled();
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_ADMINISTRATE_ROOMS]);
 
