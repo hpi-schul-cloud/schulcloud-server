@@ -80,14 +80,15 @@ export class RoomMapper {
 		roomStats: Page<RoomStats>,
 		pagination: PaginationParams
 	): RoomStatsListResponse {
-		const roomStatsResponseData: RoomStatsItemResponse[] = roomStats.data.map((item) => {
-			return {
-				...item,
-				roomName: item.name,
-				createdAt: item.createdAt,
-				updatedAt: item.updatedAt,
-			};
-		});
+		const roomStatsResponseData: RoomStatsItemResponse[] = roomStats.data.map(
+			(item) =>
+				new RoomStatsItemResponse({
+					...item,
+					name: item.name,
+					createdAt: item.createdAt,
+					updatedAt: item.updatedAt,
+				})
+		);
 		const response = new RoomStatsListResponse(
 			roomStatsResponseData,
 			roomStats.total,
