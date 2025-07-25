@@ -1625,6 +1625,11 @@
 			"default": "false",
 			"description": "Enables the tab navigation for room members page"
 		},
+		"FEATURE_ADMINISTRATE_ROOMS_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the administration of rooms by school admins"
+		},
 		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
 			"type": "boolean",
 			"default": "false",
