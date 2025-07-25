@@ -96,7 +96,8 @@ describe('rooms usecase', () => {
 	describe('getBoard', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const room = courseEntityFactory.buildWithId({ students: [user] });
+			const courseTeacher = userFactory.buildWithId();
+			const room = courseEntityFactory.buildWithId({ students: [user], teachers: [courseTeacher] });
 			const tasks = taskFactory.buildList(3, { course: room });
 			const lessons = lessonFactory.buildList(3, { course: room });
 			const board = boardFactory.buildWithId({ course: room });

@@ -48,7 +48,7 @@ export class CourseRepo extends BaseRepo<CourseEntity> {
 		};
 
 		const [courses, count] = await this._em.findAndCount(CourseEntity, scope.query, queryOptions);
-		console.log('findAllByUserId', JSON.stringify(courses));
+
 		return [courses, count];
 	}
 
