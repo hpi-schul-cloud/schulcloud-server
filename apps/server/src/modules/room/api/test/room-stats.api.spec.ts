@@ -38,7 +38,7 @@ describe('Room Controller (API)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOMS_ENABLED = true;
+		config.FEATURE_ADMINISTRATE_ROOMS_ENABLED = true;
 	});
 
 	afterAll(async () => {
