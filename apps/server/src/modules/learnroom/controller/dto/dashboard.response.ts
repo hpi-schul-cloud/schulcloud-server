@@ -88,6 +88,11 @@ export class DashboardGridElementResponse {
 	})
 	isSynchronized: boolean;
 
+	@ApiProperty({
+		description: 'Is the course locked?',
+	})
+	isLocked: boolean;
+
 	constructor(props: DashboardGridElementResponse) {
 		this.id = props.id;
 		this.title = props.title;
@@ -99,6 +104,7 @@ export class DashboardGridElementResponse {
 		this.groupElements = props.groupElements;
 		this.copyingSince = props.copyingSince;
 		this.isSynchronized = props.isSynchronized;
+		this.isLocked = props.isLocked;
 	}
 }
 

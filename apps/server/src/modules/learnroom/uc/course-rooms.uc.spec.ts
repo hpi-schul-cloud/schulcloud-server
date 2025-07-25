@@ -19,6 +19,7 @@ import { RoomBoardDTO } from '../types';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 import { CourseRoomsUc } from './course-rooms.uc';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
+import { LockedCourseLoggableException } from '../loggable';
 
 describe('rooms usecase', () => {
 	let uc: CourseRoomsUc;
@@ -96,7 +97,8 @@ describe('rooms usecase', () => {
 	describe('getBoard', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const room = courseEntityFactory.buildWithId({ students: [user] });
+			const courseTeacher = userFactory.buildWithId();
+			const room = courseEntityFactory.buildWithId({ students: [user], teachers: [courseTeacher] });
 			const tasks = taskFactory.buildList(3, { course: room });
 			const lessons = lessonFactory.buildList(3, { course: room });
 			const board = boardFactory.buildWithId({ course: room });
@@ -167,10 +169,37 @@ describe('rooms usecase', () => {
 			expect(result).toEqual(roomBoardDTO);
 		});
 
-		it('should ensure course has uptodate board', async () => {
+		it('should ensure course has updated board', async () => {
 			const { board, room, user } = setup();
 			await uc.getBoard(room.id, user.id);
 			expect(roomsService.updateLegacyBoard).toHaveBeenCalledWith(board, room.id, user.id);
+		});
+
+		describe('when course has no teacher', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const room = courseEntityFactory.buildWithId({ students: [user] });
+				const board = boardFactory.buildWithId({ course: room });
+				const userSpy = userService.getUserEntityWithRoles.mockResolvedValue(user);
+				const roomSpy = courseService.findOneForUser.mockResolvedValue(room);
+				const boardSpy = legacyBoardRepo.findByCourseId.mockResolvedValue(board);
+				const mapperSpy = factory.createDTO.mockReturnValue({
+					roomId: room.id,
+					displayColor: room.color,
+					title: room.name,
+					elements: [],
+					isArchived: room.isFinished(),
+					isSynchronized: !!room.syncedWithGroup,
+				});
+				return { user, room, board, userSpy, roomSpy, boardSpy, mapperSpy };
+			};
+
+			it('should throw LockedCourseLoggableException', async () => {
+				const { room, user } = setup();
+				room.teachers.removeAll();
+				const call = () => uc.getBoard(room.id, user.id);
+				await expect(call).rejects.toThrow(LockedCourseLoggableException);
+			});
 		});
 	});
 
