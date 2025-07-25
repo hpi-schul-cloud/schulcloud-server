@@ -10,7 +10,7 @@ import {
 	CommonCartridgeImportResourceProps,
 	CommonCartridgeImportWebContentResourceProps,
 } from '..';
-import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
+import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 import {
 	CommonCartridgeFileResourceProps,
 	CommonCartridgeWebLinkResourceProps,
@@ -18,14 +18,15 @@ import {
 
 export class CommonCartridgeImportMapper {
 	public mapResourceTypeToContentElementType(
-		resourceType: CommonCartridgeResourceTypeV1P1 | undefined
+		resourceType: CommonCartridgeXmlResourceType | undefined
 	): ContentElementType | undefined {
 		switch (resourceType) {
-			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
+			case CommonCartridgeXmlResourceType.WEB_LINK_CC11:
+			case CommonCartridgeXmlResourceType.WEB_LINK_CC13:
 				return 'link';
-			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
+			case CommonCartridgeXmlResourceType.WEB_CONTENT:
 				return 'richText';
-			case CommonCartridgeResourceTypeV1P1.FILE:
+			case CommonCartridgeXmlResourceType.FILE:
 				return 'file';
 			default:
 				return undefined;
@@ -37,14 +38,17 @@ export class CommonCartridgeImportMapper {
 		cardElementProps: CommonCartridgeImportOrganizationProps,
 		inputFormat: InputFormat
 	): LinkElementContentBody | RichTextElementContentBody | FileElementContentBody | undefined {
-		if (resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK) {
+		if (
+			resource.type === CommonCartridgeXmlResourceType.WEB_LINK_CC11 ||
+			resource.type === CommonCartridgeXmlResourceType.WEB_LINK_CC13
+		) {
 			const linkContentBody = this.createLinkFromResource(resource);
 
 			return linkContentBody;
 		}
 
 		if (
-			resource.type === CommonCartridgeResourceTypeV1P1.WEB_CONTENT &&
+			resource.type === CommonCartridgeXmlResourceType.WEB_CONTENT &&
 			cardElementProps.resourcePath.endsWith('.html')
 		) {
 			const richTextBody = this.createTextFromHtmlResource(resource, inputFormat);
@@ -52,7 +56,7 @@ export class CommonCartridgeImportMapper {
 			return richTextBody;
 		}
 
-		if (resource.type === CommonCartridgeResourceTypeV1P1.FILE) {
+		if (resource.type === CommonCartridgeXmlResourceType.FILE) {
 			const fileContentBody: FileElementContentBody = this.createFileFromResource(resource);
 
 			return fileContentBody;
