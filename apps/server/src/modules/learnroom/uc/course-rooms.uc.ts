@@ -26,7 +26,7 @@ export class CourseRoomsUc {
 		const course = await this.courseService.findOneForUser(roomId, userId);
 
 		if (course.teachers.length === 0) {
-			throw new LockedCourseLoggableException(course.name);
+			throw new LockedCourseLoggableException(course.name, course.id);
 		}
 
 		const legacyBoard = await this.legacyBoardRepo.findByCourseId(roomId);

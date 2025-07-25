@@ -2,7 +2,7 @@ import { ErrorLogMessage, Loggable } from '@core/logger';
 import { ForbiddenException } from '@nestjs/common';
 
 export class LockedCourseLoggableException extends ForbiddenException implements Loggable {
-	constructor(private readonly title: string) {
+	constructor(private readonly title: string, private readonly id?: string) {
 		super(title);
 	}
 
@@ -11,7 +11,9 @@ export class LockedCourseLoggableException extends ForbiddenException implements
 			type: 'LOCKED_COURSE',
 			message: this.message,
 			stack: this.stack,
-			title: this.title,
+			data: {
+				id: this.id,
+			},
 		};
 
 		return message;
