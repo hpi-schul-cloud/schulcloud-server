@@ -130,7 +130,6 @@ export class RoomMembershipService {
 	}
 
 	public async getRoomMembershipAuthorizablesByUserId(userId: EntityId): Promise<RoomMembershipAuthorizable[]> {
-		// TODO: evaluate if this can be optimized by fetching all groups in one go
 		const groupPage = await this.groupService.findGroups({ userId, groupTypes: [GroupTypes.ROOM] });
 		const groupIds = groupPage.data.map((group) => group.id);
 		const roomMemberships = await this.roomMembershipRepo.findByGroupIds(groupIds);
