@@ -3,7 +3,7 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { InputFormat } from '@shared/domain/types';
 import AdmZip from 'adm-zip';
 import { readFile } from 'node:fs/promises';
-import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
+import { CommonCartridgeXmlResourceType } from './common-cartridge-import.enums';
 import { CommonCartridgeOrganizationProps, CommonCartridgeWebLinkResourceProps } from './common-cartridge-import.types';
 import { CommonCartridgeResourceFactory } from './common-cartridge-resource-factory';
 
@@ -72,7 +72,7 @@ describe('CommonCartridgeResourceFactory', () => {
 				webLinkXml = await setupWebLinkXml();
 				const organizationProps = setupOrganizationProps();
 
-				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_LINK;
+				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_LINK_CC11;
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue(webLinkXml);
 
@@ -85,7 +85,7 @@ describe('CommonCartridgeResourceFactory', () => {
 				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
 
 				expect(result).toStrictEqual<CommonCartridgeWebLinkResourceProps>({
-					type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
+					type: CommonCartridgeXmlResourceType.WEB_LINK_CC11,
 					title: organizationProps.title,
 					url: 'http://www.example.tld',
 				});
@@ -96,7 +96,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();
 
-				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_LINK;
+				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_LINK_CC11;
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue(faker.lorem.sentence());
 
@@ -154,7 +154,7 @@ describe('CommonCartridgeResourceFactory', () => {
 				const webContentHtml = setupWebContentHtml();
 				const organizationProps = setupOrganizationProps();
 
-				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_CONTENT;
+				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
 				organizationProps.resourcePath = 'webcontent.html';
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue(webContentHtml);
@@ -168,7 +168,7 @@ describe('CommonCartridgeResourceFactory', () => {
 				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
 
 				expect(result).toStrictEqual({
-					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+					type: CommonCartridgeXmlResourceType.WEB_CONTENT,
 					html: '<p>Content</p>',
 				});
 			});
@@ -178,7 +178,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();
 
-				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_CONTENT;
+				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
 				organizationProps.resourcePath = 'webcontent.html';
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue('');
@@ -191,7 +191,7 @@ describe('CommonCartridgeResourceFactory', () => {
 				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
 
 				expect(result).toStrictEqual({
-					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+					type: CommonCartridgeXmlResourceType.WEB_CONTENT,
 					html: '',
 				});
 			});
@@ -200,7 +200,7 @@ describe('CommonCartridgeResourceFactory', () => {
 		describe('when resource is a file', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();
-				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_CONTENT;
+				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
 				organizationProps.resourcePath = faker.system.filePath();
 
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
@@ -217,7 +217,7 @@ describe('CommonCartridgeResourceFactory', () => {
 
 				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
 
-				expect(result?.type).toEqual(CommonCartridgeResourceTypeV1P1.FILE);
+				expect(result?.type).toEqual(CommonCartridgeXmlResourceType.FILE);
 				expect(result).toEqual(
 					expect.objectContaining({
 						description: organizationProps.title,
@@ -232,7 +232,7 @@ describe('CommonCartridgeResourceFactory', () => {
 		describe('when resource is a file and the file is empty', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();
-				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_CONTENT;
+				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
 				organizationProps.resourcePath = faker.system.filePath();
 
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
