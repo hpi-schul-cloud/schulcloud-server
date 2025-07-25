@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const { userSchema, USER_FEATURES } = require('./user.schema');
+const { userSchema } = require('./user.schema');
 const { registrationPinSchema } = require('./registrationPin.schema');
 
 /* virtual property functions */
@@ -11,7 +11,6 @@ const registrationPinModel = mongoose.model('registrationPin', registrationPinSc
 const userModel = mongoose.model('user', userSchema);
 
 module.exports = {
-	USER_FEATURES,
 	userModel,
 	registrationPinModel,
 	displayName,

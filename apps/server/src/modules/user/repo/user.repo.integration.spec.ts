@@ -59,13 +59,10 @@ describe('user repo', () => {
 					'updatedAt',
 					'roles',
 					'firstName',
-					'firstNameSearchValues',
 					'lastName',
-					'lastNameSearchValues',
 					'preferredName',
 					'lastSyncedAt',
 					'email',
-					'emailSearchValues',
 					'school',
 					'secondarySchools',
 					'source',
@@ -85,6 +82,7 @@ describe('user repo', () => {
 					'previousExternalId',
 					'birthday',
 					'consent',
+					'allSearchableStrings',
 				].sort()
 			);
 		});
@@ -194,13 +192,10 @@ describe('user repo', () => {
 					'updatedAt',
 					'roles',
 					'firstName',
-					'firstNameSearchValues',
 					'lastName',
-					'lastNameSearchValues',
 					'preferredName',
 					'lastSyncedAt',
 					'email',
-					'emailSearchValues',
 					'customAvatarBackgroundColor',
 					'school',
 					'secondarySchools',
@@ -220,6 +215,7 @@ describe('user repo', () => {
 					'consent',
 					'source',
 					'discoverable',
+					'allSearchableStrings',
 				].sort()
 			);
 		});
