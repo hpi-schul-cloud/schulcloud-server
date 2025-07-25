@@ -13,6 +13,8 @@ export interface SchoolRepo {
 
 	getSchoolById(schoolId: EntityId): Promise<School>;
 
+	getSchoolsByIds(schoolIds: EntityId[]): Promise<School[]>;
+
 	getSchoolByOfficialSchoolNumber(officialSchoolNumber: string): Promise<School | null>;
 
 	getSchoolsBySystemIds(systemIds: EntityId[]): Promise<School[]>;

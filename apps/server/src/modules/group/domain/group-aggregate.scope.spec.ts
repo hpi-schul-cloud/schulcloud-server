@@ -126,4 +126,24 @@ describe(GroupAggregateScope.name, () => {
 			});
 		});
 	});
+
+	describe('byUsersSchoolId', () => {
+		describe('when filtering for a group by users school id', () => {
+			it('should build the correct query', () => {
+				const schoolId = new ObjectId().toHexString();
+
+				const result = new GroupAggregateScope().byUsersSchoolId(schoolId).build();
+
+				expect(result).not.toEqual([defaultFacetQuery]);
+			});
+		});
+
+		describe('when no value was given', () => {
+			it('should not include the query in the result', () => {
+				const result = new GroupAggregateScope().byUsersSchoolId(undefined).build();
+
+				expect(result).toEqual([defaultFacetQuery]);
+			});
+		});
+	});
 });

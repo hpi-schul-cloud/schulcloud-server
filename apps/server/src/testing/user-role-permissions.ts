@@ -141,6 +141,7 @@ export const adminPermissions = [
 	Permission.SCHOOL_SYSTEM_VIEW,
 	Permission.SYSTEM_EDIT,
 	Permission.SYNC_START,
+	Permission.SCHOOL_ADMINISTRATE_ROOMS,
 	Permission.SCHOOL_PERMISSION_VIEW,
 	Permission.SCHOOL_PERMISSION_CHANGE,
 	Permission.IMPORT_USER_MIGRATE,

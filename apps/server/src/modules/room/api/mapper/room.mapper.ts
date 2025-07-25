@@ -8,6 +8,10 @@ import { RoomBoardListResponse } from '../dto/response/room-board-list.response'
 import { RoomDetailsResponse } from '../dto/response/room-details.response';
 import { RoomItemResponse } from '../dto/response/room-item.response';
 import { RoomListResponse } from '../dto/response/room-list.response';
+import { PaginationParams } from '@shared/controller/dto';
+import { RoomStatsListResponse } from '../dto/response/room-stats-list.repsonse';
+import { RoomStatsItemResponse } from '../dto/response/room-stats-item.response';
+import { RoomStats } from '../type/room-stats.type';
 
 export class RoomMapper {
 	static mapToRoomItemResponse(room: Room): RoomItemResponse {
@@ -68,6 +72,29 @@ export class RoomMapper {
 		const itemData = columnBoards.map((board) => this.mapToRoomBoardItemReponse(board));
 
 		const response = new RoomBoardListResponse(itemData, columnBoards.length);
+
+		return response;
+	}
+
+	public static mapToRoomStatsListResponse(
+		roomStats: Page<RoomStats>,
+		pagination: PaginationParams
+	): RoomStatsListResponse {
+		const roomStatsResponseData: RoomStatsItemResponse[] = roomStats.data.map(
+			(item) =>
+				new RoomStatsItemResponse({
+					...item,
+					name: item.name,
+					createdAt: item.createdAt,
+					updatedAt: item.updatedAt,
+				})
+		);
+		const response = new RoomStatsListResponse(
+			roomStatsResponseData,
+			roomStats.total,
+			pagination.skip,
+			pagination.limit
+		);
 
 		return response;
 	}

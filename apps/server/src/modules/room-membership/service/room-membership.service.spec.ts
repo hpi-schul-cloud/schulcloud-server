@@ -6,7 +6,7 @@ import { roleDtoFactory, roleFactory } from '@modules/role/testing';
 import { RoomService } from '@modules/room';
 import { roomFactory } from '@modules/room/testing';
 import { schoolFactory } from '@modules/school/testing';
-import { UserService } from '@modules/user';
+import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException } from '@nestjs/common/exceptions';
@@ -490,6 +490,99 @@ describe('RoomMembershipService', () => {
 			expect(result).toBeInstanceOf(RoomMembershipAuthorizable);
 			expect(result.roomId).toBe(roomId);
 			expect(result.members).toHaveLength(0);
+		});
+	});
+
+	describe('getRoomMembershipStatsByUsersSchoolId', () => {
+		const convertToGroupUsers = (users: UserDo[], role: RoleDto) =>
+			users.map((user) => {
+				return {
+					userId: user.id ?? new ObjectId().toHexString(),
+					roleId: role.id ?? new ObjectId().toHexString(),
+				};
+			});
+
+		const setup = () => {
+			const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
+
+			const schoolId1 = 'school123';
+			const usersSchool2 = userDoFactory.buildListWithId(3, {
+				roles: [role],
+				schoolId: schoolId1,
+			});
+			const schoolId2 = 'school456';
+			const usersSchool1 = userDoFactory.buildListWithId(2, {
+				roles: [role],
+				schoolId: schoolId2,
+			});
+
+			const groupSchool1 = groupFactory.build({
+				users: convertToGroupUsers(usersSchool2, role),
+			});
+			const groupSchool2 = groupFactory.build({
+				users: convertToGroupUsers(usersSchool1, role),
+			});
+			const mixedGroup = groupFactory.build({
+				users: convertToGroupUsers([...usersSchool2, ...usersSchool1], role),
+			});
+
+			groupService.findByUsersSchoolId.mockImplementation((schoolId: string) => {
+				if (schoolId === schoolId1) {
+					return Promise.resolve({ data: [groupSchool1, mixedGroup], total: 2 });
+				} else if (schoolId === schoolId2) {
+					return Promise.resolve({ data: [groupSchool2, mixedGroup], total: 2 });
+				} else {
+					return Promise.resolve({ data: [], total: 0 });
+				}
+			});
+
+			roomMembershipRepo.findByGroupIds.mockImplementation((groupIds: string[]) => {
+				const allGroups = [groupSchool1, groupSchool2, mixedGroup];
+				const requestedGroups = allGroups.filter((group) => groupIds.includes(group.id));
+				return Promise.resolve(
+					requestedGroups.map((group) =>
+						roomMembershipFactory.build({ userGroupId: group.id, schoolId: group.organizationId })
+					)
+				);
+			});
+
+			userService.findByIds.mockImplementation((userIds: string[]) => {
+				const users = userIds
+					.map(
+						(userId) =>
+							usersSchool2.find((user) => user.id === userId) ?? usersSchool1.find((user) => user.id === userId)
+					)
+					.filter((user): user is UserDo => user !== undefined);
+				return Promise.resolve(users);
+			});
+
+			roleService.findByName.mockResolvedValue(role);
+
+			return { schoolId1, schoolId2, usersSchool1, usersSchool2, groupSchool1, groupSchool2, mixedGroup };
+		};
+
+		it('should return room membership stats for school1', async () => {
+			const { schoolId1 } = setup();
+
+			const result = await service.getRoomMembershipStatsByUsersSchoolId(schoolId1);
+
+			expect(result.total).toBe(2);
+			expect(result.data.length).toEqual(2);
+			const [internalGroup, externalGroup] = result.data;
+			expect(internalGroup?.totalMembers).toEqual(3);
+			expect(externalGroup?.totalMembers).toEqual(5);
+		});
+
+		it('should return room membership stats for school2', async () => {
+			const { schoolId2 } = setup();
+
+			const result = await service.getRoomMembershipStatsByUsersSchoolId(schoolId2);
+
+			expect(result.total).toBe(2);
+			expect(result.data.length).toEqual(2);
+			const [internalGroup, externalGroup] = result.data;
+			expect(internalGroup?.totalMembers).toEqual(2);
+			expect(externalGroup?.totalMembers).toEqual(5);
 		});
 	});
 
