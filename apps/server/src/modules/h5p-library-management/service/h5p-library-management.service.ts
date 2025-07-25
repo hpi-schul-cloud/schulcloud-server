@@ -17,9 +17,9 @@ import { ConfigService } from '@nestjs/config';
 import { components } from '@octokit/openapi-types';
 import { Octokit } from '@octokit/rest';
 import axios, { AxiosResponse } from 'axios';
-import { createWriteStream, readFileSync } from 'fs';
+import { createWriteStream, readFileSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
-import { join } from 'path';
+import path, { join } from 'path';
 import { parse } from 'yaml';
 import { H5PLibraryHelper } from '../helper';
 import {
@@ -285,6 +285,7 @@ export class H5PLibraryManagementService {
 
 		await this.downloadGitHubTag(library, tag, filePath);
 		H5PLibraryHelper.unzipFile(filePath, tempFolder);
+		this.checkAndCorrectLibraryJsonVersion(folderPath, tag);
 		try {
 			const result = await this.libraryManager.installFromDirectory(folderPath);
 			if (result.type === 'none') {
@@ -331,5 +332,38 @@ export class H5PLibraryManagementService {
 					: new H5PLibraryManagementErrorLoggable(library, new Error('Unknown error during download'));
 			this.logger.warning(loggableError);
 		}
+	}
+
+	private checkAndCorrectLibraryJsonVersion(folderPath: string, tag: string): boolean {
+		const libraryJsonPath = path.join(folderPath, 'library.json');
+		let changed = false;
+		try {
+			const content = readFileSync(libraryJsonPath, { encoding: 'utf-8' });
+			const json = JSON.parse(content) as {
+				majorVersion: number;
+				minorVersion: number;
+				patchVersion: number;
+				[key: string]: unknown;
+			};
+			const [tagMajor, tagMinor, tagPatch] = tag.split('.').map(Number);
+			if (json.majorVersion !== tagMajor || json.minorVersion !== tagMinor || json.patchVersion !== tagPatch) {
+				json.majorVersion = tagMajor;
+				json.minorVersion = tagMinor;
+				json.patchVersion = tagPatch;
+				writeFileSync(libraryJsonPath, JSON.stringify(json, null, 2), { encoding: 'utf-8' });
+				changed = true;
+				this.logger.info(
+					new H5PLibraryManagementLoggable(`Corrected version in library.json to match tag ${tag} in ${folderPath}`)
+				);
+			}
+		} catch (err) {
+			this.logger.warning(
+				new H5PLibraryManagementErrorLoggable(
+					folderPath,
+					err instanceof Error ? err : new Error('Unknown error reading or correcting library.json')
+				)
+			);
+		}
+		return changed;
 	}
 }
