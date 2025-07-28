@@ -109,7 +109,12 @@ describe('Dashboard Controller (API)', () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				const twoDaysInMilliSeconds = 172800000;
 				const courses = courseBuild(studentUser, teacherUser, twoDaysInMilliSeconds);
-				await em.persistAndFlush([teacherUser, studentAccount, studentUser, ...courses]);
+				const lockedCourse = courseEntityFactory.build({
+					name: 'locked course',
+					teachers: [],
+					students: [studentUser],
+				});
+				await em.persistAndFlush([teacherUser, studentAccount, studentUser, ...courses, lockedCourse]);
 				const { id: dashboardId } = await dashboardRepo.getUsersDashboard(studentUser.id);
 
 				const loggedInClient = await apiClient.login(studentAccount);
@@ -125,11 +130,21 @@ describe('Dashboard Controller (API)', () => {
 				expect(response.status).toEqual(200);
 				const body = response.body as DashboardResponse;
 				expect(body.id).toEqual(dashboardId);
-				expect(body.gridElements.length).toEqual(4);
-				const elementNames = [...body.gridElements].map((gridElement) => gridElement.title);
-				elementNames.forEach((name) => {
-					expect(name).toEqual('should appear');
-				});
+				expect(body.gridElements.length).toEqual(5);
+			});
+
+			it('should return locked course with isLocked property', async () => {
+				const { dashboardId, loggedInClient } = await setup();
+
+				const response = await loggedInClient.get();
+
+				expect(response.status).toEqual(200);
+				const body = response.body as DashboardResponse;
+				expect(body.id).toEqual(dashboardId);
+				expect(body.gridElements.length).toEqual(5);
+
+				const lockedCourse = body.gridElements.find((element) => element.title === 'locked course');
+				expect(lockedCourse?.isLocked).toBe(true);
 			});
 		});
 	});
