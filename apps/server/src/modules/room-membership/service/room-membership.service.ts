@@ -198,7 +198,7 @@ export class RoomMembershipService {
 		const roomMemberships = await this.roomMembershipRepo.findByGroupIds(groupIds);
 		const groupIdOwnerMap = await this.getOwnerMap(groupsOnPage);
 
-		const stats = await this.getRoomMemberstatsForGroups(schoolId, groupsOnPage);
+		const stats = await this.getRoomMemberStatsForGroups(schoolId, groupsOnPage);
 
 		const result = roomMemberships.map((item) => {
 			const { userGroupId, schoolId, roomId } = item;
@@ -237,7 +237,7 @@ export class RoomMembershipService {
 		);
 		return groupIdOwnerMap;
 	}
-	private async getRoomMemberstatsForGroups<T extends Group>(
+	private async getRoomMemberStatsForGroups<T extends Group>(
 		schoolId: EntityId,
 		groups: T[]
 	): Promise<Map<T['id'], MemberStats>> {
