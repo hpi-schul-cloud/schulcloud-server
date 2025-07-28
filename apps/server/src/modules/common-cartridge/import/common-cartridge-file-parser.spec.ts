@@ -3,7 +3,7 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import AdmZip from 'adm-zip';
 import { readFile } from 'node:fs/promises';
 import { CommonCartridgeFileParser } from './common-cartridge-file-parser';
-import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
+import { CommonCartridgeXmlResourceType } from './common-cartridge-import.enums';
 import { CommonCartridgeOrganizationProps, CommonCartridgeResourceProps } from './common-cartridge-import.types';
 import { CommonCartridgeManifestParser } from './common-cartridge-manifest-parser';
 import { CommonCartridgeResourceFactory } from './common-cartridge-resource-factory';
@@ -165,7 +165,7 @@ describe('CommonCartridgeFileParser', () => {
 		describe('when accessing existing resource', () => {
 			const setup = () => {
 				const resource: CommonCartridgeResourceProps = {
-					type: CommonCartridgeResourceTypeV1P1.UNKNOWN,
+					type: CommonCartridgeXmlResourceType.UNKNOWN,
 				};
 
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);

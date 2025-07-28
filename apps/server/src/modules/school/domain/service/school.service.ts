@@ -33,6 +33,13 @@ export class SchoolService {
 		return school;
 	}
 
+	public async getSchoolsByIds(schoolIds: EntityId[]): Promise<School[]> {
+		const entities = await this.schoolRepo.getSchoolsByIds(schoolIds);
+		const schools = entities.map((entity) => this.addInstanceFeatures(entity));
+
+		return schools;
+	}
+
 	public async getSchoolByOfficialSchoolNumber(officialSchoolNumber: string): Promise<School | null> {
 		const school: School | null = await this.schoolRepo.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
 

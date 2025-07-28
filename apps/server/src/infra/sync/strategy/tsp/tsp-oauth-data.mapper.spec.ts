@@ -67,19 +67,8 @@ describe(TspOauthDataMapper.name, () => {
 				const tspTeacher = robjExportLehrerFactory.build({
 					lehrerUid,
 					schuleNummer: school.externalId,
-					lehrerRollen: 'Lehrer',
 				});
-				const tspTeacherAdmin = robjExportLehrerFactory.build({
-					lehrerUid: faker.string.uuid(),
-					schuleNummer: school.externalId,
-					lehrerRollen: 'Lehrer,Admin',
-				});
-				const tspAdmin = robjExportLehrerFactory.build({
-					lehrerUid: faker.string.uuid(),
-					schuleNummer: school.externalId,
-					lehrerRollen: 'Admin',
-				});
-				const tspTeachers = [tspTeacher, tspTeacherAdmin, tspAdmin];
+				const tspTeachers = [tspTeacher];
 
 				const klasseId = faker.string.uuid();
 				const klasse2Id = faker.string.uuid();
@@ -127,28 +116,10 @@ describe(TspOauthDataMapper.name, () => {
 				});
 
 				const externalTeacherUserDto = externalUserDtoFactory.build({
-					externalId: tspTeacher.lehrerUid ?? '',
-					firstName: tspTeacher.lehrerVorname,
-					lastName: tspTeacher.lehrerNachname,
+					externalId: tspTeachers[0].lehrerUid ?? '',
+					firstName: tspTeachers[0].lehrerVorname,
+					lastName: tspTeachers[0].lehrerNachname,
 					roles: [RoleName.TEACHER],
-					email: undefined,
-					birthday: undefined,
-				});
-
-				const externalTeacherAdminUserDto = externalUserDtoFactory.build({
-					externalId: tspTeacherAdmin.lehrerUid ?? '',
-					firstName: tspTeacherAdmin.lehrerVorname,
-					lastName: tspTeacherAdmin.lehrerNachname,
-					roles: [RoleName.TEACHER, RoleName.ADMINISTRATOR],
-					email: undefined,
-					birthday: undefined,
-				});
-
-				const externalAdminUserDto = externalUserDtoFactory.build({
-					externalId: tspAdmin.lehrerUid ?? '',
-					firstName: tspAdmin.lehrerVorname,
-					lastName: tspAdmin.lehrerNachname,
-					roles: [RoleName.ADMINISTRATOR],
 					email: undefined,
 					birthday: undefined,
 				});
@@ -175,18 +146,6 @@ describe(TspOauthDataMapper.name, () => {
 							system: provisioningSystemDto,
 							externalUser: externalTeacherUserDto,
 							externalClasses: [externalClassDto, externalClassDto2],
-							externalSchool: externalSchoolDto,
-						}),
-						oauthDataDtoFactory.build({
-							system: provisioningSystemDto,
-							externalUser: externalTeacherAdminUserDto,
-							externalClasses: [],
-							externalSchool: externalSchoolDto,
-						}),
-						oauthDataDtoFactory.build({
-							system: provisioningSystemDto,
-							externalUser: externalAdminUserDto,
-							externalClasses: [],
 							externalSchool: externalSchoolDto,
 						}),
 						oauthDataDtoFactory.build({
