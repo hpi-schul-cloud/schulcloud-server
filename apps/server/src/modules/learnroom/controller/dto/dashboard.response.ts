@@ -25,11 +25,17 @@ export class DashboardGridSubElementResponse {
 	})
 	displayColor: string;
 
+	@ApiProperty({
+		description: 'Indicates if the course is locked and cannot be accessed.',
+	})
+	isLocked: boolean;
+
 	constructor(props: DashboardGridSubElementResponse) {
 		this.id = props.id;
 		this.title = props.title;
 		this.shortTitle = props.shortTitle;
 		this.displayColor = props.displayColor;
+		this.isLocked = props.isLocked;
 	}
 }
 
