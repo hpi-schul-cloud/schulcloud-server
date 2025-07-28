@@ -25,7 +25,8 @@ export class CourseRoomsUc {
 		// TODO no authorisation check here?
 		const course = await this.courseService.findOneForUser(roomId, userId);
 
-		if (course.teachers.length === 0) {
+		const { isLocked } = course.getMetadata();
+		if (isLocked) {
 			throw new LockedCourseLoggableException(course.name, course.id);
 		}
 

@@ -89,7 +89,7 @@ export class DashboardGridElementResponse {
 	isSynchronized: boolean;
 
 	@ApiProperty({
-		description: 'Is the course locked?',
+		description: 'Indicates if the course is locked and cannot be accessed.',
 	})
 	isLocked: boolean;
 
