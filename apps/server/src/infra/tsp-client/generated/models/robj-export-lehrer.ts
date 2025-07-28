@@ -50,11 +50,5 @@ export interface RobjExportLehrer {
      * @memberof RobjExportLehrer
      */
     'schuleNummer'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportLehrer
-     */
-    'lehrerRollen'?: string;
 }
 
