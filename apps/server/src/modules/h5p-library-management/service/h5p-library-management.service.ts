@@ -17,7 +17,8 @@ import { ConfigService } from '@nestjs/config';
 import { components } from '@octokit/openapi-types';
 import { Octokit } from '@octokit/rest';
 import axios, { AxiosResponse } from 'axios';
-import { createWriteStream, readFileSync, writeFileSync } from 'fs';
+import { spawnSync } from 'child_process';
+import { createWriteStream, existsSync, readFileSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import path, { join } from 'path';
 import { parse } from 'yaml';
@@ -220,7 +221,6 @@ export class H5PLibraryManagementService {
 		const availableVersions = availableLibraries.map(
 			(lib) => `${lib.machineName}-${lib.majorVersion}.${lib.minorVersion}.${lib.patchVersion}`
 		);
-		console.log('availableVersions', JSON.stringify(availableVersions, null, 2));
 
 		const libraryMachineNames = availableLibraries.map((lib) => lib.machineName);
 		const uniqueLibraryMachineNames = Array.from(new Set(libraryMachineNames));
@@ -229,9 +229,7 @@ export class H5PLibraryManagementService {
 			const repoName = H5PLibraryMapper.mapMachineNameToGitHubRepo(library);
 			if (!repoName) {
 				this.logger.info(
-					new H5PLibraryManagementLoggable(
-						`No GitHub repository found for library ${library}. Skipping library installation.`
-					)
+					new H5PLibraryManagementLoggable(`No GitHub repository found for library ${library}. Skipping installation.`)
 				);
 				continue;
 			}
@@ -240,13 +238,35 @@ export class H5PLibraryManagementService {
 			const filteredTags = H5PLibraryHelper.getHighestPatchTags(tags);
 
 			for (const tag of filteredTags) {
-				if (!availableVersions.includes(`${library}-${tag}`)) {
-					this.logger.info(new H5PLibraryManagementLoggable(`Start installation of ${library}-${tag} from GitHub.`));
-					await this.installLibraryTagFromGitHub(repoName, tag);
-					this.logger.info(new H5PLibraryManagementLoggable(`Finished installation of ${library}-${tag} from GitHub.`));
-				} else {
-					this.logger.info(new H5PLibraryManagementLoggable(`Library ${library}-${tag} is already installed.`));
+				const currentPatchVersionAvailable = availableVersions.includes(`${library}-${tag}`);
+				if (currentPatchVersionAvailable) {
+					this.logger.info(
+						new H5PLibraryManagementLoggable(`Library ${library}-${tag} is already installed. Skipping installation.`)
+					);
+					continue;
 				}
+
+				const [tagMajor, tagMinor, tagPatch] = tag.split('.').map(Number);
+				const newerPatchVersionAvailable = availableVersions.some((v) => {
+					const [lib, version] = v.split('-');
+					if (lib !== library) return false;
+					const [major, minor, patch] = version.split('.').map(Number);
+					const result = major === tagMajor && minor === tagMinor && patch >= tagPatch;
+
+					return result;
+				});
+				if (newerPatchVersionAvailable) {
+					this.logger.info(
+						new H5PLibraryManagementLoggable(
+							`A newer patch version of ${library}-${tag} is already installed. Skipping installation.`
+						)
+					);
+					continue;
+				}
+
+				this.logger.info(new H5PLibraryManagementLoggable(`Start installation of ${library}-${tag} from GitHub.`));
+				await this.installLibraryTagFromGitHub(repoName, tag);
+				this.logger.info(new H5PLibraryManagementLoggable(`Finished installation of ${library}-${tag} from GitHub.`));
 			}
 		}
 	}
@@ -286,15 +306,10 @@ export class H5PLibraryManagementService {
 		await this.downloadGitHubTag(library, tag, filePath);
 		H5PLibraryHelper.unzipFile(filePath, tempFolder);
 		this.checkAndCorrectLibraryJsonVersion(folderPath, tag);
+		// this.buildLibraryIfRequired(folderPath, library);
+
 		try {
-			const result = await this.libraryManager.installFromDirectory(folderPath);
-			if (result.type === 'none') {
-				this.logger.info(
-					new H5PLibraryManagementLoggable(
-						`Skipped installation of library ${library} version ${tag}, because a newer version seems to be already installed.`
-					)
-				);
-			}
+			await this.libraryManager.installFromDirectory(folderPath);
 		} catch (error: unknown) {
 			const loggableError =
 				error instanceof Error
@@ -303,6 +318,22 @@ export class H5PLibraryManagementService {
 			this.logger.warning(loggableError);
 		}
 		H5PLibraryHelper.removeTemporaryFiles(filePath, folderPath);
+	}
+
+	private buildLibraryIfRequired(folderPath: string, library: string): void {
+		const packageJsonPath = join(folderPath, 'package.json');
+		if (existsSync(packageJsonPath)) {
+			this.logger.info(new H5PLibraryManagementLoggable(`Running npm install and npm run build in ${folderPath}`));
+			const npmInstall = spawnSync('npm', ['install'], { cwd: folderPath, stdio: 'inherit' });
+			if (npmInstall.status !== 0) {
+				this.logger.warning(new H5PLibraryManagementErrorLoggable(library, new Error('npm install failed')));
+			} else {
+				const npmBuild = spawnSync('npm', ['run', 'build'], { cwd: folderPath, stdio: 'inherit' });
+				if (npmBuild.status !== 0) {
+					this.logger.warning(new H5PLibraryManagementErrorLoggable(library, new Error('npm run build failed')));
+				}
+			}
+		}
 	}
 
 	private async downloadGitHubTag(library: string, tag: string, filePath: string): Promise<void> {
