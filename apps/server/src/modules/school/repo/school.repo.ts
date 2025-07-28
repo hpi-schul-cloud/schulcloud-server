@@ -60,6 +60,18 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		return school;
 	}
 
+	public async getSchoolsByIds(schoolIds: EntityId[]): Promise<School[]> {
+		const entities = await this.em.find(
+			SchoolEntity,
+			{ id: { $in: schoolIds } },
+			{ populate: ['federalState', 'currentYear'] }
+		);
+
+		const schools = entities.map((entity) => SchoolEntityMapper.mapToDo(entity));
+
+		return schools;
+	}
+
 	public async getSchoolByOfficialSchoolNumber(officialSchoolNumber: string): Promise<School | null> {
 		const entity: SchoolEntity | null = await this.em.findOne(
 			SchoolEntity,

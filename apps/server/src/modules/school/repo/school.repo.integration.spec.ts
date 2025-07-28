@@ -232,17 +232,52 @@ describe('SchoolMikroOrmRepo', () => {
 				const entity = schoolEntityFactory.buildWithId({ systems, county }, schoolId);
 				await em.persistAndFlush([entity]);
 				em.clear();
-				const schoolDo = SchoolEntityMapper.mapToDo(entity);
+				const schoolDos = SchoolEntityMapper.mapToDo(entity);
 
-				return { schoolDo, schoolId };
+				return { schoolDos, schoolId };
 			};
 
 			it('should return school', async () => {
-				const { schoolDo, schoolId } = await setup();
+				const { schoolDos, schoolId } = await setup();
 
 				const result = await repo.getSchoolById(schoolId);
 
-				expect(result).toEqual(schoolDo);
+				expect(result).toEqual(schoolDos);
+			});
+		});
+	});
+
+	describe('getSchoolsByIds', () => {
+		describe('when entity is not found', () => {
+			it('should return an empty list', async () => {
+				const someId = new ObjectId().toHexString();
+
+				const result = await repo.getSchoolsByIds([someId]);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+
+		describe('when entities exist', () => {
+			const setup = async () => {
+				const systems = systemEntityFactory.buildList(2);
+				const county = countyEmbeddableFactory.build();
+				const entities = schoolEntityFactory.buildListWithId(3, { systems, county });
+				await em.persistAndFlush(entities);
+				em.clear();
+				const schoolDos = entities.map((entity) => SchoolEntityMapper.mapToDo(entity));
+
+				return { schoolDos };
+			};
+
+			it('should return schools', async () => {
+				const { schoolDos } = await setup();
+
+				const schoolIds = schoolDos.map((school) => school.id);
+
+				const result = await repo.getSchoolsByIds(schoolIds);
+
+				expect(result).toEqual(expect.arrayContaining(schoolDos));
 			});
 		});
 	});
