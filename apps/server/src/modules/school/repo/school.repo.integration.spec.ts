@@ -249,9 +249,11 @@ describe('SchoolMikroOrmRepo', () => {
 
 	describe('getSchoolsByIds', () => {
 		describe('when entity is not found', () => {
-			it('should throw NotFound', async () => {
+			it('should return an empty list', async () => {
 				const someId = new ObjectId().toHexString();
+
 				const result = await repo.getSchoolsByIds([someId]);
+
 				expect(result).toHaveLength(0);
 			});
 		});
