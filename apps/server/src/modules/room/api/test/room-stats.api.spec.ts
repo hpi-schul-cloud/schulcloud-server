@@ -120,6 +120,17 @@ describe('Room Controller (API)', () => {
 				return { loggedInClient, school, otherSchool, adminUser, adminAccount };
 			};
 
+			describe('when the feature is disabled', () => {
+				it('should return a 403 error', async () => {
+					const { loggedInClient } = await setup();
+					config.FEATURE_ADMINISTRATE_ROOMS_ENABLED = false;
+
+					const response = await loggedInClient.get();
+
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
+			});
+
 			describe('when a room with users of the same school exists', () => {
 				it('should return a room', async () => {
 					const { loggedInClient, school } = await setup();
