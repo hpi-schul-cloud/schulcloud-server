@@ -46,7 +46,7 @@ export class Migration20250717145035 extends Migration {
 				if (batch.length === batchSize) {
 					processedUsers += batch.length;
 					console.log(`Updating a batch of ${batch.length} users. (${processedUsers} users processed so far)`);
-					// @ts-ignore
+					// @ts-expect-error: MikroORM's bulkWrite type is not exported, but this works at runtime
 					await userCollection.bulkWrite(batch);
 					batch = [];
 				}
@@ -56,7 +56,7 @@ export class Migration20250717145035 extends Migration {
 		if (batch.length > 0) {
 			processedUsers += batch.length;
 			console.log(`Updating the last batch of ${batch.length} users. (${processedUsers} users processed in total)`);
-			// @ts-ignore
+			// @ts-expect-error: MikroORM's bulkWrite type is not exported, but this works at runtime
 			await userCollection.bulkWrite(batch);
 		}
 		console.log('Finished migration to remove the old user search indexes.');

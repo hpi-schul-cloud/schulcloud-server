@@ -335,9 +335,6 @@ describe('UserRepo', () => {
 			);
 			const role = roleFactory.buildWithId();
 			testEntity.roles.add(role);
-			testEntity.firstNameSearchValues = ['em'];
-			testEntity.lastNameSearchValues = ['em'];
-			testEntity.emailSearchValues = ['em'];
 			testEntity.importHash = 'importHash';
 			testEntity.outdatedSince = new Date();
 			testEntity.lastLoginSystemChange = new Date();
@@ -373,9 +370,6 @@ describe('UserRepo', () => {
 					ldapDn: testEntity.ldapDn,
 					externalId: testEntity.externalId,
 					importHash: testEntity.importHash,
-					firstNameSearchValues: testEntity.firstNameSearchValues,
-					lastNameSearchValues: testEntity.lastNameSearchValues,
-					emailSearchValues: testEntity.emailSearchValues,
 					language: testEntity.language,
 					forcePasswordChange: testEntity.forcePasswordChange,
 					preferences: testEntity.preferences,
