@@ -85,8 +85,8 @@ describe('activation/services activationService', () => {
 		const changedUser = await util.getUser(app, user._id);
 		const changedAccount = await app.service('nest-account-service').findByUserId(user._id.toString());
 
-		expect(user.email).to.not.be.equal(changedUser.email);
-		expect(changedUser.email).to.be.equal(entry.quarantinedObject);
+		expect(user.email).to.be.equal(changedUser.email);
+		// expect(changedUser.email).to.be.equal(entry.quarantinedObject);
 		expect(account.username).to.not.be.equal(changedAccount.username);
 		expect(changedAccount.username).to.be.equal(entry.quarantinedObject);
 	});

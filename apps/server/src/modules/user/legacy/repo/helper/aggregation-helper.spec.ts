@@ -99,7 +99,14 @@ describe('Aggregation helper', () => {
 			const aggregation = createMultiDocumentAggregation(query);
 
 			expect(aggregation).toEqual(
-				expect.arrayContaining([expect.objectContaining({ $match: { score: { $gte: 9 } } })])
+				expect.arrayContaining([
+					expect.objectContaining({
+						$sort: {
+							firstName: 1,
+							score: { $meta: 'textScore' },
+						},
+					}),
+				])
 			);
 		});
 	});
