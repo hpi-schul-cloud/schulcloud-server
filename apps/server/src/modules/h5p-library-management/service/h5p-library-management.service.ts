@@ -348,7 +348,17 @@ export class H5PLibraryManagementService {
 		await this.downloadGitHubTag(library, tag, filePath);
 		H5PLibraryHelper.unzipFile(filePath, tempFolder);
 		this.checkAndCorrectLibraryJsonVersion(folderPath, tag);
-		// this.buildLibraryIfRequired(folderPath, library);
+		if (
+			(library === 'h5p/h5p-drag-question' && tag === '1.13.15') ||
+			(library === 'h5p/h5p-course-presentation' && tag === '1.25.33') ||
+			(library === 'h5p/h5p-interactive-video' && tag === '1.26.40') ||
+			(library === 'h5p/h5p-editor-audio-recorder' && tag === '1.0.12')
+		) {
+			this.buildLibraryIfRequired(folderPath, library);
+		}
+		if (library === 'h5p/h5p-memory-game' && tag === '1.3.36') {
+			this.checkAndCorrectLibraryJsonPaths(folderPath);
+		}
 
 		try {
 			await this.libraryManager.installFromDirectory(folderPath);
@@ -365,14 +375,19 @@ export class H5PLibraryManagementService {
 	private buildLibraryIfRequired(folderPath: string, library: string): void {
 		const packageJsonPath = join(folderPath, 'package.json');
 		if (existsSync(packageJsonPath)) {
-			this.logger.info(new H5PLibraryManagementLoggable(`Running npm install and npm run build in ${folderPath}`));
-			const npmInstall = spawnSync('npm', ['install'], { cwd: folderPath, stdio: 'inherit' });
+			this.logger.info(new H5PLibraryManagementLoggable(`Running npm ci and npm run build in ${folderPath}`));
+			const npmInstall = spawnSync('npm', ['ci'], { cwd: folderPath, stdio: 'inherit' });
 			if (npmInstall.status !== 0) {
-				this.logger.warning(new H5PLibraryManagementErrorLoggable(library, new Error('npm install failed')));
+				this.logger.warning(new H5PLibraryManagementErrorLoggable(library, new Error('npm ci failed')));
 			} else {
 				const npmBuild = spawnSync('npm', ['run', 'build'], { cwd: folderPath, stdio: 'inherit' });
 				if (npmBuild.status !== 0) {
 					this.logger.warning(new H5PLibraryManagementErrorLoggable(library, new Error('npm run build failed')));
+				}
+				const nodeModulesPath = join(folderPath, 'node_modules');
+				if (existsSync(nodeModulesPath)) {
+					spawnSync('rm', ['-rf', 'node_modules'], { cwd: folderPath, stdio: 'inherit' });
+					this.logger.info(new H5PLibraryManagementLoggable(`Removed node_modules from ${folderPath}`));
 				}
 			}
 		}
@@ -434,6 +449,72 @@ export class H5PLibraryManagementService {
 				new H5PLibraryManagementErrorLoggable(
 					folderPath,
 					err instanceof Error ? err : new Error('Unknown error reading or correcting library.json')
+				)
+			);
+		}
+		return changed;
+	}
+
+	private checkAndCorrectLibraryJsonPaths(folderPath: string): boolean {
+		const libraryJsonPath = path.join(folderPath, 'library.json');
+		let changed = false;
+		try {
+			const content = readFileSync(libraryJsonPath, { encoding: 'utf-8' });
+			const json = JSON.parse(content) as { [key: string]: any };
+
+			// List of keys in library.json that may contain file paths
+			const filePathKeys = [
+				'preloadedJs',
+				'preloadedCss',
+				'editorJs',
+				'editorCss',
+				'dynamicDependencies',
+				'preloadedDependencies',
+				'editorDependencies',
+			];
+
+			for (const key of filePathKeys) {
+				if (Array.isArray(json[key])) {
+					// For dependencies, check for 'path' property
+					if (key.endsWith('Dependencies')) {
+						const filteredDeps = json[key].filter((dep: any) => {
+							if (dep.path) {
+								const depPath = path.join(folderPath, dep.path);
+								return existsSync(depPath);
+							}
+							return true;
+						});
+						if (filteredDeps.length !== json[key].length) {
+							json[key] = filteredDeps;
+							changed = true;
+						}
+					} else {
+						// For JS/CSS arrays, check each file path
+						const filteredFiles = json[key].filter((file: { path: string }) => {
+							const filePath = path.join(folderPath, file.path);
+							return existsSync(filePath);
+						});
+						if (filteredFiles.length !== json[key].length) {
+							json[key] = filteredFiles;
+							changed = true;
+						}
+					}
+				}
+			}
+
+			if (changed) {
+				writeFileSync(libraryJsonPath, JSON.stringify(json, null, 2), { encoding: 'utf-8' });
+				this.logger.info(
+					new H5PLibraryManagementLoggable(
+						`Corrected file paths in library.json to only contain available files in ${folderPath}`
+					)
+				);
+			}
+		} catch (err) {
+			this.logger.warning(
+				new H5PLibraryManagementErrorLoggable(
+					folderPath,
+					err instanceof Error ? err : new Error('Unknown error reading or correcting library.json file paths')
 				)
 			);
 		}
