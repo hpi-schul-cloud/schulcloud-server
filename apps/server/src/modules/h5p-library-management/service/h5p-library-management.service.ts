@@ -10,7 +10,7 @@ import {
 } from '@lumieducation/h5p-server';
 import ContentManager from '@lumieducation/h5p-server/build/src/ContentManager';
 import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/src/ContentTypeInformationRepository';
-import { IHubContentType, ILibraryInstallResult } from '@lumieducation/h5p-server/build/src/types';
+import { IHubContentType, ILibraryInstallResult, ILibraryName } from '@lumieducation/h5p-server/build/src/types';
 import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -213,23 +213,14 @@ export class H5PLibraryManagementService {
 			new H5PLibraryManagementMetricsLoggable(availableLibraries, uninstalledLibraries, installedLibraries)
 		);
 
-		// const map = await H5PLibraryMapper.getMachineNameToRepoMapFromGitHub();
-
-		// update available libraries after installation
 		availableLibraries = await this.libraryAdministration.getLibraries();
+		const availableVersions = H5PLibraryHelper.getAvailableVersions(availableLibraries);
 
-		const availableVersions = availableLibraries.map(
-			(lib) => `${lib.machineName}-${lib.majorVersion}.${lib.minorVersion}.${lib.patchVersion}`
-		);
-
-		const libraryMachineNames = availableLibraries.map((lib) => lib.machineName);
-		const uniqueLibraryMachineNames = Array.from(new Set(libraryMachineNames));
-
-		for (const library of uniqueLibraryMachineNames) {
+		for (const library of this.libraryWishList) {
 			const repoName = H5PLibraryMapper.mapMachineNameToGitHubRepo(library);
 			if (!repoName) {
 				this.logger.info(
-					new H5PLibraryManagementLoggable(`No GitHub repository found for library ${library}. Skipping installation.`)
+					new H5PLibraryManagementLoggable(`No GitHub repository found for ${library}. Skipping installation.`)
 				);
 				continue;
 			}
@@ -238,36 +229,85 @@ export class H5PLibraryManagementService {
 			const filteredTags = H5PLibraryHelper.getHighestPatchTags(tags);
 
 			for (const tag of filteredTags) {
-				const currentPatchVersionAvailable = availableVersions.includes(`${library}-${tag}`);
-				if (currentPatchVersionAvailable) {
-					this.logger.info(
-						new H5PLibraryManagementLoggable(`Library ${library}-${tag} is already installed. Skipping installation.`)
-					);
-					continue;
-				}
-
-				const [tagMajor, tagMinor, tagPatch] = tag.split('.').map(Number);
-				const newerPatchVersionAvailable = availableVersions.some((v) => {
-					const [lib, version] = v.split('-');
-					if (lib !== library) return false;
-					const [major, minor, patch] = version.split('.').map(Number);
-					const result = major === tagMajor && minor === tagMinor && patch >= tagPatch;
-
-					return result;
-				});
-				if (newerPatchVersionAvailable) {
-					this.logger.info(
-						new H5PLibraryManagementLoggable(
-							`A newer patch version of ${library}-${tag} is already installed. Skipping installation.`
-						)
-					);
-					continue;
-				}
-
-				this.logger.info(new H5PLibraryManagementLoggable(`Start installation of ${library}-${tag} from GitHub.`));
-				await this.installLibraryTagFromGitHub(repoName, tag);
-				this.logger.info(new H5PLibraryManagementLoggable(`Finished installation of ${library}-${tag} from GitHub.`));
+				await this.installLibraryVersionAndDependencies(library, tag, repoName, availableVersions);
 			}
+		}
+	}
+
+	private async installLibraryVersionAndDependencies(
+		library: string,
+		tag: string,
+		repoName: string,
+		availableVersions: string[]
+	): Promise<void> {
+		const currentPatchVersionAvailable = H5PLibraryHelper.isCurrentVersionAvailable(library, tag, availableVersions);
+		if (currentPatchVersionAvailable) {
+			this.logger.info(
+				new H5PLibraryManagementLoggable(`${library}-${tag} is already installed. Skipping installation.`)
+			);
+			return;
+		}
+
+		const newerPatchVersionAvailable = H5PLibraryHelper.isNewerPatchVersionAvailable(library, tag, availableVersions);
+		if (newerPatchVersionAvailable) {
+			this.logger.info(
+				new H5PLibraryManagementLoggable(
+					`A newer patch version of ${library}-${tag} is already installed. Skipping installation.`
+				)
+			);
+			return;
+		}
+
+		this.logger.info(new H5PLibraryManagementLoggable(`Start installation of ${library}-${tag} from GitHub.`));
+		await this.installLibraryTagFromGitHub(repoName, tag);
+		this.logger.info(new H5PLibraryManagementLoggable(`Finished installation of ${library}-${tag} from GitHub.`));
+
+		// check and update dependencies
+		const [tagMajor, tagMinor] = tag.split('.').map(Number);
+		const libraryName: ILibraryName = {
+			machineName: library,
+			majorVersion: tagMajor,
+			minorVersion: tagMinor,
+		};
+		const installedLibrary = await this.libraryManager.getLibrary(libraryName);
+		const dependencies = (installedLibrary?.preloadedDependencies ?? []).concat(
+			installedLibrary?.editorDependencies ?? [],
+			installedLibrary?.dynamicDependencies ?? []
+		);
+		if (dependencies.length === 0) {
+			this.logger.info(new H5PLibraryManagementLoggable(`No dependencies found for ${library}-${tag}.`));
+			return;
+		}
+
+		for (const dependency of dependencies) {
+			const depName = dependency.machineName;
+			const depMajor = dependency.majorVersion;
+			const depMinor = dependency.minorVersion;
+			const depRepoName = H5PLibraryMapper.mapMachineNameToGitHubRepo(depName);
+			if (!depRepoName) {
+				this.logger.info(
+					new H5PLibraryManagementLoggable(`No GitHub repository found for ${depName}. Skipping installation.`)
+				);
+				continue;
+			}
+
+			const tags = await this.fetchGitHubTags(depRepoName);
+			const depTag = H5PLibraryHelper.getHighestVersionTags(tags, depMajor, depMinor);
+			if (!depTag) {
+				this.logger.info(
+					new H5PLibraryManagementLoggable(
+						`No suitable tag found for dependency ${depName}-${depMajor}.${depMinor}.x in ${depRepoName}. Skipping installation.`
+					)
+				);
+				continue;
+			}
+
+			this.logger.info(
+				new H5PLibraryManagementLoggable(
+					`Installing dependency ${depName}-${depTag} from GitHub for ${library}-${tag}.`
+				)
+			);
+			await this.installLibraryVersionAndDependencies(depName, depTag, depRepoName, availableVersions);
 		}
 	}
 
