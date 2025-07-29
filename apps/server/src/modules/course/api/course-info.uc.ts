@@ -2,7 +2,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { ClassService } from '@modules/class';
 import { GroupService } from '@modules/group';
 import { SchoolService } from '@modules/school';
-import { UserService } from '@modules/user';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
@@ -60,7 +60,7 @@ export class CourseInfoUc {
 				if (course.teachers) {
 					teacherNames = await this.getCourseTeacherFullNames(course.teachers);
 				}
-				const classNames = await this.getCourseClassNamaes(course.classes);
+				const classNames = await this.getCourseClassNames(course.classes);
 				const groupNames = await this.getCourseGroupNames(course.groups);
 
 				const mapped = new CourseInfoDto({
@@ -85,21 +85,14 @@ export class CourseInfoUc {
 	}
 
 	private async getCourseTeacherFullNames(teacherIds: EntityId[]): Promise<string[]> {
-		const teacherNames = await Promise.all(
-			teacherIds.map(async (teacherId): Promise<string> => {
-				const teacher = await this.userService.findByIdOrNull(teacherId);
-				if (teacher) {
-					const fullName = teacher.firstName.concat(' ', teacher.lastName);
+		const teachers = await Promise.all(teacherIds.map((id) => this.userService.findByIdOrNull(id)));
 
-					return fullName;
-				}
-				return '';
-			})
-		);
-		return teacherNames;
+		return teachers
+			.filter((teacher): teacher is UserDo => Boolean(teacher))
+			.map((teacher) => teacher.firstName.concat(' ', teacher.lastName));
 	}
 
-	private async getCourseClassNamaes(classIds: EntityId[]): Promise<string[]> {
+	private async getCourseClassNames(classIds: EntityId[]): Promise<string[]> {
 		const classes = await Promise.all<Promise<string>[]>(
 			classIds.map(async (classId): Promise<string> => {
 				const clazz = await this.classService.findById(classId);
