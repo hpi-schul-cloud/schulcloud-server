@@ -67,7 +67,6 @@ describe('Aggregation helper', () => {
 				limit: 5,
 				sort: { firstName: 1, sortBySearchQueryResult: 1 },
 				searchQuery: 'test',
-				searchFilterGate: 9,
 				schoolId: new ObjectId(exampleId),
 				schoolYearId: new ObjectId(exampleId),
 				roles: new ObjectId(exampleId),
