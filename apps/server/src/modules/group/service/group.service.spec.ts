@@ -268,6 +268,31 @@ describe('GroupService', () => {
 		});
 	});
 
+	describe('findByUsersSchoolId', () => {
+		const setup = () => {
+			const schoolId: EntityId = new ObjectId().toHexString();
+			const types: GroupTypes[] = [GroupTypes.CLASS, GroupTypes.COURSE];
+			const groups: Group[] = groupFactory.buildList(2);
+			const page: Page<Group> = new Page<Group>(groups, groups.length);
+
+			groupRepo.findByUsersSchoolId.mockResolvedValue(page);
+
+			return {
+				schoolId,
+				types,
+				groups,
+			};
+		};
+
+		it('should call the repo with the school id and types', async () => {
+			const { schoolId, types } = setup();
+
+			await service.findByUsersSchoolId(schoolId, types);
+
+			expect(groupRepo.findByUsersSchoolId).toHaveBeenCalledWith(schoolId, types);
+		});
+	});
+
 	describe('findByScope', () => {
 		describe('when the school has groups', () => {
 			const setup = () => {
