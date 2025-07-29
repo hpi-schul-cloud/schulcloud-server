@@ -46,4 +46,10 @@ export class ClassService {
 		}
 		return clazz;
 	}
+
+	public async findByIdOrNull(id: EntityId): Promise<Class | null> {
+		const clazz: Class | null = await this.classesRepo.findClassById(id);
+
+		return clazz;
+	}
 }

@@ -162,6 +162,36 @@ describe(ClassService.name, () => {
 		});
 	});
 
+	describe('findByIdOrNull', () => {
+		describe('when the user has classes', () => {
+			const setup = () => {
+				const clazz: Class = classFactory.build();
+
+				return {
+					clazz,
+				};
+			};
+
+			it('should return the class', async () => {
+				const { clazz } = setup();
+				classesRepo.findClassById.mockResolvedValueOnce(clazz);
+
+				const result: Class | null = await service.findById(clazz.id);
+
+				expect(result).toEqual(clazz);
+			});
+
+			it('should return null if class not found', async () => {
+				const { clazz } = setup();
+				classesRepo.findClassById.mockResolvedValueOnce(null);
+
+				const result: Class | null = await service.findByIdOrNull(clazz.id);
+
+				expect(result).toBeNull();
+			});
+		});
+	});
+
 	describe('findClassWithSchoolIdAndExternalId', () => {
 		describe('when searching for a class', () => {
 			const setup = () => {
