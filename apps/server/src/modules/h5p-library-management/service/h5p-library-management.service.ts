@@ -262,6 +262,8 @@ export class H5PLibraryManagementService {
 		await this.installLibraryTagFromGitHub(repoName, tag);
 		this.logger.info(new H5PLibraryManagementLoggable(`Finished installation of ${library}-${tag} from GitHub.`));
 
+		availableVersions.push(`${library}-${tag}`);
+
 		// check and update dependencies
 		const [tagMajor, tagMinor] = tag.split('.').map(Number);
 		const libraryName: ILibraryName = {
