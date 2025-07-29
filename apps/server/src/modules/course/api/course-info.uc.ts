@@ -87,7 +87,7 @@ export class CourseInfoUc {
 	private async getCourseTeacherFullNames(teacherIds: EntityId[]): Promise<string[]> {
 		const teacherNames = await Promise.all(
 			teacherIds.map(async (teacherId): Promise<string> => {
-				const teacher = await this.userService.findById(teacherId);
+				const teacher = await this.userService.findByIdOrNull(teacherId);
 				if (teacher) {
 					const fullName = teacher.firstName.concat(' ', teacher.lastName);
 
