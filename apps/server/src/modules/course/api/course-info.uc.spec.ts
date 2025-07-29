@@ -102,9 +102,9 @@ describe('CourseInfoUc', () => {
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValue(adminUser);
 				authorizationService.checkPermission.mockReturnValueOnce(undefined);
-				groupService.findById.mockResolvedValue(group);
+				groupService.tryFindById.mockResolvedValue(group);
 				userService.findByIdOrNull.mockResolvedValue(teacher);
-				classService.findById.mockResolvedValue(clazz);
+				classService.findByIdOrNull.mockResolvedValue(clazz);
 				courseDoService.getCourseInfo.mockResolvedValueOnce(new Page<Course>(courses, 5));
 
 				return {
@@ -145,7 +145,7 @@ describe('CourseInfoUc', () => {
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(adminUser, school, expectedPermissions);
 			});
 
-			it('should call user service findById', async () => {
+			it('should call user service findByIdOrNull', async () => {
 				const { user, adminUser, school } = setup();
 
 				await uc.getCourseInfo(adminUser.id, school.id);
@@ -153,19 +153,19 @@ describe('CourseInfoUc', () => {
 				expect(userService.findByIdOrNull).toHaveBeenCalledWith(user.id);
 			});
 
-			it('should call class service findById', async () => {
+			it('should call class service findByIdOrNull', async () => {
 				const { clazz, adminUser, school } = setup();
 
 				await uc.getCourseInfo(adminUser.id, school.id);
 
-				expect(classService.findById).toHaveBeenCalledWith(clazz.id);
+				expect(classService.findByIdOrNull).toHaveBeenCalledWith(clazz.id);
 			});
-			it('should call group service findById', async () => {
+			it('should call group service tryFindById', async () => {
 				const { group, adminUser, school } = setup();
 
 				await uc.getCourseInfo(adminUser.id, school.id);
 
-				expect(groupService.findById).toHaveBeenCalledWith(group.id);
+				expect(groupService.tryFindById).toHaveBeenCalledWith(group.id);
 			});
 
 			it('should call with default options', async () => {
@@ -234,9 +234,9 @@ describe('CourseInfoUc', () => {
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValue(adminUser);
 				authorizationService.checkPermission.mockReturnValueOnce(undefined);
-				groupService.findById.mockResolvedValue(group);
+				groupService.tryFindById.mockResolvedValue(group);
 				userService.findByIdOrNull.mockResolvedValue(teacher);
-				classService.findById.mockResolvedValue(clazz);
+				classService.findByIdOrNull.mockResolvedValue(clazz);
 				courseDoService.getCourseInfo.mockResolvedValueOnce(new Page<Course>([course1, course2], 1));
 
 				return {
@@ -286,10 +286,10 @@ describe('CourseInfoUc', () => {
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValue(adminUser);
 				authorizationService.checkPermission.mockReturnValueOnce(undefined);
-				groupService.findById.mockResolvedValue(group);
+				groupService.tryFindById.mockResolvedValue(group);
 				userService.findByIdOrNull.mockResolvedValueOnce(teacher);
 				userService.findByIdOrNull.mockResolvedValueOnce(null);
-				classService.findById.mockResolvedValue(clazz);
+				classService.findByIdOrNull.mockResolvedValue(clazz);
 				courseDoService.getCourseInfo.mockResolvedValueOnce(new Page<Course>([course], 1));
 
 				return {
