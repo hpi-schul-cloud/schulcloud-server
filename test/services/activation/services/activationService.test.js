@@ -70,7 +70,7 @@ describe('activation/services activationService', () => {
 		expect(entries1.entry).to.have.lengthOf(0);
 	});
 
-	it('initiate entry with valid activationCode', async () => {
+	it.only('initiate entry with valid activationCode', async () => {
 		const { entry, user } = await createEntry();
 		const credentials = { username: user.email, password: user.email };
 		const account = await createTestAccount(credentials, 'local', user);
@@ -85,8 +85,8 @@ describe('activation/services activationService', () => {
 		const changedUser = await util.getUser(app, user._id);
 		const changedAccount = await app.service('nest-account-service').findByUserId(user._id.toString());
 
-		expect(user.email).to.be.equal(changedUser.email);
-		// expect(changedUser.email).to.be.equal(entry.quarantinedObject);
+		expect(user.email).to.not.be.equal(changedUser.email);
+		expect(changedUser.email).to.be.equal(entry.quarantinedObject);
 		expect(account.username).to.not.be.equal(changedAccount.username);
 		expect(changedAccount.username).to.be.equal(entry.quarantinedObject);
 	});

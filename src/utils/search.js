@@ -35,7 +35,7 @@ const splitForSearchIndexesWithMinLength = (minLength, ...searchTexts) => {
 
 // Default version with minLength = 3
 const splitForSearchIndexes = (...searchTexts) => {
-	return splitForSearchIndexesWithMinLength(3, ...searchTexts);
+	return splitForSearchIndexesWithMinLength(3, ...searchTexts.filter((text) => text != null));
 };
 
 module.exports = {
