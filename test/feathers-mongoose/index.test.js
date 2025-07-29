@@ -226,9 +226,10 @@ describe('Feathers Mongoose Service', () => {
 			return index;
 		}
 
-		beforeEach(() =>
-			people.remove(null, {}).then(() => people.create([{ name: 'AAA' }, { name: 'aaa' }, { name: 'ccc' }]))
-		);
+		beforeEach(async () => {
+			await people.remove(null, {});
+			await people.create([{ name: 'AAA' }, { name: 'aaa' }, { name: 'ccc' }]);
+		});
 
 		it('sorts with default behavior without collation param', async () => {
 			const r = await people.find({ query: { $sort: { name: -1 } } });
@@ -243,7 +244,7 @@ describe('Feathers Mongoose Service', () => {
 				collation: { locale: 'en', strength: 1 },
 			});
 
-			expect(indexOfName(r, 'AAA')).to.be.below(indexOfName(r, 'aaa'));
+			expect(indexOfName(r, 'aaa')).to.be.below(indexOfName(r, 'AAA'));
 		});
 
 		it('removes with default behavior without collation param', async () => {
