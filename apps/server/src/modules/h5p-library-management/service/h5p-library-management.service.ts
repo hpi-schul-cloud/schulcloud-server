@@ -10,9 +10,9 @@ import {
 } from '@lumieducation/h5p-server';
 import ContentManager from '@lumieducation/h5p-server/build/src/ContentManager';
 import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/src/ContentTypeInformationRepository';
-import { IHubContentType, ILibraryInstallResult, ILibraryName } from '@lumieducation/h5p-server/build/src/types';
+import { ILibraryInstallResult, ILibraryName } from '@lumieducation/h5p-server/build/src/types';
 import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { components } from '@octokit/openapi-types';
 import { Octokit } from '@octokit/rest';
@@ -157,10 +157,11 @@ export class H5PLibraryManagementService {
 		return result;
 	}
 
-	private checkContentTypeExists(contentType: IHubContentType[]): void {
-		if (contentType === undefined) {
-			throw new NotFoundException('this library does not exist');
-		}
+	private async checkContentTypeExistsOnH5pHub(library: string): Promise<boolean> {
+		const contentType = await this.contentTypeCache.get(library);
+		const contentTypeExists = !(contentType === undefined);
+
+		return contentTypeExists;
 	}
 
 	private createDefaultIUser(): IUser {
@@ -174,64 +175,65 @@ export class H5PLibraryManagementService {
 		return user;
 	}
 
-	public async installLibraries(librariesToInstall: string[]): Promise<ILibraryInstallResult[]> {
-		if (librariesToInstall.length === 0) {
-			return [];
+	public async installLatestLibraryVersionFromH5pHub(library: string): Promise<ILibraryInstallResult[]> {
+		let result: ILibraryInstallResult[] = [];
+
+		const contentTypeExists = await this.checkContentTypeExistsOnH5pHub(library);
+		if (contentTypeExists) {
+			const user = this.createDefaultIUser();
+
+			try {
+				this.logger.info(new H5PLibraryManagementLoggable(`Start installation of ${library} from H5P Hub.`));
+				result = await this.contentTypeRepo.installContentType(library, user);
+				this.logger.info(new H5PLibraryManagementLoggable(`Finished installation of ${library} from H5P Hub.`));
+			} catch (error: unknown) {
+				this.logger.warning(new H5PLibraryManagementErrorLoggable(library, error));
+			}
+		} else {
+			this.logger.info(
+				new H5PLibraryManagementLoggable(`Content type ${library} does not exist on H5P Hub. Skipping installation.`)
+			);
 		}
-		const lastPositionLibrariesToInstallArray = librariesToInstall.length - 1;
-		const libraryToBeInstalled = librariesToInstall[lastPositionLibrariesToInstallArray];
-		// avoid conflicts, install one-by-one:
-		const contentType = await this.contentTypeCache.get(libraryToBeInstalled);
-		this.checkContentTypeExists(contentType);
-
-		const user = this.createDefaultIUser();
-
-		let installResults: ILibraryInstallResult[] = [];
-
-		try {
-			installResults = await this.contentTypeRepo.installContentType(libraryToBeInstalled, user);
-		} catch (error: unknown) {
-			this.logger.warning(new H5PLibraryManagementErrorLoggable(libraryToBeInstalled, error));
-		}
-
-		const installedLibraries = await this.installLibraries(
-			librariesToInstall.slice(0, lastPositionLibrariesToInstallArray)
-		);
-
-		const result = [...installResults, ...installedLibraries];
 
 		return result;
+	}
+
+	private async installPreviousLibraryVersionsFromGitHub(library: string, availableVersions: string[]): Promise<void> {
+		const repoName = H5PLibraryMapper.mapMachineNameToGitHubRepo(library);
+		if (!repoName) {
+			this.logger.info(
+				new H5PLibraryManagementLoggable(`No GitHub repository found for ${library}. Skipping installation.`)
+			);
+			return;
+		}
+
+		const tags = await this.fetchGitHubTags(repoName);
+		const filteredTags = H5PLibraryHelper.getHighestPatchTags(tags);
+
+		for (const tag of filteredTags) {
+			await this.installLibraryVersionAndDependencies(library, tag, repoName, availableVersions);
+		}
 	}
 
 	public async run(): Promise<void> {
 		this.logger.info(new H5PLibraryManagementLoggable('Starting H5P library management job...'));
 		let availableLibraries = await this.libraryAdministration.getLibraries();
 		const uninstalledLibraries = await this.uninstallUnwantedLibraries(this.libraryWishList);
-		const installedLibraries = await this.installLibraries(this.libraryWishList);
-		this.logger.info(new H5PLibraryManagementLoggable('Finished H5P library management job!'));
-		this.logger.info(
-			new H5PLibraryManagementMetricsLoggable(availableLibraries, uninstalledLibraries, installedLibraries)
-		);
+		const installedLibraries: ILibraryInstallResult[] = [];
 
 		availableLibraries = await this.libraryAdministration.getLibraries();
 		const availableVersions = H5PLibraryHelper.getAvailableVersions(availableLibraries);
 
 		for (const library of this.libraryWishList) {
-			const repoName = H5PLibraryMapper.mapMachineNameToGitHubRepo(library);
-			if (!repoName) {
-				this.logger.info(
-					new H5PLibraryManagementLoggable(`No GitHub repository found for ${library}. Skipping installation.`)
-				);
-				continue;
-			}
-
-			const tags = await this.fetchGitHubTags(repoName);
-			const filteredTags = H5PLibraryHelper.getHighestPatchTags(tags);
-
-			for (const tag of filteredTags) {
-				await this.installLibraryVersionAndDependencies(library, tag, repoName, availableVersions);
-			}
+			this.logLibraryBanner(library);
+			await this.installLatestLibraryVersionFromH5pHub(library);
+			await this.installPreviousLibraryVersionsFromGitHub(library, availableVersions);
 		}
+
+		this.logger.info(new H5PLibraryManagementLoggable('Finished H5P library management job!'));
+		this.logger.info(
+			new H5PLibraryManagementMetricsLoggable(availableLibraries, uninstalledLibraries, installedLibraries)
+		);
 	}
 
 	private async installLibraryVersionAndDependencies(
@@ -519,5 +521,13 @@ export class H5PLibraryManagementService {
 			);
 		}
 		return changed;
+	}
+
+	private logLibraryBanner(libraryName: string): void {
+		const name = `*   ${libraryName}   *`;
+		const border = '*'.repeat(name.length);
+		this.logger.info(new H5PLibraryManagementLoggable(border));
+		this.logger.info(new H5PLibraryManagementLoggable(name));
+		this.logger.info(new H5PLibraryManagementLoggable(border));
 	}
 }
