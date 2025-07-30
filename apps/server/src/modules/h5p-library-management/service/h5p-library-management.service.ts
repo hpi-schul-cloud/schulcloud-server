@@ -57,6 +57,10 @@ export const castToLibrariesContentType = (object: unknown): LibrariesContentTyp
 	return object;
 };
 
+function inputIsObjectWithPath(obj: unknown): obj is { path: string } {
+	return typeof obj === 'object' && obj !== null && 'path' in obj && typeof obj.path === 'string';
+}
+
 @Injectable()
 export class H5PLibraryManagementService {
 	// TODO: should all this prop private? -> check constructor setup
@@ -461,8 +465,8 @@ export class H5PLibraryManagementService {
 				if (Array.isArray(json[key])) {
 					// For dependencies, check for 'path' property
 					if (key.endsWith('Dependencies')) {
-						const filteredDeps = json[key].filter((dep: any) => {
-							if (dep.path) {
+						const filteredDeps = json[key].filter((dep) => {
+							if (inputIsObjectWithPath(dep)) {
 								const depPath = FileSystemHelper.buildPath(folderPath, dep.path);
 								return FileSystemHelper.pathExists(depPath);
 							}
