@@ -159,6 +159,19 @@ describe(BBBService.name, () => {
 				return { param, bbbCreateResponse, spy };
 			};
 
+			it('should not send config header if VIDEOCONFERENCE_DEFAULT_PRESENTATION is empty', async () => {
+				configService.get.mockImplementation((key: string) => {
+					if (key === 'VIDEOCONFERENCE_DEFAULT_PRESENTATION') {
+						return '';
+					}
+					return 'https://mocked';
+				});
+				const { param } = setup();
+
+				await service.create(param);
+				expect(httpService.post).toHaveBeenCalledWith(expect.any(String), '', undefined);
+			});
+
 			it('should return a response with returncode success', async () => {
 				const { bbbCreateResponse, param, spy } = setup();
 
