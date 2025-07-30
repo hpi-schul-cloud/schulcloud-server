@@ -393,23 +393,23 @@ export class H5PLibraryManagementService {
 	}
 
 	private buildLibraryIfRequired(folderPath: string, library: string): void {
-		const packageJsonPath = FileSystemHelper.getPackageJsonPath(folderPath);
-		if (FileSystemHelper.pathExists(packageJsonPath)) {
-			this.logger.info(new H5PLibraryManagementLoggable(`Running npm ci and npm run build in ${folderPath}`));
-			const npmInstall = spawnSync('npm', ['ci'], { cwd: folderPath, stdio: 'inherit' });
-			if (npmInstall.status !== 0) {
-				this.logger.warning(new H5PLibraryManagementErrorLoggable(new Error('npm ci failed'), { library }));
-			} else {
-				const npmBuild = spawnSync('npm', ['run', 'build'], { cwd: folderPath, stdio: 'inherit' });
-				if (npmBuild.status !== 0) {
-					this.logger.warning(new H5PLibraryManagementErrorLoggable(new Error('npm run build failed'), { library }));
-				}
-				const nodeModulesPath = FileSystemHelper.getNodeModulesPath(folderPath);
-				if (FileSystemHelper.pathExists(nodeModulesPath)) {
-					FileSystemHelper.removeFolder(nodeModulesPath);
-					this.logger.info(new H5PLibraryManagementLoggable(`Removed node_modules from ${folderPath}`));
+		try {
+			if (FileSystemHelper.checkPackageJsonPath(folderPath)) {
+				this.logger.info(new H5PLibraryManagementLoggable(`Running npm ci and npm run build in ${folderPath}`));
+				const npmInstall = spawnSync('npm', ['ci'], { cwd: folderPath, stdio: 'inherit' });
+
+				if (npmInstall.status !== 0) {
+					throw new Error('npm ci failed');
+				} else {
+					const npmBuild = spawnSync('npm', ['run', 'build'], { cwd: folderPath, stdio: 'inherit' });
+					if (npmBuild.status !== 0) {
+						throw new Error('npm run build failed');
+					}
+					FileSystemHelper.removeNodeModulesPathIfExists(folderPath, this.logger);
 				}
 			}
+		} catch (error) {
+			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, { library, folderPath }));
 		}
 	}
 
@@ -426,7 +426,7 @@ export class H5PLibraryManagementService {
 				FileSystemHelper.writeLibraryJson(libraryJsonPath, json);
 				changed = true;
 				this.logger.info(
-					new H5PLibraryManagementLoggable(`Corrected version in library.json to match tag ${tag} in ${folderPath}`)
+					new H5PLibraryManagementLoggable(`Corrected version in library.json to match tag ${tag} in ${folderPath}.`)
 				);
 			}
 		} catch (error) {
@@ -487,7 +487,7 @@ export class H5PLibraryManagementService {
 				FileSystemHelper.writeLibraryJson(libraryJsonPath, json);
 				this.logger.info(
 					new H5PLibraryManagementLoggable(
-						`Corrected file paths in library.json to only contain available files in ${folderPath}`
+						`Corrected file paths in library.json to only contain available files in ${folderPath}.`
 					)
 				);
 			}

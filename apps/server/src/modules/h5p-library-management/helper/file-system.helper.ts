@@ -3,6 +3,8 @@ import yaml from 'yaml';
 import AdmZip from 'adm-zip';
 import { tmpdir } from 'os';
 import path from 'path';
+import type { Logger } from '@core/logger';
+import { H5PLibraryManagementLoggable } from '../loggable';
 
 export class FileSystemHelper {
 	public static pathExists(path: string): boolean {
@@ -61,7 +63,7 @@ export class FileSystemHelper {
 		rmSync(filePath, { force: true });
 	}
 
-	public static removeFolder(folderPath: string): void {
+	private static removeFolder(folderPath: string): void {
 		rmSync(folderPath, { recursive: true, force: true });
 	}
 
@@ -86,19 +88,24 @@ export class FileSystemHelper {
 		return this.buildPath(folderPath, 'library.json');
 	}
 
-	public static getPackageJsonPath(folderPath: string): string {
-		return this.buildPath(folderPath, 'package.json');
-	}
-
-	public static getNodeModulesPath(folderPath: string): string {
-		return this.buildPath(folderPath, 'node_modules');
+	public static checkPackageJsonPath(folderPath: string): boolean {
+		const packageJsonPath = this.buildPath(folderPath, 'package.json');
+		return this.pathExists(packageJsonPath);
 	}
 
 	public static getLibraryRepoMap(): Record<string, string> {
-		return FileSystemHelper.readYamlFile('config/h5p-library-repo-map.yaml');
+		return this.readYamlFile('config/h5p-library-repo-map.yaml');
 	}
 
 	public static buildPath(...segments: string[]): string {
 		return path.join(...segments);
+	}
+
+	public static removeNodeModulesPathIfExists(folderPath: string, logger: Logger): void {
+		const nodeModulesPath = this.buildPath(folderPath, 'node_modules');
+		if (this.pathExists(nodeModulesPath)) {
+			this.removeFolder(nodeModulesPath);
+			logger.info(new H5PLibraryManagementLoggable(`Removed node_modules from ${folderPath}`));
+		}
 	}
 }
