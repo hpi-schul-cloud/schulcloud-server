@@ -360,24 +360,48 @@ export class H5PLibraryManagementService {
 		return result;
 	}
 
+	private isLibraryBuildRequired(library: string, tag: string): boolean {
+		const libraryBuildIsRequired =
+			(library === 'h5p/h5p-drag-question' && tag === '1.13.15') ||
+			(library === 'h5p/h5p-course-presentation' && tag === '1.25.33') ||
+			(library === 'h5p/h5p-interactive-video' && tag === '1.26.40') ||
+			(library === 'h5p/h5p-editor-audio-recorder' && tag === '1.0.12');
+
+		return libraryBuildIsRequired;
+	}
+
+	private isLibraryPathCorrectionRequired(library: string, tag: string): boolean {
+		const libraryPathCorrectionIsRequired = library === 'h5p/h5p-memory-game' && tag === '1.3.36';
+
+		return libraryPathCorrectionIsRequired;
+	}
+
+	private executeLibraryPreInstallationHook(folderPath: string, library: string, tag: string): void {
+		this.checkAndCorrectLibraryJsonVersion(folderPath, tag);
+
+		if (this.isLibraryBuildRequired(library, tag)) {
+			this.buildLibraryIfRequired(folderPath, library);
+		}
+
+		if (this.isLibraryPathCorrectionRequired(library, tag)) {
+			this.checkAndCorrectLibraryJsonPaths(folderPath);
+		}
+	}
+
 	private async installLibraryTagFromGitHub(library: string, tag: string): Promise<ILibraryInstallResult | undefined> {
 		let result: ILibraryInstallResult | undefined;
+		// TODO: wenn wir filePath vorher erstellen könnten würde der tempFolder hinter dem unzipFile verschwinden welches folderPath zurück gibt.
+		// removeTemporaryFiles sollte dann auch nur folderPath als input brauchen.
+		// Dann wäre es möglich ein pre and post hook zu erstellen.
+		// Wenn man dann noch FileSystemHelper als Klasse instanziiert über ein factory könnte man dort noch mehr implizites Wissen weg kapseln.
 		const { filePath, folderPath, tempFolder } = FileSystemHelper.createTempFolder(library, tag);
 		await this.githubClient.downloadGitHubTag(library, tag, filePath);
 		FileSystemHelper.unzipFile(filePath, tempFolder);
 
-		this.checkAndCorrectLibraryJsonVersion(folderPath, tag);
-		if (
-			(library === 'h5p/h5p-drag-question' && tag === '1.13.15') ||
-			(library === 'h5p/h5p-course-presentation' && tag === '1.25.33') ||
-			(library === 'h5p/h5p-interactive-video' && tag === '1.26.40') ||
-			(library === 'h5p/h5p-editor-audio-recorder' && tag === '1.0.12')
-		) {
-			this.buildLibraryIfRequired(folderPath, library);
-		}
-		if (library === 'h5p/h5p-memory-game' && tag === '1.3.36') {
-			this.checkAndCorrectLibraryJsonPaths(folderPath);
-		}
+		// TODO: gefühlt gehört das in den try catch rein, es sind dafür aber viel zu viele try catch instanzen.
+		// Genauso wie die downloadGitHubTag
+		// Wenn das umgesetzt wäre könnte das return result in das try catch rein
+		this.executeLibraryPreInstallationHook(folderPath, library, tag);
 
 		try {
 			result = await this.libraryManager.installFromDirectory(folderPath);
@@ -385,9 +409,10 @@ export class H5PLibraryManagementService {
 				console.log('>>> library', library, 'tag', tag, 'result', result);
 			}
 		} catch (error: unknown) {
-			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, { library }, 'during installation'));
+			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, { library, tag }, 'during installation'));
+		} finally {
+			FileSystemHelper.removeTemporaryFiles(filePath, folderPath);
 		}
-		FileSystemHelper.removeTemporaryFiles(filePath, folderPath);
 
 		return result;
 	}
