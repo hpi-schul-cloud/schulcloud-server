@@ -54,7 +54,11 @@ export class BBBService {
 		const url: string = this.getUrl('create', this.toParams(config));
 		const conf = { headers: { 'Content-Type': 'application/xml' } };
 		const data = this.getBbbRequestConfig(this.presentationUrl);
-		const observable: Observable<AxiosResponse<string>> = this.httpService.post(url, data, conf);
+		const observable: Observable<AxiosResponse<string>> = this.httpService.post(
+			url,
+			data ?? undefined,
+			data ? conf : undefined
+		);
 
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse<string>) => {
