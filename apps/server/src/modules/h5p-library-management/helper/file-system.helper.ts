@@ -94,6 +94,10 @@ export class FileSystemHelper {
 		return this.buildPath(folderPath, 'node_modules');
 	}
 
+	public static getLibraryRepoMap(): Record<string, string> {
+		return FileSystemHelper.readYamlFile('config/h5p-library-repo-map.yaml');
+	}
+
 	public static buildPath(...segments: string[]): string {
 		return path.join(...segments);
 	}

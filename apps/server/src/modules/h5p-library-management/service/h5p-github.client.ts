@@ -11,10 +11,12 @@ import { H5PLibraryManagementErrorLoggable, H5PLibraryManagementLoggable } from 
 export class H5pGitHubClient {
 	constructor(private readonly logger: Logger) {
 		this.logger.setContext(H5pGitHubClient.name);
+
+		// TODO GITHUB_PERSONAL_ACCESS_TOKEN über config
 	}
 
 	public mapMachineNamesToGitHubRepos(libraries: string[]): string[] {
-		const libraryRepoMap = FileSystemHelper.readYamlFile('config/h5p-library-repo-map.yaml');
+		const libraryRepoMap = FileSystemHelper.getLibraryRepoMap();
 
 		const repos: string[] = [];
 		for (const library of libraries) {
@@ -87,15 +89,19 @@ export class H5pGitHubClient {
 						machineNameToRepoMap[libraryJson.machineName] = `${organization}/${repo.name}`;
 					}
 				} catch (error) {
-					throw error instanceof Error
-						? error
-						: new Error(`Unknown error while processing library.json of repository ${repo.name}`);
+					throw new H5PLibraryManagementErrorLoggable(
+						error,
+						{ repoName: repo.name },
+						'while fetching repositories for organization'
+					);
 				}
 			}
 		} catch (error) {
-			throw error instanceof Error
-				? error
-				: new Error(`Unknown error while fetching repositories for organization ${organization}`);
+			throw new H5PLibraryManagementErrorLoggable(
+				error,
+				{ organization },
+				'while fetching repositories for organization'
+			);
 		}
 
 		return machineNameToRepoMap;
@@ -116,11 +122,7 @@ export class H5pGitHubClient {
 			});
 			tags = response.data.map((tag: components['schemas']['tag']) => tag.name);
 		} catch (error: unknown) {
-			const loggableError =
-				error instanceof Error
-					? new H5PLibraryManagementErrorLoggable(repoName, error)
-					: new H5PLibraryManagementErrorLoggable(repoName, new Error('Unknown error during fetching tags'));
-			this.logger.warning(loggableError);
+			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, { repoName }, 'during fetching tags'));
 			tags = [];
 		}
 
@@ -148,11 +150,7 @@ export class H5pGitHubClient {
 
 			this.logger.info(new H5PLibraryManagementLoggable(`Downloaded ${tag} of ${library} to ${filePath}`));
 		} catch (error: unknown) {
-			const loggableError =
-				error instanceof Error
-					? new H5PLibraryManagementErrorLoggable(library, error)
-					: new H5PLibraryManagementErrorLoggable(library, new Error('Unknown error during download'));
-			this.logger.warning(loggableError);
+			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, { library }, 'during download'));
 		}
 	}
 }

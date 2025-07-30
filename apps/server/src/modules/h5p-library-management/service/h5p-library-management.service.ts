@@ -225,7 +225,7 @@ export class H5PLibraryManagementService {
 			this.logger.info(new H5PLibraryManagementInstallResultsLoggable(installResults));
 			this.logger.info(new H5PLibraryManagementLoggable(`Finished installation of ${library} from H5P Hub.`));
 		} catch (error: unknown) {
-			this.logger.warning(new H5PLibraryManagementErrorLoggable(library, error));
+			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, { library }));
 		}
 
 		return installResults;
@@ -385,11 +385,7 @@ export class H5PLibraryManagementService {
 				console.log('>>> library', library, 'tag', tag, 'result', result);
 			}
 		} catch (error: unknown) {
-			const loggableError =
-				error instanceof Error
-					? new H5PLibraryManagementErrorLoggable(library, error)
-					: new H5PLibraryManagementErrorLoggable(library, new Error('Unknown error during installation'));
-			this.logger.warning(loggableError);
+			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, { library }, 'during installation'));
 		}
 		FileSystemHelper.removeTemporaryFiles(filePath, folderPath);
 
@@ -402,11 +398,11 @@ export class H5PLibraryManagementService {
 			this.logger.info(new H5PLibraryManagementLoggable(`Running npm ci and npm run build in ${folderPath}`));
 			const npmInstall = spawnSync('npm', ['ci'], { cwd: folderPath, stdio: 'inherit' });
 			if (npmInstall.status !== 0) {
-				this.logger.warning(new H5PLibraryManagementErrorLoggable(library, new Error('npm ci failed')));
+				this.logger.warning(new H5PLibraryManagementErrorLoggable(new Error('npm ci failed'), { library }));
 			} else {
 				const npmBuild = spawnSync('npm', ['run', 'build'], { cwd: folderPath, stdio: 'inherit' });
 				if (npmBuild.status !== 0) {
-					this.logger.warning(new H5PLibraryManagementErrorLoggable(library, new Error('npm run build failed')));
+					this.logger.warning(new H5PLibraryManagementErrorLoggable(new Error('npm run build failed'), { library }));
 				}
 				const nodeModulesPath = FileSystemHelper.getNodeModulesPath(folderPath);
 				if (FileSystemHelper.pathExists(nodeModulesPath)) {
@@ -433,12 +429,9 @@ export class H5PLibraryManagementService {
 					new H5PLibraryManagementLoggable(`Corrected version in library.json to match tag ${tag} in ${folderPath}`)
 				);
 			}
-		} catch (err) {
+		} catch (error) {
 			this.logger.warning(
-				new H5PLibraryManagementErrorLoggable(
-					folderPath,
-					err instanceof Error ? err : new Error('Unknown error reading or correcting library.json')
-				)
+				new H5PLibraryManagementErrorLoggable(error, { folderPath }, 'reading or correcting library.json')
 			);
 		}
 		return changed;
@@ -498,12 +491,9 @@ export class H5PLibraryManagementService {
 					)
 				);
 			}
-		} catch (err) {
+		} catch (error) {
 			this.logger.warning(
-				new H5PLibraryManagementErrorLoggable(
-					folderPath,
-					err instanceof Error ? err : new Error('Unknown error reading or correcting library.json file paths')
-				)
+				new H5PLibraryManagementErrorLoggable(error, { folderPath }, 'reading or correcting library.json file paths')
 			);
 		}
 		return changed;
