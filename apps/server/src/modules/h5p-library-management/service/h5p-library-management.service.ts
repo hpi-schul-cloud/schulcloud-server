@@ -24,6 +24,7 @@ import { parse } from 'yaml';
 import { H5PLibraryHelper } from '../helper';
 import {
 	H5PLibraryManagementErrorLoggable,
+	H5PLibraryManagementInstallResultsLoggable,
 	H5PLibraryManagementLoggable,
 	H5PLibraryManagementMetricsLoggable,
 } from '../loggable';
@@ -173,6 +174,7 @@ export class H5PLibraryManagementService {
 			try {
 				this.logger.info(new H5PLibraryManagementLoggable(`Start installation of ${library} from H5P Hub.`));
 				result = await this.contentTypeRepo.installContentType(library, user);
+				this.logger.info(new H5PLibraryManagementInstallResultsLoggable(result));
 				this.logger.info(new H5PLibraryManagementLoggable(`Finished installation of ${library} from H5P Hub.`));
 			} catch (error: unknown) {
 				this.logger.warning(new H5PLibraryManagementErrorLoggable(library, error));
@@ -186,21 +188,29 @@ export class H5PLibraryManagementService {
 		return result;
 	}
 
-	private async installPreviousLibraryVersionsFromGitHub(library: string, availableVersions: string[]): Promise<void> {
+	private async installPreviousLibraryVersionsFromGitHub(
+		library: string,
+		availableVersions: string[]
+	): Promise<ILibraryInstallResult[]> {
+		const result: ILibraryInstallResult[] = [];
+
 		const repoName = H5PLibraryMapper.mapMachineNameToGitHubRepo(library);
 		if (!repoName) {
 			this.logger.info(
 				new H5PLibraryManagementLoggable(`No GitHub repository found for ${library}. Skipping installation.`)
 			);
-			return;
+			return [];
 		}
 
 		const tags = await this.fetchGitHubTags(repoName);
 		const filteredTags = H5PLibraryHelper.getHighestPatchTags(tags);
 
 		for (const tag of filteredTags) {
-			await this.installLibraryVersionAndDependencies(library, tag, repoName, availableVersions);
+			const tagResult = await this.installLibraryVersionAndDependencies(library, tag, repoName, availableVersions);
+			result.push(...tagResult);
 		}
+
+		return result;
 	}
 
 	public async run(): Promise<void> {
@@ -214,8 +224,13 @@ export class H5PLibraryManagementService {
 
 		for (const library of this.libraryWishList) {
 			this.logLibraryBanner(library);
-			await this.installLatestLibraryVersionFromH5pHub(library);
-			await this.installPreviousLibraryVersionsFromGitHub(library, availableVersions);
+
+			const installResultH5pHub = await this.installLatestLibraryVersionFromH5pHub(library);
+			installedLibraries.push(...installResultH5pHub);
+			// add installed libraries from H5P Hub to available versions !!!
+
+			const installResultGithub = await this.installPreviousLibraryVersionsFromGitHub(library, availableVersions);
+			installedLibraries.push(...installResultGithub);
 		}
 
 		this.logger.info(new H5PLibraryManagementLoggable('Finished H5P library management job!'));
@@ -229,13 +244,15 @@ export class H5PLibraryManagementService {
 		tag: string,
 		repoName: string,
 		availableVersions: string[]
-	): Promise<void> {
+	): Promise<ILibraryInstallResult[]> {
+		const result: ILibraryInstallResult[] = [];
+
 		const currentPatchVersionAvailable = H5PLibraryHelper.isCurrentVersionAvailable(library, tag, availableVersions);
 		if (currentPatchVersionAvailable) {
 			this.logger.info(
 				new H5PLibraryManagementLoggable(`${library}-${tag} is already installed. Skipping installation.`)
 			);
-			return;
+			return [];
 		}
 
 		const newerPatchVersionAvailable = H5PLibraryHelper.isNewerPatchVersionAvailable(library, tag, availableVersions);
@@ -245,16 +262,23 @@ export class H5PLibraryManagementService {
 					`A newer patch version of ${library}-${tag} is already installed. Skipping installation.`
 				)
 			);
-			return;
+			return [];
 		}
 
 		this.logger.info(new H5PLibraryManagementLoggable(`Start installation of ${library}-${tag} from GitHub.`));
-		await this.installLibraryTagFromGitHub(repoName, tag);
-		this.logger.info(new H5PLibraryManagementLoggable(`Finished installation of ${library}-${tag} from GitHub.`));
+		const libResult = await this.installLibraryTagFromGitHub(repoName, tag);
+		if (libResult) {
+			result.push(libResult);
+			this.logger.info(new H5PLibraryManagementLoggable(`Successfully installed ${library}-${tag} from GitHub.`));
+		} else {
+			return [];
+		}
 
+		this.logger.info(
+			new H5PLibraryManagementLoggable(`Start installation of dependencies for ${library}-${tag} from GitHub.`)
+		);
 		availableVersions.push(`${library}-${tag}`);
 
-		// check and update dependencies
 		const [tagMajor, tagMinor] = tag.split('.').map(Number);
 		const libraryName: ILibraryName = {
 			machineName: library,
@@ -268,7 +292,7 @@ export class H5PLibraryManagementService {
 		);
 		if (dependencies.length === 0) {
 			this.logger.info(new H5PLibraryManagementLoggable(`No dependencies found for ${library}-${tag}.`));
-			return;
+			return libResult ? [libResult] : [];
 		}
 
 		for (const dependency of dependencies) {
@@ -299,8 +323,24 @@ export class H5PLibraryManagementService {
 					`Installing dependency ${depName}-${depTag} from GitHub for ${library}-${tag}.`
 				)
 			);
-			await this.installLibraryVersionAndDependencies(depName, depTag, depRepoName, availableVersions);
+			const depResult = await this.installLibraryVersionAndDependencies(
+				depName,
+				depTag,
+				depRepoName,
+				availableVersions
+			);
+			if (depResult.length > 0) {
+				result.push(...depResult);
+				this.logger.info(
+					new H5PLibraryManagementLoggable(`Successfully installed dependency ${depName}-${depTag} from GitHub.`)
+				);
+			}
 		}
+		this.logger.info(
+			new H5PLibraryManagementLoggable(`Finished installation of dependencies for ${library}-${tag} from GitHub.`)
+		);
+
+		return result;
 	}
 
 	private async fetchGitHubTags(repoName: string): Promise<string[]> {
@@ -329,7 +369,8 @@ export class H5PLibraryManagementService {
 		return tags;
 	}
 
-	private async installLibraryTagFromGitHub(library: string, tag: string): Promise<void> {
+	private async installLibraryTagFromGitHub(library: string, tag: string): Promise<ILibraryInstallResult | undefined> {
+		let result: ILibraryInstallResult | undefined;
 		const tempFolder = tmpdir();
 		const libraryName = library.split('/')[1];
 		const filePath = join(tempFolder, `${libraryName}-${tag}.zip`);
@@ -351,7 +392,10 @@ export class H5PLibraryManagementService {
 		}
 
 		try {
-			await this.libraryManager.installFromDirectory(folderPath);
+			result = await this.libraryManager.installFromDirectory(folderPath);
+			if (result.type === 'none') {
+				console.log('>>> library', library, 'tag', tag, 'result', result);
+			}
 		} catch (error: unknown) {
 			const loggableError =
 				error instanceof Error
@@ -360,6 +404,8 @@ export class H5PLibraryManagementService {
 			this.logger.warning(loggableError);
 		}
 		H5PLibraryHelper.removeTemporaryFiles(filePath, folderPath);
+
+		return result;
 	}
 
 	private buildLibraryIfRequired(folderPath: string, library: string): void {

@@ -58,16 +58,6 @@ export class H5PLibraryHelper {
 		return highestVersionTag;
 	}
 
-	public static getUniqueLibraryMachineNames(availableLibraries: ILibraryAdministrationOverviewItem[]): string[] {
-		const uniqueNames = new Set<string>();
-		for (const lib of availableLibraries) {
-			uniqueNames.add(lib.machineName);
-		}
-		const uniqueLibraryMachineNames = Array.from(uniqueNames);
-
-		return uniqueLibraryMachineNames;
-	}
-
 	public static isCurrentVersionAvailable(library: string, tag: string, availableVersions: string[]): boolean {
 		const currentPatchVersionAvailable = availableVersions.includes(`${library}-${tag}`);
 		return currentPatchVersionAvailable;
