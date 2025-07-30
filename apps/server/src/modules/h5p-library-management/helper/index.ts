@@ -1,1 +1,2 @@
-export * from './h5p-library.helper';
+export * from './file-system.helper';
+export * from './zip.helper';
