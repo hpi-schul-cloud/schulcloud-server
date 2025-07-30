@@ -14,8 +14,7 @@ import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { spawnSync } from 'child_process';
-import { tmpdir } from 'os';
-import path, { join } from 'path';
+import path from 'path';
 import { parse } from 'yaml';
 import { H5pDefaultUserFactory } from '../factory';
 import { FileSystemHelper, ZipHelper } from '../helper';
@@ -360,13 +359,10 @@ export class H5PLibraryManagementService {
 
 	private async installLibraryTagFromGitHub(library: string, tag: string): Promise<ILibraryInstallResult | undefined> {
 		let result: ILibraryInstallResult | undefined;
-		const tempFolder = tmpdir();
-		const libraryName = library.split('/')[1];
-		const filePath = join(tempFolder, `${libraryName}-${tag}.zip`);
-		const folderPath = join(tempFolder, `${libraryName}-${tag}`);
-
+		const { filePath, folderPath, tempFolder } = ZipHelper.createTempFolder(library, tag);
 		await this.githubClient.downloadGitHubTag(library, tag, filePath);
 		ZipHelper.unzipFile(filePath, tempFolder);
+
 		this.checkAndCorrectLibraryJsonVersion(folderPath, tag);
 		if (
 			(library === 'h5p/h5p-drag-question' && tag === '1.13.15') ||
@@ -398,7 +394,7 @@ export class H5PLibraryManagementService {
 	}
 
 	private buildLibraryIfRequired(folderPath: string, library: string): void {
-		const packageJsonPath = join(folderPath, 'package.json');
+		const packageJsonPath = path.join(folderPath, 'package.json');
 		if (FileSystemHelper.pathExists(packageJsonPath)) {
 			this.logger.info(new H5PLibraryManagementLoggable(`Running npm ci and npm run build in ${folderPath}`));
 			const npmInstall = spawnSync('npm', ['ci'], { cwd: folderPath, stdio: 'inherit' });
@@ -409,7 +405,7 @@ export class H5PLibraryManagementService {
 				if (npmBuild.status !== 0) {
 					this.logger.warning(new H5PLibraryManagementErrorLoggable(library, new Error('npm run build failed')));
 				}
-				const nodeModulesPath = join(folderPath, 'node_modules');
+				const nodeModulesPath = path.join(folderPath, 'node_modules');
 				if (FileSystemHelper.pathExists(nodeModulesPath)) {
 					FileSystemHelper.removeFolder(nodeModulesPath);
 					this.logger.info(new H5PLibraryManagementLoggable(`Removed node_modules from ${folderPath}`));
