@@ -70,9 +70,6 @@ export class FileSystemHelper {
 		zip.extractAllTo(outputDir, true);
 	}
 
-	// TODO: möglicherweise gehört das zu file-system ...theoretisch könnte das auch für unzipFile gelten.
-	// TODO: alle path Sachen aus managment gehören auch zu file-system.helper.ts
-	// getLibraryJsonPath() const libraryJsonPath = path.join(folderPath, 'library.json');
 	public static createTempFolder(
 		library: string,
 		tag: string
