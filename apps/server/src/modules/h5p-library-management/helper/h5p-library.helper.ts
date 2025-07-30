@@ -1,8 +1,19 @@
-import { ILibraryAdministrationOverviewItem } from '@lumieducation/h5p-server';
+import { ILibraryAdministrationOverviewItem, IUser } from '@lumieducation/h5p-server';
 import AdmZip from 'adm-zip';
 import { rmSync } from 'fs';
 
 export class H5PLibraryHelper {
+	public static createDefaultIUser(): IUser {
+		const user: IUser = {
+			email: 'a@b.de',
+			id: 'a',
+			name: 'a',
+			type: 'local',
+		};
+
+		return user;
+	}
+
 	public static getAvailableVersions(availableLibraries: ILibraryAdministrationOverviewItem[]): string[] {
 		const availableVersions = availableLibraries.map(
 			(lib) => `${lib.machineName}-${lib.majorVersion}.${lib.minorVersion}.${lib.patchVersion}`

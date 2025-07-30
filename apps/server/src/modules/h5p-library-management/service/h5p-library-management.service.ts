@@ -4,7 +4,6 @@ import {
 	ContentTypeCache,
 	H5PConfig,
 	ILibraryAdministrationOverviewItem,
-	IUser,
 	LibraryAdministration,
 	LibraryManager,
 } from '@lumieducation/h5p-server';
@@ -164,23 +163,12 @@ export class H5PLibraryManagementService {
 		return contentTypeExists;
 	}
 
-	private createDefaultIUser(): IUser {
-		const user: IUser = {
-			email: 'a@b.de',
-			id: 'a',
-			name: 'a',
-			type: 'local',
-		};
-
-		return user;
-	}
-
 	public async installLatestLibraryVersionFromH5pHub(library: string): Promise<ILibraryInstallResult[]> {
 		let result: ILibraryInstallResult[] = [];
 
 		const contentTypeExists = await this.checkContentTypeExistsOnH5pHub(library);
 		if (contentTypeExists) {
-			const user = this.createDefaultIUser();
+			const user = H5PLibraryHelper.createDefaultIUser();
 
 			try {
 				this.logger.info(new H5PLibraryManagementLoggable(`Start installation of ${library} from H5P Hub.`));
