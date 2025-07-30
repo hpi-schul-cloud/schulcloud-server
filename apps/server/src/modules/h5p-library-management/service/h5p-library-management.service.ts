@@ -14,10 +14,9 @@ import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { spawnSync } from 'child_process';
-import path from 'path';
 import { parse } from 'yaml';
 import { H5pDefaultUserFactory } from '../factory';
-import { FileSystemHelper, ZipHelper } from '../helper';
+import { FileSystemHelper } from '../helper';
 import {
 	H5PLibraryManagementErrorLoggable,
 	H5PLibraryManagementInstallResultsLoggable,
@@ -359,9 +358,9 @@ export class H5PLibraryManagementService {
 
 	private async installLibraryTagFromGitHub(library: string, tag: string): Promise<ILibraryInstallResult | undefined> {
 		let result: ILibraryInstallResult | undefined;
-		const { filePath, folderPath, tempFolder } = ZipHelper.createTempFolder(library, tag);
+		const { filePath, folderPath, tempFolder } = FileSystemHelper.createTempFolder(library, tag);
 		await this.githubClient.downloadGitHubTag(library, tag, filePath);
-		ZipHelper.unzipFile(filePath, tempFolder);
+		FileSystemHelper.unzipFile(filePath, tempFolder);
 
 		this.checkAndCorrectLibraryJsonVersion(folderPath, tag);
 		if (
@@ -394,7 +393,7 @@ export class H5PLibraryManagementService {
 	}
 
 	private buildLibraryIfRequired(folderPath: string, library: string): void {
-		const packageJsonPath = path.join(folderPath, 'package.json');
+		const packageJsonPath = FileSystemHelper.getPackageJsonPath(folderPath);
 		if (FileSystemHelper.pathExists(packageJsonPath)) {
 			this.logger.info(new H5PLibraryManagementLoggable(`Running npm ci and npm run build in ${folderPath}`));
 			const npmInstall = spawnSync('npm', ['ci'], { cwd: folderPath, stdio: 'inherit' });
@@ -405,7 +404,7 @@ export class H5PLibraryManagementService {
 				if (npmBuild.status !== 0) {
 					this.logger.warning(new H5PLibraryManagementErrorLoggable(library, new Error('npm run build failed')));
 				}
-				const nodeModulesPath = path.join(folderPath, 'node_modules');
+				const nodeModulesPath = FileSystemHelper.getNodeModulesPath(folderPath);
 				if (FileSystemHelper.pathExists(nodeModulesPath)) {
 					FileSystemHelper.removeFolder(nodeModulesPath);
 					this.logger.info(new H5PLibraryManagementLoggable(`Removed node_modules from ${folderPath}`));
@@ -415,7 +414,7 @@ export class H5PLibraryManagementService {
 	}
 
 	private checkAndCorrectLibraryJsonVersion(folderPath: string, tag: string): boolean {
-		const libraryJsonPath = path.join(folderPath, 'library.json');
+		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
 		let changed = false;
 		try {
 			const json = FileSystemHelper.readLibraryJson(libraryJsonPath);
@@ -442,7 +441,7 @@ export class H5PLibraryManagementService {
 	}
 
 	private checkAndCorrectLibraryJsonPaths(folderPath: string): boolean {
-		const libraryJsonPath = path.join(folderPath, 'library.json');
+		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
 		let changed = false;
 		try {
 			const json = FileSystemHelper.readLibraryJson(libraryJsonPath);
@@ -464,7 +463,7 @@ export class H5PLibraryManagementService {
 					if (key.endsWith('Dependencies')) {
 						const filteredDeps = json[key].filter((dep: any) => {
 							if (dep.path) {
-								const depPath = path.join(folderPath, dep.path);
+								const depPath = FileSystemHelper.buildPath(folderPath, dep.path);
 								return FileSystemHelper.pathExists(depPath);
 							}
 							return true;
@@ -476,7 +475,7 @@ export class H5PLibraryManagementService {
 					} else {
 						// For JS/CSS arrays, check each file path
 						const filteredFiles = json[key].filter((file: { path: string }) => {
-							const filePath = path.join(folderPath, file.path);
+							const filePath = FileSystemHelper.buildPath(folderPath, file.path);
 							return FileSystemHelper.pathExists(filePath);
 						});
 						if (filteredFiles.length !== json[key].length) {

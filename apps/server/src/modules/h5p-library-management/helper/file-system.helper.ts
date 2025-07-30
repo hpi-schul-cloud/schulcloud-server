@@ -1,5 +1,8 @@
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import yaml from 'yaml';
+import AdmZip from 'adm-zip';
+import { tmpdir } from 'os';
+import path from 'path';
 
 export class FileSystemHelper {
 	public static pathExists(path: string): boolean {
@@ -60,5 +63,41 @@ export class FileSystemHelper {
 
 	public static removeFolder(folderPath: string): void {
 		rmSync(folderPath, { recursive: true, force: true });
+	}
+
+	public static unzipFile(zipFilePath: string, outputDir: string): void {
+		const zip = new AdmZip(zipFilePath);
+		zip.extractAllTo(outputDir, true);
+	}
+
+	// TODO: möglicherweise gehört das zu file-system ...theoretisch könnte das auch für unzipFile gelten.
+	// TODO: alle path Sachen aus managment gehören auch zu file-system.helper.ts
+	// getLibraryJsonPath() const libraryJsonPath = path.join(folderPath, 'library.json');
+	public static createTempFolder(
+		library: string,
+		tag: string
+	): { filePath: string; folderPath: string; tempFolder: string } {
+		const tempFolder = tmpdir();
+		const libraryName = library.split('/')[1];
+		const filePath = path.join(tempFolder, `${libraryName}-${tag}.zip`);
+		const folderPath = path.join(tempFolder, `${libraryName}-${tag}`);
+
+		return { filePath, folderPath, tempFolder };
+	}
+
+	public static getLibraryJsonPath(folderPath: string): string {
+		return this.buildPath(folderPath, 'library.json');
+	}
+
+	public static getPackageJsonPath(folderPath: string): string {
+		return this.buildPath(folderPath, 'package.json');
+	}
+
+	public static getNodeModulesPath(folderPath: string): string {
+		return this.buildPath(folderPath, 'node_modules');
+	}
+
+	public static buildPath(...segments: string[]): string {
+		return path.join(...segments);
 	}
 }
