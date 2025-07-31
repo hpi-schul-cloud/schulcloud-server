@@ -302,11 +302,11 @@ export class H5PLibraryManagementService {
 		} else {
 			return [];
 		}
+		availableVersions.push(`${library}-${tag}`);
 
 		this.logger.info(
 			new H5PLibraryManagementLoggable(`Start installation of dependencies for ${library}-${tag} from GitHub.`)
 		);
-		availableVersions.push(`${library}-${tag}`);
 
 		const [tagMajor, tagMinor] = tag.split('.').map(Number);
 		const libraryName: ILibraryName = {
@@ -558,9 +558,9 @@ export class H5PLibraryManagementService {
 			.filter((result) => result.type === 'new' || result.type === 'patch')
 			.map(
 				(result) =>
-					`${result.newVersion?.machineName || ''}-${result.newVersion?.majorVersion || ''}.${
-						result.newVersion?.minorVersion || ''
-					}.${result.newVersion?.patchVersion || ''}`
+					`${result.newVersion?.machineName ?? ''}-${result.newVersion?.majorVersion ?? ''}.${
+						result.newVersion?.minorVersion ?? ''
+					}.${result.newVersion?.patchVersion ?? ''}`
 			);
 		availableVersions.push(...newVersions);
 	}
