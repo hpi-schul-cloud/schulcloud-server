@@ -1,0 +1,3 @@
+export enum BoardErrorTypeEnum {
+	WEBSOCKET_UNABLE_TO_CONNECT = 'WEBSOCKET_UNABLE_TO_CONNECT',
+}
