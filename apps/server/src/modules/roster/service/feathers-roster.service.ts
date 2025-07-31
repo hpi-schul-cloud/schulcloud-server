@@ -87,16 +87,20 @@ export class FeathersRosterService {
 
 	public async getUserGroups(pseudonym: string, oauth2ClientId: string): Promise<UserGroups> {
 		const courses = await this.getCourses(pseudonym, oauth2ClientId);
+		const coursesGroups = courses.map((course) => {
+			return {
+				group_id: course.id,
+				name: course.name,
+				student_count: course.students.length,
+			};
+		});
+
+		// TODO extend for rooms
+		// const rooms = await this.getRooms(pseudonym, oauth2ClientId);
 
 		const userGroups = {
 			data: {
-				groups: courses.map((course) => {
-					return {
-						group_id: course.id,
-						name: course.name,
-						student_count: course.students.length,
-					};
-				}),
+				groups: [...coursesGroups],
 			},
 		};
 
