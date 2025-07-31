@@ -136,13 +136,17 @@ export class H5PLibraryManagementService {
 		availableLibraries: ILibraryAdministrationOverviewItem[]
 	): Promise<ILibraryAdministrationOverviewItem[]> {
 		const unwantedLibraries = this.getUnwantedLibraries(availableLibraries);
+		const result: ILibraryAdministrationOverviewItem[] = [];
 
 		for (const library of unwantedLibraries) {
 			// to avoid conflicts, remove one-by-one
-			await this.forceUninstallLibrary(library);
+			const success = await this.forceUninstallLibrary(library);
+			if (success) {
+				result.push(library);
+			}
 		}
 
-		return unwantedLibraries;
+		return result;
 	}
 
 	private getUnwantedLibraries(
@@ -157,16 +161,28 @@ export class H5PLibraryManagementService {
 		return unwantedLibraries;
 	}
 
-	private async forceUninstallLibrary(unwantedLibrary: ILibraryAdministrationOverviewItem): Promise<void> {
+	private async forceUninstallLibrary(unwantedLibrary: ILibraryAdministrationOverviewItem): Promise<boolean> {
+		this.logStartForceUninstallLibrary(unwantedLibrary.machineName);
+		let result = false;
 		try {
 			await this.libraryStorage.deleteLibrary(unwantedLibrary);
+			result = true;
 		} catch (error: unknown) {
 			this.logger.warning(
 				new H5PLibraryManagementErrorLoggable(error, { library: unwantedLibrary.machineName }, 'during force uninstall')
 			);
 		}
+		this.logFinishedForceUninstallLibrary(unwantedLibrary.machineName);
 
-		//TODO: check return value!?
+		return result;
+	}
+
+	private logStartForceUninstallLibrary(library: string): void {
+		this.logger.info(new H5PLibraryManagementLoggable(`Start removal of unwanted library ${library}.`));
+	}
+
+	private logFinishedForceUninstallLibrary(library: string): void {
+		this.logger.info(new H5PLibraryManagementLoggable(`Finished removal of unwanted library ${library}.`));
 	}
 
 	private async installLibrariesAsBulk(
@@ -300,7 +316,6 @@ export class H5PLibraryManagementService {
 		this.logStartInstallationOfLibraryFromGitHub(library, tag);
 		const result: ILibraryInstallResult[] = [];
 
-		//TODO: wenn nicht avaible soll er return oder?
 		if (this.isCurrentVersionAvailable(library, tag, availableVersions)) return [];
 		if (this.isNewerPatchVersionAvailable(library, tag, availableVersions)) return [];
 
