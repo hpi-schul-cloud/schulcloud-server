@@ -67,7 +67,6 @@ describe('Aggregation helper', () => {
 				limit: 5,
 				sort: { firstName: 1, sortBySearchQueryResult: 1 },
 				searchQuery: 'test',
-				searchFilterGate: 9,
 				schoolId: new ObjectId(exampleId),
 				schoolYearId: new ObjectId(exampleId),
 				roles: new ObjectId(exampleId),
@@ -99,7 +98,14 @@ describe('Aggregation helper', () => {
 			const aggregation = createMultiDocumentAggregation(query);
 
 			expect(aggregation).toEqual(
-				expect.arrayContaining([expect.objectContaining({ $match: { score: { $gte: 9 } } })])
+				expect.arrayContaining([
+					expect.objectContaining({
+						$sort: {
+							firstName: 1,
+							score: { $meta: 'textScore' },
+						},
+					}),
+				])
 			);
 		});
 	});

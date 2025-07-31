@@ -16,13 +16,13 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 
 	protected abstract mapDOToEntityProperties(entityDO: DO): EntityData<E>;
 
-	async save(domainObject: DO): Promise<DO> {
+	public async save(domainObject: DO): Promise<DO> {
 		const savedDomainObjects = await this.saveAll([domainObject]);
 		return savedDomainObjects[0];
 	}
 
-	async saveAll(domainObjects: DO[]): Promise<DO[]> {
-		const promises = domainObjects.map(async (dob) => this.createOrUpdateEntity(dob));
+	public async saveAll(domainObjects: DO[]): Promise<DO[]> {
+		const promises = domainObjects.map((dob) => this.createOrUpdateEntity(dob));
 
 		const results = await Promise.all(promises);
 
@@ -52,7 +52,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 		return { domainObject, persistedEntity };
 	}
 
-	async delete(domainObjects: DO[] | DO): Promise<void> {
+	public async delete(domainObjects: DO[] | DO): Promise<void> {
 		const ids: Primary<E>[] = Utils.asArray(domainObjects).map((dob) => {
 			if (!dob.id) {
 				throw new InternalServerErrorException('Cannot delete object without id');
@@ -69,7 +69,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 	/**
 	 * @deprecated Please use {@link delete} instead
 	 */
-	async deleteById(id: EntityId | EntityId[]): Promise<number> {
+	public async deleteById(id: EntityId | EntityId[]): Promise<number> {
 		const ids = Utils.asArray(id) as Primary<E>[];
 
 		const entities = ids.map((eid) => this._em.getReference(this.entityName, eid));
@@ -81,7 +81,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 		return total;
 	}
 
-	async findById(id: EntityId): Promise<DO> {
+	public async findById(id: EntityId): Promise<DO> {
 		const entity: E = await this._em.findOneOrFail(this.entityName, { id } as FilterQuery<E>);
 		return this.mapEntityToDO(entity);
 	}
@@ -89,7 +89,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 	/**
 	 * Ignore base entity properties when updating entity
 	 */
-	private removeProtectedEntityFields(entityData: EntityData<E>) {
+	private removeProtectedEntityFields(entityData: EntityData<E>): void {
 		Object.keys(entityData).forEach((key) => {
 			if (baseEntityProperties.includes(key)) {
 				delete entityData[key];
@@ -97,7 +97,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 		});
 	}
 
-	private remapProtectedEntityFields(domainObject: DO, persistedEntity: E) {
+	private remapProtectedEntityFields(domainObject: DO, persistedEntity: E): DO {
 		if (!domainObject.id) {
 			domainObject.id = persistedEntity.id;
 		}

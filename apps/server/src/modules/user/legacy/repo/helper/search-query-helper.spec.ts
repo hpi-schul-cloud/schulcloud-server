@@ -49,13 +49,12 @@ describe('Search query helper', () => {
 				};
 			};
 
-			it('should fill searchQuery and searchFilterGate', () => {
+			it('should fill searchQuery', () => {
 				const { queryParams, query } = setup();
 
 				SearchQueryHelper.setSearchParametersIfExist(query, queryParams);
 
-				expect(query.searchQuery).toEqual('test t te tes est');
-				expect(query.searchFilterGate).toEqual(9);
+				expect(query.searchQuery).toEqual('test');
 				expect(query.sort).toEqual({ firstName: 1, sortBySearchQueryResult: 1 });
 			});
 		});
@@ -99,13 +98,12 @@ describe('Search query helper', () => {
 				};
 			};
 
-			it('should not fill searchQuery and searchFilterGate', () => {
+			it('should not fill searchQuery', () => {
 				const { queryParams, query } = setup();
 
 				SearchQueryHelper.setSearchParametersIfExist(query, queryParams);
 
 				expect(query.searchQuery).toBeUndefined();
-				expect(query.searchFilterGate).toBeUndefined();
 				expect(query.sort).toEqual({ firstName: 1 });
 			});
 		});

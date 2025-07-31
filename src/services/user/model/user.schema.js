@@ -1,16 +1,12 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const roleModel = require('../../role/model');
-const { splitForSearchIndexes } = require('../../../utils/search');
+const { buildAllSearchableStringsForUser } = require('../../../utils/search');
 const externalSourceSchema = require('../../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
 
 const defaultFeatures = [];
-const USER_FEATURES = {
-	EDTR: 'edtr',
-};
 
 const consentForm = ['analog', 'digital', 'update'];
 const consentTypes = {
@@ -22,7 +18,6 @@ const userSchema = new Schema(
 	{
 		roles: [{ type: Schema.Types.ObjectId, ref: 'role' }],
 		email: { type: String, required: true, lowercase: true },
-		emailSearchValues: { type: Schema.Types.Array },
 
 		schoolId: {
 			type: Schema.Types.ObjectId,
@@ -31,11 +26,10 @@ const userSchema = new Schema(
 		},
 
 		firstName: { type: String, required: true },
-		firstNameSearchValues: { type: Schema.Types.Array },
 		preferredName: { type: String },
 		middleName: { type: String },
 		lastName: { type: String, required: true },
-		lastNameSearchValues: { type: Schema.Types.Array },
+		allSearchableStrings: { type: Schema.Types.Array },
 		namePrefix: { type: String },
 		nameSuffix: { type: String },
 		forcePasswordChange: { type: Boolean, default: false },
@@ -54,11 +48,6 @@ const userSchema = new Schema(
 		],
 		language: { type: String },
 		preferences: { type: Object }, // blackbox for frontend stuff like "cookies accepted"
-		features: {
-			type: [String],
-			default: defaultFeatures,
-			enum: Object.values(USER_FEATURES),
-		},
 
 		consent: {
 			userConsent: {
@@ -119,46 +108,19 @@ schulcloud.users               find         {"firstName": 1, "lastName": 1} -> 5
 
 userSchema.index({ importHash: 1 }); // ok = 1
 
-// this index is updated in nest part, we keep it here only for tests
-userSchema.index(
-	{
-		firstName: 'text',
-		lastName: 'text',
-		email: 'text',
-		firstNameSearchValues: 'text',
-		lastNameSearchValues: 'text',
-		emailSearchValues: 'text',
-		schoolId: 1,
-	},
-	{
-		weights: {
-			firstName: 15,
-			lastName: 15,
-			email: 15,
-			firstNameSearchValues: 3,
-			lastNameSearchValues: 3,
-			emailSearchValues: 2,
-		},
-		name: 'userSearchIndex',
-		default_language: 'none', // no stop words and no stemming,
-		language_override: 'de',
-	}
-); // ?
 // maybe the schoolId index is enough ?
 // https://ticketsystem.dbildungscloud.de/browse/SC-3724
 
 // This 'pre-save' method slices the firstName, lastName and email
 // To allow searching the users
 function buildSearchIndexOnSave() {
-	this.firstNameSearchValues = splitForSearchIndexes(this.firstName);
-	this.lastNameSearchValues = splitForSearchIndexes(this.lastName);
-	this.emailSearchValues = splitForSearchIndexes(this.email);
+	this.allSearchableStrings = buildAllSearchableStringsForUser(this.firstName, this.lastName, this.email);
 }
 function buildSearchIndexOnUpdate() {
 	const data = this.getUpdate() || {};
-	if (data.firstName && !data.firstNameSearchValues) data.firstNameSearchValues = splitForSearchIndexes(data.firstName);
-	if (data.lastName && !data.lastNameSearchValues) data.lastNameSearchValues = splitForSearchIndexes(data.lastName);
-	if (data.email && !data.emailSearchValues) data.emailSearchValues = splitForSearchIndexes(data.email);
+	if (data.firstName || data.lastName || data.email) {
+		data.allSearchableStrings = buildAllSearchableStringsForUser(data.firstName, data.lastName, data.email);
+	}
 }
 userSchema.pre('save', buildSearchIndexOnSave);
 userSchema.pre('update', buildSearchIndexOnUpdate);
@@ -180,7 +142,6 @@ userSchema.methods.getPermissions = function getPermissions() {
 };
 
 module.exports = {
-	USER_FEATURES,
 	userSchema,
 	consentTypes,
 };

@@ -4,6 +4,10 @@ const testObjects = require('../../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
+
 const testGenericErrorMessage = "You don't have one of the permissions: STUDENT_LIST.";
 
 describe('AdminUsersService', () => {
@@ -58,7 +62,7 @@ describe('AdminUsersService', () => {
 		const mockData = {
 			firstName: 'testFirst',
 			lastName: 'testLast',
-			email: 'studentTest@de.de',
+			email: 'studentTestTwo@de.de',
 			roles: ['student'],
 			schoolId: admin.schoolId,
 		};
@@ -419,7 +423,7 @@ describe('AdminTeachersService', () => {
 		const mockData = {
 			firstName: 'testFirst',
 			lastName: 'testLast',
-			email: 'teacherTest@de.de',
+			email: 'teacherTestTwo@de.de',
 			roles: ['teacher'],
 			schoolId: admin.schoolId,
 		};

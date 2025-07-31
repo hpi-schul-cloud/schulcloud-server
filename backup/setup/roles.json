@@ -105,15 +105,12 @@
 			"IMPORT_USER_MIGRATE",
 			"IMPORT_USER_UPDATE",
 			"IMPORT_USER_VIEW",
-			"MEDIA_SCHOOL_LICENSE_ADMIN",
 			"NEWS_CREATE",
 			"NEWS_EDIT",
 			"REQUEST_CONSENTS",
-			"SCHOOL_ADMINISTRATE_ROOMS",
 			"SCHOOL_EDIT",
 			"SCHOOL_NEWS_EDIT",
 			"SCHOOL_CHAT_MANAGE",
-			"SCHOOL_LIST_DISCOVERABLE_TEACHERS",
 			"SCHOOL_LOGO_MANAGE",
 			"SCHOOL_STUDENT_TEAM_MANAGE",
 			"STUDENT_CREATE",
@@ -144,7 +141,10 @@
 			"GROUP_FULL_ADMIN",
 			"SCHOOL_SYSTEM_EDIT",
 			"SCHOOL_SYSTEM_VIEW",
-			"USER_CHANGE_OWN_NAME"
+			"USER_CHANGE_OWN_NAME",
+			"MEDIA_SCHOOL_LICENSE_ADMIN",
+			"SCHOOL_LIST_DISCOVERABLE_TEACHERS",
+			"SCHOOL_ADMINISTRATE_ROOMS"
 		],
 		"__v": 2
 	},
@@ -220,7 +220,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2025-07-08T12:50:43.756Z"
+			"$date": "2025-07-31T12:29:47.091Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -455,7 +455,7 @@
 			"$date": "2023-03-01T10:54:36.810Z"
 		},
 		"createdAt": {
-			"$date": "2019-09-09T12:00:00.000Z"
+			"$date": "2019-09-09T12:00:00Z"
 		},
 		"roles": [],
 		"permissions": [
@@ -493,7 +493,7 @@
 			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
-			"$date": "2019-09-09T12:00:00.000Z"
+			"$date": "2019-09-09T12:00:00Z"
 		},
 		"roles": [
 			{
@@ -531,7 +531,7 @@
 			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
-			"$date": "2019-09-09T12:00:00.000Z"
+			"$date": "2019-09-09T12:00:00Z"
 		},
 		"roles": [
 			{
@@ -566,7 +566,7 @@
 			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
-			"$date": "2019-09-09T12:00:00.000Z"
+			"$date": "2019-09-09T12:00:00Z"
 		},
 		"roles": [
 			{
@@ -616,6 +616,20 @@
 			"ROOM_LIST_CONTENT",
 			"ROOM_LIST_DRAFTS"
 		]
+	},
+	{
+		"_id": {
+			"$oid": "67404edd76a89449722a7fb1"
+		},
+		"name": "groupSubstitutionTeacher",
+		"permissions": [],
+		"createdAt": {
+			"$date": "2024-11-22T09:29:01.346Z"
+		},
+		"updatedAt": {
+			"$date": "2024-11-22T09:29:01.346Z"
+		},
+		"__v": 0
 	},
 	{
 		"_id": {
@@ -671,20 +685,6 @@
 			"ROOM_LIST_DRAFTS",
 			"ROOM_MANAGE_VIDEOCONFERENCES"
 		]
-	},
-	{
-		"_id": {
-			"$oid": "67404edd76a89449722a7fb1"
-		},
-		"name": "groupSubstitutionTeacher",
-		"permissions": [],
-		"createdAt": {
-			"$date": "2024-11-22T09:29:01.346Z"
-		},
-		"updatedAt": {
-			"$date": "2024-11-22T09:29:01.346Z"
-		},
-		"__v": 0
 	},
 	{
 		"_id": {

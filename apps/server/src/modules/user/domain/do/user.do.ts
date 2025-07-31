@@ -43,12 +43,6 @@ export class UserDo extends BaseDO {
 
 	public importHash?: string;
 
-	public firstNameSearchValues?: string[];
-
-	public lastNameSearchValues?: string[];
-
-	public emailSearchValues?: string[];
-
 	public language?: LanguageType;
 
 	public forcePasswordChange?: boolean;
@@ -88,9 +82,6 @@ export class UserDo extends BaseDO {
 		this.ldapDn = domainObject.ldapDn;
 		this.externalId = domainObject.externalId;
 		this.importHash = domainObject.importHash;
-		this.firstNameSearchValues = domainObject.firstNameSearchValues;
-		this.lastNameSearchValues = domainObject.lastNameSearchValues;
-		this.emailSearchValues = domainObject.emailSearchValues;
 		this.language = domainObject.language;
 		this.forcePasswordChange = domainObject.forcePasswordChange;
 		this.discoverable = domainObject.discoverable;

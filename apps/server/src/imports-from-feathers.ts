@@ -27,3 +27,13 @@ const usedGlobals: GlobalConstants = globals;
 
 /** Database URL */
 export const { DB_URL, DB_PASSWORD, DB_USERNAME } = usedGlobals;
+
+import { buildAllSearchableStringsForUser as _buildAllSearchableStringsForUserUntyped } from '../../../src/utils/search.js';
+
+const buildAllSearchableStringsForUser = _buildAllSearchableStringsForUserUntyped as (
+	firstName: string,
+	lastName: string,
+	email: string
+) => string[];
+
+export { buildAllSearchableStringsForUser };

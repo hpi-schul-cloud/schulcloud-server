@@ -360,7 +360,6 @@ export const createMultiDocumentAggregation = ({
 	classes,
 	schoolYearId,
 	searchQuery,
-	searchFilterGate,
 	...match
 }: UserSearchQuery) => {
 	if (typeof match._id === 'string') {
@@ -378,7 +377,7 @@ export const createMultiDocumentAggregation = ({
 		// to sort by this value, add 'searchQuery' to sort value
 		// @ts-ignore
 		match.$text = {
-			$search: searchQuery
+			$search: searchQuery,
 		};
 	}
 
@@ -387,10 +386,6 @@ export const createMultiDocumentAggregation = ({
 		aggregation.push({
 			$match: match,
 		});
-	}
-
-	if (searchQuery && searchFilterGate) {
-		stageFilterSearch(aggregation, searchFilterGate);
 	}
 
 	if (select) {
