@@ -77,14 +77,8 @@ export class ValkeyFactory {
 	}
 
 	private static async discoverSentinelHosts(sentinalServiceName: string): Promise<SentinalHost[]> {
-		// const resolveSrv = util.promisify(dns.resolveSrv);
-		// const records = await resolveSrv(sentinalServiceName);
-		// IPs for https://bc-10295-rooms-bettermarks.nbc.dbildungscloud.dev/login
-		const records = [
-			{ name: '10.221.147.138', port: 26379 },
-			{ name: '110.219.113.153', port: 26379 },
-			{ name: '10.221.240.151', port: 26379 },
-		];
+		const resolveSrv = util.promisify(dns.resolveSrv);
+		const records = await resolveSrv(sentinalServiceName);
 
 		const hosts = records.map((record) => {
 			return {
