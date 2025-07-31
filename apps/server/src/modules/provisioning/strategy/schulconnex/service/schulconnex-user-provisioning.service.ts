@@ -4,7 +4,7 @@ import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { RoleReference } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import CryptoJS from 'crypto-js';
+import crypto from 'node:crypto';
 import { ExternalUserDto } from '../../../dto';
 import { SchoolMissingLoggableException, UserRoleUnknownLoggableException } from '../../../loggable';
 
@@ -46,7 +46,10 @@ export class SchulconnexUserProvisioningService {
 		if (createNewAccount) {
 			await this.accountService.saveWithValidation({
 				userId: savedUser.id,
-				username: CryptoJS.SHA256(savedUser.id as string).toString(CryptoJS.enc.Base64),
+				username: crypto
+					.createHash('sha256')
+					.update(savedUser.id as string)
+					.digest('base64'),
 				systemId,
 				activated: true,
 			} as AccountSave);
