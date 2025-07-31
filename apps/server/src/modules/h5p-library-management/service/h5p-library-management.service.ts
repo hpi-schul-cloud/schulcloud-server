@@ -108,16 +108,15 @@ export class H5PLibraryManagementService {
 
 	public async run(): Promise<void> {
 		this.logger.info(new H5PLibraryManagementLoggable('Starting H5P library management job...'));
-		let availableLibraries = await this.libraryAdministration.getLibraries();
+		const initialLibraries = await this.libraryAdministration.getLibraries();
 		const uninstalledLibraries = await this.uninstallUnwantedLibraries(this.libraryWishList);
 
-		// TODO: is this here still required?
-		availableLibraries = await this.libraryAdministration.getLibraries();
+		const availableLibraries = await this.libraryAdministration.getLibraries();
 		const installedLibraries = await this.installLibrariesAsBulk(availableLibraries);
 
 		this.logger.info(new H5PLibraryManagementLoggable('Finished H5P library management job!'));
 		this.logger.info(
-			new H5PLibraryManagementMetricsLoggable(availableLibraries, uninstalledLibraries, installedLibraries)
+			new H5PLibraryManagementMetricsLoggable(initialLibraries, uninstalledLibraries, installedLibraries)
 		);
 	}
 
