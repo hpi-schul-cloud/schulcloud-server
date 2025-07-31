@@ -108,16 +108,53 @@ export class H5PLibraryManagementService {
 
 	public async run(): Promise<void> {
 		this.logger.info(new H5PLibraryManagementLoggable('Starting H5P library management job...'));
-		const initialLibraries = await this.libraryAdministration.getLibraries();
-		const uninstalledLibraries = await this.uninstallUnwantedLibraries(this.libraryWishList);
-
 		const availableLibraries = await this.libraryAdministration.getLibraries();
+
+		const uninstalledLibraries = await this.uninstallUnwantedLibraries(availableLibraries);
+
 		const installedLibraries = await this.installLibrariesAsBulk(availableLibraries);
 
 		this.logger.info(new H5PLibraryManagementLoggable('Finished H5P library management job!'));
 		this.logger.info(
-			new H5PLibraryManagementMetricsLoggable(initialLibraries, uninstalledLibraries, installedLibraries)
+			new H5PLibraryManagementMetricsLoggable(availableLibraries, uninstalledLibraries, installedLibraries)
 		);
+	}
+
+	public async uninstallUnwantedLibraries(
+		availableLibraries: ILibraryAdministrationOverviewItem[]
+	): Promise<ILibraryAdministrationOverviewItem[]> {
+		const unwantedLibraries = this.getUnwantedLibraries(availableLibraries);
+
+		for (const library of unwantedLibraries) {
+			// to avoid conflicts, remove one-by-one
+			await this.forceUninstallLibrary(library);
+		}
+
+		return unwantedLibraries;
+	}
+
+	private getUnwantedLibraries(
+		availableLibraries: ILibraryAdministrationOverviewItem[]
+	): ILibraryAdministrationOverviewItem[] {
+		const unwantedLibraries = availableLibraries
+			.filter((lib) => !this.libraryWishList.includes(lib.machineName) && lib.dependentsCount === 0)
+			.map((lib) => {
+				return { ...lib };
+			});
+
+		return unwantedLibraries;
+	}
+
+	private async forceUninstallLibrary(unwantedLibrary: ILibraryAdministrationOverviewItem): Promise<void> {
+		try {
+			await this.libraryStorage.deleteLibrary(unwantedLibrary);
+		} catch (error: unknown) {
+			this.logger.warning(
+				new H5PLibraryManagementErrorLoggable(error, { library: unwantedLibrary.machineName }, 'during force uninstall')
+			);
+		}
+
+		//TODO: check return value!?
 	}
 
 	private async installLibrariesAsBulk(
@@ -146,53 +183,6 @@ export class H5PLibraryManagementService {
 		const installResults = [...installResultH5pHub, ...installResultGithub];
 
 		return installResults;
-	}
-
-	public async uninstallUnwantedLibraries(wantedLibraries: string[]): Promise<ILibraryAdministrationOverviewItem[]> {
-		let librariesToCheck: ILibraryAdministrationOverviewItem[] = [];
-		let uninstalledLibraries: ILibraryAdministrationOverviewItem[];
-		let allUninstalledLibraries: ILibraryAdministrationOverviewItem[] = [];
-
-		do {
-			librariesToCheck = await this.libraryAdministration.getLibraries();
-			uninstalledLibraries = await this.uninstallUnwantedLibrariesOnce(wantedLibraries, librariesToCheck);
-			allUninstalledLibraries = [...allUninstalledLibraries, ...uninstalledLibraries];
-		} while (uninstalledLibraries.length > 0);
-
-		return allUninstalledLibraries;
-	}
-
-	private async uninstallUnwantedLibrariesOnce(
-		wantedLibraries: string[],
-		librariesToCheck: ILibraryAdministrationOverviewItem[]
-	): Promise<ILibraryAdministrationOverviewItem[]> {
-		if (librariesToCheck.length === 0) {
-			return [];
-		}
-
-		const lastPositionLibrariesToCheckArray = librariesToCheck.length - 1;
-		const libraryToBeUninstalled = librariesToCheck[lastPositionLibrariesToCheckArray];
-		const libraryCanBeUninstalled =
-			!wantedLibraries.includes(libraryToBeUninstalled.machineName) && libraryToBeUninstalled.dependentsCount === 0;
-
-		if (libraryCanBeUninstalled) {
-			// force removal, don't let content prevent it, therefore use libraryStorage directly
-			// also to avoid conflicts, remove one-by-one, not using for-await:
-			await this.libraryStorage.deleteLibrary(libraryToBeUninstalled);
-		}
-
-		const uninstalledLibraries = await this.uninstallUnwantedLibrariesOnce(
-			wantedLibraries,
-			librariesToCheck.slice(0, lastPositionLibrariesToCheckArray)
-		);
-
-		if (!libraryCanBeUninstalled) {
-			return uninstalledLibraries;
-		}
-
-		const result = [libraryToBeUninstalled, ...uninstalledLibraries];
-
-		return result;
 	}
 
 	private async checkContentTypeExistsOnH5pHub(library: string): Promise<boolean> {
