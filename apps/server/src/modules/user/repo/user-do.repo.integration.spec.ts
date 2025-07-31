@@ -855,4 +855,100 @@ describe('UserRepo', () => {
 			});
 		});
 	});
+
+	describe('searchable strings generation', () => {
+		const setup = () => {
+			const user = userDoFactory.build({
+				firstName: 'John',
+				lastName: 'Doe',
+				email: 'x@y.com',
+			});
+
+			const expectedSearchableStrings = [
+				'Joh',
+				'John',
+				'ohn',
+				'Doe',
+				'x@y',
+				'x@y.',
+				'x@y.c',
+				'x@y.co',
+				'x@y.com',
+				'@y.',
+				'@y.c',
+				'@y.co',
+				'@y.com',
+				'y.c',
+				'y.co',
+				'y.com',
+				'.co',
+				'.com',
+				'com',
+			];
+
+			return { user, expectedSearchableStrings };
+		};
+
+		describe('save', () => {
+			describe('when creating a user', () => {
+				it('should save searchable strings', async () => {
+					const { user, expectedSearchableStrings } = setup();
+
+					await repo.save(user);
+					em.clear();
+
+					const result = await em.findOneOrFail(User, { id: user.id });
+
+					expect(result.allSearchableStrings).toEqual(expectedSearchableStrings);
+				});
+			});
+
+			describe('when updating a user', () => {
+				it('should update searchable strings', async () => {
+					const { user } = setup();
+
+					await repo.save(user);
+
+					user.email = 'x@y.org';
+					await repo.save(user);
+					em.clear();
+
+					const result = await em.findOneOrFail(User, { id: user.id });
+
+					expect(result.allSearchableStrings[result.allSearchableStrings.length - 1]).toEqual('org');
+				});
+			});
+		});
+
+		describe('saveAll', () => {
+			describe('when creating users', () => {
+				it('should save searchable strings', async () => {
+					const { user, expectedSearchableStrings } = setup();
+
+					await repo.saveAll([user]);
+					em.clear();
+
+					const result = await em.findOneOrFail(User, { id: user.id });
+
+					expect(result.allSearchableStrings).toEqual(expectedSearchableStrings);
+				});
+			});
+
+			describe('when updating users', () => {
+				it('should update searchable strings', async () => {
+					const { user } = setup();
+
+					await repo.saveAll([user]);
+
+					user.email = 'x@y.org';
+					await repo.saveAll([user]);
+					em.clear();
+
+					const result = await em.findOneOrFail(User, { id: user.id });
+
+					expect(result.allSearchableStrings[result.allSearchableStrings.length - 1]).toEqual('org');
+				});
+			});
+		});
+	});
 });

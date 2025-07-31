@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const roleModel = require('../../role/model');
-const { splitForSearchIndexes } = require('../../../utils/search');
+const { buildAllSearchableStringsForUser } = require('../../../utils/search');
 const externalSourceSchema = require('../../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
@@ -112,23 +111,15 @@ userSchema.index({ importHash: 1 }); // ok = 1
 // maybe the schoolId index is enough ?
 // https://ticketsystem.dbildungscloud.de/browse/SC-3724
 
-function buildAllSearchableStrings(firstName, lastName, email) {
-	if (Configuration.get('INCLUDE_MAIL_IN_USER_FULL_TEXT_INDEX')) {
-		return splitForSearchIndexes(firstName, lastName, email);
-	} else {
-		return splitForSearchIndexes(firstName, lastName);
-	}
-}
-
 // This 'pre-save' method slices the firstName, lastName and email
 // To allow searching the users
 function buildSearchIndexOnSave() {
-	this.allSearchableStrings = buildAllSearchableStrings(this.firstName, this.lastName, this.email);
+	this.allSearchableStrings = buildAllSearchableStringsForUser(this.firstName, this.lastName, this.email);
 }
 function buildSearchIndexOnUpdate() {
 	const data = this.getUpdate() || {};
 	if (data.firstName || data.lastName || data.email) {
-		data.allSearchableStrings = buildAllSearchableStrings(data.firstName, data.lastName, data.email);
+		data.allSearchableStrings = buildAllSearchableStringsForUser(data.firstName, data.lastName, data.email);
 	}
 }
 userSchema.pre('save', buildSearchIndexOnSave);

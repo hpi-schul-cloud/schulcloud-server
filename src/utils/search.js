@@ -1,3 +1,5 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
+
 /**
  * Splitting the inputs into 3 letters for search indexing.
  * + first letter
@@ -38,6 +40,15 @@ const splitForSearchIndexes = (...searchTexts) => {
 	return splitForSearchIndexesWithMinLength(3, ...searchTexts.filter((text) => text != null));
 };
 
+const buildAllSearchableStringsForUser = (firstName, lastName, email) => {
+	if (Configuration.get('INCLUDE_MAIL_IN_USER_FULL_TEXT_INDEX')) {
+		return splitForSearchIndexes(firstName, lastName, email);
+	} else {
+		return splitForSearchIndexes(firstName, lastName);
+	}
+};
+
 module.exports = {
 	splitForSearchIndexes,
+	buildAllSearchableStringsForUser,
 };
