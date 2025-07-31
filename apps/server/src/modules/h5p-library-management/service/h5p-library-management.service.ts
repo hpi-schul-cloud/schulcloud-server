@@ -142,7 +142,7 @@ export class H5PLibraryManagementService {
 		this.addInstalLResultsToAvailableVersions(installResultH5pHub, availableVersions);
 
 		// TODO: ? availableVersions raus ziehen?
-		const installResultGithub = await this.installPreviousLibraryVersionsFromGitHub(library, availableVersions);
+		const installResultGithub = await this.installLibraryVersionsFromGitHub(library, availableVersions);
 
 		const installResults = [...installResultH5pHub, ...installResultGithub];
 
@@ -235,13 +235,11 @@ export class H5PLibraryManagementService {
 		return installResults;
 	}
 
-	private async installPreviousLibraryVersionsFromGitHub(
+	private async installLibraryVersionsFromGitHub(
 		library: string,
 		availableVersions: string[]
 	): Promise<ILibraryInstallResult[]> {
-		this.logger.info(
-			new H5PLibraryManagementLoggable(`Start installation of previous versions of ${library} from GitHub.`)
-		);
+		this.logger.info(new H5PLibraryManagementLoggable(`Start installation of versions of ${library} from GitHub.`));
 
 		const result: ILibraryInstallResult[] = [];
 
@@ -255,15 +253,18 @@ export class H5PLibraryManagementService {
 
 		const tags = await this.githubClient.fetchGitHubTags(repoName);
 		const filteredTags = this.getHighestPatchTags(tags);
+		this.logger.info(
+			new H5PLibraryManagementLoggable(
+				`Found ${filteredTags.length} versions of ${library} in ${repoName}: ${filteredTags.join(', ')}`
+			)
+		);
 
 		for (const tag of filteredTags) {
 			const tagResult = await this.installLibraryVersionAndDependencies(library, tag, repoName, availableVersions);
 			result.push(...tagResult);
 		}
 
-		this.logger.info(
-			new H5PLibraryManagementLoggable(`Finished installation of previous versions of ${library} from GitHub.`)
-		);
+		this.logger.info(new H5PLibraryManagementLoggable(`Finished installation of versions of ${library} from GitHub.`));
 		return result;
 	}
 
@@ -273,6 +274,7 @@ export class H5PLibraryManagementService {
 		repoName: string,
 		availableVersions: string[]
 	): Promise<ILibraryInstallResult[]> {
+		this.logger.info(new H5PLibraryManagementLoggable(`Start installation of ${library}-${tag} from GitHub.`));
 		const result: ILibraryInstallResult[] = [];
 
 		const currentPatchVersionAvailable = this.isCurrentVersionAvailable(library, tag, availableVersions);
@@ -293,7 +295,6 @@ export class H5PLibraryManagementService {
 			return [];
 		}
 
-		this.logger.info(new H5PLibraryManagementLoggable(`Start installation of ${library}-${tag} from GitHub.`));
 		const libResult = await this.installLibraryTagFromGitHub(repoName, tag);
 		if (libResult) {
 			result.push(libResult);
@@ -327,6 +328,12 @@ export class H5PLibraryManagementService {
 			const depName = dependency.machineName;
 			const depMajor = dependency.majorVersion;
 			const depMinor = dependency.minorVersion;
+			this.logger.info(
+				new H5PLibraryManagementLoggable(
+					`Installing dependency ${depName}-${depMajor}.${depMinor}.x from GitHub for ${library}-${tag}.`
+				)
+			);
+
 			const depRepoName = this.githubClient.mapMachineNameToGitHubRepo(depName);
 			if (!depRepoName) {
 				this.logger.info(
@@ -346,11 +353,6 @@ export class H5PLibraryManagementService {
 				continue;
 			}
 
-			this.logger.info(
-				new H5PLibraryManagementLoggable(
-					`Installing dependency ${depName}-${depTag} from GitHub for ${library}-${tag}.`
-				)
-			);
 			const depResult = await this.installLibraryVersionAndDependencies(
 				depName,
 				depTag,
