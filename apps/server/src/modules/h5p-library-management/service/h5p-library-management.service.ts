@@ -204,7 +204,9 @@ export class H5PLibraryManagementService {
 	}
 
 	public async installLatestLibraryVersionFromH5pHub(library: string): Promise<ILibraryInstallResult[]> {
-		this.logger.info(new H5PLibraryManagementLoggable(`Start installation of ${library} from H5P Hub.`));
+		this.logger.info(
+			new H5PLibraryManagementLoggable(`Start installation of current version of ${library} from H5P Hub.`)
+		);
 
 		const contentTypeExists = await this.checkContentTypeExistsOnH5pHub(library);
 		if (!contentTypeExists) {
@@ -223,7 +225,9 @@ export class H5PLibraryManagementService {
 
 			// TODO: Zusammenfassen?
 			this.logger.info(new H5PLibraryManagementInstallResultsLoggable(installResults));
-			this.logger.info(new H5PLibraryManagementLoggable(`Finished installation of ${library} from H5P Hub.`));
+			this.logger.info(
+				new H5PLibraryManagementLoggable(`Finished installation of current version of ${library} from H5P Hub.`)
+			);
 		} catch (error: unknown) {
 			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, { library }));
 		}
@@ -235,6 +239,10 @@ export class H5PLibraryManagementService {
 		library: string,
 		availableVersions: string[]
 	): Promise<ILibraryInstallResult[]> {
+		this.logger.info(
+			new H5PLibraryManagementLoggable(`Start installation of previous versions of ${library} from GitHub.`)
+		);
+
 		const result: ILibraryInstallResult[] = [];
 
 		const repoName = this.githubClient.mapMachineNameToGitHubRepo(library);
@@ -253,6 +261,9 @@ export class H5PLibraryManagementService {
 			result.push(...tagResult);
 		}
 
+		this.logger.info(
+			new H5PLibraryManagementLoggable(`Finished installation of previous versions of ${library} from GitHub.`)
+		);
 		return result;
 	}
 
