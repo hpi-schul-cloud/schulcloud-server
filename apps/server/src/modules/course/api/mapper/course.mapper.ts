@@ -9,6 +9,7 @@ export class CourseMapper {
 			courseMetadata.title,
 			courseMetadata.shortTitle,
 			courseMetadata.displayColor,
+			courseMetadata.isLocked,
 			courseMetadata.startDate,
 			courseMetadata.untilDate,
 			courseMetadata.copyingSince
