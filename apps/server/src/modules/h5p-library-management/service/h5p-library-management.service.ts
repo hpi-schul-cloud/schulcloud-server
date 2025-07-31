@@ -139,7 +139,7 @@ export class H5PLibraryManagementService {
 		this.logLibraryBanner(library);
 
 		const installResultH5pHub = await this.installLatestLibraryVersionFromH5pHub(library);
-		// TODO: add installed libraries from H5P Hub to available versions !!!
+		this.addInstalLResultsToAvailableVersions(installResultH5pHub, availableVersions);
 
 		// TODO: ? availableVersions raus ziehen?
 		const installResultGithub = await this.installPreviousLibraryVersionsFromGitHub(library, availableVersions);
@@ -405,9 +405,6 @@ export class H5PLibraryManagementService {
 
 		try {
 			result = await this.libraryManager.installFromDirectory(folderPath);
-			if (result.type === 'none') {
-				console.log('>>> library', library, 'tag', tag, 'result', result);
-			}
 		} catch (error: unknown) {
 			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, { library, tag }, 'during installation'));
 		} finally {
@@ -538,6 +535,21 @@ export class H5PLibraryManagementService {
 		);
 
 		return availableVersions;
+	}
+
+	private addInstalLResultsToAvailableVersions(
+		installResult: ILibraryInstallResult[],
+		availableVersions: string[]
+	): void {
+		const newVersions = installResult
+			.filter((result) => result.type === 'new' || result.type === 'patch')
+			.map(
+				(result) =>
+					`${result.newVersion?.machineName || ''}-${result.newVersion?.majorVersion || ''}.${
+						result.newVersion?.minorVersion || ''
+					}.${result.newVersion?.patchVersion || ''}`
+			);
+		availableVersions.push(...newVersions);
 	}
 
 	private getHighestPatchTags(tags: string[]): string[] {
