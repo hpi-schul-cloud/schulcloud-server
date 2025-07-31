@@ -24,6 +24,7 @@ export class DashboardMapper {
 			yPosition: position.y,
 			copyingSince: elementData.copyingSince ?? undefined,
 			isSynchronized: elementData.isSynchronized,
+			isLocked: elementData.isLocked,
 		});
 		if (elementData.referencedId) {
 			dto.id = elementData.referencedId;
