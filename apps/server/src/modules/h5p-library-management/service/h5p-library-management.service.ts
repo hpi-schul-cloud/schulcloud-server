@@ -266,23 +266,9 @@ export class H5PLibraryManagementService {
 		this.logger.info(new H5PLibraryManagementLoggable(`Start installation of ${library}-${tag} from GitHub.`));
 		const result: ILibraryInstallResult[] = [];
 
-		const currentPatchVersionAvailable = this.isCurrentVersionAvailable(library, tag, availableVersions);
-		if (currentPatchVersionAvailable) {
-			this.logger.info(
-				new H5PLibraryManagementLoggable(`${library}-${tag} is already installed. Skipping installation.`)
-			);
-			return [];
-		}
-
-		const newerPatchVersionAvailable = this.isNewerPatchVersionAvailable(library, tag, availableVersions);
-		if (newerPatchVersionAvailable) {
-			this.logger.info(
-				new H5PLibraryManagementLoggable(
-					`A newer patch version of ${library}-${tag} is already installed. Skipping installation.`
-				)
-			);
-			return [];
-		}
+		//TODO: wenn nicht avaible soll er return oder?
+		if (this.isCurrentVersionAvailable(library, tag, availableVersions)) return [];
+		if (this.isNewerPatchVersionAvailable(library, tag, availableVersions)) return [];
 
 		const libResult = await this.installLibraryTagFromGitHub(repoName, tag);
 		if (libResult) {
@@ -314,52 +300,76 @@ export class H5PLibraryManagementService {
 		}
 
 		for (const dependency of dependencies) {
-			const depName = dependency.machineName;
-			const depMajor = dependency.majorVersion;
-			const depMinor = dependency.minorVersion;
-			this.logger.info(
-				new H5PLibraryManagementLoggable(
-					`Installing dependency ${depName}-${depMajor}.${depMinor}.x from GitHub for ${library}-${tag}.`
-				)
-			);
-
-			const depRepoName = this.githubClient.mapMachineNameToGitHubRepo(depName);
-			if (!depRepoName) {
-				this.logger.info(
-					new H5PLibraryManagementLoggable(`No GitHub repository found for ${depName}. Skipping installation.`)
-				);
-				continue;
-			}
-
-			const tags = await this.githubClient.fetchGitHubTags(depRepoName);
-			const depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
-			if (!depTag) {
-				this.logger.info(
-					new H5PLibraryManagementLoggable(
-						`No suitable tag found for dependency ${depName}-${depMajor}.${depMinor}.x in ${depRepoName}. Skipping installation.`
-					)
-				);
-				continue;
-			}
-
-			const depResult = await this.installLibraryVersionAndDependencies(
-				depName,
-				depTag,
-				depRepoName,
-				availableVersions
-			);
-			if (depResult.length > 0) {
-				result.push(...depResult);
-				this.logger.info(
-					new H5PLibraryManagementLoggable(`Successfully installed dependency ${depName}-${depTag} from GitHub.`)
-				);
-			}
+			await this.installLibraryDependency(dependency, library, tag, availableVersions);
 		}
 		this.logger.info(
 			new H5PLibraryManagementLoggable(`Finished installation of dependencies for ${library}-${tag} from GitHub.`)
 		);
 
 		return result;
+	}
+
+	private async installLibraryDependency(
+		dependency: ILibraryName,
+		library: string,
+		tag: string,
+		availableVersions: string[]
+	): Promise<ILibraryInstallResult[]> {
+		const depName = dependency.machineName;
+		const depMajor = dependency.majorVersion;
+		const depMinor = dependency.minorVersion;
+		this.logInstallLibraryDependency(dependency, library, tag);
+
+		const depRepoName = this.githubClient.mapMachineNameToGitHubRepo(depName);
+		if (!depRepoName) {
+			this.logNoGitHubRepositoryFound(dependency);
+			return [];
+		}
+
+		const tags = await this.githubClient.fetchGitHubTags(depRepoName);
+		const depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
+		if (!depTag) {
+			this.logNoTagFound(dependency);
+			return [];
+		}
+
+		const depResult = await this.installLibraryVersionAndDependencies(depName, depTag, depRepoName, availableVersions);
+		if (depResult.length > 0) {
+			this.logInstallLibraryDependencySuccess(depName, depTag);
+			return depResult;
+		}
+
+		return [];
+	}
+
+	private logInstallLibraryDependency(dependency: ILibraryName, library: string, tag: string): void {
+		this.logger.info(
+			new H5PLibraryManagementLoggable(
+				`Installing dependency ${dependency.machineName}-${dependency.majorVersion}.${dependency.minorVersion}.x from GitHub for ${library}-${tag}.`
+			)
+		);
+	}
+
+	private logNoGitHubRepositoryFound(dependency: ILibraryName): void {
+		this.logger.info(
+			new H5PLibraryManagementLoggable(
+				`No GitHub repository found for ${dependency.machineName}. Skipping installation.`
+			)
+		);
+	}
+
+	private logNoTagFound(dependency: ILibraryName): void {
+		this.logger.info(
+			new H5PLibraryManagementLoggable(
+				`No suitable tag found for dependency ${dependency.machineName}-${dependency.majorVersion}.${dependency.minorVersion}.x . Skipping installation.`
+			)
+		);
+	}
+
+	private logInstallLibraryDependencySuccess(depName: string, depTag: string): void {
+		this.logger.info(
+			new H5PLibraryManagementLoggable(`Successfully installed dependency ${depName}-${depTag} from GitHub.`)
+		);
 	}
 
 	private isLibraryBuildRequired(library: string, tag: string): boolean {
@@ -592,7 +602,16 @@ export class H5PLibraryManagementService {
 
 	private isCurrentVersionAvailable(library: string, tag: string, availableVersions: string[]): boolean {
 		const currentPatchVersionAvailable = availableVersions.includes(`${library}-${tag}`);
+
+		if (currentPatchVersionAvailable) {
+			this.logVersionAlreadyInstalled(library, tag);
+		}
+
 		return currentPatchVersionAvailable;
+	}
+
+	private logVersionAlreadyInstalled(library: string, tag: string): void {
+		this.logger.info(new H5PLibraryManagementLoggable(`${library}-${tag} is already installed.`));
 	}
 
 	private isNewerPatchVersionAvailable(library: string, tag: string, availableVersions: string[]): boolean {
@@ -605,6 +624,14 @@ export class H5PLibraryManagementService {
 			return result;
 		});
 
+		if (newerPatchVersionAvailable) {
+			this.logNewerPatchVersionAlreadyInstalled(library, tag);
+		}
+
 		return newerPatchVersionAvailable;
+	}
+
+	private logNewerPatchVersionAlreadyInstalled(library: string, tag: string): void {
+		new H5PLibraryManagementLoggable(`A newer patch version of ${library}-${tag} is already installed.`);
 	}
 }
