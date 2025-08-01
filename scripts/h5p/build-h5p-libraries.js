@@ -19,6 +19,10 @@ const args = arg(
 		'-m': '--map',
 	},
 	{
+		'--tmp': String,
+		'-t': '--tmp',
+	},
+	{
 		argv: process.argv.slice(2),
 	}
 );
@@ -29,6 +33,7 @@ OPTIONS:
     --help (-h)		Show this help.
     --input (-i)	The file containing the list of libraries to be installed.
     --map (-m)		The file containing the library to repository map.
+	--tmp (-t)		The temporary folder to use for building libraries.
 `);
 	process.exit(0);
 }
@@ -36,11 +41,13 @@ OPTIONS:
 const params = {
 	input: args._[0] || args['--input'],
 	map: args._[1] || args['--map'],
+	tmp: args._[2] || args['--tmp'],
 };
 
 const main = async () => {
 	const mapFile = params.map || 'config/h5p-library-repo-map.yaml';
 	const librariesFile = params.input || 'config/h5p-libraries.yaml';
+	const tempFolderPath = params.tmp || ''; // TODO: Needs to be used in the service
 
 	const libraryRepoMap = fileSystemHelper.readLibraryRepoMap(mapFile);
 	const libraryWishList = fileSystemHelper.readLibraryWishList(librariesFile);

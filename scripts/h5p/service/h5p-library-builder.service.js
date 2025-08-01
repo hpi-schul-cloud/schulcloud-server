@@ -148,9 +148,10 @@ class H5pLibraryBuilderService {
 	executeAdditionalBuildStepsIfRequired(folderPath, library, tag) {
 		this.checkAndCorrectLibraryJsonVersion(folderPath, tag);
 
-		if (this.isLibraryBuildRequired(library, tag)) {
-			this.buildLibraryIfRequired(folderPath, library);
-		}
+		// TODO: Problemkinder schlagen nun fehl!?
+		// if (this.isLibraryBuildRequired(library, tag)) {
+		this.buildLibraryIfRequired(folderPath, library);
+		// }
 
 		if (this.isLibraryPathCorrectionRequired(library, tag)) {
 			this.checkAndCorrectLibraryJsonPaths(folderPath);
@@ -331,28 +332,48 @@ class H5pLibraryBuilderService {
 		const depName = dependency.machineName;
 		const depMajor = dependency.majorVersion;
 		const depMinor = dependency.minorVersion;
-		// this.logInstallLibraryDependency(dependency, library, tag);
+		this.logBuildingLibraryDependency(dependency, library, tag);
 
 		const depRepoName = this.mapMachineNameToGitHubRepo(depName);
 		if (!depRepoName) {
-			// this.logGithubRepositoryNotFound(dependency.machineName);
+			this.logGithubRepositoryNotFound(dependency.machineName);
 			return [];
 		}
 
 		const tags = await this.gitHubClient.fetchGitHubTags(depRepoName);
 		const depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
 		if (!depTag) {
-			// this.logTagNotFound(dependency);
+			this.logTagNotFound(dependency);
 			return [];
 		}
 
 		const depResult = await this.buildLibraryVersionAndDependencies(depName, depTag, depRepoName, availableVersions);
 		if (depResult.length > 0) {
-			// this.logInstallLibraryDependencySuccess(depName, depTag);
+			this.logBuildingLibraryDependencySuccess(depName, depTag);
 			return depResult;
 		}
 
 		return [];
+	}
+
+	logBuildingLibraryDependency(dependency, library, tag) {
+		console.log(
+			`Building dependency ${dependency.machineName}-${dependency.majorVersion}.${dependency.minorVersion}.x from GitHub for ${library}-${tag}.`
+		);
+	}
+
+	logGithubRepositoryNotFound(library) {
+		console.log(`No GitHub repository found for ${library}.`);
+	}
+
+	logTagNotFound(dependency) {
+		console.log(
+			`No suitable tag found for dependency ${dependency.machineName}-${dependency.majorVersion}.${dependency.minorVersion}.x .`
+		);
+	}
+
+	logBuildingLibraryDependencySuccess(depName, depTag) {
+		console.log(`Successfully built dependency ${depName}-${depTag} from GitHub.`);
 	}
 
 	getHighestVersionTags(tags, majorVersion, minorVersion) {
