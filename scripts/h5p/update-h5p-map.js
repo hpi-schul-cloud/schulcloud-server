@@ -20,12 +20,11 @@ const args = arg(
 );
 
 if ('--help' in args) {
-	log(`Usage: node update-h5p-map.js [opts]
+	console.log(`Usage: node update-h5p-map.js [opts]
 OPTIONS:
-	--help (-h)			Show this help.
+	--help (-h)		Show this help.
 	--organization (-o)	Organization name on GitHub.
 	--target (-t)		Path to the output file where the machineNameToRepoMap will be saved.
-
 `);
 	process.exit(0);
 }
