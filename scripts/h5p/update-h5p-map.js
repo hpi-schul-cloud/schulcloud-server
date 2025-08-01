@@ -1,7 +1,6 @@
-const { Octokit } = require('@octokit/rest');
 const arg = require('arg');
-const fs = require('fs');
-const yaml = require('yaml');
+const fileSystemHelper = require('./helper/file-system.helper.js');
+const H5PGitHubClient = require('./service/h5p-github.client.js');
 
 const args = arg(
 	{
@@ -24,7 +23,7 @@ if ('--help' in args) {
 OPTIONS:
 	--help (-h)		Show this help.
 	--organization (-o)	Organization name on GitHub.
-	--target (-t)		Path to the output file where the machineNameToRepoMap will be saved.
+	--target (-t)		Path to the output file where the libraryRepoMap will be saved.
 `);
 	process.exit(0);
 }
@@ -34,133 +33,26 @@ const params = {
 	target: args._[1] || args['--target'],
 };
 
-const octokit = new Octokit({
-	// Replace with your GitHub personal access token
-	// auth: 'GITHUB_PERSONAL_ACCESS_TOKEN',
-});
+const getLibraryRepoMapFromGitHubOrganization = async (organization) => {
+	const gitHubClient = new H5PGitHubClient();
 
-const getMachineNameToRepoMapFromGitHubOrganization = async (organization) => {
-	const repos = await fetchRepositoriesFromGitHubOrganization(organization);
+	const repos = await gitHubClient.fetchRepositoriesFromGitHubOrganization(organization);
 	console.log(`Found ${repos.length} repositories in the ${organization} organization.`);
 
-	const machineNameToRepoMap = await buildMachineNameToRepoMapFromRepos(organization, repos);
-	console.log(`Built machineNameToRepoMap with ${Object.keys(machineNameToRepoMap).length} entries.`);
+	const libraryRepoMap = await gitHubClient.buildLibraryRepoMapFromRepos(organization, repos);
+	console.log(`Built libraryRepoMap with ${Object.keys(libraryRepoMap).length} entries.`);
 
-	return machineNameToRepoMap;
-};
-
-const fetchRepositoriesFromGitHubOrganization = async (organization) => {
-	const repos = [];
-	let page = 1;
-	const perPage = 100; // Maximum allowed by GitHub API
-
-	while (true) {
-		const response = await fetchRepositoriesOfOrganizationPagewise(organization, page, perPage);
-		if (!response) {
-			repos = [];
-			break;
-		}
-
-		response.data.forEach((repo) => repos.push(repo));
-		if (response.data.length < perPage) {
-			break;
-		}
-
-		page++;
-	}
-
-	return repos;
-};
-
-const fetchRepositoriesOfOrganizationPagewise = async (organization, page = 1, perPage = 100) => {
-	let response;
-	try {
-		response = await octokit.repos.listForOrg({
-			org: organization,
-			type: 'public',
-			per_page: perPage,
-			page,
-		});
-	} catch (error) {
-		console.error(`Error fetching repositories for organization ${organization} on page ${page}:`, error);
-	}
-
-	return response;
-};
-
-const buildMachineNameToRepoMapFromRepos = async (organization, repos) => {
-	const machineNameToRepoMap = {};
-
-	for (const repo of repos) {
-		const response = await getLibraryJsonFromRepo(organization, repo);
-		if (!response) {
-			continue;
-		}
-
-		const data = response.data;
-		if (!checkContentOfLibraryJson(data)) {
-			continue;
-		}
-
-		const libraryJsonContent = Buffer.from(data.content, 'base64').toString('utf-8');
-		const libraryJson = JSON.parse(libraryJsonContent);
-
-		if (libraryJson.machineName) {
-			machineNameToRepoMap[libraryJson.machineName] = `${organization}/${repo.name}`;
-		}
-	}
-
-	return machineNameToRepoMap;
-};
-
-const getLibraryJsonFromRepo = async (organization, repo) => {
-	let response;
-	try {
-		response = await octokit.repos.getContent({
-			owner: organization,
-			repo: repo.name,
-			path: 'library.json',
-		});
-	} catch (error) {
-		if (error && error.status === 404) {
-			console.error(`library.json does not exist in repository ${repo.name}.`);
-		} else {
-			console.error(`Unknown error fetching library.json from repository ${repo.name}:`, error);
-		}
-	}
-
-	return response;
-};
-
-const checkContentOfLibraryJson = (data) => {
-	if (!data || !data.content || typeof data.content !== 'string') {
-		console.error('library.json content is missing or not a string.');
-
-		return false;
-	}
-
-	return true;
-};
-
-const writeMachineNameToRepoMapToYamlFile = (machineNameToRepoMap, target) => {
-	const sorted = Object.keys(machineNameToRepoMap)
-		.sort()
-		.reduce((acc, key) => {
-			acc[key] = machineNameToRepoMap[key];
-			return acc;
-		}, {});
-	const yamlContent = yaml.stringify(sorted);
-	fs.writeFileSync(target, yamlContent, { encoding: 'utf-8' });
-	console.log(`Wrote machineNameToRepoMap to ${target}`);
+	return libraryRepoMap;
 };
 
 const main = async () => {
 	const organization = params.organization || 'h5p';
 	const target = params.target || 'config/h5p-library-repo-map.yaml';
 
-	const machineNameToRepoMap = await getMachineNameToRepoMapFromGitHubOrganization(organization);
+	const libraryRepoMap = await getLibraryRepoMapFromGitHubOrganization(organization);
 
-	writeMachineNameToRepoMapToYamlFile(machineNameToRepoMap, target);
+	fileSystemHelper.writeLibraryRepoMap(target, libraryRepoMap);
+	console.log(`Wrote library repo map to ${target}`);
 };
 
 main();
