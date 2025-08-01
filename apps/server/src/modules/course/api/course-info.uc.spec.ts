@@ -102,9 +102,9 @@ describe('CourseInfoUc', () => {
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValue(adminUser);
 				authorizationService.checkPermission.mockReturnValueOnce(undefined);
-				groupService.findById.mockResolvedValue(group);
-				userService.findById.mockResolvedValue(teacher);
-				classService.findById.mockResolvedValue(clazz);
+				groupService.tryFindById.mockResolvedValue(group);
+				userService.findByIdOrNull.mockResolvedValue(teacher);
+				classService.findByIdOrNull.mockResolvedValue(clazz);
 				courseDoService.getCourseInfo.mockResolvedValueOnce(new Page<Course>(courses, 5));
 
 				return {
@@ -145,27 +145,27 @@ describe('CourseInfoUc', () => {
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(adminUser, school, expectedPermissions);
 			});
 
-			it('should call user service findById', async () => {
+			it('should call user service findByIdOrNull', async () => {
 				const { user, adminUser, school } = setup();
 
 				await uc.getCourseInfo(adminUser.id, school.id);
 
-				expect(userService.findById).toHaveBeenCalledWith(user.id);
+				expect(userService.findByIdOrNull).toHaveBeenCalledWith(user.id);
 			});
 
-			it('should call class service findById', async () => {
+			it('should call class service findByIdOrNull', async () => {
 				const { clazz, adminUser, school } = setup();
 
 				await uc.getCourseInfo(adminUser.id, school.id);
 
-				expect(classService.findById).toHaveBeenCalledWith(clazz.id);
+				expect(classService.findByIdOrNull).toHaveBeenCalledWith(clazz.id);
 			});
-			it('should call group service findById', async () => {
+			it('should call group service tryFindById', async () => {
 				const { group, adminUser, school } = setup();
 
 				await uc.getCourseInfo(adminUser.id, school.id);
 
-				expect(groupService.findById).toHaveBeenCalledWith(group.id);
+				expect(groupService.tryFindById).toHaveBeenCalledWith(group.id);
 			});
 
 			it('should call with default options', async () => {
@@ -234,9 +234,9 @@ describe('CourseInfoUc', () => {
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValue(adminUser);
 				authorizationService.checkPermission.mockReturnValueOnce(undefined);
-				groupService.findById.mockResolvedValue(group);
-				userService.findById.mockResolvedValue(teacher);
-				classService.findById.mockResolvedValue(clazz);
+				groupService.tryFindById.mockResolvedValue(group);
+				userService.findByIdOrNull.mockResolvedValue(teacher);
+				classService.findByIdOrNull.mockResolvedValue(clazz);
 				courseDoService.getCourseInfo.mockResolvedValueOnce(new Page<Course>([course1, course2], 1));
 
 				return {
@@ -260,6 +260,52 @@ describe('CourseInfoUc', () => {
 				expect(result.data[1]).toMatchObject({
 					id: 'course2',
 					name: 'course2',
+					teachers: ['firstName lastName'],
+					classes: ['1A', 'groupName'],
+					syncedGroupName: undefined,
+				});
+			});
+		});
+
+		describe('when course is found with non existing teachers in database', () => {
+			const setup = () => {
+				const user = userFactory.withRoleByName(RoleName.TEACHER).buildWithId();
+				const teacher = userDoFactory.build({ id: user.id, firstName: 'firstName', lastName: 'lastName' });
+				const { adminUser } = UserAndAccountTestFactory.buildAdmin({}, [Permission.COURSE_ADMINISTRATION]);
+				const group = groupFactory.build({ name: 'groupName' });
+				const clazz = classFactory.build({ name: 'A', gradeLevel: 1 });
+				const course = courseDoFactory.build({
+					id: 'course',
+					name: 'course',
+					teacherIds: [user.id, 'non-existing-teacher-id'],
+					groupIds: [group.id],
+					classIds: [clazz.id],
+				});
+				const school = schoolFactory.build();
+
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				authorizationService.getUserWithPermissions.mockResolvedValue(adminUser);
+				authorizationService.checkPermission.mockReturnValueOnce(undefined);
+				groupService.tryFindById.mockResolvedValue(group);
+				userService.findByIdOrNull.mockResolvedValueOnce(teacher);
+				userService.findByIdOrNull.mockResolvedValueOnce(null);
+				classService.findByIdOrNull.mockResolvedValue(clazz);
+				courseDoService.getCourseInfo.mockResolvedValueOnce(new Page<Course>([course], 1));
+
+				return {
+					school,
+					adminUser,
+				};
+			};
+
+			it('should return course with filtered results', async () => {
+				const { school, adminUser } = setup();
+
+				const result: Page<CourseInfoDto> = await uc.getCourseInfo(adminUser.id, school.id);
+
+				expect(result.data[0]).toMatchObject({
+					id: 'course',
+					name: 'course',
 					teachers: ['firstName lastName'],
 					classes: ['1A', 'groupName'],
 					syncedGroupName: undefined,
