@@ -19,6 +19,8 @@ import { EntityId } from '@shared/domain/types';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '../../board';
 import { ExternalToolElement } from '../../board/domain';
 import { RosterConfig } from '../roster.config';
+import { Room, RoomService } from '@modules/room';
+import { RoomMembershipService } from '@modules/room-membership';
 
 interface UserMetadata {
 	data: {
@@ -67,6 +69,9 @@ export class FeathersRosterService {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly columnBoardService: ColumnBoardService,
+		private readonly roomService: RoomService,
+		private readonly roomMembershipService: RoomMembershipService,
+
 		private readonly configService: ConfigService<RosterConfig, true>
 	) {}
 
@@ -86,7 +91,7 @@ export class FeathersRosterService {
 	}
 
 	public async getUserGroups(pseudonym: string, oauth2ClientId: string): Promise<UserGroups> {
-		const courses = await this.getCourses(pseudonym, oauth2ClientId);
+		const { courses, rooms } = await this.getCourses(pseudonym, oauth2ClientId);
 		const coursesGroups = courses.map((course) => {
 			return {
 				group_id: course.id,
@@ -95,19 +100,27 @@ export class FeathersRosterService {
 			};
 		});
 
-		// TODO extend for rooms
-		// const rooms = await this.getRooms(pseudonym, oauth2ClientId);
+		const roomsGroups = rooms.map((room) => {
+			return {
+				group_id: room.id,
+				name: room.name,
+				student_count: 10, // TODO
+			};
+		});
 
 		const userGroups = {
 			data: {
-				groups: [...coursesGroups],
+				groups: [...coursesGroups, ...roomsGroups],
 			},
 		};
 
 		return userGroups;
 	}
 
-	private async getCourses(pseudonym: string, oauth2ClientId: string): Promise<CourseEntity[]> {
+	private async getCourses(
+		pseudonym: string,
+		oauth2ClientId: string
+	): Promise<{ courses: CourseEntity[]; rooms: Room[] }> {
 		const pseudonymContext = await this.findPseudonymByPseudonym(pseudonym);
 		const user = await this.userService.findById(pseudonymContext.userId);
 
@@ -117,9 +130,20 @@ export class FeathersRosterService {
 		let courses = await this.courseService.findAllByUserId(pseudonymContext.userId);
 		courses = await this.filterCoursesByToolAvailability(courses, schoolExternalTool);
 
-		return courses;
+		const rooms = await this.getRooms(pseudonymContext.userId);
+
+		return { courses, rooms };
 	}
 
+	public async getRooms(userId: EntityId): Promise<Room[]> {
+		// this.roomPermissionService.checkFeatureRoomsEnabled();
+		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
+		const roomIds = roomAuthorizables.map((item) => item.roomId);
+
+		const rooms = await this.roomService.getAllByIds(roomIds);
+
+		return rooms;
+	}
 	public async getGroup(courseId: EntityId, oauth2ClientId: string): Promise<Group> {
 		const course: CourseEntity = await this.courseService.findById(courseId);
 
