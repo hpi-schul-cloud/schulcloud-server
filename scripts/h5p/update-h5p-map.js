@@ -143,7 +143,13 @@ const checkContentOfLibraryJson = (data) => {
 };
 
 const writeMachineNameToRepoMapToYamlFile = (machineNameToRepoMap, target) => {
-	const yamlContent = yaml.stringify(machineNameToRepoMap);
+	const sorted = Object.keys(machineNameToRepoMap)
+		.sort()
+		.reduce((acc, key) => {
+			acc[key] = machineNameToRepoMap[key];
+			return acc;
+		}, {});
+	const yamlContent = yaml.stringify(sorted);
 	fs.writeFileSync(target, yamlContent, { encoding: 'utf-8' });
 	console.log(`Wrote machineNameToRepoMap to ${target}`);
 };
