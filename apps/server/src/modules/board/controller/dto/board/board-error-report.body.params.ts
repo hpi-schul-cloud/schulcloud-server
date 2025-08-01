@@ -1,3 +1,4 @@
+import { IsEnum } from 'class-validator';
 import { BoardErrorContextTypeEnum } from '../../../interface/board-error-context-type.enum';
 import { BoardErrorTypeEnum } from '../../../interface/board-error-type.enum';
 import { ApiProperty } from '@nestjs/swagger';
@@ -8,6 +9,7 @@ export class BoardErrorReportBodyParams {
 		enumName: 'BoardErrorTypeEnum',
 		required: true,
 	})
+	@IsEnum(BoardErrorTypeEnum)
 	public errorType!: BoardErrorTypeEnum;
 
 	@ApiProperty({
@@ -22,6 +24,7 @@ export class BoardErrorReportBodyParams {
 		enumName: 'BoardErrorContextTypeEnum',
 		required: true,
 	})
+	@IsEnum(BoardErrorContextTypeEnum)
 	public contextType!: BoardErrorContextTypeEnum;
 
 	@ApiProperty({

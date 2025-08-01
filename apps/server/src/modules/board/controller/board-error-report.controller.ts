@@ -15,7 +15,6 @@ export class BoardErrorReportController {
 	@ApiResponse({ status: 201, description: 'Error reported' })
 	@ApiResponse({ status: 400, description: 'Validation error', type: ApiValidationError })
 	@ApiResponse({ status: 401, description: 'Unauthorized' })
-	@ApiResponse({ status: 403, description: 'Forbidden' })
 	@Post()
 	public async reportError(
 		@Body() bodyParams: BoardErrorReportBodyParams,
