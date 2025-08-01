@@ -108,12 +108,21 @@ class FileSystemHelper {
 	}
 
 	static createTempFolder(library, tag) {
-		const tempFolder = os.tmpdir();
-		const libraryName = library.split('/')[1];
-		const filePath = path.join(tempFolder, `${libraryName}-${tag}.zip`);
-		const folderPath = path.join(tempFolder, `${libraryName}-${tag}`);
+		const tempFolder = path.join(os.tmpdir(), 'h5p-libraries');
+		if (!this.pathExists(tempFolder)) {
+			this.createFolder(tempFolder);
+		}
+
+		const filePath = path.join(tempFolder, `${library}-${tag}.zip`);
+
+		const [tagMajor, tagMinor] = tag.split('.');
+		const folderPath = path.join(tempFolder, `${library}-${tagMajor}.${tagMinor}`);
 
 		return { filePath, folderPath, tempFolder };
+	}
+
+	static createFolder(folderPath) {
+		fs.mkdirSync(folderPath, { recursive: true });
 	}
 
 	static getLibraryJsonPath(folderPath) {
@@ -125,19 +134,35 @@ class FileSystemHelper {
 		return this.pathExists(packageJsonPath);
 	}
 
-	static getLibraryRepoMap() {
-		return this.readYamlFile('config/h5p-library-repo-map.yaml');
-	}
-
 	static buildPath(...segments) {
 		return path.join(...segments);
 	}
 
-	static removeNodeModulesPathIfExists(folderPath, logger) {
-		const nodeModulesPath = this.buildPath(folderPath, 'node_modules');
-		if (this.pathExists(nodeModulesPath)) {
-			this.removeFolder(nodeModulesPath);
+	static unzipAndRenameFolder(filePath, folderPath, tempFolder, repo, tag) {
+		this.unzipFile(filePath, tempFolder);
+		this.renameFolder(folderPath, tempFolder, repo, tag);
+	}
+
+	static renameFolder(folderPath, tempFolder, repo, tag) {
+		const repoName = repo.split('/')[1];
+		const repoNameFolder = path.join(tempFolder, `${repoName}-${tag}`);
+		if (repoNameFolder === folderPath) {
+			return;
 		}
+
+		if (!this.pathExists(repoNameFolder)) {
+			throw new Error(`Repository folder ${repo} does not exist in temporary folder.`);
+		}
+
+		if (this.pathExists(folderPath)) {
+			this.removeFolder(folderPath);
+		}
+
+		fs.renameSync(repoNameFolder, folderPath);
+	}
+
+	static getStatsOfPath(filePath) {
+		return fs.statSync(filePath);
 	}
 }
 

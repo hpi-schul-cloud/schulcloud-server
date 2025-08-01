@@ -1,9 +1,6 @@
 const { Octokit } = require('@octokit/rest');
-const arg = require('arg');
 const axios = require('axios');
 const fs = require('fs');
-const yaml = require('yaml');
-const fileSystemHelper = require('../helper/file-system.helper.js');
 
 class H5pGitHubClient {
 	constructor() {
@@ -108,6 +105,50 @@ class H5pGitHubClient {
 		}
 
 		return true;
+	}
+
+	async fetchGitHubTags(repoName) {
+		let tags = [];
+
+		try {
+			const [owner, repo] = repoName.split('/');
+			const response = await this.octokit.repos.listTags({
+				owner,
+				repo,
+			});
+			tags = response.data.map((tag) => tag.name);
+		} catch (error) {
+			console.error(`Unknown error while fetching tags for ${repoName}:`, error);
+			tags = [];
+		}
+
+		return tags;
+	}
+
+	async downloadGitHubTag(library, tag, filePath) {
+		const [owner, repo] = library.split('/');
+		const url = `https://github.com/${owner}/${repo}/archive/refs/tags/${tag}.zip`;
+
+		try {
+			const response = await axios({
+				url,
+				method: 'GET',
+				responseType: 'stream',
+			});
+
+			// TODO: Move this to FileSystemHelper?
+			const writer = fs.createWriteStream(filePath);
+			response.data.pipe(writer);
+
+			await new Promise((resolve, reject) => {
+				writer.on('finish', () => resolve());
+				writer.on('error', (err) => reject(err));
+			});
+
+			console.log(`Downloaded ${tag} of ${library} to ${filePath}`);
+		} catch (error) {
+			console.error(`Unknown error while downloading ${library} at tag ${tag}:`, error);
+		}
 	}
 }
 
