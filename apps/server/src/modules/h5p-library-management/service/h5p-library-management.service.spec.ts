@@ -5,7 +5,7 @@ import {
 	ILibraryAdministrationOverviewItem,
 	ILibraryInstallResult,
 } from '@lumieducation/h5p-server/build/src/types';
-import { ContentStorage, LibraryStorage } from '@modules/h5p-editor/service';
+import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -13,25 +13,9 @@ import { H5PLibraryManagementErrorLoggable } from '../loggable/h5p-library-manag
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
 import { H5PLibraryManagementService, castToLibrariesContentType } from './h5p-library-management.service';
 
-jest.mock('@lumieducation/h5p-server', () => {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-	return {
-		...jest.requireActual('@lumieducation/h5p-server'),
-		LibraryAdministration: jest.fn().mockImplementation(() => {
-			return {
-				getLibraries: jest.fn().mockResolvedValue([
-					{ machineName: 'a', dependentsCount: 0 },
-					{ machineName: 'b', dependentsCount: 1 },
-					{ machineName: 'c', dependentsCount: 0 },
-				]),
-				deleteLibraries: jest.fn().mockResolvedValue({}),
-			};
-		}),
-	};
-});
-
 describe('H5PLibraryManagementService', () => {
 	let module: TestingModule;
+	let libraryStorage: jest.Mocked<LibraryStorage>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -57,6 +41,8 @@ describe('H5PLibraryManagementService', () => {
 				},
 			],
 		}).compile();
+
+		libraryStorage = module.get(LibraryStorage);
 	});
 
 	afterAll(async () => {
@@ -65,137 +51,6 @@ describe('H5PLibraryManagementService', () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
-	});
-
-	describe('uninstallUnwantedLibraries is called', () => {
-		describe('when wantedLibraries have no dependands', () => {
-			const setup = () => {
-				const libraries: ILibraryAdministrationOverviewItem[] = [
-					{
-						canBeDeleted: true,
-						canBeUpdated: true,
-						dependentsCount: 0,
-						instancesAsDependencyCount: 0,
-						instancesCount: 0,
-						isAddon: false,
-						machineName: 'a',
-						majorVersion: 1,
-						minorVersion: 1,
-						patchVersion: 1,
-						restricted: false,
-						runnable: true,
-						title: 'a',
-					},
-					{
-						canBeDeleted: true,
-						canBeUpdated: true,
-						dependentsCount: 1,
-						instancesAsDependencyCount: 0,
-						instancesCount: 0,
-						isAddon: false,
-						machineName: 'b',
-						majorVersion: 1,
-						minorVersion: 1,
-						patchVersion: 1,
-						restricted: false,
-						runnable: true,
-						title: 'b',
-					},
-					{
-						canBeDeleted: true,
-						canBeUpdated: true,
-						dependentsCount: 0,
-						instancesAsDependencyCount: 0,
-						instancesCount: 0,
-						isAddon: false,
-						machineName: 'c',
-						majorVersion: 1,
-						minorVersion: 1,
-						patchVersion: 1,
-						restricted: false,
-						runnable: true,
-						title: 'c',
-					},
-				];
-				const service = module.get(H5PLibraryManagementService);
-				const libraryStorageMock = module.get(LibraryStorage);
-
-				return { service, libraryStorageMock, libraries };
-			};
-			it('should delete libraries not in the wanted list and with no dependents', async () => {
-				const { service, libraryStorageMock, libraries } = setup();
-				const wantedLibraries = ['a', 'c'];
-				await service.uninstallUnwantedLibraries(wantedLibraries, libraries);
-				expect(libraryStorageMock.deleteLibrary).toHaveBeenCalledWith(libraries[0]);
-				expect(libraryStorageMock.deleteLibrary).not.toHaveBeenCalledWith(libraries[1]);
-				expect(libraryStorageMock.deleteLibrary).not.toHaveBeenCalledWith(libraries[2]);
-			});
-		});
-
-		describe('when wantedLIbraries have dependands', () => {
-			const setup = () => {
-				const libraries: ILibraryAdministrationOverviewItem[] = [
-					{
-						canBeDeleted: true,
-						canBeUpdated: true,
-						dependentsCount: 0,
-						instancesAsDependencyCount: 0,
-						instancesCount: 0,
-						isAddon: false,
-						machineName: 'a',
-						majorVersion: 1,
-						minorVersion: 1,
-						patchVersion: 1,
-						restricted: false,
-						runnable: true,
-						title: 'a',
-					},
-					{
-						canBeDeleted: true,
-						canBeUpdated: true,
-						dependentsCount: 1,
-						instancesAsDependencyCount: 0,
-						instancesCount: 0,
-						isAddon: false,
-						machineName: 'b',
-						majorVersion: 1,
-						minorVersion: 1,
-						patchVersion: 1,
-						restricted: false,
-						runnable: true,
-						title: 'b',
-					},
-					{
-						canBeDeleted: true,
-						canBeUpdated: true,
-						dependentsCount: 0,
-						instancesAsDependencyCount: 0,
-						instancesCount: 0,
-						isAddon: false,
-						machineName: 'c',
-						majorVersion: 1,
-						minorVersion: 1,
-						patchVersion: 1,
-						restricted: false,
-						runnable: true,
-						title: 'c',
-					},
-				];
-				const service = module.get(H5PLibraryManagementService);
-				const libraryStorageMock = module.get(LibraryStorage);
-
-				return { service, libraryStorageMock, libraries };
-			};
-			it('should not delete libraries with dependents', async () => {
-				const { service, libraryStorageMock, libraries } = setup();
-				libraryStorageMock.deleteLibrary = jest.fn().mockResolvedValueOnce({});
-				const wantedLibraries = ['a', 'b'];
-				await service.uninstallUnwantedLibraries(wantedLibraries, libraries);
-				expect(libraryStorageMock.deleteLibrary).toHaveBeenCalledWith(libraries[0]);
-				expect(libraryStorageMock.deleteLibrary).not.toHaveBeenCalledWith(libraries[1]);
-				expect(libraryStorageMock.deleteLibrary).toHaveBeenCalledWith(libraries[2]);
-			});
-		});
 	});
 
 	describe('installLibraries is called', () => {
@@ -368,6 +223,140 @@ describe('H5PLibraryManagementService', () => {
 					random: 1,
 				};
 				expect(() => castToLibrariesContentType(randomObject)).toThrow(InternalServerErrorException);
+			});
+		});
+	});
+
+	describe('uninstallUnwantedLibraries is called', () => {
+		describe('when libraries are uninstalled successfully', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+
+				const wantedLibraries = ['a', 'b'];
+				let librariesToCheck: ILibraryAdministrationOverviewItem[] = [
+					{
+						machineName: 'a',
+						dependentsCount: 1,
+						canBeDeleted: true,
+						canBeUpdated: true,
+						instancesAsDependencyCount: 0,
+						instancesCount: 0,
+						isAddon: false,
+						majorVersion: 1,
+						minorVersion: 0,
+						patchVersion: 0,
+						restricted: false,
+						runnable: true,
+						title: 'Library A',
+					},
+					{
+						machineName: 'b',
+						dependentsCount: 0,
+						canBeDeleted: true,
+						canBeUpdated: true,
+						instancesAsDependencyCount: 0,
+						instancesCount: 0,
+						isAddon: false,
+						majorVersion: 1,
+						minorVersion: 0,
+						patchVersion: 0,
+						restricted: false,
+						runnable: true,
+						title: 'Library B',
+					},
+					{
+						machineName: 'c',
+						dependentsCount: 0,
+						canBeDeleted: true,
+						canBeUpdated: true,
+						instancesAsDependencyCount: 0,
+						instancesCount: 0,
+						isAddon: false,
+						majorVersion: 1,
+						minorVersion: 0,
+						patchVersion: 0,
+						restricted: false,
+						runnable: true,
+						title: 'Library C',
+					},
+				];
+
+				// Deep copy before mutation for assertion
+				const expectedUninstalled: ILibraryAdministrationOverviewItem[] = [
+					{
+						machineName: 'c',
+						dependentsCount: 0,
+						canBeDeleted: true,
+						canBeUpdated: true,
+						instancesAsDependencyCount: 0,
+						instancesCount: 0,
+						isAddon: false,
+						majorVersion: 1,
+						minorVersion: 0,
+						patchVersion: 0,
+						restricted: false,
+						runnable: true,
+						title: 'Library C',
+					},
+				];
+
+				jest.spyOn(service.libraryAdministration, 'getLibraries').mockResolvedValue(librariesToCheck);
+
+				libraryStorage.deleteLibrary.mockImplementationOnce((lib) => {
+					const index = librariesToCheck.findIndex((item) => item.machineName === lib.machineName);
+					if (index !== -1) {
+						librariesToCheck = librariesToCheck.splice(index, 1);
+					}
+
+					return Promise.resolve();
+				});
+
+				return { service, wantedLibraries, expectedUninstalled };
+			};
+
+			it('should uninstall unwanted libraries and return the list of uninstalled libraries', async () => {
+				const { service, wantedLibraries, expectedUninstalled } = setup();
+
+				const result = await service.uninstallUnwantedLibraries(wantedLibraries);
+
+				expect(result).toEqual(expectedUninstalled);
+			});
+		});
+
+		describe('when no libraries need to be uninstalled', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+
+				const wantedLibraries = ['a', 'b'];
+				const librariesToCheck = [
+					{
+						machineName: 'a',
+						dependentsCount: 0,
+						canBeDeleted: true,
+						canBeUpdated: true,
+						instancesAsDependencyCount: 0,
+						instancesCount: 0,
+						isAddon: false,
+						majorVersion: 1,
+						minorVersion: 0,
+						patchVersion: 0,
+						restricted: false,
+						runnable: true,
+						title: 'Library A',
+					},
+				];
+
+				jest.spyOn(service.libraryAdministration, 'getLibraries').mockResolvedValue(librariesToCheck);
+
+				return { service, wantedLibraries };
+			};
+
+			it('should return an empty list', async () => {
+				const { service, wantedLibraries } = setup();
+
+				const result = await service.uninstallUnwantedLibraries(wantedLibraries);
+
+				expect(result).toEqual([]);
 			});
 		});
 	});

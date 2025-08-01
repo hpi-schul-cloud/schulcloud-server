@@ -244,7 +244,7 @@ export class S3ClientAdapter {
 
 	public async delete(paths: string[]): Promise<void> {
 		try {
-			this.logger.debug(
+			this.logger.info(
 				new S3ClientActionLoggable('Start delete of files', {
 					action: 'delete',
 					objectPath: paths,
@@ -344,7 +344,7 @@ export class S3ClientAdapter {
 
 	public async deleteDirectory(path: string, nextMarker?: string): Promise<void> {
 		try {
-			this.logger.warning(
+			this.logger.info(
 				new S3ClientActionLoggable('Start delete directory', {
 					action: 'deleteDirectory',
 					objectPath: path,

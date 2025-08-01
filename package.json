@@ -137,7 +137,9 @@
 		"pregenerate-client:cards-api": "rimraf ./apps/server/src/infra/cards-client/generated",
 		"generate-client:cards-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key cards-api",
 		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api",
-		"knip": "knip"
+		"knip": "knip",
+		"h5p:build-h5p-libraries": "set -a && source .env && set +a && node ./scripts/h5p/build-h5p-libraries.js",
+		"h5p:update-h5p-map": "set -a && source .env && set +a && node ./scripts/h5p/update-h5p-map.js"
 	},
 	"overrides": {
 		"gm": {
@@ -180,6 +182,7 @@
 		"@nestjs/platform-socket.io": "^10.4.15",
 		"@nestjs/swagger": "^8.1.1",
 		"@nestjs/websockets": "^10.4.15",
+		"@octokit/rest": "^22.0.0",
 		"@socket.io/mongo-adapter": "^0.3.2",
 		"@socket.io/redis-adapter": "^8.3.0",
 		"adm-zip": "^0.5.16",

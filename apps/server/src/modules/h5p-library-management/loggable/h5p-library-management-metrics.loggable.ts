@@ -4,7 +4,7 @@ import { ILibraryAdministrationOverviewItem, ILibraryInstallResult } from '@lumi
 
 export class H5PLibraryManagementMetricsLoggable implements Loggable {
 	constructor(
-		private readonly availableLibraries: ILibraryAdministrationOverviewItem[],
+		private readonly initialLibraries: ILibraryAdministrationOverviewItem[],
 		private readonly uninstalledLibraries: ILibraryAdministrationOverviewItem[],
 		private readonly installedLibraries: ILibraryInstallResult[]
 	) {}
@@ -12,9 +12,9 @@ export class H5PLibraryManagementMetricsLoggable implements Loggable {
 	// istanbul ignore next
 	public getLogMessage(): LogMessage {
 		const logMessage = {
-			message: `Available ${this.availableLibraries.length} libraries. Removed ${this.uninstalledLibraries.length} libraries. Added/updated ${this.installedLibraries.length} libraries.`,
+			message: `Available ${this.initialLibraries.length} libraries. Removed ${this.uninstalledLibraries.length} libraries. Added/updated ${this.installedLibraries.length} libraries.`,
 			data: {
-				availableLibraries: this.availableLibraries
+				initialLibraries: this.initialLibraries
 					.map((lib) => `${lib.machineName}-${lib.majorVersion}.${lib.minorVersion}.${lib.patchVersion}`)
 					.join(', '),
 				uninstalledLibraries: this.uninstalledLibraries
