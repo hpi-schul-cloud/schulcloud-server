@@ -137,7 +137,8 @@
 		"pregenerate-client:cards-api": "rimraf ./apps/server/src/infra/cards-client/generated",
 		"generate-client:cards-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key cards-api",
 		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api",
-		"knip": "knip"
+		"knip": "knip",
+		"h5p:update-h5p-map": "node ./scripts/h5p/update-h5p-map.js"
 	},
 	"overrides": {
 		"gm": {
