@@ -26,6 +26,12 @@ export class RoomService {
 		return rooms;
 	}
 
+	public async getAllByIds(roomIds: EntityId[]): Promise<Room[]> {
+		const rooms = await this.roomRepo.findByIds(roomIds);
+
+		return rooms;
+	}
+
 	public async createRoom(props: RoomCreateProps): Promise<Room> {
 		const roomProps: RoomProps = {
 			id: new ObjectId().toHexString(),

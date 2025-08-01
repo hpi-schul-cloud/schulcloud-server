@@ -52,6 +52,17 @@ export class RoomRepo {
 		return page;
 	}
 
+	public async findByIds(ids: EntityId[]): Promise<Room[]> {
+		const scope = new RoomScope();
+		scope.byIds(ids);
+
+		const entities = await this.em.find(RoomEntity, scope.query);
+
+		const domainObjects = entities.map((entity) => RoomDomainMapper.mapEntityToDo(entity));
+
+		return domainObjects;
+	}
+
 	public async findById(id: EntityId): Promise<Room> {
 		const entity = await this.em.findOneOrFail(RoomEntity, id);
 		const domainobject = RoomDomainMapper.mapEntityToDo(entity);
