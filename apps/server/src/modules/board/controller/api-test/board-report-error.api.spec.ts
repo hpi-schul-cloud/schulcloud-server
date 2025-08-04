@@ -38,14 +38,12 @@ describe('BoardErrorReportController (api)', () => {
 	});
 
 	const validPayload: BoardErrorReportBodyParams = {
-		errorType: BoardErrorTypeEnum.WEBSOCKET_UNABLE_TO_CONNECT,
-		pageUrl: 'https://example.com/board',
+		type: BoardErrorTypeEnum.WEBSOCKET_UNABLE_TO_CONNECT,
+		message: 'Websocket failed to connect',
+		url: 'https://example.com/board',
 		contextType: BoardErrorContextTypeEnum.BOARD,
 		contextId: 'boardId',
-		schoolId: 'schoolId',
-		userId: 'userId',
-		errorMessage: 'Websocket failed to connect',
-		timestamp: '2023-10-01T12:00:00Z',
+		retryCount: 0,
 	};
 
 	const setup = async (): Promise<{ loggedInClient: TestApiClient }> => {
@@ -80,31 +78,16 @@ describe('BoardErrorReportController (api)', () => {
 		});
 	});
 
-	describe('When body data is incorrect', () => {
-		describe('When errorType is missing', () => {
-			it('should return status 400', async () => {
-				const { loggedInClient } = await setup();
+	describe('When error type is missing', () => {
+		it('should return status 400', async () => {
+			const { loggedInClient } = await setup();
 
-				const payload: Partial<BoardErrorReportBodyParams> = { ...validPayload };
-				delete payload.errorType;
+			const payload: Partial<BoardErrorReportBodyParams> = { ...validPayload };
+			delete payload.type;
 
-				const response = await loggedInClient.post(undefined, payload);
+			const response = await loggedInClient.post(undefined, payload);
 
-				expect(response.status).toEqual(400);
-			});
-		});
-
-		describe('timestamp property', () => {
-			describe('When timestamp is invalid', () => {
-				it('should return status 400', async () => {
-					const { loggedInClient } = await setup();
-
-					const payload: BoardErrorReportBodyParams = { ...validPayload, timestamp: 'invalid-timestamp' };
-					const responseInvalid = await loggedInClient.post(undefined, payload);
-
-					expect(responseInvalid.status).toEqual(400);
-				});
-			});
+			expect(response.status).toEqual(400);
 		});
 	});
 });
