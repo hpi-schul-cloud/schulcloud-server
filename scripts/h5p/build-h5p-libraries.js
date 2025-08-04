@@ -1,7 +1,4 @@
-const { Octokit } = require('@octokit/rest');
 const arg = require('arg');
-const fs = require('fs');
-const yaml = require('yaml');
 const fileSystemHelper = require('./helper/file-system.helper.js');
 const H5pLibraryBuilderService = require('./service/h5p-library-builder.service.js');
 
@@ -28,7 +25,7 @@ const args = arg(
 );
 
 if ('--help' in args) {
-	console.log(`Usage: node generate-h5p-libraries.js [opts]
+	console.log(`Usage: node build-h5p-libraries.js [opts]
 OPTIONS:
     --help (-h)		Show this help.
     --input (-i)	The file containing the list of libraries to be installed.
