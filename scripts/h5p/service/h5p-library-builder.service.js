@@ -131,7 +131,12 @@ class H5pLibraryBuilderService {
 		// Wenn man dann noch fileSystemHelper als Klasse instanziiert über ein factory könnte man dort noch mehr implizites Wissen weg kapseln.
 		const { filePath, folderPath, tempFolder } = fileSystemHelper.createTempFolder(library, tag);
 		await this.gitHubClient.downloadGitHubTag(repo, tag, filePath);
+
+		if (fileSystemHelper.pathExists(folderPath)) {
+			fileSystemHelper.removeFolder(folderPath);
+		}
 		fileSystemHelper.unzipAndRenameFolder(filePath, folderPath, tempFolder, repo, tag);
+		fileSystemHelper.removeFile(filePath);
 
 		// TODO: gefühlt gehört das in den try catch rein, es sind dafür aber viel zu viele try catch instanzen.
 		// Genauso wie die downloadGitHubTag
@@ -140,7 +145,8 @@ class H5pLibraryBuilderService {
 
 		this.cleanUpUnwantedFilesinLibraryFolder(folderPath);
 
-		fileSystemHelper.removeFile(filePath);
+		// TODO: Should this be kept as it would make H5P CLI required!?
+		this.validateH5pLibrary(folderPath);
 
 		return result;
 	}
@@ -148,10 +154,14 @@ class H5pLibraryBuilderService {
 	executeAdditionalBuildStepsIfRequired(folderPath, library, tag) {
 		this.checkAndCorrectLibraryJsonVersion(folderPath, tag);
 
-		// TODO: Problemkinder schlagen nun fehl!?
-		// if (this.isLibraryBuildRequired(library, tag)) {
-		this.buildLibraryIfRequired(folderPath, library);
-		// }
+		if (this.isPrependNodeOptionsRequired(library, tag)) {
+			this.prependNodeOptionsToRunScript(folderPath);
+		}
+
+		if (!this.isShepherdLibrary(library) && this.areBuildStepsRequired(folderPath)) {
+			const legacyPeerDepsRequired = this.isLegacyPeerDepsRequired(library, tag);
+			this.executeBuildSteps(folderPath, library, legacyPeerDepsRequired);
+		}
 
 		if (this.isLibraryPathCorrectionRequired(library, tag)) {
 			this.checkAndCorrectLibraryJsonPaths(folderPath);
@@ -168,7 +178,7 @@ class H5pLibraryBuilderService {
 				json.majorVersion = tagMajor;
 				json.minorVersion = tagMinor;
 				json.patchVersion = tagPatch;
-				fileSystemHelper.writeLibraryJson(libraryJsonPath, json);
+				fileSystemHelper.writeJsonFile(libraryJsonPath, json);
 				changed = true;
 				this.logCorrectedVersionInLibraryJson(folderPath, tag);
 			}
@@ -183,29 +193,93 @@ class H5pLibraryBuilderService {
 		console.log(`Corrected version in library.json to match tag ${tag} in ${folderPath}.`);
 	}
 
-	isLibraryBuildRequired(library, tag) {
-		const libraryBuildIsRequired =
-			(library === 'H5P.DragQuestion' && tag === '1.13.15') ||
-			(library === 'H5P.CoursePresentation' && tag === '1.25.33') ||
-			(library === 'H5P.InteractiveVideo' && tag === '1.26.40') ||
-			(library === 'H5P.AudioRecorder' && tag === '1.0.12');
+	isPrependNodeOptionsRequired(library, tag) {
+		const prependNodeOptions = {
+			'H5P.Dialogcards': ['1.8.8', '1.7.10'],
+			'H5P.DragQuestion': ['1.15.4'],
+			'H5P.DragText': ['1.10.25', '1.9.5', '1.8.20'],
+			'H5P.MultiMediaChoice': ['0.3.56'],
+			'H5P.InteractiveVideo': ['1.28.3'],
+		};
+		const prependNodeOptionsRequired = prependNodeOptions[library]?.includes(tag);
 
-		return libraryBuildIsRequired;
+		return prependNodeOptionsRequired;
 	}
 
-	buildLibraryIfRequired(folderPath, library) {
-		try {
-			if (fileSystemHelper.checkPackageJsonPath(folderPath)) {
-				this.logRunningNpmCiAndBuild(folderPath);
-				const npmInstall = childProcess.spawnSync('npm', ['ci'], { cwd: folderPath, stdio: 'inherit' });
+	prependNodeOptionsToRunScript(folderPath) {
+		const packageJsonPath = fileSystemHelper.buildPath(folderPath, 'package.json');
+		if (!fileSystemHelper.pathExists(packageJsonPath)) {
+			console.warn(`package.json not found in ${folderPath}`);
+			return;
+		}
+		const packageJson = fileSystemHelper.readJsonFile(packageJsonPath);
+		if (!packageJson.scripts || !packageJson.scripts.build) {
+			console.warn(`No 'build' script found in package.json at ${folderPath}`);
+			return;
+		}
+		const buildScript = packageJson.scripts.build;
+		const nodeOptionsPrefix = 'NODE_OPTIONS=--openssl-legacy-provider ';
+		if (!buildScript.startsWith(nodeOptionsPrefix)) {
+			packageJson.scripts.build = nodeOptionsPrefix + buildScript;
+			fileSystemHelper.writeJsonFile(packageJsonPath, packageJson);
+			console.log(`Prepended NODE_OPTIONS to 'build' script in ${packageJsonPath}`);
+		} else {
+			console.log(`'build' script in ${packageJsonPath} already contains NODE_OPTIONS prefix.`);
+		}
+	}
 
-				if (npmInstall.status !== 0) {
-					throw new Error('npm ci failed');
-				} else {
-					const npmBuild = childProcess.spawnSync('npm', ['run', 'build'], { cwd: folderPath, stdio: 'inherit' });
-					if (npmBuild.status !== 0) {
-						throw new Error('npm run build failed');
-					}
+	isShepherdLibrary(library) {
+		const shepherdLibraries = ['Shepherd'];
+		const isShepherdLibrary = shepherdLibraries.includes(library);
+
+		return isShepherdLibrary;
+	}
+
+	areBuildStepsRequired(folderPath) {
+		let buildStepsRequired = false;
+		const packageJsonPath = fileSystemHelper.buildPath(folderPath, 'package.json');
+		if (fileSystemHelper.pathExists(packageJsonPath)) {
+			const packageJson = fileSystemHelper.readJsonFile(packageJsonPath);
+			if (!packageJson.scripts || !packageJson.scripts.build) {
+				this.logNoBuildScriptInPackageJson(folderPath);
+			} else {
+				this.logBuildScriptFoundInPackageJson(folderPath);
+				buildStepsRequired = true;
+			}
+		}
+
+		return buildStepsRequired;
+	}
+
+	logNoBuildScriptInPackageJson(folderPath) {
+		console.log(`No 'build' script found in package.json at ${folderPath}.`);
+	}
+
+	logBuildScriptFoundInPackageJson(folderPath) {
+		console.log(`Found 'build' script in package.json at ${folderPath}.`);
+	}
+
+	isLegacyPeerDepsRequired(library, tag) {
+		const legacyPeerDeps = {
+			'H5P.DragText': ['1.9.5', '1.8.20'],
+		};
+		const legacyPeerDepsRequired = legacyPeerDeps[library]?.includes(tag);
+
+		return legacyPeerDepsRequired;
+	}
+
+	executeBuildSteps(folderPath, library, legacyPeerDepsRequired = false) {
+		try {
+			this.logRunningNpmCiAndBuild(folderPath);
+			const npmInstallArgs = legacyPeerDepsRequired ? ['ci', '--legacy-peer-deps'] : ['ci'];
+			const npmInstall = childProcess.spawnSync('npm', npmInstallArgs, { cwd: folderPath, stdio: 'inherit' });
+
+			if (npmInstall.status !== 0) {
+				throw new Error('npm ci failed');
+			} else {
+				const npmBuild = childProcess.spawnSync('npm', ['run', 'build'], { cwd: folderPath, stdio: 'inherit' });
+				if (npmBuild.status !== 0) {
+					throw new Error('npm run build failed');
 				}
 			}
 		} catch (error) {
@@ -218,9 +292,12 @@ class H5pLibraryBuilderService {
 	}
 
 	isLibraryPathCorrectionRequired(library, tag) {
-		const libraryPathCorrectionIsRequired = library === 'H5P.MemoryGame' && tag === '1.3.36';
+		const libraryPathCorrection = {
+			'H5P.MemoryGame': ['1.3.36'],
+		};
+		const libraryPathCorrectionRequired = libraryPathCorrection[library]?.includes(tag);
 
-		return libraryPathCorrectionIsRequired;
+		return libraryPathCorrectionRequired;
 	}
 
 	checkAndCorrectLibraryJsonPaths(folderPath) {
@@ -270,7 +347,7 @@ class H5pLibraryBuilderService {
 			}
 
 			if (changed) {
-				fileSystemHelper.writeLibraryJson(libraryJsonPath, json);
+				fileSystemHelper.writeJsonFile(libraryJsonPath, json);
 				this.logCorrectedFilePathsInLibraryJson(folderPath);
 			}
 		} catch (error) {
@@ -281,6 +358,26 @@ class H5pLibraryBuilderService {
 
 	inputIsObjectWithPath(obj) {
 		return typeof obj === 'object' && obj !== null && 'path' in obj && typeof obj.path === 'string';
+	}
+
+	validateH5pLibrary(folderPath) {
+		try {
+			const result = childProcess.spawnSync('h5p', ['validate', folderPath], {
+				cwd: folderPath,
+				stdio: 'inherit',
+				shell: true,
+			});
+			if (result.status === 0) {
+				console.log(`'h5p validate' succeeded for ${folderPath}`);
+				return true;
+			} else {
+				console.error(`'h5p validate' failed for ${folderPath}`);
+				return false;
+			}
+		} catch (error) {
+			console.error(`Error running 'h5p validate' for ${folderPath}:`, error);
+			return false;
+		}
 	}
 
 	logCorrectedFilePathsInLibraryJson(folderPath) {

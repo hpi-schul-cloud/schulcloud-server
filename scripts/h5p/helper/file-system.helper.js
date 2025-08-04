@@ -74,7 +74,7 @@ class FileSystemHelper {
 		return yamlContent;
 	}
 
-	static writeLibraryJson(filePath, json) {
+	static writeJsonFile(filePath, json) {
 		fs.writeFileSync(filePath, JSON.stringify(json, null, 2), { encoding: 'utf-8' });
 	}
 
