@@ -821,4 +821,46 @@ describe('GroupService', () => {
 			});
 		});
 	});
+
+	describe('getGroupName', () => {
+		describe('when a group with the id exists', () => {
+			const setup = () => {
+				const group: Group = groupFactory.build();
+
+				groupRepo.findGroupById.mockResolvedValue(group);
+
+				return {
+					group,
+				};
+			};
+
+			it('should return the group name', async () => {
+				const { group } = setup();
+
+				const result: string | undefined = await service.getGroupName(group.id);
+
+				expect(result).toEqual(group.name);
+			});
+		});
+
+		describe('when a group with the id does not exist', () => {
+			const setup = () => {
+				const group: Group = groupFactory.build();
+
+				groupRepo.findGroupById.mockResolvedValue(null);
+
+				return {
+					group,
+				};
+			};
+
+			it('should return undefined', async () => {
+				const { group } = setup();
+
+				const result: string | undefined = await service.getGroupName(group.id);
+
+				expect(result).toBeUndefined();
+			});
+		});
+	});
 });

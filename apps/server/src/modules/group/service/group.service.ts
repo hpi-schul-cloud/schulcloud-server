@@ -196,4 +196,11 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 
 		return existingGroups;
 	}
+
+	public async getGroupName(groupId: EntityId): Promise<string | undefined> {
+		const group = await this.groupRepo.findGroupById(groupId);
+		const groupName = group?.name;
+
+		return groupName;
+	}
 }

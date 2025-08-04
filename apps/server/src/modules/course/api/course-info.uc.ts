@@ -1,8 +1,8 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { type Class, ClassService } from '@modules/class';
-import { type Group, GroupService } from '@modules/group';
+import { ClassService } from '@modules/class';
+import { GroupService } from '@modules/group';
 import { SchoolService } from '@modules/school';
-import { type UserDo, UserService } from '@modules/user';
+import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
@@ -55,7 +55,9 @@ export class CourseInfoUc {
 	private async getCourseData(courses: Course[]): Promise<CourseInfoDto[]> {
 		const courseInfos = await Promise.all(
 			courses.map(async (course) => {
-				const groupName = course.syncedWithGroup ? await this.getSyncedGroupName(course.syncedWithGroup) : undefined;
+				const groupName = course.syncedWithGroup
+					? await this.groupService.getGroupName(course.syncedWithGroup)
+					: undefined;
 				let teacherNames: string[] = [];
 				if (course.teachers) {
 					teacherNames = await this.getCourseTeacherFullNames(course.teachers);
@@ -76,12 +78,6 @@ export class CourseInfoUc {
 		);
 
 		return courseInfos;
-	}
-
-	private async getSyncedGroupName(groupId: EntityId): Promise<string | undefined> {
-		const group = await this.groupService.tryFindById(groupId);
-
-		return group?.name;
 	}
 
 	private async getCourseTeacherFullNames(teacherIds: EntityId[]): Promise<string[]> {
