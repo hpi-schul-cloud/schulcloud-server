@@ -7,7 +7,12 @@ export class BoardErrorReportUc {
 	public async reportError(userId: EntityId, params: BoardErrorReportBodyParams): Promise<{ reportId: string }> {
 		// TODO: Implement error reporting logic (e.g., save to DB, log, etc.)
 		// For now, return a dummy reportId
-		console.log(`Reporting error for user ${userId}:`, params);
+		const data = {
+			...params,
+			userId: userId,
+			schoolId: 'user.school._id',
+		};
+		console.log(`Reporting board error:`, data);
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 		return { reportId: 'dummy-report-id' };
 	}

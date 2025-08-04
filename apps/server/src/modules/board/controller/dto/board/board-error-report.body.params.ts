@@ -7,22 +7,25 @@ export class BoardErrorReportBodyParams {
 	@ApiProperty({
 		enum: BoardErrorTypeEnum,
 		enumName: 'BoardErrorTypeEnum',
-		required: true,
 	})
 	@IsEnum(BoardErrorTypeEnum)
-	public errorType!: BoardErrorTypeEnum;
+	public type!: BoardErrorTypeEnum;
+
+	@ApiProperty({
+		type: String,
+		description: 'Error message',
+	})
+	public message!: string;
 
 	@ApiProperty({
 		type: String,
 		description: 'URL of the page the user was working on',
-		required: true,
 	})
-	public pageUrl!: string;
+	public url!: string;
 
 	@ApiProperty({
 		enum: BoardErrorContextTypeEnum,
 		enumName: 'BoardErrorContextTypeEnum',
-		required: true,
 	})
 	@IsEnum(BoardErrorContextTypeEnum)
 	public contextType!: BoardErrorContextTypeEnum;
@@ -30,35 +33,12 @@ export class BoardErrorReportBodyParams {
 	@ApiProperty({
 		type: String,
 		description: 'EntityId (e.g. boardId)',
-		required: true,
 	})
 	public contextId!: string;
 
 	@ApiProperty({
-		type: String,
-		description: 'SchoolId (EntityId)',
-		required: true,
+		type: Number,
+		description: 'Count of connection retries.',
 	})
-	public schoolId!: string;
-
-	@ApiProperty({
-		type: String,
-		description: 'UserId (EntityId)',
-		required: true,
-	})
-	public userId!: string;
-
-	@ApiProperty({
-		type: String,
-		description: 'Error message',
-		required: true,
-	})
-	public errorMessage!: string;
-
-	@ApiProperty({
-		type: String,
-		description: 'Timestamp of the error (ISO 8601)',
-		required: true,
-	})
-	public timestamp!: string;
+	public retryCount!: number;
 }
