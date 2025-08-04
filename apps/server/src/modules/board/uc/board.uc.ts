@@ -193,7 +193,7 @@ export class BoardUc {
 
 			this.authorizationService.checkPermission(user, roomMembershipAuthorizable, {
 				action: Action.write,
-				requiredPermissions: [Permission.ROOM_CONTENT_EDIT],
+				requiredPermissions: [Permission.ROOM_EDIT_CONTENT],
 			});
 		} else {
 			throw new Error(`Unsupported context type ${context.type as string}`);
@@ -232,7 +232,12 @@ export class BoardUc {
 	private getPermissions(userId: EntityId, boardNodeAuthorizable: BoardNodeAuthorizable): Permission[] {
 		const user = boardNodeAuthorizable.users.find((user) => user.userId === userId);
 		if (user?.roles.includes(BoardRoles.ADMIN)) {
-			return [Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE_VIDEOCONFERENCE];
+			return [
+				Permission.BOARD_VIEW,
+				Permission.BOARD_EDIT,
+				Permission.BOARD_MANAGE_VIDEOCONFERENCE,
+				Permission.BOARD_SHARE_BOARD,
+			];
 		}
 
 		if (user?.roles.includes(BoardRoles.EDITOR)) {

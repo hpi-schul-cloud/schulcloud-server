@@ -61,10 +61,11 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is loggedin', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const course = courseEntityFactory.build({ students: [studentUser] });
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const course = courseEntityFactory.build({ students: [studentUser], teachers: [teacherUser] });
 				const task = taskFactory.build({ course });
 
-				await em.persistAndFlush([course, task, studentAccount, studentUser]);
+				await em.persistAndFlush([course, task, studentAccount, studentUser, teacherUser]);
 				em.clear();
 
 				const loggedInClient = await apiClient.login(studentAccount);

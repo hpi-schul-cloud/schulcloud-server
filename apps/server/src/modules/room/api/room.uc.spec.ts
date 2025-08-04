@@ -15,6 +15,7 @@ import { RoomColor } from '../domain/type';
 import { roomFactory } from '../testing';
 import { RoomUc } from './room.uc';
 import { RoomPermissionService } from './service';
+import { SchoolService } from '@modules/school';
 
 describe('RoomUc', () => {
 	let module: TestingModule;
@@ -23,6 +24,7 @@ describe('RoomUc', () => {
 	let roomService: DeepMocked<RoomService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
@@ -54,6 +56,10 @@ describe('RoomUc', () => {
 				{
 					provide: RoomPermissionService,
 					useValue: createMock<RoomPermissionService>(),
+				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 			],
 		}).compile();

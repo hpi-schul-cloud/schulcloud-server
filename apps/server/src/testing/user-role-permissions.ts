@@ -105,8 +105,9 @@ export const teacherPermissions = [
 	Permission.TOPIC_EDIT,
 	Permission.START_MEETING,
 	Permission.CONTEXT_TOOL_ADMIN,
-	Permission.ROOM_CREATE,
+	Permission.SCHOOL_CREATE_ROOM,
 	Permission.TEACHER_LIST,
+	Permission.SCHOOL_LIST_DISCOVERABLE_TEACHERS,
 ];
 
 export const adminPermissions = [
@@ -140,6 +141,7 @@ export const adminPermissions = [
 	Permission.SCHOOL_SYSTEM_VIEW,
 	Permission.SYSTEM_EDIT,
 	Permission.SYNC_START,
+	Permission.SCHOOL_ADMINISTRATE_ROOMS,
 	Permission.SCHOOL_PERMISSION_VIEW,
 	Permission.SCHOOL_PERMISSION_CHANGE,
 	Permission.IMPORT_USER_MIGRATE,

@@ -25,11 +25,17 @@ export class DashboardGridSubElementResponse {
 	})
 	displayColor: string;
 
+	@ApiProperty({
+		description: 'Indicates if the course is locked and cannot be accessed.',
+	})
+	isLocked: boolean;
+
 	constructor(props: DashboardGridSubElementResponse) {
 		this.id = props.id;
 		this.title = props.title;
 		this.shortTitle = props.shortTitle;
 		this.displayColor = props.displayColor;
+		this.isLocked = props.isLocked;
 	}
 }
 
@@ -88,6 +94,11 @@ export class DashboardGridElementResponse {
 	})
 	isSynchronized: boolean;
 
+	@ApiProperty({
+		description: 'Indicates if the course is locked and cannot be accessed.',
+	})
+	isLocked: boolean;
+
 	constructor(props: DashboardGridElementResponse) {
 		this.id = props.id;
 		this.title = props.title;
@@ -99,6 +110,7 @@ export class DashboardGridElementResponse {
 		this.groupElements = props.groupElements;
 		this.copyingSince = props.copyingSince;
 		this.isSynchronized = props.isSynchronized;
+		this.isLocked = props.isLocked;
 	}
 }
 
