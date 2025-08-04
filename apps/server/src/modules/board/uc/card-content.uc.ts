@@ -5,7 +5,7 @@ import { EntityId } from '@shared/domain/types';
 import { BoardNodePermissionService, BoardNodeService } from '../service';
 import { Action } from '@modules/authorization';
 import { CardResponseMapper } from '../controller/mapper';
-import { AnyElementContentBody, CardResponse, UpdateElementContentBodyParams } from '../controller/dto';
+import { CardResponse, LinkContentBody, RichTextContentBody, UpdateElementContentBodyParams } from '../controller/dto';
 
 @Injectable()
 export class CardContentUc {
@@ -44,16 +44,13 @@ export class CardContentUc {
 		return elementContents.map((content) => content as AnyContentElement);
 	}
 
-	private convertCardPropsToElements(cardProps: UpdateElementContentBodyParams[]): AnyElementContentBody[] {
+	private convertCardPropsToElements(
+		cardProps: UpdateElementContentBodyParams[]
+	): (RichTextContentBody | LinkContentBody)[] {
 		return cardProps.map((param) => {
 			const { type, content } = param.data;
 
 			switch (type) {
-				case ContentElementType.FILE:
-					return {
-						caption: content.caption,
-						alternativeText: content.alternativeText,
-					};
 				case ContentElementType.LINK:
 					return {
 						url: content.url,
@@ -62,37 +59,11 @@ export class CardContentUc {
 						imageUrl: content.imageUrl,
 						originalImageUrl: content.originalImageUrl,
 					};
-				case ContentElementType.DRAWING:
-					return {
-						description: content.description,
-					};
-
 				case ContentElementType.RICH_TEXT:
 					return {
 						text: content.text,
 						inputFormat: content.inputFormat,
 					};
-
-				case ContentElementType.SUBMISSION_CONTAINER:
-					return {
-						dueDate: content.dueDate,
-					};
-
-				case ContentElementType.VIDEO_CONFERENCE:
-					return {
-						title: content.title,
-					};
-
-				case ContentElementType.FILE_FOLDER:
-					return {
-						title: content.title,
-					};
-
-				case ContentElementType.H5P:
-					return {
-						contentId: content.contentId,
-					};
-
 				default:
 					throw new Error('Unsupported element type');
 			}
