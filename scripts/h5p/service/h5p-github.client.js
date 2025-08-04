@@ -107,19 +107,23 @@ class H5pGitHubClient {
 		return true;
 	}
 
-	async fetchGitHubTags(repoName) {
+	async fetchGitHubTags(repoName, retries = 3) {
 		let tags = [];
-
-		try {
-			const [owner, repo] = repoName.split('/');
-			const response = await this.octokit.repos.listTags({
-				owner,
-				repo,
-			});
-			tags = response.data.map((tag) => tag.name);
-		} catch (error) {
-			console.error(`Unknown error while fetching tags for ${repoName}:`, error);
-			tags = [];
+		for (let attempt = 0; attempt < retries; attempt++) {
+			try {
+				const [owner, repo] = repoName.split('/');
+				const response = await this.octokit.repos.listTags({ owner, repo });
+				tags = response.data.map((tag) => tag.name);
+			} catch (error) {
+				console.error(`Unknown error while fetching tags for ${repoName}:`, error);
+				if (attempt < retries - 1) {
+					console.log(`Retrying... (${attempt + 1}/${retries})`);
+					await new Promise((res) => setTimeout(res, 1000)); // wait 1s before retry
+				} else {
+					console.error(`Failed to fetch tags for ${repoName} after ${retries} attempts.`);
+					tags = [];
+				}
+			}
 		}
 
 		return tags;
