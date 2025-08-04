@@ -777,4 +777,48 @@ describe('GroupService', () => {
 			expect(result).toEqual(groups);
 		});
 	});
+
+	describe('findExistingGroupsByIds', () => {
+		describe('when groups with these ids exist', () => {
+			const setup = () => {
+				const [groupOne, groupTwo]: Group[] = groupFactory.buildList(2);
+
+				groupRepo.findGroupById.mockResolvedValueOnce(groupOne);
+				groupRepo.findGroupById.mockResolvedValueOnce(groupTwo);
+
+				return {
+					groupOne,
+					groupTwo,
+				};
+			};
+
+			it('should return the groups as array', async () => {
+				const { groupOne, groupTwo } = setup();
+
+				const result: Group[] = await service.findExistingGroupsByIds([groupOne.id, groupTwo.id]);
+
+				expect(result).toEqual([groupOne, groupTwo]);
+			});
+		});
+
+		describe('when a group with the id does not exist', () => {
+			const setup = () => {
+				const group: Group = groupFactory.build();
+
+				groupRepo.findGroupById.mockResolvedValue(null);
+
+				return {
+					group,
+				};
+			};
+
+			it('should return empty array', async () => {
+				const { group } = setup();
+
+				const result = await service.findExistingGroupsByIds([group.id]);
+
+				expect(result).toEqual([]);
+			});
+		});
+	});
 });

@@ -85,24 +85,23 @@ export class CourseInfoUc {
 	}
 
 	private async getCourseTeacherFullNames(teacherIds: EntityId[]): Promise<string[]> {
-		const teachers = await Promise.all(teacherIds.map((id) => this.userService.findByIdOrNull(id)));
+		const teachers = await this.userService.findExistingUsersByIds(teacherIds);
+		const teacherFullNames = teachers.map((teacher) => teacher.firstName.concat(' ', teacher.lastName));
 
-		return teachers
-			.filter((teacher): teacher is UserDo => Boolean(teacher))
-			.map((teacher) => teacher.firstName.concat(' ', teacher.lastName));
+		return teacherFullNames;
 	}
 
 	private async getCourseClassNames(classIds: EntityId[]): Promise<string[]> {
-		const classes = await Promise.all(classIds.map((id) => this.classService.findByIdOrNull(id)));
+		const classes = await this.classService.findExistingClassesByIds(classIds);
+		const classNames = classes.map((clazz) => clazz.getClassFullName());
 
-		return classes
-			.filter((classItem): classItem is Class => Boolean(classItem))
-			.map((clazz) => clazz.getClassFullName());
+		return classNames;
 	}
 
 	private async getCourseGroupNames(groupIds: EntityId[]): Promise<string[]> {
-		const groups = await Promise.all(groupIds.map((groupId) => this.groupService.tryFindById(groupId)));
+		const groups = await this.groupService.findExistingGroupsByIds(groupIds);
+		const groupNames = groups.map((group) => group.name);
 
-		return groups.filter((groupItem): groupItem is Group => Boolean(groupItem)).map((group) => group.name);
+		return groupNames;
 	}
 }

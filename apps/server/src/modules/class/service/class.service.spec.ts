@@ -162,32 +162,35 @@ describe(ClassService.name, () => {
 		});
 	});
 
-	describe('findByIdOrNull', () => {
+	describe('findExistingClassesByIds', () => {
 		describe('when the user has classes', () => {
 			const setup = () => {
-				const clazz: Class = classFactory.build();
+				const [clazzOne, clazzTwo]: Class[] = classFactory.buildList(2);
 
 				return {
-					clazz,
+					clazzOne,
+					clazzTwo,
 				};
 			};
 
-			it('should return the class', async () => {
-				const { clazz } = setup();
-				classesRepo.findClassById.mockResolvedValueOnce(clazz);
+			it('should return the classes as array', async () => {
+				const { clazzOne, clazzTwo } = setup();
+				classesRepo.findClassById.mockResolvedValueOnce(clazzOne);
+				classesRepo.findClassById.mockResolvedValueOnce(clazzTwo);
 
-				const result: Class | null = await service.findById(clazz.id);
+				const result: Class[] = await service.findExistingClassesByIds([clazzOne.id, clazzTwo.id]);
 
-				expect(result).toEqual(clazz);
+				expect(result).toEqual([clazzOne, clazzTwo]);
 			});
 
-			it('should return null if class not found', async () => {
-				const { clazz } = setup();
+			it('should return empty array if classes not found', async () => {
+				const { clazzOne, clazzTwo } = setup();
+				classesRepo.findClassById.mockResolvedValueOnce(null);
 				classesRepo.findClassById.mockResolvedValueOnce(null);
 
-				const result: Class | null = await service.findByIdOrNull(clazz.id);
+				const result: Class[] = await service.findExistingClassesByIds([clazzOne.id, clazzTwo.id]);
 
-				expect(result).toBeNull();
+				expect(result).toEqual([]);
 			});
 		});
 	});

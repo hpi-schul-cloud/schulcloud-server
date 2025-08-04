@@ -188,4 +188,12 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 
 		return domainObjects;
 	}
+
+	public async findExistingGroupsByIds(groupIds: EntityId[]): Promise<Group[]> {
+		const promises = groupIds.map((groupId) => this.groupRepo.findGroupById(groupId));
+		const groups = await Promise.all(promises);
+		const existingGroups = groups.filter((group): group is Group => Boolean(group));
+
+		return existingGroups;
+	}
 }
