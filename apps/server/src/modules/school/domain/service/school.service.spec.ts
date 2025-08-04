@@ -235,6 +235,42 @@ describe('SchoolService', () => {
 		});
 	});
 
+	describe('getSchoolsByIds', () => {
+		describe('when repo returns a school', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				schoolRepo.getSchoolsByIds.mockResolvedValueOnce([school]);
+
+				return { school, id: school.id };
+			};
+
+			it('should return this school', async () => {
+				const { school, id } = setup();
+
+				const result = await service.getSchoolsByIds([id]);
+
+				expect(result).toEqual(expect.arrayContaining([school]));
+			});
+		});
+
+		describe('when repo returns multiple schools', () => {
+			const setup = () => {
+				const schools = schoolFactory.buildList(3);
+				schoolRepo.getSchoolsByIds.mockResolvedValueOnce(schools);
+
+				return { schools, ids: schools.map((school) => school.id) };
+			};
+
+			it('should return these schools', async () => {
+				const { schools, ids } = setup();
+
+				const result = await service.getSchoolsByIds(ids);
+
+				expect(result).toEqual(expect.arrayContaining(schools));
+			});
+		});
+	});
+
 	describe('getSchools', () => {
 		describe('when repo returns schools', () => {
 			const setup = () => {
@@ -336,6 +372,30 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolsForExternalInvite(query, 'ownSchoolId');
 
 				expect(result).toEqual([schools[0]]);
+			});
+		});
+	});
+
+	describe('getSchoolList', () => {
+		describe('when some schools exist that are eligible for external invite', () => {
+			const setup = () => {
+				const query = {};
+				const schools = schoolFactory.buildList(2);
+				jest.spyOn(schools[0], 'isEligibleForExternalInvite').mockReturnValueOnce(true);
+				jest.spyOn(schools[1], 'isEligibleForExternalInvite').mockReturnValueOnce(false);
+
+				schoolRepo.getSchoolList.mockResolvedValueOnce({ schools, count: 1 });
+
+				return { query, schools };
+			};
+
+			it('should return these schools', async () => {
+				const { query, schools } = setup();
+
+				const result = await service.getSchoolList(query);
+
+				const expected = { schools, count: 1 };
+				expect(result).toEqual(expected);
 			});
 		});
 	});

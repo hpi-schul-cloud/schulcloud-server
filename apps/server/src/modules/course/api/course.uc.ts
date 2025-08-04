@@ -7,6 +7,7 @@ import { Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseService, RoleNameMapper } from '../domain';
 import { CourseEntity } from '../repo';
+import { CreateCourseDto } from './dto/create-course.dto';
 
 @Injectable()
 export class CourseUc {
@@ -39,12 +40,16 @@ export class CourseUc {
 		return course;
 	}
 
-	public async createCourse(currentUser: ICurrentUser, name: string): Promise<CourseEntity> {
+	public async createCourse(currentUser: ICurrentUser, createCourseParams: CreateCourseDto): Promise<CourseEntity> {
 		const user = await this.authService.getUserWithPermissions(currentUser.userId);
 
 		this.authService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
 
-		const course = new CourseEntity({ teachers: [user], school: user.school, name });
+		const course = new CourseEntity({
+			...createCourseParams,
+			teachers: [user],
+			school: user.school,
+		});
 		const savedCourse = await this.courseService.create(course);
 
 		return savedCourse;

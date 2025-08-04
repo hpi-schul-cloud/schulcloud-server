@@ -1,6 +1,6 @@
 import { Logger } from '@core/logger';
 import { StorageLocation } from '@infra/files-storage-client';
-import { CopyStatus } from '@modules/copy-helper';
+import { CopyElementType, CopyStatus, CopyHelperService } from '@modules/copy-helper';
 import { RoomService } from '@modules/room';
 import { ModuleName, SagaService, SagaStep } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
@@ -16,6 +16,7 @@ export class CopyRoomBoardsStep extends SagaStep<'copyRoomBoards'> {
 		private readonly sagaService: SagaService,
 		private readonly roomService: RoomService,
 		private readonly columnBoardService: ColumnBoardService,
+		private readonly copyHelperService: CopyHelperService,
 		private readonly logger: Logger
 	) {
 		super('copyRoomBoards');
@@ -55,26 +56,36 @@ export class CopyRoomBoardsStep extends SagaStep<'copyRoomBoards'> {
 			0
 		);
 
+		const sourceRoom = await this.roomService.getSingleRoom(sourceRoomId);
 		const targetRoom = await this.roomService.getSingleRoom(targetRoomId);
 
-		const storageLocationReference = { id: targetRoom.schoolId, type: StorageLocation.SCHOOL };
+		const copyStatuses: CopyStatus[] = [];
+		for (const board of boards) {
+			const copyStatus = await this.columnBoardService.copyColumnBoard({
+				originalColumnBoardId: board.id,
+				targetExternalReference: {
+					type: BoardExternalReferenceType.Room,
+					id: targetRoomId,
+				},
+				sourceStorageLocationReference: { id: sourceRoom.schoolId, type: StorageLocation.SCHOOL },
+				targetStorageLocationReference: { id: targetRoom.schoolId, type: StorageLocation.SCHOOL },
+				userId,
+				targetSchoolId: targetRoom.schoolId,
+				copyTitle: board.title,
+			});
+			copyStatuses.push(copyStatus);
+		}
 
-		const copyStatuses = await Promise.all(
-			boards.map((board) =>
-				this.columnBoardService.copyColumnBoard({
-					originalColumnBoardId: board.id,
-					targetExternalReference: {
-						type: BoardExternalReferenceType.Room,
-						id: targetRoomId,
-					},
-					sourceStorageLocationReference: storageLocationReference,
-					targetStorageLocationReference: storageLocationReference,
-					userId,
-					targetSchoolId: targetRoom.schoolId,
-					copyTitle: board.title,
-				})
-			)
-		);
+		const status: CopyStatus = {
+			title: 'board',
+			type: CopyElementType.ROOM,
+			status: this.copyHelperService.deriveStatusFromElements(copyStatuses),
+			copyEntity: targetRoom,
+			originalEntity: sourceRoom,
+			elements: copyStatuses,
+		};
+
+		await this.columnBoardService.swapLinkedIdsInBoards(status);
 
 		return copyStatuses;
 	}

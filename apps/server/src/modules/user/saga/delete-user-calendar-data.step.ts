@@ -15,7 +15,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
-import { UserConfig } from '../domain';
+import { UserConfig } from '../';
 
 @Injectable()
 export class DeleteUserCalendarDataStep extends SagaStep<'deleteUserData'> {
@@ -37,7 +37,7 @@ export class DeleteUserCalendarDataStep extends SagaStep<'deleteUserData'> {
 
 		const operations: StepOperationReport[] = [];
 
-		if (this.configService.get<boolean>('CALENDAR_SERVICE_ENABLED')) {
+		if (this.configService.get('CALENDAR_SERVICE_ENABLED')) {
 			const calendarEventsDeleted = await this.deleteCalendarEvents(userId);
 			operations.push(calendarEventsDeleted);
 		}
@@ -57,7 +57,7 @@ export class DeleteUserCalendarDataStep extends SagaStep<'deleteUserData'> {
 			)
 		);
 
-		const eventIds = await this.calendarService.getAllEvents(userId);
+		const eventIds = await this.calendarService.getAllEvents(userId, userId);
 
 		await this.calendarService.deleteEventsByScopeId(userId);
 

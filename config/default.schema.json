@@ -227,11 +227,6 @@
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
-		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Feature toggle for automatic consent during TSP sync."
-		},
 		"FEATURE_VIDEOCONFERENCE_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -261,7 +256,7 @@
 		"FILES_STORAGE": {
 			"type": "object",
 			"description": "Files storage server properties, required always to be defined",
-			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"],
+			"required": ["SERVICE_BASE_URL"],
 			"properties": {
 				"SERVICE_BASE_URL": {
 					"type": "string",
@@ -273,55 +268,11 @@
 					"type": "integer",
 					"minimum": 0,
 					"default": 600000,
-					"description": "Timeout for incoming requests to the Files-Storage in milliseconds."
-				},
-				"MAX_FILE_SIZE": {
-					"type": "integer",
-					"minimum": 0,
-					"default": 2684354560,
-					"description": "Maximum file size for incoming requests in Byte. We use the Windows convention here that file sizes are measured in KB (1KB = 1024B, instead of 1kB = 1000B). Thus 2,5GB = 2684354560B."
-				},
-				"S3_ENDPOINT": {
-					"type": "string",
-					"format": "uri",
-					"description": "The URI of the S3 provider"
-				},
-				"S3_REGION": {
-					"type": "string",
-					"default": "eu-central-1",
-					"description": "Region name of bucket"
-				},
-				"S3_BUCKET": {
-					"type": "string",
-					"description": "Bucket name"
-				},
-				"S3_ACCESS_KEY_ID": {
-					"type": "string",
-					"description": "Access Key to S3"
-				},
-				"S3_SECRET_ACCESS_KEY": {
-					"type": "string",
-					"description": "Secret key to S3"
-				},
-				"EXCHANGE": {
-					"type": "string",
-					"default": "files-storage",
-					"description": "rabbitmq exchange name for files storage"
-				},
-				"USE_STREAM_TO_ANTIVIRUS": {
-					"type": "boolean",
-					"default": false,
-					"description": "send file to antivirus by uploading"
+					"description": "Timeout for incoming requests to the file storage service in milliseconds."
 				}
 			},
 			"default": {
-				"S3_ENDPOINT": "http://localhost:9000",
-				"S3_ACCESS_KEY_ID": "miniouser",
-				"S3_SECRET_ACCESS_KEY": "miniouser",
-				"S3_BUCKET": "schulcloud",
-				"S3_REGION": "eu-central-1",
-				"INCOMING_REQUEST_TIMEOUT": 600000,
-				"EXCHANGE": "files-storage"
+				"SERVICE_BASE_URL": "http://localhost:4444"
 			}
 		},
 		"FWU_CONTENT": {
@@ -454,6 +405,12 @@
 					"type": "string",
 					"default": "",
 					"description": "Library Bucket name"
+				},
+				"LOG_LEVEL": {
+					"type": "string",
+					"default": "info",
+					"description": "Log level for H5P library manager.",
+					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 				}
 			}
 		},
@@ -852,10 +809,6 @@
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
 				},
-				"OLD_PAD_URI": {
-					"type": "string",
-					"description": "The etherpad api version uri."
-				},
 				"API_KEY": {
 					"type": "string",
 					"description": "The etherpad api key for sending requests."
@@ -877,6 +830,14 @@
 			"default": "http://nextcloud.localhost:9090",
 			"description": "API URI for Nextcloud"
 		},
+		"NEXTCLOUD_CLIENT_ID": {
+			"type": "string",
+			"description": "Client id for Nextcloud"
+		},
+		"NEXTCLOUD_CLIENT_SECRET": {
+			"type": "string",
+			"description": "Client secret for Nextcloud"
+		},
 		"NEXTCLOUD_ADMIN_USER": {
 			"type": "string",
 			"default": "admin",
@@ -896,6 +857,22 @@
 			"type:": "string",
 			"default": "SchulcloudNextcloud",
 			"description": "Internal name of schulcloud oidc provider of nextcloud's social login app"
+		},
+		"MEDIA_SOURCE_VIDIS_USERNAME": {
+			"type:": "string",
+			"description": "Username for VIDIS api"
+		},
+		"MEDIA_SOURCE_VIDIS_PASSWORD": {
+			"type:": "string",
+			"description": "Password for VIDIS api"
+		},
+		"MEDIA_SOURCE_BILO_CLIENT_ID": {
+			"type:": "string",
+			"description": "Client id for Bildungslogin api"
+		},
+		"MEDIA_SOURCE_BILO_CLIENT_SECRET": {
+			"type:": "string",
+			"description": "Client secret for Bildungslogin api"
 		},
 		"HYDRA_PUBLIC_URI": {
 			"type:": "string",
@@ -1153,12 +1130,12 @@
 		},
 		"FEATURE_COLUMN_BOARD_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Toggle for activating the column board."
 		},
 		"FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enable file folder elements in column board."
 		},
 		"FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED": {
@@ -1173,27 +1150,23 @@
 		},
 		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enable link elements in column board."
 		},
 		"FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enable video conference elements in column board."
 		},
 		"FEATURE_COLUMN_BOARD_H5P_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables h5p on the column board"
 		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
 			"description": "link to userfacing documentation of the column board feature"
-		},
-		"COLUMN_BOARD_FEEDBACK_LINK": {
-			"type": "string",
-			"description": "link to a page that gathers feedback about the column board feature"
 		},
 		"FEATURE_COURSE_SHARE": {
 			"type": "boolean",
@@ -1222,7 +1195,7 @@
 		},
 		"FEATURE_BOARD_LAYOUT_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Toggle for the column board layout feature."
 		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
@@ -1435,7 +1408,7 @@
 		},
 		"FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables the new course list view"
 		},
 		"FEATURE_GROUPS_IN_COURSE_ENABLED": {
@@ -1619,7 +1592,7 @@
 		},
 		"CALENDAR_SERVICE_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables calender service"
 		},
 		"FEATURE_ROOMS_ENABLED": {
@@ -1652,6 +1625,11 @@
 			"default": "false",
 			"description": "Enables the tab navigation for room members page"
 		},
+		"FEATURE_ADMINISTRATE_ROOMS_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the administration of rooms by school admins"
+		},
 		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
 			"type": "boolean",
 			"default": "false",
@@ -1671,11 +1649,6 @@
 			"type": "string",
 			"default": "",
 			"description": "URL for SBOM summary for SVS"
-		},
-		"FEATURE_BILO_MEDIA_METADATA_SYNC_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Feature toggle for media metadata sync."
 		},
 		"ROOM_MEMBER_INFO_URL": {
 			"type": "string",

@@ -17,8 +17,6 @@ import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthorizableObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import {
@@ -96,11 +94,11 @@ describe('board copy service', () => {
 		copyHelperService = module.get(CopyHelperService);
 		columnBoardService = module.get(ColumnBoardService);
 		boardRepo = module.get(LegacyBoardRepo);
-		boardRepo.save = jest.fn();
+		jest.spyOn(boardRepo, 'save').mockImplementation();
 	});
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		jest.resetAllMocks();
 	});
 
 	describe('copyBoard', () => {
@@ -185,13 +183,23 @@ describe('board copy service', () => {
 				const user = userFactory.build();
 				const taskCopy = taskFactory.build({ name: originalTask.name });
 
-				taskCopyService.copyTask.mockResolvedValue({
+				const taskCopyStatus: CopyStatus = {
 					title: taskCopy.name,
 					type: CopyElementType.TASK,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: taskCopy,
-				});
+				};
+				taskCopyService.copyTask.mockResolvedValueOnce(taskCopyStatus);
 
+				const copyStatus: CopyStatus = {
+					title: 'board',
+					type: CopyElementType.BOARD,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: originalBoard,
+					originalEntity: originalBoard,
+					elements: [taskCopyStatus],
+				};
+				columnBoardService.swapLinkedIdsInBoards.mockResolvedValueOnce(copyStatus);
 				return { destinationCourse, originalBoard, user, originalTask };
 			};
 
@@ -250,14 +258,23 @@ describe('board copy service', () => {
 				const originalBoard = boardFactory.buildWithId({ references: [lessonElement], course: destinationCourse });
 				const user = userFactory.buildWithId();
 				const lessonCopy = lessonFactory.buildWithId({ name: originalLesson.name });
-
-				lessonCopyService.copyLesson.mockResolvedValue({
+				const lessonCopyStatus: CopyStatus = {
 					title: originalLesson.name,
 					type: CopyElementType.LESSON,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: lessonCopy,
-				});
-				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
+				};
+				lessonCopyService.copyLesson.mockResolvedValueOnce(lessonCopyStatus);
+
+				const copyStatus: CopyStatus = {
+					title: 'board',
+					type: CopyElementType.BOARD,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: originalBoard,
+					originalEntity: originalBoard,
+					elements: [lessonCopyStatus],
+				};
+				columnBoardService.swapLinkedIdsInBoards.mockResolvedValueOnce(copyStatus);
 
 				return { destinationCourse, originalBoard, user, originalLesson };
 			};
@@ -314,13 +331,24 @@ describe('board copy service', () => {
 				const user = userFactory.buildWithId();
 				const copyOfColumnBoard = columnBoardFactory.build();
 
-				columnBoardService.copyColumnBoard.mockResolvedValue({
+				const columnBoardCopyStatus: CopyStatus = {
 					type: CopyElementType.COLUMNBOARD,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: copyOfColumnBoard,
 					originalEntity: originalColumnBoard,
 					title: copyOfColumnBoard.title,
-				});
+				};
+				columnBoardService.copyColumnBoard.mockResolvedValueOnce(columnBoardCopyStatus);
+
+				const copyStatus: CopyStatus = {
+					title: 'board',
+					type: CopyElementType.BOARD,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: originalBoard,
+					originalEntity: originalBoard,
+					elements: [columnBoardCopyStatus],
+				};
+				columnBoardService.swapLinkedIdsInBoards.mockResolvedValueOnce(copyStatus);
 
 				return { destinationCourse, originalBoard, user, originalColumnBoard, columnBoardTarget };
 			};
@@ -371,121 +399,50 @@ describe('board copy service', () => {
 			});
 		});
 
-		describe('when different elements have been copied', () => {
-			const setup = () => {
-				const originalTask = taskFactory.buildWithId();
-				const taskElement = taskBoardElementFactory.buildWithId({ target: originalTask });
-				const taskCopy = taskFactory.buildWithId({ name: originalTask.name });
-				taskCopyService.copyTask.mockResolvedValue({
-					title: taskCopy.name,
-					type: CopyElementType.TASK,
-					status: CopyStatusEnum.SUCCESS,
-					copyEntity: taskCopy,
-				});
-
-				const originalLesson = lessonFactory.buildWithId();
-				const lessonElement = lessonBoardElementFactory.buildWithId({ target: originalLesson });
-				const lessonCopy = lessonFactory.buildWithId({ name: originalLesson.name });
-				lessonCopyService.copyLesson.mockResolvedValue({
-					title: originalLesson.name,
-					type: CopyElementType.LESSON,
-					status: CopyStatusEnum.SUCCESS,
-					copyEntity: lessonCopy,
-				});
-				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
-
-				const originalColumnBoard = columnBoardFactory.build();
-				const columnBoardTarget = columnBoardNodeFactory.build({
-					title: originalColumnBoard.title,
-				});
-				columnBoardTarget.id = originalColumnBoard.id;
-				const columnBoardElement = columnboardBoardElementFactory.buildWithId({ target: columnBoardTarget });
-				const columnBoardCopy = columnBoardFactory.build();
-				columnBoardService.copyColumnBoard.mockResolvedValue({
-					type: CopyElementType.COLUMNBOARD,
-					status: CopyStatusEnum.SUCCESS,
-					copyEntity: columnBoardCopy,
-					originalEntity: originalColumnBoard,
-					title: columnBoardCopy.title,
-				});
-
-				const copyDict = new Map<EntityId, AuthorizableObject>()
-					.set(originalLesson.id, lessonCopy)
-					.set(originalTask.id, taskCopy)
-					.set(originalColumnBoard.id, columnBoardCopy);
-				copyHelperService.buildCopyEntityDict.mockReturnValue(copyDict);
-
-				const originalCourse = courseEntityFactory.buildWithId();
-				const destinationCourse = courseEntityFactory.buildWithId();
-				const originalBoard = boardFactory.buildWithId({
-					references: [lessonElement, taskElement, columnBoardElement],
-					course: originalCourse,
-				});
-				const user = userFactory.buildWithId();
-
-				return {
-					originalCourse,
-					destinationCourse,
-					originalBoard,
-					user,
-					lessonCopy,
-					columnBoardCopy,
-					originalTask,
-					taskCopy,
-					originalLesson,
-				};
-			};
-
-			it('should trigger swapping ids for board', async () => {
-				const { destinationCourse, originalBoard, user, columnBoardCopy } = setup();
-				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
-
-				expect(columnBoardService.swapLinkedIds).toHaveBeenCalledWith(columnBoardCopy.id, expect.anything());
-			});
-
-			it('should pass task for swapping ids', async () => {
-				const { destinationCourse, originalBoard, user, originalTask, taskCopy } = setup();
-				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
-
-				const map = columnBoardService.swapLinkedIds.mock.calls[0][1];
-				expect(map.get(originalTask.id)).toEqual(taskCopy.id);
-			});
-
-			it('should pass lesson for swapping ids', async () => {
-				const { destinationCourse, originalBoard, user, originalLesson, lessonCopy } = setup();
-				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
-
-				const map = columnBoardService.swapLinkedIds.mock.calls[0][1];
-				expect(map.get(originalLesson.id)).toEqual(lessonCopy.id);
-			});
-
-			it('should pass course for swapping ids', async () => {
-				const { originalCourse, destinationCourse, originalBoard, user } = setup();
-				await copyService.copyBoard({ originalBoard, user, originalCourse: destinationCourse, destinationCourse });
-
-				const map = columnBoardService.swapLinkedIds.mock.calls[0][1];
-				expect(map.get(originalCourse.id)).toEqual(destinationCourse.id);
-			});
-		});
-
 		describe('derive status from elements', () => {
 			const setup = () => {
 				const originalTask = taskFactory.build();
 				const taskElement = taskBoardElementFactory.build({ target: originalTask });
 				const taskCopy = taskFactory.build({ name: originalTask.name });
+				const taskCopyStatus: CopyStatus = {
+					title: originalTask.name,
+					type: CopyElementType.TASK,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: taskCopy,
+				};
+				taskCopyService.copyTask.mockResolvedValueOnce(taskCopyStatus);
 
 				const originalLesson = lessonFactory.build();
 				const lessonElement = lessonBoardElementFactory.build({ target: originalLesson });
 				const lessonCopy = lessonFactory.build({ name: originalLesson.name });
+				const lessonCopyStatus: CopyStatus = {
+					title: originalLesson.name,
+					type: CopyElementType.LESSON,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: lessonCopy,
+				};
+				lessonCopyService.copyLesson.mockResolvedValueOnce(lessonCopyStatus);
 
 				const destinationCourse = courseEntityFactory.build();
 				const originalBoard = boardFactory.build({
 					references: [lessonElement, taskElement],
 					course: destinationCourse,
 				});
+
+				copyHelperService.deriveStatusFromElements.mockReturnValueOnce(CopyStatusEnum.PARTIAL);
+
+				const status: CopyStatus = {
+					title: 'board',
+					type: CopyElementType.BOARD,
+					status: CopyStatusEnum.PARTIAL,
+					copyEntity: originalBoard,
+					originalEntity: originalBoard,
+					elements: [lessonCopyStatus, taskCopyStatus],
+				};
+				columnBoardService.swapLinkedIdsInBoards.mockResolvedValueOnce(status);
 				const user = userFactory.build();
 
-				return { destinationCourse, originalBoard, user, taskCopy, lessonCopy };
+				return { destinationCourse, originalBoard, user, taskCopy, lessonCopy, lessonCopyStatus, taskCopyStatus };
 			};
 
 			it('should call deriveStatusFromElements', async () => {
@@ -497,7 +454,6 @@ describe('board copy service', () => {
 
 			it('should use returned value from deriveStatusFromElements', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
-				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.PARTIAL);
 				const status = await copyService.copyBoard({
 					originalBoard,
 					user,
@@ -522,13 +478,13 @@ describe('board copy service', () => {
 				// @ts-ignore
 				delete originalBoard.references[0].target;
 
-				lessonCopyService.copyLesson.mockResolvedValue({
+				const lessonCopyStatus: CopyStatus = {
 					title: originalLesson.name,
 					type: CopyElementType.LESSON,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: lessonCopy,
-				});
-				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
+				};
+				lessonCopyService.copyLesson.mockResolvedValue(lessonCopyStatus);
 
 				return { destinationCourse, originalBoard, user, originalLesson };
 			};
@@ -556,14 +512,24 @@ describe('board copy service', () => {
 				const originalBoard = boardFactory.buildWithId({ references: [lessonElement], course: destinationCourse });
 				const user = userFactory.buildWithId();
 				const lessonCopy = lessonFactory.buildWithId({ name: originalLesson.name });
-
-				lessonCopyService.copyLesson.mockResolvedValue({
+				const lessonCopyStatus: CopyStatus = {
 					title: originalLesson.name,
 					type: CopyElementType.LESSON,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: lessonCopy,
-				});
-				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
+				};
+				lessonCopyService.copyLesson.mockResolvedValue(lessonCopyStatus);
+
+				const status: CopyStatus = {
+					title: 'board',
+					type: CopyElementType.BOARD,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: originalBoard,
+					originalEntity: originalBoard,
+					elements: [lessonCopyStatus],
+				};
+				columnBoardService.swapLinkedIdsInBoards.mockResolvedValue(status);
+
 				boardRepo.save.mockRejectedValue(new Error());
 
 				return { destinationCourse, originalBoard, user, originalLesson };

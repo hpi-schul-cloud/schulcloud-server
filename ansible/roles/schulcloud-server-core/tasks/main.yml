@@ -14,15 +14,6 @@
     tags:
       - prometheus
 
-  - name: FileStorageService
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-files-svc.yml.j2
-      state: "{{ 'absent' if WITH_FILESTORAGE else 'present'}}"
-    tags:
-      - service
-
   - name: FwuLearningContentsService
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -57,15 +48,6 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: onepassword.yml.j2
-    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
-    tags:
-      - 1password
-
-  - name: File Storage Secret by 1Password
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-files-onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
     tags:
       - 1password
@@ -177,25 +159,6 @@
     tags:
       - ingress
 
-  - name: FileStorageDeployment
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-files-deployment.yml.j2
-      state: "{{ 'absent' if WITH_FILESTORAGE else 'present'}}"
-    tags:
-      - deployment
-
-  - name: File Storage Ingress
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-files-ingress.yml.j2
-      state: "{{ 'absent' if WITH_FILESTORAGE else 'present'}}"
-      apply: yes
-    tags:
-      - ingress
-
   - name: FwuLearningContentsDeployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -249,7 +212,7 @@
       namespace: "{{ NAMESPACE }}"
       state: absent
       kind: CronJob
-      name: "{{ NAMESPACE }}-data-deletion-trigger-cronjob"
+      name: "data-deletion-trigger-failed-cronjob"
     tags:
       - cronjob
 
@@ -259,92 +222,9 @@
       namespace: "{{ NAMESPACE }}"
       state: absent
       kind: ConfigMap
-      name: "{{ NAMESPACE }}-data-deletion-trigger-cronjob-configmap"
+      name: "data-deletion-trigger-failed-cronjob-configmap"
     tags:
       - configmap
-
-  - name: amqp files storage Deployment
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: amqp-files-deployment.yml.j2
-      state: "{{ 'absent' if WITH_FILESTORAGE else 'present'}}"
-    tags:
-      - deployment
-
-  - name: amqp files storage configmap
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: amqp-files-configmap.yml.j2
-      state: "{{ 'absent' if WITH_FILESTORAGE else 'present'}}"
-    tags:
-      - configmap
-
-  - name: External Secret for amqp files
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: amqp-files-external-secret.yml.j2
-      state: "{{ 'present' if 
-               WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool and
-               WITH_FILESTORAGE is not defined or not WITH_FILESTORAGE
-               else 'absent'}}"
-    when:
-      - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
-    tags:
-      - 1password
-
-  - name: amqp files storage Secret by 1Password
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: amqp-files-onepassword.yml.j2
-      state: "{{ 'absent' if WITH_FILESTORAGE else 'present'}}"
-    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
-    tags:
-      - 1password
-
-  - name: Preview Generator Deployment
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: preview-generator-deployment.yml.j2
-      state: "{{ 'absent' if WITH_FILESTORAGE else 'present'}}"
-    tags:
-      - deployment
-
-  - name: preview generator configmap
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: preview-generator-configmap.yml.j2
-      state: "{{ 'absent' if WITH_FILESTORAGE else 'present'}}"
-      apply: yes
-    tags:
-      - configmap
-
-  - name: preview generator Secret by 1Password
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: preview-generator-onepassword.yml.j2
-      state: "{{ 'absent' if WITH_FILESTORAGE else 'present'}}"
-    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
-    tags:
-      - 1password
-
-  - name: preview generator scaled object
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: preview-generator-scaled-object.yml.j2
-      state: "{{ 'absent' if WITH_FILESTORAGE else 'present'}}"
-    when:
-     - KEDA_ENABLED is defined and KEDA_ENABLED|bool
-     - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool
-    tags:
-      - keda
 
   - name: admin api server deployment
     kubernetes.core.k8s:

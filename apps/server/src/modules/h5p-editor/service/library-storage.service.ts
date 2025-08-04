@@ -13,13 +13,22 @@ import {
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import mime from 'mime';
 import path from 'node:path/posix';
+import pLimit from 'p-limit';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto';
 import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
 import { InstalledLibrary, LibraryRepo } from '../repo';
 
+enum LibraryDependencyType {
+	PreloadedDependencies = 'preloadedDependencies',
+	EditorDependencies = 'editorDependencies',
+	DynamicDependencies = 'dynamicDependencies',
+}
+
 @Injectable()
 export class LibraryStorage implements ILibraryStorage {
+	public promiseLimiter = pLimit(40);
+
 	/**
 	 * @param libraryRepo
 	 * @param s3Client
@@ -63,13 +72,15 @@ export class LibraryStorage implements ILibraryStorage {
 		const s3Key = this.getS3Key(libraryName, filename);
 
 		try {
-			await this.s3Client.create(
-				s3Key,
-				new H5pFileDto({
-					name: s3Key,
-					mimeType: 'application/octet-stream',
-					data: dataStream,
-				})
+			await this.promiseLimiter(() =>
+				this.s3Client.create(
+					s3Key,
+					new H5pFileDto({
+						name: s3Key,
+						mimeType: 'application/octet-stream',
+						data: dataStream,
+					})
+				)
 			);
 		} catch {
 			throw new H5pError(
@@ -164,32 +175,97 @@ export class LibraryStorage implements ILibraryStorage {
 		}
 	}
 
+	private removeCircularDependencies(libraries: ILibraryMetadata[]): void {
+		const libraryEntries = libraries.map<[string, ILibraryMetadata]>((library) => [
+			LibraryName.toUberName(library),
+			library,
+		]);
+		const libraryMap = new Map<string, ILibraryMetadata>(libraryEntries);
+
+		for (const library of libraries) {
+			const queue: ILibraryMetadata[] = [library];
+
+			while (queue.length > 0) {
+				const currentLibrary = queue.shift();
+				if (currentLibrary !== undefined) {
+					this.removeCircularDependenciesForSingleLibraryOfType(
+						LibraryDependencyType.PreloadedDependencies,
+						currentLibrary,
+						libraryMap,
+						queue
+					);
+					this.removeCircularDependenciesForSingleLibraryOfType(
+						LibraryDependencyType.EditorDependencies,
+						currentLibrary,
+						libraryMap,
+						queue
+					);
+					this.removeCircularDependenciesForSingleLibraryOfType(
+						LibraryDependencyType.DynamicDependencies,
+						currentLibrary,
+						libraryMap,
+						queue
+					);
+				}
+			}
+		}
+	}
+
+	private removeCircularDependenciesForSingleLibraryOfType(
+		procssingType: LibraryDependencyType,
+		currentLibrary: ILibraryMetadata,
+		libraryMap: Map<string, ILibraryMetadata>,
+		queue: ILibraryMetadata[]
+	): void {
+		for (const dependency of currentLibrary[procssingType] ?? []) {
+			const ubername = LibraryName.toUberName(dependency);
+			const dependencyMetadata = libraryMap.get(ubername);
+
+			if (dependencyMetadata) {
+				this.removeDependencyReferenceForCurrentType(
+					LibraryDependencyType.PreloadedDependencies,
+					dependencyMetadata,
+					currentLibrary
+				);
+				this.removeDependencyReferenceForCurrentType(
+					LibraryDependencyType.EditorDependencies,
+					dependencyMetadata,
+					currentLibrary
+				);
+				this.removeDependencyReferenceForCurrentType(
+					LibraryDependencyType.DynamicDependencies,
+					dependencyMetadata,
+					currentLibrary
+				);
+
+				queue.push(dependencyMetadata);
+			}
+		}
+	}
+
+	private removeDependencyReferenceForCurrentType(
+		processingType: LibraryDependencyType,
+		dependencyMetadata: ILibraryMetadata,
+		currentLibrary: ILibraryMetadata
+	): void {
+		const currentDependencies = dependencyMetadata[processingType];
+		if (currentDependencies) {
+			const index = currentDependencies.findIndex((libName) => LibraryName.equal(libName, currentLibrary));
+
+			if (index >= 0) {
+				currentDependencies.splice(index, 1);
+			}
+		}
+	}
+
 	/**
 	 * Counts how often libraries are listed in the dependencies of other libraries and returns a list of the number.
 	 * @returns an object with ubernames as key.
 	 */
 	public async getAllDependentsCount(): Promise<{ [ubername: string]: number }> {
 		const libraries = await this.libraryRepo.getAll();
-		const libraryMap = new Map(libraries.map((library) => [LibraryName.toUberName(library), library]));
 
-		// Remove circular dependencies
-		for (const library of libraries) {
-			for (const dependency of library.editorDependencies ?? []) {
-				const ubername = LibraryName.toUberName(dependency);
-
-				const dependencyMetadata = libraryMap.get(ubername);
-
-				if (dependencyMetadata?.preloadedDependencies) {
-					const index = dependencyMetadata.preloadedDependencies.findIndex((libName) =>
-						LibraryName.equal(libName, library)
-					);
-
-					if (index >= 0) {
-						dependencyMetadata.preloadedDependencies.splice(index, 1);
-					}
-				}
-			}
-		}
+		this.removeCircularDependencies(libraries);
 
 		// Count dependencies
 		const dependencies: { [ubername: string]: number } = {};
@@ -339,7 +415,7 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @returns an array of filenames
 	 */
 	public async listFiles(libraryName: ILibraryName, withMetadata = true): Promise<string[]> {
-		const prefix = this.getS3Key(libraryName, 'language');
+		const prefix = this.getS3Key(libraryName, '');
 
 		const { files } = await this.s3Client.list({ path: prefix });
 

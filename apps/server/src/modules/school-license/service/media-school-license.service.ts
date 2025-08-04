@@ -1,5 +1,5 @@
 import { Logger } from '@core/logger';
-import { OfferDTO } from '@infra/vidis-client';
+import { OfferDTO, VidisClientAdapter } from '@infra/vidis-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaSource, MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
 import { School, SchoolService } from '@modules/school';
@@ -14,7 +14,6 @@ import {
 	SchoolNumberNotFoundLoggableException,
 } from '../loggable';
 import { MEDIA_SCHOOL_LICENSE_REPO, MediaSchoolLicenseRepo } from '../repo';
-import { MediaSchoolLicenseFetchService } from './media-school-license-fetch.service';
 
 export class MediaSchoolLicenseService {
 	constructor(
@@ -22,7 +21,7 @@ export class MediaSchoolLicenseService {
 		private readonly schoolService: SchoolService,
 		private readonly logger: Logger,
 		private readonly mediaSourceService: MediaSourceService,
-		private readonly mediaSchoolLicenseFetchService: MediaSchoolLicenseFetchService
+		private readonly vidisClientAdapter: VidisClientAdapter
 	) {}
 
 	public async deleteAllByMediaSource(mediaSourceId: EntityId): Promise<number> {
@@ -81,7 +80,7 @@ export class MediaSchoolLicenseService {
 
 		const schoolName = `${mediaSource.vidisConfig.schoolNumberPrefix}${officialSchoolNumber}`;
 
-		const offersFromMediaSource: OfferDTO[] = await this.mediaSchoolLicenseFetchService.fetchOffersForSchoolFromVidis(
+		const offersFromMediaSource: OfferDTO[] = await this.vidisClientAdapter.getOfferItemsBySchoolName(
 			mediaSource,
 			schoolName
 		);

@@ -18,6 +18,7 @@ import {
 	MaintenanceResponse,
 	SchoolExistsResponse,
 	SchoolForExternalInviteResponse,
+	SchoolListResponse,
 	SchoolForLdapLoginResponse,
 	SchoolResponse,
 	SchoolSystemResponse,
@@ -32,6 +33,7 @@ import {
 	YearsResponseMapper,
 } from './mapper';
 import { MoinSchuleClassService } from '@modules/class-moin-schule/moin-schule-class.service';
+import { PaginationParams } from '@shared/controller/dto';
 
 @Injectable()
 export class SchoolUc {
@@ -73,6 +75,30 @@ export class SchoolUc {
 		const responseDto = SystemResponseMapper.mapToSchoolSystemResponse(systems);
 
 		return responseDto;
+	}
+
+	public async getSchoolList(
+		paginationParams: PaginationParams,
+		federalStateId?: EntityId
+	): Promise<SchoolListResponse> {
+		const findOptions = {
+			order: {
+				name: SortOrder.asc,
+			},
+			pagination: paginationParams,
+		};
+
+		const { schools, count } = await this.schoolService.getSchoolList(findOptions, federalStateId);
+		const dtos = SchoolResponseMapper.mapToSchoolListResponse(
+			schools,
+			{
+				skip: paginationParams.skip,
+				limit: paginationParams.limit,
+			},
+			count
+		);
+
+		return dtos;
 	}
 
 	public async getSchoolListForExternalInvite(
@@ -150,19 +176,16 @@ export class SchoolUc {
 	}
 
 	public async getSchoolTeachers(schoolId: EntityId, userId: EntityId): Promise<SchoolUserListResponse> {
-		const [school, user] = await Promise.all([
-			this.schoolService.getSchoolById(schoolId),
+		const [user] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
+			this.ensureSchoolExists(schoolId),
 		]);
 
-		this.checkHasPermissionToAccessTeachers(user);
-
-		const isUserOfSchool = this.isSchoolInternalUserWithPermission(user, school, [Permission.TEACHER_LIST]);
-
 		let result: Page<UserDo>;
-		if (isUserOfSchool) {
+		if (this.isUserOfSchool(user, schoolId)) {
 			result = await this.userService.findBySchoolRole(schoolId, RoleName.TEACHER);
 		} else {
+			this.checkHasPermissionToAccessPublicTeachers(user);
 			result = await this.userService.findPublicTeachersBySchool(schoolId);
 		}
 
@@ -171,7 +194,10 @@ export class SchoolUc {
 	}
 
 	public async getSchoolStudents(schoolId: EntityId, userId: EntityId): Promise<SchoolUserListResponse> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const [user] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.ensureSchoolExists(schoolId),
+		]);
 		const isUserOfSchool = this.isUserOfSchool(user, schoolId);
 		const isAllowedToListStudents = this.hasPermissionToListStudents(user);
 
@@ -186,6 +212,10 @@ export class SchoolUc {
 
 		const responseDto = SchoolUserResponseMapper.mapToListResponse(result);
 		return responseDto;
+	}
+
+	private async ensureSchoolExists(schoolId: EntityId): Promise<void> {
+		await this.schoolService.getSchoolById(schoolId);
 	}
 
 	private async getAllStudentsFromUsersClasses(userId: EntityId, schoolId: EntityId): Promise<Page<UserDo>> {
@@ -207,8 +237,8 @@ export class SchoolUc {
 		return result;
 	}
 
-	private checkHasPermissionToAccessTeachers(user: User): void {
-		this.authorizationService.checkAllPermissions(user, [Permission.TEACHER_LIST]);
+	private checkHasPermissionToAccessPublicTeachers(user: User): void {
+		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_LIST_DISCOVERABLE_TEACHERS]);
 	}
 
 	private isUserOfSchool(user: User, schoolId: EntityId): boolean {
@@ -219,12 +249,6 @@ export class SchoolUc {
 	private hasPermissionToListStudents(user: User): boolean {
 		const hasPermission = this.authorizationService.hasAllPermissions(user, [Permission.STUDENT_LIST]);
 		return hasPermission;
-	}
-
-	private isSchoolInternalUserWithPermission(user: User, school: School, permissions: Permission[]): boolean {
-		const authContext = AuthorizationContextBuilder.read(permissions);
-		const isUserOfSchool = this.authorizationService.hasPermission(user, school, authContext);
-		return isUserOfSchool;
 	}
 
 	private async getStudentIdsOfUsersClasses(userId: EntityId, schoolId: EntityId): Promise<EntityId[]> {

@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { School, SchoolProps, SchoolQuery, SchoolRepo } from '../domain';
+import { School, SchoolProps, SchoolPurpose, SchoolQuery, SchoolRepo } from '../domain';
 import { SchoolEntityMapper } from './mapper';
 import { SchoolEntity } from './school.entity';
 import { SchoolScope } from './scope/school.scope';
@@ -32,6 +32,22 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		return schools;
 	}
 
+	public async getSchoolList(
+		options?: IFindOptions<SchoolProps>,
+		federalStateId?: EntityId
+	): Promise<{ schools: School[]; count: number }> {
+		const scope = new SchoolScope();
+		scope.allowEmptyQuery(true);
+		scope.byFederalState(federalStateId);
+		scope.addQuery({ purpose: { $nin: [SchoolPurpose.EXPERT, SchoolPurpose.TOMBSTONE] } });
+
+		const findOptions = this.mapToMikroOrmOptions(options, ['federalState', 'currentYear']);
+
+		const [entities, count] = await this.em.findAndCount(SchoolEntity, scope.query, findOptions);
+		const schools = SchoolEntityMapper.mapToDos(entities);
+		return { schools, count };
+	}
+
 	public async getSchoolById(schoolId: EntityId): Promise<School> {
 		const entity = await this.em.findOneOrFail(
 			SchoolEntity,
@@ -42,6 +58,18 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		const school = SchoolEntityMapper.mapToDo(entity);
 
 		return school;
+	}
+
+	public async getSchoolsByIds(schoolIds: EntityId[]): Promise<School[]> {
+		const entities = await this.em.find(
+			SchoolEntity,
+			{ id: { $in: schoolIds } },
+			{ populate: ['federalState', 'currentYear'] }
+		);
+
+		const schools = entities.map((entity) => SchoolEntityMapper.mapToDo(entity));
+
+		return schools;
 	}
 
 	public async getSchoolByOfficialSchoolNumber(officialSchoolNumber: string): Promise<School | null> {

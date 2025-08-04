@@ -31,6 +31,7 @@ import {
 	SchoolQueryParams,
 	SchoolRemoveSystemUrlParams,
 	SchoolResponse,
+	SchoolListResponse,
 	SchoolSystemResponse,
 	SchoolUpdateBodyParams,
 	SchoolUrlParams,
@@ -43,6 +44,19 @@ import { SchoolUc } from './school.uc';
 @Controller('school')
 export class SchoolController {
 	constructor(private readonly schoolUc: SchoolUc) {}
+
+	@Get()
+	@JwtAuthentication()
+	public async getSchoolList(@Query() query: SchoolQueryParams): Promise<SchoolListResponse | undefined> {
+		const dto = await this.schoolUc.getSchoolList(
+			{
+				limit: query.limit,
+				skip: query.skip,
+			},
+			query.federalStateId
+		);
+		return dto;
+	}
 
 	@Get('/id/:schoolId')
 	@JwtAuthentication()

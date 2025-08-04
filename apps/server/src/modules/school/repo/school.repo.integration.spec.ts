@@ -138,6 +138,83 @@ describe('SchoolMikroOrmRepo', () => {
 		});
 	});
 
+	describe('getSchoolList', () => {
+		describe('when no options are given', () => {
+			const setup = async () => {
+				const entities = schoolEntityFactory.buildList(3);
+				await em.persistAndFlush(entities);
+				em.clear();
+
+				return { entities };
+			};
+
+			it('should return the count of all schools', async () => {
+				const { entities } = await setup();
+
+				const { count } = await repo.getSchoolList({});
+
+				expect(count).toEqual(entities.length);
+			});
+		});
+
+		describe('when pagination option is given', () => {
+			const setup = async () => {
+				const entities = schoolEntityFactory.buildList(3);
+				await em.persistAndFlush(entities);
+				em.clear();
+
+				return { entities };
+			};
+
+			it('should return the count of all schools and the schools matching pagination', async () => {
+				const { entities } = await setup();
+				const options = {
+					pagination: {
+						skip: 1,
+						limit: 1,
+					},
+				};
+
+				const { schools, count } = await repo.getSchoolList(options);
+
+				expect(count).toEqual(entities.length);
+				expect(schools.length).toEqual(1);
+
+				const schoolIds = schools.map((school) => school.id);
+				expect(schoolIds).toEqual([entities[1].id]);
+			});
+		});
+
+		describe('when order option is given', () => {
+			const setup = async () => {
+				const entity1 = schoolEntityFactory.build({ name: 'bbb' });
+				const entity2 = schoolEntityFactory.build({ name: 'aaa' });
+				const entity3 = schoolEntityFactory.build({ name: 'ccc' });
+				await em.persistAndFlush([entity1, entity2, entity3]);
+				em.clear();
+
+				return { entity1, entity2, entity3 };
+			};
+
+			it('should return the count of all schools and the schools in given order', async () => {
+				const { entity1, entity2, entity3 } = await setup();
+				const options = {
+					order: {
+						name: SortOrder.asc,
+					},
+				};
+
+				const { schools, count } = await repo.getSchoolList(options);
+
+				const schoolIds = schools.map((school) => school.id);
+				const expectedOrder = [entity2.id, entity1.id, entity3.id];
+				expect(count).toEqual(3);
+				expect(schools.length).toEqual(3);
+				expect(schoolIds).toEqual(expectedOrder);
+			});
+		});
+	});
+
 	describe('getSchoolById', () => {
 		describe('when entity is not found', () => {
 			it('should throw NotFound', async () => {
@@ -155,17 +232,52 @@ describe('SchoolMikroOrmRepo', () => {
 				const entity = schoolEntityFactory.buildWithId({ systems, county }, schoolId);
 				await em.persistAndFlush([entity]);
 				em.clear();
-				const schoolDo = SchoolEntityMapper.mapToDo(entity);
+				const schoolDos = SchoolEntityMapper.mapToDo(entity);
 
-				return { schoolDo, schoolId };
+				return { schoolDos, schoolId };
 			};
 
 			it('should return school', async () => {
-				const { schoolDo, schoolId } = await setup();
+				const { schoolDos, schoolId } = await setup();
 
 				const result = await repo.getSchoolById(schoolId);
 
-				expect(result).toEqual(schoolDo);
+				expect(result).toEqual(schoolDos);
+			});
+		});
+	});
+
+	describe('getSchoolsByIds', () => {
+		describe('when entity is not found', () => {
+			it('should return an empty list', async () => {
+				const someId = new ObjectId().toHexString();
+
+				const result = await repo.getSchoolsByIds([someId]);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+
+		describe('when entities exist', () => {
+			const setup = async () => {
+				const systems = systemEntityFactory.buildList(2);
+				const county = countyEmbeddableFactory.build();
+				const entities = schoolEntityFactory.buildListWithId(3, { systems, county });
+				await em.persistAndFlush(entities);
+				em.clear();
+				const schoolDos = entities.map((entity) => SchoolEntityMapper.mapToDo(entity));
+
+				return { schoolDos };
+			};
+
+			it('should return schools', async () => {
+				const { schoolDos } = await setup();
+
+				const schoolIds = schoolDos.map((school) => school.id);
+
+				const result = await repo.getSchoolsByIds(schoolIds);
+
+				expect(result).toEqual(expect.arrayContaining(schoolDos));
 			});
 		});
 	});

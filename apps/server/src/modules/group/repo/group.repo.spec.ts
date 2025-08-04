@@ -19,6 +19,7 @@ import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser } from '.
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';
 import { groupEntityFactory, groupFactory } from '../testing';
 import { GroupRepo } from './group.repo';
+import { Role } from '@modules/role/repo';
 
 describe(GroupRepo.name, () => {
 	let module: TestingModule;
@@ -375,6 +376,85 @@ describe(GroupRepo.name, () => {
 				const result: Page<Group> = await repo.findGroups({ schoolId, systemId });
 
 				expect(result.data).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('findByUsersSchoolId', () => {
+		const setup = async () => {
+			const school = schoolEntityFactory.buildWithId();
+			const user = userFactory.buildWithId({ school });
+			const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
+
+			await em.persistAndFlush([user, school]);
+			em.clear();
+
+			return {
+				user,
+				school,
+				role,
+			};
+		};
+
+		const addGroup = async (
+			school: SchoolEntity,
+			role: Role,
+			internalUsers = 0,
+			externalUsers = 0
+		): Promise<GroupEntity> => {
+			const internalUsersArray: User[] = userFactory.buildListWithId(internalUsers, { school });
+			const externalUsersArray: User[] = userFactory.buildListWithId(externalUsers);
+
+			const users: GroupUserEmbeddable[] = [...internalUsersArray, ...externalUsersArray].map((user) => {
+				return {
+					user,
+					role,
+				};
+			});
+			const group = groupEntityFactory.withTypeRoom().buildWithId({ organization: school, users });
+			await em.persistAndFlush([...internalUsersArray, ...externalUsersArray, role, group]);
+			em.clear();
+
+			return group;
+		};
+
+		describe('when users from the same school are in one group', () => {
+			it('should return the group', async () => {
+				const { school, role } = await setup();
+				const group = await addGroup(school, role, 4, 0);
+
+				const result: Page<Group> = await repo.findByUsersSchoolId(school.id, [GroupTypes.ROOM]);
+
+				expect(result.data).toHaveLength(1);
+				expect(result.data[0].id).toEqual(group.id);
+				expect(result.total).toEqual(1);
+			});
+		});
+
+		describe('when users from the same school are in multiple groups', () => {
+			it('should return these groups', async () => {
+				const { school, role } = await setup();
+				const group1 = await addGroup(school, role, 4, 0);
+				const group2 = await addGroup(school, role, 6, 0);
+
+				const result: Page<Group> = await repo.findByUsersSchoolId(school.id, [GroupTypes.ROOM]);
+
+				expect(result.data).toHaveLength(2);
+				expect(result.data.map((g) => g.id)).toEqual([group1.id, group2.id].sort());
+				expect(result.total).toEqual(2);
+			});
+		});
+
+		describe('when users from the same school are in none of the existing groups', () => {
+			it('should return an empty array', async () => {
+				const { school, role } = await setup();
+				await addGroup(school, role, 0, 4);
+				await addGroup(school, role, 0, 6);
+
+				const result: Page<Group> = await repo.findByUsersSchoolId(school.id, [GroupTypes.ROOM]);
+
+				expect(result.data).toHaveLength(0);
+				expect(result.total).toEqual(0);
 			});
 		});
 	});
@@ -736,6 +816,63 @@ describe(GroupRepo.name, () => {
 
 				expect(result).toBeNull();
 			});
+		});
+	});
+
+	describe('removeUserReference', () => {
+		const setup = async () => {
+			const user = userFactory.buildWithId();
+			const otherUser = userFactory.buildWithId();
+			const role = roleFactory.buildWithId({ name: RoleName.ROOMOWNER });
+			const group = groupEntityFactory.buildWithId({
+				users: [
+					new GroupUserEmbeddable({
+						user,
+						role,
+					}),
+					new GroupUserEmbeddable({
+						user: otherUser,
+						role,
+					}),
+				],
+			});
+
+			await em.persistAndFlush([user, otherUser, role, group]);
+			em.clear();
+
+			return {
+				userId: user.id,
+				otherUserId: otherUser.id,
+				group,
+			};
+		};
+
+		it('should actually remove the user reference from the group', async () => {
+			const { userId, otherUserId, group } = await setup();
+
+			await repo.removeUserReference(userId);
+
+			const updatedGroup = await em.findOne(GroupEntity, group.id);
+			expect(updatedGroup?.users).toHaveLength(1);
+			expect(updatedGroup?.users[0].user.id).toEqual(otherUserId);
+		});
+
+		it('should return count of 1 group updated', async () => {
+			const { userId } = await setup();
+
+			const numberOfUpdatedGroups = await repo.removeUserReference(userId);
+
+			expect(numberOfUpdatedGroups).toEqual(1);
+		});
+
+		it('should not affect other users having the same group', async () => {
+			const { userId, otherUserId, group } = await setup();
+
+			await repo.removeUserReference(userId);
+
+			const updatedGroup = await em.findOne(GroupEntity, group.id);
+			expect(updatedGroup?.users).toHaveLength(1);
+			expect(updatedGroup?.users[0].user.id).toEqual(otherUserId);
 		});
 	});
 });
