@@ -73,7 +73,6 @@ export class FeathersRosterService {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly roomService: RoomService,
 		private readonly roomMembershipService: RoomMembershipService,
-
 		private readonly configService: ConfigService<RosterConfig, true>
 	) {}
 
@@ -153,10 +152,11 @@ export class FeathersRosterService {
 
 	public async getGroup(id: EntityId, oauth2ClientId: string): Promise<Group> {
 		try {
+			const room = await this.roomService.getSingleRoom(id);
+
 			if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
 				throw new NotFoundLoggableException(Room.name, { id });
 			}
-			const room = await this.roomService.getSingleRoom(id);
 
 			const roomGroup = await this.getRoom(room, oauth2ClientId);
 

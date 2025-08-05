@@ -30,6 +30,8 @@ import { setupEntities } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { RosterConfig } from '../roster.config';
 import { FeathersRosterService } from './feathers-roster.service';
+import { RoomService } from '@modules/room';
+import { RoomMembershipService } from '@modules/room-membership';
 
 describe('FeathersRosterService', () => {
 	let module: TestingModule;
@@ -42,6 +44,8 @@ describe('FeathersRosterService', () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
+	let roomService: DeepMocked<RoomService>;
+	let roomMembershipService: DeepMocked<RoomMembershipService>;
 	let configService: DeepMocked<ConfigService<RosterConfig, true>>;
 
 	beforeAll(async () => {
@@ -77,6 +81,14 @@ describe('FeathersRosterService', () => {
 					useValue: createMock<ColumnBoardService>(),
 				},
 				{
+					provide: RoomService,
+					useValue: createMock<RoomService>(),
+				},
+				{
+					provide: RoomMembershipService,
+					useValue: createMock<RoomMembershipService>(),
+				},
+				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
@@ -91,6 +103,8 @@ describe('FeathersRosterService', () => {
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		columnBoardService = module.get(ColumnBoardService);
+		roomService = module.get(RoomService);
+		roomMembershipService = module.get(RoomMembershipService);
 		configService = module.get(ConfigService);
 
 		await setupEntities([CourseEntity, CourseGroupEntity]);
@@ -677,6 +691,8 @@ describe('FeathersRosterService', () => {
 
 		describe('when the tool is active in a column board of a course', () => {
 			const setup = () => {
+				roomService.getSingleRoom.mockRejectedValueOnce(new Error('Room not found'));
+
 				const schoolEntity = schoolEntityFactory.buildWithId();
 				const school = legacySchoolDoFactory.build({ id: schoolEntity.id });
 
