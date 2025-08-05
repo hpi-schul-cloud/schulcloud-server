@@ -5,6 +5,27 @@ const path = require('path');
 const yaml = require('yaml');
 
 class FileSystemHelper {
+	static getAllFolders(dirPath) {
+		if (!this.pathExists(dirPath)) {
+			throw new Error(`Path does not exist: ${dirPath}`);
+		}
+		const result = fs
+			.readdirSync(dirPath, { withFileTypes: true })
+			.filter((dirent) => dirent.isDirectory())
+			.map((dirent) => dirent.name);
+
+		return result;
+	}
+
+	static getAllFilesAndFolders(dirPath) {
+		if (!this.pathExists(dirPath)) {
+			throw new Error(`Path does not exist: ${dirPath}`);
+		}
+		const result = fs.readdirSync(dirPath, { withFileTypes: true });
+
+		return result;
+	}
+
 	static pathExists(path) {
 		const result = fs.existsSync(path);
 
@@ -105,6 +126,15 @@ class FileSystemHelper {
 	static unzipFile(zipFilePath, outputDir) {
 		const zip = new AdmZip(zipFilePath);
 		zip.extractAllTo(outputDir, true);
+	}
+
+	static getTempDir() {
+		const tempDir = os.tmpdir();
+		if (!this.pathExists(tempDir)) {
+			this.createFolder(tempDir);
+		}
+
+		return tempDir;
 	}
 
 	static createTempFolder(library, tag) {

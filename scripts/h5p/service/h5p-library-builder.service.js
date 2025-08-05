@@ -1,4 +1,3 @@
-const { result } = require('lodash');
 const childProcess = require('child_process');
 const fileSystemHelper = require('../helper/file-system.helper.js');
 const H5PGitHubClient = require('./h5p-github.client.js');

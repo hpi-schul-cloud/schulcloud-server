@@ -32,7 +32,8 @@ const params = {
 const main = async () => {
 	const tempFolderPath = params.tmp || '';
 
-	const h5pLibraryUploaderService = new H5pLibraryUploaderService();
+	const h5pLibraryUploaderService = new H5pLibraryUploaderService(tempFolderPath);
+	h5pLibraryUploaderService.uploadLibraries();
 };
 
 main();
