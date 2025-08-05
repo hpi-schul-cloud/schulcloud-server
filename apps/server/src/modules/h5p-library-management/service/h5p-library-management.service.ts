@@ -13,16 +13,15 @@ import { ILibraryInstallResult } from '@lumieducation/h5p-server/build/src/types
 import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { readFileSync } from 'fs';
 import { parse } from 'yaml';
 import { H5pDefaultUserFactory } from '../factory';
-import { FileSystemHelper } from '../helper';
 import {
 	H5PLibraryManagementErrorLoggable,
 	H5PLibraryManagementInstallResultsLoggable,
 	H5PLibraryManagementLoggable,
 	H5PLibraryManagementMetricsLoggable,
 } from '../loggable';
-import { H5pGitHubClient } from './h5p-github.client';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
 import LibraryManagementPermissionSystem from './library-management-permission-system';
 
@@ -69,7 +68,6 @@ export class H5PLibraryManagementService {
 		private readonly libraryStorage: LibraryStorage,
 		private readonly contentStorage: ContentStorage,
 		private readonly configService: ConfigService<IH5PLibraryManagementConfig, true>,
-		private readonly githubClient: H5pGitHubClient,
 		private readonly logger: Logger
 	) {
 		const kvCache = new cacheImplementations.CachedKeyValueStorage('kvcache');
@@ -94,7 +92,7 @@ export class H5PLibraryManagementService {
 		this.libraryAdministration = new LibraryAdministration(this.libraryManager, contentManager);
 		const filePath = this.configService.get<string>('H5P_EDITOR__LIBRARY_LIST_PATH');
 
-		const librariesYamlContent = FileSystemHelper.readFile(filePath);
+		const librariesYamlContent = readFileSync(filePath, { encoding: 'utf-8' });
 		const librariesContentType = castToLibrariesContentType(parse(librariesYamlContent));
 		this.libraryWishList = librariesContentType.h5p_libraries;
 
