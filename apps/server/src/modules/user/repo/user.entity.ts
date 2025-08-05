@@ -166,8 +166,12 @@ export class User extends BaseEntityWithTimestamps {
 	@Index()
 	source?: string;
 
+	/*
+	 * The language override is set to 'ignore-this-field' to ensure that the text index does not attempt to process the text as a language specified by the 'language' field, which is the default behavior.
+	 * https://www.mongodb.com/docs/v7.0/core/indexes/index-types/index-text/specify-language-text-index/create-text-index-multiple-languages/
+	 */
 	@Property({ nullable: false })
-	@Index({ name: 'userSearchIndex2', type: 'text' })
+	@Index({ name: 'userSearchIndex2', type: 'text', options: { language_override: 'ignore-this-field' } })
 	allSearchableStrings!: string[];
 
 	@BeforeCreate()
