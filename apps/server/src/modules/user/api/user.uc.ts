@@ -19,11 +19,11 @@ export class UserUc {
 	}
 
 	public async patchLanguage(userId: EntityId, params: ChangeLanguageParams): Promise<boolean> {
-		this.checkAvaibleLanguages(params.language);
-		const user = await this.userService.findById(userId);
-		user.language = params.language;
-		await this.userService.save(user);
+		const result = await this.userService.patchLanguage(userId, params.language);
+		if (!result) {
+			throw new BadRequestException('Language could not be changed.');
+		}
 
-		return true;
+		return result;
 	}
 }
