@@ -285,14 +285,14 @@ export class RoomUc {
 	}
 
 	private async isAllowedToDeleteRoom(userId: string, roomId: string, room: Room, user: User): Promise<boolean> {
-		const canDeleteRooms = await this.roomHelperService.hasRoomPermissions(userId, roomId, Action.write, [
+		const canDeleteRoom = await this.roomHelperService.hasRoomPermissions(userId, roomId, Action.write, [
 			Permission.ROOM_DELETE_ROOM,
 		]);
 		const isOwnSchool = room.schoolId === user.school.id;
 		const canAdministrateSchoolRooms = this.authorizationService.hasOneOfPermissions(user, [
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
 		]);
-		const isAllowed = canDeleteRooms || (isOwnSchool && canAdministrateSchoolRooms);
+		const isAllowed = canDeleteRoom || (isOwnSchool && canAdministrateSchoolRooms);
 		return isAllowed;
 	}
 
