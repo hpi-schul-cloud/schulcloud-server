@@ -23,6 +23,7 @@ import { RoomMembershipStats } from '@modules/room-membership/type/room-membersh
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
+export type RoomWithLockedStatus = { room: Room; isLocked: boolean };
 
 @Injectable()
 export class RoomUc {
@@ -36,12 +37,33 @@ export class RoomUc {
 		private readonly schoolService: SchoolService
 	) {}
 
-	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<Room>> {
+	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomWithLockedStatus>> {
 		this.roomHelperService.checkFeatureRoomsEnabled();
-		const authorizedRoomIds = await this.getAuthorizedRoomIds(userId, Action.read);
-		const rooms = await this.roomService.getRoomsByIds(authorizedRoomIds, findOptions);
 
-		return rooms;
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
+
+		const readableRoomIds = roomAuthorizables
+			.filter((item) =>
+				this.authorizationService.hasPermission(user, item, { action: Action.read, requiredPermissions: [] })
+			)
+			.map((item) => item.roomId);
+
+		const roomsPage = await this.roomService.getRoomsByIds(readableRoomIds, findOptions);
+
+		const roomsWithLockedStatus = roomsPage.data.map((room) => {
+			const hasOwner = roomAuthorizables.some(
+				(item) =>
+					item.roomId === room.id &&
+					item.members.some((member) => member.roles.some((role) => role.name === RoleName.ROOMOWNER))
+			);
+			return {
+				room,
+				isLocked: !hasOwner,
+			};
+		});
+
+		return { data: roomsWithLockedStatus, total: roomsPage.total };
 	}
 
 	public async getRoomStats(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomStats>> {
@@ -325,17 +347,6 @@ export class RoomUc {
 		if (owner && userIdsToChange.includes(owner.userId)) {
 			throw new CantChangeOwnersRoleLoggableException({ roomId: roomAuthorizable.roomId, currentUserId });
 		}
-	}
-
-	private async getAuthorizedRoomIds(userId: EntityId, action: Action): Promise<EntityId[]> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
-
-		const authorizedRoomIds = roomAuthorizables.filter((item) =>
-			this.authorizationService.hasPermission(user, item, { action, requiredPermissions: [] })
-		);
-
-		return authorizedRoomIds.map((item) => item.roomId);
 	}
 
 	private getPermissions(userId: EntityId, roomMembershipAuthorizable: RoomMembershipAuthorizable): Permission[] {
