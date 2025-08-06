@@ -9,7 +9,12 @@ import {
 } from '@lumieducation/h5p-server';
 import ContentManager from '@lumieducation/h5p-server/build/src/ContentManager';
 import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/src/ContentTypeInformationRepository';
-import { ILibraryInstallResult } from '@lumieducation/h5p-server/build/src/types';
+import {
+	IInstalledLibrary,
+	ILibraryInstallResult,
+	ILibraryMetadata,
+	ILibraryName,
+} from '@lumieducation/h5p-server/build/src/types';
 import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -107,7 +112,14 @@ export class H5PLibraryManagementService {
 
 		const installedLibraries = await this.installLibrariesAsBulk(availableLibraries);
 
-		this.logFinishH5pLibraryManagementJob(availableLibraries, uninstalledLibraries, installedLibraries);
+		const synchronizedLibraries = await this.synchronizeLibraries();
+
+		this.logFinishH5pLibraryManagementJob(
+			availableLibraries,
+			uninstalledLibraries,
+			installedLibraries,
+			synchronizedLibraries
+		);
 	}
 
 	private logStartH5pLibraryManagementJob(): void {
@@ -117,11 +129,17 @@ export class H5PLibraryManagementService {
 	private logFinishH5pLibraryManagementJob(
 		availableLibraries: ILibraryAdministrationOverviewItem[],
 		uninstalledLibraries: ILibraryAdministrationOverviewItem[],
-		installedLibraries: ILibraryInstallResult[]
+		installedLibraries: ILibraryInstallResult[],
+		synchronizedLibraries: ILibraryInstallResult[]
 	): void {
 		this.logger.info(new H5PLibraryManagementLoggable('Finished H5P library management job!'));
 		this.logger.info(
-			new H5PLibraryManagementMetricsLoggable(availableLibraries, uninstalledLibraries, installedLibraries)
+			new H5PLibraryManagementMetricsLoggable(
+				availableLibraries,
+				uninstalledLibraries,
+				installedLibraries,
+				synchronizedLibraries
+			)
 		);
 	}
 
@@ -281,5 +299,179 @@ export class H5PLibraryManagementService {
 					}.${result.newVersion?.patchVersion ?? ''}`
 			);
 		availableVersions.push(...newVersions);
+	}
+
+	private async synchronizeLibraries(): Promise<ILibraryInstallResult[]> {
+		const synchronizedLibraries: ILibraryInstallResult[] = [];
+		const folders = await this.libraryStorage.getAllLibraryFolders();
+
+		for (const folder of folders) {
+			const libraryName = this.getLibraryNameFromFolder(folder);
+			const libraryJsonExistsInS3 = await this.libraryStorage.fileExists(libraryName, 'library.json');
+			if (libraryJsonExistsInS3) {
+				const newLibraryMetadata: ILibraryMetadata = (await this.libraryStorage.getFileAsJson(
+					libraryName,
+					'library.json',
+					true
+				)) as ILibraryMetadata;
+				const newVersion = {
+					machineName: newLibraryMetadata.machineName,
+					majorVersion: newLibraryMetadata.majorVersion,
+					minorVersion: newLibraryMetadata.minorVersion,
+					patchVersion: newLibraryMetadata.patchVersion,
+				};
+
+				try {
+					const libraryIsInstalled = await this.libraryStorage.isInstalled(libraryName);
+					if (libraryIsInstalled) {
+						const oldVersion = await this.libraryManager.isPatchedLibrary(newLibraryMetadata);
+						if (oldVersion) {
+							await this.updateLibrary(newLibraryMetadata);
+							this.logger.info(
+								new H5PLibraryManagementLoggable(
+									`Updated library: ${oldVersion.machineName}-${oldVersion.majorVersion}.${oldVersion.minorVersion} to ${newVersion.machineName}-${newVersion.majorVersion}.${newVersion.minorVersion}`
+								)
+							);
+							synchronizedLibraries.push({
+								type: 'patch',
+								oldVersion,
+								newVersion,
+							});
+						}
+						this.logger.info(
+							new H5PLibraryManagementLoggable(
+								`Library ${newVersion.machineName}-${newVersion.majorVersion}.${newVersion.minorVersion} is already installed.`
+							)
+						);
+						continue;
+					}
+					await this.addLibrary(newLibraryMetadata);
+					this.logger.info(
+						new H5PLibraryManagementLoggable(
+							`Added library: ${newVersion.machineName}-${newVersion.majorVersion}.${newVersion.minorVersion}.${newVersion.patchVersion}`
+						)
+					);
+					synchronizedLibraries.push({
+						type: 'new',
+						newVersion,
+					});
+				} catch (error: unknown) {
+					// ???
+				}
+			}
+		}
+
+		return synchronizedLibraries;
+	}
+
+	private getLibraryNameFromFolder(folder: string): ILibraryName {
+		const [machineName, version] = folder.split('-');
+		const [majorVersion, minorVersion] = version.split('.');
+		const libraryName: ILibraryName = {
+			machineName,
+			majorVersion: Number(majorVersion),
+			minorVersion: Number(minorVersion),
+		};
+
+		return libraryName;
+	}
+
+	private async updateLibrary(newLibraryMetadata: ILibraryMetadata): Promise<void> {
+		try {
+			await this.libraryStorage.updateLibrary(newLibraryMetadata);
+			await this.checkConsistency(newLibraryMetadata);
+		} catch (error: unknown) {
+			this.logger.warning(
+				new H5PLibraryManagementErrorLoggable(
+					error,
+					{ library: newLibraryMetadata.machineName },
+					'during library update'
+				)
+			);
+			this.logger.warning(
+				new H5PLibraryManagementLoggable(
+					`Removing library ${newLibraryMetadata.machineName}-${newLibraryMetadata.majorVersion}.${newLibraryMetadata.minorVersion} due to error.`
+				)
+			);
+			await this.libraryStorage.deleteLibrary(newLibraryMetadata);
+		}
+	}
+
+	private async addLibrary(newLibraryMetadata: ILibraryMetadata): Promise<void> {
+		try {
+			await this.libraryStorage.addLibrary(newLibraryMetadata, false);
+			await this.checkConsistency(newLibraryMetadata);
+		} catch (error: unknown) {
+			this.logger.warning(
+				new H5PLibraryManagementErrorLoggable(
+					error,
+					{ library: newLibraryMetadata.machineName },
+					'during library installation'
+				)
+			);
+		}
+	}
+
+	private async checkConsistency(library: ILibraryName): Promise<boolean> {
+		const libraryIsInstalled = await this.libraryStorage.isInstalled(library);
+		if (!libraryIsInstalled) {
+			this.logger.info(
+				new H5PLibraryManagementLoggable(
+					`Library ${library.machineName}-${library.majorVersion}.${library.minorVersion} is not installed.`
+				)
+			);
+			return false;
+		}
+
+		let metadata: IInstalledLibrary | undefined = undefined;
+		try {
+			metadata = await this.libraryStorage.getLibrary(library);
+		} catch (error) {
+			this.logger.info(
+				new H5PLibraryManagementLoggable(
+					`Error reading library metadata for ${library.machineName}-${library.majorVersion}.${library.minorVersion}: ${error.message}`
+				)
+			);
+			return false;
+		}
+		if (metadata?.preloadedJs) {
+			await this.checkFiles(
+				library,
+				metadata.preloadedJs.map((js) => js.path)
+			);
+		}
+		if (metadata?.preloadedCss) {
+			await this.checkFiles(
+				library,
+				metadata.preloadedCss.map((css) => css.path)
+			);
+		}
+		return true;
+	}
+
+	private async checkFiles(library: ILibraryName, requiredFiles: string[]): Promise<boolean> {
+		const missingFiles = (
+			await Promise.all(
+				requiredFiles.map(async (file) => {
+					return {
+						path: file,
+						status: await this.libraryStorage.fileExists(library, file),
+					};
+				})
+			)
+		)
+			.filter((file) => !file.status)
+			.map((file) => file.path);
+		if (missingFiles.length > 0) {
+			this.logger.info(
+				new H5PLibraryManagementLoggable(
+					`Missing files for library ${library.machineName}-${library.majorVersion}.${
+						library.minorVersion
+					}: ${missingFiles.join(', ')}`
+				)
+			);
+			return false;
+		}
+		return true;
 	}
 }

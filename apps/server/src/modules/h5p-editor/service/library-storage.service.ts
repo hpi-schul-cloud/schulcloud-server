@@ -294,8 +294,8 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 * @param file
 	 */
-	public async getFileAsJson(library: ILibraryName, file: string): Promise<unknown> {
-		const content = await this.getFileAsString(library, file);
+	public async getFileAsJson(library: ILibraryName, file: string, readLibraryJsonFromS3 = false): Promise<unknown> {
+		const content = await this.getFileAsString(library, file, readLibraryJsonFromS3);
 		return JSON.parse(content) as unknown;
 	}
 
@@ -304,8 +304,8 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 * @param file
 	 */
-	public async getFileAsString(library: ILibraryName, file: string): Promise<string> {
-		const stream = await this.getFileStream(library, file);
+	public async getFileAsString(library: ILibraryName, file: string, readLibraryJsonFromS3 = false): Promise<string> {
+		const stream = await this.getFileStream(library, file, readLibraryJsonFromS3);
 		const data = await streamToString(stream);
 		return data;
 	}
@@ -336,10 +336,10 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 * @param file
 	 */
-	public async getFileStream(library: ILibraryName, file: string): Promise<Readable> {
+	public async getFileStream(library: ILibraryName, file: string, readLibraryJsonFromS3 = false): Promise<Readable> {
 		const ubername = LibraryName.toUberName(library);
 
-		const response = await this.getLibraryFile(ubername, file);
+		const response = await this.getLibraryFile(ubername, file, readLibraryJsonFromS3);
 
 		return response.stream;
 	}
@@ -496,7 +496,8 @@ export class LibraryStorage implements ILibraryStorage {
 	 */
 	public async getLibraryFile(
 		ubername: string,
-		file: string
+		file: string,
+		readLibraryJsonFromS3 = false
 	): Promise<{
 		stream: Readable;
 		mimetype: string;
@@ -508,7 +509,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 		let result: { stream: Readable | never; mimetype: string; size: number | undefined } | null = null;
 
-		if (file === 'library.json') {
+		if (file === 'library.json' && !readLibraryJsonFromS3) {
 			const metadata = await this.getMetadata(libraryName);
 			const stringifiedMetadata = JSON.stringify(metadata);
 			const readable = Readable.from(stringifiedMetadata);
@@ -528,6 +529,26 @@ export class LibraryStorage implements ILibraryStorage {
 				size: response.contentLength,
 			};
 		}
+		return result;
+	}
+
+	/**
+	 * Retrieves all folders in the S3 bucket under the h5p-libraries prefix.
+	 * @returns an array of folder names
+	 */
+	public async getAllLibraryFolders(): Promise<string[]> {
+		const prefix = 'h5p-libraries/';
+		const { files } = await this.s3Client.list({ path: prefix });
+		// Extract unique folder names from the file paths
+		const folders = new Set<string>();
+		for (const filePath of files) {
+			const parts = filePath.split('/');
+			if (parts.length > 1) {
+				folders.add(parts[0]);
+			}
+		}
+		const result = Array.from(folders);
+
 		return result;
 	}
 }
