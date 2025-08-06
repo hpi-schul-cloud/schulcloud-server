@@ -7,7 +7,7 @@ import { BoardErrorReportBodyParams } from './dto/board/board-error-report.body.
 
 @ApiTags('BoardErrorReport')
 @JwtAuthentication()
-@Controller('boards-error-report')
+@Controller('report-board-error')
 export class BoardErrorReportController {
 	constructor(private readonly boardErrorReportUC: BoardErrorReportUc) {}
 

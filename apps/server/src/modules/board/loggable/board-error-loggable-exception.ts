@@ -5,14 +5,14 @@ import { BoardErrorContextTypeEnum } from '../interface/board-error-context-type
 
 export class BoardErrorLoggableException extends BadGatewayException implements Loggable {
 	constructor(
+		public readonly message: string,
 		private readonly errorType: BoardErrorTypeEnum,
-		private readonly pageUrl: string,
+		private readonly url: string,
 		private readonly contextType: BoardErrorContextTypeEnum,
 		private readonly contextId: string,
 		private readonly schoolId: string,
 		private readonly userId: string,
-		private readonly errorMessage: string,
-		private readonly timestamp: string
+		private readonly retryCount: number
 	) {
 		super();
 	}
@@ -20,15 +20,15 @@ export class BoardErrorLoggableException extends BadGatewayException implements 
 	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			type: this.errorType,
-			message: this.errorMessage,
+			message: this.message,
 			stack: this.stack,
 			data: {
-				pageUrl: this.pageUrl,
+				url: this.url,
 				contextType: this.contextType,
 				contextId: this.contextId,
 				schoolId: this.schoolId,
 				userId: this.userId,
-				timestamp: this.timestamp,
+				retryCount: this.retryCount,
 			},
 		};
 	}

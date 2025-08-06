@@ -11,7 +11,7 @@ import { BoardErrorContextTypeEnum } from '../../interface/board-error-context-t
 import { BoardErrorTypeEnum } from '../../interface/board-error-type.enum';
 import { BoardErrorReportBodyParams } from '../dto/board/board-error-report.body.params';
 
-const baseRouteName = '/boards-error-report';
+const baseRouteName = '/report-board-error';
 
 describe('BoardErrorReportController (api)', () => {
 	let app: INestApplication;

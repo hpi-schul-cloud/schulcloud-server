@@ -1,4 +1,4 @@
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
 import { BoardErrorContextTypeEnum } from '../../../interface/board-error-context-type.enum';
 import { BoardErrorTypeEnum } from '../../../interface/board-error-type.enum';
 import { ApiProperty } from '@nestjs/swagger';
@@ -15,12 +15,14 @@ export class BoardErrorReportBodyParams {
 		type: String,
 		description: 'Error message',
 	})
+	@IsString()
 	public message!: string;
 
 	@ApiProperty({
 		type: String,
 		description: 'URL of the page the user was working on',
 	})
+	@IsString()
 	public url!: string;
 
 	@ApiProperty({
@@ -34,11 +36,13 @@ export class BoardErrorReportBodyParams {
 		type: String,
 		description: 'EntityId (e.g. boardId)',
 	})
+	@IsString()
 	public contextId!: string;
 
 	@ApiProperty({
 		type: Number,
 		description: 'Count of connection retries.',
 	})
+	@IsNumber()
 	public retryCount!: number;
 }
