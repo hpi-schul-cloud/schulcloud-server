@@ -1,9 +1,13 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
+	BeforeCreate,
+	BeforeUpdate,
+	ChangeSet,
 	Collection,
 	Embeddable,
 	Embedded,
 	Entity,
+	EventArgs,
 	Index,
 	ManyToMany,
 	ManyToOne,
@@ -20,6 +24,7 @@ import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ConsentEntity } from './consent.entity';
 import { UserParentsEntity } from './user-parents.entity';
+import { buildAllSearchableStringsForUser } from '@imports-from-feathers';
 
 export interface UserProperties {
 	email: string;
@@ -121,15 +126,6 @@ export class User extends BaseEntityWithTimestamps {
 	importHash?: string;
 
 	@Property({ nullable: true })
-	firstNameSearchValues?: string[];
-
-	@Property({ nullable: true })
-	lastNameSearchValues?: string[];
-
-	@Property({ nullable: true })
-	emailSearchValues?: string[];
-
-	@Property({ nullable: true })
 	language?: LanguageType;
 
 	@Property({ nullable: true })
@@ -169,6 +165,35 @@ export class User extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	@Index()
 	source?: string;
+
+	/*
+	 * The language override is set to 'ignore-this-field' to ensure that the text index does not attempt to process the text as a language specified by the 'language' field, which is the default behavior.
+	 * https://www.mongodb.com/docs/v7.0/core/indexes/index-types/index-text/specify-language-text-index/create-text-index-multiple-languages/
+	 */
+	@Property({ nullable: false })
+	@Index({ name: 'userSearchIndex2', type: 'text', options: { language_override: 'ignore-this-field' } })
+	allSearchableStrings!: string[];
+
+	@BeforeCreate()
+	public beforeCreate(args: EventArgs<User> & { changeSet: ChangeSet<User> }): void {
+		args.entity.allSearchableStrings = buildAllSearchableStringsForUser(
+			args.entity.firstName,
+			args.entity.lastName,
+			args.entity.email
+		);
+	}
+
+	@BeforeUpdate()
+	public beforeUpdate(args: EventArgs<User> & { changeSet: ChangeSet<User> }): void {
+		const changedProps = args.changeSet.payload;
+		if ('firstName' in changedProps || 'lastName' in changedProps || 'email' in changedProps) {
+			args.entity.allSearchableStrings = buildAllSearchableStringsForUser(
+				args.entity.firstName,
+				args.entity.lastName,
+				args.entity.email
+			);
+		}
+	}
 
 	constructor(props: UserProperties) {
 		super();
@@ -227,7 +252,7 @@ export class User extends BaseEntityWithTimestamps {
 		const schoolPermissions = this.school.permissions;
 		let setOfPermissions = new Set(permissions);
 
-		// This exclusion is necessary because of possible double roles (e.g. admin and teacher). Then the higher role should keep its permissions.
+		// This exclusion is necessary because of possible double roles (e.g., admin and teacher). Then the higher role should keep its permissions.
 		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR || role.name === RoleName.SUPERHERO)) {
 			return setOfPermissions;
 		}
