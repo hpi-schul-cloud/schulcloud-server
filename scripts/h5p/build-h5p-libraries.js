@@ -44,12 +44,12 @@ const params = {
 const main = async () => {
 	const mapFile = params.map || 'config/h5p-library-repo-map.yaml';
 	const librariesFile = params.input || 'config/h5p-libraries.yaml';
-	const tempFolderPath = params.tmp || ''; // TODO: Needs to be used in the service
+	const tempFolderPath = params.tmp;
 
 	const libraryRepoMap = fileSystemHelper.readLibraryRepoMap(mapFile);
 	const libraryWishList = fileSystemHelper.readLibraryWishList(librariesFile);
 
-	const h5pLibraryBuilderService = new H5pLibraryBuilderService(libraryRepoMap);
+	const h5pLibraryBuilderService = new H5pLibraryBuilderService(libraryRepoMap, tempFolderPath);
 	await h5pLibraryBuilderService.buildH5pLibrariesFromGitHubAsBulk(libraryWishList);
 };
 

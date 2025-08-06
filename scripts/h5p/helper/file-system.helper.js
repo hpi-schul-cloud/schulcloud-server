@@ -134,12 +134,7 @@ class FileSystemHelper {
 		return tempDir;
 	}
 
-	static createTempFolder(library, tag) {
-		const tempFolder = path.join(os.tmpdir(), 'h5p-libraries');
-		if (!this.pathExists(tempFolder)) {
-			this.createFolder(tempFolder);
-		}
-
+	static createTempFolder(tempFolder, library, tag) {
 		const filePath = path.join(tempFolder, `${library}-${tag}.zip`);
 
 		const [tagMajor, tagMinor] = tag.split('.');

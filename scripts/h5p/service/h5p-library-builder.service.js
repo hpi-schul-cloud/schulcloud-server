@@ -3,9 +3,19 @@ const fileSystemHelper = require('../helper/file-system.helper.js');
 const H5PGitHubClient = require('./h5p-github.client.js');
 
 class H5pLibraryBuilderService {
-	constructor(libraryRepoMap) {
-		this.gitHubClient = new H5PGitHubClient();
+	constructor(libraryRepoMap, tempFolderPath) {
+		if (!tempFolderPath) {
+			const tempDir = fileSystemHelper.getTempDir();
+			this.tempFolderPath = fileSystemHelper.buildPath(tempDir, 'h5p-libraries');
+		} else {
+			this.tempFolderPath = tempFolderPath;
+		}
+		if (!fileSystemHelper.pathExists(this.tempFolderPath)) {
+			fileSystemHelper.createFolder(this.tempFolderPath);
+		}
+
 		this.libraryRepoMap = libraryRepoMap;
+		this.gitHubClient = new H5PGitHubClient();
 	}
 
 	async buildH5pLibrariesFromGitHubAsBulk(libraries) {
@@ -128,7 +138,7 @@ class H5pLibraryBuilderService {
 		// removeTemporaryFiles sollte dann auch nur folderPath als input brauchen.
 		// Dann wäre es möglich ein pre and post hook zu erstellen.
 		// Wenn man dann noch fileSystemHelper als Klasse instanziiert über ein factory könnte man dort noch mehr implizites Wissen weg kapseln.
-		const { filePath, folderPath, tempFolder } = fileSystemHelper.createTempFolder(library, tag);
+		const { filePath, folderPath, tempFolder } = fileSystemHelper.createTempFolder(this.tempFolderPath, library, tag);
 		await this.gitHubClient.downloadGitHubTag(repo, tag, filePath);
 
 		if (fileSystemHelper.pathExists(folderPath)) {
@@ -413,7 +423,7 @@ class H5pLibraryBuilderService {
 	}
 
 	getDependenciesFromLibraryJson(repoName, tag) {
-		const { filePath, folderPath, tempFolder } = fileSystemHelper.createTempFolder(repoName, tag);
+		const { folderPath } = fileSystemHelper.createTempFolder(this.tempFolderPath, repoName, tag);
 		const libraryJsonPath = fileSystemHelper.getLibraryJsonPath(folderPath);
 		const libraryJsonContent = fileSystemHelper.readJsonFile(libraryJsonPath);
 		const dependencies = (libraryJsonContent?.preloadedDependencies ?? []).concat(
