@@ -119,6 +119,7 @@ export class RoomUc {
 	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<{ room: Room; permissions: Permission[] }> {
 		this.roomHelperService.checkFeatureRoomsEnabled();
 		const room = await this.roomService.getSingleRoom(roomId);
+		await this.roomHelperService.checkRoomIsUnlocked(roomId);
 
 		const roomMembershipAuthorizable = await this.roomHelperService.checkRoomAuthorizationByIds(
 			userId,
@@ -134,6 +135,7 @@ export class RoomUc {
 		this.roomHelperService.checkFeatureRoomsEnabled();
 
 		await this.roomService.getSingleRoom(roomId);
+		await this.roomHelperService.checkRoomIsUnlocked(roomId);
 		await this.roomHelperService.checkRoomAuthorizationByIds(userId, roomId, Action.read);
 
 		const boards = await this.columnBoardService.findByExternalReference(
