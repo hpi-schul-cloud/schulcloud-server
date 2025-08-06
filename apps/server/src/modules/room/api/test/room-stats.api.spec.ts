@@ -146,6 +146,8 @@ describe('Room Controller (API)', () => {
 								name: room.name,
 								totalMembers: users.length,
 								internalMembers: users.length,
+								schoolId: room.schoolId,
+								schoolName: expect.any(String),
 								externalMembers: 0,
 							}),
 						])
