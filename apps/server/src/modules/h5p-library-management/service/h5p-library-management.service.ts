@@ -109,7 +109,7 @@ export class H5PLibraryManagementService {
 		this.logStartH5pLibraryManagementJob();
 		const availableLibraries = await this.libraryAdministration.getLibraries();
 
-		const uninstalledLibraries = await this.uninstallUnwantedLibraries(availableLibraries);
+		const uninstalledLibraries = await this.uninstallUnwantedLibrariesAsBulk();
 
 		const installedLibraries = await this.installLibrariesAsBulk(availableLibraries);
 
@@ -142,6 +142,20 @@ export class H5PLibraryManagementService {
 				synchronizedLibraries
 			)
 		);
+	}
+
+	public async uninstallUnwantedLibrariesAsBulk(): Promise<ILibraryAdministrationOverviewItem[]> {
+		let librariesToCheck: ILibraryAdministrationOverviewItem[] = [];
+		let uninstalledLibraries: ILibraryAdministrationOverviewItem[];
+		const allUninstalledLibraries: ILibraryAdministrationOverviewItem[] = [];
+
+		do {
+			librariesToCheck = await this.libraryAdministration.getLibraries();
+			uninstalledLibraries = await this.uninstallUnwantedLibraries(librariesToCheck);
+			allUninstalledLibraries.push(...uninstalledLibraries);
+		} while (uninstalledLibraries.length > 0);
+
+		return allUninstalledLibraries;
 	}
 
 	public async uninstallUnwantedLibraries(
