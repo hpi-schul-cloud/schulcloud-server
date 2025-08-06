@@ -28,7 +28,7 @@ spec:
         - secretRef:
             name: api-secret
         command: ['/bin/sh','-c']
-        args: ['npm run ensureIndexes:prod && npm run migration:up:prod']
+        args: ['npm run migration:up:prod && npm run ensureIndexes:prod']
         resources:
           limits:
             cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
