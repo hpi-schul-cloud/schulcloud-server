@@ -1,5 +1,4 @@
 const arg = require('arg');
-const fileSystemHelper = require('./helper/file-system.helper.js');
 const H5pLibraryUploaderService = require('./service/h5p-library-uploader.service.js');
 
 const args = arg(
@@ -30,7 +29,7 @@ const params = {
 };
 
 const main = async () => {
-	const tempFolderPath = params.tmp || '';
+	const tempFolderPath = params.tmp;
 
 	const h5pLibraryUploaderService = new H5pLibraryUploaderService(tempFolderPath);
 	h5pLibraryUploaderService.uploadLibraries();

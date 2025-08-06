@@ -2,20 +2,28 @@ const fileSystemHelper = require('../helper/file-system.helper.js');
 const S3ClientHelper = require('../helper/s3-client.helper.js');
 
 class H5pLibraryUploaderService {
-	constructor() {
+	constructor(tempFolderPath) {
+		if (!tempFolderPath) {
+			const tempDir = fileSystemHelper.getTempDir();
+			this.tempFolderPath = fileSystemHelper.buildPath(tempDir, 'h5p-libraries');
+		} else {
+			this.tempFolderPath = tempFolderPath;
+		}
+		if (!fileSystemHelper.pathExists(this.tempFolderPath)) {
+			throw new Error(`Temporary folder ${this.tempFolderPath} does not exist.`);
+		}
+
 		this.s3ClientHelper = new S3ClientHelper();
 	}
 
 	async uploadLibraries() {
-		const tempDir = fileSystemHelper.getTempDir();
-		const tempFolder = fileSystemHelper.buildPath(tempDir, 'h5p-libraries');
-		const folders = fileSystemHelper.getAllFolders(tempFolder);
+		const folders = fileSystemHelper.getAllFolders(this.tempFolderPath);
 		console.log(`Found ${folders.length} folders in the temporary directory.`);
 
 		for (const folder of folders) {
 			this.logFolderBanner(folder);
-			await this.uploadLibrary(tempFolder, folder);
-			// console.log(`Successfully uploaded library from folder: ${folder}`);
+			await this.uploadLibrary(folder);
+			console.log(`Successfully uploaded library from folder: ${folder}`);
 		}
 	}
 
@@ -27,8 +35,8 @@ class H5pLibraryUploaderService {
 		console.log(border);
 	}
 
-	async uploadLibrary(tempFolder, folderName) {
-		const localFolderPath = fileSystemHelper.buildPath(tempFolder, folderName);
+	async uploadLibrary(folderName) {
+		const localFolderPath = fileSystemHelper.buildPath(this.tempFolderPath, folderName);
 		if (!fileSystemHelper.pathExists(localFolderPath)) {
 			throw new Error(`Folder ${localFolderPath} does not exist.`);
 		}

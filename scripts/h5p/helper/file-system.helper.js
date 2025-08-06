@@ -130,9 +130,6 @@ class FileSystemHelper {
 
 	static getTempDir() {
 		const tempDir = os.tmpdir();
-		if (!this.pathExists(tempDir)) {
-			this.createFolder(tempDir);
-		}
 
 		return tempDir;
 	}
