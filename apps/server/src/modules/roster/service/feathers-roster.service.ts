@@ -143,11 +143,16 @@ export class FeathersRosterService {
 			};
 			return courseUserGroup;
 		});
+
 		return coursesUserGroups;
 	}
 
 	private async getRoomsUserGroups(pseudonymContext: Pseudonym, schoolExternalTool: SchoolExternalTool) {
-		let rooms = await this.getRooms(pseudonymContext.userId);
+		if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
+			return [];
+		}
+
+		let rooms = await this.getRoomsForUser(pseudonymContext.userId);
 		rooms = await this.filterByToolAvailability(rooms, schoolExternalTool);
 
 		const roomUserGroups = await Promise.all(
@@ -167,11 +172,7 @@ export class FeathersRosterService {
 		return roomUserGroups;
 	}
 
-	private async getRooms(userId: EntityId): Promise<Room[]> {
-		if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
-			return [];
-		}
-
+	private async getRoomsForUser(userId: EntityId): Promise<Room[]> {
 		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
 		const roomIds = roomAuthorizables.map((item) => item.roomId);
 

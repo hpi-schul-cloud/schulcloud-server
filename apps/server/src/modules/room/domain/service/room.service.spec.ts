@@ -212,6 +212,30 @@ describe('RoomService', () => {
 		});
 	});
 
+	describe('getAllByIds', () => {
+		const setup = () => {
+			const roomIds: EntityId[] = ['1', '2', '3'];
+			const mockRooms: Room[] = [
+				{ id: '1', name: 'Room 1' },
+				{ id: '2', name: 'Room 2' },
+				{ id: '3', name: 'Room 3' },
+			] as Room[];
+
+			roomRepo.findByIds.mockResolvedValue(mockRooms);
+
+			return { roomIds, mockRooms };
+		};
+
+		it('should return all rooms for given ids', async () => {
+			const { roomIds, mockRooms } = setup();
+
+			const result = await service.getAllByIds(roomIds);
+
+			expect(roomRepo.findByIds).toHaveBeenCalledWith(roomIds);
+			expect(result).toEqual(mockRooms);
+		});
+	});
+
 	describe('canEditorManageVideoconferences', () => {
 		it('should return true if correct feature is present', () => {
 			const room = roomFactory.build();
