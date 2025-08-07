@@ -212,7 +212,7 @@ export class H5PLibraryManagementService {
 		this.logger.info(new H5PLibraryManagementLoggable(`Finished removal of unwanted library ${library}.`));
 	}
 
-	private async installLibrariesAsBulk(
+	public async installLibrariesAsBulk(
 		availableLibraries: ILibraryAdministrationOverviewItem[]
 	): Promise<ILibraryInstallResult[]> {
 		const installedLibraries: ILibraryInstallResult[] = [];
@@ -317,7 +317,7 @@ export class H5PLibraryManagementService {
 		availableVersions.push(...newVersions);
 	}
 
-	private async synchronizeLibraries(): Promise<ILibraryInstallResult[]> {
+	public async synchronizeLibraries(): Promise<ILibraryInstallResult[]> {
 		const synchronizedLibraries: ILibraryInstallResult[] = [];
 		const folders = await this.libraryStorage.getAllLibraryFolders();
 
