@@ -195,7 +195,7 @@ export class DatabaseManagementUc {
 
 	/**
 	 * Imports all or filtered <collections> from filesystem as bson to database.
-	 * The behaviour should match $ mongoimport
+	 * The behavior should match $ mongoimport
 	 * @param collections optional filter applied on existing collections
 	 * @returns the list of collection names exported
 	 */
@@ -325,51 +325,9 @@ export class DatabaseManagementUc {
 	 * Updates the indexes in the database based on definitions in entities
 	 */
 	public async syncIndexes(): Promise<void> {
-		await this.createUserSearchIndex();
 		await this.createGroupUniqueIndex();
 		await this.createExternalToolMediumUniqueIndex();
 		return this.databaseManagementService.syncIndexes();
-	}
-
-	private async createUserSearchIndex(): Promise<void> {
-		const usersCollection = this.databaseManagementService.getDatabaseCollection('users');
-		const userSearchIndexExists = await usersCollection.indexExists('userSearchIndex');
-		const indexes = await usersCollection.indexes();
-
-		if (userSearchIndexExists) {
-			const userSearchIndex = indexes.filter((i) => i.name === 'userSearchIndex');
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (userSearchIndex[0].key?.schoolId === 1) {
-				this.logger.debug('userSearcIndex does not require update');
-				return;
-			}
-			await usersCollection.dropIndex('userSearchIndex');
-		}
-
-		await usersCollection.createIndex(
-			{
-				firstName: 'text',
-				lastName: 'text',
-				email: 'text',
-				firstNameSearchValues: 'text',
-				lastNameSearchValues: 'text',
-				emailSearchValues: 'text',
-				schoolId: 1,
-			},
-			{
-				name: 'userSearchIndex',
-				weights: {
-					firstName: 15,
-					lastName: 15,
-					email: 15,
-					firstNameSearchValues: 3,
-					lastNameSearchValues: 3,
-					emailSearchValues: 2,
-				},
-				default_language: 'none', // no stop words and no stemming,
-				language_override: 'de',
-			}
-		);
 	}
 
 	private async createGroupUniqueIndex(): Promise<void> {
@@ -464,7 +422,7 @@ export class DatabaseManagementUc {
 
 	/**
 	 * Removes all known secrets (hard coded) from the export.
-	 * Manual replacement with the intend placeholders or value is mandatory.
+	 * Manual replacement with the intent placeholders or value is mandatory.
 	 * Currently, this affects system and storageproviders collections.
 	 */
 	private removeSecrets(collectionName: string, jsonDocuments: unknown[]): void {
