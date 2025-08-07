@@ -1,27 +1,54 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
+
 /**
  * Splitting the inputs into 3 letters for search indexing.
  * + first letter
  * + first two letters combination
  * to increase the quality
  *
- * @param {*} string
  * @returns [Array]
  */
-const splitForSearchIndexes = (...searchTexts) => {
-	const arr = [];
-	searchTexts.forEach((item) => {
-		item.split(/[\s-]/g).forEach((it) => {
-			// eslint-disable-next-line no-plusplus
-			if (it.length === 0) return;
+const createAllSubstrings = (input, minLength) => {
+	const result = [];
 
-			arr.push(it.slice(0, 1));
-			if (it.length > 1) arr.push(it.slice(0, 2));
-			for (let i = 0; i < it.length - 2; i += 1) arr.push(it.slice(i, i + 3));
-		});
-	});
-	return arr;
+	for (const word of input.split(/[\s-]/)) {
+		if (!word) continue;
+
+		const codePoints = Array.from(word);
+
+		for (let start = 0; start < codePoints.length; start++) {
+			let current = '';
+			for (let end = start; end < codePoints.length; end++) {
+				current += codePoints[end];
+				if (current.length >= minLength) {
+					result.push(current);
+				}
+			}
+		}
+	}
+
+	return result;
+};
+
+// Explicit minLength version
+const splitForSearchIndexesWithMinLength = (minLength, ...searchTexts) => {
+	return searchTexts.flatMap((text) => createAllSubstrings(text, minLength));
+};
+
+// Default version with minLength = 3
+const splitForSearchIndexes = (...searchTexts) => {
+	return splitForSearchIndexesWithMinLength(3, ...searchTexts.filter((text) => text != null));
+};
+
+const buildAllSearchableStringsForUser = (firstName, lastName, email) => {
+	if (Configuration.get('INCLUDE_MAIL_IN_USER_FULL_TEXT_INDEX')) {
+		return splitForSearchIndexes(firstName, lastName, email);
+	} else {
+		return splitForSearchIndexes(firstName, lastName);
+	}
 };
 
 module.exports = {
 	splitForSearchIndexes,
+	buildAllSearchableStringsForUser,
 };
