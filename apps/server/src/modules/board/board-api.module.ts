@@ -34,14 +34,14 @@ import { CopyHelperModule } from '@modules/copy-helper';
 	],
 	controllers: [BoardController, ColumnController, CardController, ElementController, BoardSubmissionController],
 	providers: [
-		BoardUc, 
-		BoardNodePermissionService, 
-		ColumnUc, 
-		CardUc, 
-		ElementUc, 
-		SubmissionItemUc, 
-		CopyRoomBoardsStep, 
-		CardContentUc
+		BoardUc,
+		BoardNodePermissionService,
+		ColumnUc,
+		CardUc,
+		ElementUc,
+		SubmissionItemUc,
+		CopyRoomBoardsStep,
+		CardContentUc,
 	],
 })
 export class BoardApiModule {}
