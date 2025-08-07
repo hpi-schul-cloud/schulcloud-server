@@ -112,21 +112,24 @@ export class FeathersRosterService {
 
 	public async getGroup(id: EntityId, oauth2ClientId: string): Promise<Group> {
 		let group: Group; // = { data: { students: [], teachers: [] } };
+		let room: Room;
 		try {
-			const room = await this.roomService.getSingleRoom(id);
-
-			if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
-				throw new NotFoundLoggableException(Room.name, { id });
-			}
-
-			const externalTool = await this.validateContextExternalTools(room, room.schoolId, oauth2ClientId);
-
-			group = await this.getRoomGroup(room, externalTool);
+			room = await this.roomService.getSingleRoom(id);
 		} catch (e) {
 			const course: CourseEntity = await this.courseService.findById(id);
 			const externalTool = await this.validateContextExternalTools(course, course.school.id, oauth2ClientId);
 			group = await this.getCourseGroup(course, externalTool);
+
+			return group;
 		}
+
+		if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
+			throw new NotFoundLoggableException(Room.name, { id });
+		}
+
+		const externalTool = await this.validateContextExternalTools(room, room.schoolId, oauth2ClientId);
+
+		group = await this.getRoomGroup(room, externalTool);
 
 		return group;
 	}
@@ -225,6 +228,7 @@ export class FeathersRosterService {
 
 		if (mappingType === 'roomRoles') {
 			// this mapping is for now not used, but might change in the future
+			/*
 			const teacherRoomRoles = [RoleName.ROOMADMIN, RoleName.ROOMEDITOR, RoleName.ROOMOWNER];
 			const studentRoomRoles = [RoleName.ROOMVIEWER];
 			const teacherMembers = roomMembers.members.filter((member) =>
@@ -238,6 +242,7 @@ export class FeathersRosterService {
 				Promise.all(studentMembers.map((user) => this.userService.findById(user.userId))),
 				Promise.all(teacherMembers.map((user) => this.userService.findById(user.userId))),
 			]);
+			 */
 		} else if (mappingType === 'userRoles') {
 			const teacherRoles = [RoleName.TEACHER, RoleName.COURSETEACHER, RoleName.COURSESUBSTITUTIONTEACHER];
 			const studentRoles = [RoleName.STUDENT, RoleName.COURSESTUDENT];
