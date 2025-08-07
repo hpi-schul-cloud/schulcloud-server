@@ -10,6 +10,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { H5PLibraryManagementErrorLoggable } from '../loggable/h5p-library-management-error.loggable';
+import { ILibraryAdministrationOverviewItemTestFactory, ILibraryInstallResultTestFactory } from '../testing';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
 import { H5PLibraryManagementService, castToLibrariesContentType } from './h5p-library-management.service';
 
@@ -131,84 +132,24 @@ describe('H5PLibraryManagementService', () => {
 	describe('run is called', () => {
 		describe('when run has been called successfully', () => {
 			const setup = () => {
-				const uninstalledLibraries: ILibraryAdministrationOverviewItem[] = [
-					{
-						canBeDeleted: true,
-						canBeUpdated: true,
-						dependentsCount: 0,
-						instancesAsDependencyCount: 0,
-						instancesCount: 0,
-						isAddon: false,
-						machineName: 'a',
-						majorVersion: 1,
-						minorVersion: 1,
-						patchVersion: 1,
-						restricted: false,
-						runnable: true,
-						title: 'a',
-					},
-					{
-						canBeDeleted: true,
-						canBeUpdated: true,
-						dependentsCount: 1,
-						instancesAsDependencyCount: 0,
-						instancesCount: 0,
-						isAddon: false,
-						machineName: 'b',
-						majorVersion: 1,
-						minorVersion: 1,
-						patchVersion: 1,
-						restricted: false,
-						runnable: true,
-						title: 'b',
-					},
-					{
-						canBeDeleted: true,
-						canBeUpdated: true,
-						dependentsCount: 0,
-						instancesAsDependencyCount: 0,
-						instancesCount: 0,
-						isAddon: false,
-						machineName: 'c',
-						majorVersion: 1,
-						minorVersion: 1,
-						patchVersion: 1,
-						restricted: false,
-						runnable: true,
-						title: 'c',
-					},
+				const uninstalledLibraries = [
+					ILibraryAdministrationOverviewItemTestFactory.create({ machineName: 'a', dependentsCount: 0, title: 'a' }),
+					ILibraryAdministrationOverviewItemTestFactory.create({ machineName: 'b', dependentsCount: 1, title: 'b' }),
+					ILibraryAdministrationOverviewItemTestFactory.create({ machineName: 'c', dependentsCount: 0, title: 'c' }),
 				];
 				const installedLibraries: ILibraryInstallResult[] = [
-					{
-						newVersion: {
-							machineName: 'd',
-							majorVersion: 1,
-							minorVersion: 1,
-							patchVersion: 1,
-						},
-						oldVersion: undefined,
-						type: 'new',
-					},
-					{
-						newVersion: {
-							machineName: 'e',
-							majorVersion: 1,
-							minorVersion: 1,
-							patchVersion: 1,
-						},
-						oldVersion: {
-							machineName: 'e',
-							majorVersion: 2,
-							minorVersion: 2,
-							patchVersion: 2,
-						},
-						type: 'patch',
-					},
-					{
-						newVersion: undefined,
-						oldVersion: undefined,
-						type: 'none',
-					},
+					ILibraryInstallResultTestFactory.create('new', {
+						machineName: 'd',
+						majorVersion: 1,
+						minorVersion: 1,
+						patchVersion: 1,
+					}),
+					ILibraryInstallResultTestFactory.create(
+						'patch',
+						{ machineName: 'e', majorVersion: 1, minorVersion: 1, patchVersion: 1 },
+						{ machineName: 'e', majorVersion: 2, minorVersion: 2, patchVersion: 2 }
+					),
+					ILibraryInstallResultTestFactory.create('none'),
 				];
 				const synchronizedLibraries: ILibraryInstallResult[] = [];
 				const service = module.get(H5PLibraryManagementService);
@@ -255,70 +196,29 @@ describe('H5PLibraryManagementService', () => {
 
 				const wantedLibraries = ['a', 'b'];
 				let librariesToCheck: ILibraryAdministrationOverviewItem[] = [
-					{
+					ILibraryAdministrationOverviewItemTestFactory.create({
 						machineName: 'a',
 						dependentsCount: 1,
-						canBeDeleted: true,
-						canBeUpdated: true,
-						instancesAsDependencyCount: 0,
-						instancesCount: 0,
-						isAddon: false,
-						majorVersion: 1,
-						minorVersion: 0,
-						patchVersion: 0,
-						restricted: false,
-						runnable: true,
 						title: 'Library A',
-					},
-					{
+					}),
+					ILibraryAdministrationOverviewItemTestFactory.create({
 						machineName: 'b',
 						dependentsCount: 0,
-						canBeDeleted: true,
-						canBeUpdated: true,
-						instancesAsDependencyCount: 0,
-						instancesCount: 0,
-						isAddon: false,
-						majorVersion: 1,
-						minorVersion: 0,
-						patchVersion: 0,
-						restricted: false,
-						runnable: true,
 						title: 'Library B',
-					},
-					{
+					}),
+					ILibraryAdministrationOverviewItemTestFactory.create({
 						machineName: 'c',
 						dependentsCount: 0,
-						canBeDeleted: true,
-						canBeUpdated: true,
-						instancesAsDependencyCount: 0,
-						instancesCount: 0,
-						isAddon: false,
-						majorVersion: 1,
-						minorVersion: 0,
-						patchVersion: 0,
-						restricted: false,
-						runnable: true,
 						title: 'Library C',
-					},
+					}),
 				];
 
-				// Deep copy before mutation for assertion
 				const expectedUninstalled: ILibraryAdministrationOverviewItem[] = [
-					{
+					ILibraryAdministrationOverviewItemTestFactory.create({
 						machineName: 'c',
 						dependentsCount: 0,
-						canBeDeleted: true,
-						canBeUpdated: true,
-						instancesAsDependencyCount: 0,
-						instancesCount: 0,
-						isAddon: false,
-						majorVersion: 1,
-						minorVersion: 0,
-						patchVersion: 0,
-						restricted: false,
-						runnable: true,
 						title: 'Library C',
-					},
+					}),
 				];
 
 				jest.spyOn(service.libraryAdministration, 'getLibraries').mockResolvedValue(librariesToCheck);
