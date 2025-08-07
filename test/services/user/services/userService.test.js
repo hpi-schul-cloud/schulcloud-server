@@ -6,6 +6,10 @@ const { setupNestServices, closeNestServices } = require('../../../utils/setup.n
 const testHelper = require('../../helpers/testObjects');
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
+
 const testGenericErrorMessage = 'Der angefragte Nutzer ist unbekannt!';
 
 describe('user service', () => {
