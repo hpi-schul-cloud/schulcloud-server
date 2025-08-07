@@ -146,32 +146,45 @@ export class H5PLibraryManagementService {
 	}
 
 	public async uninstallUnwantedLibrariesAsBulk(): Promise<ILibraryAdministrationOverviewItem[]> {
-		let librariesToCheck: ILibraryAdministrationOverviewItem[] = [];
-		let uninstalledLibraries: ILibraryAdministrationOverviewItem[];
+		let availableLibraries: ILibraryAdministrationOverviewItem[] = [];
+		let uninstalledLibraries: ILibraryAdministrationOverviewItem[] = [];
+		let failedLibraries: ILibraryAdministrationOverviewItem[] = [];
 		const allUninstalledLibraries: ILibraryAdministrationOverviewItem[] = [];
+		const allFailedLibraries: ILibraryAdministrationOverviewItem[] = [];
 
 		do {
-			librariesToCheck = await this.libraryAdministration.getLibraries();
-			uninstalledLibraries = await this.uninstallUnwantedLibraries(librariesToCheck);
+			availableLibraries = await this.libraryAdministration.getLibraries();
+			if (allFailedLibraries.length > 0) {
+				const failedSet = new Set(allFailedLibraries.map((lib) => lib.machineName));
+				availableLibraries = availableLibraries.filter((lib) => !failedSet.has(lib.machineName));
+			}
+			const result = await this.uninstallUnwantedLibraries(availableLibraries);
+			({ uninstalledLibraries, failedLibraries } = result);
 			allUninstalledLibraries.push(...uninstalledLibraries);
+			allFailedLibraries.push(...failedLibraries);
 		} while (uninstalledLibraries.length > 0);
 
 		return allUninstalledLibraries;
 	}
 
-	public async uninstallUnwantedLibraries(
-		availableLibraries: ILibraryAdministrationOverviewItem[]
-	): Promise<ILibraryAdministrationOverviewItem[]> {
+	public async uninstallUnwantedLibraries(availableLibraries: ILibraryAdministrationOverviewItem[]): Promise<{
+		uninstalledLibraries: ILibraryAdministrationOverviewItem[];
+		failedLibraries: ILibraryAdministrationOverviewItem[];
+	}> {
 		const unwantedLibraries = this.getUnwantedLibraries(availableLibraries);
-		const result: ILibraryAdministrationOverviewItem[] = [];
+		const uninstalledLibraries: ILibraryAdministrationOverviewItem[] = [];
+		const failedLibraries: ILibraryAdministrationOverviewItem[] = [];
 
 		for (const library of unwantedLibraries) {
 			// to avoid conflicts, remove one-by-one
 			const success = await this.forceUninstallLibrary(library);
 			if (success) {
-				result.push(library);
+				uninstalledLibraries.push(library);
+			} else {
+				failedLibraries.push(library);
 			}
 		}
+		const result = { uninstalledLibraries, failedLibraries };
 
 		return result;
 	}
