@@ -34,6 +34,12 @@ export class RoomPermissionService {
 		}
 	}
 
+	public checkFeatureAdministrateRoomsEnabled(): void {
+		if (!this.configService.get('FEATURE_ADMINISTRATE_ROOMS_ENABLED', { infer: true })) {
+			throw new FeatureDisabledLoggableException('FEATURE_ADMINISTRATE_ROOMS_ENABLED');
+		}
+	}
+
 	public checkFeatureRoomCopyEnabled(): void {
 		if (!this.configService.get('FEATURE_ROOM_COPY_ENABLED', { infer: true })) {
 			throw new FeatureDisabledLoggableException('FEATURE_ROOM_COPY_ENABLED');

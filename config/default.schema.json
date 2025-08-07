@@ -1630,6 +1630,11 @@
 			"default": "false",
 			"description": "Enables the tab navigation for room members page"
 		},
+		"FEATURE_ADMINISTRATE_ROOMS_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the administration of rooms by school admins"
+		},
 		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
 			"type": "boolean",
 			"default": "false",
@@ -1686,6 +1691,11 @@
 			"type": "string",
 			"default": "noreply@dbildungscloud.de",
 			"description": "sender address used to send mails with"
+		},
+		"INCLUDE_MAIL_IN_USER_FULL_TEXT_INDEX": {
+			"type": "boolean",
+			"default": true,
+			"description": "if user.email shall be included in the full text index"
 		}
 	},
 	"required": []

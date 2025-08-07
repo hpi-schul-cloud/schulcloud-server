@@ -33,8 +33,6 @@ export class RoomRolesTestFactory {
 				Permission.ROOM_CHANGE_ROLES,
 				Permission.ROOM_DELETE_ROOM,
 				Permission.ROOM_CHANGE_OWNER,
-				Permission.ROOM_COPY_ROOM,
-				Permission.ROOM_SHARE_ROOM,
 			],
 		});
 		const roomAdminRole = roleFactory.buildWithId({
