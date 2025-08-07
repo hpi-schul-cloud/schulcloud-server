@@ -5,7 +5,13 @@ import { EntityId } from '@shared/domain/types';
 import { BoardNodePermissionService, BoardNodeService } from '../service';
 import { Action } from '@modules/authorization';
 import { CardResponseMapper } from '../controller/mapper';
-import { CardResponse, LinkContentBody, RichTextContentBody, UpdateElementContentBodyParams } from '../controller/dto';
+import {
+	CardResponse,
+	FileContentBody,
+	LinkContentBody,
+	RichTextContentBody,
+	UpdateElementContentBodyParams,
+} from '../controller/dto';
 
 @Injectable()
 export class CardContentUc {
@@ -46,7 +52,7 @@ export class CardContentUc {
 
 	private convertCardPropsToElements(
 		cardProps: UpdateElementContentBodyParams[]
-	): (RichTextContentBody | LinkContentBody)[] {
+	): (RichTextContentBody | LinkContentBody | FileContentBody)[] {
 		return cardProps.map((param) => {
 			const { type, content } = param.data;
 
@@ -63,6 +69,11 @@ export class CardContentUc {
 					return {
 						text: content.text,
 						inputFormat: content.inputFormat,
+					};
+				case ContentElementType.FILE:
+					return {
+						caption: content.caption,
+						alternativeText: content.alternativeText,
 					};
 				default:
 					throw new Error('Unsupported element type');

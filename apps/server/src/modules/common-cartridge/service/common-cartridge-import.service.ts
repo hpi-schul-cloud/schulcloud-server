@@ -177,7 +177,6 @@ export class CommonCartridgeImportService {
 		};
 		const cardResponse = await this.columnClient.createCardWithContent(column.id, cardCreateImportParams);
 
-		// await this.uploadFile(currentUser, resources, cardResponse.id);
 		for await (const element of cardResponse.elements) {
 			const foundItem = commonCartridgeResourcesList.find((item) => item.id === element.id);
 
@@ -185,9 +184,6 @@ export class CommonCartridgeImportService {
 				await this.uploadFile(currentUser, foundItem.resource, element.id);
 			}
 		}
-		// for await (const cardElement of cardElements) {
-		// 	await this.createCardElement(parser, card.id, cardElement, currentUser);
-		// }
 	}
 
 	private async createCardElement(
