@@ -33,6 +33,15 @@ import { CopyHelperModule } from '@modules/copy-helper';
 		SagaModule,
 	],
 	controllers: [BoardController, ColumnController, CardController, ElementController, BoardSubmissionController],
-	providers: [BoardUc, BoardNodePermissionService, ColumnUc, CardUc, ElementUc, SubmissionItemUc, CopyRoomBoardsStep, CardContentUc],
+	providers: [
+		BoardUc, 
+		BoardNodePermissionService, 
+		ColumnUc, 
+		CardUc, 
+		ElementUc, 
+		SubmissionItemUc, 
+		CopyRoomBoardsStep, 
+		CardContentUc
+	],
 })
 export class BoardApiModule {}
