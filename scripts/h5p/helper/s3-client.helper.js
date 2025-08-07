@@ -1,4 +1,10 @@
-const { GetObjectCommand, ListObjectsV2Command, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const {
+	DeleteObjectsCommand,
+	GetObjectCommand,
+	ListObjectsV2Command,
+	S3Client,
+	PutObjectCommand,
+} = require('@aws-sdk/client-s3');
 const { ConfiguredRetryStrategy, RETRY_MODES } = require('@aws-sdk/util-retry');
 
 const MAXIMUM_ATTEMPTS = 3;
@@ -53,7 +59,9 @@ class S3ClientHelper {
 		for await (const chunk of response.Body) {
 			chunks.push(chunk);
 		}
-		return Buffer.concat(chunks);
+		const result = Buffer.concat(chunks);
+
+		return result;
 	}
 
 	async listObjects(prefix = undefined) {
@@ -62,7 +70,9 @@ class S3ClientHelper {
 			Prefix: prefix,
 		});
 		const response = await this.s3Client.send(command);
-		return response.Contents || [];
+		const result = response.Contents || [];
+
+		return result;
 	}
 
 	async uploadFile(key, body) {
@@ -71,7 +81,45 @@ class S3ClientHelper {
 			Key: key,
 			Body: body,
 		});
-		return this.s3Client.send(command);
+		const result = await this.s3Client.send(command);
+
+		return result;
+	}
+
+	async deleteFolder(path, nextMarker = undefined) {
+		const data = await this.listObjects(path, nextMarker);
+		if (data.length === 0) {
+			return [];
+		}
+
+		const paths = data.map((obj) => obj.Key);
+		const result = await this.delete(paths);
+		if (data.IsTruncated && data.NextContinuationToken) {
+			const deletedFiles = await this.deleteDirectory(path, data.NextContinuationToken);
+			result.push(...deletedFiles);
+		}
+
+		return result;
+	}
+
+	async delete(paths) {
+		const result = [];
+		if (paths.length === 0) return [];
+
+		const pathObjects = paths.map((p) => {
+			return { Key: p };
+		});
+		const command = new DeleteObjectsCommand({
+			Bucket: this.bucket,
+			Delete: { Objects: pathObjects },
+		});
+		const response = await this.s3Client.send(command);
+		if (response.$metadata.httpStatusCode === 200 && response.Deleted) {
+			const deletedFiles = response.Deleted.map((obj) => obj.Key);
+			result.push(...deletedFiles);
+		}
+
+		return result;
 	}
 }
 
