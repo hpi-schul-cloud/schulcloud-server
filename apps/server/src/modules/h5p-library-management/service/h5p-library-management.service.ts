@@ -20,6 +20,7 @@ import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { readFileSync } from 'fs';
+import { Readable } from 'stream';
 import { parse } from 'yaml';
 import { H5pDefaultUserFactory } from '../factory';
 import {
@@ -324,10 +325,12 @@ export class H5PLibraryManagementService {
 			const libraryName = this.getLibraryNameFromFolder(folder);
 			const libraryJsonExistsInS3 = await this.libraryStorage.fileExists(libraryName, 'library.json');
 			if (libraryJsonExistsInS3) {
-				const result = await this.synchronizeLibrary(libraryName);
+				const result = await this.synchronizeLibraryFromS3(libraryName);
 				if (result.type === 'new' || result.type === 'patch') {
 					synchronizedLibraries.push(result);
 				}
+			} else {
+				await this.synchronizeLibraryToS3(libraryName);
 			}
 		}
 
@@ -346,7 +349,7 @@ export class H5PLibraryManagementService {
 		return libraryName;
 	}
 
-	private async synchronizeLibrary(libraryName: ILibraryName): Promise<ILibraryInstallResult> {
+	private async synchronizeLibraryFromS3(libraryName: ILibraryName): Promise<ILibraryInstallResult> {
 		const newLibraryMetadata: ILibraryMetadata = (await this.libraryStorage.getFileAsJson(
 			libraryName,
 			'library.json',
@@ -467,7 +470,7 @@ export class H5PLibraryManagementService {
 		try {
 			metadata = await this.libraryStorage.getLibrary(library);
 		} catch (error) {
-			this.logger.info(
+			this.logger.warning(
 				new H5PLibraryManagementErrorLoggable(
 					error,
 					{ library: `${library.machineName}-${library.majorVersion}.${library.minorVersion}` },
@@ -531,5 +534,32 @@ export class H5PLibraryManagementService {
 				}: ${missingFiles.join(', ')}`
 			)
 		);
+	}
+
+	private async synchronizeLibraryToS3(libraryName: ILibraryName): Promise<void> {
+		let metadata: IInstalledLibrary | undefined = undefined;
+		try {
+			metadata = await this.libraryStorage.getLibrary(libraryName);
+		} catch (error) {
+			this.logger.warning(
+				new H5PLibraryManagementErrorLoggable(
+					error,
+					{ library: `${libraryName.machineName}-${libraryName.majorVersion}.${libraryName.minorVersion}` },
+					'while reading library'
+				)
+			);
+
+			return;
+		}
+
+		const dataStream = Readable.from(JSON.stringify(metadata, null, 2));
+		const fileAdded = await this.libraryStorage.addFile(libraryName, 'library.json', dataStream);
+		if (fileAdded) {
+			this.logger.info(
+				new H5PLibraryManagementLoggable(
+					`Added library.json containing latest metadata for ${metadata.machineName}-${metadata.majorVersion}.${metadata.minorVersion}.${metadata.patchVersion} to S3.`
+				)
+			);
+		}
 	}
 }
