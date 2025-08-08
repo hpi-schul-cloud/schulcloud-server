@@ -162,6 +162,39 @@ describe(ClassService.name, () => {
 		});
 	});
 
+	describe('findExistingClassesByIds', () => {
+		describe('when the user has classes', () => {
+			const setup = () => {
+				const [clazzOne, clazzTwo]: Class[] = classFactory.buildList(2);
+
+				return {
+					clazzOne,
+					clazzTwo,
+				};
+			};
+
+			it('should return the classes as array', async () => {
+				const { clazzOne, clazzTwo } = setup();
+				classesRepo.findClassById.mockResolvedValueOnce(clazzOne);
+				classesRepo.findClassById.mockResolvedValueOnce(clazzTwo);
+
+				const result: Class[] = await service.findExistingClassesByIds([clazzOne.id, clazzTwo.id]);
+
+				expect(result).toEqual([clazzOne, clazzTwo]);
+			});
+
+			it('should return empty array if classes not found', async () => {
+				const { clazzOne, clazzTwo } = setup();
+				classesRepo.findClassById.mockResolvedValueOnce(null);
+				classesRepo.findClassById.mockResolvedValueOnce(null);
+
+				const result: Class[] = await service.findExistingClassesByIds([clazzOne.id, clazzTwo.id]);
+
+				expect(result).toEqual([]);
+			});
+		});
+	});
+
 	describe('findClassWithSchoolIdAndExternalId', () => {
 		describe('when searching for a class', () => {
 			const setup = () => {

@@ -246,4 +246,12 @@ export class UserService {
 
 		return users;
 	}
+
+	public async findExistingUsersByIds(userIds: EntityId[]): Promise<UserDo[]> {
+		const promises = userIds.map((userId) => this.userDoRepo.findByIdOrNull(userId));
+		const users = await Promise.all(promises);
+		const existingUsers = users.filter((user): user is UserDo => Boolean(user));
+
+		return existingUsers;
+	}
 }
