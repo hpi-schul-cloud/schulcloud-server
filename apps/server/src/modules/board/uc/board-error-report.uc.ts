@@ -10,7 +10,7 @@ import { BoardErrorLoggableException } from '../loggable/board-error-loggable-ex
 export class BoardErrorReportUc {
 	constructor(private readonly authorizationService: AuthorizationService, private readonly logger: Logger) {}
 
-	public async reportError(userId: EntityId, params: BoardErrorReportBodyParams): Promise<{ reportId: string }> {
+	public async reportError(userId: EntityId, params: BoardErrorReportBodyParams): Promise<void> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		const errorData = {
 			...params,
@@ -23,15 +23,11 @@ export class BoardErrorReportUc {
 				errorData.message,
 				errorData.type,
 				errorData.url,
-				errorData.contextType,
-				errorData.contextId,
+				errorData.boardId,
 				errorData.schoolId,
 				errorData.userId,
 				errorData.retryCount
 			)
 		);
-		console.log(`Reporting board error:`, errorData);
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-		return { reportId: 'dummy-report-id' };
 	}
 }

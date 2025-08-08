@@ -7,8 +7,6 @@ import { TestApiClient } from '@testing/test-api-client';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { userFactory } from '@modules/user/testing';
 import { accountFactory } from '@modules/account/testing';
-import { BoardErrorContextTypeEnum } from '../../interface/board-error-context-type.enum';
-import { BoardErrorTypeEnum } from '../../interface/board-error-type.enum';
 import { BoardErrorReportBodyParams } from '../dto/board/board-error-report.body.params';
 
 const baseRouteName = '/report-board-error';
@@ -38,11 +36,10 @@ describe('BoardErrorReportController (api)', () => {
 	});
 
 	const validPayload: BoardErrorReportBodyParams = {
-		type: BoardErrorTypeEnum.WEBSOCKET_UNABLE_TO_CONNECT,
+		type: 'disconnect',
 		message: 'Websocket failed to connect',
 		url: 'https://example.com/board',
-		contextType: BoardErrorContextTypeEnum.BOARD,
-		contextId: 'boardId',
+		boardId: 'boardId',
 		retryCount: 0,
 	};
 

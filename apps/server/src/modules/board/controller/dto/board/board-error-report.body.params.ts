@@ -1,15 +1,13 @@
-import { IsEnum, IsNumber, IsString } from 'class-validator';
-import { BoardErrorContextTypeEnum } from '../../../interface/board-error-context-type.enum';
-import { BoardErrorTypeEnum } from '../../../interface/board-error-type.enum';
+import { IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class BoardErrorReportBodyParams {
 	@ApiProperty({
-		enum: BoardErrorTypeEnum,
-		enumName: 'BoardErrorTypeEnum',
+		type: String,
+		description: 'Type of the board error',
 	})
-	@IsEnum(BoardErrorTypeEnum)
-	public type!: BoardErrorTypeEnum;
+	@IsString()
+	public type!: string;
 
 	@ApiProperty({
 		type: String,
@@ -26,18 +24,11 @@ export class BoardErrorReportBodyParams {
 	public url!: string;
 
 	@ApiProperty({
-		enum: BoardErrorContextTypeEnum,
-		enumName: 'BoardErrorContextTypeEnum',
-	})
-	@IsEnum(BoardErrorContextTypeEnum)
-	public contextType!: BoardErrorContextTypeEnum;
-
-	@ApiProperty({
 		type: String,
-		description: 'EntityId (e.g. boardId)',
+		description: 'Id of the board the error occurred on',
 	})
 	@IsString()
-	public contextId!: string;
+	public boardId!: string;
 
 	@ApiProperty({
 		type: Number,
