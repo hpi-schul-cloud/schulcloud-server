@@ -26,6 +26,12 @@ export class RoomService {
 		return rooms;
 	}
 
+	public async getAllByIds(roomIds: EntityId[]): Promise<Room[]> {
+		const rooms = await this.roomRepo.findByIds(roomIds);
+
+		return rooms;
+	}
+
 	public async createRoom(props: RoomCreateProps): Promise<Room> {
 		const roomProps: RoomProps = {
 			id: new ObjectId().toHexString(),
@@ -51,6 +57,17 @@ export class RoomService {
 		const room = await this.roomRepo.findById(roomId);
 
 		return room;
+	}
+
+	public async roomExists(roomId: EntityId): Promise<boolean> {
+		let room: Room;
+		try {
+			room = await this.getSingleRoom(roomId);
+		} catch (error) {
+			return false;
+		}
+
+		return !!room;
 	}
 
 	public async updateRoom(room: Room, props: RoomUpdateProps): Promise<void> {
