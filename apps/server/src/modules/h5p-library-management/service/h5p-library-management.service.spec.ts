@@ -10,7 +10,6 @@ import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { H5PLibraryManagementErrorLoggable } from '../loggable/h5p-library-management-error.loggable';
 import { ILibraryAdministrationOverviewItemTestFactory, ILibraryInstallResultTestFactory } from '../testing';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
 import { H5PLibraryManagementService, castToLibrariesContentType } from './h5p-library-management.service';
@@ -158,20 +157,20 @@ describe('H5PLibraryManagementService', () => {
 					return Promise.resolve();
 				});
 
+				service.libraryWishList = wantedLibraries;
+
 				return { service, wantedLibraries, expectedUninstalled };
 			};
 
 			it('should uninstall unwanted libraries and return the list of uninstalled libraries', async () => {
-				const { service, wantedLibraries, expectedUninstalled } = setup();
-
-				service.libraryWishList = wantedLibraries;
+				const { service, expectedUninstalled } = setup();
 
 				// Call the method to uninstall unwanted libraries
 				// This will use the mocked getLibraries and deleteLibrary methods
 
-				const result = await service.uninstallUnwantedLibrariesAsBulk();
+				const uninstalledLibraries = await service.uninstallUnwantedLibrariesAsBulk();
 
-				expect(result).toEqual(expectedUninstalled);
+				expect(uninstalledLibraries).toEqual(expectedUninstalled);
 			});
 		});
 
@@ -219,20 +218,20 @@ describe('H5PLibraryManagementService', () => {
 						return Promise.resolve();
 					});
 
+				service.libraryWishList = wantedLibraries;
+
 				return { service, wantedLibraries, expectedUninstalled };
 			};
 
 			it('should uninstall unwanted libraries except the failed library and return the list of uninstalled libraries', async () => {
-				const { service, wantedLibraries, expectedUninstalled } = setup();
-
-				service.libraryWishList = wantedLibraries;
+				const { service, expectedUninstalled } = setup();
 
 				// Call the method to uninstall unwanted libraries
 				// This will use the mocked getLibraries and deleteLibrary methods
 
-				const result = await service.uninstallUnwantedLibrariesAsBulk();
+				const uninstalledLibraries = await service.uninstallUnwantedLibrariesAsBulk();
 
-				expect(result).toEqual(expectedUninstalled);
+				expect(uninstalledLibraries).toEqual(expectedUninstalled);
 			});
 		});
 
@@ -261,17 +260,17 @@ describe('H5PLibraryManagementService', () => {
 
 				jest.spyOn(service.libraryAdministration, 'getLibraries').mockResolvedValue(librariesToCheck);
 
-				return { service, wantedLibraries };
+				service.libraryWishList = wantedLibraries;
+
+				return { service };
 			};
 
 			it('should return an empty list', async () => {
-				const { service, wantedLibraries } = setup();
+				const { service } = setup();
 
-				service.libraryWishList = wantedLibraries;
+				const uninstalledLibraries = await service.uninstallUnwantedLibrariesAsBulk();
 
-				const result = await service.uninstallUnwantedLibrariesAsBulk();
-
-				expect(result).toEqual([]);
+				expect(uninstalledLibraries).toEqual([]);
 			});
 		});
 	});
@@ -281,22 +280,97 @@ describe('H5PLibraryManagementService', () => {
 			const setup = () => {
 				const service = module.get(H5PLibraryManagementService);
 
-				return { service };
-			};
-			it('should install all libraries in the list', async () => {
-				const { service } = setup();
 				const wantedLibraries = ['a', 'b', 'c'];
-				const availableLibraries: ILibraryAdministrationOverviewItem[] = [];
+				const availableLibraries: ILibraryAdministrationOverviewItem[] = [
+					ILibraryAdministrationOverviewItemTestFactory.create({
+						machineName: 'd',
+						dependentsCount: 0,
+						title: 'Library D',
+					}),
+					ILibraryAdministrationOverviewItemTestFactory.create({
+						machineName: 'e',
+						dependentsCount: 0,
+						title: 'Library E',
+					}),
+					ILibraryAdministrationOverviewItemTestFactory.create({
+						machineName: 'f',
+						dependentsCount: 0,
+						title: 'Library F',
+					}),
+				];
 
 				service.libraryWishList = wantedLibraries;
 
-				const installContentTypeSpy = jest.spyOn(service.contentTypeRepo, 'installContentType').mockResolvedValue([]);
+				jest
+					.spyOn(service.contentTypeRepo, 'installContentType')
+					.mockResolvedValueOnce([
+						ILibraryInstallResultTestFactory.create('new', {
+							machineName: 'libraryA',
+							majorVersion: 1,
+							minorVersion: 0,
+							patchVersion: 0,
+						}),
+					])
+					.mockResolvedValueOnce([
+						ILibraryInstallResultTestFactory.create(
+							'patch',
+							{
+								machineName: 'libraryB',
+								majorVersion: 1,
+								minorVersion: 0,
+								patchVersion: 0,
+							},
+							{
+								machineName: 'libraryB',
+								majorVersion: 1,
+								minorVersion: 0,
+								patchVersion: 1,
+							}
+						),
+					])
+					.mockResolvedValueOnce([ILibraryInstallResultTestFactory.create('none')]);
 				jest.spyOn(service.contentTypeCache, 'get').mockResolvedValue([]);
 
-				await service.installLibrariesAsBulk(availableLibraries);
-				for (const libName of wantedLibraries) {
-					expect(installContentTypeSpy).toHaveBeenCalledWith(libName, expect.anything());
-				}
+				return { availableLibraries, service };
+			};
+
+			it('should install all libraries in the list', async () => {
+				const { availableLibraries, service } = setup();
+
+				const installedLibraries = await service.installLibrariesAsBulk(availableLibraries);
+
+				expect(installedLibraries).toEqual([
+					{
+						newVersion: {
+							machineName: 'libraryA',
+							majorVersion: 1,
+							minorVersion: 0,
+							patchVersion: 0,
+						},
+						oldVersion: undefined,
+						type: 'new',
+					},
+					{
+						newVersion: {
+							machineName: 'libraryB',
+							majorVersion: 1,
+							minorVersion: 0,
+							patchVersion: 0,
+						},
+						oldVersion: {
+							machineName: 'libraryB',
+							majorVersion: 1,
+							minorVersion: 0,
+							patchVersion: 1,
+						},
+						type: 'patch',
+					},
+					{
+						newVersion: undefined,
+						oldVersion: undefined,
+						type: 'none',
+					},
+				]);
 			});
 		});
 
@@ -304,30 +378,31 @@ describe('H5PLibraryManagementService', () => {
 			const setup = () => {
 				const service = module.get(H5PLibraryManagementService);
 
-				return { service };
-			};
-			it('should not install library', async () => {
-				const { service } = setup();
 				const nonExistentLibrary = 'nonExistentLibrary';
 				const availableLibraries: ILibraryAdministrationOverviewItem[] = [];
 
 				service.libraryWishList = [nonExistentLibrary];
 
-				const installContentTypeSpy = jest.spyOn(service.contentTypeRepo, 'installContentType');
+				jest.spyOn(service.contentTypeRepo, 'installContentType');
 				jest
 					.spyOn(service.contentTypeCache, 'get')
 					.mockResolvedValueOnce(undefined as unknown as Promise<IHubContentType[]>);
 
-				await service.installLibrariesAsBulk(availableLibraries);
+				return { availableLibraries, service };
+			};
 
-				expect(installContentTypeSpy).not.toHaveBeenCalled();
+			it('should not install library', async () => {
+				const { availableLibraries, service } = setup();
+
+				const availableLLibraries = await service.installLibrariesAsBulk(availableLibraries);
+
+				expect(availableLLibraries).toEqual([]);
 			});
 		});
 
 		describe('when contentTypeRepo.installContentType rejects with an error', () => {
 			const setup = () => {
 				const service = module.get(H5PLibraryManagementService);
-				const logger = module.get(Logger);
 
 				const library = 'mock-library';
 				const error = new Error('Mock installation error');
@@ -335,18 +410,19 @@ describe('H5PLibraryManagementService', () => {
 				jest.spyOn(service.contentTypeCache, 'get').mockResolvedValueOnce([]);
 				jest.spyOn(service.contentTypeRepo, 'installContentType').mockRejectedValueOnce(error);
 
-				return { service, logger, library, error };
-			};
-
-			it('should log the error using H5PLibraryManagementLoggable', async () => {
-				const { service, logger, library, error } = setup();
 				const availableLibraries: ILibraryAdministrationOverviewItem[] = [];
 
 				service.libraryWishList = [library];
 
-				await service.installLibrariesAsBulk(availableLibraries);
+				return { availableLibraries, service };
+			};
 
-				expect(logger.warning).toHaveBeenCalledWith(new H5PLibraryManagementErrorLoggable(error, { library }));
+			it('should return an empty result list', async () => {
+				const { availableLibraries, service } = setup();
+
+				const availableLLibraries = await service.installLibrariesAsBulk(availableLibraries);
+
+				expect(availableLLibraries).toEqual([]);
 			});
 		});
 	});
