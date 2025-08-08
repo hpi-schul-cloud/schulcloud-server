@@ -1,4 +1,3 @@
-const { Octokit } = require('@octokit/rest');
 const axios = require('axios');
 const fs = require('fs');
 
@@ -9,9 +8,7 @@ class H5pGitHubClient {
 			throw new Error('GITHUB_PERSONAL_ACCESS_TOKEN environment variable is not set');
 		}
 
-		this.octokit = new Octokit({
-			auth: personalAccessToken,
-		});
+		this.token = personalAccessToken;
 	}
 
 	async fetchRepositoriesFromGitHubOrganization(organization) {
@@ -38,19 +35,17 @@ class H5pGitHubClient {
 	}
 
 	async fetchRepositoriesOfOrganizationPagewise(organization, page = 1, perPage = 100) {
-		let response;
+		let result;
+		const url = `https://api.github.com/orgs/${organization}/repos?type=public&per_page=${perPage}&page=${page}`;
 		try {
-			response = await this.octokit.repos.listForOrg({
-				org: organization,
-				type: 'public',
-				per_page: perPage,
-				page,
-			});
+			const headers = this.token ? { Authorization: `token ${this.token}` } : {};
+			const response = await axios.get(url, { headers });
+			result = { data: response.data };
 		} catch (error) {
 			console.error(`Error fetching repositories for organization ${organization} on page ${page}:`, error);
 		}
 
-		return response;
+		return result;
 	}
 
 	async buildLibraryRepoMapFromRepos(organization, repos) {
@@ -79,22 +74,21 @@ class H5pGitHubClient {
 	}
 
 	async getLibraryJsonFromRepo(organization, repo) {
-		let response;
+		let result;
+		const url = `https://api.github.com/repos/${organization}/${repo.name}/contents/library.json`;
 		try {
-			response = await this.octokit.repos.getContent({
-				owner: organization,
-				repo: repo.name,
-				path: 'library.json',
-			});
+			const headers = this.token ? { Authorization: `token ${this.token}` } : {};
+			result = await axios.get(url, { headers });
 		} catch (error) {
-			if (error && error.status === 404) {
+			if (error && error.response && error.response.status === 404) {
 				console.error(`library.json does not exist in repository ${repo.name}.`);
 			} else {
 				console.error(`Unknown error fetching library.json from repository ${repo.name}:`, error);
 			}
+			result = undefined;
 		}
 
-		return response;
+		return result;
 	}
 
 	checkContentOfLibraryJson(data) {
@@ -110,10 +104,13 @@ class H5pGitHubClient {
 	async fetchGitHubTags(repoName, retries = 3) {
 		let tags = [];
 		for (let attempt = 0; attempt < retries; attempt++) {
+			const [owner, repo] = repoName.split('/');
+			const url = `https://api.github.com/repos/${owner}/${repo}/tags`;
 			try {
-				const [owner, repo] = repoName.split('/');
-				const response = await this.octokit.repos.listTags({ owner, repo });
+				const headers = this.token ? { Authorization: `token ${this.token}` } : {};
+				const response = await axios.get(url, { headers });
 				tags = response.data.map((tag) => tag.name);
+				break;
 			} catch (error) {
 				console.error(`Unknown error while fetching tags for ${repoName}:`, error);
 				if (attempt < retries - 1) {
