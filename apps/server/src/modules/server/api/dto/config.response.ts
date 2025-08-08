@@ -108,6 +108,9 @@ export class ConfigResponse {
 	public FEATURE_COLUMN_BOARD_H5P_ENABLED: boolean;
 
 	@ApiProperty()
+	public FEATURE_COLUMN_BOARD_COLLABORA_ENABLED: boolean;
+
+	@ApiProperty()
 	FEATURE_COURSE_SHARE: boolean;
 
 	@ApiProperty()
@@ -324,5 +327,6 @@ export class ConfigResponse {
 		this.LICENSE_SUMMARY_URL = config.LICENSE_SUMMARY_URL;
 		this.ROOM_MEMBER_INFO_URL = config.ROOM_MEMBER_INFO_URL;
 		this.FEATURE_COLUMN_BOARD_H5P_ENABLED = config.FEATURE_COLUMN_BOARD_H5P_ENABLED;
+		this.FEATURE_COLUMN_BOARD_COLLABORA_ENABLED = config.FEATURE_COLUMN_BOARD_COLLABORA_ENABLED;
 	}
 }

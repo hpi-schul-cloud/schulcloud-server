@@ -1158,6 +1158,11 @@
 			"default": true,
 			"description": "Enables h5p on the column board"
 		},
+		"FEATURE_COLUMN_BOARD_COLLABORA_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables edit of office documents on the column board"
+		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
