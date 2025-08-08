@@ -5,6 +5,7 @@ import {
 	ILibraryAdministrationOverviewItem,
 	ILibraryInstallResult,
 } from '@lumieducation/h5p-server/build/src/types';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -346,6 +347,276 @@ describe('H5PLibraryManagementService', () => {
 				await service.installLibrariesAsBulk(availableLibraries);
 
 				expect(logger.warning).toHaveBeenCalledWith(new H5PLibraryManagementErrorLoggable(error, { library }));
+			});
+		});
+	});
+
+	describe('synchronizeLibraries is called', () => {
+		describe('when a new version of an existing library is available on S3', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+
+				libraryStorage.getAllLibraryFolders.mockResolvedValueOnce(['libraryA-1.0']);
+				libraryStorage.fileExists.mockResolvedValueOnce(true);
+				libraryStorage.getFileAsJson.mockResolvedValueOnce({
+					machineName: 'libraryA',
+					majorVersion: 1,
+					minorVersion: 0,
+					patchVersion: 1,
+				});
+				libraryStorage.isInstalled.mockResolvedValueOnce(true);
+				libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
+					{
+						machineName: 'libraryA',
+						majorVersion: 1,
+						minorVersion: 0,
+					},
+				]);
+				libraryStorage.getLibrary.mockResolvedValueOnce({
+					machineName: 'libraryA',
+					majorVersion: 1,
+					minorVersion: 0,
+					patchVersion: 0,
+					files: [],
+					_id: new ObjectId(),
+					id: 'mock_id',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					restricted: false,
+					runnable: true,
+					title: 'Library A',
+					compare: jest.fn(),
+					compareVersions: jest.fn(),
+				});
+				libraryStorage.updateLibrary.mockResolvedValueOnce({
+					machineName: 'libraryA',
+					majorVersion: 1,
+					minorVersion: 0,
+					patchVersion: 1,
+					restricted: false,
+					runnable: true,
+					title: 'Library A',
+					compare: jest.fn(),
+					compareVersions: jest.fn(),
+				});
+				libraryStorage.isInstalled.mockResolvedValueOnce(true);
+				libraryStorage.getLibrary.mockResolvedValueOnce({
+					machineName: 'libraryA',
+					majorVersion: 1,
+					minorVersion: 0,
+					patchVersion: 1,
+					files: [],
+					_id: new ObjectId(),
+					id: 'mock_id',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					restricted: false,
+					runnable: true,
+					title: 'Library A',
+					compare: jest.fn(),
+					compareVersions: jest.fn(),
+					preloadedJs: [{ path: 'path/to/preloaded.js' }],
+					preloadedCss: [{ path: 'path/to/preloaded.css' }],
+				});
+				libraryStorage.fileExists.mockResolvedValueOnce(true).mockResolvedValueOnce(true);
+
+				return { service };
+			};
+
+			it('should update the library in the database', async () => {
+				const { service } = setup();
+
+				const synchronizedLibraries = await service.synchronizeLibraries();
+
+				expect(synchronizedLibraries).toEqual([
+					{
+						newVersion: {
+							machineName: 'libraryA',
+							majorVersion: 1,
+							minorVersion: 0,
+							patchVersion: 1,
+						},
+						oldVersion: {
+							machineName: 'libraryA',
+							majorVersion: 1,
+							minorVersion: 0,
+							patchVersion: 0,
+						},
+						type: 'patch',
+					},
+				]);
+			});
+		});
+
+		describe('when a new library is available on S3', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+
+				libraryStorage.getAllLibraryFolders.mockResolvedValueOnce(['libraryA-1.0']);
+				libraryStorage.fileExists.mockResolvedValueOnce(true);
+				libraryStorage.getFileAsJson.mockResolvedValueOnce({
+					machineName: 'libraryA',
+					majorVersion: 1,
+					minorVersion: 0,
+					patchVersion: 1,
+				});
+				libraryStorage.isInstalled.mockResolvedValueOnce(false);
+				libraryStorage.addLibrary.mockResolvedValueOnce({
+					machineName: 'libraryA',
+					majorVersion: 1,
+					minorVersion: 0,
+					patchVersion: 1,
+					restricted: false,
+					runnable: true,
+					title: 'Library A',
+					compare: jest.fn(),
+					compareVersions: jest.fn(),
+				});
+				libraryStorage.isInstalled.mockResolvedValueOnce(true);
+				libraryStorage.getLibrary.mockResolvedValueOnce({
+					machineName: 'libraryA',
+					majorVersion: 1,
+					minorVersion: 0,
+					patchVersion: 1,
+					files: [],
+					_id: new ObjectId(),
+					id: 'mock_id',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					restricted: false,
+					runnable: true,
+					title: 'Library A',
+					compare: jest.fn(),
+					compareVersions: jest.fn(),
+					preloadedJs: [{ path: 'path/to/preloaded.js' }],
+					preloadedCss: [{ path: 'path/to/preloaded.css' }],
+				});
+				libraryStorage.fileExists.mockResolvedValueOnce(true).mockResolvedValueOnce(true);
+
+				return { service };
+			};
+
+			it('should update the library in the database', async () => {
+				const { service } = setup();
+
+				const synchronizedLibraries = await service.synchronizeLibraries();
+
+				expect(synchronizedLibraries).toEqual([
+					{
+						newVersion: {
+							machineName: 'libraryA',
+							majorVersion: 1,
+							minorVersion: 0,
+							patchVersion: 1,
+						},
+						type: 'new',
+					},
+				]);
+			});
+		});
+
+		describe('when no library update is available', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+
+				libraryStorage.getAllLibraryFolders.mockResolvedValueOnce(['libraryA-1.0']);
+				libraryStorage.fileExists.mockResolvedValueOnce(true);
+				libraryStorage.getFileAsJson.mockResolvedValueOnce({
+					machineName: 'libraryA',
+					majorVersion: 1,
+					minorVersion: 0,
+					patchVersion: 0,
+				});
+				libraryStorage.isInstalled.mockResolvedValueOnce(true);
+				libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
+					{
+						machineName: 'libraryA',
+						majorVersion: 1,
+						minorVersion: 0,
+					},
+				]);
+				libraryStorage.getLibrary.mockResolvedValueOnce({
+					machineName: 'libraryA',
+					majorVersion: 1,
+					minorVersion: 0,
+					patchVersion: 0,
+					files: [],
+					_id: new ObjectId(),
+					id: 'mock_id',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					restricted: false,
+					runnable: true,
+					title: 'Library A',
+					compare: jest.fn(),
+					compareVersions: jest.fn(),
+				});
+				libraryStorage.isInstalled.mockResolvedValueOnce(true);
+				libraryStorage.getLibrary.mockResolvedValueOnce({
+					machineName: 'libraryA',
+					majorVersion: 1,
+					minorVersion: 0,
+					patchVersion: 0,
+					files: [],
+					_id: new ObjectId(),
+					id: 'mock_id',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					restricted: false,
+					runnable: true,
+					title: 'Library A',
+					compare: jest.fn(),
+					compareVersions: jest.fn(),
+					preloadedJs: [{ path: 'path/to/preloaded.js' }],
+					preloadedCss: [{ path: 'path/to/preloaded.css' }],
+				});
+				libraryStorage.fileExists.mockResolvedValueOnce(true).mockResolvedValueOnce(true);
+
+				return { service };
+			};
+
+			it('should do nothing', async () => {
+				const { service } = setup();
+
+				const synchronizedLibraries = await service.synchronizeLibraries();
+
+				expect(synchronizedLibraries).toEqual([]);
+			});
+		});
+
+		describe('when library.json is missing in library folder on S3', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+
+				libraryStorage.getAllLibraryFolders.mockResolvedValueOnce(['libraryA-1.0']);
+				libraryStorage.fileExists.mockResolvedValueOnce(false);
+				libraryStorage.getLibrary.mockResolvedValueOnce({
+					machineName: 'libraryA',
+					majorVersion: 1,
+					minorVersion: 0,
+					patchVersion: 0,
+					files: [],
+					_id: new ObjectId(),
+					id: 'mock_id',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					restricted: false,
+					runnable: true,
+					title: 'Library A',
+					compare: jest.fn(),
+					compareVersions: jest.fn(),
+				});
+				libraryStorage.addFile.mockResolvedValueOnce(true);
+
+				return { service };
+			};
+
+			it('should update the library in the database', async () => {
+				const { service } = setup();
+
+				const synchronizedLibraries = await service.synchronizeLibraries();
+
+				expect(synchronizedLibraries).toEqual([]);
 			});
 		});
 	});
