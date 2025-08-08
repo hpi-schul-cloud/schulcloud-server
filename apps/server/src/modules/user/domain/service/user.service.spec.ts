@@ -947,4 +947,51 @@ describe('UserService', () => {
 			});
 		});
 	});
+
+	describe('findExistingUsersByIds', () => {
+		describe('when users with these ids exist', () => {
+			const setup = () => {
+				const userIdOne = new ObjectId().toHexString();
+				const userIdTwo = new ObjectId().toHexString();
+				const userOne = userDoFactory.buildWithId({ id: userIdOne });
+				const userTwo = userDoFactory.buildWithId({ id: userIdTwo });
+
+				userDoRepo.findByIdOrNull.mockResolvedValueOnce(userOne);
+				userDoRepo.findByIdOrNull.mockResolvedValueOnce(userTwo);
+
+				return {
+					userOne,
+					userTwo,
+					userIdOne,
+					userIdTwo,
+				};
+			};
+
+			it('should return the users as array', async () => {
+				const { userOne, userTwo, userIdOne, userIdTwo } = setup();
+
+				const result = await service.findExistingUsersByIds([userIdOne, userIdTwo]);
+
+				expect(result).toEqual([userOne, userTwo]);
+			});
+		});
+
+		describe('when a user with this id does not exist', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+
+				userDoRepo.findByIdOrNull.mockResolvedValue(null);
+
+				return { userId };
+			};
+
+			it('should return empty array', async () => {
+				const { userId } = setup();
+
+				const result = await service.findExistingUsersByIds([userId]);
+
+				expect(result).toEqual([]);
+			});
+		});
+	});
 });
