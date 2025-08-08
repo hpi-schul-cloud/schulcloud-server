@@ -10,6 +10,10 @@ import { TestApiClient } from '@testing/test-api-client';
 import { CourseSortProps, CourseStatus } from '../../domain';
 import { courseEntityFactory } from '../../testing';
 import { CourseInfoListResponse } from '../dto';
+import { groupEntityFactory } from '@modules/group/testing';
+import { GroupEntityTypes } from '@modules/group/entity';
+import { roleFactory } from '@modules/role/testing';
+import { RoleName } from '@modules/role';
 
 const createStudent = () => {
 	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({}, [Permission.COURSE_VIEW]);
@@ -54,6 +58,7 @@ describe('Course Info Controller (API)', () => {
 			const setup = async () => {
 				const student = createStudent();
 				const teacher = createTeacher();
+				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
 				const admin = createAdmin();
 				const school = schoolEntityFactory.buildWithId({});
 
@@ -62,6 +67,25 @@ describe('Course Info Controller (API)', () => {
 					school,
 					untilDate: new Date('2045-07-31T23:59:59'),
 				});
+
+				const group = groupEntityFactory.buildWithId({
+					name: 'Synced Group',
+					organization: school,
+					type: GroupEntityTypes.CLASS,
+					users: [
+						{
+							user: teacher.user,
+							role: teacherRole,
+						},
+					],
+				});
+				const syncedCourses = courseEntityFactory.buildList(2, {
+					teachers: [teacher.user],
+					school,
+					syncedWithGroup: group,
+					untilDate: new Date('2045-07-31T23:59:59'),
+				});
+
 				const archivedCourses = courseEntityFactory.buildList(10, {
 					teachers: [teacher.user],
 					school,
@@ -69,18 +93,23 @@ describe('Course Info Controller (API)', () => {
 				});
 
 				currentCourses[0].teachers.removeAll();
+				syncedCourses[0].teachers.removeAll();
 				archivedCourses[0].teachers.removeAll();
 
 				admin.user.school = school;
 				await em.persistAndFlush(school);
+				await em.persistAndFlush(group);
 				await em.persistAndFlush(currentCourses);
+				await em.persistAndFlush(syncedCourses);
 				await em.persistAndFlush(archivedCourses);
 				await em.persistAndFlush([admin.account, admin.user]);
 				em.clear();
 
 				return {
 					student,
+					group,
 					currentCourses,
+					syncedCourses,
 					archivedCourses,
 					teacher,
 					admin,
@@ -110,7 +139,7 @@ describe('Course Info Controller (API)', () => {
 				const response = await loggedInClient.get().query(query);
 
 				const { data } = response.body as CourseInfoListResponse;
-				expect(data.length).toBe(1);
+				expect(data.length).toBe(2);
 			});
 
 			it('should return archive courses without teachers', async () => {
@@ -140,7 +169,7 @@ describe('Course Info Controller (API)', () => {
 			});
 
 			it('should return current courses in pages', async () => {
-				const { admin, currentCourses } = await setup();
+				const { admin, currentCourses, group } = await setup();
 				const query = { skip: 4, limit: 2, sortBy: CourseSortProps.NAME, status: CourseStatus.CURRENT };
 
 				const loggedInClient = await testApiClient.login(admin.account);
@@ -150,9 +179,10 @@ describe('Course Info Controller (API)', () => {
 				expect(response.statusCode).toBe(200);
 				expect(skip).toBe(4);
 				expect(limit).toBe(2);
-				expect(total).toBe(5);
-				expect(data.length).toBe(1);
+				expect(total).toBe(7);
+				expect(data.length).toBe(2);
 				expect(data[0].id).toBe(currentCourses[4].id);
+				expect(data[1].syncedGroup).toBe(group.name);
 			});
 		});
 
