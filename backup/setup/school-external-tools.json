@@ -118,24 +118,5 @@
 		},
 		"schoolParameters": [],
 		"isDeactivated": false
-	},
-	{
-		"_id": {
-			"$oid": "672b2dde7bb05b9a2ea92b07"
-		},
-		"createdAt": {
-			"$date": "2024-10-25T02:29:56.005Z"
-		},
-		"updatedAt": {
-			"$date": "2024-10-25T02:29:56.005Z"
-		},
-		"tool": {
-			"$oid": "667e52a4162707ce02b9ac06"
-		},
-		"school": {
-			"$oid": "5f2987e020834114b8efd6f8"
-		},
-		"schoolParameters": [],
-		"isDeactivated": false
 	}
 ]
