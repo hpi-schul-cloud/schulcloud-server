@@ -892,14 +892,14 @@ describe(S3ClientAdapter.name, () => {
 				client.send.mockResolvedValueOnce({
 					IsTruncated: true,
 					Contents: responseContents.slice(0, 1000),
-					ContinuationToken: 'KEY-1000',
+					NextContinuationToken: 'KEY-1000',
 				});
 
 				// @ts-expect-error ignore parameter type of mock function
 				client.send.mockResolvedValueOnce({
 					IsTruncated: true,
 					Contents: responseContents.slice(1000, 1200),
-					ContinuationToken: 'KEY-1200',
+					NextContinuationToken: 'KEY-1200',
 				});
 
 				const resultKeys = await service.list({ path, maxKeys: 1200 });
@@ -942,13 +942,13 @@ describe(S3ClientAdapter.name, () => {
 					// @ts-expect-error ignore parameter type of mock function
 					.mockResolvedValueOnce({
 						IsTruncated: true,
-						ContinuationToken: '1',
+						NextContinuationToken: '1',
 						Contents: responseContents.slice(0, 1000),
 					})
 					// @ts-expect-error ignore parameter type of mock function
 					.mockResolvedValueOnce({
 						IsTruncated: true,
-						ContinuationToken: '2',
+						NextContinuationToken: '2',
 						Contents: responseContents.slice(1000, 2000),
 					})
 					// @ts-expect-error ignore parameter type of mock function

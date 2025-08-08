@@ -300,7 +300,7 @@ export class S3ClientAdapter {
 
 		files = files.concat(returnedFiles);
 
-		let res: ObjectKeysRecursive = { path, maxKeys, nextMarker: data?.ContinuationToken, files };
+		let res: ObjectKeysRecursive = { path, maxKeys, nextMarker: data.NextContinuationToken, files };
 
 		if (data?.IsTruncated && (!maxKeys || res.files.length < maxKeys)) {
 			res = await this.listObjectKeysRecursive(res);
