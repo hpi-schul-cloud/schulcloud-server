@@ -122,9 +122,17 @@ export class FeathersRosterService {
 
 			const room = await this.roomService.getSingleRoom(id);
 
+			const roomMembers = await this.roomMembershipService.getRoomMembershipAuthorizable(room.id);
+			const hasOwner = roomMembers.members.some((member) =>
+				member.roles.some((role) => role.name === RoleName.ROOMOWNER)
+			);
+			if (!hasOwner) {
+				throw new NotFoundLoggableException(RoomMembershipAuthorizable.name, { roomId: room.id });
+			}
+
 			const externalTool = await this.validateContextExternalTools(room, room.schoolId, oauth2ClientId);
 
-			group = await this.getRoomGroup(room, externalTool);
+			group = await this.getRoomGroup(roomMembers, externalTool);
 		} else {
 			const course: CourseEntity = await this.courseService.findById(id);
 			const externalTool = await this.validateContextExternalTools(course, course.school.id, oauth2ClientId);
@@ -187,7 +195,16 @@ export class FeathersRosterService {
 
 		const rooms = await this.roomService.getAllByIds(roomIds);
 
-		return rooms;
+		const filteredRooms = rooms.filter((room) => {
+			const hasOwner = roomAuthorizables.some(
+				(item) =>
+					item.roomId === room.id &&
+					item.members.some((member) => member.roles.some((role) => role.name === RoleName.ROOMOWNER))
+			);
+			return hasOwner;
+		});
+
+		return filteredRooms;
 	}
 
 	private async filterByToolAvailability<T extends CourseEntity | Room>(
@@ -206,8 +223,7 @@ export class FeathersRosterService {
 		return validItems;
 	}
 
-	private async getRoomGroup(room: Room, externalTool: ExternalTool): Promise<Group> {
-		const roomMembers = await this.roomMembershipService.getRoomMembershipAuthorizable(room.id);
+	private async getRoomGroup(roomMembers: RoomMembershipAuthorizable, externalTool: ExternalTool): Promise<Group> {
 		const { students, teachers } = await this.mapRoomUsers(roomMembers, 'userRoles');
 
 		const [studentPseudonyms, teacherPseudonyms] = await Promise.all([
