@@ -18,16 +18,17 @@ export class BoardErrorReportUc {
 			schoolId: user.school.id,
 		};
 
-		this.logger.warning(
-			new BoardErrorLoggableException(
-				errorData.message,
-				errorData.type,
-				errorData.url,
-				errorData.boardId,
-				errorData.schoolId,
-				errorData.userId,
-				errorData.retryCount
-			)
+		const loggable = new BoardErrorLoggableException(
+			errorData.message,
+			errorData.type,
+			errorData.url,
+			errorData.boardId,
+			errorData.schoolId,
+			errorData.userId,
+			errorData.retryCount
 		);
+		this.logger.warning(loggable);
+
+		console.log(loggable.getLogMessage());
 	}
 }

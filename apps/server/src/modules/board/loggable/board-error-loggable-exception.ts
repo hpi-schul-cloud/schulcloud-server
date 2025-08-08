@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { BadGatewayException } from '@nestjs/common';
 
 export class BoardErrorLoggableException extends BadGatewayException implements Loggable {
@@ -14,18 +14,17 @@ export class BoardErrorLoggableException extends BadGatewayException implements 
 		super();
 	}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LogMessage | ValidationErrorLogMessage {
+		const data = {
+			url: this.url,
+			boardId: this.boardId,
+			schoolId: this.schoolId,
+			userId: this.userId,
+			retryCount: this.retryCount,
+		};
 		return {
 			type: this.errorType,
-			message: this.message,
-			stack: this.stack,
-			data: {
-				url: this.url,
-				boardId: this.boardId,
-				schoolId: this.schoolId,
-				userId: this.userId,
-				retryCount: this.retryCount,
-			},
+			message: JSON.stringify(data),
 		};
 	}
 }
