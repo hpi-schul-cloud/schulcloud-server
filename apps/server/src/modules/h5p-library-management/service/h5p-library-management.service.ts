@@ -177,8 +177,8 @@ export class H5PLibraryManagementService {
 
 		for (const library of unwantedLibraries) {
 			// to avoid conflicts, remove one-by-one
-			const success = await this.forceUninstallLibrary(library);
-			if (success) {
+			const forceUninstallSuccessful = await this.forceUninstallLibrary(library);
+			if (forceUninstallSuccessful) {
 				uninstalledLibraries.push(library);
 			} else {
 				failedLibraries.push(library);
@@ -379,7 +379,15 @@ export class H5PLibraryManagementService {
 		if (libraryIsInstalled) {
 			const oldVersion = await this.libraryManager.isPatchedLibrary(newLibraryMetadata);
 			if (oldVersion) {
-				await this.updateLibrary(newLibraryMetadata);
+				const updateSuccessful = await this.updateLibrary(newLibraryMetadata);
+				if (!updateSuccessful) {
+					const result: ILibraryInstallResult = {
+						type: 'none',
+					};
+
+					return result;
+				}
+
 				this.logLibraryUpdated(oldVersion, newVersion);
 				const result: ILibraryInstallResult = {
 					type: 'patch',
@@ -397,7 +405,15 @@ export class H5PLibraryManagementService {
 			return result;
 		}
 
-		await this.addLibrary(newLibraryMetadata);
+		const addLibrarySuccessful = await this.addLibrary(newLibraryMetadata);
+		if (!addLibrarySuccessful) {
+			const result: ILibraryInstallResult = {
+				type: 'none',
+			};
+
+			return result;
+		}
+
 		this.logLibraryAdded(newVersion);
 		const result: ILibraryInstallResult = {
 			type: 'new',
@@ -407,10 +423,12 @@ export class H5PLibraryManagementService {
 		return result;
 	}
 
-	private async updateLibrary(newLibraryMetadata: ILibraryMetadata): Promise<void> {
+	private async updateLibrary(newLibraryMetadata: ILibraryMetadata): Promise<boolean> {
+		let result = false;
 		try {
 			await this.libraryStorage.updateLibrary(newLibraryMetadata);
-			await this.checkConsistency(newLibraryMetadata);
+			result = await this.checkConsistency(newLibraryMetadata);
+			// TODO: What to do, when consistency check fails?
 		} catch (error: unknown) {
 			this.logger.warning(
 				new H5PLibraryManagementErrorLoggable(
@@ -422,6 +440,8 @@ export class H5PLibraryManagementService {
 			this.logRemoveLibraryDueToError(newLibraryMetadata);
 			await this.libraryStorage.deleteLibrary(newLibraryMetadata);
 		}
+
+		return result;
 	}
 
 	private logRemoveLibraryDueToError(library: ILibraryMetadata): void {
@@ -448,10 +468,12 @@ export class H5PLibraryManagementService {
 		);
 	}
 
-	private async addLibrary(newLibraryMetadata: ILibraryMetadata): Promise<void> {
+	private async addLibrary(newLibraryMetadata: ILibraryMetadata): Promise<boolean> {
+		let result = false;
 		try {
 			await this.libraryStorage.addLibrary(newLibraryMetadata, false);
-			await this.checkConsistency(newLibraryMetadata);
+			result = await this.checkConsistency(newLibraryMetadata);
+			// TODO: What to do, when consistency check fails?
 		} catch (error: unknown) {
 			this.logger.warning(
 				new H5PLibraryManagementErrorLoggable(
@@ -461,6 +483,8 @@ export class H5PLibraryManagementService {
 				)
 			);
 		}
+
+		return result;
 	}
 
 	private logLibraryAdded(newVersion: IFullLibraryName): void {
@@ -482,7 +506,7 @@ export class H5PLibraryManagementService {
 		let metadata: IInstalledLibrary | undefined = undefined;
 		try {
 			metadata = await this.libraryStorage.getLibrary(library);
-		} catch (error) {
+		} catch (error: unknown) {
 			this.logger.warning(
 				new H5PLibraryManagementErrorLoggable(
 					error,
@@ -494,16 +518,22 @@ export class H5PLibraryManagementService {
 			return false;
 		}
 		if (metadata?.preloadedJs) {
-			await this.checkFiles(
+			const jsFilesExist = await this.checkFiles(
 				library,
 				metadata.preloadedJs.map((js) => js.path)
 			);
+			if (!jsFilesExist) {
+				return false;
+			}
 		}
 		if (metadata?.preloadedCss) {
-			await this.checkFiles(
+			const cssFilesExist = await this.checkFiles(
 				library,
 				metadata.preloadedCss.map((css) => css.path)
 			);
+			if (!cssFilesExist) {
+				return false;
+			}
 		}
 
 		return true;
@@ -553,7 +583,7 @@ export class H5PLibraryManagementService {
 		let metadata: IInstalledLibrary | undefined = undefined;
 		try {
 			metadata = await this.libraryStorage.getLibrary(libraryName);
-		} catch (error) {
+		} catch (error: unknown) {
 			this.logger.warning(
 				new H5PLibraryManagementErrorLoggable(
 					error,
@@ -565,8 +595,19 @@ export class H5PLibraryManagementService {
 			return;
 		}
 
+		let fileAdded = false;
 		const dataStream = Readable.from(JSON.stringify(metadata, null, 2));
-		const fileAdded = await this.libraryStorage.addFile(libraryName, 'library.json', dataStream);
+		try {
+			fileAdded = await this.libraryStorage.addFile(libraryName, 'library.json', dataStream);
+		} catch (error: unknown) {
+			this.logger.warning(
+				new H5PLibraryManagementErrorLoggable(
+					error,
+					{ library: `${libraryName.machineName}-${libraryName.majorVersion}.${libraryName.minorVersion}` },
+					'while adding library.json to S3'
+				)
+			);
+		}
 		if (fileAdded) {
 			this.logger.info(
 				new H5PLibraryManagementLoggable(
