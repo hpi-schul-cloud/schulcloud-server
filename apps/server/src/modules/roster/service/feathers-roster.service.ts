@@ -111,30 +111,33 @@ export class FeathersRosterService {
 	}
 
 	public async getGroup(id: EntityId, oauth2ClientId: string): Promise<Group> {
-		let group: Group; // = { data: { students: [], teachers: [] } };
-		let room: Room;
-		try {
-			room = await this.roomService.getSingleRoom(id);
-		} catch (e) {
+		let group: Group;
+
+		const roomExists = await this.roomService.roomExists(id);
+
+		if (roomExists) {
+			if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
+				throw new NotFoundLoggableException(Room.name, { id });
+			}
+
+			const room = await this.roomService.getSingleRoom(id);
+
+			const externalTool = await this.validateContextExternalTools(room, room.schoolId, oauth2ClientId);
+
+			group = await this.getRoomGroup(room, externalTool);
+		} else {
 			const course: CourseEntity = await this.courseService.findById(id);
 			const externalTool = await this.validateContextExternalTools(course, course.school.id, oauth2ClientId);
 			group = await this.getCourseGroup(course, externalTool);
-
-			return group;
 		}
-
-		if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
-			throw new NotFoundLoggableException(Room.name, { id });
-		}
-
-		const externalTool = await this.validateContextExternalTools(room, room.schoolId, oauth2ClientId);
-
-		group = await this.getRoomGroup(room, externalTool);
 
 		return group;
 	}
 
-	private async getCoursesUserGroups(pseudonymContext: Pseudonym, schoolExternalTool: SchoolExternalTool) {
+	private async getCoursesUserGroups(
+		pseudonymContext: Pseudonym,
+		schoolExternalTool: SchoolExternalTool
+	): Promise<UserGroup[]> {
 		let courses = await this.courseService.findAllByUserId(pseudonymContext.userId);
 		courses = await this.filterByToolAvailability(courses, schoolExternalTool);
 
@@ -150,7 +153,10 @@ export class FeathersRosterService {
 		return coursesUserGroups;
 	}
 
-	private async getRoomsUserGroups(pseudonymContext: Pseudonym, schoolExternalTool: SchoolExternalTool) {
+	private async getRoomsUserGroups(
+		pseudonymContext: Pseudonym,
+		schoolExternalTool: SchoolExternalTool
+	): Promise<UserGroup[]> {
 		if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
 			return [];
 		}

@@ -705,7 +705,7 @@ describe('FeathersRosterService', () => {
 					const mockedIframeSubject = 'mockedIframeSubject';
 					pseudonymService.getIframeSubject.mockReturnValue(mockedIframeSubject);
 
-					roomService.getSingleRoom.mockRejectedValueOnce(new NotFoundLoggableException('Room', { id: 'not-found' }));
+					roomService.roomExists.mockResolvedValueOnce(false);
 
 					return {
 						externalTool,
@@ -1161,6 +1161,7 @@ describe('FeathersRosterService', () => {
 			describe('when the room exists but feature flag is not enabled', () => {
 				const setup = () => {
 					const room = roomFactory.build({});
+					roomService.roomExists.mockResolvedValueOnce(true);
 
 					configService.get.mockImplementation((key: keyof RosterConfig) => {
 						if (key === 'FEATURE_ROOMS_ENABLED') {
@@ -1198,6 +1199,7 @@ describe('FeathersRosterService', () => {
 					userService.findById.mockResolvedValueOnce(student).mockResolvedValueOnce(teacher);
 
 					const room = roomFactory.build({ schoolId: student.schoolId });
+					roomService.roomExists.mockResolvedValueOnce(true);
 					roomService.getSingleRoom.mockResolvedValue(room);
 
 					configService.get.mockReturnValue(true);

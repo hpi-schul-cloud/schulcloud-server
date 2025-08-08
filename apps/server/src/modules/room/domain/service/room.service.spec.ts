@@ -127,6 +127,31 @@ describe('RoomService', () => {
 		});
 	});
 
+	describe('roomExists', () => {
+		const setup = () => {
+			const room = roomFactory.build();
+			roomRepo.findById.mockResolvedValueOnce(room);
+
+			return { room };
+		};
+
+		it('should return true if room exists', async () => {
+			const { room } = setup();
+
+			const result = await service.roomExists(room.id);
+
+			expect(result).toBe(true);
+		});
+
+		it('should return false if repo throws an error', async () => {
+			roomRepo.findById.mockRejectedValueOnce(new Error('Database error'));
+
+			const result = await service.roomExists('id');
+
+			expect(result).toBe(false);
+		});
+	});
+
 	describe('updateRoom', () => {
 		const setup = () => {
 			const room = roomFactory.build({

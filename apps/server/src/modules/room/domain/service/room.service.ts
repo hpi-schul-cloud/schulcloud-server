@@ -59,6 +59,17 @@ export class RoomService {
 		return room;
 	}
 
+	public async roomExists(roomId: EntityId): Promise<boolean> {
+		let room: Room;
+		try {
+			room = await this.getSingleRoom(roomId);
+		} catch (error) {
+			return false;
+		}
+
+		return !!room;
+	}
+
 	public async updateRoom(room: Room, props: RoomUpdateProps): Promise<void> {
 		this.validateTimeSpan(props, room.id);
 
