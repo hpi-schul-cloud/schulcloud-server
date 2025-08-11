@@ -147,6 +147,8 @@ describe('Room Controller (API)', () => {
 								totalMembers: users.length,
 								internalMembers: users.length,
 								externalMembers: 0,
+								schoolId: room.schoolId,
+								schoolName: school.name,
 							}),
 						])
 					);

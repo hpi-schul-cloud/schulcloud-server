@@ -32,6 +32,22 @@ export class RoomPermissionService {
 		return roomMembershipAuthorizable;
 	}
 
+	public async hasRoomPermissions(
+		userId: EntityId,
+		roomId: EntityId,
+		action: Action,
+		requiredPermissions: Permission[] = []
+	): Promise<boolean> {
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const hasRoomPermissions = this.authorizationService.hasPermission(user, roomMembershipAuthorizable, {
+			action,
+			requiredPermissions,
+		});
+
+		return hasRoomPermissions;
+	}
+
 	public checkFeatureRoomsEnabled(): void {
 		if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
 			throw new FeatureDisabledLoggableException('FEATURE_ROOMS_ENABLED');

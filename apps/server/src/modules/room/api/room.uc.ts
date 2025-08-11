@@ -4,7 +4,7 @@ import { RoleName, RoomRole } from '@modules/role';
 import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo'; // TODO: Auth service should use a different type
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -93,6 +93,7 @@ export class RoomUc {
 			return {
 				...membership,
 				name: room?.name ?? '',
+				schoolId: room?.schoolId ?? '',
 				schoolName: school?.getProps().name ?? '',
 				createdAt: room?.createdAt ?? new Date(),
 				updatedAt: room?.updatedAt ?? new Date(),
@@ -173,10 +174,13 @@ export class RoomUc {
 	public async deleteRoom(userId: EntityId, roomId: EntityId): Promise<void> {
 		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const room = await this.roomService.getSingleRoom(roomId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write, [
-			Permission.ROOM_DELETE_ROOM,
-		]);
+		const isAllowed = await this.isAllowedToDeleteRoom(userId, roomId, room, user);
+		if (!isAllowed) {
+			throw new ForbiddenException('You do not have permission to delete this room');
+		}
+
 		await this.columnBoardService.deleteByExternalReference({
 			type: BoardExternalReferenceType.Room,
 			id: roomId,
@@ -303,6 +307,18 @@ export class RoomUc {
 				targetUserId: context.targetUser.id || 'undefined',
 			});
 		}
+	}
+
+	private async isAllowedToDeleteRoom(userId: string, roomId: string, room: Room, user: User): Promise<boolean> {
+		const canDeleteRoom = await this.roomHelperService.hasRoomPermissions(userId, roomId, Action.write, [
+			Permission.ROOM_DELETE_ROOM,
+		]);
+		const isOwnSchool = room.schoolId === user.school.id;
+		const canAdministrateSchoolRooms = this.authorizationService.hasOneOfPermissions(user, [
+			Permission.SCHOOL_ADMINISTRATE_ROOMS,
+		]);
+		const isAllowed = canDeleteRoom || (isOwnSchool && canAdministrateSchoolRooms);
+		return isAllowed;
 	}
 
 	private checkUserIsStudent(context: OwnershipContext): void {
