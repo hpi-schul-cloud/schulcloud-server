@@ -550,11 +550,17 @@ export class LibraryStorage implements ILibraryStorage {
 	public async getAllLibraryFolders(): Promise<string[]> {
 		const prefix = 'h5p-libraries/';
 		const { files } = await this.s3Client.list({ path: prefix });
-		// Extract unique folder names from the file paths
+		const result = this.extractUniqueFolderNamesFromFilePaths(files);
+
+		return result;
+	}
+
+	private extractUniqueFolderNamesFromFilePaths(files: string[]): string[] {
 		const folders = new Set<string>();
 		for (const filePath of files) {
 			const parts = filePath.split('/');
-			if (parts.length > 1) {
+			const filePathHasFolder = parts.length > 1;
+			if (filePathHasFolder) {
 				folders.add(parts[0]);
 			}
 		}
