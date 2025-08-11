@@ -499,12 +499,12 @@ export class LibraryStorage implements ILibraryStorage {
 	/**
 	 * Returns a file from a library
 	 * @param ubername Library ubername
-	 * @param file file
+	 * @param fileName file name
 	 * @returns a readable stream, mimetype and size
 	 */
 	public async getLibraryFile(
 		ubername: string,
-		file: string,
+		fileName: string,
 		readLibraryJsonFromS3 = false
 	): Promise<{
 		stream: Readable;
@@ -513,11 +513,11 @@ export class LibraryStorage implements ILibraryStorage {
 	}> {
 		const libraryName = LibraryName.fromUberName(ubername);
 
-		this.checkFilename(file);
+		this.checkFilename(fileName);
 
 		let result: { stream: Readable | never; mimetype: string; size: number | undefined } | null = null;
 
-		if (file === 'library.json' && !readLibraryJsonFromS3) {
+		if (fileName === 'library.json' && !readLibraryJsonFromS3) {
 			const metadata = await this.getMetadata(libraryName);
 			const stringifiedMetadata = JSON.stringify(metadata);
 			const readable = Readable.from(stringifiedMetadata);
@@ -528,8 +528,8 @@ export class LibraryStorage implements ILibraryStorage {
 				size: stringifiedMetadata.length,
 			};
 		} else {
-			const response = await this.s3Client.get(this.getS3Key(libraryName, file));
-			const mimetype = mime.lookup(file, 'application/octet-stream');
+			const response = await this.s3Client.get(this.getS3Key(libraryName, fileName));
+			const mimetype = mime.lookup(fileName, 'application/octet-stream');
 
 			result = {
 				stream: response.data,
