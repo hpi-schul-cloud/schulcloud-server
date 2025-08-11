@@ -17,13 +17,14 @@ export class BoardErrorLoggableException extends BadGatewayException implements 
 	public getLogMessage(): LogMessage | ValidationErrorLogMessage {
 		const data = {
 			url: this.url,
+			type: this.errorType,
 			boardId: this.boardId,
 			schoolId: this.schoolId,
 			userId: this.userId,
 			retryCount: this.retryCount,
 		};
 		return {
-			type: this.errorType,
+			type: 'board-error-report',
 			message: JSON.stringify(data),
 		};
 	}
