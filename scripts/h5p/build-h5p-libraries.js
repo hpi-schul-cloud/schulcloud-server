@@ -42,7 +42,7 @@ const params = {
 };
 
 const main = async () => {
-	const mapFile = params.map || 'config/h5p-library-repo-map.yaml';
+	const mapFile = params.map || 'scripts/h5p/config/h5p-library-repo-map.yaml';
 	const librariesFile = params.input || 'config/h5p-libraries.yaml';
 	const tempFolderPath = params.tmp;
 

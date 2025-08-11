@@ -47,7 +47,7 @@ const getLibraryRepoMapFromGitHubOrganization = async (organization) => {
 
 const main = async () => {
 	const organization = params.organization || 'h5p';
-	const target = params.target || 'config/h5p-library-repo-map.yaml';
+	const target = params.target || 'scripts/h5p/config/h5p-library-repo-map.yaml';
 
 	const libraryRepoMap = await getLibraryRepoMapFromGitHubOrganization(organization);
 
