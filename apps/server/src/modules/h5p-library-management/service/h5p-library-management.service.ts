@@ -610,11 +610,15 @@ export class H5PLibraryManagementService {
 			);
 		}
 		if (fileAdded) {
-			this.logger.info(
-				new H5PLibraryManagementLoggable(
-					`Added library.json containing latest metadata for ${metadata.machineName}-${metadata.majorVersion}.${metadata.minorVersion}.${metadata.patchVersion} to S3.`
-				)
-			);
+			this.logLibraryJsonAddedToS3(metadata);
 		}
+	}
+
+	private logLibraryJsonAddedToS3(metadata: IInstalledLibrary): void {
+		this.logger.info(
+			new H5PLibraryManagementLoggable(
+				`Added library.json containing latest metadata for ${metadata.machineName}-${metadata.majorVersion}.${metadata.minorVersion}.${metadata.patchVersion} to S3.`
+			)
+		);
 	}
 }
