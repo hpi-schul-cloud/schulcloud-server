@@ -168,6 +168,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 		try {
 			await this.s3Client.head(this.getS3Key(libraryName, filename));
+
 			return true;
 		} catch {
 			return false;
@@ -287,6 +288,7 @@ export class LibraryStorage implements ILibraryStorage {
 	 */
 	public async getDependentsCount(library: ILibraryName): Promise<number> {
 		const allDependencies = await this.getAllDependentsCount();
+
 		return allDependencies[LibraryName.toUberName(library)] ?? 0;
 	}
 
@@ -310,6 +312,7 @@ export class LibraryStorage implements ILibraryStorage {
 	public async getFileAsString(library: ILibraryName, file: string, readLibraryJsonFromS3 = false): Promise<string> {
 		const stream = await this.getFileStream(library, file, readLibraryJsonFromS3);
 		const data = await streamToString(stream);
+
 		return data;
 	}
 
@@ -355,6 +358,7 @@ export class LibraryStorage implements ILibraryStorage {
 		if (machineName) {
 			return this.libraryRepo.findByName(machineName);
 		}
+
 		return this.libraryRepo.getAll();
 	}
 
@@ -395,6 +399,7 @@ export class LibraryStorage implements ILibraryStorage {
 			libraryName.majorVersion,
 			libraryName.minorVersion
 		);
+
 		return library !== null;
 	}
 
@@ -532,6 +537,7 @@ export class LibraryStorage implements ILibraryStorage {
 				size: response.contentLength,
 			};
 		}
+
 		return result;
 	}
 
