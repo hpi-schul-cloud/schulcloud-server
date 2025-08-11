@@ -104,6 +104,7 @@ class FileSystemHelper {
 			.sort()
 			.reduce((acc, key) => {
 				acc[key] = machineNameToRepoMap[key];
+
 				return acc;
 			}, {});
 		const yamlContent = yaml.stringify(sorted);
@@ -153,6 +154,7 @@ class FileSystemHelper {
 
 	static checkPackageJsonPath(folderPath) {
 		const packageJsonPath = this.buildPath(folderPath, 'package.json');
+
 		return this.pathExists(packageJsonPath);
 	}
 

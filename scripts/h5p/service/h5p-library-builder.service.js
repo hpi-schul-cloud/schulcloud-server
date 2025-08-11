@@ -485,6 +485,7 @@ class H5pLibraryBuilderService {
 	getHighestVersionTags(tags, majorVersion, minorVersion) {
 		const matchingTags = tags.filter((t) => {
 			const [maj, min] = t.split('.').map(Number);
+
 			return maj === majorVersion && min === minorVersion;
 		});
 		let highestVersionTag;

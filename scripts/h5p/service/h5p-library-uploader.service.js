@@ -91,6 +91,7 @@ class H5pLibraryUploaderService {
 		} catch (error) {
 			if (error.Code === 'NoSuchKey') {
 				console.error(`No library.json found in S3 at ${s3LibraryJsonKey}.`);
+
 				return undefined;
 			}
 		}

@@ -104,7 +104,9 @@ class S3ClientHelper {
 
 	async delete(paths) {
 		const result = [];
-		if (paths.length === 0) return [];
+		if (paths.length === 0) {
+			return [];
+		}
 
 		const pathObjects = paths.map((p) => {
 			return { Key: p };
