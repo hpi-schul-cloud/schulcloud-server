@@ -33,12 +33,12 @@ export class RoomUc {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly userService: UserService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly roomHelperService: RoomPermissionService,
+		private readonly roomPermissionService: RoomPermissionService,
 		private readonly schoolService: SchoolService
 	) {}
 
 	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomWithLockedStatus>> {
-		this.roomHelperService.checkFeatureRoomsEnabled();
+		this.roomPermissionService.checkFeatureRoomsEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
@@ -67,7 +67,7 @@ export class RoomUc {
 	}
 
 	public async getRoomStats(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomStats>> {
-		this.roomHelperService.checkFeatureAdministrateRoomsEnabled();
+		this.roomPermissionService.checkFeatureAdministrateRoomsEnabled();
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_ADMINISTRATE_ROOMS]);
 
@@ -101,7 +101,7 @@ export class RoomUc {
 	}
 
 	public async createRoom(userId: EntityId, props: CreateRoomBodyParams): Promise<Room> {
-		this.roomHelperService.checkFeatureRoomsEnabled();
+		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const room = await this.roomService.createRoom({ ...props, schoolId: user.school.id });
 
@@ -117,11 +117,11 @@ export class RoomUc {
 	}
 
 	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<{ room: Room; permissions: Permission[] }> {
-		this.roomHelperService.checkFeatureRoomsEnabled();
+		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const room = await this.roomService.getSingleRoom(roomId);
-		await this.roomHelperService.checkRoomIsUnlocked(roomId);
+		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
 
-		const roomMembershipAuthorizable = await this.roomHelperService.checkRoomAuthorizationByIds(
+		const roomMembershipAuthorizable = await this.roomPermissionService.checkRoomAuthorizationByIds(
 			userId,
 			roomId,
 			Action.read
@@ -132,11 +132,11 @@ export class RoomUc {
 	}
 
 	public async getRoomBoards(userId: EntityId, roomId: EntityId): Promise<ColumnBoard[]> {
-		this.roomHelperService.checkFeatureRoomsEnabled();
+		this.roomPermissionService.checkFeatureRoomsEnabled();
 
 		await this.roomService.getSingleRoom(roomId);
-		await this.roomHelperService.checkRoomIsUnlocked(roomId);
-		await this.roomHelperService.checkRoomAuthorizationByIds(userId, roomId, Action.read);
+		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
+		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.read);
 
 		const boards = await this.columnBoardService.findByExternalReference(
 			{
@@ -154,10 +154,10 @@ export class RoomUc {
 		roomId: EntityId,
 		props: UpdateRoomBodyParams
 	): Promise<{ room: Room; permissions: Permission[] }> {
-		this.roomHelperService.checkFeatureRoomsEnabled();
+		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const room = await this.roomService.getSingleRoom(roomId);
 
-		const roomMembershipAuthorizable = await this.roomHelperService.checkRoomAuthorizationByIds(
+		const roomMembershipAuthorizable = await this.roomPermissionService.checkRoomAuthorizationByIds(
 			userId,
 			roomId,
 			Action.write
@@ -171,10 +171,10 @@ export class RoomUc {
 	}
 
 	public async deleteRoom(userId: EntityId, roomId: EntityId): Promise<void> {
-		this.roomHelperService.checkFeatureRoomsEnabled();
+		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const room = await this.roomService.getSingleRoom(roomId);
 
-		await this.roomHelperService.checkRoomAuthorizationByIds(userId, roomId, Action.write, [
+		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write, [
 			Permission.ROOM_DELETE_ROOM,
 		]);
 		await this.columnBoardService.deleteByExternalReference({
@@ -186,7 +186,7 @@ export class RoomUc {
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
-		this.roomHelperService.checkFeatureRoomsEnabled();
+		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkPermission(currentUser, roomMembershipAuthorizable, {
@@ -214,8 +214,8 @@ export class RoomUc {
 		roomId: EntityId,
 		userIds: Array<EntityId>
 	): Promise<RoomRole> {
-		this.roomHelperService.checkFeatureRoomsEnabled();
-		await this.roomHelperService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [
+		this.roomPermissionService.checkFeatureRoomsEnabled();
+		await this.roomPermissionService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [
 			Permission.ROOM_ADD_MEMBERS,
 		]);
 		await this.checkUsersAccessible(currentUserId, userIds);
@@ -229,8 +229,8 @@ export class RoomUc {
 		userIds: Array<EntityId>,
 		roleName: RoleName
 	): Promise<void> {
-		this.roomHelperService.checkFeatureRoomsEnabled();
-		const roomAuthorizable = await this.roomHelperService.checkRoomAuthorizationByIds(
+		this.roomPermissionService.checkFeatureRoomsEnabled();
+		const roomAuthorizable = await this.roomPermissionService.checkRoomAuthorizationByIds(
 			currentUserId,
 			roomId,
 			Action.write,
@@ -241,7 +241,7 @@ export class RoomUc {
 	}
 
 	public async passOwnership(currentUserId: EntityId, roomId: EntityId, targetUserId: EntityId): Promise<void> {
-		this.roomHelperService.checkFeatureRoomsEnabled();
+		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const ownershipContext = await this.getPassOwnershipContext(roomId, currentUserId, targetUserId);
 
 		this.checkRoomAuthorizationByContext(ownershipContext, Action.write, [Permission.ROOM_CHANGE_OWNER]);
@@ -253,16 +253,16 @@ export class RoomUc {
 	}
 
 	public async leaveRoom(currentUserId: EntityId, roomId: EntityId): Promise<void> {
-		this.roomHelperService.checkFeatureRoomsEnabled();
-		await this.roomHelperService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.read, [
+		this.roomPermissionService.checkFeatureRoomsEnabled();
+		await this.roomPermissionService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.read, [
 			Permission.ROOM_LEAVE_ROOM,
 		]);
 		await this.roomMembershipService.removeMembersFromRoom(roomId, [currentUserId]);
 	}
 
 	public async removeMembersFromRoom(currentUserId: EntityId, roomId: EntityId, userIds: EntityId[]): Promise<void> {
-		this.roomHelperService.checkFeatureRoomsEnabled();
-		await this.roomHelperService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [
+		this.roomPermissionService.checkFeatureRoomsEnabled();
+		await this.roomPermissionService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [
 			Permission.ROOM_REMOVE_MEMBERS,
 		]);
 		await this.roomMembershipService.removeMembersFromRoom(roomId, userIds);
