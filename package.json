@@ -189,7 +189,7 @@
 		"args": "^5.0.3",
 		"async-mutex": "^0.5.0",
 		"aws-sdk": "^2.1692.0",
-		"axios": "^1.8.4",
+		"axios": "^1.11.0",
 		"bcryptjs": "*",
 		"body-parser": "^1.20.3",
 		"bson": "^4.7.2",
