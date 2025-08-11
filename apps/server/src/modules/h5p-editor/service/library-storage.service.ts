@@ -131,7 +131,8 @@ export class LibraryStorage implements ILibraryStorage {
 			});
 		}
 
-		await this.s3Client.deleteDirectory(this.getS3Key(libraryName, ''));
+		const path = this.getS3Key(libraryName, '');
+		await this.s3Client.deleteDirectory(path);
 	}
 
 	/**
