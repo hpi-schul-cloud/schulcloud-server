@@ -69,14 +69,14 @@ export class LibraryStorage implements ILibraryStorage {
 	public async addFile(libraryName: ILibraryName, filename: string, dataStream: Readable): Promise<boolean> {
 		this.checkFilename(filename);
 
-		const s3Key = this.getS3Key(libraryName, filename);
+		const s3Path = this.getS3Key(libraryName, filename);
 
 		try {
 			await this.promiseLimiter(() =>
 				this.s3Client.create(
-					s3Key,
+					s3Path,
 					new H5pFileDto({
-						name: s3Key,
+						name: s3Path,
 						mimeType: 'application/octet-stream',
 						data: dataStream,
 					})
@@ -131,8 +131,8 @@ export class LibraryStorage implements ILibraryStorage {
 			});
 		}
 
-		const path = this.getS3Key(libraryName, '');
-		await this.s3Client.deleteDirectory(path);
+		const s3Path = this.getS3Key(libraryName, '');
+		await this.s3Client.deleteDirectory(s3Path);
 	}
 
 	/**
@@ -167,7 +167,8 @@ export class LibraryStorage implements ILibraryStorage {
 		this.checkFilename(filename);
 
 		try {
-			await this.s3Client.head(this.getS3Key(libraryName, filename));
+			const s3Path = this.getS3Key(libraryName, filename);
+			await this.s3Client.head(s3Path);
 
 			return true;
 		} catch {
@@ -324,8 +325,8 @@ export class LibraryStorage implements ILibraryStorage {
 	public async getFileStats(libraryName: ILibraryName, file: string): Promise<IFileStats> {
 		this.checkFilename(file);
 
-		const s3Key = this.getS3Key(libraryName, file);
-		const head = await this.s3Client.head(s3Key);
+		const s3Path = this.getS3Key(libraryName, file);
+		const head = await this.s3Client.head(s3Path);
 
 		if (head.LastModified === undefined || head.ContentLength === undefined) {
 			throw new NotFoundException();
@@ -367,9 +368,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param libraryName
 	 */
 	public async getLanguages(libraryName: ILibraryName): Promise<string[]> {
-		const prefix = this.getS3Key(libraryName, 'language');
+		const s3Path = this.getS3Key(libraryName, 'language');
 
-		const { files } = await this.s3Client.list({ path: prefix });
+		const { files } = await this.s3Client.list({ path: s3Path });
 
 		const jsonFiles = files.filter((file) => path.extname(file) === '.json');
 		const languages = jsonFiles.map((file) => path.basename(file, '.json'));
@@ -421,9 +422,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @returns an array of filenames
 	 */
 	public async listFiles(libraryName: ILibraryName, withMetadata = true): Promise<string[]> {
-		const prefix = this.getS3Key(libraryName, '');
+		const s3Path = this.getS3Key(libraryName, '');
 
-		const { files } = await this.s3Client.list({ path: prefix });
+		const { files } = await this.s3Client.list({ path: s3Path });
 
 		if (withMetadata) {
 			return files.concat('library.json');
@@ -528,7 +529,8 @@ export class LibraryStorage implements ILibraryStorage {
 				size: stringifiedMetadata.length,
 			};
 		} else {
-			const response = await this.s3Client.get(this.getS3Key(libraryName, fileName));
+			const s3Path = this.getS3Key(libraryName, fileName);
+			const response = await this.s3Client.get(s3Path);
 			const mimetype = mime.lookup(fileName, 'application/octet-stream');
 
 			result = {
