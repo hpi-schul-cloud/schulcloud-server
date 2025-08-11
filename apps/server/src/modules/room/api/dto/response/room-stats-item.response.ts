@@ -11,6 +11,9 @@ export class RoomStatsItemResponse {
 	public owner: string | undefined;
 
 	@ApiProperty({ type: String })
+	public schoolId: string;
+
+	@ApiProperty({ type: String })
 	public schoolName: string;
 
 	@ApiProperty({ type: Number })
@@ -32,6 +35,7 @@ export class RoomStatsItemResponse {
 		this.roomId = room.roomId;
 		this.name = room.name;
 		this.owner = room.owner;
+		this.schoolId = room.schoolId;
 		this.schoolName = room.schoolName;
 		this.totalMembers = room.totalMembers;
 		this.internalMembers = room.internalMembers;

@@ -93,7 +93,7 @@ describe('Room Controller (API)', () => {
 			});
 		});
 
-		describe('when the user has the required permissions', () => {
+		describe('when the user has the required room permissions', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build();
 				const { roomEditorRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
@@ -187,6 +187,47 @@ describe('Room Controller (API)', () => {
 
 					expect(response.status).toBe(HttpStatus.NOT_FOUND);
 				});
+			});
+		});
+
+		describe('when the user is an administrator of the school', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const room = roomEntityFactory.build({ schoolId: school.id });
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+				await em.persistAndFlush([room, adminAccount, adminUser]);
+				em.clear();
+				const loggedInClient = await testApiClient.login(adminAccount);
+				return { loggedInClient, room };
+			};
+
+			it('should delete the room', async () => {
+				const { loggedInClient, room } = await setup();
+
+				const response = await loggedInClient.delete(room.id);
+
+				expect(response.status).toBe(HttpStatus.NO_CONTENT);
+				await expect(em.findOneOrFail(RoomEntity, room.id)).rejects.toThrow(NotFoundException);
+			});
+		});
+
+		describe('when the user is an administrator of another school', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const room = roomEntityFactory.build({ schoolId: school.id });
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin();
+				await em.persistAndFlush([room, adminAccount, adminUser]);
+				em.clear();
+				const loggedInClient = await testApiClient.login(adminAccount);
+				return { loggedInClient, room };
+			};
+
+			it('should throw a forbidden exception', async () => {
+				const { loggedInClient, room } = await setup();
+
+				const response = await loggedInClient.delete(room.id);
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 
