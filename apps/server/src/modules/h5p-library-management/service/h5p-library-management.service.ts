@@ -270,6 +270,7 @@ export class H5PLibraryManagementService {
 		const contentTypeExists = await this.checkContentTypeExistsOnH5pHub(library);
 		if (!contentTypeExists) {
 			this.logContentTypeNotFoundOnH5pHub(library);
+
 			return [];
 		}
 
