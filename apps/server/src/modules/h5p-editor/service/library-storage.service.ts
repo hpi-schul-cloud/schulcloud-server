@@ -297,7 +297,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 */
 	public async getFileAsJson(library: ILibraryName, file: string, readLibraryJsonFromS3 = false): Promise<unknown> {
 		const content = await this.getFileAsString(library, file, readLibraryJsonFromS3);
-		return JSON.parse(content) as unknown;
+		const json = JSON.parse(content) as unknown;
+
+		return json;
 	}
 
 	/**
