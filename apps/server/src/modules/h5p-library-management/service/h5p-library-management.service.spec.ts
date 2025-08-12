@@ -99,7 +99,9 @@ describe('H5PLibraryManagementService', () => {
 					.spyOn(service, 'uninstallUnwantedLibrariesAsBulk')
 					.mockResolvedValueOnce(uninstalledLibraries);
 				const installSpy = jest.spyOn(service, 'installLibrariesAsBulk').mockResolvedValueOnce(installedLibraries);
-				const synchronizeSpy = jest.spyOn(service, 'synchronizeLibraries').mockResolvedValueOnce(synchronizedLibraries);
+				const synchronizeSpy = jest
+					.spyOn(service, 'synchronizeDbEntryAndLibraryJson')
+					.mockResolvedValueOnce(synchronizedLibraries);
 
 				await service.run();
 
@@ -427,7 +429,7 @@ describe('H5PLibraryManagementService', () => {
 		});
 	});
 
-	describe('synchronizeLibraries', () => {
+	describe('synchronizeDbEntryAndLibraryJson', () => {
 		describe('updateLibrary', () => {
 			describe('when a new version of an existing library is available on S3', () => {
 				const setup = () => {
@@ -503,7 +505,7 @@ describe('H5PLibraryManagementService', () => {
 				it('should update the library in the database', async () => {
 					const { service } = setup();
 
-					const synchronizedLibraries = await service.synchronizeLibraries();
+					const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
 					expect(synchronizedLibraries).toEqual([
 						{
@@ -588,7 +590,7 @@ describe('H5PLibraryManagementService', () => {
 				it('should return an empty result list', async () => {
 					const { service } = setup();
 
-					const synchronizedLibraries = await service.synchronizeLibraries();
+					const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
 					expect(synchronizedLibraries).toEqual([]);
 				});
@@ -639,7 +641,7 @@ describe('H5PLibraryManagementService', () => {
 				it('should return an empty result list', async () => {
 					const { service } = setup();
 
-					const synchronizedLibraries = await service.synchronizeLibraries();
+					const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
 					expect(synchronizedLibraries).toEqual([]);
 				});
@@ -701,7 +703,7 @@ describe('H5PLibraryManagementService', () => {
 					it('should return an empty result list', async () => {
 						const { service } = setup();
 
-						const synchronizedLibraries = await service.synchronizeLibraries();
+						const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
 						expect(synchronizedLibraries).toEqual([]);
 					});
@@ -752,7 +754,7 @@ describe('H5PLibraryManagementService', () => {
 					it('should return an empty result list', async () => {
 						const { service } = setup();
 
-						const synchronizedLibraries = await service.synchronizeLibraries();
+						const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
 						expect(synchronizedLibraries).toEqual([]);
 					});
@@ -821,7 +823,7 @@ describe('H5PLibraryManagementService', () => {
 					it('should return an empty result list', async () => {
 						const { service } = setup();
 
-						const synchronizedLibraries = await service.synchronizeLibraries();
+						const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
 						expect(synchronizedLibraries).toEqual([]);
 					});
@@ -890,7 +892,7 @@ describe('H5PLibraryManagementService', () => {
 					it('should return an empty result list', async () => {
 						const { service } = setup();
 
-						const synchronizedLibraries = await service.synchronizeLibraries();
+						const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
 						expect(synchronizedLibraries).toEqual([]);
 					});
@@ -950,7 +952,7 @@ describe('H5PLibraryManagementService', () => {
 				it('should return an empty result list', async () => {
 					const { service } = setup();
 
-					const synchronizedLibraries = await service.synchronizeLibraries();
+					const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
 					expect(synchronizedLibraries).toEqual([
 						{
@@ -988,7 +990,7 @@ describe('H5PLibraryManagementService', () => {
 				it('should return an empty result list', async () => {
 					const { service } = setup();
 
-					const synchronizedLibraries = await service.synchronizeLibraries();
+					const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
 					expect(synchronizedLibraries).toEqual([]);
 				});
@@ -1026,7 +1028,7 @@ describe('H5PLibraryManagementService', () => {
 				it('should return an empty result list', async () => {
 					const { service } = setup();
 
-					const synchronizedLibraries = await service.synchronizeLibraries();
+					const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
 					expect(synchronizedLibraries).toEqual([]);
 				});
@@ -1046,7 +1048,7 @@ describe('H5PLibraryManagementService', () => {
 				it('should return an empty result list', async () => {
 					const { service } = setup();
 
-					const synchronizedLibraries = await service.synchronizeLibraries();
+					const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
 					expect(synchronizedLibraries).toEqual([]);
 				});
@@ -1082,7 +1084,7 @@ describe('H5PLibraryManagementService', () => {
 				it('should return an empty result list', async () => {
 					const { service } = setup();
 
-					const synchronizedLibraries = await service.synchronizeLibraries();
+					const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
 					expect(synchronizedLibraries).toEqual([]);
 				});

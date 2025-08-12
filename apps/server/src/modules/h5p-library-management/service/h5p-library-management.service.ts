@@ -112,7 +112,7 @@ export class H5PLibraryManagementService {
 		const availableLibraries = await this.libraryAdministration.getLibraries();
 		const uninstalledLibraries = await this.uninstallUnwantedLibrariesAsBulk();
 		const installedLibraries = await this.installLibrariesAsBulk(availableLibraries);
-		const synchronizedLibraries = await this.synchronizeLibraries();
+		const synchronizedLibraries = await this.synchronizeDbEntryAndLibraryJson();
 
 		this.logFinishH5pLibraryManagementJob(
 			availableLibraries,
@@ -352,7 +352,7 @@ export class H5PLibraryManagementService {
 		return `${version.machineName}-${version.majorVersion}.${version.minorVersion}.${version.patchVersion}`;
 	}
 
-	public async synchronizeLibraries(): Promise<ILibraryInstallResult[]> {
+	public async synchronizeDbEntryAndLibraryJson(): Promise<ILibraryInstallResult[]> {
 		const installResults: ILibraryInstallResult[] = [];
 		const folders = await this.libraryStorage.getAllLibraryFolders();
 
