@@ -332,14 +332,24 @@ export class H5PLibraryManagementService {
 		availableVersions: string[]
 	): void {
 		const newVersions = installResult
-			.filter((result) => result.type === 'new' || result.type === 'patch')
-			.map(
-				(result) =>
-					`${result.newVersion?.machineName ?? ''}-${result.newVersion?.majorVersion ?? ''}.${
-						result.newVersion?.minorVersion ?? ''
-					}.${result.newVersion?.patchVersion ?? ''}`
-			);
+			.filter((result) => this.isLibraryInstalledOrUpdated(result))
+			.map((result) => this.formatLibraryVersion(result.newVersion));
+
 		availableVersions.push(...newVersions);
+	}
+
+	private isLibraryInstalledOrUpdated(installResult: ILibraryInstallResult): boolean {
+		const isLibraryInstalled = installResult.type === 'new';
+		const isLibraryUpdated = installResult.type === 'patch';
+		const result = isLibraryInstalled || isLibraryUpdated;
+
+		return result;
+	}
+
+	private formatLibraryVersion(version?: IFullLibraryName): string {
+		if (!version) return '';
+
+		return `${version.machineName}-${version.majorVersion}.${version.minorVersion}.${version.patchVersion}`;
 	}
 
 	public async synchronizeLibraries(): Promise<ILibraryInstallResult[]> {
