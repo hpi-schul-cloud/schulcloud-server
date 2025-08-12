@@ -201,7 +201,12 @@ export class H5PLibraryManagementService {
 		availableLibraries: ILibraryAdministrationOverviewItem[]
 	): ILibraryAdministrationOverviewItem[] {
 		const unwantedLibraries = availableLibraries
-			.filter((lib) => !this.libraryWishList.includes(lib.machineName) && lib.dependentsCount === 0)
+			.filter((lib) => {
+				const isLibraryInWishList = this.libraryWishList.includes(lib.machineName);
+				const isNeededByOtherLibrary = lib.dependentsCount === 0;
+
+				return !isLibraryInWishList && isNeededByOtherLibrary;
+			})
 			.map((lib) => {
 				return { ...lib };
 			});
