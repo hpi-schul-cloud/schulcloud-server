@@ -353,23 +353,24 @@ export class H5PLibraryManagementService {
 	}
 
 	public async synchronizeLibraries(): Promise<ILibraryInstallResult[]> {
-		const synchronizedLibraries: ILibraryInstallResult[] = [];
+		const installResults: ILibraryInstallResult[] = [];
 		const folders = await this.libraryStorage.getAllLibraryFolders();
 
 		for (const folder of folders) {
 			const libraryName = this.getLibraryNameFromFolder(folder);
 			const libraryJsonExistsInS3 = await this.libraryStorage.fileExists(libraryName, 'library.json');
+
 			if (libraryJsonExistsInS3) {
-				const result = await this.synchronizeLibraryFromS3(libraryName);
-				if (result.type === 'new' || result.type === 'patch') {
-					synchronizedLibraries.push(result);
-				}
+				const result = await this.synchronizeLibraryMetadataInDatabase(libraryName);
+				installResults.push(result);
 			} else {
-				await this.synchronizeLibraryToS3(libraryName);
+				await this.addLibraryJsonToS3(libraryName);
 			}
 		}
 
-		return synchronizedLibraries;
+		const synchronizedResults = installResults.filter((result) => this.isLibraryInstalledOrUpdated(result));
+
+		return synchronizedResults;
 	}
 
 	private getLibraryNameFromFolder(folder: string): ILibraryName {
@@ -384,7 +385,7 @@ export class H5PLibraryManagementService {
 		return libraryName;
 	}
 
-	private async synchronizeLibraryFromS3(libraryName: ILibraryName): Promise<ILibraryInstallResult> {
+	private async synchronizeLibraryMetadataInDatabase(libraryName: ILibraryName): Promise<ILibraryInstallResult> {
 		const newLibraryMetadata: ILibraryMetadata = (await this.libraryStorage.getFileAsJson(
 			libraryName,
 			'library.json',
@@ -601,7 +602,7 @@ export class H5PLibraryManagementService {
 		);
 	}
 
-	private async synchronizeLibraryToS3(libraryName: ILibraryName): Promise<void> {
+	private async addLibraryJsonToS3(libraryName: ILibraryName): Promise<void> {
 		let metadata: IInstalledLibrary | undefined = undefined;
 		try {
 			metadata = await this.libraryStorage.getLibrary(libraryName);
