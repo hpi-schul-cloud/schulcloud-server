@@ -109,13 +109,9 @@ export class H5PLibraryManagementService {
 	public async run(): Promise<void> {
 		this.logStartH5pLibraryManagementJob();
 		const availableLibraries = await this.libraryAdministration.getLibraries();
-
 		const uninstalledLibraries = await this.uninstallUnwantedLibrariesAsBulk();
-
 		const installedLibraries = await this.installLibrariesAsBulk(availableLibraries);
-
 		const synchronizedLibraries = await this.synchronizeLibraries();
-
 		this.logFinishH5pLibraryManagementJob(
 			availableLibraries,
 			uninstalledLibraries,
