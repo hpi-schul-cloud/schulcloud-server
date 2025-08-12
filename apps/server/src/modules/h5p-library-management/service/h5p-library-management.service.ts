@@ -108,10 +108,12 @@ export class H5PLibraryManagementService {
 
 	public async run(): Promise<void> {
 		this.logStartH5pLibraryManagementJob();
+
 		const availableLibraries = await this.libraryAdministration.getLibraries();
 		const uninstalledLibraries = await this.uninstallUnwantedLibrariesAsBulk();
 		const installedLibraries = await this.installLibrariesAsBulk(availableLibraries);
 		const synchronizedLibraries = await this.synchronizeLibraries();
+
 		this.logFinishH5pLibraryManagementJob(
 			availableLibraries,
 			uninstalledLibraries,
@@ -142,20 +144,19 @@ export class H5PLibraryManagementService {
 	}
 
 	public async uninstallUnwantedLibrariesAsBulk(): Promise<ILibraryAdministrationOverviewItem[]> {
-		let availableLibraries: ILibraryAdministrationOverviewItem[] = [];
-		let uninstalledLibraries: ILibraryAdministrationOverviewItem[] = [];
-		let failedLibraries: ILibraryAdministrationOverviewItem[] = [];
 		const allUninstalledLibraries: ILibraryAdministrationOverviewItem[] = [];
 		const allFailedLibraries: ILibraryAdministrationOverviewItem[] = [];
 
 		do {
-			availableLibraries = await this.libraryAdministration.getLibraries();
-			const filteredLibraries = this.excludeFailedLibraries(availableLibraries, failedLibraries);
-			({ uninstalledLibraries, failedLibraries } = await this.uninstallUnwantedLibraries(filteredLibraries));
+			const availableLibraries = await this.libraryAdministration.getLibraries();
+			const filteredLibraries = this.excludeFailedLibraries(availableLibraries, allFailedLibraries);
+			const { uninstalledLibraries, failedLibraries } = await this.uninstallUnwantedLibraries(filteredLibraries);
 
 			allUninstalledLibraries.push(...uninstalledLibraries);
 			allFailedLibraries.push(...failedLibraries);
-		} while (uninstalledLibraries.length > 0);
+
+			if (uninstalledLibraries.length === 0) break;
+		} while (true);
 
 		return allUninstalledLibraries;
 	}
@@ -164,13 +165,14 @@ export class H5PLibraryManagementService {
 		availableLibraries: ILibraryAdministrationOverviewItem[],
 		failedLibraries: ILibraryAdministrationOverviewItem[]
 	): ILibraryAdministrationOverviewItem[] {
-		let filteredLibraries = availableLibraries;
 		if (failedLibraries.length > 0) {
 			const failedLibrariesSet = new Set(failedLibraries.map((lib) => lib.machineName));
-			filteredLibraries = availableLibraries.filter((lib) => !failedLibrariesSet.has(lib.machineName));
+			const filteredLibraries = availableLibraries.filter((lib) => !failedLibrariesSet.has(lib.machineName));
+
+			return filteredLibraries;
 		}
 
-		return filteredLibraries;
+		return availableLibraries;
 	}
 
 	public async uninstallUnwantedLibraries(availableLibraries: ILibraryAdministrationOverviewItem[]): Promise<{
