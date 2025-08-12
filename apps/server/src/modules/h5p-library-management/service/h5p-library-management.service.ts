@@ -150,17 +150,27 @@ export class H5PLibraryManagementService {
 
 		do {
 			availableLibraries = await this.libraryAdministration.getLibraries();
-			if (allFailedLibraries.length > 0) {
-				const failedSet = new Set(allFailedLibraries.map((lib) => lib.machineName));
-				availableLibraries = availableLibraries.filter((lib) => !failedSet.has(lib.machineName));
-			}
-			const result = await this.uninstallUnwantedLibraries(availableLibraries);
-			({ uninstalledLibraries, failedLibraries } = result);
+			const filteredLibraries = this.excludeFailedLibraries(availableLibraries, failedLibraries);
+			({ uninstalledLibraries, failedLibraries } = await this.uninstallUnwantedLibraries(filteredLibraries));
+
 			allUninstalledLibraries.push(...uninstalledLibraries);
 			allFailedLibraries.push(...failedLibraries);
 		} while (uninstalledLibraries.length > 0);
 
 		return allUninstalledLibraries;
+	}
+
+	private excludeFailedLibraries(
+		availableLibraries: ILibraryAdministrationOverviewItem[],
+		failedLibraries: ILibraryAdministrationOverviewItem[]
+	): ILibraryAdministrationOverviewItem[] {
+		let filteredLibraries = availableLibraries;
+		if (failedLibraries.length > 0) {
+			const failedLibrariesSet = new Set(failedLibraries.map((lib) => lib.machineName));
+			filteredLibraries = availableLibraries.filter((lib) => !failedLibrariesSet.has(lib.machineName));
+		}
+
+		return filteredLibraries;
 	}
 
 	public async uninstallUnwantedLibraries(availableLibraries: ILibraryAdministrationOverviewItem[]): Promise<{
