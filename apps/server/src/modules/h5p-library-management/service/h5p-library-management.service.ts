@@ -183,12 +183,13 @@ export class H5PLibraryManagementService {
 		const uninstalledLibraries: ILibraryAdministrationOverviewItem[] = [];
 		const failedLibraries: ILibraryAdministrationOverviewItem[] = [];
 
+		// to avoid conflicts or race conditions with the S3, we remove the libraries
+		// one-by-one and don't use Promise.allSettled()
 		for (const library of unwantedLibraries) {
-			// to avoid conflicts, remove one-by-one
-			const forceUninstallSuccessful = await this.forceUninstallLibrary(library);
-			if (forceUninstallSuccessful) {
+			try {
+				await this.forceUninstallLibrary(library);
 				uninstalledLibraries.push(library);
-			} else {
+			} catch (error: unknown) {
 				failedLibraries.push(library);
 			}
 		}
@@ -214,20 +215,17 @@ export class H5PLibraryManagementService {
 		return unwantedLibraries;
 	}
 
-	private async forceUninstallLibrary(unwantedLibrary: ILibraryAdministrationOverviewItem): Promise<boolean> {
+	private async forceUninstallLibrary(unwantedLibrary: ILibraryAdministrationOverviewItem): Promise<void> {
 		this.logStartForceUninstallLibrary(unwantedLibrary.machineName);
-		let result = false;
 		try {
 			await this.libraryStorage.deleteLibrary(unwantedLibrary);
-			result = true;
 		} catch (error: unknown) {
 			this.logger.warning(
 				new H5PLibraryManagementErrorLoggable(error, { library: unwantedLibrary.machineName }, 'during force uninstall')
 			);
+			throw error;
 		}
 		this.logFinishedForceUninstallLibrary(unwantedLibrary.machineName);
-
-		return result;
 	}
 
 	private logStartForceUninstallLibrary(library: string): void {
@@ -287,17 +285,17 @@ export class H5PLibraryManagementService {
 			return [];
 		}
 
-		let installResults: ILibraryInstallResult[] = [];
-
 		try {
 			const h5pDefaultUser = H5pDefaultUserFactory.create();
-			installResults = await this.contentTypeRepo.installContentType(library, h5pDefaultUser);
+			const installResults = await this.contentTypeRepo.installContentType(library, h5pDefaultUser);
 			this.logFinishedInstallationOfCurrentVersionFromH5pHub(library, installResults);
+
+			return installResults;
 		} catch (error: unknown) {
 			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, { library }));
-		}
 
-		return installResults;
+			return [];
+		}
 	}
 
 	private logStartInstallationOfCurrentVersionFromH5pHub(library: string): void {
