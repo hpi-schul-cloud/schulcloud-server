@@ -34,7 +34,7 @@ export class CardContentUc {
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
 
 		await this.boardNodePermissionService.checkPermission(userId, column, Action.write);
-		const card = this.boardNodeFactory.buildCard(this.convertCardPropsToDomainElements(cardProps));
+		const card = this.boardNodeFactory.buildCard(this.convertCardPropsToContentElements(cardProps));
 
 		await this.boardNodeService.addToParent(column, card);
 
@@ -44,9 +44,12 @@ export class CardContentUc {
 		return cardResponse;
 	}
 
-	private convertCardPropsToDomainElements(cardProps: UpdateElementContentBodyParams[]): AnyContentElement[] {
-		const elementContents = this.convertCardPropsToElements(cardProps);
-
+	private convertCardPropsToContentElements(cardProps: UpdateElementContentBodyParams[]): AnyContentElement[] {
+		const elementContents: AnyContentElement[] = [];
+		for (const cardProp of cardProps) {
+			const contentElement = this.boardNodeFactory.buildContentElement(cardProp.data.type);
+			elementContents.push(contentElement);
+		}
 		return elementContents.map((content) => content as AnyContentElement);
 	}
 
