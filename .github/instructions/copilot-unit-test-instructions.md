@@ -22,7 +22,7 @@
 - Under each method/function describe block, add describe blocks for every scenario to be tested.
 - In each scenario `describe` block add `setup` arrow function.
 - Setup function must return all needed test data and mocks.
-- Add empty line before setup return statement.
+- Add empty line before setup retu rn statement.
 
 # Mocks
 
