@@ -50,7 +50,13 @@ export class ValkeyFactory {
 
 			return valkeyClientInstance;
 		} catch (err) {
-			throw new Error('Can not create valkey instance.', { cause: err });
+			throw new Error(
+				`Can not create valkey "sentinal" instance.
+					If you are on macOS and using Telepresence, DNS resolution may be broken.
+					See: https://telepresence.io/docs/troubleshooting#dns-is-broken-on-macos
+					You could use directly add the IPs discoverSentinelHosts below, and also for MongoDB in your /etc/hosts`,
+				{ cause: err }
+			);
 		}
 	}
 

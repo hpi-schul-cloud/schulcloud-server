@@ -7,6 +7,7 @@ export type RoomStats = {
 	totalMembers: number;
 	internalMembers: number;
 	externalMembers: number;
+	schoolId: EntityId;
 	schoolName: string;
 	createdAt: Date;
 	updatedAt: Date;
