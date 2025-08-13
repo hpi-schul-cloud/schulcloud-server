@@ -83,13 +83,15 @@ export const BoardColumnApiAxiosParamCreator = function (configuration?: Configu
          * 
          * @summary Create a new card on a column with content.
          * @param {string} columnId The id of the column.
-         * @param {CreateCardImportBodyParams} [createCardImportBodyParams] 
+         * @param {CreateCardImportBodyParams} createCardImportBodyParams 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        columnControllerCreateCardWithContent: async (columnId: string, createCardImportBodyParams?: CreateCardImportBodyParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        columnControllerCreateCardWithContent: async (columnId: string, createCardImportBodyParams: CreateCardImportBodyParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'columnId' is not null or undefined
             assertParamExists('columnControllerCreateCardWithContent', 'columnId', columnId)
+            // verify required parameter 'createCardImportBodyParams' is not null or undefined
+            assertParamExists('columnControllerCreateCardWithContent', 'createCardImportBodyParams', createCardImportBodyParams)
             const localVarPath = `/columns/{columnId}/cardsContent`
                 .replace(`{${"columnId"}}`, encodeURIComponent(String(columnId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -193,11 +195,11 @@ export const BoardColumnApiFp = function(configuration?: Configuration) {
          * 
          * @summary Create a new card on a column with content.
          * @param {string} columnId The id of the column.
-         * @param {CreateCardImportBodyParams} [createCardImportBodyParams] 
+         * @param {CreateCardImportBodyParams} createCardImportBodyParams 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async columnControllerCreateCardWithContent(columnId: string, createCardImportBodyParams?: CreateCardImportBodyParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CardResponse>> {
+        async columnControllerCreateCardWithContent(columnId: string, createCardImportBodyParams: CreateCardImportBodyParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CardResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.columnControllerCreateCardWithContent(columnId, createCardImportBodyParams, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BoardColumnApi.columnControllerCreateCardWithContent']?.[localVarOperationServerIndex]?.url;
@@ -242,11 +244,11 @@ export const BoardColumnApiFactory = function (configuration?: Configuration, ba
          * 
          * @summary Create a new card on a column with content.
          * @param {string} columnId The id of the column.
-         * @param {CreateCardImportBodyParams} [createCardImportBodyParams] 
+         * @param {CreateCardImportBodyParams} createCardImportBodyParams 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        columnControllerCreateCardWithContent(columnId: string, createCardImportBodyParams?: CreateCardImportBodyParams, options?: any): AxiosPromise<CardResponse> {
+        columnControllerCreateCardWithContent(columnId: string, createCardImportBodyParams: CreateCardImportBodyParams, options?: any): AxiosPromise<CardResponse> {
             return localVarFp.columnControllerCreateCardWithContent(columnId, createCardImportBodyParams, options).then((request) => request(axios, basePath));
         },
         /**
@@ -284,12 +286,12 @@ export interface BoardColumnApiInterface {
      * 
      * @summary Create a new card on a column with content.
      * @param {string} columnId The id of the column.
-     * @param {CreateCardImportBodyParams} [createCardImportBodyParams] 
+     * @param {CreateCardImportBodyParams} createCardImportBodyParams 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof BoardColumnApiInterface
      */
-    columnControllerCreateCardWithContent(columnId: string, createCardImportBodyParams?: CreateCardImportBodyParams, options?: RawAxiosRequestConfig): AxiosPromise<CardResponse>;
+    columnControllerCreateCardWithContent(columnId: string, createCardImportBodyParams: CreateCardImportBodyParams, options?: RawAxiosRequestConfig): AxiosPromise<CardResponse>;
 
     /**
      * 
@@ -328,12 +330,12 @@ export class BoardColumnApi extends BaseAPI implements BoardColumnApiInterface {
      * 
      * @summary Create a new card on a column with content.
      * @param {string} columnId The id of the column.
-     * @param {CreateCardImportBodyParams} [createCardImportBodyParams] 
+     * @param {CreateCardImportBodyParams} createCardImportBodyParams 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof BoardColumnApi
      */
-    public columnControllerCreateCardWithContent(columnId: string, createCardImportBodyParams?: CreateCardImportBodyParams, options?: RawAxiosRequestConfig) {
+    public columnControllerCreateCardWithContent(columnId: string, createCardImportBodyParams: CreateCardImportBodyParams, options?: RawAxiosRequestConfig) {
         return BoardColumnApiFp(this.configuration).columnControllerCreateCardWithContent(columnId, createCardImportBodyParams, options).then((request) => request(this.axios, this.basePath));
     }
 

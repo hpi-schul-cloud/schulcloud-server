@@ -156,12 +156,12 @@ export class ColumnController {
 		return response;
 	}
 
-	@ApiOperation({ summary: 'Create a new card on a column with content.' })
+	@ApiOperation({ summary: 'Create a new card on a column with content.', operationId: 'ColumnController_createCardWithContent' })
 	@ApiResponse({ status: 201, type: CardResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@ApiBody({ required: false, type: CreateCardImportBodyParams })
+	@ApiBody({ required: true, type: CreateCardImportBodyParams })
 	@Post(':columnId/cardsContent')
 	public async createCardWithContent(
 		@Param() urlParams: ColumnUrlParams,
