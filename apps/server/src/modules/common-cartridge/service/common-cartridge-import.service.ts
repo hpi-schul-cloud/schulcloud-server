@@ -249,27 +249,28 @@ export class CommonCartridgeImportService {
 
 				if (!resourceBody) return null;
 
-				let updateElementContentBodyParamsData = {
+				const updateElementContentBodyParamsData = {
 					type: contentElementType,
 					content: this.convertElementToContentBody(resourceBody),
 				};
 
-				if (resource.type === 'file') {
-					updateElementContentBodyParamsData = {
-						type: contentElementType,
-						content: this.convertElementToContentBody(resourceBody),
-					};
-				}
+				// if (resource.type === 'file') {
+				// 	updateElementContentBodyParamsData = {
+				// 		type: contentElementType,
+				// 		content: this.convertElementToContentBody(resourceBody),
+				// 	};
+				// }
 				return {
 					data: updateElementContentBodyParamsData,
 				} as UpdateElementContentBodyParams;
 			})
-			.filter((element): element is UpdateElementContentBodyParams => element !== null);
+			.filter((element): element is UpdateElementContentBodyParams => element !== null && element !== undefined);
 	}
 
 	private convertElementToContentBody(
 		element: LinkElementContentBody | RichTextElementContentBody | FileElementContentBody
-	): LinkContentBody | RichTextContentBody | FileContentBody {
+	): LinkContentBody | RichTextContentBody | FileContentBody | undefined {
+		if (!element) return;
 		if (element.type === 'link') {
 			return element.content as LinkContentBody;
 		} else if (element.type === 'file') {
