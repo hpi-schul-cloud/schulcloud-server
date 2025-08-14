@@ -19,7 +19,6 @@ import {
 import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { error } from 'console';
 import { readFileSync } from 'fs';
 import { Readable } from 'stream';
 import { parse } from 'yaml';
@@ -433,8 +432,6 @@ export class H5PLibraryManagementService {
 				oldVersion,
 				newVersion,
 			};
-
-			// TODO: What to do, when consistency check fails?
 		} catch (error: unknown) {
 			this.logger.warning(
 				new H5PLibraryManagementErrorLoggable(
@@ -488,7 +485,6 @@ export class H5PLibraryManagementService {
 				type: 'new',
 				newVersion,
 			};
-			// TODO: What to do, when consistency check fails?
 		} catch (error: unknown) {
 			this.logger.warning(
 				new H5PLibraryManagementErrorLoggable(
@@ -511,7 +507,8 @@ export class H5PLibraryManagementService {
 	}
 
 	private async checkConsistency(library: ILibraryName): Promise<void> {
-		if (!(await this.libraryStorage.isInstalled(library))) {
+		const isLibraryInstalled = await this.libraryStorage.isInstalled(library);
+		if (!isLibraryInstalled) {
 			this.logLibraryIsNotInstalled(library);
 			this.throwConsistencyError('Library is not installed');
 		}
@@ -520,7 +517,7 @@ export class H5PLibraryManagementService {
 		try {
 			metadata = await this.libraryStorage.getLibrary(library);
 		} catch (error: unknown) {
-			this.logMetadataMissing(library);
+			this.logMetadataMissing(error, library);
 			this.throwConsistencyError('Could not read library metadata');
 		}
 
@@ -555,7 +552,7 @@ export class H5PLibraryManagementService {
 		return metadata?.preloadedJs?.map((js) => js.path) || [];
 	}
 
-	private logMetadataMissing(library: ILibraryName): void {
+	private logMetadataMissing(error: unknown, library: ILibraryName): void {
 		this.logger.warning(
 			new H5PLibraryManagementErrorLoggable(
 				error,
