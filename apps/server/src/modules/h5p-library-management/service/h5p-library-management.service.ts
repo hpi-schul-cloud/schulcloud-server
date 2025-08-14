@@ -391,7 +391,7 @@ export class H5PLibraryManagementService {
 			'library.json',
 			true
 		)) as ILibraryMetadata;
-		const newVersion: IFullLibraryName = {
+		const newVersionOfLibrary: IFullLibraryName = {
 			machineName: newLibraryMetadata.machineName,
 			majorVersion: newLibraryMetadata.majorVersion,
 			minorVersion: newLibraryMetadata.minorVersion,
@@ -399,59 +399,39 @@ export class H5PLibraryManagementService {
 		};
 
 		const libraryIsInstalled = await this.libraryStorage.isInstalled(libraryName);
-		if (libraryIsInstalled) {
-			const oldVersion = await this.libraryManager.isPatchedLibrary(newLibraryMetadata);
-			if (oldVersion) {
-				const updateSuccessful = await this.updateLibrary(newLibraryMetadata);
-				if (!updateSuccessful) {
-					const result: ILibraryInstallResult = {
-						type: 'none',
-					};
-
-					return result;
-				}
-
-				this.logLibraryUpdated(oldVersion, newVersion);
-				const result: ILibraryInstallResult = {
-					type: 'patch',
-					oldVersion,
-					newVersion,
-				};
-
-				return result;
-			}
-			this.logLibraryAlreadyInstalled(newVersion);
-			const result: ILibraryInstallResult = {
-				type: 'none',
-			};
+		if (!libraryIsInstalled) {
+			const result = await this.addLibrary(newLibraryMetadata, newVersionOfLibrary);
 
 			return result;
 		}
 
-		const addLibrarySuccessful = await this.addLibrary(newLibraryMetadata);
-		if (!addLibrarySuccessful) {
-			const result: ILibraryInstallResult = {
-				type: 'none',
-			};
+		const oldVersionOfLibrary = await this.libraryManager.isPatchedLibrary(newLibraryMetadata);
+		if (oldVersionOfLibrary) {
+			const result = await this.updateLibrary(newLibraryMetadata, oldVersionOfLibrary, newVersionOfLibrary);
 
 			return result;
 		}
 
-		this.logLibraryAdded(newVersion);
-		const result: ILibraryInstallResult = {
-			type: 'new',
-			newVersion,
-		};
-
-		return result;
+		this.logLibraryAlreadyInstalled(newVersionOfLibrary);
+		return { type: 'none' };
 	}
 
-	private async updateLibrary(newLibraryMetadata: ILibraryMetadata): Promise<boolean> {
-		let result = false;
+	private async updateLibrary(
+		newLibraryMetadata: ILibraryMetadata,
+		oldVersion: IFullLibraryName,
+		newVersion: IFullLibraryName
+	): Promise<ILibraryInstallResult> {
 		try {
 			await this.libraryStorage.updateLibrary(newLibraryMetadata);
-			result = await this.checkConsistency(newLibraryMetadata);
-			// TODO: What to do, when consistency check fails?
+			await this.checkConsistency(newLibraryMetadata);
+
+			this.logLibraryUpdated(oldVersion, newVersion);
+
+			return {
+				type: 'patch',
+				oldVersion,
+				newVersion,
+			};
 		} catch (error: unknown) {
 			this.logger.warning(
 				new H5PLibraryManagementErrorLoggable(
@@ -462,9 +442,9 @@ export class H5PLibraryManagementService {
 			);
 			this.logRemoveLibraryDueToError(newLibraryMetadata);
 			await this.libraryStorage.deleteLibrary(newLibraryMetadata);
-		}
 
-		return result;
+			return { type: 'none' };
+		}
 	}
 
 	private logRemoveLibraryDueToError(library: ILibraryMetadata): void {
@@ -491,12 +471,20 @@ export class H5PLibraryManagementService {
 		);
 	}
 
-	private async addLibrary(newLibraryMetadata: ILibraryMetadata): Promise<boolean> {
-		let result = false;
+	private async addLibrary(
+		newLibraryMetadata: ILibraryMetadata,
+		newVersion: IFullLibraryName
+	): Promise<ILibraryInstallResult> {
 		try {
 			await this.libraryStorage.addLibrary(newLibraryMetadata, false);
-			result = await this.checkConsistency(newLibraryMetadata);
-			// TODO: What to do, when consistency check fails?
+			await this.checkConsistency(newLibraryMetadata);
+
+			this.logLibraryAdded(newVersion);
+
+			return {
+				type: 'new',
+				newVersion,
+			};
 		} catch (error: unknown) {
 			this.logger.warning(
 				new H5PLibraryManagementErrorLoggable(
@@ -505,9 +493,9 @@ export class H5PLibraryManagementService {
 					'during library installation'
 				)
 			);
-		}
 
-		return result;
+			return { type: 'none' };
+		}
 	}
 
 	private logLibraryAdded(newVersion: IFullLibraryName): void {
@@ -518,48 +506,64 @@ export class H5PLibraryManagementService {
 		);
 	}
 
-	private async checkConsistency(library: ILibraryName): Promise<boolean> {
-		const libraryIsInstalled = await this.libraryStorage.isInstalled(library);
-		if (!libraryIsInstalled) {
+	private async checkConsistency(library: ILibraryName): Promise<void> {
+		const isLibraryInstalled = await this.libraryStorage.isInstalled(library);
+		if (!isLibraryInstalled) {
 			this.logLibraryIsNotInstalled(library);
-
-			return false;
+			this.throwConsistencyError('Library is not installed');
 		}
 
-		let metadata: IInstalledLibrary | undefined = undefined;
+		let metadata: IInstalledLibrary;
 		try {
 			metadata = await this.libraryStorage.getLibrary(library);
 		} catch (error: unknown) {
-			this.logger.warning(
-				new H5PLibraryManagementErrorLoggable(
-					error,
-					{ library: `${library.machineName}-${library.majorVersion}.${library.minorVersion}` },
-					'while reading library metadata'
-				)
-			);
-
-			return false;
-		}
-		if (metadata?.preloadedJs) {
-			const jsFilesExist = await this.checkFiles(
-				library,
-				metadata.preloadedJs.map((js) => js.path)
-			);
-			if (!jsFilesExist) {
-				return false;
-			}
-		}
-		if (metadata?.preloadedCss) {
-			const cssFilesExist = await this.checkFiles(
-				library,
-				metadata.preloadedCss.map((css) => css.path)
-			);
-			if (!cssFilesExist) {
-				return false;
-			}
+			this.logMetadataMissing(error, library);
+			this.throwConsistencyError('Could not read library metadata');
 		}
 
-		return true;
+		const jsIsMissing = await this.jsIsMissing(metadata);
+		if (jsIsMissing) this.throwConsistencyError('Missing JS files');
+
+		const cssIsMissing = await this.cssIsMissing(metadata);
+		if (cssIsMissing) this.throwConsistencyError('Missing CSS files');
+	}
+
+	private async jsIsMissing(metadata: IInstalledLibrary): Promise<boolean> {
+		const jsPaths = this.getJsPaths(metadata);
+		const filesExist = await this.checkFiles(metadata, jsPaths);
+		const jsIsMissing = !!metadata?.preloadedJs && !filesExist;
+
+		return jsIsMissing;
+	}
+
+	private async cssIsMissing(metadata: IInstalledLibrary): Promise<boolean> {
+		const cssPaths = this.getCssPaths(metadata);
+		const filesExist = await this.checkFiles(metadata, cssPaths);
+		const cssIsMissing = !!metadata?.preloadedCss && !filesExist;
+
+		return cssIsMissing;
+	}
+
+	private getCssPaths(metadata: IInstalledLibrary): string[] {
+		return metadata?.preloadedCss?.map((css) => css.path) || [];
+	}
+
+	private getJsPaths(metadata: IInstalledLibrary): string[] {
+		return metadata?.preloadedJs?.map((js) => js.path) || [];
+	}
+
+	private logMetadataMissing(error: unknown, library: ILibraryName): void {
+		this.logger.warning(
+			new H5PLibraryManagementErrorLoggable(
+				error,
+				{ library: `${library.machineName}-${library.majorVersion}.${library.minorVersion}` },
+				'while reading library metadata'
+			)
+		);
+	}
+
+	private throwConsistencyError(message: string): never {
+		throw new Error(message);
 	}
 
 	private logLibraryIsNotInstalled(library: ILibraryName): void {
