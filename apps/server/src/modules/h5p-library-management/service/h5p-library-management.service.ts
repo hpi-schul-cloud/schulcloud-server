@@ -19,6 +19,7 @@ import {
 import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { error } from 'console';
 import { readFileSync } from 'fs';
 import { Readable } from 'stream';
 import { parse } from 'yaml';
@@ -510,45 +511,62 @@ export class H5PLibraryManagementService {
 	}
 
 	private async checkConsistency(library: ILibraryName): Promise<void> {
-		const libraryIsInstalled = await this.libraryStorage.isInstalled(library);
-		if (!libraryIsInstalled) {
+		if (!(await this.libraryStorage.isInstalled(library))) {
 			this.logLibraryIsNotInstalled(library);
-
-			throw new Error('Library is not installed');
+			this.throwConsistencyError('Library is not installed');
 		}
 
-		let metadata: IInstalledLibrary | undefined = undefined;
+		let metadata: IInstalledLibrary;
 		try {
 			metadata = await this.libraryStorage.getLibrary(library);
 		} catch (error: unknown) {
-			this.logger.warning(
-				new H5PLibraryManagementErrorLoggable(
-					error,
-					{ library: `${library.machineName}-${library.majorVersion}.${library.minorVersion}` },
-					'while reading library metadata'
-				)
-			);
+			this.logMetadataMissing(library);
+			this.throwConsistencyError('Could not read library metadata');
+		}
 
-			throw new Error('Could not read library metadata');
-		}
-		if (metadata?.preloadedJs) {
-			const jsFilesExist = await this.checkFiles(
-				library,
-				metadata.preloadedJs.map((js) => js.path)
-			);
-			if (!jsFilesExist) {
-				throw new Error('Missing JS files');
-			}
-		}
-		if (metadata?.preloadedCss) {
-			const cssFilesExist = await this.checkFiles(
-				library,
-				metadata.preloadedCss.map((css) => css.path)
-			);
-			if (!cssFilesExist) {
-				throw new Error('Missing CSS files');
-			}
-		}
+		const jsIsMissing = await this.jsIsMissing(metadata);
+		if (jsIsMissing) this.throwConsistencyError('Missing JS files');
+
+		const cssIsMissing = await this.cssIsMissing(metadata);
+		if (cssIsMissing) this.throwConsistencyError('Missing CSS files');
+	}
+
+	private async jsIsMissing(metadata: IInstalledLibrary): Promise<boolean> {
+		const jsPaths = this.getJsPaths(metadata);
+		const filesExist = await this.checkFiles(metadata, jsPaths);
+		const jsIsMissing = !!metadata?.preloadedJs && !filesExist;
+
+		return jsIsMissing;
+	}
+
+	private async cssIsMissing(metadata: IInstalledLibrary): Promise<boolean> {
+		const cssPaths = this.getCssPaths(metadata);
+		const filesExist = await this.checkFiles(metadata, cssPaths);
+		const cssIsMissing = !!metadata?.preloadedCss && !filesExist;
+
+		return cssIsMissing;
+	}
+
+	private getCssPaths(metadata: IInstalledLibrary): string[] {
+		return metadata?.preloadedCss?.map((css) => css.path) || [];
+	}
+
+	private getJsPaths(metadata: IInstalledLibrary): string[] {
+		return metadata?.preloadedJs?.map((js) => js.path) || [];
+	}
+
+	private logMetadataMissing(library: ILibraryName): void {
+		this.logger.warning(
+			new H5PLibraryManagementErrorLoggable(
+				error,
+				{ library: `${library.machineName}-${library.majorVersion}.${library.minorVersion}` },
+				'while reading library metadata'
+			)
+		);
+	}
+
+	private throwConsistencyError(message: string): never {
+		throw new Error(message);
 	}
 
 	private logLibraryIsNotInstalled(library: ILibraryName): void {
