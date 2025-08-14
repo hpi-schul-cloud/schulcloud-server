@@ -20,6 +20,7 @@ import { RoomPermissionService } from './service';
 import { School, SchoolService } from '@modules/school';
 import { RoomStats } from './type/room-stats.type';
 import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
+import { RoomAnonymizationLabel } from './type/room-anonymization.enum';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
@@ -169,32 +170,29 @@ export class RoomUc {
 		this.roomHelperService.checkFeatureRoomsEnabled();
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
+		const canAccessRoomMembers = this.authorizationService.hasPermission(currentUser, roomMembershipAuthorizable, {
+			action: Action.read,
+			requiredPermissions: [],
+		});
 		const canAdministrateSchoolRooms = this.authorizationService.hasOneOfPermissions(currentUser, [
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
 		]);
-		let shouldAnonymize = false;
-
-		try {
-			this.authorizationService.checkPermission(currentUser, roomMembershipAuthorizable, {
-				action: Action.read,
-				requiredPermissions: [],
-			});
-
-			shouldAnonymize = canAdministrateSchoolRooms;
-		} catch {
-			shouldAnonymize = canAdministrateSchoolRooms;
-
-			if (!canAdministrateSchoolRooms) {
-				throw new ForbiddenException('You do not have permission to get members for this room');
-			}
+		const isAllowedToViewRoomMembers = canAccessRoomMembers || canAdministrateSchoolRooms;
+		if (!isAllowedToViewRoomMembers) {
+			throw new ForbiddenException('You do not have permission to view members for this room');
 		}
+		const canOnlyAdministrate = !canAccessRoomMembers && canAdministrateSchoolRooms;
 
 		const userIds = roomMembershipAuthorizable.members.map((member) => member.userId);
 		const users = (await this.userService.findByIds(userIds)).filter((user) => !user.deletedAt);
 
-		const memberResponses = this.handleMemberMapping(users, roomMembershipAuthorizable, shouldAnonymize);
+		const membersResponse = this.buildRoomMembersResponse(users, roomMembershipAuthorizable);
+		if (canOnlyAdministrate) {
+			const anonymizedMembersResponse = this.handleAnonymization(membersResponse);
+			return anonymizedMembersResponse;
+		}
 
-		return memberResponses;
+		return membersResponse;
 	}
 
 	public async addMembersToRoom(
@@ -326,10 +324,9 @@ export class RoomUc {
 		});
 	}
 
-	private handleMemberMapping(
+	private buildRoomMembersResponse(
 		users: UserDo[],
-		roomMembershipAuthorizable: RoomMembershipAuthorizable,
-		shouldAnonymize: boolean
+		roomMembershipAuthorizable: RoomMembershipAuthorizable
 	): RoomMemberResponse[] {
 		const membersResponse = users.map((user) => {
 			const member = roomMembershipAuthorizable.members.find((item) => item.userId === user.id);
@@ -337,36 +334,30 @@ export class RoomUc {
 				/* istanbul ignore next */
 				throw new Error('User not found in room members');
 			}
-			const shouldBeAnonymized = shouldAnonymize && member.roles.some((role) => role.name === RoleName.ROOMOWNER);
-			return shouldBeAnonymized ? this.mapToAnonymizedMember(member, user) : this.mapToMember(member, user);
+			const schoolRoleNames = user.roles.map((role) => role.name);
+			return new RoomMemberResponse({
+				userId: member.userId,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				roomRoleName: member.roles[0].name ?? '',
+				schoolRoleNames,
+				schoolName: user.schoolName ?? '',
+				schoolId: user.schoolId,
+			});
 		});
 		return membersResponse;
 	}
 
-	private mapToMember(member: UserWithRoomRoles, user: UserDo): RoomMemberResponse {
-		const schoolRoleNames = user.roles.map((role) => role.name);
-		return new RoomMemberResponse({
-			userId: member.userId,
-			firstName: user.firstName,
-			lastName: user.lastName,
-			roomRoleName: member.roles[0].name,
-			schoolRoleNames,
-			schoolName: user.schoolName ?? '',
-			schoolId: user.schoolId,
+	private handleAnonymization(membersResponse: RoomMemberResponse[]): RoomMemberResponse[] {
+		const anonymizedMembersResponse = membersResponse.map((member) => {
+			const isRoomOwner = member.roomRoleName === RoleName.ROOMOWNER;
+			return {
+				...member,
+				firstName: isRoomOwner ? member.firstName : RoomAnonymizationLabel.ANONYMIZED,
+				lastName: isRoomOwner ? member.lastName : RoomAnonymizationLabel.ANONYMIZED,
+			};
 		});
-	}
-
-	private mapToAnonymizedMember(member: UserWithRoomRoles, user: UserDo): RoomMemberResponse {
-		const schoolRoleNames = user.roles.map((role) => role.name);
-		return new RoomMemberResponse({
-			userId: member.userId,
-			firstName: '(anonymisiert)',
-			lastName: '(anonymisiert)',
-			roomRoleName: member.roles[0].name,
-			schoolRoleNames,
-			schoolName: user.schoolName ?? '',
-			schoolId: user.schoolId,
-		});
+		return anonymizedMembersResponse;
 	}
 
 	private preventChangingOwnersRole(

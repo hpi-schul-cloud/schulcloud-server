@@ -1,12 +1,13 @@
 import { RoleName } from '@modules/role';
 import { ApiProperty } from '@nestjs/swagger';
+import { RoomAnonymizationLabel } from '../../type/room-anonymization.enum';
 
 export class RoomMemberResponse {
 	@ApiProperty()
-	public firstName!: string;
+	public firstName!: string | RoomAnonymizationLabel;
 
 	@ApiProperty()
-	public lastName!: string;
+	public lastName!: string | RoomAnonymizationLabel;
 
 	@ApiProperty({ enum: RoleName, enumName: 'RoleName' })
 	public roomRoleName!: RoleName;
