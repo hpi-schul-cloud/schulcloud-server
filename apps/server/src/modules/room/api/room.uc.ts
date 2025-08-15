@@ -1,7 +1,7 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { RoleName, RoomRole } from '@modules/role';
-import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
+import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo'; // TODO: Auth service should use a different type
 import { ForbiddenException, Injectable } from '@nestjs/common';
@@ -169,24 +169,30 @@ export class RoomUc {
 		this.roomHelperService.checkFeatureRoomsEnabled();
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(currentUser, roomMembershipAuthorizable, {
+		const canAccessRoomMembers = this.authorizationService.hasPermission(currentUser, roomMembershipAuthorizable, {
 			action: Action.read,
 			requiredPermissions: [],
 		});
+		const canAdministrateSchoolRooms = this.authorizationService.hasOneOfPermissions(currentUser, [
+			Permission.SCHOOL_ADMINISTRATE_ROOMS,
+		]);
+		const isAllowedToViewRoomMembers = canAccessRoomMembers || canAdministrateSchoolRooms;
+		if (!isAllowedToViewRoomMembers) {
+			throw new ForbiddenException('You do not have permission to view members for this room');
+		}
+		const canOnlyAdministrate = !canAccessRoomMembers && canAdministrateSchoolRooms;
 
 		const userIds = roomMembershipAuthorizable.members.map((member) => member.userId);
 		const users = (await this.userService.findByIds(userIds)).filter((user) => !user.deletedAt);
 
-		const memberResponses = users.map((user) => {
-			const member = roomMembershipAuthorizable.members.find((item) => item.userId === user.id);
-			if (!member) {
-				/* istanbul ignore next */
-				throw new Error('User not found in room members');
-			}
-			return this.mapToMember(member, user);
-		});
+		const membersResponse = this.buildRoomMembersResponse(users, roomMembershipAuthorizable);
+		if (canOnlyAdministrate) {
+			const currentUserSchoolId = currentUser.school.id;
+			const anonymizedMembersResponse = this.handleAnonymization(membersResponse, currentUserSchoolId);
+			return anonymizedMembersResponse;
+		}
 
-		return memberResponses;
+		return membersResponse;
 	}
 
 	public async addMembersToRoom(
@@ -318,16 +324,45 @@ export class RoomUc {
 		});
 	}
 
-	private mapToMember(member: UserWithRoomRoles, user: UserDo): RoomMemberResponse {
-		const schoolRoleNames = user.roles.map((role) => role.name);
-		return new RoomMemberResponse({
-			userId: member.userId,
-			firstName: user.firstName,
-			lastName: user.lastName,
-			roomRoleName: member.roles[0].name,
-			schoolRoleNames,
-			schoolName: user.schoolName ?? '',
+	private buildRoomMembersResponse(
+		users: UserDo[],
+		roomMembershipAuthorizable: RoomMembershipAuthorizable
+	): RoomMemberResponse[] {
+		const membersResponse = users.map((user) => {
+			const member = roomMembershipAuthorizable.members.find((item) => item.userId === user.id);
+			if (!member) {
+				/* istanbul ignore next */
+				throw new Error('User not found in room members');
+			}
+			const schoolRoleNames = user.roles.map((role) => role.name);
+			return new RoomMemberResponse({
+				userId: member.userId,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				roomRoleName: member.roles[0].name ?? '',
+				schoolRoleNames,
+				schoolName: user.schoolName ?? '',
+				schoolId: user.schoolId,
+			});
 		});
+		return membersResponse;
+	}
+
+	private handleAnonymization(
+		membersResponse: RoomMemberResponse[],
+		currentUserSchoolId: EntityId
+	): RoomMemberResponse[] {
+		const anonymizedMembersResponse = membersResponse.map((member) => {
+			const isRoomOwner = member.roomRoleName === RoleName.ROOMOWNER;
+			const isCurrentUserInSameSchool = member.schoolId === currentUserSchoolId;
+			const shouldBeAnonymized = !isRoomOwner && !isCurrentUserInSameSchool;
+			return {
+				...member,
+				firstName: shouldBeAnonymized ? '---' : member.firstName,
+				lastName: shouldBeAnonymized ? '---' : member.lastName,
+			};
+		});
+		return anonymizedMembersResponse;
 	}
 
 	private preventChangingOwnersRole(

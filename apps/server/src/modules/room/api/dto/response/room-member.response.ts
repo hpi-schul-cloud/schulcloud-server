@@ -15,6 +15,9 @@ export class RoomMemberResponse {
 	public schoolRoleNames!: RoleName[];
 
 	@ApiProperty()
+	public schoolId!: string;
+
+	@ApiProperty()
 	public schoolName!: string;
 
 	@ApiProperty()
@@ -27,5 +30,6 @@ export class RoomMemberResponse {
 		this.roomRoleName = props.roomRoleName;
 		this.schoolRoleNames = props.schoolRoleNames;
 		this.schoolName = props.schoolName;
+		this.schoolId = props.schoolId;
 	}
 }
