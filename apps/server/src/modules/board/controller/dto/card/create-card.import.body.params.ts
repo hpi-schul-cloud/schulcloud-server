@@ -11,6 +11,7 @@ import {
 	UpdateElementContentBodyParams,
 	VideoConferenceElementContentBody,
 } from '../element';
+import { ValidateNested } from 'class-validator';
 
 @ApiExtraModels(
 	FileElementContentBody,
@@ -30,6 +31,8 @@ export class CreateCardImportBodyParams {
 		type: String,
 	})
 	public cardTitle?: string;
+	
+	@ValidateNested({ each: true })
 	@ApiProperty({
 		description: 'The elements to be included in the card.',
 		type: [UpdateElementContentBodyParams],
