@@ -50,7 +50,7 @@ export class CardContentUc {
 			const contentElement = this.boardNodeFactory.buildContentElement(cardProp.data.type);
 			elementContents.push(contentElement);
 		}
-		return elementContents.map((content) => content as AnyContentElement);
+		return elementContents;
 	}
 
 	private convertCardPropsToElements(
