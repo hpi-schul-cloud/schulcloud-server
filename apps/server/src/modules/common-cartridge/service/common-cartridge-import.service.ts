@@ -254,12 +254,6 @@ export class CommonCartridgeImportService {
 					content: this.convertElementToContentBody(resourceBody),
 				};
 
-				// if (resource.type === 'file') {
-				// 	updateElementContentBodyParamsData = {
-				// 		type: contentElementType,
-				// 		content: this.convertElementToContentBody(resourceBody),
-				// 	};
-				// }
 				return {
 					data: updateElementContentBodyParamsData,
 				} as UpdateElementContentBodyParams;
@@ -270,7 +264,7 @@ export class CommonCartridgeImportService {
 	private convertElementToContentBody(
 		element: LinkElementContentBody | RichTextElementContentBody | FileElementContentBody
 	): LinkContentBody | RichTextContentBody | FileContentBody | undefined {
-		if (!element) return;
+		if (element === undefined) return;
 		if (element.type === 'link') {
 			return element.content as LinkContentBody;
 		} else if (element.type === 'file') {
