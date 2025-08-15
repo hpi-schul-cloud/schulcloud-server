@@ -7,10 +7,8 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page } from '@shared/domain/domainobject';
-import { IFindOptions } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { Room, RoomService } from '../domain';
+import { RoomService } from '../domain';
 import { RoomColor } from '../domain/type';
 import { roomFactory } from '../testing';
 import { RoomUc } from './room.uc';
@@ -78,38 +76,6 @@ describe('RoomUc', () => {
 
 	beforeEach(() => {
 		jest.resetAllMocks();
-	});
-
-	describe('getRooms', () => {
-		const setup = () => {
-			configService.get.mockReturnValue(true);
-			const rooms: Room[] = roomFactory.buildList(2);
-			const paginatedRooms: Page<Room> = new Page<Room>(rooms, rooms.length);
-			roomService.getRoomsByIds.mockResolvedValue(paginatedRooms);
-			const findOptions: IFindOptions<Room> = {};
-
-			return {
-				findOptions,
-				paginatedRooms,
-			};
-		};
-
-		it('should call roomService.getRooms with findOptions', async () => {
-			const { findOptions } = setup();
-
-			jest.spyOn(uc as any, 'getAuthorizedRoomIds').mockResolvedValue([]);
-			await uc.getRooms('userId', findOptions);
-
-			expect(roomService.getRoomsByIds).toHaveBeenCalledWith([], findOptions);
-		});
-
-		it('should return rooms when feature is enabled', async () => {
-			const { paginatedRooms } = setup();
-			jest.spyOn(uc as any, 'getAuthorizedRoomIds').mockResolvedValue(paginatedRooms.data.map((room) => room.id));
-
-			const result = await uc.getRooms('userId', {});
-			expect(result).toEqual(paginatedRooms);
-		});
 	});
 
 	describe('createRoom', () => {

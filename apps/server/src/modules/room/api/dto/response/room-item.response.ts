@@ -28,6 +28,9 @@ export class RoomItemResponse {
 	@ApiProperty({ type: Date })
 	updatedAt: Date;
 
+	@ApiProperty({ type: Boolean })
+	isLocked: boolean;
+
 	constructor(room: RoomItemResponse) {
 		this.id = room.id;
 		this.name = room.name;
@@ -38,5 +41,7 @@ export class RoomItemResponse {
 		this.endDate = room.endDate;
 		this.createdAt = room.createdAt;
 		this.updatedAt = room.updatedAt;
+
+		this.isLocked = room.isLocked;
 	}
 }
