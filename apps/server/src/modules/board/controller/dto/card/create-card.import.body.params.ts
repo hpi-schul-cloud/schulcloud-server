@@ -29,7 +29,7 @@ export class CreateCardImportBodyParams {
 		description: 'The title of the card to be created.',
 		type: String,
 	})
-	public cardTitle: string;
+	public cardTitle?: string;
 	@ApiProperty({
 		description: 'The elements to be included in the card.',
 		type: [UpdateElementContentBodyParams],
@@ -47,7 +47,7 @@ export class CreateCardImportBodyParams {
 			],
 		},
 	})
-	public cardElements: UpdateElementContentBodyParams[];
+	public cardElements?: UpdateElementContentBodyParams[];
 
 	constructor(cardTitle: string, cardElements: UpdateElementContentBodyParams[]) {
 		this.cardTitle = cardTitle;
