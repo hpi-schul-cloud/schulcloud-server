@@ -19,6 +19,7 @@ import {
 import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { TypeGuard } from '@shared/common/guards';
 import { readFileSync } from 'fs';
 import { Readable } from 'stream';
 import { parse } from 'yaml';
@@ -386,11 +387,13 @@ export class H5PLibraryManagementService {
 	}
 
 	private async synchronizeLibraryMetadataInDatabase(libraryName: ILibraryName): Promise<ILibraryInstallResult> {
-		const newLibraryMetadata: ILibraryMetadata = (await this.libraryStorage.getFileAsJson(
+		const parsedJson: ILibraryMetadata = (await this.libraryStorage.getFileAsJson(
 			libraryName,
 			'library.json',
 			true
 		)) as ILibraryMetadata;
+		const newLibraryMetadata = this.checkIsLibraryMetadata(parsedJson);
+
 		const newVersionOfLibrary: IFullLibraryName = {
 			machineName: newLibraryMetadata.machineName,
 			majorVersion: newLibraryMetadata.majorVersion,
@@ -414,6 +417,45 @@ export class H5PLibraryManagementService {
 
 		this.logLibraryAlreadyInstalled(newVersionOfLibrary);
 		return { type: 'none' };
+	}
+
+	private checkIsLibraryMetadata(obj: unknown): ILibraryMetadata {
+		const definedObject = TypeGuard.checkDefinedObject(obj);
+		const objectWithDefinedKeys = TypeGuard.checkKeysInObject(definedObject, [
+			'machineName',
+			'majorVersion',
+			'minorVersion',
+			'patchVersion',
+			'runnable',
+			'title',
+		]);
+		const machineName = TypeGuard.checkString(objectWithDefinedKeys.machineName);
+		const majorVersion = TypeGuard.checkNumber(objectWithDefinedKeys.majorVersion);
+		const minorVersion = TypeGuard.checkNumber(objectWithDefinedKeys.minorVersion);
+		const patchVersion = TypeGuard.checkNumber(objectWithDefinedKeys.patchVersion);
+		let runnable: boolean | 0 | 1;
+		if (typeof objectWithDefinedKeys.runnable === 'boolean') {
+			({ runnable } = objectWithDefinedKeys);
+		} else if (objectWithDefinedKeys.runnable === 0) {
+			runnable = 0;
+		} else if (objectWithDefinedKeys.runnable === 1) {
+			runnable = 1;
+		} else {
+			throw new Error('runnable must be boolean, 0, or 1');
+		}
+		const title = TypeGuard.checkString(objectWithDefinedKeys.title);
+
+		const result: ILibraryMetadata = {
+			...definedObject,
+			machineName,
+			majorVersion,
+			minorVersion,
+			patchVersion,
+			runnable,
+			title,
+		};
+
+		return result;
 	}
 
 	private async updateLibrary(
