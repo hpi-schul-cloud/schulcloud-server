@@ -1,7 +1,7 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { RoleName, RoomRole } from '@modules/role';
-import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
+import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo'; // TODO: Auth service should use a different type
 import { ForbiddenException, Injectable } from '@nestjs/common';
@@ -188,7 +188,8 @@ export class RoomUc {
 
 		const membersResponse = this.buildRoomMembersResponse(users, roomMembershipAuthorizable);
 		if (canOnlyAdministrate) {
-			const anonymizedMembersResponse = this.handleAnonymization(membersResponse);
+			const currentUserSchoolId = currentUser.school.id;
+			const anonymizedMembersResponse = this.handleAnonymization(membersResponse, currentUserSchoolId);
 			return anonymizedMembersResponse;
 		}
 
@@ -348,13 +349,18 @@ export class RoomUc {
 		return membersResponse;
 	}
 
-	private handleAnonymization(membersResponse: RoomMemberResponse[]): RoomMemberResponse[] {
+	private handleAnonymization(
+		membersResponse: RoomMemberResponse[],
+		currentUserSchoolId: EntityId
+	): RoomMemberResponse[] {
 		const anonymizedMembersResponse = membersResponse.map((member) => {
 			const isRoomOwner = member.roomRoleName === RoleName.ROOMOWNER;
+			const isCurrentUserInSameSchool = member.schoolId === currentUserSchoolId;
+			const shouldBeAnonymized = !isRoomOwner && !isCurrentUserInSameSchool;
 			return {
 				...member,
-				firstName: isRoomOwner ? member.firstName : RoomAnonymizationLabel.ANONYMIZED,
-				lastName: isRoomOwner ? member.lastName : RoomAnonymizationLabel.ANONYMIZED,
+				firstName: shouldBeAnonymized ? RoomAnonymizationLabel.ANONYMIZED : member.firstName,
+				lastName: shouldBeAnonymized ? RoomAnonymizationLabel.ANONYMIZED : member.lastName,
 			};
 		});
 		return anonymizedMembersResponse;
