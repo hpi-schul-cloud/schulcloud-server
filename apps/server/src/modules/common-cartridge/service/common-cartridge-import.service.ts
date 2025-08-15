@@ -170,7 +170,9 @@ export class CommonCartridgeImportService {
 			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
 		);
 		const commonCartridgeResourcesList: { id: string; resource: CommonCartridgeFileResourceProps }[] = [];
-		const cardElementsMapped = (this.mapCardElements(cardElements, parser, commonCartridgeResourcesList)).filter((element) => element !== undefined);
+		const cardElementsMapped = this.mapCardElements(cardElements, parser, commonCartridgeResourcesList).filter(
+			(element) => element !== undefined
+		);
 		const cardCreateImportParams: CreateCardImportBodyParams = {
 			cardTitle: cardProps.title,
 			cardElements: cardElementsMapped,
@@ -249,14 +251,22 @@ export class CommonCartridgeImportService {
 
 				if (!resourceBody) return null;
 
+				const content = this.convertElementToContentBody(resourceBody);
+
+				if (content === undefined) {
+					return null;
+				}
+
 				const updateElementContentBodyParamsData = {
 					type: contentElementType,
-					content: this.convertElementToContentBody(resourceBody),
+					content,
 				};
 
-				return {
+				const bodyParams: UpdateElementContentBodyParams = {
 					data: updateElementContentBodyParamsData,
-				} as UpdateElementContentBodyParams;
+				};
+
+				return bodyParams;
 			})
 			.filter((element): element is UpdateElementContentBodyParams => element !== null && element !== undefined);
 	}
@@ -264,7 +274,7 @@ export class CommonCartridgeImportService {
 	private convertElementToContentBody(
 		element: LinkElementContentBody | RichTextElementContentBody | FileElementContentBody
 	): LinkContentBody | RichTextContentBody | FileContentBody | undefined {
-		if (element === undefined) return;
+		if (element === undefined) return undefined;
 		if (element.type === 'link') {
 			return element.content as LinkContentBody;
 		} else if (element.type === 'file') {
