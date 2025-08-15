@@ -8,7 +8,7 @@ export class LockedRoomLoggableException extends ForbiddenException implements L
 
 	public getLogMessage(): ErrorLogMessage {
 		const message = {
-			type: 'LOCKED_COURSE',
+			type: 'LOCKED_ROOM',
 			message: this.message,
 			stack: this.stack,
 			data: {
