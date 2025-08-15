@@ -20,7 +20,6 @@ import { RoomPermissionService } from './service';
 import { School, SchoolService } from '@modules/school';
 import { RoomStats } from './type/room-stats.type';
 import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
-import { RoomAnonymizationLabel } from './type/room-anonymization.enum';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
@@ -359,8 +358,8 @@ export class RoomUc {
 			const shouldBeAnonymized = !isRoomOwner && !isCurrentUserInSameSchool;
 			return {
 				...member,
-				firstName: shouldBeAnonymized ? RoomAnonymizationLabel.ANONYMIZED : member.firstName,
-				lastName: shouldBeAnonymized ? RoomAnonymizationLabel.ANONYMIZED : member.lastName,
+				firstName: shouldBeAnonymized ? '---' : member.firstName,
+				lastName: shouldBeAnonymized ? '---' : member.lastName,
 			};
 		});
 		return anonymizedMembersResponse;
