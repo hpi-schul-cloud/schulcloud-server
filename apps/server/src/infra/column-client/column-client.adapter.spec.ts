@@ -104,14 +104,11 @@ describe(ColumnClientAdapter.name, () => {
 				}
 			]
 			};
-
-
-				columnApiMock.columnControllerCreateCardWithContent.mockResolvedValue(axiosResponseFactory.build({ data: columnId }));
-
-				return {
+			columnApiMock.columnControllerCreateCardWithContent.mockResolvedValue(axiosResponseFactory.build({ data: columnId }));
+			return {
 					columnId,
 					testCardImport,
-				};
+			};
 			};
 
 			it('should call boardColumnApi.columnControllerCreateCardWithContent', async () => {

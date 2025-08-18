@@ -53,7 +53,6 @@ import { CardContentUc } from '../uc/card-content.uc';
 
 import { CreateCardImportBodyParams } from './dto/card/create-card.import.body.params';
 
-
 @ApiTags('Board Column')
 @JwtAuthentication()
 @Controller('columns')
@@ -125,39 +124,42 @@ export class ColumnController {
 		return response;
 	}
 
-	@ApiOperation({ summary: 'Create a new card on a column with content.', operationId: 'ColumnController_createCardWithContent' })
+	@ApiOperation({
+		summary: 'Create a new card on a column with content.',
+		operationId: 'ColumnController_createCardWithContent',
+	})
 	@ApiResponse({ status: 201, type: CardResponse })
 	@ApiExtraModels(
-	ExternalToolElementResponse,
-	FileElementResponse,
-	LinkElementResponse,
-	RichTextElementResponse,
-	SubmissionContainerElementResponse,
-	DrawingElementResponse,
-	CollaborativeTextEditorElementResponse,
-	DeletedElementResponse,
-	VideoConferenceElementResponse,
-	FileFolderElementResponse,
-	H5pElementResponse,
-	UpdateElementContentBodyParams,
-	FileElementContentBody,
-	LinkElementContentBody,
-	RichTextElementContentBody,
-	SubmissionContainerElementContentBody,
-	ExternalToolElementContentBody,
-	VideoConferenceElementContentBody,
-	FileFolderElementContentBody,
-	H5pElementContentBody,
-	DrawingElementContentBody,
-	FileContentBody,
-	DrawingContentBody,
-	LinkContentBody,
-	RichTextContentBody,
-	SubmissionContainerContentBody,
-	ExternalToolContentBody,
-	VideoConferenceContentBody,
-	FileFolderContentBody,
-	H5pContentBody
+		ExternalToolElementResponse,
+		FileElementResponse,
+		LinkElementResponse,
+		RichTextElementResponse,
+		SubmissionContainerElementResponse,
+		DrawingElementResponse,
+		CollaborativeTextEditorElementResponse,
+		DeletedElementResponse,
+		VideoConferenceElementResponse,
+		FileFolderElementResponse,
+		H5pElementResponse,
+		UpdateElementContentBodyParams,
+		FileElementContentBody,
+		LinkElementContentBody,
+		RichTextElementContentBody,
+		SubmissionContainerElementContentBody,
+		ExternalToolElementContentBody,
+		VideoConferenceElementContentBody,
+		FileFolderElementContentBody,
+		H5pElementContentBody,
+		DrawingElementContentBody,
+		FileContentBody,
+		DrawingContentBody,
+		LinkContentBody,
+		RichTextContentBody,
+		SubmissionContainerContentBody,
+		ExternalToolContentBody,
+		VideoConferenceContentBody,
+		FileFolderContentBody,
+		H5pContentBody
 	)
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })

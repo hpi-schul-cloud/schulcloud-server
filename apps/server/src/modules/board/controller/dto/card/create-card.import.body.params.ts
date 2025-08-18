@@ -34,13 +34,13 @@ export class CreateCardImportBodyParams {
 		required: false,
 	})
 	@IsOptional()
-  	@IsString()
+	@IsString()
 	public cardTitle?: string;
 
 	@IsOptional()
-  	@IsArray()
-  	@ValidateNested({ each: true })
-  	@Type(() => UpdateElementContentBodyParams)
+	@IsArray()
+	@ValidateNested({ each: true })
+	@Type(() => UpdateElementContentBodyParams)
 	@ApiProperty({
 		description: 'The elements to be included in the card.',
 		type: [UpdateElementContentBodyParams],

@@ -171,7 +171,7 @@ export class CommonCartridgeImportService {
 			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
 		);
 		const commonCartridgeResourcesList: { id: number; resource: CommonCartridgeFileResourceProps }[] = [];
-		const cardElementsMapped = (this.mapCardElements(cardElements, parser, commonCartridgeResourcesList)).filter(
+		const cardElementsMapped = this.mapCardElements(cardElements, parser, commonCartridgeResourcesList).filter(
 			(element) => element !== undefined && element !== null
 		);
 		const cardCreateImportParams: CreateCardImportBodyParams = {
