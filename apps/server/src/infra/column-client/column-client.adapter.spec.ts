@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ColumnClientAdapter } from './column-client.adapter';
-import { BoardColumnApi, CreateCardBodyParamsRequiredEmptyElements } from './generated';
+import { BoardColumnApi, CreateCardBodyParamsRequiredEmptyElements, CreateCardImportBodyParams } from './generated';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 
 describe(ColumnClientAdapter.name, () => {
@@ -81,6 +81,46 @@ describe(ColumnClientAdapter.name, () => {
 				await sut.updateBoardColumnTitle(columnId, { title });
 
 				expect(columnApiMock.columnControllerUpdateColumnTitle).toHaveBeenCalledWith(columnId, { title });
+			});
+		});
+	});
+
+	describe('createCardWithContent', () => {
+		describe('when creating a card with content', () => {
+			const setup = () => {
+				const columnId = faker.string.uuid();
+				
+			const testCardImport: CreateCardImportBodyParams = {
+			cardTitle: "Sample Card Title",
+			cardElements: [
+				{
+					data: {
+						type: "richText", // Assuming this is a valid value for ContentElementType
+						content: {
+							text: "This is a sample rich text content for testing purposes.",
+							inputFormat: "html" // or "markdown", depending on your system
+						}
+					}
+				}
+			]
+			};
+
+
+				columnApiMock.columnControllerCreateCardWithContent.mockResolvedValue(axiosResponseFactory.build({ data: columnId }));
+
+				return {
+					columnId,
+					testCardImport,
+				};
+			};
+
+			it('should call boardColumnApi.columnControllerCreateCardWithContent', async () => {
+				const { columnId, testCardImport } = setup();
+
+				const response = await sut.createCardWithContent(columnId, testCardImport);
+
+				expect(response).toEqual(columnId);
+				expect(columnApiMock.columnControllerCreateCardWithContent).toHaveBeenCalledWith(columnId, testCardImport);
 			});
 		});
 	});
