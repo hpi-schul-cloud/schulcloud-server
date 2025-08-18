@@ -57,35 +57,4 @@ export class CardContentUc {
 		}
 		return elementContents;
 	}
-
-	private convertCardPropsToElements(
-		cardProps: UpdateElementContentBodyParams[]
-	): (RichTextContentBody | LinkContentBody | FileContentBody)[] {
-		return cardProps.map((param) => {
-			const { type, content } = param.data;
-
-			switch (type) {
-				case ContentElementType.LINK:
-					return {
-						url: content.url,
-						title: content.title,
-						description: content.description,
-						imageUrl: content.imageUrl,
-						originalImageUrl: content.originalImageUrl,
-					};
-				case ContentElementType.RICH_TEXT:
-					return {
-						text: content.text,
-						inputFormat: content.inputFormat,
-					};
-				case ContentElementType.FILE:
-					return {
-						caption: content.caption,
-						alternativeText: content.alternativeText,
-					};
-				default:
-					throw new Error('Unsupported element type');
-			}
-		});
-	}
 }
