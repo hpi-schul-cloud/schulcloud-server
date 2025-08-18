@@ -11,7 +11,8 @@ import {
 	UpdateElementContentBodyParams,
 	VideoConferenceElementContentBody,
 } from '../element';
-import { ValidateNested } from 'class-validator';
+import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
 @ApiExtraModels(
 	FileElementContentBody,
@@ -30,10 +31,16 @@ export class CreateCardImportBodyParams {
 		description: 'The title of the card to be created.',
 		type: 'string',
 		nullable: true,
+		required: false,
 	})
+	@IsOptional()
+  	@IsString()
 	public cardTitle?: string;
 
-	@ValidateNested({ each: true })
+	@IsOptional()
+  	@IsArray()
+  	@ValidateNested({ each: true })
+  	@Type(() => UpdateElementContentBodyParams)
 	@ApiProperty({
 		description: 'The elements to be included in the card.',
 		type: [UpdateElementContentBodyParams],
