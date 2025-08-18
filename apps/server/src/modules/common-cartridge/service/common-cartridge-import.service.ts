@@ -183,7 +183,7 @@ export class CommonCartridgeImportService {
 			const foundItem = commonCartridgeResourcesList.find((item) => item.id === element.id);
 
 			if (element.content === 'file' && foundItem?.resource) {
-				await this.uploadFile(currentUser, foundItem.resource, element.id);
+				await this.uploadFile(currentUser, foundItem.resource, cardResponse.id);
 			}
 		}
 	}
@@ -238,7 +238,7 @@ export class CommonCartridgeImportService {
 				if (!resource) return null;
 
 				if (resource.type === 'file') {
-					commonCartridgeResourcesList.push({ id: element.identifierRef ?? '', resource });
+					commonCartridgeResourcesList.push({ id: element.identifier ?? '', resource });
 				}
 				const contentElementType = this.commonCartridgeImportMapper.mapResourceTypeToContentElementType(resource.type);
 				if (!contentElementType) return null;
