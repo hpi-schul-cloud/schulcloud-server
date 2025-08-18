@@ -28,10 +28,10 @@ import { ValidateNested } from 'class-validator';
 export class CreateCardImportBodyParams {
 	@ApiProperty({
 		description: 'The title of the card to be created.',
-		type: String,
+		type: 'string',
 	})
 	public cardTitle?: string;
-	
+
 	@ValidateNested({ each: true })
 	@ApiProperty({
 		description: 'The elements to be included in the card.',

@@ -238,7 +238,7 @@ export class CommonCartridgeImportService {
 				if (!resource) return null;
 
 				if (resource.type === 'file') {
-					commonCartridgeResourcesList.push({ id: element.identifier, resource });
+					commonCartridgeResourcesList.push({ id: element.identifierRef ?? '', resource });
 				}
 				const contentElementType = this.commonCartridgeImportMapper.mapResourceTypeToContentElementType(resource.type);
 				if (!contentElementType) return null;
