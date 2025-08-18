@@ -180,10 +180,11 @@ export class CommonCartridgeImportService {
 		const cardResponse = await this.columnClient.createCardWithContent(column.id, cardCreateImportParams);
 
 		for await (const element of cardResponse.elements) {
-			const foundItem = commonCartridgeResourcesList.find((item) => item.id === element.id);
+			const resourceIndex = cardResponse.elements.indexOf(element);
+			const resource = commonCartridgeResourcesList[resourceIndex];
 
-			if (element.type === 'file' && foundItem?.resource) {
-				await this.uploadFile(currentUser, foundItem.resource, element.id);
+			if (element.type === 'file' && resource?.resource) {
+				await this.uploadFile(currentUser, resource.resource, element.id);
 			}
 		}
 	}
