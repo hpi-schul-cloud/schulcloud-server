@@ -95,10 +95,10 @@ describe(ColumnClientAdapter.name, () => {
 			cardElements: [
 				{
 					data: {
-						type: "richText", // Assuming this is a valid value for ContentElementType
+						type: "richText",
 						content: {
 							text: "This is a sample rich text content for testing purposes.",
-							inputFormat: "html" // or "markdown", depending on your system
+							inputFormat: "html"
 						}
 					}
 				}
