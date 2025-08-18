@@ -168,8 +168,8 @@ export class ColumnController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() createCardBodyParams: CreateCardImportBodyParams
 	): Promise<CardResponse> {
-		const cardTitle = createCardBodyParams.cardTitle || '';
-		const cardElements = createCardBodyParams.cardElements || [];
+		const cardTitle = createCardBodyParams.cardTitle ?? '';
+		const cardElements = createCardBodyParams.cardElements ?? [];
 		const response = await this.cardContentUc.createCardWithContent(
 			currentUser.userId,
 			urlParams.columnId,
