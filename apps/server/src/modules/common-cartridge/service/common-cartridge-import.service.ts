@@ -182,7 +182,7 @@ export class CommonCartridgeImportService {
 		for await (const element of cardResponse.elements) {
 			const foundItem = commonCartridgeResourcesList.find((item) => item.id === element.id);
 
-			if (element.content === 'file' && foundItem?.resource) {
+			if (element.type === 'file' && foundItem?.resource) {
 				await this.uploadFile(currentUser, foundItem.resource, element.id);
 			}
 		}
