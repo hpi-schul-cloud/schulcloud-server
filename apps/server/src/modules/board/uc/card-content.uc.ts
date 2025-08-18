@@ -39,6 +39,7 @@ export class CardContentUc {
 		const contentElements = this.convertCardPropsToContentElements(cardProps);
 		const card = this.boardNodeFactory.buildCard(contentElements);
 		card.title = cardTitle;
+		await this.boardNodeService.updateTitle(card, cardTitle);
 		await this.boardNodeService.addToParent(column, card);
 
 		const cardResponse = CardResponseMapper.mapToResponse(card);
