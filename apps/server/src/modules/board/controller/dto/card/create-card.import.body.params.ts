@@ -26,9 +26,11 @@ import { ValidateNested } from 'class-validator';
 	UpdateElementContentBodyParams
 )
 export class CreateCardImportBodyParams {
+	@ValidateNested({ each: true })
 	@ApiProperty({
 		description: 'The title of the card to be created.',
 		type: 'string',
+		nullable: true,
 	})
 	public cardTitle?: string;
 

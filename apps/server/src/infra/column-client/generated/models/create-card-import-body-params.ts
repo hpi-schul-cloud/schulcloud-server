@@ -28,7 +28,7 @@ export interface CreateCardImportBodyParams {
      * @type {string}
      * @memberof CreateCardImportBodyParams
      */
-    'cardTitle': string;
+    'cardTitle': string | null;
     /**
      * The elements to be included in the card.
      * @type {Array<UpdateElementContentBodyParams>}
