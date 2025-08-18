@@ -12,6 +12,7 @@ import {
 	RichTextContentBody,
 	UpdateElementContentBodyParams,
 } from '../controller/dto';
+import { UpdateImportElementMapper } from '../controller/mapper/update-import-element.mapper';
 
 @Injectable()
 export class CardContentUc {
@@ -34,20 +35,25 @@ export class CardContentUc {
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
 
 		await this.boardNodePermissionService.checkPermission(userId, column, Action.write);
-		const card = this.boardNodeFactory.buildCard(this.convertCardPropsToContentElements(cardProps));
 
+		const contentElements = this.convertCardPropsToContentElements(cardProps);
+		const card = this.boardNodeFactory.buildCard(contentElements);
+		
 		await this.boardNodeService.addToParent(column, card);
 
 		const cardResponse = CardResponseMapper.mapToResponse(card);
 		cardResponse.title = cardTitle;
-
+		// for (const element of cardResponse.elements) {
+		// 	await this.boardNodeService.updateContent(element, content);
+		// }
 		return cardResponse;
 	}
 
 	private convertCardPropsToContentElements(cardProps: UpdateElementContentBodyParams[]): AnyContentElement[] {
 		const elementContents: AnyContentElement[] = [];
 		for (const cardProp of cardProps) {
-			const contentElement = this.boardNodeFactory.buildContentElement(cardProp.data.type);
+			let contentElement = this.boardNodeFactory.buildContentElement(cardProp.data.type);
+			contentElement = UpdateImportElementMapper.mapCardPropsToCardElements(contentElement, cardProp);
 			elementContents.push(contentElement);
 		}
 		return elementContents;

@@ -162,7 +162,6 @@ export class ColumnController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@ApiBody({ required: false, type: CreateCardImportBodyParams })
 	@Post(':columnId/cardsContent')
 	public async createCardWithContent(
 		@Param() urlParams: ColumnUrlParams,
