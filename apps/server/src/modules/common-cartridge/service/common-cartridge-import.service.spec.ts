@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { BoardsClientAdapter } from '@infra/boards-client';
 import { CardClientAdapter } from '@infra/cards-client';
-import { ColumnClientAdapter } from '@infra/column-client';
+import { CardResponse, ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
@@ -124,11 +124,32 @@ describe(CommonCartridgeImportService.name, () => {
 
 		const orgs = [board, column1, card1, element1, column2, card2, element2, column3, card3, element3];
 
+		const testCardResponse: CardResponse = {
+			id: cardId1,
+			title: 'Sample Card Title',
+			elements: [
+				{
+					id: elementId1,
+					type: 'richText',
+					content: {
+						text: 'This is a sample rich text content for testing purposes.',
+						inputFormat: 'html',
+					},
+					timestamps: '',
+				},
+			],
+			height: 1,
+			visibilitySettings: {},
+			timestamps: '',
+		};
+
 		commonCartridgeFileParser.getTitle.mockReturnValueOnce('test course');
 
 		commonCartridgeFileParser.getOrganizations.mockReturnValue(orgs);
 
 		coursesClientAdapterMock.createCourse.mockResolvedValueOnce({ courseId: faker.string.uuid() });
+
+		columnClientAdapterMock.createCardWithContent.mockResolvedValueOnce(testCardResponse);
 
 		boardsClientAdapterMock.createBoard.mockResolvedValueOnce({ id: boardId });
 
@@ -192,7 +213,7 @@ describe(CommonCartridgeImportService.name, () => {
 
 				await sut.importFile(file, currentUser);
 
-				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(3);
+				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(2);
 			});
 
 			it('should create an element', async () => {
@@ -200,7 +221,7 @@ describe(CommonCartridgeImportService.name, () => {
 
 				await sut.importFile(file, currentUser);
 
-				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(3);
+				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(2);
 			});
 
 			it('should upload files', async () => {
