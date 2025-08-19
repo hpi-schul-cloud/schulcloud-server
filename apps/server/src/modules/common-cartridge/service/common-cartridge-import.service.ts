@@ -1,14 +1,6 @@
 import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
-import {
-	CardClientAdapter,
-	LinkContentBody,
-	LinkElementContentBody,
-	RichTextContentBody,
-	RichTextElementContentBody,
-	UpdateElementContentBodyParams,
-	FileElementContentBody,
-} from '@infra/cards-client';
-import { ColumnClientAdapter, CreateCardImportBodyParams, FileContentBody } from '@infra/column-client';
+import { CardClientAdapter, UpdateElementContentBodyParams } from '@infra/cards-client';
+import { ColumnClientAdapter, CreateCardImportBodyParams } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Injectable } from '@nestjs/common';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
@@ -255,7 +247,7 @@ export class CommonCartridgeImportService {
 
 				const updateElementContentBodyParamsData = {
 					type: contentElementType,
-					content: this.convertElementToContentBody(resourceBody),
+					content: resourceBody.content,
 				};
 
 				return {
@@ -263,18 +255,6 @@ export class CommonCartridgeImportService {
 				} as UpdateElementContentBodyParams;
 			})
 			.filter((element): element is UpdateElementContentBodyParams => element !== null && element !== undefined);
-	}
-
-	private convertElementToContentBody(
-		element: LinkElementContentBody | RichTextElementContentBody | FileElementContentBody
-	): LinkContentBody | RichTextContentBody | FileContentBody | undefined {
-		if (element === undefined) return;
-		if (element.type === 'link') {
-			return element.content as LinkContentBody;
-		} else if (element.type === 'file') {
-			return element.content as FileContentBody;
-		}
-		return element.content as RichTextContentBody;
 	}
 
 	private async uploadFile(

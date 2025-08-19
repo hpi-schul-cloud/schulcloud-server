@@ -269,61 +269,7 @@ describe(CommonCartridgeImportService.name, () => {
 				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalled();
 			});
 		});
-		describe('convertElementToContentBody via createCardWithContent payload', () => {
-			it('uses FileContentBody when wrapper type is "file"', async () => {
-				const { file, currentUser } = setupBase();
 
-				const mapper = module.get(CommonCartridgeImportMapper);
-				(mapper.mapResourceTypeToContentElementType as jest.Mock).mockReturnValueOnce('file');
-				(mapper.mapResourceToContentBody as jest.Mock).mockReturnValueOnce({
-					type: 'file',
-					content: { caption: 'Cap', alternativeText: 'Alt' },
-				});
-
-				columnClientAdapterMock.createCardWithContent.mockResolvedValueOnce({
-					id: 'card',
-					title: '',
-					elements: [],
-					height: 1,
-					visibilitySettings: {},
-					timestamps: '',
-				});
-
-				await sut.importFile(file, currentUser);
-
-				expect(columnClientAdapterMock.createCardWithContent).toHaveBeenCalledTimes(1);
-				const body = columnClientAdapterMock.createCardWithContent.mock.calls[0][1];
-
-				expect(body.cardElements).toHaveLength(1);
-			});
-
-			it('uses RichTextContentBody (default branch) when wrapper type is "richText"', async () => {
-				const { file, currentUser } = setupBase();
-
-				const mapper = module.get(CommonCartridgeImportMapper);
-				(mapper.mapResourceTypeToContentElementType as jest.Mock).mockReturnValueOnce('richText');
-				(mapper.mapResourceToContentBody as jest.Mock).mockReturnValueOnce({
-					type: 'richText',
-					content: { text: 'Hello', inputFormat: 'html' },
-				});
-
-				columnClientAdapterMock.createCardWithContent.mockResolvedValueOnce({
-					id: 'card',
-					title: '',
-					elements: [],
-					height: 1,
-					visibilitySettings: {},
-					timestamps: '',
-				});
-
-				await sut.importFile(file, currentUser);
-
-				expect(columnClientAdapterMock.createCardWithContent).toHaveBeenCalledTimes(1);
-				const body = columnClientAdapterMock.createCardWithContent.mock.calls[0][1];
-
-				expect(body.cardElements).toHaveLength(1);
-			});
-		});
 		describe('when no title is given', () => {
 			const setup = () => {
 				commonCartridgeFileParser.getTitle.mockReturnValueOnce(undefined);
