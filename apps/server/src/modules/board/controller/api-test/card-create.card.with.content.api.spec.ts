@@ -14,7 +14,7 @@ import { CreateCardImportBodyParams } from '../dto/card/create-card.import.body.
 
 const baseRouteName = '/columns';
 
-describe(`card create (api)`, () => {
+describe(`card create with content (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let apiClient: TestApiClient;
@@ -49,17 +49,14 @@ describe(`card create (api)`, () => {
 		await em.persistAndFlush([columnBoardNode, columnNode]);
 		em.clear();
 
-		const createCardImportBodyParams: CreateCardImportBodyParams = {
-			cardTitle: 'New Card',
-			cardElements: [
-				{
-					data: {
-						type: ContentElementType.RICH_TEXT,
-						content: { text: 'This is a rich text element.', inputFormat: InputFormat.RICH_TEXT_CK5 },
-					},
+		const createCardImportBodyParams: CreateCardImportBodyParams = new CreateCardImportBodyParams('New Card', [
+			{
+				data: {
+					type: ContentElementType.RICH_TEXT,
+					content: { text: 'This is a rich text element.', inputFormat: InputFormat.RICH_TEXT_CK5 },
 				},
-			],
-		};
+			},
+		]);
 
 		const loggedInClient = await apiClient.login(account);
 
@@ -90,6 +87,33 @@ describe(`card create (api)`, () => {
 			const result = response.body as CardResponse;
 
 			expect(result.elements[0].type).toEqual(ContentElementType.RICH_TEXT);
+		});
+	});
+
+	describe('with invalid user', () => {
+		it('should return status 403', async () => {
+			const { columnNode, createCardImportBodyParams } = await setup();
+			const { teacherAccount: account, teacherUser: user } = UserAndAccountTestFactory.buildTeacher();
+			await em.persistAndFlush([user, account]);
+
+			const api = new TestApiClient(app, baseRouteName);
+			const loggedInClient = await api.login(account);
+
+			const response = await loggedInClient.post(`${columnNode.id}/cardsContent`, createCardImportBodyParams);
+
+			expect(response.status).toEqual(403);
+		});
+	});
+
+	describe('with not logged in user', () => {
+		it('should return status 403', async () => {
+			const { columnNode, createCardImportBodyParams } = await setup();
+			const { teacherAccount: account, teacherUser: user } = UserAndAccountTestFactory.buildTeacher();
+			await em.persistAndFlush([user, account]);
+
+			const response = await apiClient.post(`${columnNode.id}/cardsContent`, createCardImportBodyParams);
+
+			expect(response.status).toEqual(401);
 		});
 	});
 });
