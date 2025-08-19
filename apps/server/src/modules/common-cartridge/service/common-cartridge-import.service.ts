@@ -181,8 +181,9 @@ export class CommonCartridgeImportService {
 		const cardResponse = await this.columnClient.createCardWithContent(column.id, cardCreateImportParams);
 
 		for await (const element of cardResponse.elements) {
-			const resource = commonCartridgeResourcesList[fileCounter];
-			if (element.type === 'file' && resource?.resource) {
+			if (element.type === 'file' && commonCartridgeResourcesList[fileCounter]) {
+				const resource = commonCartridgeResourcesList[fileCounter];
+
 				await this.uploadFile(currentUser, resource.resource, element.id);
 				fileCounter++;
 			}
@@ -282,7 +283,7 @@ export class CommonCartridgeImportService {
 	private async uploadFile(
 		currentUser: ICurrentUser,
 		resource: CommonCartridgeFileResourceProps,
-		cardElementId: string
+		cardElementId: string //element ID
 	): Promise<void> {
 		const { schoolId } = currentUser;
 
