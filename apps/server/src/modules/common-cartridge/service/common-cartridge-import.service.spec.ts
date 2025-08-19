@@ -137,6 +137,15 @@ describe(CommonCartridgeImportService.name, () => {
 					},
 					timestamps: '',
 				},
+				{
+					id: elementId1,
+					type: 'file',
+					content: {
+						caption: 'Sample File Caption',
+						alternativeText: 'Sample File Alternative Text',
+					},
+					timestamps: '',
+				},
 			],
 			height: 1,
 			visibilitySettings: {},
@@ -214,6 +223,14 @@ describe(CommonCartridgeImportService.name, () => {
 				await sut.importFile(file, currentUser);
 
 				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(2);
+			});
+
+			it('should create Cards with elements and update title', async () => {
+				const { file, currentUser } = setup();
+
+				await sut.importFile(file, currentUser);
+
+				expect(columnClientAdapterMock.createCardWithContent).toHaveBeenCalledTimes(1);
 			});
 
 			it('should create an element', async () => {
