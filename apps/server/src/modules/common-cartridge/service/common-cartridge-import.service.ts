@@ -170,7 +170,7 @@ export class CommonCartridgeImportService {
 		const cardElements = organizations.filter(
 			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
 		);
-		const commonCartridgeResourcesList: { id: number; resource: CommonCartridgeFileResourceProps }[] = [];
+		const commonCartridgeResourcesList: CommonCartridgeFileResourceProps[] = [];
 		const cardElementsMapped = this.mapCardElements(cardElements, parser, commonCartridgeResourcesList).filter(
 			(element) => element !== undefined && element !== null
 		);
@@ -184,7 +184,7 @@ export class CommonCartridgeImportService {
 			if (element.type === 'file' && commonCartridgeResourcesList[fileCounter]) {
 				const resource = commonCartridgeResourcesList[fileCounter];
 
-				await this.uploadFile(currentUser, resource.resource, element.id);
+				await this.uploadFile(currentUser, resource, element.id);
 				fileCounter++;
 			}
 		}
@@ -230,9 +230,8 @@ export class CommonCartridgeImportService {
 	private mapCardElements(
 		cardElements: CommonCartridgeOrganizationProps[],
 		parser: CommonCartridgeFileParser,
-		commonCartridgeResourcesList: { id: number; resource: CommonCartridgeFileResourceProps }[]
+		commonCartridgeResourcesList: CommonCartridgeFileResourceProps[]
 	): UpdateElementContentBodyParams[] {
-		let fileCounter = 0;
 		return cardElements
 			.map((element) => {
 				if (!element.isResource) return null;
@@ -241,8 +240,7 @@ export class CommonCartridgeImportService {
 				if (!resource) return null;
 
 				if (resource.type === 'file') {
-					commonCartridgeResourcesList.push({ id: fileCounter, resource });
-					fileCounter++;
+					commonCartridgeResourcesList.push(resource);
 				}
 				const contentElementType = this.commonCartridgeImportMapper.mapResourceTypeToContentElementType(resource.type);
 				if (!contentElementType) return null;
