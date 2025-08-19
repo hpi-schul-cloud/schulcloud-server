@@ -89,26 +89,28 @@ describe(ColumnClientAdapter.name, () => {
 		describe('when creating a card with content', () => {
 			const setup = () => {
 				const columnId = faker.string.uuid();
-				
-			const testCardImport: CreateCardImportBodyParams = {
-			cardTitle: "Sample Card Title",
-			cardElements: [
-				{
-					data: {
-						type: "richText",
-						content: {
-							text: "This is a sample rich text content for testing purposes.",
-							inputFormat: "html"
-						}
-					}
-				}
-			]
-			};
-			columnApiMock.columnControllerCreateCardWithContent.mockResolvedValue(axiosResponseFactory.build({ data: columnId }));
-			return {
+
+				const testCardImport: CreateCardImportBodyParams = {
+					cardTitle: 'Sample Card Title',
+					cardElements: [
+						{
+							data: {
+								type: 'richText',
+								content: {
+									text: 'This is a sample rich text content for testing purposes.',
+									inputFormat: 'html',
+								},
+							},
+						},
+					],
+				};
+				columnApiMock.columnControllerCreateCardWithContent.mockResolvedValue(
+					axiosResponseFactory.build({ data: columnId })
+				);
+				return {
 					columnId,
 					testCardImport,
-			};
+				};
 			};
 
 			it('should call boardColumnApi.columnControllerCreateCardWithContent', async () => {

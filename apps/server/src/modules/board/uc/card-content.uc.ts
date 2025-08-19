@@ -1,17 +1,11 @@
 import { LegacyLogger } from '@core/logger';
 import { Injectable } from '@nestjs/common';
-import { AnyContentElement, BoardNodeFactory, Column, ContentElementType } from '../domain';
+import { AnyContentElement, BoardNodeFactory, Column } from '../domain';
 import { EntityId } from '@shared/domain/types';
 import { BoardNodePermissionService, BoardNodeService } from '../service';
 import { Action } from '@modules/authorization';
 import { CardResponseMapper } from '../controller/mapper';
-import {
-	CardResponse,
-	FileContentBody,
-	LinkContentBody,
-	RichTextContentBody,
-	UpdateElementContentBodyParams,
-} from '../controller/dto';
+import { CardResponse, UpdateElementContentBodyParams } from '../controller/dto';
 import { UpdateImportElementMapper } from '../controller/mapper/update-import-element.mapper';
 
 @Injectable()
@@ -42,11 +36,7 @@ export class CardContentUc {
 
 		await this.boardNodeService.addToParent(column, card);
 
-		const cardResponse = CardResponseMapper.mapToResponse(card);
-		// for (const element of cardResponse.elements) {
-		// 	await this.boardNodeService.updateContent(element, content);
-		// }
-		return cardResponse;
+		return CardResponseMapper.mapToResponse(card);
 	}
 
 	private convertCardPropsToContentElements(cardProps: UpdateElementContentBodyParams[]): AnyContentElement[] {
