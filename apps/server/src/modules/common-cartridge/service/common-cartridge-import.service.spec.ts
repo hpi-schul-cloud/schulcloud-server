@@ -146,6 +146,18 @@ describe(CommonCartridgeImportService.name, () => {
 					},
 					timestamps: '',
 				},
+				{
+					id: elementId1,
+					type: 'link',
+					content: {
+						url: 'https://example.com',
+						title: 'Sample Link Title',
+						description: 'Sample Link Description',
+						imageUrl: 'https://example.com/image.jpg',
+						originalImageUrl: 'https://example.com/original-image.jpg',
+					},
+					timestamps: '',
+				},
 			],
 			height: 1,
 			visibilitySettings: {},
@@ -257,7 +269,6 @@ describe(CommonCartridgeImportService.name, () => {
 				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalled();
 			});
 		});
-
 		describe('when no title is given', () => {
 			const setup = () => {
 				commonCartridgeFileParser.getTitle.mockReturnValueOnce(undefined);

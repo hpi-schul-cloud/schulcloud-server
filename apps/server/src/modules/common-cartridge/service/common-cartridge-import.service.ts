@@ -274,7 +274,6 @@ export class CommonCartridgeImportService {
 		} else if (element.type === 'file') {
 			return element.content as FileContentBody;
 		}
-		// Default to RICH_TEXT
 		return element.content as RichTextContentBody;
 	}
 
