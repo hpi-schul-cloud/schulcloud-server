@@ -98,10 +98,14 @@ describe('Room Controller (API)', () => {
 					context: { type: BoardExternalReferenceType.Room, id: room.id },
 				});
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
-				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 				const userGroupEntity = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
-					users: [{ role: roomViewerRole, user: studentUser }],
+					users: [
+						{ role: roomViewerRole, user: studentUser },
+						{ role: roomOwnerRole, user: teacherUser },
+					],
 					organization: studentUser.school,
 					externalSource: undefined,
 				});
@@ -115,6 +119,7 @@ describe('Room Controller (API)', () => {
 					board,
 					studentAccount,
 					studentUser,
+					teacherUser,
 					roomViewerRole,
 					userGroupEntity,
 					roomMembership,

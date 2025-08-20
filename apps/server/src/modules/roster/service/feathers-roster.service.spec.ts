@@ -30,7 +30,7 @@ import { setupEntities } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { RosterConfig } from '../roster.config';
 import { FeathersRosterService } from './feathers-roster.service';
-import { RoomService } from '@modules/room';
+import { Room, RoomService } from '@modules/room';
 import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
 import { roomFactory } from '@modules/room/testing';
 
@@ -456,7 +456,7 @@ describe('FeathersRosterService', () => {
 
 				const roleDto: RoleDto = {
 					id: 'role-id',
-					name: RoleName.TEACHER,
+					name: RoleName.ROOMOWNER,
 					permissions: [Permission.ROOM_EDIT_ROOM],
 				};
 				const members: UserWithRoomRoles[] = [
@@ -1116,12 +1116,12 @@ describe('FeathersRosterService', () => {
 		});
 
 		describe('when trying the get a room', () => {
-			describe('when room does not exist, it should catch error and call course instead', () => {
+			describe('when room does not exist, it should fallback to course instead', () => {
 				const setup = () => {
 					const id = new ObjectId().toHexString();
 					const clientId = 'testClientId';
 
-					roomService.getSingleRoom.mockRejectedValueOnce(new NotFoundLoggableException('Room', { id }));
+					roomService.roomExists.mockResolvedValueOnce(false);
 
 					const course = courseEntityFactory.buildWithId({});
 					courseService.findById.mockResolvedValueOnce(course);
@@ -1149,7 +1149,7 @@ describe('FeathersRosterService', () => {
 					};
 				};
 
-				it('should not throw', async () => {
+				it('should fallback to course', async () => {
 					const { clientId, id } = setup();
 
 					await service.getGroup(id, clientId);
@@ -1185,7 +1185,36 @@ describe('FeathersRosterService', () => {
 				});
 			});
 
-			describe('when the tool is active in a column board of a room', () => {
+			describe('when the room exists, but has no owner', () => {
+				const setup = () => {
+					const room = roomFactory.build({});
+					roomService.roomExists.mockResolvedValueOnce(true);
+					roomService.getSingleRoom.mockResolvedValueOnce(room);
+
+					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValueOnce(
+						new RoomMembershipAuthorizable(room.id, [], room.schoolId)
+					);
+
+					configService.get.mockReturnValue(true);
+
+					const clientId = 'testClientId';
+
+					return {
+						room,
+						clientId,
+					};
+				};
+
+				it('should throw an error if the room has no owner', async () => {
+					const { room, clientId } = setup();
+
+					await expect(service.getGroup(room.id, clientId)).rejects.toThrow(
+						new NotFoundLoggableException(Room.name, { id: room.id })
+					);
+				});
+			});
+
+			describe('when room exists and has a column board with an active external-tool', () => {
 				const setup = () => {
 					const student = userDoFactory
 						.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
@@ -1240,18 +1269,25 @@ describe('FeathersRosterService', () => {
 					columnBoardService.findByExternalReference.mockResolvedValue([columnBoard]);
 					contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
 
-					const roleDto: RoleDto = {
-						id: 'role-id',
-						name: RoleName.TEACHER,
-						permissions: [Permission.ROOM_EDIT_ROOM],
-					};
 					const members: UserWithRoomRoles[] = [
 						{
-							roles: [roleDto],
+							roles: [
+								{
+									id: 'role-id',
+									name: RoleName.ROOMVIEWER,
+									permissions: [],
+								},
+							],
 							userId: student.id,
 						},
 						{
-							roles: [roleDto],
+							roles: [
+								{
+									id: 'role-id',
+									name: RoleName.ROOMOWNER,
+									permissions: [],
+								},
+							],
 							userId: teacher.id,
 						},
 					];
