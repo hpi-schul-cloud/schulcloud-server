@@ -211,8 +211,7 @@ export class RoomUc {
 
 		const membersResponse = this.buildRoomMembersResponse(users, roomMembershipAuthorizable);
 		if (canOnlyAdministrate) {
-			const currentUserSchoolId = currentUser.school.id;
-			const anonymizedMembersResponse = this.handleAnonymization(membersResponse, currentUserSchoolId);
+			const anonymizedMembersResponse = this.handleAnonymization(membersResponse, currentUser.school.id);
 			return anonymizedMembersResponse;
 		}
 
@@ -378,8 +377,8 @@ export class RoomUc {
 	): RoomMemberResponse[] {
 		const anonymizedMembersResponse = membersResponse.map((member) => {
 			const isRoomOwner = member.roomRoleName === RoleName.ROOMOWNER;
-			const isCurrentUserInSameSchool = member.schoolId === currentUserSchoolId;
-			const shouldBeAnonymized = !isRoomOwner && !isCurrentUserInSameSchool;
+			const isFromSameSchool = member.schoolId === currentUserSchoolId;
+			const shouldBeAnonymized = !isRoomOwner && !isFromSameSchool;
 			return {
 				...member,
 				firstName: shouldBeAnonymized ? '---' : member.firstName,
