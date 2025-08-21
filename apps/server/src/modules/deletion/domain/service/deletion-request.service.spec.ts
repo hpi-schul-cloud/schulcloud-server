@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { setupEntities } from '@testing/database';
 import { ObjectId } from 'bson';
+import { UserService } from '@modules/user';
 import { DeletionRequestRepo } from '../../repo';
 import { DeletionRequestEntity } from '../../repo/entity';
 import { deletionRequestFactory, deletionTestConfig } from '../testing';
@@ -14,6 +15,7 @@ describe(DeletionRequestService.name, () => {
 	let module: TestingModule;
 	let service: DeletionRequestService;
 	let deletionRequestRepo: DeepMocked<DeletionRequestRepo>;
+	let userService: DeepMocked<UserService>;
 	let configService: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
@@ -25,11 +27,16 @@ describe(DeletionRequestService.name, () => {
 					provide: DeletionRequestRepo,
 					useValue: createMock<DeletionRequestRepo>(),
 				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(DeletionRequestService);
 		deletionRequestRepo = module.get(DeletionRequestRepo);
+		userService = module.get(UserService);
 		configService = module.get(ConfigService);
 
 		await setupEntities([DeletionRequestEntity]);
@@ -63,6 +70,14 @@ describe(DeletionRequestService.name, () => {
 				return { targetRefId, targetRefDomain, deleteAfter };
 			};
 
+			it('should call userService.findById if targetRefDomain is USER', async () => {
+				const { targetRefId, targetRefDomain, deleteAfter } = setup();
+
+				await service.createDeletionRequest(targetRefId, targetRefDomain, deleteAfter);
+
+				expect(userService.findById).toHaveBeenCalledWith(targetRefId);
+			});
+
 			it('should call deletionRequestRepo.create', async () => {
 				const { targetRefId, targetRefDomain, deleteAfter } = setup();
 
@@ -77,6 +92,14 @@ describe(DeletionRequestService.name, () => {
 						status: StatusModel.REGISTERED,
 					})
 				);
+			});
+
+			it('should call userService.markUserAsDeleted if targetRefDomain is USER', async () => {
+				const { targetRefId, targetRefDomain, deleteAfter } = setup();
+
+				await service.createDeletionRequest(targetRefId, targetRefDomain, deleteAfter);
+
+				expect(userService.markUserAsDeleted).toHaveBeenCalledWith(targetRefId, deleteAfter);
 			});
 		});
 	});
@@ -394,16 +417,35 @@ describe(DeletionRequestService.name, () => {
 	describe('deleteById', () => {
 		describe('when deleting deletionRequest', () => {
 			const setup = () => {
-				const deletionRequestId = new ObjectId().toHexString();
+				const deletionRequest = deletionRequestFactory.build({
+					id: new ObjectId().toHexString(),
+					targetRefDomain: DomainName.USER,
+				});
 
-				return { deletionRequestId };
+				deletionRequestRepo.findById.mockResolvedValueOnce(deletionRequest);
+
+				return { deletionRequestId: deletionRequest.id, deletionRequest };
 			};
+
+			it('should fetch deletionRequest by id', async () => {
+				const { deletionRequestId } = setup();
+				await service.deleteById(deletionRequestId);
+
+				expect(deletionRequestRepo.findById).toBeCalledWith(deletionRequestId);
+			});
 
 			it('should call deletionRequestRepo.findAllItemsByDeletionDate', async () => {
 				const { deletionRequestId } = setup();
 				await service.deleteById(deletionRequestId);
 
 				expect(deletionRequestRepo.deleteById).toBeCalledWith(deletionRequestId);
+			});
+
+			it('should call userService.markUserAsDeleted if targetRefDomain is USER', async () => {
+				const { deletionRequestId } = setup();
+				await service.deleteById(deletionRequestId);
+
+				expect(userService.restoreDeletedUser).toHaveBeenCalledWith(deletionRequestId);
 			});
 		});
 	});

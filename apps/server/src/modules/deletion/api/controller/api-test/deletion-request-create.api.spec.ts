@@ -7,6 +7,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { DomainName } from '../../../domain/types';
 import { DeletionRequestEntity } from '../../../repo/entity';
 import { DeletionRequestBodyParams, DeletionRequestResponse } from '../dto';
+import { userFactory } from '../../../../user/testing';
 
 const baseRouteName = '/deletionRequests';
 
@@ -76,18 +77,23 @@ describe(`deletionRequest create (api)`, () => {
 
 	describe('createDeletionRequests', () => {
 		describe('when called', () => {
-			const setup = () => {
+			const setup = async () => {
+				const user = userFactory.build();
+
+				await em.persistAndFlush([user]);
+				em.clear();
+
 				const deletionRequestToCreate: DeletionRequestBodyParams = {
 					targetRef: {
 						domain: DomainName.USER,
-						id: '653e4833cc39e5907a1e18d2',
+						id: user.id,
 					},
 				};
 
 				const deletionRequestToImmediateRemoval: DeletionRequestBodyParams = {
 					targetRef: {
 						domain: DomainName.USER,
-						id: '653e4833cc39e5907a1e18d2',
+						id: user.id,
 					},
 					deleteAfterMinutes: 0,
 				};
@@ -105,7 +111,7 @@ describe(`deletionRequest create (api)`, () => {
 			};
 
 			it('should return status 202', async () => {
-				const { deletionRequestToCreate } = setup();
+				const { deletionRequestToCreate } = await setup();
 
 				const response = await testApiClient.post('', deletionRequestToCreate);
 
@@ -113,7 +119,7 @@ describe(`deletionRequest create (api)`, () => {
 			});
 
 			it('should return the created deletionRequest', async () => {
-				const { deletionRequestToCreate } = setup();
+				const { deletionRequestToCreate } = await setup();
 
 				const response = await testApiClient.post('', deletionRequestToCreate);
 
@@ -123,7 +129,8 @@ describe(`deletionRequest create (api)`, () => {
 
 			describe('when the "delete after minutes" param has not been provided', () => {
 				it('should set the "deleteAfter" date to the date after the default DELETION_DELETE_AFTER_MINUTES ', async () => {
-					const { deletionRequestToCreate, defaultDeleteAfterMinutes, operationalTimeToleranceInSeconds } = setup();
+					const { deletionRequestToCreate, defaultDeleteAfterMinutes, operationalTimeToleranceInSeconds } =
+						await setup();
 
 					const response = await testApiClient.post('', deletionRequestToCreate);
 
@@ -145,7 +152,7 @@ describe(`deletionRequest create (api)`, () => {
 
 			describe('when the "delete after minutes" param has been set to 0', () => {
 				it('should set the "deleteAfter" date to now', async () => {
-					const { deletionRequestToImmediateRemoval, operationalTimeToleranceInSeconds } = setup();
+					const { deletionRequestToImmediateRemoval, operationalTimeToleranceInSeconds } = await setup();
 
 					const response = await testApiClient.post('', deletionRequestToImmediateRemoval);
 
@@ -167,7 +174,7 @@ describe(`deletionRequest create (api)`, () => {
 
 			describe('when the "delete after minutes" param has been set to > 0', () => {
 				it('should set the "deleteAfter" date to now plus "delete after minutes" ', async () => {
-					const { deletionRequestToCreate, operationalTimeToleranceInSeconds } = setup();
+					const { deletionRequestToCreate, operationalTimeToleranceInSeconds } = await setup();
 
 					const deleteAfterMinutes = 120;
 

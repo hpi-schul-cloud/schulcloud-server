@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
+import { UserService } from '@modules/user';
 import { DeletionRequestRepo } from '../../repo';
 import { DeletionRequest } from '../do';
 import { DomainName, StatusModel } from '../types';
@@ -15,10 +16,10 @@ export class DeletionRequestService {
 
 	constructor(
 		private readonly deletionRequestRepo: DeletionRequestRepo,
+		private readonly userService: UserService,
 		private readonly configService: ConfigService<DeletionConfig, true>
 	) {
 		this.thresholdOlder = this.configService.get<number>('ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS');
-
 		this.thresholdNewer = this.configService.get<number>('ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS');
 	}
 
@@ -39,6 +40,10 @@ export class DeletionRequestService {
 		);
 
 		await this.deletionRequestRepo.create(deletionRequests);
+
+		if (targetRefDomain === DomainName.USER) {
+			await this.userService.markUserAsDeleted(targetRefIds, deleteAfter);
+		}
 	}
 
 	public async createDeletionRequest(
@@ -54,7 +59,17 @@ export class DeletionRequestService {
 			status: StatusModel.REGISTERED,
 		});
 
+		// TODO automatic check if targetRefId exists for all domains
+		if (targetRefDomain === DomainName.USER) {
+			await this.userService.findById(targetRefId);
+		}
+
 		await this.deletionRequestRepo.create(newDeletionRequest);
+
+		if (targetRefDomain === DomainName.USER) {
+			await this.userService.markUserAsDeleted(targetRefId, deleteAfter);
+		}
+
 		return { requestId: newDeletionRequest.id, deletionPlannedAt: newDeletionRequest.deleteAfter };
 	}
 
@@ -115,6 +130,12 @@ export class DeletionRequestService {
 	}
 
 	public async deleteById(deletionRequestId: EntityId): Promise<void> {
+		const deletionRequest = await this.deletionRequestRepo.findById(deletionRequestId);
+
 		await this.deletionRequestRepo.deleteById(deletionRequestId);
+
+		if (deletionRequest.targetRefDomain === DomainName.USER) {
+			await this.userService.restoreDeletedUser(deletionRequestId);
+		}
 	}
 }
