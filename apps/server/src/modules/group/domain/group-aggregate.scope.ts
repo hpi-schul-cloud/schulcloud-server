@@ -67,7 +67,7 @@ export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
 		return this;
 	}
 
-	public byUsersSchoolId(schoolId: EntityId | undefined): this {
+	public byUsersAndRoomsSchoolId(schoolId: EntityId | undefined): this {
 		if (schoolId) {
 			this.pipeline.push({
 				$lookup: {
@@ -79,7 +79,7 @@ export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
 			});
 			this.pipeline.push({
 				$match: {
-					'groupUsers.schoolId': new ObjectId(schoolId),
+					$or: [{ 'groupUsers.schoolId': new ObjectId(schoolId) }, { organization: new ObjectId(schoolId) }],
 				},
 			});
 		}
