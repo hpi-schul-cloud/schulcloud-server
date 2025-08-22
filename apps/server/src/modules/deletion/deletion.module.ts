@@ -10,10 +10,9 @@ import {
 } from './domain/service';
 import { DeletionBatchRepo, DeletionBatchUsersRepo, DeletionLogRepo, DeletionRequestRepo } from './repo';
 import { LoggerModule } from '@core/logger';
-import { UserModule } from '@modules/user';
 
 @Module({
-	imports: [SagaModule, LoggerModule, UserModule],
+	imports: [SagaModule, LoggerModule],
 	providers: [
 		DeletionRequestRepo,
 		DeletionLogRepo,

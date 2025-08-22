@@ -10,8 +10,10 @@ import {
 	DeletionBatchService,
 	DeletionBatchSummary,
 } from '../../domain/service';
-import { BatchStatus } from '../../domain/types';
+import { BatchStatus, DomainName } from '../../domain/types';
 import { CantCreateDeletionRequestsForBatchErrorLoggable } from '../loggable/cant-create-deletion-requests-for-batch-error.loggable';
+
+const revalidateAfterMinutes = 60;
 
 @Injectable()
 export class DeletionBatchUc {
@@ -48,11 +50,31 @@ export class DeletionBatchUc {
 	}
 
 	public async createDeletionRequestForBatch(batchId: EntityId, deleteAfter: Date): Promise<DeletionBatchSummary> {
-		const deletionBatch = await this.deletionBatchService.findById(batchId);
+		let deletionBatch = await this.deletionBatchService.findById(batchId);
+
 		if (deletionBatch.status !== BatchStatus.CREATED) {
 			throw new CantCreateDeletionRequestsForBatchErrorLoggable(batchId, deletionBatch.status);
 		}
+
+		const revalidate = deletionBatch.createdAt.getTime() + revalidateAfterMinutes * 60 * 1000 > Date.now();
+
+		if (revalidate) {
+			const { validUserIds, invalidUserIds, skippedUserIds } = await this.validateAndFilterUserIds(
+				deletionBatch.targetRefIds
+			);
+			deletionBatch = await this.deletionBatchService.updateBatch({
+				batchId,
+				targetRefIds: validUserIds,
+				invalidIds: invalidUserIds,
+				skippedIds: skippedUserIds,
+			});
+		}
+
 		const requestedDeletionBatch = await this.deletionBatchService.requestDeletionForBatch(deletionBatch, deleteAfter);
+
+		if (deletionBatch.targetRefDomain === DomainName.USER) {
+			await this.userService.markUserAsDeleted(deletionBatch.targetRefIds, deleteAfter);
+		}
 
 		return requestedDeletionBatch;
 	}
