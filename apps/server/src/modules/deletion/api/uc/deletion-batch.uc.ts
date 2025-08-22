@@ -73,7 +73,7 @@ export class DeletionBatchUc {
 		const requestedDeletionBatch = await this.deletionBatchService.requestDeletionForBatch(deletionBatch, deleteAfter);
 
 		if (deletionBatch.targetRefDomain === DomainName.USER) {
-			await this.userService.markUserAsDeleted(deletionBatch.targetRefIds, deleteAfter);
+			await this.userService.markUserAsDeleted(deletionBatch.targetRefIds, new Date());
 		}
 
 		return requestedDeletionBatch;
