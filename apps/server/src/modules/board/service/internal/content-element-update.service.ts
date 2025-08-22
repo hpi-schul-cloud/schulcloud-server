@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller/transformer';
 import { InputFormat } from '@shared/domain/types';
+import { Ollama } from 'ollama'; // Assuming ollama is imported from a client module
 import {
 	type AnyElementContentBody,
 	DrawingContentBody,
@@ -49,7 +50,7 @@ export class ContentElementUpdateService {
 		} else if (isLinkElement(element) && content instanceof LinkContentBody) {
 			this.updateLinkElement(element, content);
 		} else if (isRichTextElement(element) && content instanceof RichTextContentBody) {
-			this.updateRichTextElement(element, content);
+			await this.updateRichTextElement(element, content);
 		} else if (isDrawingElement(element) && content instanceof DrawingContentBody) {
 			this.updateDrawingElement(element, content);
 		} else if (isSubmissionContainerElement(element) && content instanceof SubmissionContainerContentBody) {
@@ -91,9 +92,21 @@ export class ContentElementUpdateService {
 		}
 	}
 
-	public updateRichTextElement(element: RichTextElement, content: RichTextContentBody): void {
+	public async updateRichTextElement(element: RichTextElement, content: RichTextContentBody): Promise<void> {
+		const ollama = new Ollama();
+		console.log('text', content.text);
+		const embeddingText = sanitizeRichText(content.text, InputFormat.PLAIN_TEXT);
+		console.log('Embedding text:', embeddingText);
+		const embedding = await ollama.embed({
+			model: 'mxbai-embed-large',
+			input: embeddingText,
+		});
+
+		console.log('Embedding generated:', embedding);
+
 		element.text = sanitizeRichText(content.text, content.inputFormat);
 		element.inputFormat = content.inputFormat;
+		element.embedding = embedding.embeddings;
 	}
 
 	public updateDrawingElement(element: DrawingElement, content: DrawingContentBody): void {

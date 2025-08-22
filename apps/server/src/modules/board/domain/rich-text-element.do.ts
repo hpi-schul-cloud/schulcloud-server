@@ -19,6 +19,14 @@ export class RichTextElement extends BoardNode<RichTextElementProps> {
 		this.props.inputFormat = value;
 	}
 
+	get embedding(): number[][] {
+		return this.props.embedding;
+	}
+
+	set embedding(value: number[][]) {
+		this.props.embedding = value;
+	}
+
 	canHaveChild(): boolean {
 		return false;
 	}

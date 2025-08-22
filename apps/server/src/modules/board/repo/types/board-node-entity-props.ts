@@ -47,7 +47,7 @@ export interface BoardNodeEntityProps
 		ComponentProps<ColumnProps>,
 		ComponentProps<CollaborativeTextEditorElementProps>,
 		ComponentProps<CardProps>,
-		ComponentProps<RichTextElementProps>,
+		StrictOmit<ComponentProps<RichTextElementProps>, 'embedding'>,
 		ComponentProps<LinkElementProps>,
 		ComponentProps<FileElementProps>,
 		ComponentProps<DrawingElementProps>,

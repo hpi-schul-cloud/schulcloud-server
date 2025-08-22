@@ -1,17 +1,18 @@
 import { FilterQuery, Utils } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { QdrantClient } from '@qdrant/js-client-rest';
 import { EntityId } from '@shared/domain/types';
-import { AnyBoardNode, BoardExternalReference, getBoardNodeType } from '../domain';
+import { v5 as uuidv5 } from 'uuid';
+import { AnyBoardNode, BoardExternalReference, getBoardNodeType, RichTextElement } from '../domain';
 import { pathOfChildren } from '../domain/path-utils';
 import { BoardNodeEntity } from './entity/board-node.entity';
 import { TreeBuilder } from './tree-builder';
-
 @Injectable()
 export class BoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findById(id: EntityId, depth?: number): Promise<AnyBoardNode> {
+	public async findById(id: EntityId, depth?: number): Promise<AnyBoardNode> {
 		const props = await this.em.findOneOrFail(BoardNodeEntity, { id });
 		const descendants = await this.findDescendants(props, depth);
 
@@ -21,7 +22,7 @@ export class BoardNodeRepo {
 		return boardNode;
 	}
 
-	async findByIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
+	public async findByIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
 		const entities = await this.em.find(BoardNodeEntity, { id: { $in: ids } });
 
 		// TODO refactor descendants mapping, more DRY?
@@ -38,7 +39,7 @@ export class BoardNodeRepo {
 		return boardNodes;
 	}
 
-	async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise<AnyBoardNode[]> {
+	public async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise<AnyBoardNode[]> {
 		const entities = await this.em.find(BoardNodeEntity, {
 			context: {
 				_contextId: new ObjectId(reference.id),
@@ -60,7 +61,10 @@ export class BoardNodeRepo {
 		return boardNodes;
 	}
 
-	async findByContextExternalToolIds(contextExternalToolIds: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
+	public async findByContextExternalToolIds(
+		contextExternalToolIds: EntityId[],
+		depth?: number
+	): Promise<AnyBoardNode[]> {
 		const entities = await this.em.find(BoardNodeEntity, {
 			contextExternalToolId: { $in: contextExternalToolIds },
 		});
@@ -79,11 +83,41 @@ export class BoardNodeRepo {
 		return boardNodes;
 	}
 
-	async save(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
+	public async save(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
+		if (boardNode instanceof RichTextElement) {
+			const client = new QdrantClient({ url: 'http://localhost:6333' });
+
+			const collectionName = 'my_embeddings';
+			const collections = await client.getCollections();
+			const exists = collections.collections.some((c) => c.name === collectionName);
+
+			if (!exists) {
+				await client.createCollection(collectionName, {
+					vectors: { size: 1024, distance: 'Cosine' }, // adjust size to your embedding dimension
+				});
+			}
+
+			console.log('Saving boardNode with embedding:', boardNode.id);
+			console.log(boardNode.embedding);
+
+			await client.upsert(collectionName, {
+				wait: true,
+				points: [
+					{
+						id: uuidv5(boardNode.id, uuidv5.URL),
+						vector: boardNode.embedding[0],
+						payload: {
+							svs_id: boardNode.id,
+						},
+					},
+				],
+			});
+		}
+
 		return this.persist(boardNode).flush();
 	}
 
-	async delete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
+	public async delete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
 		await this.remove(boardNode).flush();
 	}
 

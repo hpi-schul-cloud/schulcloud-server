@@ -56,6 +56,7 @@ export interface LinkElementProps extends BoardNodeProps {
 export interface RichTextElementProps extends BoardNodeProps {
 	text: string;
 	inputFormat: InputFormat;
+	embedding: number[][];
 }
 
 export interface SubmissionContainerElementProps extends BoardNodeProps {

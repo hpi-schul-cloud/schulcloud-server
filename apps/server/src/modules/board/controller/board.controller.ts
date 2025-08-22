@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import {
@@ -11,8 +12,9 @@ import {
 	Param,
 	Patch,
 	Post,
+	Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
 import { BoardUc } from '../uc';
@@ -29,11 +31,65 @@ import {
 import { BoardContextResponse } from './dto/board/board-context.reponse';
 import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from './mapper';
 
+import { QdrantClient } from '@qdrant/js-client-rest';
+// Import your embedding provider (Ollama or similar)
+import { IsString } from 'class-validator';
+import { Ollama } from 'ollama';
+import { RichTextElement } from '../domain';
+import { BoardNodeService } from '../service';
+
+class SearchEmbeddingParams {
+	@IsString()
+	@ApiProperty({
+		description: 'Search string',
+		required: true,
+		nullable: false,
+	})
+	public query!: string;
+}
+
 @ApiTags('Board')
 @JwtAuthentication()
 @Controller('boards')
 export class BoardController {
-	constructor(private readonly boardUc: BoardUc) {}
+	constructor(private readonly boardUc: BoardUc, private readonly boardNodeService: BoardNodeService) {}
+
+	@Get('search-embedding')
+	@ApiOperation({ summary: 'Search board nodes by embedding similarity.' })
+	@ApiResponse({ status: 200, description: 'List of similar board node ids.' })
+	public async searchEmbedding(@Query() urlParams: SearchEmbeddingParams) {
+		if (!urlParams.query) {
+			return { error: 'Missing query parameter' };
+		}
+
+		const ollama = new Ollama();
+		const embeddingResult = await ollama.embed({
+			model: 'mxbai-embed-large',
+			input: urlParams.query,
+		});
+		const embedding = embeddingResult.embeddings[0];
+
+		const client = new QdrantClient({ url: 'http://localhost:6333' });
+		const collectionName = 'my_embeddings';
+		const searchResult = await client.search(collectionName, {
+			vector: embedding,
+			limit: 10,
+		});
+
+		const elementIds = searchResult.map((result) => result?.payload?.svs_id) as string[];
+		console.log('Element IDs:', elementIds);
+		const elements = (await this.boardNodeService.findByIds(elementIds)) as RichTextElement[];
+
+		// add element text to each search result
+		for (const result of searchResult) {
+			const element = elements.find((el) => el.id === result?.payload?.svs_id);
+			if (element && result.payload) {
+				result.payload.text = element.text;
+			}
+		}
+
+		return searchResult;
+	}
 
 	@ApiOperation({ summary: 'Create a new board.' })
 	@ApiResponse({ status: 201, type: CreateBoardResponse })

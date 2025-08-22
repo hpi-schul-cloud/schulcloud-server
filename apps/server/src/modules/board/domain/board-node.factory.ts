@@ -70,6 +70,7 @@ export class BoardNodeFactory {
 					...this.getBaseProps(),
 					text: '',
 					inputFormat: InputFormat.RICH_TEXT_CK5,
+					embedding: [],
 				});
 				break;
 			case ContentElementType.DRAWING:
