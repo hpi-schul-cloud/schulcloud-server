@@ -380,19 +380,21 @@ describe(GroupRepo.name, () => {
 		});
 	});
 
-	describe('findByUsersSchoolId', () => {
+	describe('findByUsersAndRoomsSchoolId', () => {
 		const setup = async () => {
 			const school = schoolEntityFactory.buildWithId();
+			const differentSchool = schoolEntityFactory.buildWithId();
 			const user = userFactory.buildWithId({ school });
 			const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
 
-			await em.persistAndFlush([user, school]);
+			await em.persistAndFlush([user, school, differentSchool]);
 			em.clear();
 
 			return {
-				user,
-				school,
+				differentSchool,
 				role,
+				school,
+				user,
 			};
 		};
 
@@ -420,10 +422,10 @@ describe(GroupRepo.name, () => {
 
 		describe('when users from the same school are in one group', () => {
 			it('should return the group', async () => {
-				const { school, role } = await setup();
+				const { role, school } = await setup();
 				const group = await addGroup(school, role, 4, 0);
 
-				const result: Page<Group> = await repo.findByUsersSchoolId(school.id, [GroupTypes.ROOM]);
+				const result: Page<Group> = await repo.findByUsersAndRoomsSchoolId(school.id, [GroupTypes.ROOM]);
 
 				expect(result.data).toHaveLength(1);
 				expect(result.data[0].id).toEqual(group.id);
@@ -433,11 +435,11 @@ describe(GroupRepo.name, () => {
 
 		describe('when users from the same school are in multiple groups', () => {
 			it('should return these groups', async () => {
-				const { school, role } = await setup();
+				const { role, school } = await setup();
 				const group1 = await addGroup(school, role, 4, 0);
 				const group2 = await addGroup(school, role, 6, 0);
 
-				const result: Page<Group> = await repo.findByUsersSchoolId(school.id, [GroupTypes.ROOM]);
+				const result: Page<Group> = await repo.findByUsersAndRoomsSchoolId(school.id, [GroupTypes.ROOM]);
 
 				expect(result.data).toHaveLength(2);
 				expect(result.data.map((g) => g.id)).toEqual([group1.id, group2.id].sort());
@@ -445,16 +447,38 @@ describe(GroupRepo.name, () => {
 			});
 		});
 
-		describe('when users from the same school are in none of the existing groups', () => {
-			it('should return an empty array', async () => {
-				const { school, role } = await setup();
-				await addGroup(school, role, 0, 4);
-				await addGroup(school, role, 0, 6);
+		describe('when no users from the same school are in groups from the same school', () => {
+			it('should still return the groups from the same school', async () => {
+				const { role, school } = await setup();
+				const group1 = await addGroup(school, role, 0, 4);
+				const group2 = await addGroup(school, role, 0, 0);
 
-				const result: Page<Group> = await repo.findByUsersSchoolId(school.id, [GroupTypes.ROOM]);
+				const result: Page<Group> = await repo.findByUsersAndRoomsSchoolId(school.id, [GroupTypes.ROOM]);
+
+				expect(result.data).toHaveLength(2);
+				expect(result.data.map((g) => g.id)).toEqual([group1.id, group2.id].sort());
+				expect(result.total).toEqual(2);
+			});
+		});
+
+		describe('when no groups from the same school exist', () => {
+			it('should return an empty list', async () => {
+				const { school } = await setup();
+
+				const result: Page<Group> = await repo.findByUsersAndRoomsSchoolId(school.id, [GroupTypes.ROOM]);
 
 				expect(result.data).toHaveLength(0);
-				expect(result.total).toEqual(0);
+			});
+		});
+
+		describe('when no users from the same school are in groups from the different school', () => {
+			it('should return an empty list', async () => {
+				const { differentSchool, role, school } = await setup();
+				await addGroup(differentSchool, role, 0, 4);
+
+				const result: Page<Group> = await repo.findByUsersAndRoomsSchoolId(school.id, [GroupTypes.ROOM]);
+
+				expect(result.data).toHaveLength(0);
 			});
 		});
 	});
