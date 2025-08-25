@@ -71,7 +71,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_ADMINISTRATE_ROOMS]);
 
-		const roomMembershipStats = await this.roomMembershipService.getRoomMembershipStatsByUsersSchoolId(
+		const roomMembershipStats = await this.roomMembershipService.getRoomMembershipStatsByUsersAndRoomsSchoolId(
 			user.school.id,
 			findOptions.pagination
 		);
