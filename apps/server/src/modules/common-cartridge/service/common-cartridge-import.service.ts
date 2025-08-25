@@ -1,6 +1,6 @@
 import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
-import { CardClientAdapter, CardControllerCreateElement201Response } from '@infra/cards-client';
-import { ColumnClientAdapter } from '@infra/column-client';
+import { CardClientAdapter, UpdateElementContentBodyParams } from '@infra/cards-client';
+import { ColumnClientAdapter, CreateCardImportBodyParams } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Injectable } from '@nestjs/common';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
@@ -157,18 +157,28 @@ export class CommonCartridgeImportService {
 		cardProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const card = await this.columnClient.createCard(column.id, {});
-		await this.cardClient.updateCardTitle(card.id, {
-			title: cardProps.title,
-		});
-
+		let fileCounter = 0;
 		const organizations = parser.getOrganizations();
 		const cardElements = organizations.filter(
 			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
 		);
+		const commonCartridgeResourcesList: CommonCartridgeFileResourceProps[] = [];
+		const cardElementsMapped = this.mapCardElements(cardElements, parser, commonCartridgeResourcesList).filter(
+			(element) => element !== undefined && element !== null
+		);
+		const cardCreateImportParams: CreateCardImportBodyParams = {
+			cardTitle: cardProps.title,
+			cardElements: cardElementsMapped,
+		};
+		const cardResponse = await this.columnClient.createCardWithContent(column.id, cardCreateImportParams);
 
-		for await (const cardElement of cardElements) {
-			await this.createCardElement(parser, card.id, cardElement, currentUser);
+		for (const element of cardResponse.elements) {
+			if (element.type === 'file' && commonCartridgeResourcesList[fileCounter]) {
+				const resource = commonCartridgeResourcesList[fileCounter];
+
+				await this.uploadFile(currentUser, resource, element.id);
+				fileCounter++;
+			}
 		}
 	}
 
@@ -201,7 +211,7 @@ export class CommonCartridgeImportService {
 		});
 
 		if (resource.type === 'file') {
-			await this.uploadFile(currentUser, resource, contentElement);
+			await this.uploadFile(currentUser, resource, contentElement.id);
 		}
 
 		await this.cardClient.updateCardElement(contentElement.id, {
@@ -209,13 +219,51 @@ export class CommonCartridgeImportService {
 		});
 	}
 
+	private mapCardElements(
+		cardElements: CommonCartridgeOrganizationProps[],
+		parser: CommonCartridgeFileParser,
+		commonCartridgeResourcesList: CommonCartridgeFileResourceProps[]
+	): UpdateElementContentBodyParams[] {
+		return cardElements
+			.map((element) => {
+				if (!element.isResource) return null;
+
+				const resource = parser.getResource(element);
+				if (!resource) return null;
+
+				if (resource.type === 'file') {
+					commonCartridgeResourcesList.push(resource);
+				}
+				const contentElementType = this.commonCartridgeImportMapper.mapResourceTypeToContentElementType(resource.type);
+				if (!contentElementType) return null;
+
+				const resourceBody = this.commonCartridgeImportMapper.mapResourceToContentBody(
+					resource,
+					element,
+					parser.options.inputFormat
+				);
+
+				if (!resourceBody) return null;
+
+				const updateElementContentBodyParamsData = {
+					type: contentElementType,
+					content: resourceBody.content,
+				};
+
+				return {
+					data: updateElementContentBodyParamsData,
+				} as UpdateElementContentBodyParams;
+			})
+			.filter((element): element is UpdateElementContentBodyParams => element !== null && element !== undefined);
+	}
+
 	private async uploadFile(
 		currentUser: ICurrentUser,
 		resource: CommonCartridgeFileResourceProps,
-		cardElement: CardControllerCreateElement201Response
+		cardElementId: string //element ID
 	): Promise<void> {
 		const { schoolId } = currentUser;
 
-		await this.fileClient.upload(schoolId, 'school', cardElement.id, 'boardnodes', resource.file);
+		await this.fileClient.upload(schoolId, 'school', cardElementId, 'boardnodes', resource.file);
 	}
 }

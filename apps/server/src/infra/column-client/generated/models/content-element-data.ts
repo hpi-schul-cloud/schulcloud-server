@@ -17,18 +17,24 @@
 /**
  * 
  * @export
- * @interface CreateCardBodyParams
+ * @interface ContentElementData
  */
-export interface CreateCardBodyParams {
+export interface ContentElementData {
     /**
-     * 
-     * @type {Array<string>}
-     * @memberof CreateCardBodyParams
+     * The unique identifier for the content element.
+     * @type {string}
+     * @memberof ContentElementData
      */
-    'requiredEmptyElements'?: Array<CreateCardBodyParamsRequiredEmptyElements>;
+    'elementId': string;
+    /**
+     * The type of the content element.
+     * @type {string}
+     * @memberof ContentElementData
+     */
+    'type': ContentElementDataType;
 }
 
-export const CreateCardBodyParamsRequiredEmptyElements = {
+export const ContentElementDataType = {
     FILE: 'file',
     DRAWING: 'drawing',
     LINK: 'link',
@@ -42,6 +48,6 @@ export const CreateCardBodyParamsRequiredEmptyElements = {
     H5P: 'h5p'
 } as const;
 
-export type CreateCardBodyParamsRequiredEmptyElements = typeof CreateCardBodyParamsRequiredEmptyElements[keyof typeof CreateCardBodyParamsRequiredEmptyElements];
+export type ContentElementDataType = typeof ContentElementDataType[keyof typeof ContentElementDataType];
 
 
