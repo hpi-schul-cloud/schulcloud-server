@@ -74,6 +74,29 @@ export class DeletionBatchService {
 		return summary;
 	}
 
+	public async updateBatch({
+		batchId,
+		targetRefIds,
+		invalidIds,
+		skippedIds,
+	}: {
+		batchId: EntityId;
+		targetRefIds: EntityId[];
+		invalidIds: EntityId[];
+		skippedIds: EntityId[];
+	}): Promise<DeletionBatch> {
+		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
+
+		deletionBatch.targetRefIds = targetRefIds;
+		deletionBatch.invalidIds = invalidIds;
+		deletionBatch.skippedIds = skippedIds;
+		deletionBatch.updatedAt = new Date();
+
+		await this.deletionBatchRepo.save(deletionBatch);
+
+		return deletionBatch;
+	}
+
 	public async deleteDeletionBatch(batchId: EntityId): Promise<void> {
 		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
 

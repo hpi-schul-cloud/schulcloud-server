@@ -207,6 +207,22 @@ export class UserService {
 		return userDeleted;
 	}
 
+	public async markUserAsDeleted(ids: EntityId | EntityId[], deleteAt: Date): Promise<void> {
+		if (Array.isArray(ids)) {
+			await this.userRepo.markDeleted(ids, deleteAt);
+		} else {
+			await this.userRepo.markDeleted([ids], deleteAt);
+		}
+	}
+
+	public async restoreDeletedUser(ids: EntityId | EntityId[]): Promise<void> {
+		if (Array.isArray(ids)) {
+			await this.userRepo.markDeleted(ids, null);
+		} else {
+			await this.userRepo.markDeleted([ids], null);
+		}
+	}
+
 	public async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
 		const parentEmails = await this.userRepo.getParentEmailsFromUser(userId);
 

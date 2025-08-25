@@ -18,7 +18,6 @@ export class DeletionRequestService {
 		private readonly configService: ConfigService<DeletionConfig, true>
 	) {
 		this.thresholdOlder = this.configService.get<number>('ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS');
-
 		this.thresholdNewer = this.configService.get<number>('ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS');
 	}
 
@@ -55,6 +54,7 @@ export class DeletionRequestService {
 		});
 
 		await this.deletionRequestRepo.create(newDeletionRequest);
+
 		return { requestId: newDeletionRequest.id, deletionPlannedAt: newDeletionRequest.deleteAfter };
 	}
 

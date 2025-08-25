@@ -527,6 +527,49 @@ describe('user repo', () => {
 		});
 	});
 
+	describe('markDeleted', () => {
+		const setup = async () => {
+			const user1: User = userFactory.buildWithId();
+			const user2: User = userFactory.buildWithId();
+			const user3: User = userFactory.buildWithId();
+			await em.persistAndFlush([user1, user2, user3]);
+			em.clear();
+
+			return {
+				user1,
+				user2,
+				user3,
+			};
+		};
+
+		it('should mark users as deleted with specific date', async () => {
+			const { user1, user2 } = await setup();
+			const deleteAt = new Date();
+
+			await repo.markDeleted([user1.id, user2.id], deleteAt);
+
+			const resultUser1 = await repo.findById(user1.id);
+			const resultUser2 = await repo.findById(user2.id);
+
+			expect(resultUser1.deletedAt).toEqual(deleteAt);
+			expect(resultUser2.deletedAt).toEqual(deleteAt);
+		});
+
+		it('should unset deletedAt for users', async () => {
+			const { user1, user2 } = await setup();
+			const deleteAt = new Date();
+
+			await repo.markDeleted([user1.id, user2.id], deleteAt);
+			await repo.markDeleted([user1.id, user2.id], null);
+
+			const resultUser1 = await repo.findById(user1.id);
+			const resultUser2 = await repo.findById(user2.id);
+
+			expect(resultUser1.deletedAt).toBeNull();
+			expect(resultUser2.deletedAt).toBeNull();
+		});
+	});
+
 	describe('getParentEmailsFromUser', () => {
 		const setup = async () => {
 			const id = new ObjectId().toHexString();
