@@ -152,12 +152,21 @@ describe('BoardNode', () => {
 			});
 
 			describe('when position > length', () => {
-				it('should throw an error', () => {
+				it('should put the child in the empty list', () => {
 					const { parent, child } = setup();
 
 					parent.addChild(child, 3);
 
 					expect(child.position).toBe(0);
+				});
+
+				it('should append the child at the end of the list', () => {
+					const { parent, child } = setup();
+					parent.addChild(cardFactory.build(), 0);
+					parent.addChild(cardFactory.build(), 1);
+					parent.addChild(child, 10);
+
+					expect(child.position).toBe(2);
 				});
 			});
 		});
