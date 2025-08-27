@@ -691,22 +691,6 @@ const renameService = {
 	},
 };
 
-const fileTotalSizeService = {
-	docs: swaggerDocs.fileTotalSizeService,
-
-	/**
-	 * @returns total file size and amount of files
-	 * FIX-ME:
-	 * - Check if user in payload is administrator
-	 */
-	find() {
-		return Promise.resolve({
-			total: 0,
-			totalSize: 0,
-		});
-	},
-};
-
 const bucketService = {
 	docs: swaggerDocs.bucketService,
 	Stategy: AWSS3Strategy,
@@ -1041,7 +1025,6 @@ module.exports = function proxyService() {
 	app.use('/fileStorage/rename', renameService);
 	app.use('/fileStorage/signedUrl', signedUrlService);
 	app.use('/fileStorage/bucket', bucketService);
-	app.use('/fileStorage/total', fileTotalSizeService);
 	app.use('/fileStorage/permission', filePermissionService);
 	app.use('/fileStorage/files/new', newFileService);
 	app.use('/fileStorage/shared', shareTokenService);

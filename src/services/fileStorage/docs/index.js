@@ -450,29 +450,6 @@ module.exports = {
 			},
 		},
 	},
-	fileTotalSizeService: {
-		description: '',
-		summary: 'A service for getting file sizes',
-		operations: {
-			find: {
-				description: '',
-				summary: 'Gets total size of all files',
-				parameters: [],
-				responses: {
-					200: {
-						description: 'Returns file statistics',
-						example: {
-							total: 112,
-							totalSize: 548000,
-						},
-					},
-					500: {
-						description: 'Error performing operation',
-					},
-				},
-			},
-		},
-	},
 	signedUrlService: {
 		description: '',
 		summary:
