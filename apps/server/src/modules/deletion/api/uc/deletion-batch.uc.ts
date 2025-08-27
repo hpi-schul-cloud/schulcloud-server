@@ -59,12 +59,9 @@ export class DeletionBatchUc {
 		const revalidate = deletionBatch.createdAt.getTime() + revalidateAfterMinutes * 60 * 1000 > Date.now();
 
 		if (revalidate) {
-			const { validUserIds, invalidUserIds, skippedUserIds } = await this.validateAndFilterUserIds(
-				deletionBatch.targetRefIds
-			);
+			const { invalidUserIds, skippedUserIds } = await this.validateAndFilterUserIds(deletionBatch.targetRefIds);
 			deletionBatch = await this.deletionBatchService.updateBatch({
 				batchId,
-				targetRefIds: validUserIds,
 				invalidIds: invalidUserIds,
 				skippedIds: skippedUserIds,
 			});

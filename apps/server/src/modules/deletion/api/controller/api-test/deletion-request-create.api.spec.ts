@@ -3,11 +3,11 @@ import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { userFactory } from '@modules/user/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { DomainName } from '../../../domain/types';
 import { DeletionRequestEntity } from '../../../repo/entity';
 import { DeletionRequestBodyParams, DeletionRequestResponse } from '../dto';
-import { userFactory } from '../../../../user/testing';
 
 const baseRouteName = '/deletionRequests';
 
