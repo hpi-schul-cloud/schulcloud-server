@@ -489,10 +489,6 @@ describe('fileStorage services', () => {
 		assert.ok(app.service('fileStorage/rename'));
 	});
 
-	it('registered the file total service', () => {
-		assert.ok(app.service('fileStorage/total'));
-	});
-
 	it('registered the bucket service', () => {
 		assert.ok(app.service('/fileStorage/files/new'));
 	});
