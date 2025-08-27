@@ -1,4 +1,4 @@
-import { accessTokenRegex, CustomPayload } from '@infra/access-token';
+import { accessTokenRegex, CustomPayload, NanoidString24Chars } from '@infra/access-token';
 import { Action, AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { ApiProperty } from '@nestjs/swagger';
 import { Permission } from '@shared/domain/interface';
@@ -63,7 +63,7 @@ export class CreateAccessTokenParams extends AuthorizationBodyParams {
 export class AccessTokenParams {
 	@ApiProperty({ description: 'The access token to be resolved.' })
 	@Matches(accessTokenRegex, { message: 'Token must be a valid access token string.' })
-	public token!: string;
+	public token!: NanoidString24Chars;
 
 	@ApiProperty({ description: 'Lifetime of token' })
 	@IsNumber()
