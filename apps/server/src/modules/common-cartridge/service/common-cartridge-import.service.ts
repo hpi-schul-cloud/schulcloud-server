@@ -12,6 +12,7 @@ import {
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { ICurrentUser } from '@infra/auth-guard';
+import { LegacyLogger } from '@core/logger';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;
@@ -28,13 +29,18 @@ export class CommonCartridgeImportService {
 		private readonly columnClient: ColumnClientAdapter,
 		private readonly cardClient: CardClientAdapter,
 		private readonly fileClient: FilesStorageClientAdapter,
-		private readonly commonCartridgeImportMapper: CommonCartridgeImportMapper
+		private readonly commonCartridgeImportMapper: CommonCartridgeImportMapper,
+		private readonly logger: LegacyLogger
 	) {}
 
 	public async importFile(file: Buffer, currentUser: ICurrentUser): Promise<void> {
+		this.logger.log('Starting import of Common Cartridge file');
+
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
 
 		await this.createCourse(parser, currentUser);
+
+		this.logger.log('Finished import of Common Cartridge file');
 	}
 
 	private async createCourse(parser: CommonCartridgeFileParser, currentUser: ICurrentUser): Promise<void> {
@@ -61,6 +67,7 @@ export class CommonCartridgeImportService {
 				parentId,
 				parentType: 'course',
 			});
+			this.logger.log(`Created board '${board.title}' with ID '${response.id}'`);
 
 			await this.createColumns(response.id, board, parser, currentUser);
 		}
@@ -89,6 +96,10 @@ export class CommonCartridgeImportService {
 					organization.path.startsWith(board.identifier) &&
 					!organization.isResource
 			);
+
+		this.logger.log(
+			`Found ${columnsWithResource.length} columns with resources and ${columnsWithoutResource.length} without resources`
+		);
 
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
@@ -129,11 +140,14 @@ export class CommonCartridgeImportService {
 			);
 		const cardsWithResource = cards.filter((card) => card.isResource);
 
+		this.logger.log(`Found ${cardsWithResource.length} cards with resources`);
+
 		for (const card of cardsWithResource) {
 			await this.createCardElementWithResource(parser, columnResponse, card, currentUser);
 		}
 
 		const cardsWithoutResource = cards.filter((card) => !card.isResource);
+		this.logger.log(`Found ${cardsWithoutResource.length} cards without resources`);
 
 		for (const card of cardsWithoutResource) {
 			await this.createCard(parser, columnResponse, card, currentUser);
@@ -166,6 +180,8 @@ export class CommonCartridgeImportService {
 		const cardElements = organizations.filter(
 			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
 		);
+
+		this.logger.log(`Found ${cardElements.length} card elements for card '${cardProps.title}'`);
 
 		for await (const cardElement of cardElements) {
 			await this.createCardElement(parser, card.id, cardElement, currentUser);
@@ -217,5 +233,7 @@ export class CommonCartridgeImportService {
 		const { schoolId } = currentUser;
 
 		await this.fileClient.upload(schoolId, 'school', cardElement.id, 'boardnodes', resource.file);
+
+		this.logger.log(`Uploaded file for card element '${cardElement.id}'`);
 	}
 }
