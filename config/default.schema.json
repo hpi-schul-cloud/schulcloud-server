@@ -1595,21 +1595,6 @@
 			"default": true,
 			"description": "Enables the room sharing feature"
 		},
-		"FEATURE_ROOM_INVITATION_LINKS_ENABLED": {
-			"type": "boolean",
-			"default": "true",
-			"description": "Enables the room invitation links feature"
-		},
-		"FEATURE_ROOM_ADD_STUDENTS_ENABLED": {
-			"type": "boolean",
-			"default": "false",
-			"description": "Enables adding students to a room"
-		},
-		"FEATURE_ROOM_MEMBERS_TABS_ENABLED": {
-			"type": "boolean",
-			"default": "false",
-			"description": "Enables the tab navigation for room members page"
-		},
 		"FEATURE_ADMINISTRATE_ROOMS_ENABLED": {
 			"type": "boolean",
 			"default": "false",
