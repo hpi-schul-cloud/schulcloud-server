@@ -1058,6 +1058,7 @@ module.exports = function proxyService() {
 	app.use('/fileStorage/signedUrl', signedUrlService);
 	app.use('/fileStorage/bucket', bucketService);
 	app.use('/fileStorage/total', fileTotalSizeService);
+	//TODO Remove the copy Service
 	app.use('/fileStorage/copy', copyService);
 	app.use('/fileStorage/permission', filePermissionService);
 	app.use('/fileStorage/files/new', newFileService);
