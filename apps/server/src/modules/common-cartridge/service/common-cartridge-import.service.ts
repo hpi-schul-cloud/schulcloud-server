@@ -54,7 +54,7 @@ export class CommonCartridgeImportService {
 
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
-		for await (const board of boards) {
+		for (const board of boards) {
 			const response = await this.boardsClient.createBoard({
 				title: board.title,
 				layout: 'columns',
@@ -92,11 +92,11 @@ export class CommonCartridgeImportService {
 
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
-		for await (const column of columnsWithResource) {
+		for (const column of columnsWithResource) {
 			await this.createColumnWithResource(parser, boardId, column, currentUser);
 		}
 
-		for await (const column of columnsWithoutResource) {
+		for (const column of columnsWithoutResource) {
 			await this.createColumn(parser, boardId, column, currentUser);
 		}
 	}
@@ -129,13 +129,13 @@ export class CommonCartridgeImportService {
 			);
 		const cardsWithResource = cards.filter((card) => card.isResource);
 
-		for await (const card of cardsWithResource) {
+		for (const card of cardsWithResource) {
 			await this.createCardElementWithResource(parser, columnResponse, card, currentUser);
 		}
 
 		const cardsWithoutResource = cards.filter((card) => !card.isResource);
 
-		for await (const card of cardsWithoutResource) {
+		for (const card of cardsWithoutResource) {
 			await this.createCard(parser, columnResponse, card, currentUser);
 		}
 	}
