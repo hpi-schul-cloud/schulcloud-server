@@ -351,31 +351,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/signedUrl'
-  /fileStorage/bucket:
-    post:
-      parameters:
-        - description: ID of school
-          required: true
-          type: string
-          in: body
-          name: parent
-          example: 5f2987e020834114b8efd6f7
-      responses:
-        '200':
-          description: OK - bucket created
-        '500':
-          description: Error performing operation
-      description: ''
-      summary: Create a bucket for given school
-      tags:
-        - fileStorage
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/bucket'
   /fileStorage/total:
     get:
       parameters: []

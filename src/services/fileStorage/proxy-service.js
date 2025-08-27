@@ -691,27 +691,6 @@ const renameService = {
 	},
 };
 
-const bucketService = {
-	docs: swaggerDocs.bucketService,
-	Stategy: AWSS3Strategy,
-
-	getStrategy() {
-		return new this.Stategy();
-	},
-
-	/**
-	 * @param data, contains schoolId
-	 * FIX-ME:
-	 * - Check if user in payload is administrator
-	 * @returns {Promise}
-	 */
-	create(data) {
-		const { schoolId } = data;
-
-		return this.getStrategy().create(schoolId);
-	},
-};
-
 const newFileService = {
 	docs: swaggerDocs.newFileService,
 
@@ -1024,7 +1003,6 @@ module.exports = function proxyService() {
 	app.use('/fileStorage/directories/rename', renameService);
 	app.use('/fileStorage/rename', renameService);
 	app.use('/fileStorage/signedUrl', signedUrlService);
-	app.use('/fileStorage/bucket', bucketService);
 	app.use('/fileStorage/permission', filePermissionService);
 	app.use('/fileStorage/files/new', newFileService);
 	app.use('/fileStorage/shared', shareTokenService);
@@ -1033,11 +1011,9 @@ module.exports = function proxyService() {
 	[
 		'/fileStorage',
 		'/fileStorage/signedUrl',
-		'/fileStorage/bucket',
 		'/fileStorage/directories',
 		'/fileStorage/directories/rename',
 		'/fileStorage/rename',
-		'/fileStorage/total',
 		'/fileStorage/files/new',
 		'/fileStorage/shared',
 		'/fileStorage/permission',

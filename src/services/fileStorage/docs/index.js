@@ -569,33 +569,6 @@ module.exports = {
 			},
 		},
 	},
-	bucketService: {
-		description: 'A service for creating a buckets',
-		operations: {
-			create: {
-				description: '',
-				summary: 'Create a bucket for given school',
-				parameters: [
-					{
-						description: 'ID of school',
-						required: true,
-						type: 'string',
-						in: 'body',
-						name: 'parent',
-						example: '5f2987e020834114b8efd6f7',
-					},
-				],
-				responses: {
-					200: {
-						description: 'OK - bucket created',
-					},
-					500: {
-						description: 'Error performing operation',
-					},
-				},
-			},
-		},
-	},
 	newFileService: {
 		description: 'A service for creating new files',
 		operations: {

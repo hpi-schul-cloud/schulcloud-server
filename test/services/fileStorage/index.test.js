@@ -53,8 +53,6 @@ describe('fileStorage services', () => {
 		fileStorageService.Stategy = AWSStrategy;
 		signedUrlService.Stategy = AWSStrategy;
 
-		// 	app.use('/fileStorage/bucket', bucketService); ????
-
 		const promises = [
 			teamsModel.create(fixtures.teams),
 			schoolModel.create(fixtures.schools),
