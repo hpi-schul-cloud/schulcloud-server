@@ -16,7 +16,6 @@ const {
 	canDelete,
 	returnFileType,
 	generateFileNameSuffix,
-	copyFile,
 	createDefaultPermissions,
 	createPermission,
 } = require('./utils');
@@ -729,21 +728,6 @@ const bucketService = {
 	},
 };
 
-const copyService = {
-	docs: swaggerDocs.copyService,
-
-	defaultPermissionHandler(userId, file, parent) {
-		return Promise.all([canRead(userId, file), canWrite(userId, parent)]);
-	},
-	/**
-	 * @param data, contains file-Id and new parent
-	 * @returns {Promise}
-	 */
-	create(data, params) {
-		return copyFile(data, params, this.defaultPermissionHandler);
-	},
-};
-
 const newFileService = {
 	docs: swaggerDocs.newFileService,
 
@@ -1058,8 +1042,6 @@ module.exports = function proxyService() {
 	app.use('/fileStorage/signedUrl', signedUrlService);
 	app.use('/fileStorage/bucket', bucketService);
 	app.use('/fileStorage/total', fileTotalSizeService);
-	//TODO Remove the copy Service
-	app.use('/fileStorage/copy', copyService);
 	app.use('/fileStorage/permission', filePermissionService);
 	app.use('/fileStorage/files/new', newFileService);
 	app.use('/fileStorage/shared', shareTokenService);
@@ -1073,7 +1055,6 @@ module.exports = function proxyService() {
 		'/fileStorage/directories/rename',
 		'/fileStorage/rename',
 		'/fileStorage/total',
-		'/fileStorage/copy',
 		'/fileStorage/files/new',
 		'/fileStorage/shared',
 		'/fileStorage/permission',
