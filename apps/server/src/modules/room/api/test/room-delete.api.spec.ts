@@ -38,7 +38,6 @@ describe('Room Controller (API)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOMS_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -51,27 +50,6 @@ describe('Room Controller (API)', () => {
 				const someId = new ObjectId().toHexString();
 				const response = await testApiClient.delete(someId);
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-			});
-		});
-
-		describe('when the feature is disabled', () => {
-			const setup = async () => {
-				config.FEATURE_ROOMS_ENABLED = false;
-
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
-
-				return { loggedInClient };
-			};
-
-			it('should return a 403 error', async () => {
-				const { loggedInClient } = await setup();
-				const someId = new ObjectId().toHexString();
-				const response = await loggedInClient.delete(someId);
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 

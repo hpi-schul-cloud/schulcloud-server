@@ -1580,11 +1580,6 @@
 			"default": true,
 			"description": "Enables calender service"
 		},
-		"FEATURE_ROOMS_ENABLED": {
-			"type": "boolean",
-			"default": "true",
-			"description": "Enables the rooms feature"
-		},
 		"FEATURE_ROOM_COPY_ENABLED": {
 			"type": "boolean",
 			"default": true,

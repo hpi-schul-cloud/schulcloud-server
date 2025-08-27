@@ -36,7 +36,6 @@ describe('Room Controller (API)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOMS_ENABLED = true;
 
 		await em.clearCache('roles-cache-byname-roomadmin');
 		await em.clearCache('roles-cache-byname-roomowner');
@@ -118,19 +117,6 @@ describe('Room Controller (API)', () => {
 			it('should return forbidden error', async () => {
 				const { room, targetUser } = await setupRoomWithMembers();
 				const { loggedInClient } = await setupLoggedInUser();
-
-				const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
-					userId: targetUser.id,
-				});
-
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
-			});
-		});
-
-		describe('when the feature is disabled', () => {
-			it('should return a 403 error', async () => {
-				const { loggedInClient, room, targetUser } = await setupRoomWithMembers();
-				config.FEATURE_ROOMS_ENABLED = false;
 
 				const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
 					userId: targetUser.id,

@@ -33,7 +33,6 @@ describe('Room Controller (API)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOMS_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -114,19 +113,6 @@ describe('Room Controller (API)', () => {
 			it('should return forbidden error', async () => {
 				const { room } = await setupRoomWithMembers();
 				const { loggedInClient } = await setupLoggedInUser();
-
-				const response = await loggedInClient.patch(`/${room.id}/leave`);
-
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
-			});
-		});
-
-		describe('when the feature is disabled', () => {
-			it('should return a 403 error', async () => {
-				const { room, teacherAccount } = await setupRoomWithMembers();
-				config.FEATURE_ROOMS_ENABLED = false;
-
-				const loggedInClient = await testApiClient.login(teacherAccount);
 
 				const response = await loggedInClient.patch(`/${room.id}/leave`);
 

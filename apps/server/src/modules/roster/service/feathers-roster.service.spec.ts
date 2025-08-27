@@ -308,6 +308,8 @@ describe('FeathersRosterService', () => {
 				const courseC = courseEntityFactory.buildWithId();
 				const courses = [courseA, courseB, courseC];
 
+				// roomService.roomExists.mockResolvedValueOnce(false);
+
 				const clientId = 'testClientId';
 				const externalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
 				const otherExternalTool = externalToolFactory.buildWithId();
@@ -1155,33 +1157,6 @@ describe('FeathersRosterService', () => {
 					await service.getGroup(id, clientId);
 
 					expect(courseService.findById).toHaveBeenCalledWith(id);
-				});
-			});
-
-			describe('when the room exists but feature flag is not enabled', () => {
-				const setup = () => {
-					const room = roomFactory.build({});
-					roomService.roomExists.mockResolvedValueOnce(true);
-
-					configService.get.mockImplementation((key: keyof RosterConfig) => {
-						if (key === 'FEATURE_ROOMS_ENABLED') {
-							return false;
-						}
-						return true;
-					});
-
-					const clientId = 'testClientId';
-
-					return {
-						room,
-						clientId,
-					};
-				};
-
-				it('should throw an error if the FEATURE_ROOMS_ENABLED is not true', async () => {
-					const { room, clientId } = setup();
-
-					await expect(service.getGroup(room.id, clientId)).rejects.toThrow(NotFoundLoggableException);
 				});
 			});
 

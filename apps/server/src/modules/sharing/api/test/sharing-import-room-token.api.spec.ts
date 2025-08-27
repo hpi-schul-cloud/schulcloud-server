@@ -35,7 +35,6 @@ describe('Sharing Controller (API)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		Configuration.set('FEATURE_ROOMS_ENABLED', true);
 		Configuration.set('FEATURE_ROOM_SHARE', true);
 		Configuration.set('FEATURE_ROOM_COPY_ENABLED', true);
 	});
