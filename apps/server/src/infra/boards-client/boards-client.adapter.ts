@@ -1,11 +1,16 @@
+import { LegacyLogger } from '@core/logger';
 import { Injectable } from '@nestjs/common';
 import { BoardApi, BoardResponse, ColumnResponse, CreateBoardBodyParams, CreateBoardResponse } from './generated';
 
 @Injectable()
 export class BoardsClientAdapter {
-	constructor(private readonly boardApi: BoardApi) {}
+	constructor(private readonly boardApi: BoardApi, private readonly logger: LegacyLogger) {
+		this.logger.setContext('BoardsClientAdapter');
+	}
 
 	public async createBoard(params: CreateBoardBodyParams): Promise<CreateBoardResponse> {
+		this.logger.log(`Creating board with the following values '${JSON.stringify(params)}'`);
+
 		const response = await this.boardApi.boardControllerCreateBoard(params);
 
 		return response.data;

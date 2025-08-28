@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { Module, Scope } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
@@ -8,6 +9,7 @@ import { BoardsClientConfig } from './boards-client.config';
 import { Configuration, BoardApi } from './generated';
 
 @Module({
+	imports: [LoggerModule],
 	providers: [
 		BoardsClientAdapter,
 		{
