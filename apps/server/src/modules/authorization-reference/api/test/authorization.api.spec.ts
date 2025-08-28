@@ -16,6 +16,7 @@ import { AuthorizationResponseMapper } from '../mapper';
 import { createAccessTokenParamsTestFactory } from '../../testing';
 import { ObjectId } from 'bson';
 import { randomUUID } from 'crypto';
+import { nanoid } from 'nanoid';
 
 const createExamplePostData = (userId: string): AuthorizationBodyParams => {
 	const referenceType = AuthorizableReferenceType.User;
@@ -471,7 +472,7 @@ describe('Authorization Controller (API)', () => {
 				await em.persistAndFlush([teacherAccount, teacherUser]);
 				em.clear();
 
-				const fakeToken = new ObjectId().toHexString();
+				const fakeToken = nanoid(5);
 				const tokenTtl = 3600;
 
 				return { token: fakeToken, tokenTtl };
@@ -490,7 +491,7 @@ describe('Authorization Controller (API)', () => {
 					type: 'API_VALIDATION_ERROR',
 					validationErrors: [
 						{
-							errors: ['token must be a UUID'],
+							errors: ['Token must be a valid access token string.'],
 							field: ['token'],
 						},
 					],
@@ -505,7 +506,7 @@ describe('Authorization Controller (API)', () => {
 				await em.persistAndFlush([teacherAccount, teacherUser]);
 				em.clear();
 
-				const notExistingToken = randomUUID();
+				const notExistingToken = nanoid();
 				const tokenTtl = 3600;
 
 				return { token: notExistingToken, tokenTtl };
