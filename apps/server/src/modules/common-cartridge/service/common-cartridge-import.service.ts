@@ -36,9 +36,12 @@ export class CommonCartridgeImportService {
 	public async importFile(file: Buffer, currentUser: ICurrentUser): Promise<void> {
 		this.logger.setContext('CommonCartridgeImportService');
 
+		this.logger.log('Starting import of Common Cartridge file');
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
 
 		await this.createCourse(parser, currentUser);
+
+		this.logger.log('Finished import of Common Cartridge file');
 	}
 
 	private async createCourse(parser: CommonCartridgeFileParser, currentUser: ICurrentUser): Promise<void> {

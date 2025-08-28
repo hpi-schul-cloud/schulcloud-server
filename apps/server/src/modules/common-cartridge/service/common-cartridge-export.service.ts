@@ -121,6 +121,9 @@ export class CommonCartridgeExportService {
 		const tasks: BoardTaskDto[] = this.filterTasksFromBoardElements(elements).filter((task) =>
 			exportedTasks.includes(task.id)
 		);
+
+		if (tasks.length === 0) return;
+
 		const tasksOrganization = builder.createOrganization({
 			title: 'Aufgaben',
 			identifier: createIdentifier(),
