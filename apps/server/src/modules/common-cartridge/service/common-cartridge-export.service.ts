@@ -251,7 +251,7 @@ export class CommonCartridgeExportService {
 				if (file) {
 					this.logger.log(
 						CommonCartridgeExportService.name +
-							`: push file ${fileMetadata.name} (${fileMetadata.id})  in fileMetadataBufferArray...`
+							`: push files ${fileMetadata.name} (${fileMetadata.id})  in fileMetadataBufferArray...`
 					);
 					fileMetadataBufferArray.push({
 						id: element.id,
@@ -261,7 +261,7 @@ export class CommonCartridgeExportService {
 					});
 					this.logger.log(
 						CommonCartridgeExportService.name +
-							`: push file ${fileMetadata.name} (${fileMetadata.id})  in fileMetadataBufferArray... done.`
+							`: push files ${fileMetadata.name} (${fileMetadata.id})  in fileMetadataBufferArray... done.`
 					);
 				}
 			}
