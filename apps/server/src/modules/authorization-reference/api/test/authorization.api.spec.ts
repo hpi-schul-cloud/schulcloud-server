@@ -506,7 +506,7 @@ describe('Authorization Controller (API)', () => {
 				await em.persistAndFlush([teacherAccount, teacherUser]);
 				em.clear();
 
-				const notExistingToken = nanoid();
+				const notExistingToken = nanoid(24);
 				const tokenTtl = 3600;
 
 				return { token: notExistingToken, tokenTtl };
