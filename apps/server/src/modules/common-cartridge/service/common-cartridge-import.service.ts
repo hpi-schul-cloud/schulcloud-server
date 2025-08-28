@@ -34,13 +34,11 @@ export class CommonCartridgeImportService {
 	) {}
 
 	public async importFile(file: Buffer, currentUser: ICurrentUser): Promise<void> {
-		this.logger.log('Starting import of Common Cartridge file');
+		this.logger.setContext('CommonCartridgeImportService');
 
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
 
 		await this.createCourse(parser, currentUser);
-
-		this.logger.log('Finished import of Common Cartridge file');
 	}
 
 	private async createCourse(parser: CommonCartridgeFileParser, currentUser: ICurrentUser): Promise<void> {
@@ -58,6 +56,8 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		const boards = parser.getOrganizations().filter((organization) => organization.pathDepth === DEPTH_BOARD);
 
+		this.logger.log(`Found ${boards.length} boards`);
+
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
 		for (const board of boards) {
@@ -67,7 +67,8 @@ export class CommonCartridgeImportService {
 				parentId,
 				parentType: 'course',
 			});
-			this.logger.log(`Created board '${board.title}' with ID '${response.id}'`);
+
+			this.logger.log(`Created board '${board.title}'`);
 
 			await this.createColumns(response.id, board, parser, currentUser);
 		}
@@ -98,7 +99,7 @@ export class CommonCartridgeImportService {
 			);
 
 		this.logger.log(
-			`Found ${columnsWithResource.length} columns with resources and ${columnsWithoutResource.length} without resources`
+			`Found ${columnsWithResource.length} columns with resources and ${columnsWithoutResource.length} without resources in board '${board.title}'`
 		);
 
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
@@ -121,6 +122,7 @@ export class CommonCartridgeImportService {
 		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
+		this.logger.log(`Created column with resource of '${columnProps.title}'`);
 		await this.createCardElementWithResource(parser, columnResponse, columnProps, currentUser);
 	}
 
@@ -133,6 +135,8 @@ export class CommonCartridgeImportService {
 		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
+		this.logger.log(`Created column without resource of '${columnProps.title}'`);
+
 		const cards = parser
 			.getOrganizations()
 			.filter(
@@ -140,14 +144,14 @@ export class CommonCartridgeImportService {
 			);
 		const cardsWithResource = cards.filter((card) => card.isResource);
 
-		this.logger.log(`Found ${cardsWithResource.length} cards with resources`);
+		this.logger.log(`Found ${cardsWithResource.length} cards with resources in column '${columnProps.title}'`);
 
 		for (const card of cardsWithResource) {
 			await this.createCardElementWithResource(parser, columnResponse, card, currentUser);
 		}
 
 		const cardsWithoutResource = cards.filter((card) => !card.isResource);
-		this.logger.log(`Found ${cardsWithoutResource.length} cards without resources`);
+		this.logger.log(`Found ${cardsWithoutResource.length} cards without resources in column '${columnProps.title}'`);
 
 		for (const card of cardsWithoutResource) {
 			await this.createCard(parser, columnResponse, card, currentUser);
@@ -161,6 +165,8 @@ export class CommonCartridgeImportService {
 		currentUser: ICurrentUser
 	): Promise<void> {
 		const card = await this.columnClient.createCard(columnResponse.id, {});
+
+		this.logger.log(`Created card with resource of '${cardProps.title}' in column '${columnResponse.title}'`);
 
 		await this.createCardElement(parser, card.id, cardProps, currentUser);
 	}
@@ -176,12 +182,16 @@ export class CommonCartridgeImportService {
 			title: cardProps.title,
 		});
 
+		this.logger.log(`Created card without resource of '${cardProps.title}' in column '${column.title}'`);
+
 		const organizations = parser.getOrganizations();
 		const cardElements = organizations.filter(
 			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
 		);
 
-		this.logger.log(`Found ${cardElements.length} card elements for card '${cardProps.title}'`);
+		this.logger.log(
+			`Found ${cardElements.length} card elements for card '${cardProps.title}' in column '${column.title}'`
+		);
 
 		for await (const cardElement of cardElements) {
 			await this.createCardElement(parser, card.id, cardElement, currentUser);
@@ -218,11 +228,15 @@ export class CommonCartridgeImportService {
 
 		if (resource.type === 'file') {
 			await this.uploadFile(currentUser, resource, contentElement);
+
+			this.logger.log(`Uploaded file for card element '${cardElementProps.title}'`);
 		}
 
 		await this.cardClient.updateCardElement(contentElement.id, {
 			data: resourceBody,
 		});
+
+		this.logger.log(`Created card element '${cardElementProps.title}'`);
 	}
 
 	private async uploadFile(
@@ -233,7 +247,5 @@ export class CommonCartridgeImportService {
 		const { schoolId } = currentUser;
 
 		await this.fileClient.upload(schoolId, 'school', cardElement.id, 'boardnodes', resource.file);
-
-		this.logger.log(`Uploaded file for card element '${cardElement.id}'`);
 	}
 }
