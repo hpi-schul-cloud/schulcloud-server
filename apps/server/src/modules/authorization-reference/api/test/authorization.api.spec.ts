@@ -14,8 +14,6 @@ import { TestApiClient } from '@testing/test-api-client';
 import { AuthorizationBodyParams } from '../dto';
 import { AuthorizationResponseMapper } from '../mapper';
 import { createAccessTokenParamsTestFactory } from '../../testing';
-import { ObjectId } from 'bson';
-import { randomUUID } from 'crypto';
 import { nanoid } from 'nanoid';
 
 const createExamplePostData = (userId: string): AuthorizationBodyParams => {
