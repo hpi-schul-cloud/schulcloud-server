@@ -105,6 +105,8 @@ export class CommonCartridgeImportService {
 			`Found ${columnsWithResource.length} columns with resources and ${columnsWithoutResource.length} without resources in board '${board.title}'`
 		);
 
+		if (columnsWithResource.length === 0 && columnsWithoutResource.length === 0) return;
+
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
 		for (const column of columnsWithResource) {
