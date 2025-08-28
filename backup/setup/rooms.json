@@ -1,0 +1,53 @@
+[
+    {
+		"_id": {
+			"$oid": "68af290bcf0a6d6da2508125"
+		},
+        "createdAt": {
+            "$date": "2025-08-27T15:49:31.517Z"
+        },
+        "updatedAt": {
+            "$date": "2025-08-27T15:49:31.517Z"
+        },
+		"name": "Mathe",
+        "color" : "blue-grey",
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+        "features" : []
+	},
+    {
+		"_id": {
+			"$oid": "68b00d84d39b6604a5cd6a3b"
+		},
+        "createdAt": {
+            "$date": "2025-08-28T08:04:20.907Z"
+        },
+        "updatedAt": {
+            "$date": "2025-08-28T08:04:20.907Z"
+        },
+		"name": "Room with internal members",
+        "color" : "red",
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+        "features" : ["editor_manage_videoconference"]
+	},
+    {
+		"_id": {
+			"$oid": "68b011aad39b6604a5cd6a3e"
+		},
+        "createdAt": {
+            "$date": "2025-08-28T08:22:02.240Z"
+        },
+        "updatedAt": {
+            "$date": "2025-08-28T08:22:02.240Z"
+        },
+		"name": "Room with external members",
+        "color" : "magenta",
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+        "features" : ["editor_manage_videoconference"]
+	}
+]

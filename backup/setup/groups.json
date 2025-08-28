@@ -300,5 +300,115 @@
 		"validPeriod_until": {
 			"$date": "2026-07-31T00:00:00.000Z"
 		}
+	},
+	{
+		"_id": {
+			"$oid": "68af290bcf0a6d6da2508126"
+		},
+		"createdAt": {
+			"$date": "2025-08-27T15:49:31.566Z"
+		},
+		"updatedAt": {
+			"$date": "2025-08-27T15:49:31.566Z"
+		},
+		"name": "Room Members for Room 68af290bcf0a6d6da2508125",
+		"type": "room",
+		"users": [
+			{
+				"user": {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"role": {
+					"$oid": "675abdb4e76b1142cd4c89e3"
+				}
+			}
+		],
+		"organization": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "68b00d84d39b6604a5cd6a3c"
+		},
+		"createdAt": {
+			"$date": "2025-08-28T08:04:20.917Z"
+		},
+		"updatedAt": {
+			"$date": "2025-08-28T08:04:20.917Z"
+		},
+		"name": "Room Members for Room 68b00d84d39b6604a5cd6a3b",
+		"type": "room",
+		"users": [
+			{
+				"user": {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"role": {
+					"$oid": "675abdb4e76b1142cd4c89e3"
+				}
+			},
+			{
+				"user": {
+					"$oid": "0000d224816abba584714c9c"
+				},
+				"role": {
+					"$oid": "6720b8621b61c9dd7ebd193b"
+				}
+			},
+			{
+				"user": {
+					"$oid": "63ce4f5610087350c4a8fbb2"
+				},
+				"role": {
+					"$oid": "6720b8621b61c9dd7ebd193b"
+				}
+			}
+		],
+		"organization": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "68b011aad39b6604a5cd6a3f"
+		},
+		"createdAt": {
+			"$date": "2025-08-28T08:22:02.255Z"
+		},
+		"updatedAt": {
+			"$date": "2025-08-28T08:22:02.255Z"
+		},
+		"name": "Room Members for Room 68b011aad39b6604a5cd6a3e",
+		"type": "room",
+		"users": [
+			{
+				"user": {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"role": {
+					"$oid": "675abdb4e76b1142cd4c89e3"
+				}
+			},
+			{
+				"user": {
+					"$oid": "6492cfa7ad0aa141f4e36354"
+				},
+				"role": {
+					"$oid": "6720b8621b61c9dd7ebd193b"
+				}
+			},
+			{
+				"user": {
+					"$oid": "6492d064ad0aa141f4e363ca"
+				},
+				"role": {
+					"$oid": "6720b8621b61c9dd7ebd193b"
+				}
+			}
+		],
+		"organization": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		}
 	}
 ]
