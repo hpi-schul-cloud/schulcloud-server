@@ -151,12 +151,15 @@ export class CommonCartridgeImportService {
 
 		this.logger.log(`Found ${cardsWithResource.length} cards with resources in column '${columnProps.title}'`);
 
+		const cardsWithoutResource = cards.filter((card) => !card.isResource);
+
+		this.logger.log(`Found ${cardsWithoutResource.length} cards without resources in column '${columnProps.title}'`);
+
+		if (cardsWithResource.length === 0 && cardsWithoutResource.length === 0) return;
+
 		for (const card of cardsWithResource) {
 			await this.createCardElementWithResource(parser, columnResponse, card, currentUser);
 		}
-
-		const cardsWithoutResource = cards.filter((card) => !card.isResource);
-		this.logger.log(`Found ${cardsWithoutResource.length} cards without resources in column '${columnProps.title}'`);
 
 		for (const card of cardsWithoutResource) {
 			await this.createCard(parser, columnResponse, card, currentUser);
@@ -197,6 +200,8 @@ export class CommonCartridgeImportService {
 		this.logger.log(
 			`Found ${cardElements.length} card elements for card '${cardProps.title}' in column '${column.title}'`
 		);
+
+		if (cardElements.length === 0) return;
 
 		for await (const cardElement of cardElements) {
 			await this.createCardElement(parser, card.id, cardElement, currentUser);
