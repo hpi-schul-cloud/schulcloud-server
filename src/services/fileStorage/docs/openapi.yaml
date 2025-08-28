@@ -351,22 +351,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/signedUrl'
-  /fileStorage/total:
-    get:
-      parameters: []
-      responses:
-        '200':
-          description: Returns file statistics
-          example:
-            total: 112
-            totalSize: 548000
-        '500':
-          description: Error performing operation
-      description: ''
-      summary: Gets total size of all files
-      tags:
-        - fileStorage
-      security: []
   /fileStorage/permission:
     get:
       parameters:
