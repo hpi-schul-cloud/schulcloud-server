@@ -29,7 +29,6 @@ import {
 	FileElementResponseDto,
 } from '../common-cartridge-client/card-client/dto';
 import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
-import { th } from '@faker-js/faker/.';
 
 type FileMetadataBuffer = { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto };
 
@@ -174,15 +173,11 @@ export class CommonCartridgeExportService {
 					title: boardSkeleton.title,
 					identifier: createIdentifier(boardSkeleton.id),
 				});
-				this.logger.log(
-					CommonCartridgeExportService.name + `: adding columns of board to organization...`
-				);
+				this.logger.log(CommonCartridgeExportService.name + `: adding columns of board to organization...`);
 				await Promise.all(
 					boardSkeleton.columns.map((column) => this.addColumnToOrganization(column, columnBoardOrganization))
 				);
-				this.logger.log(
-					CommonCartridgeExportService.name + `: adding columns of board to organization... done.`
-				);
+				this.logger.log(CommonCartridgeExportService.name + `: adding columns of board to organization... done.`);
 			})
 		);
 	}
@@ -200,9 +195,13 @@ export class CommonCartridgeExportService {
 			const cardsIds = column.cards.map((card) => card.cardId);
 			const listOfCards: CardListResponseDto = await this.cardClientAdapter.getAllBoardCardsByIds(cardsIds);
 			const sortedCards = this.sortCardsAfterRetrieval(cardsIds, listOfCards.data);
-			this.logger.log(CommonCartridgeExportService.name + `: adding cards of column ${column.title} to organization...`);
+			this.logger.log(
+				CommonCartridgeExportService.name + `: adding cards of column ${column.title} to organization...`
+			);
 			await Promise.all(sortedCards.map((card) => this.addCardToOrganization(card, columnOrganization)));
-			this.logger.log(CommonCartridgeExportService.name + `: adding cards of column ${column.title} to organization... done.`);
+			this.logger.log(
+				CommonCartridgeExportService.name + `: adding cards of column ${column.title} to organization... done.`
+			);
 		}
 	}
 
@@ -225,13 +224,13 @@ export class CommonCartridgeExportService {
 		const fileMetadataBufferArray = await Promise.all(
 			card.elements.map((element) => this.downloadAndStoreFiles(element))
 		).then((array) => array.flat());
-		this.logger.log(CommonCartridgeExportService.name + `: adding card ${card.title} (${card.id}) to organization...`);
+		this.logger.log(CommonCartridgeExportService.name + `: adding card ${card.id} to organization...`);
 		await Promise.all(
 			card.elements.map((element) =>
 				this.addCardElementToOrganization(element, cardOrganization, fileMetadataBufferArray)
 			)
 		);
-		this.logger.log(CommonCartridgeExportService.name + `: adding card ${card.title} (${card.id}) to organization... done.`);
+		this.logger.log(CommonCartridgeExportService.name + `: adding card ${card.id} to organization... done.`);
 	}
 
 	private async downloadAndStoreFiles(element: CardResponseElementsInnerDto): Promise<FileMetadataBuffer[]> {
@@ -241,19 +240,29 @@ export class CommonCartridgeExportService {
 			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
 
 			for (const fileMetadata of filesMetadata) {
-				this.logger.log(CommonCartridgeExportService.name + `: Downloading file ${fileMetadata.name} (${fileMetadata.id})...`);
+				this.logger.log(
+					CommonCartridgeExportService.name + `: Downloading file ${fileMetadata.name} (${fileMetadata.id})...`
+				);
 				const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
-				this.logger.log(CommonCartridgeExportService.name + `: Downloading file ${fileMetadata.name} (${fileMetadata.id})... done.`);
+				this.logger.log(
+					CommonCartridgeExportService.name + `: Downloading file ${fileMetadata.name} (${fileMetadata.id})... done.`
+				);
 
 				if (file) {
-					this.logger.log(CommonCartridgeExportService.name + `: push file ${fileMetadata.name} (${fileMetadata.id})  in fileMetadataBufferArray...`);
+					this.logger.log(
+						CommonCartridgeExportService.name +
+							`: push file ${fileMetadata.name} (${fileMetadata.id})  in fileMetadataBufferArray...`
+					);
 					fileMetadataBufferArray.push({
 						id: element.id,
 						name: fileMetadata.name,
 						fileBuffer: file,
 						fileDto: fileMetadata,
 					});
-					this.logger.log(CommonCartridgeExportService.name + `: push file ${fileMetadata.name} (${fileMetadata.id})  in fileMetadataBufferArray... done.`);
+					this.logger.log(
+						CommonCartridgeExportService.name +
+							`: push file ${fileMetadata.name} (${fileMetadata.id})  in fileMetadataBufferArray... done.`
+					);
 				}
 			}
 		}
