@@ -14,7 +14,6 @@ import { DeletionBatchUc } from './deletion-batch.uc';
 describe('DeletionBatchUc', () => {
 	let module: TestingModule;
 	let uc: DeletionBatchUc;
-	let accountService: DeepMocked<AccountService>;
 	let userService: DeepMocked<UserService>;
 	let deletionBatchService: DeepMocked<DeletionBatchService>;
 
@@ -38,7 +37,6 @@ describe('DeletionBatchUc', () => {
 		}).compile();
 
 		uc = module.get(DeletionBatchUc);
-		accountService = module.get(AccountService);
 		userService = module.get(UserService);
 		deletionBatchService = module.get(DeletionBatchService);
 	});

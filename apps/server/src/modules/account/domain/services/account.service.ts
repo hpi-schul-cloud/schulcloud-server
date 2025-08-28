@@ -185,21 +185,14 @@ export class AccountService extends AbstractAccountService {
 	public async deactivateAccount(userId: EntityId, deactivatedAt: Date): Promise<void> {
 		const account = await this.accountRepo.findByUserIdOrFail(userId);
 		account.deactivatedAt = deactivatedAt;
-		try {
-			await this.save(account);
-		} catch (err) {
-			throw new EntityNotFoundError('AccountEntity');
-		}
+
+		await this.save(account);
 	}
 
 	public async reactivateAccount(userId: EntityId): Promise<void> {
 		const account = await this.accountRepo.findByUserIdOrFail(userId);
 		account.deactivatedAt = undefined;
-		try {
-			await this.save(account);
-		} catch (err) {
-			throw new EntityNotFoundError('AccountEntity');
-		}
+		await this.save(account);
 	}
 
 	public async deactivateMultipleAccounts(userIds: EntityId[], deactivatedAt: Date): Promise<void> {

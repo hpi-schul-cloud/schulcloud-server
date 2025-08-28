@@ -1673,64 +1673,43 @@ describe('AccountService', () => {
 				);
 			});
 		});
+	});
 
-		describe('when account cannot be saved', () => {
+	describe('reactivateAccount', () => {
+		describe('when reactivating account', () => {
 			const setup = () => {
 				const mockStudentUser = userFactory.buildWithId();
 				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-					activated: true,
+					deactivatedAt: new Date(),
 				});
+
 				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-				accountServiceDb.save.mockRejectedValueOnce(undefined);
+
+				const mockStudentAccountDoSaved = accountDoFactory.build({
+					userId: mockStudentUser.id,
+				});
+				accountServiceDb.save.mockResolvedValueOnce(mockStudentAccountDoSaved);
 
 				return { mockStudentAccountDo, mockStudentUser };
 			};
 
-			it('should throw EntityNotFoundError', async () => {
+			it('should fetch account by userId', async () => {
 				const { mockStudentUser } = setup();
+				await accountService.reactivateAccount(mockStudentUser.id);
+				expect(accountRepo.findByUserIdOrFail).toHaveBeenCalledWith(mockStudentUser.id);
+			});
 
-				await expect(accountService.deactivateAccount(mockStudentUser.id, new Date())).rejects.toThrow(
-					EntityNotFoundError
+			it('should save account with deactivatedAt undefined', async () => {
+				const { mockStudentUser } = setup();
+				await accountService.reactivateAccount(mockStudentUser.id);
+				expect(accountServiceDb.save).toHaveBeenCalledWith(
+					expect.not.objectContaining({
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						deactivatedAt: expect.anything(),
+					})
 				);
 			});
-		});
-	});
-
-	describe('reactivateAccount', () => {
-		const setup = () => {
-			const mockStudentUser = userFactory.buildWithId();
-			const mockStudentAccountDo = accountDoFactory.build({
-				userId: mockStudentUser.id,
-				deactivatedAt: new Date(),
-			});
-
-			accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-
-			const mockStudentAccountDoSaved = accountDoFactory.build({
-				userId: mockStudentUser.id,
-			});
-			accountServiceDb.save.mockResolvedValueOnce(mockStudentAccountDoSaved);
-
-			return { mockStudentAccountDo, mockStudentUser };
-		};
-
-		it('should fetch account by userId', async () => {
-			const { mockStudentUser } = setup();
-			await accountService.reactivateAccount(mockStudentUser.id);
-			expect(accountRepo.findByUserIdOrFail).toHaveBeenCalledWith(mockStudentUser.id);
-		});
-
-		it('should save account with deactivatedAt undefined', async () => {
-			const { mockStudentUser } = setup();
-			await accountService.reactivateAccount(mockStudentUser.id);
-			expect(accountServiceDb.save).toHaveBeenCalledWith(
-				expect.not.objectContaining({
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					deactivatedAt: expect.anything(),
-				})
-			);
 		});
 	});
 
