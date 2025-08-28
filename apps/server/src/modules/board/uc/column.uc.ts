@@ -17,7 +17,7 @@ export class ColumnUc {
 		this.logger.setContext(ColumnUc.name);
 	}
 
-	async deleteColumn(userId: EntityId, columnId: EntityId): Promise<EntityId> {
+	public async deleteColumn(userId: EntityId, columnId: EntityId): Promise<EntityId> {
 		this.logger.debug({ action: 'deleteColumn', userId, columnId });
 
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
@@ -29,7 +29,7 @@ export class ColumnUc {
 		return rootId;
 	}
 
-	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise<Column> {
+	public async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise<Column> {
 		this.logger.debug({ action: 'updateColumnTitle', userId, columnId, title });
 
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
@@ -39,7 +39,7 @@ export class ColumnUc {
 		return column;
 	}
 
-	async createCard(
+	public async createCard(
 		userId: EntityId,
 		columnId: EntityId,
 		requiredEmptyElements: ContentElementType[] = []
@@ -57,7 +57,12 @@ export class ColumnUc {
 		return card;
 	}
 
-	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise<Card> {
+	public async moveCard(
+		userId: EntityId,
+		cardId: EntityId,
+		targetColumnId: EntityId,
+		targetPosition: number
+	): Promise<Card> {
 		this.logger.debug({ action: 'moveCard', userId, cardId, targetColumnId, toPosition: targetPosition });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
