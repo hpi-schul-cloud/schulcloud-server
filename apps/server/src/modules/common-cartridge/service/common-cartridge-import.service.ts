@@ -66,9 +66,9 @@ export class CommonCartridgeImportService {
 		for (const board of boards) {
 			const response = await this.boardsClient.createBoard({
 				title: board.title,
-				layout: 'columns',
 				parentId,
 				parentType: 'course',
+				layout: 'columns',
 			});
 
 			this.logger.log(`Created board '${board.title}'`);

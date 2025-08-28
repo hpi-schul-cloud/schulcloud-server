@@ -11,9 +11,13 @@ export class BoardsClientAdapter {
 	public async createBoard(params: CreateBoardBodyParams): Promise<CreateBoardResponse> {
 		this.logger.log(`Creating board with the following values '${JSON.stringify(params)}'`);
 
-		const response = await this.boardApi.boardControllerCreateBoard(params);
-
-		return response.data;
+		try {
+			const response = await this.boardApi.boardControllerCreateBoard(params);
+			return response.data;
+		} catch (error) {
+			this.logger.error(`Failed to create board`);
+			throw error;
+		}
 	}
 
 	public async createBoardColumn(boardId: string): Promise<ColumnResponse> {
