@@ -182,6 +182,30 @@ export class AccountService extends AbstractAccountService {
 		return targetAccount;
 	}
 
+	public async deactivateAccount(userId: EntityId, deactivatedAt: Date): Promise<void> {
+		const account = await this.accountRepo.findByUserIdOrFail(userId);
+		account.deactivatedAt = deactivatedAt;
+		try {
+			await this.save(account);
+		} catch (err) {
+			throw new EntityNotFoundError('AccountEntity');
+		}
+	}
+
+	public async reactivateAccount(userId: EntityId): Promise<void> {
+		const account = await this.accountRepo.findByUserIdOrFail(userId);
+		account.deactivatedAt = undefined;
+		try {
+			await this.save(account);
+		} catch (err) {
+			throw new EntityNotFoundError('AccountEntity');
+		}
+	}
+
+	public async deactivateMultipleAccounts(userIds: EntityId[], deactivatedAt: Date): Promise<void> {
+		await this.accountRepo.deactivateMultipleByUserIds(userIds, deactivatedAt);
+	}
+
 	public async replaceMyTemporaryPassword(userId: EntityId, password: string, confirmPassword: string): Promise<void> {
 		if (password !== confirmPassword) {
 			throw new ForbiddenOperationError('Password and confirm password do not match.');

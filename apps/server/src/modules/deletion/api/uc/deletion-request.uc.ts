@@ -2,6 +2,7 @@ import { LegacyLogger } from '@core/logger';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
+import { AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
 import { DeletionConfig } from '../../deletion.config';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
@@ -21,6 +22,7 @@ export class DeletionRequestUc {
 		private readonly deletionLogService: DeletionLogService,
 		private readonly deletionExecutionService: DeletionExecutionService,
 		private readonly logger: LegacyLogger,
+		private readonly accountService: AccountService,
 		private readonly userService: UserService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
@@ -45,7 +47,7 @@ export class DeletionRequestUc {
 		);
 
 		if (deletionRequest.targetRef.domain === DomainName.USER) {
-			await this.userService.markUserAsDeleted(deletionRequest.targetRef.id, new Date());
+			await this.accountService.deactivateAccount(deletionRequest.targetRef.id, new Date());
 		}
 
 		return result;
@@ -102,7 +104,7 @@ export class DeletionRequestUc {
 		await this.deletionRequestService.deleteById(deletionRequestId);
 
 		if (deletionRequest.targetRefDomain === DomainName.USER) {
-			await this.userService.restoreDeletedUser(deletionRequestId);
+			await this.accountService.reactivateAccount(deletionRequest.targetRefId);
 		}
 	}
 }

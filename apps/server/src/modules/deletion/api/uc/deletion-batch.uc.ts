@@ -1,4 +1,5 @@
 import { RoleName } from '@modules/role';
+import { AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
@@ -17,7 +18,11 @@ const revalidateAfterMinutes = 60;
 
 @Injectable()
 export class DeletionBatchUc {
-	constructor(private readonly deletionBatchService: DeletionBatchService, private readonly userService: UserService) {}
+	constructor(
+		private readonly deletionBatchService: DeletionBatchService,
+		private readonly accountService: AccountService,
+		private readonly userService: UserService
+	) {}
 
 	public async createDeletionBatch(params: CreateDeletionBatchParams): Promise<DeletionBatchSummary> {
 		const { validUserIds, invalidUserIds, skippedUserIds } = await this.validateAndFilterUserIds(params.targetRefIds);
@@ -70,7 +75,7 @@ export class DeletionBatchUc {
 		const requestedDeletionBatch = await this.deletionBatchService.requestDeletionForBatch(deletionBatch, deleteAfter);
 
 		if (deletionBatch.targetRefDomain === DomainName.USER) {
-			await this.userService.markUserAsDeleted(deletionBatch.targetRefIds, new Date());
+			await this.accountService.deactivateMultipleAccounts(deletionBatch.targetRefIds, new Date());
 		}
 
 		return requestedDeletionBatch;

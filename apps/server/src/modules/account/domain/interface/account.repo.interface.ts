@@ -38,6 +38,8 @@ export interface AccountRepo {
 	findMany(): Promise<Account[]>;
 
 	findByUserIdsAndSystemId(userIds: string[], systemId: string): Promise<string[]>;
+
+	deactivateMultipleByUserIds(userIds: EntityId[], deactivatedAt: Date): Promise<void>;
 }
 
 export const ACCOUNT_REPO = Symbol('ACCOUNT_REPO');

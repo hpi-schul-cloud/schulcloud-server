@@ -1636,6 +1636,113 @@ describe('AccountService', () => {
 		});
 	});
 
+	describe('deactivateAccount', () => {
+		describe('when deactivating account', () => {
+			const setup = () => {
+				const mockStudentUser = userFactory.buildWithId();
+				const mockStudentAccountDo = accountDoFactory.build({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+					activated: true,
+				});
+
+				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
+
+				const mockStudentAccountDoSaved = accountDoFactory.build({
+					userId: mockStudentUser.id,
+				});
+				accountServiceDb.save.mockResolvedValueOnce(mockStudentAccountDoSaved);
+
+				return { mockStudentAccountDo, mockStudentUser };
+			};
+
+			it('should fetch account by userId', async () => {
+				const { mockStudentUser } = setup();
+				await accountService.deactivateAccount(mockStudentUser.id, new Date());
+				expect(accountRepo.findByUserIdOrFail).toHaveBeenCalledWith(mockStudentUser.id);
+			});
+
+			it('should save account with deactivatedAt set', async () => {
+				const { mockStudentUser } = setup();
+				const deactivatedAt = new Date();
+				await accountService.deactivateAccount(mockStudentUser.id, deactivatedAt);
+				expect(accountServiceDb.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						deactivatedAt: deactivatedAt,
+					})
+				);
+			});
+		});
+
+		describe('when account cannot be saved', () => {
+			const setup = () => {
+				const mockStudentUser = userFactory.buildWithId();
+				const mockStudentAccountDo = accountDoFactory.build({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+					activated: true,
+				});
+				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
+				accountServiceDb.save.mockRejectedValueOnce(undefined);
+
+				return { mockStudentAccountDo, mockStudentUser };
+			};
+
+			it('should throw EntityNotFoundError', async () => {
+				const { mockStudentUser } = setup();
+
+				await expect(accountService.deactivateAccount(mockStudentUser.id, new Date())).rejects.toThrow(
+					EntityNotFoundError
+				);
+			});
+		});
+	});
+
+	describe('reactivateAccount', () => {
+		const setup = () => {
+			const mockStudentUser = userFactory.buildWithId();
+			const mockStudentAccountDo = accountDoFactory.build({
+				userId: mockStudentUser.id,
+				deactivatedAt: new Date(),
+			});
+
+			accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
+
+			const mockStudentAccountDoSaved = accountDoFactory.build({
+				userId: mockStudentUser.id,
+			});
+			accountServiceDb.save.mockResolvedValueOnce(mockStudentAccountDoSaved);
+
+			return { mockStudentAccountDo, mockStudentUser };
+		};
+
+		it('should fetch account by userId', async () => {
+			const { mockStudentUser } = setup();
+			await accountService.reactivateAccount(mockStudentUser.id);
+			expect(accountRepo.findByUserIdOrFail).toHaveBeenCalledWith(mockStudentUser.id);
+		});
+
+		it('should save account with deactivatedAt undefined', async () => {
+			const { mockStudentUser } = setup();
+			await accountService.reactivateAccount(mockStudentUser.id);
+			expect(accountServiceDb.save).toHaveBeenCalledWith(
+				expect.not.objectContaining({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					deactivatedAt: expect.anything(),
+				})
+			);
+		});
+	});
+
+	describe('deactivateMultipleAccounts', () => {
+		it('should call accountRepo.deactivateMultipleAccounts', async () => {
+			const userIds = ['userId1', 'userId2'];
+			const deactivatedAt = new Date();
+			await accountService.deactivateMultipleAccounts(userIds, deactivatedAt);
+			expect(accountRepo.deactivateMultipleByUserIds).toHaveBeenCalledWith(userIds, deactivatedAt);
+		});
+	});
+
 	describe('replaceMyTemporaryPassword', () => {
 		describe('When passwords do not match', () => {
 			it('should throw ForbiddenOperationError', async () => {
