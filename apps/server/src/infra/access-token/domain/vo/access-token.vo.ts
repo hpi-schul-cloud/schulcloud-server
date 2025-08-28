@@ -1,13 +1,16 @@
 import { ValueObject } from '@shared/domain/value-object.decorator';
-import { IsUUID } from 'class-validator';
-import { randomUUID } from 'crypto';
+import { Matches } from 'class-validator';
+import { nanoid } from 'nanoid';
+
+export type NanoidString24Chars = string;
+export const accessTokenRegex = /^[a-zA-Z0-9_-]{24}$/;
 
 @ValueObject()
 export class AccessToken {
 	constructor() {
-		this.token = randomUUID();
+		this.token = nanoid(24);
 	}
 
-	@IsUUID()
-	public readonly token: string;
+	@Matches(accessTokenRegex, { message: 'Token must be a valid string.' })
+	public readonly token: NanoidString24Chars;
 }
