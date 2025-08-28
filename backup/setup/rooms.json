@@ -43,7 +43,7 @@
         "updatedAt": {
             "$date": "2025-08-28T08:22:02.240Z"
         },
-		"name": "Room with external members",
+		"name": "Room with internal and external members",
         "color" : "magenta",
 		"schoolId": {
 			"$oid": "5f2987e020834114b8efd6f8"
