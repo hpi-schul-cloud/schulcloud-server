@@ -308,8 +308,6 @@ describe('FeathersRosterService', () => {
 				const courseC = courseEntityFactory.buildWithId();
 				const courses = [courseA, courseB, courseC];
 
-				// roomService.roomExists.mockResolvedValueOnce(false);
-
 				const clientId = 'testClientId';
 				const externalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
 				const otherExternalTool = externalToolFactory.buildWithId();
