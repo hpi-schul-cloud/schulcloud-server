@@ -14,7 +14,6 @@ export class RoomCopyUc {
 	) {}
 
 	public async copyRoom(userId: EntityId, roomId: EntityId): Promise<CopyStatus> {
-		this.roomPermissionService.checkFeatureRoomsEnabled();
 		this.roomPermissionService.checkFeatureRoomCopyEnabled();
 
 		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write, [

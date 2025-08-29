@@ -44,9 +44,6 @@ export class ShareTokenPermissionService {
 				}
 				break;
 			case ShareTokenParentType.Room:
-				if (!(Configuration.get('FEATURE_ROOMS_ENABLED') as boolean)) {
-					throw new FeatureDisabledLoggableException('FEATURE_ROOMS_ENABLED');
-				}
 				if (!(Configuration.get('FEATURE_ROOM_SHARE') as boolean)) {
 					throw new FeatureDisabledLoggableException('FEATURE_ROOM_SHARE');
 				}

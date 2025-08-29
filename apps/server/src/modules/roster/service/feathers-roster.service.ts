@@ -116,10 +116,6 @@ export class FeathersRosterService {
 		const roomExists = await this.roomService.roomExists(id);
 
 		if (roomExists) {
-			if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
-				throw new NotFoundLoggableException(Room.name, { id });
-			}
-
 			const room = await this.roomService.getSingleRoom(id);
 
 			const roomMembers = await this.roomMembershipService.getRoomMembershipAuthorizable(room.id);
@@ -165,10 +161,6 @@ export class FeathersRosterService {
 		pseudonymContext: Pseudonym,
 		schoolExternalTool: SchoolExternalTool
 	): Promise<UserGroup[]> {
-		if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
-			return [];
-		}
-
 		let rooms = await this.getRoomsForUser(pseudonymContext.userId);
 		rooms = await this.filterByToolAvailability(rooms, schoolExternalTool);
 
@@ -191,6 +183,7 @@ export class FeathersRosterService {
 
 	private async getRoomsForUser(userId: EntityId): Promise<Room[]> {
 		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
+		if (!roomAuthorizables) return [];
 		const roomIds = roomAuthorizables.map((item) => item.roomId);
 
 		const rooms = await this.roomService.getAllByIds(roomIds);

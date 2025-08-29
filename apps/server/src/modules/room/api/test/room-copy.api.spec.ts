@@ -39,7 +39,6 @@ describe('POST /rooms/:roomId/copy', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOMS_ENABLED = true;
 		config.FEATURE_ROOM_COPY_ENABLED = true;
 	});
 

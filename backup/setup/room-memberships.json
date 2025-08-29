@@ -1,0 +1,62 @@
+[
+    {
+		"_id": {
+			"$oid": "68af290bcf0a6d6da2508127"
+		},
+		"createdAt": {
+			"$date": "2025-08-27T15:49:31.584Z"
+		},
+		"updatedAt": {
+			"$date": "2025-08-27T15:49:31.584Z"
+		},
+		"room": {
+			"$oid": "68af290bcf0a6d6da2508125"
+		},
+		"userGroup": {
+			"$oid": "68af290bcf0a6d6da2508126"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		}
+	},
+    {
+		"_id": {
+			"$oid": "68b00d84d39b6604a5cd6a3d"
+		},
+		"createdAt": {
+			"$date": "2025-08-28T08:04:20.928Z"
+		},
+		"updatedAt": {
+			"$date": "2025-08-28T08:04:20.928Z"
+		},
+		"room": {
+			"$oid": "68b00d84d39b6604a5cd6a3b"
+		},
+		"userGroup": {
+			"$oid": "68b00d84d39b6604a5cd6a3c"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		}
+	},
+    {
+		"_id": {
+			"$oid": "68b011aad39b6604a5cd6a40"
+		},
+		"createdAt": {
+			"$date": "2025-08-28T08:22:02.303Z"
+		},
+		"updatedAt": {
+			"$date": "2025-08-28T08:22:02.303Z"
+		},
+		"room": {
+			"$oid": "68b011aad39b6604a5cd6a3e"
+		},
+		"userGroup": {
+			"$oid": "68b011aad39b6604a5cd6a3f"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		}
+	}
+]

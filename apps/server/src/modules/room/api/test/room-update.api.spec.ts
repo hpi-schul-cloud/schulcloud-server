@@ -3,7 +3,7 @@ import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -16,7 +16,6 @@ describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -27,13 +26,10 @@ describe('Room Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'rooms');
-
-		config = serverConfig();
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOMS_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -46,28 +42,6 @@ describe('Room Controller (API)', () => {
 				const someId = new ObjectId().toHexString();
 				const response = await testApiClient.put(someId);
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-			});
-		});
-
-		describe('when the feature is disabled', () => {
-			const setup = async () => {
-				config.FEATURE_ROOMS_ENABLED = false;
-
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
-
-				return { loggedInClient };
-			};
-
-			it('should return a 403 error', async () => {
-				const { loggedInClient } = await setup();
-				const someId = new ObjectId().toHexString();
-				const params = { name: 'Room #101', color: 'green', features: [] };
-				const response = await loggedInClient.put(someId, params);
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 
