@@ -1085,7 +1085,7 @@ describe('lesson copy service', () => {
 				expect(copiedMaterial.title).toEqual(originalMaterial.title);
 				expect(copiedMaterial.url).toEqual(originalMaterial.url);
 			});
-
+			// test fails sometimes
 			it('should put copy status materials leaf', async () => {
 				const { originalLesson, destinationCourse, user, mockedMaterialGroupStatus } = setup();
 
