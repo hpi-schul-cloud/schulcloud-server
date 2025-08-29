@@ -16,7 +16,6 @@ const {
 	canDelete,
 	returnFileType,
 	generateFileNameSuffix,
-	copyFile,
 	createDefaultPermissions,
 	createPermission,
 } = require('./utils');
@@ -692,58 +691,6 @@ const renameService = {
 	},
 };
 
-const fileTotalSizeService = {
-	docs: swaggerDocs.fileTotalSizeService,
-
-	/**
-	 * @returns total file size and amount of files
-	 * FIX-ME:
-	 * - Check if user in payload is administrator
-	 */
-	find() {
-		return Promise.resolve({
-			total: 0,
-			totalSize: 0,
-		});
-	},
-};
-
-const bucketService = {
-	docs: swaggerDocs.bucketService,
-	Stategy: AWSS3Strategy,
-
-	getStrategy() {
-		return new this.Stategy();
-	},
-
-	/**
-	 * @param data, contains schoolId
-	 * FIX-ME:
-	 * - Check if user in payload is administrator
-	 * @returns {Promise}
-	 */
-	create(data) {
-		const { schoolId } = data;
-
-		return this.getStrategy().create(schoolId);
-	},
-};
-
-const copyService = {
-	docs: swaggerDocs.copyService,
-
-	defaultPermissionHandler(userId, file, parent) {
-		return Promise.all([canRead(userId, file), canWrite(userId, parent)]);
-	},
-	/**
-	 * @param data, contains file-Id and new parent
-	 * @returns {Promise}
-	 */
-	create(data, params) {
-		return copyFile(data, params, this.defaultPermissionHandler);
-	},
-};
-
 const newFileService = {
 	docs: swaggerDocs.newFileService,
 
@@ -1056,9 +1003,6 @@ module.exports = function proxyService() {
 	app.use('/fileStorage/directories/rename', renameService);
 	app.use('/fileStorage/rename', renameService);
 	app.use('/fileStorage/signedUrl', signedUrlService);
-	app.use('/fileStorage/bucket', bucketService);
-	app.use('/fileStorage/total', fileTotalSizeService);
-	app.use('/fileStorage/copy', copyService);
 	app.use('/fileStorage/permission', filePermissionService);
 	app.use('/fileStorage/files/new', newFileService);
 	app.use('/fileStorage/shared', shareTokenService);
@@ -1067,12 +1011,9 @@ module.exports = function proxyService() {
 	[
 		'/fileStorage',
 		'/fileStorage/signedUrl',
-		'/fileStorage/bucket',
 		'/fileStorage/directories',
 		'/fileStorage/directories/rename',
 		'/fileStorage/rename',
-		'/fileStorage/total',
-		'/fileStorage/copy',
 		'/fileStorage/files/new',
 		'/fileStorage/shared',
 		'/fileStorage/permission',
