@@ -394,9 +394,14 @@ describe(DeletionRequestService.name, () => {
 	describe('deleteById', () => {
 		describe('when deleting deletionRequest', () => {
 			const setup = () => {
-				const deletionRequestId = new ObjectId().toHexString();
+				const deletionRequest = deletionRequestFactory.build({
+					id: new ObjectId().toHexString(),
+					targetRefDomain: DomainName.USER,
+				});
 
-				return { deletionRequestId };
+				deletionRequestRepo.findById.mockResolvedValueOnce(deletionRequest);
+
+				return { deletionRequestId: deletionRequest.id, deletionRequest };
 			};
 
 			it('should call deletionRequestRepo.findAllItemsByDeletionDate', async () => {

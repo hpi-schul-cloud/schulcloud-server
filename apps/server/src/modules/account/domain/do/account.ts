@@ -110,6 +110,10 @@ export class Account extends DomainObject<AccountProps> {
 		return this.props.deactivatedAt;
 	}
 
+	set deactivatedAt(deactivatedAt: Date | undefined) {
+		this.props.deactivatedAt = deactivatedAt;
+	}
+
 	public async update(accountSave: AccountSave): Promise<void> {
 		this.props.userId = accountSave.userId ?? this.props.userId;
 		this.props.systemId = accountSave.systemId ?? this.props.systemId;
