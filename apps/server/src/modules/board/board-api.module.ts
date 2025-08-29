@@ -15,7 +15,7 @@ import {
 	ElementController,
 } from './controller';
 import { BoardNodePermissionService } from './service';
-import { BoardUc, BoardErrorReportUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
+import { BoardUc, BoardErrorReportUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc, CardContentUc } from './uc';
 import { SagaModule } from '@modules/saga';
 import { CopyRoomBoardsStep } from './saga';
 import { CopyHelperModule } from '@modules/copy-helper';
@@ -49,6 +49,7 @@ import { CopyHelperModule } from '@modules/copy-helper';
 		ElementUc,
 		SubmissionItemUc,
 		CopyRoomBoardsStep,
+		CardContentUc,
 	],
 })
 export class BoardApiModule {}

@@ -17,18 +17,10 @@
 /**
  * 
  * @export
- * @interface CreateCardBodyParams
+ * @enum {string}
  */
-export interface CreateCardBodyParams {
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof CreateCardBodyParams
-     */
-    'requiredEmptyElements'?: Array<CreateCardBodyParamsRequiredEmptyElements>;
-}
 
-export const CreateCardBodyParamsRequiredEmptyElements = {
+export const ContentElementType = {
     FILE: 'file',
     DRAWING: 'drawing',
     LINK: 'link',
@@ -42,6 +34,7 @@ export const CreateCardBodyParamsRequiredEmptyElements = {
     H5P: 'h5p'
 } as const;
 
-export type CreateCardBodyParamsRequiredEmptyElements = typeof CreateCardBodyParamsRequiredEmptyElements[keyof typeof CreateCardBodyParamsRequiredEmptyElements];
+export type ContentElementType = typeof ContentElementType[keyof typeof ContentElementType];
+
 
 
