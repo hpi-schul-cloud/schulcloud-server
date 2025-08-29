@@ -24,6 +24,9 @@ import type { BoardLayout } from './board-layout';
 import type { ColumnResponse } from './column-response';
 // May contain unused imports in some cases
 // @ts-ignore
+import type { Permission } from './permission';
+// May contain unused imports in some cases
+// @ts-ignore
 import type { TimestampsResponse } from './timestamps-response';
 
 /**
@@ -74,6 +77,12 @@ export interface BoardResponse {
      * @memberof BoardResponse
      */
     'features': Array<BoardFeature>;
+    /**
+     * 
+     * @type {Array<Permission>}
+     * @memberof BoardResponse
+     */
+    'permissions': Array<Permission>;
 }
 
 

@@ -31,6 +31,8 @@ import type { ColumnResponse } from '../models';
 import type { CreateBoardBodyParams } from '../models';
 // @ts-ignore
 import type { CreateBoardResponse } from '../models';
+// @ts-ignore
+import type { ManyBoards } from '../models';
 /**
  * BoardApi - axios parameter creator
  * @export
@@ -117,6 +119,46 @@ export const BoardApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Create many boards.
+         * @param {ManyBoards} manyBoards 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        boardControllerCreateManyBoards: async (manyBoards: ManyBoards, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'manyBoards' is not null or undefined
+            assertParamExists('boardControllerCreateManyBoards', 'manyBoards', manyBoards)
+            const localVarPath = `/boards/manyboards`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(manyBoards, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Get the skeleton of a a board.
          * @param {string} boardId The id of the board.
          * @param {*} [options] Override http request option.
@@ -191,6 +233,19 @@ export const BoardApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Create many boards.
+         * @param {ManyBoards} manyBoards 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async boardControllerCreateManyBoards(manyBoards: ManyBoards, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ManyBoards>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.boardControllerCreateManyBoards(manyBoards, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BoardApi.boardControllerCreateManyBoards']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary Get the skeleton of a a board.
          * @param {string} boardId The id of the board.
          * @param {*} [options] Override http request option.
@@ -234,6 +289,16 @@ export const BoardApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
+         * @summary Create many boards.
+         * @param {ManyBoards} manyBoards 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        boardControllerCreateManyBoards(manyBoards: ManyBoards, options?: any): AxiosPromise<ManyBoards> {
+            return localVarFp.boardControllerCreateManyBoards(manyBoards, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Get the skeleton of a a board.
          * @param {string} boardId The id of the board.
          * @param {*} [options] Override http request option.
@@ -270,6 +335,16 @@ export interface BoardApiInterface {
      * @memberof BoardApiInterface
      */
     boardControllerCreateColumn(boardId: string, options?: RawAxiosRequestConfig): AxiosPromise<ColumnResponse>;
+
+    /**
+     * 
+     * @summary Create many boards.
+     * @param {ManyBoards} manyBoards 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BoardApiInterface
+     */
+    boardControllerCreateManyBoards(manyBoards: ManyBoards, options?: RawAxiosRequestConfig): AxiosPromise<ManyBoards>;
 
     /**
      * 
@@ -312,6 +387,18 @@ export class BoardApi extends BaseAPI implements BoardApiInterface {
      */
     public boardControllerCreateColumn(boardId: string, options?: RawAxiosRequestConfig) {
         return BoardApiFp(this.configuration).boardControllerCreateColumn(boardId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Create many boards.
+     * @param {ManyBoards} manyBoards 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BoardApi
+     */
+    public boardControllerCreateManyBoards(manyBoards: ManyBoards, options?: RawAxiosRequestConfig) {
+        return BoardApiFp(this.configuration).boardControllerCreateManyBoards(manyBoards, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

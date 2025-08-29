@@ -13,8 +13,10 @@ import {
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 import {
 	CommonCartridgeFileResourceProps,
+	CommonCartridgeOrganizationProps,
 	CommonCartridgeWebLinkResourceProps,
 } from '../import/common-cartridge-import.types';
+import { CreateBoardBodyParams } from '@infra/boards-client';
 
 export class CommonCartridgeImportMapper {
 	public mapResourceTypeToContentElementType(
@@ -63,6 +65,22 @@ export class CommonCartridgeImportMapper {
 		}
 
 		return undefined;
+	}
+
+	public mapCommonCartridgeBoardsToCreateBoardParams(
+		boards: CommonCartridgeOrganizationProps[],
+		parentId: string
+	): CreateBoardBodyParams[] {
+		return boards.map((board) => {
+			const createBoardParams: CreateBoardBodyParams = {
+				title: board.title || 'Untitled Board',
+				parentId,
+				parentType: 'course',
+				layout: 'columns',
+			};
+
+			return createBoardParams;
+		});
 	}
 
 	private createTextFromHtmlResource(

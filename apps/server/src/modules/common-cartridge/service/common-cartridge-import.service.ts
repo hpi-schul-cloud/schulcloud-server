@@ -59,11 +59,21 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		const boards = parser.getOrganizations().filter((organization) => organization.pathDepth === DEPTH_BOARD);
 
+		this.logger.log(`currentUser is ${currentUser.accountId}`);
 		this.logger.log(`Found ${boards.length} boards`);
 
+		const createBoardParams = this.commonCartridgeImportMapper.mapCommonCartridgeBoardsToCreateBoardParams(
+			boards,
+			parentId
+		);
+
+		const createdBoards = await this.boardsClient.createManyBoards(createBoardParams);
+
+		this.logger.log(`Created ${createdBoards.length} boards`);
+		this.logger.log(`the following boards were created: ${createdBoards.map((board) => board.id).join(', ')}`);
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
-		for (const board of boards) {
+		/* for (const board of boards) {
 			const response = await this.boardsClient.createBoard({
 				title: board.title,
 				parentId,
@@ -74,7 +84,7 @@ export class CommonCartridgeImportService {
 			this.logger.log(`Created board '${board.title}'`);
 
 			await this.createColumns(response.id, board, parser, currentUser);
-		}
+		}*/
 	}
 
 	private async createColumns(

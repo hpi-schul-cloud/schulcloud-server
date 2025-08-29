@@ -5,4 +5,5 @@ export * from './card-skeleton-response';
 export * from './column-response';
 export * from './create-board-body-params';
 export * from './create-board-response';
+export * from './many-boards';
 export * from './timestamps-response';

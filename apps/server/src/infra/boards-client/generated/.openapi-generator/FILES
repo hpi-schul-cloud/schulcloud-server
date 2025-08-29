@@ -16,4 +16,5 @@ models/column-response.ts
 models/create-board-body-params.ts
 models/create-board-response.ts
 models/index.ts
+models/many-boards.ts
 models/timestamps-response.ts

@@ -13,6 +13,8 @@ export class BoardsClientAdapter {
 
 		try {
 			const response = await this.boardApi.boardControllerCreateBoard(params);
+			this.logger.log(`Board created with ID '${response.data.id}'`);
+
 			return response.data;
 		} catch (error) {
 			this.logger.error(`Failed to create board`);
@@ -30,5 +32,14 @@ export class BoardsClientAdapter {
 		const response = await this.boardApi.boardControllerGetBoardSkeleton(boardId);
 
 		return response.data;
+	}
+
+	public async createManyBoards(params: CreateBoardBodyParams[]): Promise<CreateBoardResponse[]> {
+		const responses: CreateBoardResponse[] = [];
+		for (const param of params) {
+			const response = await this.boardApi.boardControllerCreateBoard(param);
+			responses.push(response.data);
+		}
+		return responses;
 	}
 }
