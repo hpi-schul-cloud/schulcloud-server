@@ -44,8 +44,16 @@ export class DeletionBatch extends DomainObject<DeletionBatchProps> {
 		return this.props.invalidIds;
 	}
 
+	set invalidIds(value: EntityId[]) {
+		this.props.invalidIds = value;
+	}
+
 	get skippedIds(): EntityId[] {
 		return this.props.skippedIds;
+	}
+
+	set skippedIds(value: EntityId[]) {
+		this.props.skippedIds = value;
 	}
 
 	get createdAt(): Date {
@@ -54,5 +62,9 @@ export class DeletionBatch extends DomainObject<DeletionBatchProps> {
 
 	get updatedAt(): Date {
 		return this.props.updatedAt;
+	}
+
+	set updatedAt(value: Date) {
+		this.props.updatedAt = value;
 	}
 }

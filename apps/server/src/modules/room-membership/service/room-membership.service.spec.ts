@@ -526,7 +526,7 @@ describe('RoomMembershipService', () => {
 				users: convertToGroupUsers([...usersSchool2, ...usersSchool1], role),
 			});
 
-			groupService.findByUsersSchoolId.mockImplementation((schoolId: string) => {
+			groupService.findByUsersAndRoomsSchoolId.mockImplementation((schoolId: string) => {
 				if (schoolId === schoolId1) {
 					return Promise.resolve({ data: [groupSchool1, mixedGroup], total: 2 });
 				} else if (schoolId === schoolId2) {
@@ -564,7 +564,7 @@ describe('RoomMembershipService', () => {
 		it('should return room membership stats for school1', async () => {
 			const { schoolId1 } = setup();
 
-			const result = await service.getRoomMembershipStatsByUsersSchoolId(schoolId1);
+			const result = await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(schoolId1);
 
 			expect(result.total).toBe(2);
 			expect(result.data.length).toEqual(2);
@@ -576,13 +576,23 @@ describe('RoomMembershipService', () => {
 		it('should return room membership stats for school2', async () => {
 			const { schoolId2 } = setup();
 
-			const result = await service.getRoomMembershipStatsByUsersSchoolId(schoolId2);
+			const result = await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(schoolId2);
 
 			expect(result.total).toBe(2);
 			expect(result.data.length).toEqual(2);
 			const [internalGroup, externalGroup] = result.data;
 			expect(internalGroup?.totalMembers).toEqual(2);
 			expect(externalGroup?.totalMembers).toEqual(5);
+		});
+
+		it('should return empty result for unknown school', async () => {
+			setup();
+			const unknownSchoolId = 'unknownSchoolId';
+
+			const result = await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(unknownSchoolId);
+
+			expect(result.total).toBe(0);
+			expect(result.data.length).toEqual(0);
 		});
 	});
 
