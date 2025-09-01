@@ -238,7 +238,7 @@ export const BoardApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async boardControllerCreateManyBoards(manyBoards: ManyBoards, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ManyBoards>> {
+        async boardControllerCreateManyBoards(manyBoards: ManyBoards, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<CreateBoardResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.boardControllerCreateManyBoards(manyBoards, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BoardApi.boardControllerCreateManyBoards']?.[localVarOperationServerIndex]?.url;
@@ -294,7 +294,7 @@ export const BoardApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        boardControllerCreateManyBoards(manyBoards: ManyBoards, options?: any): AxiosPromise<ManyBoards> {
+        boardControllerCreateManyBoards(manyBoards: ManyBoards, options?: any): AxiosPromise<Array<CreateBoardResponse>> {
             return localVarFp.boardControllerCreateManyBoards(manyBoards, options).then((request) => request(axios, basePath));
         },
         /**
@@ -344,7 +344,7 @@ export interface BoardApiInterface {
      * @throws {RequiredError}
      * @memberof BoardApiInterface
      */
-    boardControllerCreateManyBoards(manyBoards: ManyBoards, options?: RawAxiosRequestConfig): AxiosPromise<ManyBoards>;
+    boardControllerCreateManyBoards(manyBoards: ManyBoards, options?: RawAxiosRequestConfig): AxiosPromise<Array<CreateBoardResponse>>;
 
     /**
      * 

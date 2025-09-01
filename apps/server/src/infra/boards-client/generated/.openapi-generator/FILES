@@ -15,6 +15,7 @@ models/card-skeleton-response.ts
 models/column-response.ts
 models/create-board-body-params.ts
 models/create-board-response.ts
+models/create-boards-body-params.ts
 models/index.ts
 models/many-boards.ts
 models/timestamps-response.ts

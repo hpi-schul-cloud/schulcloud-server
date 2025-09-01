@@ -16,7 +16,7 @@ import {
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeWebLinkResourceProps,
 } from '../import/common-cartridge-import.types';
-import { CreateBoardBodyParams } from '@infra/boards-client';
+import { CreateBoardsBodyParams } from '@infra/boards-client';
 
 export class CommonCartridgeImportMapper {
 	public mapResourceTypeToContentElementType(
@@ -67,16 +67,17 @@ export class CommonCartridgeImportMapper {
 		return undefined;
 	}
 
-	public mapCommonCartridgeBoardsToCreateBoardParams(
+	public mapCommonCartridgeBoardsToCreateBoardsParams(
 		boards: CommonCartridgeOrganizationProps[],
 		parentId: string
-	): CreateBoardBodyParams[] {
-		return boards.map((board) => {
-			const createBoardParams: CreateBoardBodyParams = {
-				title: board.title || 'Untitled Board',
+	): CreateBoardsBodyParams[] {
+		return boards.map((board): CreateBoardsBodyParams => {
+			const createBoardParams: CreateBoardsBodyParams = {
+				title: board.title,
 				parentId,
 				parentType: 'course',
 				layout: 'columns',
+				xmlIdentifier: board.identifier,
 			};
 
 			return createBoardParams;

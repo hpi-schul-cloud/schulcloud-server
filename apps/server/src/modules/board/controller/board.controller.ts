@@ -28,7 +28,7 @@ import {
 } from './dto';
 import { BoardContextResponse } from './dto/board/board-context.reponse';
 import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from './mapper';
-import { ManyBoards } from './dto/board/create-array-of-board.response';
+import { ManyBoards } from './dto/board/create-boards.response';
 
 @ApiTags('Board')
 @JwtAuthentication()
@@ -54,7 +54,7 @@ export class BoardController {
 	}
 
 	@ApiOperation({ summary: 'Create many boards.' })
-	@ApiResponse({ status: 201, type: ManyBoards })
+	@ApiResponse({ status: 201, type: CreateBoardResponse, isArray: true })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
@@ -62,7 +62,7 @@ export class BoardController {
 	public async createManyBoards(
 		@Body() bodyParams: ManyBoards,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<Array<CreateBoardResponse>> {
+	): Promise<CreateBoardResponse[]> {
 		const boards = await Promise.all(
 			bodyParams.boards.map((board) => this.boardUc.createBoard(currentUser.userId, board))
 		);

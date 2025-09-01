@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import type { CreateBoardBodyParams } from './create-board-body-params';
+import type { CreateBoardsBodyParams } from './create-boards-body-params';
 
 /**
  * 
@@ -25,9 +25,9 @@ import type { CreateBoardBodyParams } from './create-board-body-params';
 export interface ManyBoards {
     /**
      * Array of created board responses
-     * @type {Array<CreateBoardBodyParams>}
+     * @type {Array<CreateBoardsBodyParams>}
      * @memberof ManyBoards
      */
-    'boards': Array<CreateBoardBodyParams>;
+    'boards': Array<CreateBoardsBodyParams>;
 }
 

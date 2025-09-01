@@ -38,7 +38,7 @@
 					"FILTER": "operationId:BoardController_createBoard|BoardController_getBoardSkeleton|BoardController_createColumn|BoardController_createManyBoards"
 				},
 				"globalProperty": {
-					"models": "CreateBoardBodyParams:CreateBoardResponse:BoardParentType:BoardLayout:BoardResponse:ColumnResponse:CardSkeletonResponse:TimestampsResponse:ManyBoards",
+					"models": "CreateBoardBodyParams:CreateBoardResponse:BoardParentType:BoardLayout:BoardResponse:ColumnResponse:CardSkeletonResponse:TimestampsResponse:ManyBoards:CreateBoardsBodyParams",
 					"apis": "",
 					"supportingFiles": ""
 				},

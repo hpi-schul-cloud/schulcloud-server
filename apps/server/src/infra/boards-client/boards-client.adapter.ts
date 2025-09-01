@@ -1,6 +1,14 @@
 import { LegacyLogger } from '@core/logger';
 import { Injectable } from '@nestjs/common';
-import { BoardApi, BoardResponse, ColumnResponse, CreateBoardBodyParams, CreateBoardResponse } from './generated';
+import {
+	BoardApi,
+	BoardResponse,
+	ColumnResponse,
+	CreateBoardBodyParams,
+	CreateBoardResponse,
+	CreateBoardsBodyParams,
+	ManyBoards,
+} from './generated';
 
 @Injectable()
 export class BoardsClientAdapter {
@@ -34,12 +42,14 @@ export class BoardsClientAdapter {
 		return response.data;
 	}
 
-	public async createManyBoards(params: CreateBoardBodyParams[]): Promise<CreateBoardResponse[]> {
-		const responses: CreateBoardResponse[] = [];
-		for (const param of params) {
-			const response = await this.boardApi.boardControllerCreateBoard(param);
-			responses.push(response.data);
-		}
-		return responses;
+	public async createManyBoards(params: CreateBoardsBodyParams[]): Promise<CreateBoardResponse[]> {
+		const boards: ManyBoards = {
+			boards: {
+				...params,
+			},
+		};
+		const response = await this.boardApi.boardControllerCreateManyBoards(boards);
+
+		return response.data;
 	}
 }
