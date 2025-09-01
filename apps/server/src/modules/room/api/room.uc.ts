@@ -20,6 +20,7 @@ import { RoomPermissionService } from './service';
 import { School, SchoolService } from '@modules/school';
 import { RoomStats } from './type/room-stats.type';
 import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
+import { RoomMemberAuthorizable } from '@modules/room-membership/do/room-member-authorizable.do';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
@@ -176,7 +177,7 @@ export class RoomUc {
 		const room = await this.roomService.getSingleRoom(roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		const isAllowed = await this.isAllowedToDeleteRoom(userId, roomId, room, user);
+		const isAllowed = await this.roomPermissionService.isAllowedToDeleteRoom(user, room);
 		if (!isAllowed) {
 			throw new ForbiddenException('You do not have permission to delete this room');
 		}
@@ -271,9 +272,19 @@ export class RoomUc {
 
 	public async removeMembersFromRoom(currentUserId: EntityId, roomId: EntityId, userIds: EntityId[]): Promise<void> {
 		this.roomPermissionService.checkFeatureRoomsEnabled();
-		await this.roomPermissionService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [
-			Permission.ROOM_REMOVE_MEMBERS,
-		]);
+
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const roomMembers = await this.roomMembershipService.getRoomMembers(roomId);
+		const roomMembersToBeDeleted = roomMembers.filter((member) => userIds.includes(member.userId));
+
+		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
+		for (const member of roomMembersToBeDeleted) {
+			const roomMemberAuthorizable = new RoomMemberAuthorizable(roomMembershipAuthorizable, member);
+			this.authorizationService.checkPermission(user, roomMemberAuthorizable, {
+				action: Action.write,
+				requiredPermissions: [Permission.ROOM_REMOVE_MEMBERS],
+			});
+		}
 		await this.roomMembershipService.removeMembersFromRoom(roomId, userIds);
 	}
 
@@ -312,18 +323,6 @@ export class RoomUc {
 				targetUserId: context.targetUser.id || 'undefined',
 			});
 		}
-	}
-
-	private async isAllowedToDeleteRoom(userId: string, roomId: string, room: Room, user: User): Promise<boolean> {
-		const canDeleteRoom = await this.roomPermissionService.hasRoomPermissions(userId, roomId, Action.write, [
-			Permission.ROOM_DELETE_ROOM,
-		]);
-		const isOwnSchool = room.schoolId === user.school.id;
-		const canAdministrateSchoolRooms = this.authorizationService.hasOneOfPermissions(user, [
-			Permission.SCHOOL_ADMINISTRATE_ROOMS,
-		]);
-		const isAllowed = canDeleteRoom || (isOwnSchool && canAdministrateSchoolRooms);
-		return isAllowed;
 	}
 
 	private checkUserIsStudent(context: OwnershipContext): void {
