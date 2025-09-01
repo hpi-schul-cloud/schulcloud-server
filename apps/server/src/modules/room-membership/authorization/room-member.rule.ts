@@ -11,6 +11,7 @@ import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { RoomMemberAuthorizable } from '../do/room-member-authorizable.do';
 import { RoomMembershipRule } from './room-membership.rule';
+import { RoomMember } from '../do/room-member.do';
 
 @Injectable()
 export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
@@ -38,7 +39,7 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 
 	private hasRequiredPermission(user: User, object: RoomMemberAuthorizable, permission: Permission): boolean {
 		const hasPermission = this.hasDynamicPermission(user, object, permission);
-		const isImmutableUser = this.isImmutableObject(user, object);
+		const isImmutableUser = this.isImmutableMember(user, object.member);
 		return hasPermission && !isImmutableUser;
 	}
 
@@ -60,8 +61,7 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 		return canAdministrateSchoolRooms && isSameSchool;
 	}
 
-	private isImmutableObject(user: User, object: RoomMemberAuthorizable): boolean {
-		const { member } = object;
+	private isImmutableMember(user: User, member: RoomMember): boolean {
 		const isRoomOwner = member.roomRoleName == RoleName.ROOMOWNER;
 		const isCurrentUser = member.userId == user.id;
 		return isRoomOwner || isCurrentUser;
