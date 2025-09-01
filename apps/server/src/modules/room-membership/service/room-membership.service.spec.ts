@@ -190,6 +190,7 @@ describe('RoomMembershipService', () => {
 				});
 
 				groupService.findById.mockResolvedValue(group);
+				groupService.findGroups.mockResolvedValue({ total: 1, data: [group] });
 				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 
 				return { group, room, roomMembership };
@@ -317,10 +318,10 @@ describe('RoomMembershipService', () => {
 					return { user, room };
 				};
 
-				it('should throw a badrequest exception', async () => {
+				it('should not throw an error, as e.g. KNL could be using this', async () => {
 					const { user, room } = setup();
 
-					await expect(service.removeMembersFromRoom(room.id, [user.id])).rejects.toThrowError(BadRequestException);
+					await expect(service.removeMembersFromRoom(room.id, [user.id])).resolves.toBe(undefined);
 				});
 			});
 		});
