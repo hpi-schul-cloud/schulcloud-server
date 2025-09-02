@@ -3,9 +3,11 @@ import {
 	cacheImplementations,
 	ContentTypeCache,
 	H5PConfig,
+	H5pError,
 	ILibraryAdministrationOverviewItem,
 	LibraryAdministration,
 	LibraryManager,
+	LibraryName,
 } from '@lumieducation/h5p-server';
 import ContentManager from '@lumieducation/h5p-server/build/src/ContentManager';
 import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/src/ContentTypeInformationRepository';
@@ -24,6 +26,7 @@ import { readFileSync } from 'fs';
 import { Readable } from 'stream';
 import { parse } from 'yaml';
 import { H5pDefaultUserFactory } from '../factory';
+import { H5pTimeoutError } from '../interface';
 import {
 	H5PLibraryManagementErrorLoggable,
 	H5PLibraryManagementInstallResultsLoggable,
@@ -297,8 +300,31 @@ export class H5PLibraryManagementService {
 		} catch (error: unknown) {
 			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, { library }));
 
+			if (this.isH5pTimeoutError(error) && TypeGuard.isString(error.replacements.ubername)) {
+				this.logTimeOutError(error.replacements.ubername);
+				const libraryName = LibraryName.fromUberName(error.replacements.ubername);
+				await this.libraryStorage.deleteLibrary(libraryName);
+			}
+
 			return [];
 		}
+	}
+
+	private isH5pTimeoutError(error: unknown): error is H5pTimeoutError {
+		const result =
+			error instanceof H5pError &&
+			(error.errorId === 'server:install-library-lock-max-time-exceeded' ||
+				error.errorId === 'server:install-library-lock-timeout');
+
+		return result;
+	}
+
+	private logTimeOutError(library: string): void {
+		this.logger.warning(
+			new H5PLibraryManagementLoggable(
+				`There was a timeout error when installing library ${library}. Reverting installation.`
+			)
+		);
 	}
 
 	private logStartInstallationOfCurrentVersionFromH5pHub(library: string): void {
