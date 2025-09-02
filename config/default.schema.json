@@ -370,7 +370,13 @@
 					"type": "integer",
 					"minimum": 0,
 					"default": 600000,
-					"description": "Timeout for incoming requests (including file uploads) to the h5p editor in milliseconds ."
+					"description": "Timeout for incoming requests (including file uploads) to the h5p editor in milliseconds."
+				},
+				"INSTALL_LIBRARY_LOCK_MAX_OCCUPATION_TIME": {
+					"type": "integer",
+					"minimum": 0,
+					"default": 30000,
+					"description": "The number of milliseconds that code has until a single library is installed. If this time is exceeded the lock will be freed and the library installation has failed."
 				},
 				"LIBRARY_LIST_PATH": {
 					"type": "string",

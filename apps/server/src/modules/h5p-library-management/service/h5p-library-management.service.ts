@@ -33,13 +33,6 @@ import {
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
 import LibraryManagementPermissionSystem from './library-management-permission-system';
 
-const h5pConfig = new H5PConfig(undefined, {
-	baseUrl: '/api/v3/h5p-editor',
-	contentUserStateSaveInterval: false,
-	setFinishedEnabled: false,
-	installLibraryLockMaxOccupationTime: 30000,
-});
-
 interface LibrariesContentType {
 	h5p_libraries: string[];
 }
@@ -78,6 +71,15 @@ export class H5PLibraryManagementService {
 		private readonly configService: ConfigService<IH5PLibraryManagementConfig, true>,
 		private readonly logger: Logger
 	) {
+		const installLibraryLockMaxOccupationTime = this.configService.get<number>(
+			'H5P_EDITOR__INSTALL_LIBRARY_LOCK_MAX_OCCUPATION_TIME'
+		);
+		const h5pConfig = new H5PConfig(undefined, {
+			baseUrl: '/api/v3/h5p-editor',
+			contentUserStateSaveInterval: false,
+			setFinishedEnabled: false,
+			installLibraryLockMaxOccupationTime,
+		});
 		const kvCache = new cacheImplementations.CachedKeyValueStorage('kvcache');
 		this.contentTypeCache = new ContentTypeCache(h5pConfig, kvCache);
 		this.libraryManager = new LibraryManager(
