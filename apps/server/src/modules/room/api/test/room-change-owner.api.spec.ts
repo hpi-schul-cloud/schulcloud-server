@@ -4,7 +4,7 @@ import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing/room-membership-entity.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -20,7 +20,6 @@ describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -31,13 +30,10 @@ describe('Room Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'rooms');
-
-		config = serverConfig();
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOMS_ENABLED = true;
 
 		await em.clearCache('roles-cache-byname-roomadmin');
 		await em.clearCache('roles-cache-byname-roomowner');
@@ -122,19 +118,6 @@ describe('Room Controller (API)', () => {
 			it('should return forbidden error', async () => {
 				const { room, targetUser } = await setupRoomWithMembers();
 				const { loggedInClient } = await setupLoggedInUser();
-
-				const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
-					userId: targetUser.id,
-				});
-
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
-			});
-		});
-
-		describe('when the feature is disabled', () => {
-			it('should return a 403 error', async () => {
-				const { loggedInClient, room, targetUser } = await setupRoomWithMembers();
-				config.FEATURE_ROOMS_ENABLED = false;
 
 				const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
 					userId: targetUser.id,

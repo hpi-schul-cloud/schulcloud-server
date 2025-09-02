@@ -52,12 +52,6 @@ export class RoomPermissionService {
 		return hasRoomPermissions;
 	}
 
-	public checkFeatureRoomsEnabled(): void {
-		if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
-			throw new FeatureDisabledLoggableException('FEATURE_ROOMS_ENABLED');
-		}
-	}
-
 	public checkFeatureAdministrateRoomsEnabled(): void {
 		if (!this.configService.get('FEATURE_ADMINISTRATE_ROOMS_ENABLED', { infer: true })) {
 			throw new FeatureDisabledLoggableException('FEATURE_ADMINISTRATE_ROOMS_ENABLED');

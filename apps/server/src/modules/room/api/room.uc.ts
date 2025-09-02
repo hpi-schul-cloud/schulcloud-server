@@ -39,8 +39,6 @@ export class RoomUc {
 	) {}
 
 	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomWithLockedStatus>> {
-		this.roomPermissionService.checkFeatureRoomsEnabled();
-
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
 
@@ -103,7 +101,6 @@ export class RoomUc {
 	}
 
 	public async createRoom(userId: EntityId, props: CreateRoomBodyParams): Promise<Room> {
-		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const room = await this.roomService.createRoom({ ...props, schoolId: user.school.id });
 
@@ -119,7 +116,6 @@ export class RoomUc {
 	}
 
 	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<{ room: Room; permissions: Permission[] }> {
-		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const room = await this.roomService.getSingleRoom(roomId);
 		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
@@ -139,8 +135,6 @@ export class RoomUc {
 	}
 
 	public async getRoomBoards(userId: EntityId, roomId: EntityId): Promise<ColumnBoard[]> {
-		this.roomPermissionService.checkFeatureRoomsEnabled();
-
 		await this.roomService.getSingleRoom(roomId);
 		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
 		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.read);
@@ -161,7 +155,6 @@ export class RoomUc {
 		roomId: EntityId,
 		props: UpdateRoomBodyParams
 	): Promise<{ room: Room; permissions: Permission[] }> {
-		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const room = await this.roomService.getSingleRoom(roomId);
 
 		const roomMembershipAuthorizable = await this.roomPermissionService.checkRoomAuthorizationByIds(
@@ -178,7 +171,6 @@ export class RoomUc {
 	}
 
 	public async deleteRoom(userId: EntityId, roomId: EntityId): Promise<void> {
-		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const room = await this.roomService.getSingleRoom(roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
@@ -196,7 +188,6 @@ export class RoomUc {
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
-		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
 		const canAccessRoomMembers = this.authorizationService.hasPermission(currentUser, roomMembershipAuthorizable, {
@@ -229,7 +220,6 @@ export class RoomUc {
 		roomId: EntityId,
 		userIds: Array<EntityId>
 	): Promise<RoomRole> {
-		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const currentUser = await this.authorizationService.getUserWithPermissions(currentUserId);
 		const users = await this.userService.findByIds(userIds);
 
@@ -255,7 +245,6 @@ export class RoomUc {
 		userIds: Array<EntityId>,
 		roleName: RoleName
 	): Promise<void> {
-		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const roomAuthorizable = await this.roomPermissionService.checkRoomAuthorizationByIds(
 			currentUserId,
 			roomId,
@@ -267,7 +256,6 @@ export class RoomUc {
 	}
 
 	public async passOwnership(currentUserId: EntityId, roomId: EntityId, targetUserId: EntityId): Promise<void> {
-		this.roomPermissionService.checkFeatureRoomsEnabled();
 		const ownershipContext = await this.getPassOwnershipContext(roomId, currentUserId, targetUserId);
 		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
 
@@ -296,7 +284,6 @@ export class RoomUc {
 	}
 
 	public async leaveRoom(currentUserId: EntityId, roomId: EntityId): Promise<void> {
-		this.roomPermissionService.checkFeatureRoomsEnabled();
 		await this.roomPermissionService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.read, [
 			Permission.ROOM_LEAVE_ROOM,
 		]);
@@ -304,8 +291,6 @@ export class RoomUc {
 	}
 
 	public async removeMembersFromRoom(currentUserId: EntityId, roomId: EntityId, userIds: EntityId[]): Promise<void> {
-		this.roomPermissionService.checkFeatureRoomsEnabled();
-
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const roomMembers = await this.roomMembershipService.getRoomMembers(roomId);
 		const roomMembersToBeDeleted = roomMembers.filter((member) => userIds.includes(member.userId));
