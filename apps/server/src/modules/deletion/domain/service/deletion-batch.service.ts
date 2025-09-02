@@ -74,6 +74,26 @@ export class DeletionBatchService {
 		return summary;
 	}
 
+	public async updateBatch({
+		batchId,
+		invalidIds,
+		skippedIds,
+	}: {
+		batchId: EntityId;
+		invalidIds: EntityId[];
+		skippedIds: EntityId[];
+	}): Promise<DeletionBatch> {
+		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
+
+		deletionBatch.invalidIds = invalidIds;
+		deletionBatch.skippedIds = skippedIds;
+		deletionBatch.updatedAt = new Date();
+
+		await this.deletionBatchRepo.save(deletionBatch);
+
+		return deletionBatch;
+	}
+
 	public async deleteDeletionBatch(batchId: EntityId): Promise<void> {
 		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
 
@@ -138,11 +158,11 @@ export class DeletionBatchService {
 	}
 
 	public async requestDeletionForBatch(deletionBatch: DeletionBatch, deleteAfter: Date): Promise<DeletionBatchSummary> {
-		await this.deletionRequestService.createDeletionRequestBatch(
-			deletionBatch.targetRefIds,
-			deletionBatch.targetRefDomain,
-			deleteAfter
+		const validIds = deletionBatch.targetRefIds.filter(
+			(id) => !deletionBatch.skippedIds.includes(id) && !deletionBatch.invalidIds.includes(id)
 		);
+
+		await this.deletionRequestService.createDeletionRequestBatch(validIds, deletionBatch.targetRefDomain, deleteAfter);
 
 		await this.deletionBatchRepo.updateStatus(deletionBatch, BatchStatus.DELETION_REQUESTED);
 
