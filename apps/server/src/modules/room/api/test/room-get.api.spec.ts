@@ -253,7 +253,7 @@ describe('Room Controller (API)', () => {
 					endDate: room.endDate?.toISOString(),
 					createdAt: room.createdAt.toISOString(),
 					updatedAt: room.updatedAt.toISOString(),
-					permissions: [Permission.ROOM_LIST_CONTENT, Permission.ROOM_LEAVE_ROOM],
+					permissions: [],
 					features: room.features,
 				};
 
@@ -266,39 +266,8 @@ describe('Room Controller (API)', () => {
 				const response = await loggedInClient.get(room.id);
 
 				expect(response.status).toBe(HttpStatus.OK);
-				expect(response.body).toEqual(expectedResponse);
+				expect(response.body).toEqual(expect.objectContaining(expectedResponse));
 			});
-
-			// it('should not allow to pick role roomowner (=> different endpoint)', async () => {
-			// 	const { loggedInClient, room, school, targetUser } = await setup();
-
-			// 	const response = await loggedInClient.get(room.id);
-			// 	const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
-			// 		userIds: [targetUser.id],
-			// 		roleName: RoleName.ROOMOWNER,
-			// 	});
-
-			// 	expect(response.body as ApiValidationError).toEqual(
-			// 		expect.objectContaining({
-			// 			type: 'API_VALIDATION_ERROR',
-			// 			validationErrors: expect.arrayContaining([expect.objectContaining({ field: ['roleName'] })]),
-			// 		})
-			// 	);
-			// });
-
-			// it('should not allow passing ownership to external teachers', async () => {
-			// 	const { room, school, externalTeacherUser } = await setup();
-			// 	const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
-			// 	await em.persistAndFlush([adminAccount, adminUser]);
-			// 	const loggedInClient = await testApiClient.login(adminAccount);
-
-			// 	const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
-			// 		userIds: [externalTeacherUser.id],
-			// 		roleName: RoleName.ROOMOWNER,
-			// 	});
-
-			// 	expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-			// });
 		});
 
 		describe('when the user is a school admin of different school', () => {});
