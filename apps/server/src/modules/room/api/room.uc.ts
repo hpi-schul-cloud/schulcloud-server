@@ -275,7 +275,6 @@ export class RoomUc {
 			requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
 		});
 
-		this.checkRoomAuthorizationByContext(ownershipContext, Action.write, [Permission.ROOM_CHANGE_OWNER]);
 		this.checkUserInRoom(ownershipContext);
 		this.checkUserIsStudent(ownershipContext);
 
