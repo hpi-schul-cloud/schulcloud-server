@@ -228,5 +228,104 @@ describe('Room Controller (API)', () => {
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
+
+		describe('when the user is a school admin of same school', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+				const room = roomEntityFactory.build({ schoolId: school.id });
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { teacherUser: teacherUser2 } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+				const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+				const userGroupEntity = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
+					users: [
+						{ role: roomViewerRole, user: studentUser },
+						{ role: roomOwnerRole, user: teacherUser },
+						{ role: roomViewerRole, user: teacherUser2 },
+					],
+					organization: school,
+					externalSource: undefined,
+				});
+				const roomMembership = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntity.id,
+					roomId: room.id,
+					schoolId: school.id,
+				});
+				await em.persistAndFlush([
+					room,
+					adminAccount,
+					adminUser,
+					teacherUser,
+					teacherUser2,
+					studentUser,
+					roomOwnerRole,
+					roomViewerRole,
+					userGroupEntity,
+					roomMembership,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				const expectedResponse = {
+					id: room.id,
+					name: room.name,
+					color: room.color,
+					schoolId: room.schoolId,
+					startDate: room.startDate?.toISOString(),
+					endDate: room.endDate?.toISOString(),
+					createdAt: room.createdAt.toISOString(),
+					updatedAt: room.updatedAt.toISOString(),
+					permissions: [Permission.ROOM_LIST_CONTENT, Permission.ROOM_LEAVE_ROOM],
+					features: room.features,
+				};
+
+				return { loggedInClient, room, expectedResponse };
+			};
+
+			it('should return a room', async () => {
+				const { loggedInClient, room, expectedResponse } = await setup();
+
+				const response = await loggedInClient.get(room.id);
+
+				expect(response.status).toBe(HttpStatus.OK);
+				expect(response.body).toEqual(expectedResponse);
+			});
+
+			// it('should not allow to pick role roomowner (=> different endpoint)', async () => {
+			// 	const { loggedInClient, room, school, targetUser } = await setup();
+
+			// 	const response = await loggedInClient.get(room.id);
+			// 	const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+			// 		userIds: [targetUser.id],
+			// 		roleName: RoleName.ROOMOWNER,
+			// 	});
+
+			// 	expect(response.body as ApiValidationError).toEqual(
+			// 		expect.objectContaining({
+			// 			type: 'API_VALIDATION_ERROR',
+			// 			validationErrors: expect.arrayContaining([expect.objectContaining({ field: ['roleName'] })]),
+			// 		})
+			// 	);
+			// });
+
+			// it('should not allow passing ownership to external teachers', async () => {
+			// 	const { room, school, externalTeacherUser } = await setup();
+			// 	const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+			// 	await em.persistAndFlush([adminAccount, adminUser]);
+			// 	const loggedInClient = await testApiClient.login(adminAccount);
+
+			// 	const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+			// 		userIds: [externalTeacherUser.id],
+			// 		roleName: RoleName.ROOMOWNER,
+			// 	});
+
+			// 	expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			// });
+		});
+
+		describe('when the user is a school admin of different school', () => {});
 	});
 });

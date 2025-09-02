@@ -14,6 +14,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomRolesTestFactory } from '../../testing/room-roles.test.factory';
 import { RoomMemberListResponse } from '../dto/response/room-member-list.response';
+import { ApiValidationError } from '@shared/common/error';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -50,10 +51,12 @@ describe('Room Controller (API)', () => {
 	describe('POST /rooms/:roomId/members/changeowner', () => {
 		const setupRoomWithMembers = async () => {
 			const school = schoolEntityFactory.buildWithId();
+			const otherSchool = schoolEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser: owner } = UserAndAccountTestFactory.buildTeacher({ school });
 			const teacherRole = owner.roles[0];
 			const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
 			const student = userFactory.buildWithId({ school: owner.school, roles: [studentRole] });
+			const externalTeacherUser = userFactory.buildWithId({ school: otherSchool, roles: [teacherRole] });
 			const targetUser = userFactory.buildWithId({ school: owner.school, roles: [teacherRole] });
 			const room = roomEntityFactory.buildWithId({ schoolId: owner.school.id });
 			const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
@@ -79,6 +82,7 @@ describe('Room Controller (API)', () => {
 				owner,
 				studentRole,
 				student,
+				externalTeacherUser,
 				teacherRole,
 				roomEditorRole,
 				roomAdminRole,
@@ -92,7 +96,7 @@ describe('Room Controller (API)', () => {
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, room, targetUser, owner, teacherRole, student };
+			return { loggedInClient, room, targetUser, owner, teacherRole, student, school, externalTeacherUser };
 		};
 
 		describe('when the user is not authenticated', () => {
@@ -196,6 +200,41 @@ describe('Room Controller (API)', () => {
 
 				const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
 					userId: student.id,
+				});
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			});
+		});
+
+		describe('when the user is a school admin', () => {
+			it('should not allow to pick role roomowner (=> different endpoint)', async () => {
+				const { room, school, targetUser } = await setupRoomWithMembers();
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+				await em.persistAndFlush([adminAccount, adminUser]);
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [targetUser.id],
+					roleName: RoleName.ROOMOWNER,
+				});
+
+				expect(response.body as ApiValidationError).toEqual(
+					expect.objectContaining({
+						type: 'API_VALIDATION_ERROR',
+						validationErrors: expect.arrayContaining([expect.objectContaining({ field: ['roleName'] })]),
+					})
+				);
+			});
+
+			it('should not allow passing ownership to external teachers', async () => {
+				const { room, school, externalTeacherUser } = await setupRoomWithMembers();
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+				await em.persistAndFlush([adminAccount, adminUser]);
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [externalTeacherUser.id],
+					roleName: RoleName.ROOMOWNER,
 				});
 
 				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
