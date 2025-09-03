@@ -59,7 +59,7 @@ export class RoomMembershipService {
 			.map((user) => {
 				const groupUser = group.users.find((g) => g.userId === user.id);
 				const role = roles.find((r) => r.id === groupUser?.roleId);
-				if (!groupUser || !role || !user.id) {
+				if (!role || !user.id) {
 					// inconsistent data - technically not possible - but in the rare occassion - i would log it here... but it's not worth to implement a loggable and a test...
 					return;
 				}

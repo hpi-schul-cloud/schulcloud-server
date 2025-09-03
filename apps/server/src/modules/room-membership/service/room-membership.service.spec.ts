@@ -451,6 +451,36 @@ describe('RoomMembershipService', () => {
 		});
 	});
 
+	describe('getRoomMembers', () => {
+		const setup = () => {
+			const roomId = 'room123';
+			const userId = 'user456';
+			const groupId = 'group789';
+			const roleId = 'role101';
+
+			const user = userDoFactory.buildWithId({ id: userId });
+			const roomMembership = roomMembershipFactory.build({ roomId, userGroupId: groupId });
+			const group = groupFactory.build({ id: groupId, users: [{ userId, roleId }] });
+
+			roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
+			groupService.findById.mockResolvedValue(group);
+			roleService.findByIds.mockResolvedValue([]);
+			userService.findByIds.mockResolvedValue([user]);
+
+			return { roomId, userId, groupId, roleId, roomMembership, group };
+		};
+
+		describe('when roleId does not point to existing role', () => {
+			it('should remove member from result', async () => {
+				const { roomId } = setup();
+
+				const result = await service.getRoomMembers(roomId);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+	});
+
 	describe('getRoomMembershipAuthorizable', () => {
 		const setup = () => {
 			const roomId = 'room123';
