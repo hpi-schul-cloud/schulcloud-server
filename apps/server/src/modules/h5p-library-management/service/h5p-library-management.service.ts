@@ -26,7 +26,7 @@ import { readFileSync } from 'fs';
 import { Readable } from 'stream';
 import { parse } from 'yaml';
 import { H5pDefaultUserFactory } from '../factory';
-import { H5pTimeoutError } from '../interface';
+import { H5pConsistencyError, H5pTimeoutError } from '../interface';
 import {
 	H5PLibraryManagementErrorLoggable,
 	H5PLibraryManagementInstallResultsLoggable,
@@ -306,6 +306,12 @@ export class H5PLibraryManagementService {
 				await this.libraryStorage.deleteLibrary(libraryName);
 			}
 
+			if (this.isH5pConsistencyError(error) && TypeGuard.isString(error.replacements.name)) {
+				this.logConsistencyError(error.replacements.name);
+				const libraryName = LibraryName.fromUberName(error.replacements.name);
+				await this.libraryStorage.deleteLibrary(libraryName);
+			}
+
 			return [];
 		}
 	}
@@ -323,6 +329,24 @@ export class H5PLibraryManagementService {
 		this.logger.warning(
 			new H5PLibraryManagementLoggable(
 				`There was a timeout error when installing library ${library}. Reverting installation.`
+			)
+		);
+	}
+
+	private isH5pConsistencyError(error: unknown): error is H5pConsistencyError {
+		const result =
+			error instanceof H5pError &&
+			(error.errorId === 'library-consistency-check-not-installed' ||
+				error.errorId === 'library-consistency-check-library-json-unreadable' ||
+				error.errorId === 'library-consistency-check-file-missing');
+
+		return result;
+	}
+
+	private logConsistencyError(library: string): void {
+		this.logger.warning(
+			new H5PLibraryManagementLoggable(
+				`There was a consistency error when installing library ${library}. Reverting installation.`
 			)
 		);
 	}
