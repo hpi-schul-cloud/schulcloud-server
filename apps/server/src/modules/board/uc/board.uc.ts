@@ -148,7 +148,7 @@ export class BoardUc {
 
 		const storageLocationReference = await this.getStorageLocationReference(board.context);
 
-		const copyStatus = await this.columnBoardService.copyColumnBoard({
+		let copyStatus = await this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId: boardId,
 			targetExternalReference: board.context,
 			sourceStorageLocationReference: storageLocationReference,
@@ -156,6 +156,8 @@ export class BoardUc {
 			userId,
 			targetSchoolId: schoolId,
 		});
+
+		copyStatus = await this.columnBoardService.swapLinkedIdsInBoards(copyStatus);
 
 		return copyStatus;
 	}
