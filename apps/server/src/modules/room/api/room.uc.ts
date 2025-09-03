@@ -121,7 +121,7 @@ export class RoomUc {
 		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
 
 		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(userId, roomId, Action.read);
-		const hasAdminPermission = await this.authorizationService.hasAllPermissions(user, [
+		const hasAdminPermission = this.authorizationService.hasAllPermissions(user, [
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
 		]);
 		if (!hasRoomPermission && !hasAdminPermission) {
@@ -226,7 +226,7 @@ export class RoomUc {
 		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(currentUserId, roomId, Action.write, [
 			Permission.ROOM_ADD_MEMBERS,
 		]);
-		const hasAdminPermission = await this.authorizationService.hasAllPermissions(currentUser, [
+		const hasAdminPermission = this.authorizationService.hasAllPermissions(currentUser, [
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
 		]);
 		const isAdminFromSameSchool = users.every((user) => user.schoolId === currentUser.school.id);
