@@ -168,6 +168,18 @@ export class BoardUc {
 		return board;
 	}
 
+	public async updateReadersCanEdit(
+		userId: EntityId,
+		boardId: EntityId,
+		readersCanEdit: boolean
+	): Promise<ColumnBoard> {
+		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+		// await this.boardPermissionService.checkPermission(userId, board, Action.write);
+
+		await this.columnBoardService.updateReadersCanEdit(board, readersCanEdit);
+		return board;
+	}
+
 	public async updateLayout(userId: EntityId, boardId: EntityId, layout: BoardLayout): Promise<ColumnBoard> {
 		const board: ColumnBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		await this.boardPermissionService.checkPermission(userId, board, Action.write);
