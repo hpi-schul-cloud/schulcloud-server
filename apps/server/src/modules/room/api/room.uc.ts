@@ -116,6 +116,7 @@ export class RoomUc {
 	}
 
 	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<{ room: Room; permissions: Permission[] }> {
+		console.log('userId', userId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const room = await this.roomService.getSingleRoom(roomId);
 		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
@@ -124,7 +125,8 @@ export class RoomUc {
 		const hasAdminPermission = this.authorizationService.hasAllPermissions(user, [
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
 		]);
-		if (!hasRoomPermission && !hasAdminPermission) {
+		const isFromSameSchool = user.school.id === room.schoolId;
+		if (!hasRoomPermission && !(hasAdminPermission && isFromSameSchool)) {
 			throw new ForbiddenException('You do not have permission to access this room');
 		}
 
