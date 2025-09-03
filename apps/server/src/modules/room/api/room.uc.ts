@@ -264,6 +264,7 @@ export class RoomUc {
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const roomMembers = await this.roomMembershipService.getRoomMembers(roomId);
 		const roomMember = roomMembers.find((member) => member.userId === targetUserId);
+		const roomOwner = roomMembers.find((member) => member.roomRoleName === RoleName.ROOMOWNER);
 		if (!roomMember) {
 			throw new CantPassOwnershipToUserNotInRoomLoggableException({
 				roomId,
@@ -271,6 +272,7 @@ export class RoomUc {
 				targetUserId,
 			});
 		}
+
 		const roomMemberAuthorizable = new RoomMemberAuthorizable(roomMembershipAuthorizable, roomMember);
 		this.authorizationService.checkPermission(user, roomMemberAuthorizable, {
 			action: Action.write,
@@ -279,7 +281,9 @@ export class RoomUc {
 
 		this.checkUserIsStudent(ownershipContext);
 
-		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [currentUserId], RoleName.ROOMADMIN);
+		if (roomOwner) {
+			await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [roomOwner.userId], RoleName.ROOMADMIN);
+		}
 		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [targetUserId], RoleName.ROOMOWNER);
 	}
 

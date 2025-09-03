@@ -15,6 +15,7 @@ import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomRolesTestFactory } from '../../testing/room-roles.test.factory';
 import { RoomMemberListResponse } from '../dto/response/room-member-list.response';
 import { ApiValidationError } from '@shared/common/error';
+import { Role } from '@modules/role/repo';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -45,23 +46,28 @@ describe('Room Controller (API)', () => {
 	});
 
 	describe('POST /rooms/:roomId/members/changeowner', () => {
-		const setupRoomWithMembers = async () => {
+		const setupRoomWithMembers = async (options: { addUnknownRoleUser?: boolean } = {}) => {
 			const school = schoolEntityFactory.buildWithId();
 			const otherSchool = schoolEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser: owner } = UserAndAccountTestFactory.buildTeacher({ school });
 			const teacherRole = owner.roles[0];
 			const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
 			const student = userFactory.buildWithId({ school: owner.school, roles: [studentRole] });
+			const unknownRoleUser = userFactory.buildWithId({ school: owner.school, roles: [teacherRole] });
 			const externalTeacherUser = userFactory.buildWithId({ school: otherSchool, roles: [teacherRole] });
 			const targetUser = userFactory.buildWithId({ school: owner.school, roles: [teacherRole] });
 			const room = roomEntityFactory.buildWithId({ schoolId: owner.school.id });
 			const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+			const users = [
+				{ role: roomOwnerRole, user: owner },
+				{ role: roomViewerRole, user: targetUser },
+				{ role: roomViewerRole, user: student },
+			];
+			if (options?.addUnknownRoleUser) {
+				users.push({ role: undefined as unknown as Role, user: unknownRoleUser });
+			}
 			const userGroupEntity = groupEntityFactory.withTypeRoom().buildWithId({
-				users: [
-					{ role: roomOwnerRole, user: owner },
-					{ role: roomViewerRole, user: targetUser },
-					{ role: roomViewerRole, user: student },
-				],
+				users,
 				organization: owner.school,
 				externalSource: undefined,
 			});
@@ -87,12 +93,23 @@ describe('Room Controller (API)', () => {
 				targetUser,
 				targetUser,
 				userGroupEntity,
+				unknownRoleUser,
 			]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, room, targetUser, owner, teacherRole, student, school, externalTeacherUser };
+			return {
+				loggedInClient,
+				room,
+				targetUser,
+				owner,
+				teacherRole,
+				student,
+				school,
+				externalTeacherUser,
+				unknownRoleUser,
+			};
 		};
 
 		describe('when the user is not authenticated', () => {
@@ -152,7 +169,7 @@ describe('Room Controller (API)', () => {
 				);
 			});
 
-			it('should change the current user to admin', async () => {
+			it('should change the current room owner to room admin', async () => {
 				const { loggedInClient, room, targetUser, owner } = await setupRoomWithMembers();
 
 				await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
@@ -166,26 +183,42 @@ describe('Room Controller (API)', () => {
 				);
 			});
 
-			it('should return error when targeting a user that is not in the room', async () => {
-				const { loggedInClient, room, owner, teacherRole } = await setupRoomWithMembers();
-				const targetUser = userFactory.buildWithId({ school: owner.school, roles: [teacherRole] });
-				await em.persistAndFlush(targetUser);
+			describe('when target user is not in the room', () => {
+				it('should return error', async () => {
+					const { loggedInClient, room, owner, teacherRole } = await setupRoomWithMembers();
+					const targetUser = userFactory.buildWithId({ school: owner.school, roles: [teacherRole] });
+					await em.persistAndFlush(targetUser);
 
-				const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
-					userId: targetUser.id,
+					const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
+						userId: targetUser.id,
+					});
+
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 				});
-
-				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 			});
 
-			it('should return error when targeting a user that is a student', async () => {
-				const { loggedInClient, room, student } = await setupRoomWithMembers();
+			describe('when target user is a student', () => {
+				it('should return an error', async () => {
+					const { loggedInClient, room, student } = await setupRoomWithMembers();
 
-				const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
-					userId: student.id,
+					const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
+						userId: student.id,
+					});
+
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 				});
+			});
 
-				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			describe('when role of target user is unknown', () => {
+				it('should return an error ', async () => {
+					const { loggedInClient, room, unknownRoleUser } = await setupRoomWithMembers({ addUnknownRoleUser: true });
+
+					const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
+						userId: unknownRoleUser.id,
+					});
+
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				});
 			});
 		});
 
@@ -216,6 +249,17 @@ describe('Room Controller (API)', () => {
 				});
 
 				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			});
+
+			describe('when no room owner exists', () => {
+				it('should gracefully continue and only upgrade role of target user', async () => {
+					const { loggedInClient, room, targetUser } = await setupRoomWithMembers();
+					const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
+						userId: targetUser.id,
+					});
+
+					expect(response.status).toBe(HttpStatus.OK);
+				});
 			});
 		});
 	});
