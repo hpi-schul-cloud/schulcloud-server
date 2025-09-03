@@ -226,8 +226,8 @@ describe('Room Controller (API)', () => {
 		});
 
 		describe('when the user is a school admin', () => {
-			const setupAdminLogin = async () => {
-				const { room, school, targetUser, externalTeacherUser } = await setupRoomWithMembers();
+			const setupAdminLogin = async (options: { addUnknownRoleUser?: boolean; overwriteOwnerRole?: boolean } = {}) => {
+				const { room, school, targetUser, externalTeacherUser } = await setupRoomWithMembers(options);
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 				await em.persistAndFlush([adminAccount, adminUser]);
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -258,7 +258,7 @@ describe('Room Controller (API)', () => {
 
 			describe('when no room owner exists', () => {
 				it('should gracefully continue and only upgrade role of target user', async () => {
-					const { loggedInClient, room, targetUser } = await setupAdminLogin();
+					const { loggedInClient, room, targetUser } = await setupAdminLogin({ overwriteOwnerRole: true });
 
 					const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
 						userId: targetUser.id,
