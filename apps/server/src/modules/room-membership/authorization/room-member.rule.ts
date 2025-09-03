@@ -34,12 +34,14 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 		const hasPermissions = requiredPermissions.every((permission) =>
 			this.hasRequiredPermission(user, object, permission)
 		);
+
 		return hasPermissions;
 	}
 
 	private hasRequiredPermission(user: User, object: RoomMemberAuthorizable, permission: Permission): boolean {
 		const hasPermission = this.hasDynamicPermission(user, object, permission);
 		const isImmutableUser = this.isImmutableMember(user, object.member);
+
 		return hasPermission && !isImmutableUser;
 	}
 
@@ -48,8 +50,8 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 			action: Action.write,
 			requiredPermissions: [permission],
 		});
-
 		const isAdminOfUserSchool = this.isAdminOfUserSchool(user, object);
+
 		return hasPermission || isAdminOfUserSchool;
 	}
 
@@ -58,12 +60,15 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
 		]);
 		const isSameSchool = object.member.schoolId === user.school.id;
+
 		return canAdministrateSchoolRooms && isSameSchool;
 	}
 
+	// check is needed for removeMember - but needs to be reevaluated for other actions
 	private isImmutableMember(user: User, member: RoomMember): boolean {
 		const isRoomOwner = member.roomRoleName == RoleName.ROOMOWNER;
 		const isCurrentUser = member.userId == user.id;
+
 		return isRoomOwner || isCurrentUser;
 	}
 }
