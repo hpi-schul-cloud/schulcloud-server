@@ -20,6 +20,7 @@ export interface ColumnBoardProps extends BoardNodeProps {
 	context: BoardExternalReference;
 	isVisible: boolean;
 	layout: BoardLayout;
+	readersCanEdit: boolean;
 }
 
 export interface ColumnProps extends BoardNodeProps {
