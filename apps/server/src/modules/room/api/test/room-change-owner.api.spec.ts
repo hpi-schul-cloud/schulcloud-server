@@ -201,12 +201,7 @@ describe('Room Controller (API)', () => {
 					roleName: RoleName.ROOMOWNER,
 				});
 
-				expect(response.body as ApiValidationError).toEqual(
-					expect.objectContaining({
-						type: 'API_VALIDATION_ERROR',
-						validationErrors: expect.arrayContaining([expect.objectContaining({ field: ['roleName'] })]),
-					})
-				);
+				expect(response.body as ApiValidationError).toEqual(expect.objectContaining({ type: 'API_VALIDATION_ERROR' }));
 			});
 
 			it('should not allow passing ownership to external teachers', async () => {

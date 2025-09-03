@@ -277,7 +277,6 @@ export class RoomUc {
 			requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
 		});
 
-		this.checkUserInRoom(ownershipContext);
 		this.checkUserIsStudent(ownershipContext);
 
 		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [currentUserId], RoleName.ROOMADMIN);
@@ -332,18 +331,6 @@ export class RoomUc {
 		return context;
 	}
 
-	private checkUserInRoom(context: OwnershipContext): void {
-		const { targetUser, roomAuthorizable } = context;
-		const isRoomMember = roomAuthorizable.members.find((member) => member.userId === targetUser.id);
-		if (isRoomMember === undefined) {
-			throw new CantPassOwnershipToUserNotInRoomLoggableException({
-				roomId: context.roomAuthorizable.roomId,
-				currentUserId: context.currentUser.id,
-				targetUserId: context.targetUser.id || 'undefined',
-			});
-		}
-	}
-
 	private checkUserIsStudent(context: OwnershipContext): void {
 		if (context.targetUser.roles.find((role) => role.name === RoleName.STUDENT)) {
 			throw new CantPassOwnershipToStudentLoggableException({
@@ -352,17 +339,6 @@ export class RoomUc {
 				targetUserId: context.targetUser.id || 'undefined',
 			});
 		}
-	}
-
-	private checkRoomAuthorizationByContext(
-		context: BaseContext,
-		action: Action,
-		requiredPermissions: Permission[] = []
-	): void {
-		this.authorizationService.checkPermission(context.currentUser, context.roomAuthorizable, {
-			action,
-			requiredPermissions,
-		});
 	}
 
 	private buildRoomMembersResponse(
