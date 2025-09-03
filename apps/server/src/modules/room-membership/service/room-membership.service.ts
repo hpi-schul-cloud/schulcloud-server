@@ -63,14 +63,14 @@ export class RoomMembershipService {
 					// inconsistent data - technically not possible - but in the rare occassion - i would log it here... but it's not worth to implement a loggable and a test...
 					return;
 				}
-				return {
+				return new RoomMember({
 					userId: user.id,
 					firstName: user.firstName,
 					lastName: user.lastName,
 					roomRoleId: role.id,
 					roomRoleName: role.name,
 					schoolId: user.schoolId,
-				};
+				});
 			})
 			.filter((user) => user !== undefined);
 		return validRoomMembers;
