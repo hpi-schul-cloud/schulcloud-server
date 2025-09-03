@@ -116,7 +116,6 @@ export class RoomUc {
 	}
 
 	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<{ room: Room; permissions: Permission[] }> {
-		console.log('userId', userId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const room = await this.roomService.getSingleRoom(roomId);
 		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
