@@ -46,7 +46,9 @@ describe('Room Controller (API)', () => {
 	});
 
 	describe('POST /rooms/:roomId/members/changeowner', () => {
-		const setupRoomWithMembers = async (options: { addUnknownRoleUser?: boolean } = {}) => {
+		const setupRoomWithMembers = async (
+			options: { addUnknownRoleUser?: boolean; overwriteOwnerRole?: boolean } = {}
+		) => {
 			const school = schoolEntityFactory.buildWithId();
 			const otherSchool = schoolEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser: owner } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -58,8 +60,9 @@ describe('Room Controller (API)', () => {
 			const targetUser = userFactory.buildWithId({ school: owner.school, roles: [teacherRole] });
 			const room = roomEntityFactory.buildWithId({ schoolId: owner.school.id });
 			const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+			const actualOwnerRole = options.overwriteOwnerRole ? roomViewerRole : roomOwnerRole;
 			const users = [
-				{ role: roomOwnerRole, user: owner },
+				{ role: actualOwnerRole, user: owner },
 				{ role: roomViewerRole, user: targetUser },
 				{ role: roomViewerRole, user: student },
 			];
@@ -223,11 +226,16 @@ describe('Room Controller (API)', () => {
 		});
 
 		describe('when the user is a school admin', () => {
-			it('should not allow to pick role roomowner (=> different endpoint)', async () => {
-				const { room, school, targetUser } = await setupRoomWithMembers();
+			const setupAdminLogin = async () => {
+				const { room, school, targetUser, externalTeacherUser } = await setupRoomWithMembers();
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 				await em.persistAndFlush([adminAccount, adminUser]);
 				const loggedInClient = await testApiClient.login(adminAccount);
+				return { loggedInClient, room, targetUser, externalTeacherUser };
+			};
+
+			it('should not allow to pick role roomowner (=> different endpoint)', async () => {
+				const { loggedInClient, room, targetUser } = await setupAdminLogin();
 
 				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
 					userIds: [targetUser.id],
@@ -238,10 +246,7 @@ describe('Room Controller (API)', () => {
 			});
 
 			it('should not allow passing ownership to external teachers', async () => {
-				const { room, school, externalTeacherUser } = await setupRoomWithMembers();
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
-				await em.persistAndFlush([adminAccount, adminUser]);
-				const loggedInClient = await testApiClient.login(adminAccount);
+				const { loggedInClient, room, externalTeacherUser } = await setupAdminLogin();
 
 				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
 					userIds: [externalTeacherUser.id],
@@ -253,7 +258,8 @@ describe('Room Controller (API)', () => {
 
 			describe('when no room owner exists', () => {
 				it('should gracefully continue and only upgrade role of target user', async () => {
-					const { loggedInClient, room, targetUser } = await setupRoomWithMembers();
+					const { loggedInClient, room, targetUser } = await setupAdminLogin();
+
 					const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
 						userId: targetUser.id,
 					});
