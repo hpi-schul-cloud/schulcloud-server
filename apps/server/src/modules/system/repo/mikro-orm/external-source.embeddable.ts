@@ -1,4 +1,4 @@
-import { Embeddable, ManyToOne, Property } from '@mikro-orm/core';
+import { Embeddable, ManyToOne, Property, ref, Ref } from '@mikro-orm/core';
 import { SystemEntity } from './system.entity';
 
 export interface ExternalSourceEntityProps {
@@ -15,14 +15,14 @@ export class ExternalSourceEmbeddable {
 	public externalId: string;
 
 	@ManyToOne(() => SystemEntity)
-	public system: SystemEntity;
+	public system: Ref<SystemEntity>;
 
 	@Property()
 	public lastSyncedAt: Date;
 
 	constructor(props: ExternalSourceEntityProps) {
 		this.externalId = props.externalId;
-		this.system = props.system;
+		this.system = ref(props.system);
 		this.lastSyncedAt = props.lastSyncedAt;
 	}
 }

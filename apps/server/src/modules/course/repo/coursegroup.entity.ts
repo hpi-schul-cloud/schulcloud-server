@@ -1,4 +1,4 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, ref, Ref } from '@mikro-orm/core';
 import { LessonParent } from '@modules/lesson/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { TaskParent } from '@modules/task/repo';
@@ -26,17 +26,17 @@ export class CourseGroupEntity extends BaseEntityWithTimestamps implements TaskP
 
 	@Index()
 	@ManyToOne(() => CourseEntity, { fieldName: 'courseId' })
-	course: CourseEntity;
+	course: Ref<CourseEntity>;
 
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
 	@Index()
-	school: SchoolEntity;
+	school: Ref<SchoolEntity>;
 
 	constructor(props: CourseGroupProperties) {
 		super();
 		this.name = props.name;
-		this.course = props.course;
-		this.school = props.course.school;
+		this.course = ref(props.course);
+		this.school = ref(props.course.school);
 		if (props.students) this.students.set(props.students);
 	}
 

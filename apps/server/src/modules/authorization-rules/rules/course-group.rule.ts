@@ -30,9 +30,14 @@ export class CourseGroupRule implements Rule<CourseGroupEntity> {
 		const { requiredPermissions } = context;
 
 		const hasAllPermissions = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
+
+		if (!object.course.isInitialized()) {
+			throw new Error('Course is not initialized');
+		}
+
 		const hasPermission =
 			this.authorizationHelper.hasAccessToEntity(user, object, ['students']) ||
-			this.courseRule.hasPermission(user, object.course, { action: Action.write, requiredPermissions: [] });
+			this.courseRule.hasPermission(user, object.course.unwrap(), { action: Action.write, requiredPermissions: [] });
 
 		return hasAllPermissions && hasPermission;
 	}
