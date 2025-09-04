@@ -10,7 +10,7 @@ let config: Config.InitialOptions = {
 	// ignore legacy mocha tests
 	testPathIgnorePatterns: ['^src', '^test'],
 	transform: {
-		'^.+\\.(t|j)s$': 'ts-jest',
+		'^.+\\.(t|j)s?$': '@swc/jest',
 	},
 	collectCoverageFrom: ['apps/**/*.(t|j)s'],
 	coverageDirectory: './coverage',

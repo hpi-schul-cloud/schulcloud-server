@@ -1,20 +1,12 @@
 {
 	"collection": "@nestjs/schematics",
-	"sourceRoot": "apps/server",
+	"sourceRoot": "apps/server/src",
+	"entryFile": "apps/server.app",
 	"monorepo": true,
 	"root": "apps/server",
 	"compilerOptions": {
-		"webpack": false,
+		"webpack": true,
 		"tsConfigPath": "apps/server/tsconfig.app.json",
-		"plugins": [
-			{
-				"name": "@nestjs/swagger",
-				"options": {
-					"classValidatorShim": true,
-					"introspectComments": true
-				}
-			}
-		],
 		"assets": ["static-assets/*"]
 	},
 	"projects": {

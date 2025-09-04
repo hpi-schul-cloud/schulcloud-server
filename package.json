@@ -264,6 +264,8 @@
 		"@nestjs/schematics": "^10.2.3",
 		"@nestjs/testing": "^10.4.15",
 		"@openapitools/openapi-generator-cli": "^2.19.1",
+		"@swc/core": "^1.13.5",
+		"@swc/jest": "^0.2.39",
 		"@types/adm-zip": "^0.5.7",
 		"@types/amqplib": "^0.10.7",
 		"@types/crypto-js": "^4.2.2",
@@ -310,6 +312,7 @@
 		"sinon-chai": "^3.7.0",
 		"socket.io-client": "^4.8.1",
 		"supertest": "^7.1.0",
+		"swc-loader": "^0.2.6",
 		"ts-jest": "^29.3.1",
 		"typescript": "^5.8.3"
 	}
