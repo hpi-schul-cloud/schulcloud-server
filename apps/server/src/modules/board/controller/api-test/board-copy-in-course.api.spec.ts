@@ -59,7 +59,7 @@ describe(`board copy with course relation (api)`, () => {
 				url: `https://example.com/boards/${columnBoardNode.id}#card-${cardNode.id}`,
 			});
 
-			await em.persistAndFlush([columnBoardNode, internalLinkElement]);
+			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, internalLinkElement]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
