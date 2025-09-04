@@ -667,6 +667,11 @@
 			"default": "false",
 			"description": "Oauth Login Endpoints Enabled."
 		},
+		"FEATURE_OAUTH_LOGIN_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables button Oauth Login feature"
+		},
 		"FEATURE_LOGIN_LINK_ENABLED": {
 			"type": "boolean",
 			"default": "false",
