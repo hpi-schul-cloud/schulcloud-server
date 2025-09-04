@@ -190,6 +190,7 @@ describe('RoomMembershipService', () => {
 				});
 
 				groupService.findById.mockResolvedValue(group);
+				groupService.findGroups.mockResolvedValue({ total: 1, data: [group] });
 				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 
 				return { group, room, roomMembership };
@@ -317,10 +318,10 @@ describe('RoomMembershipService', () => {
 					return { user, room };
 				};
 
-				it('should throw a badrequest exception', async () => {
+				it('should not throw an error, as e.g. KNL could be using this', async () => {
 					const { user, room } = setup();
 
-					await expect(service.removeMembersFromRoom(room.id, [user.id])).rejects.toThrowError(BadRequestException);
+					await expect(service.removeMembersFromRoom(room.id, [user.id])).resolves.toBe(undefined);
 				});
 			});
 		});
@@ -446,6 +447,36 @@ describe('RoomMembershipService', () => {
 				await service.deleteRoomMembership(roomMembership.roomId);
 				expect(groupService.delete).toHaveBeenCalledWith(group);
 				expect(roomMembershipRepo.delete).toHaveBeenCalledWith(roomMembership);
+			});
+		});
+	});
+
+	describe('getRoomMembers', () => {
+		const setup = () => {
+			const roomId = 'room123';
+			const userId = 'user456';
+			const groupId = 'group789';
+			const roleId = 'role101';
+
+			const user = userDoFactory.buildWithId({ id: userId });
+			const roomMembership = roomMembershipFactory.build({ roomId, userGroupId: groupId });
+			const group = groupFactory.build({ id: groupId, users: [{ userId, roleId }] });
+
+			roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
+			groupService.findById.mockResolvedValue(group);
+			roleService.findByIds.mockResolvedValue([]);
+			userService.findByIds.mockResolvedValue([user]);
+
+			return { roomId, userId, groupId, roleId, roomMembership, group };
+		};
+
+		describe('when roleId does not point to existing role', () => {
+			it('should remove member from result', async () => {
+				const { roomId } = setup();
+
+				const result = await service.getRoomMembers(roomId);
+
+				expect(result).toHaveLength(0);
 			});
 		});
 	});
