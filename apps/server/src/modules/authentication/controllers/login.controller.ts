@@ -64,7 +64,9 @@ export class LoginController {
 		@Body() _: Oauth2AuthorizationBodyParams
 	): Promise<OauthLoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
-
+		setTimeout(() => {
+			console.log('Nach 2 Sekunden');
+		}, 2000);
 		const mapped: OauthLoginResponse = LoginResponseMapper.mapToOauthLoginResponse(loginDto, user.externalIdToken);
 
 		return mapped;
