@@ -124,6 +124,30 @@
 					"withSeparateModelsAndApi": true
 				}
 			},
+			"common-cartridge-api":{
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json",
+				"output": "./apps/server/src/infra/common-cartridge-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:CommonCartridgeImportController_importCourse"
+				},
+				"globalProperty":{
+					"models": "CreateCcCourseBodyParams:CreateCcBoardBodyParams:CreateCcColumnBodyParams:CreateCcCardBodyParams:CreateCcCardElementBodyParams:UpdateElementContentBodyParams_data:UpdateElementContentBodyParams:UpdateElementContentBodyParamsData:DrawingElementContentBody:ExternalToolElementContentBody:FileElementContentBody:FileFolderElementContentBody:LinkElementContentBody:RichTextElementContentBody:SubmissionContainerElementContentBody:VideoConferenceElementContentBody",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
 			"courses-api": {
 				"generatorName": "typescript-axios",
 				"inputSpec": "http://localhost:3030/api/v3/docs-json",
