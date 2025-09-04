@@ -442,6 +442,8 @@ describe('H5PLibraryManagementService', () => {
 						majorVersion: 1,
 						minorVersion: 0,
 						patchVersion: 1,
+						runnable: 0,
+						title: 'Library A',
 					});
 					libraryStorage.isInstalled.mockResolvedValueOnce(true);
 					libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
@@ -538,6 +540,8 @@ describe('H5PLibraryManagementService', () => {
 						majorVersion: 1,
 						minorVersion: 0,
 						patchVersion: 0,
+						runnable: 0,
+						title: 'Library A',
 					});
 					libraryStorage.isInstalled.mockResolvedValueOnce(true);
 					libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
@@ -607,6 +611,8 @@ describe('H5PLibraryManagementService', () => {
 						majorVersion: 1,
 						minorVersion: 0,
 						patchVersion: 1,
+						runnable: 0,
+						title: 'Library A',
 					});
 					libraryStorage.isInstalled.mockResolvedValueOnce(true);
 					libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
@@ -659,6 +665,8 @@ describe('H5PLibraryManagementService', () => {
 							majorVersion: 1,
 							minorVersion: 0,
 							patchVersion: 1,
+							runnable: 0,
+							title: 'Library A',
 						});
 						libraryStorage.isInstalled.mockResolvedValueOnce(true);
 						libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
@@ -720,6 +728,8 @@ describe('H5PLibraryManagementService', () => {
 							majorVersion: 1,
 							minorVersion: 0,
 							patchVersion: 1,
+							runnable: 0,
+							title: 'Library A',
 						});
 						libraryStorage.isInstalled.mockResolvedValueOnce(true);
 						libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
@@ -771,6 +781,8 @@ describe('H5PLibraryManagementService', () => {
 							majorVersion: 1,
 							minorVersion: 0,
 							patchVersion: 1,
+							runnable: 0,
+							title: 'Library A',
 						});
 						libraryStorage.isInstalled.mockResolvedValueOnce(true);
 						libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
@@ -840,6 +852,8 @@ describe('H5PLibraryManagementService', () => {
 							majorVersion: 1,
 							minorVersion: 0,
 							patchVersion: 1,
+							runnable: 0,
+							title: 'Library A',
 						});
 						libraryStorage.isInstalled.mockResolvedValueOnce(true);
 						libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
@@ -912,6 +926,8 @@ describe('H5PLibraryManagementService', () => {
 						majorVersion: 1,
 						minorVersion: 0,
 						patchVersion: 1,
+						runnable: 0,
+						title: 'Library A',
 					});
 					libraryStorage.isInstalled.mockResolvedValueOnce(false);
 					libraryStorage.addLibrary.mockResolvedValueOnce({
@@ -979,6 +995,8 @@ describe('H5PLibraryManagementService', () => {
 						majorVersion: 1,
 						minorVersion: 0,
 						patchVersion: 1,
+						runnable: 0,
+						title: 'Library A',
 					});
 					libraryStorage.isInstalled.mockResolvedValueOnce(false);
 					libraryStorage.addLibrary.mockRejectedValueOnce(new Error('Mocked error during library addition'));
