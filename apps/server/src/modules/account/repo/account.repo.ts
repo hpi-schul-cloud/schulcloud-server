@@ -210,4 +210,13 @@ export class AccountMikroOrmRepo extends BaseDomainObjectRepo<Account, AccountEn
 
 		return result;
 	}
+
+	public async deactivateMultipleByUserIds(userIds: EntityId[], deactivatedAt: Date): Promise<void> {
+		const objectIds = userIds.map((id: EntityId) => new ObjectId(id));
+		await this.em.nativeUpdate(
+			this.entityName,
+			{ userId: { $in: objectIds } },
+			{ deactivatedAt, updatedAt: new Date() }
+		);
+	}
 }

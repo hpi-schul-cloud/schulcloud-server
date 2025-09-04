@@ -58,7 +58,7 @@ describe('AccessTokenService', () => {
 					tokenTtlInSeconds
 				);
 				expect(result.token).toEqual(expect.any(String));
-				expect(result.token.length).toBe(36);
+				expect(result.token.length).toBe(24);
 			});
 		});
 

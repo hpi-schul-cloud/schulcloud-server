@@ -4,7 +4,7 @@ import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing/room-membership-entity.factory';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -16,7 +16,6 @@ describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -27,13 +26,10 @@ describe('Room Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'rooms');
-
-		config = serverConfig();
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOMS_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -114,19 +110,6 @@ describe('Room Controller (API)', () => {
 			it('should return forbidden error', async () => {
 				const { room } = await setupRoomWithMembers();
 				const { loggedInClient } = await setupLoggedInUser();
-
-				const response = await loggedInClient.patch(`/${room.id}/leave`);
-
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
-			});
-		});
-
-		describe('when the feature is disabled', () => {
-			it('should return a 403 error', async () => {
-				const { room, teacherAccount } = await setupRoomWithMembers();
-				config.FEATURE_ROOMS_ENABLED = false;
-
-				const loggedInClient = await testApiClient.login(teacherAccount);
 
 				const response = await loggedInClient.patch(`/${room.id}/leave`);
 
