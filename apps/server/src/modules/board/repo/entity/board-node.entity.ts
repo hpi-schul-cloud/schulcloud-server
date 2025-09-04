@@ -18,7 +18,7 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	// Generic Tree
 	// --------------------------------------------------------------------------
 	@Index()
-	@Property({ nullable: false })
+	@Property({ nullable: false, type: 'string' })
 	path = ROOT_PATH;
 
 	@Property({ nullable: false, type: 'integer' })
