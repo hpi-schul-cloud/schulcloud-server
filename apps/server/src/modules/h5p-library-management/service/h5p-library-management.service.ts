@@ -257,9 +257,7 @@ export class H5PLibraryManagementService {
 	}
 
 	private getAvailableVersions(availableLibraries: ILibraryAdministrationOverviewItem[]): string[] {
-		const availableVersions = availableLibraries.map(
-			(lib) => `${lib.machineName}-${lib.majorVersion}.${lib.minorVersion}.${lib.patchVersion}`
-		);
+		const availableVersions = availableLibraries.map((lib) => this.formatLibraryVersion(lib));
 
 		return availableVersions;
 	}
@@ -410,7 +408,7 @@ export class H5PLibraryManagementService {
 		const folders = await this.libraryStorage.getAllLibraryFolders();
 
 		for (const folder of folders) {
-			const libraryName = this.getLibraryNameFromFolder(folder);
+			const libraryName = LibraryName.fromUberName(folder);
 			const libraryJsonExistsInS3 = await this.libraryStorage.fileExists(libraryName, 'library.json');
 
 			if (libraryJsonExistsInS3) {
@@ -424,18 +422,6 @@ export class H5PLibraryManagementService {
 		const synchronizedResults = installResults.filter((result) => this.isLibraryInstalledOrUpdated(result));
 
 		return synchronizedResults;
-	}
-
-	private getLibraryNameFromFolder(folder: string): ILibraryName {
-		const [machineName, version] = folder.split('-');
-		const [majorVersion, minorVersion] = version.split('.');
-		const libraryName: ILibraryName = {
-			machineName,
-			majorVersion: Number(majorVersion),
-			minorVersion: Number(minorVersion),
-		};
-
-		return libraryName;
 	}
 
 	private async synchronizeLibraryMetadataInDatabase(libraryName: ILibraryName): Promise<ILibraryInstallResult> {
@@ -543,25 +529,21 @@ export class H5PLibraryManagementService {
 
 	private logRemoveLibraryDueToError(library: ILibraryMetadata): void {
 		this.logger.warning(
-			new H5PLibraryManagementLoggable(
-				`Removing library ${library.machineName}-${library.majorVersion}.${library.minorVersion} due to error.`
-			)
+			new H5PLibraryManagementLoggable(`Removing library ${LibraryName.toUberName(library)} due to error.`)
 		);
 	}
 
 	private logLibraryUpdated(oldVersion: IFullLibraryName, newVersion: IFullLibraryName): void {
 		this.logger.info(
 			new H5PLibraryManagementLoggable(
-				`Updated library: ${oldVersion.machineName}-${oldVersion.majorVersion}.${oldVersion.minorVersion} to ${newVersion.machineName}-${newVersion.majorVersion}.${newVersion.minorVersion}`
+				`Updated library: ${LibraryName.toUberName(oldVersion)} to ${LibraryName.toUberName(newVersion)}`
 			)
 		);
 	}
 
 	private logLibraryAlreadyInstalled(newVersion: IFullLibraryName): void {
 		this.logger.info(
-			new H5PLibraryManagementLoggable(
-				`Library ${newVersion.machineName}-${newVersion.majorVersion}.${newVersion.minorVersion} is already installed.`
-			)
+			new H5PLibraryManagementLoggable(`Library ${LibraryName.toUberName(newVersion)} is already installed.`)
 		);
 	}
 
@@ -593,11 +575,7 @@ export class H5PLibraryManagementService {
 	}
 
 	private logLibraryAdded(newVersion: IFullLibraryName): void {
-		this.logger.info(
-			new H5PLibraryManagementLoggable(
-				`Added library: ${newVersion.machineName}-${newVersion.majorVersion}.${newVersion.minorVersion}.${newVersion.patchVersion}`
-			)
-		);
+		this.logger.info(new H5PLibraryManagementLoggable(`Added library: ${this.formatLibraryVersion(newVersion)}`));
 	}
 
 	private async checkConsistency(library: ILibraryName): Promise<void> {
@@ -650,7 +628,7 @@ export class H5PLibraryManagementService {
 		this.logger.warning(
 			new H5PLibraryManagementErrorLoggable(
 				error,
-				{ library: `${library.machineName}-${library.majorVersion}.${library.minorVersion}` },
+				{ library: LibraryName.toUberName(library) },
 				'while reading library metadata'
 			)
 		);
@@ -661,11 +639,7 @@ export class H5PLibraryManagementService {
 	}
 
 	private logLibraryIsNotInstalled(library: ILibraryName): void {
-		this.logger.info(
-			new H5PLibraryManagementLoggable(
-				`Library ${library.machineName}-${library.majorVersion}.${library.minorVersion} is not installed.`
-			)
-		);
+		this.logger.info(new H5PLibraryManagementLoggable(`Library ${LibraryName.toUberName(library)} is not installed.`));
 	}
 
 	private async checkFiles(library: ILibraryName, requiredFiles: string[]): Promise<boolean> {
@@ -693,9 +667,7 @@ export class H5PLibraryManagementService {
 	private logMissingFiles(library: ILibraryName, missingFiles: string[]): void {
 		this.logger.info(
 			new H5PLibraryManagementLoggable(
-				`Missing files for library ${library.machineName}-${library.majorVersion}.${
-					library.minorVersion
-				}: ${missingFiles.join(', ')}`
+				`Missing files for library ${LibraryName.toUberName(library)}: ${missingFiles.join(', ')}`
 			)
 		);
 	}
@@ -708,7 +680,7 @@ export class H5PLibraryManagementService {
 			this.logger.warning(
 				new H5PLibraryManagementErrorLoggable(
 					error,
-					{ library: `${libraryName.machineName}-${libraryName.majorVersion}.${libraryName.minorVersion}` },
+					{ library: LibraryName.toUberName(libraryName) },
 					'while reading library'
 				)
 			);
@@ -724,7 +696,7 @@ export class H5PLibraryManagementService {
 			this.logger.warning(
 				new H5PLibraryManagementErrorLoggable(
 					error,
-					{ library: `${libraryName.machineName}-${libraryName.majorVersion}.${libraryName.minorVersion}` },
+					{ library: LibraryName.toUberName(libraryName) },
 					'while adding library.json to S3'
 				)
 			);
@@ -737,7 +709,7 @@ export class H5PLibraryManagementService {
 	private logLibraryJsonAddedToS3(metadata: IInstalledLibrary): void {
 		this.logger.info(
 			new H5PLibraryManagementLoggable(
-				`Added library.json containing latest metadata for ${metadata.machineName}-${metadata.majorVersion}.${metadata.minorVersion}.${metadata.patchVersion} to S3.`
+				`Added library.json containing latest metadata for ${this.formatLibraryVersion(metadata)} to S3.`
 			)
 		);
 	}
