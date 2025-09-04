@@ -11,7 +11,8 @@ import {
 	CreateCcColumnBodyParams,
 	CreateCcCardBodyParams,
 } from '../controller/dto/common-cartridge-dtos';
-
+import { Injectable } from '@nestjs/common';
+@Injectable()
 export class CommonCartridgeImportService {
 	constructor(
 		private readonly courseService: CourseService,
