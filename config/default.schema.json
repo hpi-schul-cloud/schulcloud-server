@@ -375,7 +375,7 @@
 				"INSTALL_LIBRARY_LOCK_MAX_OCCUPATION_TIME": {
 					"type": "integer",
 					"minimum": 0,
-					"default": 30000,
+					"default": 600000,
 					"description": "The number of milliseconds that code has until a single library is installed. If this time is exceeded the lock will be freed and the library installation has failed."
 				},
 				"LIBRARY_LIST_PATH": {
