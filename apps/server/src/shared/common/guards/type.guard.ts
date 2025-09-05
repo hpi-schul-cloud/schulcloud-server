@@ -25,6 +25,14 @@ export class TypeGuard {
 		return isNumber;
 	}
 
+	public static checkNumber(value: unknown): number {
+		if (!TypeGuard.isNumber(value)) {
+			throw new Error('Type is not a number');
+		}
+
+		return value;
+	}
+
 	public static isBoolean(value: unknown): value is boolean {
 		const isBoolean = typeof value === 'boolean';
 
@@ -34,14 +42,6 @@ export class TypeGuard {
 	public static checkBoolean(value: unknown): boolean {
 		if (!TypeGuard.isBoolean(value)) {
 			throw new Error('Type is not a boolean');
-		}
-
-		return value;
-	}
-
-	public static checkNumber(value: unknown): number {
-		if (!TypeGuard.isNumber(value)) {
-			throw new Error('Type is not a number');
 		}
 
 		return value;
