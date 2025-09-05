@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Action } from '@modules/authorization';
+import { AuthorizationContextBuilder } from '@modules/authorization';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
@@ -111,7 +111,11 @@ describe(SubmissionItemUc.name, () => {
 				const { submissionContainerEl, user } = setup();
 
 				await uc.findSubmissionItems(user.id, submissionContainerEl.id);
-				expect(boardPermissionService.checkPermission).toBeCalledWith(user.id, submissionContainerEl, Action.read);
+				expect(boardPermissionService.checkPermission).toBeCalledWith(
+					user.id,
+					submissionContainerEl,
+					AuthorizationContextBuilder.read([])
+				);
 			});
 		});
 
@@ -217,7 +221,11 @@ describe(SubmissionItemUc.name, () => {
 
 			await uc.updateSubmissionItem(user.id, submissionItem.id, false);
 
-			expect(boardPermissionService.checkPermission).toBeCalledWith(user.id, submissionItem, Action.write);
+			expect(boardPermissionService.checkPermission).toBeCalledWith(
+				user.id,
+				submissionItem,
+				AuthorizationContextBuilder.write([])
+			);
 		});
 
 		it('should call service to update submission item', async () => {
@@ -256,7 +264,11 @@ describe(SubmissionItemUc.name, () => {
 
 			await uc.deleteSubmissionItem(user.id, submissionItem.id);
 
-			expect(boardPermissionService.checkPermission).toBeCalledWith(user.id, submissionItem, Action.write);
+			expect(boardPermissionService.checkPermission).toBeCalledWith(
+				user.id,
+				submissionItem,
+				AuthorizationContextBuilder.write([])
+			);
 		});
 
 		it('should call service to delete submission item', async () => {
@@ -324,7 +336,11 @@ describe(SubmissionItemUc.name, () => {
 
 				await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
 
-				expect(boardPermissionService.checkPermission).toBeCalledWith(user.id, submissionItem, Action.write);
+				expect(boardPermissionService.checkPermission).toBeCalledWith(
+					user.id,
+					submissionItem,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call factory to build content element', async () => {

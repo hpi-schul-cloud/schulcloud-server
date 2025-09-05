@@ -1,7 +1,7 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Action, AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
@@ -393,7 +393,11 @@ describe(BoardUc.name, () => {
 
 			await uc.findBoardContext(user.id, board.id);
 
-			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
+			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
+				user.id,
+				board,
+				AuthorizationContextBuilder.read([])
+			);
 		});
 
 		it('should return the context object', async () => {
@@ -422,7 +426,11 @@ describe(BoardUc.name, () => {
 
 				await uc.deleteBoard(user.id, board.id);
 
-				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					board,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to delete the board', async () => {
@@ -452,7 +460,11 @@ describe(BoardUc.name, () => {
 
 				await uc.updateBoardTitle(user.id, board.id, 'new title');
 
-				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					board,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to update the board title', async () => {
@@ -483,7 +495,11 @@ describe(BoardUc.name, () => {
 
 				await uc.createColumn(user.id, board.id);
 
-				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					board,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the factory to build column', async () => {
@@ -539,7 +555,11 @@ describe(BoardUc.name, () => {
 
 				await uc.moveColumn(user.id, column.id, board.id, 1);
 
-				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, column, Action.write);
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					board,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to check the permissions for target board', async () => {
@@ -548,7 +568,11 @@ describe(BoardUc.name, () => {
 
 				await uc.moveColumn(user.id, column.id, board.id, 1);
 
-				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					board,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to move the column', async () => {
@@ -603,7 +627,11 @@ describe(BoardUc.name, () => {
 
 			await uc.copyBoard(user.id, board.id, user.school.id);
 
-			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
+			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
+				user.id,
+				board,
+				AuthorizationContextBuilder.read([])
+			);
 		});
 
 		it('should call authorization to check course permissions', async () => {
@@ -668,7 +696,11 @@ describe(BoardUc.name, () => {
 
 			await uc.updateVisibility(user.id, board.id, true);
 
-			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
+			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
+				user.id,
+				board,
+				AuthorizationContextBuilder.write([])
+			);
 		});
 
 		it('should call the service to update the board visibility', async () => {
@@ -703,7 +735,11 @@ describe(BoardUc.name, () => {
 
 				await uc.updateLayout(user.id, board.id, BoardLayout.LIST);
 
-				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					board,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to update the board layout', async () => {

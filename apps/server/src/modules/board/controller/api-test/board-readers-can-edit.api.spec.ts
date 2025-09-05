@@ -129,6 +129,31 @@ describe(`board readers can edit setting (api)`, () => {
 		});
 	});
 
+	describe('with user who has only edit role in room', () => {
+		it('should return status 403', async () => {
+			const { accountWithEditRole, columnBoardNode } = await setup();
+
+			const loggedInClient = await testApiClient.login(accountWithEditRole);
+
+			const readersCanEdit = true;
+
+			const response = await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+
+			expect(response.status).toEqual(403);
+		});
+		it('should not change the board visibility', async () => {
+			const { accountWithEditRole, columnBoardNode } = await setup();
+
+			const loggedInClient = await testApiClient.login(accountWithEditRole);
+
+			const readersCanEdit = true;
+			const response = await loggedInClient.get(columnBoardNode.id);
+			const result = response.body as BoardResponse;
+
+			expect(result.readersCanEdit).toEqual(readersCanEdit);
+		});
+	});
+
 	describe('with user who has only view role in room', () => {
 		it('should return status 403', async () => {
 			const { accountWithViewRole, columnBoardNode } = await setup();

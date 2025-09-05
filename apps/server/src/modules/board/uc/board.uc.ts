@@ -1,6 +1,6 @@
 import { LegacyLogger } from '@core/logger';
 import { StorageLocation } from '@infra/files-storage-client';
-import { Action, AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { CopyStatus } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
@@ -81,7 +81,7 @@ export class BoardUc {
 		this.logger.debug({ action: 'findBoardContext', userId, boardId });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.read);
+		await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.read([]));
 
 		return board.context;
 	}
@@ -90,7 +90,7 @@ export class BoardUc {
 		this.logger.debug({ action: 'deleteBoard', userId, boardId });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.delete(board);
 		return board;
@@ -100,7 +100,7 @@ export class BoardUc {
 		this.logger.debug({ action: 'updateBoardTitle', userId, boardId, title });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.updateTitle(board, title);
 		return board;
@@ -110,7 +110,7 @@ export class BoardUc {
 		this.logger.debug({ action: 'createColumn', userId, boardId });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId, 1);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
 
 		const column = this.boardNodeFactory.buildColumn();
 
@@ -130,8 +130,8 @@ export class BoardUc {
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
 		const targetBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, targetBoardId);
 
-		await this.boardPermissionService.checkPermission(userId, column, Action.write);
-		await this.boardPermissionService.checkPermission(userId, targetBoard, Action.write);
+		await this.boardPermissionService.checkPermission(userId, column, AuthorizationContextBuilder.write([]));
+		await this.boardPermissionService.checkPermission(userId, targetBoard, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.move(column, targetBoard, targetPosition);
 		return column;
@@ -142,7 +142,7 @@ export class BoardUc {
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 
-		await this.boardPermissionService.checkPermission(userId, board, Action.read);
+		await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.read([]));
 		await this.checkReferenceWritePermission(userId, board.context);
 
 		const storageLocationReference = await this.getStorageLocationReference(board.context);
@@ -161,7 +161,7 @@ export class BoardUc {
 
 	public async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise<ColumnBoard> {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.updateVisibility(board, isVisible);
 		return board;
@@ -173,7 +173,7 @@ export class BoardUc {
 		readersCanEdit: boolean
 	): Promise<ColumnBoard> {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		// await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		// await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
 
 		await this.columnBoardService.updateReadersCanEdit(board, readersCanEdit);
 		return board;
@@ -181,7 +181,7 @@ export class BoardUc {
 
 	public async updateLayout(userId: EntityId, boardId: EntityId, layout: BoardLayout): Promise<ColumnBoard> {
 		const board: ColumnBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.updateLayout(board, layout);
 		return board;
