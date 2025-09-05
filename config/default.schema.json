@@ -1580,6 +1580,11 @@
 			"default": true,
 			"description": "Enables calender service"
 		},
+		"FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables the toggle that allows board readers to edit the board"
+		},
 		"FEATURE_ROOM_COPY_ENABLED": {
 			"type": "boolean",
 			"default": true,
