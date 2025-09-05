@@ -1,5 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
@@ -203,7 +203,11 @@ describe(MediaBoardUc.name, () => {
 
 				await uc.createLine(user.id, mediaBoard.id);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaBoard,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should return a new media line', async () => {
@@ -258,7 +262,11 @@ describe(MediaBoardUc.name, () => {
 
 				await uc.setLayout(user.id, mediaBoard.id, BoardLayout.GRID);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaBoard,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should change the layout', async () => {

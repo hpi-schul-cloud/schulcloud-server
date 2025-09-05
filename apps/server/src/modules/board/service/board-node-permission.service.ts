@@ -1,6 +1,5 @@
-import { Action, AuthorizationService } from '@modules/authorization';
+import { AuthorizationContext, AuthorizationService } from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode, BoardRoles, UserWithBoardRoles } from '../domain';
 import { BoardNodeAuthorizableService } from './board-node-authorizable.service';
@@ -13,12 +12,15 @@ export class BoardNodePermissionService {
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService
 	) {}
 
-	public async checkPermission(userId: EntityId, boardNode: AnyBoardNode, action: Action): Promise<void> {
-		const requiredPermissions: Permission[] = [];
+	public async checkPermission(
+		userId: EntityId,
+		boardNode: AnyBoardNode,
+		context: AuthorizationContext
+	): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
 
-		this.authorizationService.checkPermission(user, boardNodeAuthorizable, { action, requiredPermissions });
+		this.authorizationService.checkPermission(user, boardNodeAuthorizable, context);
 	}
 
 	public isUserBoardEditor(userId: EntityId, userBoardRoles: UserWithBoardRoles[]): boolean {

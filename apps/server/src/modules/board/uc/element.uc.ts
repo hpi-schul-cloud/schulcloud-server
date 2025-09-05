@@ -1,5 +1,5 @@
 import { Logger } from '@core/logger';
-import { Action } from '@modules/authorization';
+import { AuthorizationContextBuilder } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -32,7 +32,7 @@ export class ElementUc {
 		elementId: EntityId
 	): Promise<ContentElementWithParentHierarchy> {
 		const element = await this.boardNodeService.findContentElementById(elementId);
-		await this.boardPermissionService.checkPermission(userId, element, Action.read);
+		await this.boardPermissionService.checkPermission(userId, element, AuthorizationContextBuilder.read([]));
 
 		const parentHierarchy = await this.boardContextApiHelperService.getParentsOfElement(element.rootId);
 
@@ -45,7 +45,7 @@ export class ElementUc {
 		content: AnyElementContentBody
 	): Promise<AnyContentElement> {
 		const element = await this.boardNodeService.findContentElementById(elementId);
-		await this.boardPermissionService.checkPermission(userId, element, Action.write);
+		await this.boardPermissionService.checkPermission(userId, element, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.updateContent(element, content);
 
@@ -55,7 +55,7 @@ export class ElementUc {
 	public async deleteElement(userId: EntityId, elementId: EntityId): Promise<EntityId> {
 		const element = await this.boardNodeService.findContentElementById(elementId);
 		const { rootId } = element;
-		await this.boardPermissionService.checkPermission(userId, element, Action.write);
+		await this.boardPermissionService.checkPermission(userId, element, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.delete(element);
 		return rootId;
@@ -63,7 +63,7 @@ export class ElementUc {
 
 	public async checkElementReadPermission(userId: EntityId, elementId: EntityId): Promise<void> {
 		const element = await this.boardNodeService.findContentElementById(elementId);
-		await this.boardPermissionService.checkPermission(userId, element, Action.read);
+		await this.boardPermissionService.checkPermission(userId, element, AuthorizationContextBuilder.read([]));
 	}
 
 	public async createSubmissionItem(
@@ -85,7 +85,11 @@ export class ElementUc {
 			);
 		}
 
-		await this.boardPermissionService.checkPermission(userId, submissionContainerElement, Action.read);
+		await this.boardPermissionService.checkPermission(
+			userId,
+			submissionContainerElement,
+			AuthorizationContextBuilder.read([])
+		);
 
 		// TODO move this in service
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(

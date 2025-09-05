@@ -44,7 +44,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 			boardNode,
 			rootNode,
 			parentNode,
-			boardSettings,
+			boardContextSettings: boardSettings,
 		});
 
 		return boardNodeAuthorizable;
@@ -77,7 +77,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 				boardNode,
 				rootNode,
 				parentNode,
-				boardSettings,
+				boardContextSettings: boardSettings,
 			});
 			return boardNodeAuthorizable;
 		});

@@ -26,6 +26,7 @@ export const columnBoardFactory = ColumnBoardFactory.define(ColumnBoard, ({ sequ
 		},
 		isVisible: true,
 		layout: BoardLayout.COLUMNS,
+		readersCanEdit: false,
 	};
 
 	return props;

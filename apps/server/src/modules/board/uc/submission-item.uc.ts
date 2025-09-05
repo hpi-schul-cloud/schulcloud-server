@@ -1,4 +1,4 @@
-import { Action } from '@modules/authorization';
+import { AuthorizationContextBuilder } from '@modules/authorization';
 import { BadRequestException, ForbiddenException, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import {
@@ -25,7 +25,7 @@ export class SubmissionItemUc {
 		private readonly boardNodeFactory: BoardNodeFactory
 	) {}
 
-	async findSubmissionItems(
+	public async findSubmissionItems(
 		userId: EntityId,
 		submissionContainerId: EntityId
 	): Promise<{ submissionItems: SubmissionItem[]; users: UserWithBoardRoles[] }> {
@@ -34,7 +34,11 @@ export class SubmissionItemUc {
 			submissionContainerId
 		);
 
-		await this.boardPermissionService.checkPermission(userId, submissionContainerElement, Action.read);
+		await this.boardPermissionService.checkPermission(
+			userId,
+			submissionContainerElement,
+			AuthorizationContextBuilder.read([])
+		);
 
 		let submissionItems = submissionContainerElement.children.filter(isSubmissionItem);
 
@@ -54,28 +58,28 @@ export class SubmissionItemUc {
 		return { submissionItems, users };
 	}
 
-	async updateSubmissionItem(
+	public async updateSubmissionItem(
 		userId: EntityId,
 		submissionItemId: EntityId,
 		completed: boolean
 	): Promise<SubmissionItem> {
 		const submissionItem = await this.boardNodeService.findByClassAndId(SubmissionItem, submissionItemId);
 
-		await this.boardPermissionService.checkPermission(userId, submissionItem, Action.write);
+		await this.boardPermissionService.checkPermission(userId, submissionItem, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.updateCompleted(submissionItem, completed);
 
 		return submissionItem;
 	}
 
-	async deleteSubmissionItem(userId: EntityId, submissionItemId: EntityId): Promise<void> {
+	public async deleteSubmissionItem(userId: EntityId, submissionItemId: EntityId): Promise<void> {
 		const submissionItem = await this.boardNodeService.findByClassAndId(SubmissionItem, submissionItemId);
-		await this.boardPermissionService.checkPermission(userId, submissionItem, Action.write);
+		await this.boardPermissionService.checkPermission(userId, submissionItem, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.delete(submissionItem);
 	}
 
-	async createElement(
+	public async createElement(
 		userId: EntityId,
 		submissionItemId: EntityId,
 		type: ContentElementType
@@ -92,7 +96,7 @@ export class SubmissionItemUc {
 			throw new ForbiddenException();
 		}
 
-		await this.boardPermissionService.checkPermission(userId, submissionItem, Action.write);
+		await this.boardPermissionService.checkPermission(userId, submissionItem, AuthorizationContextBuilder.write([]));
 
 		const element = this.boardNodeFactory.buildContentElement(type);
 		// TODO this is already taken care in add to parent, but TS complains without this type guard

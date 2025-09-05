@@ -1,4 +1,9 @@
-import { Action, AuthorizationContext, AuthorizationService } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+} from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@core/logger';
@@ -45,7 +50,7 @@ export class CardUc {
 		this.logger.debug({ action: 'updateCardHeight', userId, cardId, height });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
-		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.updateHeight(card, height);
 		return card;
@@ -55,7 +60,7 @@ export class CardUc {
 		this.logger.debug({ action: 'updateCardTitle', userId, cardId, title });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
-		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.updateTitle(card, title);
 		return card;
@@ -66,7 +71,7 @@ export class CardUc {
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		const { rootId } = card;
-		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.delete(card);
 		return rootId;
@@ -83,7 +88,7 @@ export class CardUc {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
-		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
 
 		const element = this.boardNodeFactory.buildContentElement(type);
 
@@ -103,8 +108,8 @@ export class CardUc {
 		const element = await this.boardNodeService.findContentElementById(elementId);
 		const targetCard = await this.boardNodeService.findByClassAndId(Card, targetCardId);
 
-		await this.boardNodePermissionService.checkPermission(userId, element, Action.write);
-		await this.boardNodePermissionService.checkPermission(userId, targetCard, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, element, AuthorizationContextBuilder.write([]));
+		await this.boardNodePermissionService.checkPermission(userId, targetCard, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.move(element, targetCard, targetPosition);
 
