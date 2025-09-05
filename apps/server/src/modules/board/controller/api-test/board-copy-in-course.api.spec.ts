@@ -14,6 +14,7 @@ import {
 	columnBoardEntityFactory,
 	columnEntityFactory,
 	linkElementEntityFactory,
+	richTextElementEntityFactory,
 } from '../../testing';
 
 const baseRouteName = '/boards';
@@ -53,13 +54,8 @@ describe(`board copy with course relation (api)`, () => {
 				...columnBoardProps,
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
-			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
-			const cardNode = cardEntityFactory.withParent(columnNode).build();
-			const internalLinkElement = linkElementEntityFactory.withParent(cardNode).build({
-				url: `https://example.com/boards/${columnBoardNode.id}#card-${cardNode.id}`,
-			});
 
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, internalLinkElement]);
+			await em.persistAndFlush([columnBoardNode]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -96,22 +92,6 @@ describe(`board copy with course relation (api)`, () => {
 			expect(result).toBeDefined();
 		});
 
-		it('should update internal links on the board copy', async () => {
-			const { loggedInClient, columnBoardNode } = await setup();
-
-			const response = await loggedInClient.post(`${columnBoardNode.id}/copy`);
-			const body = response.body as CopyApiResponse;
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			const copyId = body.id!;
-
-			const result = await em.find(BoardNodeEntity, {
-				path: { $re: `^https://example.com/boards/${copyId}` },
-				type: BoardNodeType.LINK_ELEMENT,
-			});
-
-			expect(result).toBeDefined();
-		});
-
 		it('should set draft status on the board copy', async () => {
 			const { loggedInClient, columnBoardNode } = await setup({ isVisible: true });
 
@@ -131,6 +111,47 @@ describe(`board copy with course relation (api)`, () => {
 			const result = await em.findOneOrFail(BoardNodeEntity, body.id!);
 
 			expect(result.isVisible).toBe(false);
+		});
+
+		describe('when board contains link elements', () => {
+			const setupWithLinkElement = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				await em.persistAndFlush([teacherAccount, teacherUser, course]);
+
+				const columnBoardNode = columnBoardEntityFactory.build({
+					context: { id: course.id, type: BoardExternalReferenceType.Course },
+				});
+				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+				const cardNode = cardEntityFactory.withParent(columnNode).build();
+				const internalLinkElement = linkElementEntityFactory.withParent(cardNode).build({
+					url: `https://example.com/boards/${columnBoardNode.id}#card-${cardNode.id}`,
+					imageUrl: '',
+				});
+				await em.persistAndFlush([columnBoardNode, columnNode, cardNode, internalLinkElement]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient, columnBoardNode };
+			};
+
+			it('should update internal links on the board copy', async () => {
+				const { loggedInClient, columnBoardNode } = await setupWithLinkElement();
+
+				const response = await loggedInClient.post(`${columnBoardNode.id}/copy`);
+				const body = response.body as CopyApiResponse;
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				const copyId = body.id!;
+
+				const result = await em.find(BoardNodeEntity, {
+					path: { $re: `^https://example.com/boards/${copyId}` },
+					type: BoardNodeType.LINK_ELEMENT,
+				});
+
+				expect(result).toBeDefined();
+			});
 		});
 
 		describe('with invalid id', () => {
