@@ -272,14 +272,63 @@ export class LibraryStorage implements ILibraryStorage {
 		const dependencies: { [ubername: string]: number } = {};
 		for (const library of libraries) {
 			const { preloadedDependencies = [], editorDependencies = [], dynamicDependencies = [] } = library;
+			const softDependencies = await this.getSoftDependenciesFromSemantics(library);
 
-			for (const dependency of preloadedDependencies.concat(editorDependencies, dynamicDependencies)) {
+			for (const dependency of preloadedDependencies.concat(
+				editorDependencies,
+				dynamicDependencies,
+				softDependencies
+			)) {
 				const ubername = LibraryName.toUberName(dependency);
 				dependencies[ubername] = (dependencies[ubername] ?? 0) + 1;
 			}
 		}
 
 		return dependencies;
+	}
+
+	private async getSoftDependenciesFromSemantics(library: ILibraryMetadata): Promise<ILibraryName[]> {
+		const softDependencies: LibraryName[] = [];
+
+		const semanticsFileExists = await this.fileExists(library, 'semantics.json');
+		if (semanticsFileExists) {
+			const semantics = await this.getFileAsJson(library, 'semantics.json', true);
+			if (Array.isArray(semantics)) {
+				const libraryOptions = this.findLibraryOptions(semantics);
+				for (const libraryOption of libraryOptions) {
+					const libraryName = LibraryName.fromUberName(libraryOption, { useWhitespace: true, useHyphen: false });
+					softDependencies.push(libraryName);
+				}
+			}
+		}
+
+		return softDependencies;
+	}
+
+	private findLibraryOptions(semantics: any[]): string[] {
+		const results: string[] = [];
+
+		function search(obj: any): void {
+			if (obj && typeof obj === 'object') {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				if ('type' in obj && obj.type && obj.type === 'library' && 'options' in obj && Array.isArray(obj.options)) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+					results.push(...obj.options);
+				}
+				for (const key in obj) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+					const value = obj[key];
+					if (Array.isArray(value)) {
+						value.forEach(search);
+					} else if (typeof value === 'object' && value !== null) {
+						search(value);
+					}
+				}
+			}
+		}
+
+		semantics.forEach(search);
+		return results;
 	}
 
 	/**
