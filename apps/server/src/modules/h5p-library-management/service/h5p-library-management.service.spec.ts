@@ -589,6 +589,88 @@ describe('H5PLibraryManagementService', () => {
 				});
 			});
 
+			describe('when wrong metadata is provided', () => {
+				const setup = () => {
+					const service = module.get(H5PLibraryManagementService);
+
+					libraryStorage.getAllLibraryFolders.mockResolvedValueOnce(['libraryA-1.0']);
+					libraryStorage.fileExists.mockResolvedValueOnce(true);
+					libraryStorage.getFileAsJson.mockResolvedValueOnce({
+						machineName: 'libraryA',
+						majorVersion: 1,
+						minorVersion: 0,
+						patchVersion: 1,
+						runnable: 'true',
+						title: 'Library A',
+					});
+					libraryStorage.isInstalled.mockResolvedValueOnce(true);
+					libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
+						{
+							machineName: 'libraryA',
+							majorVersion: 1,
+							minorVersion: 0,
+						},
+					]);
+					libraryStorage.getLibrary.mockResolvedValueOnce({
+						machineName: 'libraryA',
+						majorVersion: 1,
+						minorVersion: 0,
+						patchVersion: 0,
+						files: [],
+						_id: new ObjectId(),
+						id: 'mock_id',
+						createdAt: new Date(),
+						updatedAt: new Date(),
+						restricted: false,
+						runnable: true,
+						title: 'Library A',
+						compare: jest.fn(),
+						compareVersions: jest.fn(),
+					});
+					libraryStorage.updateLibrary.mockResolvedValueOnce({
+						machineName: 'libraryA',
+						majorVersion: 1,
+						minorVersion: 0,
+						patchVersion: 1,
+						restricted: false,
+						runnable: true,
+						title: 'Library A',
+						compare: jest.fn(),
+						compareVersions: jest.fn(),
+					});
+					libraryStorage.isInstalled.mockResolvedValueOnce(true);
+					libraryStorage.getLibrary.mockResolvedValueOnce({
+						machineName: 'libraryA',
+						majorVersion: 1,
+						minorVersion: 0,
+						patchVersion: 1,
+						files: [],
+						_id: new ObjectId(),
+						id: 'mock_id',
+						createdAt: new Date(),
+						updatedAt: new Date(),
+						restricted: false,
+						runnable: true,
+						title: 'Library A',
+						compare: jest.fn(),
+						compareVersions: jest.fn(),
+						preloadedJs: [{ path: 'path/to/preloaded.js' }],
+						preloadedCss: [{ path: 'path/to/preloaded.css' }],
+					});
+					libraryStorage.fileExists.mockResolvedValueOnce(true).mockResolvedValueOnce(true);
+
+					return { service };
+				};
+
+				it('should update the library in the database', async () => {
+					const { service } = setup();
+
+					const error = new Error('runnable must be boolean, 0, or 1');
+
+					await expect(service.synchronizeDbEntryAndLibraryJson()).rejects.toThrow(error);
+				});
+			});
+
 			describe('when no library update is available', () => {
 				const setup = () => {
 					const service = module.get(H5PLibraryManagementService);
@@ -600,7 +682,7 @@ describe('H5PLibraryManagementService', () => {
 						majorVersion: 1,
 						minorVersion: 0,
 						patchVersion: 0,
-						runnable: 0,
+						runnable: 1,
 						title: 'Library A',
 					});
 					libraryStorage.isInstalled.mockResolvedValueOnce(true);
@@ -671,7 +753,7 @@ describe('H5PLibraryManagementService', () => {
 						majorVersion: 1,
 						minorVersion: 0,
 						patchVersion: 1,
-						runnable: 0,
+						runnable: false,
 						title: 'Library A',
 					});
 					libraryStorage.isInstalled.mockResolvedValueOnce(true);
@@ -725,7 +807,7 @@ describe('H5PLibraryManagementService', () => {
 							majorVersion: 1,
 							minorVersion: 0,
 							patchVersion: 1,
-							runnable: 0,
+							runnable: true,
 							title: 'Library A',
 						});
 						libraryStorage.isInstalled.mockResolvedValueOnce(true);
