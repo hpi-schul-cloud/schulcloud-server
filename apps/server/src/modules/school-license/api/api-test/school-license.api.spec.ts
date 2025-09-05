@@ -83,7 +83,7 @@ describe('SchoolLicenseController (API)', () => {
 				try {
 					expect(response.statusCode).toEqual(HttpStatus.CREATED);
 				} catch (error) {
-					throw new Error(String(error));
+					throw new Error(`Unstable Test listed in Ticket XYZ, please inform ticket creator:${String(error)}`);
 				}
 			});
 		});
