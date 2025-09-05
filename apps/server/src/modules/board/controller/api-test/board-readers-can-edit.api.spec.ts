@@ -15,13 +15,15 @@ import { BoardExternalReferenceType } from '../../domain';
 import { columnBoardEntityFactory } from '../../testing';
 import { BoardResponse } from '../dto';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { serverConfig, ServerConfig } from '@modules/server';
 
 const baseRouteName = '/boards';
 
-describe(`board readers can edit setting (api)`, () => {
+describe(`board readersCanEdit setting (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let config: ServerConfig;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -32,6 +34,7 @@ describe(`board readers can edit setting (api)`, () => {
 		await app.init();
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, baseRouteName);
+		config = serverConfig();
 	});
 
 	afterAll(async () => {
@@ -40,6 +43,7 @@ describe(`board readers can edit setting (api)`, () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
+		config.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = true;
 	});
 
 	const setup = async () => {
@@ -100,116 +104,162 @@ describe(`board readers can edit setting (api)`, () => {
 		return { accountWithAdminRole, accountWithEditRole, accountWithViewRole, noAccessAccount, columnBoardNode };
 	};
 
-	describe('with user who has admin role in room', () => {
-		it('should return status 204', async () => {
-			const { accountWithAdminRole, columnBoardNode } = await setup();
+	describe('toggle the setting', () => {
+		describe('with user who has admin role in room', () => {
+			it('should return status 204', async () => {
+				const { accountWithAdminRole, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(accountWithAdminRole);
+				const loggedInClient = await testApiClient.login(accountWithAdminRole);
 
-			const readersCanEdit = true;
+				const readersCanEdit = true;
 
-			const response = await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+				const response = await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
 
-			expect(response.status).toEqual(204);
+				expect(response.status).toEqual(204);
+			});
+
+			it('should actually change the board visibility', async () => {
+				const { accountWithAdminRole, columnBoardNode } = await setup();
+
+				const loggedInClient = await testApiClient.login(accountWithAdminRole);
+
+				const readersCanEdit = true;
+
+				await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+
+				const response = await loggedInClient.get(columnBoardNode.id);
+				const result = response.body as BoardResponse;
+
+				expect(result.readersCanEdit).toEqual(readersCanEdit);
+			});
 		});
 
-		it('should actually change the board visibility', async () => {
-			const { accountWithAdminRole, columnBoardNode } = await setup();
+		describe('with user who has only edit role in room', () => {
+			it('should return status 403', async () => {
+				const { accountWithEditRole, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(accountWithAdminRole);
+				const loggedInClient = await testApiClient.login(accountWithEditRole);
 
-			const readersCanEdit = true;
+				const readersCanEdit = true;
 
-			await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+				const response = await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
 
-			const response = await loggedInClient.get(columnBoardNode.id);
-			const result = response.body as BoardResponse;
+				expect(response.status).toEqual(403);
+			});
 
-			expect(result.readersCanEdit).toEqual(readersCanEdit);
+			it('should not change the board visibility', async () => {
+				const { accountWithEditRole, columnBoardNode } = await setup();
+
+				const loggedInClient = await testApiClient.login(accountWithEditRole);
+
+				const readersCanEdit = true;
+
+				await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+
+				const response = await loggedInClient.get(columnBoardNode.id);
+				const result = response.body as BoardResponse;
+
+				expect(result.readersCanEdit).toEqual(false);
+			});
+		});
+
+		describe('with user who has only view role in room', () => {
+			it('should return status 403', async () => {
+				const { accountWithViewRole, columnBoardNode } = await setup();
+
+				const loggedInClient = await testApiClient.login(accountWithViewRole);
+
+				const readersCanEdit = true;
+
+				const response = await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+
+				expect(response.status).toEqual(403);
+			});
+
+			it('should not change the board visibility', async () => {
+				const { accountWithViewRole, columnBoardNode } = await setup();
+
+				const loggedInClient = await testApiClient.login(accountWithViewRole);
+
+				const readersCanEdit = true;
+
+				await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+
+				const response = await loggedInClient.get(columnBoardNode.id);
+				const result = response.body as BoardResponse;
+
+				expect(result.readersCanEdit).toEqual(false);
+			});
+		});
+
+		describe('with user who is not part of the room', () => {
+			it('should return status 403', async () => {
+				const { noAccessAccount, columnBoardNode } = await setup();
+				const loggedInClient = await testApiClient.login(noAccessAccount);
+				const readersCanEdit = true;
+
+				const response = await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+
+				expect(response.status).toEqual(403);
+			});
+			it('should not change the board visibility', async () => {
+				const { noAccessAccount, columnBoardNode, accountWithViewRole } = await setup();
+				const loggedInClient = await testApiClient.login(noAccessAccount);
+				const readersCanEdit = true;
+
+				await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+
+				const loggedInClientWithView = await testApiClient.login(accountWithViewRole);
+
+				const response = await loggedInClientWithView.get(columnBoardNode.id);
+				const result = response.body as BoardResponse;
+
+				expect(result.readersCanEdit).toEqual(false);
+			});
 		});
 	});
 
-	describe('with user who has only edit role in room', () => {
-		it('should return status 403', async () => {
-			const { accountWithEditRole, columnBoardNode } = await setup();
+	describe('when the setting is enabled', () => {
+		it('should allow users with view role to edit the board', async () => {
+			const { accountWithViewRole, accountWithAdminRole, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(accountWithEditRole);
+			const loggedInAdmin = await testApiClient.login(accountWithAdminRole);
+			const settingResponse = await loggedInAdmin.patch(`${columnBoardNode.id}/readers-can-edit`, {
+				readersCanEdit: true,
+			});
+			expect(settingResponse.status).toEqual(204);
 
-			const readersCanEdit = true;
+			const loggedInViewer = await testApiClient.login(accountWithViewRole);
+			const newTitle = 'new title';
+			const patchresponse = await loggedInViewer.patch(`${columnBoardNode.id}/title`, { title: newTitle });
+			expect(patchresponse.status).toEqual(204);
 
-			const response = await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+			const checkResponse = await loggedInViewer.get(columnBoardNode.id);
+			const result = checkResponse.body as BoardResponse;
 
-			expect(response.status).toEqual(403);
-		});
-
-		it('should not change the board visibility', async () => {
-			const { accountWithEditRole, columnBoardNode } = await setup();
-
-			const loggedInClient = await testApiClient.login(accountWithEditRole);
-
-			const readersCanEdit = true;
-
-			await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
-
-			const response = await loggedInClient.get(columnBoardNode.id);
-			const result = response.body as BoardResponse;
-
-			expect(result.readersCanEdit).toEqual(false);
+			expect(result.title).toEqual(newTitle);
 		});
 	});
 
-	describe('with user who has only view role in room', () => {
-		it('should return status 403', async () => {
-			const { accountWithViewRole, columnBoardNode } = await setup();
+	describe('when the setting is disabled', () => {
+		it('should allow users with view role to edit the board', async () => {
+			const { accountWithViewRole, accountWithAdminRole, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(accountWithViewRole);
+			const loggedInAdmin = await testApiClient.login(accountWithAdminRole);
+			const settingResponse = await loggedInAdmin.patch(`${columnBoardNode.id}/readers-can-edit`, {
+				readersCanEdit: false,
+			});
+			expect(settingResponse.status).toEqual(204);
 
-			const readersCanEdit = true;
+			const loggedInViewer = await testApiClient.login(accountWithViewRole);
+			const newTitle = 'new title';
+			const patchresponse = await loggedInViewer.patch(`${columnBoardNode.id}/title`, { title: newTitle });
+			expect(patchresponse.status).toEqual(403);
 
-			const response = await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+			const checkResponse = await loggedInViewer.get(columnBoardNode.id);
+			const result = checkResponse.body as BoardResponse;
 
-			expect(response.status).toEqual(403);
-		});
-
-		it('should not change the board visibility', async () => {
-			const { accountWithViewRole, columnBoardNode } = await setup();
-
-			const loggedInClient = await testApiClient.login(accountWithViewRole);
-
-			const readersCanEdit = true;
-
-			await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
-
-			const response = await loggedInClient.get(columnBoardNode.id);
-			const result = response.body as BoardResponse;
-
-			expect(result.readersCanEdit).toEqual(false);
-		});
-	});
-
-	describe('with user who is not part of the room', () => {
-		it('should return status 403', async () => {
-			const { noAccessAccount, columnBoardNode } = await setup();
-			const loggedInClient = await testApiClient.login(noAccessAccount);
-			const readersCanEdit = true;
-
-			const response = await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
-
-			expect(response.status).toEqual(403);
-		});
-		it('should not change the board visibility', async () => {
-			const { noAccessAccount, columnBoardNode, accountWithViewRole } = await setup();
-			const loggedInClient = await testApiClient.login(noAccessAccount);
-			const readersCanEdit = true;
-
-			await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
-
-			const loggedInClientWithView = await testApiClient.login(accountWithViewRole);
-
-			const response = await loggedInClientWithView.get(columnBoardNode.id);
-			const result = response.body as BoardResponse;
-
-			expect(result.readersCanEdit).toEqual(false);
+			expect(result.title).not.toEqual(newTitle);
 		});
 	});
 });
