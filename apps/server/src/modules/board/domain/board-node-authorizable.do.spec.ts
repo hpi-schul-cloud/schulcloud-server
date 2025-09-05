@@ -1,10 +1,10 @@
 import { columnBoardFactory } from '../testing';
-import { BoardNodeAuthorizable, BoardRoles, BoardSettings } from './board-node-authorizable.do';
+import { BoardNodeAuthorizable, BoardRoles, BoardContextSettings } from './board-node-authorizable.do';
 import { Permission } from '@shared/domain/interface';
 import { ObjectId } from 'bson';
 
 describe('Board Node Authorizable Domain Object', () => {
-	const setup = (boardSettings?: BoardSettings) => {
+	const setup = (boardSettings?: BoardContextSettings) => {
 		const readerId = new ObjectId().toString();
 		const editorId = new ObjectId().toString();
 		const adminId = new ObjectId().toString();
@@ -19,7 +19,7 @@ describe('Board Node Authorizable Domain Object', () => {
 			id: anyBoardDo.id,
 			boardNode: anyBoardDo,
 			rootNode: columnBoardFactory.build(),
-			boardSettings: boardSettings || {},
+			boardContextSettings: boardSettings || {},
 		});
 
 		return { anyBoardDo, boardNodeAuthorizable, readerId, editorId, adminId };

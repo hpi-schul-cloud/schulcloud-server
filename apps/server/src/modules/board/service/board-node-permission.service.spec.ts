@@ -60,7 +60,7 @@ describe(BoardNodePermissionService.name, () => {
 				id: anyBoardDo.id,
 				boardNode: anyBoardDo,
 				rootNode: columnBoardFactory.build(),
-				boardSettings: {},
+				boardContextSettings: {},
 			});
 
 			return { anyBoardDo, boardNodeAuthorizable, user };
@@ -109,7 +109,7 @@ describe(BoardNodePermissionService.name, () => {
 				id: anyBoardDo.id,
 				boardNode: anyBoardDo,
 				rootNode: anyBoardDo,
-				boardSettings: {},
+				boardContextSettings: {},
 			});
 			const result = service.isUserBoardEditor(user.id, boardDoAuthorizable.users);
 			expect(result).toBe(true);
@@ -122,7 +122,7 @@ describe(BoardNodePermissionService.name, () => {
 				id: anyBoardDo.id,
 				boardNode: anyBoardDo,
 				rootNode: anyBoardDo,
-				boardSettings: {},
+				boardContextSettings: {},
 			});
 			const result = service.isUserBoardEditor(user.id, boardDoAuthorizable.users);
 			expect(result).toBe(false);
@@ -135,7 +135,7 @@ describe(BoardNodePermissionService.name, () => {
 				id: anyBoardDo.id,
 				boardNode: anyBoardDo,
 				rootNode: anyBoardDo,
-				boardSettings: {},
+				boardContextSettings: {},
 			});
 			const result = service.isUserBoardEditor(user.id, boardDoAuthorizable.users);
 			expect(result).toBe(false);

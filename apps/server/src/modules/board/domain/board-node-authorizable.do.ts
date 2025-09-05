@@ -22,10 +22,10 @@ export interface BoardNodeAuthorizableProps extends AuthorizableObject {
 	boardNode: AnyBoardNode;
 	rootNode: AnyBoardNode;
 	parentNode?: AnyBoardNode;
-	boardSettings: BoardSettings;
+	boardContextSettings: BoardContextSettings;
 }
 
-export interface BoardSettings {
+export interface BoardContextSettings {
 	canRoomEditorManageVideoconference?: boolean;
 }
 
@@ -56,8 +56,8 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 		return this.props.rootNode;
 	}
 
-	get boardSettings(): BoardSettings {
-		return this.props.boardSettings;
+	get boardContextSettings(): BoardContextSettings {
+		return this.props.boardContextSettings;
 	}
 
 	public getUserPermissions(userId: EntityId): Permission[] {
@@ -74,7 +74,7 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 
 		if (user?.roles.includes(BoardRoles.EDITOR)) {
 			const permissions: Permission[] = [Permission.BOARD_VIEW, Permission.BOARD_EDIT];
-			const canRoomEditorManageVideoconference = this.boardSettings.canRoomEditorManageVideoconference ?? false;
+			const canRoomEditorManageVideoconference = this.boardContextSettings.canRoomEditorManageVideoconference ?? false;
 			if (canRoomEditorManageVideoconference) {
 				permissions.push(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
 			}

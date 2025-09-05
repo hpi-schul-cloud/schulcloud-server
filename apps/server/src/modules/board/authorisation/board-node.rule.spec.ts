@@ -16,7 +16,7 @@ import {
 	videoConferenceElementFactory,
 } from '../testing';
 import { BoardNodeRule } from './board-node.rule';
-import { BoardSettings } from '../domain';
+import { BoardContextSettings } from '../domain';
 
 describe(BoardNodeRule.name, () => {
 	let service: BoardNodeRule;
@@ -50,7 +50,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardSettings: {},
+					boardContextSettings: {},
 				});
 				return { user, boardNodeAuthorizable };
 			};
@@ -94,7 +94,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardSettings: {},
+					boardContextSettings: {},
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -122,7 +122,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardSettings: {},
+					boardContextSettings: {},
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -151,7 +151,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardSettings: {},
+					boardContextSettings: {},
 				});
 
 				return { user, permissionA, boardNodeAuthorizable };
@@ -181,7 +181,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardSettings: {},
+					boardContextSettings: {},
 				});
 
 				return { userWithoutPermision, boardNodeAuthorizable };
@@ -209,7 +209,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardSettings: {},
+					boardContextSettings: {},
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -238,7 +238,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: anyBoardNode,
 						rootNode: columnBoard,
-						boardSettings: {},
+						boardContextSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -274,7 +274,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: anyBoardNode,
 						rootNode: columnBoard,
-						boardSettings: {},
+						boardContextSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -313,7 +313,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
-						boardSettings: {},
+						boardContextSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -349,7 +349,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
-						boardSettings: {},
+						boardContextSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -385,7 +385,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
-						boardSettings: {},
+						boardContextSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -426,7 +426,7 @@ describe(BoardNodeRule.name, () => {
 						boardNode: fileElement,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
-						boardSettings: {},
+						boardContextSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -464,7 +464,7 @@ describe(BoardNodeRule.name, () => {
 						boardNode: fileElement,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
-						boardSettings: {},
+						boardContextSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -502,7 +502,7 @@ describe(BoardNodeRule.name, () => {
 						boardNode: anyBoardDo,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
-						boardSettings: {},
+						boardContextSettings: {},
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -546,7 +546,7 @@ describe(BoardNodeRule.name, () => {
 						boardNode: anyBoardDo,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
-						boardSettings: {},
+						boardContextSettings: {},
 					});
 
 					const res = service.hasPermission(user, boardNodeAuthorizable, {
@@ -566,7 +566,7 @@ describe(BoardNodeRule.name, () => {
 						parentNode: submissionItem,
 						boardNode: notAllowedChildElement,
 						rootNode: columnBoard,
-						boardSettings: {},
+						boardContextSettings: {},
 					});
 
 					const res = service.hasPermission(user, boardNodeAuthorizable, {
@@ -591,7 +591,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardSettings: {},
+							boardContextSettings: {},
 						});
 
 						return { user, boardNodeAuthorizable };
@@ -627,7 +627,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardSettings: {},
+							boardContextSettings: {},
 						});
 
 						return { user, boardNodeAuthorizable };
@@ -665,7 +665,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardSettings: {},
+							boardContextSettings: {},
 						});
 
 						return { user, boardNodeAuthorizable };
@@ -711,7 +711,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardSettings: {},
+							boardContextSettings: {},
 						});
 
 						return { user, boardNodeAuthorizable };
@@ -742,7 +742,7 @@ describe(BoardNodeRule.name, () => {
 
 		describe('when boardDoAuthorizable.boardDo is a videoConferenceElement', () => {
 			describe('when user is Admin', () => {
-				const setup = (boardSettings: BoardSettings) => {
+				const setup = (boardSettings: BoardContextSettings) => {
 					const user = userFactory.asTeacher().buildWithId();
 					const videoConferenceElement = videoConferenceElementFactory.build();
 					const columnBoard = columnBoardFactory.build();
@@ -751,7 +751,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: videoConferenceElement,
 						rootNode: columnBoard,
-						boardSettings,
+						boardContextSettings: boardSettings,
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -803,7 +803,7 @@ describe(BoardNodeRule.name, () => {
 				});
 			});
 			describe('when user is Editor', () => {
-				const setup = (boardSettings: BoardSettings) => {
+				const setup = (boardSettings: BoardContextSettings) => {
 					const user = userFactory.asTeacher().buildWithId();
 					const videoConferenceElement = videoConferenceElementFactory.build();
 					const columnBoard = columnBoardFactory.build();
@@ -812,7 +812,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: videoConferenceElement,
 						rootNode: columnBoard,
-						boardSettings,
+						boardContextSettings: boardSettings,
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -864,7 +864,7 @@ describe(BoardNodeRule.name, () => {
 				});
 			});
 			describe('when user is Reader', () => {
-				const setup = (boardSettings: BoardSettings) => {
+				const setup = (boardSettings: BoardContextSettings) => {
 					const user = userFactory.asTeacher().buildWithId();
 					const videoConferenceElement = videoConferenceElementFactory.build();
 					const columnBoard = columnBoardFactory.build();
@@ -873,7 +873,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: videoConferenceElement,
 						rootNode: columnBoard,
-						boardSettings,
+						boardContextSettings: boardSettings,
 					});
 
 					return { user, boardNodeAuthorizable };

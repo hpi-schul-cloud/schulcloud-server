@@ -251,7 +251,7 @@ describe(BoardUc.name, () => {
 						userId: user.id,
 					},
 				],
-				boardSettings: { canRoomEditorManageVideoconference },
+				boardContextSettings: { canRoomEditorManageVideoconference },
 			});
 			boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardAuthorizable);
 
