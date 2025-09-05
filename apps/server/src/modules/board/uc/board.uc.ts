@@ -157,6 +157,8 @@ export class BoardUc {
 			targetSchoolId: schoolId,
 		});
 
+		await this.columnBoardService.swapLinkedIdsInBoards(copyStatus);
+
 		return copyStatus;
 	}
 

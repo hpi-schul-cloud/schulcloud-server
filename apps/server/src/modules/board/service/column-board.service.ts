@@ -76,6 +76,10 @@ export class ColumnBoardService {
 		copyDict.forEach((value, key) => idMap.set(key, value.id));
 
 		const elements = copyStatus.elements ?? [];
+		if (copyStatus.type === CopyElementType.COLUMNBOARD && copyStatus.copyEntity) {
+			copyStatus.copyEntity = await this.swapLinkedIds(copyStatus.copyEntity?.id, idMap);
+		}
+
 		const updatedElements = await Promise.all(
 			elements.map(async (el) => {
 				if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {
