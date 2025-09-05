@@ -14,7 +14,6 @@ import {
 	columnBoardEntityFactory,
 	columnEntityFactory,
 	linkElementEntityFactory,
-	richTextElementEntityFactory,
 } from '../../testing';
 
 const baseRouteName = '/boards';
