@@ -33,6 +33,20 @@ export class TypeGuard {
 		return value;
 	}
 
+	public static isBoolean(value: unknown): value is boolean {
+		const isBoolean = typeof value === 'boolean';
+
+		return isBoolean;
+	}
+
+	public static checkBoolean(value: unknown): boolean {
+		if (!TypeGuard.isBoolean(value)) {
+			throw new Error('Type is not a boolean');
+		}
+
+		return value;
+	}
+
 	public static isString(value: unknown): value is string {
 		const isString = typeof value === 'string';
 

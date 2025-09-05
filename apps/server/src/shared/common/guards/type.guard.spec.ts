@@ -161,6 +161,74 @@ describe('TypeGuard', () => {
 		});
 	});
 
+	describe('isBoolean', () => {
+		describe('when passing type of value is a boolean', () => {
+			it('should return true', () => {
+				expect(TypeGuard.isBoolean(true)).toBe(true);
+			});
+
+			it('should return true', () => {
+				expect(TypeGuard.isBoolean(false)).toBe(true);
+			});
+		});
+
+		describe('when passing type of value is NOT a boolean', () => {
+			it('should return false', () => {
+				expect(TypeGuard.isBoolean(undefined)).toBe(false);
+			});
+
+			it('should return false', () => {
+				expect(TypeGuard.isBoolean(null)).toBe(false);
+			});
+
+			it('should return false', () => {
+				expect(TypeGuard.isBoolean({})).toBe(false);
+			});
+
+			it('should return false', () => {
+				expect(TypeGuard.isBoolean('string')).toBe(false);
+			});
+
+			it('should return false', () => {
+				expect(TypeGuard.isBoolean(123)).toBe(false);
+			});
+		});
+	});
+
+	describe('checkBoolean', () => {
+		describe('when passing type of value is a boolean', () => {
+			it('should be return value', () => {
+				expect(TypeGuard.checkBoolean(true)).toEqual(true);
+			});
+
+			it('should be return value', () => {
+				expect(TypeGuard.checkBoolean(false)).toEqual(false);
+			});
+		});
+
+		describe('when passing type of value is NOT a boolean', () => {
+			it('should return false', () => {
+				expect(() => TypeGuard.checkBoolean(undefined)).toThrowError('Type is not a boolean');
+			});
+
+			it('should return false', () => {
+				expect(() => TypeGuard.checkBoolean(null)).toThrowError('Type is not a boolean');
+			});
+
+			it('should return false', () => {
+				expect(() => TypeGuard.checkBoolean({})).toThrowError('Type is not a boolean');
+			});
+
+			it('should return false', () => {
+				expect(() => TypeGuard.checkBoolean('string')).toThrowError('Type is not a boolean');
+			});
+
+			it('should return false', () => {
+				expect(() => TypeGuard.checkBoolean(123)).toThrowError('Type is not a boolean');
+			});
+		});
+	});
+
 	describe('isString', () => {
 		describe('when passing type of value is a string', () => {
 			it('should return true', () => {
