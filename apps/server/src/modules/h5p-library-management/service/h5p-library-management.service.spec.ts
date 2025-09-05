@@ -10,6 +10,7 @@ import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { H5pConsistencyError, H5pTimeoutError } from '../interface';
 import { ILibraryAdministrationOverviewItemTestFactory, ILibraryInstallResultTestFactory } from '../testing';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
 import { H5PLibraryManagementService, castToLibrariesContentType } from './h5p-library-management.service';
@@ -385,7 +386,6 @@ describe('H5PLibraryManagementService', () => {
 
 				service.libraryWishList = [nonExistentLibrary];
 
-				jest.spyOn(service.contentTypeRepo, 'installContentType');
 				jest
 					.spyOn(service.contentTypeCache, 'get')
 					.mockResolvedValueOnce(undefined as unknown as Promise<IHubContentType[]>);
@@ -426,6 +426,66 @@ describe('H5PLibraryManagementService', () => {
 
 				expect(availableLLibraries).toEqual([]);
 			});
+		});
+
+		describe('when contentTypeRepo.installContentType rejects with an H5pTimeoutError', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+
+				const library = 'mock-library';
+				const error = new H5pTimeoutError(
+					'server:install-library-lock-max-time-exceeded',
+					{ ubername: 'MockLibrary-1.0' },
+					500
+				);
+
+				jest.spyOn(service.contentTypeCache, 'get').mockResolvedValueOnce([]);
+				jest.spyOn(service.contentTypeRepo, 'installContentType').mockRejectedValueOnce(error);
+
+				const availableLibraries: ILibraryAdministrationOverviewItem[] = [];
+
+				service.libraryWishList = [library];
+
+				return { availableLibraries, service };
+			};
+
+			it('should return an empty result list', async () => {
+				const { availableLibraries, service } = setup();
+
+				const availableLLibraries = await service.installLibrariesAsBulk(availableLibraries);
+
+				expect(availableLLibraries).toEqual([]);
+			});
+		});
+	});
+
+	describe('when contentTypeRepo.installContentType rejects with an error', () => {
+		const setup = () => {
+			const service = module.get(H5PLibraryManagementService);
+
+			const library = 'mock-library';
+			const error = new H5pConsistencyError(
+				'library-consistency-check-not-installed',
+				{ name: 'MockLibrary-1.0' },
+				500
+			);
+
+			jest.spyOn(service.contentTypeCache, 'get').mockResolvedValueOnce([]);
+			jest.spyOn(service.contentTypeRepo, 'installContentType').mockRejectedValueOnce(error);
+
+			const availableLibraries: ILibraryAdministrationOverviewItem[] = [];
+
+			service.libraryWishList = [library];
+
+			return { availableLibraries, service };
+		};
+
+		it('should return an empty result list', async () => {
+			const { availableLibraries, service } = setup();
+
+			const availableLLibraries = await service.installLibrariesAsBulk(availableLibraries);
+
+			expect(availableLLibraries).toEqual([]);
 		});
 	});
 
