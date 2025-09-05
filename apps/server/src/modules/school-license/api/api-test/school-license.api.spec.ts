@@ -76,17 +76,16 @@ describe('SchoolLicenseController (API)', () => {
 			};
 
 			it('should return status created', async () => {
-				for (let i = 0; i < 100; i++) {
-					console.log(`Iteration ${i + 1} of 10000`);
-					const { loggedInClient } = await setup();
-					const response = await loggedInClient.post();
-					try {
-						expect(response.statusCode).toEqual(HttpStatus.CREATED);
-					} catch (error) {
-						throw new Error(`Test failed in iteration ${i + 1}: ${String(error)}`);
-					}
+				const { loggedInClient } = await setup();
+
+				const response = await loggedInClient.post();
+
+				try {
+					expect(response.statusCode).toEqual(HttpStatus.CREATED);
+				} catch (error) {
+					throw new Error(String(error));
 				}
-			}, 60000);
+			});
 		});
 
 		describe('when official school number was not found', () => {
