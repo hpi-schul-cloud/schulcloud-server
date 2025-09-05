@@ -5,6 +5,8 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { ObjectId } from 'bson';
+import { AccountService } from '@modules/account';
+import { UserService } from '@modules/user';
 import { DeletionConfig } from '../../deletion.config';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DomainDeletionReport } from '../../domain/interface';
@@ -23,6 +25,8 @@ describe(DeletionRequestUc.name, () => {
 	let deletionLogService: DeepMocked<DeletionLogService>;
 	let configService: DeepMocked<ConfigService<DeletionConfig, true>>;
 	let deletionExecutionService: DeepMocked<DeletionExecutionService>;
+	let accountService: DeepMocked<AccountService>;
+	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
 		await setupEntities([DeletionRequestEntity]);
@@ -50,6 +54,14 @@ describe(DeletionRequestUc.name, () => {
 					provide: DeletionExecutionService,
 					useValue: createMock<DeletionExecutionService>(),
 				},
+				{
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
 			],
 		}).compile();
 
@@ -58,6 +70,8 @@ describe(DeletionRequestUc.name, () => {
 		deletionLogService = module.get(DeletionLogService);
 		configService = module.get(ConfigService);
 		deletionExecutionService = module.get(DeletionExecutionService);
+		accountService = module.get(AccountService);
+		userService = module.get(UserService);
 	});
 
 	afterEach(() => {
@@ -90,6 +104,14 @@ describe(DeletionRequestUc.name, () => {
 				};
 			};
 
+			it('should call the service to check user exists if domain is DomainName.User', async () => {
+				const { deletionRequestToCreate } = setup();
+
+				await uc.createDeletionRequest(deletionRequestToCreate);
+
+				expect(userService.findById).toHaveBeenCalledWith(deletionRequestToCreate.targetRef.id);
+			});
+
 			it('should call the service to create the deletionRequest', async () => {
 				const { deletionRequestToCreate, deleteAfter } = setup();
 
@@ -116,6 +138,17 @@ describe(DeletionRequestUc.name, () => {
 					requestId: deletionRequest.id,
 					deletionPlannedAt: deletionRequest.deleteAfter,
 				});
+			});
+
+			it('should call accountService.deactivateAccount if domain is DomainName.User', async () => {
+				const { deletionRequestToCreate } = setup();
+
+				await uc.createDeletionRequest(deletionRequestToCreate);
+
+				expect(accountService.deactivateAccount).toHaveBeenCalledWith(
+					deletionRequestToCreate.targetRef.id,
+					expect.any(Date)
+				);
 			});
 		});
 	});
@@ -379,10 +412,20 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				const deletionRequest = deletionRequestFactory.build();
 
+				deletionRequestService.findById.mockResolvedValueOnce(deletionRequest);
+
 				return {
 					deletionRequest,
 				};
 			};
+
+			it('should call the service deletionRequestService.findById', async () => {
+				const { deletionRequest } = setup();
+
+				await uc.deleteDeletionRequestById(deletionRequest.id);
+
+				expect(deletionRequestService.findById).toHaveBeenCalledWith(deletionRequest.id);
+			});
 
 			it('should call the service deletionRequestService.deleteById', async () => {
 				const { deletionRequest } = setup();
@@ -390,6 +433,14 @@ describe(DeletionRequestUc.name, () => {
 				await uc.deleteDeletionRequestById(deletionRequest.id);
 
 				expect(deletionRequestService.deleteById).toHaveBeenCalledWith(deletionRequest.id);
+			});
+
+			it('should call the service accountService.reactivateAccount if domain is DomainName.User', async () => {
+				const { deletionRequest } = setup();
+
+				await uc.deleteDeletionRequestById(deletionRequest.id);
+
+				expect(accountService.reactivateAccount).toHaveBeenCalledWith(deletionRequest.targetRefId);
 			});
 		});
 	});

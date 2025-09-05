@@ -57,7 +57,7 @@ describe('ShareTokenPermissionService', () => {
 				if (key === 'FEATURE_LESSON_SHARE') return false;
 				if (key === 'FEATURE_TASK_SHARE') return false;
 				if (key === 'FEATURE_COLUMN_BOARD_SHARE') return false;
-				if (key === 'FEATURE_ROOMS_ENABLED') return false;
+				if (key === 'FEATURE_ROOM_SHARE') return false;
 				return true;
 			});
 		};

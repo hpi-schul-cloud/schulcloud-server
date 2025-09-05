@@ -131,11 +131,12 @@ describe('Room Controller (API)', () => {
 				});
 			});
 
-			describe('when a room with users of the same school exists', () => {
-				it('should return a room', async () => {
-					const { loggedInClient, school } = await setup();
+			describe('when a room of the same school with users exists', () => {
+				it('should return a room with stats', async () => {
+					const { loggedInClient, otherSchool, school } = await setup();
 					const { users } = await createUsers(school, 3);
-					const { room } = await createRoom(school, users);
+					const { users: externalUsers } = await createUsers(otherSchool, 2);
+					const { room } = await createRoom(school, [...users, ...externalUsers]);
 
 					const response = (await loggedInClient.get()) as { status: number; body: { data: unknown[] } };
 
@@ -144,9 +145,9 @@ describe('Room Controller (API)', () => {
 						expect.arrayContaining([
 							expect.objectContaining({
 								name: room.name,
-								totalMembers: users.length,
+								totalMembers: users.length + externalUsers.length,
 								internalMembers: users.length,
-								externalMembers: 0,
+								externalMembers: externalUsers.length,
 								schoolId: room.schoolId,
 								schoolName: school.name,
 							}),
@@ -155,37 +156,68 @@ describe('Room Controller (API)', () => {
 				});
 			});
 
-			describe('when rooms with and without users of the same school exist', () => {
-				it('should return only rooms with users of the same school', async () => {
+			describe('when rooms of the same school and rooms of other schools exist both with users from same school', () => {
+				it('should return rooms with users from same school', async () => {
 					const { loggedInClient, school, otherSchool } = await setup();
 					const { users: internalUsers } = await createUsers(school, 3);
 					const { users: otherInternalUsers } = await createUsers(school, 1);
 					const { users: externalUsers } = await createUsers(otherSchool, 2);
-					const { room: room1 } = await createRoom(school, internalUsers);
-					const { room: room2 } = await createRoom(school, externalUsers);
-					const { room: room3 } = await createRoom(school, [...externalUsers, ...otherInternalUsers]);
-					const { room: room4 } = await createRoom(otherSchool, [...internalUsers, ...externalUsers]);
+					const { room: room1 } = await createRoom(school, [...internalUsers, ...externalUsers]);
+					const { room: room2 } = await createRoom(otherSchool, [...externalUsers, ...otherInternalUsers]);
 
 					const response = (await loggedInClient.get()) as { status: number; body: { data: unknown[] } };
 					expect(response.status).toBe(HttpStatus.OK);
+					expect(response.body.data.length).toEqual(2);
 					expect(response.body.data).toEqual(
 						expect.arrayContaining([
 							expect.objectContaining({
 								name: room1.name,
-								totalMembers: internalUsers.length,
+								totalMembers: internalUsers.length + externalUsers.length,
 								internalMembers: internalUsers.length,
-								externalMembers: 0,
+								externalMembers: externalUsers.length,
 							}),
 							expect.objectContaining({
-								name: room3.name,
+								name: room2.name,
 								totalMembers: externalUsers.length + otherInternalUsers.length,
 								internalMembers: otherInternalUsers.length,
 								externalMembers: externalUsers.length,
 							}),
+						])
+					);
+				});
+			});
+
+			describe('when rooms of the same school with and without users and rooms of other schools with external users exist', () => {
+				it('should only return rooms from same school', async () => {
+					const { loggedInClient, school, otherSchool } = await setup();
+					const { users: internalUsers } = await createUsers(school, 3);
+					const { users: externalUsers } = await createUsers(otherSchool, 2);
+					const { room: room1 } = await createRoom(school, [...internalUsers, ...externalUsers]);
+					const { room: room2 } = await createRoom(school, []);
+					const { room: room3 } = await createRoom(school, externalUsers);
+					const { room: room4 } = await createRoom(otherSchool, externalUsers);
+
+					const response = (await loggedInClient.get()) as { status: number; body: { data: unknown[] } };
+					expect(response.status).toBe(HttpStatus.OK);
+					expect(response.body.data.length).toEqual(3);
+					expect(response.body.data).toEqual(
+						expect.arrayContaining([
 							expect.objectContaining({
-								name: room4.name,
-								totalMembers: externalUsers.length + internalUsers.length,
+								name: room1.name,
+								totalMembers: internalUsers.length + externalUsers.length,
 								internalMembers: internalUsers.length,
+								externalMembers: externalUsers.length,
+							}),
+							expect.objectContaining({
+								name: room2.name,
+								totalMembers: 0,
+								internalMembers: 0,
+								externalMembers: 0,
+							}),
+							expect.objectContaining({
+								name: room3.name,
+								totalMembers: externalUsers.length,
+								internalMembers: 0,
 								externalMembers: externalUsers.length,
 							}),
 						])
@@ -193,10 +225,10 @@ describe('Room Controller (API)', () => {
 					expect(response.body.data).not.toEqual(
 						expect.arrayContaining([
 							expect.objectContaining({
-								name: room2.name,
+								name: room4.name,
 								totalMembers: externalUsers.length,
-								internalMembers: externalUsers.length,
-								externalMembers: 0,
+								internalMembers: 0,
+								externalMembers: externalUsers.length,
 							}),
 						])
 					);
@@ -204,7 +236,7 @@ describe('Room Controller (API)', () => {
 			});
 
 			describe('when the room does not exist', () => {
-				it('should return a 404 error', async () => {
+				it('should return an empty list', async () => {
 					const { loggedInClient } = await setup();
 
 					const response = (await loggedInClient.get()) as { status: number; body: { data: unknown[] } };
@@ -228,7 +260,7 @@ describe('Room Controller (API)', () => {
 			};
 
 			describe('when the room exists', () => {
-				it('should return 403', async () => {
+				it('should return 401', async () => {
 					const { loggedInClient } = await setup();
 
 					const response = await loggedInClient.get();
