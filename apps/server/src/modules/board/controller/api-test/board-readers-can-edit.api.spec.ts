@@ -141,16 +141,20 @@ describe(`board readers can edit setting (api)`, () => {
 
 			expect(response.status).toEqual(403);
 		});
+
 		it('should not change the board visibility', async () => {
 			const { accountWithEditRole, columnBoardNode } = await setup();
 
 			const loggedInClient = await testApiClient.login(accountWithEditRole);
 
 			const readersCanEdit = true;
+
+			await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+
 			const response = await loggedInClient.get(columnBoardNode.id);
 			const result = response.body as BoardResponse;
 
-			expect(result.readersCanEdit).toEqual(readersCanEdit);
+			expect(result.readersCanEdit).toEqual(false);
 		});
 	});
 
@@ -166,40 +170,46 @@ describe(`board readers can edit setting (api)`, () => {
 
 			expect(response.status).toEqual(403);
 		});
+
 		it('should not change the board visibility', async () => {
 			const { accountWithViewRole, columnBoardNode } = await setup();
 
 			const loggedInClient = await testApiClient.login(accountWithViewRole);
 
 			const readersCanEdit = true;
+
+			await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+
 			const response = await loggedInClient.get(columnBoardNode.id);
 			const result = response.body as BoardResponse;
 
-			expect(result.readersCanEdit).toEqual(readersCanEdit);
+			expect(result.readersCanEdit).toEqual(false);
 		});
 	});
 
-	/* describe('with user who is not part of the room', () => {
+	describe('with user who is not part of the room', () => {
 		it('should return status 403', async () => {
 			const { noAccessAccount, columnBoardNode } = await setup();
-
 			const loggedInClient = await testApiClient.login(noAccessAccount);
+			const readersCanEdit = true;
 
-			const isVisible = true;
-
-			const response = await loggedInClient.patch(`${columnBoardNode.id}/visibility`, { isVisible });
+			const response = await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
 
 			expect(response.status).toEqual(403);
 		});
 		it('should not change the board visibility', async () => {
-			const { noAccessAccount, columnBoardNode } = await setup();
-
+			const { noAccessAccount, columnBoardNode, accountWithViewRole } = await setup();
 			const loggedInClient = await testApiClient.login(noAccessAccount);
+			const readersCanEdit = true;
 
-			const isVisible = true;
-			await loggedInClient.patch(`${columnBoardNode.id}/visibility`, { isVisible });
-			const result = await em.findOneOrFail(BoardNodeEntity, columnBoardNode.id);
-			expect(result.isVisible).toEqual(false);
+			await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+
+			const loggedInClientWithView = await testApiClient.login(accountWithViewRole);
+
+			const response = await loggedInClientWithView.get(columnBoardNode.id);
+			const result = response.body as BoardResponse;
+
+			expect(result.readersCanEdit).toEqual(false);
 		});
-	}); */
+	});
 });

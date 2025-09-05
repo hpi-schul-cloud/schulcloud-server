@@ -173,7 +173,11 @@ export class BoardUc {
 		readersCanEdit: boolean
 	): Promise<ColumnBoard> {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		// await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
+		await this.boardPermissionService.checkPermission(
+			userId,
+			board,
+			AuthorizationContextBuilder.write([Permission.BOARD_MANAGE_READERS_CAN_EDIT])
+		);
 
 		await this.columnBoardService.updateReadersCanEdit(board, readersCanEdit);
 		return board;
