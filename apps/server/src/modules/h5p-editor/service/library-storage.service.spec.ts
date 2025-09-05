@@ -492,6 +492,30 @@ describe('LibraryStorage', () => {
 				await storage.addLibrary(library, false);
 			}
 
+			const { testingLib } = names;
+			const testFile = {
+				name: 'semantics.json',
+				content: JSON.stringify([
+					{
+						type: 'library',
+						options: ['soft 3.4'],
+					},
+					{
+						field: {
+							type: 'group',
+							fields: [
+								{
+									type: 'library',
+									options: ['soft 3.4'],
+								},
+							],
+						},
+					},
+				]),
+			};
+
+			await storage.addFile(testingLib, testFile.name, Readable.from(Buffer.from(testFile.content)));
+
 			return names;
 		};
 
@@ -506,7 +530,7 @@ describe('LibraryStorage', () => {
 			await setup();
 
 			const dependencies = await storage.getAllDependentsCount();
-			expect(dependencies).toEqual({ 'circular_b-1.2': 1, 'testing-1.2': 2, 'fake-2.3': 1 });
+			expect(dependencies).toEqual({ 'circular_b-1.2': 1, 'testing-1.2': 2, 'soft-3.4': 2, 'fake-2.3': 1 });
 		});
 
 		it('should count dependents for single library', async () => {
