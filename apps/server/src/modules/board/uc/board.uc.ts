@@ -17,7 +17,6 @@ import {
 	BoardLayout,
 	BoardNodeAuthorizable,
 	BoardNodeFactory,
-	BoardRoles,
 	Column,
 	ColumnBoard,
 } from '../domain';
@@ -74,7 +73,7 @@ export class BoardUc {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		const boardNodeAuthorizable = await this.checkBoardAuthorization(userId, board, Action.read);
 		const features = await this.boardContextApiHelperService.getFeaturesForBoardNode(boardId);
-		const permissions = this.getPermissions(userId, boardNodeAuthorizable);
+		const permissions = boardNodeAuthorizable.getUserPermissions(userId);
 		return { board, features, permissions };
 	}
 
@@ -239,33 +238,5 @@ export class BoardUc {
 		this.authorizationService.checkPermission(user, boardNodeAuthorizable, { action, requiredPermissions });
 
 		return boardNodeAuthorizable;
-	}
-
-	private getPermissions(userId: EntityId, boardNodeAuthorizable: BoardNodeAuthorizable): Permission[] {
-		const user = boardNodeAuthorizable.users.find((user) => user.userId === userId);
-		if (user?.roles.includes(BoardRoles.ADMIN)) {
-			return [
-				Permission.BOARD_VIEW,
-				Permission.BOARD_EDIT,
-				Permission.BOARD_MANAGE_VIDEOCONFERENCE,
-				Permission.BOARD_SHARE_BOARD,
-			];
-		}
-
-		if (user?.roles.includes(BoardRoles.EDITOR)) {
-			const permissions: Permission[] = [Permission.BOARD_VIEW, Permission.BOARD_EDIT];
-			const canRoomEditorManageVideoconference =
-				boardNodeAuthorizable.boardSettings.canRoomEditorManageVideoconference ?? false;
-			if (canRoomEditorManageVideoconference) {
-				permissions.push(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
-			}
-			return permissions;
-		}
-
-		if (user?.roles.includes(BoardRoles.READER)) {
-			return [Permission.BOARD_VIEW];
-		}
-
-		return [];
 	}
 }

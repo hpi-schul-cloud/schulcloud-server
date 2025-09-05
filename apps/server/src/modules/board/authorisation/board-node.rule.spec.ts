@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import { Action, AuthorizationInjectionService } from '@modules/authorization';
 import { BoardRoles } from '@modules/board';
 import { roleFactory } from '@modules/role/testing';
 import { User } from '@modules/user/repo';
@@ -20,18 +20,16 @@ import { BoardSettings } from '../domain';
 
 describe(BoardNodeRule.name, () => {
 	let service: BoardNodeRule;
-	let authorizationHelper: AuthorizationHelper;
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [BoardNodeRule, AuthorizationHelper, AuthorizationInjectionService],
+			providers: [BoardNodeRule, AuthorizationInjectionService],
 		}).compile();
 
 		service = await module.get(BoardNodeRule);
-		authorizationHelper = await module.get(AuthorizationHelper);
 		injectionService = await module.get(AuthorizationInjectionService);
 	});
 
@@ -102,21 +100,40 @@ describe(BoardNodeRule.name, () => {
 				return { user, boardNodeAuthorizable };
 			};
 
-			it('should call hasAllPermissions on AuthorizationHelper', () => {
-				const { user, boardNodeAuthorizable } = setup();
-
-				const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
-				service.hasPermission(user, boardNodeAuthorizable, { action: Action.read, requiredPermissions: [] });
-
-				expect(spy).toBeCalledWith(user, []);
-			});
-
 			it('should return "true"', () => {
 				const { user, boardNodeAuthorizable } = setup();
 
 				const res = service.hasPermission(user, boardNodeAuthorizable, {
 					action: Action.read,
 					requiredPermissions: [],
+				});
+
+				expect(res).toBe(true);
+			});
+		});
+
+		describe('when user has a boardPermission permission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const anyBoardNode = fileElementFactory.build();
+				const columnBoard = columnBoardFactory.build();
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }], // Editor has BOARD_VIEW permission
+					id: new ObjectId().toHexString(),
+					boardNode: anyBoardNode,
+					rootNode: columnBoard,
+					boardSettings: {},
+				});
+
+				return { user, boardNodeAuthorizable };
+			};
+
+			it('should return "true"', () => {
+				const { user, boardNodeAuthorizable } = setup();
+
+				const res = service.hasPermission(user, boardNodeAuthorizable, {
+					action: Action.read,
+					requiredPermissions: [Permission.BOARD_VIEW],
 				});
 
 				expect(res).toBe(true);

@@ -1,6 +1,7 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode } from './types';
+import { Permission } from '@shared/domain/interface';
 
 export enum BoardRoles {
 	EDITOR = 'editor',
@@ -57,5 +58,32 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 
 	get boardSettings(): BoardSettings {
 		return this.props.boardSettings;
+	}
+
+	public getUserPermissions(userId: EntityId): Permission[] {
+		const user = this.users.find((user) => user.userId === userId);
+		if (user?.roles.includes(BoardRoles.ADMIN)) {
+			return [
+				Permission.BOARD_VIEW,
+				Permission.BOARD_EDIT,
+				Permission.BOARD_MANAGE_VIDEOCONFERENCE,
+				Permission.BOARD_SHARE_BOARD,
+			];
+		}
+
+		if (user?.roles.includes(BoardRoles.EDITOR)) {
+			const permissions: Permission[] = [Permission.BOARD_VIEW, Permission.BOARD_EDIT];
+			const canRoomEditorManageVideoconference = this.boardSettings.canRoomEditorManageVideoconference ?? false;
+			if (canRoomEditorManageVideoconference) {
+				permissions.push(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
+			}
+			return permissions;
+		}
+
+		if (user?.roles.includes(BoardRoles.READER)) {
+			return [Permission.BOARD_VIEW];
+		}
+
+		return [];
 	}
 }

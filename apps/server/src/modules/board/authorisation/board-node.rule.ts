@@ -1,10 +1,4 @@
-import {
-	Action,
-	AuthorizationContext,
-	AuthorizationHelper,
-	AuthorizationInjectionService,
-	Rule,
-} from '@modules/authorization';
+import { Action, AuthorizationContext, AuthorizationInjectionService, Rule } from '@modules/authorization';
 import {
 	BoardNodeAuthorizable,
 	BoardRoles,
@@ -23,10 +17,7 @@ import { isVideoConferenceElement } from '../domain';
 
 @Injectable()
 export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
-	constructor(
-		private readonly authorizationHelper: AuthorizationHelper,
-		authorisationInjectionService: AuthorizationInjectionService
-	) {
+	constructor(authorisationInjectionService: AuthorizationInjectionService) {
 		authorisationInjectionService.injectAuthorizationRule(this);
 	}
 
@@ -37,8 +28,8 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	public hasPermission(user: User, authorizable: BoardNodeAuthorizable, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-		if (!hasPermission) {
+		const hasAllPermissions = this.hasAllPermissions(user, authorizable, context);
+		if (!hasAllPermissions) {
 			return false;
 		}
 
@@ -76,6 +67,14 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		}
 
 		return this.isBoardReader(userWithBoardRoles);
+	}
+
+	private hasAllPermissions(user: User, authorizable: BoardNodeAuthorizable, context: AuthorizationContext): boolean {
+		const schoolPermissions = user.resolvePermissions();
+		const boardPermissions = authorizable.getUserPermissions(user.id);
+
+		const permissions = Array.from(new Set([...schoolPermissions, ...boardPermissions]));
+		return context.requiredPermissions.every((p) => permissions.includes(p));
 	}
 
 	private isBoardAdmin(userWithBoardRoles: UserWithBoardRoles): boolean {
