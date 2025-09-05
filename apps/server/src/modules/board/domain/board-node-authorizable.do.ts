@@ -2,6 +2,7 @@ import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode } from './types';
 import { Permission } from '@shared/domain/interface';
+import { isColumnBoard } from './colum-board.do';
 
 export enum BoardRoles {
 	EDITOR = 'editor',
@@ -82,9 +83,17 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 		}
 
 		if (user?.roles.includes(BoardRoles.READER)) {
-			return [Permission.BOARD_VIEW];
+			const permissions = [Permission.BOARD_VIEW];
+			if (this.readersCanEdit(this.rootNode)) {
+				permissions.push(Permission.BOARD_EDIT);
+			}
+			return permissions;
 		}
 
 		return [];
+	}
+
+	private readersCanEdit(rootNode: AnyBoardNode): boolean {
+		return isColumnBoard(rootNode) && rootNode.readersCanEdit;
 	}
 }

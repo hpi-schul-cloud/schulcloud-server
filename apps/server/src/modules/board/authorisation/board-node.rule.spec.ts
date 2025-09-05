@@ -578,7 +578,6 @@ describe(BoardNodeRule.name, () => {
 				});
 			});
 		});
-
 		describe('when boardDoAuthorizable.boardDo is a drawingElement', () => {
 			describe('when required permissions do not include FILESTORAGE_CREATE or FILESTORAGE_VIEW or FILESTORAGE_REMOVE', () => {
 				describe('when user is Editor', () => {

@@ -28,7 +28,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	public hasPermission(user: User, authorizable: BoardNodeAuthorizable, context: AuthorizationContext): boolean {
-		const hasAllPermissions = this.hasAllPermissions(user, authorizable, context);
+		const hasAllPermissions = this.hasAllPermissions(user, authorizable, context.requiredPermissions);
 		if (!hasAllPermissions) {
 			return false;
 		}
@@ -54,27 +54,27 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 			return this.hasPermissionForDrawingElementFile(userWithBoardRoles);
 		}
 
-		if (this.shouldProcessDrawingElement(authorizable)) {
-			return this.hasPermissionForDrawingElement(userWithBoardRoles, context);
-		}
-
 		if (this.shouldProcessVideoConferenceElement(authorizable)) {
 			return this.hasPermissionForVideoConferenceElement(userWithBoardRoles, context, authorizable);
 		}
 
 		if (context.action === Action.write) {
-			return this.isBoardEditor(userWithBoardRoles);
+			return this.hasAllPermissions(user, authorizable, [Permission.BOARD_EDIT]);
 		}
 
 		return this.isBoardReader(userWithBoardRoles);
 	}
 
-	private hasAllPermissions(user: User, authorizable: BoardNodeAuthorizable, context: AuthorizationContext): boolean {
+	private hasAllPermissions(
+		user: User,
+		authorizable: BoardNodeAuthorizable,
+		requiredPermissions: Permission[]
+	): boolean {
 		const schoolPermissions = user.resolvePermissions();
 		const boardPermissions = authorizable.getUserPermissions(user.id);
 
 		const permissions = Array.from(new Set([...schoolPermissions, ...boardPermissions]));
-		return context.requiredPermissions.every((p) => permissions.includes(p));
+		return requiredPermissions.every((p) => permissions.includes(p));
 	}
 
 	private isBoardAdmin(userWithBoardRoles: UserWithBoardRoles): boolean {
@@ -101,24 +101,9 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return isDrawingElement(boardNodeAuthorizable.boardNode) && requiresFileStoragePermission;
 	}
 
-	private shouldProcessDrawingElement(boardNodeAuthorizable: BoardNodeAuthorizable): boolean {
-		return isDrawingElement(boardNodeAuthorizable.boardNode);
-	}
-
 	private hasPermissionForDrawingElementFile(userWithBoardRoles: UserWithBoardRoles): boolean {
 		// check if user has read permissions with no account for the context.action
 		// because everyone should be able to upload files to a drawing element
-		return this.isBoardReader(userWithBoardRoles);
-	}
-
-	private hasPermissionForDrawingElement(
-		userWithBoardRoles: UserWithBoardRoles,
-		context: AuthorizationContext
-	): boolean {
-		if (context.action === Action.write) {
-			return this.isBoardEditor(userWithBoardRoles);
-		}
-
 		return this.isBoardReader(userWithBoardRoles);
 	}
 
