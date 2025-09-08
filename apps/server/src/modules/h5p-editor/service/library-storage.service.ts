@@ -328,6 +328,7 @@ export class LibraryStorage implements ILibraryStorage {
 		}
 
 		semantics.forEach(search);
+
 		return results;
 	}
 
