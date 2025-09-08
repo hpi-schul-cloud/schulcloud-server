@@ -14,10 +14,10 @@ const fixtures = require('./fixtures');
 const setContext = (userId) => {
 	return {
 		payload: {
-			userId: mongoose.mongo.ObjectId(userId),
+			userId: new mongoose.mongo.ObjectId(userId),
 			fileStorageType: 'awsS3',
 		},
-		account: { userId: mongoose.mongo.ObjectId(userId) },
+		account: { userId: new mongoose.mongo.ObjectId(userId) },
 	};
 };
 
@@ -87,7 +87,7 @@ describe('fileStorage services', () => {
 			storageFileName: 'storage.jpg',
 			thumbnail: 'thumbnail.jpg',
 			bucket: 'bucket-test',
-			storageProviderId: mongoose.Types.ObjectId(),
+			storageProviderId: new mongoose.Types.ObjectId(),
 		};
 
 		const created = [];

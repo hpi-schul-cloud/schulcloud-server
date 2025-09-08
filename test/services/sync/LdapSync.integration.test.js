@@ -27,15 +27,15 @@ const fakeLdapConfig = {
 const exampleLdapSchoolData = [
 	{
 		displayName: 'school1',
-		ldapOu: testObjects.generateObjectId().toString(),
+		ldapOu: new testObjects.generateObjectId().toString(),
 	},
 	{
 		displayName: 'school2',
-		ldapOu: testObjects.generateObjectId().toString(),
+		ldapOu: new testObjects.generateObjectId().toString(),
 	},
 	{
 		displayName: 'school2',
-		ldapOu: testObjects.generateObjectId().toString(),
+		ldapOu: new testObjects.generateObjectId().toString(),
 	},
 ];
 

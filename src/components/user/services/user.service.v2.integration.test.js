@@ -171,7 +171,7 @@ describe('user service v2', () => {
 
 				it('when an admin deletes a non-existing user, then it throws Not-Found', async () => {
 					const { _id: schoolId } = await testHelper.createTestSchool();
-					const notFoundId = ObjectId();
+					const notFoundId = new ObjectId();
 					const token = await getAuthToken(schoolId);
 					const request = chai
 						.request(app)
@@ -299,7 +299,7 @@ describe('user service v2', () => {
 
 				it('When an admin deletes a list containing a non-existing user, then it throws Not-Found', async () => {
 					const { _id: schoolId } = await testHelper.createTestSchool();
-					const notFoundId = ObjectId();
+					const notFoundId = new ObjectId();
 					const user1 = await testHelper.createTestUser({ roles: ['student'], schoolId });
 					const user2 = await testHelper.createTestUser({ roles: ['student'], schoolId });
 					const token = await getAuthToken(schoolId);
