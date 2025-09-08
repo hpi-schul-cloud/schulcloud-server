@@ -23,6 +23,7 @@ import {
 } from '../service';
 import { boardNodeAuthorizableFactory, columnBoardFactory, columnFactory } from '../testing';
 import { BoardUc } from './board.uc';
+import { ConfigService } from '@nestjs/config';
 
 describe(BoardUc.name, () => {
 	let module: TestingModule;
@@ -83,6 +84,10 @@ describe(BoardUc.name, () => {
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
 				},
 			],
 		}).compile();
