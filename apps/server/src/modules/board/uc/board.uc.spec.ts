@@ -595,8 +595,13 @@ describe(BoardUc.name, () => {
 		const setup = () => {
 			const { user, board, boardId } = globalSetup();
 			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
-
-			return { user, board, boardId };
+			const copyStatus: CopyStatus = {
+				type: CopyElementType.BOARD,
+				status: CopyStatusEnum.SUCCESS,
+			};
+			columnBoardService.swapLinkedIdsInBoards.mockResolvedValueOnce(copyStatus);
+			columnBoardService.copyColumnBoard.mockResolvedValueOnce(copyStatus);
+			return { user, board, boardId, copyStatus };
 		};
 
 		it('should call the service to find the user', async () => {
@@ -660,14 +665,16 @@ describe(BoardUc.name, () => {
 			);
 		});
 
-		it('should return the copy status', async () => {
+		it('should call columnBoardService to swapLinkedIdsInBoards', async () => {
 			const { user, boardId } = setup();
 
-			const copyStatus: CopyStatus = {
-				type: CopyElementType.BOARD,
-				status: CopyStatusEnum.SUCCESS,
-			};
-			columnBoardService.copyColumnBoard.mockResolvedValueOnce(copyStatus);
+			await uc.copyBoard(user.id, boardId, user.school.id);
+
+			expect(columnBoardService.swapLinkedIdsInBoards).toHaveBeenCalled();
+		});
+
+		it('should return the copy status', async () => {
+			const { user, boardId, copyStatus } = setup();
 
 			const result = await uc.copyBoard(user.id, boardId, user.school.id);
 
