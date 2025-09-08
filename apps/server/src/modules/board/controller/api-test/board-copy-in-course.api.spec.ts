@@ -7,9 +7,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { BoardExternalReferenceType, ColumnBoardProps } from '../../domain';
+import { BoardExternalReferenceType, BoardNodeType, ColumnBoardProps } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
-import { columnBoardEntityFactory } from '../../testing';
+import {
+	cardEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+	linkElementEntityFactory,
+} from '../../testing';
 
 const baseRouteName = '/boards';
 
@@ -105,6 +110,47 @@ describe(`board copy with course relation (api)`, () => {
 			const result = await em.findOneOrFail(BoardNodeEntity, body.id!);
 
 			expect(result.isVisible).toBe(false);
+		});
+
+		describe('when board contains link elements', () => {
+			const setupWithLinkElement = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				await em.persistAndFlush([teacherAccount, teacherUser, course]);
+
+				const columnBoardNode = columnBoardEntityFactory.build({
+					context: { id: course.id, type: BoardExternalReferenceType.Course },
+				});
+				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+				const cardNode = cardEntityFactory.withParent(columnNode).build();
+				const internalLinkElement = linkElementEntityFactory.withParent(cardNode).build({
+					url: `https://example.com/boards/${columnBoardNode.id}#card-${cardNode.id}`,
+					imageUrl: '',
+				});
+				await em.persistAndFlush([columnBoardNode, columnNode, cardNode, internalLinkElement]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient, columnBoardNode };
+			};
+
+			it('should update internal links on the board copy', async () => {
+				const { loggedInClient, columnBoardNode } = await setupWithLinkElement();
+
+				const response = await loggedInClient.post(`${columnBoardNode.id}/copy`);
+				const body = response.body as CopyApiResponse;
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				const copyId = body.id!;
+
+				const result = await em.find(BoardNodeEntity, {
+					path: { $re: `^https://example.com/boards/${copyId}` },
+					type: BoardNodeType.LINK_ELEMENT,
+				});
+
+				expect(result).toBeDefined();
+			});
 		});
 
 		describe('with invalid id', () => {
