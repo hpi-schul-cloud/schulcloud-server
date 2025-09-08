@@ -135,7 +135,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 		});
 
 		describe('with feature flag disabled', () => {
-			it('should return status 204', async () => {
+			it('should return status 403', async () => {
 				const { accountWithAdminRole, columnBoardNode } = await setup();
 				config.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = false;
 
@@ -148,8 +148,9 @@ describe(`board readersCanEdit setting (api)`, () => {
 				expect(response.status).toEqual(403);
 			});
 
-			it('should actually change the board visibility', async () => {
+			it('should not change the board visibility', async () => {
 				const { accountWithAdminRole, columnBoardNode } = await setup();
+				config.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = false;
 
 				const loggedInClient = await testApiClient.login(accountWithAdminRole);
 
