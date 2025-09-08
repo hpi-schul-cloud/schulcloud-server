@@ -1,16 +1,14 @@
 import { UpdateElementContentBodyParams } from '@modules/board/controller/dto';
 import { CommonCartridgeXmlResourceType } from '@modules/common-cartridge';
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEnum } from 'class-validator';
 
 export class CreateCcCardElementBodyParams {
-	@ApiProperty({
-		description: 'the card id of the card element',
-		required: true,
+	@ApiPropertyOptional({
+		description: 'the unique xml path of the card element',
+		required: false,
 	})
-	@IsString()
-	public cardId!: string;
-
+	public xmlPath?: string;
 	@ApiProperty({
 		description: 'the type of the card element',
 		required: true,
