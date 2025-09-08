@@ -435,12 +435,11 @@ describe('LibraryStorage', () => {
 					return Promise.resolve();
 				});
 
-				// @ts-expect-error test case
-				s3ClientAdapter.list.mockResolvedValueOnce({ files: [] });
-
 				await storage.deleteLibrary(testingLib);
 				await expect(storage.getLibrary(testingLib)).rejects.toThrow();
-				expect(s3ClientAdapter.delete).toHaveBeenCalled();
+				expect(s3ClientAdapter.deleteDirectory).toHaveBeenCalledWith(
+					`h5p-libraries/${testingLib.machineName}-${testingLib.majorVersion}.${testingLib.minorVersion}/`
+				);
 			});
 
 			it("should fail if library doesn't exists", async () => {
@@ -493,6 +492,30 @@ describe('LibraryStorage', () => {
 				await storage.addLibrary(library, false);
 			}
 
+			const { testingLib } = names;
+			const testFile = {
+				name: 'semantics.json',
+				content: JSON.stringify([
+					{
+						type: 'library',
+						options: ['soft 3.4'],
+					},
+					{
+						field: {
+							type: 'group',
+							fields: [
+								{
+									type: 'library',
+									options: ['soft 3.4'],
+								},
+							],
+						},
+					},
+				]),
+			};
+
+			await storage.addFile(testingLib, testFile.name, Readable.from(Buffer.from(testFile.content)));
+
 			return names;
 		};
 
@@ -507,7 +530,7 @@ describe('LibraryStorage', () => {
 			await setup();
 
 			const dependencies = await storage.getAllDependentsCount();
-			expect(dependencies).toEqual({ 'circular_b-1.2': 1, 'testing-1.2': 2, 'fake-2.3': 1 });
+			expect(dependencies).toEqual({ 'circular_b-1.2': 1, 'testing-1.2': 2, 'soft-3.4': 2, 'fake-2.3': 1 });
 		});
 
 		it('should count dependents for single library', async () => {
@@ -732,14 +755,24 @@ describe('LibraryStorage', () => {
 			});
 		});
 
-		it('should list all files', async () => {
+		it('should list all files (including library.json)', async () => {
 			const { testingLib, testFile } = await setup();
 
 			// @ts-expect-error test
 			s3ClientAdapter.list.mockResolvedValueOnce({ files: [testFile.name] });
 
 			const files = await storage.listFiles(testingLib);
-			expect(files).toContainEqual(expect.stringContaining(testFile.name));
+			expect(files).toEqual([testFile.name, 'library.json']);
+		});
+
+		it('should list all files (excluding library.json)', async () => {
+			const { testingLib, testFile } = await setup();
+
+			// @ts-expect-error test
+			s3ClientAdapter.list.mockResolvedValueOnce({ files: [testFile.name] });
+
+			const files = await storage.listFiles(testingLib, false);
+			expect(files).toEqual([testFile.name]);
 		});
 
 		describe('when checking if file exists', () => {
@@ -760,14 +793,13 @@ describe('LibraryStorage', () => {
 
 		describe('when clearing files', () => {
 			it('should remove all files', async () => {
-				const { testingLib, testFile } = await setup();
-
-				// @ts-expect-error test
-				s3ClientAdapter.list.mockResolvedValueOnce({ files: [testFile.name] });
+				const { testingLib } = await setup();
 
 				await storage.clearFiles(testingLib);
 
-				expect(s3ClientAdapter.delete).toHaveBeenCalledWith([expect.stringContaining(testFile.name)]);
+				expect(s3ClientAdapter.deleteDirectory).toHaveBeenCalledWith(
+					`h5p-libraries/${testingLib.machineName}-${testingLib.majorVersion}.${testingLib.minorVersion}/`
+				);
 			});
 
 			it("should fail if library doesn't exist", async () => {
@@ -879,6 +911,34 @@ describe('LibraryStorage', () => {
 
 			const supportedLanguages = await storage.getLanguages(testingLib);
 			expect(supportedLanguages).toEqual(expect.arrayContaining(languages));
+		});
+	});
+
+	describe('getAllLibraryFolders', () => {
+		const setup = () => {
+			const libraryFiles = [
+				'H5P.Testing-1.0/language/de.json',
+				'H5P.Testing-1.0/language/en.json',
+				'H5P.Testing-1.0/scripts/test.js',
+				'H5P.Testing-1.0/styles/tst.css',
+				'H5P.Testing-1.0/library.json',
+				'H5P.Testing-1.0/upgrade.js',
+				'H5P.Testing-1.1/scripts/test.js',
+				'H5P.Testing-1.1/library.json',
+			];
+			// @ts-expect-error test
+			s3ClientAdapter.list.mockResolvedValueOnce({ files: libraryFiles });
+
+			const expectedFolders = ['H5P.Testing-1.0', 'H5P.Testing-1.1'];
+
+			return { expectedFolders };
+		};
+
+		it('should return a list of all library folders', async () => {
+			const { expectedFolders } = setup();
+
+			const libraryFolders = await storage.getAllLibraryFolders();
+			expect(libraryFolders).toEqual(expect.arrayContaining(expectedFolders));
 		});
 	});
 });
