@@ -1,6 +1,7 @@
 import { CurrentUser, ICurrentUser } from '@infra/auth-guard';
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Response } from 'express'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ForbiddenOperationError, ValidationError } from '@shared/common/error';
 import { StrategyType, type OauthCurrentUser } from '../interface';
@@ -29,8 +30,10 @@ export class LoginController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
 	// Body is not used, but validated and used in the strategy implementation
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams): Promise<LoginResponse> {
-		const response = this.login(user);
+	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams, @Res() res: Response): Promise<LoginResponse> {
+		const response = await this.login(user, _.createLoginCookies ?? undefined);
+		res.cookie("jwt", response.accessToken, response.cookieOptionsJwt)
+		res.cookie("isLoggedIn", true, response.cookieOptionsLoggedIn)
 
 		return response;
 	}
@@ -44,8 +47,10 @@ export class LoginController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
 	// Body is not used, but validated and used in the strategy implementation
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationBodyParams): Promise<LoginResponse> {
-		const response = this.login(user);
+	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationBodyParams, @Res() res: Response): Promise<LoginResponse> {
+		const response = await this.login(user, _.createLoginCookies ?? undefined);
+		res.cookie("jwt", response.accessToken, response.cookieOptionsJwt)
+		res.cookie("isLoggedIn", true, response.cookieOptionsLoggedIn)
 
 		return response;
 	}
@@ -70,8 +75,8 @@ export class LoginController {
 		return mapped;
 	}
 
-	private async login(user: ICurrentUser): Promise<LoginResponse> {
-		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
+	private async login(user: ICurrentUser, createLoginCookie?: boolean): Promise<LoginResponse> {
+		const loginDto: LoginDto = await this.loginUc.getLoginData(user, createLoginCookie);
 
 		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);
 

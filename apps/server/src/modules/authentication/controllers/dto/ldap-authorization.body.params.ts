@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsBoolean, IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class LdapAuthorizationBodyParams {
 	@IsMongoId()
@@ -19,4 +19,9 @@ export class LdapAuthorizationBodyParams {
 	@IsMongoId()
 	@ApiProperty()
 	schoolId!: string;
+
+	@IsOptional()
+	@IsBoolean()
+	@ApiPropertyOptional()
+	createLoginCookies?: boolean
 }

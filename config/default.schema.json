@@ -1272,6 +1272,11 @@
 					"default": false,
 					"description": "Value for cookies httpOnly property"
 				},
+				"JWT_HTTP_ONLY": {
+					"type": "boolean",
+					"default": true,
+					"description": "Value for cookies httpOnly property"
+				},
 				"HOST_ONLY": {
 					"type": "boolean",
 					"default": true,

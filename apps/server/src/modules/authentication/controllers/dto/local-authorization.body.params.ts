@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class LocalAuthorizationBodyParams {
 	@IsString()
@@ -11,4 +11,9 @@ export class LocalAuthorizationBodyParams {
 	@IsNotEmpty()
 	@ApiProperty()
 	password!: string;
+
+	@IsOptional()
+	@IsBoolean()
+	@ApiPropertyOptional()
+	createLoginCookies?: boolean
 }
