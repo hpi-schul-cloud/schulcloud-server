@@ -23,7 +23,7 @@ import { VideoConferenceElement } from './video-conference-element.do';
 @Injectable()
 export class BoardNodeFactory {
 	public buildColumnBoard(props: { context: BoardExternalReference; title: string; layout: BoardLayout }): ColumnBoard {
-		const columnBoard = new ColumnBoard({ ...this.getBaseProps(), isVisible: false, ...props });
+		const columnBoard = new ColumnBoard({ ...this.getBaseProps(), isVisible: false, readersCanEdit: false, ...props });
 
 		return columnBoard;
 	}
