@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpService } from '@nestjs/axios';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
 import { ServerConfig } from '@modules/server';
-import { axiosResponseFactory } from '@shared/testing';
-import { of, throwError } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosError } from 'axios';
-import { StatusAdapter } from './status.adapter';
-import { ComponentDto, ComponentResponse, IncidentsResponse } from './dto';
+import { of, throwError } from 'rxjs';
 import { createComponent, createIncident } from '../testing';
+import { ComponentDto, ComponentResponse, IncidentsResponse } from './dto';
+import { StatusAdapter } from './status.adapter';
 
 describe('StatusAdapter', () => {
 	const incidentsPath = '/api/v1/incidents';

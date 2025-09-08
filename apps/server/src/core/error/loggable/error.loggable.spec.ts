@@ -1,8 +1,8 @@
 import { NotFound } from '@feathersjs/errors';
 import { BadRequestException, HttpStatus, ValidationError } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { ApiValidationError, BusinessError } from '@shared/common';
-import { PrivacyProtect } from '@shared/controller';
+import { ApiValidationError, BusinessError, ErrorLogMessage } from '@shared/common/error';
+import { PrivacyProtect } from '@shared/controller/validator';
 import { ErrorLoggable } from './error.loggable';
 
 class SampleBusinessError extends BusinessError {
@@ -156,6 +156,17 @@ describe('ErrorLoggable', () => {
 				const message = errorLoggable.getLogMessage();
 
 				expect(message).toEqual(expectedMessage);
+			});
+		});
+
+		describe('when error is of unknown type', () => {
+			it('should return ErrorLogMessage with appropriate error type', () => {
+				const errorLoggable = new ErrorLoggable('something broke');
+
+				const message = errorLoggable.getLogMessage() as ErrorLogMessage;
+				expect(message.data).toBeUndefined();
+				expect(message.error).toBeInstanceOf(Error);
+				expect(message.type).toBe('Unhandled or Unknown Error');
 			});
 		});
 	});

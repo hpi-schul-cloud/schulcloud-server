@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -12,14 +12,14 @@ import {
 	Put,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { BoardUc, ColumnUc } from '../uc';
 import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
 import { CreateCardBodyParams } from './dto/card/create-card.body.params';
 import { CardResponseMapper } from './mapper';
 
 @ApiTags('Board Column')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('columns')
 export class ColumnController {
 	constructor(private readonly boardUc: BoardUc, private readonly columnUc: ColumnUc) {}

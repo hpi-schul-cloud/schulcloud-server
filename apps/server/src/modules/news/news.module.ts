@@ -1,17 +1,16 @@
-import { Module } from '@nestjs/common';
-import { NewsRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
-import { CqrsModule } from '@nestjs/cqrs';
-import { NewsController } from './controller/news.controller';
-import { TeamNewsController } from './controller/team-news.controller';
-import { NewsUc } from './uc/news.uc';
-import { NewsService } from './service/news.service';
+import { SagaModule } from '@modules/saga';
+import { forwardRef, Module } from '@nestjs/common';
+import { NewsController, NewsUc, TeamNewsController } from './api';
+import { NewsRepo } from './repo/news.repo';
+import { DeleteUserNewsDataStep } from './saga';
 
+// imports from deletion module?
 @Module({
-	imports: [AuthorizationModule, CqrsModule, LoggerModule],
+	imports: [LoggerModule, forwardRef(() => AuthorizationModule), SagaModule],
 	controllers: [NewsController, TeamNewsController],
-	providers: [NewsUc, NewsRepo, NewsService],
-	exports: [NewsUc, NewsService],
+	providers: [NewsUc, NewsRepo, DeleteUserNewsDataStep],
+	exports: [NewsUc],
 })
 export class NewsModule {}

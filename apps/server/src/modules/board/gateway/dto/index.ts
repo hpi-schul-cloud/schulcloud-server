@@ -1,39 +1,19 @@
-import { CreateCardMessageParams } from './create-card.message.param';
-import { CreateColumnMessageParams } from './create-column.message.param';
-import { CreateContentElementMessageParams } from './create-content-element.message.param';
-import { DeleteBoardMessageParams } from './delete-board.message.param';
-import { DeleteCardMessageParams } from './delete-card.message.param';
-import { DeleteContentElementMessageParams } from './delete-content-element.message.param';
-import { DeleteColumnMessageParams } from './delete-column.message.param';
-import { FetchBoardMessageParams } from './fetch-board.message.param';
-import { FetchCardsMessageParams } from './fetch-cards.message.param';
-import { MoveCardMessageParams } from './move-card.message.param';
-import { MoveColumnMessageParams } from './move-column.message.param';
-import { MoveContentElementMessageParams } from './move-content-element.message.param';
-import { UpdateBoardTitleMessageParams } from './update-board-title.message.param';
-import { UpdateBoardVisibilityMessageParams } from './update-board-visibility.message.param';
-import { UpdateCardHeightMessageParams } from './update-card-height.message.param';
-import { UpdateCardTitleMessageParams } from './update-card-title.message.param';
-import { UpdateColumnTitleMessageParams } from './update-column-title.message.param';
-import { UpdateContentElementMessageParams } from './update-content-element.message.param';
-
-export {
-	CreateCardMessageParams,
-	CreateColumnMessageParams,
-	CreateContentElementMessageParams,
-	DeleteBoardMessageParams,
-	DeleteCardMessageParams,
-	DeleteColumnMessageParams,
-	DeleteContentElementMessageParams,
-	FetchBoardMessageParams,
-	FetchCardsMessageParams,
-	MoveCardMessageParams,
-	MoveColumnMessageParams,
-	MoveContentElementMessageParams,
-	UpdateBoardTitleMessageParams,
-	UpdateBoardVisibilityMessageParams,
-	UpdateCardHeightMessageParams,
-	UpdateCardTitleMessageParams,
-	UpdateColumnTitleMessageParams,
-	UpdateContentElementMessageParams,
-};
+export { CreateCardMessageParams } from './create-card.message.param';
+export { CreateColumnMessageParams } from './create-column.message.param';
+export { CreateContentElementMessageParams } from './create-content-element.message.param';
+export { DeleteBoardMessageParams } from './delete-board.message.param';
+export { DeleteCardMessageParams } from './delete-card.message.param';
+export { DeleteColumnMessageParams } from './delete-column.message.param';
+export { DeleteContentElementMessageParams } from './delete-content-element.message.param';
+export { FetchBoardMessageParams } from './fetch-board.message.param';
+export { FetchCardsMessageParams } from './fetch-cards.message.param';
+export { MoveCardMessageParams } from './move-card.message.param';
+export { MoveColumnMessageParams } from './move-column.message.param';
+export { MoveContentElementMessageParams } from './move-content-element.message.param';
+export { UpdateBoardTitleMessageParams } from './update-board-title.message.param';
+export { UpdateBoardVisibilityMessageParams } from './update-board-visibility.message.param';
+export { UpdateCardHeightMessageParams } from './update-card-height.message.param';
+export { UpdateCardTitleMessageParams } from './update-card-title.message.param';
+export { UpdateColumnTitleMessageParams } from './update-column-title.message.param';
+export { UpdateContentElementMessageParams } from './update-content-element.message.param';
+export { UpdateBoardLayoutMessageParams } from './update-board-layout.message.param';

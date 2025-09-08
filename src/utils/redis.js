@@ -1,26 +1,24 @@
-const { promisify } = require('util');
-const Redis = require('ioredis');
-const { Configuration } = require('@hpi-schul-cloud/commons');
-
+const { Redis } = require('iovalkey');
 const { GeneralError } = require('../errors');
-const logger = require('../logger');
 
 let redisClient = false;
 
-async function initializeRedisClient() {
-	if (Configuration.has('REDIS_URI')) {
+/**
+ * 
+ * @param {Redis} redisInstance 
+ */
+async function initializeRedisClient(redisInstance) {
+	if (redisInstance) {
 		try {
-			redisClient = new Redis(Configuration.get('REDIS_URI'));
-
-			// The error event must be handled, otherwise the app crashes on redis connection errors.
-			// This is due to basic NodeJS behavior: https://nodejs.org/api/events.html#error-events
-			redisClient.on('error', (err) => {
-				logger.error('Redis client error', err);
-			});
+			redisClient = redisInstance
 		} catch (err) {
 			throw new GeneralError('Redis connection failed!', err);
 		}
 	}
+}
+
+function clearRedis() {
+	redisClient = false;
 }
 
 function getRedisClient() {
@@ -32,23 +30,24 @@ function setRedisClient(client) {
 }
 
 const redisGetAsync = (...args) => {
-	if (redisClient) return promisify(redisClient.get).apply(redisClient, args);
+	if (redisClient) return redisClient.get(...args);
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
 };
 const redisSetAsync = (...args) => {
-	if (redisClient) return promisify(redisClient.set).apply(redisClient, args);
+	if (redisClient) return redisClient.set(...args);
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
 };
 const redisDelAsync = (...args) => {
-	if (redisClient) return promisify(redisClient.del).apply(redisClient, args);
+	if (redisClient) return redisClient.del(...args);
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
 };
 const redisTtlAsync = (...args) => {
-	if (redisClient) return promisify(redisClient.ttl).apply(redisClient, args);
+	if (redisClient) return redisClient.ttl(...args);
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
 };
 
 module.exports = {
+	clearRedis,
 	initializeRedisClient,
 	setRedisClient,
 	getRedisClient,

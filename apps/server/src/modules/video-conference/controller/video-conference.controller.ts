@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Get, HttpStatus, Param, Put, Req } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -15,7 +15,7 @@ import {
 } from './dto';
 
 @ApiTags('VideoConference')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('videoconference2')
 export class VideoConferenceController {
 	constructor(

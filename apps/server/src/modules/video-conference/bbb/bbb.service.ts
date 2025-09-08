@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ErrorUtils } from '@src/core/error/utils';
+import { ErrorUtils } from '@core/error/utils';
 import { AxiosResponse } from 'axios';
 import crypto from 'crypto';
 import { firstValueFrom, Observable } from 'rxjs';
@@ -54,7 +54,7 @@ export class BBBService {
 		const url: string = this.getUrl('create', this.toParams(config));
 		const conf = { headers: { 'Content-Type': 'application/xml' } };
 		const data = this.getBbbRequestConfig(this.presentationUrl);
-		const observable: Observable<AxiosResponse<string>> = this.httpService.post(url, data, conf);
+		const observable: Observable<AxiosResponse<string>> = this.httpService.post(url, data, data ? conf : undefined);
 
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse<string>) => {
@@ -137,7 +137,7 @@ export class BBBService {
 	 */
 	protected generateChecksum(callName: string, queryParams: URLSearchParams): string {
 		const queryString: string = queryParams.toString();
-		const sha = crypto.createHash('sha1');
+		const sha = crypto.createHash('sha512');
 		sha.update(callName + queryString + this.salt);
 		const checksum: string = sha.digest('hex');
 

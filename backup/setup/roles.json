@@ -23,25 +23,29 @@
 			"COMMENTS_VIEW",
 			"CONTENT_NON_OER_VIEW",
 			"CONTENT_VIEW",
-			"COURSE_VIEW",
+			"CONTEXT_TOOL_USER",
 			"COURSEGROUP_CREATE",
 			"COURSEGROUP_EDIT",
+			"COURSE_VIEW",
 			"DASHBOARD_VIEW",
 			"FEDERALSTATE_VIEW",
-			"FILE_CREATE",
-			"FILE_DELETE",
-			"FILE_MOVE",
 			"FILESTORAGE_CREATE",
 			"FILESTORAGE_EDIT",
 			"FILESTORAGE_REMOVE",
 			"FILESTORAGE_VIEW",
+			"FILE_CREATE",
+			"FILE_DELETE",
+			"FILE_MOVE",
 			"FOLDER_CREATE",
 			"FOLDER_DELETE",
+			"GROUP_VIEW",
 			"HELPDESK_CREATE",
 			"HOMEWORK_VIEW",
+			"INSTANCE_VIEW",
 			"LERNSTORE_VIEW",
 			"LINK_CREATE",
 			"NEWS_VIEW",
+			"NEXTCLOUD_USER",
 			"NOTIFICATION_CREATE",
 			"NOTIFICATION_EDIT",
 			"NOTIFICATION_VIEW",
@@ -51,15 +55,13 @@
 			"PWRECOVERY_VIEW",
 			"RELEASES_VIEW",
 			"ROLE_VIEW",
+			"SCHOOL_VIEW",
 			"SUBMISSIONS_CREATE",
 			"SUBMISSIONS_EDIT",
 			"SUBMISSIONS_VIEW",
 			"TEAM_VIEW",
 			"TOOL_VIEW",
-			"TOPIC_VIEW",
-			"NEXTCLOUD_USER",
-			"CONTEXT_TOOL_USER",
-			"GROUP_VIEW"
+			"TOPIC_VIEW"
 		],
 		"__v": 0
 	},
@@ -90,6 +92,7 @@
 			"COURSE_CREATE",
 			"COURSE_EDIT",
 			"COURSE_REMOVE",
+			"COURSE_ADMINISTRATION",
 			"DATASOURCES_CREATE",
 			"DATASOURCES_DELETE",
 			"DATASOURCES_EDIT",
@@ -138,7 +141,10 @@
 			"GROUP_FULL_ADMIN",
 			"SCHOOL_SYSTEM_EDIT",
 			"SCHOOL_SYSTEM_VIEW",
-			"USER_CHANGE_OWN_NAME"
+			"USER_CHANGE_OWN_NAME",
+			"MEDIA_SCHOOL_LICENSE_ADMIN",
+			"SCHOOL_LIST_DISCOVERABLE_TEACHERS",
+			"SCHOOL_ADMINISTRATE_ROOMS"
 		],
 		"__v": 2
 	},
@@ -202,7 +208,9 @@
 			"ACCOUNT_DELETE",
 			"USER_LOGIN_MIGRATION_FORCE",
 			"USER_LOGIN_MIGRATION_ROLLBACK",
-			"INSTANCE_VIEW"
+			"MEDIA_SOURCE_ADMIN",
+			"INSTANCE_EDIT",
+			"CAN_EXECUTE_INSTANCE_OPERATIONS"
 		],
 		"__v": 2
 	},
@@ -212,7 +220,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2024-04-19T10:32:51.070Z"
+			"$date": "2025-07-31T12:29:47.091Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -228,20 +236,29 @@
 			"CLASS_EDIT",
 			"CLASS_LIST",
 			"CLASS_REMOVE",
+			"CONTEXT_TOOL_ADMIN",
 			"COURSE_CREATE",
 			"COURSE_EDIT",
 			"COURSE_REMOVE",
 			"ENTERTHECLOUD_START",
+			"GROUP_LIST",
+			"HOMEWORK_CREATE",
+			"HOMEWORK_EDIT",
+			"JOIN_MEETING",
 			"LESSONS_VIEW",
 			"NEWS_CREATE",
 			"NEWS_EDIT",
 			"REQUEST_CONSENTS",
 			"SCHOOL_NEWS_EDIT",
+			"START_MEETING",
 			"STUDENT_EDIT",
 			"STUDENT_LIST",
 			"STUDENT_SKIP_REGISTRATION",
 			"SUBMISSIONS_SCHOOL_VIEW",
+			"TASK_DASHBOARD_TEACHER_VIEW_V3",
 			"TEACHER_LIST",
+			"TEAM_CREATE",
+			"TEAM_EDIT",
 			"TEAM_INVITE_EXTERNAL",
 			"TEAM_INVITE_EXTERNAL",
 			"TOOL_CREATE",
@@ -251,17 +268,15 @@
 			"TOPIC_EDIT",
 			"USERGROUP_CREATE",
 			"USERGROUP_EDIT",
+			"USER_CHANGE_OWN_NAME",
 			"USER_CREATE",
-			"TASK_DASHBOARD_TEACHER_VIEW_V3",
-			"TEAM_CREATE",
-			"TEAM_EDIT",
-			"START_MEETING",
-			"HOMEWORK_CREATE",
-			"HOMEWORK_EDIT",
-			"CONTEXT_TOOL_ADMIN",
-			"JOIN_MEETING",
-			"GROUP_LIST",
-			"USER_CHANGE_OWN_NAME"
+			"ROOM_CREATE",
+			"SCHOOL_CREATE_ROOM",
+			"SCHOOL_EDIT_ROOM",
+			"SCHOOL_DELETE_ROOM",
+			"SCHOOL_LIST_DISCOVERABLE_TEACHERS",
+			"SCHOOL_MANAGE_ROOM_INVITATIONLINKS",
+			"SCHOOL_BECOME_ROOMOWNER"
 		],
 		"__v": 2
 	},
@@ -579,5 +594,103 @@
 		],
 		"permissions": [],
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6720b8621b61c9dd7ebd193b"
+		},
+		"name": "roomviewer",
+		"permissions": [
+			"ROOM_LEAVE_ROOM",
+			"ROOM_LIST_CONTENT"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "6720b8621b61c9dd7ebd193c"
+		},
+		"name": "roomeditor",
+		"permissions": [
+			"ROOM_EDIT_CONTENT",
+			"ROOM_LEAVE_ROOM",
+			"ROOM_LIST_CONTENT",
+			"ROOM_LIST_DRAFTS"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "67404edd76a89449722a7fb1"
+		},
+		"name": "groupSubstitutionTeacher",
+		"permissions": [],
+		"createdAt": {
+			"$date": "2024-11-22T09:29:01.346Z"
+		},
+		"updatedAt": {
+			"$date": "2024-11-22T09:29:01.346Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "674444262ba8186272dc8abb"
+		},
+		"name": "guestStudent",
+		"permissions": []
+	},
+	{
+		"_id": {
+			"$oid": "674444262ba8186272dc8abc"
+		},
+		"name": "guestTeacher",
+		"permissions": []
+	},
+	{
+		"_id": {
+			"$oid": "675abdb4e76b1142cd4c89e3"
+		},
+		"name": "roomowner",
+		"permissions": [
+			"ROOM_EDIT_ROOM",
+			"ROOM_DELETE_ROOM",
+			"ROOM_SHARE_ROOM",
+			"ROOM_COPY_ROOM",
+			"ROOM_EDIT_CONTENT",
+			"ROOM_REMOVE_MEMBERS",
+			"ROOM_ADD_MEMBERS",
+			"ROOM_MANAGE_INVITATIONLINKS",
+			"ROOM_CHANGE_OWNER",
+			"ROOM_CHANGE_ROLES",
+			"ROOM_LIST_CONTENT",
+			"ROOM_LIST_DRAFTS",
+			"ROOM_MANAGE_VIDEOCONFERENCES"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "675abdb4e76b1142cd4c89e4"
+		},
+		"name": "roomadmin",
+		"permissions": [
+			"ROOM_EDIT_ROOM",
+			"ROOM_SHARE_ROOM",
+			"ROOM_COPY_ROOM",
+			"ROOM_EDIT_CONTENT",
+			"ROOM_REMOVE_MEMBERS",
+			"ROOM_ADD_MEMBERS",
+			"ROOM_MANAGE_INVITATIONLINKS",
+			"ROOM_CHANGE_ROLES",
+			"ROOM_LEAVE_ROOM",
+			"ROOM_LIST_CONTENT",
+			"ROOM_LIST_DRAFTS",
+			"ROOM_MANAGE_VIDEOCONFERENCES"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "6834512d020bf0a70deb4b22"
+		},
+		"name": "roomapplicant",
+		"permissions": []
 	}
 ]

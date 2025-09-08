@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -20,7 +20,7 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { MediaExternalToolElement } from '../../domain';
 import { MediaElementUc } from '../../uc';
 import {
@@ -32,7 +32,7 @@ import {
 import { MediaExternalToolElementResponseMapper } from './mapper';
 
 @ApiTags('Media Element')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('media-elements')
 export class MediaElementController {
 	constructor(private readonly mediaElementUc: MediaElementUc) {}
@@ -73,7 +73,8 @@ export class MediaElementController {
 			params.position
 		);
 
-		const response: MediaExternalToolElementResponse = MediaExternalToolElementResponseMapper.mapToResponse(element);
+		const response: MediaExternalToolElementResponse =
+			MediaExternalToolElementResponseMapper.getInstance().mapToResponse(element);
 
 		return response;
 	}

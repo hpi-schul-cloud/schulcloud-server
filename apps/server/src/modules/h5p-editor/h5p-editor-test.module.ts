@@ -1,18 +1,16 @@
-import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
+import { CoreModule } from '@core/core.module';
+import { LoggerModule } from '@core/logger';
+import { AuthorizationClientModule } from '@infra/authorization-client';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
-import { AuthenticationModule } from '@modules/authentication';
-import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
-import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
+import { AuthenticationApiTestModule } from '@modules/authentication/authentication-api-test.module';
 import { UserModule } from '@modules/user';
 import { DynamicModule, Module } from '@nestjs/common';
-import { ALL_ENTITIES } from '@shared/domain/entity';
-import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
+import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@testing/database';
 import { H5PEditorController } from './controller';
-import { H5PContent } from './entity';
-import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
-import { H5PEditorModule } from './h5p-editor.module';
+import { H5PEditorModule } from './h5p-editor.app.module';
+import { authorizationClientConfig, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
+import { TEST_ENTITIES } from './h5p-editor.entity.exports';
 import { H5PAjaxEndpointProvider, H5PEditorProvider, H5PPlayerProvider } from './provider';
 import { H5PContentRepo, LibraryRepo } from './repo';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from './service';
@@ -20,10 +18,9 @@ import { H5PEditorUc } from './uc/h5p.uc';
 
 const imports = [
 	H5PEditorModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES, H5PContent] }),
-	AuthenticationApiModule,
-	AuthorizationReferenceModule,
-	AuthenticationModule,
+	MongoMemoryDatabaseModule.forRoot({ entities: TEST_ENTITIES }),
+	AuthenticationApiTestModule,
+	AuthorizationClientModule.register(authorizationClientConfig),
 	UserModule,
 	CoreModule,
 	LoggerModule,

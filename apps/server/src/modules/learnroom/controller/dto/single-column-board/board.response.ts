@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
+import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { BoardElementResponse } from './board-element.response';
 
 // TODO: this and DashboardResponse should be combined
 export class SingleColumnBoardResponse {
 	@ApiProperty({
 		description: 'The id of the room this board belongs to',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	roomId: string;
 

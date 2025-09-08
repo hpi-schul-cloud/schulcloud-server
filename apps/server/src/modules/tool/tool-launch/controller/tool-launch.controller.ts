@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
@@ -19,7 +19,7 @@ import {
 } from './dto';
 
 @ApiTags('Tool')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('tools')
 export class ToolLaunchController {
 	constructor(private readonly toolLaunchUc: ToolLaunchUc) {}

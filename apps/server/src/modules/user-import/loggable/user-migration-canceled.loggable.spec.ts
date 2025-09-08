@@ -1,4 +1,4 @@
-import { legacySchoolDoFactory } from '@shared/testing';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { UserMigrationCanceledLoggable } from './user-migration-canceled.loggable';
 
 describe('UserMigrationCanceledLoggable', () => {

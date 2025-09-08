@@ -1,14 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementOauthService } from '@infra/identity-management';
 import { Account } from '@modules/account';
-import { ServerConfig } from '@modules/server';
+import { accountDoFactory } from '@modules/account/testing';
+import { RoleName } from '@modules/role';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { User } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo';
-import { setupEntities, userFactory } from '@shared/testing';
-import { accountDoFactory } from '@src/modules/account/testing';
+import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
 import { AuthenticationService } from '../services/authentication.service';
 import { LocalStrategy } from './local.strategy';
@@ -17,7 +17,7 @@ describe('LocalStrategy', () => {
 	let strategy: LocalStrategy;
 	let mockUser: User;
 	let mockAccount: Account;
-	let userRepoMock: DeepMocked<UserRepo>;
+	let userServiceMock: DeepMocked<UserService>;
 	let authenticationServiceMock: DeepMocked<AuthenticationService>;
 	let idmOauthServiceMock: DeepMocked<IdentityManagementOauthService>;
 	let configServiceMock: DeepMocked<ConfigService>;
@@ -26,12 +26,12 @@ describe('LocalStrategy', () => {
 	const mockPasswordHash = bcrypt.hashSync(mockPassword);
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 		authenticationServiceMock = createMock<AuthenticationService>();
 		idmOauthServiceMock = createMock<IdentityManagementOauthService>();
-		configServiceMock = createMock<ConfigService<ServerConfig, true>>();
-		userRepoMock = createMock<UserRepo>();
-		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userRepoMock);
+		configServiceMock = createMock<ConfigService>();
+		userServiceMock = createMock<UserService>();
+		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userServiceMock);
 		mockUser = userFactory.withRoleByName(RoleName.STUDENT).buildWithId();
 		mockAccount = accountDoFactory.build({ userId: mockUser.id, password: mockPasswordHash });
 	});
@@ -40,7 +40,7 @@ describe('LocalStrategy', () => {
 		authenticationServiceMock.loadAccount.mockResolvedValue(mockAccount);
 		authenticationServiceMock.normalizeUsername.mockImplementation((username: string) => username);
 		authenticationServiceMock.normalizePassword.mockImplementation((password: string) => password);
-		userRepoMock.findById.mockResolvedValue(mockUser);
+		userServiceMock.getUserEntityWithRoles.mockResolvedValue(mockUser);
 		configServiceMock.get.mockReturnValue(false);
 	});
 

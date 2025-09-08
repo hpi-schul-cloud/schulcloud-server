@@ -1,5 +1,3 @@
-const removeLeadingSlash = (path) => (path[0] === '/' ? path.substring(1) : path);
-
 const s3FileNameFilterExpression = /[^0-9A-Za-z\-_.]+/g;
 /**
  * ensures a valid filename for s3 removing invalid characters from local/internal filename
@@ -50,7 +48,6 @@ const returnFileType = (fileName) =>
 	}[fileName.split('.').pop()]);
 
 module.exports = {
-	removeLeadingSlash,
 	whitelistFileName,
 	generateFileNameSuffix,
 	returnFileType,

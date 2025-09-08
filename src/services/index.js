@@ -5,11 +5,9 @@ const news = require('./news');
 const newsEvents = require('./news/events');
 const content = require('./content');
 const calendar = require('./calendar');
-const ltiTool = require('./ltiTool');
 const school = require('./school');
 const system = require('./system');
 const lesson = require('./lesson');
-const analytics = require('./analytics');
 const edusharing = require('./edusharing');
 const account = require('./account');
 const authentication = require('./authentication');
@@ -28,7 +26,6 @@ const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
 const statisticMails = require('./statisticMail');
 const wopi = require('./wopi');
-const pseudonym = require('./pseudonym');
 const consent = require('./consent');
 const oauth2 = require('./oauth2');
 const roster = require('./roster');
@@ -41,11 +38,11 @@ const webuntis = require('./webuntis');
 const me = require('./me');
 const help = require('./help');
 const database = require('../utils/database');
-const nexboard = require('./nexboard');
 const etherpad = require('./etherpad');
 const storageProvider = require('./storageProvider');
 const activation = require('./activation');
 const config = require('./config');
+const syncLegacyIndexes = require('./sync-legacy-indexes');
 const docs = require('./docs');
 
 module.exports = function initializeServices() {
@@ -56,7 +53,6 @@ module.exports = function initializeServices() {
 	// register services
 	app.configure(docs);
 	app.configure(authentication);
-	app.configure(analytics);
 	app.configure(base64Files);
 	app.configure(user);
 	app.configure(role);
@@ -66,7 +62,6 @@ module.exports = function initializeServices() {
 	app.configure(resolve);
 	app.configure(userGroup);
 	app.configure(teams);
-	app.configure(ltiTool);
 	app.configure(content);
 	app.configure(calendar);
 	app.configure(lesson);
@@ -82,7 +77,6 @@ module.exports = function initializeServices() {
 	app.configure(statistic);
 	app.configure(statisticMails);
 	app.configure(wopi);
-	app.configure(pseudonym);
 	app.configure(consent);
 	app.configure(ldap);
 	app.configure(ldapConfig);
@@ -95,10 +89,10 @@ module.exports = function initializeServices() {
 	app.configure(datasources);
 	app.configure(edusharing);
 	app.configure(webuntis);
-	app.configure(nexboard);
 	app.configure(etherpad);
 	app.configure(storageProvider);
 	app.configure(activation);
+	app.configure(syncLegacyIndexes);
 	app.configure(config);
 
 	// initialize events

@@ -2,7 +2,7 @@ import { Migration } from '@mikro-orm/migrations-mongodb';
 
 // remove-undefined-parameters-from-external-tool
 export class Migration20240115103302 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		const contextExternalToolResponse = await this.driver.nativeUpdate(
 			'context-external-tools',
 			{ $or: [{ 'parameters.value': undefined }, { 'parameters.value': '' }] },
@@ -22,8 +22,8 @@ export class Migration20240115103302 extends Migration {
 		console.info(`Removed ${schoolExternalToolResponse.affectedRows} parameter(s) in school-external-tools`);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
-	async down() {
+	// eslint-disable-next-line @typescript-eslint/require-await, require-await
+	public async down(): Promise<void> {
 		console.error('This migration cannot be undone');
 	}
 }

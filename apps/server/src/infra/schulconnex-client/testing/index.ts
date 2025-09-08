@@ -1,2 +1,6 @@
 export { schulconnexResponseFactory } from './schulconnex-response-factory';
-export { schulconnexPoliciesInfoResponseFactory } from './schulconnex-policies-info-response-factory';
+export {
+	schulconnexPoliciesInfoLicenseResponseFactory,
+	schulconnexPoliciesInfoErrorResponseFactory,
+	schulconnexPoliciesInfoResponseFactory,
+} from './schulconnex-policies-info-response.factory';

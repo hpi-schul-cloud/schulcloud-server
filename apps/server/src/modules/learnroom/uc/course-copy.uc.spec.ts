@@ -1,12 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { AuthorizationContextBuilder } from '@modules/authorization';
-import { AuthorizableReferenceType, AuthorizationReferenceService } from '@modules/authorization/domain';
+import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizationReferenceService } from '@modules/authorization-reference';
 import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { courseFactory, setupEntities, userFactory } from '@shared/testing';
+import { setupEntities } from '@testing/database';
 import { CourseCopyService } from '../service';
 import { CourseCopyUC } from './course-copy.uc';
 
@@ -17,7 +21,7 @@ describe('course copy uc', () => {
 	let courseCopyService: DeepMocked<CourseCopyService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseCopyUC,
@@ -48,7 +52,7 @@ describe('course copy uc', () => {
 			const setup = () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId({ teachers: [user] });
+				const course = courseEntityFactory.buildWithId({ teachers: [user] });
 
 				return {
 					userId: user.id,
@@ -69,8 +73,8 @@ describe('course copy uc', () => {
 			const setup = () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId({ teachers: [user] });
-				const courseCopy = courseFactory.buildWithId({ teachers: [user] });
+				const course = courseEntityFactory.buildWithId({ teachers: [user] });
+				const courseCopy = courseEntityFactory.buildWithId({ teachers: [user] });
 
 				const status = {
 					title: 'courseCopy',
@@ -124,7 +128,7 @@ describe('course copy uc', () => {
 			const setupWithCourseForbidden = () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				authorization.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
 
 				return { user, course };

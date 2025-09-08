@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain/types/entity-id';
 import { Scope } from '@shared/repo/scope';
 import { SystemType } from '../../../domain';
-import { SystemEntity } from '../../../entity';
+import { SystemEntity } from '../system.entity';
 
 export class SystemScope extends Scope<SystemEntity> {
 	byIds(ids?: EntityId[]): this {

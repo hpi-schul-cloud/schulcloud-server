@@ -1,11 +1,14 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.module';
+import { courseEntityFactory } from '@modules/course/testing';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
+import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
-import { BoardExternalReferenceType } from '../../domain';
 
 describe(`card update height (api)`, () => {
 	let app: INestApplication;
@@ -33,7 +36,7 @@ describe(`card update height (api)`, () => {
 
 	const setup = async () => {
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-		const course = courseFactory.build({ teachers: [teacherUser] });
+		const course = courseEntityFactory.build({ teachers: [teacherUser] });
 		await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({

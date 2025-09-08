@@ -1,7 +1,7 @@
-import { Embedded, Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
+import { Embedded, Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { SchoolEntity } from '@modules/school/repo';
+import { ExternalSourceEmbeddable } from '@modules/system/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { ExternalSourceEmbeddable } from '@shared/domain/entity/external-source.embeddable';
-import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { EntityId } from '@shared/domain/types';
 import { GroupUserEmbeddable } from './group-user.embeddable';
 import { GroupValidPeriodEmbeddable } from './group-valid-period.embeddable';
@@ -9,6 +9,7 @@ import { GroupValidPeriodEmbeddable } from './group-valid-period.embeddable';
 export enum GroupEntityTypes {
 	CLASS = 'class',
 	COURSE = 'course',
+	ROOM = 'room',
 	OTHER = 'other',
 }
 
@@ -33,6 +34,7 @@ export class GroupEntity extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
 
+	@Index()
 	@Enum()
 	type: GroupEntityTypes;
 
@@ -42,9 +44,11 @@ export class GroupEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => GroupValidPeriodEmbeddable, { nullable: true })
 	validPeriod?: GroupValidPeriodEmbeddable;
 
+	@Index()
 	@Embedded(() => GroupUserEmbeddable, { array: true })
 	users: GroupUserEmbeddable[];
 
+	@Index()
 	@ManyToOne(() => SchoolEntity, { nullable: true })
 	organization?: SchoolEntity;
 

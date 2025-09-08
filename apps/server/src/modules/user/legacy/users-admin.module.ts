@@ -1,12 +1,12 @@
+import { LoggerModule } from '@core/logger';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
-import { UserRepo } from '@shared/repo';
-import { UsersAdminService } from './service';
+import { UserModule } from '../user.module';
 import { UsersAdminRepo } from './repo';
+import { UsersAdminService } from './service';
 
 @Module({
-	imports: [LoggerModule],
-	providers: [UserRepo, UsersAdminService, UsersAdminRepo],
+	imports: [LoggerModule, UserModule],
+	providers: [UsersAdminService, UsersAdminRepo],
 	exports: [UsersAdminService],
 })
 export class UsersAdminModule {}

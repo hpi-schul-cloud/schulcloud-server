@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
-import { Loggable } from '@src/core/logger/interfaces';
-import { ErrorLogMessage } from '@src/core/logger/types';
+import { Loggable } from '@core/logger/interfaces';
+import { ErrorLogMessage } from '@core/logger/types';
 
 export class NotFoundLoggableException extends NotFoundException implements Loggable {
 	constructor(private readonly resourceName: string, private readonly identifiers: Record<string, string>) {

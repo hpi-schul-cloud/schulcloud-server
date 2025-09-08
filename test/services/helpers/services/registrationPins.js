@@ -1,3 +1,5 @@
+const logger = require('../../../../src/logger/index');
+
 let createdregistrationPinsIds = [];
 
 // should rewrite
@@ -23,8 +25,20 @@ const cleanup = (appPromise) => async () => {
 	return ids.map((id) => app.service('registrationPinsModel').remove(id));
 };
 
-module.exports = (app, opt) => ({
-	create: createTestRegistrationPin(app, opt),
-	cleanup: cleanup(app),
-	info: createdregistrationPinsIds,
-});
+const removeRegistraionPinPointer = (id) => {
+	const index = createdregistrationPinsIds.indexOf(id);
+	if (index > -1) {
+		createdregistrationPinsIds.splice(index, 1);
+	} else {
+		logger.warning(`TestObject: No pointer with ${id} found.`);
+	}
+};
+
+module.exports = (app, opt) => {
+	return {
+		create: createTestRegistrationPin(app, opt),
+		cleanup: cleanup(app),
+		info: createdregistrationPinsIds,
+		removePointer: removeRegistraionPinPointer,
+	};
+};

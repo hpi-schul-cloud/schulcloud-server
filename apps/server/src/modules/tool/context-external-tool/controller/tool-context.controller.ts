@@ -1,4 +1,5 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { LegacyLogger } from '@core/logger';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
@@ -11,8 +12,7 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { ValidationError } from '@shared/common';
-import { LegacyLogger } from '@src/core/logger';
+import { ValidationError } from '@shared/common/error';
 import { ContextExternalTool } from '../domain';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from '../mapper';
 import { ContextExternalToolUc } from '../uc';
@@ -26,7 +26,7 @@ import {
 } from './dto';
 
 @ApiTags('Tool')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('tools/context-external-tools')
 export class ToolContextController {
 	constructor(private readonly contextExternalToolUc: ContextExternalToolUc, private readonly logger: LegacyLogger) {}
@@ -41,7 +41,7 @@ export class ToolContextController {
 	@ApiUnauthorizedResponse()
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Creates a ContextExternalTool' })
-	async createContextExternalTool(
+	public async createContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: ContextExternalToolPostParams
 	): Promise<ContextExternalToolResponse> {
@@ -50,7 +50,6 @@ export class ToolContextController {
 
 		const createdTool: ContextExternalTool = await this.contextExternalToolUc.createContextExternalTool(
 			currentUser.userId,
-			currentUser.schoolId,
 			contextExternalTool
 		);
 
@@ -67,7 +66,7 @@ export class ToolContextController {
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: 'Deletes a ContextExternalTool' })
 	@HttpCode(HttpStatus.NO_CONTENT)
-	async deleteContextExternalTool(
+	public async deleteContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams
 	): Promise<void> {
@@ -86,7 +85,7 @@ export class ToolContextController {
 		type: ContextExternalToolSearchListResponse,
 	})
 	@ApiOperation({ summary: 'Returns a list of ContextExternalTools for the given context' })
-	async getContextExternalToolsForContext(
+	public async getContextExternalToolsForContext(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolContextParams
 	): Promise<ContextExternalToolSearchListResponse> {
@@ -119,7 +118,7 @@ export class ToolContextController {
 		type: ContextExternalToolResponse,
 	})
 	@ApiOperation({ summary: 'Searches a ContextExternalTool for the given id' })
-	async getContextExternalTool(
+	public async getContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams
 	): Promise<ContextExternalToolResponse> {
@@ -143,7 +142,7 @@ export class ToolContextController {
 	@ApiUnauthorizedResponse()
 	@ApiUnprocessableEntityResponse()
 	@ApiOperation({ summary: 'Updates a ContextExternalTool' })
-	async updateContextExternalTool(
+	public async updateContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams,
 		@Body() body: ContextExternalToolPostParams

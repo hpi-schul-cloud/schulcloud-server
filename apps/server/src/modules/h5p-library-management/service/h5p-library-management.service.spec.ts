@@ -1,11 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { ContentStorage, LibraryStorage } from '@src/modules/h5p-editor/service';
-import { IHubContentType, ILibraryAdministrationOverviewItem } from '@lumieducation/h5p-server/build/src/types';
-import { ConfigService } from '@nestjs/config';
+import {
+	IHubContentType,
+	ILibraryAdministrationOverviewItem,
+	ILibraryInstallResult,
+} from '@lumieducation/h5p-server/build/src/types';
+import { ContentStorage, LibraryStorage } from '@modules/h5p-editor/service';
 import { InternalServerErrorException } from '@nestjs/common';
-import { H5PLibraryManagementService, castToLibrariesContentType } from './h5p-library-management.service';
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { H5PLibraryManagementErrorLoggable } from '../loggable/h5p-library-management-error.loggable';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
+import { H5PLibraryManagementService, castToLibrariesContentType } from './h5p-library-management.service';
 
 jest.mock('@lumieducation/h5p-server', () => {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -44,6 +50,10 @@ describe('H5PLibraryManagementService', () => {
 					useValue: createMock<ConfigService<IH5PLibraryManagementConfig, true>>({
 						get: () => 'config/h5p-libraries.yaml',
 					}),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -222,19 +232,123 @@ describe('H5PLibraryManagementService', () => {
 				await expect(service.installLibraries([nonExistentLibrary])).rejects.toThrow('this library does not exist');
 			});
 		});
+
+		describe('when contentTypeRepo.installContentType rejects with an error', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+				const logger = module.get(Logger);
+
+				const library = 'mock-library';
+				const error = new Error('Mock installation error');
+
+				jest.spyOn(service.contentTypeCache, 'get').mockResolvedValueOnce([]);
+				jest.spyOn(service.contentTypeRepo, 'installContentType').mockRejectedValueOnce(error);
+
+				return { service, logger, library, error };
+			};
+
+			it('should log the error using H5PLibraryManagementLoggable', async () => {
+				const { service, logger, library, error } = setup();
+
+				await service.installLibraries([library]);
+
+				expect(logger.warning).toHaveBeenCalledWith(new H5PLibraryManagementErrorLoggable(library, error));
+			});
+		});
 	});
 
 	describe('run is called', () => {
 		describe('when run has been called successfully', () => {
 			const setup = () => {
+				const uninstalledLibraries: ILibraryAdministrationOverviewItem[] = [
+					{
+						canBeDeleted: true,
+						canBeUpdated: true,
+						dependentsCount: 0,
+						instancesAsDependencyCount: 0,
+						instancesCount: 0,
+						isAddon: false,
+						machineName: 'a',
+						majorVersion: 1,
+						minorVersion: 1,
+						patchVersion: 1,
+						restricted: false,
+						runnable: true,
+						title: 'a',
+					},
+					{
+						canBeDeleted: true,
+						canBeUpdated: true,
+						dependentsCount: 1,
+						instancesAsDependencyCount: 0,
+						instancesCount: 0,
+						isAddon: false,
+						machineName: 'b',
+						majorVersion: 1,
+						minorVersion: 1,
+						patchVersion: 1,
+						restricted: false,
+						runnable: true,
+						title: 'b',
+					},
+					{
+						canBeDeleted: true,
+						canBeUpdated: true,
+						dependentsCount: 0,
+						instancesAsDependencyCount: 0,
+						instancesCount: 0,
+						isAddon: false,
+						machineName: 'c',
+						majorVersion: 1,
+						minorVersion: 1,
+						patchVersion: 1,
+						restricted: false,
+						runnable: true,
+						title: 'c',
+					},
+				];
+				const installedLibraries: ILibraryInstallResult[] = [
+					{
+						newVersion: {
+							machineName: 'd',
+							majorVersion: 1,
+							minorVersion: 1,
+							patchVersion: 1,
+						},
+						oldVersion: undefined,
+						type: 'new',
+					},
+					{
+						newVersion: {
+							machineName: 'e',
+							majorVersion: 1,
+							minorVersion: 1,
+							patchVersion: 1,
+						},
+						oldVersion: {
+							machineName: 'e',
+							majorVersion: 2,
+							minorVersion: 2,
+							patchVersion: 2,
+						},
+						type: 'patch',
+					},
+					{
+						newVersion: undefined,
+						oldVersion: undefined,
+						type: 'none',
+					},
+				];
 				const service = module.get(H5PLibraryManagementService);
 
-				return { service };
+				return { installedLibraries, service, uninstalledLibraries };
 			};
 			it('should trigger uninstallUnwantedLibraries and installLibraries', async () => {
-				const { service } = setup();
-				const uninstallSpy = jest.spyOn(service, 'uninstallUnwantedLibraries').mockResolvedValueOnce(undefined);
-				const installSpy = jest.spyOn(service, 'installLibraries').mockResolvedValueOnce(undefined);
+				const { installedLibraries, service, uninstalledLibraries } = setup();
+				const uninstallSpy = jest
+					.spyOn(service, 'uninstallUnwantedLibraries')
+					.mockResolvedValueOnce(uninstalledLibraries);
+				const installSpy = jest.spyOn(service, 'installLibraries').mockResolvedValueOnce(installedLibraries);
 
 				await service.run();
 

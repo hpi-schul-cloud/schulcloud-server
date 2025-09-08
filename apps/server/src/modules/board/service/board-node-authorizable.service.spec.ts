@@ -1,16 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
+import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { columnBoardFactory, columnFactory } from '../testing';
+import { setupEntities } from '@testing/database';
 import { BoardNodeAuthorizable, BoardRoles, UserWithBoardRoles } from '../domain';
 import { BoardNodeRepo } from '../repo';
-import { BoardContextService } from './internal/board-context.service';
+import { columnBoardFactory, columnFactory } from '../testing';
 import { BoardNodeAuthorizableService } from './board-node-authorizable.service';
 import { BoardNodeService } from './board-node.service';
+import { BoardContextService } from './internal/board-context.service';
 
 describe(BoardNodeAuthorizableService.name, () => {
 	let module: TestingModule;
 	let service: BoardNodeAuthorizableService;
+	let injectionService: DeepMocked<AuthorizationInjectionService>;
 	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let boardContextService: DeepMocked<BoardContextService>;
@@ -31,15 +34,20 @@ describe(BoardNodeAuthorizableService.name, () => {
 					provide: BoardContextService,
 					useValue: createMock<BoardContextService>(),
 				},
+				{
+					provide: AuthorizationInjectionService,
+					useValue: createMock<AuthorizationInjectionService>(),
+				},
 			],
 		}).compile();
 
+		injectionService = module.get(AuthorizationInjectionService);
 		service = module.get(BoardNodeAuthorizableService);
 		boardNodeRepo = module.get(BoardNodeRepo);
 		boardNodeService = module.get(BoardNodeService);
 		boardContextService = module.get(BoardContextService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterEach(() => {
@@ -48,6 +56,12 @@ describe(BoardNodeAuthorizableService.name, () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('injection', () => {
+		it('should inject itself into authorisation module', () => {
+			expect(injectionService.injectReferenceLoader).toHaveBeenCalledWith(AuthorizableReferenceType.BoardNode, service);
+		});
 	});
 
 	describe('findById', () => {
@@ -62,6 +76,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 					boardNode: column,
 					rootNode: columnBoard,
 					users: [],
+					boardContextSettings: {},
 				});
 
 				return { columnBoard, column, authorizable };
@@ -102,8 +117,10 @@ describe(BoardNodeAuthorizableService.name, () => {
 				},
 			];
 			boardContextService.getUsersWithBoardRoles.mockResolvedValue(usersWithRoles);
+			const boardSettings = { canRoomEditorManageVideoconference: true };
+			boardContextService.getBoardSettings.mockResolvedValueOnce(boardSettings);
 
-			return { columnBoard, column, usersWithRoles };
+			return { boardSettings, columnBoard, column, usersWithRoles };
 		};
 
 		it('should call the service to get the parent node', async () => {
@@ -123,7 +140,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 		});
 
 		it('should return an authorizable of the root context', async () => {
-			const { column, columnBoard, usersWithRoles } = setup();
+			const { boardSettings, column, columnBoard, usersWithRoles } = setup();
 
 			const result = await service.getBoardAuthorizable(column);
 			const expected = new BoardNodeAuthorizable({
@@ -132,6 +149,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 				boardNode: column,
 				rootNode: columnBoard,
 				parentNode: columnBoard,
+				boardContextSettings: boardSettings,
 			});
 
 			expect(result).toEqual(expected);

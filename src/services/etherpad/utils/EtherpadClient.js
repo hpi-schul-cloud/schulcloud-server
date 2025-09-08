@@ -1,5 +1,4 @@
-const rp = require('request-promise-native');
-const rpErrors = require('request-promise-core/errors');
+const axios = require('axios');
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { BadRequest, Conflict } = require('../../../errors');
@@ -40,48 +39,31 @@ class EtherpadClient {
 		};
 	}
 
-	createSettings(
-		{
-			method = 'POST',
-			endpoint,
-			formDef = {
-				apikey: Configuration.get('ETHERPAD__API_KEY'),
-			},
-			body,
-		},
-		params = {}
-	) {
-		const form = { ...formDef, ...params };
+	createOptions(endpoint, params = {}) {
+		const apikey = Configuration.get('ETHERPAD__API_KEY');
+		const data = { apikey, ...params };
 		return {
-			method,
-			uri: `${this.uri()}/${endpoint}`,
-			form,
-			body,
-			json: false,
+			method: 'POST',
+			url: `${this.uri()}/${endpoint}`,
+			data,
 		};
 	}
 
 	handleEtherpadResponse(res) {
-		const responseJSON = JSON.parse(res);
+		const responseJSON = res.data;
 		switch (responseJSON.code) {
 			case 0:
 				return responseJSON;
 			case 1:
-				throw new Conflict(responseJSON.message, rpErrors.RequestError(responseJSON.message, res));
+				throw new Conflict(res);
 			default:
-				throw new BadRequest(responseJSON.message, rpErrors.RequestError(responseJSON.message, res));
+				throw new BadRequest(res);
 		}
 	}
 
 	createOrGetAuthor(params) {
-		return rp(
-			this.createSettings(
-				{
-					endpoint: 'createAuthorIfNotExistsFor',
-				},
-				params
-			)
-		)
+		const options = this.createOptions('createAuthorIfNotExistsFor', params);
+		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				throw new BadRequest(this.err.createOrGetAuthor, err);
@@ -89,14 +71,8 @@ class EtherpadClient {
 	}
 
 	createOrGetGroup(params) {
-		return rp(
-			this.createSettings(
-				{
-					endpoint: 'createGroupIfNotExistsFor',
-				},
-				params
-			)
-		)
+		const options = this.createOptions('createGroupIfNotExistsFor', params);
+		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				throw new BadRequest(this.err.createOrGetGroup, err);
@@ -104,14 +80,8 @@ class EtherpadClient {
 	}
 
 	getActiveSessions(params) {
-		return rp(
-			this.createSettings(
-				{
-					endpoint: 'listSessionsOfAuthor',
-				},
-				params
-			)
-		)
+		const options = this.createOptions('listSessionsOfAuthor', params);
+		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				throw new BadRequest(this.err.getActiveSessions, err);
@@ -119,14 +89,8 @@ class EtherpadClient {
 	}
 
 	createSession(params) {
-		return rp(
-			this.createSettings(
-				{
-					endpoint: 'createSession',
-				},
-				params
-			)
-		)
+		const options = this.createOptions('createSession', params);
+		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				throw new BadRequest(this.err.createSession, err);
@@ -134,39 +98,8 @@ class EtherpadClient {
 	}
 
 	createOrGetGroupPad(params) {
-		if (params.oldPadId) {
-			const newPadId = `${params.groupID}$${params.padName}`;
-			const copyParams = {
-				sourceID: params.oldPadId,
-				destinationID: newPadId,
-			};
-			return rp(
-				this.createSettings(
-					{
-						endpoint: 'copyPad',
-					},
-					copyParams
-				)
-			)
-				.then((res) => {
-					const response = this.handleEtherpadResponse(res);
-					response.data = {
-						padID: newPadId,
-					};
-					return response;
-				})
-				.catch((err) => {
-					throw new BadRequest(this.err.copyOldPadToGroupPad, err);
-				});
-		}
-		return rp(
-			this.createSettings(
-				{
-					endpoint: 'createGroupPad',
-				},
-				params
-			)
-		)
+		const options = this.createOptions('createGroupPad', params);
+		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				// pad is already there, just return the constructed pad path

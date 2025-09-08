@@ -1,4 +1,4 @@
-import { Action, AuthorizationBodyParamsReferenceType } from '../authorization-api-client';
+import { AuthorizationBodyParamsReferenceType, AuthorizationContextParamsAction } from '../authorization-api-client';
 import { AuthorizationErrorLoggableException } from './authorization-error.loggable-exception';
 
 describe('AuthorizationErrorLoggableException', () => {
@@ -7,7 +7,7 @@ describe('AuthorizationErrorLoggableException', () => {
 			const setup = () => {
 				const params = {
 					context: {
-						action: Action.READ,
+						action: AuthorizationContextParamsAction.READ,
 						requiredPermissions: [],
 					},
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
@@ -30,7 +30,7 @@ describe('AuthorizationErrorLoggableException', () => {
 				const result = exception.getLogMessage();
 
 				expect(result).toEqual({
-					type: 'INTERNAL_SERVER_ERROR',
+					type: AuthorizationErrorLoggableException.name,
 					error,
 					stack: expect.any(String),
 					data: {
@@ -49,7 +49,7 @@ describe('AuthorizationErrorLoggableException', () => {
 			const setup = () => {
 				const params = {
 					context: {
-						action: Action.READ,
+						action: AuthorizationContextParamsAction.READ,
 						requiredPermissions: [],
 					},
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
@@ -72,7 +72,7 @@ describe('AuthorizationErrorLoggableException', () => {
 				const result = exception.getLogMessage();
 
 				expect(result).toEqual({
-					type: 'INTERNAL_SERVER_ERROR',
+					type: AuthorizationErrorLoggableException.name,
 					error: new Error(JSON.stringify(error)),
 					stack: expect.any(String),
 					data: {

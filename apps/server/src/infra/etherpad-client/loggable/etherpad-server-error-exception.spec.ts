@@ -1,4 +1,4 @@
-import { ErrorUtils } from '@src/core/error/utils';
+import { ErrorUtils } from '@core/error/utils';
 import { EtherpadErrorType } from '../interface';
 import { EtherpadErrorLoggableException } from './etherpad-error-loggable-exception';
 
@@ -13,7 +13,7 @@ describe('EtherpadErrorLoggableException', () => {
 			const error = new Error('error');
 			const httpExceptionOptions = ErrorUtils.createHttpExceptionOptions(error);
 
-			const exception = new EtherpadErrorLoggableException(type, payload, httpExceptionOptions);
+			const exception = new EtherpadErrorLoggableException(type, payload, 'hugo ist nudeln', httpExceptionOptions);
 			const result = exception.getLogMessage();
 
 			expect(result).toStrictEqual({
@@ -22,6 +22,7 @@ describe('EtherpadErrorLoggableException', () => {
 				data: {
 					userId: 'userId',
 					parentId: 'parentId',
+					originalMessage: 'hugo ist nudeln',
 				},
 			});
 		});

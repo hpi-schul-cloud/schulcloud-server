@@ -1,8 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
+import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common/error';
 
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { AccountUc } from './account.uc';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -16,10 +17,9 @@ import {
 	UpdateMyAccountDto,
 } from './dto';
 import { AccountResponseMapper } from './mapper/account-response.mapper';
-import { AccountUc } from './account.uc';
 
 @ApiTags('Account')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('account')
 export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}
@@ -32,7 +32,7 @@ export class AccountController {
 	@ApiResponse({ status: 200, type: AccountSearchListResponse, description: 'Returns a paged list of accounts.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero or administrator.' })
-	async searchAccounts(
+	public async searchAccounts(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: AccountSearchQueryParams
 	): Promise<AccountSearchListResponse> {
@@ -48,7 +48,7 @@ export class AccountController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
-	async findAccountById(
+	public async findAccountById(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams
 	): Promise<AccountResponse> {
@@ -65,7 +65,10 @@ export class AccountController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid password.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
-	async updateMyAccount(@CurrentUser() currentUser: ICurrentUser, @Body() params: PatchMyAccountParams): Promise<void> {
+	public updateMyAccount(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() params: PatchMyAccountParams
+	): Promise<void> {
 		const updateData = new UpdateMyAccountDto(params);
 		return this.accountUc.updateMyAccount(currentUser.userId, updateData);
 	}
@@ -76,7 +79,7 @@ export class AccountController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
-	async updateAccountById(
+	public async updateAccountById(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams,
 		@Body() body: AccountByIdBodyParams
@@ -93,7 +96,7 @@ export class AccountController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
-	async deleteAccountById(
+	public async deleteAccountById(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams
 	): Promise<AccountResponse> {
@@ -107,7 +110,7 @@ export class AccountController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid password.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account or user not found.' })
-	async replaceMyPassword(
+	public replaceMyPassword(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: PatchMyPasswordParams
 	): Promise<void> {

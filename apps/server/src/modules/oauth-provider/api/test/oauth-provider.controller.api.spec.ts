@@ -1,18 +1,14 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { externalToolPseudonymEntityFactory } from '@modules/pseudonym/testing';
 import { ServerTestModule } from '@modules/server';
+import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import {
-	cleanupCollections,
-	externalToolPseudonymEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
-import { ltiToolFactory } from '@shared/testing/factory/ltitool.factory';
-import { pseudonymEntityFactory } from '@shared/testing/factory/pseudonym.factory';
-import { externalToolEntityFactory } from '@src/modules/tool/external-tool/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import {
@@ -341,11 +337,13 @@ describe(OauthProviderController.name, () => {
 		describe('when accepting a login request', () => {
 			const setup = async () => {
 				const challenge = 'challenge';
+				const clientId = 'clientId';
 				const loginResponse: ProviderLoginResponse = providerLoginResponseFactory.build({
+					client: providerOauthClientFactory.build({ client_id: clientId }),
 					challenge,
 				});
+				const externalTool = externalToolEntityFactory.withOauth2Config({ clientId }).build();
 				const redirectResponse: ProviderRedirectResponse = { redirect_to: 'redirect' };
-				const ltiTool = ltiToolFactory.buildWithId({ oAuthClientId: loginResponse.client.client_id });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				axiosMock
@@ -354,7 +352,7 @@ describe(OauthProviderController.name, () => {
 					.onPut(`${hydraUri}/oauth2/auth/requests/login/accept?login_challenge=${challenge}`)
 					.replyOnce<ProviderRedirectResponse>(HttpStatus.OK, redirectResponse);
 
-				await em.persistAndFlush([studentAccount, studentUser, ltiTool]);
+				await em.persistAndFlush([studentAccount, studentUser, externalTool]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -482,17 +480,16 @@ describe(OauthProviderController.name, () => {
 		describe('when accepting a consent request', () => {
 			const setup = async () => {
 				const challenge = 'challenge';
+				const clientId = 'clientId';
+				const externalTool = externalToolEntityFactory.withOauth2Config({ clientId }).build();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const pseudonym = externalToolPseudonymEntityFactory.build({ toolId: externalTool.id, userId: studentUser.id });
 				const consentResponse: ProviderConsentResponse = providerConsentResponseFactory.build({
+					client: providerOauthClientFactory.build({ client_id: clientId }),
 					challenge,
 					subject: studentUser.id,
 				});
 				const redirectResponse: ProviderRedirectResponse = { redirect_to: 'redirect' };
-				const ltiTool = ltiToolFactory.buildWithId({ oAuthClientId: consentResponse.client.client_id });
-				const pseudonym = pseudonymEntityFactory.buildWithId({
-					toolId: ltiTool.id,
-					userId: studentUser.id,
-				});
 
 				axiosMock
 					.onGet(`${hydraUri}/oauth2/auth/requests/consent?consent_challenge=${challenge}`)
@@ -500,7 +497,7 @@ describe(OauthProviderController.name, () => {
 					.onPut(`${hydraUri}/oauth2/auth/requests/consent/accept?consent_challenge=${challenge}`)
 					.replyOnce<ProviderRedirectResponse>(HttpStatus.OK, redirectResponse);
 
-				await em.persistAndFlush([studentAccount, studentUser, ltiTool, pseudonym]);
+				await em.persistAndFlush([studentAccount, studentUser, externalTool, pseudonym]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -536,7 +533,7 @@ describe(OauthProviderController.name, () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				const consentListResponse: ProviderConsentSessionResponse = providerConsentSessionResponseFactory.build();
-				const externalTool = externalToolEntityFactory.withOauth2Config('clientId').buildWithId();
+				const externalTool = externalToolEntityFactory.withOauth2Config().buildWithId();
 				const pseudonym = externalToolPseudonymEntityFactory.buildWithId({
 					toolId: externalTool.id,
 					userId: studentUser.id,

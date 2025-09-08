@@ -1,17 +1,14 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { ContextExternalToolConfigurationStatus } from '../../common/domain';
+import { ContextExternalToolLaunchable } from '../../context-external-tool/domain';
 
 export class ToolStatusNotLaunchableLoggableException extends UnprocessableEntityException implements Loggable {
 	constructor(
 		private readonly userId: EntityId,
-		private readonly toolId: EntityId,
-		private readonly isOutdatedOnScopeSchool: boolean,
-		private readonly isOutdatedOnScopeContext: boolean,
-		private readonly isIncompleteOnScopeContext: boolean,
-		private readonly isIncompleteOperationalOnScopeContext: boolean,
-		private readonly isDeactivated: boolean,
-		private readonly isNotLicensed: boolean
+		private readonly contextExternalTool: ContextExternalToolLaunchable,
+		private readonly configStatus: ContextExternalToolConfigurationStatus
 	) {
 		super();
 	}
@@ -23,13 +20,9 @@ export class ToolStatusNotLaunchableLoggableException extends UnprocessableEntit
 			stack: this.stack,
 			data: {
 				userId: this.userId,
-				toolId: this.toolId,
-				isOutdatedOnScopeSchool: this.isOutdatedOnScopeSchool,
-				isOutdatedOnScopeContext: this.isOutdatedOnScopeContext,
-				isIncompleteOnScopeContext: this.isIncompleteOnScopeContext,
-				isIncompleteOperationalOnScopeContext: this.isIncompleteOperationalOnScopeContext,
-				isDeactivated: this.isDeactivated,
-				isNotLicensed: this.isNotLicensed,
+				contextExternalToolId: this.contextExternalTool.id,
+				schoolExternalToolId: this.contextExternalTool.schoolToolRef.schoolToolId,
+				status: { ...this.configStatus },
 			},
 		};
 	}

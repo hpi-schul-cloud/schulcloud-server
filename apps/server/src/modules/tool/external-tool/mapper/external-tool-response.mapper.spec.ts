@@ -95,6 +95,7 @@ describe(ExternalToolResponseMapper.name, () => {
 					isDeactivated: true,
 					description: externalTool.description,
 					thumbnailUrl: externalTool.thumbnail?.uploadUrl,
+					isPreferred: false,
 				});
 
 				return {
@@ -187,6 +188,7 @@ describe(ExternalToolResponseMapper.name, () => {
 					config: oauth2ToolConfigResponse,
 					isDeactivated: false,
 					description: externalTool.description,
+					isPreferred: false,
 				});
 
 				return {
@@ -274,6 +276,7 @@ describe(ExternalToolResponseMapper.name, () => {
 					config: lti11ToolConfigResponse,
 					isDeactivated: false,
 					description: externalTool.description,
+					isPreferred: false,
 				});
 
 				return {

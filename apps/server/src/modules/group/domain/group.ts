@@ -1,6 +1,7 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { ExternalSource, type UserDO } from '@shared/domain/domainobject';
+import { ExternalSource } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
+import { GroupPeriod } from './group-period';
 import { GroupTypes } from './group-types';
 import { GroupUser } from './group-user';
 
@@ -11,9 +12,7 @@ export interface GroupProps extends AuthorizableObject {
 
 	type: GroupTypes;
 
-	validFrom?: Date;
-
-	validUntil?: Date;
+	validPeriod?: GroupPeriod;
 
 	externalSource?: ExternalSource;
 
@@ -47,25 +46,43 @@ export class Group extends DomainObject<GroupProps> {
 		return this.props.type;
 	}
 
-	get validFrom(): Date | undefined {
-		return this.props.validFrom;
+	get validPeriod(): GroupPeriod | undefined {
+		return this.props.validPeriod;
 	}
 
-	get validUntil(): Date | undefined {
-		return this.props.validUntil;
+	public isCurrentlyInValidPeriod(): boolean {
+		if (!this.validPeriod) {
+			return true;
+		}
+		const now: Date = new Date();
+		if (this.validPeriod.from && this.validPeriod.from > now) {
+			return false;
+		}
+		if (this.validPeriod.until && this.validPeriod.until < now) {
+			return false;
+		}
+		return true;
 	}
 
-	removeUser(user: UserDO): void {
-		this.props.users = this.props.users.filter((groupUser: GroupUser): boolean => groupUser.userId !== user.id);
+	public removeUser(userId: EntityId): void {
+		this.props.users = this.props.users.filter((groupUser: GroupUser): boolean => groupUser.userId !== userId);
 	}
 
-	isEmpty(): boolean {
+	public isEmpty(): boolean {
 		return this.props.users.length === 0;
 	}
 
-	addUser(user: GroupUser): void {
+	public addUser(user: GroupUser): void {
 		if (!this.users.find((u: GroupUser): boolean => u.userId === user.userId)) {
 			this.users.push(user);
 		}
+	}
+
+	public isMember(userId: EntityId, roleId?: EntityId): boolean {
+		const isMember: boolean = this.users.some(
+			(groupUser: GroupUser) => groupUser.userId === userId && (roleId ? groupUser.roleId === roleId : true)
+		);
+
+		return isMember;
 	}
 }

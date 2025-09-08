@@ -1,15 +1,14 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Group } from '@modules/group';
 import { Controller, ForbiddenException, Get, HttpStatus, Param, Query, UnauthorizedException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
-import { ErrorResponse } from '@src/core/error/dto';
+import { ErrorResponse } from '@core/error/dto';
 import { ClassGroupUc, GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
 import {
-	ClassCallerParams,
 	ClassFilterParams,
 	ClassInfoSearchListResponse,
 	ClassSortParams,
@@ -22,7 +21,7 @@ import {
 import { GroupResponseMapper } from './mapper';
 
 @ApiTags('Group')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('groups')
 export class GroupController {
 	constructor(private readonly groupUc: GroupUc, private readonly classGroupUc: ClassGroupUc) {}
@@ -36,14 +35,12 @@ export class GroupController {
 		@Query() pagination: GroupPaginationParams,
 		@Query() sortingQuery: ClassSortParams,
 		@Query() filterParams: ClassFilterParams,
-		@Query() callerParams: ClassCallerParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ClassInfoSearchListResponse> {
 		const board: Page<ClassInfoDto> = await this.classGroupUc.findAllClasses(
 			currentUser.userId,
 			currentUser.schoolId,
 			filterParams.type,
-			callerParams.calledFrom,
 			pagination,
 			sortingQuery.sortBy,
 			sortingQuery.sortOrder

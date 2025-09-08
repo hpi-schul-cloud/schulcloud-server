@@ -1,10 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { setupEntities } from '@shared/testing';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
+import { setupEntities } from '@testing/database';
 import { ObjectId } from 'bson';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@src/config';
 import { DeletionRequestRepo } from '../../repo';
+import { DeletionRequestEntity } from '../../repo/entity';
 import { deletionRequestFactory, deletionTestConfig } from '../testing';
 import { DomainName, StatusModel } from '../types';
 import { DeletionRequestService } from './deletion-request.service';
@@ -13,6 +14,7 @@ describe(DeletionRequestService.name, () => {
 	let module: TestingModule;
 	let service: DeletionRequestService;
 	let deletionRequestRepo: DeepMocked<DeletionRequestRepo>;
+	let configService: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -28,8 +30,11 @@ describe(DeletionRequestService.name, () => {
 
 		service = module.get(DeletionRequestService);
 		deletionRequestRepo = module.get(DeletionRequestRepo);
+		configService = module.get(ConfigService);
 
-		await setupEntities();
+		await setupEntities([DeletionRequestEntity]);
+
+		jest.useFakeTimers().setSystemTime(new Date());
 	});
 
 	beforeEach(() => {
@@ -51,20 +56,23 @@ describe(DeletionRequestService.name, () => {
 			const setup = () => {
 				const targetRefId = '653e4833cc39e5907a1e18d2';
 				const targetRefDomain = DomainName.USER;
+				const deleteAfter = new Date();
+				const minutes = 60;
+				deleteAfter.setMinutes(deleteAfter.getMinutes() + minutes);
 
-				return { targetRefId, targetRefDomain };
+				return { targetRefId, targetRefDomain, deleteAfter };
 			};
 
 			it('should call deletionRequestRepo.create', async () => {
-				const { targetRefId, targetRefDomain } = setup();
+				const { targetRefId, targetRefDomain, deleteAfter } = setup();
 
-				await service.createDeletionRequest(targetRefId, targetRefDomain);
+				await service.createDeletionRequest(targetRefId, targetRefDomain, deleteAfter);
 
 				expect(deletionRequestRepo.create).toHaveBeenCalledWith(
 					expect.objectContaining({
 						id: expect.any(String),
 						targetRefDomain,
-						deleteAfter: expect.any(Date),
+						deleteAfter,
 						targetRefId,
 						status: StatusModel.REGISTERED,
 					})
@@ -102,33 +110,72 @@ describe(DeletionRequestService.name, () => {
 		});
 	});
 
+	describe('findByIds', () => {
+		describe('when finding by deletionRequestIds', () => {
+			const setup = () => {
+				const deletionRequestIds = [new ObjectId().toHexString(), new ObjectId().toHexString()];
+				const deletionRequest1 = deletionRequestFactory.build({ id: deletionRequestIds[0] });
+				const deletionRequest2 = deletionRequestFactory.build({ id: deletionRequestIds[1] });
+
+				deletionRequestRepo.findByIds.mockResolvedValue([deletionRequest1, deletionRequest2]);
+
+				return { deletionRequestIds, deletionRequest1, deletionRequest2 };
+			};
+
+			it('should call deletionRequestRepo.findByIds', async () => {
+				const { deletionRequestIds } = setup();
+
+				await service.findByIds(deletionRequestIds);
+
+				expect(deletionRequestRepo.findByIds).toBeCalledWith(deletionRequestIds);
+			});
+
+			it('should return array of two deletionRequests', async () => {
+				const { deletionRequest1, deletionRequest2 } = setup();
+
+				const result = await service.findByIds([deletionRequest1.id, deletionRequest2.id]);
+
+				expect(result).toHaveLength(2);
+				expect(result).toEqual([deletionRequest1, deletionRequest2]);
+			});
+		});
+	});
+
 	describe('findAllItemsToExecute', () => {
 		describe('when finding all deletionRequests for execution', () => {
 			const setup = () => {
+				const limit = 100;
+
 				const dateInPast = new Date();
-				const threshold = 1000;
-				const limit = undefined;
 				dateInPast.setDate(dateInPast.getDate() - 1);
+
+				const thresholdOlderMs = configService.get<number>('ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS') ?? 100;
+				const thresholdNewerMs = configService.get<number>('ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS') ?? 1000;
+
+				const olderThan = new Date(Date.now() - thresholdOlderMs);
+				const newerThan = new Date(Date.now() - thresholdNewerMs);
+
 				const deletionRequest1 = deletionRequestFactory.build({ deleteAfter: dateInPast });
 				const deletionRequest2 = deletionRequestFactory.build({ deleteAfter: dateInPast });
 
-				deletionRequestRepo.findAllItemsToExecution.mockResolvedValue([deletionRequest1, deletionRequest2]);
+				deletionRequestRepo.findAllItems.mockResolvedValue([deletionRequest1, deletionRequest2]);
 
 				const deletionRequests = [deletionRequest1, deletionRequest2];
-				return { deletionRequests, limit, threshold };
+
+				return { deletionRequests, limit, olderThan, newerThan };
 			};
 
-			it('should call deletionRequestRepo.findAllItemsByDeletionDate with required parameter', async () => {
-				const { limit, threshold } = setup();
+			it('should call deletionRequestRepo.findAllItemsToExecution with required parameter', async () => {
+				const { limit } = setup();
 
-				await service.findAllItemsToExecute();
+				await service.findAllItemsToExecute(limit);
 
-				expect(deletionRequestRepo.findAllItemsToExecution).toBeCalledWith(threshold, limit);
+				expect(deletionRequestRepo.findAllItems).toBeCalledWith(limit);
 			});
 
 			it('should return array of two deletionRequests to execute', async () => {
-				const { deletionRequests } = setup();
-				const result = await service.findAllItemsToExecute();
+				const { deletionRequests, limit } = setup();
+				const result = await service.findAllItemsToExecute(limit);
 
 				expect(result).toHaveLength(2);
 				expect(result).toEqual(deletionRequests);
@@ -136,33 +183,146 @@ describe(DeletionRequestService.name, () => {
 		});
 	});
 
-	describe('countPendingDeletionRequests', () => {
-		describe('when counting all deletionRequests with status pending', () => {
+	describe('findByStatusAndTargetRefId', () => {
+		describe('when status is registered', () => {
 			const setup = () => {
-				const deletionRequestWithStatusPending = deletionRequestFactory.buildListWithId(5, {
-					status: StatusModel.PENDING,
-				});
+				const status = StatusModel.REGISTERED;
+				const targetRefIds = ['653e4833cc39e5907a1e18d2'];
 
-				deletionRequestRepo.countPendingDeletionRequests.mockResolvedValue(deletionRequestWithStatusPending.length);
+				const deletionRequest1 = deletionRequestFactory.build({ status });
 
-				const numberDeletionRequestsWithStatusPending = deletionRequestWithStatusPending.length;
-				return { numberDeletionRequestsWithStatusPending };
+				deletionRequestRepo.findRegisteredByTargetRefId.mockResolvedValue([deletionRequest1]);
+
+				const deletionRequests = [deletionRequest1];
+
+				return { deletionRequests, status, targetRefIds };
 			};
 
-			it('should call deletionRequestRepo.countPendingDeletionRequests', async () => {
-				await service.countPendingDeletionRequests();
+			it('should call deletionRequestRepo.findRegisteredByTargetRefId with required parameter', async () => {
+				const { status, targetRefIds } = setup();
 
-				expect(deletionRequestRepo.countPendingDeletionRequests).toBeCalled();
+				await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(deletionRequestRepo.findRegisteredByTargetRefId).toBeCalledWith(targetRefIds);
 			});
 
-			it('should return number of deletionRequests with status pending', async () => {
-				const { numberDeletionRequestsWithStatusPending } = setup();
-				const result = await service.countPendingDeletionRequests();
+			it('should return deletionRequests', async () => {
+				const { deletionRequests, status, targetRefIds } = setup();
+				const result = await service.findByStatusAndTargetRefId(status, targetRefIds);
 
-				expect(result).toEqual(numberDeletionRequestsWithStatusPending);
+				expect(result).toEqual(deletionRequests);
+			});
+		});
+
+		describe('when status is pending', () => {
+			const setup = () => {
+				const status = StatusModel.PENDING;
+				const targetRefIds = ['653e4833cc39e5907a1e18d2'];
+
+				const deletionRequest1 = deletionRequestFactory.build({ status });
+
+				deletionRequestRepo.findPendingByTargetRefId.mockResolvedValue([deletionRequest1]);
+
+				const deletionRequests = [deletionRequest1];
+
+				return { deletionRequests, status, targetRefIds };
+			};
+
+			it('should call deletionRequestRepo.findPendingByTargetRefId with required parameter', async () => {
+				const { status, targetRefIds } = setup();
+
+				await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(deletionRequestRepo.findPendingByTargetRefId).toBeCalledWith(targetRefIds);
+			});
+
+			it('should return deletionRequests', async () => {
+				const { deletionRequests, status, targetRefIds } = setup();
+				const result = await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(result).toEqual(deletionRequests);
+			});
+		});
+
+		describe('when status is failed', () => {
+			const setup = () => {
+				const status = StatusModel.FAILED;
+				const targetRefIds = ['653e4833cc39e5907a1e18d2'];
+
+				const deletionRequest1 = deletionRequestFactory.build({ status });
+
+				deletionRequestRepo.findFailedByTargetRefId.mockResolvedValue([deletionRequest1]);
+
+				const deletionRequests = [deletionRequest1];
+
+				return { deletionRequests, status, targetRefIds };
+			};
+
+			it('should call deletionRequestRepo.findFailedByTargetRefId with required parameter', async () => {
+				const { status, targetRefIds } = setup();
+
+				await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(deletionRequestRepo.findFailedByTargetRefId).toBeCalledWith(targetRefIds);
+			});
+
+			it('should return deletionRequests', async () => {
+				const { deletionRequests, status, targetRefIds } = setup();
+				const result = await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(result).toEqual(deletionRequests);
+			});
+		});
+
+		describe('when status is success', () => {
+			const setup = () => {
+				const status = StatusModel.SUCCESS;
+				const targetRefIds = ['653e4833cc39e5907a1e18d2'];
+
+				const deletionRequest1 = deletionRequestFactory.build({ status });
+
+				deletionRequestRepo.findSuccessfulByTargetRefId.mockResolvedValue([deletionRequest1]);
+
+				const deletionRequests = [deletionRequest1];
+
+				return { deletionRequests, status, targetRefIds };
+			};
+
+			it('should call deletionRequestRepo.findSuccessfulByTargetRefId with required parameter', async () => {
+				const { status, targetRefIds } = setup();
+
+				await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(deletionRequestRepo.findSuccessfulByTargetRefId).toBeCalledWith(targetRefIds);
+			});
+
+			it('should return deletionRequests', async () => {
+				const { deletionRequests, status, targetRefIds } = setup();
+				const result = await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(result).toEqual(deletionRequests);
+			});
+		});
+
+		describe('when status is anything else', () => {
+			const setup = () => {
+				const status = StatusModel.FINISHED;
+				const targetRefIds = ['653e4833cc39e5907a1e18d2'];
+
+				const deletionRequests = [];
+
+				return { deletionRequests, status, targetRefIds };
+			};
+
+			it('should return empty array', async () => {
+				const { deletionRequests, status, targetRefIds } = setup();
+				const result = await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(result).toEqual(deletionRequests);
 			});
 		});
 	});
+
 	describe('update', () => {
 		describe('when updating deletionRequest', () => {
 			const setup = () => {
@@ -234,9 +394,14 @@ describe(DeletionRequestService.name, () => {
 	describe('deleteById', () => {
 		describe('when deleting deletionRequest', () => {
 			const setup = () => {
-				const deletionRequestId = new ObjectId().toHexString();
+				const deletionRequest = deletionRequestFactory.build({
+					id: new ObjectId().toHexString(),
+					targetRefDomain: DomainName.USER,
+				});
 
-				return { deletionRequestId };
+				deletionRequestRepo.findById.mockResolvedValueOnce(deletionRequest);
+
+				return { deletionRequestId: deletionRequest.id, deletionRequest };
 			};
 
 			it('should call deletionRequestRepo.findAllItemsByDeletionDate', async () => {

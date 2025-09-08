@@ -1,4 +1,4 @@
-import { axiosErrorFactory } from '@shared/testing/factory';
+import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { AxiosError } from 'axios';
 import { AxiosErrorLoggable } from './axios-error.loggable';
 
@@ -17,15 +17,15 @@ describe(AxiosErrorLoggable.name, () => {
 		};
 
 		it('should return error log message', () => {
-			const { axiosErrorLoggable, error, axiosError } = setup();
+			const { axiosErrorLoggable, error } = setup();
 
 			const result = axiosErrorLoggable.getLogMessage();
 
 			expect(result).toEqual({
 				type: 'mockType',
-				message: axiosError.message,
+				message: 'message: Bad Request code: 400',
 				data: JSON.stringify(error),
-				stack: 'mockStack',
+				stack: axiosErrorLoggable.stack,
 			});
 		});
 	});

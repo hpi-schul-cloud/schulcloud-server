@@ -1,7 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { PrivacyProtect, SanitizeHtml } from '@shared/controller';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { SanitizeHtml } from '@shared/controller/transformer';
+import { PrivacyProtect } from '@shared/controller/validator';
 import { IsEmail, IsOptional, IsString, Matches } from 'class-validator';
-import { passwordPattern } from '../password-pattern';
+import { passwordPattern } from '../../../domain';
 
 export class PatchMyAccountParams {
 	@IsString()
@@ -10,48 +11,40 @@ export class PatchMyAccountParams {
 		required: true,
 		nullable: false,
 	})
-	passwordOld!: string;
+	public passwordOld!: string;
 
 	@PrivacyProtect()
 	@IsString()
 	@IsOptional()
 	@Matches(passwordPattern)
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'The new password for the current user.',
-		required: false,
-		nullable: true,
 	})
-	passwordNew?: string;
+	public passwordNew?: string;
 
 	@IsEmail()
 	@SanitizeHtml()
 	@IsOptional()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'The new email address for the current user.',
-		required: false,
-		nullable: true,
 	})
-	email?: string;
+	public email?: string;
 
 	@IsString()
 	@SanitizeHtml()
 	@IsOptional()
 	@SanitizeHtml()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'The new first name for the current user.',
-		required: false,
-		nullable: true,
 	})
-	firstName?: string;
+	public firstName?: string;
 
 	@IsString()
 	@SanitizeHtml()
 	@IsOptional()
 	@SanitizeHtml()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'The new last name for the current user.',
-		required: false,
-		nullable: true,
 	})
-	lastName?: string;
+	public lastName?: string;
 }

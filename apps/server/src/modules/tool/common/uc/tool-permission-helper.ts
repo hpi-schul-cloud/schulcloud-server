@@ -1,9 +1,10 @@
 import { AuthorizationContext, AuthorizationService, ForbiddenLoggableException } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService } from '@modules/board';
-import { CourseService } from '@modules/learnroom';
+import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
+import { User } from '@modules/user/repo';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -53,7 +54,7 @@ export class ToolPermissionHelper {
 	): Promise<void> {
 		switch (contextType) {
 			case ToolContextType.COURSE: {
-				const course: Course = await this.courseService.findById(contextId);
+				const course: CourseEntity = await this.courseService.findById(contextId);
 
 				this.authorizationService.checkPermission(user, course, context);
 				break;

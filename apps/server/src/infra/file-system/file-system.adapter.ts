@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { promises as fsp, existsSync } from 'fs';
+import { existsSync, promises as fsp } from 'fs';
 import os from 'os';
 import path from 'path';
 
-import rimraf = require('rimraf');
+import { rimrafSync } from 'rimraf';
 
 const { mkdir, readdir, writeFile, readFile, mkdtemp } = fsp;
 
@@ -77,7 +77,7 @@ export class FileSystemAdapter {
 	 */
 	async removeDirRecursive(folderPath: string): Promise<void> {
 		// fs.rm changed in node 14.14, use rimraf instead
-		rimraf.sync(folderPath);
+		rimrafSync(folderPath);
 		return Promise.resolve();
 	}
 

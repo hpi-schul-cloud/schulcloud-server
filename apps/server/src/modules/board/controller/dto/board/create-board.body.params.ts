@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SanitizeHtml } from '@shared/controller';
-import { IsEnum, IsMongoId, NotEquals, MaxLength, MinLength } from 'class-validator';
+import { SanitizeHtml } from '@shared/controller/transformer';
+import { IsEnum, IsMongoId, MaxLength, MinLength, NotEquals } from 'class-validator';
 import { BoardExternalReferenceType, BoardLayout } from '../../../domain';
 
 export class CreateBoardBodyParams {
@@ -11,14 +11,14 @@ export class CreateBoardBodyParams {
 	@MinLength(1)
 	@MaxLength(100)
 	@SanitizeHtml()
-	title!: string;
+	public title!: string;
 
 	@IsMongoId()
 	@ApiProperty({
 		description: 'The id of the parent',
 		required: true,
 	})
-	parentId!: string;
+	public parentId!: string;
 
 	@ApiProperty({
 		description: 'The type of the parent',
@@ -27,7 +27,7 @@ export class CreateBoardBodyParams {
 		enumName: 'BoardParentType',
 	})
 	@IsEnum(BoardExternalReferenceType)
-	parentType!: BoardExternalReferenceType;
+	public parentType!: BoardExternalReferenceType;
 
 	@ApiProperty({
 		description: 'The layout of the board',
@@ -37,5 +37,5 @@ export class CreateBoardBodyParams {
 	})
 	@IsEnum(BoardLayout, {})
 	@NotEquals(BoardLayout[BoardLayout.GRID])
-	layout!: BoardLayout;
+	public layout!: BoardLayout;
 }

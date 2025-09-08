@@ -1,11 +1,12 @@
-import { PropertyLocation, ToolLaunchDataType, ToolLaunchRequest } from '../types';
-import { ToolLaunchRequestResponse } from '../controller/dto';
 import { CustomParameterLocation, ToolConfigType } from '../../common/enum';
+import { ToolLaunchRequestResponse } from '../controller/dto';
+import { PropertyLocation, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 
 const customToParameterLocationMapping: Record<CustomParameterLocation, PropertyLocation> = {
 	[CustomParameterLocation.PATH]: PropertyLocation.PATH,
 	[CustomParameterLocation.BODY]: PropertyLocation.BODY,
 	[CustomParameterLocation.QUERY]: PropertyLocation.QUERY,
+	[CustomParameterLocation.FRAGMENT]: PropertyLocation.FRAGMENT,
 };
 
 const toolConfigTypeToToolLaunchDataTypeMapping: Record<ToolConfigType, ToolLaunchDataType> = {
@@ -14,37 +15,22 @@ const toolConfigTypeToToolLaunchDataTypeMapping: Record<ToolConfigType, ToolLaun
 	[ToolConfigType.OAUTH2]: ToolLaunchDataType.OAUTH2,
 };
 
-const toolLaunchDataTypeToToolConfigTypeMapping: Record<ToolLaunchDataType, ToolConfigType> = {
-	[ToolLaunchDataType.BASIC]: ToolConfigType.BASIC,
-	[ToolLaunchDataType.LTI11]: ToolConfigType.LTI11,
-	[ToolLaunchDataType.OAUTH2]: ToolConfigType.OAUTH2,
-};
-
 export class ToolLaunchMapper {
-	static mapToParameterLocation(location: CustomParameterLocation): PropertyLocation {
+	public static mapToParameterLocation(location: CustomParameterLocation): PropertyLocation {
 		const mappedLocation = customToParameterLocationMapping[location];
+
 		return mappedLocation;
 	}
 
-	static mapToToolLaunchDataType(configType: ToolConfigType): ToolLaunchDataType {
+	public static mapToToolLaunchDataType(configType: ToolConfigType): ToolLaunchDataType {
 		const mappedType = toolConfigTypeToToolLaunchDataTypeMapping[configType];
+
 		return mappedType;
 	}
 
-	static mapToToolConfigType(launchDataType: ToolLaunchDataType): ToolConfigType {
-		const mappedType = toolLaunchDataTypeToToolConfigTypeMapping[launchDataType];
-		return mappedType;
-	}
+	public static mapToToolLaunchRequestResponse(toolLaunchRequest: ToolLaunchRequest): ToolLaunchRequestResponse {
+		const response = new ToolLaunchRequestResponse(toolLaunchRequest);
 
-	static mapToToolLaunchRequestResponse(toolLaunchRequest: ToolLaunchRequest): ToolLaunchRequestResponse {
-		const { method, url, payload, openNewTab } = toolLaunchRequest;
-
-		const response = new ToolLaunchRequestResponse({
-			method,
-			url,
-			payload,
-			openNewTab,
-		});
 		return response;
 	}
 }

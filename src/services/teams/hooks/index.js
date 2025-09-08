@@ -754,7 +754,6 @@ const keys = {
 		'userIds',
 		'color',
 		'features',
-		'ltiToolIds',
 		'classIds',
 		'startDate',
 		'untilDate',

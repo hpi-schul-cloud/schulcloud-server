@@ -8,13 +8,13 @@ export interface FeathersService {
 	 *
 	 * @param id
 	 * @param params
-	 * @deprecated Access legacy eathers service get method
+	 * @deprecated Access legacy feathers service get method
 	 */
 	get(id: string, params?: FeathersServiceParams): Promise<FeathersServiceResponse>;
 	/**
 	 *
 	 * @param params
-	 * @deprecated Access legacy eathers service find method
+	 * @deprecated Access legacy feathers service find method
 	 */
 	find(params?: FeathersServiceParams): Promise<FeathersServiceResponse>;
 	/**

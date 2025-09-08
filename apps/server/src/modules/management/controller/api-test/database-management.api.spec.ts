@@ -1,22 +1,35 @@
+import { faker } from '@faker-js/faker/locale/af_ZA';
+import { createMock } from '@golevelup/ts-jest';
+import { FeathersServiceProvider } from '@infra/feathers';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ManagementServerTestModule } from '@modules/management/management-server.module';
-import { INestApplication } from '@nestjs/common';
+import { ManagementServerTestModule } from '@modules/management/management-server.app.module';
+import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createCollections } from '@shared/testing';
+import { createCollections } from '@testing/create-collections';
 import request from 'supertest';
 
 describe('Database Management Controller (API)', () => {
-	let app: INestApplication;
+	let app: NestExpressApplication;
 	let orm: MikroORM;
 	const sampleCollectionName = 'accounts';
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ManagementServerTestModule],
-		}).compile();
+			providers: [
+				{
+					provide: FeathersServiceProvider,
+					useValue: createMock<FeathersServiceProvider>(),
+				},
+			],
+		})
+			.overrideProvider(FeathersServiceProvider)
+			.useValue(createMock<FeathersServiceProvider>())
+			.compile();
 
-		app = module.createNestApplication();
+		app = module.createNestApplication(new ExpressAdapter());
+		app.useBodyParser('text');
 		await app.init();
 		orm = module.get(MikroORM);
 		await orm.getSchemaGenerator().clearDatabase();
@@ -60,10 +73,21 @@ describe('Database Management Controller (API)', () => {
 
 			expect(result.status).toEqual(201);
 		});
-		it('should export a collection to filesystem', async () => {
+		it('should create indexes', async () => {
 			const result = await request(app.getHttpServer()).post(`/management/database/sync-indexes`);
 
 			expect(result.status).toEqual(201);
+		});
+		it('should encrypt plain text', async () => {
+			const txt = faker.string.alphanumeric(42);
+			const result = await request(app.getHttpServer())
+				.post(`/management/database/encrypt-plain-text`)
+				.set('content-type', 'text/plain')
+				.set('content-length', Buffer.byteLength(txt).toString())
+				.send(txt);
+
+			expect(result.status).toEqual(200);
+			expect(result.text).not.toHaveLength(0);
 		});
 	});
 });

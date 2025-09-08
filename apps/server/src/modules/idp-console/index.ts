@@ -1,2 +1,3 @@
-export * from './idp-console.module';
-export * from './interface';
+/** *************************************************
+ *   Do not re-export here! File should be empty!   *
+ ************************************************** */

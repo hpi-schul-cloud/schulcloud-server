@@ -85,7 +85,6 @@ const facadeStubs = {
 };
 
 let getUserStub;
-let getUserAccountStub;
 let createUserTrashbinStub;
 let updateTrashbinByUserIdStub;
 let getUserRolesStub;
@@ -129,7 +128,9 @@ describe('users usecase', () => {
 			const currentUser = createCurrentUser();
 			const testUser = createTestUser();
 			const testAccount = createTestAccount();
+
 			await userUC.deleteUser(USER_ID, 'student', { account: currentUser });
+
 			expect(createUserTrashbinStub).to.have.been.calledWith(USER_ID, [
 				{ scope: 'user', data: testUser },
 				{ scope: 'account', data: testAccount },
@@ -139,16 +140,14 @@ describe('users usecase', () => {
 		it('when the function is called with an invalid id, then it fails', async () => {
 			const currentUser = createCurrentUser();
 			const userId = 'NOT_FOUND_USER';
-			expect(
-				() => userUC.deleteUser(userId, 'student', { account: currentUser }),
-				"if user wasn't found it should fail"
-			).to.throw;
+
+			await expect(userUC.deleteUser(userId, 'student', { account: currentUser })).to.be.rejected;
 		});
 	});
 
 	describe('deleteUserRelatedData', () => {
-		it('should not throw for empty facade list', () => {
-			expect(userUC.deleteUserRelatedData('12', 'tombstoneUserId', [])).to.not.be.rejected;
+		it('should not throw for empty facade list', async () => {
+			await expect(userUC.deleteUserRelatedData('12', 'tombstoneUserId', [])).to.not.be.rejected;
 		});
 
 		it('should update trashbin correctly if facade.deleteUser is a function', async () => {
@@ -157,11 +156,11 @@ describe('users usecase', () => {
 
 			const deleteUserStub = facadeStubs.facade1.deleteUserData[0];
 			expect(deleteUserStub.callCount).to.be.equal(1);
-			expect(deleteUserStub.calledWith(testUserId), 'deleteUser not called with correct userId').to.be.true;
+			expect(deleteUserStub.calledWith(testUserId), 'deleteUser not called with correct userId').to.equal(true);
 			expect(
 				updateTrashbinByUserIdStub.calledWith(testUserId, trashBinExample1.trashBinData),
 				'updateTrashbinByUser not called with correct params'
-			).to.be.true;
+			).to.equal(true);
 		});
 
 		it('should update trashbin correctly if facade.deleteUser is an array of functions', async () => {
@@ -171,16 +170,16 @@ describe('users usecase', () => {
 			const deleteUserStubs = facadeStubs.facade2.deleteUserData;
 			expect(deleteUserStubs[0].callCount).to.be.equal(1);
 			expect(deleteUserStubs[1].callCount).to.be.equal(1);
-			expect(deleteUserStubs[0].calledWith(testUserId), 'deleteUser not called with correct userId').to.be.true;
-			expect(deleteUserStubs[1].calledWith(testUserId), 'deleteUser not called with correct userId').to.be.true;
+			expect(deleteUserStubs[0].calledWith(testUserId), 'deleteUser not called with correct userId').to.equal(true);
+			expect(deleteUserStubs[1].calledWith(testUserId), 'deleteUser not called with correct userId').to.equal(true);
 			expect(
 				updateTrashbinByUserIdStub.calledWith(testUserId, trashBinExample1.trashBinData),
 				'updateTrashbinByUser not called with correct params'
-			).to.be.true;
+			).to.equal(true);
 			expect(
 				updateTrashbinByUserIdStub.calledWith(testUserId, trashBinExample2.trashBinData),
 				'updateTrashbinByUser not called with correct params'
-			).to.be.true;
+			).to.equal(true);
 		});
 
 		it('should update trashbin correctly for multiple facades', async () => {
@@ -191,15 +190,15 @@ describe('users usecase', () => {
 			expect(
 				updateTrashbinByUserIdStub.getCall(0).calledWithExactly(testUserId, trashBinExample1.trashBinData),
 				'updateTrashbinByUser not called with correct params #1'
-			).to.be.true;
+			).to.equal(true);
 			expect(
 				updateTrashbinByUserIdStub.getCall(1).calledWithExactly(testUserId, trashBinExample1.trashBinData),
 				'updateTrashbinByUser not called with correct params #2'
-			).to.be.true;
+			).to.equal(true);
 			expect(
 				updateTrashbinByUserIdStub.getCall(2).calledWithExactly(testUserId, trashBinExample2.trashBinData),
 				'updateTrashbinByUser not called with correct params #3'
-			).to.be.true;
+			).to.equal(true);
 		});
 
 		it('should not throw errors if facades throw, but log facade errors', async () => {

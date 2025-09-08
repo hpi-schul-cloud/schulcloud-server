@@ -85,6 +85,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolCreateParams.isDeactivated = true;
 				externalToolCreateParams.description = 'description';
 				externalToolCreateParams.thumbnailUrl = 'mockThumbnailUrl';
+				externalToolCreateParams.isPreferred = false;
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -158,6 +159,7 @@ describe('ExternalToolRequestMapper', () => {
 					medium: externalToolDOCreate.medium,
 					restrictToContexts: externalToolDOCreate.restrictToContexts,
 					thumbnailUrl: externalToolCreateParams.thumbnailUrl,
+					isPreferred: false,
 				});
 			});
 		});
@@ -178,7 +180,6 @@ describe('ExternalToolRequestMapper', () => {
 					secret: 'mockSecret',
 					key: 'mockKey',
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
 					launch_presentation_locale: 'de-DE',
 				});
@@ -206,6 +207,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolCreateParams.config = lti11ConfigParams;
 				externalToolCreateParams.isDeactivated = false;
 				externalToolCreateParams.description = 'description';
+				externalToolCreateParams.isPreferred = false;
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -279,6 +281,7 @@ describe('ExternalToolRequestMapper', () => {
 					isDeactivated: externalToolDOCreate.isDeactivated,
 					medium: externalToolDOCreate.medium,
 					restrictToContexts: externalToolDOCreate.restrictToContexts,
+					isPreferred: false,
 				});
 			});
 		});
@@ -331,6 +334,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolCreateParams.config = oauth2ConfigParams;
 				externalToolCreateParams.isDeactivated = false;
 				externalToolCreateParams.description = 'description';
+				externalToolCreateParams.isPreferred = false;
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -406,6 +410,7 @@ describe('ExternalToolRequestMapper', () => {
 					isDeactivated: externalToolDOCreate.isDeactivated,
 					medium: externalToolDOCreate.medium,
 					restrictToContexts: externalToolDOCreate.restrictToContexts,
+					isPreferred: false,
 				});
 			});
 		});
@@ -442,6 +447,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolUpdateParams.config = basicConfigParams;
 				externalToolUpdateParams.isDeactivated = false;
 				externalToolUpdateParams.description = 'description';
+				externalToolUpdateParams.isPreferred = false;
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -518,6 +524,7 @@ describe('ExternalToolRequestMapper', () => {
 					isDeactivated: externalToolDOUpdate.isDeactivated,
 					medium: externalToolDOUpdate.medium,
 					restrictToContexts: externalToolDOUpdate.restrictToContexts,
+					isPreferred: false,
 				});
 			});
 		});
@@ -567,6 +574,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolUpdateParams.config = lti11ConfigParams;
 				externalToolUpdateParams.isDeactivated = false;
 				externalToolUpdateParams.description = 'description';
+				externalToolUpdateParams.isPreferred = false;
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -644,6 +652,7 @@ describe('ExternalToolRequestMapper', () => {
 					isDeactivated: externalToolDOUpdate.isDeactivated,
 					medium: externalToolDOUpdate.medium,
 					restrictToContexts: externalToolDOUpdate.restrictToContexts,
+					isPreferred: false,
 				});
 			});
 		});
@@ -697,6 +706,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolUpdateParams.config = oauth2ConfigParams;
 				externalToolUpdateParams.isDeactivated = false;
 				externalToolUpdateParams.description = 'description';
+				externalToolUpdateParams.isPreferred = false;
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -776,6 +786,7 @@ describe('ExternalToolRequestMapper', () => {
 					isDeactivated: externalToolDOUpdate.isDeactivated,
 					medium: externalToolDOUpdate.medium,
 					restrictToContexts: externalToolDOUpdate.restrictToContexts,
+					isPreferred: false,
 				});
 			});
 		});

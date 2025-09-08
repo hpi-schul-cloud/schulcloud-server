@@ -1,16 +1,17 @@
 /* eslint-disable promise/valid-params */
+import { ErrorLogMessage, Loggable } from '@core/logger';
 import { NotFound } from '@feathersjs/errors';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ArgumentsHost, BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BusinessError } from '@shared/common';
-import { ErrorLogMessage, Loggable } from '@src/core/logger';
-import { Response } from 'express';
 import { WsException } from '@nestjs/websockets';
+import { BusinessError } from '@shared/common/error';
+import { AxiosError } from 'axios';
+import { Response } from 'express';
+import { DomainErrorHandler } from '../domain';
 import { ErrorResponse } from '../dto';
 import { ErrorUtils } from '../utils';
-import { GlobalErrorFilter } from './global-error.filter';
-import { DomainErrorHandler } from '../domain';
+import { GlobalErrorFilter, UseableContextType } from './global-error.filter';
 
 class SampleBusinessError extends BusinessError {
 	constructor() {
@@ -78,19 +79,47 @@ describe('GlobalErrorFilter', () => {
 	describe('catch', () => {
 		describe('when any error is passed as parameter', () => {
 			const setup = () => {
-				const argumentsHost = createMock<ArgumentsHost>();
-				argumentsHost.getType.mockReturnValueOnce('http');
+				const allContextTypes = Object.keys(UseableContextType);
+				const contextTypes = [...allContextTypes];
+				const argumentsHost = createMock<ArgumentsHost>({
+					getType: () => contextTypes.pop() || '',
+				});
 				const error = new Error('test');
+
+				return { allContextTypes, argumentsHost, error };
+			};
+
+			it('should call exec on domain error handler', () => {
+				const { allContextTypes, argumentsHost, error } = setup();
+
+				allContextTypes.forEach(() => {
+					service.catch(error, argumentsHost);
+				});
+
+				expect(domainErrorHandler.exec).toBeCalledWith(error);
+				expect(domainErrorHandler.exec).toBeCalledTimes(allContextTypes.length - 1);
+				expect(domainErrorHandler.execHttpContext).toBeCalledWith(error, {});
+				expect(domainErrorHandler.execHttpContext).toBeCalledTimes(1);
+			});
+		});
+
+		describe('given context is axios', () => {
+			const setup = () => {
+				const argumentsHost = createMock<ArgumentsHost>();
+				argumentsHost.getType.mockReturnValueOnce(UseableContextType.http);
+
+				const error = new AxiosError('test');
 
 				return { error, argumentsHost };
 			};
 
-			it('should be pass the error to domain error handler', () => {
+			it('should call exec on domain error handler', () => {
 				const { error, argumentsHost } = setup();
 
 				service.catch(error, argumentsHost);
 
-				expect(domainErrorHandler.exec).toBeCalledWith(error);
+				expect(domainErrorHandler.execHttpContext).toBeCalledWith(error, {});
+				expect(domainErrorHandler.execHttpContext).toBeCalledTimes(1);
 			});
 		});
 

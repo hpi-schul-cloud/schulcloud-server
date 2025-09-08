@@ -1,14 +1,21 @@
-import { SchulconnexResponse, schulconnexResponseFactory } from '@infra/schulconnex-client';
+import { SchulconnexResponse } from '@infra/schulconnex-client';
+import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { OauthTokenResponse } from '@modules/oauth/service/dto';
+import { accountFactory } from '@modules/account/testing';
+import { OauthTokenResponse } from '@modules/oauth-adapter';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { SchoolFeature } from '@modules/school/domain';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerConfig } from '@modules/server';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
+import { systemEntityFactory } from '@modules/system/testing';
+import { userLoginMigrationFactory } from '@modules/user-login-migration/testing';
+import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { SchoolFeature } from '@shared/domain/types';
-import { roleFactory, schoolEntityFactory, systemEntityFactory, TestApiClient, userFactory } from '@shared/testing';
-import { accountFactory } from '@src/modules/account/testing';
+import { Permission } from '@shared/domain/interface';
+import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
@@ -112,11 +119,15 @@ describe('ImportUser Controller Populate (API)', () => {
 		describe('when users school has no external id', () => {
 			const setup = async () => {
 				const { account, school, system } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE], [], false);
-				const loggedInClient = await testApiClient.login(account);
+				school.externalId = undefined;
+
 				const config: ServerConfig = serverConfig();
 				config.FEATURE_USER_MIGRATION_SYSTEM_ID = system.id;
 
-				school.externalId = undefined;
+				const userLoginMigration = userLoginMigrationFactory.buildWithId({ school });
+				await em.persistAndFlush([userLoginMigration]);
+
+				const loggedInClient = await testApiClient.login(account);
 
 				return { loggedInClient };
 			};
@@ -143,6 +154,9 @@ describe('ImportUser Controller Populate (API)', () => {
 				const config: ServerConfig = serverConfig();
 				config.FEATURE_USER_MIGRATION_ENABLED = true;
 				config.FEATURE_USER_MIGRATION_SYSTEM_ID = system.id;
+
+				const userLoginMigration = userLoginMigrationFactory.buildWithId({ school });
+				await em.persistAndFlush([userLoginMigration]);
 
 				axiosMock.onPost(/(.*)\/token/).reply<OauthTokenResponse>(HttpStatus.OK, {
 					id_token: 'idToken',

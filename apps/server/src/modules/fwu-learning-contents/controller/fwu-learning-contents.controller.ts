@@ -1,4 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { JwtAuthentication } from '@infra/auth-guard';
 import {
 	Controller,
 	Get,
@@ -10,13 +11,12 @@ import {
 	StreamableFile,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Authenticate } from '@modules/authentication';
 import { Request, Response } from 'express';
 import { FwuLearningContentsUc } from '../uc/fwu-learning-contents.uc';
 import { GetFwuLearningContentParams } from './dto/fwu-learning-contents.params';
 
 @ApiTags('fwu')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('fwu')
 export class FwuLearningContentsController {
 	constructor(private readonly fwuLearningContentsUc: FwuLearningContentsUc) {}

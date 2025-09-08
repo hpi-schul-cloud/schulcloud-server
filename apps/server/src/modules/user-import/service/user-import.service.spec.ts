@@ -1,60 +1,50 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { SchoolFeature } from '@modules/school/domain';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { System, SystemService } from '@modules/system';
+import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationDO } from '@modules/user-login-migration';
+import { userLoginMigrationDOFactory } from '@modules/user-login-migration/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
-import { SchoolFeature } from '@shared/domain/types';
-import { ImportUserRepo } from '@shared/repo';
-import {
-	cleanupCollections,
-	importUserFactory,
-	legacySchoolDoFactory,
-	schoolEntityFactory,
-	setupEntities,
-	systemFactory,
-	userFactory,
-} from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { MongoMemoryDatabaseModule } from '@testing/database';
+import { ImportUser, MatchCreator } from '../entity';
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
+import { ImportUserRepo } from '../repo';
+import { importUserFactory } from '../testing';
 import { UserImportConfig } from '../user-import-config';
 import { UserImportService } from './user-import.service';
 
 describe(UserImportService.name, () => {
 	let module: TestingModule;
 	let service: UserImportService;
-	let em: EntityManager;
 
+	let configService: DeepMocked<ConfigService>;
 	let importUserRepo: DeepMocked<ImportUserRepo>;
 	let systemService: DeepMocked<SystemService>;
 	let userService: DeepMocked<UserService>;
 	let logger: DeepMocked<Logger>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 
-	const config: UserImportConfig = {
-		FEATURE_USER_MIGRATION_SYSTEM_ID: new ObjectId().toHexString(),
-		FEATURE_USER_MIGRATION_ENABLED: true,
-		FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: true,
-		IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: 8000,
-	};
+	let config: UserImportConfig;
 
 	beforeAll(async () => {
-		await setupEntities();
-
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
 			providers: [
 				UserImportService,
 				{
 					provide: ConfigService,
-					useValue: {
-						get: jest.fn().mockImplementation((key: keyof UserImportConfig) => config[key]),
-					},
+					useValue: createMock<ConfigService>(),
 				},
 				{
 					provide: ImportUserRepo,
@@ -80,7 +70,7 @@ describe(UserImportService.name, () => {
 		}).compile();
 
 		service = module.get(UserImportService);
-		em = module.get(EntityManager);
+		configService = module.get(ConfigService);
 		importUserRepo = module.get(ImportUserRepo);
 		systemService = module.get(SystemService);
 		userService = module.get(UserService);
@@ -88,12 +78,23 @@ describe(UserImportService.name, () => {
 		schoolService = module.get(LegacySchoolService);
 	});
 
-	afterAll(async () => {
-		await module.close();
+	beforeEach(() => {
+		config = {
+			FEATURE_USER_MIGRATION_SYSTEM_ID: new ObjectId().toHexString(),
+			FEATURE_USER_MIGRATION_ENABLED: true,
+			FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: true,
+			IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: 8000,
+		};
+
+		configService.get.mockImplementation((key: keyof UserImportConfig) => config[key]);
 	});
 
-	beforeEach(async () => {
-		await cleanupCollections(em);
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('saveImportUsers', () => {
@@ -144,7 +145,7 @@ describe(UserImportService.name, () => {
 			const setup = () => {
 				config.FEATURE_USER_MIGRATION_ENABLED = true;
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ features: undefined });
+				const school = legacySchoolDoFactory.buildWithId({ features: undefined });
 
 				return {
 					school,
@@ -162,7 +163,7 @@ describe(UserImportService.name, () => {
 			const setup = () => {
 				config.FEATURE_USER_MIGRATION_ENABLED = false;
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school = legacySchoolDoFactory.buildWithId({
 					features: [SchoolFeature.LDAP_UNIVENTION_MIGRATION],
 				});
 
@@ -182,7 +183,7 @@ describe(UserImportService.name, () => {
 			const setup = () => {
 				config.FEATURE_USER_MIGRATION_ENABLED = false;
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school = legacySchoolDoFactory.buildWithId({
 					features: [],
 				});
 
@@ -212,7 +213,8 @@ describe(UserImportService.name, () => {
 		describe('matchUsers', () => {
 			describe('when all users have unique names', () => {
 				const setup = () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId();
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({ schoolId: school.id });
 					const user1: User = userFactory.buildWithId({ firstName: 'First1', lastName: 'Last1' });
 					const user2: User = userFactory.buildWithId({ firstName: 'First2', lastName: 'Last2' });
 					const importUser1: ImportUser = importUserFactory.buildWithId({
@@ -234,13 +236,55 @@ describe(UserImportService.name, () => {
 						user2,
 						importUser1,
 						importUser2,
+						userLoginMigration,
 					};
 				};
 
 				it('should return all users as auto matched', async () => {
-					const { user1, user2, importUser1, importUser2 } = setup();
+					const { user1, user2, importUser1, importUser2, userLoginMigration } = setup();
 
-					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2]);
+					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2], userLoginMigration, false);
+
+					expect(result).toEqual([
+						{ ...importUser1, user: user1, matchedBy: MatchCreator.AUTO },
+						{ ...importUser2, user: user2, matchedBy: MatchCreator.AUTO },
+					]);
+				});
+			});
+
+			describe('when preferred names are used and all users have unique names', () => {
+				const setup = () => {
+					const school = schoolEntityFactory.buildWithId();
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({ schoolId: school.id });
+					const user1: User = userFactory.buildWithId({ firstName: 'First1', lastName: 'Last1' });
+					const user2: User = userFactory.buildWithId({ firstName: 'First2', lastName: 'Last2' });
+					const importUser1: ImportUser = importUserFactory.buildWithId({
+						school,
+						preferredName: user1.preferredName,
+						lastName: user1.lastName,
+					});
+					const importUser2: ImportUser = importUserFactory.buildWithId({
+						school,
+						firstName: user2.firstName,
+						lastName: user2.lastName,
+					});
+
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user1]);
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user2]);
+
+					return {
+						user1,
+						user2,
+						importUser1,
+						importUser2,
+						userLoginMigration,
+					};
+				};
+
+				it('should return users with preferred name matched by preferred name and users without matched by first name', async () => {
+					const { user1, user2, importUser1, importUser2, userLoginMigration } = setup();
+
+					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2], userLoginMigration, true);
 
 					expect(result).toEqual([
 						{ ...importUser1, user: user1, matchedBy: MatchCreator.AUTO },
@@ -251,7 +295,8 @@ describe(UserImportService.name, () => {
 
 			describe('when the imported users have the same names', () => {
 				const setup = () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId();
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({ schoolId: school.id });
 					const user1: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
 					const importUser1: ImportUser = importUserFactory.buildWithId({
 						school,
@@ -271,13 +316,14 @@ describe(UserImportService.name, () => {
 						user1,
 						importUser1,
 						importUser2,
+						userLoginMigration,
 					};
 				};
 
 				it('should return the users without a match', async () => {
-					const { importUser1, importUser2 } = setup();
+					const { importUser1, importUser2, userLoginMigration } = setup();
 
-					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2]);
+					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2], userLoginMigration, false);
 
 					expect(result).toEqual([importUser1, importUser2]);
 				});
@@ -285,7 +331,8 @@ describe(UserImportService.name, () => {
 
 			describe('when existing users in svs have the same names', () => {
 				const setup = () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId();
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({ schoolId: school.id });
 					const user1: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
 					const user2: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
 					const importUser1: ImportUser = importUserFactory.buildWithId({
@@ -301,13 +348,14 @@ describe(UserImportService.name, () => {
 						user1,
 						user2,
 						importUser1,
+						userLoginMigration,
 					};
 				};
 
 				it('should return the users without a match', async () => {
-					const { importUser1 } = setup();
+					const { importUser1, userLoginMigration } = setup();
 
-					const result: ImportUser[] = await service.matchUsers([importUser1]);
+					const result: ImportUser[] = await service.matchUsers([importUser1], userLoginMigration, false);
 
 					expect(result).toEqual([importUser1]);
 				});
@@ -315,7 +363,8 @@ describe(UserImportService.name, () => {
 
 			describe('when import users have the same name ', () => {
 				const setup = () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId();
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({ schoolId: school.id });
 					const user1: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
 					const importUser1: ImportUser = importUserFactory.buildWithId({
 						school,
@@ -335,13 +384,47 @@ describe(UserImportService.name, () => {
 						user1,
 						importUser1,
 						importUser2,
+						userLoginMigration,
 					};
 				};
 
 				it('should return the users without a match', async () => {
-					const { importUser1, importUser2 } = setup();
+					const { importUser1, importUser2, userLoginMigration } = setup();
 
-					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2]);
+					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2], userLoginMigration, false);
+
+					result.forEach((importUser) => expect(importUser.matchedBy).toBeUndefined());
+				});
+			});
+
+			describe('when a user is already migarted', () => {
+				const setup = () => {
+					const school = schoolEntityFactory.buildWithId();
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({ schoolId: school.id });
+					const user1: User = userFactory.buildWithId({
+						firstName: 'First',
+						lastName: 'Last',
+						lastLoginSystemChange: userLoginMigration.startedAt,
+					});
+					const importUser1: ImportUser = importUserFactory.buildWithId({
+						school,
+						firstName: user1.firstName,
+						lastName: user1.lastName,
+					});
+
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user1]);
+
+					return {
+						user1,
+						importUser1,
+						userLoginMigration,
+					};
+				};
+
+				it('should return the user without a match', async () => {
+					const { importUser1, userLoginMigration } = setup();
+
+					const result: ImportUser[] = await service.matchUsers([importUser1], userLoginMigration, false);
 
 					result.forEach((importUser) => expect(importUser.matchedBy).toBeUndefined());
 				});
@@ -351,7 +434,7 @@ describe(UserImportService.name, () => {
 		describe('deleteImportUsersBySchool', () => {
 			describe('when deleting all import users of school', () => {
 				const setup = () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId();
 
 					return {
 						school,
@@ -373,7 +456,7 @@ describe(UserImportService.name, () => {
 		describe('when resetting the migration for a school', () => {
 			const setup = () => {
 				const currentUser: User = userFactory.build();
-				const school: LegacySchoolDo = legacySchoolDoFactory.build();
+				const school = legacySchoolDoFactory.build();
 
 				return {
 					currentUser,

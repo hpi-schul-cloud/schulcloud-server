@@ -23,7 +23,7 @@ import {
 	Oauth2ToolConfigUpdateParams,
 	SortExternalToolParams,
 } from '../controller/dto';
-import { ExternalTool } from '../domain';
+import { ExternalTool, ExternalToolMedium } from '../domain';
 import {
 	BasicToolConfigDto,
 	CustomParameterDto,
@@ -46,6 +46,7 @@ const locationMapping: Record<CustomParameterLocationParams, CustomParameterLoca
 	[CustomParameterLocationParams.PATH]: CustomParameterLocation.PATH,
 	[CustomParameterLocationParams.QUERY]: CustomParameterLocation.QUERY,
 	[CustomParameterLocationParams.BODY]: CustomParameterLocation.BODY,
+	[CustomParameterLocationParams.FRAGMENT]: CustomParameterLocation.FRAGMENT,
 };
 
 const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
@@ -57,6 +58,7 @@ const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 	[CustomParameterTypeParams.AUTO_SCHOOLID]: CustomParameterType.AUTO_SCHOOLID,
 	[CustomParameterTypeParams.AUTO_SCHOOLNUMBER]: CustomParameterType.AUTO_SCHOOLNUMBER,
 	[CustomParameterTypeParams.AUTO_MEDIUMID]: CustomParameterType.AUTO_MEDIUMID,
+	[CustomParameterTypeParams.AUTO_GROUP_EXTERNALUUID]: CustomParameterType.AUTO_GROUP_EXTERNALUUID,
 };
 
 @Injectable()
@@ -89,6 +91,8 @@ export class ExternalToolRequestMapper {
 			openNewTab: externalToolUpdateParams.openNewTab,
 			restrictToContexts: externalToolUpdateParams.restrictToContexts,
 			medium: this.mapRequestToExternalToolMedium(externalToolUpdateParams.medium),
+			isPreferred: externalToolUpdateParams.isPreferred,
+			iconName: externalToolUpdateParams.iconName,
 		};
 	}
 
@@ -119,6 +123,8 @@ export class ExternalToolRequestMapper {
 			restrictToContexts: externalToolCreateParams.restrictToContexts,
 			medium: this.mapRequestToExternalToolMedium(externalToolCreateParams.medium),
 			description: externalToolCreateParams.description,
+			isPreferred: externalToolCreateParams.isPreferred,
+			iconName: externalToolCreateParams.iconName,
 		};
 	}
 
@@ -136,7 +142,15 @@ export class ExternalToolRequestMapper {
 		if (!externalToolMediumParams) {
 			return undefined;
 		}
-		return { ...externalToolMediumParams };
+		const externalToolMedium: ExternalToolMedium = new ExternalToolMedium({
+			status: externalToolMediumParams.status,
+			mediumId: externalToolMediumParams.mediumId,
+			publisher: externalToolMediumParams.publisher,
+			mediaSourceId: externalToolMediumParams.mediaSourceId,
+			metadataModifiedAt: externalToolMediumParams.modifiedAt,
+		});
+
+		return externalToolMedium;
 	}
 
 	private mapRequestToBasicToolConfig(externalToolConfigParams: BasicToolConfigParams): BasicToolConfigDto {
@@ -185,7 +199,7 @@ export class ExternalToolRequestMapper {
 		});
 	}
 
-	mapSortingQueryToDomain(sortingQuery: SortExternalToolParams): SortOrderMap<ExternalTool> | undefined {
+	public mapSortingQueryToDomain(sortingQuery: SortExternalToolParams): SortOrderMap<ExternalTool> | undefined {
 		const { sortBy } = sortingQuery;
 		if (sortBy == null) {
 			return undefined;
@@ -197,7 +211,9 @@ export class ExternalToolRequestMapper {
 		return result;
 	}
 
-	mapExternalToolFilterQueryToExternalToolSearchQuery(params: ExternalToolSearchParams): ExternalToolSearchQuery {
+	public mapExternalToolFilterQueryToExternalToolSearchQuery(
+		params: ExternalToolSearchParams
+	): ExternalToolSearchQuery {
 		const searchQuery: ExternalToolSearchQuery = {
 			name: params.name,
 			clientId: params.clientId,

@@ -1,17 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ICurrentUser } from '@infra/auth-guard';
+import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
 import { H5PAjaxEndpoint, H5PEditor, IPlayerModel } from '@lumieducation/h5p-server';
+import { UserService } from '@modules/user';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { h5pContentFactory, setupEntities } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { AuthorizationContextBuilder, AuthorizationReferenceService } from '@src/modules/authorization/domain';
-import { UserService } from '@src/modules/user';
 import { Request } from 'express';
 import { Readable } from 'stream';
 import { H5PEditorProvider, H5PPlayerProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { ContentStorage, LibraryStorage } from '../service';
 import { TemporaryFileStorage } from '../service/temporary-file-storage.service';
+import { h5pContentFactory } from '../testing';
 import { H5PEditorUc } from './h5p.uc';
 
 const createParams = () => {
@@ -23,6 +23,7 @@ const createParams = () => {
 		schoolId: 'mockSchoolId',
 		userId: 'mockUserId',
 		isExternalUser: false,
+		support: false,
 	};
 
 	const mockContentParameters: Awaited<ReturnType<H5PEditor['getContent']>> = {
@@ -47,7 +48,7 @@ describe('H5P Files', () => {
 	let libraryStorage: DeepMocked<LibraryStorage>;
 	let ajaxEndpointService: DeepMocked<H5PAjaxEndpoint>;
 	let h5pContentRepo: DeepMocked<H5PContentRepo>;
-	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
+	let authorizationClientAdapter: DeepMocked<AuthorizationClientAdapter>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -76,8 +77,8 @@ describe('H5P Files', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: AuthorizationReferenceService,
-					useValue: createMock<AuthorizationReferenceService>(),
+					provide: AuthorizationClientAdapter,
+					useValue: createMock<AuthorizationClientAdapter>(),
 				},
 				{
 					provide: H5PContentRepo,
@@ -90,8 +91,7 @@ describe('H5P Files', () => {
 		libraryStorage = module.get(LibraryStorage);
 		ajaxEndpointService = module.get(H5PAjaxEndpoint);
 		h5pContentRepo = module.get(H5PContentRepo);
-		authorizationReferenceService = module.get(AuthorizationReferenceService);
-		await setupEntities();
+		authorizationClientAdapter = module.get(AuthorizationClientAdapter);
 	});
 
 	afterEach(() => {
@@ -109,18 +109,17 @@ describe('H5P Files', () => {
 
 				ajaxEndpointService.getContentParameters.mockResolvedValueOnce(mockContentParameters);
 				h5pContentRepo.findById.mockResolvedValueOnce(content);
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 
 				return { content, mockCurrentUser, mockContentParameters };
 			};
 
-			it('should call authorizationService.checkPermissionByReferences', async () => {
+			it('should call authorizationClientAdapter.checkPermissionsByReference', async () => {
 				const { content, mockCurrentUser } = setup();
 
-				await uc.getContentParameters(content.id, mockCurrentUser);
+				await uc.getContentParameters(content.id, mockCurrentUser.userId);
 
-				expect(authorizationReferenceService.checkPermissionByReferences).toBeCalledWith(
-					mockCurrentUser.userId,
+				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
 					content.parentType,
 					content.parentId,
 					AuthorizationContextBuilder.read([])
@@ -130,7 +129,7 @@ describe('H5P Files', () => {
 			it('should call service with correct params', async () => {
 				const { content, mockCurrentUser } = setup();
 
-				await uc.getContentParameters(content.id, mockCurrentUser);
+				await uc.getContentParameters(content.id, mockCurrentUser.userId);
 
 				expect(ajaxEndpointService.getContentParameters).toHaveBeenCalledWith(
 					content.id,
@@ -143,7 +142,7 @@ describe('H5P Files', () => {
 			it('should return results of service', async () => {
 				const { mockCurrentUser, content, mockContentParameters } = setup();
 
-				const result = await uc.getContentParameters(content.id, mockCurrentUser);
+				const result = await uc.getContentParameters(content.id, mockCurrentUser.userId);
 
 				expect(result).toEqual(mockContentParameters);
 			});
@@ -161,7 +160,7 @@ describe('H5P Files', () => {
 			it('should throw NotFoundException', async () => {
 				const { mockCurrentUser, content } = setup();
 
-				const getContentParametersPromise = uc.getContentParameters(content.id, mockCurrentUser);
+				const getContentParametersPromise = uc.getContentParameters(content.id, mockCurrentUser.userId);
 
 				await expect(getContentParametersPromise).rejects.toThrow(new NotFoundException());
 			});
@@ -172,7 +171,7 @@ describe('H5P Files', () => {
 				const { content, mockCurrentUser } = createParams();
 
 				h5pContentRepo.findById.mockResolvedValueOnce(content);
-				authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				authorizationClientAdapter.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
 				return { content, mockCurrentUser };
 			};
@@ -180,7 +179,7 @@ describe('H5P Files', () => {
 			it('should throw forbidden error', async () => {
 				const { mockCurrentUser, content } = setup();
 
-				const getContentParametersPromise = uc.getContentParameters(content.id, mockCurrentUser);
+				const getContentParametersPromise = uc.getContentParameters(content.id, mockCurrentUser.userId);
 
 				await expect(getContentParametersPromise).rejects.toThrow(new ForbiddenException());
 			});
@@ -191,7 +190,7 @@ describe('H5P Files', () => {
 				const { content, mockCurrentUser } = createParams();
 
 				h5pContentRepo.findById.mockResolvedValueOnce(content);
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 				ajaxEndpointService.getContentParameters.mockRejectedValueOnce(new Error('test'));
 
 				return { content, mockCurrentUser };
@@ -200,7 +199,7 @@ describe('H5P Files', () => {
 			it('should return NotFoundException', async () => {
 				const { mockCurrentUser, content } = setup();
 
-				const getContentParametersPromise = uc.getContentParameters(content.id, mockCurrentUser);
+				const getContentParametersPromise = uc.getContentParameters(content.id, mockCurrentUser.userId);
 
 				await expect(getContentParametersPromise).rejects.toThrow(new NotFoundException());
 			});
@@ -223,7 +222,7 @@ describe('H5P Files', () => {
 				});
 
 				h5pContentRepo.findById.mockResolvedValueOnce(content);
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 
 				const filename = 'test/file.txt';
 
@@ -233,10 +232,9 @@ describe('H5P Files', () => {
 			it('should call authorizationService.checkPermissionByReferences', async () => {
 				const { content, filename, requestMock, mockCurrentUser } = setup();
 
-				await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+				await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser.userId);
 
-				expect(authorizationReferenceService.checkPermissionByReferences).toBeCalledWith(
-					mockCurrentUser.userId,
+				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
 					content.parentType,
 					content.parentId,
 					AuthorizationContextBuilder.read([])
@@ -246,7 +244,7 @@ describe('H5P Files', () => {
 			it('should call service with correct params', async () => {
 				const { content, mockCurrentUser, filename, requestMock } = setup();
 
-				await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+				await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser.userId);
 
 				expect(ajaxEndpointService.getContentFile).toHaveBeenCalledWith(
 					content.id,
@@ -261,7 +259,7 @@ describe('H5P Files', () => {
 			it('should return results of service', async () => {
 				const { mockCurrentUser, fileResponseMock, filename, requestMock, content } = setup();
 
-				const result = await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+				const result = await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser.userId);
 
 				expect(result).toEqual({
 					data: fileResponseMock.stream,
@@ -294,7 +292,7 @@ describe('H5P Files', () => {
 						stream: createMock<Readable>(),
 					});
 				});
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 
 				const filename = 'test/file.txt';
 
@@ -304,7 +302,7 @@ describe('H5P Files', () => {
 			it('should return parsed range', async () => {
 				const { mockCurrentUser, range, content, filename, requestMock } = setup();
 
-				const result = await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+				const result = await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser.userId);
 
 				expect(result.contentRange).toEqual(range);
 			});
@@ -326,7 +324,7 @@ describe('H5P Files', () => {
 					rangeCallback?.(100);
 					return createMock();
 				});
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 
 				const filename = 'test/file.txt';
 
@@ -337,7 +335,7 @@ describe('H5P Files', () => {
 				it('should throw NotFoundException', async () => {
 					const { mockCurrentUser, filename, requestMock, content } = setup(-2);
 
-					const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+					const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser.userId);
 
 					await expect(getContentFilePromise).rejects.toThrow(NotFoundException);
 				});
@@ -347,7 +345,7 @@ describe('H5P Files', () => {
 				it('should throw NotFoundException', async () => {
 					const { mockCurrentUser, filename, requestMock, content } = setup(-1);
 
-					const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+					const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser.userId);
 
 					await expect(getContentFilePromise).rejects.toThrow(NotFoundException);
 				});
@@ -360,7 +358,7 @@ describe('H5P Files', () => {
 						{ start: 2, end: 3 },
 					]);
 
-					const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+					const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser.userId);
 
 					await expect(getContentFilePromise).rejects.toThrow(NotFoundException);
 				});
@@ -384,7 +382,7 @@ describe('H5P Files', () => {
 			it('should return error of service', async () => {
 				const { mockCurrentUser, filename, requestMock, content } = setup();
 
-				const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+				const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser.userId);
 
 				await expect(getContentFilePromise).rejects.toThrow(NotFoundException);
 			});
@@ -399,7 +397,7 @@ describe('H5P Files', () => {
 
 				ajaxEndpointService.getContentFile.mockRejectedValueOnce(new Error('test'));
 				h5pContentRepo.findById.mockResolvedValueOnce(content);
-				authorizationReferenceService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 
 				const filename = 'test/file.txt';
 
@@ -409,7 +407,7 @@ describe('H5P Files', () => {
 			it('should return error of service', async () => {
 				const { mockCurrentUser, filename, requestMock, content } = setup();
 
-				const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+				const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser.userId);
 
 				await expect(getContentFilePromise).rejects.toThrow(NotFoundException);
 			});
@@ -488,7 +486,7 @@ describe('H5P Files', () => {
 			it('should call service with correct params', async () => {
 				const { mockCurrentUser, filename, requestMock } = setup();
 
-				await uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
+				await uc.getTemporaryFile(filename, requestMock, mockCurrentUser.userId);
 
 				expect(ajaxEndpointService.getTemporaryFile).toHaveBeenCalledWith(
 					filename,
@@ -502,7 +500,7 @@ describe('H5P Files', () => {
 			it('should return results of service', async () => {
 				const { mockCurrentUser, fileResponseMock, filename, requestMock } = setup();
 
-				const result = await uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
+				const result = await uc.getTemporaryFile(filename, requestMock, mockCurrentUser.userId);
 
 				expect(result).toEqual({
 					data: fileResponseMock.stream,
@@ -537,7 +535,7 @@ describe('H5P Files', () => {
 				it('should throw NotFoundException', async () => {
 					const { mockCurrentUser, filename, requestMock } = setup(-2);
 
-					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
+					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser.userId);
 
 					await expect(getTemporaryFilePromise).rejects.toThrow(NotFoundException);
 				});
@@ -547,7 +545,7 @@ describe('H5P Files', () => {
 				it('should throw NotFoundException', async () => {
 					const { mockCurrentUser, filename, requestMock } = setup(-1);
 
-					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
+					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser.userId);
 
 					await expect(getTemporaryFilePromise).rejects.toThrow(NotFoundException);
 				});
@@ -560,7 +558,7 @@ describe('H5P Files', () => {
 						{ start: 2, end: 3 },
 					]);
 
-					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
+					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser.userId);
 
 					await expect(getTemporaryFilePromise).rejects.toThrow(NotFoundException);
 				});
@@ -583,7 +581,7 @@ describe('H5P Files', () => {
 			it('should return error of service', async () => {
 				const { mockCurrentUser, filename, requestMock } = setup();
 
-				const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
+				const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser.userId);
 
 				await expect(getTemporaryFilePromise).rejects.toThrow(NotFoundException);
 			});

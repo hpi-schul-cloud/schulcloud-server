@@ -1,6 +1,8 @@
 import { Collection } from '@mikro-orm/core';
+import { RoleName } from '@modules/role';
+import { Role } from '@modules/role/repo';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { Role, User } from '@shared/domain/entity';
 
 @Injectable()
 export class AuthorizationHelper {
@@ -33,6 +35,10 @@ export class AuthorizationHelper {
 		const result = userRefProps.some((prop) => this.isUserReferenced(user, entity, prop));
 
 		return result;
+	}
+
+	public hasRole(user: User, roleName: RoleName) {
+		return user.roles.getItems().some((role) => role.name === roleName);
 	}
 
 	private isUserReferenced<T, K extends keyof T>(user: User, entity: T, prop: K): boolean {

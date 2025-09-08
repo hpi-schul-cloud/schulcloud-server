@@ -5,7 +5,6 @@ import { EntityId } from '@shared/domain/types';
 export interface AuthorizationLoaderService {
 	findById(id: EntityId): Promise<AuthorizableObject | BaseDO>;
 }
-
 export interface AuthorizationLoaderServiceGeneric<T extends AuthorizableObject | BaseDO>
 	extends AuthorizationLoaderService {
 	findById(id: EntityId): Promise<T>;

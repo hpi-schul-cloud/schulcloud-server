@@ -1,8 +1,7 @@
+import { RoleName } from '@modules/role';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { UserDO } from '@shared/domain/domainobject';
-import { RoleName } from '@shared/domain/interface';
-import { UserService } from '@src/modules/user';
-import { Gauge, Summary, register, Counter } from 'prom-client';
+import { Counter, Gauge, Summary, register } from 'prom-client';
 
 type ClientId = string;
 type Role = 'owner' | 'editor' | 'viewer';
@@ -44,7 +43,7 @@ export class MetricsService {
 		register.registerMetric(this.numberOfBoardroomsOnServerCounter);
 	}
 
-	private mapRole(user: UserDO): 'editor' | 'viewer' | undefined {
+	private mapRole(user: UserDo): 'editor' | 'viewer' | undefined {
 		const EDITOR_ROLES = [RoleName.TEACHER, RoleName.COURSESUBSTITUTIONTEACHER, RoleName.COURSETEACHER];
 		if (user.roles.find((r) => EDITOR_ROLES.includes(r.name))) {
 			return 'editor';
@@ -92,7 +91,7 @@ export class MetricsService {
 			summary = new Summary({
 				name: `sc_boards_execution_time_${actionName}`,
 				help: 'Average execution time of a specific action in milliseconds',
-				maxAgeSeconds: 600,
+				maxAgeSeconds: 30,
 				ageBuckets: 5,
 				percentiles: [0.01, 0.1, 0.5, 0.9, 0.99],
 				pruneAgedBuckets: true,
@@ -100,7 +99,6 @@ export class MetricsService {
 			this.executionTimesSummary.set(actionName, summary);
 			register.registerMetric(summary);
 		}
-		console.log(actionName, `executionTime: ${value.toFixed(3)} ms`);
 		summary.observe(value);
 	}
 
@@ -121,7 +119,6 @@ export class MetricsService {
 			register.registerMetric(counter);
 		}
 		counter.inc();
-		console.log(actionName, `count increased`);
 	}
 
 	public incrementActionGauge(actionName: string): void {
@@ -129,7 +126,7 @@ export class MetricsService {
 
 		if (!counter) {
 			counter = new Gauge({
-				name: `sc_boards_count2_${actionName}`,
+				name: `sc_boards_actions_gauge_${actionName}`,
 				help: 'Number of calls for a specific action per minute',
 				// async collect() {
 				// 	// Invoked when the registry collects its metrics' values.
@@ -141,6 +138,5 @@ export class MetricsService {
 			register.registerMetric(counter);
 		}
 		counter.inc();
-		console.log(actionName, `count increased`);
 	}
 }

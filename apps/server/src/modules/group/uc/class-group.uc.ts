@@ -1,31 +1,31 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
-import { CourseDoService } from '@modules/learnroom';
-import { Course } from '@modules/learnroom/domain';
-import { SchoolYearService } from '@modules/legacy-school';
+import { ClassScope } from '@modules/class/repo';
+import { Course, CourseDoService } from '@modules/course';
 import { ProvisioningConfig } from '@modules/provisioning';
-import { School, SchoolService, SchoolYear } from '@modules/school/domain';
+import { RoleDto, RoleName, RoleService } from '@modules/role';
+import { School, SchoolService, SchoolYear, SchoolYearService } from '@modules/school/domain';
+import { System, SystemService } from '@modules/system';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SortHelper } from '@shared/common';
-import { Page, UserDO } from '@shared/domain/domainobject';
-import { SchoolYearEntity, User } from '@shared/domain/entity';
+import { SortHelper } from '@shared/common/utils';
+import { Page } from '@shared/domain/domainobject';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { System, SystemService } from '@src/modules/system';
-import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
-import { Group, GroupFilter } from '../domain';
+import { ClassSortQueryType, SchoolYearQueryType } from '../controller/dto/interface';
+import { Group, GroupAggregateScope, GroupTypes, GroupUser, GroupVisibilityPermission } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
-import { ClassInfoDto, ResolvedGroupUser } from './dto';
-import { GroupUcMapper } from './mapper/group-uc.mapper';
+import { ClassInfoDto, ClassRootType, InternalClassDto } from './dto';
 
 @Injectable()
 export class ClassGroupUc {
 	constructor(
 		private readonly groupService: GroupService,
 		private readonly classService: ClassService,
+		private readonly roleService: RoleService,
 		private readonly systemService: SystemService,
 		private readonly schoolService: SchoolService,
 		private readonly authorizationService: AuthorizationService,
@@ -38,9 +38,8 @@ export class ClassGroupUc {
 		userId: EntityId,
 		schoolId: EntityId,
 		schoolYearQueryType?: SchoolYearQueryType,
-		calledFrom?: ClassRequestContext,
 		pagination?: Pagination,
-		sortBy: keyof ClassInfoDto = 'name',
+		sortBy: ClassSortQueryType = ClassSortQueryType.NAME,
 		sortOrder: SortOrder = SortOrder.asc
 	): Promise<Page<ClassInfoDto>> {
 		const school: School = await this.schoolService.getSchoolById(schoolId);
@@ -52,129 +51,205 @@ export class ClassGroupUc {
 			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW])
 		);
 
-		const canSeeFullList: boolean = this.authorizationService.hasAllPermissions(user, [
-			Permission.CLASS_FULL_ADMIN,
-			Permission.GROUP_FULL_ADMIN,
-		]);
+		const groupVisibilityPermission: GroupVisibilityPermission = this.getGroupVisibilityPermission(user, school);
 
-		const calledFromCourse: boolean =
-			calledFrom === ClassRequestContext.COURSE && school.getPermissions()?.teacher?.STUDENT_LIST === true;
+		const page: Page<InternalClassDto<Group | Class>> = await this.findCombinedClassListPage(
+			user,
+			school,
+			groupVisibilityPermission,
+			schoolYearQueryType,
+			pagination,
+			sortBy,
+			sortOrder
+		);
 
-		let combinedClassInfo: ClassInfoDto[];
-		if (canSeeFullList || calledFromCourse) {
-			combinedClassInfo = await this.findCombinedClassListForSchool(schoolId, schoolYearQueryType);
-		} else {
-			combinedClassInfo = await this.findCombinedClassListForUser(userId, schoolYearQueryType);
+		const finalPage: Page<ClassInfoDto> = await this.buildClassInfoPage(page);
+
+		return finalPage;
+	}
+
+	private async buildClassInfoPage(classDtoPage: Page<InternalClassDto<Group | Class>>): Promise<Page<ClassInfoDto>> {
+		const classInfoDtoPromises: Promise<ClassInfoDto>[] = classDtoPage.data.map(
+			async (dto: InternalClassDto<Group | Class>): Promise<ClassInfoDto> => {
+				let synchronizedCourses: Course[] | undefined;
+				const teacherNames: string[] = [];
+
+				if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') && dto.isGroup()) {
+					synchronizedCourses = await this.courseService.findBySyncedGroup(dto.original);
+				}
+
+				return new ClassInfoDto({
+					...dto,
+					teacherNames,
+					synchronizedCourses,
+				});
+			}
+		);
+
+		const classInfoDtos: ClassInfoDto[] = await Promise.all(classInfoDtoPromises);
+
+		const finalPage: Page<ClassInfoDto> = new Page(classInfoDtos, classDtoPage.total);
+
+		return finalPage;
+	}
+
+	private getGroupVisibilityPermission(user: User, school: School): GroupVisibilityPermission {
+		const canSeeAllSchoolGroups =
+			this.authorizationService.hasAllPermissions(user, [Permission.CLASS_FULL_ADMIN, Permission.GROUP_FULL_ADMIN]) ||
+			this.authorizationService.hasPermission(
+				user,
+				school,
+				AuthorizationContextBuilder.read([Permission.STUDENT_LIST])
+			);
+
+		if (canSeeAllSchoolGroups) {
+			return GroupVisibilityPermission.ALL_SCHOOL_GROUPS;
 		}
 
-		combinedClassInfo.sort((a: ClassInfoDto, b: ClassInfoDto): number =>
+		return GroupVisibilityPermission.OWN_GROUPS;
+	}
+
+	private async findCombinedClassListPage(
+		user: User,
+		school: School,
+		groupVisibilityPermission: GroupVisibilityPermission,
+		schoolYearQueryType?: SchoolYearQueryType,
+		pagination?: Pagination,
+		sortBy: ClassSortQueryType = ClassSortQueryType.NAME,
+		sortOrder: SortOrder = SortOrder.asc
+	): Promise<Page<InternalClassDto<Group | Class>>> {
+		const schoolYears: SchoolYear[] = await this.schoolYearService.getAllSchoolYears();
+		const { currentYear } = school;
+
+		const classDtos: InternalClassDto<Class>[] = await this.getClassDtos(
+			school,
+			groupVisibilityPermission,
+			user,
+			schoolYears,
+			currentYear,
+			schoolYearQueryType
+		);
+
+		let groupDtos: InternalClassDto<Group>[] = [];
+		if (!schoolYearQueryType || schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR) {
+			groupDtos = await this.getGroupDtos(user, school, groupVisibilityPermission);
+		}
+
+		const combinedClassDtos: InternalClassDto<Class | Group>[] = [...classDtos, ...groupDtos];
+
+		combinedClassDtos.sort((a: InternalClassDto<unknown>, b: InternalClassDto<unknown>): number =>
 			SortHelper.genericSortFunction(a[sortBy], b[sortBy], sortOrder)
 		);
 
-		const pageContent: ClassInfoDto[] = this.applyPagination(combinedClassInfo, pagination?.skip, pagination?.limit);
+		const pageContent: InternalClassDto<Class | Group>[] = this.applyPagination(
+			combinedClassDtos,
+			pagination?.skip,
+			pagination?.limit
+		);
 
-		const page: Page<ClassInfoDto> = new Page<ClassInfoDto>(pageContent, combinedClassInfo.length);
+		const page: Page<InternalClassDto<Class | Group>> = new Page(pageContent, combinedClassDtos.length);
 
 		return page;
 	}
 
-	private async findCombinedClassListForSchool(
-		schoolId: EntityId,
-		schoolYearQueryType?: SchoolYearQueryType
-	): Promise<ClassInfoDto[]> {
-		let classInfosFromGroups: ClassInfoDto[] = [];
+	private async getGroupDtos(
+		user: User,
+		school: School,
+		groupVisibilityPermission: GroupVisibilityPermission
+	): Promise<InternalClassDto<Group>[]> {
+		const scope = new GroupAggregateScope()
+			.byOrganization(school.id)
+			.byType([GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]);
 
-		const classInfosFromClasses = await this.findClassesForSchool(schoolId, schoolYearQueryType);
-
-		if (!schoolYearQueryType || schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR) {
-			classInfosFromGroups = await this.findGroupsForSchool(schoolId);
+		if (groupVisibilityPermission === GroupVisibilityPermission.OWN_GROUPS) {
+			scope.byUser(user.id);
 		}
 
-		const combinedClassInfo: ClassInfoDto[] = [...classInfosFromClasses, ...classInfosFromGroups];
+		const groups: Page<Group> = await this.groupService.findByScope(scope);
 
-		return combinedClassInfo;
+		const systemIdSet: Set<string> = new Set();
+		groups.data.forEach((group: Group): void => {
+			if (group.externalSource) {
+				systemIdSet.add(group.externalSource.systemId);
+			}
+		});
+		const systems: System[] = await this.systemService.getSystems(Array.from(systemIdSet));
+
+		const studentRole: RoleDto = await this.roleService.findByName(RoleName.STUDENT);
+
+		const groupDtos: InternalClassDto<Group>[] = groups.data.map((group: Group): InternalClassDto<Group> => {
+			const studentCount: number = group.users.reduce(
+				(acc: number, element: GroupUser): number => (element.roleId === studentRole.id ? acc + 1 : acc),
+				0
+			);
+			const externalSourceName: string | undefined = group.externalSource
+				? systems.find((system: System): boolean => system.id === group.externalSource?.systemId)?.displayName
+				: undefined;
+
+			const mapped: InternalClassDto<Group> = new InternalClassDto({
+				id: group.id,
+				type: ClassRootType.GROUP,
+				name: group.name,
+				externalSourceName,
+				studentCount,
+				original: group,
+			});
+
+			return mapped;
+		});
+
+		return groupDtos;
 	}
 
-	private async findCombinedClassListForUser(
-		userId: EntityId,
-		schoolYearQueryType?: SchoolYearQueryType
-	): Promise<ClassInfoDto[]> {
-		let classInfosFromGroups: ClassInfoDto[] = [];
+	private async getClassDtos(
+		school: School,
+		groupVisibilityPermission: GroupVisibilityPermission,
+		user: User,
+		schoolYears: SchoolYear[],
+		currentYear: SchoolYear | undefined,
+		schoolYearQueryType: SchoolYearQueryType | undefined
+	): Promise<InternalClassDto<Class>[]> {
+		const classScope = new ClassScope().bySchoolId(school.id);
 
-		const classInfosFromClasses = await this.findClassesForUser(userId, schoolYearQueryType);
-
-		if (!schoolYearQueryType || schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR) {
-			classInfosFromGroups = await this.findGroupsForUser(userId);
+		if (groupVisibilityPermission === GroupVisibilityPermission.OWN_GROUPS) {
+			classScope.byUserId(user.id);
 		}
 
-		const combinedClassInfo: ClassInfoDto[] = [...classInfosFromClasses, ...classInfosFromGroups];
+		const classes: Class[] = await this.classService.find(classScope);
 
-		return combinedClassInfo;
-	}
+		const classDtos: InternalClassDto<Class>[] = classes
+			.map((clazz: Class): InternalClassDto<Class> | null => {
+				const name: string = clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name;
+				const isUpgradable: boolean = clazz.gradeLevel !== 13 && !clazz.successor;
+				const schoolYear: SchoolYear | undefined = clazz.year
+					? schoolYears.find((year: SchoolYear): boolean => year.id === clazz.year)
+					: undefined;
 
-	private async findClassesForSchool(
-		schoolId: EntityId,
-		schoolYearQueryType?: SchoolYearQueryType
-	): Promise<ClassInfoDto[]> {
-		const classes: Class[] = await this.classService.findClassesForSchool(schoolId);
-
-		const classInfosFromClasses: ClassInfoDto[] = await this.getClassInfosFromClasses(classes, schoolYearQueryType);
-
-		return classInfosFromClasses;
-	}
-
-	private async findClassesForUser(
-		userId: EntityId,
-		schoolYearQueryType?: SchoolYearQueryType
-	): Promise<ClassInfoDto[]> {
-		const classes: Class[] = await this.classService.findAllByUserId(userId);
-
-		const classInfosFromClasses: ClassInfoDto[] = await this.getClassInfosFromClasses(classes, schoolYearQueryType);
-
-		return classInfosFromClasses;
-	}
-
-	private async getClassInfosFromClasses(
-		classes: Class[],
-		schoolYearQueryType?: SchoolYearQueryType
-	): Promise<ClassInfoDto[]> {
-		const currentYear: SchoolYear | undefined =
-			classes.length > 0 ? await this.schoolService.getCurrentYear(classes[0].schoolId) : undefined;
-
-		const classesWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[] = await this.addSchoolYearsToClasses(
-			classes
-		);
-
-		const filteredClassesForSchoolYear = classesWithSchoolYear.filter((classWithSchoolYear) =>
-			this.isClassOfQueryType(currentYear, classWithSchoolYear.schoolYear, schoolYearQueryType)
-		);
-
-		const classInfosFromClasses: ClassInfoDto[] = this.mapClassInfosFromClasses(filteredClassesForSchoolYear);
-
-		return classInfosFromClasses;
-	}
-
-	private async addSchoolYearsToClasses(classes: Class[]): Promise<{ clazz: Class; schoolYear?: SchoolYearEntity }[]> {
-		const classesWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[] = await Promise.all(
-			classes.map(async (clazz: Class) => {
-				let schoolYear: SchoolYearEntity | undefined;
-				if (clazz.year) {
-					schoolYear = await this.schoolYearService.findById(clazz.year);
+				if (!this.isClassOfQueryType(currentYear, schoolYear, schoolYearQueryType)) {
+					return null;
 				}
 
-				return {
-					clazz,
-					schoolYear,
-				};
-			})
-		);
+				const mapped: InternalClassDto<Class> = new InternalClassDto({
+					id: clazz.id,
+					type: ClassRootType.CLASS,
+					name,
+					externalSourceName: clazz.source,
+					schoolYear: schoolYear?.name,
+					isUpgradable,
+					studentCount: clazz.userIds.length,
+					original: clazz,
+				});
 
-		return classesWithSchoolYear;
+				return mapped;
+			})
+			.filter((clazz: InternalClassDto<Class> | null): clazz is InternalClassDto<Class> => !!clazz);
+
+		return classDtos;
 	}
 
 	private isClassOfQueryType(
-		currentYear: SchoolYear | undefined,
-		schoolYear?: SchoolYearEntity,
+		currentYear?: SchoolYear,
+		schoolYear?: SchoolYear,
 		schoolYearQueryType?: SchoolYearQueryType
 	): boolean {
 		if (schoolYearQueryType === undefined) {
@@ -197,108 +272,10 @@ export class ClassGroupUc {
 		}
 	}
 
-	private mapClassInfosFromClasses(
-		filteredClassesForSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[]
-	): ClassInfoDto[] {
-		const classInfosFromClasses: ClassInfoDto[] = filteredClassesForSchoolYear.map(
-			(classWithSchoolYear): ClassInfoDto => {
-				const teachers: UserDO[] = [];
+	private applyPagination<T>(array: T[], skip = 0, limit?: number): T[] {
+		const positiveSkip: number = Math.max(0, skip);
 
-				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(
-					classWithSchoolYear.clazz,
-					teachers,
-					classWithSchoolYear.schoolYear
-				);
-
-				return mapped;
-			}
-		);
-		return classInfosFromClasses;
-	}
-
-	private async findGroupsForSchool(schoolId: EntityId): Promise<ClassInfoDto[]> {
-		const filter: GroupFilter = { schoolId };
-
-		const groups: Page<Group> = await this.groupService.findGroups(filter);
-
-		const classInfosFromGroups: ClassInfoDto[] = await this.getClassInfosFromGroups(groups.data);
-
-		return classInfosFromGroups;
-	}
-
-	private async findGroupsForUser(userId: EntityId): Promise<ClassInfoDto[]> {
-		const filter: GroupFilter = { userId };
-
-		const groups: Page<Group> = await this.groupService.findGroups(filter);
-
-		const classInfosFromGroups: ClassInfoDto[] = await this.getClassInfosFromGroups(groups.data);
-
-		return classInfosFromGroups;
-	}
-
-	private async getClassInfosFromGroups(groups: Group[]): Promise<ClassInfoDto[]> {
-		const systemMap: Map<EntityId, System> = await this.findSystemNamesForGroups(groups);
-
-		const classInfosFromGroups: ClassInfoDto[] = await Promise.all(
-			groups.map(async (group: Group): Promise<ClassInfoDto> => this.getClassInfoFromGroup(group, systemMap))
-		);
-
-		return classInfosFromGroups;
-	}
-
-	private async getClassInfoFromGroup(group: Group, systemMap: Map<EntityId, System>): Promise<ClassInfoDto> {
-		let system: System | undefined;
-		if (group.externalSource) {
-			system = systemMap.get(group.externalSource.systemId);
-		}
-
-		const resolvedUsers: ResolvedGroupUser[] = [];
-
-		let synchronizedCourses: Course[] = [];
-		if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
-			synchronizedCourses = await this.courseService.findBySyncedGroup(group);
-		}
-
-		const mapped: ClassInfoDto = GroupUcMapper.mapGroupToClassInfoDto(
-			group,
-			resolvedUsers,
-			synchronizedCourses,
-			system
-		);
-
-		return mapped;
-	}
-
-	private async findSystemNamesForGroups(groups: Group[]): Promise<Map<EntityId, System>> {
-		const systemIds: EntityId[] = groups
-			.map((group: Group): string | undefined => group.externalSource?.systemId)
-			.filter((systemId: string | undefined): systemId is EntityId => systemId !== undefined);
-
-		const uniqueSystemIds: EntityId[] = Array.from(new Set(systemIds));
-
-		const systems: Map<EntityId, System> = new Map<EntityId, System>();
-
-		await Promise.all(
-			uniqueSystemIds.map(async (systemId: string): Promise<void> => {
-				const system: System | null = await this.systemService.findById(systemId);
-
-				if (system) {
-					systems.set(systemId, system);
-				}
-			})
-		);
-
-		return systems;
-	}
-
-	private applyPagination(combinedClassInfo: ClassInfoDto[], skip = 0, limit?: number): ClassInfoDto[] {
-		let page: ClassInfoDto[];
-
-		if (limit === -1) {
-			page = combinedClassInfo.slice(skip);
-		} else {
-			page = combinedClassInfo.slice(skip, limit ? skip + limit : combinedClassInfo.length);
-		}
+		const page: T[] = array.slice(positiveSkip, limit && limit >= 0 ? positiveSkip + limit : undefined);
 
 		return page;
 	}

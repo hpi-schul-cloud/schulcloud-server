@@ -1,6 +1,6 @@
-import { ClassEntity, ClassEntityProps, ClassSourceOptionsEntity } from '@modules/class/entity';
-import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ClassEntity, ClassEntityProps, ClassSourceOptionsEntity } from '@modules/class/entity';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
 
 class ClassEntityFactory extends BaseFactory<ClassEntity, ClassEntityProps> {
@@ -21,7 +21,7 @@ export const classEntityFactory = ClassEntityFactory.define(ClassEntity, ({ sequ
 		teacherIds: [new ObjectId(), new ObjectId()],
 		invitationLink: `link-${sequence}`,
 		year: new ObjectId(),
-		gradeLevel: sequence,
+		gradeLevel: 3,
 		ldapDN: `dn-${sequence}`,
 		successor: new ObjectId(),
 		source: `source-${sequence}`,

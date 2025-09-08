@@ -1,20 +1,19 @@
 import { createMock } from '@golevelup/ts-jest';
+import { StorageLocation } from '@infra/files-storage-client';
+import { FileRecordParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { StorageLocation } from '@modules/files-storage/interface';
-import { FileRecordParentType } from '@src/infra/rabbitmq';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { BoardNodeCopyContext } from './board-node-copy-context';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { BoardNodeCopyContext, BoardNodeCopyContextProps } from './board-node-copy-context';
 
 describe(BoardNodeCopyContext.name, () => {
 	describe('copyFilesOfParent', () => {
 		const setup = () => {
-			const contextProps = {
-				sourceStorageLocationId: new ObjectId().toHexString(),
-				targetStorageLocationId: new ObjectId().toHexString(),
-				sourceStorageLocation: StorageLocation.SCHOOL,
-				targetStorageLocation: StorageLocation.SCHOOL,
+			const contextProps: BoardNodeCopyContextProps = {
+				sourceStorageLocationReference: { id: new ObjectId().toHexString(), type: StorageLocation.SCHOOL },
+				targetStorageLocationReference: { id: new ObjectId().toHexString(), type: StorageLocation.SCHOOL },
 				userId: new ObjectId().toHexString(),
 				filesStorageClientAdapterService: createMock<FilesStorageClientAdapterService>(),
+				targetSchoolId: new ObjectId().toHexString(),
 			};
 
 			const copyContext = new BoardNodeCopyContext(contextProps);
@@ -34,14 +33,14 @@ describe(BoardNodeCopyContext.name, () => {
 				source: {
 					parentId: sourceParentId,
 					parentType: FileRecordParentType.BoardNode,
-					storageLocationId: contextProps.sourceStorageLocationId,
-					storageLocation: contextProps.sourceStorageLocation,
+					storageLocationId: contextProps.sourceStorageLocationReference.id,
+					storageLocation: contextProps.sourceStorageLocationReference.type,
 				},
 				target: {
 					parentId: targetParentId,
 					parentType: FileRecordParentType.BoardNode,
-					storageLocationId: contextProps.targetStorageLocationId,
-					storageLocation: contextProps.targetStorageLocation,
+					storageLocationId: contextProps.targetStorageLocationReference.id,
+					storageLocation: contextProps.targetStorageLocationReference.type,
 				},
 				userId: contextProps.userId,
 			});

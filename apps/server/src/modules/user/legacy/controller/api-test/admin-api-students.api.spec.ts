@@ -1,24 +1,15 @@
-import { EntityManager } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { accountFactory } from '@modules/account/testing';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
+import { ServerTestModule } from '@modules/server/server.app.module';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
-import { Permission, RoleName } from '@shared/domain/interface';
-import {
-	mapUserToCurrentUser,
-	roleFactory,
-	schoolEntityFactory,
-	schoolYearFactory,
-	userFactory,
-} from '@shared/testing';
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
-import { accountFactory } from '@src/modules/account/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@src/modules/server/server.module';
-import { Request } from 'express';
-import request from 'supertest';
-import { classEntityFactory } from '../../../../class/entity/testing';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../dto';
 
 describe('Users Admin Students Controller (API)', () => {
@@ -26,116 +17,62 @@ describe('Users Admin Students Controller (API)', () => {
 
 	let app: INestApplication;
 	let em: EntityManager;
+	let apiClient: TestApiClient;
 
-	let adminAccount: AccountEntity;
-	let studentAccount1: AccountEntity;
-	let studentAccount2: AccountEntity;
-
-	let adminUser: User;
 	let studentUser1: User;
 	let studentUser2: User;
+	let loggedInAdminClient: TestApiClient;
+	let loggedInStudentClient: TestApiClient;
 
-	let currentUser: ICurrentUser;
-
-	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
-
-	const setupDb = async () => {
-		const currentYear = schoolYearFactory.withStartYear(2002).buildWithId();
+	const setup = async () => {
+		const currentYear = schoolYearEntityFactory.withStartYear(2002).buildWithId();
 		const school = schoolEntityFactory.buildWithId({ currentYear });
+		const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT, permissions: [] });
 
-		const adminRoles = roleFactory.build({
-			name: RoleName.ADMINISTRATOR,
-			permissions: [Permission.STUDENT_LIST],
-		});
-		const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
+		const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+		studentUser1 = userFactory.withRole(studentRole).buildWithId({ school });
 
-		adminUser = userFactory.buildWithId({ school, roles: [adminRoles] });
-		studentUser1 = userFactory.buildWithId({
-			firstName: 'Marla',
+		const studentAccount1 = accountFactory.withUser(studentUser1).build();
+		studentUser2 = userFactory.withRole(studentRole).buildWithId({ school });
+
+		await em.persistAndFlush([
+			studentRole,
 			school,
-			roles: [studentRoles],
-			consent: {
-				userConsent: {
-					form: 'digital',
-					privacyConsent: true,
-					termsOfUseConsent: true,
-					dateOfPrivacyConsent: new Date('2017-01-01T00:06:37.148Z'),
-					dateOfTermsOfUseConsent: new Date('2017-01-01T00:06:37.148Z'),
-				},
-				parentConsents: [
-					{
-						_id: new ObjectId('5fa31aacb229544f2c697b48'),
-						form: 'digital',
-						privacyConsent: true,
-						termsOfUseConsent: true,
-						dateOfPrivacyConsent: new Date('2017-01-01T00:06:37.148Z'),
-						dateOfTermsOfUseConsent: new Date('2017-01-01T00:06:37.148Z'),
-					},
-				],
-			},
-		});
+			currentYear,
+			adminAccount,
+			adminUser,
+			studentUser1,
+			studentAccount1,
+			studentUser2,
+		]);
+		em.clear();
 
-		studentUser2 = userFactory.buildWithId({
-			firstName: 'Test',
-			school,
-			roles: [studentRoles],
-			consent: {
-				userConsent: {
-					form: 'digital',
-					privacyConsent: true,
-					termsOfUseConsent: true,
-					dateOfPrivacyConsent: new Date('2017-01-01T00:06:37.148Z'),
-					dateOfTermsOfUseConsent: new Date('2017-01-01T00:06:37.148Z'),
-				},
-			},
-		});
+		loggedInAdminClient = await apiClient.login(adminAccount);
+		loggedInStudentClient = await apiClient.login(studentAccount1);
 
-		const studentClass = classEntityFactory.buildWithId({
-			name: 'Group A',
-			schoolId: school.id,
-			year: currentYear.id,
-			userIds: [studentUser1._id],
-			gradeLevel: 12,
-		});
-
-		const mapUserToAccount = (user: User): AccountEntity =>
-			accountFactory.buildWithId({
-				userId: user.id,
-				username: user.email,
-				password: defaultPasswordHash,
-			});
-		adminAccount = mapUserToAccount(adminUser);
-		studentAccount1 = mapUserToAccount(studentUser1);
-		studentAccount2 = mapUserToAccount(studentUser2);
-
-		em.persist(school);
-		em.persist(currentYear);
-		em.persist([adminRoles, studentRoles]);
-		em.persist([adminUser, studentUser1, studentUser2]);
-		em.persist([adminAccount, studentAccount1, studentAccount2]);
-		em.persist(studentClass);
-		await em.flush();
+		return {
+			adminUser,
+			adminAccount,
+			studentUser1,
+			studentAccount1,
+			studentUser2,
+			loggedInAdminClient,
+			loggedInStudentClient,
+		};
 	};
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
 
-		await setupDb();
+		apiClient = new TestApiClient(app, basePath);
+
+		await setup();
 	});
 
 	afterAll(async () => {
@@ -145,15 +82,8 @@ describe('Users Admin Students Controller (API)', () => {
 
 	describe('[GET] :id', () => {
 		describe('when student exists', () => {
-			const setup = () => {
-				currentUser = mapUserToCurrentUser(adminUser, adminAccount);
-			};
-
 			it('should return student ', async () => {
-				setup();
-				const response = await request(app.getHttpServer()) //
-					.get(`${basePath}/${studentUser1.id}`)
-					.expect(200);
+				const response = await loggedInAdminClient.get(studentUser1.id).expect(200);
 
 				// eslint-disable-next-line @typescript-eslint/naming-convention
 				const { _id } = response.body as UserResponse;
@@ -163,54 +93,27 @@ describe('Users Admin Students Controller (API)', () => {
 		});
 
 		describe('when user has no right permission', () => {
-			const setup = () => {
-				currentUser = mapUserToCurrentUser(studentUser1, studentAccount1);
-			};
-
 			it('should reject request', async () => {
-				setup();
-				await request(app.getHttpServer()) //
-					.get(`${basePath}/${studentUser1.id}`)
-					.expect(403);
+				await loggedInStudentClient.get(studentUser1.id).expect(403);
 			});
 		});
 
 		describe('when student does not exists', () => {
-			const setup = () => {
-				currentUser = mapUserToCurrentUser(adminUser, adminAccount);
-			};
-
 			it('should reject request ', async () => {
-				setup();
-				await request(app.getHttpServer()) //
-					.get(`${basePath}/000000000000000000000000`)
-					.expect(404);
+				await loggedInAdminClient.get(`000000000000000000000000`).expect(404);
 			});
 		});
 	});
 
 	describe('[GET]', () => {
 		describe('when sort param is provided', () => {
-			const setup = () => {
-				currentUser = mapUserToCurrentUser(adminUser, adminAccount);
+			it('should return students in correct order', async () => {
 				const query: UsersSearchQueryParams = {
 					$skip: 0,
 					$limit: 5,
 					$sort: { firstName: 1 },
 				};
-
-				return {
-					query,
-				};
-			};
-
-			it('should return students in correct order', async () => {
-				const { query } = setup();
-				const response = await request(app.getHttpServer()) //
-					.get(`${basePath}`)
-					.query(query)
-					.set('Accept', 'application/json')
-					.expect(200);
+				const response = await loggedInAdminClient.get().query(query).expect(200);
 
 				const { data, total } = response.body as UserListResponse;
 
@@ -222,26 +125,14 @@ describe('Users Admin Students Controller (API)', () => {
 		});
 
 		describe('when sorting by classes', () => {
-			const setup = () => {
-				currentUser = mapUserToCurrentUser(adminUser, adminAccount);
+			it('should return students', async () => {
 				const query: UsersSearchQueryParams = {
 					$skip: 0,
 					$limit: 5,
 					$sort: { classes: 1 },
 				};
 
-				return {
-					query,
-				};
-			};
-
-			it('should return students', async () => {
-				const { query } = setup();
-				const response = await request(app.getHttpServer()) //
-					.get(`${basePath}`)
-					.query(query)
-					.set('Accept', 'application/json')
-					.expect(200);
+				const response = await loggedInAdminClient.get().query(query).expect(200);
 
 				const { data, total } = response.body as UserListResponse;
 
@@ -251,26 +142,13 @@ describe('Users Admin Students Controller (API)', () => {
 		});
 
 		describe('when sorting by consentStatus', () => {
-			const setup = () => {
-				currentUser = mapUserToCurrentUser(adminUser, adminAccount);
+			it('should return students', async () => {
 				const query: UsersSearchQueryParams = {
 					$skip: 0,
 					$limit: 5,
 					$sort: { consentStatus: 1 },
 				};
-
-				return {
-					query,
-				};
-			};
-
-			it('should return students', async () => {
-				const { query } = setup();
-				const response = await request(app.getHttpServer()) //
-					.get(`${basePath}`)
-					.query(query)
-					.set('Accept', 'application/json')
-					.expect(200);
+				const response = await loggedInAdminClient.get().query(query).expect(200);
 
 				const { data, total } = response.body as UserListResponse;
 
@@ -280,27 +158,14 @@ describe('Users Admin Students Controller (API)', () => {
 		});
 
 		describe('when searching for users by wrong params', () => {
-			const setup = () => {
-				currentUser = mapUserToCurrentUser(adminUser, adminAccount);
+			it('should return empty list', async () => {
 				const query: UsersSearchQueryParams = {
 					$skip: 0,
 					$limit: 5,
 					$sort: { firstName: 1 },
 					classes: ['1A'],
 				};
-
-				return {
-					query,
-				};
-			};
-
-			it('should return empty list', async () => {
-				const { query } = setup();
-				const response = await request(app.getHttpServer()) //
-					.get(`${basePath}`)
-					.query(query)
-					.set('Accept', 'application/json')
-					.expect(200);
+				const response = await loggedInAdminClient.get().query(query).expect(200);
 
 				const { data, total } = response.body as UserListResponse;
 
@@ -310,26 +175,14 @@ describe('Users Admin Students Controller (API)', () => {
 		});
 
 		describe('when user has no right permission', () => {
-			const setup = () => {
-				currentUser = mapUserToCurrentUser(studentUser1, studentAccount1);
+			it('should reject request', async () => {
 				const query: UsersSearchQueryParams = {
 					$skip: 0,
 					$limit: 5,
 					$sort: { firstName: 1 },
 				};
 
-				return {
-					query,
-				};
-			};
-
-			it('should reject request', async () => {
-				const { query } = setup();
-				await request(app.getHttpServer()) //
-					.get(`${basePath}`)
-					.query(query)
-					.send()
-					.expect(403);
+				await loggedInStudentClient.get().query(query).send().expect(403);
 			});
 		});
 	});

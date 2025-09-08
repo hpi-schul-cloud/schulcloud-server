@@ -1,17 +1,14 @@
 import { NotImplementedException } from '@nestjs/common';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import { Transform, TransformFnParams } from 'class-transformer';
-import sanitize, { AllowedAttribute } from 'sanitize-html';
+import { decode } from 'html-entities';
+import sanitize, { IOptions } from 'sanitize-html';
 
-export type IInputFormatsConfig = {
-	allowedTags: string[]; // Note: tag names are not case-sensitive
-	allowedAttributes?: Record<string, AllowedAttribute[]>;
-};
-
-const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
+const inputFormatsSanitizeConfig: Record<string, IOptions> = {
 	PlainText: {
 		allowedTags: [],
 		allowedAttributes: {},
+		textFilter: (text: string) => decode(text),
 	},
 
 	RichTextCk4: {
@@ -104,7 +101,7 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 	},
 };
 
-export const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IInputFormatsConfig => {
+const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IOptions => {
 	switch (inputFormat) {
 		case InputFormat.RICH_TEXT_CK5_SIMPLE:
 			return inputFormatsSanitizeConfig.RichTextCk5Simple;
@@ -119,7 +116,7 @@ export const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IInputFormats
 };
 
 export const sanitizeRichText = (value: string, inputFormat?: InputFormat): string => {
-	const sanitizeHtmlOptions: sanitize.IOptions = getSanitizeHtmlOptions(inputFormat);
+	const sanitizeHtmlOptions = getSanitizeHtmlOptions(inputFormat);
 
 	const sanitized = sanitize(value, sanitizeHtmlOptions);
 

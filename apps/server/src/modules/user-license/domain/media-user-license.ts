@@ -1,11 +1,7 @@
-import { MediaSource } from './media-source';
+import { MediaSource, MediumIdentifier } from '@modules/media-source';
 import { UserLicense, UserLicenseProps } from './user-license';
 
-export interface MediaUserLicenseProps extends UserLicenseProps {
-	mediumId: string;
-
-	mediaSource?: MediaSource;
-}
+export interface MediaUserLicenseProps extends UserLicenseProps, MediumIdentifier {}
 
 export class MediaUserLicense extends UserLicense<MediaUserLicenseProps> {
 	get mediumId(): string {

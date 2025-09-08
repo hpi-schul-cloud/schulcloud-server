@@ -39,7 +39,9 @@ jobs:
           password: ${{ secrets.QUAY_TOKEN }}
 
       - name: Build and push ${{ github.repository }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
         with:
           context: .
           file: ./Dockerfile
@@ -49,46 +51,16 @@ jobs:
           tags: ${{ steps.docker_meta_img_hub.outputs.tags }}
           labels: ${{ steps.docker_meta_img_hub.outputs.labels }}
 
-      - name: Docker meta Service Name for docker hub (file preview)
-        id: docker_meta_img_hub_file_storage
-        uses: docker/metadata-action@v5
-        with:
-          images: docker.io/schulcloud/schulcloud-server, quay.io/schulcloudverbund/schulcloud-server
-          tags: |
-            type=semver,pattern={{version}},prefix=file-preview-,onlatest=false
-            type=semver,pattern={{major}}.{{minor}},prefix=file-preview-,onlatest=false
-          labels: |
-            org.opencontainers.image.title=schulcloud-file-storage
-      - name: Build and push ${{ github.repository }} (file-storage)
-        uses: docker/build-push-action@v5
-        with:
-          build-args: |
-            BASE_IMAGE=quay.io/schulcloudverbund/schulcloud-server:${{ github.ref_name }}
-          context: .
-          file: ./Dockerfile.filepreview
-          platforms: linux/amd64
-          push: true
-          pull: true
-          tags: ${{ steps.docker_meta_img_hub_file_storage.outputs.tags }}
-          labels: ${{ steps.docker_meta_img_hub_file_storage.outputs.labels }}
-
-  create-release:
-    needs:
-      - build_and_push
+  create_release:
     runs-on: ubuntu-latest
     permissions:
-      actions: read
       contents: write
     steps:
-      - name: create sbom
-        uses: aquasecurity/trivy-action@1f6384b6ceecbbc6673526f865b818a2a06b07c9
-        with:
-          scan-type: 'image'
-          format: 'cyclonedx'
-          image-ref: 'docker.io/schulcloud/schulcloud-server:${{ github.ref_name }}'
-          output: 'dependency-results.sbom.json'
+      - name: generate sbom via dependency-graph
+        run: gh api repos/${{ github.repository }}/dependency-graph/sbom > dependencies.sbom.json
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: create release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          body: 'refer to the schulcloud-client release notes https://github.com/hpi-schul-cloud/schulcloud-client/releases/'
-          files: dependency-results.sbom.json
+          files: dependencies.sbom.json

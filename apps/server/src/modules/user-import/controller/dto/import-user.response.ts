@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationResponse } from '@shared/controller';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
+import { PaginationResponse } from '@shared/controller/dto';
 import { IsMongoId, IsString } from 'class-validator';
 import { UserMatchResponse } from './user-match.response';
 import { UserRole } from './user-role';
@@ -12,13 +13,14 @@ export class ImportUserResponse {
 		this.lastName = props.lastName;
 		this.roleNames = props.roleNames;
 		this.classNames = props.classNames;
+		this.externalRoleNames = props.externalRoleNames;
 		if (props.match != null) this.match = props.match;
 		if (props.flagged === true) this.flagged = true;
 	}
 
 	@IsMongoId()
 	@ApiProperty({
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 		description: 'id reference to a import user',
 	})
 	// no school, system
@@ -59,6 +61,9 @@ export class ImportUserResponse {
 	// eslint-disable-next-line @typescript-eslint/no-inferrable-types
 	@ApiProperty({ description: 'manual flag to apply it as filter' })
 	flagged: boolean = false;
+
+	@ApiPropertyOptional({ description: 'exact user roles from the external system' })
+	externalRoleNames?: string[];
 }
 
 export class ImportUserListResponse extends PaginationResponse<ImportUserResponse[]> {

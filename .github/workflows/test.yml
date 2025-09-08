@@ -11,12 +11,17 @@ permissions:
   contents: read
 
 env:
-  MONGODB_VERSION: 6.0
-  NODE_VERSION: '18'
+  MONGODB_VERSION: 7.0
+  NODE_VERSION: '22'
 jobs:
   feathers_tests_cov:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      rabbitmq:
+        image: rabbitmq:4
+        ports:
+          - 5672:5672
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -25,12 +30,9 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.10.0
+        uses: supercharge/mongodb-github-action@1.12.0
         with:
           mongodb-version: ${{ env.MONGODB_VERSION }}
-      - name: environment setup
-        run: |
-          sh scripts/unitTestFeathers.sh
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
       - name: feathers:Test - test with coverage
@@ -42,7 +44,7 @@ jobs:
         shard: [1, 2, 3, 4, 5, 6, 7, 8]
     services:
       rabbitmq:
-        image: rabbitmq:3
+        image: rabbitmq:4
         ports:
           - 5672:5672
     steps:
@@ -53,7 +55,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.10.0
+        uses: supercharge/mongodb-github-action@1.12.0
         with:
           mongodb-version: ${{ env.MONGODB_VERSION }}
       - name: npm ci
@@ -88,9 +90,9 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
       - name: SonarCloud upload coverage
-        uses: SonarSource/sonarcloud-github-action@v2.1.1
+        uses: SonarSource/sonarqube-scan-action@v5.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}

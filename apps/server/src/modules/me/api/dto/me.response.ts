@@ -3,7 +3,7 @@ import { LanguageType } from '@shared/domain/interface';
 
 export class MeAccountResponse {
 	@ApiProperty()
-	id: string;
+	public id: string;
 
 	constructor(props: MeAccountResponse) {
 		this.id = props.id;
@@ -12,10 +12,10 @@ export class MeAccountResponse {
 
 export class MeSchoolLogoResponse {
 	@ApiPropertyOptional()
-	url?: string;
+	public url?: string;
 
 	@ApiPropertyOptional()
-	name?: string;
+	public name?: string;
 
 	constructor(props: MeSchoolLogoResponse) {
 		this.url = props.url;
@@ -25,13 +25,13 @@ export class MeSchoolLogoResponse {
 
 export class MeSchoolResponse {
 	@ApiProperty()
-	id: string;
+	public id: string;
 
 	@ApiProperty()
-	name: string;
+	public name: string;
 
 	@ApiProperty()
-	logo: MeSchoolLogoResponse;
+	public logo: MeSchoolLogoResponse;
 
 	constructor(props: MeSchoolResponse) {
 		this.id = props.id;
@@ -42,16 +42,16 @@ export class MeSchoolResponse {
 
 export class MeUserResponse {
 	@ApiProperty()
-	id: string;
+	public id: string;
 
 	@ApiProperty()
-	firstName: string;
+	public firstName: string;
 
 	@ApiProperty()
-	lastName: string;
+	public lastName: string;
 
 	@ApiPropertyOptional()
-	customAvatarBackgroundColor?: string;
+	public customAvatarBackgroundColor?: string;
 
 	constructor(props: MeUserResponse) {
 		this.id = props.id;
@@ -63,10 +63,10 @@ export class MeUserResponse {
 
 export class MeRoleResponse {
 	@ApiProperty()
-	id: string;
+	public id: string;
 
 	@ApiProperty()
-	name: string;
+	public name: string;
 
 	constructor(props: MeRoleResponse) {
 		this.id = props.id;
@@ -76,25 +76,28 @@ export class MeRoleResponse {
 
 export class MeResponse {
 	@ApiProperty()
-	school: MeSchoolResponse;
+	public school: MeSchoolResponse;
 
 	@ApiProperty()
-	user: MeUserResponse;
+	public user: MeUserResponse;
 
 	@ApiProperty({ type: [MeRoleResponse] })
-	roles: MeRoleResponse[];
+	public roles: MeRoleResponse[];
 
 	@ApiProperty()
-	permissions: string[];
+	public permissions: string[];
 
 	@ApiProperty({
 		enum: LanguageType,
 		enumName: 'LanguageType',
 	})
-	language?: LanguageType;
+	public language?: LanguageType;
 
 	@ApiProperty()
-	account: MeAccountResponse;
+	public account: MeAccountResponse;
+
+	@ApiPropertyOptional()
+	public systemId?: string;
 
 	constructor(props: MeResponse) {
 		this.school = props.school;
@@ -103,5 +106,6 @@ export class MeResponse {
 		this.permissions = props.permissions;
 		this.language = props.language;
 		this.account = props.account;
+		this.systemId = props.systemId;
 	}
 }

@@ -1,22 +1,11 @@
+import { externalToolElementFactory } from '../testing';
 import { ExternalToolElement, isExternalToolElement } from './external-tool-element.do';
-import { BoardNodeProps } from './types';
 
 describe('ExternalToolElement', () => {
 	let externalToolElement: ExternalToolElement;
 
-	const boardNodeProps: BoardNodeProps = {
-		id: '1',
-		path: '',
-		level: 1,
-		position: 1,
-		children: [],
-		createdAt: new Date(),
-		updatedAt: new Date(),
-	};
-
 	beforeEach(() => {
-		externalToolElement = new ExternalToolElement({
-			...boardNodeProps,
+		externalToolElement = externalToolElementFactory.build({
 			contextExternalToolId: 'test-id',
 		});
 	});

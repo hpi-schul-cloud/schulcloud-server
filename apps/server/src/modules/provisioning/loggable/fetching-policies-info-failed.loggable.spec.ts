@@ -1,12 +1,10 @@
-import { ExternalUserDto } from '../dto';
+import { externalUserDtoFactory } from '../testing';
 import { FetchingPoliciesInfoFailedLoggable } from './fetching-policies-info-failed.loggable';
 
 describe(FetchingPoliciesInfoFailedLoggable.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const externalUserDto: ExternalUserDto = {
-				externalId: 'someId',
-			};
+			const externalUserDto = externalUserDtoFactory.build();
 			const policiesInfoEndpoint = 'someEndpoint';
 
 			const loggable = new FetchingPoliciesInfoFailedLoggable(externalUserDto, policiesInfoEndpoint);

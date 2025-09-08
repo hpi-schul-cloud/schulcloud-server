@@ -1,14 +1,13 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
+import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cleanupCollections,
-	courseFactory,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
+import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import {
 	cardEntityFactory,
@@ -16,7 +15,6 @@ import {
 	columnEntityFactory,
 	submissionContainerElementEntityFactory,
 } from '../../testing';
-import { BoardExternalReferenceType } from '../../domain';
 import { SubmissionItemResponse } from '../dto';
 
 const baseRouteName = '/elements';
@@ -45,7 +43,7 @@ describe('submission create (api)', () => {
 			await cleanupCollections(em);
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -79,7 +77,7 @@ describe('submission create (api)', () => {
 			await cleanupCollections(em);
 
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			const course = courseFactory.build({ students: [studentUser] });
+			const course = courseEntityFactory.build({ students: [studentUser] });
 			await em.persistAndFlush([studentAccount, studentUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -154,7 +152,7 @@ describe('submission create (api)', () => {
 			await cleanupCollections(em);
 
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			const course = courseFactory.build({ students: [] });
+			const course = courseEntityFactory.build({ students: [] });
 			await em.persistAndFlush([studentAccount, studentUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -189,7 +187,7 @@ describe('submission create (api)', () => {
 			await cleanupCollections(em);
 
 			const user = userFactory.build();
-			const course = courseFactory.build({ teachers: [user] });
+			const course = courseEntityFactory.build({ teachers: [user] });
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 

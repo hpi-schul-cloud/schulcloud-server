@@ -1,11 +1,11 @@
+import { LegacyLogger } from '@core/logger';
 import { CollaborativeStorageAdapter } from '@infra/collaborative-storage';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { RoleService } from '@modules/role/service/role.service';
+import { TeamRepo } from '@modules/team/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { TeamsRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
 import { TeamMapper } from '../mapper/team.mapper';
 import { TeamPermissionsDto } from './dto/team-permissions.dto';
 import { TeamDto } from './dto/team.dto';
@@ -16,7 +16,7 @@ export class CollaborativeStorageService {
 		private adapter: CollaborativeStorageAdapter,
 		private roleService: RoleService,
 		private teamsMapper: TeamMapper,
-		private teamsRepo: TeamsRepo,
+		private teamRepo: TeamRepo,
 		private authService: AuthorizationService,
 		private logger: LegacyLogger
 	) {
@@ -30,7 +30,7 @@ export class CollaborativeStorageService {
 	 * @return The mapped DTO
 	 */
 	async findTeamById(teamId: EntityId, populate = false): Promise<TeamDto> {
-		return this.teamsMapper.mapEntityToDto(await this.teamsRepo.findById(teamId, populate));
+		return this.teamsMapper.mapEntityToDto(await this.teamRepo.findById(teamId, populate));
 	}
 
 	/**
@@ -48,7 +48,7 @@ export class CollaborativeStorageService {
 	): Promise<void> {
 		this.authService.checkPermission(
 			await this.authService.getUserWithPermissions(currentUserId),
-			await this.teamsRepo.findById(teamId, true),
+			await this.teamRepo.findById(teamId, true),
 			AuthorizationContextBuilder.write([Permission.CHANGE_TEAM_ROLES])
 		);
 		return this.adapter.updateTeamPermissionsForRole(

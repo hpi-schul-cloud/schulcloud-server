@@ -1,3 +1,4 @@
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolConfigurationStatus } from '../../common/domain';
@@ -9,8 +10,7 @@ import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ToolStatusNotLaunchableLoggableException } from '../error';
-import { ToolLaunchMapper } from '../mapper';
-import { ToolLaunchData, ToolLaunchRequest } from '../types';
+import { ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
 	Lti11ToolLaunchStrategy,
@@ -25,10 +25,10 @@ export class ToolLaunchService {
 	constructor(
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly externalToolService: ExternalToolService,
-		private readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
-		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
-		private readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy,
-		private readonly toolConfigurationStatusService: ToolConfigurationStatusService
+		private readonly toolConfigurationStatusService: ToolConfigurationStatusService,
+		readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
+		readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
+		readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy
 	) {
 		this.strategies = new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);
@@ -36,58 +36,36 @@ export class ToolLaunchService {
 		this.strategies.set(ToolConfigType.OAUTH2, oauth2ToolLaunchStrategy);
 	}
 
-	public generateLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
-		const toolConfigType: ToolConfigType = ToolLaunchMapper.mapToToolConfigType(toolLaunchData.type);
-		const strategy: ToolLaunchStrategy | undefined = this.strategies.get(toolConfigType);
+	public async generateLaunchRequest(
+		userId: EntityId,
+		contextExternalTool: ContextExternalToolLaunchable
+	): Promise<ToolLaunchRequest> {
+		const schoolExternalToolId: EntityId = contextExternalTool.schoolToolRef.schoolToolId;
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
+		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
+
+		if (externalTool.medium && externalTool.medium.status !== ExternalToolMediumStatus.ACTIVE) {
+			throw new InternalServerErrorException('Medium is not active');
+		}
+
+		await this.checkToolStatus(userId, externalTool, schoolExternalTool, contextExternalTool);
+
+		const strategy: ToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
 
 		if (!strategy) {
 			throw new InternalServerErrorException('Unknown tool launch data type');
 		}
 
-		const launchRequest: ToolLaunchRequest = strategy.createLaunchRequest(toolLaunchData);
-
-		return launchRequest;
-	}
-
-	public async getLaunchData(
-		userId: EntityId,
-		contextExternalTool: ContextExternalToolLaunchable
-	): Promise<ToolLaunchData> {
-		const schoolExternalToolId: EntityId = contextExternalTool.schoolToolRef.schoolToolId;
-
-		const { externalTool, schoolExternalTool } = await this.loadToolHierarchy(schoolExternalToolId);
-
-		await this.isToolStatusLaunchableOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
-
-		const strategy: ToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
-
-		if (!strategy) {
-			throw new InternalServerErrorException('Unknown tool config type');
-		}
-
-		const launchData: ToolLaunchData = await strategy.createLaunchData(userId, {
+		const launchRequest: ToolLaunchRequest = await strategy.createLaunchRequest(userId, {
 			externalTool,
 			schoolExternalTool,
 			contextExternalTool,
 		});
 
-		return launchData;
+		return launchRequest;
 	}
 
-	public async loadToolHierarchy(
-		schoolExternalToolId: string
-	): Promise<{ schoolExternalTool: SchoolExternalTool; externalTool: ExternalTool }> {
-		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
-
-		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
-
-		return {
-			schoolExternalTool,
-			externalTool,
-		};
-	}
-
-	private async isToolStatusLaunchableOrThrow(
+	private async checkToolStatus(
 		userId: EntityId,
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
@@ -108,16 +86,7 @@ export class ToolLaunchService {
 			status.isNotLicensed ||
 			status.isIncompleteOnScopeContext
 		) {
-			throw new ToolStatusNotLaunchableLoggableException(
-				userId,
-				contextExternalTool.id ?? '',
-				status.isOutdatedOnScopeSchool,
-				status.isOutdatedOnScopeContext,
-				status.isIncompleteOnScopeContext,
-				status.isIncompleteOperationalOnScopeContext,
-				status.isDeactivated,
-				status.isNotLicensed
-			);
+			throw new ToolStatusNotLaunchableLoggableException(userId, contextExternalTool, status);
 		}
 	}
 }

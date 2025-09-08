@@ -4,12 +4,12 @@ import { ClassSourceOptions } from '../../domain/class-source-options.do';
 import { ClassEntity } from '../../entity';
 
 export class ClassMapper {
-	private static mapToDO(entity: ClassEntity): Class {
+	static mapToDO(entity: ClassEntity): Class {
 		return new Class({
 			id: entity.id,
 			name: entity.name,
 			schoolId: entity.schoolId.toHexString(),
-			userIds: entity.userIds?.map((userId) => userId.toHexString()),
+			userIds: entity.userIds?.map((userId) => userId.toHexString()) || [],
 			teacherIds: entity.teacherIds.map((teacherId) => teacherId.toHexString()),
 			invitationLink: entity.invitationLink,
 			year: entity.year?.toHexString(),

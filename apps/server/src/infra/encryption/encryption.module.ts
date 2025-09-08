@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LegacyLogger, LoggerModule } from '@src/core/logger';
+import { LegacyLogger, LoggerModule } from '@core/logger';
 import { DefaultEncryptionService, LdapEncryptionService } from './encryption.interface';
-import { SymetricKeyEncryptionService } from './encryption.service';
+import { SymmetricKeyEncryptionService } from './encryption.service';
 
 function encryptionProviderFactory(configService: ConfigService, logger: LegacyLogger, aesKey: string) {
 	const key = configService.get<string>(aesKey);
-	return new SymetricKeyEncryptionService(logger, key);
+	return new SymmetricKeyEncryptionService(logger, key);
 }
 
 @Module({

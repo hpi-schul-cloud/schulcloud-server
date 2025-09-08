@@ -21,7 +21,7 @@ export class YourLoggable implements Loggable {
 ```
 
 ```TypeScript
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 
 export class YourUc {
 	constructor(private logger: Logger) {

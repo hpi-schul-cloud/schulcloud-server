@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { UserRepo } from '@shared/repo';
-import { RoleModule } from '../../role';
 import { AuthorizationModule } from '../../authorization';
+import { RoleModule } from '../../role';
+import { UserModule } from '../user.module';
 import { AdminApiStudentsController, AdminApiTeachersController } from './controller';
 import { UsersAdminApiUc } from './uc';
 import { UsersAdminModule } from './users-admin.module';
 
 @Module({
-	imports: [UsersAdminModule, RoleModule, AuthorizationModule],
+	imports: [UsersAdminModule, RoleModule, AuthorizationModule, UserModule],
 	controllers: [AdminApiStudentsController, AdminApiTeachersController],
-	providers: [UserRepo, UsersAdminApiUc],
+	providers: [UsersAdminApiUc],
 	exports: [],
 })
 export class UsersAdminApiModule {}

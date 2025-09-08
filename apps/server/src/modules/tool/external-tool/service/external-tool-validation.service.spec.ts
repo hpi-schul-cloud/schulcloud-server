@@ -1,9 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
+import { Page } from '@shared/domain/domainobject';
 import { ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';
+import { ExternalToolMediumStatus } from '../enum';
 import { externalToolFactory } from '../testing';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
@@ -69,6 +71,30 @@ describe(ExternalToolValidationService.name, () => {
 		});
 
 		describe('when external tool config has oauth config', () => {
+			describe('when external tool is a template', () => {
+				const setup = () => {
+					const externalOauthToolTemplate: ExternalTool = externalToolFactory
+						.withMedium({ status: ExternalToolMediumStatus.TEMPLATE })
+						.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
+						.buildWithId();
+					externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
+
+					return { externalOauthToolTemplate };
+				};
+
+				it('should throw validation error', async () => {
+					const { externalOauthToolTemplate } = setup();
+
+					const result: Promise<void> = service.validateCreate(externalOauthToolTemplate);
+
+					await expect(result).rejects.toThrow(
+						new ValidationError(
+							'tool_template_oauth2_invalid: No templates for tools with OAuth2 configuration allowed.'
+						)
+					);
+				});
+			});
+
 			describe('when client id is unique', () => {
 				describe('when tool with oauth2 config not exists', () => {
 					const setup = () => {
@@ -201,6 +227,378 @@ describe(ExternalToolValidationService.name, () => {
 				expect(logoService.validateLogoSize).toHaveBeenCalledWith(externalTool);
 			});
 		});
+
+		describe('when the external tool is set to be a preferred tool', () => {
+			describe('when the preferred tool has an icon name', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.build({
+						isPreferred: true,
+						iconName: 'mdiAlert',
+					});
+					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+					configService.get.mockReturnValue(10);
+
+					return {
+						externalTool,
+					};
+				};
+
+				it('should not throw an validation error', async () => {
+					const { externalTool } = setup();
+
+					const result: Promise<void> = service.validateCreate(externalTool);
+
+					await expect(result).resolves.not.toThrow();
+				});
+			});
+
+			describe('when the preferred tool has undefined icon name', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.build({
+						isPreferred: true,
+						iconName: undefined,
+					});
+
+					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+					configService.get.mockReturnValue(10);
+
+					const expectedError = new ValidationError(
+						`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${externalTool.name} is missing.`
+					);
+
+					return {
+						externalTool,
+						expectedError,
+					};
+				};
+
+				it('should throw an validation error', async () => {
+					const { externalTool, expectedError } = setup();
+
+					const result: Promise<void> = service.validateCreate(externalTool);
+
+					await expect(result).rejects.toThrow(expectedError);
+				});
+			});
+
+			describe('when the preferred tool has a blank icon name', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.build({
+						isPreferred: true,
+						iconName: '',
+					});
+
+					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+					configService.get.mockReturnValue(10);
+
+					const expectedError = new ValidationError(
+						`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${externalTool.name} is missing.`
+					);
+
+					return {
+						externalTool,
+						expectedError,
+					};
+				};
+
+				it('should throw an validation error', async () => {
+					const { externalTool, expectedError } = setup();
+
+					const result: Promise<void> = service.validateCreate(externalTool);
+
+					await expect(result).rejects.toThrow(expectedError);
+				});
+			});
+
+			describe('when the preferred tool limits had already been reached', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.build({
+						isPreferred: true,
+						iconName: 'mdiAlert',
+					});
+
+					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>(
+						externalToolFactory.buildList(3),
+						3
+					);
+
+					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+					configService.get.mockReturnValue(3);
+
+					const expectedError = new ValidationError(
+						`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
+					);
+
+					return {
+						externalTool,
+						expectedError,
+					};
+				};
+
+				it('should throw an validation error', async () => {
+					const { externalTool, expectedError } = setup();
+
+					const result: Promise<void> = service.validateCreate(externalTool);
+
+					await expect(result).rejects.toThrow(expectedError);
+				});
+			});
+
+			describe('when the preferred tool limits had already been exceeded', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.build({
+						isPreferred: true,
+						iconName: 'mdiAlert',
+					});
+
+					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>(
+						externalToolFactory.buildList(5),
+						3
+					);
+
+					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+					configService.get.mockReturnValue(3);
+
+					const expectedError = new ValidationError(
+						`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
+					);
+
+					return {
+						externalTool,
+						expectedError,
+					};
+				};
+
+				it('should throw a validation error', async () => {
+					const { externalTool, expectedError } = setup();
+
+					const result: Promise<void> = service.validateCreate(externalTool);
+
+					await expect(result).rejects.toThrow(expectedError);
+				});
+			});
+		});
+
+		describe('when the external tool has no medium', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build();
+
+				const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+				externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+				configService.get.mockReturnValue(10);
+
+				return {
+					externalTool,
+				};
+			};
+
+			it('should not throw an validation error', async () => {
+				const { externalTool } = setup();
+
+				const result: Promise<void> = service.validateCreate(externalTool);
+
+				await expect(result).resolves.not.toThrow();
+			});
+		});
+		describe('when the external tool has medium', () => {
+			describe('when the medium has no status', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.withMedium({ status: undefined }).build();
+
+					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+					configService.get.mockReturnValue(10);
+
+					const expectedError = new ValidationError(
+						`tool_medium_status: This medium status must be one of: active, draft or template.`
+					);
+
+					return {
+						externalTool,
+						expectedError,
+					};
+				};
+
+				it('should throw a validation error', async () => {
+					const { externalTool, expectedError } = setup();
+
+					const result: Promise<void> = service.validateCreate(externalTool);
+
+					await expect(result).rejects.toThrow(expectedError);
+				});
+			});
+
+			describe('when the medium is in status active', () => {
+				describe('when the medium is valid', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory.withMedium().build();
+						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+						configService.get.mockReturnValue(10);
+
+						return {
+							externalTool,
+						};
+					};
+
+					it('should not throw a validation error', async () => {
+						const { externalTool } = setup();
+
+						const result: Promise<void> = service.validateCreate(externalTool);
+
+						await expect(result).resolves.not.toThrow();
+					});
+				});
+
+				describe('when medium the has no mediumId', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory.withMedium({ mediumId: undefined }).build();
+
+						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+						configService.get.mockReturnValue(10);
+
+						const expectedError = new ValidationError(
+							`tool_medium_status_active: This medium is active but is not linked to an external medium.`
+						);
+
+						return {
+							externalTool,
+							expectedError,
+						};
+					};
+
+					it('should throw a validation error', async () => {
+						const { externalTool, expectedError } = setup();
+
+						const result: Promise<void> = service.validateCreate(externalTool);
+
+						await expect(result).rejects.toThrow(expectedError);
+					});
+				});
+			});
+
+			describe('when the medium is in status draft', () => {
+				describe('when the medium draft is valid', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withMedium({ status: ExternalToolMediumStatus.DRAFT })
+							.build();
+						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+						configService.get.mockReturnValue(10);
+
+						return {
+							externalTool,
+						};
+					};
+
+					it('should not throw a validation error', async () => {
+						const { externalTool } = setup();
+
+						const result: Promise<void> = service.validateCreate(externalTool);
+
+						await expect(result).resolves.not.toThrow();
+					});
+				});
+
+				describe('when the medium draft has no mediumId', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withMedium({ status: ExternalToolMediumStatus.DRAFT, mediumId: undefined })
+							.build();
+
+						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+						configService.get.mockReturnValue(10);
+
+						const expectedError = new ValidationError(
+							`tool_medium_status_draft: This medium is draft but is not linked to an external medium.`
+						);
+
+						return {
+							externalTool,
+							expectedError,
+						};
+					};
+
+					it('should throw a validation error', async () => {
+						const { externalTool, expectedError } = setup();
+
+						const result: Promise<void> = service.validateCreate(externalTool);
+
+						await expect(result).rejects.toThrow(expectedError);
+					});
+				});
+			});
+
+			describe('when the medium is in status template', () => {
+				describe('when the medium template is valid', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withMedium({ status: ExternalToolMediumStatus.TEMPLATE, mediumId: undefined })
+							.build();
+						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+						configService.get.mockReturnValue(10);
+
+						return {
+							externalTool,
+						};
+					};
+
+					it('should not throw a validation error', async () => {
+						const { externalTool } = setup();
+
+						const result: Promise<void> = service.validateCreate(externalTool);
+
+						await expect(result).resolves.not.toThrow();
+					});
+				});
+				describe('when the medium tempalte has mediumId', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withMedium({ status: ExternalToolMediumStatus.TEMPLATE })
+							.build();
+
+						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+						configService.get.mockReturnValue(10);
+
+						const expectedError = new ValidationError(
+							`tool_medium_status_template: This template cannot be linked to a specific medium.`
+						);
+
+						return {
+							externalTool,
+							expectedError,
+						};
+					};
+
+					it('should throw a validation error', async () => {
+						const { externalTool, expectedError } = setup();
+
+						const result: Promise<void> = service.validateCreate(externalTool);
+
+						await expect(result).rejects.toThrow(expectedError);
+					});
+				});
+			});
+		});
 	});
 
 	describe('validateUpdate', () => {
@@ -258,6 +656,30 @@ describe(ExternalToolValidationService.name, () => {
 		});
 
 		describe('when external tool config has oauth config', () => {
+			describe('when external tool is a template', () => {
+				const setup = () => {
+					const externalOauthToolTemplate: ExternalTool = externalToolFactory
+						.withMedium({ status: ExternalToolMediumStatus.TEMPLATE })
+						.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
+						.buildWithId();
+					externalToolService.findById.mockResolvedValue(externalOauthToolTemplate);
+
+					return { externalOauthToolTemplate };
+				};
+
+				it('should throw validation error', async () => {
+					const { externalOauthToolTemplate } = setup();
+
+					const result: Promise<void> = service.validateUpdate(externalOauthToolTemplate.id, externalOauthToolTemplate);
+
+					await expect(result).rejects.toThrow(
+						new ValidationError(
+							'tool_template_oauth2_invalid: No templates for tools with OAuth2 configuration allowed.'
+						)
+					);
+				});
+			});
+
 			describe('when config type was changed', () => {
 				const setup = () => {
 					const existingExternalOauthTool: ExternalTool = externalToolFactory
@@ -372,6 +794,475 @@ describe(ExternalToolValidationService.name, () => {
 				await service.validateCreate(externalTool);
 
 				expect(logoService.validateLogoSize).toHaveBeenCalledWith(externalTool);
+			});
+		});
+
+		describe('when the external tool is not an preferred tool', () => {
+			describe('when the external tool is set to be a preferred tool', () => {
+				describe('when the preferred tool has an icon name', () => {
+					const setup = () => {
+						const existingToolToUpdate = externalToolFactory.buildWithId({
+							isPreferred: false,
+						});
+
+						const toolWithNewParams = externalToolFactory.build({
+							...existingToolToUpdate.getProps(),
+							id: existingToolToUpdate.id,
+							isPreferred: true,
+							iconName: 'mdiAlert',
+						});
+
+						const existingPreferredTools: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(existingPreferredTools);
+						configService.get.mockReturnValue(10);
+
+						return {
+							existingToolToUpdateId: existingToolToUpdate.id,
+							toolWithNewParams,
+						};
+					};
+
+					it('should not throw an validation error', async () => {
+						const { existingToolToUpdateId, toolWithNewParams } = setup();
+
+						const result: Promise<void> = service.validateUpdate(existingToolToUpdateId, toolWithNewParams);
+
+						await expect(result).resolves.not.toThrow();
+					});
+				});
+
+				describe('when the preferred tool has undefined icon name', () => {
+					const setup = () => {
+						const existingToolToUpdate = externalToolFactory.buildWithId({
+							isPreferred: false,
+						});
+
+						const toolWithNewParams = externalToolFactory.build({
+							...existingToolToUpdate.getProps(),
+							id: existingToolToUpdate.id,
+							isPreferred: true,
+							iconName: undefined,
+						});
+
+						const existingPreferredTools: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(existingPreferredTools);
+						configService.get.mockReturnValue(10);
+
+						const expectedError = new ValidationError(
+							`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${toolWithNewParams.name} is missing.`
+						);
+
+						return {
+							existingToolToUpdateId: existingToolToUpdate.id,
+							toolWithNewParams,
+							expectedError,
+						};
+					};
+
+					it('should throw an validation error', async () => {
+						const { existingToolToUpdateId, toolWithNewParams, expectedError } = setup();
+
+						const result: Promise<void> = service.validateUpdate(existingToolToUpdateId, toolWithNewParams);
+
+						await expect(result).rejects.toThrow(expectedError);
+					});
+				});
+
+				describe('when the preferred tool has a blank icon name', () => {
+					const setup = () => {
+						const existingToolToUpdate = externalToolFactory.buildWithId({
+							isPreferred: false,
+						});
+
+						const toolWithNewParams = externalToolFactory.build({
+							...existingToolToUpdate.getProps(),
+							id: existingToolToUpdate.id,
+							isPreferred: true,
+							iconName: '',
+						});
+
+						const existingPreferredTools: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(existingPreferredTools);
+						configService.get.mockReturnValue(10);
+
+						const expectedError = new ValidationError(
+							`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${toolWithNewParams.name} is missing.`
+						);
+
+						return {
+							existingToolToUpdateId: existingToolToUpdate.id,
+							toolWithNewParams,
+							expectedError,
+						};
+					};
+
+					it('should throw an validation error', async () => {
+						const { existingToolToUpdateId, toolWithNewParams, expectedError } = setup();
+
+						const result: Promise<void> = service.validateUpdate(existingToolToUpdateId, toolWithNewParams);
+
+						await expect(result).rejects.toThrow(expectedError);
+					});
+				});
+
+				describe('when the preferred tool limits had already been reached', () => {
+					const setup = () => {
+						const existingToolToUpdate = externalToolFactory.buildWithId({
+							isPreferred: false,
+						});
+
+						const toolWithNewParams = externalToolFactory.build({
+							...existingToolToUpdate.getProps(),
+							id: existingToolToUpdate.id,
+							isPreferred: true,
+							iconName: 'mdiAlert',
+						});
+
+						const existingPreferredTools: Page<ExternalTool> = new Page<ExternalTool>(
+							externalToolFactory.buildListWithId(3, {
+								isPreferred: true,
+								iconName: 'mdiFlag',
+							}),
+							3
+						);
+
+						externalToolService.findExternalTools.mockResolvedValue(existingPreferredTools);
+						configService.get.mockReturnValue(3);
+
+						const expectedError = new ValidationError(
+							`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
+						);
+
+						return {
+							existingToolToUpdateId: existingToolToUpdate.id,
+							toolWithNewParams,
+							expectedError,
+						};
+					};
+
+					it('should throw an validation error', async () => {
+						const { existingToolToUpdateId, toolWithNewParams, expectedError } = setup();
+
+						const result: Promise<void> = service.validateUpdate(existingToolToUpdateId, toolWithNewParams);
+
+						await expect(result).rejects.toThrow(expectedError);
+						expect(externalToolService.findExternalTools).toBeCalledWith({ isPreferred: true });
+					});
+				});
+
+				describe('when the preferred tool limits had already been exceeded', () => {
+					const setup = () => {
+						const existingToolToUpdate = externalToolFactory.buildWithId({
+							isPreferred: false,
+						});
+
+						const toolWithNewParams = externalToolFactory.build({
+							...existingToolToUpdate.getProps(),
+							id: existingToolToUpdate.id,
+							isPreferred: true,
+							iconName: 'mdiAlert',
+						});
+
+						const existingPreferredTools: Page<ExternalTool> = new Page<ExternalTool>(
+							externalToolFactory.buildListWithId(3, {
+								isPreferred: true,
+								iconName: 'mdiFlag',
+							}),
+							5
+						);
+
+						externalToolService.findExternalTools.mockResolvedValue(existingPreferredTools);
+						configService.get.mockReturnValue(3);
+
+						const expectedError = new ValidationError(
+							`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
+						);
+
+						return {
+							existingToolToUpdateId: existingToolToUpdate.id,
+							toolWithNewParams,
+							expectedError,
+						};
+					};
+
+					it('should throw an validation error', async () => {
+						const { existingToolToUpdateId, toolWithNewParams, expectedError } = setup();
+
+						const result: Promise<void> = service.validateUpdate(existingToolToUpdateId, toolWithNewParams);
+
+						await expect(result).rejects.toThrow(expectedError);
+						expect(externalToolService.findExternalTools).toBeCalledWith({ isPreferred: true });
+					});
+				});
+			});
+		});
+
+		describe('when the external tool is already an preferred tool', () => {
+			describe('when the preferred tool limit is reached', () => {
+				const setup = () => {
+					const existingToolToUpdate = externalToolFactory.buildWithId({
+						isPreferred: true,
+						iconName: 'mdiAlert',
+					});
+
+					const toolWithNewParams = externalToolFactory.build({
+						...existingToolToUpdate.getProps(),
+						id: existingToolToUpdate.id,
+						name: 'new-name-tool',
+					});
+
+					const existingOtherPreferredTools = externalToolFactory.buildListWithId(3, {
+						isPreferred: true,
+						iconName: 'mdiFlag',
+					});
+
+					const existingTools: Page<ExternalTool> = new Page<ExternalTool>(
+						[existingToolToUpdate, ...existingOtherPreferredTools],
+						4
+					);
+
+					externalToolService.findExternalTools.mockResolvedValue(existingTools);
+					configService.get.mockReturnValue(4);
+
+					return {
+						existingToolToUpdateId: existingToolToUpdate.id,
+						toolWithNewParams,
+					};
+				};
+
+				it('should not throw any error', async () => {
+					const { existingToolToUpdateId, toolWithNewParams } = setup();
+
+					const result: Promise<void> = service.validateUpdate(existingToolToUpdateId, toolWithNewParams);
+
+					await expect(result).resolves.not.toThrow();
+					expect(externalToolService.findExternalTools).toBeCalledWith({ isPreferred: true });
+				});
+			});
+
+			describe('when the preferred tool limits had already been exceeded', () => {
+				const setup = () => {
+					const existingToolToUpdate = externalToolFactory.buildWithId({
+						isPreferred: true,
+						iconName: 'mdiAlert',
+					});
+
+					const toolWithNewParams = externalToolFactory.build({
+						...existingToolToUpdate.getProps(),
+						id: existingToolToUpdate.id,
+						name: 'new-name-tool',
+					});
+
+					const existingOtherPreferredTools = externalToolFactory.buildListWithId(3, {
+						isPreferred: true,
+						iconName: 'mdiFlag',
+					});
+
+					const existingTools: Page<ExternalTool> = new Page<ExternalTool>(
+						[existingToolToUpdate, ...existingOtherPreferredTools],
+						4
+					);
+
+					externalToolService.findExternalTools.mockResolvedValue(existingTools);
+					configService.get.mockReturnValue(2);
+
+					const expectedError = new ValidationError(
+						`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
+					);
+
+					return {
+						existingToolToUpdateId: existingToolToUpdate.id,
+						toolWithNewParams,
+						expectedError,
+					};
+				};
+
+				it('should not throw any error', async () => {
+					const { existingToolToUpdateId, toolWithNewParams } = setup();
+
+					const result: Promise<void> = service.validateUpdate(existingToolToUpdateId, toolWithNewParams);
+
+					await expect(result).resolves.not.toThrow();
+					expect(externalToolService.findExternalTools).toBeCalledWith({ isPreferred: true });
+				});
+			});
+		});
+
+		describe('when the external tool has medium', () => {
+			describe('when the medium has no status', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.withMedium({ status: undefined }).buildWithId();
+
+					externalToolService.findById.mockResolvedValue(externalTool);
+					const expectedError = new ValidationError(
+						`tool_medium_status: This medium status must be one of: active, draft or template.`
+					);
+					return {
+						externalTool,
+						externalToolId: externalTool.id,
+						expectedError,
+					};
+				};
+
+				it('should throw a validation error', async () => {
+					const { externalToolId, externalTool, expectedError } = setup();
+
+					const result: Promise<void> = service.validateUpdate(externalToolId, externalTool);
+
+					await expect(result).rejects.toThrow(expectedError);
+				});
+			});
+			describe('when the medium is in status active', () => {
+				describe('when the medium is valid', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory.withMedium({}).buildWithId();
+
+						externalToolService.findById.mockResolvedValue(externalTool);
+
+						return {
+							externalTool,
+							externalToolId: externalTool.id,
+						};
+					};
+
+					it('should not throw a validation error', async () => {
+						const { externalToolId, externalTool } = setup();
+
+						const result: Promise<void> = service.validateUpdate(externalToolId, externalTool);
+
+						await expect(result).resolves.not.toThrow();
+					});
+				});
+
+				describe('when medium has no mediumId', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory.withMedium({ mediumId: undefined }).buildWithId();
+
+						externalToolService.findById.mockResolvedValue(externalTool);
+						const expectedError = new ValidationError(
+							`tool_medium_status_active: This medium is active but is not linked to an external medium.`
+						);
+						return {
+							externalTool,
+							externalToolId: externalTool.id,
+							expectedError,
+						};
+					};
+
+					it('should throw a validation error', async () => {
+						const { externalToolId, externalTool, expectedError } = setup();
+
+						const result: Promise<void> = service.validateUpdate(externalToolId, externalTool);
+						await expect(result).rejects.toThrow(expectedError);
+					});
+				});
+			});
+
+			describe('when the medium is in status draft', () => {
+				describe('when the medium draft is valid', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withMedium({ status: ExternalToolMediumStatus.DRAFT })
+							.buildWithId();
+
+						externalToolService.findById.mockResolvedValue(externalTool);
+
+						return {
+							externalTool,
+							externalToolId: externalTool.id,
+						};
+					};
+
+					it('should not throw a validation error', async () => {
+						const { externalToolId, externalTool } = setup();
+
+						const result: Promise<void> = service.validateUpdate(externalToolId, externalTool);
+
+						await expect(result).resolves.not.toThrow();
+					});
+				});
+
+				describe('when the medium draft has no mediumId', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withMedium({ status: ExternalToolMediumStatus.DRAFT, mediumId: undefined })
+							.buildWithId();
+
+						externalToolService.findById.mockResolvedValue(externalTool);
+
+						const expectedError = new ValidationError(
+							`tool_medium_status_draft: This medium is draft but is not linked to an external medium.`
+						);
+
+						return {
+							externalTool,
+							externalToolId: externalTool.id,
+							expectedError,
+						};
+					};
+
+					it('should throw a validation error', async () => {
+						const { externalToolId, externalTool, expectedError } = setup();
+
+						const result: Promise<void> = service.validateUpdate(externalToolId, externalTool);
+
+						await expect(result).rejects.toThrow(expectedError);
+					});
+				});
+			});
+
+			describe('when the medium is in status template', () => {
+				describe('when the medium template is valid', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withMedium({ status: ExternalToolMediumStatus.TEMPLATE, mediumId: undefined })
+							.buildWithId();
+
+						externalToolService.findById.mockResolvedValue(externalTool);
+
+						return {
+							externalTool,
+							externalToolId: externalTool.id,
+						};
+					};
+					it('should not throw a validation error', async () => {
+						const { externalToolId, externalTool } = setup();
+
+						const result: Promise<void> = service.validateUpdate(externalToolId, externalTool);
+
+						await expect(result).resolves.not.toThrow();
+					});
+				});
+				describe('when the medium tempalte has mediumId', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withMedium({ status: ExternalToolMediumStatus.TEMPLATE })
+							.buildWithId();
+
+						externalToolService.findById.mockResolvedValue(externalTool);
+
+						const expectedError = new ValidationError(
+							`tool_medium_status_template: This template cannot be linked to a specific medium.`
+						);
+
+						return {
+							externalTool,
+							externalToolId: externalTool.id,
+							expectedError,
+						};
+					};
+
+					it('should throw a validation error', async () => {
+						const { externalToolId, externalTool, expectedError } = setup();
+
+						const result: Promise<void> = service.validateUpdate(externalToolId, externalTool);
+
+						await expect(result).rejects.toThrow(expectedError);
+					});
+				});
 			});
 		});
 	});

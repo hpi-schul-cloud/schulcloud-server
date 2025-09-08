@@ -1,9 +1,10 @@
 import { EntityId } from '@shared/domain/types';
+import { VideoConferenceScope } from '../../domain';
 
 export interface ScopeInfo {
 	scopeId: EntityId;
 
-	scopeName: string;
+	scopeName: VideoConferenceScope;
 
 	title: string;
 

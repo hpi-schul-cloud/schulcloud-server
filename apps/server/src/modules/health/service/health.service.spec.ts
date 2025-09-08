@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 
-import { setupEntities } from '@shared/testing';
-import { HealthService } from './health.service';
-import { HealthCheckRepo } from '../repo';
+import { setupEntities } from '@testing/database';
 import { HealthCheck } from '../domain';
+import { HealthCheckRepo } from '../repo';
 import { HealthCheckEntity } from '../repo/entity';
+import { HealthService } from './health.service';
 
 describe(HealthService.name, () => {
 	const testId = 'test_health_check_id';

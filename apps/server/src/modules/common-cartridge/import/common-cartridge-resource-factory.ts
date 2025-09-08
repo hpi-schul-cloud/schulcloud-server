@@ -1,9 +1,10 @@
-import { sanitizeRichText } from '@shared/controller';
+import { sanitizeRichText } from '@shared/controller/transformer';
 import { InputFormat } from '@shared/domain/types';
 import AdmZip from 'adm-zip';
-import { JSDOM } from 'jsdom';
-import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
+import { load } from 'cheerio';
+import { CommonCartridgeXmlResourceType } from './common-cartridge-import.enums';
 import {
+	CommonCartridgeFileResourceProps,
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceProps,
 	CommonCartridgeWebContentResourceProps,
@@ -25,10 +26,11 @@ export class CommonCartridgeResourceFactory {
 		const { title } = organization;
 
 		switch (organization.resourceType) {
-			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
-				return this.createWebLinkResource(content, title);
-			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
-				return this.createWebContentResource(content, title, inputFormat);
+			case CommonCartridgeXmlResourceType.WEB_LINK_CC11:
+			case CommonCartridgeXmlResourceType.WEB_LINK_CC13:
+				return this.createWebLinkResource(content, title, organization.resourceType);
+			case CommonCartridgeXmlResourceType.WEB_CONTENT:
+				return this.buildWebContentResourceFromPath(content, organization.resourcePath, inputFormat, title);
 			default:
 				return undefined;
 		}
@@ -41,49 +43,73 @@ export class CommonCartridgeResourceFactory {
 		return isValidOrganization;
 	}
 
-	private createWebLinkResource(content: string, title: string): CommonCartridgeWebLinkResourceProps | undefined {
-		const document = this.tryCreateDocument(content, 'text/xml');
+	private createWebLinkResource(
+		content: string,
+		title: string,
+		type: CommonCartridgeXmlResourceType.WEB_LINK_CC11 | CommonCartridgeXmlResourceType.WEB_LINK_CC13
+	): CommonCartridgeWebLinkResourceProps | undefined {
+		const document = load(content, { xml: true });
+		const url = document('webLink > url').attr('href') ?? '';
 
-		if (!document) {
+		if (url === '') {
 			return undefined;
 		}
 
-		const url = document.querySelector('webLink > url')?.getAttribute('href') ?? '';
-
 		return {
-			type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
+			type,
 			title,
 			url,
 		};
 	}
 
-	private createWebContentResource(
+	private buildWebContentResourceFromPath(
 		content: string,
-		title: string,
-		inputFormat: InputFormat
-	): CommonCartridgeWebContentResourceProps | undefined {
-		const document = this.tryCreateDocument(content, 'text/html');
+		resourcePath: string,
+		inputFormat: InputFormat,
+		title: string
+	): CommonCartridgeResourceProps | undefined {
+		if (this.isFile(resourcePath)) {
+			return this.createFileContentResource(resourcePath, title);
+		} else {
+			return this.createWebContentResource(content, inputFormat);
+		}
+	}
 
-		if (!document) {
+	private isFile(resourcePath: string): boolean {
+		return !resourcePath.endsWith('.html');
+	}
+
+	private createFileContentResource(resourcePath: string, title: string): CommonCartridgeFileResourceProps | undefined {
+		const fileName = resourcePath.split('/').pop() ?? 'unnamed';
+		const zipEntry = this.archive.getEntry(resourcePath);
+		const buffer = zipEntry?.getData();
+
+		if (!(buffer instanceof Buffer) || buffer.length === 0) {
 			return undefined;
 		}
 
-		const html = sanitizeRichText(document.body.innerHTML?.trim() ?? '', inputFormat);
+		const file = new File([buffer], fileName, {});
 
 		return {
-			type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-			title,
-			html,
+			type: CommonCartridgeXmlResourceType.FILE,
+			href: resourcePath,
+			fileName,
+			file,
+			description: title,
 		};
 	}
 
-	private tryCreateDocument(content: string, contentType: 'text/html' | 'text/xml'): Document | undefined {
-		try {
-			const parser = new JSDOM(content, { contentType }).window.document;
+	private createWebContentResource(
+		content: string,
+		inputFormat: InputFormat
+	): CommonCartridgeWebContentResourceProps | undefined {
+		const document = load(content);
+		const unsanitizedHtml = document('body').html()?.trim() ?? content;
+		const sanitizedHtml = sanitizeRichText(unsanitizedHtml, inputFormat);
 
-			return parser;
-		} catch (error) {
-			return undefined;
-		}
+		return {
+			type: CommonCartridgeXmlResourceType.WEB_CONTENT,
+			html: sanitizedHtml,
+		};
 	}
 }

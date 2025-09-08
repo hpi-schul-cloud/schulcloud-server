@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { AuthorizationContextBuilder } from '@modules/authorization';
-import { AuthorizableReferenceType, AuthorizationReferenceService } from '@modules/authorization/domain';
+import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizationReferenceService } from '@modules/authorization-reference';
 import { CopyStatus } from '@modules/copy-helper';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
@@ -14,7 +14,7 @@ export class CourseCopyUC {
 		private readonly courseCopyService: CourseCopyService
 	) {}
 
-	async copyCourse(userId: EntityId, courseId: EntityId): Promise<CopyStatus> {
+	public async copyCourse(userId: EntityId, courseId: EntityId): Promise<CopyStatus> {
 		this.checkFeatureEnabled();
 
 		const context = AuthorizationContextBuilder.write([Permission.COURSE_CREATE]);
@@ -25,7 +25,7 @@ export class CourseCopyUC {
 		return result;
 	}
 
-	private checkFeatureEnabled() {
+	private checkFeatureEnabled(): void {
 		// @hpi-schul-cloud/commons is deprecated way to get envirements
 		const enabled = Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean;
 		if (!enabled) {

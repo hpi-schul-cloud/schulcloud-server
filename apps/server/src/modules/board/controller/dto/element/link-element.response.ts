@@ -1,12 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { ContentElementType } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class LinkElementContent {
-	constructor({ url, title, description, imageUrl }: LinkElementContent) {
+	constructor({ url, title, description, originalImageUrl, imageUrl }: LinkElementContent) {
 		this.url = url;
 		this.title = title;
 		this.description = description;
+		this.originalImageUrl = originalImageUrl;
 		this.imageUrl = imageUrl;
 	}
 
@@ -20,6 +22,9 @@ export class LinkElementContent {
 	description?: string;
 
 	@ApiPropertyOptional()
+	originalImageUrl?: string;
+
+	@ApiPropertyOptional()
 	imageUrl?: string;
 }
 
@@ -31,7 +36,7 @@ export class LinkElementResponse {
 		this.type = type;
 	}
 
-	@ApiProperty({ pattern: '[a-f0-9]{24}' })
+	@ApiProperty({ pattern: bsonStringPattern })
 	id: string;
 
 	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })

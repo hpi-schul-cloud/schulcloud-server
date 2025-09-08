@@ -1,5 +1,5 @@
-import { schoolFactory, schoolYearFactory } from '../../testing';
-import { MissingYearsLoggableException } from '../error';
+import { schoolFactory, schoolYearDoFactory } from '../../testing';
+import { MissingYearsLoggableException } from '../loggable';
 import { SchoolYearHelper } from './school-year.helper';
 
 describe('SchoolYearHelper', () => {
@@ -11,7 +11,7 @@ describe('SchoolYearHelper', () => {
 	describe('computeActiveAndLastAndNextYear', () => {
 		describe('when all needed years exist', () => {
 			const setup = () => {
-				const schoolYears = schoolYearFactory.withStartYear(2019).buildList(3);
+				const schoolYears = schoolYearDoFactory.withStartYear(2019).buildList(3);
 				const school = schoolFactory.build({ currentYear: schoolYears[1] });
 
 				return { school, schoolYears };
@@ -32,7 +32,7 @@ describe('SchoolYearHelper', () => {
 
 		describe('when a needed year is missing', () => {
 			const setup = () => {
-				const schoolYears = schoolYearFactory.withStartYear(2019).buildList(2);
+				const schoolYears = schoolYearDoFactory.withStartYear(2019).buildList(2);
 				const school = schoolFactory.build();
 
 				return { school, schoolYears };
@@ -51,7 +51,7 @@ describe('SchoolYearHelper', () => {
 	describe('computeActiveYear', () => {
 		describe('when school has a current year', () => {
 			const setup = () => {
-				const schoolYears = schoolYearFactory.withStartYear(2019).buildList(3);
+				const schoolYears = schoolYearDoFactory.withStartYear(2019).buildList(3);
 				const school = schoolFactory.build({ currentYear: schoolYears[1] });
 
 				return { school, schoolYears };
@@ -69,7 +69,7 @@ describe('SchoolYearHelper', () => {
 		describe('when school does not have a current year', () => {
 			describe('when there exists a fitting year', () => {
 				const setup = () => {
-					const schoolYears = schoolYearFactory.withStartYear(2019).buildList(3);
+					const schoolYears = schoolYearDoFactory.withStartYear(2019).buildList(3);
 					const school = schoolFactory.build();
 
 					return { school, schoolYears };
@@ -86,7 +86,7 @@ describe('SchoolYearHelper', () => {
 
 			describe('when there exists no fitting year', () => {
 				const setup = () => {
-					const schoolYears = schoolYearFactory.withStartYear(2012).buildList(3);
+					const schoolYears = schoolYearDoFactory.withStartYear(2012).buildList(3);
 					const school = schoolFactory.build();
 
 					return { school, schoolYears };
@@ -104,7 +104,7 @@ describe('SchoolYearHelper', () => {
 	describe('computeLastYear', () => {
 		describe('when there exists a fitting year', () => {
 			const setup = () => {
-				const schoolYears = schoolYearFactory.withStartYear(2019).buildList(3);
+				const schoolYears = schoolYearDoFactory.withStartYear(2019).buildList(3);
 				const activeYear = schoolYears[1];
 
 				return { schoolYears, activeYear };
@@ -121,7 +121,7 @@ describe('SchoolYearHelper', () => {
 
 		describe('when there exists no fitting year', () => {
 			const setup = () => {
-				const schoolYears = schoolYearFactory.withStartYear(2012).buildList(3);
+				const schoolYears = schoolYearDoFactory.withStartYear(2012).buildList(3);
 				const activeYear = schoolYears[0];
 
 				return { schoolYears, activeYear };
@@ -138,7 +138,7 @@ describe('SchoolYearHelper', () => {
 	describe('computeNextYear', () => {
 		describe('when there exists a fitting year', () => {
 			const setup = () => {
-				const schoolYears = schoolYearFactory.withStartYear(2019).buildList(3);
+				const schoolYears = schoolYearDoFactory.withStartYear(2019).buildList(3);
 				const activeYear = schoolYears[1];
 
 				return { schoolYears, activeYear };
@@ -155,7 +155,7 @@ describe('SchoolYearHelper', () => {
 
 		describe('when there exists no fitting year', () => {
 			const setup = () => {
-				const schoolYears = schoolYearFactory.withStartYear(2012).buildList(3);
+				const schoolYears = schoolYearDoFactory.withStartYear(2012).buildList(3);
 				const activeYear = schoolYears[2];
 
 				return { schoolYears, activeYear };

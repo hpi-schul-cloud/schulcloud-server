@@ -7,11 +7,8 @@ metadata:
     app: api
 spec:
   selector:
-    matchExpressions:
-      - key: app.kubernetes.io/name
-        operator: in
-        values:
-          - api-svc
+    matchLabels:
+      app.kubernetes.io/name: api-svc
   endpoints:
   - path: /metrics
     port: api-metrics

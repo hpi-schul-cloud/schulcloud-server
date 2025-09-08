@@ -1,17 +1,17 @@
 import { IError, RpcMessage } from '@infra/rabbitmq';
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
-import { ApiValidationError, BusinessError } from '@shared/common';
+import { WsException } from '@nestjs/websockets';
+import { ApiValidationError, BusinessError } from '@shared/common/error';
 import { Response } from 'express';
 import _ from 'lodash';
-import { WsException } from '@nestjs/websockets';
+import { DomainErrorHandler } from '../domain';
 import { ApiValidationErrorResponse, ErrorResponse } from '../dto';
 import { FeathersError } from '../interface';
 import { ErrorUtils } from '../utils';
-import { DomainErrorHandler } from '../domain';
 
 // We are receiving rmq instead of rpc and rmq is missing in context type.
 // @nestjs/common export type ContextType = 'http' | 'ws' | 'rpc';
-enum UseableContextType {
+export enum UseableContextType {
 	http = 'http',
 	rpc = 'rpc',
 	ws = 'ws',
@@ -23,18 +23,20 @@ export class GlobalErrorFilter<E extends IError> implements ExceptionFilter<E> {
 	constructor(private readonly domainErrorHandler: DomainErrorHandler) {}
 
 	catch(error: E, host: ArgumentsHost): void | RpcMessage<undefined> | WsException {
-		this.domainErrorHandler.exec(error);
-
 		const contextType = host.getType<UseableContextType>();
 		switch (contextType) {
 			case UseableContextType.http:
+				this.domainErrorHandler.execHttpContext(error, host.switchToHttp());
 				return this.sendHttpResponse(error, host);
 			case UseableContextType.rpc:
 			case UseableContextType.rmq:
+				this.domainErrorHandler.exec(error);
 				return this.sendRpcResponse(error);
 			case UseableContextType.ws:
+				this.domainErrorHandler.exec(error);
 				return this.sendWsResponse(error);
 			default:
+				this.domainErrorHandler.exec(error);
 				return undefined;
 		}
 	}

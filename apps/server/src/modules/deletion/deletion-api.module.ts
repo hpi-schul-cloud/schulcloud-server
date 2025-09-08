@@ -1,34 +1,18 @@
+import { LoggerModule } from '@core/logger';
+import { SagaModule } from '@modules/saga';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
-import { CqrsModule } from '@nestjs/cqrs';
-import { AuthenticationModule } from '@modules/authentication';
-import { RocketChatUserModule } from '@modules/rocketchat-user';
-import { ClassModule } from '@modules/class';
-import { NewsModule } from '@modules/news';
-import { TeamsModule } from '@modules/teams';
-import { PseudonymModule } from '@modules/pseudonym';
-import { FilesModule } from '@modules/files';
-import { CalendarModule } from '@src/infra/calendar';
 import { DeletionModule } from '.';
+import { DeletionBatchController } from './api/controller/deletion-batch.controller';
+import { DeletionExecutionController } from './api/controller/deletion-execution.controller';
+import { DeletionRequestController } from './api/controller/deletion-request.controller';
 import { DeletionRequestUc } from './api/uc';
-import { DeletionExecutionsController } from './api/controller/deletion-executions.controller';
-import { DeletionRequestsController } from './api/controller/deletion-requests.controller';
+import { DeletionBatchUc } from './api/uc/deletion-batch.uc';
+import { AccountModule } from '../account';
 
 @Module({
-	imports: [
-		CalendarModule,
-		CqrsModule,
-		DeletionModule,
-		LoggerModule,
-		AuthenticationModule,
-		ClassModule,
-		NewsModule,
-		TeamsModule,
-		PseudonymModule,
-		FilesModule,
-		RocketChatUserModule,
-	],
-	controllers: [DeletionRequestsController, DeletionExecutionsController],
-	providers: [DeletionRequestUc],
+	imports: [LoggerModule, DeletionModule, SagaModule, UserModule, AccountModule],
+	controllers: [DeletionRequestController, DeletionExecutionController, DeletionBatchController],
+	providers: [DeletionRequestUc, DeletionBatchUc],
 })
 export class DeletionApiModule {}

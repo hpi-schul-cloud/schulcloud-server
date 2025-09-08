@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { EntityId, SchoolFeature } from '@shared/domain/types';
-import { LegacySchoolRepo } from '@shared/repo';
-import { FederalStateService } from './federal-state.service';
+import { FileStorageType } from '@modules/school';
+import { FederalStateService, SchoolFeature, SchoolYearService } from '@modules/school/domain';
+import { StorageProviderRepo } from '@modules/school/repo';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+import { LegacySchoolDo } from '../domain';
+import { LegacySchoolRepo } from '../repo';
 import { SchoolValidationService } from './validation';
-import { SchoolYearService } from './school-year.service';
 
 /**
  * @deprecated because it uses the deprecated LegacySchoolDo.
@@ -15,7 +16,8 @@ export class LegacySchoolService {
 		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly schoolValidationService: SchoolValidationService,
 		private readonly federalStateService: FederalStateService,
-		private readonly schoolYearService: SchoolYearService
+		private readonly schoolYearService: SchoolYearService,
+		private readonly storageProviderRepo: StorageProviderRepo
 	) {}
 
 	async hasFeature(schoolId: EntityId, feature: SchoolFeature): Promise<boolean> {
@@ -59,11 +61,25 @@ export class LegacySchoolService {
 		return ret;
 	}
 
+	/**
+	 * @deprecated
+	 * this method is only used for the creation of Cypress test data
+	 * please do not use this method for other purposes
+	 */
 	async createSchool(props: { name: string; federalStateName: string }): Promise<LegacySchoolDo> {
-		const federalState = await this.federalStateService.findFederalStateByName(props.federalStateName);
-		const schoolYear = await this.schoolYearService.getCurrentOrNextSchoolYear();
+		const [federalState, schoolYear, storageProviders] = await Promise.all([
+			this.federalStateService.findFederalStateByName(props.federalStateName),
+			this.schoolYearService.getCurrentOrNextSchoolYear(),
+			this.storageProviderRepo.findAll(),
+		]);
+
+		if (!Array.isArray(storageProviders) || storageProviders.length === 0) {
+			throw new InternalServerErrorException('No storage providers found');
+		}
+
 		const defaults = {
-			// fileStorageType: 'awsS3',
+			storageProvider: storageProviders[0].id,
+			fileStorageType: FileStorageType.AWS_S3,
 			schoolYear,
 			permissions: {
 				teacher: {

@@ -28,6 +28,8 @@ export class OauthConfig {
 
 	jwksEndpoint: string;
 
+	endSessionEndpoint?: string;
+
 	constructor(oauthConfigDto: OauthConfig) {
 		this.clientId = oauthConfigDto.clientId;
 		this.clientSecret = oauthConfigDto.clientSecret;
@@ -42,5 +44,6 @@ export class OauthConfig {
 		this.logoutEndpoint = oauthConfigDto.logoutEndpoint;
 		this.issuer = oauthConfigDto.issuer;
 		this.jwksEndpoint = oauthConfigDto.jwksEndpoint;
+		this.endSessionEndpoint = oauthConfigDto.endSessionEndpoint;
 	}
 }

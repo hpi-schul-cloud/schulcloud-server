@@ -1,10 +1,14 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing/school-entity.factory';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections, schoolEntityFactory, shareTokenFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ShareTokenContextType } from '../domainobject/share-token.do';
+import { ShareToken } from '../entity/share-token.entity';
+import { shareTokenDOFactory } from '../testing/share-token.do.factory';
 import { ShareTokenRepo } from './share-token.repo';
 
 describe('ShareTokenRepo', () => {
@@ -14,7 +18,7 @@ describe('ShareTokenRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [ShareToken, SchoolEntity] })],
 			providers: [
 				ShareTokenRepo,
 				{
@@ -37,7 +41,7 @@ describe('ShareTokenRepo', () => {
 
 	describe('findOneByToken', () => {
 		it('should find a shareToken by its token', async () => {
-			const shareToken = shareTokenFactory.build();
+			const shareToken = shareTokenDOFactory.build();
 			await repo.save(shareToken);
 
 			const result = await repo.findOneByToken(shareToken.token);
@@ -49,7 +53,7 @@ describe('ShareTokenRepo', () => {
 		it('should include context id', async () => {
 			const school = schoolEntityFactory.build();
 			await em.persistAndFlush([school]);
-			const shareToken = shareTokenFactory.build({
+			const shareToken = shareTokenDOFactory.build({
 				context: { contextType: ShareTokenContextType.School, contextId: school.id },
 			});
 			await repo.save(shareToken);

@@ -1,14 +1,16 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
-import { Action, AuthorizationService } from '@modules/authorization';
+import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { setupEntities, userFactory as userEntityFactory } from '@shared/testing';
-import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
+import { setupEntities } from '@testing/database';
 import { MediaBoard, MediaBoardNodeFactory, MediaExternalToolElement, MediaLine } from '../../domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
@@ -29,7 +31,7 @@ describe(MediaElementUc.name, () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -86,12 +88,13 @@ describe(MediaElementUc.name, () => {
 	describe('moveElement', () => {
 		describe('when the user moves a media element', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaElement).mockResolvedValueOnce(mediaLine);
+				boardNodeService.findAnyMediaElementById.mockResolvedValueOnce(mediaElement);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine);
 
 				return {
 					user,
@@ -105,7 +108,7 @@ describe(MediaElementUc.name, () => {
 
 				await uc.moveElement(user.id, mediaElement.id, mediaLine.id, 1);
 
-				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(MediaExternalToolElement, mediaElement.id);
+				expect(boardNodeService.findAnyMediaElementById).toHaveBeenCalledWith(mediaElement.id);
 				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(MediaLine, mediaLine.id);
 			});
 
@@ -114,7 +117,11 @@ describe(MediaElementUc.name, () => {
 
 				await uc.moveElement(user.id, mediaElement.id, mediaLine.id, 1);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaLine,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should move the element', async () => {
@@ -128,7 +135,7 @@ describe(MediaElementUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
@@ -154,7 +161,7 @@ describe(MediaElementUc.name, () => {
 	describe('createElement', () => {
 		describe('when the user creates a not existing media element', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
@@ -196,7 +203,11 @@ describe(MediaElementUc.name, () => {
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaLine,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should find the board', async () => {
@@ -252,7 +263,7 @@ describe(MediaElementUc.name, () => {
 
 		describe('when the user creates an existing media element', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
@@ -290,7 +301,7 @@ describe(MediaElementUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
@@ -316,11 +327,11 @@ describe(MediaElementUc.name, () => {
 	describe('deleteElement', () => {
 		describe('when the user deletes a media element', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaElement);
+				boardNodeService.findAnyMediaElementById.mockResolvedValueOnce(mediaElement);
 
 				return {
 					user,
@@ -333,7 +344,11 @@ describe(MediaElementUc.name, () => {
 
 				await uc.deleteElement(user.id, mediaElement.id);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaElement, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaElement,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should delete the element', async () => {
@@ -347,7 +362,7 @@ describe(MediaElementUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
 				configService.get.mockReturnValueOnce(false);

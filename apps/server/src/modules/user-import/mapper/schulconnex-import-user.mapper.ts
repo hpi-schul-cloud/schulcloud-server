@@ -1,10 +1,11 @@
 import { SchulconnexGroupType, SchulconnexGruppenResponse, SchulconnexResponse } from '@infra/schulconnex-client';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { SchulconnexResponseMapper } from '@modules/provisioning';
+import { RoleName } from '@modules/role';
+import { SchoolEntity } from '@modules/school/repo';
 import { System } from '@modules/system';
-import { SystemEntity } from '@modules/system/entity';
-import { ImportUser, SchoolEntity } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
+import { SystemEntity } from '@modules/system/repo';
+import { ImportUser } from '../entity';
 
 export class SchulconnexImportUserMapper {
 	public static mapDataToUserImportEntities(
@@ -14,7 +15,8 @@ export class SchulconnexImportUserMapper {
 		em: EntityManager
 	): ImportUser[] {
 		const importUsers: ImportUser[] = response.map((externalUser: SchulconnexResponse): ImportUser => {
-			const role: RoleName = SchulconnexResponseMapper.mapSanisRoleToRoleName(externalUser);
+			const role: RoleName | undefined = SchulconnexResponseMapper.mapSchulconnexRoleToRoleName(externalUser);
+
 			const groups: SchulconnexGruppenResponse[] | undefined = externalUser.personenkontexte[0]?.gruppen?.filter(
 				(group) => group.gruppe.typ === SchulconnexGroupType.CLASS
 			);
@@ -25,10 +27,12 @@ export class SchulconnexImportUserMapper {
 				ldapDn: `uid=${externalUser.person.name.vorname}.${externalUser.person.name.familienname}.${externalUser.pid},`,
 				externalId: externalUser.pid,
 				firstName: externalUser.person.name.vorname,
+				preferredName: externalUser.person.name.rufname,
 				lastName: externalUser.person.name.familienname,
 				roleNames: ImportUser.isImportUserRole(role) ? [role] : [],
 				email: `${externalUser.person.name.vorname}.${externalUser.person.name.familienname}.${externalUser.pid}@schul-cloud.org`,
 				classNames: groups ? SchulconnexResponseMapper.mapToGroupNameList(groups) : [],
+				externalRoleNames: [externalUser.personenkontexte[0].rolle],
 			});
 
 			return importUser;

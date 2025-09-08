@@ -1,37 +1,32 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { PrivacyProtect, SanitizeHtml } from '@shared/controller';
-import { IsBoolean, IsString, IsOptional, Matches, IsEmail } from 'class-validator';
-import { passwordPattern } from '../password-pattern';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { SanitizeHtml } from '@shared/controller/transformer';
+import { PrivacyProtect } from '@shared/controller/validator';
+import { IsBoolean, IsEmail, IsOptional, IsString, Matches } from 'class-validator';
+import { passwordPattern } from '../../../domain';
 
 export class AccountByIdBodyParams {
 	@IsOptional()
 	@IsString()
 	@SanitizeHtml()
 	@IsEmail()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'The new user name for the user.',
-		required: false,
-		nullable: true,
 	})
-	username?: string;
+	public username?: string;
 
 	@PrivacyProtect()
 	@IsOptional()
 	@IsString()
 	@Matches(passwordPattern)
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'The new password for the user.',
-		required: false,
-		nullable: true,
 	})
-	password?: string;
+	public password?: string;
 
 	@IsOptional()
 	@IsBoolean()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'The new activation state of the user.',
-		required: false,
-		nullable: true,
 	})
-	activated?: boolean;
+	public activated?: boolean;
 }

@@ -8,11 +8,12 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { LegacyLogger } from '@src/core/logger';
-import { FwuLearningContentsModule } from '@modules/fwu-learning-contents';
-import { enableOpenApiDocs } from '@src/shared/controller/swagger';
+import { LegacyLogger } from '@core/logger';
+import { FwuLearningContentsModule } from '@modules/fwu-learning-contents/fwu-learning-contents.app.module';
+import { enableOpenApiDocs } from './helpers';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
 	// create the NestJS application on a seperate express instance
@@ -26,6 +27,7 @@ async function bootstrap() {
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 	enableOpenApiDocs(nestApp, 'docs');
+	nestApp.use(createRequestLoggerMiddleware());
 
 	await nestApp.init();
 

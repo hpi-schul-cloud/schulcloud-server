@@ -1,64 +1,66 @@
+/* eslint-disable max-classes-per-file */
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { PrivacyProtect } from '@shared/controller/validator';
 import { EntityId } from '@shared/domain/types';
-import { IsBoolean, IsDate, IsMongoId, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
-import { PrivacyProtect } from '@shared/controller';
-import { passwordPattern } from './password-pattern';
+import { IsBoolean, IsDate, IsMongoId, IsNotEmpty, IsString, Matches } from 'class-validator';
+import { passwordPattern } from '../../domain';
 
 export class ResolvedAccountDto {
-	@IsOptional()
+	@ApiPropertyOptional()
 	@IsMongoId()
-	readonly id: EntityId;
+	public readonly id: EntityId;
 
-	@IsOptional()
+	@ApiPropertyOptional()
 	@IsDate()
-	readonly createdAt?: Date;
+	public readonly createdAt?: Date;
 
-	@IsOptional()
+	@ApiPropertyOptional()
 	@IsDate()
-	readonly updatedAt?: Date;
+	public readonly updatedAt?: Date;
 
 	@IsString()
 	@IsNotEmpty()
-	username: string;
+	public username: string;
 
 	@PrivacyProtect()
-	@IsOptional()
+	@ApiPropertyOptional()
 	@Matches(passwordPattern)
-	password?: string;
+	public password?: string;
 
-	@IsOptional()
+	@ApiPropertyOptional()
 	@IsString()
-	token?: string;
+	public token?: string;
 
-	@IsOptional()
+	@ApiPropertyOptional()
 	@IsString()
-	credentialHash?: string;
+	public credentialHash?: string;
 
-	@IsOptional()
+	@ApiPropertyOptional()
 	@IsMongoId()
-	userId?: EntityId;
+	public userId?: EntityId;
 
-	@IsOptional()
+	@ApiPropertyOptional()
 	@IsMongoId()
-	systemId?: EntityId;
+	public systemId?: EntityId;
 
-	@IsOptional()
+	@ApiPropertyOptional()
 	@IsDate()
-	lasttriedFailedLogin?: Date;
+	public lasttriedFailedLogin?: Date;
 
-	@IsOptional()
+	@ApiPropertyOptional()
 	@IsDate()
-	expiresAt?: Date;
+	public expiresAt?: Date;
 
-	@IsOptional()
+	@ApiPropertyOptional()
 	@IsBoolean()
-	activated?: boolean;
+	public activated?: boolean;
 
-	@IsOptional()
-	idmReferenceId?: string;
+	@ApiPropertyOptional()
+	public idmReferenceId?: string;
 
-	@IsOptional()
+	@ApiPropertyOptional()
 	@IsDate()
-	deactivatedAt?: Date;
+	public deactivatedAt?: Date;
 
 	constructor(account: ResolvedAccountDto) {
 		this.id = account.id;
@@ -79,13 +81,13 @@ export class ResolvedAccountDto {
 }
 
 export class ResolvedSearchListAccountDto {
-	data: ResolvedAccountDto[];
+	public data: ResolvedAccountDto[];
 
-	total: number;
+	public total: number;
 
-	skip?: number;
+	public skip?: number;
 
-	limit?: number;
+	public limit?: number;
 
 	constructor(data: ResolvedAccountDto[], total: number, skip?: number, limit?: number) {
 		this.data = data;

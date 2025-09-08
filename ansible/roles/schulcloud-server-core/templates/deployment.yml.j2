@@ -3,6 +3,12 @@ kind: Deployment
 metadata:
   name: api-deployment
   namespace: {{ NAMESPACE }}
+{% if ANNOTATIONS is defined and ANNOTATIONS|bool %}
+  annotations:
+{% if RELOADER is defined and RELOADER|bool %}
+    reloader.stakater.com/auto: "true"
+{% endif %}
+{% endif %}
   labels:
     app: api
     app.kubernetes.io/part-of: schulcloud-verbund
@@ -58,7 +64,8 @@ spec:
         - secretRef:
             name: api-secret
         - secretRef:
-            name: api-files-secret
+            name: session-valkey-password
+        command: ['npm', 'run', 'nest:start:prod']
         readinessProbe:
           httpGet:
             path: /internal/health

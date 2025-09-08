@@ -13,5 +13,5 @@ export { ConsentResponse } from './response/consent.response';
 export { RedirectResponse } from './response/redirect.response';
 export { OidcContextResponse } from './response/oidc-context.response';
 export { ConsentSessionResponse } from './response/consent-session.response';
-export { LoginResponse } from './response/login.response';
+export { OauthProviderLoginResponse } from './response/oauth-provider-login.response';
 export { OAuthRejectableBody } from './request/oauth-rejectable.body';

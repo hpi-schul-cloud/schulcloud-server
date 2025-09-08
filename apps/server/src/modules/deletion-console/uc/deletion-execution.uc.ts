@@ -5,7 +5,7 @@ import { DeletionClient } from '../deletion-client';
 export class DeletionExecutionUc {
 	constructor(private readonly deletionClient: DeletionClient) {}
 
-	async triggerDeletionExecution(limit?: number): Promise<void> {
-		await this.deletionClient.executeDeletions(limit);
+	async triggerDeletionExecution(limit?: number, runFailed?: boolean): Promise<void> {
+		await this.deletionClient.executeDeletions(limit, runFailed);
 	}
 }

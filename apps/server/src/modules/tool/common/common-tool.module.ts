@@ -1,27 +1,37 @@
-import { BoardModule } from '@modules/board';
-import { forwardRef, Module } from '@nestjs/common';
-import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
-import { SchoolModule } from '@src/modules/school';
-import { CommonToolService, CommonToolValidationService } from './service';
-import { CommonToolMetadataService } from './service/common-tool-metadata.service';
+import { LoggerModule } from '@core/logger';
+import { SchoolModule } from '@modules/school';
+import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
+import { ContextExternalToolRepo } from '../context-external-tool/repo';
+import { ExternalToolRepo } from '../external-tool/repo';
+import { SchoolExternalToolRepo } from '../school-external-tool/repo';
+import {
+	CommonToolDeleteService,
+	CommonToolService,
+	CommonToolValidationService,
+	Lti11EncryptionService,
+} from './service';
 
 @Module({
-	imports: [LoggerModule, SchoolModule, forwardRef(() => BoardModule)],
+	imports: [LoggerModule, SchoolModule, CqrsModule],
 	// TODO: make deletion of entities cascading, adjust ExternalToolService.deleteExternalTool and remove the repos from here
 	providers: [
 		CommonToolService,
 		CommonToolValidationService,
+		ExternalToolRepo,
 		SchoolExternalToolRepo,
 		ContextExternalToolRepo,
-		CommonToolMetadataService,
+		CommonToolDeleteService,
+		Lti11EncryptionService,
 	],
 	exports: [
 		CommonToolService,
 		CommonToolValidationService,
+		ExternalToolRepo,
 		SchoolExternalToolRepo,
 		ContextExternalToolRepo,
-		CommonToolMetadataService,
+		CommonToolDeleteService,
+		Lti11EncryptionService,
 	],
 })
 export class CommonToolModule {}

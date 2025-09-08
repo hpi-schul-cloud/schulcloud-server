@@ -2,6 +2,251 @@
 	"$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
 	"spaces": 2,
 	"generator-cli": {
-		"version": "7.6.0"
+		"version": "7.6.0",
+		"generators": {
+			"tsp-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "./apps/server/src/infra/tsp-client/openapi.json",
+				"output": "./apps/server/src/infra/tsp-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:exportKlasseList|exportLehrerListMigration|exportLehrerList|exportSchuelerListMigration|exportSchuelerList|exportSchuleList|version"
+				},
+				"globalProperty": {
+					"models": "RobjExportKlasse:RobjExportLehrerMigration:RobjExportLehrer:RobjExportSchuelerMigration:RobjExportSchueler:RobjExportSchule:VersionResponse",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
+			"boards-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json",
+				"output": "./apps/server/src/infra/boards-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:BoardController_createBoard|BoardController_getBoardSkeleton|BoardController_createColumn"
+				},
+				"globalProperty": {
+					"models": "CreateBoardBodyParams:CreateBoardResponse:BoardParentType:BoardLayout:BoardResponse:ColumnResponse:CardSkeletonResponse:TimestampsResponse",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
+			"columns-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json",
+				"output": "./apps/server/src/infra/columns-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:ColumnController_createCard|ColumnController_updateColumnTitle"
+				},
+				"globalProperty": {
+					"models": "CreateCardBodyParams:CardResponse:RenameBodyParams",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
+			"cards-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json",
+				"output": "./apps/server/src/infra/cards-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:CardController_updateCardTitle|CardController_createElement|ElementController_updateElement|CardController_getCards"
+				},
+				"globalProperty": {
+					"models": "ApiValidationError:CardController_createElement_201_response:ElementController_updateElement_200_response:BoardSubmissionController_createElement_201_response:LessonContentResponse_content:BoardElementResponse_content:ExternalToolResponse_config:ExternalToolUpdateParams_config:CardResponse_elements_inner:UpdateElementContentBodyParams_data:SubmissionItemResponse_elements_inner:MediaLineResponse_elements_inner:CardListResponse:CardResponseElementsInner:CardResponse:CollaborativeTextEditorElementResponse:ContentElementType:AnyContentElementResponse:CreateContentElementBodyParams:DeletedElementContent:DeletedElementResponse:DrawingElementContent:DrawingElementResponse:ExternalToolElementContent:ExternalToolElementResponse:FileElementContent:FileElementResponse:LinkElementContent:LinkElementResponse:MoveCardBodyParams:RenameBodyParams:RichTextElementContent:InputFormat:RichTextElementResponse:SubmissionContainerElementContent:SubmissionContainerElementResponse:TimestampsResponse:VideoConferenceElementContent:FileFolderElementResponse:VideoConferenceElementResponse:VisibilitySettingsResponse:ElementController_updateElement_200_response:UpdateElementContentBodyParams:UpdateElementContentBodyParamsData:DrawingElementContentBody:ExternalToolElementContentBody:FileElementContentBody:LinkElementContentBody:RichTextElementContentBody:SubmissionContainerElementContentBody:VideoConferenceElementContentBody:LinkContentBody:RichTextContentBody:AnyElementContentBody:DrawingContentBody:ExternalToolContentBody:FileContentBody:SubmissionContainerContentBody:VideoConferenceContentBody",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
+			"files-storage-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:4444/api/v3/docs-json",
+				"output": "./apps/server/src/infra/files-storage-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:upload|download|uploadFromUrl|deleteByParent|deleteFile"
+				},
+				"globalProperty": {
+					"models": "FileRecordResponse:StreamableFile:FileRecordParentType:FileRecordScanStatus:PreviewStatus:StorageLocation:FileUrlParams:FileRecordListResponse",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
+			"courses-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json",
+				"output": "./apps/server/src/infra/courses-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:CourseController_getCourseCcMetadataById|CourseController_createCourse"
+				},
+				"globalProperty": {
+					"models": "CourseCommonCartridgeMetadataResponse:CreateCourseBodyParams:CreateCourseResponse",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
+			"lessons-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json",
+				"output": "./apps/server/src/modules/common-cartridge/common-cartridge-client/lesson-client/lessons-api-client",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:LessonController_getLesson|LessonController_getLessonTasks"
+				},
+				"additionalProperties": {
+					"withSeparateModelsAndApi": true,
+					"skipUnusedModels": true,
+					"apiPackage": "api",
+					"modelPackage": "models"
+				},
+				"globalProperty": {
+					"models": "LessonResponse:LessonLinkedTaskResponse:LessonContentResponse:ComponentTextPropsImpl:ComponentEtherpadPropsImpl:ComponentGeogebraPropsImpl:ComponentInternalPropsImpl:ComponentLernstorePropsImpl:LernstoreResources:MaterialResponse",
+					"apis": "",
+					"supportingFiles": ""
+				}
+			},
+			"tldraw-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3349/docs-json",
+				"output": "./apps/server/src/infra/tldraw-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
+			"vidis-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "./apps/server/src/infra/vidis-client/vidis.yml",
+				"output": "./apps/server/src/infra/vidis-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:getActivatedOffersByRegion|operationId:getActivatedOffersBySchool"
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
+			"cc-cards-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json/",
+				"output": "./apps/server/src/modules/common-cartridge/common-cartridge-client/card-client/cards-api-client",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:CardController_getCards"
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
+			"authorization-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json",
+				"output": "./apps/server/src/infra/authorization-client/authorization-api-client",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:AuthorizationReferenceController_authorizeByReference|AuthorizationReferenceController_createToken|AuthorizationReferenceController_resolveToken"
+				},
+				"globalProperty": {
+					"models": "AuthorizationBodyParams:AuthorizationContextParams:AuthorizedResponse:CreateAccessTokenParams:AccessTokenResponse:AccessTokenParams:AccessTokenPayloadResponse",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			}
+		}
 	}
 }

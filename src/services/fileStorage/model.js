@@ -129,6 +129,7 @@ fileSchema.index({ 'permissions.refId': 1, 'permissions.refPermModel': 1 }); // 
 // Speed up directory listings
 fileSchema.index({ owner: 1, parent: 1 }); // ?
 fileSchema.index({ 'securityCheck.requestToken': 1 }); // ?
+fileSchema.index({ createdAt: 1 });
 
 const FileModel = mongoose.model('file', fileSchema);
 const FilePermissionModel = mongoose.model('filePermissionModel', permissionSchema);

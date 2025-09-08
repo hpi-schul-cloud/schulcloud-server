@@ -1,7 +1,7 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Res } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { Response } from 'express';
 import { CollaborativeTextEditorUc } from './collaborative-text-editor.uc';
 import { CollaborativeTextEditorResponse } from './dto/collaborative-text-editor.response';
@@ -9,7 +9,7 @@ import { GetCollaborativeTextEditorForParentParams } from './dto/get-collaborati
 import { CollaborativeTextEditorMapper } from './mapper/collaborative-text-editor.mapper';
 
 @ApiTags('CollaborativeTextEditor')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('collaborative-text-editor')
 export class CollaborativeTextEditorController {
 	constructor(private readonly collaborativeTextEditorUc: CollaborativeTextEditorUc) {}

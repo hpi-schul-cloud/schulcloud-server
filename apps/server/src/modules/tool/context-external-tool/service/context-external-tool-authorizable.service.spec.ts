@@ -1,10 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalToolRepo } from '@shared/repo';
-import { legacySchoolDoFactory } from '@shared/testing';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ContextExternalTool } from '../domain';
+import { ContextExternalToolRepo } from '../repo/mikro-orm';
 import { contextExternalToolFactory } from '../testing';
 import { ContextExternalToolAuthorizableService } from './context-external-tool-authorizable.service';
 
@@ -13,6 +14,7 @@ describe('ContextExternalToolAuthorizableService', () => {
 	let service: ContextExternalToolAuthorizableService;
 
 	let contextExternalToolRepo: DeepMocked<ContextExternalToolRepo>;
+	let injectionService: DeepMocked<AuthorizationInjectionService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -22,11 +24,13 @@ describe('ContextExternalToolAuthorizableService', () => {
 					provide: ContextExternalToolRepo,
 					useValue: createMock<ContextExternalToolRepo>(),
 				},
+				AuthorizationInjectionService,
 			],
 		}).compile();
 
 		service = module.get(ContextExternalToolAuthorizableService);
 		contextExternalToolRepo = module.get(ContextExternalToolRepo);
+		injectionService = module.get(AuthorizationInjectionService);
 	});
 
 	afterAll(async () => {
@@ -35,6 +39,12 @@ describe('ContextExternalToolAuthorizableService', () => {
 
 	beforeEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('constructor', () => {
+		it('should inject itself into the AuthorizationInjectionService', () => {
+			expect(injectionService.getReferenceLoader(AuthorizableReferenceType.ContextExternalToolEntity)).toBe(service);
+		});
 	});
 
 	describe('findById', () => {

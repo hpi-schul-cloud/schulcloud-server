@@ -1,14 +1,10 @@
-import { RoleMapper } from '@modules/role/mapper/role.mapper';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { Role } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { roleFactory, setupEntities } from '@shared/testing';
+import { Role } from '../repo';
+import { roleFactory } from '../testing';
+import { RoleDto } from '../service';
+import { RoleMapper } from './role.mapper';
 
 describe('RoleMapper', () => {
-	beforeAll(async () => {
-		await setupEntities();
-	});
-
 	it('mapFromEntityToDto', () => {
 		// Arrange
 		const entity: Role = roleFactory.buildWithId({ permissions: [Permission.DELETE_TEAM, Permission.COMMENTS_EDIT] });

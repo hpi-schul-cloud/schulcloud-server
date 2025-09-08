@@ -5,6 +5,8 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-ldap-sync-full-cronjob.yml.j2
+    tags:
+      - cronjob
 
   - name: Ldap Worker Deployment
     when: WITH_LDAP is defined and WITH_LDAP|bool == true
@@ -12,6 +14,8 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-ldap-worker-deployment.yml.j2
+    tags:
+      - deployment
 
   - name: api worker scaled object
     kubernetes.core.k8s:
@@ -22,4 +26,6 @@
       - WITH_LDAP is defined and WITH_LDAP|bool
       - KEDA_ENABLED is defined and KEDA_ENABLED|bool
       - SCALED_API_WORKER_ENABLED is defined and SCALED_API_WORKER_ENABLED|bool
+    tags:
+      - keda
 

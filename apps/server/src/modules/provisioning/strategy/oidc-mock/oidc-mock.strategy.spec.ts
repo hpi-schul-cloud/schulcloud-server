@@ -1,7 +1,7 @@
+import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import jwt from 'jsonwebtoken';
-import { IdTokenExtractionFailureLoggableException } from '@src/modules/oauth/loggable';
 import {
 	ExternalUserDto,
 	OauthDataDto,
@@ -73,7 +73,7 @@ describe('OidcMockProvisioningStrategy', () => {
 
 				expect(result).toEqual<OauthDataDto>({
 					system: input.system,
-					externalUser: new ExternalUserDto({ externalId: userName }),
+					externalUser: new ExternalUserDto({ externalId: userName, roles: [] }),
 				});
 			});
 
@@ -106,7 +106,7 @@ describe('OidcMockProvisioningStrategy', () => {
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					}),
-					externalUser: new ExternalUserDto({ externalId: userName }),
+					externalUser: new ExternalUserDto({ externalId: userName, roles: [] }),
 				});
 
 				const result: ProvisioningDto = await strategy.apply(data);

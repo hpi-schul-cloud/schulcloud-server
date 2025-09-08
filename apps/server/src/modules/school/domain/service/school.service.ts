@@ -1,19 +1,19 @@
 import { System, SystemService } from '@modules/system';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TypeGuard } from '@shared/common';
+import { TypeGuard } from '@shared/common/guards';
 import { IFindOptions } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { SchoolConfig } from '../../school.config';
 import { School, SchoolProps, SystemForLdapLogin } from '../do';
 import { SchoolForLdapLogin, SchoolForLdapLoginProps } from '../do/school-for-ldap-login';
+import { SchoolFactory } from '../factory';
+import { SCHOOL_REPO, SchoolRepo, SchoolUpdateBody } from '../interface';
 import {
 	SchoolHasNoSystemLoggableException,
 	SystemCanNotBeDeletedLoggableException,
 	SystemNotFoundLoggableException,
-} from '../error';
-import { SchoolFactory } from '../factory';
-import { SCHOOL_REPO, SchoolRepo, SchoolUpdateBody } from '../interface';
+} from '../loggable';
 import { SchoolQuery } from '../query';
 import { InstanceFeature } from '../type';
 
@@ -29,6 +29,19 @@ export class SchoolService {
 		let school = await this.schoolRepo.getSchoolById(schoolId);
 
 		school = this.addInstanceFeatures(school);
+
+		return school;
+	}
+
+	public async getSchoolsByIds(schoolIds: EntityId[]): Promise<School[]> {
+		const entities = await this.schoolRepo.getSchoolsByIds(schoolIds);
+		const schools = entities.map((entity) => this.addInstanceFeatures(entity));
+
+		return schools;
+	}
+
+	public async getSchoolByOfficialSchoolNumber(officialSchoolNumber: string): Promise<School | null> {
+		const school: School | null = await this.schoolRepo.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
 
 		return school;
 	}
@@ -51,6 +64,26 @@ export class SchoolService {
 		const schoolsForExternalInvite = schools.filter((school) => school.isEligibleForExternalInvite(ownSchoolId));
 
 		return schoolsForExternalInvite;
+	}
+
+	public async getSchoolList(
+		options: IFindOptions<SchoolProps> = {},
+		federalStateId?: EntityId
+	): Promise<{ schools: School[]; count: number }> {
+		const { schools, count } = await this.getExternalSchools(options, federalStateId);
+
+		return { schools, count };
+	}
+
+	private async getExternalSchools(
+		options: IFindOptions<SchoolProps> = {},
+		federalStateId?: EntityId
+	): Promise<{ schools: School[]; count: number }> {
+		const result = await this.schoolRepo.getSchoolList(options, federalStateId);
+
+		const schools = result.schools.map((school) => this.addInstanceFeatures(school));
+
+		return { schools, count: result.count };
 	}
 
 	public async getCurrentYear(schoolId: EntityId) {
@@ -196,5 +229,11 @@ export class SchoolService {
 			// because it being undefined means that the school has not opted out yet.
 			(configValue === 'opt-out' && enableStudentTeamCreation !== false)
 		);
+	}
+
+	public async hasLdapSystem(schoolId: EntityId): Promise<boolean> {
+		const hasLdapSystem: boolean = await this.schoolRepo.hasLdapSystem(schoolId);
+
+		return hasLdapSystem;
 	}
 }

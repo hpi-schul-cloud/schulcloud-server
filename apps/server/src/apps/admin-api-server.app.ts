@@ -1,30 +1,37 @@
 /* istanbul ignore file */
-import { NestFactory } from '@nestjs/core';
-import { install as sourceMapInstall } from 'source-map-support';
-import { LegacyLogger, Logger } from '@src/core/logger';
-import { enableOpenApiDocs } from '@shared/controller/swagger';
-import { AppStartLoggable } from '@src/apps/helpers/app-start-loggable';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import express from 'express';
-import { AdminApiServerModule } from '@src/modules/server/admin-api.server.module';
+import { LegacyLogger, Logger } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { AdminApiServerModule } from '@modules/server/admin-api.server.app.module';
+import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
+import express from 'express';
+import { install as sourceMapInstall } from 'source-map-support';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
+	AppStartLoggable,
 	createAndStartPrometheusMetricsAppIfEnabled,
-} from './helpers/prometheus-metrics';
+	enableOpenApiDocs,
+} from './helpers';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
 	const nestAdminServerExpress = express();
 	const nestAdminServerExpressAdapter = new ExpressAdapter(nestAdminServerExpress);
 	nestAdminServerExpressAdapter.disable('x-powered-by');
 
-	const nestAdminServerApp = await NestFactory.create(AdminApiServerModule, nestAdminServerExpressAdapter);
+	const nestAdminServerApp = await NestFactory.create<NestExpressApplication>(
+		AdminApiServerModule,
+		nestAdminServerExpressAdapter
+	);
 	const logger = await nestAdminServerApp.resolve(Logger);
 	const legacyLogger = await nestAdminServerApp.resolve(LegacyLogger);
+	nestAdminServerApp.use(createRequestLoggerMiddleware());
+
 	nestAdminServerApp.useLogger(legacyLogger);
 	nestAdminServerApp.enableCors();
+	nestAdminServerApp.useBodyParser('json', { limit: '4mb' });
 
 	addPrometheusMetricsMiddlewaresIfEnabled(logger, nestAdminServerExpress);
 

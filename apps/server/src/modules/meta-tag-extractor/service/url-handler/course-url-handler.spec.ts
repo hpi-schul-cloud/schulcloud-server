@@ -1,8 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CourseService } from '@modules/learnroom';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { Submission, Task } from '@modules/task/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course } from '@shared/domain/entity';
-import { setupEntities } from '@shared/testing';
+import { setupEntities } from '@testing/database';
+import { ObjectId } from 'bson';
+import { MetaDataEntityType } from '../../types';
 import { CourseUrlHandler } from './course-url-handler';
 
 describe(CourseUrlHandler.name, () => {
@@ -23,14 +28,15 @@ describe(CourseUrlHandler.name, () => {
 
 		courseService = module.get(CourseService);
 		courseUrlHandler = module.get(CourseUrlHandler);
-		await setupEntities();
+
+		await setupEntities([CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
 	});
 
 	describe('getMetaData', () => {
 		describe('when url fits', () => {
 			it('should call courseService with the correct id', async () => {
-				const id = 'af322312feae';
-				const url = `https://localhost/rooms/${id}`;
+				const id = new ObjectId().toHexString();
+				const url = new URL(`https://localhost/course-rooms/${id}`);
 
 				await courseUrlHandler.getMetaData(url);
 
@@ -38,20 +44,20 @@ describe(CourseUrlHandler.name, () => {
 			});
 
 			it('should take the title from the course name', async () => {
-				const id = 'af322312feae';
-				const url = `https://localhost/rooms/${id}`;
-				const courseName = 'My Course';
-				courseService.findById.mockResolvedValue({ name: courseName } as Course);
+				const name = 'My Course';
+				const course = courseEntityFactory.buildWithId({ name });
+				const url = new URL(`https://localhost/course-rooms/${course.id}`);
+
+				courseService.findById.mockResolvedValueOnce(course);
 
 				const result = await courseUrlHandler.getMetaData(url);
-
-				expect(result).toEqual(expect.objectContaining({ title: courseName, type: 'course' }));
+				expect(result).toEqual(expect.objectContaining({ title: name, type: MetaDataEntityType.COURSE }));
 			});
 		});
 
 		describe('when url does not fit', () => {
 			it('should return undefined', async () => {
-				const url = `https://localhost/invalid/ef2345abe4e3b`;
+				const url = new URL(`https://localhost/invalid/ef2345abe4e3b`);
 
 				const result = await courseUrlHandler.getMetaData(url);
 

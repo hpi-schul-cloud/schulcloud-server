@@ -1,25 +1,36 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { JwtPayloadFactory } from '@infra/auth-guard';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Account, AccountService } from '@modules/account';
+import { accountDoFactory } from '@modules/account/testing';
+import { OauthSessionTokenService } from '@modules/oauth';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
+import { HttpService } from '@nestjs/axios';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@testing/database';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import jwt from 'jsonwebtoken';
-import { BruteForceError } from '../errors/brute-force.error';
-import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
-import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
-import { currentUserFactory } from '../testing';
+import { BruteForceError } from '../errors';
+import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
+import { UserAccountDeactivatedLoggableException } from '../loggable';
+import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from './authentication.service';
 
 jest.mock('jsonwebtoken');
 
-describe('AuthenticationService', () => {
+describe(AuthenticationService.name, () => {
 	let module: TestingModule;
 	let authenticationService: AuthenticationService;
 
-	let jwtValidationAdapter: DeepMocked<JwtValidationAdapter>;
+	let jwtWhitelistAdapter: DeepMocked<JwtWhitelistAdapter>;
 	let accountService: DeepMocked<AccountService>;
 	let jwtService: DeepMocked<JwtService>;
+	let configService: DeepMocked<ConfigService>;
 
 	const mockAccount: Account = new Account({
 		id: 'mockAccountId',
@@ -29,12 +40,14 @@ describe('AuthenticationService', () => {
 	});
 
 	beforeAll(async () => {
+		await setupEntities([Account, User]);
+
 		module = await Test.createTestingModule({
 			providers: [
 				AuthenticationService,
 				{
-					provide: JwtValidationAdapter,
-					useValue: createMock<JwtValidationAdapter>(),
+					provide: JwtWhitelistAdapter,
+					useValue: createMock<JwtWhitelistAdapter>(),
 				},
 				{
 					provide: JwtService,
@@ -48,13 +61,30 @@ describe('AuthenticationService', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>({ get: () => 15 }),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+				{
+					provide: OauthSessionTokenService,
+					useValue: createMock<OauthSessionTokenService>(),
+				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: DefaultEncryptionService,
+					useValue: createMock<EncryptionService>(),
+				},
 			],
 		}).compile();
 
-		jwtValidationAdapter = module.get(JwtValidationAdapter);
+		jwtWhitelistAdapter = module.get(JwtWhitelistAdapter);
 		authenticationService = module.get(AuthenticationService);
 		accountService = module.get(AccountService);
 		jwtService = module.get(JwtService);
+		configService = module.get(ConfigService);
 	});
 
 	afterEach(() => {
@@ -102,6 +132,7 @@ describe('AuthenticationService', () => {
 					username: 'mockedUsername',
 					deactivatedAt: new Date(),
 				});
+
 			it('should throw USER_ACCOUNT_DEACTIVATED exception', async () => {
 				const deactivatedAccount = setup();
 				accountService.findByUsernameAndSystemId.mockResolvedValue(deactivatedAccount);
@@ -111,18 +142,84 @@ describe('AuthenticationService', () => {
 		});
 	});
 
-	describe('generateJwt', () => {
+	describe('generateSupportJwt', () => {
 		describe('when generating new jwt', () => {
-			it('should pass the correct parameters', async () => {
-				const mockCurrentUser = currentUserFactory.withRole('random role').build();
+			const setup = () => {
+				const supportUser = userFactory.asSuperhero().buildWithId();
+				const targetUser = userFactory.asTeacher().buildWithId();
+				const targetUserAccount = accountDoFactory.build({ userId: targetUser.id });
+				const mockCurrentUser = CurrentUserMapper.userToICurrentUser(
+					targetUserAccount.id,
+					targetUser,
+					false,
+					targetUserAccount.systemId
+				);
+				const expiresIn = 150;
 
-				await authenticationService.generateJwt(mockCurrentUser);
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(targetUserAccount);
+				configService.get.mockReturnValueOnce(expiresIn);
+				jwtService.sign.mockReturnValueOnce('jwt');
+
+				const expectedPayload = JwtPayloadFactory.buildFromSupportUser(mockCurrentUser, supportUser.id);
+
+				return { supportUser, targetUser, mockCurrentUser, targetUserAccount, expectedPayload, expiresIn };
+			};
+
+			it('should pass the correct parameters', async () => {
+				const { supportUser, targetUser, mockCurrentUser, expectedPayload, expiresIn } = setup();
+
+				await authenticationService.generateSupportJwt(supportUser, targetUser);
+
 				expect(jwtService.sign).toBeCalledWith(
-					mockCurrentUser,
+					expectedPayload,
 					expect.objectContaining({
 						subject: mockCurrentUser.accountId,
+						jwtid: expect.any(String),
+						expiresIn,
 					})
 				);
+			});
+
+			it('should return the generated jwt', async () => {
+				const { mockCurrentUser } = setup();
+
+				const result = await authenticationService.generateCurrentUserJwt(mockCurrentUser);
+
+				expect(result).toEqual('jwt');
+			});
+		});
+	});
+
+	describe('generateCurrentUserJwt', () => {
+		describe('when generating new jwt', () => {
+			const setup = () => {
+				const mockCurrentUser = currentUserFactory.withRole('random role').build();
+				const expectedPayload = JwtPayloadFactory.buildFromCurrentUser(mockCurrentUser);
+				const expiresIn = 15;
+				configService.get.mockReturnValueOnce(expiresIn);
+				jwtService.sign.mockReturnValueOnce('jwt');
+
+				return { mockCurrentUser, expectedPayload, expiresIn };
+			};
+
+			it('should pass the correct parameters', async () => {
+				const { mockCurrentUser, expectedPayload } = setup();
+				await authenticationService.generateCurrentUserJwt(mockCurrentUser);
+				expect(jwtService.sign).toBeCalledWith(
+					expectedPayload,
+					expect.objectContaining({
+						subject: mockCurrentUser.accountId,
+						jwtid: expect.any(String),
+					})
+				);
+			});
+
+			it('should return the generated jwt', async () => {
+				const { mockCurrentUser } = setup();
+
+				const result = await authenticationService.generateCurrentUserJwt(mockCurrentUser);
+
+				expect(result).toEqual('jwt');
 			});
 		});
 	});
@@ -135,7 +232,7 @@ describe('AuthenticationService', () => {
 
 				await authenticationService.removeJwtFromWhitelist('jwt');
 
-				expect(jwtValidationAdapter.removeFromWhitelist).toHaveBeenCalledWith(jwtToken.accountId, jwtToken.jti);
+				expect(jwtWhitelistAdapter.removeFromWhitelist).toHaveBeenCalledWith(jwtToken.accountId, jwtToken.jti);
 			});
 		});
 
@@ -145,7 +242,19 @@ describe('AuthenticationService', () => {
 
 				await authenticationService.removeJwtFromWhitelist('jwt');
 
-				expect(jwtValidationAdapter.removeFromWhitelist).not.toHaveBeenCalled();
+				expect(jwtWhitelistAdapter.removeFromWhitelist).not.toHaveBeenCalled();
+			});
+		});
+	});
+
+	describe('removeUserFromWhitelist', () => {
+		describe('when an account was provided', () => {
+			it('should call the jwtValidationAdapter to remove the jwt', async () => {
+				const account = accountDoFactory.build();
+
+				await authenticationService.removeUserFromWhitelist(account);
+
+				expect(jwtWhitelistAdapter.removeFromWhitelist).toHaveBeenCalledWith(account.id);
 			});
 		});
 	});

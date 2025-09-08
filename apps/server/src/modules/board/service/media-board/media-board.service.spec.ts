@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
-import { mediaBoardFactory, mediaExternalToolElementFactory, mediaLineFactory } from '../../testing';
+import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReference, BoardExternalReferenceType, BoardLayout, MediaBoardColors } from '../../domain';
 import { BoardNodeRepo } from '../../repo';
+import { mediaBoardFactory, mediaExternalToolElementFactory, mediaLineFactory } from '../../testing';
 import { MediaBoardService } from './media-board.service';
 
 describe('MediaBoardService', () => {
@@ -106,6 +106,7 @@ describe('MediaBoardService', () => {
 
 				return { schoolExternalTool, mediaBoard };
 			};
+
 			it('should return true if element exists in MediaBoard', async () => {
 				const { schoolExternalTool, mediaBoard } = setup();
 				const exists = await service.checkElementExists(mediaBoard, schoolExternalTool);

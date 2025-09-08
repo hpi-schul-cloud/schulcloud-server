@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
-import { ExternalTool } from '../domain';
+import { ConfigService } from '@nestjs/config';
+import { ValidationError } from '@shared/common/error';
+import { Page } from '@shared/domain/domainobject';
+import { ToolConfig } from '../../tool-config';
+import { ExternalTool, ExternalToolMedium } from '../domain';
+import { ExternalToolMediumStatus } from '../enum';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 import { ExternalToolService } from './external-tool.service';
@@ -10,10 +14,11 @@ export class ExternalToolValidationService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
 		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService,
-		private readonly externalToolLogoService: ExternalToolLogoService
+		private readonly externalToolLogoService: ExternalToolLogoService,
+		private readonly configService: ConfigService<ToolConfig, true>
 	) {}
 
-	async validateCreate(externalTool: ExternalTool): Promise<void> {
+	public async validateCreate(externalTool: ExternalTool): Promise<void> {
 		await this.externalToolParameterValidationService.validateCommon(externalTool);
 
 		await this.validateOauth2Config(externalTool);
@@ -21,9 +26,17 @@ export class ExternalToolValidationService {
 		this.validateLti11Config(externalTool);
 
 		this.externalToolLogoService.validateLogoSize(externalTool);
+
+		if (externalTool.isPreferred) {
+			await this.validatePreferredTool(externalTool);
+		}
+
+		if (externalTool.medium) {
+			this.validateToolMedium(externalTool.medium);
+		}
 	}
 
-	async validateUpdate(toolId: string, externalTool: ExternalTool): Promise<void> {
+	public async validateUpdate(toolId: string, externalTool: ExternalTool): Promise<void> {
 		if (toolId !== externalTool.id) {
 			throw new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`);
 		}
@@ -52,7 +65,24 @@ export class ExternalToolValidationService {
 			);
 		}
 
+		if (
+			ExternalTool.isOauth2Config(externalTool.config) &&
+			externalTool.medium?.status === ExternalToolMediumStatus.TEMPLATE
+		) {
+			throw new ValidationError(
+				'tool_template_oauth2_invalid: No templates for tools with OAuth2 configuration allowed.'
+			);
+		}
+
 		this.externalToolLogoService.validateLogoSize(externalTool);
+
+		if (externalTool.isPreferred) {
+			await this.validatePreferredTool(externalTool);
+		}
+
+		if (externalTool.medium) {
+			this.validateToolMedium(externalTool.medium);
+		}
 	}
 
 	private async validateOauth2Config(externalTool: ExternalTool): Promise<void> {
@@ -66,6 +96,12 @@ export class ExternalToolValidationService {
 			if (!(await this.isClientIdUnique(externalTool))) {
 				throw new ValidationError(
 					`tool_clientId_duplicate: The Client Id of the tool ${externalTool.name || ''} is already used.`
+				);
+			}
+
+			if (externalTool.medium?.status === ExternalToolMediumStatus.TEMPLATE) {
+				throw new ValidationError(
+					'tool_template_oauth2_invalid: No templates for tools with OAuth2 configuration allowed.'
 				);
 			}
 		}
@@ -87,5 +123,55 @@ export class ExternalToolValidationService {
 			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalTool.config.clientId);
 		}
 		return duplicate == null || duplicate.id === externalTool.id;
+	}
+
+	private async validatePreferredTool(toolToValidate: ExternalTool): Promise<void> {
+		if (!toolToValidate.iconName) {
+			throw new ValidationError(
+				`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${toolToValidate.name} is missing.`
+			);
+		}
+
+		const preferredTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({
+			isPreferred: true,
+		});
+
+		const isToolToValidateAlreadyPreferred: boolean = preferredTools.data.some(
+			(existingPreferredTool: ExternalTool) => existingPreferredTool.id === toolToValidate.id
+		);
+		if (isToolToValidateAlreadyPreferred) {
+			return;
+		}
+
+		if (preferredTools.total >= this.configService.get<number>('CTL_TOOLS__PREFERRED_TOOLS_LIMIT')) {
+			throw new ValidationError(
+				`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
+			);
+		}
+	}
+
+	private validateToolMedium(medium: ExternalToolMedium): void {
+		const { status, mediumId } = medium;
+
+		const errorPrefix = (s: string): string => `tool_medium_status_${s.toLowerCase()}`;
+
+		switch (status) {
+			case ExternalToolMediumStatus.ACTIVE:
+			case ExternalToolMediumStatus.DRAFT:
+				if (!mediumId) {
+					throw new ValidationError(
+						`${errorPrefix(status)}: This medium is ${status.toLowerCase()} but is not linked to an external medium.`
+					);
+				}
+				break;
+			case ExternalToolMediumStatus.TEMPLATE:
+				if (mediumId) {
+					throw new ValidationError(`${errorPrefix(status)}: This template cannot be linked to a specific medium.`);
+				}
+				break;
+
+			default:
+				throw new ValidationError(`tool_medium_status: This medium status must be one of: active, draft or template.`);
+		}
 	}
 }

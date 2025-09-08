@@ -1,16 +1,23 @@
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationService } from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
-import { Injectable } from '@nestjs/common';
+import { User } from '@modules/user/repo';
+import { Inject, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
-import { ExternalTool, ExternalToolConfig, ExternalToolDatasheetTemplateData, ExternalToolMetadata } from '../domain';
+import {
+	BasicToolConfig,
+	ExternalTool,
+	ExternalToolConfig,
+	ExternalToolDatasheetTemplateData,
+	Lti11ToolConfig,
+	Oauth2ToolConfig,
+} from '../domain';
 import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 import {
 	DatasheetPdfService,
@@ -30,29 +37,28 @@ export class ExternalToolUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly commonToolMetadataService: CommonToolMetadataService,
 		private readonly datasheetPdfService: DatasheetPdfService,
-		private readonly externalToolImageService: ExternalToolImageService
+		private readonly externalToolImageService: ExternalToolImageService,
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
 
-	public async createExternalTool(
-		userId: EntityId,
-		externalToolCreate: ExternalToolCreate,
-		jwt: string
-	): Promise<ExternalTool> {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+	public async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
-		const tool: ExternalTool = await this.validateAndSaveExternalTool(externalToolCreate, jwt);
+		externalToolCreate.config = this.encryptLtiSecret(externalToolCreate);
+
+		const tool: ExternalTool = await this.validateAndSaveExternalTool(externalToolCreate);
 
 		return tool;
 	}
 
 	public async importExternalTools(
 		userId: EntityId,
-		externalTools: ExternalToolCreate[],
-		jwt: string
+		externalTools: ExternalToolCreate[]
 	): Promise<ExternalToolImportResult[]> {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
 		const results: ExternalToolImportResult[] = [];
 
@@ -64,8 +70,10 @@ export class ExternalToolUc {
 			});
 
 			try {
+				externalTool.config = this.encryptLtiSecret(externalTool);
+
 				// eslint-disable-next-line no-await-in-loop
-				const savedTool: ExternalTool = await this.validateAndSaveExternalTool(externalTool, jwt);
+				const savedTool: ExternalTool = await this.validateAndSaveExternalTool(externalTool);
 
 				result.toolId = savedTool.id;
 			} catch (error: unknown) {
@@ -80,10 +88,7 @@ export class ExternalToolUc {
 		return results;
 	}
 
-	private async validateAndSaveExternalTool(
-		externalToolCreate: ExternalToolCreate,
-		jwt: string
-	): Promise<ExternalTool> {
+	private async validateAndSaveExternalTool(externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
 		const { thumbnailUrl, ...externalToolCreateProps } = externalToolCreate;
 
 		const pendingExternalTool: ExternalTool = new ExternalTool({
@@ -100,8 +105,7 @@ export class ExternalToolUc {
 			savedExternalTool.thumbnail = await this.externalToolImageService.uploadImageFileFromUrl(
 				thumbnailUrl,
 				ExternalTool.thumbnailNameAffix,
-				savedExternalTool.id,
-				jwt
+				savedExternalTool.id
 			);
 
 			savedExternalTool = await this.externalToolService.updateExternalTool(savedExternalTool);
@@ -113,14 +117,20 @@ export class ExternalToolUc {
 	public async updateExternalTool(
 		userId: EntityId,
 		toolId: string,
-		externalToolUpdate: ExternalToolUpdate,
-		jwt: string
+		externalToolUpdate: ExternalToolUpdate
 	): Promise<ExternalTool> {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		const currentExternalTool: ExternalTool = await this.externalToolService.findById(toolId);
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(
+			user,
+			currentExternalTool,
+			AuthorizationContextBuilder.write([Permission.TOOL_ADMIN])
+		);
+
+		externalToolUpdate.config = this.encryptLtiSecret(externalToolUpdate);
 
 		const { thumbnailUrl, ...externalToolUpdateProps } = externalToolUpdate;
-
-		const currentExternalTool: ExternalTool = await this.externalToolService.findById(toolId);
 
 		// Use secrets from existing config
 		const updatedConfigProps: ExternalToolConfig = { ...currentExternalTool.config, ...externalToolUpdateProps.config };
@@ -130,13 +140,14 @@ export class ExternalToolUc {
 			...externalToolUpdateProps,
 			config: updatedConfigProps,
 		});
+
 		pendingExternalTool.logo = await this.externalToolLogoService.fetchLogo(pendingExternalTool);
 
 		await this.toolValidationService.validateUpdate(toolId, pendingExternalTool);
 
 		if (thumbnailUrl !== currentExternalTool.thumbnail?.uploadUrl) {
 			if (currentExternalTool.thumbnail) {
-				await this.externalToolImageService.deleteImageFile(currentExternalTool.thumbnail.fileRecordId, jwt);
+				await this.externalToolImageService.deleteImageFile(currentExternalTool.thumbnail.fileRecordId);
 
 				pendingExternalTool.thumbnail = undefined;
 			}
@@ -145,8 +156,7 @@ export class ExternalToolUc {
 				pendingExternalTool.thumbnail = await this.externalToolImageService.uploadImageFileFromUrl(
 					thumbnailUrl,
 					ExternalTool.thumbnailNameAffix,
-					pendingExternalTool.id,
-					jwt
+					pendingExternalTool.id
 				);
 			}
 		}
@@ -161,7 +171,10 @@ export class ExternalToolUc {
 		query: ExternalToolSearchQuery,
 		options: IFindOptions<ExternalTool>
 	): Promise<Page<ExternalTool>> {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+
+		query.isTemplateOrDraft = true;
 
 		const tools: Page<ExternalTool> = await this.externalToolService.findExternalTools(query, options);
 
@@ -169,33 +182,31 @@ export class ExternalToolUc {
 	}
 
 	public async getExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalTool> {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		const externalTool: ExternalTool = await this.externalToolService.findById(toolId);
 
-		const tool: ExternalTool = await this.externalToolService.findById(toolId);
-
-		return tool;
-	}
-
-	public async deleteExternalTool(userId: EntityId, externalToolId: EntityId, jwt: string): Promise<void> {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
-
-		await this.externalToolImageService.deleteAllFiles(externalToolId, jwt);
-
-		await this.externalToolService.deleteExternalTool(externalToolId);
-	}
-
-	public async getMetadataForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolMetadata> {
-		// TODO N21-1496: Change External Tools to use authorizationService.checkPermission
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
-
-		const metadata: ExternalToolMetadata = await this.commonToolMetadataService.getMetadataForExternalTool(toolId);
-
-		return metadata;
-	}
-
-	private async ensurePermission(userId: EntityId, permission: Permission): Promise<void> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkAllPermissions(user, [permission]);
+		this.authorizationService.checkPermission(
+			user,
+			externalTool,
+			AuthorizationContextBuilder.read([Permission.TOOL_ADMIN])
+		);
+
+		return externalTool;
+	}
+
+	public async deleteExternalTool(userId: EntityId, externalToolId: EntityId): Promise<void> {
+		const externalTool: ExternalTool = await this.externalToolService.findById(externalToolId);
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(
+			user,
+			externalTool,
+			AuthorizationContextBuilder.write([Permission.TOOL_ADMIN])
+		);
+
+		await this.externalToolImageService.deleteAllFiles(externalToolId);
+
+		await this.externalToolService.deleteExternalTool(externalTool);
 	}
 
 	public async getDatasheet(userId: EntityId, externalToolId: EntityId): Promise<Buffer> {
@@ -245,5 +256,19 @@ export class ExternalToolUc {
 		const fileName = `CTL-Datenblatt-${externalTool.name}-${dateString}.pdf`;
 
 		return fileName;
+	}
+
+	private encryptLtiSecret(
+		externalTool: ExternalToolCreate | ExternalToolUpdate
+	): BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig {
+		if (ExternalTool.isLti11Config(externalTool.config) && externalTool.config.secret) {
+			const encrypted = this.encryptionService.encrypt(externalTool.config.secret);
+
+			const updatedConfig = new Lti11ToolConfig({ ...externalTool.config, secret: encrypted });
+
+			return updatedConfig;
+		}
+
+		return externalTool.config;
 	}
 }

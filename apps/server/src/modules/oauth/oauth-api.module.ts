@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
-import { OauthSSOController } from './controller/oauth-sso.controller';
+import { OAuthController, OAuthUc } from './api';
 import { OauthModule } from './oauth.module';
-import { HydraOauthUc } from './uc';
 
 @Module({
-	imports: [OauthModule, LoggerModule],
-	controllers: [OauthSSOController],
-	providers: [HydraOauthUc],
+	imports: [OauthModule],
+	controllers: [OAuthController],
+	providers: [OAuthUc],
 })
-export class OauthApiModule {}
+export class OAuthApiModule {}

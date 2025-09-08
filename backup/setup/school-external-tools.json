@@ -25,10 +25,7 @@
 				"value": "HelloWorld"
 			}
 		],
-		"status": {
-			"isOutdatedOnScopeSchool": false,
-			"isDeactivated": false
-		}
+		"isDeactivated": false
 	},
 	{
 		"_id": {
@@ -51,36 +48,7 @@
 			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"schoolParameters": [],
-		"status": {
-			"isOutdatedOnScopeSchool": false,
-			"isDeactivated": false
-		}
-	},
-	{
-		"_id": {
-			"$oid": "65fd74c4d1c1ddf3bb2b05de"
-		},
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1711109316850"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1711109316850"
-			}
-		},
-		"tool": {
-			"$oid": "65fd44ba09e6ffd0bae3b8d3"
-		},
-		"school": {
-			"$oid": "5f2987e020834114b8efd6f8"
-		},
-		"schoolParameters": [],
-		"status": {
-			"isOutdatedOnScopeSchool": false,
-			"isDeactivated": false
-		}
+		"isDeactivated": false
 	},
 	{
 		"_id": {
@@ -103,10 +71,7 @@
 			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"schoolParameters": [],
-		"status": {
-			"isOutdatedOnScopeSchool": false,
-			"isDeactivated": false
-		}
+		"isDeactivated": false
 	},
 	{
 		"_id": {
@@ -129,10 +94,7 @@
 			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"schoolParameters": [],
-		"status": {
-			"isOutdatedOnScopeSchool": false,
-			"isDeactivated": false
-		}
+		"isDeactivated": false
 	},
 	{
 		"_id": {
@@ -155,9 +117,6 @@
 			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"schoolParameters": [],
-		"status": {
-			"isOutdatedOnScopeSchool": false,
-			"isDeactivated": false
-		}
+		"isDeactivated": false
 	}
 ]

@@ -5,11 +5,10 @@ import {
 	ColumnBoard,
 	MediaBoard,
 } from '@modules/board';
-import { CourseService } from '@modules/learnroom';
+import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
 import { Injectable } from '@nestjs/common';
-import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-
 import { CustomParameterType, ToolContextType } from '../../../common/enum';
 import { ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
@@ -48,7 +47,7 @@ export class AutoContextNameStrategy implements AutoParameterStrategy {
 	}
 
 	private async getCourseValue(courseId: EntityId): Promise<string> {
-		const course: Course = await this.courseService.findById(courseId);
+		const course: CourseEntity = await this.courseService.findById(courseId);
 
 		return course.name;
 	}

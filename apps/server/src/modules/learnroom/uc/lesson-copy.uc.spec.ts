@@ -3,20 +3,26 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { LessonCopyService, LessonService } from '@modules/lesson';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { lessonFactory } from '@modules/lesson/testing';
+import { Submission, Task } from '@modules/task/repo';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { CourseRepo, UserRepo } from '@shared/repo';
-import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
+import { setupEntities } from '@testing/database';
 import { LessonCopyUC } from './lesson-copy.uc';
 
 describe('lesson copy uc', () => {
 	let module: TestingModule;
 	let uc: LessonCopyUC;
-	let userRepo: DeepMocked<UserRepo>;
 	let lessonService: DeepMocked<LessonService>;
-	let courseRepo: DeepMocked<CourseRepo>;
+	let courseService: DeepMocked<CourseService>;
 	let authorisation: DeepMocked<AuthorizationService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
@@ -26,21 +32,17 @@ describe('lesson copy uc', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, CourseEntity, CourseGroupEntity, LessonEntity, Material, Task, Submission]);
 		module = await Test.createTestingModule({
 			providers: [
 				LessonCopyUC,
-				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
-				},
 				{
 					provide: LessonService,
 					useValue: createMock<LessonService>(),
 				},
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 				{
 					provide: AuthorizationService,
@@ -58,10 +60,9 @@ describe('lesson copy uc', () => {
 		}).compile();
 
 		uc = module.get(LessonCopyUC);
-		userRepo = module.get(UserRepo);
 		lessonService = module.get(LessonService);
 		authorisation = module.get(AuthorizationService);
-		courseRepo = module.get(CourseRepo);
+		courseService = module.get(CourseService);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
 	});
@@ -81,7 +82,7 @@ describe('lesson copy uc', () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
 
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId({ teachers: [user] });
+				const course = courseEntityFactory.buildWithId({ teachers: [user] });
 				const lesson = lessonFactory.build({ course });
 
 				const parentParams = { courseId: course.id, userId: user.id };
@@ -107,7 +108,7 @@ describe('lesson copy uc', () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId({ teachers: [user] });
+				const course = courseEntityFactory.buildWithId({ teachers: [user] });
 				const allLessons = lessonFactory.buildList(3, { course });
 				const copy = lessonFactory.buildWithId({ course });
 
@@ -126,7 +127,7 @@ describe('lesson copy uc', () => {
 
 				lessonService.findById.mockResolvedValueOnce(lesson);
 				lessonService.findByCourseIds.mockResolvedValueOnce([allLessons, allLessons.length]);
-				courseRepo.findById.mockResolvedValueOnce(course);
+				courseService.findById.mockResolvedValueOnce(course);
 
 				lessonCopyService.copyLesson.mockResolvedValueOnce(status);
 				copyHelperService.deriveCopyName.mockReturnValueOnce(lessonCopyName);
@@ -146,7 +147,7 @@ describe('lesson copy uc', () => {
 
 				await uc.copyLesson(userId, lessonId, parentParams);
 
-				expect(courseRepo.findById).not.toHaveBeenCalled();
+				expect(courseService.findById).not.toHaveBeenCalled();
 			});
 
 			it('should pass authorisation check without destination course', async () => {
@@ -164,7 +165,7 @@ describe('lesson copy uc', () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId({ teachers: [user] });
+				const course = courseEntityFactory.buildWithId({ teachers: [user] });
 				const allLessons = lessonFactory.buildList(3, { course });
 				const copy = lessonFactory.buildWithId({ course });
 
@@ -183,7 +184,7 @@ describe('lesson copy uc', () => {
 
 				lessonService.findById.mockResolvedValueOnce(lesson);
 				lessonService.findByCourseIds.mockResolvedValueOnce([allLessons, allLessons.length]);
-				courseRepo.findById.mockResolvedValueOnce(course);
+				courseService.findById.mockResolvedValueOnce(course);
 
 				lessonCopyService.copyLesson.mockResolvedValueOnce(status);
 				// lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(status);
@@ -225,7 +226,7 @@ describe('lesson copy uc', () => {
 
 				await uc.copyLesson(userId, lessonId, parentParams);
 
-				expect(courseRepo.findById).toBeCalledWith(course.id);
+				expect(courseService.findById).toBeCalledWith(course.id);
 			});
 
 			it('should check authorisation for lesson', async () => {
@@ -290,14 +291,13 @@ describe('lesson copy uc', () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId();
 
 				const parentParams = { courseId: course.id, userId: new ObjectId().toHexString() };
 
-				userRepo.findById.mockResolvedValueOnce(user);
 				lessonService.findById.mockResolvedValueOnce(lesson);
-				courseRepo.findById.mockResolvedValueOnce(course);
+				courseService.findById.mockResolvedValueOnce(course);
 				authorisation.hasPermission.mockReturnValueOnce(false);
 
 				return {
@@ -321,14 +321,13 @@ describe('lesson copy uc', () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId();
 
 				const parentParams = { courseId: course.id, userId: new ObjectId().toHexString() };
 
-				userRepo.findById.mockResolvedValueOnce(user);
 				lessonService.findById.mockResolvedValueOnce(lesson);
-				courseRepo.findById.mockResolvedValueOnce(course);
+				courseService.findById.mockResolvedValueOnce(course);
 				authorisation.checkPermission.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});

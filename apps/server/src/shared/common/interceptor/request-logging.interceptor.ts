@@ -1,6 +1,6 @@
-import { ICurrentUser } from '@modules/authentication/interface/user';
+import { ICurrentUser } from '@infra/auth-guard';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import { LegacyLogger, RequestLoggingBody } from '@src/core/logger';
+import { LegacyLogger, RequestLoggingBody } from '@core/logger';
 import { Request } from 'express';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';

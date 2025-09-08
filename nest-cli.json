@@ -39,7 +39,7 @@
 		"console": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "console/console",
+			"entryFile": "apps/server-console.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
@@ -72,28 +72,37 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
-		"files-storage": {
+		"sync-console": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "apps/files-storage.app",
+			"entryFile": "apps/sync-console.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
-		"files-storage-amqp": {
+		"schulconnex-group-provisioning-amqp": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "apps/files-storage-consumer.app",
+			"entryFile": "apps/schulconnex-group-provisioning-consumer.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
-		"preview-generator-amqp": {
+		"schulconnex-group-removal-amqp": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "apps/preview-generator-consumer.app",
+			"entryFile": "apps/schulconnex-group-removal-consumer.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"schulconnex-license-provisioning-amqp": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/schulconnex-license-provisioning-consumer.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
@@ -130,15 +139,6 @@
 			"type": "application",
 			"root": "apps/server",
 			"entryFile": "apps/admin-api-server.app",
-			"sourceRoot": "apps/server/src",
-			"compilerOptions": {
-				"tsConfigPath": "apps/server/tsconfig.app.json"
-			}
-		},
-		"tldraw": {
-			"type": "application",
-			"root": "apps/server",
-			"entryFile": "apps/tldraw.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"

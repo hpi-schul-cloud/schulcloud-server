@@ -2,7 +2,7 @@ import { AuthorizationModule } from '@modules/authorization';
 import { PseudonymModule } from '@modules/pseudonym';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import {
 	OauthProviderClientCrudUc,
 	OauthProviderConsentFlowUc,

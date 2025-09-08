@@ -20,6 +20,8 @@ spec:
       activeDeadlineSeconds: {{ SERVER_LDAP_SYNC_FULL_CRONJOB_TIMEOUT|default("39600", true) }}
       template:
         spec:
+          os:
+            name: linux
           containers:
           - name: api-ldapsync-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
@@ -29,7 +31,7 @@ spec:
             - secretRef:
                 name: api-secret
             - secretRef:
-                name: api-files-secret
+                name: session-valkey-password
             command: ['/schulcloud-server/scripts/ldapSync.sh']
             resources:
               limits:

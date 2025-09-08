@@ -1,15 +1,15 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { cleanupCollections } from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { Synchronization } from '../domain';
 import { synchronizationFactory } from '../domain/testing';
+import { SynchronizationStatusModel } from '../domain/types';
 import { SynchronizationEntity } from './entity';
 import { synchronizationEntityFactory } from './entity/testing';
 import { SynchronizationMapper } from './mapper';
 import { SynchronizationRepo } from './synchronization.repo';
-import { SynchronizationStatusModel } from '../domain/types';
 
 describe(SynchronizationRepo.name, () => {
 	let module: TestingModule;

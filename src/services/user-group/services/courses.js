@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider } = require('feathers-hooks-common');
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 const {
 	ifNotLocal,
 	restrictToCurrentSchool,
@@ -25,6 +26,7 @@ const {
 	addWholeClassToCourse,
 	deleteWholeClassFromCourse,
 	removeColumnBoard,
+	removeContextExternalTools,
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
@@ -60,6 +62,7 @@ class Courses {
 	}
 
 	remove(id, params) {
+		this.app.service('/calendar/courses').remove(id, prepareInternalParams(params));
 		return this.app.service('courseModel').remove(id, prepareInternalParams(params));
 	}
 
@@ -140,7 +143,7 @@ const courseHooks = {
 		create: [addWholeClassToCourse],
 		update: [],
 		patch: [addWholeClassToCourse],
-		remove: [removeColumnBoard],
+		remove: [removeColumnBoard, removeContextExternalTools],
 	},
 };
 

@@ -1,5 +1,4 @@
-import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
-import { SchulconnexGroupRole } from './schulconnex-group-role';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class SchulconnexSonstigeGruppenzugehoerigeResponse {
 	@IsString()
@@ -7,6 +6,6 @@ export class SchulconnexSonstigeGruppenzugehoerigeResponse {
 
 	@IsOptional()
 	@IsArray()
-	@IsEnum(SchulconnexGroupRole, { each: true })
-	rollen?: SchulconnexGroupRole[];
+	@IsString({ each: true })
+	rollen?: string[];
 }

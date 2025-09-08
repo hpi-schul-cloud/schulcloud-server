@@ -1,0 +1,4781 @@
+{
+	"swagger": "2.0",
+	"info": { "description": "TIP-Rest Api v1", "version": "1.0.0", "title": "" },
+	"basePath": "/tip-ms/api",
+	"tags": [
+		{ "name": "Zugangsdaten prüfen und verwalten" },
+		{ "name": "geschaeftspartneradmin_aktuellestammdatenbearbeitung" },
+		{ "name": "geschaeftspartneradmin_benutzergruppezuordnung" },
+		{ "name": "geschaeftspartneradmin_benutzerrollezuordnung" },
+		{ "name": "geschaeftspartneradmin_kommunikation" },
+		{ "name": "geschaeftspartneradmin_zugangsdaten" },
+		{ "name": "Ilea" },
+		{ "name": "klasse_detail" },
+		{ "name": "klasse_personalzuordnung" },
+		{ "name": "klasse_schuelerzuordnung" },
+		{ "name": "Klassenbildung" },
+		{ "name": "Klassenuebersicht" },
+		{ "name": "kurs_detail" },
+		{ "name": "kurs_personalzuordnung" },
+		{ "name": "kurs_schuelerzuordnung" },
+		{ "name": "Kursbildung" },
+		{ "name": "schueler_detail" },
+		{ "name": "schueler_uebernahme" },
+		{ "name": "Schueleruebersicht" },
+		{ "name": "backend_schule_tsc_sso_links" },
+		{ "name": "backend_stammdaten_ilea_aufgabenpaketjahrgang" },
+		{ "name": "backend_stammdaten_tooltipbearbeiten" },
+		{ "name": "backend_systempflege_protokolleintrag" },
+		{ "name": "Mediotheksexport" },
+		{ "name": "Berechtigungen" },
+		{ "name": "Export" },
+		{ "name": "Klassenverwaltung" },
+		{ "name": "Schulpersonalverwaltung" }
+	],
+	"schemes": ["https"],
+	"securityDefinitions": {
+		"Bearer": {
+			"type": "apiKey",
+			"name": "Authorization",
+			"in": "header"
+		}
+	},
+	"consumes": ["application/json"],
+	"produces": ["application/json"],
+	"paths": {
+		"/info": {
+			"get": {
+				"operationId": "getInfo",
+				"produces": ["text/plain"],
+				"parameters": [],
+				"responses": { "200": { "description": "successful operation", "headers": {}, "schema": { "type": "string" } } }
+			}
+		},
+		"/authentication": {
+			"post": {
+				"tags": ["Zugangsdaten prüfen und verwalten"],
+				"summary": "Zugangsdaten hinzufügen",
+				"description": "",
+				"operationId": "insertZugang",
+				"parameters": [
+					{
+						"name": "benutzername",
+						"in": "formData",
+						"description": "benutzername",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "kennwort", "in": "formData", "description": "kennwort", "required": true, "type": "string" },
+					{
+						"name": "kennwortWiederholung",
+						"in": "formData",
+						"description": "kennwortWiederholung",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			},
+			"put": {
+				"tags": ["Zugangsdaten prüfen und verwalten"],
+				"summary": "Zugangsdaten ändern",
+				"description": "",
+				"operationId": "updateZugang",
+				"parameters": [
+					{
+						"name": "benutzername",
+						"in": "formData",
+						"description": "benutzername",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "currentBenutzername",
+						"in": "formData",
+						"description": "currentBenutzername",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "currentKennwort",
+						"in": "formData",
+						"description": "Aktuelles Kennwort",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "kennwort", "in": "formData", "description": "kennwort", "required": true, "type": "string" },
+					{
+						"name": "kennwortWiederholung",
+						"in": "formData",
+						"description": "kennwortWiederholung",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "boolean" } } }
+			}
+		},
+		"/authentication/loginId": {
+			"get": {
+				"tags": ["Zugangsdaten prüfen und verwalten"],
+				"summary": "Liefert den aktuellen Benutzername",
+				"description": "",
+				"operationId": "getCurrentUser",
+				"parameters": [
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			}
+		},
+		"/backend_geschaeftspartneradmin_aktuellestammdatenbearbeitung/standortzuordnungen": {
+			"get": {
+				"tags": ["geschaeftspartneradmin_aktuellestammdatenbearbeitung"],
+				"summary": "liefert die Stammdaten eines Geschäftspartners",
+				"description": "",
+				"operationId": "getStandortZuordnungen",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "gepaId",
+						"in": "query",
+						"description": "ID des Geschäftspartners",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjStandortZuordnung" } }
+					}
+				}
+			}
+		},
+		"/backend_geschaeftspartneradmin_aktuellestammdatenbearbeitung/dienststellen": {
+			"get": {
+				"tags": ["geschaeftspartneradmin_aktuellestammdatenbearbeitung"],
+				"summary": "liefert die Dienststellenliste",
+				"description": "",
+				"operationId": "getListDienststelle",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "dienststelleNummer",
+						"in": "query",
+						"description": "Nummer der Dienststelle eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "dienststelleName",
+						"in": "query",
+						"description": "Name der Dienststelle eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "strasse",
+						"in": "query",
+						"description": "Straße der Dienststelle eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "postleitzahl",
+						"in": "query",
+						"description": "Postleitzahl der Dienststelle eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "ort",
+						"in": "query",
+						"description": "Ort der Dienststelle eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjDienststelle" } }
+					}
+				}
+			}
+		},
+		"/backend_geschaeftspartneradmin_aktuellestammdatenbearbeitung": {
+			"post": {
+				"tags": ["geschaeftspartneradmin_aktuellestammdatenbearbeitung"],
+				"summary": "Setze neue Stammdienststelle",
+				"description": "",
+				"operationId": "insertStammdienststelle",
+				"consumes": ["application/x-www-form-urlencoded"],
+				"parameters": [
+					{
+						"name": "gepaId",
+						"in": "formData",
+						"description": "ID des Geschäftspartners",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "dienId",
+						"in": "formData",
+						"description": "ID der neuen Stammdienststelle",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "persUser",
+						"in": "formData",
+						"description": "User der zu ändernden Person",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "persXPts",
+						"in": "formData",
+						"description": "XPts der zu ändernden Person",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "altPestId",
+						"in": "formData",
+						"description": "ID der letzen Person-Standort-Zuordnung",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "altPestUser",
+						"in": "formData",
+						"description": "User der letzen Person-Standort-Zuordnung",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "altPestXPts",
+						"in": "formData",
+						"description": "XPts der letzen Person-Standort-Zuordnung",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "altAnscId",
+						"in": "formData",
+						"description": "ID der letzen Anschrift",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "altAnscUser",
+						"in": "formData",
+						"description": "User der letzen Anschrift",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "altAnscXPts",
+						"in": "formData",
+						"description": "XPts der letzen Anschrift",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "neuPestId",
+						"in": "formData",
+						"description": "ID der neuen Person-Standort-Zuordnung",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "neuPestUser",
+						"in": "formData",
+						"description": "User der neuen Person-Standort-Zuordnung",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "neuPestXPts",
+						"in": "formData",
+						"description": "XPts der neuen Person-Standort-Zuordnung",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "neuAnscId",
+						"in": "formData",
+						"description": "ID der neuen Anschrift",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "neuAnscUser",
+						"in": "formData",
+						"description": "User der neuen Anschrift",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "neuAnscXPts",
+						"in": "formData",
+						"description": "XPts der neuen Anschrift",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/backend_geschaeftspartneradmin_aktuellestammdatenbearbeitung/person": {
+			"get": {
+				"tags": ["geschaeftspartneradmin_aktuellestammdatenbearbeitung"],
+				"summary": "liefert die Stammdaten eines Geschäftspartners",
+				"description": "",
+				"operationId": "getPerson",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "gepaId",
+						"in": "query",
+						"description": "ID des Geschäftspartners",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/RobjPerson" } }
+				}
+			}
+		},
+		"/backend_geschaeftspartneradmin_benutzergruppezuordnung/zuordnungen": {
+			"get": {
+				"tags": ["geschaeftspartneradmin_benutzergruppezuordnung"],
+				"summary": "liefert die Gruppenzuordnungen eines Geschäftspartners",
+				"description": "",
+				"operationId": "getListBenutzergruppeZuordnungByGepa",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "gepaId",
+						"in": "query",
+						"description": "ID des Geschäftspartners",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjBenutzergruppeZuordnung" } }
+					}
+				}
+			}
+		},
+		"/backend_geschaeftspartneradmin_benutzergruppezuordnung/gruppen": {
+			"get": {
+				"tags": ["geschaeftspartneradmin_benutzergruppezuordnung"],
+				"summary": "liefert die Gruppen ohne die, die dem übergebenen Geschäftspartner zugeordnet sind",
+				"description": "",
+				"operationId": "getListBenutzergruppeOhneGepaGruppen",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "gepaId",
+						"in": "query",
+						"description": "ID des Geschäftspartners",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "benutzergruppeName",
+						"in": "query",
+						"description": "Name der Benutzergruppe",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjBenutzergruppe" } }
+					}
+				}
+			}
+		},
+		"/backend_geschaeftspartneradmin_benutzergruppezuordnung/save": {
+			"put": {
+				"tags": ["geschaeftspartneradmin_benutzergruppezuordnung"],
+				"summary": "ermöglicht das Einfügen, Updaten, Löschen von Benutzergruppenzuordnungen eines Geschäftspartners",
+				"description": "",
+				"operationId": "insertGruppenzuordnungen",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonZuordnung",
+						"in": "formData",
+						"description": "Daten der Benutzergruppenzuordnungen im JSON Format",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "gepaId",
+						"in": "query",
+						"description": "ID des Geschäftspartners",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/backend_geschaeftspartneradmin_benutzerrollezuordnung/auswahl_klasse": {
+			"get": {
+				"tags": ["geschaeftspartneradmin_benutzerrollezuordnung"],
+				"summary": "liefert die Klassenliste",
+				"description": "",
+				"operationId": "getListAuswahlKlassen",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjKlasse" } }
+					}
+				}
+			}
+		},
+		"/backend_geschaeftspartneradmin_benutzerrollezuordnung/schulen": {
+			"get": {
+				"tags": ["geschaeftspartneradmin_benutzerrollezuordnung"],
+				"summary": "liefert die Schulenliste",
+				"description": "",
+				"operationId": "getListSchulen",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "dienststellennummer",
+						"in": "query",
+						"description": "Nummer der Schule eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "name",
+						"in": "query",
+						"description": "Name der Schule eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "strasse",
+						"in": "query",
+						"description": "Straße der Schule eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "postleitzahl",
+						"in": "query",
+						"description": "Postleitzahl der Schule eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "ort",
+						"in": "query",
+						"description": "Ort der Schule eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schulartId",
+						"in": "query",
+						"description": "ID der Schulart eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjSchule" } }
+					}
+				}
+			}
+		},
+		"/backend_geschaeftspartneradmin_benutzerrollezuordnung/save": {
+			"put": {
+				"tags": ["geschaeftspartneradmin_benutzerrollezuordnung"],
+				"summary": "ermöglicht das Einfügen, Updaten, Löschen von Benutzerrollenzuordnungen eines Geschäftspartners",
+				"description": "",
+				"operationId": "updateBenutzerrolleZuordnung",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonZuordnung",
+						"in": "formData",
+						"description": "Daten der Benutzerrollenzuordnungen im JSON Format",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "gepaId",
+						"in": "query",
+						"description": "ID des Geschäftspartners",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/backend_geschaeftspartneradmin_benutzerrollezuordnung/listeRolleZuordnung": {
+			"get": {
+				"tags": ["geschaeftspartneradmin_benutzerrollezuordnung"],
+				"summary": "liefert die Rollenzuordnungen eines Geschäftspartners",
+				"description": "",
+				"operationId": "getListBenutzerrolleZuordnungByGepa",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "gepaId",
+						"in": "query",
+						"description": "GepaId des Geschäftspartners",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjBenutzerrolleZuordnung" } }
+					}
+				}
+			}
+		},
+		"/backend_geschaeftspartneradmin_kommunikation": {
+			"get": {
+				"tags": ["geschaeftspartneradmin_kommunikation"],
+				"summary": "liefert die Kommunikationsverbindungen eines Geschäftspartners",
+				"description": "",
+				"operationId": "getListeKommunikationByGepaId",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "gepaId",
+						"in": "query",
+						"description": "GepaId des Geschäftspartners",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjKommunikation" } }
+					}
+				}
+			},
+			"put": {
+				"tags": ["geschaeftspartneradmin_kommunikation"],
+				"summary": "ermöglicht das Einfügen und Löschen von Kommunikationsverbindungen eines Geschäftspartners",
+				"description": "",
+				"operationId": "updateGepaKommunikation",
+				"parameters": [
+					{ "name": "gepaId", "in": "formData", "required": false, "type": "string" },
+					{ "name": "kommunikationJson", "in": "formData", "required": false, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/backend_geschaeftspartneradmin_kommunikation/auswahl_kommunikationsart": {
+			"get": {
+				"tags": ["geschaeftspartneradmin_kommunikation"],
+				"summary": "liefert die Kommunikationsarten als Auswahlliste",
+				"description": "",
+				"operationId": "getAuswahlKommunikationsart",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_geschaeftspartneradmin_zugangsdaten": {
+			"get": {
+				"tags": ["geschaeftspartneradmin_zugangsdaten"],
+				"summary": "liefert die Zugangsdaten eines Geschäftspartners",
+				"description": "",
+				"operationId": "getZugangsdaten",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "gepaId",
+						"in": "query",
+						"description": "GepaId des Geschäftspartners",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/DobjZugangsdaten" } }
+				}
+			},
+			"put": {
+				"tags": ["geschaeftspartneradmin_zugangsdaten"],
+				"summary": "ändern die Zugangsdaten eines Geschäftspartners",
+				"description": "",
+				"operationId": "updateZugangsdaten",
+				"parameters": [
+					{
+						"name": "jsonZugang",
+						"in": "formData",
+						"description": "Zugangsdaten im JSON Format",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/public_backend_kennwortneu": {
+			"put": {
+				"summary": "Zugangsdaten ändern",
+				"description": "",
+				"operationId": "updateZugang_1",
+				"consumes": ["application/x-www-form-urlencoded"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "currentBenutzername",
+						"in": "formData",
+						"description": "currentBenutzername",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "currentKennwort",
+						"in": "formData",
+						"description": "currentKennwort",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "kennwort", "in": "formData", "description": "kennwort", "required": true, "type": "string" },
+					{
+						"name": "kennwortWiederholung",
+						"in": "formData",
+						"description": "kennwortWiederholung",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "boolean" } } }
+			}
+		},
+		"/public_backend_kennwortneu/getKennwortLaenge": {
+			"get": {
+				"summary": "Liefert den zulaessigen Wert für die Kennwortlaenge.",
+				"description": "",
+				"operationId": "getKennwortLaenge",
+				"parameters": [],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			}
+		},
+		"/public_backend_report": {
+			"get": {
+				"summary": "Liefert einen Kopfzeileninformationen für Reports",
+				"description": "",
+				"operationId": "getKopfzeilenInformationen",
+				"produces": ["application/json"],
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "$ref": "#/definitions/DobjKopfzeilenInformationen" }
+					}
+				}
+			}
+		},
+		"/backend_schule_ilea/searchExamen": {
+			"get": {
+				"tags": ["Ilea"],
+				"summary": "liefert alle Examen einer Schule",
+				"description": "",
+				"operationId": "getListExamen",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjExamen" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_ilea/examen": {
+			"get": {
+				"tags": ["Ilea"],
+				"summary": "liefert ein Examen samt Teilnehmer einer Schule",
+				"description": "",
+				"operationId": "getExamen",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "examenId",
+						"in": "query",
+						"description": "ID des Examen eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/DobjExamen" } }
+				}
+			},
+			"post": {
+				"tags": ["Ilea"],
+				"summary": "Einfügen eines Examen",
+				"description": "",
+				"operationId": "insertExam",
+				"consumes": ["application/x-www-form-urlencoded"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonExamen",
+						"in": "formData",
+						"description": "Daten des Examen im JSON Format",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "schuleId", "in": "query", "description": "Schule ID", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			},
+			"delete": {
+				"tags": ["Ilea"],
+				"summary": "löscht ein Examen samt aller Unterdaten",
+				"description": "",
+				"operationId": "deleteExamen",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonExamenIds",
+						"in": "formData",
+						"description": "ID des Examen eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/backend_schule_ilea/teilnehmer": {
+			"get": {
+				"tags": ["Ilea"],
+				"summary": "liefert alle Teilnehmer eines Examen",
+				"description": "",
+				"operationId": "getListExamenTeilnehmer",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "schuleId", "in": "query", "description": "ID der Schule", "required": true, "type": "string" },
+					{ "name": "examenId", "in": "query", "description": "ID des Examen", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjSchueler" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_ilea/schueler": {
+			"get": {
+				"tags": ["Ilea"],
+				"summary": "liefert alle Schueler einer Klasse",
+				"description": "",
+				"operationId": "getListSchueler",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "schuleId", "in": "query", "description": "ID der Schule", "required": true, "type": "string" },
+					{ "name": "kursId", "in": "query", "description": "ID der Klasse", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjSchueler" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_ilea/auswertung": {
+			"get": {
+				"tags": ["Ilea"],
+				"summary": "liefert ein Examen samt Teilnehmer einer Schule",
+				"description": "",
+				"operationId": "getAuswertung",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "examenId",
+						"in": "query",
+						"description": "ID des Examen eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/DobjDatei" } }
+				}
+			}
+		},
+		"/backend_schule_ilea/auswahl_kurs": {
+			"get": {
+				"tags": ["Ilea"],
+				"summary": "liefert alle aktiven Kurse der schule",
+				"description": "",
+				"operationId": "getListkurs",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "ileaPaketCode",
+						"in": "query",
+						"description": "ileaPaketCode",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_ilea/aufgaben": {
+			"get": {
+				"tags": ["Ilea"],
+				"summary": "liefert alle aufgaben",
+				"description": "",
+				"operationId": "getListAufgaben",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" },
+					{ "name": "paketCode", "in": "query", "description": "paketCode", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/IleaAufgabe" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_ilea/auswahl_aufgabenpaket": {
+			"get": {
+				"tags": ["Ilea"],
+				"summary": "liefert alle Aufgabenpakete",
+				"description": "",
+				"operationId": "getListAufgabenpaket",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAufgabenpaketAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_ilea/printExamen": {
+			"get": {
+				"tags": ["Ilea"],
+				"summary": "Liefert Examen im Format PDF zurück.",
+				"description": "",
+				"operationId": "print",
+				"parameters": [
+					{
+						"name": "examenId",
+						"in": "query",
+						"description": "ID des Examen eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "hostname", "in": "query", "description": "hostname", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/backend_schule_klasse_detail/schueler_vorgaengerklasse": {
+			"get": {
+				"tags": ["klasse_detail"],
+				"summary": "Liefert die Schueler einer bestimmten Klasse.",
+				"description": "",
+				"operationId": "getListSchueler_1",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "klasseId", "in": "query", "description": "KlasseID eingeben", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjSchueler" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_klasse_detail/auswahl_halbjahr": {
+			"get": {
+				"tags": ["klasse_detail"],
+				"summary": "liefert die Halbjahreliste",
+				"description": "",
+				"operationId": "getListHalbjahr",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjHalbjahr" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_klasse_detail/{id}": {
+			"get": {
+				"tags": ["klasse_detail"],
+				"summary": "liest eine Klasse",
+				"description": "",
+				"operationId": "getKlasse",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "id", "in": "path", "description": "ID der Klasse eingeben", "required": true, "type": "string" },
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/DobjKlasse" } }
+				}
+			},
+			"put": {
+				"tags": ["klasse_detail"],
+				"summary": "modifiziert eine Klasse",
+				"description": "",
+				"operationId": "updateKlasse",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonKlasse",
+						"in": "formData",
+						"description": "Daten der Klasse im JSON Format",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			},
+			"delete": {
+				"tags": ["klasse_detail"],
+				"summary": "löscht eine Klasse",
+				"description": "",
+				"operationId": "deleteKlasse",
+				"parameters": [
+					{ "name": "id", "in": "path", "description": "ID der Klasse", "required": true, "type": "string" },
+					{
+						"name": "version",
+						"in": "formData",
+						"description": "Zeitstempel der Klasse",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			}
+		},
+		"/backend_schule_klasse_detail": {
+			"post": {
+				"tags": ["klasse_detail"],
+				"summary": "Einfügen einer Klasse",
+				"description": "",
+				"operationId": "insertKlasse",
+				"consumes": ["application/x-www-form-urlencoded"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonKlasse",
+						"in": "formData",
+						"description": "Daten der Klasse im JSON Format",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			}
+		},
+		"/backend_schule_klasse_detail/auswahl_vorgaengerKlasse": {
+			"get": {
+				"tags": ["klasse_detail"],
+				"summary": "Liefert die Klassen eines des vorangegangen Halbjahres für eine Auswahlliste.",
+				"description": "",
+				"operationId": "getListAuswahlVorgaengerKlassen",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "halbjahrId",
+						"in": "query",
+						"description": "HalbjahrID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjVorgaengerklasse" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_klasse_personalzuordnung/auswahl_klassenlehrerFunktion": {
+			"get": {
+				"tags": ["klasse_personalzuordnung"],
+				"summary": "Liefert die möglichen Funktionen von Lehrern für eine Auswahlliste",
+				"description": "",
+				"operationId": "getListAuswahlKlassenlehrerFunktion",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjKodierung" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_klasse_personalzuordnung/auswahl_klassenlehrer": {
+			"get": {
+				"tags": ["klasse_personalzuordnung"],
+				"summary": "Liefert die Lehrer einer Schule für eine Auswahlliste",
+				"description": "",
+				"operationId": "getListAuswahlKlassenlehrer",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjKodierung" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_klasse_personalzuordnung": {
+			"get": {
+				"tags": ["klasse_personalzuordnung"],
+				"summary": "liest die Personalzuordnungen",
+				"description": "",
+				"operationId": "getPersonalzuordnung",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "klasseId",
+						"in": "query",
+						"description": "ID der Klasse eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjKlassenlehrerZuordnung" } }
+					}
+				}
+			},
+			"put": {
+				"tags": ["klasse_personalzuordnung"],
+				"summary": "modifiziert die Personalzuordnungen",
+				"description": "",
+				"operationId": "updatePersonalzuordnung",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonPersonalzuordnungen",
+						"in": "formData",
+						"description": "Daten der Personalzuordnungen im JSON Format",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "klasseId", "in": "formData", "description": "ID der Klasse", "required": true, "type": "string" },
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			}
+		},
+		"/backend_schule_klasse_schuelerzuordnung/auswahl_klasse": {
+			"get": {
+				"tags": ["klasse_schuelerzuordnung"],
+				"summary": "liefert die Klassenliste",
+				"description": "",
+				"operationId": "getListAuswahlKlassenByHalbjahr",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "halbjahrId",
+						"in": "query",
+						"description": "HalbjahrID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjKlasse" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_klasse_schuelerzuordnung/auswahl_halbjahr": {
+			"get": {
+				"tags": ["klasse_schuelerzuordnung"],
+				"summary": "liefert die Halbjahreliste",
+				"description": "",
+				"operationId": "getListHalbjahr_1",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjHalbjahr" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_klasse_schuelerzuordnung": {
+			"get": {
+				"tags": ["klasse_schuelerzuordnung"],
+				"summary": "liefert Schülerzuordnungen zu Klassen",
+				"description": "",
+				"operationId": "getListSchuelerzuordnung",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuelerNachname",
+						"in": "query",
+						"description": "Nachname des Schülers eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schuelerVorname",
+						"in": "query",
+						"description": "Vorname des Schülers eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "klasseId",
+						"in": "query",
+						"description": "Id der Klasse eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "halbjahrId",
+						"in": "query",
+						"description": "ID des Halbjahres eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "kzAktiv", "in": "query", "description": "Ist Aktiv", "required": false, "type": "string" },
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" },
+					{
+						"name": "currentKlasseId",
+						"in": "query",
+						"description": "ID der aktuellen Klasse",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjSchuelerzuordnung" } }
+					}
+				}
+			},
+			"put": {
+				"tags": ["klasse_schuelerzuordnung"],
+				"summary": "Überträgt Schüler in eine neue Klasse",
+				"description": "",
+				"operationId": "updateSchuelerzuordnung",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonSchueler",
+						"in": "formData",
+						"description": "Daten der Schüler im JSON Format",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "zielKlasseId",
+						"in": "query",
+						"description": "ID der Zielklasse eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjHalbjahr" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_klassenbildung/auswahl_halbjahr": {
+			"get": {
+				"tags": ["Klassenbildung"],
+				"summary": "liefert die Halbjahreliste",
+				"description": "",
+				"operationId": "getListHalbjahr_2",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjHalbjahr" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_klassenbildung": {
+			"get": {
+				"tags": ["Klassenbildung"],
+				"summary": "liefert Klassen",
+				"description": "",
+				"operationId": "getListKlasse",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "name",
+						"in": "query",
+						"description": "Name der Klasse eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "halbjahrId",
+						"in": "query",
+						"description": "ID des Halbjahres eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "kzAktiv", "in": "query", "description": "Ist Aktiv", "required": false, "type": "string" },
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjKlasse" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_klassenbildung/print": {
+			"get": {
+				"tags": ["Klassenbildung"],
+				"summary": "Liefert die Statistik als Dokument im Format PDF zurück.",
+				"description": "",
+				"operationId": "print_1",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "schuleId", "in": "query", "description": "schuleId", "required": true, "type": "string" },
+					{ "name": "name", "in": "query", "description": "name", "required": true, "type": "string" },
+					{ "name": "halbjahrId", "in": "query", "description": "halbjahrId", "required": true, "type": "string" },
+					{ "name": "kzAktiv", "in": "query", "description": "kzAktiv", "required": true, "type": "string" },
+					{ "name": "selectedIds", "in": "query", "description": "selectedIds", "required": true, "type": "string" },
+					{ "name": "reportTyp", "in": "query", "description": "reportTyp", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/DobjDatei" } }
+				}
+			}
+		},
+		"/backend_schule_klassenuebersicht/schueler": {
+			"get": {
+				"tags": ["Klassenuebersicht"],
+				"summary": "liest einen Schüler",
+				"description": "",
+				"operationId": "getSchueler",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "id", "in": "query", "description": "Schüler ID eingeben", "required": true, "type": "string" },
+					{
+						"name": "klasseId",
+						"in": "query",
+						"description": "Klassen ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/RobjSchueler" } }
+				}
+			}
+		},
+		"/backend_schule_kurs_detail/schueler_klasse": {
+			"get": {
+				"tags": ["kurs_detail"],
+				"summary": "Liefert die Schueler einer bestimmten Kurs.",
+				"description": "",
+				"operationId": "getListSchueler_2",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "klasseId", "in": "query", "description": "KlasseId eingeben", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjSchueler" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_kurs_detail/{id}": {
+			"get": {
+				"tags": ["kurs_detail"],
+				"summary": "liest eine Kurs",
+				"description": "",
+				"operationId": "getKurs",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "id", "in": "path", "description": "ID der Kurs eingeben", "required": true, "type": "string" },
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/DobjKurs" } }
+				}
+			},
+			"put": {
+				"tags": ["kurs_detail"],
+				"summary": "modifiziert eine Kurs",
+				"description": "",
+				"operationId": "updateKurs",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonKurs",
+						"in": "formData",
+						"description": "Daten der Kurs im JSON Format",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			},
+			"delete": {
+				"tags": ["kurs_detail"],
+				"summary": "löscht eine Kurs",
+				"description": "",
+				"operationId": "deleteKurs",
+				"parameters": [
+					{ "name": "id", "in": "path", "description": "ID der Kurs", "required": true, "type": "string" },
+					{
+						"name": "version",
+						"in": "formData",
+						"description": "Zeitstempel der Kurs",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			}
+		},
+		"/backend_schule_kurs_detail/auswahl_fachrichtung": {
+			"get": {
+				"tags": ["kurs_detail"],
+				"summary": "liefert die Fachrichtungen",
+				"description": "",
+				"operationId": "getListFachrichtung",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_kurs_detail/auswahl_stufe": {
+			"get": {
+				"tags": ["kurs_detail"],
+				"summary": "liefert die Stufe",
+				"description": "",
+				"operationId": "getListStufe",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_kurs_detail": {
+			"post": {
+				"tags": ["kurs_detail"],
+				"summary": "Einfügen einer Kurs",
+				"description": "",
+				"operationId": "insertKurs",
+				"consumes": ["application/x-www-form-urlencoded"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonKurs",
+						"in": "formData",
+						"description": "Daten der Kurs im JSON Format",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			}
+		},
+		"/backend_schule_kurs_detail/auswahl_Klasse": {
+			"get": {
+				"tags": ["kurs_detail"],
+				"summary": "Liefert die Kurs eines des vorangegangen Halbjahres für eine Auswahlliste.",
+				"description": "",
+				"operationId": "getListAuswahlVorgaengerKurs",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "halbjahrId",
+						"in": "query",
+						"description": "HalbjahrID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjVorgaengerkurs" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_kurs_detail/auswahl_halbjahr": {
+			"get": {
+				"tags": ["kurs_detail"],
+				"summary": "liefert die Halbjahreliste",
+				"description": "",
+				"operationId": "getListHalbjahr_3",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjHalbjahr" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_kurs_personalzuordnung/auswahl_kurslehrer": {
+			"get": {
+				"tags": ["kurs_personalzuordnung"],
+				"summary": "Liefert die Lehrer einer Schule für eine Auswahlliste",
+				"description": "",
+				"operationId": "getListAuswahlKurslehrer",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjKodierung" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_kurs_personalzuordnung/auswahl_kurslehrerFunktion": {
+			"get": {
+				"tags": ["kurs_personalzuordnung"],
+				"summary": "Liefert die möglichen Funktionen von Lehrern für eine Auswahlliste",
+				"description": "",
+				"operationId": "getListAuswahlKurslehrerFunktion",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjKodierung" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_kurs_personalzuordnung": {
+			"get": {
+				"tags": ["kurs_personalzuordnung"],
+				"summary": "liest die Personalzuordnungen",
+				"description": "",
+				"operationId": "getPersonalzuordnung_1",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "kursId",
+						"in": "query",
+						"description": "ID der Kurs eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjKurslehrerZuordnung" } }
+					}
+				}
+			},
+			"put": {
+				"tags": ["kurs_personalzuordnung"],
+				"summary": "modifiziert die Personalzuordnungen",
+				"description": "",
+				"operationId": "updatePersonalzuordnung_1",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonPersonalzuordnungen",
+						"in": "formData",
+						"description": "Daten der Personalzuordnungen im JSON Format",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "kursId", "in": "formData", "description": "ID der Kurs", "required": true, "type": "string" },
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			}
+		},
+		"/backend_schule_kurs_schuelerzuordnung/suchen_schueler": {
+			"get": {
+				"tags": ["kurs_schuelerzuordnung"],
+				"summary": "liefert Schülerzuordnungen zu Kurs",
+				"description": "",
+				"operationId": "getListSchueler_3",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuelerNachname",
+						"in": "query",
+						"description": "Nachname des Schülers eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schuelerVorname",
+						"in": "query",
+						"description": "Vorname des Schülers eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "kursId",
+						"in": "query",
+						"description": "Id der Kurs eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "klasseId",
+						"in": "query",
+						"description": "Id der Klasse eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "halbjahrId",
+						"in": "query",
+						"description": "ID des Halbjahres eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "kzAktiv", "in": "query", "description": "Ist Aktiv", "required": false, "type": "string" },
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" },
+					{
+						"name": "currentKursId",
+						"in": "query",
+						"description": "ID dem aktuellen Kurs",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjSchuelerzuordnung" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_kurs_schuelerzuordnung/auswahl_halbjahr": {
+			"get": {
+				"tags": ["kurs_schuelerzuordnung"],
+				"summary": "liefert die Halbjahreliste",
+				"description": "",
+				"operationId": "getListHalbjahr_4",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjHalbjahr" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_kurs_schuelerzuordnung": {
+			"get": {
+				"tags": ["kurs_schuelerzuordnung"],
+				"operationId": "getListSchuelerzuordnung_1",
+				"consumes": ["text/html"],
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "kursId", "in": "query", "description": "Klasse ID eingeben", "required": false, "type": "string" },
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"headers": {},
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjSchuelerzuordnung" } }
+					}
+				}
+			},
+			"put": {
+				"tags": ["kurs_schuelerzuordnung"],
+				"summary": "Überträgt Schüler in einen neuen Kurs",
+				"description": "",
+				"operationId": "updateSchuelerzuordnung_1",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonSchueler",
+						"in": "formData",
+						"description": "Daten der Schüler im JSON Format",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "zielKursId",
+						"in": "query",
+						"description": "ID der Zielkurs eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/backend_schule_kurs_schuelerzuordnung/auswahl_kurs": {
+			"get": {
+				"tags": ["kurs_schuelerzuordnung"],
+				"summary": "liefert die Kursliste",
+				"description": "",
+				"operationId": "getListAuswahlKursByHalbjahr",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "halbjahrId",
+						"in": "query",
+						"description": "HalbjahrID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjKurs" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_kursbildung": {
+			"get": {
+				"tags": ["Kursbildung"],
+				"summary": "liefert Kurse",
+				"description": "",
+				"operationId": "getListKurs_1",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "name",
+						"in": "query",
+						"description": "Name der Kurs eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "halbjahrId",
+						"in": "query",
+						"description": "ID des Halbjahres eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "kzAktiv", "in": "query", "description": "Ist Aktiv", "required": false, "type": "string" },
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjKurs" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_kursbildung/auswahl_halbjahr": {
+			"get": {
+				"tags": ["Kursbildung"],
+				"summary": "liefert die Halbjahreliste",
+				"description": "",
+				"operationId": "getListHalbjahr_5",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjHalbjahr" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_kursbildung/print": {
+			"get": {
+				"tags": ["Kursbildung"],
+				"summary": "Liefert die Statistik als Dokument im Format PDF zurück.",
+				"description": "",
+				"operationId": "print_2",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "schuleId", "in": "query", "description": "schuleId", "required": true, "type": "string" },
+					{ "name": "name", "in": "query", "description": "name", "required": true, "type": "string" },
+					{ "name": "halbjahrId", "in": "query", "description": "halbjahrId", "required": true, "type": "string" },
+					{ "name": "kzAktiv", "in": "query", "description": "kzAktiv", "required": true, "type": "string" },
+					{ "name": "selectedIds", "in": "query", "description": "selectedIds", "required": true, "type": "string" },
+					{ "name": "reportTyp", "in": "query", "description": "reportTyp", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/DobjDatei" } }
+				}
+			}
+		},
+		"/backend_schule_schueler_detail/{id}": {
+			"get": {
+				"tags": ["schueler_detail"],
+				"summary": "liest einen Schüler",
+				"description": "",
+				"operationId": "getSchueler_1",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "id", "in": "path", "description": "Schüler ID eingeben", "required": true, "type": "string" },
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/DobjSchueler" } }
+				}
+			},
+			"put": {
+				"tags": ["schueler_detail"],
+				"summary": "modifiziert einen Schüler",
+				"description": "",
+				"operationId": "updateSchueler",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "id", "in": "path", "description": "Schüler ID", "required": true, "type": "string" },
+					{ "name": "version", "in": "formData", "description": "Version", "required": true, "type": "string" },
+					{
+						"name": "vorname",
+						"in": "formData",
+						"description": "Vorname des Schülers",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "nachname",
+						"in": "formData",
+						"description": "Nachname des Schülers",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "geburtsdatum",
+						"in": "formData",
+						"description": "geburtsdatum",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "email",
+						"in": "formData",
+						"description": "Email des Schülers",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			}
+		},
+		"/backend_schule_schueler_detail/auswahl_halbjahr_aktuell": {
+			"get": {
+				"tags": ["schueler_detail"],
+				"summary": "liefert die Halbjahreliste",
+				"description": "",
+				"operationId": "getListHalbjahrAktuell",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjHalbjahr" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_schueler_detail/auswahl_klasse": {
+			"get": {
+				"tags": ["schueler_detail"],
+				"summary": "liefert die Klassenliste",
+				"description": "",
+				"operationId": "getListAuswahlKlassenByHalbjahr_1",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "halbjahrId",
+						"in": "query",
+						"description": "HalbjahrID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjKlasse" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_schueler_detail": {
+			"post": {
+				"tags": ["schueler_detail"],
+				"summary": "Einfügen eines Schülers",
+				"description": "",
+				"operationId": "insertSchueler",
+				"consumes": ["application/x-www-form-urlencoded"],
+				"parameters": [
+					{
+						"name": "vorname",
+						"in": "formData",
+						"description": "Vorname des Schülers",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "nachname",
+						"in": "formData",
+						"description": "Nachname des Schülers",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "geburtsdatum",
+						"in": "formData",
+						"description": "geburtsdatum",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "klasseId",
+						"in": "formData",
+						"description": "Klasse-ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			}
+		},
+		"/backend_schule_schueler_uebernahme/auswahl_halbjahr": {
+			"get": {
+				"tags": ["schueler_uebernahme"],
+				"summary": "liefert die Halbjahreliste",
+				"description": "",
+				"operationId": "getListHalbjahr_6",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjHalbjahr" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_schueler_uebernahme/klasse": {
+			"get": {
+				"tags": ["schueler_uebernahme"],
+				"summary": "liefert Klassen",
+				"description": "",
+				"operationId": "getListKlasse_1",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "name",
+						"in": "query",
+						"description": "Name der Klasse eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "halbjahrId",
+						"in": "query",
+						"description": "ID des Halbjahres eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "kzAktiv", "in": "query", "description": "Ist Aktiv", "required": false, "type": "string" },
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjKlasse" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_schueler_uebernahme": {
+			"get": {
+				"tags": ["schueler_uebernahme"],
+				"summary": "liefert freigegebene Schüler",
+				"description": "",
+				"operationId": "getListFreigegebeneSchueler",
+				"consumes": ["text/html"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "nachname",
+						"in": "query",
+						"description": "Nachname des Schülers",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "vorname",
+						"in": "query",
+						"description": "Vorname des Schülers",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "geburtsdatum",
+						"in": "query",
+						"description": "Geburtsdatum des Schülers",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "kzAktuellerSchuleZugeordnet",
+						"in": "query",
+						"description": "Kennzeichen, dass die Schüler der übergebenen Schule zugeordnet sind",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjSchueler" } }
+					}
+				}
+			},
+			"put": {
+				"tags": ["schueler_uebernahme"],
+				"summary": "übernimmt Schüler in gewählte Klasse",
+				"description": "",
+				"operationId": "transferSchueler",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonSchueler",
+						"in": "formData",
+						"description": "Daten der Schüler im JSON Format",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "zielKlasseId",
+						"in": "query",
+						"description": "ID der Zielklasse eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/backend_schule_schueleruebersicht/schulen": {
+			"get": {
+				"tags": ["Schueleruebersicht"],
+				"summary": "liefert die Schulenliste",
+				"description": "",
+				"operationId": "getListSchulen_1",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schulnummer",
+						"in": "query",
+						"description": "Nummer der Schule eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schulname",
+						"in": "query",
+						"description": "Name der Schule eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "strasse",
+						"in": "query",
+						"description": "Straße der Schule eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "postleitzahl",
+						"in": "query",
+						"description": "Postleitzahl der Schule eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "ort",
+						"in": "query",
+						"description": "Ort der Schule eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schulartId",
+						"in": "query",
+						"description": "ID der Schulart eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjSchule" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_schueleruebersicht/auswahl_klasse": {
+			"get": {
+				"tags": ["Schueleruebersicht"],
+				"summary": "liefert die Klassenliste",
+				"description": "",
+				"operationId": "getListAuswahlKlassenByHalbjahr_2",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "halbjahrId",
+						"in": "query",
+						"description": "HalbjahrID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjKlasse" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_schueleruebersicht/auswahl_halbjahr": {
+			"get": {
+				"tags": ["Schueleruebersicht"],
+				"summary": "liefert die Halbjahreliste",
+				"description": "",
+				"operationId": "getListHalbjahr_7",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjHalbjahr" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_schueleruebersicht": {
+			"get": {
+				"tags": ["Schueleruebersicht"],
+				"summary": "liefert die Schüler",
+				"description": "",
+				"operationId": "getListSchuelerzuordnung_2",
+				"consumes": ["text/html"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "name",
+						"in": "query",
+						"description": "Name der Klasse eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "halbjahrId",
+						"in": "query",
+						"description": "ID des Halbjahres eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "klasseId",
+						"in": "query",
+						"description": "Klasse ID eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjSchuelerzuordnung" } }
+					}
+				}
+			}
+		},
+		"/backend_schule_schueleruebersicht/schuelerfreigabe": {
+			"put": {
+				"tags": ["Schueleruebersicht"],
+				"summary": "Gibt die ausgewählten Schüler zur Übernahme frei.",
+				"description": "",
+				"operationId": "schuelerFreigeben",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "listSchuelerId",
+						"in": "query",
+						"description": "Liste der Schüler-IDs",
+						"required": true,
+						"type": "array",
+						"items": { "type": "string" },
+						"collectionFormat": "multi"
+					},
+					{
+						"name": "wunschschuleId",
+						"in": "formData",
+						"description": "ID der Wunschschule eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/backend_schule_schueleruebersicht/schueler_archivieren": {
+			"delete": {
+				"tags": ["Schueleruebersicht"],
+				"summary": "Archiviert alle ausgewählten Schüler.",
+				"description": "",
+				"operationId": "deleteKlasse_1",
+				"parameters": [
+					{
+						"name": "listSchuelerId",
+						"in": "query",
+						"description": "Liste der Schüler-IDs",
+						"required": true,
+						"type": "array",
+						"items": { "type": "string" },
+						"collectionFormat": "multi"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/backend_schule_schueleruebersicht/print": {
+			"get": {
+				"tags": ["Schueleruebersicht"],
+				"summary": "Liefert die Statistik als Dokument im Format PDF zurück.",
+				"description": "",
+				"operationId": "print_3",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "schuleId", "in": "query", "description": "schuleId", "required": true, "type": "string" },
+					{ "name": "selectedIds", "in": "query", "description": "selectedIds", "required": true, "type": "string" },
+					{ "name": "reportTyp", "in": "query", "description": "reportTyp", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/DobjDatei" } }
+				}
+			}
+		},
+		"/backend_schule_tsc_sso_links": {
+			"get": {
+				"tags": ["backend_schule_tsc_sso_links"],
+				"summary": "liest eine Klasse",
+				"description": "",
+				"operationId": "getList",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjSsoLink" } }
+					}
+				}
+			}
+		},
+		"/backend_stammdaten_ilea_aufgabenpaketjahrgang/suche": {
+			"get": {
+				"tags": ["backend_stammdaten_ilea_aufgabenpaketjahrgang"],
+				"summary": "Liefert die Ilea-Aufgabenpakete",
+				"description": "",
+				"operationId": "getIleaAufgabenpakete",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "jahrgang", "in": "query", "description": "jahrgang", "required": true, "type": "string" },
+					{
+						"name": "listAufgabenpaketCode",
+						"in": "query",
+						"description": "aufgabenpaketCode",
+						"required": true,
+						"type": "array",
+						"items": { "type": "string" },
+						"collectionFormat": "multi"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjAufgabepaket" } }
+					}
+				}
+			}
+		},
+		"/backend_stammdaten_ilea_aufgabenpaketjahrgang": {
+			"post": {
+				"tags": ["backend_stammdaten_ilea_aufgabenpaketjahrgang"],
+				"summary": "Einfügen eine Aufgabenpaket-Zuordnung",
+				"description": "",
+				"operationId": "insertZuordnung",
+				"consumes": ["application/x-www-form-urlencoded"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonAufgabenpaket",
+						"in": "formData",
+						"description": "Daten des Aufgabenpakets im JSON Format",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "default": { "description": "successful operation" } }
+			},
+			"delete": {
+				"tags": ["backend_stammdaten_ilea_aufgabenpaketjahrgang"],
+				"summary": "Entfernt Aufgabenpaket Zuordnung/en.",
+				"description": "",
+				"operationId": "listZuordnungId",
+				"parameters": [
+					{
+						"name": "listZuordnungId",
+						"in": "query",
+						"description": "Liste der Zuordnung-IDs",
+						"required": true,
+						"type": "array",
+						"items": { "type": "string" },
+						"collectionFormat": "multi"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/backend_stammdaten_ilea_aufgabenpaketjahrgang/auswahl_jahrgang": {
+			"get": {
+				"tags": ["backend_stammdaten_ilea_aufgabenpaketjahrgang"],
+				"summary": "liefert die Jahrgänge",
+				"description": "",
+				"operationId": "getListJahrgang",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_stammdaten_ilea_aufgabenpaketjahrgang/auswahl_aufgabenpaket": {
+			"get": {
+				"tags": ["backend_stammdaten_ilea_aufgabenpaketjahrgang"],
+				"summary": "liefert alle Aufgabenpakete",
+				"description": "",
+				"operationId": "getListAufgabenpaket_1",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "aufgabenpaket",
+						"in": "query",
+						"description": "aufgabenpaket",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAufgabenpaketAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_stammdaten_tooltipbearbeiten/suche": {
+			"get": {
+				"tags": ["backend_stammdaten_tooltipbearbeiten"],
+				"summary": "Liefert eine Liste mit Tooltips.",
+				"description": "",
+				"operationId": "getListTooltip",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "komponente",
+						"in": "query",
+						"description": "Code der Komponente",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "feld", "in": "query", "description": "Name des Feldes", "required": false, "type": "string" },
+					{ "name": "text", "in": "query", "description": "Text des Tooltips", "required": false, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjTooltip" } }
+					}
+				}
+			}
+		},
+		"/backend_stammdaten_tooltipbearbeiten/auswahl_komponente": {
+			"get": {
+				"tags": ["backend_stammdaten_tooltipbearbeiten"],
+				"summary": "Liefert eine Auswahlliste der Komponenten für die Tooltipkonfiguration.",
+				"description": "",
+				"operationId": "getAuswahlKomponente",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_stammdaten_tooltipbearbeiten/tooltiptext_update": {
+			"put": {
+				"tags": ["backend_stammdaten_tooltipbearbeiten"],
+				"summary": "Ändert den Text eines Tooltips.",
+				"description": "",
+				"operationId": "tooltiptextUpdate",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "id", "in": "formData", "description": "ID des Tooltips", "required": true, "type": "string" },
+					{ "name": "text", "in": "formData", "description": "Text des Tooltips", "required": true, "type": "string" },
+					{ "name": "version", "in": "formData", "description": "Version", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/backend_stammdaten_tooltipbearbeiten/{id}": {
+			"get": {
+				"tags": ["backend_stammdaten_tooltipbearbeiten"],
+				"summary": "Liefert die Daten eines Tooltips.",
+				"description": "",
+				"operationId": "getTooltip",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "id", "in": "path", "description": "ID des Tooltips", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/RobjTooltip" } }
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_auswertungstyp": {
+			"get": {
+				"summary": "Liefert Auswahlliste Auswertungstyp",
+				"description": "",
+				"operationId": "getAuswahlAuswertungstyp",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahlGruppiert" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_mandant": {
+			"get": {
+				"summary": "Liefert Auswahlliste Mandant",
+				"description": "",
+				"operationId": "getAuswahlMandant",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_eigentuemer": {
+			"get": {
+				"summary": "Liefert Auswahlliste Eigentümer",
+				"description": "",
+				"operationId": "getAuswahlEigentuemer",
+				"parameters": [
+					{ "name": "mandId", "in": "query", "description": "mandId", "required": false, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_arbeitsbereich": {
+			"get": {
+				"summary": "Liefert Auswahlliste Arbeitsbereich",
+				"description": "",
+				"operationId": "getAuswahlArbeitsbereich",
+				"parameters": [
+					{ "name": "mandId", "in": "query", "description": "mandId", "required": false, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_kostenstelle": {
+			"get": {
+				"summary": "Liefert Auswahlliste Kostenstelle",
+				"description": "",
+				"operationId": "getAuswahlKostenstelle",
+				"parameters": [
+					{ "name": "mandId", "in": "query", "description": "mandId", "required": false, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_organisationsform": {
+			"get": {
+				"summary": "Liefert Auswahlliste Organisationsform",
+				"description": "",
+				"operationId": "getAuswahlOrganisationsform",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_veranstaltungsstatus": {
+			"get": {
+				"summary": "Liefert Auswahlliste Veranstaltungsstatus",
+				"description": "",
+				"operationId": "getAuswahlVeranstaltungsstatus",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_zielgruppe": {
+			"get": {
+				"summary": "Liefert Auswahlliste Zielgruppe",
+				"description": "",
+				"operationId": "getAuswahlZielgruppe",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_schulart": {
+			"get": {
+				"summary": "Liefert Auswahlliste Schulart",
+				"description": "",
+				"operationId": "getAuswahlSchulart",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_gueltigkeitsbereich": {
+			"get": {
+				"summary": "Liefert Auswahlliste Gültigkeitsbereich",
+				"description": "",
+				"operationId": "getAuswahlGueltigkeitsbereich",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_fachrichtung": {
+			"get": {
+				"summary": "Liefert Auswahlliste Fachrichtung",
+				"description": "",
+				"operationId": "getAuswahlFachrichtung",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_abrechnungsstatus": {
+			"get": {
+				"summary": "Liefert Auswahlliste Fachrichtung",
+				"description": "",
+				"operationId": "getAuswahlAbrechnungsstatus",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_fortbildungsart": {
+			"get": {
+				"summary": "Liefert Auswahlliste Fortbildungsart",
+				"description": "",
+				"operationId": "getAuswahlFortbildungsart",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_veranstaltungsart": {
+			"get": {
+				"summary": "Liefert Auswahlliste Veranstaltungsart",
+				"description": "",
+				"operationId": "getAuswahlVeranstaltungsart",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_schwerpunkt": {
+			"get": {
+				"summary": "Liefert Auswahlliste Schwerpunkt",
+				"description": "",
+				"operationId": "getAuswahlSchwerpunkt",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_stichwort": {
+			"get": {
+				"summary": "Liefert Auswahlliste Stichwort",
+				"description": "",
+				"operationId": "getAuswahlStichwort",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_dozent": {
+			"get": {
+				"summary": "Liefert Auswahlliste Stichwort",
+				"description": "",
+				"operationId": "getAuswahlDozent",
+				"parameters": [
+					{ "name": "name", "in": "query", "description": "name", "required": true, "type": "string" },
+					{ "name": "ort", "in": "query", "description": "ort", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/auswahl_leitung": {
+			"get": {
+				"summary": "Liefert Auswahlliste Stichwort",
+				"description": "",
+				"operationId": "getAuswahlLeitung",
+				"parameters": [
+					{ "name": "name", "in": "query", "description": "name", "required": true, "type": "string" },
+					{ "name": "ort", "in": "query", "description": "ort", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/spaltenoption": {
+			"get": {
+				"summary": "Liefert die Spaltenoptionen für die Ergebnisliste.",
+				"description": "",
+				"operationId": "getSpaltenoptionen",
+				"parameters": [
+					{
+						"name": "auswertungstypGruppeCode",
+						"in": "query",
+						"description": "auswertungstypGruppeCode",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "resultsetId", "in": "query", "description": "resultsetId", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjSpaltenoption" } }
+					}
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung/print": {
+			"get": {
+				"summary": "Liefert die Statistik als Dokument im Format PDF oder Excel zurück.",
+				"description": "",
+				"operationId": "print_4",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonReportBobj",
+						"in": "query",
+						"description": "JSON Objekt mit Suchparametern",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "reportFormat", "in": "query", "description": "reportFormat", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/DobjDatei" } }
+				}
+			}
+		},
+		"/backend_statistik_veranstaltung": {
+			"get": {
+				"summary": "Liefert Vesg Statistik",
+				"description": "",
+				"operationId": "search",
+				"parameters": [
+					{
+						"name": "jsonSearchBobj",
+						"in": "query",
+						"description": "JSON Objekt mit Suchparametern",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/DobjStatistik" } }
+				}
+			}
+		},
+		"/backend_systempflege_protokolleintrag/auswahl_protokolleintragSchweregrad": {
+			"get": {
+				"tags": ["backend_systempflege_protokolleintrag"],
+				"summary": "Liefert eine Auswahlliste der Schweregrade des Logeintritts.",
+				"description": "",
+				"operationId": "getAuswahlProtokolleintragSchweregrad",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/backend_systempflege_protokolleintrag/details": {
+			"get": {
+				"tags": ["backend_systempflege_protokolleintrag"],
+				"summary": "Liefert die Daten eines Fehlereintritts.",
+				"description": "",
+				"operationId": "getProtokolleintrag",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "logUID",
+						"in": "query",
+						"description": "Nummer des Fehlereintritts",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/RobjProtokolleintrag" } }
+				}
+			}
+		},
+		"/backend_systempflege_protokolleintrag/suche": {
+			"get": {
+				"tags": ["backend_systempflege_protokolleintrag"],
+				"summary": "Liefert eine Liste mit Fehlereintritten.",
+				"description": "",
+				"operationId": "getListProtokolleintrag",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "jsonSearchBobj",
+						"in": "query",
+						"description": "JSON Objekt mit Suchparametern",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjProtokolleintrag" } }
+					}
+				}
+			}
+		},
+		"/backend_systempflege_protokolleintrag/auswahl_protokolleintragTyp": {
+			"get": {
+				"tags": ["backend_systempflege_protokolleintrag"],
+				"summary": "Liefert eine Auswahlliste der Logeintrittstypen.",
+				"description": "",
+				"operationId": "getAuswahlProtokolleintragTyp",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahl" } }
+					}
+				}
+			}
+		},
+		"/public_backend_tooltip": {
+			"get": {
+				"summary": "Liefert einen Tooltip",
+				"description": "",
+				"operationId": "get",
+				"produces": ["application/json"],
+				"parameters": [{ "name": "key", "in": "query", "description": "key", "required": true, "type": "string" }],
+				"responses": { "200": { "description": "successful operation", "schema": { "$ref": "#/definitions/Value" } } }
+			}
+		},
+		"/public_mediothek_metadatenexport/publicMediendatei": {
+			"get": {
+				"tags": ["Mediotheksexport"],
+				"summary": "Liefert alle Metadaten.",
+				"description": "Sortiert nach letzte Änderung (pts)",
+				"operationId": "getAll",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "pts",
+						"in": "query",
+						"description": "Letzte Änderung der Datei",
+						"required": false,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjMediumdatei" } }
+					}
+				}
+			}
+		},
+		"/permission/reload_syei": {
+			"get": {
+				"tags": ["Berechtigungen"],
+				"operationId": "reload_syei",
+				"parameters": [],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/permission/reload_bere": {
+			"get": {
+				"tags": ["Berechtigungen"],
+				"operationId": "reload_bere",
+				"parameters": [],
+				"responses": { "default": { "description": "successful operation" } }
+			}
+		},
+		"/permission": {
+			"get": {
+				"tags": ["Berechtigungen"],
+				"summary": "Ruft technische Objekte auf Basis eines Präfix ab.",
+				"description": "",
+				"operationId": "get_1",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "prefix",
+						"in": "query",
+						"description": "Präfix auf deren Basis die technischen Objekte geholt werden",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "rolleObjektId",
+						"in": "query",
+						"description": "Id bei Rollenberechtigungen",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "rolleObjektName",
+						"in": "query",
+						"description": "Name bei Rollenberechtigungen",
+						"required": false,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "$ref": "#/definitions/Objekt zur Beantwortung von Berechtigungsanfragen" }
+					},
+					"401": {
+						"description": "Fehler mit oder bei der Authentifizierung.",
+						"schema": { "$ref": "#/definitions/Fehlerantwort" }
+					},
+					"400": {
+						"description": "Fehlerhafte Authentifizierungsdaten.",
+						"schema": { "$ref": "#/definitions/Fehlerantwort" }
+					}
+				}
+			}
+		},
+		"/schulverwaltung_export_klasse": {
+			"get": {
+				"tags": ["Export"],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"summary": "liefert eine Liste von allen geändert oder erstellten Klassen seit dem gegebenen Datum",
+				"description": "",
+				"operationId": "exportKlasseList",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "dtLetzteAenderung",
+						"in": "query",
+						"description": "Datum der letzten Änderung eingeben",
+						"required": false,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjExportKlasse" } }
+					}
+				}
+			}
+		},
+		"/schulverwaltung_export_lehrer_migration": {
+			"get": {
+				"tags": ["Export"],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"summary": "liefert eine Liste von allen Lehrern. Zu einem Lehrer wird die alte und die neue uid geliefert.",
+				"description": "",
+				"operationId": "exportLehrerListMigration",
+				"produces": ["application/json"],
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjExportLehrerMigration" } }
+					}
+				}
+			}
+		},
+		"/schulverwaltung_export_lehrer": {
+			"get": {
+				"tags": ["Export"],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"summary": "liefert eine Liste von allen geändert oder erstellten Lehrer seit dem gegebenen Datum",
+				"description": "",
+				"operationId": "exportLehrerList",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "dtLetzteAenderung",
+						"in": "query",
+						"description": "Datum der letzten Änderung eingeben",
+						"required": false,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjExportLehrer" } }
+					}
+				}
+			}
+		},
+		"/schulverwaltung_export_schueler_migration": {
+			"get": {
+				"tags": ["Export"],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"summary": "liefert eine Liste von allen Lehrern. Zu einem Schüler wird die alte und die neue uid geliefert.",
+				"description": "",
+				"operationId": "exportSchuelerListMigration",
+				"produces": ["application/json"],
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjExportSchuelerMigration" } }
+					}
+				}
+			}
+		},
+		"/schulverwaltung_export_schueler": {
+			"get": {
+				"tags": ["Export"],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"summary": "liefert eine Liste von allen geändert oder erstellten Schüler seit dem gegebenen Datum",
+				"description": "",
+				"operationId": "exportSchuelerList",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "dtLetzteAenderung",
+						"in": "query",
+						"description": "Datum der letzten Änderung eingeben",
+						"required": false,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjExportSchueler" } }
+					}
+				}
+			}
+		},
+		"/schulverwaltung_export_schule": {
+			"get": {
+				"tags": ["Export"],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"summary": "liefert eine Liste von allen geändert oder erstellten Schulen seit dem gegebenen Datum",
+				"description": "",
+				"operationId": "exportSchuleList",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "dtLetzteAenderung",
+						"in": "query",
+						"description": "Datum der letzten Änderung eingeben",
+						"required": false,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjExportSchule" } }
+					}
+				}
+			}
+		},
+		"/schulverwaltung_export_version": {
+			"get": {
+				"tags": ["Export"],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"summary": "liefert die aktuelle Version zurück",
+				"description": "",
+				"operationId": "version",
+				"produces": ["application/json"],
+				"parameters": [],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/VersionResponse" } }
+				}
+			}
+		},
+		"/schulverwaltung_klasse": {
+			"get": {
+				"tags": ["Klassenverwaltung"],
+				"summary": "liefert Klassen",
+				"description": "",
+				"operationId": "getListKlasse_2",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjKlasse" } }
+					}
+				}
+			},
+			"post": {
+				"tags": ["Klassenverwaltung"],
+				"summary": "Einfügen einer Klasse",
+				"description": "",
+				"operationId": "insertKlasse_1",
+				"consumes": ["application/x-www-form-urlencoded"],
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "name", "in": "formData", "description": "Name der Klasse", "required": true, "type": "string" },
+					{
+						"name": "klassenlehrerId",
+						"in": "formData",
+						"description": "Lehrer-ID",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			}
+		},
+		"/schulverwaltung_klasse/{id}": {
+			"put": {
+				"tags": ["Klassenverwaltung"],
+				"summary": "modifiziert eine Klasse",
+				"description": "",
+				"operationId": "updateKlasse_1",
+				"produces": ["application/json"],
+				"parameters": [
+					{ "name": "id", "in": "path", "description": "Klasse-ID", "required": true, "type": "string" },
+					{
+						"name": "version",
+						"in": "formData",
+						"description": "Zeitstempel der Klasse",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "name", "in": "formData", "description": "Name der Klasse", "required": true, "type": "string" },
+					{
+						"name": "klassenlehrerId",
+						"in": "formData",
+						"description": "Lehrer-ID",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			},
+			"delete": {
+				"tags": ["Klassenverwaltung"],
+				"summary": "löscht eine Klasse",
+				"description": "",
+				"operationId": "deleteKlasse_2",
+				"parameters": [
+					{ "name": "id", "in": "path", "description": "ID der Klasse", "required": true, "type": "string" },
+					{
+						"name": "version",
+						"in": "formData",
+						"description": "Zeitstempel der Klasse",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			}
+		},
+		"/public_schuelerregistrierung/bestaetigungscode": {
+			"post": {
+				"summary": "Es testet die Formularangaben und erzeugt einen Bestätigungscode",
+				"description": "",
+				"operationId": "createBestaetigungscode",
+				"parameters": [
+					{ "name": "vorname", "in": "formData", "description": "vorname", "required": true, "type": "string" },
+					{ "name": "nachname", "in": "formData", "description": "nachname", "required": true, "type": "string" },
+					{
+						"name": "geburtsdatum",
+						"in": "formData",
+						"description": "geburtsdatum",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "email", "in": "formData", "description": "email", "required": true, "type": "string" },
+					{
+						"name": "emailWiederholung",
+						"in": "formData",
+						"description": "wiederholung",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "registrierungCode",
+						"in": "formData",
+						"description": "registrierungscode",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "kzEinverstaendnis1",
+						"in": "formData",
+						"description": "kzEinverstaendnis1",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "kzEinverstaendnis2",
+						"in": "formData",
+						"description": "kzEinverstaendnis2",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "kzEinverstaendnis3",
+						"in": "formData",
+						"description": "kzEinverstaendnis3",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "boolean" } } }
+			}
+		},
+		"/public_schuelerregistrierung": {
+			"post": {
+				"summary": "Zugangsdaten einpflegen",
+				"description": "",
+				"operationId": "insertZugangsdaten",
+				"parameters": [
+					{ "name": "vorname", "in": "formData", "description": "vorname", "required": true, "type": "string" },
+					{ "name": "nachname", "in": "formData", "description": "nachname", "required": true, "type": "string" },
+					{
+						"name": "geburtsdatum",
+						"in": "formData",
+						"description": "geburtsdatum",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "email", "in": "formData", "description": "email", "required": true, "type": "string" },
+					{
+						"name": "emailWiederholung",
+						"in": "formData",
+						"description": "wiederholung",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "registrierungCode",
+						"in": "formData",
+						"description": "registrierungscode",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "kzEinverstaendnis1",
+						"in": "formData",
+						"description": "kzEinverstaendnis1",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "kzEinverstaendnis2",
+						"in": "formData",
+						"description": "kzEinverstaendnis2",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "kzEinverstaendnis3",
+						"in": "formData",
+						"description": "kzEinverstaendnis3",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "benutzername",
+						"in": "formData",
+						"description": "benutzername",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "kennwort", "in": "formData", "description": "kennwort", "required": true, "type": "string" },
+					{
+						"name": "kennwortWiederholung",
+						"in": "formData",
+						"description": "kennwortWiederholung",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "bestaetigungscode",
+						"in": "formData",
+						"description": "bestaetigungscode",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "boolean" } } }
+			}
+		},
+		"/schulverwaltung_schueler": {
+			"get": {
+				"summary": "liefert die Schüler",
+				"description": "",
+				"operationId": "getListSchueler_4",
+				"consumes": ["text/html"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "klasseId",
+						"in": "query",
+						"description": "Klasse ID eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "maxResults",
+						"in": "query",
+						"description": "Max zum anzeigen",
+						"required": false,
+						"type": "integer",
+						"format": "int32"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjSchueler" } }
+					}
+				}
+			}
+		},
+		"/schulverwaltung_schueler/einladung": {
+			"get": {
+				"summary": "Einfügen eines Schülers",
+				"description": "",
+				"operationId": "getEinladung",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "listEinladungId",
+						"in": "query",
+						"description": "einladungId",
+						"required": true,
+						"type": "array",
+						"items": { "type": "string" },
+						"collectionFormat": "multi"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "klasseId", "in": "query", "description": "klasseId eingeben", "required": true, "type": "string" },
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/DobjDatei" } }
+				}
+			},
+			"post": {
+				"summary": "Einfügen eines Schülers",
+				"description": "",
+				"operationId": "createEinladung",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "listSchuelerId",
+						"in": "query",
+						"description": "Liste der Schüler-IDs",
+						"required": true,
+						"type": "array",
+						"items": { "type": "string" },
+						"collectionFormat": "multi"
+					},
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "type": "array", "items": { "type": "string" } } }
+				}
+			}
+		},
+		"/schulverwaltung_schule/{schuleId}": {
+			"get": {
+				"summary": "liefert eine Schule",
+				"description": "",
+				"operationId": "getSchule",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "path",
+						"description": "ID der Schule eingeben",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": { "description": "successful operation", "schema": { "$ref": "#/definitions/DobjSchule" } }
+				}
+			}
+		},
+		"/schulverwaltung_schule": {
+			"get": {
+				"summary": "liefert Schulen",
+				"description": "",
+				"operationId": "getListSchule",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "ID der Schule eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "schulenName",
+						"in": "query",
+						"description": "Name der Schule eingeben",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"name": "dienststellennummer",
+						"in": "query",
+						"description": "Dienststellennummer",
+						"required": false,
+						"type": "string"
+					},
+					{ "name": "schultyp", "in": "query", "description": "Schultyp", "required": false, "type": "string" },
+					{ "name": "plz", "in": "query", "description": "Plz", "required": false, "type": "string" },
+					{ "name": "ort", "in": "query", "description": "Ort", "required": false, "type": "string" },
+					{ "name": "hausnummer", "in": "query", "description": "Hausnummer", "required": false, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/DobjSchule" } }
+					}
+				}
+			}
+		},
+		"/schulverwaltung_schulpersonal": {
+			"get": {
+				"tags": ["Schulpersonalverwaltung"],
+				"summary": "Liefert die Lehrer einer Schule",
+				"description": "",
+				"operationId": "getListSchulpersonal",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjSchulpersonal" } }
+					}
+				}
+			}
+		},
+		"/schulverwaltung_schulpersonal/auswahlliste": {
+			"get": {
+				"tags": ["Schulpersonalverwaltung"],
+				"summary": "Liefert die Lehrer einer Schule in einer Auswahlliste",
+				"description": "",
+				"operationId": "getListAuswahl",
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "schuleId",
+						"in": "query",
+						"description": "Schule ID eingeben",
+						"required": true,
+						"type": "string"
+					},
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": { "type": "array", "items": { "$ref": "#/definitions/RobjSchulpersonal" } }
+					}
+				}
+			}
+		},
+		"/zugangsdaten_bearbeiten/current_user": {
+			"get": {
+				"summary": "Lifert den aktuellen Benutzername",
+				"description": "",
+				"operationId": "getCurrentUser_1",
+				"parameters": [
+					{ "name": "authToken", "in": "query", "description": "authToken", "required": true, "type": "string" }
+				],
+				"responses": { "200": { "description": "successful operation", "schema": { "type": "string" } } }
+			}
+		}
+	},
+	"definitions": {
+		"RobjStandortZuordnung": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"dienName1": { "type": "string" },
+				"dienName2": { "type": "string" },
+				"dienNr": { "type": "string" },
+				"dienId": { "type": "string" },
+				"orgUser": { "type": "string" },
+				"orgXPts": { "type": "string" },
+				"kzBevorzugt": { "type": "string" },
+				"anschriftId": { "type": "string" },
+				"anschriftUser": { "type": "string" },
+				"anschriftXPts": { "type": "string" },
+				"anschriftIdReferenz": { "type": "string" }
+			}
+		},
+		"RobjDienststelle": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"gepa_id": { "type": "string" },
+				"GEPA_NAME_1": { "type": "string" },
+				"gepa_ortv_name": { "type": "string" },
+				"gepa_strv_name": { "type": "string" },
+				"anschriftId": { "type": "string" }
+			}
+		},
+		"RobjPerson": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"orgUser": { "type": "string" },
+				"orgXPts": { "type": "string" }
+			}
+		},
+		"RobjBenutzergruppeZuordnung": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"name": { "type": "string" },
+				"orgUser": { "type": "string" },
+				"orgXPts": { "type": "string" }
+			}
+		},
+		"RobjBenutzergruppe": {
+			"type": "object",
+			"properties": { "id": { "type": "string" }, "version": { "type": "string" }, "name": { "type": "string" } }
+		},
+		"RobjKlasse": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"name": { "type": "string" },
+				"schuleId": { "type": "string" },
+				"klassenlehrerName": { "type": "string" },
+				"listKlassenlehrer": { "type": "array", "items": { "$ref": "#/definitions/RobjKlassenlehrerZuordnung" } },
+				"kzMeineKlasse": { "type": "string" }
+			}
+		},
+		"RobjSchule": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"ROWS_TOTAL": { "type": "integer", "format": "int32" },
+				"RESULTSET_ID": { "type": "string" },
+				"schulnummer": { "type": "string" },
+				"schulname": { "type": "string" },
+				"schulartDecode": { "type": "string" },
+				"ort": { "type": "string" },
+				"strasse": { "type": "string" }
+			}
+		},
+		"RobjBenutzerrolleZuordnung": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"tscAuthUID": { "type": "string" },
+				"tscAuthUID_label": { "type": "string" },
+				"dienststellennummer": { "type": "string" },
+				"rolle": { "type": "string" },
+				"dtGueltigAb": { "type": "string" },
+				"dtGueltigBis": { "type": "string" },
+				"kzEdit": { "type": "string" },
+				"kzDelete": { "type": "string" }
+			}
+		},
+		"DobjAuswahl": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"fieldLabel": { "type": "string" },
+				"selectLabel": { "type": "string" }
+			}
+		},
+		"RobjKommunikation": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"artCode": { "type": "string" },
+				"artDecode": { "type": "string" },
+				"verbindung": { "type": "string" },
+				"kzBevorzugt": { "type": "string" },
+				"orgUser": { "type": "string" },
+				"orgXPts": { "type": "string" }
+			}
+		},
+		"DobjZugangsdaten": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"loginId": { "type": "string" },
+				"kzKennwortAbgelaufen": { "type": "string" },
+				"kennwortGueltigBis": { "type": "string" },
+				"zugangGueltigAb": { "type": "string" },
+				"zugangGueltigBis": { "type": "string" }
+			}
+		},
+		"DobjKopfzeilenInformationen": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"KopfSpalteLinksZeile1": { "type": "string" },
+				"KopfSpalteLinksZeile2": { "type": "string" },
+				"KopfSpalteLinksZeile3": { "type": "string" },
+				"KopfSpalteRechtsZeile1": { "type": "string" },
+				"KopfSpalteRechtsZeile2": { "type": "string" },
+				"KopfSpalteRechtsZeile3": { "type": "string" }
+			}
+		},
+		"RobjExamen": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"examenUid": { "type": "string" },
+				"schuleId": { "type": "string" },
+				"schuleName": { "type": "string" },
+				"schuleNummer": { "type": "string" },
+				"kursName": { "type": "string" },
+				"kursId": { "type": "string" },
+				"ileaPaketCode": { "type": "string" },
+				"ileaPaketFachCode": { "type": "string" },
+				"ileaPaketJahrgangsstufe": { "type": "string" },
+				"dtExamenBeginn": { "type": "string" },
+				"dtExamenEnde": { "type": "string" },
+				"dtExamenErstelltAm": { "type": "string" },
+				"dtExamenGeaendertAm": { "type": "string" }
+			}
+		},
+		"DobjExamen": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"examenUID": { "type": "string" },
+				"schuleId": { "type": "string" },
+				"schuleName": { "type": "string" },
+				"schuleNummer": { "type": "string" },
+				"kursName": { "type": "string" },
+				"kursId": { "type": "string" },
+				"ileaPaketCode": { "type": "string" },
+				"ileaPaketFachCode": { "type": "string" },
+				"ileaPaketJahrgangsstufe": { "type": "string" },
+				"dtExamenBeginn": { "type": "string" },
+				"beginnDatum": { "type": "string" },
+				"dtExamenEnde": { "type": "string" },
+				"endeDatum": { "type": "string" },
+				"dtErstelltAm": { "type": "string" },
+				"erstelltDurch": { "type": "string" },
+				"dtGeaendertAm": { "type": "string" },
+				"geandertDurch": { "type": "string" },
+				"listSchueler": { "type": "array", "items": { "$ref": "#/definitions/DobjTeilnehmer" } }
+			}
+		},
+		"DobjTeilnehmer": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"teilnahmeCode": { "type": "string" },
+				"schuelerId": { "type": "string" },
+				"nachname": { "type": "string" },
+				"vorname": { "type": "string" },
+				"geburtsdatum": { "type": "string" },
+				"checked": { "type": "boolean" },
+				"isNew": { "type": "boolean" }
+			}
+		},
+		"RobjSchueler": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"nachname": { "type": "string" },
+				"vorname": { "type": "string" },
+				"geburtsdatum": { "type": "string" },
+				"email": { "type": "string" },
+				"kzZugang": { "type": "string" },
+				"klasseId": { "type": "string" },
+				"klasseName": { "type": "string" },
+				"schuleId": { "type": "string" },
+				"benutzerName": { "type": "string" },
+				"dtEinladungAblauf": { "type": "string" }
+			}
+		},
+		"DobjDatei": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"dateiname": { "type": "string" },
+				"base64Data": { "type": "string" },
+				"mimetype": { "type": "string" }
+			}
+		},
+		"IleaAufgabe": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"art": { "type": "string" },
+				"displayId": { "type": "string" },
+				"bezeichnung": { "type": "string" },
+				"beschreibung": { "type": "string" }
+			}
+		},
+		"DobjAufgabenpaketAuswahl": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"fieldLabel": { "type": "string" },
+				"selectLabel": { "type": "string" },
+				"jahrgangsstufe": { "type": "integer", "format": "int32" },
+				"ileaFachId": { "type": "string" }
+			}
+		},
+		"RobjHalbjahr": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"beschreibung": { "type": "string" },
+				"dtBeginn": { "type": "string" },
+				"dtEnde": { "type": "string" },
+				"kzAktuell": { "type": "string" }
+			}
+		},
+		"DobjKlasse": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"kzAktiv": { "type": "string" },
+				"halbjahrId": { "type": "string" },
+				"halbjahrBeschreibung": { "type": "string" },
+				"name": { "type": "string" },
+				"schuleId": { "type": "string" },
+				"vorgaengerKlasseId": { "type": "string" },
+				"kzSchuelerUebernehmen": { "type": "string" },
+				"schuelerAnzahl": { "type": "string" },
+				"listSchuelerUebernahme": { "type": "array", "items": { "type": "string" } }
+			}
+		},
+		"RobjVorgaengerklasse": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"name": { "type": "string" },
+				"halbjahrId": { "type": "string" }
+			}
+		},
+		"RobjKodierung": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"code": { "type": "string" },
+				"decode": { "type": "string" },
+				"ext1": { "type": "string" }
+			}
+		},
+		"DobjKlassenlehrerZuordnung": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"klasseId": { "type": "string" },
+				"personalSchuleVerhaeltnisId": { "type": "string" },
+				"lehrerName": { "type": "string" },
+				"funktionsbezeichnungCode": { "type": "string" },
+				"funktionsbezeichnungDecode": { "type": "string" }
+			}
+		},
+		"RobjSchuelerzuordnung": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"schuelerId": { "type": "string" },
+				"nachname": { "type": "string" },
+				"vorname": { "type": "string" },
+				"geburtsdatum": { "type": "string" },
+				"email": { "type": "string" },
+				"kzZugang": { "type": "string" },
+				"klasseId": { "type": "string" },
+				"zeitraum": { "type": "string" },
+				"klasseName": { "type": "string" },
+				"schuleId": { "type": "string" },
+				"benutzerName": { "type": "string" },
+				"dtEinladungAblauf": { "type": "string" }
+			}
+		},
+		"RobjKlassenlehrerZuordnung": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"klasseId": { "type": "string" },
+				"klassenlehrerId": { "type": "string" },
+				"klassenlehrerName": { "type": "string" },
+				"funktionsbezeichnungId": { "type": "string" },
+				"funktionsbezeichnung": { "type": "string" }
+			}
+		},
+		"DobjKurs": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"kzAktiv": { "type": "string" },
+				"halbjahrId": { "type": "string" },
+				"halbjahrBeschreibung": { "type": "string" },
+				"name": { "type": "string" },
+				"schuleId": { "type": "string" },
+				"vorgaengerKursId": { "type": "string" },
+				"klasseId": { "type": "string" },
+				"klasseName": { "type": "string" },
+				"fachId": { "type": "string" },
+				"fachBezeichnung": { "type": "string" },
+				"stufeId": { "type": "string" },
+				"stufeBezeichnung": { "type": "string" },
+				"kzSchuelerUebernehmen": { "type": "string" },
+				"schuelerAnzahl": { "type": "string" },
+				"listSchuelerUebernahme": { "type": "array", "items": { "type": "string" } }
+			}
+		},
+		"RobjVorgaengerkurs": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"name": { "type": "string" },
+				"halbjahrId": { "type": "string" }
+			}
+		},
+		"DobjKurslehrerZuordnung": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"kursId": { "type": "string" },
+				"personalSchuleVerhaeltnisId": { "type": "string" },
+				"lehrerName": { "type": "string" },
+				"erstelltVon": { "type": "string" }
+			}
+		},
+		"DobjSchuelerzuordnung": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"schuleId": { "type": "string" },
+				"klasseId": { "type": "string" },
+				"kursId": { "type": "string" },
+				"kurszuordnungId": { "type": "string" },
+				"nachname": { "type": "string" },
+				"vorname": { "type": "string" },
+				"geburtsdatum": { "type": "string" },
+				"email": { "type": "string" },
+				"kzZugang": { "type": "string" }
+			}
+		},
+		"RobjKurs": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"name": { "type": "string" },
+				"schuleId": { "type": "string" },
+				"halbjahrId": { "type": "string" },
+				"halbjahrBeschreibung": { "type": "string" },
+				"dtBeginn": { "type": "string" },
+				"dtEnde": { "type": "string" },
+				"schuelerAnzahl": { "type": "string" },
+				"kzMeineKurs": { "type": "string" },
+				"kzAktiv": { "type": "string" },
+				"listKurslehrer": { "type": "array", "items": { "$ref": "#/definitions/RobjKurslehrerZuordnung" } }
+			}
+		},
+		"RobjKurslehrerZuordnung": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"KursId": { "type": "string" },
+				"KurslehrerId": { "type": "string" },
+				"KurslehrerName": { "type": "string" },
+				"funktionsbezeichnungId": { "type": "string" },
+				"funktionsbezeichnung": { "type": "string" }
+			}
+		},
+		"DobjSchueler": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"schuleId": { "type": "string" },
+				"klasseId": { "type": "string" },
+				"kursId": { "type": "string" },
+				"nachname": { "type": "string" },
+				"vorname": { "type": "string" },
+				"geburtsdatum": { "type": "string" },
+				"email": { "type": "string" },
+				"kzZugang": { "type": "string" },
+				"geandertDurch": { "type": "string" }
+			}
+		},
+		"DobjSsoLink": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"tscAuthUID": { "type": "string" },
+				"tscAuthUID_label": { "type": "string" }
+			}
+		},
+		"RobjAufgabepaket": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"jahrgang": { "type": "string" },
+				"ileaAufgabenpaket": { "type": "string" },
+				"stufen": { "type": "string" },
+				"dtErstelltAm": { "type": "string" },
+				"erstelltVon": { "type": "string" }
+			}
+		},
+		"RobjTooltip": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"komponente": { "type": "string" },
+				"feld": { "type": "string" },
+				"text": { "type": "string" }
+			}
+		},
+		"DobjAuswahlGruppiert": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"parentId": { "type": "string" },
+				"fieldLabel": { "type": "string" },
+				"selectLabel": { "type": "string" },
+				"ext1": { "type": "string" },
+				"ext2": { "type": "string" },
+				"hasFocus": { "type": "boolean" },
+				"isSelected": { "type": "boolean" },
+				"listChild": { "type": "array", "items": { "$ref": "#/definitions/DobjAuswahlGruppiert" } }
+			}
+		},
+		"DobjSpaltenoption": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"fieldLabel": { "type": "string" },
+				"selectLabel": { "type": "string" },
+				"kzUntergruppe": { "type": "boolean" },
+				"kzDefault": { "type": "boolean" }
+			}
+		},
+		"BobjStandard": { "type": "object", "properties": { "id": { "type": "string" }, "version": { "type": "string" } } },
+		"DobjStatistik": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"kopfSpalte1": { "type": "string" },
+				"resultsetId": { "type": "string" },
+				"resultsetId2": { "type": "string" },
+				"auswertungstypGruppeCode": { "type": "string" },
+				"fusszeile": { "type": "string" },
+				"results": { "type": "array", "items": { "$ref": "#/definitions/BobjStandard" } }
+			}
+		},
+		"RobjProtokolleintrag": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"logUID": { "type": "string" },
+				"lognummer": { "type": "string" },
+				"typCode": { "type": "string" },
+				"typDecode": { "type": "string" },
+				"schweregradCode": { "type": "string" },
+				"schweregradDecode": { "type": "string" },
+				"meldung": { "type": "string" },
+				"server": { "type": "string" },
+				"zeitstempel": { "type": "string" },
+				"kategorie": { "type": "string" },
+				"datenbank": { "type": "string" },
+				"objekt": { "type": "string" },
+				"ausloesenderBenutzer": { "type": "string" },
+				"betroffenerBenutzer": { "type": "string" }
+			}
+		},
+		"Value": { "type": "object", "properties": { "value": { "type": "string" } } },
+		"DobjMediumdatei": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"mediumId": { "type": "string" },
+				"pts": { "type": "string" },
+				"dateiName": { "type": "string" },
+				"mediumNummer": { "type": "string" },
+				"oeffentlich": { "type": "string" },
+				"pixiothek": { "type": "string" },
+				"serientitel": { "type": "string" },
+				"serienuntertitel": { "type": "string" },
+				"einzeltitel": { "type": "string" },
+				"einzeluntertitel": { "type": "string" },
+				"anzahlLaufzeitFarben": { "type": "string" },
+				"mediumStatusCode": { "type": "string" },
+				"inhalt": { "type": "string" },
+				"kurzinhalt": { "type": "string" },
+				"fskVermerkCode": { "type": "string" },
+				"fskVermerkDecode": { "type": "string" },
+				"previewImageId": { "type": "string" },
+				"downloadUrl": { "type": "string" },
+				"previewImageUrl": { "type": "string" },
+				"dateiBezeichnung": { "type": "string" },
+				"dateiGroesse": { "type": "string" },
+				"dateiVerwendungCode": { "type": "string" },
+				"dateiSortierung": { "type": "string" },
+				"dateiAufloesung": { "type": "string" },
+				"listeStichwort": { "type": "array", "items": { "type": "string" } },
+				"listeUrheber": { "type": "array", "items": { "type": "string" } }
+			}
+		},
+		"Objekt zur Beantwortung von Berechtigungsanfragen": {
+			"type": "object",
+			"properties": {
+				"authToken": {
+					"type": "string",
+					"description": "Dient in erster Linie zur Verhinderung von Cross-Site-Request-Forgery.",
+					"readOnly": true
+				},
+				"listTechObj": {
+					"type": "array",
+					"description": "Beinhaltet die Liste aller technischen Objekte für die der Anfrager berechtigt ist und welche zu dem angegebenen prefix passen.",
+					"items": { "type": "string" }
+				},
+				"listSystemeinstellung": {
+					"type": "object",
+					"description": "Beinhaltet die Liste aller relevanten syeis für den Prefix",
+					"additionalProperties": { "type": "string" }
+				},
+				"listToolTipKey": {
+					"type": "array",
+					"description": "Beinhaltet die Liste aller relevanten listToolTipKeys für den Prefix",
+					"items": { "type": "string" }
+				}
+			}
+		},
+		"Fehler": {
+			"type": "object",
+			"properties": {
+				"reference": {
+					"type": "string",
+					"description": "Welchen Aspekt / welchen Bereich / welche Unterliste ist betroffen?"
+				},
+				"fieldName": {
+					"type": "string",
+					"description": "Feldname, falls ein konkretes (Eingabe)feld betroffen/ursächlich ist."
+				},
+				"errorText": { "type": "string", "description": "Der, dem Nutzer anzuzeigende Fehlertext." },
+				"errorSource": {
+					"type": "string",
+					"description": "Technische Zusatzinformationen, StackTrace, Prozedurname, Statement etc. insofern keine sicherheitsrelevanten Informationen preisgegeben würden."
+				}
+			}
+		},
+		"Fehlerantwort": {
+			"type": "object",
+			"properties": { "listError": { "type": "array", "items": { "$ref": "#/definitions/Fehler" } } }
+		},
+		"RobjExportKlasse": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"klasseId": { "type": "string" },
+				"klasseName": { "type": "string" },
+				"schuleNummer": { "type": "string" },
+				"lehrerUid": { "type": "string" }
+			}
+		},
+		"RobjExportLehrerMigration": {
+			"type": "object",
+			"properties": { "lehrerUidAlt": { "type": "string" }, "lehrerUidNeu": { "type": "string" } }
+		},
+		"RobjExportLehrer": {
+			"type": "object",
+			"properties": {
+				"lehrerUid": { "type": "string" },
+				"lehrerTitel": { "type": "string" },
+				"lehrerVorname": { "type": "string" },
+				"lehrerNachname": { "type": "string" },
+				"schuleNummer": { "type": "string" },
+				"lehrerRollen": { "type": "string" }
+			}
+		},
+		"RobjExportSchuelerMigration": {
+			"type": "object",
+			"properties": { "schuelerUidAlt": { "type": "string" }, "schuelerUidNeu": { "type": "string" } }
+		},
+		"RobjExportSchueler": {
+			"type": "object",
+			"properties": {
+				"schuelerUid": { "type": "string" },
+				"schuelerVorname": { "type": "string" },
+				"schuelerNachname": { "type": "string" },
+				"schuleNummer": { "type": "string" },
+				"klasseId": { "type": "string" }
+			}
+		},
+		"RobjExportSchule": {
+			"type": "object",
+			"properties": { "schuleNummer": { "type": "string" }, "schuleName": { "type": "string" } }
+		},
+		"VersionResponse": { "type": "object", "properties": { "version": { "type": "string" } } },
+		"DobjSchule": {
+			"type": "object",
+			"properties": {
+				"schuleId": { "type": "string" },
+				"name": { "type": "string" },
+				"dienststellenNummer": { "type": "string" },
+				"schultyp": { "type": "string" },
+				"plz": { "type": "string" },
+				"ort": { "type": "string" },
+				"hausnummer": { "type": "string" }
+			}
+		},
+		"RobjSchulpersonal": {
+			"type": "object",
+			"properties": {
+				"id": { "type": "string" },
+				"version": { "type": "string" },
+				"code": { "type": "string" },
+				"decode": { "type": "string" },
+				"ext1": { "type": "string" },
+				"nachname": { "type": "string" },
+				"vorname": { "type": "string" },
+				"titel": { "type": "string" },
+				"schuleId": { "type": "string" }
+			}
+		}
+	}
+}

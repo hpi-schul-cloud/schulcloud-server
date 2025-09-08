@@ -1,6 +1,6 @@
-import { DoBaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DomainOperationReportBuilder, DomainDeletionReportBuilder } from '../../builder';
+import { DoBaseFactory } from '@testing/factory/domainobject';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '../../builder';
 import { DeletionLog, DeletionLogProps } from '../../do';
 import { DomainName, OperationType } from '../../types';
 

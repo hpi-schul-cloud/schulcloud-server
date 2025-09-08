@@ -2,53 +2,58 @@
 import { Mail, MailService } from '@infra/mail';
 // application imports
 /* eslint-disable no-console */
+import { LegacyLogger, Logger } from '@core/logger';
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
-import { AccountUc } from '@src/modules/account/api/account.uc';
-import { SystemRule } from '@modules/authorization/domain/rules';
+import { AccountUc } from '@modules/account/api/account.uc';
+import { SESSION_VALKEY_CLIENT } from '@modules/authentication/authentication-config';
+import { SystemRule } from '@modules/authorization-rules';
+import { ColumnBoardService } from '@modules/board';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
 import { GroupService } from '@modules/group';
-import { FeathersRosterService } from '@modules/pseudonym';
+import { InternalServerModule } from '@modules/internal-server/internal-server.app.module';
 import { RocketChatService } from '@modules/rocketchat';
-import { ServerModule } from '@modules/server';
-import { InternalServerModule } from '@modules/internal-server';
-import { TeamService } from '@modules/teams/service/team.service';
+import { FeathersRosterService } from '@modules/roster';
+import { ServerModule } from '@modules/server/server.app.module';
+import { TeamService } from '@modules/team';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { enableOpenApiDocs } from '@shared/controller/swagger';
-import { LegacyLogger, Logger } from '@src/core/logger';
 import express from 'express';
 import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
-
-import { ColumnBoardService } from '@modules/board';
-import { AppStartLoggable } from './helpers/app-start-loggable';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
+	AppStartLoggable,
 	createAndStartPrometheusMetricsAppIfEnabled,
-} from './helpers/prometheus-metrics';
+	createRequestLoggerMiddleware,
+	enableOpenApiDocs,
+} from './helpers';
 import legacyAppPromise = require('../../../../src/app');
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
-	// create the NestJS application on a seperate express instance
+	// create the NestJS application on a separate express instance
 	const nestExpress = express();
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 	const orm = nestApp.get(MikroORM);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const cacheManager = await nestApp.resolve(SESSION_VALKEY_CLIENT);
 
 	// WinstonLogger
 	const legacyLogger = await nestApp.resolve(LegacyLogger);
 	nestApp.useLogger(legacyLogger);
 
 	const logger = await nestApp.resolve(Logger);
+	nestApp.use(createRequestLoggerMiddleware());
 
 	// load the legacy feathers/express server
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const feathersExpress = await legacyAppPromise(orm);
+	const feathersExpress = await legacyAppPromise(orm, cacheManager);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	await feathersExpress.setup();
 
@@ -94,6 +99,8 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-column-board-service'] = nestApp.get(ColumnBoardService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+	feathersExpress.services['nest-context-external-tool-service'] = nestApp.get(ContextExternalToolService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-system-rule'] = nestApp.get(SystemRule);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-orm'] = orm;
@@ -112,7 +119,7 @@ async function bootstrap() {
 
 	// logger middleware for deprecated paths
 	// TODO remove when all calls to the server are migrated
-	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction): void => {
 		legacyLogger.error(req.path, 'DEPRECATED-PATH');
 		next();
 	};

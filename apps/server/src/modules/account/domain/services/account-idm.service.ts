@@ -1,15 +1,14 @@
+import { Logger } from '@core/logger';
 import { IdentityManagementOauthService, IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
-import { EntityNotFoundError } from '@shared/common';
-import { IdmAccountUpdate } from '@shared/domain/interface';
+import { EntityNotFoundError } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
-import { Account, AccountSave } from '..';
 import { AccountConfig } from '../../account-config';
-import { AccountIdmToDoMapper } from '../../repo/micro-orm/mapper';
+import { Account, AccountSave, IdmAccountUpdate } from '../do';
 import { FindAccountByDbcUserIdLoggable, GetOptionalIdmAccountLoggable } from '../error';
+import { AccountIdmToDoMapper } from '../mapper';
 import { AbstractAccountService } from './account.service.abstract';
 
 @Injectable()
@@ -24,13 +23,13 @@ export class AccountServiceIdm extends AbstractAccountService {
 		super();
 	}
 
-	async findById(id: EntityId): Promise<Account> {
+	public async findById(id: EntityId): Promise<Account> {
 		const result = await this.identityManager.findAccountById(id);
 		const account = this.accountIdmToDoMapper.mapToDo(result);
 		return account;
 	}
 
-	async findMultipleByUserId(userIds: EntityId[]): Promise<Account[]> {
+	public async findMultipleByUserId(userIds: EntityId[]): Promise<Account[]> {
 		const resultAccounts = new Array<Account>();
 
 		const promises = userIds.map((userId) => this.identityManager.findAccountByDbcUserId(userId).catch(() => null));
@@ -48,7 +47,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return resultAccounts;
 	}
 
-	async findByUserId(userId: EntityId): Promise<Account | null> {
+	public async findByUserId(userId: EntityId): Promise<Account | null> {
 		try {
 			const result = await this.identityManager.findAccountByDbcUserId(userId);
 			return this.accountIdmToDoMapper.mapToDo(result);
@@ -58,7 +57,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		}
 	}
 
-	async findByUserIdOrFail(userId: EntityId): Promise<Account> {
+	public async findByUserIdOrFail(userId: EntityId): Promise<Account> {
 		try {
 			const result = await this.identityManager.findAccountByDbcUserId(userId);
 			return this.accountIdmToDoMapper.mapToDo(result);
@@ -67,25 +66,29 @@ export class AccountServiceIdm extends AbstractAccountService {
 		}
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
+	public async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
 		const [accounts] = await this.searchByUsernameExactMatch(username);
 		const account = accounts.find((tempAccount) => tempAccount.systemId === systemId) || null;
 		return account;
 	}
 
-	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
+	public async searchByUsernamePartialMatch(
+		userName: string,
+		skip: number,
+		limit: number
+	): Promise<Counted<Account[]>> {
 		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { skip, limit, exact: false });
 		const accounts = results.map((result) => this.accountIdmToDoMapper.mapToDo(result));
 		return [accounts, total];
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
+	public async searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
 		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { exact: true });
 		const accounts = results.map((result) => this.accountIdmToDoMapper.mapToDo(result));
 		return [accounts, total];
 	}
 
-	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<Account> {
+	public async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<Account> {
 		const attributeName = 'lastTriedFailedLogin';
 		const id = await this.getIdmAccountId(accountId);
 		await this.identityManager.setUserAttribute(id, attributeName, lastTriedFailedLogin.toISOString());
@@ -93,7 +96,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return this.accountIdmToDoMapper.mapToDo(updatedAccount);
 	}
 
-	async save(accountSave: AccountSave): Promise<Account> {
+	public async save(accountSave: AccountSave): Promise<Account> {
 		let accountId: string;
 		const idmAccount: IdmAccountUpdate = {
 			username: accountSave.username,
@@ -117,6 +120,13 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return this.accountIdmToDoMapper.mapToDo(updatedAccount);
 	}
 
+	public saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
+		const savePromises = accountSaves.map((accountSave) => this.save(accountSave));
+		const savedAccounts = Promise.all(savePromises);
+
+		return savedAccounts;
+	}
+
 	private async updateAccount(idmAccountId: string, idmAccount: IdmAccountUpdate, password?: string): Promise<string> {
 		const updatedAccountId = await this.identityManager.updateAccount(idmAccountId, idmAccount);
 		if (password) {
@@ -130,31 +140,31 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return accountId;
 	}
 
-	async updateUsername(accountRefId: EntityId, username: string): Promise<Account> {
+	public async updateUsername(accountRefId: EntityId, username: string): Promise<Account> {
 		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccount(id, { username });
 		const updatedAccount = await this.identityManager.findAccountById(id);
 		return this.accountIdmToDoMapper.mapToDo(updatedAccount);
 	}
 
-	async updatePassword(accountRefId: EntityId, password: string): Promise<Account> {
+	public async updatePassword(accountRefId: EntityId, password: string): Promise<Account> {
 		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccountPassword(id, password);
 		const updatedAccount = await this.identityManager.findAccountById(id);
 		return this.accountIdmToDoMapper.mapToDo(updatedAccount);
 	}
 
-	async validatePassword(account: Account, comparePassword: string): Promise<boolean> {
+	public async validatePassword(account: Account, comparePassword: string): Promise<boolean> {
 		const jwt = await this.idmOauthService.resourceOwnerPasswordGrant(account.username, comparePassword);
 		return jwt !== undefined;
 	}
 
-	async delete(accountRefId: EntityId): Promise<void> {
+	public async delete(accountRefId: EntityId): Promise<void> {
 		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.deleteAccountById(id);
 	}
 
-	async deleteByUserId(userId: EntityId): Promise<EntityId[]> {
+	public async deleteByUserId(userId: EntityId): Promise<EntityId[]> {
 		const idmAccount = await this.identityManager.findAccountByDbcUserId(userId);
 		const deletedAccountId = await this.identityManager.deleteAccountById(idmAccount.id);
 
@@ -162,8 +172,8 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
-	async findMany(_offset: number, _limit: number): Promise<Account[]> {
-		throw new NotImplementedException();
+	public findMany(_offset: number, _limit: number): Promise<Account[]> {
+		return Promise.reject(new NotImplementedException());
 	}
 
 	private async getOptionalIdmAccount(accountId: string): Promise<string | undefined> {

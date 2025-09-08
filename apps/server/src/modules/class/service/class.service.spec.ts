@@ -1,35 +1,22 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	DataDeletedEvent,
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-} from '@modules/deletion';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { InternalServerErrorException } from '@nestjs/common';
-import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain/types';
-import { setupEntities } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { setupEntities } from '@testing/database';
 import { Class } from '../domain';
 import { classFactory } from '../domain/testing';
-import { classEntityFactory } from '../entity/testing';
-import { ClassesRepo } from '../repo';
-import { ClassMapper } from '../repo/mapper';
+import { ClassEntity } from '../entity';
+import { ClassesRepo, ClassScope } from '../repo';
 import { ClassService } from './class.service';
 
 describe(ClassService.name, () => {
 	let module: TestingModule;
 	let service: ClassService;
 	let classesRepo: DeepMocked<ClassesRepo>;
-	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities();
+		await setupEntities([ClassEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -42,22 +29,11 @@ describe(ClassService.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
-				{
-					provide: EventBus,
-					useValue: {
-						publish: jest.fn(),
-					},
-				},
-				{
-					provide: MikroORM,
-					useValue: orm,
-				},
 			],
 		}).compile();
 
 		service = module.get(ClassService);
 		classesRepo = module.get(ClassesRepo);
-		eventBus = module.get(EventBus);
 	});
 
 	beforeEach(() => {
@@ -66,6 +42,38 @@ describe(ClassService.name, () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('find', () => {
+		describe('when the school has classes', () => {
+			const setup = () => {
+				const scope = new ClassScope();
+				const classes: Class[] = classFactory.buildList(3);
+
+				classesRepo.find.mockResolvedValueOnce(classes);
+
+				return {
+					classes,
+					scope,
+				};
+			};
+
+			it('should call the repo', async () => {
+				const { scope } = setup();
+
+				await service.find(scope);
+
+				expect(classesRepo.find).toHaveBeenCalledWith(scope);
+			});
+
+			it('should return the classes', async () => {
+				const { scope, classes } = setup();
+
+				const result: Class[] = await service.find(scope);
+
+				expect(result).toEqual(classes);
+			});
+		});
 	});
 
 	describe('findClassesForSchool', () => {
@@ -126,100 +134,108 @@ describe(ClassService.name, () => {
 		});
 	});
 
-	describe('deleteUserDataFromClasses', () => {
-		describe('when user is missing', () => {
+	describe('findById', () => {
+		describe('when the user has classes', () => {
 			const setup = () => {
-				const userId = undefined as unknown as EntityId;
+				const clazz: Class = classFactory.build();
+
+				classesRepo.findClassById.mockResolvedValueOnce(clazz);
 
 				return {
-					userId,
+					clazz,
 				};
 			};
 
-			it('should throw and error', async () => {
-				const { userId } = setup();
+			it('should return the class', async () => {
+				const { clazz } = setup();
 
-				await expect(service.deleteUserData(userId)).rejects.toThrowError(InternalServerErrorException);
-			});
-		});
+				const result: Class = await service.findById(clazz.id);
 
-		describe('when deleting by userId', () => {
-			const setup = () => {
-				const userId1 = new ObjectId();
-				const userId2 = new ObjectId();
-				const userId3 = new ObjectId();
-				const class1 = classEntityFactory.withUserIds([userId1, userId2]).build();
-				const class2 = classEntityFactory.withUserIds([userId1, userId3]).build();
-
-				const mappedClasses = ClassMapper.mapToDOs([class1, class2]);
-
-				classesRepo.findAllByUserId.mockResolvedValue(mappedClasses);
-
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.CLASS, [
-					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [class1.id, class2.id]),
-				]);
-
-				return {
-					expectedResult,
-					userId1,
-				};
-			};
-
-			it('should call classesRepo.findAllByUserId', async () => {
-				const { userId1 } = setup();
-				await service.deleteUserData(userId1.toHexString());
-
-				expect(classesRepo.findAllByUserId).toBeCalledWith(userId1.toHexString());
+				expect(result).toEqual(clazz);
 			});
 
-			it('should update classes without updated user', async () => {
-				const { expectedResult, userId1 } = setup();
+			it('should throw error', async () => {
+				classesRepo.findClassById.mockResolvedValueOnce(null);
 
-				const result = await service.deleteUserData(userId1.toHexString());
-
-				expect(result).toEqual(expectedResult);
+				await expect(service.findById('someId')).rejects.toThrowError(NotFoundLoggableException);
 			});
 		});
 	});
 
-	describe('handle', () => {
-		const setup = () => {
-			const targetRefId = new ObjectId().toHexString();
-			const targetRefDomain = DomainName.CLASS;
-			const classId = new ObjectId().toHexString();
-			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
-			const deletionRequestId = deletionRequest.id;
+	describe('findExistingClassesByIds', () => {
+		describe('when the user has classes', () => {
+			const setup = () => {
+				const [clazzOne, clazzTwo]: Class[] = classFactory.buildList(2);
 
-			const expectedData = DomainDeletionReportBuilder.build(DomainName.CLASS, [
-				DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [classId]),
-			]);
-
-			return {
-				deletionRequestId,
-				expectedData,
-				targetRefId,
+				return {
+					clazzOne,
+					clazzTwo,
+				};
 			};
-		};
 
-		describe('when UserDeletedEvent is received', () => {
-			it('should call deleteUserData in classService', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
+			it('should return the classes as array', async () => {
+				const { clazzOne, clazzTwo } = setup();
+				classesRepo.findClassById.mockResolvedValueOnce(clazzOne);
+				classesRepo.findClassById.mockResolvedValueOnce(clazzTwo);
 
-				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+				const result: Class[] = await service.findExistingClassesByIds([clazzOne.id, clazzTwo.id]);
 
-				await service.handle({ deletionRequestId, targetRefId });
-
-				expect(service.deleteUserData).toHaveBeenCalledWith(targetRefId);
+				expect(result).toEqual([clazzOne, clazzTwo]);
 			});
 
-			it('should call eventBus.publish with DataDeletedEvent', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
+			it('should return empty array if classes not found', async () => {
+				const { clazzOne, clazzTwo } = setup();
+				classesRepo.findClassById.mockResolvedValueOnce(null);
+				classesRepo.findClassById.mockResolvedValueOnce(null);
 
-				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+				const result: Class[] = await service.findExistingClassesByIds([clazzOne.id, clazzTwo.id]);
 
-				await service.handle({ deletionRequestId, targetRefId });
+				expect(result).toEqual([]);
+			});
+		});
+	});
 
-				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
+	describe('findClassWithSchoolIdAndExternalId', () => {
+		describe('when searching for a class', () => {
+			const setup = () => {
+				const schoolId = new ObjectId().toHexString();
+				const externalId = new ObjectId().toHexString();
+
+				classesRepo.findClassWithSchoolIdAndExternalId.mockResolvedValueOnce(null);
+
+				return {
+					schoolId,
+					externalId,
+				};
+			};
+
+			it('should call the repo', async () => {
+				const { schoolId, externalId } = setup();
+
+				const result = await service.findClassWithSchoolIdAndExternalId(schoolId, externalId);
+
+				expect(result).toBeNull();
+				expect(classesRepo.findClassWithSchoolIdAndExternalId).toHaveBeenCalledWith(schoolId, externalId);
+			});
+		});
+	});
+
+	describe('save', () => {
+		describe('when saving classes', () => {
+			const setup = () => {
+				const classes = classFactory.buildList(3);
+
+				return {
+					classes,
+				};
+			};
+
+			it('should call the repo', async () => {
+				const { classes } = setup();
+
+				await service.save(classes);
+
+				expect(classesRepo.save).toHaveBeenCalledWith(classes);
 			});
 		});
 	});

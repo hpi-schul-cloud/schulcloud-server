@@ -1,6 +1,7 @@
+import { Course } from '@modules/course';
 import { Page } from '@shared/domain/domainobject';
 import { GroupTypes } from '../../domain';
-import { ClassInfoDto, CourseInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../../uc/dto';
+import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../../uc/dto';
 import {
 	ClassInfoResponse,
 	ClassInfoSearchListResponse,
@@ -12,10 +13,12 @@ import {
 	GroupUserResponse,
 } from '../dto';
 import { CourseInfoResponse } from '../dto/response/course-info.response';
+import { PeriodResponse } from '../dto/response/period.response';
 
 const typeMapping: Record<GroupTypes, GroupTypeResponse> = {
 	[GroupTypes.CLASS]: GroupTypeResponse.CLASS,
 	[GroupTypes.COURSE]: GroupTypeResponse.COURSE,
+	[GroupTypes.ROOM]: GroupTypeResponse.ROOM,
 	[GroupTypes.OTHER]: GroupTypeResponse.OTHER,
 };
 
@@ -50,7 +53,7 @@ export class GroupResponseMapper {
 			isUpgradable: classInfo.isUpgradable,
 			studentCount: classInfo.studentCount,
 			synchronizedCourses: classInfo.synchronizedCourses?.map(
-				(synchronizedCourse: CourseInfoDto): CourseInfoResponse => new CourseInfoResponse(synchronizedCourse)
+				(synchronizedCourse: Course): CourseInfoResponse => new CourseInfoResponse(synchronizedCourse)
 			),
 		});
 
@@ -81,6 +84,9 @@ export class GroupResponseMapper {
 			type: typeMapping[resolvedGroup.type],
 			externalSource,
 			users,
+			validPeriod: resolvedGroup.validPeriod
+				? new PeriodResponse({ from: resolvedGroup.validPeriod.from, until: resolvedGroup.validPeriod.until })
+				: undefined,
 			organizationId: resolvedGroup.organizationId,
 		});
 

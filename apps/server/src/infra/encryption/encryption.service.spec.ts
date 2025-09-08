@@ -1,12 +1,12 @@
 import { createMock } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@src/core/logger';
-import { SymetricKeyEncryptionService } from './encryption.service';
+import { LegacyLogger } from '@core/logger';
+import { SymmetricKeyEncryptionService } from './encryption.service';
 
 describe('SymetricKeyEncryptionService', () => {
 	describe('with configure encryption key', () => {
 		const encryptionKey = 'abcdefghijklmnop';
 		const logger = createMock<LegacyLogger>();
-		const encryptionService = new SymetricKeyEncryptionService(logger, encryptionKey);
+		const encryptionService = new SymmetricKeyEncryptionService(logger, encryptionKey);
 		const testInput = 'testInput';
 
 		it('encrypts the input', () => {
@@ -33,7 +33,7 @@ describe('SymetricKeyEncryptionService', () => {
 
 	describe('without configured encryption key', () => {
 		const logger = createMock<LegacyLogger>();
-		const encryptionService = new SymetricKeyEncryptionService(logger);
+		const encryptionService = new SymmetricKeyEncryptionService(logger);
 		const testInput = 'testInput';
 
 		beforeEach(() => {

@@ -1,18 +1,19 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Page, Pseudonym } from '@shared/domain/domainobject';
+import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Scope } from '@shared/repo';
+import { Scope } from '@shared/repo/scope';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity, ExternalToolPseudonymEntityProps } from '../entity';
 import { PseudonymScope } from '../entity/pseudonym.scope';
+import { Pseudonym } from './pseudonym.do';
 
 @Injectable()
 export class ExternalToolPseudonymRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findByUserIdAndToolIdOrFail(userId: EntityId, toolId: EntityId): Promise<Pseudonym> {
+	public async findByUserIdAndToolIdOrFail(userId: EntityId, toolId: EntityId): Promise<Pseudonym> {
 		const entity: ExternalToolPseudonymEntity = await this.em.findOneOrFail(ExternalToolPseudonymEntity, {
 			userId: new ObjectId(userId),
 			toolId: new ObjectId(toolId),
@@ -23,7 +24,7 @@ export class ExternalToolPseudonymRepo {
 		return domainObject;
 	}
 
-	async findByUserIdAndToolId(userId: EntityId, toolId: EntityId): Promise<Pseudonym | null> {
+	public async findByUserIdAndToolId(userId: EntityId, toolId: EntityId): Promise<Pseudonym | null> {
 		const entity: ExternalToolPseudonymEntity | null = await this.em.findOne(ExternalToolPseudonymEntity, {
 			userId: new ObjectId(userId),
 			toolId: new ObjectId(toolId),
@@ -38,7 +39,7 @@ export class ExternalToolPseudonymRepo {
 		return domainObject;
 	}
 
-	async findByUserId(userId: EntityId): Promise<Pseudonym[]> {
+	public async findByUserId(userId: EntityId): Promise<Pseudonym[]> {
 		const entities: ExternalToolPseudonymEntity[] = await this.em.find(ExternalToolPseudonymEntity, {
 			userId: new ObjectId(userId),
 		});
@@ -47,7 +48,7 @@ export class ExternalToolPseudonymRepo {
 		return pseudonyms;
 	}
 
-	async createOrUpdate(domainObject: Pseudonym): Promise<Pseudonym> {
+	public async createOrUpdate(domainObject: Pseudonym): Promise<Pseudonym> {
 		const existing: ExternalToolPseudonymEntity | undefined = this.em
 			.getUnitOfWork()
 			.getById<ExternalToolPseudonymEntity>(ExternalToolPseudonymEntity.name, domainObject.id);
@@ -68,7 +69,7 @@ export class ExternalToolPseudonymRepo {
 		return savedDomainObject;
 	}
 
-	async deletePseudonymsByUserId(userId: EntityId): Promise<EntityId[]> {
+	public async deletePseudonymsByUserId(userId: EntityId): Promise<EntityId[]> {
 		const externalPseudonyms = await this.em.find(ExternalToolPseudonymEntity, { userId: new ObjectId(userId) });
 		if (externalPseudonyms.length === 0) {
 			return [];
@@ -81,7 +82,7 @@ export class ExternalToolPseudonymRepo {
 		return this.getExternalPseudonymId(externalPseudonyms);
 	}
 
-	async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
+	public async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
 		const entities: ExternalToolPseudonymEntity | null = await this.em.findOne(ExternalToolPseudonymEntity, {
 			pseudonym,
 		});
@@ -120,7 +121,7 @@ export class ExternalToolPseudonymRepo {
 		};
 	}
 
-	async findPseudonym(query: PseudonymSearchQuery, options?: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
+	public async findPseudonym(query: PseudonymSearchQuery, options?: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
 		const pagination: Pagination = options?.pagination ?? {};
 		const scope: Scope<ExternalToolPseudonymEntity> = new PseudonymScope()
 			.byPseudonym(query.pseudonym)

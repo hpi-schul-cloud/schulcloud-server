@@ -5,33 +5,59 @@ import { ExternalToolConfigCreateParams } from './external-tool-config.params';
 
 export class Lti11ToolConfigCreateParams extends ExternalToolConfigCreateParams {
 	@IsEnum(ToolConfigType)
-	@ApiProperty({ enum: ToolConfigType, enumName: 'ToolConfigType' })
-	type!: ToolConfigType;
+	@ApiProperty({
+		enum: ToolConfigType,
+		enumName: 'ToolConfigType',
+		description: 'Configuration type of the tool.',
+		example: ToolConfigType.LTI11,
+	})
+	public type!: ToolConfigType;
 
 	@IsUrl(
 		{ require_protocol: true, protocols: ['https'] },
 		{ message: 'baseUrl must be a URL address with https protocol' }
 	)
-	@ApiProperty()
-	baseUrl!: string;
+	@ApiProperty({
+		description:
+			'Defines the target URL that is launched. Can be automatically filled with parameter values when using : in-front of the parameter name. Must be HTTPS.',
+		example: 'https://example.com/:parameter1/test',
+	})
+	public baseUrl!: string;
 
 	@IsString()
-	@ApiProperty()
-	key!: string;
+	@ApiProperty({
+		description: 'LTI 1.1 encryption key.',
+	})
+	public key!: string;
 
 	@IsString()
-	@ApiProperty()
-	secret!: string;
+	@ApiProperty({
+		description: 'LTI 1.1 encryption secret.',
+	})
+	public secret!: string;
 
 	@IsEnum(LtiMessageType)
-	@ApiProperty({ enum: LtiMessageType, enumName: 'LtiMessageType' })
-	lti_message_type!: LtiMessageType;
+	@ApiProperty({
+		enum: LtiMessageType,
+		enumName: 'LtiMessageType',
+		description: 'LTI 1.1 message type.',
+		example: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+	})
+	public lti_message_type!: LtiMessageType;
 
 	@IsEnum(LtiPrivacyPermission)
-	@ApiProperty({ enum: LtiPrivacyPermission, enumName: 'LtiPrivacyPermission' })
-	privacy_permission!: LtiPrivacyPermission;
+	@ApiProperty({
+		enum: LtiPrivacyPermission,
+		enumName: 'LtiPrivacyPermission',
+		description: 'Describes the amount of personal information that the tool provider gets.',
+		example: LtiPrivacyPermission.ANONYMOUS,
+	})
+	public privacy_permission!: LtiPrivacyPermission;
 
 	@IsLocale()
-	@ApiProperty()
-	launch_presentation_locale!: string;
+	@ApiProperty({
+		description: 'LTI 1.1 requested language.',
+		example: 'de-DE',
+	})
+	public launch_presentation_locale!: string;
 }

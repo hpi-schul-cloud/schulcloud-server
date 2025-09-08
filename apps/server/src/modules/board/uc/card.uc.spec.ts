@@ -1,8 +1,10 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Action, AuthorizationService } from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities, userFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { setupEntities } from '@testing/database';
 import { BoardNodeAuthorizable, BoardNodeFactory, Card, ContentElementType } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
 import { cardFactory, columnBoardFactory, richTextElementFactory } from '../testing';
@@ -54,7 +56,7 @@ describe(CardUc.name, () => {
 		boardNodePermissionService = module.get(BoardNodePermissionService);
 		boardNodeService = module.get(BoardNodeService);
 		boardNodeFactory = module.get(BoardNodeFactory);
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {
@@ -78,18 +80,21 @@ describe(CardUc.name, () => {
 						id: cards[0].id,
 						boardNode: cards[0],
 						rootNode: columnBoardFactory.build(),
+						boardContextSettings: {},
 					}),
 					new BoardNodeAuthorizable({
 						users: [],
 						id: cards[1].id,
 						boardNode: cards[1],
 						rootNode: columnBoardFactory.build(),
+						boardContextSettings: {},
 					}),
 					new BoardNodeAuthorizable({
 						users: [],
 						id: cards[2].id,
 						boardNode: cards[2],
 						rootNode: columnBoardFactory.build(),
+						boardContextSettings: {},
 					}),
 				]);
 				authorizationService.hasPermission.mockReturnValue(true);
@@ -167,7 +172,11 @@ describe(CardUc.name, () => {
 
 				await uc.deleteCard(user.id, card.id);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, card, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					card,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to delete the card', async () => {
@@ -206,7 +215,11 @@ describe(CardUc.name, () => {
 
 				await uc.updateCardHeight(user.id, card.id, cardHeight);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, card, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					card,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to update the card height', async () => {
@@ -244,7 +257,11 @@ describe(CardUc.name, () => {
 
 				await uc.updateCardTitle(user.id, card.id, 'new title');
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, card, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					card,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to update the card title', async () => {
@@ -283,7 +300,11 @@ describe(CardUc.name, () => {
 
 				await uc.createElement(user.id, card.id, ContentElementType.RICH_TEXT);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, card, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					card,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the factory to build element', async () => {
@@ -347,7 +368,11 @@ describe(CardUc.name, () => {
 
 				await uc.moveElement(user.id, element.id, card.id, 3);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, element, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					element,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to check the user permission for the target card', async () => {
@@ -356,7 +381,11 @@ describe(CardUc.name, () => {
 
 				await uc.moveElement(user.id, element.id, card.id, 3);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, card, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					card,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to move the element', async () => {

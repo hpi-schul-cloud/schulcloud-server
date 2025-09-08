@@ -6,37 +6,40 @@ import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
+import { LegacyLogger, Logger } from '@core/logger';
+import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
-import { DB_URL } from '@src/config';
-import { LegacyLogger, Logger } from '@src/core/logger';
-import { MongoIoAdapter } from '@src/infra/socketio';
-import { BoardCollaborationModule } from '@src/modules/board/board-collaboration.module';
-import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 import express from 'express';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
-} from '@src/apps/helpers/prometheus-metrics';
-import { ExpressAdapter } from '@nestjs/platform-express';
+	enableOpenApiDocs,
+} from './helpers';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
 	const nestExpress = express();
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(BoardCollaborationModule, nestExpressAdapter);
-	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
+	const legacyLogger = await nestApp.resolve(LegacyLogger);
+	nestApp.useLogger(legacyLogger);
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
-	const mongoIoAdapter = new MongoIoAdapter(nestApp);
-	await mongoIoAdapter.connectToMongoDb(DB_URL);
-	nestApp.useWebSocketAdapter(mongoIoAdapter);
+	/* This is not used yet, and will be replaced by the new socket.io adapter
+	const ioAdapter = new RedisIoAdapter(nestApp);
+	ioAdapter.connectToRedis();
+	nestApp.useWebSocketAdapter(ioAdapter);
+	*/
 
 	const options: SwaggerDocumentOptions = {
 		operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
 	};
 	enableOpenApiDocs(nestApp, 'docs', options);
 	const logger = await nestApp.resolve(Logger);
+	nestApp.use(createRequestLoggerMiddleware());
 
 	await nestApp.init();
 

@@ -10,7 +10,7 @@ const { error } = require('../../logger');
  * @param {Integer} upsertedCount; // Number indicating how many documents had to be upserted. Will either be 0 or 1.
  */
 const updateManyResult = ({ acknowledged, matchedCount, modifiedCount }) => {
-	if (acknowledged) {
+	if (!acknowledged) {
 		error('mongoose updateMany has failed', { acknowledged, matchedCount, modifiedCount });
 	}
 	return { success: acknowledged, modifiedDocuments: modifiedCount };

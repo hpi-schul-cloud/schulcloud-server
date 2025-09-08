@@ -1,0 +1,14 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+api.ts
+api/courses-api.ts
+base.ts
+common.ts
+configuration.ts
+git_push.sh
+index.ts
+models/course-common-cartridge-metadata-response.ts
+models/create-course-body-params.ts
+models/create-course-response.ts
+models/index.ts

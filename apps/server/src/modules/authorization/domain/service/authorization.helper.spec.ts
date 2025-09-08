@@ -1,12 +1,14 @@
-import { courseFactory } from '@modules/learnroom/testing';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory, courseFactory } from '@modules/course/testing';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { Submission, Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Permission } from '@shared/domain/interface';
-import {
-	courseFactory as courseEntityFactory,
-	roleFactory,
-	setupEntities,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
+import { setupEntities } from '@testing/database';
 import { AuthorizationHelper } from './authorization.helper';
 
 describe('AuthorizationHelper', () => {
@@ -17,7 +19,7 @@ describe('AuthorizationHelper', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, LessonEntity, Submission, Material]);
 	});
 
 	afterEach(() => {
@@ -225,6 +227,40 @@ describe('AuthorizationHelper', () => {
 				const permissions = service.hasAccessToEntity(user2, task, ['creator']);
 
 				expect(permissions).toEqual(false);
+			});
+		});
+	});
+
+	describe('hasRole', () => {
+		describe('when user has role', () => {
+			const setup = () => {
+				const user = userFactory.asTeacher().buildWithId();
+
+				return { user };
+			};
+
+			it('should return true', () => {
+				const { user } = setup();
+
+				const result = service.hasRole(user, RoleName.TEACHER);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when user does not have role', () => {
+			const setup = () => {
+				const user = userFactory.asStudent().buildWithId();
+
+				return { user };
+			};
+
+			it('should return false', () => {
+				const { user } = setup();
+
+				const result = service.hasRole(user, RoleName.TEACHER);
+
+				expect(result).toBe(false);
 			});
 		});
 	});

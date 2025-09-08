@@ -1,8 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LanguageType } from '@shared/domain/interface';
-import { SchoolPurpose } from '@shared/domain/types';
-import { federalStateFactory, schoolFactory } from '../../testing';
-import { InstanceFeature } from '../type';
+import { federalStateDoFactory, schoolFactory } from '../../testing';
+import { InstanceFeature, SchoolPurpose } from '../type';
 
 describe('School', () => {
 	beforeAll(() => {
@@ -81,7 +80,7 @@ describe('School', () => {
 
 		describe('when county is already set', () => {
 			const setup = () => {
-				const federalState = federalStateFactory.build();
+				const federalState = federalStateDoFactory.build();
 				// @ts-expect-error test case
 				const county = federalState.getProps().counties[0];
 				const school = schoolFactory.build({ federalState, county });
@@ -99,7 +98,7 @@ describe('School', () => {
 
 		describe('when county is not set', () => {
 			const setup = () => {
-				const federalState = federalStateFactory.build();
+				const federalState = federalStateDoFactory.build();
 				// @ts-expect-error test case
 				const county = federalState.getProps().counties[0];
 				const school = schoolFactory.build({ federalState });
@@ -114,6 +113,16 @@ describe('School', () => {
 				school.updateCounty(countyId);
 
 				expect(school.getProps().county).toEqual(county);
+			});
+		});
+
+		describe('when school has no defined federalState', () => {
+			it('should throw `County cannot be set without a federal state being assigned to the school.` error', () => {
+				const school = schoolFactory.build({ federalState: undefined });
+
+				expect(() => school.updateCounty('abc')).toThrowError(
+					'County cannot be set without a federal state being assigned to the school.'
+				);
 			});
 		});
 	});

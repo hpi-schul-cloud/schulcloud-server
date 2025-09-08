@@ -6,10 +6,11 @@ import { ExternalTool } from '../../../external-tool/domain';
 import { externalToolFactory } from '../../../external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
-import { LaunchRequestMethod, PropertyData } from '../../types';
+import { LaunchRequestMethod, LaunchType, PropertyData } from '../../types';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoGroupExternalUuidStrategy,
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
@@ -44,6 +45,10 @@ describe('OAuth2ToolLaunchStrategy', () => {
 				{
 					provide: AutoMediumIdStrategy,
 					useValue: createMock<AutoMediumIdStrategy>(),
+				},
+				{
+					provide: AutoGroupExternalUuidStrategy,
+					useValue: createMock<AutoGroupExternalUuidStrategy>(),
 				},
 			],
 		}).compile();
@@ -93,6 +98,16 @@ describe('OAuth2ToolLaunchStrategy', () => {
 				const result: LaunchRequestMethod = strategy.determineLaunchRequestMethod([]);
 
 				expect(result).toEqual(LaunchRequestMethod.GET);
+			});
+		});
+	});
+
+	describe('determineLaunchType', () => {
+		describe('whenever it is called', () => {
+			it('should return oauth2', () => {
+				const result = strategy.determineLaunchType();
+
+				expect(result).toEqual(LaunchType.OAUTH2);
 			});
 		});
 	});

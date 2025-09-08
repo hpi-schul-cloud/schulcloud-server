@@ -1,16 +1,19 @@
-import { Type } from 'class-transformer';
-import { IsArray, IsObject, ValidateNested } from 'class-validator';
-import { SchulconnexPoliciesInfoPermissionResponse } from './schulconnex-policies-info-permission-response';
-import { SchulconnexPoliciesInfoTargetResponse } from './schulconnex-policies-info-target-response';
+import { PolymorphicArrayTransform } from '@shared/controller/transformer';
+import { ClassConstructor } from 'class-transformer';
+import { IsArray, ValidateNested } from 'class-validator';
+import { SchulconnexPoliciesInfoErrorResponse } from './schulconnex-policies-info-error-response';
+import { SchulconnexPoliciesInfoLicenseResponse } from './schulconnex-policies-info-license-response';
+
+const policiesInfoDiscriminator = (
+	obj: unknown
+): ClassConstructor<SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse> =>
+	typeof obj === 'object' && obj !== null && 'target' in obj && 'permission' in obj
+		? SchulconnexPoliciesInfoLicenseResponse
+		: SchulconnexPoliciesInfoErrorResponse;
 
 export class SchulconnexPoliciesInfoResponse {
-	@IsObject()
-	@ValidateNested()
-	@Type(() => SchulconnexPoliciesInfoTargetResponse)
-	target!: SchulconnexPoliciesInfoTargetResponse;
-
 	@IsArray()
 	@ValidateNested({ each: true })
-	@Type(() => SchulconnexPoliciesInfoPermissionResponse)
-	permission!: SchulconnexPoliciesInfoPermissionResponse[];
+	@PolymorphicArrayTransform(policiesInfoDiscriminator)
+	data!: (SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[];
 }

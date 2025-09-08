@@ -1,5 +1,5 @@
-import { DoBaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { DoBaseFactory } from '@testing/factory/domainobject';
 import { DeepPartial } from 'fishery';
 import { DeletionRequest, DeletionRequestProps } from '../../do';
 import { DomainName, StatusModel } from '../../types';

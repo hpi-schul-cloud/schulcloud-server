@@ -3,6 +3,12 @@ kind: Deployment
 metadata:
   name: management-deployment
   namespace: {{ NAMESPACE }}
+{% if ANNOTATIONS is defined and ANNOTATIONS|bool %}
+  annotations:
+{% if RELOADER is defined and RELOADER|bool %}
+    reloader.stakater.com/auto: "true"
+{% endif %}
+{% endif %}
   labels:
     app: management-deployment
     app.kubernetes.io/part-of: schulcloud-verbund
@@ -40,6 +46,8 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
         runAsNonRoot: true
+      os:
+        name: linux
       containers:
       - name: api
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
@@ -51,10 +59,10 @@ spec:
         envFrom:
         - configMapRef:
             name: api-configmap
+        - configMapRef:
+            name: api-management-configmap
         - secretRef:
             name: api-secret
-        - secretRef:
-            name: api-files-secret
         command: ['npm', 'run', 'nest:start:management:prod']
         readinessProbe:
           httpGet:

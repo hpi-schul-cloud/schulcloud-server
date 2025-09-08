@@ -9,11 +9,12 @@ metadata:
 data:
   # general
   NODE_ENV: "production"
-  NODE_OPTIONS: "--max-old-space-size=2048"
+  NODE_OPTIONS: "--max-old-space-size=1536"
   SC_TITLE: "{{ SC_TITLE }}"
   SC_THEME: "{{ SC_THEME }}"
   SC_SHORTNAME: "{{ SC_SHORTNAME }}"
   SC_DOMAIN: "{{ DOMAIN }}"
+  TLDRAW__WEBSOCKET_URL: "wss://{{ DOMAIN }}/tldraw-server"
   SHLVL: "1"
   #  Prints slow requests above 4 s in log
   #  LEAD_TIME: "4000"

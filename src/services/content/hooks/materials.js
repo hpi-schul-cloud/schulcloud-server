@@ -1,5 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
-
+const logger = require('../../../logger');
 const { Forbidden } = require('../../../errors');
 const { hasPermission } = require('../../../hooks');
 const { getScopePermissions } = require('../../helpers/scopePermissions/hooks/checkScopePermissions');
@@ -30,6 +30,7 @@ const hasMaterialAccess = async (context, id, permissions) => {
 		try {
 			userPermissions = await getScopePermissions(context.app, context.params.account.userId, scope);
 		} catch (err) {
+			logger.warning(err);
 			// the course scope throws Forbidden if the user is not in the course (?!)
 			userPermissions = [];
 		}
@@ -71,6 +72,7 @@ const checkAssociatedCoursePermissionForSearchResult =
 	async (context) => {
 		const results = context.result.data ? context.result.data : context.result;
 		const filteredResults = [];
+		// Promise all will do the same but much faster
 		for (const result of results) {
 			if (await hasMaterialAccess(context, result._id, permissions)) {
 				filteredResults.push(result);
@@ -82,6 +84,7 @@ const checkAssociatedCoursePermissionForSearchResult =
 		} else {
 			context.result = filteredResults;
 		}
+
 		return context;
 	};
 

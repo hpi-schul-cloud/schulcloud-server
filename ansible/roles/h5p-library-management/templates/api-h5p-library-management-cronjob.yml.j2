@@ -13,7 +13,7 @@ metadata:
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
   name: api-h5p-library-management-cronjob
 spec:
-  schedule: "{{ SERVER_H5P_LIBRARY_MANAGEMENT_CRONJOB|default("0 3 * * 3,6", true) }}"
+  schedule: "{{ SERVER_H5P_LIBRARY_MANAGEMENT_CRONJOB|default("0 * * * *", true) }}"
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
@@ -35,6 +35,8 @@ spec:
             runAsGroup: 1000
             fsGroup: 1000
             runAsNonRoot: true
+          os:
+            name: linux
           volumes:
             - name: libraries-list
               configMap:
@@ -49,15 +51,13 @@ spec:
                 name: api-secret
             - secretRef:
                 name: api-h5p-library-management-secret
-            - secretRef:
-                name: api-files-secret
             volumeMounts:
             - name: libraries-list
               mountPath: /schulcloud-server/config/h5p-libraries.yaml
               subPath: h5p-libraries.yaml
               readOnly: true
             command: ['/bin/sh', '-c']
-            args: ['npm run nest:start:h5p:library-management']
+            args: ['npm run nest:start:h5p:library-management:prod']
             resources:
               limits:
                 cpu: {{ API_H5P_LIBRARY_MANAGEMENT_CPU_LIMITS|default("2000m", true) }}

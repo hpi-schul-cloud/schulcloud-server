@@ -1,11 +1,4 @@
-const {
-	HOST,
-	AWS_ACCESS_KEY,
-	AWS_SECRET_ACCESS_KEY,
-	AWS_REGION,
-	AWS_ENDPOINT_URL,
-	AUTHENTICATION,
-} = require('./globals');
+const { HOST, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_ENDPOINT_URL } = require('./globals');
 
 const secrets = {
 	aws: {
@@ -25,7 +18,6 @@ const secrets = {
 			},
 		],
 	},
-	authentication: AUTHENTICATION,
 };
 
 module.exports = secrets;

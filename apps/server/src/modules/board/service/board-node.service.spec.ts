@@ -1,9 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { User } from '@modules/user/repo';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { Card, ColumnBoard } from '../domain';
+import { setupEntities } from '@testing/database';
+import { BoardLayout, Card, ColumnBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
-import { columnBoardFactory, richTextElementFactory } from '../testing';
+import {
+	cardFactory,
+	columnBoardFactory,
+	deletedElementFactory,
+	externalToolElementFactory,
+	richTextElementFactory,
+} from '../testing';
 import { BoardNodeService } from './board-node.service';
 import { BoardNodeDeleteHooksService, ContentElementUpdateService } from './internal';
 
@@ -39,7 +48,7 @@ describe(BoardNodeService.name, () => {
 		// contentElementUpdateService = module.get(ContentElementUpdateService);
 		// boardNodeDeleteHooksService = module.get(BoardNodeDeleteHooksService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterEach(() => {
@@ -144,6 +153,163 @@ describe(BoardNodeService.name, () => {
 				const { boardNode } = setupNoneElement();
 
 				await expect(service.findContentElementById(boardNode.id)).rejects.toThrowError();
+			});
+		});
+	});
+
+	describe('findAnyMediaElementById', () => {
+		const setup = () => {
+			const element = deletedElementFactory.build();
+			boardNodeRepo.findById.mockResolvedValueOnce(element);
+
+			return { element };
+		};
+
+		it('should use the repo', async () => {
+			const { element } = setup();
+
+			await service.findAnyMediaElementById(element.id);
+
+			expect(boardNodeRepo.findById).toHaveBeenCalledWith(element.id, undefined);
+		});
+
+		it('should return the repo result', async () => {
+			const { element } = setup();
+
+			const result = await service.findAnyMediaElementById(element.id);
+
+			expect(result).toBe(element);
+		});
+
+		describe('when node is not a content element', () => {
+			const setupNoneElement = () => {
+				const boardNode = columnBoardFactory.build();
+				boardNodeRepo.findById.mockResolvedValueOnce(boardNode);
+
+				return { boardNode };
+			};
+
+			it('should throw error', async () => {
+				const { boardNode } = setupNoneElement();
+
+				await expect(service.findAnyMediaElementById(boardNode.id)).rejects.toThrowError();
+			});
+		});
+	});
+
+	describe('replace', () => {
+		describe('when replacing a node', () => {
+			const setup = () => {
+				const oldNode = externalToolElementFactory.build();
+				const newNode = deletedElementFactory.build();
+				const parentNode = cardFactory.build();
+				parentNode.addChild(oldNode);
+
+				boardNodeRepo.findById.mockResolvedValueOnce(new Card({ ...parentNode.getProps() }));
+
+				return {
+					parentNode,
+					oldNode,
+					newNode,
+				};
+			};
+
+			it('should add the new node', async () => {
+				const { parentNode, oldNode, newNode } = setup();
+
+				await service.replace(oldNode, newNode);
+
+				expect(boardNodeRepo.save).toHaveBeenCalledWith(
+					new Card({ ...parentNode.getProps(), children: [oldNode, newNode] })
+				);
+			});
+
+			it('should delete the old node', async () => {
+				const { oldNode, newNode } = setup();
+
+				await service.replace(oldNode, newNode);
+
+				expect(boardNodeRepo.delete).toHaveBeenCalledWith(oldNode);
+			});
+		});
+
+		describe('when the node has no parent', () => {
+			const setup = () => {
+				const oldNode = externalToolElementFactory.build();
+				const newNode = deletedElementFactory.build();
+
+				return {
+					oldNode,
+					newNode,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { oldNode, newNode } = setup();
+
+				await expect(service.replace(oldNode, newNode)).rejects.toThrow(NotFoundException);
+			});
+		});
+	});
+
+	describe('findElementsByContextExternalToolId', () => {
+		describe('when finding a node by its context external tool id', () => {
+			const setup = () => {
+				const contextExternalToolId = new ObjectId().toHexString();
+				const node = externalToolElementFactory.build({
+					contextExternalToolId,
+				});
+
+				boardNodeRepo.findByContextExternalToolIds.mockResolvedValueOnce([node]);
+
+				return {
+					node,
+					contextExternalToolId,
+				};
+			};
+
+			it('should search by the context external tool id', async () => {
+				const { contextExternalToolId } = setup();
+
+				await service.findElementsByContextExternalToolId(contextExternalToolId);
+
+				expect(boardNodeRepo.findByContextExternalToolIds).toHaveBeenCalledWith([contextExternalToolId]);
+			});
+
+			it('should return the node', async () => {
+				const { node, contextExternalToolId } = setup();
+
+				const result = await service.findElementsByContextExternalToolId(contextExternalToolId);
+
+				expect(result).toEqual([node]);
+			});
+		});
+	});
+
+	describe('updateLayout', () => {
+		describe('when updating the layout', () => {
+			const setup = () => {
+				const node = columnBoardFactory.build({
+					layout: BoardLayout.COLUMNS,
+				});
+
+				const expected = new ColumnBoard({
+					...node.getProps(),
+					layout: BoardLayout.LIST,
+				});
+
+				return {
+					node,
+					expected,
+				};
+			};
+
+			it('should save the board with the updated layout', async () => {
+				const { node, expected } = setup();
+
+				await service.updateLayout(node, BoardLayout.LIST);
+
+				expect(boardNodeRepo.save).toHaveBeenCalledWith(expected);
 			});
 		});
 	});

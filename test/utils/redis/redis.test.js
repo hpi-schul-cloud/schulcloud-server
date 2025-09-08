@@ -1,36 +1,48 @@
-/* eslint-disable global-require */
-
 const { expect } = require('chai');
-const mockery = require('mockery');
 const commons = require('@hpi-schul-cloud/commons');
+const redisHelpers = require('../../../src/utils/redis');
 
 const { Configuration } = commons;
 
-const redisMock = require('./redisMock');
+const valueDict = {};
+const ttlDict = {};
+class RedisClientMock {
+	get(key) {
+		const value = valueDict[key];
+		return Promise.resolve(value);
+	}
+
+	set(key, value, ...args) {
+		valueDict[key] = value;
+		const ex = args.indexOf('EX');
+		if (ex >= 0) {
+			ttlDict[key] = args[ex + 1];
+		}
+		return Promise.resolve(true);
+	}
+
+	del(key) {
+		delete valueDict[key];
+		delete ttlDict[key];
+		return Promise.resolve(true);
+	}
+
+	ttl(key) {
+		const ttl = ttlDict[key];
+		return Promise.resolve(ttl);
+	}
+
+	on(_key, _func) {}
+}
 
 describe('redis helpers', () => {
 	describe('without a redis server', () => {
-		let redisHelpers;
-
 		before(async () => {
-			mockery.enable({
-				warnOnReplace: false,
-				warnOnUnregistered: false,
-				useCleanCache: true,
-			});
-			mockery.registerMock('ioredis', redisMock);
-			mockery.registerMock('@hpi-schul-cloud/commons', commons);
-
-			delete require.cache[require.resolve('../../../src/utils/redis')];
-			redisHelpers = require('../../../src/utils/redis');
+			redisHelpers.clearRedis();
 			redisHelpers.initializeRedisClient();
 		});
 
-		after(async () => {
-			delete require.cache[require.resolve('../../../src/utils/redis')];
-			mockery.deregisterAll();
-			mockery.disable();
-		});
+		after(async () => {});
 
 		it('no redisClient is created if there is no URL', async () => {
 			expect(redisHelpers.getRedisClient()).to.equal(false);
@@ -71,29 +83,18 @@ describe('redis helpers', () => {
 	});
 
 	describe('with a redis server', () => {
-		let redisHelpers;
 		let configBefore;
 
 		before(async () => {
 			configBefore = Configuration.toObject({ plainSecrets: true });
-			mockery.enable({
-				warnOnReplace: false,
-				warnOnUnregistered: false,
-				useCleanCache: true,
-			});
-			mockery.registerMock('ioredis', redisMock);
-			mockery.registerMock('@hpi-schul-cloud/commons', commons);
-
-			delete require.cache[require.resolve('../../../src/utils/redis')];
-			redisHelpers = require('../../../src/utils/redis');
-			Configuration.set('REDIS_URI', '//validHost:6666');
-			redisHelpers.initializeRedisClient();
+			Configuration.set('SESSION_VALKEY_URI', '//validHost:6666');
+			redisHelpers.clearRedis();
+			const redisMock = new RedisClientMock();
+			redisHelpers.initializeRedisClient(redisMock);
 		});
 
 		after(async () => {
-			mockery.deregisterAll();
-			mockery.disable();
-			delete require.cache[require.resolve('../../../src/utils/redis')];
+			redisHelpers.clearRedis();
 			Configuration.reset(configBefore);
 		});
 

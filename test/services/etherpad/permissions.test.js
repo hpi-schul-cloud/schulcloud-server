@@ -2,11 +2,11 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const freeport = require('freeport');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const decode = require('jwt-decode');
+const jsonwebtoken = require('jsonwebtoken');
 const logger = require('../../../src/logger');
-const MockServer = require('./MockServer');
+const EtherpadMockServer = require('./EtherpadMockServer');
 const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(appPromise());
+const testHelper = require('../helpers/testObjects');
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 const { expect } = chai;
@@ -14,7 +14,7 @@ const { expect } = chai;
 chai.use(chaiHttp);
 
 function request({ server, method = 'get', endpoint, data, accessToken }) {
-	return new Promise((resolve, reject) =>
+	return new Promise((resolve, reject) => {
 		chai
 			.request(server)
 			[method](endpoint)
@@ -30,16 +30,17 @@ function request({ server, method = 'get', endpoint, data, accessToken }) {
 					return;
 				}
 				resolve(res);
-			})
-	);
+			});
+	});
 }
 
 describe('Etherpad Permission Check: Teacher', () => {
-	let mockServer;
+	let etherpadMockServer;
 	let server;
 	let app;
 	let nestServices;
 	let configBefore;
+	let testObjects;
 
 	before((done) => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
@@ -56,14 +57,15 @@ describe('Etherpad Permission Check: Teacher', () => {
 			app = await appPromise();
 			server = await app.listen(0);
 			nestServices = await setupNestServices(app);
+			testObjects = testHelper(app);
 
-			const mock = MockServer(mockUrl, ethPath, done);
-			mockServer = mock.server;
+			const mock = EtherpadMockServer(done, mockUrl, ethPath);
+			etherpadMockServer = mock.server;
 		});
 	});
 
 	after(async () => {
-		await mockServer.close();
+		await etherpadMockServer.close();
 		await server.close();
 		await testObjects.cleanup();
 		await closeNestServices(nestServices);
@@ -80,7 +82,7 @@ describe('Etherpad Permission Check: Teacher', () => {
 			},
 		} = await testObjects.setupUser({ roles: ['teacher'] });
 
-		const jwt = decode(accessToken);
+		const jwt = jsonwebtoken.decode(accessToken);
 		const course = await testObjects.createTestCourse({ teacherIds: [jwt.userId] });
 
 		const data = {

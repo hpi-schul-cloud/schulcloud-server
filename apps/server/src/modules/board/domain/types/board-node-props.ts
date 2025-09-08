@@ -1,8 +1,9 @@
 import type { EntityId, InputFormat } from '@shared/domain/types';
+import type { MediaBoardColors } from '../media-board';
 import type { AnyBoardNode } from './any-board-node';
 import type { BoardExternalReference } from './board-external-reference';
-import { BoardLayout } from './board-layout.enum';
-import type { MediaBoardColors } from '../media-board';
+import type { BoardLayout } from './board-layout.enum';
+import type { ContentElementType } from './content-element-type.enum';
 
 export interface BoardNodeProps {
 	id: EntityId;
@@ -19,6 +20,7 @@ export interface ColumnBoardProps extends BoardNodeProps {
 	context: BoardExternalReference;
 	isVisible: boolean;
 	layout: BoardLayout;
+	readersCanEdit: boolean;
 }
 
 export interface ColumnProps extends BoardNodeProps {
@@ -48,6 +50,7 @@ export interface LinkElementProps extends BoardNodeProps {
 	title: string;
 	url: string;
 	description?: string;
+	originalImageUrl?: string;
 	imageUrl?: string;
 }
 
@@ -63,6 +66,24 @@ export interface SubmissionContainerElementProps extends BoardNodeProps {
 export interface SubmissionItemProps extends BoardNodeProps {
 	completed: boolean;
 	userId: EntityId;
+}
+
+export interface VideoConferenceElementProps extends BoardNodeProps {
+	title: string;
+}
+
+export interface FileFolderElementProps extends BoardNodeProps {
+	title: string;
+}
+
+export interface DeletedElementProps extends BoardNodeProps {
+	title: string;
+	deletedElementType: ContentElementType;
+	description?: string;
+}
+
+export interface H5pElementProps extends BoardNodeProps {
+	contentId?: string;
 }
 
 export interface MediaBoardProps extends BoardNodeProps {
@@ -93,8 +114,12 @@ export type AnyBoardNodeProps =
 	| DrawingElementProps
 	| ExternalToolElementProps
 	| FileElementProps
+	| FileFolderElementProps
 	| LinkElementProps
 	| RichTextElementProps
 	| SubmissionContainerElementProps
 	| SubmissionItemProps
+	| VideoConferenceElementProps
+	| DeletedElementProps
+	| H5pElementProps
 	| MediaBoardNodeProps;

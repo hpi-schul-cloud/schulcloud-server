@@ -13,3 +13,4 @@ export { CreateMediaElementBodyParams } from './create-media-element.body.params
 export { ColorBodyParams } from './color.body.params';
 export { CollapsableBodyParams } from './collapsable.body.params';
 export { LayoutBodyParams } from './layout.body.params';
+export { AnyMediaElementResponse } from './any-media-element.response';

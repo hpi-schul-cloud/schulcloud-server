@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DomainObjectFactory } from '@shared/testing';
+import { DomainObjectFactory } from '@testing/factory/domainobject';
 import { BoardNodeAuthorizable, BoardNodeAuthorizableProps } from '../domain';
 import { columnBoardFactory } from './column-board.factory';
 import { columnFactory } from './column.factory';
@@ -15,5 +15,6 @@ export const boardNodeAuthorizableFactory = DomainObjectFactory.define<
 		users: [],
 		boardNode,
 		rootNode,
+		boardContextSettings: {},
 	};
 });

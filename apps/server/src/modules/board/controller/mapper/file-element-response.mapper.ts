@@ -24,7 +24,7 @@ export class FileElementResponseMapper implements BaseResponseMapper {
 		return result;
 	}
 
-	canMap(element: FileElement): boolean {
+	canMap(element: unknown): boolean {
 		return element instanceof FileElement;
 	}
 }

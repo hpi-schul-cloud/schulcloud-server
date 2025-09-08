@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementOauthService } from './keycloak-identity-management-oauth.service';
 
@@ -14,7 +14,7 @@ describe('KeycloakIdentityManagementService', () => {
 	let kcIdmOauthService: KeycloakIdentityManagementOauthService;
 	let kcAdminServiceMock: DeepMocked<KeycloakAdministrationService>;
 	let httpServiceMock: DeepMocked<HttpService>;
-	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
+	let oAuthEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
 
 	const clientId = 'TheClientId';
 	const clientSecret = 'TheClientSecret';

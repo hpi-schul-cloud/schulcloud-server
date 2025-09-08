@@ -1,11 +1,13 @@
 import { AmqpConnectionManager, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Global, Module, OnModuleDestroy } from '@nestjs/common';
 import {
-	AntivirusExchange,
-	FilesPreviewExchange,
 	FilesStorageExchange,
+	H5pEditorExchange,
+	HeartBeatIntervalInSeconds,
 	MailSendExchange,
 	RabbitMqURI,
+	SchulconnexProvisioningExchange,
 } from './rabbitmq.config';
 
 /**
@@ -18,15 +20,12 @@ import {
 
 const imports = [
 	RabbitMQModule.forRoot(RabbitMQModule, {
-		// Please don't change the global prefetch count, if you need constraint, change it at channel level
-		prefetchCount: 5,
+		// Please don't change the global prefetch count for the existing exchanges.
+		// If you need individual prefetch counts for each consumer, please create a separate RabbitMQModule with channels for your deployment.
+		prefetchCount: Configuration.get('RABBITMQ_GLOBAL_PREFETCH_COUNT') as number,
 		exchanges: [
 			{
 				name: MailSendExchange,
-				type: 'direct',
-			},
-			{
-				name: AntivirusExchange,
 				type: 'direct',
 			},
 			{
@@ -34,11 +33,18 @@ const imports = [
 				type: 'direct',
 			},
 			{
-				name: FilesPreviewExchange,
+				name: SchulconnexProvisioningExchange,
+				type: 'direct',
+			},
+			{
+				name: H5pEditorExchange,
 				type: 'direct',
 			},
 		],
 		uri: RabbitMqURI,
+		connectionManagerOptions: {
+			heartbeatIntervalInSeconds: HeartBeatIntervalInSeconds,
+		},
 	}),
 ];
 @Global()
@@ -56,8 +62,8 @@ export class RabbitMQWrapperModule {}
 export class RabbitMQWrapperTestModule implements OnModuleDestroy {
 	constructor(private readonly amqpConnectionManager: AmqpConnectionManager) {}
 
-	// In tests we need to close connections when the module is destroyed.
-	async onModuleDestroy() {
+	// In tests, we need to close connections when the module is destroyed.
+	public async onModuleDestroy(): Promise<void> {
 		await Promise.all(
 			this.amqpConnectionManager.getConnections().map((connection) => connection.managedConnection.close())
 		);

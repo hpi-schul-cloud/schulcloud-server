@@ -1,21 +1,17 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, discard, disallow, keepInArray, keep } = require('feathers-hooks-common');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-
 const { Forbidden } = require('../../../errors');
 const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
-
 const globalHooks = require('../../../hooks');
-const { fileStorageTypes, SCHOOL_FEATURES } = require('../model');
-const getFileStorageStrategy = require('../../fileStorage/strategies').createStrategy;
-
-const { yearModel: Year } = require('../model');
+const AWSStrategy = require('../../fileStorage/strategies/awsS3');
+const { fileStorageTypes, SCHOOL_FEATURES, yearModel: Year } = require('../model');
 const SchoolYearFacade = require('../logic/year');
 
 // years are cached on first call, because they are expected to not change during runtime.
-let years = null;
+let years = null; // ..need cleanup to make it really testable
 
 const cacheYearsIfNotSet = async () => {
 	if (!years) {
@@ -112,18 +108,17 @@ const createDefaultStorageOptions = (hook) => {
 	if (NODE_ENV !== ENVIRONMENTS.PRODUCTION) {
 		return Promise.resolve(hook);
 	}
-	const storageType = getDefaultFileStorageType();
 	const schoolId = hook.result._id;
-	const fileStorageStrategy = getFileStorageStrategy(storageType);
+	const fileStorageStrategy = new AWSStrategy();
 	return fileStorageStrategy
 		.create(schoolId)
-		.then(() => Promise.resolve(hook))
+		.then(() => hook)
 		.catch((err) => {
 			if (err && err.code === 'BucketAlreadyOwnedByYou') {
 				// The bucket already exists
-				return Promise.resolve(hook);
+				return hook;
 			}
-			return Promise.reject(err);
+			throw err;
 		});
 };
 
@@ -205,21 +200,25 @@ const isNotAuthenticated = async (context) => {
 const validateOfficialSchoolNumber = async (context) => {
 	if (context && context.data && context.data.officialSchoolNumber) {
 		const { officialSchoolNumber } = context.data;
-		const schools = await context.app.service('schools').find({
-			query: {
-				_id: context.id,
-				$populate: 'federalState',
-				$limit: 1,
-			},
-		});
-		const currentSchool = schools.data[0];
-		if (!currentSchool) {
-			throw new Error(`Internal error`);
-		}
 		const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
-		if (!isSuperHero && currentSchool.officialSchoolNumber) {
-			throw new Error(`This school already have an officialSchoolNumber`);
+		if (!isSuperHero) {
+			const schools = await context.app.service('schools').find({
+				query: {
+					_id: context.id,
+					$populate: 'federalState',
+					$limit: 1,
+				},
+			});
+
+			const currentSchool = schools.data[0];
+			if (!currentSchool) {
+				throw new Error(`Internal error`);
+			}
+			if (currentSchool.officialSchoolNumber) {
+				throw new Error(`This school already have an officialSchoolNumber`);
+			}
 		}
+
 		const officialSchoolNumberFormat = /^[a-zA-Z0-9-]+$/;
 		if (!officialSchoolNumberFormat.test(officialSchoolNumber)) {
 			throw new Error(
@@ -233,34 +232,47 @@ const validateOfficialSchoolNumber = async (context) => {
 // school County
 const validateCounty = async (context) => {
 	if (context && context.data && context.data.county) {
-		const schools = await context.app.service('schools').find({
-			query: {
-				_id: context.id,
-				$populate: 'federalState',
-				$limit: 1,
-			},
-		});
-		const currentSchool = schools.data[0];
-		if (!currentSchool) {
-			throw new Error(`Internal error`);
-		}
+		let federalState;
 
 		const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
+		if (!isSuperHero) {
+			const schools = await context.app.service('schools').find({
+				query: {
+					_id: context.id,
+					$populate: 'federalState',
+					$limit: 1,
+				},
+			});
 
-		const { county } = context.data;
-		if (
-			!isSuperHero &&
-			(!currentSchool.federalState.counties.length ||
-				!currentSchool.federalState.counties.some((c) => c._id.toString() === county.toString()))
-		) {
-			throw new Error(`The state doesn't not have a matching county`);
+			const currentSchool = schools.data[0];
+			if (!currentSchool) {
+				throw new Error(`Internal error`);
+			}
+
+			const { county } = context.data;
+			if (
+				!currentSchool.federalState.counties.length ||
+				!currentSchool.federalState.counties.some((c) => c._id.toString() === county.toString())
+			) {
+				throw new Error(`The state doesn't not have a matching county`);
+			}
+
+			/* Tries to replace the existing county with a new one */
+			if (currentSchool.county && JSON.stringify(currentSchool.county) !== JSON.stringify(county)) {
+				throw new Error(`This school already have a county`);
+			}
+
+			// eslint-disable-next-line prefer-destructuring
+			federalState = currentSchool.federalState;
 		}
 
-		/* Tries to replace the existing county with a new one */
-		if (!isSuperHero && currentSchool.county && JSON.stringify(currentSchool.county) !== JSON.stringify(county)) {
-			throw new Error(`This school already have a county`);
+		if (!federalState) {
+			federalState = await context.app.service('federalStates').get(context.data.federalState);
 		}
-		context.data.county = currentSchool.federalState.counties.find((c) => c._id.toString() === county.toString());
+		if (!federalState) {
+			throw new Error(`Unknown federal state was provided for the school`);
+		}
+		context.data.county = federalState.counties.find((c) => c._id.toString() === context.data.county.toString());
 	}
 	// checks for empty value and deletes it from context
 	if (context && context.data && Object.keys(context.data).includes('county') && !context.data.county) {

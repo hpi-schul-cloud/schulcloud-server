@@ -1,11 +1,11 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
-import { Injectable, NotImplementedException } from '@nestjs/common';
-import { EntityId, SystemTypeEnum } from '@shared/domain/types';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { System, SystemQuery, SystemRepo } from '../../domain';
-import { SystemEntity } from '../../entity';
+import { System, SystemQuery, SystemRepo, SystemTypeEnum } from '../../domain';
 import { SystemEntityMapper } from './mapper';
 import { SystemScope } from './scope';
+import { SystemEntity } from './system.entity';
 
 @Injectable()
 export class SystemMikroOrmRepo extends BaseDomainObjectRepo<System, SystemEntity> implements SystemRepo {
@@ -13,8 +13,10 @@ export class SystemMikroOrmRepo extends BaseDomainObjectRepo<System, SystemEntit
 		return SystemEntity;
 	}
 
-	protected mapDOToEntityProperties(): EntityData<SystemEntity> {
-		throw new NotImplementedException('Method `mapDOToEntityProperties` not implemented.');
+	protected mapDOToEntityProperties(entityDO: System): EntityData<SystemEntity> {
+		const entity = SystemEntityMapper.mapDoToEntityData(entityDO);
+
+		return entity;
 	}
 
 	public async find(filter: SystemQuery): Promise<System[]> {
@@ -60,5 +62,20 @@ export class SystemMikroOrmRepo extends BaseDomainObjectRepo<System, SystemEntit
 		const domainObjects: System[] = entities.map((entity) => SystemEntityMapper.mapToDo(entity));
 
 		return domainObjects;
+	}
+
+	async findByOauth2Issuer(issuer: string): Promise<System | null> {
+		const entity: SystemEntity | null = await this.em.findOne(SystemEntity, {
+			type: SystemTypeEnum.OAUTH,
+			oauthConfig: { issuer },
+		});
+
+		if (!entity) {
+			return null;
+		}
+
+		const domainObject: System = SystemEntityMapper.mapToDo(entity);
+
+		return domainObject;
 	}
 }

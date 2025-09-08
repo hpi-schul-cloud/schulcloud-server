@@ -1,11 +1,43 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, Patch, Query } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
-import { SchoolQueryParams, SchoolRemoveSystemUrlParams, SchoolUpdateBodyParams, SchoolUrlParams } from './dto/param';
-import { SchoolForExternalInviteResponse, SchoolResponse, SchoolSystemResponse } from './dto/response';
-import { SchoolExistsResponse } from './dto/response/school-exists.response';
-import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import {
+	Body,
+	Controller,
+	ForbiddenException,
+	Get,
+	HttpCode,
+	HttpStatus,
+	NotFoundException,
+	Param,
+	Patch,
+	Post,
+	Query,
+} from '@nestjs/common';
+import {
+	ApiBadRequestResponse,
+	ApiForbiddenResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiResponse,
+	ApiTags,
+	ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
+import { ApiValidationError } from '@shared/common/error';
+import {
+	MaintenanceResponse,
+	SchoolExistsResponse,
+	SchoolForExternalInviteResponse,
+	SchoolForLdapLoginResponse,
+	SchoolQueryParams,
+	SchoolRemoveSystemUrlParams,
+	SchoolResponse,
+	SchoolListResponse,
+	SchoolSystemResponse,
+	SchoolUpdateBodyParams,
+	SchoolUrlParams,
+	SchoolUserListResponse,
+} from './dto';
+import { MaintenanceParams } from './dto/maintenance.params';
 import { SchoolUc } from './school.uc';
 
 @ApiTags('School')
@@ -13,8 +45,21 @@ import { SchoolUc } from './school.uc';
 export class SchoolController {
 	constructor(private readonly schoolUc: SchoolUc) {}
 
+	@Get()
+	@JwtAuthentication()
+	public async getSchoolList(@Query() query: SchoolQueryParams): Promise<SchoolListResponse | undefined> {
+		const dto = await this.schoolUc.getSchoolList(
+			{
+				limit: query.limit,
+				skip: query.skip,
+			},
+			query.federalStateId
+		);
+		return dto;
+	}
+
 	@Get('/id/:schoolId')
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	public async getSchoolById(
 		@Param() urlParams: SchoolUrlParams,
 		@CurrentUser() user: ICurrentUser
@@ -25,7 +70,7 @@ export class SchoolController {
 	}
 
 	@Get('/list-for-external-invite')
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	public async getSchoolListForExternalInvite(
 		@Query() query: SchoolQueryParams,
 		@CurrentUser() user: ICurrentUser
@@ -54,7 +99,7 @@ export class SchoolController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	@Get('/:schoolId/systems')
 	public async getSchoolSystems(
 		@Param() urlParams: SchoolUrlParams,
@@ -72,7 +117,7 @@ export class SchoolController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Patch('/:schoolId')
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	public async updateSchool(
 		@Param() urlParams: SchoolUrlParams,
 		@Body() body: SchoolUpdateBodyParams,
@@ -84,11 +129,72 @@ export class SchoolController {
 	}
 
 	@Patch('/:schoolId/system/:systemId/remove')
-	@Authenticate('jwt')
+	@JwtAuthentication()
 	public async removeSystemFromSchool(
 		@Param() urlParams: SchoolRemoveSystemUrlParams,
 		@CurrentUser() user: ICurrentUser
 	): Promise<void> {
 		await this.schoolUc.removeSystemFromSchool(urlParams.schoolId, urlParams.systemId, user.userId);
+	}
+
+	@Get('/:schoolId/teachers')
+	@JwtAuthentication()
+	public async getTeachers(
+		@Param() urlParams: SchoolUrlParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise<SchoolUserListResponse> {
+		const res = await this.schoolUc.getSchoolTeachers(urlParams.schoolId, user.userId);
+
+		return res;
+	}
+
+	@Get('/:schoolId/students')
+	@JwtAuthentication()
+	public async getStudents(
+		@Param() urlParams: SchoolUrlParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise<SchoolUserListResponse> {
+		const res = await this.schoolUc.getSchoolStudents(urlParams.schoolId, user.userId);
+
+		return res;
+	}
+
+	@Get('/:schoolId/maintenance')
+	@ApiOperation({ summary: 'Returns the current maintenance status of the school' })
+	@ApiOkResponse({ type: MaintenanceResponse })
+	@ApiNotFoundResponse()
+	@ApiForbiddenResponse()
+	@ApiBadRequestResponse()
+	@JwtAuthentication()
+	public async getMaintenanceStatus(
+		@Param() urlParams: SchoolUrlParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise<MaintenanceResponse> {
+		const response: MaintenanceResponse = await this.schoolUc.getMaintenanceStatus(urlParams.schoolId, user.userId);
+
+		return response;
+	}
+
+	@Post('/:schoolId/maintenance')
+	@ApiOperation({ summary: 'Sets the school into maintenance or puts it into the next year' })
+	@ApiOkResponse({ type: MaintenanceResponse })
+	@ApiNotFoundResponse()
+	@ApiForbiddenResponse()
+	@ApiBadRequestResponse()
+	@ApiUnprocessableEntityResponse()
+	@JwtAuthentication()
+	@HttpCode(HttpStatus.OK)
+	public async setMaintenanceStatus(
+		@Param() urlParams: SchoolUrlParams,
+		@Body() bodyParams: MaintenanceParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise<MaintenanceResponse> {
+		const response: MaintenanceResponse = await this.schoolUc.setMaintenanceStatus(
+			urlParams.schoolId,
+			user.userId,
+			bodyParams.maintenance
+		);
+
+		return response;
 	}
 }

@@ -1,6 +1,6 @@
 import type { System } from '@modules/system';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { Client, createClient } from 'ldapjs';
 import { LdapConnectionError } from '../errors/ldap-connection.error';
 import { LdapUserCouldNotBeAuthenticatedLoggableException, UserAuthenticatedLoggable } from '../loggable';

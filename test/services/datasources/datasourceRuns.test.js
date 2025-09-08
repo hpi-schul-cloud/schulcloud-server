@@ -1,11 +1,9 @@
 /* eslint-disable max-classes-per-file */
 const { expect } = require('chai');
-const mockery = require('mockery');
 const sleep = require('util').promisify(setTimeout);
-
 const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(appPromise());
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise());
+const testHelper = require('../helpers/testObjects');
+const loginTestHelper = require('../helpers/services/login');
 const { datasourceRunModel } = require('../../../src/services/datasources/model');
 const Syncer = require('../../../src/services/sync/strategies/Syncer');
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
@@ -43,34 +41,44 @@ describe('datasourceRuns service', () => {
 	let datasourceRunsService;
 	let server;
 	let nestServices;
+	let testObjects;
+	let generateRequestParamsFromUser;
+	let datasourceRunIds;
 
 	before(async () => {
 		app = await appPromise();
+		testObjects = testHelper(app);
+		({ generateRequestParamsFromUser } = loginTestHelper(app));
+
 		nestServices = await setupNestServices(app);
-		mockery.enable({
-			useCleanCache: true,
-			warnOnUnregistered: false,
-		});
-		mockery.registerMock('./strategies', [MockSyncer, MockSyncerWithData]);
+
+		// override registered strategies
+		app.set('syncersStrategies', [MockSyncer, MockSyncerWithData]);
 		datasourceRunsService = app.service('datasourceRuns');
 
 		app.unuse('/sync/userAccount');
-		app.unuse('/sync');
-		// eslint-disable-next-line global-require
-		const sync = require('../../../src/services/sync');
-		app.configure(sync);
+
 		server = await app.listen(0);
 	});
 
 	after(async () => {
-		mockery.deregisterAll();
-		mockery.disable();
+		await testObjects.cleanup();
 		await server.close();
 		await closeNestServices(nestServices);
 	});
 
+	afterEach(async () => {
+		if (!datasourceRunIds) {
+			await datasourceRunModel
+				.remove({ _id: { $in: datasourceRunIds } })
+				.lean()
+				.exec();
+			datasourceRunIds = undefined;
+		}
+	});
+
 	it('registered the datasourceRuns service', () => {
-		expect(datasourceRunsService).to.not.be.undefined;
+		expect(datasourceRunsService).to.not.equal(undefined);
 	});
 
 	it('CREATE starts a datasource run without data', async () => {
@@ -81,10 +89,9 @@ describe('datasourceRuns service', () => {
 			name: 'cool datasource',
 		});
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id });
+		datasourceRunIds = [result._id];
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Pending');
-
-		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
 	it('CREATE handles errors in syncer', async () => {
@@ -94,14 +101,16 @@ describe('datasourceRuns service', () => {
 			config: { target: 'errormock' },
 			name: 'cool datasource',
 		});
+
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id });
+		datasourceRunIds = [result._id];
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Pending');
-		await sleep(50);
-		const updatedRun = await datasourceRunsService.get(result._id);
-		expect(updatedRun.status).to.equal('Error');
 
-		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
+		await sleep(250);
+
+		const updatedRun = await datasourceRunsService.get(datasourceRunIds[0]);
+		expect(updatedRun.status).to.equal('Error');
 	});
 
 	it('CREATE starts a datasource run with data', async () => {
@@ -115,10 +124,9 @@ describe('datasourceRuns service', () => {
 			datasourceId: datasource._id,
 			data: { key: 'datakraken-food' },
 		});
+		datasourceRunIds = [result._id];
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Pending');
-
-		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
 	it('CREATE updates the datasource and datasourcerun once its done.', async () => {
@@ -130,6 +138,7 @@ describe('datasourceRuns service', () => {
 		});
 		const beforeRun = Date.now();
 		const run = await datasourceRunsService.create({ datasourceId: datasource._id });
+		datasourceRunIds = [run._id];
 		await sleep(50);
 		const updatedRun = await datasourceRunsService.get(run._id);
 		expect(updatedRun.status).to.equal('Success');
@@ -137,8 +146,6 @@ describe('datasourceRuns service', () => {
 		expect(updatedDatasource).to.not.equal(undefined);
 		expect(updatedDatasource.lastRun.getTime()).to.be.greaterThan(beforeRun);
 		expect(updatedDatasource.lastStatus).to.equal(updatedRun.status);
-
-		await datasourceRunModel.deleteOne({ _id: run._id }).lean().exec();
 	});
 
 	it('CREATE works for an authorized user', async () => {
@@ -151,10 +158,9 @@ describe('datasourceRuns service', () => {
 		});
 		const params = await generateRequestParamsFromUser(user);
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id.toString() }, params);
+		datasourceRunIds = [result._id];
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Pending');
-
-		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
 	it('CREATE fails for a different school', async () => {
@@ -172,8 +178,8 @@ describe('datasourceRuns service', () => {
 				{ datasourceId: datasource._id.toString(), data: { plate: 'datakraken-food' } },
 				params
 			);
-			// this should not be reached, but in case it does: clean up
-			await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
+			datasourceRunIds = [result._id];
+
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
@@ -193,10 +199,9 @@ describe('datasourceRuns service', () => {
 		});
 		const params = await generateRequestParamsFromUser(user);
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id.toString() }, params);
+		datasourceRunIds = [result._id];
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Pending');
-
-		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
 	it('GET fetches a run including log', async () => {
@@ -209,12 +214,11 @@ describe('datasourceRuns service', () => {
 		const datasourceRun = await datasourceRunsService.create({ datasourceId: datasource._id });
 		await sleep(50);
 		const result = await datasourceRunsService.get(datasourceRun._id);
+		datasourceRunIds = [result._id];
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Success');
 		expect(typeof result.log).to.equal('string');
 		expect(result.datasourceId.toString()).to.equal(datasource._id.toString());
-
-		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
 	it('GET fails for a different school', async () => {
@@ -233,14 +237,13 @@ describe('datasourceRuns service', () => {
 				datasourceId: datasource._id.toString(),
 				data: { payload: 'datakraken-food' },
 			});
+			datasourceRunIds = [datasourceRun._id];
 			await datasourceRunsService.get(datasourceRun._id, params);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(403);
 			expect(err.className).to.equal('forbidden');
-		} finally {
-			await datasourceRunModel.deleteOne({ _id: datasourceRun._id }).lean().exec();
 		}
 	});
 
@@ -251,7 +254,7 @@ describe('datasourceRuns service', () => {
 			config: { target: 'mock' },
 			name: 'beautiful datasource',
 		});
-		const datasourceRunIds = (
+		datasourceRunIds = (
 			await Promise.all([
 				datasourceRunsService.create({ datasourceId: datasource._id }),
 				datasourceRunsService.create({ datasourceId: datasource._id }),
@@ -261,14 +264,10 @@ describe('datasourceRuns service', () => {
 		const result = await datasourceRunsService.find({ query: { datasourceId: datasource._id } });
 		expect(result).to.not.equal(undefined);
 		result.data.forEach((res) => {
-			expect(res.status).to.not.be.undefined;
-			expect(res.log).to.not.exist;
+			expect(res.status).to.not.equal(undefined);
+			expect(res.log).to.equal(undefined);
 			expect(datasourceRunIds.includes(res._id.toString())).to.equal(true);
 		});
-		await datasourceRunModel
-			.remove({ _id: { $in: datasourceRunIds } })
-			.lean()
-			.exec();
 	});
 
 	it('FIND fetches all runs for a school', async () => {
@@ -283,7 +282,7 @@ describe('datasourceRuns service', () => {
 			config: { target: 'mock' },
 			name: 'second datasource',
 		});
-		const datasourceRunIds = (
+		datasourceRunIds = (
 			await Promise.all([
 				datasourceRunsService.create({ datasourceId: datasource._id }),
 				datasourceRunsService.create({ datasourceId: otherDatasource._id }),
@@ -292,14 +291,10 @@ describe('datasourceRuns service', () => {
 		const result = await datasourceRunsService.find({ query: { schoolId: testSchool._id } });
 		expect(result).to.not.equal(undefined);
 		result.data.forEach((res) => {
-			expect(res.status).to.not.be.undefined;
-			expect(res.log).to.not.exist;
+			expect(res.status).to.not.equal(undefined);
+			expect(res.log).to.equal(undefined);
 			expect(datasourceRunIds.includes(res._id.toString())).to.equal(true);
 		});
-		await datasourceRunModel
-			.remove({ _id: { $in: datasourceRunIds } })
-			.lean()
-			.exec();
 	});
 
 	it('FIND can be sorted', async () => {
@@ -314,7 +309,7 @@ describe('datasourceRuns service', () => {
 			config: { target: 'mock' },
 			name: 'second datasource',
 		});
-		const datasourceRunIds = (
+		datasourceRunIds = (
 			await Promise.all([
 				datasourceRunsService.create({ datasourceId: datasource._id }),
 				datasourceRunsService.create({ datasourceId: otherDatasource._id }),
@@ -328,11 +323,6 @@ describe('datasourceRuns service', () => {
 		expect(descResult.total).to.equal(2);
 		expect(ascResult.data[0]._id.toString()).to.equal(descResult.data[1]._id.toString());
 		expect(ascResult.data[1]._id.toString()).to.equal(descResult.data[0]._id.toString());
-
-		await datasourceRunModel
-			.remove({ _id: { $in: datasourceRunIds } })
-			.lean()
-			.exec();
 	});
 
 	it('FIND can be paginated', async () => {
@@ -347,7 +337,7 @@ describe('datasourceRuns service', () => {
 			config: { target: 'mock' },
 			name: 'second datasource',
 		});
-		const datasourceRunIds = (
+		datasourceRunIds = (
 			await Promise.all([
 				datasourceRunsService.create({ datasourceId: datasource._id }),
 				datasourceRunsService.create({ datasourceId: otherDatasource._id }),
@@ -359,11 +349,6 @@ describe('datasourceRuns service', () => {
 		expect(result.limit).to.equal(1);
 		expect(Array.isArray(result.data)).to.equal(true);
 		expect(result.data.length).to.equal(1);
-
-		await datasourceRunModel
-			.remove({ _id: { $in: datasourceRunIds } })
-			.lean()
-			.exec();
 	});
 
 	it('FIND doesnt include filtered results', async () => {
@@ -378,7 +363,7 @@ describe('datasourceRuns service', () => {
 			config: { target: 'mock' },
 			name: 'other datasource',
 		});
-		const datasourceRunIds = (
+		datasourceRunIds = (
 			await Promise.all([
 				datasourceRunsService.create({ datasourceId: datasource._id }),
 				datasourceRunsService.create({ datasourceId: otherDatasource._id }),
@@ -388,11 +373,6 @@ describe('datasourceRuns service', () => {
 		expect(result).to.not.equal(undefined);
 		expect(result.total).to.equal(1);
 		expect(result.data[0]._id.toString()).to.equal(datasourceRunIds[0].toString());
-
-		await datasourceRunModel
-			.remove({ _id: { $in: datasourceRunIds } })
-			.lean()
-			.exec();
 	});
 
 	it('FIND cant fetch runs from a different school', async () => {
@@ -408,7 +388,7 @@ describe('datasourceRuns service', () => {
 			config: { target: 'mock' },
 			name: 'other datasource',
 		});
-		const datasourceRunIds = (
+		datasourceRunIds = (
 			await Promise.all([
 				datasourceRunsService.create({ datasourceId: datasource._id }),
 				datasourceRunsService.create({ datasourceId: otherDatasource._id }),
@@ -420,10 +400,5 @@ describe('datasourceRuns service', () => {
 		expect(result).to.not.equal(undefined);
 		expect(result.total).to.equal(1);
 		expect(result.data[0]._id.toString()).to.equal(datasourceRunIds[0].toString());
-
-		await datasourceRunModel
-			.remove({ _id: { $in: datasourceRunIds } })
-			.lean()
-			.exec();
 	});
 });

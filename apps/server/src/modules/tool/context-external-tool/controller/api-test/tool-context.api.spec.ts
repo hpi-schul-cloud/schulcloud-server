@@ -1,26 +1,20 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { accountFactory } from '@modules/account/testing';
+import { courseEntityFactory } from '@modules/course/testing';
+import { roleFactory } from '@modules/role/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
+import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	courseFactory,
-	roleFactory,
-	schoolEntityFactory,
-	userFactory,
-} from '@shared/testing';
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
-import { accountFactory } from '@src/modules/account/testing';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../../common/enum';
-import { ExternalToolEntity } from '../../../external-tool/entity';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../repo';
 import { contextExternalToolEntityFactory } from '../../testing';
 import {
 	ContextExternalToolPostParams,
@@ -59,14 +53,14 @@ describe('ToolContextController (API)', () => {
 	describe('[POST] tools/context-external-tools', () => {
 		describe('when creation of contextExternalTool is successfully', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_ADMIN,
 				]);
 
-				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
+				const course = courseEntityFactory.buildWithId({ teachers: [teacherUser], school });
 
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+				const externalToolEntity = externalToolEntityFactory.buildWithId({
 					parameters: [
 						customParameterEntityFactory.build({
 							name: 'param1',
@@ -83,7 +77,7 @@ describe('ToolContextController (API)', () => {
 					],
 					restrictToContexts: [ToolContextType.COURSE],
 				});
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,
 					school,
 					schoolParameters: [],
@@ -135,9 +129,9 @@ describe('ToolContextController (API)', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-				const course = courseFactory.build({ teachers: [teacherUser] });
-				const otherCourse = courseFactory.build();
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.build({
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				const otherCourse = courseEntityFactory.build();
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.build({
 					schoolParameters: [],
 					school,
 				});
@@ -172,18 +166,18 @@ describe('ToolContextController (API)', () => {
 
 		describe('when external tool has no restrictions ', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_ADMIN,
 				]);
 
-				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
+				const course = courseEntityFactory.buildWithId({ teachers: [teacherUser], school });
 
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+				const externalToolEntity = externalToolEntityFactory.buildWithId({
 					parameters: [],
 					restrictToContexts: [],
 				});
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,
 					school,
 					schoolParameters: [],
@@ -227,18 +221,18 @@ describe('ToolContextController (API)', () => {
 
 		describe('when external tool restricts to wrong context ', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_ADMIN,
 				]);
 
-				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
+				const course = courseEntityFactory.buildWithId({ teachers: [teacherUser], school });
 
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+				const externalToolEntity = externalToolEntityFactory.buildWithId({
 					parameters: [],
 					restrictToContexts: [ToolContextType.BOARD_ELEMENT],
 				});
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,
 					school,
 					schoolParameters: [],
@@ -276,13 +270,13 @@ describe('ToolContextController (API)', () => {
 	describe('[DELETE] tools/context-external-tools/:contextExternalToolId', () => {
 		describe('when deletion of contextExternalTool is successfully', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_ADMIN,
 				]);
-				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser] });
+				const course = courseEntityFactory.buildWithId({ teachers: [teacherUser] });
 
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 				});
 				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
@@ -310,7 +304,7 @@ describe('ToolContextController (API)', () => {
 				expect(result.statusCode).toEqual(HttpStatus.NO_CONTENT);
 
 				const deleted: ContextExternalToolEntity | null = await em.findOne(ContextExternalToolEntity, {
-					contextId: contextExternalToolEntity.id,
+					contextId: new ObjectId(contextExternalToolEntity.id),
 				});
 
 				expect(deleted).toBeNull();
@@ -320,7 +314,7 @@ describe('ToolContextController (API)', () => {
 		describe('when deletion of contextExternalTool failed', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseFactory.buildWithId({ teachers: [teacherUser] });
+				const course = courseEntityFactory.buildWithId({ teachers: [teacherUser] });
 				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({});
 				const contextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
@@ -357,22 +351,22 @@ describe('ToolContextController (API)', () => {
 
 	describe('[GET] tools/context-external-tools/:contextType/:contextId', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolEntityFactory.buildWithId();
-			const otherSchool: SchoolEntity = schoolEntityFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
+			const otherSchool = schoolEntityFactory.buildWithId();
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 				Permission.CONTEXT_TOOL_ADMIN,
 			]);
-			const otherTeacherUser: User = userFactory.buildWithId({ roles: [], school: otherSchool });
-			const otherTeacherAccount: AccountEntity = accountFactory.buildWithId({ userId: otherTeacherUser.id });
+			const otherTeacherUser = userFactory.buildWithId({ roles: [], school: otherSchool });
+			const otherTeacherAccount = accountFactory.buildWithId({ userId: otherTeacherUser.id });
 
-			const course: Course = courseFactory.buildWithId({
+			const course = courseEntityFactory.buildWithId({
 				students: [teacherUser],
 				teachers: [teacherUser, otherTeacherUser],
 				school,
 			});
 
-			const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+			const schoolExternalTool1 = schoolExternalToolEntityFactory.buildWithId({
 				school,
 			});
 			const contextExternalTool1: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
@@ -380,7 +374,7 @@ describe('ToolContextController (API)', () => {
 				schoolTool: schoolExternalTool1,
 			});
 
-			const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+			const schoolExternalTool2 = schoolExternalToolEntityFactory.buildWithId({
 				school,
 			});
 			const contextExternalTool2: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
@@ -388,7 +382,7 @@ describe('ToolContextController (API)', () => {
 				schoolTool: schoolExternalTool2,
 			});
 
-			const schoolExternalToolFromOtherSchool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+			const schoolExternalToolFromOtherSchool = schoolExternalToolEntityFactory.buildWithId({
 				school: otherSchool,
 			});
 			const contextExternalToolFromOtherSchool: ContextExternalToolEntity =
@@ -433,7 +427,7 @@ describe('ToolContextController (API)', () => {
 					await setup();
 
 				const response = await loggedInClient.get(
-					`${contextExternalTool1.contextType}/${contextExternalTool1.contextId}`
+					`${contextExternalTool1.contextType}/${contextExternalTool1.contextId.toHexString()}`
 				);
 
 				expect(response.status).toEqual(HttpStatus.OK);
@@ -448,7 +442,7 @@ describe('ToolContextController (API)', () => {
 							],
 							id: contextExternalTool1.id,
 							schoolToolId: contextExternalTool1.schoolTool.id,
-							contextId: contextExternalTool1.contextId,
+							contextId: contextExternalTool1.contextId.toHexString(),
 							contextType: ToolContextType.COURSE,
 							displayName: contextExternalTool1.displayName,
 						},
@@ -461,7 +455,7 @@ describe('ToolContextController (API)', () => {
 							],
 							id: contextExternalTool2.id,
 							schoolToolId: contextExternalTool2.schoolTool.id,
-							contextId: contextExternalTool2.contextId,
+							contextId: contextExternalTool2.contextId.toHexString(),
 							contextType: ToolContextType.COURSE,
 							displayName: contextExternalTool2.displayName,
 						},
@@ -478,7 +472,7 @@ describe('ToolContextController (API)', () => {
 							],
 							id: contextExternalToolFromOtherSchool.id,
 							schoolToolId: contextExternalToolFromOtherSchool.schoolTool.id,
-							contextId: contextExternalToolFromOtherSchool.contextId,
+							contextId: contextExternalToolFromOtherSchool.contextId.toHexString(),
 							contextType: ToolContextType.COURSE,
 							displayName: contextExternalToolFromOtherSchool.displayName,
 						},
@@ -491,7 +485,7 @@ describe('ToolContextController (API)', () => {
 					const { contextExternalTool1 } = await setup();
 
 					const response = await testApiClient.get(
-						`${contextExternalTool1.contextType}/${contextExternalTool1.contextId}`
+						`${contextExternalTool1.contextType}/${contextExternalTool1.contextId.toHexString()}`
 					);
 
 					expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
@@ -503,7 +497,7 @@ describe('ToolContextController (API)', () => {
 					const { contextExternalTool1, otherLoggedInClient } = await setup();
 
 					const response = await otherLoggedInClient.get(
-						`${contextExternalTool1.contextType}/${contextExternalTool1.contextId}`
+						`${contextExternalTool1.contextType}/${contextExternalTool1.contextId.toHexString()}`
 					);
 
 					expect(response.status).toEqual(HttpStatus.OK);
@@ -518,19 +512,19 @@ describe('ToolContextController (API)', () => {
 	describe('[GET] tools/context-external-tools/:contextExternalToolId', () => {
 		describe('when the tool exists', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_ADMIN,
 				]);
 
-				const course: Course = courseFactory.buildWithId({
+				const course = courseEntityFactory.buildWithId({
 					teachers: [teacherUser],
 					school,
 				});
 
-				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const externalTool = externalToolEntityFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalTool,
 				});
@@ -568,7 +562,7 @@ describe('ToolContextController (API)', () => {
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual({
 					schoolToolId: contextExternalTool.schoolTool.id,
-					contextId: contextExternalTool.contextId,
+					contextId: contextExternalTool.contextId.toHexString(),
 					contextType: ToolContextType.COURSE,
 					id: contextExternalTool.id,
 					displayName: contextExternalTool.displayName,
@@ -579,13 +573,13 @@ describe('ToolContextController (API)', () => {
 
 		describe('when the tool does not exist', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_ADMIN,
 				]);
 
-				const course: Course = courseFactory.buildWithId({
+				const course = courseEntityFactory.buildWithId({
 					teachers: [teacherUser],
 					school,
 				});
@@ -609,14 +603,14 @@ describe('ToolContextController (API)', () => {
 
 		describe('when user is not authorized', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
-				const course: Course = courseFactory.buildWithId({
+				const course = courseEntityFactory.buildWithId({
 					school,
 				});
 
-				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const externalTool = externalToolEntityFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalTool,
 				});
@@ -638,7 +632,9 @@ describe('ToolContextController (API)', () => {
 			it('should return unauthorized', async () => {
 				const { contextExternalTool } = await setup();
 
-				const response = await testApiClient.get(`${contextExternalTool.contextType}/${contextExternalTool.contextId}`);
+				const response = await testApiClient.get(
+					`${contextExternalTool.contextType}/${contextExternalTool.contextId.toHexString()}`
+				);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -648,12 +644,12 @@ describe('ToolContextController (API)', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.build();
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
-				const course = courseFactory.build({
+				const course = courseEntityFactory.build({
 					teachers: [studentUser],
 					school,
 				});
-				const externalTool: ExternalToolEntity = externalToolEntityFactory.build();
-				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.build({
+				const externalTool = externalToolEntityFactory.build();
+				const schoolExternalTool = schoolExternalToolEntityFactory.build({
 					school,
 					tool: externalTool,
 				});
@@ -692,24 +688,24 @@ describe('ToolContextController (API)', () => {
 	describe('[PUT] tools/context-external-tools/:contextExternalToolId', () => {
 		describe('when update of contextExternalTool is successfully', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_ADMIN,
 				]);
 
-				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
+				const course = courseEntityFactory.buildWithId({ teachers: [teacherUser], school });
 
 				const contextParameter = customParameterEntityFactory.build({
 					scope: CustomParameterScope.CONTEXT,
 					regex: 'testValue123',
 				});
 
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+				const externalToolEntity = externalToolEntityFactory.buildWithId({
 					parameters: [contextParameter],
 				});
 
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,
 					school,
 					schoolParameters: [],
@@ -782,15 +778,15 @@ describe('ToolContextController (API)', () => {
 				teacherUser.roles.set([roleWithoutPermission]);
 
 				const school = schoolEntityFactory.build();
-				const course = courseFactory.build({ teachers: [teacherUser], school });
+				const course = courseEntityFactory.build({ teachers: [teacherUser], school });
 				const contextParameter = customParameterEntityFactory.build({
 					scope: CustomParameterScope.CONTEXT,
 					regex: 'testValue123',
 				});
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.build({
+				const externalToolEntity = externalToolEntityFactory.build({
 					parameters: [contextParameter],
 				});
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.build({
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.build({
 					tool: externalToolEntity,
 					school,
 					schoolParameters: [],
@@ -848,19 +844,19 @@ describe('ToolContextController (API)', () => {
 		describe('when the user is not authenticated', () => {
 			const setup = async () => {
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
-				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
+				const school = schoolEntityFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId({ teachers: [teacherUser], school });
 
 				const contextParameter = customParameterEntityFactory.build({
 					scope: CustomParameterScope.CONTEXT,
 					regex: 'testValue123',
 				});
 
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+				const externalToolEntity = externalToolEntityFactory.buildWithId({
 					parameters: [contextParameter],
 				});
 
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,
 					school,
 					schoolParameters: [],

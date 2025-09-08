@@ -1,16 +1,14 @@
+import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { IdentityManagementOauthService, IdentityManagementService } from '@infra/identity-management';
 import { NotImplementedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
-import { IdmAccount } from '@shared/domain/interface';
-import { Logger } from '@src/core/logger';
-import { Account, AccountSave } from '..';
+import { EntityNotFoundError } from '@shared/common/error';
 import { AccountConfig } from '../../account-config';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/micro-orm/mapper';
+import { Account, AccountSave, IdmAccount } from '../do';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
 
 describe('AccountIdmService', () => {
@@ -36,7 +34,7 @@ describe('AccountIdmService', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [],
 			providers: [
 				AccountServiceIdm,
 				{
@@ -214,6 +212,37 @@ describe('AccountIdmService', () => {
 					updatedAt: mockIdmAccount.createdDate,
 					username: mockIdmAccount.username,
 				});
+			});
+		});
+	});
+
+	describe('saveAll', () => {
+		describe('when saving multiple accounts', () => {
+			const setup = () => {
+				const mockAccountSaves = [
+					{
+						id: mockIdmAccountRefId,
+						username: 'testUserName1',
+						userId: 'userId1',
+						systemId: 'systemId1',
+					} as AccountSave,
+					{
+						id: undefined,
+						username: 'testUserName2',
+						userId: 'userId2',
+						systemId: 'systemId2',
+					} as AccountSave,
+				];
+
+				return { mockAccountSaves };
+			};
+
+			it('should save all accounts', async () => {
+				const { mockAccountSaves } = setup();
+
+				const ret = await accountIdmService.saveAll(mockAccountSaves);
+
+				expect(ret).toHaveLength(mockAccountSaves.length);
 			});
 		});
 	});

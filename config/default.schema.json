@@ -1,5 +1,5 @@
 {
-	"title": "HPI Schul-Cloud Configuration",
+	"title": "SVS Server Configuration",
 	"type": "object",
 	"additionalProperties": false,
 	"properties": {
@@ -49,11 +49,6 @@
 			"type": "integer",
 			"default": 16,
 			"description": "Second gate for consent. Starting at this age parent consent is not required"
-		},
-		"DISABLED_BRUTE_FORCE_CHECK": {
-			"type": "boolean",
-			"default": false,
-			"description": "To disabled the brute force prevention hooks for by authentication."
 		},
 		"LOGIN_BLOCK_TIME": {
 			"type": "integer",
@@ -109,15 +104,52 @@
 			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "defines wheter students may create teams or not. if enabled system wide there are options general enabled or opt-in/-out by school admin required."
 		},
-		"REDIS_URI": {
-			"type": "string",
-			"pattern": "(rediss?:)?//((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
-			"description": "URL of a Redis server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
+		"SESSION_VALKEY": {
+			"type": "object",
+			"description": "Session configuration ",
+			"properties": {
+				"MODE": {
+					"type": "string",
+					"default": "cluster",
+					"enum": ["cluster", "single", "in-memory"],
+					"description": "Define valkey mode."
+				},
+				"URI": {
+					"type": "string",
+					"pattern": "(rediss?:)?//((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
+					"description": "URL of a Valkey server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
+				},
+				"SENTINEL_NAME": {
+					"type": "string",
+					"description": "The name of the Redis Sentinel."
+				},
+				"SENTINEL_PASSWORD": {
+					"type": "string",
+					"description": "The password for the Redis Sentinel service."
+				},
+				"SENTINEL_SERVICE_NAME": {
+					"type": "string",
+					"description": "The name of the Redis Sentinel service."
+				}
+			}
 		},
 		"PIN_MAX_AGE_SECONDS": {
 			"type": "integer",
 			"default": 86400,
 			"description": "Maximum time in seconds a generated pin is handled as valid."
+		},
+		"JWT_PRIVATE_KEY": {
+			"type": "string",
+			"description": "The private key used to sign JWTs."
+		},
+		"JWT_PUBLIC_KEY": {
+			"type": "string",
+			"description": "The public key used to verify JWTs."
+		},
+		"JWT_SIGNING_ALGORITHM": {
+			"type": "string",
+			"default": "RS256",
+			"description": "The algorithm used to sign JWTs. Must be an asymmetric algorithm."
 		},
 		"JWT_LIFETIME": {
 			"type": "string",
@@ -125,10 +157,15 @@
 			"pattern": "^[0-9]+d$",
 			"description": "Lifetime of generated JWTs in days."
 		},
+		"JWT_LIFETIME_SUPPORT_SECONDS": {
+			"type": "number",
+			"default": 3600,
+			"description": "Lifetime of generated support JWTs."
+		},
 		"JWT_TIMEOUT_SECONDS": {
 			"type": "integer",
 			"default": 7200,
-			"description": "After this many seconds of inactivity, a user gets logged out automatically. If no REDIS_URI is set, this value is ignored."
+			"description": "After this many seconds of inactivity, a user gets logged out automatically."
 		},
 		"FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED": {
 			"type": "boolean",
@@ -138,37 +175,42 @@
 		"JWT_EXTENDED_TIMEOUT_SECONDS": {
 			"type": "integer",
 			"default": 2629746,
-			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration. If no REDIS_URI is set, this value is ignored."
+			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration."
 		},
-		"TSP_API_BASE_URL": {
+		"TSP_API_CLIENT_BASE_URL": {
 			"type": "string",
-			"default": "https://www.schulportal-thueringen.de",
+			"default": "",
 			"description": "The TSP API base URL."
 		},
-		"TSP_API_CLIENT_ID": {
-			"type": "string",
-			"default": "",
-			"description": "The TSP API client id."
+		"TSP_API_CLIENT_TOKEN_LIFETIME_MS": {
+			"type": "number",
+			"default": "30000",
+			"description": "The TSP token lifetime in milliseconds."
 		},
-		"TSP_API_CLIENT_SECRET": {
-			"type": "string",
-			"default": "",
-			"description": "The TSP API client secret."
+		"TSP_SYNC_SCHOOL_LIMIT": {
+			"type": "number",
+			"default": "10",
+			"description": "The amount of schools the sync handles at once."
 		},
-		"TSP_API_ENCRYPTION_KEY": {
-			"type": "string",
-			"default": "",
-			"description": "The key used to encrypt/decrypt TSP request tokens."
+		"TSP_SYNC_SCHOOL_DAYS_TO_FETCH": {
+			"type": "number",
+			"default": "1",
+			"description": "The amount of days for which the sync fetches schools from the TSP."
 		},
-		"TSP_API_SIGNATURE_KEY": {
-			"type": "string",
-			"default": "",
-			"description": "The key used to sign/verify TSP request tokens."
+		"TSP_SYNC_DATA_LIMIT": {
+			"type": "number",
+			"default": "150",
+			"description": "The amount of school data updates the sync handles at once."
 		},
-		"FEATURE_TSP_ENABLED": {
+		"TSP_SYNC_DATA_DAYS_TO_FETCH": {
+			"type": "number",
+			"default": "1",
+			"description": "The amount of days for which the sync fetches school data from the TSP."
+		},
+		"FEATURE_TSP_SYNC_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Feature toggle for TSP features."
+			"description": "Feature toggle for TSP sync."
 		},
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS": {
 			"type": "boolean",
@@ -184,11 +226,6 @@
 			"type": "string",
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
-		},
-		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Feature toggle for automatic consent during TSP sync."
 		},
 		"FEATURE_VIDEOCONFERENCE_ENABLED": {
 			"type": "boolean",
@@ -219,7 +256,7 @@
 		"FILES_STORAGE": {
 			"type": "object",
 			"description": "Files storage server properties, required always to be defined",
-			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"],
+			"required": ["SERVICE_BASE_URL"],
 			"properties": {
 				"SERVICE_BASE_URL": {
 					"type": "string",
@@ -231,46 +268,11 @@
 					"type": "integer",
 					"minimum": 0,
 					"default": 600000,
-					"description": "Timeout for incoming requests to the Files-Storage in milliseconds."
-				},
-				"MAX_FILE_SIZE": {
-					"type": "integer",
-					"minimum": 0,
-					"default": 2684354560,
-					"description": "Maximum file size for incoming requests in Byte. We use the Windows convention here that file sizes are measured in KB (1KB = 1024B, instead of 1kB = 1000B). Thus 2,5GB = 2684354560B."
-				},
-				"S3_ENDPOINT": {
-					"type": "string",
-					"format": "uri",
-					"description": "The URI of the S3 provider"
-				},
-				"S3_REGION": {
-					"type": "string",
-					"default": "eu-central-1",
-					"description": "Region name of bucket"
-				},
-				"S3_BUCKET": {
-					"type": "string",
-					"description": "Bucket name"
-				},
-				"S3_ACCESS_KEY_ID": {
-					"type": "string",
-					"description": "Access Key to S3"
-				},
-				"S3_SECRET_ACCESS_KEY": {
-					"type": "string",
-					"description": "Secret key to S3"
-				},
-				"EXCHANGE": {
-					"type": "string",
-					"default": "files-storage",
-					"description": "rabbitmq exchange name for antivirus"
-				},
-				"USE_STREAM_TO_ANTIVIRUS": {
-					"type": "boolean",
-					"default": false,
-					"description": "send file to antivirus by uploading"
+					"description": "Timeout for incoming requests to the file storage service in milliseconds."
 				}
+			},
+			"default": {
+				"SERVICE_BASE_URL": "http://localhost:4444"
 			}
 		},
 		"FWU_CONTENT": {
@@ -359,6 +361,11 @@
 					"default": "",
 					"description": "Library Bucket name"
 				},
+				"EXCHANGE": {
+					"type": "string",
+					"default": "h5p-editor",
+					"description": "rabbitmq exchange name for h5p editor"
+				},
 				"INCOMING_REQUEST_TIMEOUT": {
 					"type": "integer",
 					"minimum": 0,
@@ -398,6 +405,12 @@
 					"type": "string",
 					"default": "",
 					"description": "Library Bucket name"
+				},
+				"LOG_LEVEL": {
+					"type": "string",
+					"default": "info",
+					"description": "Log level for H5P library manager.",
+					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 				}
 			}
 		},
@@ -405,11 +418,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Defines if backend for the FWU content in the Learnstore is enabled."
-		},
-		"FEATURE_H5P_EDITOR_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Defines if backend for the H5P editor is enabled."
 		},
 		"WOPI_MAX_FILE_SIZE": {
 			"type": "integer",
@@ -528,6 +536,16 @@
 			"default": "amqp://guest:guest@localhost:5672",
 			"description": "The URI of the RabbitMQ server."
 		},
+		"RABBITMQ_GLOBAL_PREFETCH_COUNT": {
+			"type": "integer",
+			"default": 5,
+			"description": "The global prefetch count of the RabbitMQ server."
+		},
+		"RABBITMQ_HEARTBEAT_INTERVAL_IN_SECONDS": {
+			"type": "integer",
+			"default": 20,
+			"description": "Defines the time interval (in seconds) for periodic heartbeats between the client and the RabbitMQ broker to detect unresponsive connections and prevent network timeouts"
+		},
 		"LEGACY_RABBITMQ_GLOBAL_PREFETCH_COUNT": {
 			"type": "number",
 			"default": 25,
@@ -563,41 +581,11 @@
 			"default": 1,
 			"description": "Time between updating alerts (in minutes)"
 		},
-		"NEXBOARD_URL": {
-			"type": "string",
-			"format": "uri",
-			"default": "https://nexboard.nexenio.com",
-			"pattern": ".*(?<!/)$",
-			"description": "The nexboard url."
-		},
-		"NEXBOARD_URI": {
-			"type": "string",
-			"default": "/portal/api/v1/public/",
-			"description": "The nexboard api version uri."
-		},
-		"NEXBOARD_API_KEY": {
-			"type": "string",
-			"description": "The nexboard api key for sending requests."
-		},
-		"NEXBOARD_USER_ID": {
-			"type": "string",
-			"description": "The nexboard 'schul-cloud' userId."
-		},
 		"HYDRA_URI": {
 			"type": "string",
 			"format": "uri",
 			"default": "http://localhost:9001",
 			"description": "The hydra url."
-		},
-		"FEATURE_NEXBOARD_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enable nexboard"
-		},
-		"FEATURE_NEXBOARD_COPY_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enable nexboard copying when copying course or lesson"
 		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
@@ -684,17 +672,17 @@
 			"default": "false",
 			"description": "Login via Link generation (to the right form)."
 		},
-		"FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED": {
+		"FEATURE_USER_LOGIN_MIGRATION_ENABLED": {
 			"type": "boolean",
 			"default": "false",
-			"description": "Enables the oauth system (iserv to sanis) migration feature."
+			"description": "Enables the oauth system migration feature."
 		},
 		"MIGRATION_END_GRACE_PERIOD_MS": {
 			"type": "number",
 			"default": "604800000",
 			"description": "Grace period before school admin cannot restart oauth migration anymore. Value is given in ms and default is 7 days"
 		},
-		"FEATURE_SANIS_GROUP_PROVISIONING_ENABLED": {
+		"FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Groups of type class also gets provisioned, when provisioning a user via oauth login."
@@ -707,6 +695,11 @@
 		"SC_DOMAIN": {
 			"type": "string",
 			"description": "The Schulcloud domain."
+		},
+		"TRAINING_URL": {
+			"type": "string",
+			"default": "https://lernen.dbildungscloud.de",
+			"description": "URL for the platform training material"
 		},
 		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
 			"type": "boolean",
@@ -735,11 +728,6 @@
 				"IS_ENABLED_BY_DEFAULT": true,
 				"IS_VISIBLE": true
 			}
-		},
-		"FEATURE_SCHOOL_POLICY_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables uploading of school specific Privacy Policy on old admin page "
 		},
 		"FEATURE_SCHOOL_POLICY_ENABLED_NEW": {
 			"type": "boolean",
@@ -793,7 +781,7 @@
 		},
 		"AES_KEY": {
 			"type": "string",
-			"description": "Symetric encryption key used to encrypt and decrypt secrets.",
+			"description": "Symmetric encryption key used to encrypt and decrypt secrets.",
 			"pattern": ".{16}.*"
 		},
 		"FEATURE_ETHERPAD_ENABLED": {
@@ -816,10 +804,6 @@
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
 				},
-				"OLD_PAD_URI": {
-					"type": "string",
-					"description": "The etherpad api version uri."
-				},
 				"API_KEY": {
 					"type": "string",
 					"description": "The etherpad api key for sending requests."
@@ -841,6 +825,14 @@
 			"default": "http://nextcloud.localhost:9090",
 			"description": "API URI for Nextcloud"
 		},
+		"NEXTCLOUD_CLIENT_ID": {
+			"type": "string",
+			"description": "Client id for Nextcloud"
+		},
+		"NEXTCLOUD_CLIENT_SECRET": {
+			"type": "string",
+			"description": "Client secret for Nextcloud"
+		},
 		"NEXTCLOUD_ADMIN_USER": {
 			"type": "string",
 			"default": "admin",
@@ -860,6 +852,22 @@
 			"type:": "string",
 			"default": "SchulcloudNextcloud",
 			"description": "Internal name of schulcloud oidc provider of nextcloud's social login app"
+		},
+		"MEDIA_SOURCE_VIDIS_USERNAME": {
+			"type:": "string",
+			"description": "Username for VIDIS api"
+		},
+		"MEDIA_SOURCE_VIDIS_PASSWORD": {
+			"type:": "string",
+			"description": "Password for VIDIS api"
+		},
+		"MEDIA_SOURCE_BILO_CLIENT_ID": {
+			"type:": "string",
+			"description": "Client id for Bildungslogin api"
+		},
+		"MEDIA_SOURCE_BILO_CLIENT_SECRET": {
+			"type:": "string",
+			"description": "Client secret for Bildungslogin api"
 		},
 		"HYDRA_PUBLIC_URI": {
 			"type:": "string",
@@ -906,11 +914,6 @@
 			"type": "string",
 			"description": "The password for edu-sharing api access",
 			"default": ""
-		},
-		"ES_API_V7": {
-			"type": "boolean",
-			"default": false,
-			"description": "Use the newer API for Edusharing v7"
 		},
 		"FEATURE_ES_MERLIN_ENABLED": {
 			"type": "boolean",
@@ -1050,12 +1053,6 @@
 			"default": true,
 			"description": "By default, the application is terminated after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to false."
 		},
-		"SYSTEM_LOG_LEVEL": {
-			"type": "string",
-			"default": "requestError",
-			"description": "Special logs.",
-			"enum": ["requestError", "systemLogs", "request", "sendRequests"]
-		},
 		"SYNC_QUEUE_NAME": {
 			"type": "string",
 			"default": "sync_ldap",
@@ -1080,11 +1077,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enabled that every request is logged with the information route and method"
-		},
-		"JWT_AUD": {
-			"type": "string",
-			"default": "https://dbildungscloud.de",
-			"description": "It is the organisation web point that is created the jwt and where questions can addressed."
 		},
 		"SUPPORT_PROBLEM_EMAIL_ADDRESS": {
 			"type": "string",
@@ -1121,15 +1113,25 @@
 			"default": "/login",
 			"description": "Determines the url to be redirected to when the user is not authenticated"
 		},
+		"SC_CONTACT_EMAIL": {
+			"type": "string",
+			"default": "ticketsystem@dbildungscloud.de",
+			"description": "Email address used for contacting"
+		},
 		"ACCESSIBILITY_REPORT_EMAIL": {
 			"type": "string",
-			"default": "lernen.cloud@dataport.de",
+			"default": "dbildungscloud@dataport.de",
 			"description": "Email to report accessibility issue"
 		},
 		"FEATURE_COLUMN_BOARD_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Toggle for activating the column board."
+		},
+		"FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enable file folder elements in column board."
 		},
 		"FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED": {
 			"type": "boolean",
@@ -1143,17 +1145,28 @@
 		},
 		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enable link elements in column board."
+		},
+		"FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enable video conference elements in column board."
+		},
+		"FEATURE_COLUMN_BOARD_H5P_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables h5p on the column board"
+		},
+		"FEATURE_COLUMN_BOARD_COLLABORA_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables edit of office documents on the column board"
 		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
 			"description": "link to userfacing documentation of the column board feature"
-		},
-		"COLUMN_BOARD_FEEDBACK_LINK": {
-			"type": "string",
-			"description": "link to a page that gathers feedback about the column board feature"
 		},
 		"FEATURE_COURSE_SHARE": {
 			"type": "boolean",
@@ -1182,7 +1195,7 @@
 		},
 		"FEATURE_BOARD_LAYOUT_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Toggle for the column board layout feature."
 		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
@@ -1319,38 +1332,28 @@
 					"default": "",
 					"description": "Allowed Admin API keys (for accessing the Admin API). - A comma seperated list of strings where description is optional e.g. [<description>:]<token>,[<description>:]<token>"
 				},
-				"MODIFICATION_THRESHOLD_MS": {
+				"DELETION_DELETE_AFTER_MINUTES": {
 					"type": "number",
-					"default": 60000,
-					"description": "threshold in milliseconds to get deletionRequest to delete"
+					"default": 43200,
+					"description": "threshold in minutes, after which a deletion request can be processed"
 				},
-				"MAX_CONCURRENT_DELETION_REQUESTS": {
+				"DELETION_MODIFICATION_THRESHOLD_MS": {
 					"type": "number",
-					"default": 100,
-					"description": "max amount of deletion requests proccessed concurently"
+					"default": 300000,
+					"description": "threshold in milliseconds to try again to process a hanging Pending or Failed deletion requests"
 				},
-				"DELETION_DELAY_MILLISECONDS": {
+				"DELETION_CONSIDER_FAILED_AFTER_MS": {
 					"type": "number",
-					"default": 5000,
-					"description": "deley in milliseconds to give time modules to perform deletion proccess"
+					"default": 360000000,
+					"description": "threshold in milliseconds to stop trying to process Pending or Failed deletion requests"
+				},
+				"DELETION_EXECUTION_BATCH_NUMBER": {
+					"type": "number",
+					"default": 20,
+					"description": "max amount of deletion requests to be executed in one batch"
 				}
 			},
 			"default": {}
-		},
-		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Makes the new school administration page the default page"
-		},
-		"FEATURE_CTL_TOOLS_TAB_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables new CTL-tool tab in a course"
-		},
-		"FEATURE_LTI_TOOLS_TAB_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables old LTI-tool tab in a course"
 		},
 		"FEATURE_SHOW_OUTDATED_USERS": {
 			"type": "boolean",
@@ -1369,8 +1372,13 @@
 		},
 		"FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables external tools on the column board"
+		},
+		"FEATURE_PREFERRED_CTL_TOOLS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables preferred external tools on the column board"
 		},
 		"CTL_TOOLS": {
 			"type": "object",
@@ -1380,13 +1388,13 @@
 					"type": "integer",
 					"default": 300000,
 					"description": "Maximum size of the logo of an external tool in bytes"
+				},
+				"PREFERRED_TOOLS_LIMIT": {
+					"type": "integer",
+					"default": 5,
+					"description": "Maximum number of preferred tools that can be set"
 				}
 			}
-		},
-		"FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the new class list view"
 		},
 		"FEATURE_GROUPS_IN_COURSE_ENABLED": {
 			"type": "boolean",
@@ -1416,22 +1424,6 @@
 		"MIGRATION_WIZARD_DOCUMENTATION_LINK": {
 			"type": "string",
 			"description": "The documentation page that gets rendered in the migration wizard tool."
-		},
-		"TSP_SCHOOL_SYNCER": {
-			"type": "object",
-			"description": "TSP School Syncer properties",
-			"properties": {
-				"SCHOOL_LIMIT": {
-					"type": "integer",
-					"minimum": 1,
-					"description": "Number of simultaneously synchronized schools"
-				},
-				"STUDENTS_TEACHERS_CLASSES_LIMIT": {
-					"type": "integer",
-					"minimum": 1,
-					"description": "Number of simultaneously synchronized students, teachers and classes"
-				}
-			}
 		},
 		"ADMIN_API_CLIENT": {
 			"type": "object",
@@ -1474,98 +1466,6 @@
 				"API_KEY": ""
 			}
 		},
-		"TLDRAW": {
-			"type": "object",
-			"description": "Configuration of tldraw related settings",
-			"required": [
-				"PING_TIMEOUT",
-				"FINALIZE_DELAY",
-				"SOCKET_PORT",
-				"GC_ENABLED",
-				"DB_COMPRESS_THRESHOLD",
-				"MAX_DOCUMENT_SIZE",
-				"ASSETS_ENABLED",
-				"ASSETS_SYNC_ENABLED",
-				"ASSETS_MAX_SIZE",
-				"ASSETS_ALLOWED_MIME_TYPES_LIST"
-			],
-			"properties": {
-				"SOCKET_PORT": {
-					"type": "number",
-					"description": "Web socket port for tldraw"
-				},
-				"PING_TIMEOUT": {
-					"type": "number",
-					"description": "Websocket ping timeout in ms"
-				},
-				"FINALIZE_DELAY": {
-					"type": "number",
-					"description": "Delay in milliseconds before checking if can finalize a tldraw board"
-				},
-				"GC_ENABLED": {
-					"type": "boolean",
-					"description": "If tldraw garbage collector should be enabled"
-				},
-				"DB_COMPRESS_THRESHOLD": {
-					"type": "integer",
-					"description": "Mongo documents with same docName compress threshold size"
-				},
-				"MAX_DOCUMENT_SIZE": {
-					"type": "number",
-					"description": "Maximum size of a single tldraw document in mongo"
-				},
-				"ASSETS_ENABLED": {
-					"type": "boolean",
-					"description": "Enables uploading assets to tldraw board"
-				},
-				"ASSETS_SYNC_ENABLED": {
-					"type": "boolean",
-					"description": "Enables synchronization of tldraw board assets with file storage"
-				},
-				"ASSETS_MAX_SIZE": {
-					"type": "integer",
-					"description": "Maximum asset size in bytes"
-				},
-				"ASSETS_ALLOWED_MIME_TYPES_LIST": {
-					"type": "string",
-					"description": "List with allowed assets MIME types, comma separated, empty if all MIME types supported by tldraw should be allowed",
-					"examples": ["image/gif,image/jpeg,video/webm"]
-				},
-				"PERFORMANCE_MEASURE_ENABLED": {
-					"type": "boolean",
-					"description": "Activate the performance measure for observed areas.",
-					"default": true
-				},
-				"LOG_LEVEL": {
-					"type": "string",
-					"default": "info",
-					"description": "Define log level for tldraw.",
-					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
-				}
-			},
-			"default": {
-				"SOCKET_PORT": 3345,
-				"PING_TIMEOUT": 30000,
-				"FINALIZE_DELAY": 5000,
-				"GC_ENABLED": true,
-				"DB_COMPRESS_THRESHOLD": 400,
-				"MAX_DOCUMENT_SIZE": 15000000,
-				"ASSETS_ENABLED": true,
-				"ASSETS_SYNC_ENABLED": false,
-				"ASSETS_MAX_SIZE": 10485760,
-				"ASSETS_ALLOWED_MIME_TYPES_LIST": "image/png,image/jpeg,image/gif,image/svg+xml"
-			}
-		},
-		"TLDRAW_DB_URL": {
-			"type": "string",
-			"default": "mongodb://127.0.0.1:27017/tldraw",
-			"description": "DB connection url"
-		},
-		"TLDRAW_URI": {
-			"type": "string",
-			"default": "http://localhost:3349",
-			"description": "Address for tldraw management app"
-		},
 		"SCHULCONNEX_CLIENT": {
 			"type": "object",
 			"description": "Configuration of the schulcloud's schulconnex client.",
@@ -1588,10 +1488,20 @@
 					"type": "string",
 					"description": "Client secret for accessing the schulconnex API (from server vault)"
 				},
+				"PERSON_INFO_TIMEOUT_IN_MS": {
+					"type": "integer",
+					"description": "Timeout in milliseconds for fetching person info from schulconnex",
+					"default": 3000
+				},
 				"PERSONEN_INFO_TIMEOUT_IN_MS": {
 					"type": "integer",
 					"description": "Timeout in milliseconds for fetching personen info from schulconnex",
 					"default": 120000
+				},
+				"POLICIES_INFO_TIMEOUT_IN_MS": {
+					"type": "integer",
+					"description": "Timeout in milliseconds for fetching policies info from schulconnex",
+					"default": 4000
 				}
 			},
 			"default": {
@@ -1646,10 +1556,106 @@
 			"description": "URL for fetching policies info from moin.schule schulconnex",
 			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/policies-info"]
 		},
+		"PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT": {
+			"type": "number",
+			"description": "Maximum number of users in group that still get processed during schulconnex provisioning"
+		},
+		"PROVISIONING_SCHULCONNEX_EXCHANGE": {
+			"type": "string",
+			"default": "schulconnex-provisioning",
+			"description": "rabbitmq exchange name for schulconnex provisioning"
+		},
 		"BOARD_COLLABORATION_URI": {
 			"type": "string",
 			"default": "ws://localhost:4450",
 			"description": "URL for connecting to the WebSocketServer"
+		},
+		"FEATURE_AI_TUTOR_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the AI Tutor"
+		},
+		"CALENDAR_SERVICE_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables calender service"
+		},
+		"FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables the toggle that allows board readers to edit the board"
+		},
+		"FEATURE_ROOM_COPY_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables the rooms feature to duplicate rooms"
+		},
+		"FEATURE_ROOM_SHARE": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables the room sharing feature"
+		},
+		"FEATURE_ADMINISTRATE_ROOMS_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the administration of rooms by school admins"
+		},
+		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the external system logout feature"
+		},
+		"FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables VIDIS media activation synchronisation"
+		},
+		"ENABLE_SYNC_LEGACY_INDEXES_VIA_FEATHERS_SERVICE": {
+			"type": "boolean",
+			"default": "false",
+			"description": "if calling sync legacy indexes is allowed, only management module should have access to this, this should not exist in the long term when all entites and their indexes have been migrated"
+		},
+		"LICENSE_SUMMARY_URL": {
+			"type": "string",
+			"default": "",
+			"description": "URL for SBOM summary for SVS"
+		},
+		"ROOM_MEMBER_INFO_URL": {
+			"type": "string",
+			"default": null,
+			"description": "The url for further information in room member administration."
+		},
+		"SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS": {
+			"type": "number",
+			"default": 864000,
+			"description": "Number of seconds for a course synchronization history from schulconnex provisioning to expire."
+		},
+		"RELEASE_NOTES_REPO_URL": {
+			"type": "string",
+			"default": "https://api.github.com/repos/hpi-schul-cloud/RELEASE-NOTES/releases",
+			"description": "URL of the GitHub repository from which release notes are fetched. Used for testing and overriding the default release notes source."
+		},
+		"DB_URL": {
+			"type": "string",
+			"description": "Mongodb url, may contain user and password"
+		},
+		"DB_USERNAME": {
+			"type": "string",
+			"description": "Mongodb user"
+		},
+		"DB_PASSWORD": {
+			"type": "string",
+			"description": "Mongodb password"
+		},
+		"SMTP_SENDER": {
+			"type": "string",
+			"default": "noreply@dbildungscloud.de",
+			"description": "sender address used to send mails with"
+		},
+		"INCLUDE_MAIL_IN_USER_FULL_TEXT_INDEX": {
+			"type": "boolean",
+			"default": true,
+			"description": "if user.email shall be included in the full text index"
 		}
 	},
 	"required": []

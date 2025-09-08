@@ -1,5 +1,5 @@
 import { BoardLayout } from '@modules/board';
-import { TaskWithStatusVo } from '@shared/domain/entity';
+import { TaskWithStatusVo } from '@modules/task/repo';
 import { EntityId } from '@shared/domain/types';
 
 export type RoomBoardDTO = {

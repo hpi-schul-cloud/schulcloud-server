@@ -1,10 +1,10 @@
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Request } from 'express';
-import { AuthGuard } from '@nestjs/passport';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { TestApiClient, cleanupCollections } from '@shared/testing';
-import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
+import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { TestApiClient } from '@testing/test-api-client';
 import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
 import { DeletionRequestLogResponse } from '../dto';
 
@@ -14,21 +14,15 @@ describe(`deletionRequest find (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	const API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
+	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
+		const config = adminApiServerConfig();
+		config.ADMIN_API__ALLOWED_API_KEYS = [API_KEY];
+
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		})
-			.overrideGuard(AuthGuard('api-key'))
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.headers['X-API-KEY'] = API_KEY;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
@@ -51,6 +45,7 @@ describe(`deletionRequest find (api)`, () => {
 
 				return { deletionRequest };
 			};
+
 			it('should return status 202', async () => {
 				const { deletionRequest } = await setup();
 

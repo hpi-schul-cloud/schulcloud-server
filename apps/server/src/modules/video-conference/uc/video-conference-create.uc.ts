@@ -1,6 +1,4 @@
-import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import {
 	BBBBaseMeetingConfig,
@@ -15,16 +13,21 @@ import { ErrorStatus } from '../error/error-status.enum';
 import { VideoConferenceOptions } from '../interface';
 import { VideoConferenceService } from '../service';
 import { ScopeInfo, ScopeRef } from './dto';
+import { VideoConferenceFeatureService } from './video-conference-feature.service';
 
 @Injectable()
 export class VideoConferenceCreateUc {
 	constructor(
 		private readonly bbbService: BBBService,
-		private readonly userService: UserService,
-		private readonly videoConferenceService: VideoConferenceService
+		private readonly videoConferenceService: VideoConferenceService,
+		private readonly videoConferenceFeatureService: VideoConferenceFeatureService
 	) {}
 
-	async createIfNotRunning(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
+	public async createIfNotRunning(
+		currentUserId: EntityId,
+		scope: ScopeRef,
+		options: VideoConferenceOptions
+	): Promise<void> {
 		let bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
 		// try and catch based on legacy behavior
 		try {
@@ -39,15 +42,7 @@ export class VideoConferenceCreateUc {
 	}
 
 	private async create(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
-		/* need to be replace with
-		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course] = await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			this.videoConferenceService.loadScopeRessources(scopeId, scope),
-		]);
-		*/
-		const user: UserDO = await this.userService.findById(currentUserId);
-
-		await this.verifyFeaturesEnabled(user.schoolId);
+		await this.videoConferenceFeatureService.checkVideoConferenceFeatureEnabled(currentUserId, scope);
 
 		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
 
@@ -56,7 +51,7 @@ export class VideoConferenceCreateUc {
 			scopeInfo.scopeId,
 			scope.scope
 		);
-		this.throwIfNotModerator(bbbRole, 'You are not allowed to start the videoconference. Ask a moderator.');
+		this.checkModerator(bbbRole, 'You are not allowed to start the videoconference. Ask a moderator.');
 
 		await this.videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions(scope.id, scope.scope, options);
 
@@ -86,11 +81,7 @@ export class VideoConferenceCreateUc {
 		return configBuilder;
 	}
 
-	private async verifyFeaturesEnabled(schoolId: string): Promise<void> {
-		await this.videoConferenceService.throwOnFeaturesDisabled(schoolId);
-	}
-
-	private throwIfNotModerator(role: BBBRole, errorMessage: string) {
+	private checkModerator(role: BBBRole, errorMessage: string): void {
 		if (role !== BBBRole.MODERATOR) {
 			throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION, errorMessage);
 		}

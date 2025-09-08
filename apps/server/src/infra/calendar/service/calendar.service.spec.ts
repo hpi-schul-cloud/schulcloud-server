@@ -4,20 +4,13 @@ import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { HttpService } from '@nestjs/axios';
 import { HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { axiosResponseFactory } from '@shared/testing';
+import { Logger } from '@core/logger';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
-import { Logger } from '@src/core/logger';
-import { EntityId } from '@shared/domain/types';
-import {
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-} from '@modules/deletion';
+import { CalendarEventId } from '../interface/calendar-event-id.interface';
 import { CalendarEvent } from '../interface/calendar-event.interface';
 import { CalendarMapper } from '../mapper/calendar.mapper';
-import { CalendarEventId } from '../interface/calendar-event-id.interface';
 
 describe('CalendarServiceSpec', () => {
 	let module: TestingModule;
@@ -62,7 +55,7 @@ describe('CalendarServiceSpec', () => {
 		jest.clearAllMocks();
 	});
 
-	describe('findEvents', () => {
+	describe('findEvent', () => {
 		it('should successfully find an event', async () => {
 			// Arrange
 			const title = 'eventTitle';
@@ -121,6 +114,23 @@ describe('CalendarServiceSpec', () => {
 			expect(result[1]).toEqual('2');
 		});
 
+		it('should call httpService.get with with scopeId', async () => {
+			const event: CalendarEventId = {
+				data: [{ id: '1' }, { id: '2' }],
+			};
+			const axiosResponse: AxiosResponse<CalendarEvent[]> = axiosResponseFactory.build({
+				data: [event],
+			});
+			httpService.get.mockReturnValue(of(axiosResponse));
+			calendarMapper.mapEventsToId.mockReturnValueOnce(['1', '2']);
+			await service.getAllEvents('userId', 'scopeId');
+
+			expect(httpService.get).toHaveBeenCalledWith(
+				expect.stringContaining('/events?scope-id=scopeId'),
+				expect.any(Object)
+			);
+		});
+
 		it('should throw if event cannot be found, because of invalid parameters', async () => {
 			const error = 'error1';
 			httpService.get.mockReturnValue(throwError(() => error));
@@ -176,61 +186,6 @@ describe('CalendarServiceSpec', () => {
 				setup();
 
 				await expect(service.deleteEventsByScopeId('userId')).rejects.toThrow(Error);
-			});
-		});
-
-		describe('when calling the deleteUserEvent events method', () => {
-			const setup = () => {
-				httpService.delete.mockReturnValue(
-					of(
-						axiosResponseFactory.build({
-							data: '',
-							status: HttpStatus.NO_CONTENT,
-							statusText: 'NO_CONTENT',
-						})
-					)
-				);
-
-				const event: CalendarEventId = {
-					data: [{ id: '1' }, { id: '2' }],
-				};
-
-				const axiosResponse: AxiosResponse<CalendarEvent[]> = axiosResponseFactory.build({
-					data: [event],
-				});
-
-				httpService.get.mockReturnValue(of(axiosResponse));
-				calendarMapper.mapEventsToId.mockReturnValueOnce(['1', '2']);
-
-				const userId: EntityId = '1';
-
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
-					DomainOperationReportBuilder.build(OperationType.DELETE, 2, ['1', '2']),
-				]);
-
-				return {
-					expectedResult,
-					userId,
-				};
-			};
-
-			it('should call service.deleteEventsByScopeId with userId', async () => {
-				const { userId } = setup();
-				const spyEvents = jest.spyOn(service, 'getAllEvents');
-				const spyDelete = jest.spyOn(service, 'deleteEventsByScopeId');
-
-				await service.deleteUserData(userId);
-
-				expect(spyEvents).toHaveBeenCalledWith(userId);
-				expect(spyDelete).toHaveBeenCalledWith(userId);
-			});
-
-			it('should return domainOperation object with information about deleted user', async () => {
-				const { expectedResult, userId } = setup();
-
-				const result = await service.deleteUserData(userId);
-
-				expect(result).toEqual(expectedResult);
 			});
 		});
 	});

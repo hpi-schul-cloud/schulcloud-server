@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
+import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { TimestampsResponse } from '../timestamps.response';
 import { CardSkeletonResponse } from './card-skeleton.response';
 
@@ -12,7 +13,7 @@ export class ColumnResponse {
 	}
 
 	@ApiProperty({
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id: string;
 

@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import {
 	ApiBody,
@@ -26,7 +26,7 @@ import { SchoolSystemOptionsMapper } from './school-system-options.mapper';
 
 @ApiTags('School')
 @Controller('schools')
-@Authenticate('jwt')
+@JwtAuthentication()
 export class SchoolController {
 	constructor(private readonly schoolSystemOptionsUc: SchoolSystemOptionsUc) {}
 

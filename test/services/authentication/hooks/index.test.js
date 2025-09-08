@@ -1,16 +1,44 @@
-const mockery = require('mockery');
 const { expect } = require('chai');
-const commons = require('@hpi-schul-cloud/commons');
-
-const { Configuration } = commons;
-const redisMock = require('../../../utils/redis/redisMock');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const appPromise = require('../../../../src/app');
+const testHelper = require('../../helpers/testObjects');
+const redisHelpers = require('../../../../src/utils/redis');
+const { addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks');
 const whitelist = require('../../../../src/services/authentication/logic/whitelist');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
+const valueDict = {};
+const ttlDict = {};
+class RedisClientMock {
+	get(key) {
+		const value = valueDict[key];
+		return Promise.resolve(value);
+	}
+
+	set(key, value, ...args) {
+		valueDict[key] = value;
+		const ex = args.indexOf('EX');
+		if (ex >= 0) {
+			ttlDict[key] = args[ex + 1];
+		}
+		return Promise.resolve(true);
+	}
+
+	del(key) {
+		delete valueDict[key];
+		delete ttlDict[key];
+		return Promise.resolve(true);
+	}
+
+	ttl(key) {
+		const ttl = ttlDict[key];
+		return Promise.resolve(ttl);
+	}
+
+	on(_key, _func) {}
+}
+
 describe('authentication hooks', () => {
-	let redisHelper;
-	let addJwtToWhitelist;
-	let removeJwtFromWhitelist;
 	let configBefore = null;
 	let app;
 	let server;
@@ -18,49 +46,24 @@ describe('authentication hooks', () => {
 	let testObjects;
 
 	before(async () => {
-		configBefore = Configuration.toObject({ plainSecrets: true });
-
-		/* eslint-disable global-require */
-		app = await require('../../../../src/app')();
+		app = await appPromise();
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
-		testObjects = require('../../helpers/testObjects')(app);
-		/* eslint-enable global-require */
+		testObjects = testHelper(app);
+		await testObjects.cleanup();
 
-		mockery.enable({
-			warnOnReplace: false,
-			warnOnUnregistered: false,
-			useCleanCache: true,
-		});
-		mockery.registerMock('ioredis', redisMock);
-		mockery.registerMock('@hpi-schul-cloud/commons', commons);
-
-		delete require.cache[require.resolve('../../../../src/app')];
-		delete require.cache[require.resolve('../../../../src/utils/redis')];
-		delete require.cache[require.resolve('../../../services/helpers/testObjects')];
-		delete require.cache[require.resolve('../../../services/helpers/services/login')];
-		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
-		/* eslint-disable global-require */
-		redisHelper = require('../../../../src/utils/redis');
-		({ addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks'));
-		/* eslint-enable global-require */
-
-		Configuration.set('REDIS_URI', '//validHost:5555');
+		configBefore = Configuration.toObject({ plainSecrets: true });
+		Configuration.set('SESSION_VALKEY_URI', '//validHost:5555');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
-		redisHelper.initializeRedisClient();
+		redisHelpers.clearRedis();
+		// we need clean file that no redis instance is saved from any test before
+		const redisMock = new RedisClientMock();
+		redisHelpers.initializeRedisClient(redisMock);
 	});
 
 	after(async () => {
-		mockery.deregisterAll();
-		mockery.disable();
 		await testObjects.cleanup();
-
-		delete require.cache[require.resolve('../../../../src/app')];
-		delete require.cache[require.resolve('../../../../src/utils/redis')];
-		delete require.cache[require.resolve('../../../services/helpers/testObjects')];
-		delete require.cache[require.resolve('../../../services/helpers/services/login')];
-		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
-
+		redisHelpers.clearRedis();
 		Configuration.reset(configBefore);
 		await server.close();
 		await closeNestServices(nestServices);
@@ -71,11 +74,14 @@ describe('authentication hooks', () => {
 		const params = await testObjects.generateRequestParamsFromUser(user);
 		const { accessToken } = params.authentication;
 		const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(accessToken);
-		const result = await addJwtToWhitelist({ result: { accessToken } });
-		expect(result).to.not.equal(undefined);
-		const redisResult = await redisHelper.redisGetAsync(redisIdentifier);
-		const redisTtl = await redisHelper.redisTtlAsync(redisIdentifier);
-		expect(redisResult).to.not.eq(undefined);
+
+		const response = await addJwtToWhitelist({ result: { accessToken } });
+		expect(response.result.accessToken).to.equal(accessToken);
+
+		const redisResult = await redisHelpers.redisGetAsync(redisIdentifier);
+		expect(redisResult).to.not.equal(undefined);
+
+		const redisTtl = await redisHelpers.redisTtlAsync(redisIdentifier);
 		expect(redisTtl).to.be.greaterThan(7000);
 	});
 
@@ -83,12 +89,14 @@ describe('authentication hooks', () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
 		const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(params.authentication.accessToken);
-		await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 7200);
+		await redisHelpers.redisSetAsync(redisIdentifier, 'value', 'EX', 7200);
+
 		const result = await removeJwtFromWhitelist({
 			params,
 		});
 		expect(result).to.not.equal(undefined);
-		const redisResult = await redisHelper.redisGetAsync(redisIdentifier);
-		expect(redisResult).to.eq(undefined);
+
+		const redisResult = await redisHelpers.redisGetAsync(redisIdentifier);
+		expect(redisResult).to.equal(undefined);
 	});
 });

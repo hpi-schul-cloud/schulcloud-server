@@ -16,8 +16,8 @@ import {
 	OcsResponse,
 	SuccessfulRes,
 } from '@infra/collaborative-storage/strategy/nextcloud/nextcloud.interface';
-import { ErrorUtils } from '@src/core/error/utils';
-import { LegacyLogger } from '@src/core/logger';
+import { ErrorUtils } from '@core/error/utils';
+import { LegacyLogger } from '@core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { parseInt } from 'lodash';
 import { Observable, firstValueFrom } from 'rxjs';

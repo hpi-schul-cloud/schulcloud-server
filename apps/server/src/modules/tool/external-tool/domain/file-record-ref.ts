@@ -9,11 +9,11 @@ export interface FileRecordRefProps {
 }
 
 export class FileRecordRef implements FileRecordRefProps {
-	uploadUrl: string;
+	public uploadUrl: string;
 
-	fileName: string;
+	public fileName: string;
 
-	fileRecordId: EntityId;
+	public fileRecordId: EntityId;
 
 	constructor(props: FileRecordRefProps) {
 		this.uploadUrl = props.uploadUrl;
@@ -21,7 +21,7 @@ export class FileRecordRef implements FileRecordRefProps {
 		this.fileRecordId = props.fileRecordId;
 	}
 
-	getPreviewUrl() {
+	public getPreviewUrl(): string {
 		return `/api/v3/file/preview/${this.fileRecordId}/${encodeURIComponent(this.fileName)}`;
 	}
 }

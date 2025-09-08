@@ -1,12 +1,23 @@
+import { LoggerModule } from '@core/logger';
+import { AuthorizationModule } from '@modules/authorization';
+import { SchoolLicenseModule } from '@modules/school-license';
+import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
 import { forwardRef, Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
 import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolModule } from '../school-external-tool';
-import { ContextExternalToolAuthorizableService, ContextExternalToolService, ToolReferenceService } from './service';
+import { ContextExternalToolRule } from './authorisation/context-external-tool.rule';
+import { LTI_DEEP_LINK_TOKEN_REPO, LtiDeepLinkTokenMikroOrmRepo } from './repo';
+import {
+	ContextExternalToolAuthorizableService,
+	ContextExternalToolService,
+	LtiDeepLinkingService,
+	LtiDeepLinkTokenService,
+	ToolConfigurationStatusService,
+	ToolReferenceService,
+} from './service';
 import { ContextExternalToolValidationService } from './service/context-external-tool-validation.service';
-import { ToolConfigurationStatusService } from './service/tool-configuration-status.service';
 
 @Module({
 	imports: [
@@ -15,6 +26,9 @@ import { ToolConfigurationStatusService } from './service/tool-configuration-sta
 		SchoolExternalToolModule,
 		LoggerModule,
 		UserLicenseModule,
+		SchoolLicenseModule,
+		UserModule,
+		AuthorizationModule,
 	],
 	providers: [
 		ContextExternalToolService,
@@ -22,13 +36,21 @@ import { ToolConfigurationStatusService } from './service/tool-configuration-sta
 		ContextExternalToolAuthorizableService,
 		ToolReferenceService,
 		ToolConfigurationStatusService,
+		ContextExternalToolRule,
+		LtiDeepLinkTokenService,
+		LtiDeepLinkingService,
+		{
+			provide: LTI_DEEP_LINK_TOKEN_REPO,
+			useClass: LtiDeepLinkTokenMikroOrmRepo,
+		},
 	],
 	exports: [
 		ContextExternalToolService,
 		ContextExternalToolValidationService,
-		ContextExternalToolAuthorizableService,
 		ToolReferenceService,
 		ToolConfigurationStatusService,
+		LtiDeepLinkTokenService,
+		LtiDeepLinkingService,
 	],
 })
 export class ContextExternalToolModule {}

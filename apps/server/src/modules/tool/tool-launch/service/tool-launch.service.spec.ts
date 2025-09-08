@@ -1,21 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EntityId } from '@shared/domain/types';
 import { ToolConfigType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ToolConfigurationStatusService } from '../../context-external-tool/service';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { ExternalToolService } from '../../external-tool';
-import { BasicToolConfig, ExternalTool } from '../../external-tool/domain';
-import {
-	basicToolConfigFactory,
-	externalToolFactory,
-	toolConfigurationStatusFactory,
-} from '../../external-tool/testing';
+import { externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ToolStatusNotLaunchableLoggableException } from '../error';
-import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
+import { toolLaunchRequestFactory } from '../testing';
+import { ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
 	Lti11ToolLaunchStrategy,
@@ -24,14 +23,17 @@ import {
 } from './launch-strategy';
 import { ToolLaunchService } from './tool-launch.service';
 
-describe('ToolLaunchService', () => {
+describe(ToolLaunchService.name, () => {
 	let module: TestingModule;
 	let service: ToolLaunchService;
 
+	let basicToolLaunchStrategy: DeepMocked<BasicToolLaunchStrategy>;
+	let lti11ToolLaunchStrategy: DeepMocked<Lti11ToolLaunchStrategy>;
+	let oauth2ToolLaunchStrategy: DeepMocked<OAuth2ToolLaunchStrategy>;
+
+	let toolConfigurationStatusService: DeepMocked<ToolConfigurationStatusService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
-	let basicToolLaunchStrategy: DeepMocked<BasicToolLaunchStrategy>;
-	let toolConfigurationStatusService: DeepMocked<ToolConfigurationStatusService>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -68,6 +70,9 @@ describe('ToolLaunchService', () => {
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		externalToolService = module.get(ExternalToolService);
 		basicToolLaunchStrategy = module.get(BasicToolLaunchStrategy);
+		lti11ToolLaunchStrategy = module.get(Lti11ToolLaunchStrategy);
+		oauth2ToolLaunchStrategy = module.get(OAuth2ToolLaunchStrategy);
+
 		toolConfigurationStatusService = module.get(ToolConfigurationStatusService);
 	});
 
@@ -79,230 +84,298 @@ describe('ToolLaunchService', () => {
 		jest.clearAllMocks();
 	});
 
-	describe('getLaunchData', () => {
-		describe('when the tool config type is BASIC', () => {
+	describe('generateLaunchRequest', () => {
+		describe('when the tool type is basic', () => {
 			const setup = () => {
-				const schoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id)
-					.build();
-				const basicToolConfigDO: BasicToolConfig = basicToolConfigFactory.build();
-				const externalTool: ExternalTool = externalToolFactory.build({
-					config: basicToolConfigDO,
+				const userId: string = new ObjectId().toHexString();
+				const externalTool = externalToolFactory.withBasicConfig().build();
+				const schoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool.id });
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					schoolToolRef: {
+						schoolToolId: schoolExternalTool.id,
+						schoolId: schoolExternalTool.schoolId,
+					},
 				});
 
-				const launchDataDO: ToolLaunchData = new ToolLaunchData({
-					type: ToolLaunchDataType.BASIC,
-					baseUrl: 'https://www.basic-baseurl.com/',
-					properties: [],
-					openNewTab: false,
+				const expectedLaunchRequest: ToolLaunchRequest = toolLaunchRequestFactory.build();
+
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+				toolConfigurationStatusService.determineToolConfigurationStatus.mockResolvedValueOnce({
+					isDeactivated: false,
+					isNotLicensed: false,
+					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: false,
 				});
-
-				const launchParams: ToolLaunchParams = {
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
-				};
-
-				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
-				externalToolService.findById.mockResolvedValue(externalTool);
-				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
-				toolConfigurationStatusService.determineToolConfigurationStatus.mockResolvedValueOnce(
-					toolConfigurationStatusFactory.build({
-						isOutdatedOnScopeContext: false,
-						isOutdatedOnScopeSchool: false,
-						isIncompleteOnScopeContext: false,
-					})
-				);
+				basicToolLaunchStrategy.createLaunchRequest.mockResolvedValueOnce(expectedLaunchRequest);
 
 				return {
-					launchDataDO,
-					launchParams,
-				};
-			};
-
-			it('should return launchData', async () => {
-				const { launchParams, launchDataDO } = setup();
-
-				const result: ToolLaunchData = await service.getLaunchData('userId', launchParams.contextExternalTool);
-
-				expect(result).toEqual(launchDataDO);
-			});
-
-			it('should call basicToolLaunchStrategy with given launchParams ', async () => {
-				const { launchParams } = setup();
-
-				await service.getLaunchData('userId', launchParams.contextExternalTool);
-
-				expect(basicToolLaunchStrategy.createLaunchData).toHaveBeenCalledWith('userId', launchParams);
-			});
-
-			it('should call getSchoolExternalToolById', async () => {
-				const { launchParams } = setup();
-
-				await service.getLaunchData('userId', launchParams.contextExternalTool);
-
-				expect(schoolExternalToolService.findById).toHaveBeenCalledWith(launchParams.schoolExternalTool.id);
-			});
-
-			it('should call findExternalToolById', async () => {
-				const { launchParams } = setup();
-
-				await service.getLaunchData('userId', launchParams.contextExternalTool);
-
-				expect(externalToolService.findById).toHaveBeenCalledWith(launchParams.schoolExternalTool.toolId);
-			});
-
-			it('should call toolConfigurationStatusService', async () => {
-				const { launchParams } = setup();
-
-				await service.getLaunchData('userId', launchParams.contextExternalTool);
-
-				expect(toolConfigurationStatusService.determineToolConfigurationStatus).toHaveBeenCalled();
-			});
-		});
-
-		describe('when the tool config type is unknown', () => {
-			const setup = () => {
-				const schoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id)
-					.build();
-				const externalTool: ExternalTool = externalToolFactory.build();
-				externalTool.config.type = 'unknown' as ToolConfigType;
-
-				const launchParams: ToolLaunchParams = {
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
-				};
-
-				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
-				externalToolService.findById.mockResolvedValue(externalTool);
-				toolConfigurationStatusService.determineToolConfigurationStatus.mockResolvedValueOnce(
-					toolConfigurationStatusFactory.build({
-						isOutdatedOnScopeContext: false,
-						isOutdatedOnScopeSchool: false,
-						isIncompleteOnScopeContext: false,
-					})
-				);
-
-				return {
-					launchParams,
-				};
-			};
-
-			it('should throw InternalServerErrorException for unknown tool config type', async () => {
-				const { launchParams } = setup();
-
-				await expect(service.getLaunchData('userId', launchParams.contextExternalTool)).rejects.toThrow(
-					new InternalServerErrorException('Unknown tool config type')
-				);
-			});
-		});
-
-		describe('when tool configuration status is not launchable', () => {
-			const setup = () => {
-				const schoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id)
-					.build();
-				const basicToolConfigDO: BasicToolConfig = basicToolConfigFactory.build();
-				const externalTool: ExternalTool = externalToolFactory.build({
-					config: basicToolConfigDO,
-				});
-
-				const launchDataDO: ToolLaunchData = new ToolLaunchData({
-					type: ToolLaunchDataType.BASIC,
-					baseUrl: 'https://www.basic-baseurl.com/',
-					properties: [],
-					openNewTab: false,
-				});
-
-				const launchParams: ToolLaunchParams = {
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
-				};
-
-				const userId = 'userId';
-
-				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
-				externalToolService.findById.mockResolvedValue(externalTool);
-				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
-				toolConfigurationStatusService.determineToolConfigurationStatus.mockResolvedValueOnce(
-					toolConfigurationStatusFactory.build({
-						isOutdatedOnScopeContext: true,
-						isOutdatedOnScopeSchool: true,
-						isIncompleteOnScopeContext: false,
-						isIncompleteOperationalOnScopeContext: false,
-						isDeactivated: true,
-						isNotLicensed: true,
-					})
-				);
-
-				return {
-					launchParams,
 					userId,
-					contextExternalToolId: contextExternalTool.id,
+					expectedLaunchRequest,
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should use the basic strategy', async () => {
+				const { userId, externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				await service.generateLaunchRequest(userId, contextExternalTool);
+
+				expect(basicToolLaunchStrategy.createLaunchRequest).toHaveBeenCalledWith<[EntityId, ToolLaunchParams]>(userId, {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				});
+			});
+
+			it('should generate launch request ', async () => {
+				const { userId, contextExternalTool, expectedLaunchRequest } = setup();
+
+				const result: ToolLaunchRequest = await service.generateLaunchRequest(userId, contextExternalTool);
+
+				expect(result).toEqual(expectedLaunchRequest);
+			});
+		});
+
+		describe('when the tool type is lti11', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const externalTool = externalToolFactory.withLti11Config().build();
+				const schoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool.id });
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					schoolToolRef: {
+						schoolToolId: schoolExternalTool.id,
+						schoolId: schoolExternalTool.schoolId,
+					},
+				});
+
+				const expectedLaunchRequest: ToolLaunchRequest = toolLaunchRequestFactory.build();
+
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+				toolConfigurationStatusService.determineToolConfigurationStatus.mockResolvedValueOnce({
+					isDeactivated: false,
+					isNotLicensed: false,
+					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: false,
+				});
+				lti11ToolLaunchStrategy.createLaunchRequest.mockResolvedValueOnce(expectedLaunchRequest);
+
+				return {
+					userId,
+					expectedLaunchRequest,
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should use the lti11 strategy', async () => {
+				const { userId, externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				await service.generateLaunchRequest(userId, contextExternalTool);
+
+				expect(lti11ToolLaunchStrategy.createLaunchRequest).toHaveBeenCalledWith<[EntityId, ToolLaunchParams]>(userId, {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				});
+			});
+
+			it('should generate launch request ', async () => {
+				const { userId, contextExternalTool, expectedLaunchRequest } = setup();
+
+				const result: ToolLaunchRequest = await service.generateLaunchRequest(userId, contextExternalTool);
+
+				expect(result).toEqual(expectedLaunchRequest);
+			});
+		});
+
+		describe('when the tool type is oauth2', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const externalTool = externalToolFactory.withOauth2Config().build();
+				const schoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool.id });
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					schoolToolRef: {
+						schoolToolId: schoolExternalTool.id,
+						schoolId: schoolExternalTool.schoolId,
+					},
+				});
+
+				const expectedLaunchRequest: ToolLaunchRequest = toolLaunchRequestFactory.build();
+
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+				toolConfigurationStatusService.determineToolConfigurationStatus.mockResolvedValueOnce({
+					isDeactivated: false,
+					isNotLicensed: false,
+					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: false,
+				});
+				oauth2ToolLaunchStrategy.createLaunchRequest.mockResolvedValueOnce(expectedLaunchRequest);
+
+				return {
+					userId,
+					expectedLaunchRequest,
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should use the oauth2 strategy', async () => {
+				const { userId, externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				await service.generateLaunchRequest(userId, contextExternalTool);
+
+				expect(oauth2ToolLaunchStrategy.createLaunchRequest).toHaveBeenCalledWith<[EntityId, ToolLaunchParams]>(
+					userId,
+					{
+						externalTool,
+						schoolExternalTool,
+						contextExternalTool,
+					}
+				);
+			});
+
+			it('should generate launch request ', async () => {
+				const { userId, contextExternalTool, expectedLaunchRequest } = setup();
+
+				const result: ToolLaunchRequest = await service.generateLaunchRequest(userId, contextExternalTool);
+
+				expect(result).toEqual(expectedLaunchRequest);
+			});
+		});
+
+		describe('when the tool is a non active medium', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const externalTool = externalToolFactory.withMedium({ status: ExternalToolMediumStatus.DRAFT }).build();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({ toolId: externalTool.id });
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					schoolToolRef: {
+						schoolToolId: schoolExternalTool.id,
+						schoolId: schoolExternalTool.schoolId,
+					},
+				});
+
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+				toolConfigurationStatusService.determineToolConfigurationStatus.mockResolvedValueOnce({
+					isDeactivated: false,
+					isNotLicensed: false,
+					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: false,
+				});
+
+				return {
+					contextExternalTool,
+					userId,
+				};
+			};
+
+			it('should throw InternalServerErrorException', async () => {
+				const { userId, contextExternalTool } = setup();
+
+				await expect(() => service.generateLaunchRequest(userId, contextExternalTool)).rejects.toThrow(
+					new InternalServerErrorException('Medium is not active')
+				);
+			});
+		});
+
+		describe('when the tool type is unknown', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const externalTool = externalToolFactory.build();
+				externalTool.config.type = 'unknown' as ToolConfigType;
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({ toolId: externalTool.id });
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					schoolToolRef: {
+						schoolToolId: schoolExternalTool.id,
+						schoolId: schoolExternalTool.schoolId,
+					},
+				});
+
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findById.mockResolvedValueOnce(externalTool);
+				toolConfigurationStatusService.determineToolConfigurationStatus.mockResolvedValueOnce({
+					isDeactivated: false,
+					isNotLicensed: false,
+					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: false,
+				});
+
+				return {
+					contextExternalTool,
+					userId,
+				};
+			};
+
+			it('should throw InternalServerErrorException', async () => {
+				const { userId, contextExternalTool } = setup();
+
+				await expect(() => service.generateLaunchRequest(userId, contextExternalTool)).rejects.toThrow(
+					new InternalServerErrorException('Unknown tool launch data type')
+				);
+			});
+		});
+
+		describe.each([
+			{ isDeactivated: true },
+			{ isNotLicensed: true },
+			{ isIncompleteOnScopeContext: true },
+			{ isOutdatedOnScopeSchool: true },
+			{ isOutdatedOnScopeContext: true },
+		])('when the tool status is %o', (status) => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const externalTool = externalToolFactory.build();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({ toolId: externalTool.id });
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					schoolToolRef: {
+						schoolToolId: schoolExternalTool.id,
+						schoolId: schoolExternalTool.schoolId,
+					},
+				});
+
+				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
+				externalToolService.findById.mockResolvedValue(externalTool);
+				toolConfigurationStatusService.determineToolConfigurationStatus.mockResolvedValue({
+					isDeactivated: false,
+					isNotLicensed: false,
+					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: false,
+					...status,
+				});
+
+				return {
+					contextExternalTool,
+					userId,
 				};
 			};
 
 			it('should throw ToolStatusNotLaunchableLoggableException', async () => {
-				const { launchParams, userId, contextExternalToolId } = setup();
+				const { userId, contextExternalTool } = setup();
 
-				const func = () => service.getLaunchData(userId, launchParams.contextExternalTool);
-
-				await expect(func).rejects.toThrow(
-					new ToolStatusNotLaunchableLoggableException(
-						userId,
-						contextExternalToolId,
-						true,
-						true,
-						false,
-						false,
-						true,
-						true
-					)
+				await expect(() => service.generateLaunchRequest(userId, contextExternalTool)).rejects.toThrow(
+					ToolStatusNotLaunchableLoggableException
 				);
 			});
-		});
-	});
-
-	describe('generateLaunchRequest', () => {
-		it('should generate launch request for BASIC type', () => {
-			const toolLaunchDataDO: ToolLaunchData = new ToolLaunchData({
-				type: ToolLaunchDataType.BASIC,
-				baseUrl: 'https://www.basic-baseurl.com/',
-				properties: [],
-				openNewTab: false,
-			});
-
-			const expectedLaunchRequest: ToolLaunchRequest = new ToolLaunchRequest({
-				method: LaunchRequestMethod.GET,
-				url: 'https://example.com/tool-launch',
-				payload: '{ "key": "value" }',
-				openNewTab: false,
-			});
-			basicToolLaunchStrategy.createLaunchRequest.mockReturnValue(expectedLaunchRequest);
-
-			const result: ToolLaunchRequest = service.generateLaunchRequest(toolLaunchDataDO);
-
-			expect(result).toEqual(expectedLaunchRequest);
-			expect(basicToolLaunchStrategy.createLaunchRequest).toHaveBeenCalledWith(toolLaunchDataDO);
-		});
-
-		it('should throw InternalServerErrorException for unknown type', () => {
-			const toolLaunchDataDO: ToolLaunchData = new ToolLaunchData({
-				type: 'unknown' as ToolLaunchDataType,
-				baseUrl: 'https://www.basic-baseurl.com/',
-				properties: [],
-				openNewTab: false,
-			});
-
-			const func = () => service.generateLaunchRequest(toolLaunchDataDO);
-
-			expect(() => func()).toThrow(new InternalServerErrorException('Unknown tool launch data type'));
 		});
 	});
 });

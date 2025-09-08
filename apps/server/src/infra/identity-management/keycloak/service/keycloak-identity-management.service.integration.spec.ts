@@ -3,10 +3,10 @@ import { KeycloakModule } from '@infra/identity-management/keycloak/keycloak.mod
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ServerModule } from '@modules/server';
+import { IdmAccount, IdmAccountUpdate } from '@modules/account/domain';
+import { ServerModule } from '@modules/server/server.app.module';
 import { HttpModule } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IdmAccount, IdmAccountUpdate } from '@shared/domain/interface';
 import { v1 } from 'uuid';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';

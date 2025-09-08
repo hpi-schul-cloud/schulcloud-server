@@ -12,7 +12,9 @@ describe(SchoolSystemOptionsBuilder.name, () => {
 	describe('getDefaultProvisioningOptions', () => {
 		describe('when the provisioning strategy has options', () => {
 			it('should have the correct options instance', () => {
-				const builder: SchoolSystemOptionsBuilder = new SchoolSystemOptionsBuilder(SystemProvisioningStrategy.SANIS);
+				const builder: SchoolSystemOptionsBuilder = new SchoolSystemOptionsBuilder(
+					SystemProvisioningStrategy.SCHULCONNEX_ASYNC
+				);
 
 				const result: AnyProvisioningOptions = builder.getDefaultProvisioningOptions();
 
@@ -32,7 +34,7 @@ describe(SchoolSystemOptionsBuilder.name, () => {
 	});
 
 	describe('buildProvisioningOptions', () => {
-		describe('when the provisioning strategy is "SANIS" and the options are valid', () => {
+		describe('when the provisioning strategy is "SCHULCONNEX_ASYNC" and the options are valid', () => {
 			const setup = () => {
 				const options: SchulConneXProvisioningOptionsInterface = {
 					groupProvisioningClassesEnabled: true,
@@ -50,7 +52,7 @@ describe(SchoolSystemOptionsBuilder.name, () => {
 				const { options } = setup();
 
 				const result: AnyProvisioningOptions = new SchoolSystemOptionsBuilder(
-					SystemProvisioningStrategy.SANIS
+					SystemProvisioningStrategy.SCHULCONNEX_ASYNC
 				).buildProvisioningOptions(options);
 
 				expect(result).toBeInstanceOf(SchulConneXProvisioningOptions);
@@ -60,7 +62,7 @@ describe(SchoolSystemOptionsBuilder.name, () => {
 				const { options } = setup();
 
 				const result: AnyProvisioningOptions = new SchoolSystemOptionsBuilder(
-					SystemProvisioningStrategy.SANIS
+					SystemProvisioningStrategy.SCHULCONNEX_ASYNC
 				).buildProvisioningOptions(options);
 
 				expect(result).toEqual(options);
@@ -69,7 +71,9 @@ describe(SchoolSystemOptionsBuilder.name, () => {
 
 		describe('when the provided options do not fit the strategy', () => {
 			it('should throw an error', () => {
-				const builder: SchoolSystemOptionsBuilder = new SchoolSystemOptionsBuilder(SystemProvisioningStrategy.SANIS);
+				const builder: SchoolSystemOptionsBuilder = new SchoolSystemOptionsBuilder(
+					SystemProvisioningStrategy.SCHULCONNEX_ASYNC
+				);
 
 				expect(() =>
 					builder.buildProvisioningOptions({

@@ -12,13 +12,13 @@ import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
-import { setupEntities, userFactory } from '@shared/testing';
+import { setupEntities } from '@testing/database';
 import { MediaAvailableLine, MediaBoard, MediaExternalToolElement } from '../../domain';
 import { MediaAvailableLineService } from './media-available-line.service';
-import { MediaBoardService } from './media-board.service';
 
 describe(MediaAvailableLineService.name, () => {
 	let module: TestingModule;
@@ -28,7 +28,6 @@ describe(MediaAvailableLineService.name, () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let externalToolLogoService: DeepMocked<ExternalToolLogoService>;
-	let mediaBoardService: DeepMocked<MediaBoardService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -50,10 +49,6 @@ describe(MediaAvailableLineService.name, () => {
 					provide: ExternalToolLogoService,
 					useValue: createMock<ExternalToolLogoService>(),
 				},
-				{
-					provide: MediaBoardService,
-					useValue: createMock<MediaBoardService>(),
-				},
 			],
 		}).compile();
 
@@ -62,9 +57,8 @@ describe(MediaAvailableLineService.name, () => {
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		externalToolLogoService = module.get(ExternalToolLogoService);
-		mediaBoardService = module.get(MediaBoardService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {
@@ -101,8 +95,6 @@ describe(MediaAvailableLineService.name, () => {
 					usedSchoolExternalTool,
 				]);
 				contextExternalToolService.findById.mockResolvedValueOnce(usedContextExternalTool);
-
-				mediaBoardService.findMediaElements.mockReturnValueOnce([mediaExternalToolElement]);
 
 				return { user, board, mediaExternalToolElement, schoolExternalTool };
 			};
@@ -166,7 +158,6 @@ describe(MediaAvailableLineService.name, () => {
 				const board: MediaBoard = mediaBoardFactory.build({
 					children: [mediaExternalToolElement, mediaExternalToolElementWithDeletedTool],
 				});
-				mediaBoardService.findMediaElements.mockReturnValueOnce([mediaExternalToolElement]);
 
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([
 					schoolExternalTool,
@@ -249,7 +240,9 @@ describe(MediaAvailableLineService.name, () => {
 
 				await service.getAvailableExternalToolsForSchool([schoolExternalTool]);
 
-				expect(externalToolService.findExternalTools).toHaveBeenCalledWith({ ids: [schoolExternalTool.toolId] });
+				expect(externalToolService.findExternalTools).toHaveBeenCalledWith({
+					ids: [schoolExternalTool.toolId],
+				});
 			});
 
 			it('should return all available external tools in correct order', async () => {
@@ -371,6 +364,7 @@ describe(MediaAvailableLineService.name, () => {
 					{
 						schoolExternalToolId: schoolExternalTool1.id,
 						name: externalTool1.name,
+						domain: new URL(externalTool1.config.baseUrl).hostname,
 						description: externalTool1.description,
 						logoUrl,
 						thumbnailUrl: externalTool1.thumbnail?.getPreviewUrl(),
@@ -378,6 +372,7 @@ describe(MediaAvailableLineService.name, () => {
 					{
 						schoolExternalToolId: schoolExternalTool2.id,
 						name: externalTool2.name,
+						domain: new URL(externalTool2.config.baseUrl).hostname,
 						description: externalTool2.description,
 						logoUrl: undefined,
 					},

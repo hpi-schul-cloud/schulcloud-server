@@ -1,18 +1,25 @@
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
 import { ToolContextType } from '@modules/tool/common/enum';
-import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import {
+	ContextExternalTool,
+	ContextRef,
+	CopyContextExternalToolRejectData,
+} from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ToolConfig } from '@modules/tool/tool-config';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '../repo';
 import { BoardCopyService } from './board-copy.service';
-import { RoomsService } from './rooms.service';
+import { CourseRoomsService } from './course-rooms.service';
 
 type CourseCopyParams = {
-	originalCourse: Course;
+	originalCourse: CourseEntity;
 	user: User;
 	copyName?: string;
 };
@@ -21,16 +28,16 @@ type CourseCopyParams = {
 export class CourseCopyService {
 	constructor(
 		private readonly configService: ConfigService<ToolConfig, true>,
-		private readonly courseRepo: CourseRepo,
+		private readonly courseService: CourseService,
 		private readonly legacyBoardRepo: LegacyBoardRepo,
-		private readonly roomsService: RoomsService,
+		private readonly roomsService: CourseRoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
-		private readonly userRepo: UserRepo,
+		private readonly userService: UserService,
 		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
-	async copyCourse({
+	public async copyCourse({
 		userId,
 		courseId,
 		newName,
@@ -39,48 +46,62 @@ export class CourseCopyService {
 		courseId: EntityId;
 		newName?: string | undefined;
 	}): Promise<CopyStatus> {
-		const user: User = await this.userRepo.findById(userId, true);
+		const user: User = await this.userService.getUserEntityWithRoles(userId);
 
 		// fetch original course and board
-		const originalCourse = await this.courseRepo.findById(courseId);
+		const originalCourse = await this.courseService.findById(courseId);
 		let originalBoard = await this.legacyBoardRepo.findByCourseId(courseId);
 		originalBoard = await this.roomsService.updateLegacyBoard(originalBoard, courseId, userId);
 
 		// handle potential name conflict
-		const [existingCourses] = await this.courseRepo.findAllByUserId(userId);
-		const existingNames = existingCourses.map((course: Course) => course.name);
+		const existingCourses = await this.courseService.findAllByUserId(userId);
+		const existingNames = existingCourses.map((course: CourseEntity) => course.name);
 		const copyName = this.copyHelperService.deriveCopyName(newName || originalCourse.name, existingNames);
 
 		// copy course and board
 		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
+
+		let courseToolsCopyStatus: CopyStatus | null = null;
 		if (this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED')) {
 			const contextRef: ContextRef = { id: courseId, type: ToolContextType.COURSE };
 			const contextExternalToolsInContext: ContextExternalTool[] =
 				await this.contextExternalToolService.findAllByContext(contextRef);
 
-			await Promise.all(
-				contextExternalToolsInContext.map(async (tool: ContextExternalTool): Promise<ContextExternalTool> => {
-					const copiedTool: ContextExternalTool = await this.contextExternalToolService.copyContextExternalTool(
-						tool,
-						courseCopy.id
-					);
+			const copyCourseToolsResult = await Promise.all(
+				contextExternalToolsInContext.map(
+					async (tool: ContextExternalTool): Promise<ContextExternalTool | CopyContextExternalToolRejectData> => {
+						const copiedResult: ContextExternalTool | CopyContextExternalToolRejectData =
+							await this.contextExternalToolService.copyContextExternalTool(tool, courseCopy.id, user.school.id);
 
-					return copiedTool;
-				})
+						return copiedResult;
+					}
+				)
 			);
+
+			courseToolsCopyStatus = this.deriveCourseToolCopyStatus(copyCourseToolsResult);
 		}
 
-		const boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
+		const boardStatus = await this.boardCopyService.copyBoard({
+			originalBoard,
+			originalCourse,
+			destinationCourse: courseCopy,
+			user,
+		});
 		const finishedCourseCopy = await this.finishCourseCopying(courseCopy);
 
-		const courseStatus = this.deriveCourseStatus(originalCourse, finishedCourseCopy, boardStatus);
+		const courseStatus = this.deriveCourseStatus(
+			originalCourse,
+			finishedCourseCopy,
+			boardStatus,
+			courseToolsCopyStatus
+		);
 
 		return courseStatus;
 	}
 
-	private async copyCourseEntity(params: CourseCopyParams): Promise<Course> {
+	private async copyCourseEntity(params: CourseCopyParams): Promise<CourseEntity> {
 		const { originalCourse, user, copyName } = params;
-		const courseCopy = new Course({
+		const courseCopy = new CourseEntity({
 			school: user.school,
 			name: copyName,
 			color: originalCourse.color,
@@ -90,17 +111,24 @@ export class CourseCopyService {
 			copyingSince: new Date(),
 		});
 
-		await this.courseRepo.createCourse(courseCopy);
+		await this.courseService.create(courseCopy);
+
 		return courseCopy;
 	}
 
-	private async finishCourseCopying(courseCopy: Course) {
+	private async finishCourseCopying(courseCopy: CourseEntity): Promise<CourseEntity> {
 		delete courseCopy.copyingSince;
-		await this.courseRepo.save(courseCopy);
+		await this.courseService.save(courseCopy);
+
 		return courseCopy;
 	}
 
-	private deriveCourseStatus(originalCourse: Course, courseCopy: Course, boardStatus: CopyStatus): CopyStatus {
+	private deriveCourseStatus(
+		originalCourse: CourseEntity,
+		courseCopy: CourseEntity,
+		boardStatus: CopyStatus,
+		courseToolsCopyStatus: CopyStatus | null
+	): CopyStatus {
 		const elements = [
 			{
 				type: CopyElementType.METADATA,
@@ -111,21 +139,14 @@ export class CourseCopyService {
 				status: CopyStatusEnum.NOT_DOING,
 			},
 			{
-				type: CopyElementType.LTITOOL_GROUP,
-				status: CopyStatusEnum.NOT_DOING,
-			},
-			{
 				type: CopyElementType.TIME_GROUP,
 				status: CopyStatusEnum.NOT_DOING,
 			},
 			boardStatus,
 		];
 
-		if (this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED')) {
-			elements.push({
-				type: CopyElementType.EXTERNAL_TOOL,
-				status: CopyStatusEnum.SUCCESS,
-			});
+		if (courseToolsCopyStatus) {
+			elements.push(courseToolsCopyStatus);
 		}
 
 		const courseGroupsExist = originalCourse.getCourseGroupItems().length > 0;
@@ -145,5 +166,31 @@ export class CourseCopyService {
 			elements,
 		};
 		return status;
+	}
+
+	private deriveCourseToolCopyStatus(
+		copyCourseToolsResult: (ContextExternalTool | CopyContextExternalToolRejectData)[]
+	): CopyStatus | null {
+		if (!copyCourseToolsResult.length) {
+			return null;
+		}
+
+		const rejectedCopies: CopyContextExternalToolRejectData[] = copyCourseToolsResult.filter(
+			(result) => result instanceof CopyContextExternalToolRejectData
+		);
+
+		let status: CopyStatusEnum;
+		if (rejectedCopies.length === copyCourseToolsResult.length) {
+			status = CopyStatusEnum.FAIL;
+		} else if (rejectedCopies.length > 0) {
+			status = CopyStatusEnum.PARTIAL;
+		} else {
+			status = CopyStatusEnum.SUCCESS;
+		}
+
+		return {
+			type: CopyElementType.EXTERNAL_TOOL,
+			status,
+		};
 	}
 }

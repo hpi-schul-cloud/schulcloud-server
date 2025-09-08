@@ -59,7 +59,9 @@ jobs:
 
       - name: Build and push ${{ github.repository }}
         if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
         with:
           context: .
           file: ./Dockerfile
@@ -68,40 +70,6 @@ jobs:
           pull: true
           tags: ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}
           labels: ${{ steps.docker_meta_img.outputs.labels }}
-
-      - name: Docker meta Service Name (file preview)
-        id: docker_meta_img_file_storage
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=ref,event=branch,enable=false,priority=600,prefix=file-preview-
-            type=sha,enable=true,priority=600,prefix=file-preview-
-          labels: |
-            org.opencontainers.image.title=schulcloud-file-storage
-
-      - name: test image exists (file preview)
-        run: |
-          echo "IMAGE_EXISTS=$(docker manifest inspect ghcr.io/${{ github.repository }}:file-preview-${{ needs.branch_meta.outputs.sha }} > /dev/null && echo 1 || echo 0)" >> $GITHUB_ENV
-
-      - name: Set up Docker Buildx (file preview)
-        if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push ${{ github.repository }} (file preview)
-        if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/build-push-action@v5
-        with:
-          build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}
-          context: .
-          file: ./Dockerfile.filepreview
-          platforms: linux/amd64
-          push: true
-          pull: true
-          tags: ghcr.io/${{ github.repository }}:file-preview-${{ needs.branch_meta.outputs.sha }}
-          labels: |
-            ${{ steps.docker_meta_img_file_storage.outputs.labels }}
 
       - name: Send Notification to Rocket Chat if docker image build failed
         if: ${{ failure() && github.ref == 'refs/heads/main' }}
@@ -172,26 +140,22 @@ jobs:
       security-events: write
     steps:
       - name: run trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@1f6384b6ceecbbc6673526f865b818a2a06b07c9
+        uses: aquasecurity/trivy-action@0.31.0
         with:
           image-ref: 'ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}'
           format: 'sarif'
           output: 'trivy-results.sarif'
+          scan-type: 'image'
           severity: 'CRITICAL,HIGH'
           ignore-unfixed: true
+        env:
+          TRIVY_SKIP_DB_UPDATE: true
+          TRIVY_SKIP_JAVA_DB_UPDATE: true
       - name: upload trivy results
         if: ${{ always() }}
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
-
-  end-to-end-tests:
-    needs:
-      - build_and_push
-      - branch_meta
-    uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e_call.yml@main
-    with:
-      ref: ${{ needs.branch_meta.outputs.branch }}
 
   cy-e2e-tests:
     needs:
@@ -202,10 +166,3 @@ jobs:
       ref: ${{ needs.branch_meta.outputs.branch }}
     secrets:
       service-account-token: ${{ secrets.CYPRESS_ONEPWD_SERVICE_ACCOUNT_TOKEN }}
-
-  test-successful:
-    runs-on: ubuntu-latest
-    needs:
-      - end-to-end-tests
-    steps:
-      - run: echo "Test was successful"

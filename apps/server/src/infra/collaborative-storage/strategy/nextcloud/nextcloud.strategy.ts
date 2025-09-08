@@ -1,13 +1,12 @@
+import { LegacyLogger } from '@core/logger';
 import { TeamDto, TeamUserDto } from '@modules/collaborative-storage';
 import { PseudonymService } from '@modules/pseudonym';
+import { Pseudonym } from '@modules/pseudonym/repo';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
-import { UserService } from '@modules/user';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolRepo } from '@shared/repo/ltitool/';
-import { LegacyLogger } from '@src/core/logger';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { CollaborativeStorageStrategy } from '../base.interface.strategy';
 import { NextcloudClient } from './nextcloud.client';
@@ -23,7 +22,6 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 		private readonly logger: LegacyLogger,
 		private readonly client: NextcloudClient,
 		private readonly pseudonymService: PseudonymService,
-		private readonly ltiToolRepo: LtiToolRepo,
 		private readonly externalToolService: ExternalToolService,
 		private readonly userService: UserService
 	) {
@@ -128,12 +126,12 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 	 */
 	protected async updateTeamUsersInGroup(groupId: string, teamUsers: TeamUserDto[]): Promise<void[][]> {
 		const groupUserIds: string[] = await this.client.getGroupUsers(groupId);
-		const nextcloudTool: ExternalTool | LtiToolDO = await this.findNextcloudTool();
+		const nextcloudTool: ExternalTool = await this.findNextcloudTool();
 
 		let convertedTeamUserIds: string[] = await Promise.all<Promise<string>[]>(
 			// The Oauth authentication generates a pseudonym which will be used from external systems as identifier
 			teamUsers.map(async (teamUser: TeamUserDto): Promise<string> => {
-				const user: UserDO = await this.userService.findById(teamUser.userId);
+				const user: UserDo = await this.userService.findById(teamUser.userId);
 				const userId = await this.pseudonymService
 					.findByUserAndToolOrThrow(user, nextcloudTool)
 					.then((pseudonymDO: Pseudonym) => this.client.getNameWithPrefix(pseudonymDO.pseudonym))
@@ -155,31 +153,16 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 		]);
 	}
 
-	private async findNextcloudTool(): Promise<ExternalTool | LtiToolDO> {
+	private async findNextcloudTool(): Promise<ExternalTool> {
 		const tool: ExternalTool | null = await this.externalToolService.findExternalToolByName(
 			this.client.oidcInternalName
 		);
 
 		if (!tool) {
-			const ltiToolPromise: Promise<LtiToolDO> = this.findLegacyLtiTool();
-
-			return ltiToolPromise;
+			throw new NotFoundLoggableException(ExternalTool.name, { name: this.client.oidcInternalName });
 		}
 
 		return tool;
-	}
-
-	private async findLegacyLtiTool(): Promise<LtiToolDO> {
-		const foundTools: LtiToolDO[] = await this.ltiToolRepo.findByName(this.client.oidcInternalName);
-
-		if (foundTools.length > 1) {
-			this.logger.warn(
-				`Please check the configured lti tools. There should one be one tool with the name ${this.client.oidcInternalName}. 
-				Otherwise teams can not be created or updated on demand.`
-			);
-		}
-
-		return foundTools[0];
 	}
 
 	/**

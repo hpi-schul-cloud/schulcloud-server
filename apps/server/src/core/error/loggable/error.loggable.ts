@@ -1,28 +1,38 @@
-import { ApiValidationError } from '@shared/common';
-import { getMetadataStorage } from 'class-validator';
 import { ValidationError } from '@nestjs/common';
+import { ApiValidationError } from '@shared/common/error';
+import { getMetadataStorage } from 'class-validator';
+import util from 'util';
 import { Loggable } from '../../logger/interfaces';
-import { ErrorLogMessage, ValidationErrorLogMessage } from '../../logger/types';
+import { ErrorLogMessage, LogMessageDataObject, ValidationErrorLogMessage } from '../../logger/types';
 import { ErrorUtils } from '../utils/error.utils';
 
 export class ErrorLoggable implements Loggable {
-	constructor(private readonly error: Error) {}
+	readonly actualError: Error;
+
+	constructor(private readonly error: unknown, private readonly data?: LogMessageDataObject) {
+		if (this.error instanceof Error) {
+			this.actualError = <Error>error;
+		} else {
+			this.actualError = new Error(util.inspect(error));
+		}
+	}
 
 	private readonly classValidatorMetadataStorage = getMetadataStorage();
 
 	getLogMessage(): ErrorLogMessage | ValidationErrorLogMessage {
 		let logMessage: ErrorLogMessage | ValidationErrorLogMessage = {
-			error: this.error,
+			error: this.actualError,
 			type: '',
+			data: this.data,
 		};
 
-		if (this.error instanceof ApiValidationError) {
-			logMessage = this.createLogMessageForValidationErrors(this.error);
-		} else if (ErrorUtils.isFeathersError(this.error)) {
+		if (this.actualError instanceof ApiValidationError) {
+			logMessage = this.createLogMessageForValidationErrors(this.actualError);
+		} else if (ErrorUtils.isFeathersError(this.actualError)) {
 			logMessage.type = 'Feathers Error';
-		} else if (ErrorUtils.isBusinessError(this.error)) {
+		} else if (ErrorUtils.isBusinessError(this.actualError)) {
 			logMessage.type = 'Business Error';
-		} else if (ErrorUtils.isNestHttpException(this.error)) {
+		} else if (ErrorUtils.isNestHttpException(this.actualError)) {
 			logMessage.type = 'Technical Error';
 		} else {
 			logMessage.type = 'Unhandled or Unknown Error';

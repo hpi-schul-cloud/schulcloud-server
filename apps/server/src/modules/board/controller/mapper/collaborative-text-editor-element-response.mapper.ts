@@ -25,7 +25,7 @@ export class CollaborativeTextEditorElementResponseMapper implements BaseRespons
 		return result;
 	}
 
-	canMap(element: CollaborativeTextEditorElement): boolean {
+	canMap(element: unknown): boolean {
 		return element instanceof CollaborativeTextEditorElement;
 	}
 }

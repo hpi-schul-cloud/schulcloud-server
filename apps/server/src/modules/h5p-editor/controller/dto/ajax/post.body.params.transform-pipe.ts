@@ -15,7 +15,7 @@ import {
 
 @Injectable()
 export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
-	async transform(value: AjaxPostBodyParams): Promise<unknown> {
+	public async transform(value: AjaxPostBodyParams): Promise<unknown> {
 		if (value === undefined) {
 			return undefined;
 		}
@@ -25,6 +25,8 @@ export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 			value = plainToClass(ContentBodyParams, value);
 		} else if ('libraryParameters' in value) {
 			value = plainToClass(LibraryParametersBodyParams, value);
+		} else {
+			return undefined;
 		}
 
 		const validationResult = await validate(value);

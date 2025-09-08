@@ -1,11 +1,11 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { cleanupCollections } from '@shared/testing';
-import { RocketChatUserMapper } from './mapper';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { RocketChatUserEntity } from '../entity';
-import { RocketChatUserRepo } from './rocket-chat-user.repo';
 import { rocketChatUserEntityFactory } from '../entity/testing';
+import { RocketChatUserMapper } from './mapper';
+import { RocketChatUserRepo } from './rocket-chat-user.repo';
 
 describe(RocketChatUserRepo.name, () => {
 	let module: TestingModule;

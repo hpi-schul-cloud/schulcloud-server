@@ -1,26 +1,24 @@
+import { LegacyLogger } from '@core/logger';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { OauthDataDto } from '@modules/provisioning/dto/oauth-data.dto';
+import { AuthenticationCodeGrantTokenRequest, OAuthTokenDto, OauthAdapterService } from '@modules/oauth-adapter';
+import { TokenRequestMapper } from '@modules/oauth-adapter/mapper/token-request.mapper';
 import { ProvisioningService } from '@modules/provisioning/service/provisioning.service';
-import { System, SystemService } from '@modules/system';
-import { OauthConfigEntity } from '@modules/system/entity';
-import { UserService } from '@modules/user';
+import { SchoolFeature } from '@modules/school/domain';
+import { SystemService } from '@modules/system';
+import { OauthConfigEntity } from '@modules/system/repo';
+import { UserDo, UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
-import { EntityId, SchoolFeature } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { isObject } from '@nestjs/common/utils/shared.utils';
+import { EntityId } from '@shared/domain/types';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthTokenDto } from '../interface';
 import {
-	IdTokenInvalidLoggableException,
 	OauthConfigMissingLoggableException,
+	TokenInvalidLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
 } from '../loggable';
-import { TokenRequestMapper } from '../mapper/token-request.mapper';
-import { AuthenticationCodeGrantTokenRequest } from './dto';
-import { OauthAdapterService } from './oauth-adapter.service';
 
 @Injectable()
 export class OAuthService {
@@ -37,40 +35,40 @@ export class OAuthService {
 		this.logger.setContext(OAuthService.name);
 	}
 
-	async authenticateUser(systemId: string, redirectUri: string, code: string): Promise<OAuthTokenDto> {
-		const system: System | null = await this.systemService.findById(systemId);
+	public async authenticateUser(systemId: string, redirectUri: string, code: string): Promise<OAuthTokenDto> {
+		const system = await this.systemService.findById(systemId);
 
 		if (!system || !system.oauthConfig) {
 			throw new OauthConfigMissingLoggableException(systemId);
 		}
 		const { oauthConfig } = system;
 
-		const oauthTokens: OAuthTokenDto = await this.requestToken(code, oauthConfig, redirectUri);
+		const oauthTokens = await this.requestToken(code, oauthConfig, redirectUri);
 
 		await this.validateToken(oauthTokens.idToken, oauthConfig);
 
 		return oauthTokens;
 	}
 
-	async provisionUser(systemId: string, idToken: string, accessToken: string): Promise<UserDO | null> {
-		const data: OauthDataDto = await this.provisioningService.getData(systemId, idToken, accessToken);
+	public async provisionUser(systemId: string, idToken: string, accessToken: string): Promise<UserDo | null> {
+		const data = await this.provisioningService.getData(systemId, idToken, accessToken);
 
-		const externalUserId: string = data.externalUser.externalId;
-		const officialSchoolNumber: string | undefined = data.externalSchool?.officialSchoolNumber;
+		const externalUserId = data.externalUser.externalId;
+		const officialSchoolNumber = data.externalSchool?.officialSchoolNumber;
 
 		let isProvisioningEnabled = true;
 
 		if (officialSchoolNumber) {
 			isProvisioningEnabled = await this.isOauthProvisioningEnabledForSchool(officialSchoolNumber);
 
-			const shouldUserMigrate: boolean = await this.migrationCheckService.shouldUserMigrate(
+			const shouldUserMigrate = await this.migrationCheckService.shouldUserMigrate(
 				externalUserId,
 				systemId,
 				officialSchoolNumber
 			);
 
 			if (shouldUserMigrate) {
-				const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+				const existingUser = await this.userService.findByExternalId(externalUserId, systemId);
 
 				if (!existingUser) {
 					return null;
@@ -82,7 +80,7 @@ export class OAuthService {
 			await this.provisioningService.provisionData(data);
 		}
 
-		const user: UserDO = await this.findUserAfterProvisioningOrThrow(externalUserId, systemId, officialSchoolNumber);
+		const user: UserDo = await this.findUserAfterProvisioningOrThrow(externalUserId, systemId, officialSchoolNumber);
 
 		return user;
 	}
@@ -91,8 +89,8 @@ export class OAuthService {
 		externalUserId: string,
 		systemId: EntityId,
 		officialSchoolNumber?: string
-	): Promise<UserDO> {
-		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+	): Promise<UserDo> {
+		const user = await this.userService.findByExternalId(externalUserId, systemId);
 
 		if (!user) {
 			// This can happen, when OAuth2 provisioning is disabled, because the school doesn't have the feature.
@@ -103,8 +101,8 @@ export class OAuthService {
 		return user;
 	}
 
-	async isOauthProvisioningEnabledForSchool(officialSchoolNumber: string): Promise<boolean> {
-		const school: LegacySchoolDo | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+	public async isOauthProvisioningEnabledForSchool(officialSchoolNumber: string): Promise<boolean> {
+		const school = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
 		if (!school) {
 			return true;
@@ -113,27 +111,49 @@ export class OAuthService {
 		return !!school.features?.includes(SchoolFeature.OAUTH_PROVISIONING_ENABLED);
 	}
 
-	async requestToken(code: string, oauthConfig: OauthConfigEntity, redirectUri: string): Promise<OAuthTokenDto> {
-		const payload: AuthenticationCodeGrantTokenRequest = this.buildTokenRequestPayload(code, oauthConfig, redirectUri);
+	// private
+	public async requestToken(code: string, oauthConfig: OauthConfigEntity, redirectUri: string): Promise<OAuthTokenDto> {
+		const payload = this.buildTokenRequestPayload(code, oauthConfig, redirectUri);
 
-		const tokenDto: OAuthTokenDto = await this.oauthAdapterService.sendTokenRequest(oauthConfig.tokenEndpoint, payload);
+		const tokenDto = await this.oauthAdapterService.sendTokenRequest(oauthConfig.tokenEndpoint, payload);
 
 		return tokenDto;
 	}
 
-	async validateToken(idToken: string, oauthConfig: OauthConfigEntity): Promise<JwtPayload> {
-		const publicKey: string = await this.oauthAdapterService.getPublicKey(oauthConfig.jwksEndpoint);
-		const decodedJWT: string | JwtPayload = jwt.verify(idToken, publicKey, {
+	// private
+	public async validateToken(idToken: string, oauthConfig: OauthConfigEntity): Promise<JwtPayload> {
+		const publicKey = await this.oauthAdapterService.getPublicKey(oauthConfig.jwksEndpoint);
+		const decodedJWT = jwt.verify(idToken, publicKey, {
 			algorithms: ['RS256'],
 			issuer: oauthConfig.issuer,
 			audience: oauthConfig.clientId,
 		});
 
 		if (typeof decodedJWT === 'string') {
-			throw new IdTokenInvalidLoggableException();
+			throw new TokenInvalidLoggableException();
 		}
 
 		return decodedJWT;
+	}
+
+	/**
+	 * @see https://openid.net/specs/openid-connect-backchannel-1_0.html#Validation
+	 */
+	public async validateLogoutToken(logoutToken: string, oauthConfig: OauthConfigEntity): Promise<JwtPayload> {
+		const validatedJwt: JwtPayload = await this.validateToken(logoutToken, oauthConfig);
+
+		if (
+			!isObject(validatedJwt.events) ||
+			!Object.keys(validatedJwt.events).includes('http://schemas.openid.net/event/backchannel-logout')
+		) {
+			throw new TokenInvalidLoggableException();
+		}
+
+		if (validatedJwt.nonce !== undefined) {
+			throw new TokenInvalidLoggableException();
+		}
+
+		return validatedJwt;
 	}
 
 	private buildTokenRequestPayload(
@@ -143,13 +163,12 @@ export class OAuthService {
 	): AuthenticationCodeGrantTokenRequest {
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
 
-		const tokenRequestPayload: AuthenticationCodeGrantTokenRequest =
-			TokenRequestMapper.createAuthenticationCodeGrantTokenRequestPayload(
-				oauthConfig.clientId,
-				decryptedClientSecret,
-				code,
-				redirectUri
-			);
+		const tokenRequestPayload = TokenRequestMapper.createAuthenticationCodeGrantTokenRequestPayload(
+			oauthConfig.clientId,
+			decryptedClientSecret,
+			code,
+			redirectUri
+		);
 
 		return tokenRequestPayload;
 	}

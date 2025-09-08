@@ -1,6 +1,7 @@
-import { Role, User } from '@shared/domain/entity';
+import { Role } from '@modules/role/repo';
+import { School } from '@modules/school';
+import { User } from '@modules/user/repo';
 import { EntityId } from '@shared/domain/types';
-import { School } from '@src/modules/school';
 import {
 	MeAccountResponse,
 	MeResponse,
@@ -11,7 +12,13 @@ import {
 } from '../dto';
 
 export class MeResponseMapper {
-	public static mapToResponse(school: School, user: User, accountId: EntityId, permissions: string[]): MeResponse {
+	public static mapToResponse(
+		school: School,
+		user: User,
+		accountId: EntityId,
+		permissions: string[],
+		systemId?: EntityId
+	): MeResponse {
 		const schoolResponse = MeResponseMapper.mapSchool(school);
 		const userResponse = MeResponseMapper.mapUser(user);
 		const rolesResponse = MeResponseMapper.mapUserRoles(user);
@@ -25,6 +32,7 @@ export class MeResponseMapper {
 			permissions,
 			language,
 			account: accountResponse,
+			systemId,
 		});
 
 		return res;

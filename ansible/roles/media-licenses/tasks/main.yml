@@ -1,0 +1,17 @@
+- name: media licenses sync CronJob ConfigMap
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: vidis-sync-cronjob-configmap.yml.j2
+    state: "{{ 'present' if WITH_MEDIA_LICENSES is defined and WITH_MEDIA_LICENSES|bool else 'absent'}}"
+  tags:
+    - configmap
+
+- name: media licenses sync CronJob
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: vidis-sync-cronjob.yml.j2
+    state: "{{ 'present' if WITH_MEDIA_LICENSES is defined and WITH_MEDIA_LICENSES|bool else 'absent'}}"
+  tags:
+    - cronjob

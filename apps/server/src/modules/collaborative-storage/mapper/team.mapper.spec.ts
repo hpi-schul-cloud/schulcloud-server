@@ -1,7 +1,8 @@
+import { TeamEntity } from '@modules/team/repo';
+import { teamFactory } from '@modules/team/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { teamFactory } from '@shared/testing/factory/team.factory';
-import { TeamMapper } from '@modules/collaborative-storage/mapper/team.mapper';
+import { setupEntities } from '@testing/database';
+import { TeamMapper } from './team.mapper';
 
 describe('TeamMapper', () => {
 	let module: TestingModule;
@@ -13,7 +14,7 @@ describe('TeamMapper', () => {
 			providers: [TeamMapper],
 		}).compile();
 		mapper = module.get(TeamMapper);
-		await setupEntities();
+		await setupEntities([TeamEntity]);
 	});
 
 	afterAll(async () => {

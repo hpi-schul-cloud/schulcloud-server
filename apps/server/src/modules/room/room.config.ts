@@ -1,0 +1,5 @@
+export interface RoomConfig {
+	FEATURE_ADMINISTRATE_ROOMS_ENABLED: boolean;
+	FEATURE_ROOM_COPY_ENABLED: boolean;
+	FEATURE_ROOM_SHARE: boolean;
+}

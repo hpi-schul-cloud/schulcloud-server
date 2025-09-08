@@ -34,6 +34,14 @@ export class LinkElement extends BoardNode<LinkElementProps> {
 		this.props.imageUrl = value;
 	}
 
+	get originalImageUrl(): string {
+		return this.props.originalImageUrl ?? '';
+	}
+
+	set originalImageUrl(value: string) {
+		this.props.originalImageUrl = value;
+	}
+
 	canHaveChild(): boolean {
 		return false;
 	}

@@ -1,2 +1,4 @@
+export { RoleName, RoomRole } from './domain';
+export { RoleConfig } from './role.config';
 export { RoleModule } from './role.module';
-export { RoleService, RoleDto } from './service';
+export { RoleDto, RoleService } from './service';

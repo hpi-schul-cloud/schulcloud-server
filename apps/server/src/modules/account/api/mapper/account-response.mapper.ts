@@ -2,7 +2,7 @@ import { AccountResponse, AccountSearchListResponse } from '../dto';
 import { ResolvedAccountDto, ResolvedSearchListAccountDto } from '../dto/resolved-account.dto';
 
 export class AccountResponseMapper {
-	static mapToAccountResponse(resolvedAccount: ResolvedAccountDto): AccountResponse {
+	public static mapToAccountResponse(resolvedAccount: ResolvedAccountDto): AccountResponse {
 		return new AccountResponse({
 			id: resolvedAccount.id,
 			userId: resolvedAccount.userId,
@@ -12,11 +12,11 @@ export class AccountResponseMapper {
 		});
 	}
 
-	static mapToAccountResponses(resolvedAccounts: ResolvedAccountDto[]): AccountResponse[] {
+	public static mapToAccountResponses(resolvedAccounts: ResolvedAccountDto[]): AccountResponse[] {
 		return resolvedAccounts.map((resolvedAccount) => AccountResponseMapper.mapToAccountResponse(resolvedAccount));
 	}
 
-	static mapToAccountSearchListResponse(
+	public static mapToAccountSearchListResponse(
 		resolvedSearchListAccountDto: ResolvedSearchListAccountDto
 	): AccountSearchListResponse {
 		return new AccountSearchListResponse(

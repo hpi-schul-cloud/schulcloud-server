@@ -1,8 +1,8 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
-import { cleanupCollections } from '@shared/testing';
-import { MongoMemoryDatabaseModule } from '@src/infra/database';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ColumnBoard } from '../domain';
 import { cardFactory, columnBoardFactory, columnFactory } from '../testing';
 import { BoardNodeRepo } from './board-node.repo';

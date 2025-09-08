@@ -1,11 +1,11 @@
-import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { setupEntities } from '@testing/database';
 import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareToken } from './share-token.entity';
 
 describe('share-token entity', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([ShareToken]);
 	});
 
 	const setup = () => {

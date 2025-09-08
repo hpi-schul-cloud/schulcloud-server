@@ -1,22 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { IFileStats, ILibraryName } from '@lumieducation/h5p-server';
 import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import {
-	courseFactory,
-	h5pContentFactory,
-	lessonFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { Readable } from 'stream';
-import { H5PContent, H5PContentParentType, H5PContentProperties } from '../../entity';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
+import { H5PContent, H5PContentProperties } from '../../repo';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from '../../service';
+import { h5pContentFactory } from '../../testing';
+import { H5PContentParentType } from '../../types';
 
 const helpers = {
 	buildMetadata(
@@ -92,6 +90,8 @@ describe('H5PEditor Controller (api)', () => {
 			.useValue(createMock<LibraryStorage>())
 			.overrideProvider(TemporaryFileStorage)
 			.useValue(createMock<TemporaryFileStorage>())
+			.overrideProvider(AuthorizationClientAdapter)
+			.useValue(createMock<AuthorizationClientAdapter>())
 			.compile();
 
 		app = module.createNestApplication();
@@ -123,21 +123,16 @@ describe('H5PEditor Controller (api)', () => {
 		});
 
 		describe('when user is logged in', () => {
-			const createStudent = () => UserAndAccountTestFactory.buildStudent();
+			const setup = () => {
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-			const setup = async () => {
-				const { studentAccount, studentUser } = createStudent();
-
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
 				return { loggedInClient };
 			};
 
 			it('should return the library file', async () => {
-				const { loggedInClient } = await setup();
+				const { loggedInClient } = setup();
 
 				const mockFile = { content: 'Test File', size: 9, name: 'test.txt', birthtime: new Date() };
 
@@ -154,7 +149,7 @@ describe('H5PEditor Controller (api)', () => {
 			});
 
 			it('should return 404 if file does not exist', async () => {
-				const { loggedInClient } = await setup();
+				const { loggedInClient } = setup();
 
 				libraryStorage.getLibraryFile.mockRejectedValueOnce(new Error('Does not exist'));
 
@@ -181,19 +176,16 @@ describe('H5PEditor Controller (api)', () => {
 		});
 
 		describe('when user is logged in', () => {
-			const createStudent = () => UserAndAccountTestFactory.buildStudent();
-
 			const setup = async () => {
-				const { studentAccount, studentUser } = createStudent();
-				const course = courseFactory.build({ students: [studentUser], school: studentUser.school });
-				const lesson = lessonFactory.build({ course });
-				await em.persistAndFlush([studentAccount, studentUser, lesson, course]);
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-				const content = h5pContentFactory.build({ parentId: lesson.id, parentType: H5PContentParentType.Lesson });
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+
+				const parentId = new ObjectId().toString();
+
+				const content = h5pContentFactory.build({ parentId, parentType: H5PContentParentType.Lesson });
 				await em.persistAndFlush([content]);
 				em.clear();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
 
 				return { loggedInClient, content };
 			};
@@ -254,15 +246,10 @@ describe('H5PEditor Controller (api)', () => {
 		});
 
 		describe('when user is logged in', () => {
-			const createStudent = () => UserAndAccountTestFactory.buildStudent();
+			const setup = () => {
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-			const setup = async () => {
-				const { studentAccount, studentUser } = createStudent();
-
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
 				const mockFile = {
 					name: 'example.txt',
@@ -278,7 +265,7 @@ describe('H5PEditor Controller (api)', () => {
 			};
 
 			it('should return the content file', async () => {
-				const { loggedInClient, mockFile, mockFileStats } = await setup();
+				const { loggedInClient, mockFile, mockFileStats } = setup();
 
 				temporaryStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
 				temporaryStorage.getFileStats.mockResolvedValueOnce(mockFileStats);
@@ -290,7 +277,7 @@ describe('H5PEditor Controller (api)', () => {
 			});
 
 			it('should work with range requests', async () => {
-				const { loggedInClient, mockFile, mockFileStats } = await setup();
+				const { loggedInClient, mockFile, mockFileStats } = setup();
 
 				temporaryStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
 				temporaryStorage.getFileStats.mockResolvedValueOnce(mockFileStats);
@@ -302,7 +289,7 @@ describe('H5PEditor Controller (api)', () => {
 			});
 
 			it('should return 404 if file does not exist', async () => {
-				const { loggedInClient } = await setup();
+				const { loggedInClient } = setup();
 
 				temporaryStorage.getFileStats.mockRejectedValueOnce(new Error('Does not exist'));
 
@@ -329,19 +316,16 @@ describe('H5PEditor Controller (api)', () => {
 		});
 
 		describe('when user is logged in', () => {
-			const createStudent = () => UserAndAccountTestFactory.buildStudent();
-
 			const setup = async () => {
-				const { studentAccount, studentUser } = createStudent();
-				const course = courseFactory.build({ students: [studentUser], school: studentUser.school });
-				const lesson = lessonFactory.build({ course });
-				await em.persistAndFlush([studentAccount, studentUser, lesson, course]);
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-				const content = h5pContentFactory.build({ parentId: lesson.id, parentType: H5PContentParentType.Lesson });
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+
+				const parentId = new ObjectId().toString();
+
+				const content = h5pContentFactory.build({ parentId, parentType: H5PContentParentType.Lesson });
 				await em.persistAndFlush([content]);
 				em.clear();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
 
 				return { loggedInClient, content };
 			};

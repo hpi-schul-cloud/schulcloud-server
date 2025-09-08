@@ -1,6 +1,6 @@
+import { ErrorUtils } from '@core/error/utils';
 import { InternalServerErrorException } from '@nestjs/common';
-import { TypeGuard } from '@shared/common';
-import { ErrorUtils } from '@src/core/error/utils';
+import { TypeGuard } from '@shared/common/guards';
 import {
 	CreateAuthorUsingGET200ResponseData,
 	CreateGroupUsingGET200ResponseData,
@@ -62,7 +62,12 @@ export class EtherpadResponseMapper {
 		payload: EtherpadParams,
 		response: T | Error
 	): EtherpadErrorLoggableException {
-		return new EtherpadErrorLoggableException(type, payload, ErrorUtils.createHttpExceptionOptions(response.message));
+		return new EtherpadErrorLoggableException(
+			type,
+			payload,
+			response.message,
+			ErrorUtils.createHttpExceptionOptions(response.message)
+		);
 	}
 
 	static mapEtherpadSessionsToSessions(etherpadSessions: unknown): Session[] {

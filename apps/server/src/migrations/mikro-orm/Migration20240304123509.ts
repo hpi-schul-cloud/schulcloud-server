@@ -2,7 +2,7 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
 export class Migration20240304123509 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		const columBoardResponse = await this.driver.nativeUpdate(
 			'boardnodes',
 			{ type: 'column-board' },
@@ -54,7 +54,7 @@ export class Migration20240304123509 extends Migration {
 		// console.info(`Collection colum-board-target was NOT removed`);
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		const columBoardResponse = await this.driver.nativeUpdate(
 			'boardnodes',
 			{ type: 'column-board' },

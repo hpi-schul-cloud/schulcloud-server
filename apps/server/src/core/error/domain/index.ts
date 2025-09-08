@@ -1,1 +1,1 @@
-export { DomainErrorHandler } from './domainErrorHandler';
+export { DomainErrorHandler } from './domain-error-handler';

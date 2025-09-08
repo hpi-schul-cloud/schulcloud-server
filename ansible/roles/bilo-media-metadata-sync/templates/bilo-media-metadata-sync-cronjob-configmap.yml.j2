@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ NAMESPACE }}
+  name: bilo-media-metadata-sync-cronjob-configmap
+  labels:
+    app: bilo-media-metadata-sync-cronjob
+data:
+  NODE_OPTIONS: "--max-old-space-size=1536"
+  NEST_LOG_LEVEL: "info"
+  EXIT_ON_ERROR: "true"

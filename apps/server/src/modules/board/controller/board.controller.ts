@@ -1,4 +1,5 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import {
 	Body,
 	Controller,
@@ -12,8 +13,8 @@ import {
 	Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError, RequestTimeout } from '@shared/common';
-import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
+import { RequestTimeout } from '@shared/common/decorators';
+import { ApiValidationError } from '@shared/common/error';
 import { BoardUc } from '../uc';
 import {
 	BoardResponse,
@@ -21,14 +22,16 @@ import {
 	ColumnResponse,
 	CreateBoardBodyParams,
 	CreateBoardResponse,
+	LayoutBodyParams,
 	UpdateBoardTitleParams,
 	VisibilityBodyParams,
 } from './dto';
 import { BoardContextResponse } from './dto/board/board-context.reponse';
 import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from './mapper';
+import { ReadersCanEditBodyParams } from './dto/board/readers-can-edit.body.params';
 
 @ApiTags('Board')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('boards')
 export class BoardController {
 	constructor(private readonly boardUc: BoardUc) {}
@@ -39,7 +42,7 @@ export class BoardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post()
-	async createBoard(
+	public async createBoard(
 		@Body() bodyParams: CreateBoardBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CreateBoardResponse> {
@@ -56,13 +59,13 @@ export class BoardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Get(':boardId')
-	async getBoardSkeleton(
+	public async getBoardSkeleton(
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardResponse> {
-		const board = await this.boardUc.findBoard(currentUser.userId, urlParams.boardId);
+		const { board, features, permissions } = await this.boardUc.findBoard(currentUser.userId, urlParams.boardId);
 
-		const response = BoardResponseMapper.mapToResponse(board);
+		const response = BoardResponseMapper.mapToResponse(board, features, permissions);
 
 		return response;
 	}
@@ -73,7 +76,7 @@ export class BoardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Get(':boardId/context')
-	async getBoardContext(
+	public async getBoardContext(
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardContextResponse> {
@@ -91,7 +94,7 @@ export class BoardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Patch(':boardId/title')
-	async updateBoardTitle(
+	public async updateBoardTitle(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: UpdateBoardTitleParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -106,7 +109,10 @@ export class BoardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Delete(':boardId')
-	async deleteBoard(@Param() urlParams: BoardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	public async deleteBoard(
+		@Param() urlParams: BoardUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
 		await this.boardUc.deleteBoard(currentUser.userId, urlParams.boardId);
 	}
 
@@ -116,7 +122,7 @@ export class BoardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':boardId/columns')
-	async createColumn(
+	public async createColumn(
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ColumnResponse> {
@@ -134,11 +140,11 @@ export class BoardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':boardId/copy')
 	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
-	async copyBoard(
+	public async copyBoard(
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CopyApiResponse> {
-		const copyStatus = await this.boardUc.copyBoard(currentUser.userId, urlParams.boardId);
+		const copyStatus = await this.boardUc.copyBoard(currentUser.userId, urlParams.boardId, currentUser.schoolId);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
 	}
@@ -150,11 +156,41 @@ export class BoardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Patch(':boardId/visibility')
-	async updateVisibility(
+	public async updateVisibility(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: VisibilityBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
-	) {
+	): Promise<void> {
 		await this.boardUc.updateVisibility(currentUser.userId, urlParams.boardId, bodyParams.isVisible);
+	}
+
+	@ApiOperation({ summary: 'Update the visibility of a board.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(':boardId/readers-can-edit')
+	public async updateReadersCanEdit(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: ReadersCanEditBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.boardUc.updateReadersCanEdit(currentUser.userId, urlParams.boardId, bodyParams.readersCanEdit);
+	}
+
+	@ApiOperation({ summary: 'Update the layout of a board.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(':boardId/layout')
+	public async updateLayout(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: LayoutBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.boardUc.updateLayout(currentUser.userId, urlParams.boardId, bodyParams.layout);
 	}
 }

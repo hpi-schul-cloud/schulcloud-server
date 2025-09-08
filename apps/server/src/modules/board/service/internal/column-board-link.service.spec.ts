@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
-import { setupEntities } from '@shared/testing';
 import { ColumnBoard, LinkElement } from '../../domain';
 import { BoardNodeRepo } from '../../repo';
 import {
@@ -39,8 +38,6 @@ describe(ColumnBoardLinkService.name, () => {
 		service = module.get(ColumnBoardLinkService);
 		boardNodeService = module.get(BoardNodeService);
 		boardNodeRepo = module.get(BoardNodeRepo);
-
-		await setupEntities();
 	});
 
 	afterEach(() => {

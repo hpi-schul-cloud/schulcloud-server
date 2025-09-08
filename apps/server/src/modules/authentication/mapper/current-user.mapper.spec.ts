@@ -1,17 +1,18 @@
-import { ValidationError } from '@shared/common';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { roleFactory, schoolEntityFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { ICurrentUser, OauthCurrentUser } from '../interface';
-import { CreateJwtPayload } from '../interface/jwt-payload';
-import { currentUserFactory, jwtPayloadFactory } from '../testing';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userDoFactory, userFactory } from '@modules/user/testing';
+import { ValidationError } from '@shared/common/error';
+import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
+import { ObjectId } from 'bson';
+import { OauthCurrentUser } from '../interface';
 import { CurrentUserMapper } from './current-user.mapper';
 
 describe('CurrentUserMapper', () => {
-	const accountId = 'mockAccountId';
-
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	describe('userToICurrentUser', () => {
@@ -25,39 +26,51 @@ describe('CurrentUserMapper', () => {
 					const user = userFactory.buildWithId({
 						roles: [teacherRole],
 					});
+					const accountId = new ObjectId().toHexString();
 
 					return {
 						teacherRole,
 						user,
+						accountId,
 					};
 				};
 
 				it('should map with roles', () => {
-					const { teacherRole, user } = setup();
+					const { accountId, teacherRole, user } = setup();
 
-					const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user, false);
+					const currentUser = CurrentUserMapper.userToICurrentUser(accountId, user, false);
 
 					expect(currentUser).toMatchObject({
 						accountId,
 						systemId: undefined,
 						roles: [teacherRole.id],
-						schoolId: null,
+						schoolId: user.school.id,
 						isExternalUser: false,
 					});
 				});
 			});
 
 			describe('when user has no roles', () => {
-				it('should map without roles', () => {
+				const setup = () => {
 					const user = userFactory.buildWithId();
+					const accountId = new ObjectId().toHexString();
 
-					const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user, true);
+					return {
+						accountId,
+						user,
+					};
+				};
+
+				it('should map without roles', () => {
+					const { accountId, user } = setup();
+
+					const currentUser = CurrentUserMapper.userToICurrentUser(accountId, user, true);
 
 					expect(currentUser).toMatchObject({
 						accountId,
 						systemId: undefined,
 						roles: [],
-						schoolId: null,
+						schoolId: user.school.id,
 						isExternalUser: true,
 					});
 				});
@@ -69,17 +82,19 @@ describe('CurrentUserMapper', () => {
 						school: schoolEntityFactory.buildWithId(),
 					});
 					const systemId = 'mockSystemId';
+					const accountId = new ObjectId().toHexString();
 
 					return {
 						user,
 						systemId,
+						accountId,
 					};
 				};
 
 				it('should map system and school', () => {
-					const { user, systemId } = setup();
+					const { accountId, user, systemId } = setup();
 
-					const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user, false, systemId);
+					const currentUser = CurrentUserMapper.userToICurrentUser(accountId, user, false, systemId);
 
 					expect(currentUser).toMatchObject({
 						accountId,
@@ -94,10 +109,19 @@ describe('CurrentUserMapper', () => {
 	});
 
 	describe('OauthCurrentUser', () => {
-		const userIdMock = 'mockUserId';
 		describe('when userDO has no ID', () => {
+			const setup = () => {
+				const user = userDoFactory.build({ createdAt: new Date(), updatedAt: new Date() });
+				const accountId = new ObjectId().toHexString();
+
+				return {
+					user,
+					accountId,
+				};
+			};
+
 			it('should throw error', () => {
-				const user: UserDO = userDoFactory.build({ createdAt: new Date(), updatedAt: new Date() });
+				const { accountId, user } = setup();
 
 				expect(() => CurrentUserMapper.mapToOauthCurrentUser(accountId, user, undefined, 'idToken')).toThrow(
 					ValidationError
@@ -107,29 +131,26 @@ describe('CurrentUserMapper', () => {
 
 		describe('when userDO is valid', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId({
-					id: userIdMock,
+				const user = userDoFactory.buildWithId({
+					id: 'mockUserId',
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				});
 				const idToken = 'idToken';
+				const accountId = new ObjectId().toHexString();
 
 				return {
 					user,
 					userId: user.id as string,
 					idToken,
+					accountId,
 				};
 			};
 
 			it('should return valid oauth current user instance', () => {
-				const { user, userId, idToken } = setup();
+				const { accountId, user, userId, idToken } = setup();
 
-				const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
-					accountId,
-					user,
-					undefined,
-					idToken
-				);
+				const currentUser = CurrentUserMapper.mapToOauthCurrentUser(accountId, user, undefined, idToken);
 
 				expect(currentUser).toMatchObject<OauthCurrentUser>({
 					accountId,
@@ -139,37 +160,35 @@ describe('CurrentUserMapper', () => {
 					userId,
 					externalIdToken: idToken,
 					isExternalUser: true,
+					support: false,
 				});
 			});
 		});
 
 		describe('when userDO is valid and a systemId is provided', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId({
-					id: userIdMock,
+				const user = userDoFactory.buildWithId({
+					id: 'mockUserId',
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				});
 				const systemId = 'mockSystemId';
 				const idToken = 'idToken';
+				const accountId = new ObjectId().toHexString();
 
 				return {
 					user,
 					userId: user.id as string,
 					idToken,
 					systemId,
+					accountId,
 				};
 			};
 
 			it('should return valid ICurrentUser instance with systemId', () => {
-				const { user, userId, systemId, idToken } = setup();
+				const { accountId, user, userId, systemId, idToken } = setup();
 
-				const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
-					accountId,
-					user,
-					systemId,
-					idToken
-				);
+				const currentUser = CurrentUserMapper.mapToOauthCurrentUser(accountId, user, systemId, idToken);
 
 				expect(currentUser).toMatchObject<OauthCurrentUser>({
 					accountId,
@@ -179,13 +198,14 @@ describe('CurrentUserMapper', () => {
 					userId,
 					externalIdToken: idToken,
 					isExternalUser: true,
+					support: false,
 				});
 			});
 		});
 
 		describe('when userDO is valid and contains roles', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user = userDoFactory
 					.withRoles([
 						{
 							id: 'mockRoleId',
@@ -193,18 +213,20 @@ describe('CurrentUserMapper', () => {
 						},
 					])
 					.buildWithId({
-						id: userIdMock,
+						id: 'mockUserId',
 						createdAt: new Date(),
 						updatedAt: new Date(),
 					});
+				const accountId = new ObjectId().toHexString();
 
 				return {
 					user,
+					accountId,
 				};
 			};
 
 			it('should return valid ICurrentUser instance without systemId', () => {
-				const { user } = setup();
+				const { accountId, user } = setup();
 
 				const currentUser = CurrentUserMapper.mapToOauthCurrentUser(accountId, user, undefined, 'idToken');
 
@@ -215,94 +237,6 @@ describe('CurrentUserMapper', () => {
 					schoolId: user.schoolId,
 					userId: user.id,
 				});
-			});
-		});
-	});
-
-	describe('jwtToICurrentUser', () => {
-		describe('when JWT is provided with all claims', () => {
-			const setup = () => {
-				const mockJwtPayload = jwtPayloadFactory.build();
-
-				return {
-					mockJwtPayload,
-				};
-			};
-
-			it('should return current user', () => {
-				const { mockJwtPayload } = setup();
-
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(mockJwtPayload);
-
-				expect(currentUser).toMatchObject({
-					accountId: mockJwtPayload.accountId,
-					systemId: mockJwtPayload.systemId,
-					roles: [mockJwtPayload.roles[0]],
-					schoolId: mockJwtPayload.schoolId,
-					userId: mockJwtPayload.userId,
-					impersonated: mockJwtPayload.support,
-				});
-			});
-
-			it('should return current user with default for isExternalUser', () => {
-				const { mockJwtPayload } = setup();
-
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(mockJwtPayload);
-
-				expect(currentUser).toMatchObject({
-					isExternalUser: mockJwtPayload.isExternalUser,
-				});
-			});
-		});
-
-		describe('when JWT is provided without optional claims', () => {
-			const setup = () => {
-				const mockJwtPayload = jwtPayloadFactory.build();
-
-				return {
-					mockJwtPayload,
-				};
-			};
-
-			it('should return current user', () => {
-				const { mockJwtPayload } = setup();
-
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(mockJwtPayload);
-
-				expect(currentUser).toMatchObject({
-					accountId: mockJwtPayload.accountId,
-					roles: [mockJwtPayload.roles[0]],
-					schoolId: mockJwtPayload.schoolId,
-					userId: mockJwtPayload.userId,
-					isExternalUser: true,
-				});
-			});
-
-			it('should return current user with default for isExternalUser', () => {
-				const { mockJwtPayload } = setup();
-
-				const currentUser = CurrentUserMapper.jwtToICurrentUser(mockJwtPayload);
-
-				expect(currentUser).toMatchObject({
-					isExternalUser: true,
-				});
-			});
-		});
-	});
-
-	describe('mapCurrentUserToCreateJwtPayload', () => {
-		it('should map current user to create jwt payload', () => {
-			const currentUser = currentUserFactory.build();
-
-			const createJwtPayload: CreateJwtPayload = CurrentUserMapper.mapCurrentUserToCreateJwtPayload(currentUser);
-
-			expect(createJwtPayload).toMatchObject<CreateJwtPayload>({
-				accountId: currentUser.accountId,
-				systemId: currentUser.systemId,
-				roles: currentUser.roles,
-				schoolId: currentUser.schoolId,
-				userId: currentUser.userId,
-				isExternalUser: false,
 			});
 		});
 	});

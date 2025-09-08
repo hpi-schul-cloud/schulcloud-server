@@ -3,7 +3,10 @@ import {
 	createCommonCartridgeMetadataElementProps,
 	createCommonCartridgeOrganizationProps,
 } from '../../testing/common-cartridge-element-props.factory';
-import { createCommonCartridgeWebLinkResourceProps } from '../../testing/common-cartridge-resource-props.factory';
+import {
+	createCommonCartridgeFileProps,
+	createCommonCartridgeWebLinkResourceProps,
+} from '../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeElementFactory } from '../elements/common-cartridge-element-factory';
 import { MissingMetadataLoggableException } from '../errors';
@@ -73,19 +76,21 @@ describe('CommonCartridgeFileBuilder', () => {
 			const setup = () => {
 				const metadataProps = createCommonCartridgeMetadataElementProps();
 				const organizationProps = createCommonCartridgeOrganizationProps();
-				const resourceProps = createCommonCartridgeWebLinkResourceProps();
+				const webLinkProps = createCommonCartridgeWebLinkResourceProps();
+				const fileProps = createCommonCartridgeFileProps();
 
-				return { metadataProps, organizationProps, resourceProps };
+				return { metadataProps, organizationProps, webLinkProps, fileProps };
 			};
 
 			it('should build the common cartridge file', () => {
-				const { metadataProps, organizationProps, resourceProps } = setup();
+				const { metadataProps, organizationProps, webLinkProps, fileProps } = setup();
 
 				sut.addMetadata(metadataProps);
 
 				const org = sut.createOrganization(organizationProps);
 
-				org.addResource(resourceProps);
+				org.addResource(webLinkProps);
+				org.addResource(fileProps);
 
 				const result = sut.build();
 

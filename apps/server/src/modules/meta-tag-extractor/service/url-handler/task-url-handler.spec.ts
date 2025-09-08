@@ -1,8 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { LessonEntity, Material } from '@modules/lesson/repo';
 import { TaskService } from '@modules/task';
+import { Submission, Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
+import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Task } from '@shared/domain/entity';
-import { setupEntities } from '@shared/testing';
+import { setupEntities } from '@testing/database';
+import { ObjectId } from 'bson';
+import { MetaDataEntityType } from '../../types';
 import { TaskUrlHandler } from './task-url-handler';
 
 describe(TaskUrlHandler.name, () => {
@@ -23,14 +29,14 @@ describe(TaskUrlHandler.name, () => {
 
 		taskService = module.get(TaskService);
 		taskUrlHandler = module.get(TaskUrlHandler);
-		await setupEntities();
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 	});
 
 	describe('getMetaData', () => {
 		describe('when url fits', () => {
 			it('should call taskService with the correct id', async () => {
-				const id = 'af322312feae';
-				const url = `https://localhost/homework/${id}`;
+				const id = new ObjectId().toHexString();
+				const url = new URL(`https://localhost/homework/${id}`);
 
 				await taskUrlHandler.getMetaData(url);
 
@@ -38,20 +44,20 @@ describe(TaskUrlHandler.name, () => {
 			});
 
 			it('should take the title from the tasks name', async () => {
-				const id = 'af322312feae';
-				const url = `https://localhost/homework/${id}`;
 				const taskName = 'My Task';
-				taskService.findById.mockResolvedValue({ name: taskName } as Task);
+				const task = taskFactory.buildWithId({ name: taskName });
+				const url = new URL(`https://localhost/homework/${task.id}`);
+				taskService.findById.mockResolvedValue(task);
 
 				const result = await taskUrlHandler.getMetaData(url);
 
-				expect(result).toEqual(expect.objectContaining({ title: taskName, type: 'task' }));
+				expect(result).toEqual(expect.objectContaining({ title: taskName, type: MetaDataEntityType.TASK }));
 			});
 		});
 
 		describe('when url does not fit', () => {
 			it('should return undefined', async () => {
-				const url = `https://localhost/invalid/ef2345abe4e3b`;
+				const url = new URL(`https://localhost/invalid/ef2345abe4e3b`);
 
 				const result = await taskUrlHandler.getMetaData(url);
 

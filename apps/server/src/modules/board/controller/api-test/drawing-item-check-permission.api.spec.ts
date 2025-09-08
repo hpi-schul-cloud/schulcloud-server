@@ -1,15 +1,18 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
+import { BoardExternalReferenceType } from '../../domain';
 import {
 	cardEntityFactory,
-	columnEntityFactory,
 	columnBoardEntityFactory,
+	columnEntityFactory,
 	drawingElementEntityFactory,
 } from '../../testing';
-import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/elements';
 describe('drawing permission check (api)', () => {
@@ -37,7 +40,7 @@ describe('drawing permission check (api)', () => {
 			await cleanupCollections(em);
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -74,7 +77,7 @@ describe('drawing permission check (api)', () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-			const course = courseFactory.build({ students: [teacherUser] });
+			const course = courseEntityFactory.build({ students: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course, studentAccount, studentUser]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({

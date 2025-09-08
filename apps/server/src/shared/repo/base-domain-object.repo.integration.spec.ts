@@ -1,5 +1,5 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { Entity, EntityData, EntityName, Property } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
@@ -8,7 +8,7 @@ import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { LegacyLogger } from '@src/core/logger';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 
 describe('BaseDomainObjectRepo', () => {
 	interface TestEntityProperties {

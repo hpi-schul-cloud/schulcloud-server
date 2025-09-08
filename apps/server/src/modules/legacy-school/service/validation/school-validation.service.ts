@@ -1,6 +1,6 @@
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
+import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { LegacySchoolRepo } from '@shared/repo';
 import { SchoolNumberDuplicateLoggableException } from '../../loggable';
 
 @Injectable()

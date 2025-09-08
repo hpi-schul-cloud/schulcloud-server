@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	BadRequestException,
 	Body,
@@ -11,8 +11,8 @@ import {
 	Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { VideoConferenceScope } from '@shared/domain/interface';
 import { BBBBaseResponse } from '../bbb';
+import { VideoConferenceScope } from '../domain';
 import { defaultVideoConferenceOptions } from '../interface';
 import { VideoConferenceResponseDeprecatedMapper } from '../mapper/vc-deprecated-response.mapper';
 import { VideoConferenceDeprecatedUc } from '../uc';
@@ -27,7 +27,7 @@ import {
  * This controller is deprecated. Please use {@link VideoConferenceController} instead.
  */
 @ApiTags('VideoConference')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('videoconference')
 export class VideoConferenceDeprecatedController {
 	constructor(private readonly videoConferenceUc: VideoConferenceDeprecatedUc) {}

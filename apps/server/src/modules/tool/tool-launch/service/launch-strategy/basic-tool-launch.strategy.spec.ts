@@ -6,10 +6,11 @@ import { ExternalTool } from '../../../external-tool/domain';
 import { externalToolFactory } from '../../../external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
-import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
+import { LaunchRequestMethod, LaunchType, PropertyData, PropertyLocation } from '../../types';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoGroupExternalUuidStrategy,
 	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
@@ -19,7 +20,7 @@ import { ToolLaunchParams } from './tool-launch-params.interface';
 
 describe('BasicToolLaunchStrategy', () => {
 	let module: TestingModule;
-	let basicToolLaunchStrategy: BasicToolLaunchStrategy;
+	let strategy: BasicToolLaunchStrategy;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -45,10 +46,14 @@ describe('BasicToolLaunchStrategy', () => {
 					provide: AutoMediumIdStrategy,
 					useValue: createMock<AutoMediumIdStrategy>(),
 				},
+				{
+					provide: AutoGroupExternalUuidStrategy,
+					useValue: createMock<AutoGroupExternalUuidStrategy>(),
+				},
 			],
 		}).compile();
 
-		basicToolLaunchStrategy = module.get(BasicToolLaunchStrategy);
+		strategy = module.get(BasicToolLaunchStrategy);
 	});
 
 	afterAll(async () => {
@@ -78,7 +83,7 @@ describe('BasicToolLaunchStrategy', () => {
 			it('should return null', () => {
 				const { properties } = setup();
 
-				const payload: string | null = basicToolLaunchStrategy.buildToolLaunchRequestPayload('url', properties);
+				const payload: string | null = strategy.buildToolLaunchRequestPayload('url', properties);
 
 				expect(payload).toBeNull();
 			});
@@ -112,7 +117,7 @@ describe('BasicToolLaunchStrategy', () => {
 			it('should build the tool launch request payload correctly', () => {
 				const { properties } = setup();
 
-				const payload: string | null = basicToolLaunchStrategy.buildToolLaunchRequestPayload('url', properties);
+				const payload: string | null = strategy.buildToolLaunchRequestPayload('url', properties);
 
 				expect(payload).toEqual('{"param1":"value1","param2":"value2"}');
 			});
@@ -137,10 +142,7 @@ describe('BasicToolLaunchStrategy', () => {
 		it('should build the tool launch data from the basic tool config correctly', async () => {
 			const { data } = setup();
 
-			const result: PropertyData[] = await basicToolLaunchStrategy.buildToolLaunchDataFromConcreteConfig(
-				'userId',
-				data
-			);
+			const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
 
 			expect(result).toEqual([]);
 		});
@@ -169,7 +171,7 @@ describe('BasicToolLaunchStrategy', () => {
 			it('should return GET', () => {
 				const { properties } = setup();
 
-				const result: LaunchRequestMethod = basicToolLaunchStrategy.determineLaunchRequestMethod(properties);
+				const result: LaunchRequestMethod = strategy.determineLaunchRequestMethod(properties);
 
 				expect(result).toEqual(LaunchRequestMethod.GET);
 			});
@@ -203,9 +205,19 @@ describe('BasicToolLaunchStrategy', () => {
 			it('should return POST', () => {
 				const { properties } = setup();
 
-				const result: LaunchRequestMethod = basicToolLaunchStrategy.determineLaunchRequestMethod(properties);
+				const result: LaunchRequestMethod = strategy.determineLaunchRequestMethod(properties);
 
 				expect(result).toEqual(LaunchRequestMethod.POST);
+			});
+		});
+	});
+
+	describe('determineLaunchType', () => {
+		describe('whenever it is called', () => {
+			it('should return basic', () => {
+				const result = strategy.determineLaunchType();
+
+				expect(result).toEqual(LaunchType.BASIC);
 			});
 		});
 	});

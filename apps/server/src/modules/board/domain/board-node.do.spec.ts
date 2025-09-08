@@ -1,5 +1,7 @@
-import { cardFactory, columnBoardFactory, columnFactory } from '../testing';
-import { ROOT_PATH, joinPath } from './path-utils';
+import { cardFactory, columnBoardFactory, columnFactory, linkElementFactory, richTextElementFactory } from '../testing';
+import { ExternalToolElement } from './external-tool-element.do';
+import { joinPath, ROOT_PATH } from './path-utils';
+import { RichTextElement } from './rich-text-element.do';
 
 describe('BoardNode', () => {
 	describe('a new instance', () => {
@@ -112,7 +114,7 @@ describe('BoardNode', () => {
 				return { parent, existingChild: child };
 			};
 
-			it('should thow an error', () => {
+			it('should throw an error', () => {
 				const { parent, existingChild } = setupWithChild();
 
 				expect(() => parent.addChild(existingChild)).toThrowError();
@@ -142,7 +144,7 @@ describe('BoardNode', () => {
 			});
 
 			describe('when position < 0', () => {
-				it('should thow an error', () => {
+				it('should throw an error', () => {
 					const { parent, child } = setup();
 
 					expect(() => parent.addChild(child, -1)).toThrowError();
@@ -150,10 +152,21 @@ describe('BoardNode', () => {
 			});
 
 			describe('when position > length', () => {
-				it('should thow an error', () => {
+				it('should put the child in the empty list', () => {
 					const { parent, child } = setup();
 
-					expect(() => parent.addChild(child, 1)).toThrowError();
+					parent.addChild(child, 3);
+
+					expect(child.position).toBe(0);
+				});
+
+				it('should append the child at the end of the list', () => {
+					const { parent, child } = setup();
+					parent.addChild(cardFactory.build(), 0);
+					parent.addChild(cardFactory.build(), 1);
+					parent.addChild(child, 10);
+
+					expect(child.position).toBe(2);
 				});
 			});
 		});
@@ -328,6 +341,49 @@ describe('BoardNode', () => {
 				const { parent, child } = setup();
 
 				expect(child.rootId).toBe(parent.id);
+			});
+		});
+	});
+
+	describe('getChildrenOfType', () => {
+		const setup = () => {
+			const richTextElementsOnCard1 = richTextElementFactory.buildList(1);
+			const richTextElementsOnCard2 = richTextElementFactory.buildList(2);
+			const parent = columnFactory.build({
+				children: [
+					cardFactory.build({
+						children: [...richTextElementsOnCard1, linkElementFactory.build()],
+					}),
+					cardFactory.build({
+						children: richTextElementsOnCard2,
+					}),
+				],
+			});
+
+			return {
+				parent,
+				richTextElementsOnCard1,
+				richTextElementsOnCard2,
+			};
+		};
+
+		describe('when the parent has children of the given type', () => {
+			it('should return the children', () => {
+				const { parent, richTextElementsOnCard1, richTextElementsOnCard2 } = setup();
+
+				const result = parent.getChildrenOfType(RichTextElement);
+
+				expect(result).toEqual([...richTextElementsOnCard1, ...richTextElementsOnCard2]);
+			});
+		});
+
+		describe('when there is no child with the given type', () => {
+			it('should return an empty array', () => {
+				const { parent } = setup();
+
+				const result = parent.getChildrenOfType(ExternalToolElement);
+
+				expect(result).toEqual([]);
 			});
 		});
 	});

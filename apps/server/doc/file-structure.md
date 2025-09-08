@@ -129,7 +129,7 @@ This possibility should not be used for new features in Feathers, but it can hel
 
 ```TypeScript
     // main.ts
-    async function bootstrap() {
+    async function bootstrap(): Promise<void> {
         // (...)
         feathersExpress.services['nest-rocket-chat'] = nestApp.get(RocketChatService);
         // (...)

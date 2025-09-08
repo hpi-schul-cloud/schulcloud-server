@@ -24,7 +24,7 @@ export class ExternalToolElementResponseMapper implements BaseResponseMapper {
 		return result;
 	}
 
-	canMap(element: ExternalToolElement): boolean {
+	canMap(element: unknown): boolean {
 		return element instanceof ExternalToolElement;
 	}
 }

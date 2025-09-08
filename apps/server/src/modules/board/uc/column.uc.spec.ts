@@ -1,8 +1,10 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Action } from '@modules/authorization';
+import { AuthorizationContextBuilder } from '@modules/authorization';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities, userFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { setupEntities } from '@testing/database';
 import { BoardNodeFactory, Card, Column, ContentElementType } from '../domain';
 import { BoardNodeService } from '../service';
 import { BoardNodePermissionService } from '../service/board-node-permission.service';
@@ -44,7 +46,7 @@ describe(ColumnUc.name, () => {
 		boardNodePermissionService = module.get(BoardNodePermissionService);
 		boardNodeService = module.get(BoardNodeService);
 		boardNodeFactory = module.get(BoardNodeFactory);
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {
@@ -86,7 +88,11 @@ describe(ColumnUc.name, () => {
 
 				await uc.deleteColumn(user.id, column.id);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, column, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					column,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to delete the column', async () => {
@@ -116,7 +122,11 @@ describe(ColumnUc.name, () => {
 
 				await uc.updateColumnTitle(user.id, column.id, 'new title');
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, column, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					column,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to update the column title', async () => {
@@ -147,7 +157,11 @@ describe(ColumnUc.name, () => {
 
 				await uc.createCard(user.id, column.id);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, column, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					column,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the factory to build card', async () => {
@@ -205,7 +219,11 @@ describe(ColumnUc.name, () => {
 
 				await uc.moveCard(user.id, card.id, column.id, 5);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, card, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					card,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to check the user permission for the target column', async () => {
@@ -214,7 +232,11 @@ describe(ColumnUc.name, () => {
 
 				await uc.moveCard(user.id, card.id, column.id, 5);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, column, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					column,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to move the card', async () => {

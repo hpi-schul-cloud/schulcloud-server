@@ -1,7 +1,6 @@
 const fs = require('fs');
 const url = require('url');
-const rp = require('request-promise-native');
-const { iff, isProvider, disallow } = require('feathers-hooks-common');
+const axios = require('axios');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { filesRepo } = require('../../components/fileStorage/repo');
 
@@ -17,8 +16,6 @@ const {
 	canDelete,
 	returnFileType,
 	generateFileNameSuffix,
-	copyFile,
-	createCorrectStrategy,
 	createDefaultPermissions,
 	createPermission,
 } = require('./utils');
@@ -31,53 +28,50 @@ const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
-const {
-	FILE_PREVIEW_SERVICE_URI,
-	FILE_PREVIEW_CALLBACK_URI,
-	ENABLE_THUMBNAIL_GENERATION,
-	FILE_SECURITY_CHECK_MAX_FILE_SIZE,
-	SECURITY_CHECK_SERVICE_PATH,
-} = require('../../../config/globals');
+const { FILE_SECURITY_CHECK_MAX_FILE_SIZE, SECURITY_CHECK_SERVICE_PATH } = require('../../../config/globals');
+const AWSS3Strategy = require('./strategies/awsS3');
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
 	return obj;
 };
 
-const prepareThumbnailGeneration = (file, strategy, userId, { name: dataName }, { storageFileName, name: propName }) =>
-	ENABLE_THUMBNAIL_GENERATION
-		? Promise.all([
-				strategy.getSignedUrl({
-					userId,
-					flatFileName: storageFileName,
-					localFileName: storageFileName,
-					download: true,
-					Expires: 3600 * 24,
-				}),
-				strategy.generateSignedUrl({
-					userId,
-					flatFileName: storageFileName.replace(/(\..+)$/, '-thumbnail.png'),
-					fileType: returnFileType(dataName || propName), // data.type
-				}),
-		  ]).then(([downloadUrl, signedS3Url]) =>
-				rp
-					.post({
-						url: FILE_PREVIEW_SERVICE_URI,
-						body: {
-							downloadUrl,
-							signedS3Url,
-							callbackUrl: url.resolve(FILE_PREVIEW_CALLBACK_URI, file.thumbnailRequestToken),
-							options: {
-								width: 120,
-							},
-						},
-						json: true,
-					})
-					.catch((err) => {
-						logger.warning(new Error('Can not create tumbnail', err)); // todo err message is lost and throw error
-					})
-		  )
-		: Promise.resolve();
+const getStorageProviderIdAndBucket = async (userId, fileObject, strategy) => {
+	let storageProviderId = fileObject.storageProviderId;
+	let bucket = fileObject.bucket;
+
+	if (!storageProviderId) {
+		// deprecated: author check via file.permissions[0]?.refId is deprecated and will be removed in the next release
+		const creatorId =
+			fileObject.creator ||
+			(fileObject.permissions[0]?.refPermModel !== 'user' ? userId : fileObject.permissions[0]?.refId);
+
+		const creator = await userModel.findById(creatorId).exec();
+		if (!creator || !creator.schoolId) {
+			throw new NotFound('User not found');
+		}
+
+		const { schoolId } = creator;
+
+		const school = await schoolModel
+			.findOne({ _id: schoolId }, null, { readPreference: 'primary' }) // primary for afterhook in school.create
+			.populate('storageProvider')
+			.select(['storageProvider'])
+			.lean()
+			.exec();
+		if (school === null) {
+			throw new NotFound('School not found.');
+		}
+
+		storageProviderId = school.storageProvider;
+		bucket = strategy.getBucket(schoolId);
+	}
+
+	return {
+		storageProviderId,
+		bucket,
+	};
+};
 
 /**
  *
@@ -86,7 +80,7 @@ const prepareThumbnailGeneration = (file, strategy, userId, { name: dataName }, 
  * @param {FileStorageStrategy} strategy the file storage strategy used
  * @returns {Promise} Promise that rejects with errors or resolves with no data otherwise
  */
-const prepareSecurityCheck = (file, userId, strategy) => {
+const prepareSecurityCheck = async (file, userId, strategy) => {
 	if (Configuration.get('ENABLE_FILE_SECURITY_CHECK') === true) {
 		if (file.size > FILE_SECURITY_CHECK_MAX_FILE_SIZE) {
 			return FileModel.updateOne(
@@ -99,10 +93,12 @@ const prepareSecurityCheck = (file, userId, strategy) => {
 				}
 			).exec();
 		}
+		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, file);
 		// create a temporary signed URL and provide it to the virus scan service
 		return strategy
 			.getSignedUrl({
-				userId,
+				storageProviderId,
+				bucket,
 				flatFileName: file.storageFileName,
 				localFileName: file.storageFileName,
 				download: true,
@@ -110,20 +106,20 @@ const prepareSecurityCheck = (file, userId, strategy) => {
 			.then((signedUrl) => {
 				const params = {
 					url: Configuration.get('FILE_SECURITY_CHECK_SERVICE_URI'),
+					method: 'POST',
 					auth: {
-						user: Configuration.get('FILE_SECURITY_SERVICE_USERNAME'),
-						pass: Configuration.get('FILE_SECURITY_SERVICE_PASSWORD'),
+						username: Configuration.get('FILE_SECURITY_SERVICE_USERNAME'),
+						password: Configuration.get('FILE_SECURITY_SERVICE_PASSWORD'),
 					},
-					body: {
+					data: {
 						download_uri: signedUrl,
 						callback_uri: url.resolve(
 							Configuration.get('API_HOST'),
 							`${SECURITY_CHECK_SERVICE_PATH}${file.securityCheck.requestToken}`
 						),
 					},
-					json: true,
 				};
-				const send = rp.post(params);
+				const send = axios(params);
 				return send;
 			});
 	}
@@ -147,6 +143,11 @@ const getRefOwnerModel = async (owner) => {
 
 const fileStorageService = {
 	docs: swaggerDocs.fileStorageService,
+	Stategy: AWSS3Strategy,
+
+	getStrategy() {
+		return new this.Stategy();
+	},
 	/**
 	 * @param data, file data
 	 * @param params,
@@ -154,7 +155,7 @@ const fileStorageService = {
 	 */
 	async create(data, params) {
 		const {
-			payload: { userId: creatorId, fileStorageType },
+			payload: { userId: creatorId },
 		} = params;
 		const { owner, parent, studentCanEdit, permissions: sendPermissions = [], deletedAt } = data;
 
@@ -173,10 +174,9 @@ const fileStorageService = {
 			throw new GeneralError('Can not create default Permissions', err);
 		});
 
-		const strategy = createCorrectStrategy(fileStorageType);
-
 		const fileOwner = owner || creatorId;
 
+		const strategy = this.getStrategy();
 		const creator = await userModel.findById(creatorId).lean().exec();
 		const { schoolId } = creator;
 		const bucket = strategy.getBucket(schoolId);
@@ -212,7 +212,7 @@ const fileStorageService = {
 		if (!file) file = await FileModel.create(props);
 
 		prepareSecurityCheck(file, creatorId, strategy).catch(asyncErrorHandler);
-		prepareThumbnailGeneration(file, strategy, creatorId, data, props).catch(asyncErrorHandler);
+
 		return file;
 	},
 
@@ -329,6 +329,11 @@ const fileStorageService = {
 
 const signedUrlService = {
 	docs: swaggerDocs.signedUrlService,
+	Stategy: AWSS3Strategy,
+
+	getStrategy() {
+		return new this.Stategy();
+	},
 
 	fileRegexCheck(fileName) {
 		return [
@@ -371,7 +376,6 @@ const signedUrlService = {
 		const {
 			payload: { userId },
 		} = params;
-		const strategy = createCorrectStrategy(params.payload.fileStorageType);
 		const flatFileName = _flatFileName || generateFileNameSuffix(filename);
 
 		const parentPromise = parent ? FileModel.findOne({ parent, name: filename }).exec() : Promise.resolve({});
@@ -379,7 +383,7 @@ const signedUrlService = {
 		const header = {
 			name: encodeURIComponent(filename),
 			'flat-name': encodeURIComponent(flatFileName),
-			thumbnail: 'https://schulcloud.org/images/login-right.png',
+			thumbnail: '',
 		};
 
 		return parentPromise
@@ -389,7 +393,7 @@ const signedUrlService = {
 					throw new BadRequest(`Die Datei '${filename}' ist nicht erlaubt!`);
 				}
 
-				return strategy.generateSignedUrl({
+				return this.getStrategy().generateSignedUrl({
 					userId,
 					flatFileName,
 					fileType,
@@ -402,7 +406,6 @@ const signedUrlService = {
 					'Content-Type': fileType,
 					'x-amz-meta-name': header.name,
 					'x-amz-meta-flat-name': header['flat-name'],
-					'x-amz-meta-thumbnail': header.thumbnail,
 				},
 			}))
 			.catch((err) => {
@@ -415,17 +418,13 @@ const signedUrlService = {
 
 	async find({ query, payload: { userId, fileStorageType } }) {
 		const { file, download } = query;
-		const strategy = createCorrectStrategy(fileStorageType);
 		const fileObject = await FileModel.findOne({ _id: file }).lean().exec();
 
 		if (!fileObject) {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		// deprecated: author check via file.permissions[0]?.refId is deprecated and will be removed in the next release
-		const creatorId =
-			fileObject.creator ||
-			(fileObject.permissions[0]?.refPermModel !== 'user' ? userId : fileObject.permissions[0]?.refId);
+		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, fileObject);
 
 		if (download && fileObject.securityCheck && fileObject.securityCheck.status === SecurityCheckStatusTypes.BLOCKED) {
 			throw new Forbidden('File access blocked by security check.');
@@ -433,12 +432,12 @@ const signedUrlService = {
 
 		return canRead(userId, file)
 			.then(() =>
-				strategy.getSignedUrl({
-					userId: creatorId,
+				this.getStrategy().getSignedUrl({
+					storageProviderId,
+					bucket,
 					flatFileName: fileObject.storageFileName,
 					localFileName: query.name || fileObject.name,
-					download,
-					bucket: fileObject.bucket,
+					download: true,
 				})
 			)
 			.then((res) => ({
@@ -450,23 +449,19 @@ const signedUrlService = {
 	async patch(id, data, params) {
 		const { payload } = params;
 		const { userId } = payload;
-		const strategy = createCorrectStrategy(payload.fileStorageType);
 		const fileObject = await FileModel.findOne({ _id: id }).lean().exec();
 
 		if (!fileObject) {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		// deprecated: author check via file.permissions[0]?.refId is deprecated and will be removed in the next release
-		const creatorId =
-			fileObject.creator || fileObject.permissions[0]?.refPermModel !== 'user'
-				? userId
-				: fileObject.permissions[0]?.refId;
+		const { storageProviderId, bucket } = await getStorageProviderIdAndBucket(userId, fileObject);
 
 		return canRead(userId, id)
 			.then(() =>
-				strategy.getSignedUrl({
-					userId: creatorId,
+				this.getStrategy().getSignedUrl({
+					storageProviderId,
+					bucket,
 					flatFileName: fileObject.storageFileName,
 					action: 'putObject',
 				})
@@ -696,56 +691,6 @@ const renameService = {
 	},
 };
 
-const fileTotalSizeService = {
-	docs: swaggerDocs.fileTotalSizeService,
-
-	/**
-	 * @returns total file size and amount of files
-	 * FIX-ME:
-	 * - Check if user in payload is administrator
-	 */
-	find() {
-		return Promise.resolve({
-			total: 0,
-			totalSize: 0,
-		});
-	},
-};
-
-const bucketService = {
-	docs: swaggerDocs.bucketService,
-
-	/**
-	 * @param data, contains schoolId
-	 * FIX-ME:
-	 * - Check if user in payload is administrator
-	 * @returns {Promise}
-	 */
-	create(data, params) {
-		const { schoolId } = data;
-		const {
-			payload: { fileStorageType },
-		} = params;
-
-		return createCorrectStrategy(fileStorageType).create(schoolId);
-	},
-};
-
-const copyService = {
-	docs: swaggerDocs.copyService,
-
-	defaultPermissionHandler(userId, file, parent) {
-		return Promise.all([canRead(userId, file), canWrite(userId, parent)]);
-	},
-	/**
-	 * @param data, contains file-Id and new parent
-	 * @returns {Promise}
-	 */
-	create(data, params) {
-		return copyFile(data, params, this.defaultPermissionHandler);
-	},
-};
-
 const newFileService = {
 	docs: swaggerDocs.newFileService,
 
@@ -774,10 +719,10 @@ const newFileService = {
 				if (Configuration.get('REQUEST_OPTION__KEEP_ALIVE')) {
 					headers.Connection = 'Keep-Alive';
 				}
-				return rp({
+				return axios({
 					method: 'PUT',
-					uri: signedUrl.url,
-					body: buffer,
+					url: signedUrl.url,
+					data: buffer,
 					headers,
 				});
 			})
@@ -787,7 +732,7 @@ const newFileService = {
 						size: buffer.length,
 						storageFileName: flatFileName,
 						type: returnFileType(name),
-						thumbnail: 'https://schulcloud.org/images/login-right.png',
+						thumbnail: '',
 						name,
 						owner,
 						parent,
@@ -1058,9 +1003,6 @@ module.exports = function proxyService() {
 	app.use('/fileStorage/directories/rename', renameService);
 	app.use('/fileStorage/rename', renameService);
 	app.use('/fileStorage/signedUrl', signedUrlService);
-	app.use('/fileStorage/bucket', bucketService);
-	app.use('/fileStorage/total', fileTotalSizeService);
-	app.use('/fileStorage/copy', copyService);
 	app.use('/fileStorage/permission', filePermissionService);
 	app.use('/fileStorage/files/new', newFileService);
 	app.use('/fileStorage/shared', shareTokenService);
@@ -1069,12 +1011,9 @@ module.exports = function proxyService() {
 	[
 		'/fileStorage',
 		'/fileStorage/signedUrl',
-		'/fileStorage/bucket',
 		'/fileStorage/directories',
 		'/fileStorage/directories/rename',
 		'/fileStorage/rename',
-		'/fileStorage/total',
-		'/fileStorage/copy',
 		'/fileStorage/files/new',
 		'/fileStorage/shared',
 		'/fileStorage/permission',

@@ -1,14 +1,19 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
+import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import {
 	AnyContentElementResponse,
 	CollaborativeTextEditorElementResponse,
+	DeletedElementResponse,
 	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
+	FileFolderElementResponse,
+	H5pElementResponse,
 	LinkElementResponse,
 	RichTextElementResponse,
 	SubmissionContainerElementResponse,
+	VideoConferenceElementResponse,
 } from '../element';
 import { TimestampsResponse } from '../timestamps.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
@@ -20,7 +25,11 @@ import { VisibilitySettingsResponse } from './visibility-settings.response';
 	RichTextElementResponse,
 	DrawingElementResponse,
 	SubmissionContainerElementResponse,
-	CollaborativeTextEditorElementResponse
+	CollaborativeTextEditorElementResponse,
+	DeletedElementResponse,
+	VideoConferenceElementResponse,
+	FileFolderElementResponse,
+	H5pElementResponse
 )
 export class CardResponse {
 	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {
@@ -33,7 +42,7 @@ export class CardResponse {
 	}
 
 	@ApiProperty({
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id: string;
 
@@ -55,6 +64,10 @@ export class CardResponse {
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(CollaborativeTextEditorElementResponse) },
+				{ $ref: getSchemaPath(DeletedElementResponse) },
+				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
+				{ $ref: getSchemaPath(FileFolderElementResponse) },
+				{ $ref: getSchemaPath(H5pElementResponse) },
 			],
 		},
 	})

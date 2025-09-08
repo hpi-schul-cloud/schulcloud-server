@@ -1,14 +1,22 @@
-import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth';
-import { OAuthGrantType } from '@modules/oauth/interface/oauth-grant-type.enum';
-import { ClientCredentialsGrantTokenRequest } from '@modules/oauth/service/dto';
+import {
+	OAuthTokenDto,
+	OauthAdapterService,
+	OAuthGrantType,
+	ClientCredentialsGrantTokenRequest,
+} from '@modules/oauth-adapter';
 import { HttpService } from '@nestjs/axios';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { AxiosResponse } from 'axios';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
 import { SchulconnexConfigurationMissingLoggable } from './loggable';
 import { SchulconnexPersonenInfoParams } from './request';
-import { SchulconnexPoliciesInfoResponse, SchulconnexResponse } from './response';
+import {
+	SchulconnexPoliciesInfoErrorResponse,
+	SchulconnexPoliciesInfoLicenseResponse,
+	SchulconnexPoliciesInfoResponse,
+	SchulconnexResponse,
+} from './response';
 import { SchulconnexApiInterface } from './schulconnex-api.interface';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 
@@ -25,10 +33,14 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		this.SCHULCONNEX_API_BASE_URL = options.apiUrl || '';
 	}
 
-	public async getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SchulconnexResponse> {
+	public getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SchulconnexResponse> {
 		const url: URL = new URL(options?.overrideUrl ?? `${this.SCHULCONNEX_API_BASE_URL}/person-info`);
 
-		const response: Promise<SchulconnexResponse> = this.getRequest<SchulconnexResponse>(url, accessToken);
+		const response: Promise<SchulconnexResponse> = this.getRequest<SchulconnexResponse>(
+			url,
+			accessToken,
+			this.options.personInfoTimeoutInMs
+		);
 
 		return response;
 	}
@@ -51,15 +63,19 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 	public async getPoliciesInfo(
 		accessToken: string,
 		options?: { overrideUrl: string }
-	): Promise<SchulconnexPoliciesInfoResponse[]> {
+	): Promise<SchulconnexPoliciesInfoResponse> {
 		const url: URL = new URL(options?.overrideUrl ?? `${this.SCHULCONNEX_API_BASE_URL}/policies-info`);
 
-		const response: Promise<SchulconnexPoliciesInfoResponse[]> = this.getRequest<SchulconnexPoliciesInfoResponse[]>(
-			url,
-			accessToken
-		);
+		const response: (SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[] =
+			await this.getRequest<(SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[]>(
+				url,
+				accessToken,
+				this.options.policiesInfoTimeoutInMs
+			);
 
-		return response;
+		const responseObject: SchulconnexPoliciesInfoResponse = { data: response };
+
+		return responseObject;
 	}
 
 	private checkOptions(): boolean {

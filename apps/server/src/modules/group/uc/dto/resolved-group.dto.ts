@@ -1,5 +1,5 @@
 import { ExternalSource } from '@shared/domain/domainobject';
-import { GroupTypes } from '../../domain';
+import { GroupPeriod, GroupTypes } from '../../domain';
 import { ResolvedGroupUser } from './resolved-group-user';
 
 export class ResolvedGroupDto {
@@ -15,6 +15,8 @@ export class ResolvedGroupDto {
 
 	organizationId?: string;
 
+	validPeriod?: GroupPeriod;
+
 	constructor(group: ResolvedGroupDto) {
 		this.id = group.id;
 		this.name = group.name;
@@ -22,5 +24,6 @@ export class ResolvedGroupDto {
 		this.users = group.users;
 		this.externalSource = group.externalSource;
 		this.organizationId = group.organizationId;
+		this.validPeriod = group.validPeriod;
 	}
 }

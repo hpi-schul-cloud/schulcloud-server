@@ -5,11 +5,10 @@ import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolLogoService, ExternalToolService } from '@modules/tool/external-tool/service';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { MediaAvailableLine, MediaAvailableLineElement, MediaBoard, MediaExternalToolElement } from '../../domain';
-import { MediaBoardService } from './media-board.service';
 
 @Injectable()
 export class MediaAvailableLineService {
@@ -17,8 +16,7 @@ export class MediaAvailableLineService {
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly mediaBoardService: MediaBoardService
+		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
 	public async getUnusedAvailableSchoolExternalTools(user: User, board: MediaBoard): Promise<SchoolExternalTool[]> {
@@ -89,8 +87,8 @@ export class MediaAvailableLineService {
 	}
 
 	private async getContextExternalToolsByBoard(board: MediaBoard): Promise<ContextExternalTool[]> {
-		const contextExternalTools: Promise<ContextExternalTool | null>[] = this.mediaBoardService
-			.findMediaElements(board)
+		const contextExternalTools: Promise<ContextExternalTool | null>[] = board
+			.getChildrenOfType(MediaExternalToolElement)
 			.map((element: MediaExternalToolElement) =>
 				this.contextExternalToolService.findById(element.contextExternalToolId)
 			);
@@ -145,6 +143,7 @@ export class MediaAvailableLineService {
 		const element: MediaAvailableLineElement = new MediaAvailableLineElement({
 			schoolExternalToolId: schoolExternalTool.id ?? '',
 			name: externalTool.name,
+			domain: new URL(externalTool.config.baseUrl).hostname,
 			description: externalTool.description,
 			logoUrl,
 			thumbnailUrl: externalTool.thumbnail?.getPreviewUrl(),

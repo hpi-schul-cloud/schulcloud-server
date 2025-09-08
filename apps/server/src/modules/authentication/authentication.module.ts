@@ -1,85 +1,96 @@
-import { CacheWrapperModule } from '@infra/cache';
+import { LoggerModule } from '@core/logger';
+import { EncryptionModule } from '@infra/encryption';
 import { IdentityManagementModule } from '@infra/identity-management';
+import { ValkeyClientModule, ValkeyConfig } from '@infra/valkey-client';
 import { AccountModule } from '@modules/account';
+import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { OauthModule } from '@modules/oauth/oauth.module';
 import { RoleModule } from '@modules/role';
 import { SystemModule } from '@modules/system';
+import { UserModule } from '@modules/user';
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { LegacySchoolRepo, UserRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
-import { jwtConstants } from './constants';
-import { JwtValidationAdapter } from './helper/jwt-validation.adapter';
+import { AuthenticationConfig, SESSION_VALKEY_CLIENT } from './authentication-config';
+import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
+import { LogoutService } from './services';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
-import { JwtStrategy } from './strategy/jwt.strategy';
 import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
-import { WsJwtStrategy } from './strategy/ws-jwt.strategy';
-import { XApiKeyStrategy } from './strategy/x-api-key.strategy';
 
-// values copied from Algorithm definition. Type does not exist at runtime and can't be checked anymore otherwise
-const algorithms = [
-	'HS256',
-	'HS384',
-	'HS512',
-	'RS256',
-	'RS384',
-	'RS512',
-	'ES256',
-	'ES384',
-	'ES512',
-	'PS256',
-	'PS384',
-	'PS512',
-	'none',
-];
+const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) => {
+	const algorithm = configService.getOrThrow<Algorithm>('JWT_SIGNING_ALGORITHM');
 
-if (!algorithms.includes(jwtConstants.jwtOptions.algorithm)) {
-	throw new Error(`${jwtConstants.jwtOptions.algorithm} is not a valid JWT signing algorithm`);
-}
-const signAlgorithm = jwtConstants.jwtOptions.algorithm as Algorithm;
+	const signOptions: SignOptions = {
+		algorithm,
+		expiresIn: configService.getOrThrow<string>('JWT_LIFETIME'),
+		issuer: configService.getOrThrow<string>('SC_DOMAIN'),
+		audience: configService.getOrThrow<string>('SC_DOMAIN'),
+		header: { typ: 'JWT', alg: algorithm },
+	};
 
-const signOptions: SignOptions = {
-	algorithm: signAlgorithm,
-	audience: jwtConstants.jwtOptions.audience,
-	expiresIn: jwtConstants.jwtOptions.expiresIn,
-	issuer: jwtConstants.jwtOptions.issuer,
-	header: { ...jwtConstants.jwtOptions.header, alg: signAlgorithm },
+	const privateKey = configService.getOrThrow<string>('JWT_PRIVATE_KEY');
+	const publicKey = configService.getOrThrow<string>('JWT_PUBLIC_KEY');
+
+	const options = {
+		privateKey,
+		publicKey,
+		signOptions,
+		verifyOptions: signOptions,
+	};
+
+	return options;
 };
-const jwtModuleOptions: JwtModuleOptions = {
-	secret: jwtConstants.secret,
-	signOptions,
-	verifyOptions: signOptions,
+
+const createValkeyModuleOptions = (configService: ConfigService<AuthenticationConfig>): ValkeyConfig => {
+	const config = {
+		MODE: configService.getOrThrow('SESSION_VALKEY__MODE', { infer: true }),
+		URI: configService.get('SESSION_VALKEY__URI', { infer: true }),
+		SENTINEL_NAME: configService.get('SESSION_VALKEY__SENTINEL_NAME', { infer: true }),
+		SENTINEL_PASSWORD: configService.get('SESSION_VALKEY__SENTINEL_PASSWORD', { infer: true }),
+		SENTINEL_SERVICE_NAME: configService.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME', { infer: true }),
+	};
+
+	return config;
 };
+
 @Module({
 	imports: [
 		LoggerModule,
 		PassportModule,
-		JwtModule.register(jwtModuleOptions),
+		JwtModule.registerAsync({
+			useFactory: createJwtOptions,
+			inject: [ConfigService],
+		}),
 		AccountModule,
 		SystemModule,
 		OauthModule,
 		RoleModule,
 		IdentityManagementModule,
-		CacheWrapperModule,
+		ValkeyClientModule.registerAsync({
+			injectionToken: SESSION_VALKEY_CLIENT,
+			useFactory: createValkeyModuleOptions,
+			inject: [ConfigService],
+		}),
+		UserModule,
+		HttpModule,
+		EncryptionModule,
 	],
 	providers: [
-		JwtStrategy,
-		WsJwtStrategy,
-		JwtValidationAdapter,
-		UserRepo,
 		LegacySchoolRepo,
 		LocalStrategy,
 		AuthenticationService,
 		LdapService,
 		LdapStrategy,
 		Oauth2Strategy,
-		XApiKeyStrategy,
+		JwtWhitelistAdapter,
+		LogoutService,
 	],
-	exports: [AuthenticationService],
+	exports: [AuthenticationService, LogoutService],
 })
 export class AuthenticationModule {}

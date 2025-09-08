@@ -21,9 +21,6 @@ module.exports = {
 					return context;
 				}
 				throw new BadRequest('Access token invalid');
-			})
-			.catch((error) => {
-				throw error;
 			}),
 
 	/**
@@ -49,24 +46,13 @@ module.exports = {
 		const regEx = /oauth2\/username\/(.*?)"/;
 		const pseudonym = context.params.route.user;
 		context.params.pseudonym = pseudonym.includes('iframe') ? pseudonym.match(regEx)[1] : pseudonym;
-		return context;
-	},
 
-	injectOriginToolId: async (context) => {
-		if (!context.params.tokenInfo) throw new Error('Token info is missing in params'); // first call isTokenActive
-		const toolService = context.app.service('ltiTools');
-		const originTools = await toolService.find({
-			query: {
-				oAuthClientId: context.params.tokenInfo.client_id,
-				isLocal: true,
-			},
-		});
-		context.params.originToolId = originTools.data[0]._id;
 		return context;
 	},
 
 	groupContainsUser: (context) => {
 		if (!context.result.data) return context;
+
 		const users = context.result.data.students.concat(context.result.data.teachers);
 		if (
 			users.some(
@@ -76,6 +62,7 @@ module.exports = {
 			)
 		)
 			return context;
+
 		throw new BadRequest('Current user is not part of group');
 	},
 };

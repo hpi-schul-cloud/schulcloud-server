@@ -1,22 +1,26 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
 import { CustomParameterResponse } from './custom-parameter.response';
+import { ExternalToolMediumResponse } from './external-tool-medium.response';
 
 export class SchoolExternalToolConfigurationTemplateResponse {
 	@ApiProperty()
-	externalToolId: EntityId;
+	public externalToolId: EntityId;
 
 	@ApiProperty()
-	name: string;
+	public name: string;
 
 	@ApiProperty()
-	baseUrl: string;
+	public baseUrl: string;
 
 	@ApiPropertyOptional()
-	logoUrl?: string;
+	public logoUrl?: string;
 
 	@ApiProperty({ type: [CustomParameterResponse] })
-	parameters: CustomParameterResponse[];
+	public parameters: CustomParameterResponse[];
+
+	@ApiPropertyOptional({ type: ExternalToolMediumResponse, description: 'Medium of the external tool' })
+	public medium?: ExternalToolMediumResponse;
 
 	constructor(configuration: SchoolExternalToolConfigurationTemplateResponse) {
 		this.externalToolId = configuration.externalToolId;
@@ -24,5 +28,6 @@ export class SchoolExternalToolConfigurationTemplateResponse {
 		this.baseUrl = configuration.baseUrl;
 		this.logoUrl = configuration.logoUrl;
 		this.parameters = configuration.parameters;
+		this.medium = configuration.medium;
 	}
 }

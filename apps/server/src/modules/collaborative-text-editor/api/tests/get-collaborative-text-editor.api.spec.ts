@@ -1,18 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { EtherpadClientAdapter } from '@infra/etherpad-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
-import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
-import { EtherpadClientAdapter } from '@src/infra/etherpad-client';
-import { BoardExternalReferenceType } from '@src/modules/board';
+import { BoardExternalReferenceType } from '@modules/board';
 import {
 	cardEntityFactory,
 	collaborativeTextEditorEntityFactory,
 	columnBoardEntityFactory,
 	columnEntityFactory,
-} from '@src/modules/board/testing';
-import { ServerTestModule } from '@src/modules/server';
+} from '@modules/board/testing';
+import { courseEntityFactory } from '@modules/course/testing';
+import { ServerTestModule } from '@modules/server';
+import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 
 describe('Collaborative Text Editor Controller (API)', () => {
 	let app: INestApplication;
@@ -105,7 +108,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 			describe('when no session for user exists', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseFactory.build({ students: [studentUser] });
+					const course = courseEntityFactory.build({ students: [studentUser] });
 
 					await em.persistAndFlush([studentAccount, studentUser, course]);
 
@@ -170,7 +173,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 			describe('when other sessions for user already exists', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseFactory.build({ students: [studentUser] });
+					const course = courseEntityFactory.build({ students: [studentUser] });
 
 					await em.persistAndFlush([studentUser, course]);
 
@@ -241,7 +244,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 			describe('when session for user already exists', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseFactory.build({ students: [studentUser] });
+					const course = courseEntityFactory.build({ students: [studentUser] });
 
 					await em.persistAndFlush([studentUser, course]);
 

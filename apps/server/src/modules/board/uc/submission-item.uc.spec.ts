@@ -1,8 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Action } from '@modules/authorization';
+import { AuthorizationContextBuilder } from '@modules/authorization';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities, userFactory } from '@shared/testing';
+import { setupEntities } from '@testing/database';
 import {
 	BoardNodeAuthorizable,
 	BoardNodeFactory,
@@ -58,7 +60,7 @@ describe(SubmissionItemUc.name, () => {
 		boardPermissionService = module.get(BoardNodePermissionService);
 		boardNodeService = module.get(BoardNodeService);
 		boardNodeFactory = module.get(BoardNodeFactory);
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {
@@ -88,6 +90,7 @@ describe(SubmissionItemUc.name, () => {
 						id: submissionContainerEl.id,
 						boardNode: submissionContainerEl,
 						rootNode: columnBoardFactory.build(),
+						boardContextSettings: {},
 					})
 				);
 
@@ -108,7 +111,11 @@ describe(SubmissionItemUc.name, () => {
 				const { submissionContainerEl, user } = setup();
 
 				await uc.findSubmissionItems(user.id, submissionContainerEl.id);
-				expect(boardPermissionService.checkPermission).toBeCalledWith(user.id, submissionContainerEl, Action.read);
+				expect(boardPermissionService.checkPermission).toBeCalledWith(
+					user.id,
+					submissionContainerEl,
+					AuthorizationContextBuilder.read([])
+				);
 			});
 		});
 
@@ -140,6 +147,7 @@ describe(SubmissionItemUc.name, () => {
 						id: submissionContainerEl.id,
 						boardNode: submissionContainerEl,
 						rootNode: columnBoardFactory.build(),
+						boardContextSettings: {},
 					})
 				);
 
@@ -213,7 +221,11 @@ describe(SubmissionItemUc.name, () => {
 
 			await uc.updateSubmissionItem(user.id, submissionItem.id, false);
 
-			expect(boardPermissionService.checkPermission).toBeCalledWith(user.id, submissionItem, Action.write);
+			expect(boardPermissionService.checkPermission).toBeCalledWith(
+				user.id,
+				submissionItem,
+				AuthorizationContextBuilder.write([])
+			);
 		});
 
 		it('should call service to update submission item', async () => {
@@ -252,7 +264,11 @@ describe(SubmissionItemUc.name, () => {
 
 			await uc.deleteSubmissionItem(user.id, submissionItem.id);
 
-			expect(boardPermissionService.checkPermission).toBeCalledWith(user.id, submissionItem, Action.write);
+			expect(boardPermissionService.checkPermission).toBeCalledWith(
+				user.id,
+				submissionItem,
+				AuthorizationContextBuilder.write([])
+			);
 		});
 
 		it('should call service to delete submission item', async () => {
@@ -281,6 +297,7 @@ describe(SubmissionItemUc.name, () => {
 						id: submissionItem.id,
 						boardNode: submissionItem,
 						rootNode: columnBoardFactory.build(),
+						boardContextSettings: {},
 					})
 				);
 
@@ -319,7 +336,11 @@ describe(SubmissionItemUc.name, () => {
 
 				await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
 
-				expect(boardPermissionService.checkPermission).toBeCalledWith(user.id, submissionItem, Action.write);
+				expect(boardPermissionService.checkPermission).toBeCalledWith(
+					user.id,
+					submissionItem,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call factory to build content element', async () => {
@@ -359,6 +380,7 @@ describe(SubmissionItemUc.name, () => {
 						id: submissionItem.id,
 						boardNode: submissionItem,
 						rootNode: columnBoardFactory.build(),
+						boardContextSettings: {},
 					})
 				);
 
@@ -393,6 +415,7 @@ describe(SubmissionItemUc.name, () => {
 						id: submissionItem.id,
 						boardNode: submissionItem,
 						rootNode: columnBoardFactory.build(),
+						boardContextSettings: {},
 					})
 				);
 

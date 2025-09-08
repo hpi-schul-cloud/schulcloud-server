@@ -1,6 +1,6 @@
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ToolContextType } from '../../common/enum';
@@ -11,7 +11,7 @@ import { type SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { LaunchContextUnavailableLoggableException } from '../error';
 import { ToolLaunchService } from '../service';
-import { ToolLaunchData, ToolLaunchRequest } from '../types';
+import { ToolLaunchRequest } from '../types';
 
 @Injectable()
 export class ToolLaunchUc {
@@ -23,7 +23,7 @@ export class ToolLaunchUc {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async getContextExternalToolLaunchRequest(
+	public async getContextExternalToolLaunchRequest(
 		userId: EntityId,
 		contextExternalToolId: EntityId
 	): Promise<ToolLaunchRequest> {
@@ -35,13 +35,15 @@ export class ToolLaunchUc {
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
 		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 
-		const toolLaunchData: ToolLaunchData = await this.toolLaunchService.getLaunchData(userId, contextExternalTool);
-		const launchRequest: ToolLaunchRequest = this.toolLaunchService.generateLaunchRequest(toolLaunchData);
+		const launchRequest: ToolLaunchRequest = await this.toolLaunchService.generateLaunchRequest(
+			userId,
+			contextExternalTool
+		);
 
 		return launchRequest;
 	}
 
-	async getSchoolExternalToolLaunchRequest(
+	public async getSchoolExternalToolLaunchRequest(
 		userId: EntityId,
 		pseudoContextExternalTool: ContextExternalToolLaunchable
 	): Promise<ToolLaunchRequest> {
@@ -66,12 +68,10 @@ export class ToolLaunchUc {
 
 		await this.contextExternalToolService.checkContextRestrictions(pseudoContextExternalTool);
 
-		const toolLaunchData: ToolLaunchData = await this.toolLaunchService.getLaunchData(
+		const launchRequest: ToolLaunchRequest = await this.toolLaunchService.generateLaunchRequest(
 			userId,
 			pseudoContextExternalTool
 		);
-		const launchRequest: ToolLaunchRequest = this.toolLaunchService.generateLaunchRequest(toolLaunchData);
-
 		return launchRequest;
 	}
 }

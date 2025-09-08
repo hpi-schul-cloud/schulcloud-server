@@ -1,8 +1,10 @@
+import { RoleName } from '@modules/role';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { BadRequestException } from '@nestjs/common';
-import { MatchCreator } from '@shared/domain/entity';
-import { RoleName, SortOrder } from '@shared/domain/interface';
-import { MatchCreatorScope } from '@shared/domain/types';
-import { importUserFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
+import { SortOrder } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import {
 	FilterImportUserParams,
 	FilterMatchType,
@@ -11,6 +13,9 @@ import {
 	SortImportUserParams,
 	UserMatchResponse,
 } from '../controller/dto';
+import { ImportUserMatchCreatorScope } from '../domain/interface';
+import { MatchCreator } from '../entity';
+import { importUserFactory } from '../testing';
 import { ImportUserMapper } from './import-user.mapper';
 import { ImportUserMatchMapper } from './match.mapper';
 import { RoleNameMapper } from './role-name.mapper';
@@ -18,7 +23,7 @@ import { UserMatchMapper } from './user-match.mapper';
 
 describe('[ImportUserMapper]', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	describe('[mapSortingQueryToDomain] from query to domain', () => {
@@ -70,6 +75,7 @@ describe('[ImportUserMapper]', () => {
 				roleNames: [RoleName.STUDENT, RoleName.TEACHER, RoleName.ADMINISTRATOR],
 				ldapDn: 'uid=Eva_Rak123,foo=bar,...',
 				flagged: true,
+				externalRoleNames: ['ext-student', 'ext-teacher', 'ext-admin'],
 			});
 			const result = ImportUserMapper.mapToResponse(importUser);
 			const expected = {
@@ -80,6 +86,7 @@ describe('[ImportUserMapper]', () => {
 				lastName: 'Rakäthe',
 				roleNames: ['student', 'teacher', 'admin'],
 				classNames: ['firstClass'],
+				externalRoleNames: ['ext-student', 'ext-teacher', 'ext-admin'],
 			};
 			expect(result).toEqual(expected);
 		});
@@ -145,9 +152,9 @@ describe('[ImportUserMapper]', () => {
 			const query: FilterImportUserParams = { match: [FilterMatchType.MANUAL] };
 			const importUserMatchMapperSpy = jest
 				.spyOn(ImportUserMatchMapper, 'mapImportUserMatchScopeToDomain')
-				.mockReturnValueOnce(MatchCreatorScope.MANUAL);
+				.mockReturnValueOnce(ImportUserMatchCreatorScope.MANUAL);
 			const result = ImportUserMapper.mapImportUserFilterQueryToDomain(query);
-			expect(result.matches).toEqual([MatchCreatorScope.MANUAL]);
+			expect(result.matches).toEqual([ImportUserMatchCreatorScope.MANUAL]);
 			expect(importUserMatchMapperSpy).toBeCalledWith(FilterMatchType.MANUAL);
 			importUserMatchMapperSpy.mockRestore();
 		});

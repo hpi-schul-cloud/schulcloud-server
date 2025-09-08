@@ -1,10 +1,9 @@
+import { Logger } from '@core/logger';
 import { Injectable } from '@nestjs/common';
+import { EntityNotFoundError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
-import { User } from '@shared/domain/entity';
-import { EntityNotFoundError } from '@shared/common';
-import { UsersAdminRepo } from '../repo';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
+import { UsersAdminRepo } from '../repo';
 
 @Injectable()
 export class UsersAdminService {
@@ -40,7 +39,7 @@ export class UsersAdminService {
 			userId
 		)) as UserResponse[];
 		if (user.length < 1) {
-			throw new EntityNotFoundError(User.name);
+			throw new EntityNotFoundError('User');
 		}
 		return new UserResponse(user[0]);
 	}

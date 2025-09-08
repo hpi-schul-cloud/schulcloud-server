@@ -5,6 +5,7 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api-admin
+    app.kubernetes.io/name: api-admin-svc
 spec:
   type: ClusterIP
   ports:

@@ -6,6 +6,7 @@ import type {
 	CollaborativeTextEditorElementProps,
 	ColumnBoardProps,
 	ColumnProps,
+	DeletedElementProps,
 	DrawingElementProps,
 	ExternalToolElementProps,
 	FileElementProps,
@@ -55,4 +56,5 @@ export interface BoardNodeEntityProps
 		ComponentProps<ExternalToolElementProps>,
 		ComponentProps<MediaBoardProps>,
 		ComponentProps<MediaExternalToolElementProps>,
-		ComponentProps<MediaLineProps> {}
+		ComponentProps<MediaLineProps>,
+		ComponentProps<DeletedElementProps> {}

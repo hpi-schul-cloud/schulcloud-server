@@ -3,6 +3,12 @@ kind: Deployment
 metadata:
   name: api-fwu-deployment
   namespace: {{ NAMESPACE }}
+{% if ANNOTATIONS is defined and ANNOTATIONS|bool %}
+  annotations:
+{% if RELOADER is defined and RELOADER|bool %}
+    reloader.stakater.com/auto: "true"
+{% endif %}
+{% endif %}
   labels:
     app: api-fwu
     app.kubernetes.io/part-of: schulcloud-verbund
@@ -41,6 +47,8 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
         runAsNonRoot: true
+      os:
+        name: linux
       containers:
       - name: api-fwu
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
@@ -54,8 +62,6 @@ spec:
             name: api-configmap
         - secretRef:
             name: api-secret
-        - secretRef:
-            name: api-files-secret
         command: ['npm', 'run', 'nest:start:fwu-learning-contents:prod']
         readinessProbe:
           httpGet:

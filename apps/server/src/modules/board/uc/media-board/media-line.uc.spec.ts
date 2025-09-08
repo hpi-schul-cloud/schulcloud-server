@@ -1,15 +1,17 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { Action } from '@modules/authorization';
+import { AuthorizationContextBuilder } from '@modules/authorization';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { setupEntities, userFactory as userEntityFactory } from '@shared/testing';
+import { setupEntities } from '@testing/database';
+import { MediaBoard, MediaLine } from '../../domain';
+import { MediaBoardColors } from '../../domain/media-board/types';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
 import { mediaBoardFactory, mediaLineFactory } from '../../testing';
 import { MediaLineUc } from './media-line.uc';
-import { MediaBoard, MediaLine } from '../../domain';
-import { MediaBoardColors } from '../../domain/media-board/types';
 
 describe(MediaLineUc.name, () => {
 	let module: TestingModule;
@@ -21,7 +23,7 @@ describe(MediaLineUc.name, () => {
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -63,7 +65,7 @@ describe(MediaLineUc.name, () => {
 	describe('moveLine', () => {
 		describe('when the user moves a media line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard: MediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
@@ -91,7 +93,11 @@ describe(MediaLineUc.name, () => {
 
 				await uc.moveLine(user.id, mediaLine.id, mediaBoard.id, 1);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaBoard,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should move the line', async () => {
@@ -105,7 +111,7 @@ describe(MediaLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
@@ -131,7 +137,7 @@ describe(MediaLineUc.name, () => {
 	describe('updateLineTitle', () => {
 		describe('when the user renames a media line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -149,7 +155,11 @@ describe(MediaLineUc.name, () => {
 
 				await uc.updateLineTitle(user.id, mediaLine.id, 'newTitle');
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaLine,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should rename the line', async () => {
@@ -163,7 +173,7 @@ describe(MediaLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(false);
@@ -187,7 +197,7 @@ describe(MediaLineUc.name, () => {
 	describe('deleteLine', () => {
 		describe('when the user deletes a media line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -201,7 +211,11 @@ describe(MediaLineUc.name, () => {
 
 				await uc.deleteLine(user.id, mediaLine.id);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaLine,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should delete the line', async () => {
@@ -215,7 +229,7 @@ describe(MediaLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(false);
@@ -237,7 +251,7 @@ describe(MediaLineUc.name, () => {
 	describe('updateLineColor', () => {
 		describe('when the user changes background color of media line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -255,7 +269,11 @@ describe(MediaLineUc.name, () => {
 
 				await uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaLine,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should set background color', async () => {
@@ -269,7 +287,7 @@ describe(MediaLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(false);
@@ -293,7 +311,7 @@ describe(MediaLineUc.name, () => {
 	describe('collapseLine', () => {
 		describe('when the user collapse a media line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -311,7 +329,11 @@ describe(MediaLineUc.name, () => {
 
 				await uc.collapseLine(user.id, mediaLine.id, true);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaLine,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should collapse the line', async () => {
@@ -325,7 +347,7 @@ describe(MediaLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(false);

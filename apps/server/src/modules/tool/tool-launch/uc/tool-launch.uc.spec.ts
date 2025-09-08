@@ -1,12 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { LaunchContextUnavailableLoggableException } from '@modules/tool/tool-launch/error';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { setupEntities } from '@testing/database';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool, ContextExternalToolLaunchable } from '../../context-external-tool/domain';
@@ -15,7 +16,8 @@ import { contextExternalToolFactory } from '../../context-external-tool/testing'
 import { SchoolExternalToolService } from '../../school-external-tool';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ToolLaunchService } from '../service';
-import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
+import { toolLaunchRequestFactory } from '../testing';
+import { ToolLaunchRequest } from '../types';
 import { ToolLaunchUc } from './tool-launch.uc';
 
 describe('ToolLaunchUc', () => {
@@ -64,7 +66,7 @@ describe('ToolLaunchUc', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {
@@ -83,23 +85,19 @@ describe('ToolLaunchUc', () => {
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
 					id: contextExternalToolId,
 				});
-				const toolLaunchData: ToolLaunchData = new ToolLaunchData({
-					baseUrl: 'baseUrl',
-					type: ToolLaunchDataType.BASIC,
-					openNewTab: true,
-					properties: [],
-				});
+
+				const toolLaunchRequest: ToolLaunchRequest = toolLaunchRequestFactory.build();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
 				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
-				toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
+				toolLaunchService.generateLaunchRequest.mockResolvedValueOnce(toolLaunchRequest);
 
 				return {
 					user,
 					contextExternalToolId,
 					contextExternalTool,
-					toolLaunchData,
+					toolLaunchRequest,
 				};
 			};
 
@@ -123,22 +121,14 @@ describe('ToolLaunchUc', () => {
 				expect(contextExternalToolService.findByIdOrFail).toHaveBeenCalledWith(contextExternalToolId);
 			});
 
-			it('should call service to get data', async () => {
-				const { user, contextExternalToolId, contextExternalTool } = setup();
-
-				await uc.getContextExternalToolLaunchRequest(user.id, contextExternalToolId);
-
-				expect(toolLaunchService.getLaunchData).toHaveBeenCalledWith(user.id, contextExternalTool);
-			});
-
 			it('should call service to generate launch request', async () => {
-				const { user, contextExternalToolId, toolLaunchData } = setup();
+				const { user, contextExternalToolId, contextExternalTool, toolLaunchRequest } = setup();
 
-				toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
+				toolLaunchService.generateLaunchRequest.mockResolvedValueOnce(toolLaunchRequest);
 
 				await uc.getContextExternalToolLaunchRequest(user.id, contextExternalToolId);
 
-				expect(toolLaunchService.generateLaunchRequest).toHaveBeenCalledWith(toolLaunchData);
+				expect(toolLaunchService.generateLaunchRequest).toHaveBeenCalledWith(user.id, contextExternalTool);
 			});
 
 			it('should return launch request', async () => {
@@ -170,28 +160,17 @@ describe('ToolLaunchUc', () => {
 					},
 					parameters: [],
 				};
-				const toolLaunchData: ToolLaunchData = new ToolLaunchData({
-					baseUrl: 'baseUrl',
-					type: ToolLaunchDataType.BASIC,
-					openNewTab: true,
-					properties: [],
-				});
-				const toolLaunchRequest = new ToolLaunchRequest({
-					openNewTab: true,
-					method: LaunchRequestMethod.GET,
-					url: 'https://mock.com/',
-				});
+
+				const toolLaunchRequest = toolLaunchRequestFactory.build();
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
-				toolLaunchService.generateLaunchRequest.mockReturnValueOnce(toolLaunchRequest);
+				toolLaunchService.generateLaunchRequest.mockResolvedValueOnce(toolLaunchRequest);
 
 				return {
 					user,
 					schoolExternalTool,
 					contextExternalTool,
-					toolLaunchData,
 					toolLaunchRequest,
 				};
 			};
@@ -218,22 +197,14 @@ describe('ToolLaunchUc', () => {
 				expect(contextExternalToolService.checkContextRestrictions).toHaveBeenCalledWith(contextExternalTool);
 			});
 
-			it('should call service to get data', async () => {
-				const { user, contextExternalTool } = setup();
-
-				await uc.getSchoolExternalToolLaunchRequest(user.id, contextExternalTool);
-
-				expect(toolLaunchService.getLaunchData).toHaveBeenCalledWith(user.id, contextExternalTool);
-			});
-
 			it('should call service to generate launch request', async () => {
-				const { user, contextExternalTool, toolLaunchData } = setup();
+				const { user, contextExternalTool, toolLaunchRequest } = setup();
 
-				toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
+				toolLaunchService.generateLaunchRequest.mockResolvedValueOnce(toolLaunchRequest);
 
 				await uc.getSchoolExternalToolLaunchRequest(user.id, contextExternalTool);
 
-				expect(toolLaunchService.generateLaunchRequest).toHaveBeenCalledWith(toolLaunchData);
+				expect(toolLaunchService.generateLaunchRequest).toHaveBeenCalledWith(user.id, contextExternalTool);
 			});
 
 			it('should return launch request', async () => {

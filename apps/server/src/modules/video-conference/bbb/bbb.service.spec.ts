@@ -3,8 +3,8 @@ import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { axiosResponseFactory } from '@shared/testing';
-import { ErrorUtils } from '@src/core/error/utils';
+import { ErrorUtils } from '@core/error/utils';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
@@ -159,6 +159,19 @@ describe(BBBService.name, () => {
 				return { param, bbbCreateResponse, spy };
 			};
 
+			it('should not send config header if VIDEOCONFERENCE_DEFAULT_PRESENTATION is empty', async () => {
+				configService.get.mockImplementation((key: string) => {
+					if (key === 'VIDEOCONFERENCE_DEFAULT_PRESENTATION') {
+						return '';
+					}
+					return 'https://mocked';
+				});
+				const { param } = setup();
+
+				await service.create(param);
+				expect(httpService.post).toHaveBeenCalledWith(expect.any(String), '', undefined);
+			});
+
 			it('should return a response with returncode success', async () => {
 				const { bbbCreateResponse, param, spy } = setup();
 
@@ -183,7 +196,7 @@ describe(BBBService.name, () => {
 				jest.spyOn(service, 'xml2object').mockReturnValueOnce(bbbCreateResponse.data);
 
 				const error = new InternalServerErrorException(
-					`${bbbCreateResponse.data.response.messageKey}, ${bbbCreateResponse.data.response.message}`
+					`${bbbCreateResponse.data.response.messageKey}: ${bbbCreateResponse.data.response.message}`
 				);
 				const expectedError = new InternalServerErrorException(
 					null,
@@ -238,7 +251,7 @@ describe(BBBService.name, () => {
 				jest.spyOn(service, 'xml2object').mockReturnValueOnce(bbbBaseResponse.data);
 
 				const error = new InternalServerErrorException(
-					`${bbbBaseResponse.data.response.messageKey}, ${bbbBaseResponse.data.response.message}`
+					`${bbbBaseResponse.data.response.messageKey}: ${bbbBaseResponse.data.response.message}`
 				);
 				const expectedError = new InternalServerErrorException(
 					null,
@@ -251,7 +264,7 @@ describe(BBBService.name, () => {
 			it('should throw an error if there is a different return code then success', async () => {
 				const { param, expectedError } = setup();
 
-				await expect(service.end(param)).rejects.toThrowError(expectedError);
+				await expect(service.end(param)).rejects.toThrow(expectedError);
 			});
 		});
 	});
@@ -399,13 +412,13 @@ describe(BBBService.name, () => {
 			const { callName, createConfig, createHashMock } = setup();
 			const urlSearchParams = service.superToParams(createConfig);
 			const queryString = urlSearchParams.toString();
-			const sha = crypto.createHash('sha1');
+			const sha = crypto.createHash('sha512');
 			const expectedChecksum = sha.update(callName + queryString + service.getSalt()).digest('hex');
 
 			const checksum = service.superGenerateChecksum(callName, urlSearchParams);
 
 			expect(checksum).toEqual(expectedChecksum);
-			expect(createHashMock).toBeCalledWith('sha1');
+			expect(createHashMock).toBeCalledWith('sha512');
 		});
 
 		it('getUrl: should return composed url', () => {

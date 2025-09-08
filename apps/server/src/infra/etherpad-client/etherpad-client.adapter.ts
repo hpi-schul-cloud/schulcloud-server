@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { TypeGuard } from '@shared/common';
+import { TypeGuard } from '@shared/common/guards';
 import { EntityId } from '@shared/domain/types';
 import { AxiosResponse } from 'axios';
 import {

@@ -1,13 +1,13 @@
+import { ICurrentUser } from '@infra/auth-guard';
 import { IdentityManagementConfig, IdentityManagementOauthService } from '@infra/identity-management';
 import { Account } from '@modules/account';
+import { UserService } from '@modules/user';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { TypeGuard } from '@shared/common';
-import { UserRepo } from '@shared/repo';
+import { TypeGuard } from '@shared/common/guards';
 import bcrypt from 'bcryptjs';
 import { Strategy } from 'passport-local';
-import { ICurrentUser } from '../interface';
 import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from '../services/authentication.service';
 
@@ -17,12 +17,12 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		private readonly authenticationService: AuthenticationService,
 		private readonly idmOauthService: IdentityManagementOauthService,
 		private readonly configService: ConfigService<IdentityManagementConfig, true>,
-		private readonly userRepo: UserRepo
+		private readonly userService: UserService
 	) {
 		super();
 	}
 
-	async validate(username?: string, password?: string): Promise<ICurrentUser> {
+	public async validate(username?: string, password?: string): Promise<ICurrentUser> {
 		({ username, password } = this.cleanupInput(username, password));
 		const account = await this.authenticationService.loadAccount(username);
 
@@ -38,8 +38,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 			account.userId,
 			new Error(`login failing, because account ${account.id} has no userId`)
 		);
-		const user = await this.userRepo.findById(accountUserId, true);
+		const user = await this.userService.getUserEntityWithRoles(accountUserId);
 		const currentUser = CurrentUserMapper.userToICurrentUser(account.id, user, false);
+
 		return currentUser;
 	}
 
@@ -48,16 +49,15 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		password = TypeGuard.checkNotNullOrUndefined(password, new UnauthorizedException());
 		username = this.authenticationService.normalizeUsername(username);
 		password = this.authenticationService.normalizePassword(password);
+
 		return { username, password };
 	}
 
-	private async checkCredentials(
-		enteredPassword: string,
-		savedPassword: string,
-		account: Account
-	): Promise<void | never> {
+	private async checkCredentials(enteredPassword: string, savedPassword: string, account: Account): Promise<void> {
 		this.authenticationService.checkBrutForce(account);
-		if (!(await bcrypt.compare(enteredPassword, savedPassword))) {
+		const samePassword = await bcrypt.compare(enteredPassword, savedPassword);
+
+		if (!samePassword) {
 			await this.authenticationService.updateLastTriedFailedLogin(account.id);
 			throw new UnauthorizedException();
 		}

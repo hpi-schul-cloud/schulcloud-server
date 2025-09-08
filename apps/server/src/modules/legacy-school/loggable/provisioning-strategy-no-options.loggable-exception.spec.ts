@@ -4,7 +4,9 @@ import { ProvisioningStrategyNoOptionsLoggableException } from './provisioning-s
 describe(ProvisioningStrategyNoOptionsLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		it('should log the correct message', () => {
-			const exception = new ProvisioningStrategyNoOptionsLoggableException(SystemProvisioningStrategy.SANIS);
+			const exception = new ProvisioningStrategyNoOptionsLoggableException(
+				SystemProvisioningStrategy.SCHULCONNEX_ASYNC
+			);
 
 			const result = exception.getLogMessage();
 
@@ -13,7 +15,7 @@ describe(ProvisioningStrategyNoOptionsLoggableException.name, () => {
 				message: expect.any(String),
 				stack: expect.any(String),
 				data: {
-					provisioningStrategy: SystemProvisioningStrategy.SANIS,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 				},
 			});
 		});

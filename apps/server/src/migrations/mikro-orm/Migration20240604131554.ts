@@ -2,7 +2,7 @@ import { Migration } from '@mikro-orm/migrations-mongodb';
 import * as process from 'node:process';
 
 export class Migration20240604131554 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		// eslint-disable-next-line no-process-env
 		if (process.env.SC_THEME === 'n21') {
 			await this.driver.nativeInsert('instances', {
@@ -36,7 +36,7 @@ export class Migration20240604131554 extends Migration {
 		}
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		await this.getCollection('instances').drop();
 
 		console.info('Collection "instances" was dropped');

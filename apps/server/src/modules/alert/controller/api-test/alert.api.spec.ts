@@ -1,15 +1,16 @@
-import { INestApplication } from '@nestjs/common';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import request from 'supertest';
-import { of } from 'rxjs';
-import { axiosResponseFactory } from '@shared/testing';
 import { SchulcloudTheme } from '@shared/domain/types';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import type { Server } from 'node:net';
+import { of } from 'rxjs';
+import request from 'supertest';
 import { serverConfig, ServerTestModule } from '../../../server';
+import { ComponentDto, ComponentResponse, IncidentsResponse } from '../../adapter/dto';
 import { createComponent, createIncident } from '../../testing';
 import { AlertResponse } from '../dto';
-import { ComponentDto, ComponentResponse, IncidentsResponse } from '../../adapter/dto';
 
 describe('Alert Controller api', () => {
 	const alertPath = '/alert';
@@ -21,7 +22,7 @@ describe('Alert Controller api', () => {
 	const component1 = createComponent(1, 1);
 	const component2 = createComponent(2, 2);
 
-	let app: INestApplication;
+	let app: INestApplication<Server>;
 	let httpService: DeepMocked<HttpService>;
 
 	beforeEach(async () => {

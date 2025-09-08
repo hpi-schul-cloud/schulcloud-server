@@ -1,17 +1,19 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { TeamDto, TeamUserDto } from '@modules/collaborative-storage/services/dto/team.dto';
 import { PseudonymService } from '@modules/pseudonym';
+import { Pseudonym } from '@modules/pseudonym/repo';
+import { pseudonymFactory } from '@modules/pseudonym/testing';
+import { RoleName } from '@modules/role';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
+import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiPrivacyPermission, LtiRoleType, User } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
-import { LtiToolRepo } from '@shared/repo';
-import { ltiToolDOFactory, pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { setupEntities } from '@testing/database';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { NextcloudClient } from './nextcloud.client';
 import { NextcloudStrategy } from './nextcloud.strategy';
@@ -36,11 +38,9 @@ describe('NextCloudStrategy', () => {
 
 	let client: DeepMocked<NextcloudClient>;
 	let pseudonymService: DeepMocked<PseudonymService>;
-	let ltiToolRepo: DeepMocked<LtiToolRepo>;
 	let userService: DeepMocked<UserService>;
+	let externalToolService: DeepMocked<ExternalToolService>;
 
-	let nextcloudTool: LtiToolDO;
-	let logger: LegacyLogger;
 	const toolName = 'SchulcloudNextcloud';
 
 	afterAll(async () => {
@@ -54,10 +54,6 @@ describe('NextCloudStrategy', () => {
 				{
 					provide: NextcloudClient,
 					useValue: createMock<NextcloudClient>({ oidcInternalName: toolName }),
-				},
-				{
-					provide: LtiToolRepo,
-					useValue: createMock<LtiToolRepo>(),
 				},
 				{
 					provide: PseudonymService,
@@ -82,41 +78,16 @@ describe('NextCloudStrategy', () => {
 		client = module.get(NextcloudClient);
 		pseudonymService = module.get(PseudonymService);
 		userService = module.get(UserService);
-		ltiToolRepo = module.get(LtiToolRepo);
-		logger = module.get(LegacyLogger);
+		externalToolService = module.get(ExternalToolService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterEach(() => {
 		jest.resetAllMocks();
 	});
 
-	beforeEach(() => {
-		nextcloudTool = ltiToolDOFactory.build({
-			id: 'toolId',
-			name: toolName,
-			isLocal: true,
-			oAuthClientId: 'oauthClientId',
-			secret: 'secret',
-			customs: [{ key: 'key', value: 'value' }],
-			isHidden: false,
-			isTemplate: false,
-			key: 'key',
-			openNewTab: false,
-			originToolId: 'originToolId',
-			privacy_permission: LtiPrivacyPermission.NAME,
-			roles: [LtiRoleType.INSTRUCTOR, LtiRoleType.LEARNER],
-			url: 'url',
-			friendlyUrl: 'friendlyUrl',
-			frontchannel_logout_uri: 'frontchannel_logout_uri',
-			logo_url: 'logo_url',
-			lti_message_type: 'lti_message_type',
-			lti_version: 'lti_version',
-			resource_link_id: 'resource_link_id',
-			skipConsent: true,
-		});
-	});
+	beforeEach(() => {});
 
 	describe('updateTeamPermissionsForRole', () => {
 		describe('when nextcloud group can be found', () => {
@@ -241,7 +212,8 @@ describe('NextCloudStrategy', () => {
 			};
 			const folderId = 1;
 
-			ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
+			const externalTool = externalToolFactory.withOauth2Config().build({ name: toolName });
+			externalToolService.findExternalToolByName.mockResolvedValueOnce(externalTool);
 			client.getNameWithPrefix.mockReturnValue(groupId);
 			pseudonymService.findByUserAndToolOrThrow.mockRejectedValueOnce(undefined);
 			client.findGroupFolderIdForGroupId.mockResolvedValue(folderId);
@@ -305,7 +277,8 @@ describe('NextCloudStrategy', () => {
 				const folderId = 1;
 				const groupId = 'groupId';
 
-				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
+				const externalTool = externalToolFactory.withOauth2Config().build({ name: toolName });
+				externalToolService.findExternalToolByName.mockResolvedValueOnce(externalTool);
 				client.getNameWithPrefix.mockReturnValue(groupId);
 				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
 				pseudonymService.findByUserAndToolOrThrow.mockRejectedValueOnce(undefined);
@@ -383,26 +356,35 @@ describe('NextCloudStrategy', () => {
 	describe('updateTeamUsersInGroup', () => {
 		describe('when user was added to a team', () => {
 			const setup = () => {
-				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
-				const userDo: UserDO = userDoFactory.build({ id: user.id });
+				const user = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
+				const userDo = userDoFactory.build({ id: user.id });
 				const teamUsers: TeamUserDto[] = [{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id }];
+				const externalTool = externalToolFactory.withOauth2Config().build({ name: toolName });
 
-				const pseudonym: Pseudonym = pseudonymFactory.build({
+				const pseudonym = pseudonymFactory.build({
 					userId: user.id,
-					toolId: nextcloudTool.id as string,
+					toolId: externalTool.id,
 					pseudonym: `ps${user.id}`,
 				});
 
 				const nextCloudUserId = `prefix-${pseudonym.pseudonym}`;
 				const groupId = 'groupId';
 
-				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
+				externalToolService.findExternalToolByName.mockResolvedValueOnce(externalTool);
 				client.getGroupUsers.mockResolvedValue([]);
 				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
 				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
 				userService.findById.mockResolvedValue(userDo);
 
-				return { user, teamUsers, pseudonym, nextCloudUserId, groupId, userDo };
+				return {
+					user,
+					teamUsers,
+					pseudonym,
+					nextCloudUserId,
+					groupId,
+					userDo,
+					externalTool,
+				};
 			};
 
 			it('should call clients getGroupUsers', async () => {
@@ -413,20 +395,12 @@ describe('NextCloudStrategy', () => {
 				expect(client.getGroupUsers).toHaveBeenCalledWith(groupId);
 			});
 
-			it('should call ltiToolRepo.findByName', async () => {
-				const { teamUsers, groupId } = setup();
-
-				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
-
-				expect(ltiToolRepo.findByName).toHaveBeenCalledWith(nextcloudTool.name);
-			});
-
 			it('should call clients pseudonymService.findByUserAndTool', async () => {
-				const { teamUsers, groupId, userDo } = setup();
+				const { teamUsers, groupId, userDo, externalTool } = setup();
 
 				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
 
-				expect(pseudonymService.findByUserAndToolOrThrow).toHaveBeenCalledWith(userDo, nextcloudTool);
+				expect(pseudonymService.findByUserAndToolOrThrow).toHaveBeenCalledWith(userDo, externalTool);
 			});
 
 			it('should call userService.findById', async () => {
@@ -464,19 +438,20 @@ describe('NextCloudStrategy', () => {
 
 		describe('when user was removed from a team', () => {
 			const setup = () => {
-				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
+				const user = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
 				const teamUsers: TeamUserDto[] = [];
+				const externalTool = externalToolFactory.withOauth2Config().build({ name: toolName });
 
 				const pseudonym: Pseudonym = pseudonymFactory.build({
 					userId: user.id,
-					toolId: nextcloudTool.id as string,
+					toolId: externalTool.id,
 					pseudonym: `ps${user.id}`,
 				});
 
 				const nextCloudUserId = `prefix-${pseudonym.pseudonym}`;
 				const groupId = 'groupId';
 
-				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
+				externalToolService.findExternalToolByName.mockResolvedValueOnce(externalTool);
 				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
 				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
 				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
@@ -527,22 +502,23 @@ describe('NextCloudStrategy', () => {
 
 		describe('when no pseudonym for the user was found', () => {
 			const setup = () => {
-				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
+				const user = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
 				const teamUsers: TeamUserDto[] = [
 					{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id },
 					{ userId: 'invalidId', schoolId: 'someSchool', roleId: 'someRole' },
 				];
+				const externalTool = externalToolFactory.withOauth2Config().build({ name: toolName });
 
 				const pseudonym: Pseudonym = pseudonymFactory.build({
 					userId: user.id,
-					toolId: nextcloudTool.id as string,
+					toolId: externalTool.id,
 					pseudonym: `ps${user.id}`,
 				});
 
 				const nextCloudUserId = `prefix-${pseudonym.pseudonym}`;
 				const groupId = 'groupId';
 
-				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
+				externalToolService.findExternalToolByName.mockResolvedValueOnce(externalTool);
 				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
 				pseudonymService.findByUserAndToolOrThrow.mockResolvedValueOnce(pseudonym).mockRejectedValueOnce(undefined);
 				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
@@ -567,34 +543,24 @@ describe('NextCloudStrategy', () => {
 			});
 		});
 
-		describe('when there are more than one team with the same name', () => {
+		describe('when the external tool was not found', () => {
 			const setup = () => {
-				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
+				const user = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
 				const teamUsers: TeamUserDto[] = [{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id }];
 
-				const pseudonym: Pseudonym = pseudonymFactory.build({
-					userId: user.id,
-					toolId: nextcloudTool.id as string,
-					pseudonym: `ps${user.id}`,
-				});
-
-				const nextCloudUserId = `prefix-${pseudonym.pseudonym}`;
 				const groupId = 'groupId';
-				const nextcloudTool2: LtiToolDO = { ...nextcloudTool };
 
-				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
-				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool, nextcloudTool2]);
-				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
+				externalToolService.findExternalToolByName.mockResolvedValueOnce(null);
 
-				return { user, teamUsers, pseudonym, nextCloudUserId, groupId };
+				return { user, teamUsers, groupId };
 			};
 
-			it('should log a warning', async () => {
+			it('should throw not found', async () => {
 				const { groupId, teamUsers } = setup();
 
-				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
-
-				expect(logger.warn).toHaveBeenCalled();
+				await expect(strategy.specUpdateTeamUsersInGroup(groupId, teamUsers)).rejects.toThrow(
+					NotFoundLoggableException
+				);
 			});
 		});
 	});

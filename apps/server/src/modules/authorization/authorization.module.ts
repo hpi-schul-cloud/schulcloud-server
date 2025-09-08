@@ -1,59 +1,19 @@
+import { LoggerModule } from '@core/logger';
 import { FeathersModule } from '@infra/feathers';
 import { Module } from '@nestjs/common';
-import { UserRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
-import { AuthorizationHelper, AuthorizationService, RuleManager } from './domain';
-import {
-	BoardNodeRule,
-	ContextExternalToolRule,
-	CourseGroupRule,
-	CourseRule,
-	ExternalToolRule,
-	GroupRule,
-	InstanceRule,
-	LegacySchoolRule,
-	LessonRule,
-	SchoolExternalToolRule,
-	SchoolRule,
-	SchoolSystemOptionsRule,
-	SubmissionRule,
-	SystemRule,
-	TaskRule,
-	TeamRule,
-	UserLoginMigrationRule,
-	UserRule,
-} from './domain/rules';
+import { AuthorizationHelper, AuthorizationInjectionService, AuthorizationService, RuleManager } from './domain';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 
 @Module({
 	imports: [FeathersModule, LoggerModule],
 	providers: [
 		FeathersAuthorizationService,
+		AuthorizationInjectionService,
 		FeathersAuthProvider,
 		AuthorizationService,
-		UserRepo,
 		RuleManager,
 		AuthorizationHelper,
-		// rules
-		BoardNodeRule,
-		ContextExternalToolRule,
-		CourseGroupRule,
-		CourseRule,
-		GroupRule,
-		LessonRule,
-		SchoolRule,
-		SchoolExternalToolRule,
-		SubmissionRule,
-		TaskRule,
-		TeamRule,
-		UserRule,
-		UserLoginMigrationRule,
-		LegacySchoolRule,
-		SystemRule,
-		SchoolSystemOptionsRule,
-		ExternalToolRule,
-		InstanceRule,
 	],
-	exports: [FeathersAuthorizationService, AuthorizationService, SystemRule],
+	exports: [FeathersAuthorizationService, AuthorizationService, AuthorizationInjectionService, AuthorizationHelper],
 })
 export class AuthorizationModule {}

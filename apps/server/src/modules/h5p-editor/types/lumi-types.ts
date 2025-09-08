@@ -1,6 +1,6 @@
 import { IUser } from '@lumieducation/h5p-server';
 import { EntityId } from '@shared/domain/types';
-import { H5PContentParentType } from '../entity';
+import { H5PContentParentType } from '../types';
 
 export interface H5PContentParentParams {
 	schoolId: EntityId;
@@ -9,19 +9,19 @@ export interface H5PContentParentParams {
 }
 
 export class LumiUserWithContentData implements IUser {
-	contentParentType: H5PContentParentType;
+	public contentParentType: H5PContentParentType;
 
-	contentParentId: EntityId;
+	public contentParentId: EntityId;
 
-	schoolId: EntityId;
+	public schoolId: EntityId;
 
-	email: string;
+	public email: string;
 
-	id: EntityId;
+	public id: EntityId;
 
-	name: string;
+	public name: string;
 
-	type: 'local' | string;
+	public type: 'local' | string;
 
 	constructor(user: IUser, parentParams: H5PContentParentParams) {
 		this.contentParentType = parentParams.parentType;

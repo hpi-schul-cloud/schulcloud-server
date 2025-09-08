@@ -1,230 +1,235 @@
-const mockery = require('mockery');
 const { expect } = require('chai');
-
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
-const testObjects = require('../../helpers/testObjects')(appPromise());
-
+const testHelper = require('../../helpers/testObjects');
 const {
 	hasEditPermissionForUser,
 	hasReadPermissionForUser,
 } = require('../../../../src/services/user/hooks/index.hooks');
 
-/**
- * Warning: Role Changes are not handled yet.
- * @param loggedinUserPermissions {array} - an array of permissions that the requesting user has
- * @returns the hasEditPermissionForUser hook with mocked dependencies
- */
-const hasPermissionHookMockGenerator = (loggedinUserPermissions = []) => {
-	const globalHookMock = {
-		hasPermission: (permissions) => () =>
-			permissions.some((permission) => loggedinUserPermissions.includes(permission)),
-	};
-	mockery.enable({
-		warnOnReplace: false,
-		warnOnUnregistered: false,
-		useCleanCache: true,
-	});
-	mockery.registerMock('../../../hooks', globalHookMock);
-	// need to require it after the mocks got defined
-	// eslint-disable-next-line global-require
-	const { hasEditPermissionForUser: testHook } = require('../../../../src/services/user/hooks/index.hooks');
-	return testHook;
-};
+describe('user hooks', () => {
+	let app;
+	let userService;
+	let server;
+	let nestServices;
+	let configBefore;
+	let testObjects;
 
-/**
- * Warning: Role Changes are not handled yet.
- * @param promise {Promise} - an array of permissions that the requesting user has
- * @param sucess {Promise} - should the promise succeed?
- * @returns the promise
- */
-const assertPromiseStatus = (promise, success) =>
-	promise
-		.then((result) => {
-			expect(success).to.be.ok;
-			return result;
-		})
-		.catch((error) => {
-			expect(success).to.not.be.ok;
-			return error;
+	before(async () => {
+		configBefore = Configuration.toObject({ plainSecrets: true });
+		Configuration.set('FEATURE_NEXBOARD_COPY_ENABLED', false);
+		app = await appPromise();
+		testObjects = testHelper(app);
+		userService = app.service('users');
+		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
+	});
+
+	after(async () => {
+		Configuration.reset(configBefore);
+		await testObjects.cleanup();
+		await server.close();
+		await closeNestServices(nestServices);
+	});
+
+	describe('hasEditPermissionForUser', () => {
+		it('can edit your own user', async () => {
+			const teacherUser = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await testObjects.generateRequestParamsFromUser(teacherUser);
+			const context = {
+				id: teacherUser._id.toString(),
+				params,
+			};
+
+			const result = await hasEditPermissionForUser(context);
+
+			expect(result).to.deep.equal(context);
 		});
 
-describe('hasEditPermissionForUser', () => {
-	let app;
-	let userService;
-	let server;
-	let nestServices;
+		it('can edit a student when current user has the STUDENT_EDIT permission', async () => {
+			const key = 'STUDENT_EDIT';
+			await testObjects.createTestRole({
+				name: key,
+				permissions: [key],
+			});
+			const user = await testObjects.createTestUser({ roles: [key] });
+			const context = {
+				id: user._id.toString(),
+				service: userService,
+			};
 
-	before(async () => {
-		app = await appPromise();
-		userService = app.service('users');
-		server = await app.listen(0);
-		nestServices = await setupNestServices(app);
+			const result = await hasEditPermissionForUser(context);
+
+			expect(result).to.deep.equal(context);
+		});
+
+		it('can not edit a student when current user has not the STUDENT_EDIT permission', async () => {
+			const key = 'NO_STUDENT_EDIT';
+			await testObjects.createTestRole({
+				name: key,
+				permissions: [],
+			});
+			const { _id: targetId } = await testObjects.createTestUser({ roles: [key] });
+			const context = {
+				id: targetId,
+				service: userService,
+			};
+
+			const result = await hasEditPermissionForUser(context);
+
+			expect(result).to.deep.equal(context);
+		});
+
+		it('can edit a teachers when current user has the TEACHER_EDIT permission', async () => {
+			const key = 'TEACHER_EDIT';
+			await testObjects.createTestRole({
+				name: key,
+				permissions: [key],
+			});
+			const { _id: targetId } = await testObjects.createTestUser({ roles: [key] });
+			const context = {
+				id: targetId,
+				service: userService,
+			};
+
+			const result = await hasEditPermissionForUser(context);
+
+			expect(result).to.deep.equal(context);
+		});
+
+		it('can not edit a teacher when current user has not the TEACHER_EDIT permission', async () => {
+			const key = 'NO_TEACHER_EDIT';
+			await testObjects.createTestRole({
+				name: key,
+				permissions: [],
+			});
+			const { _id: targetId } = await testObjects.createTestUser({ roles: [key] });
+			const context = {
+				id: targetId,
+				service: userService,
+			};
+
+			const result = await hasEditPermissionForUser(context);
+
+			expect(result).to.deep.equal(context);
+		});
+
+		it('can edit an admin when current user has ADMIN_EDIT permission', async () => {
+			const key = 'ADMIN_EDIT';
+			await testObjects.createTestRole({
+				name: key,
+				permissions: [key],
+			});
+			const { _id: targetId } = await testObjects.createTestUser({ roles: [key] });
+			const context = {
+				id: targetId,
+				service: userService,
+			};
+
+			const result = await hasEditPermissionForUser(context);
+
+			expect(result).to.deep.equal(context);
+		});
+
+		it('can not edit an admin when current user has not the ADMIN_EDIT permission', async () => {
+			const key = 'ADMIN_EDIT';
+			await testObjects.createTestRole({
+				name: key,
+				permissions: [],
+			});
+			const { _id: targetId } = await testObjects.createTestUser({ roles: [key] });
+			const context = {
+				id: targetId,
+				service: userService,
+			};
+
+			const result = await hasEditPermissionForUser(context);
+
+			expect(result).to.deep.equal(context);
+		});
 	});
 
-	afterEach(async () => {
-		mockery.disable();
-	});
+	describe('hasReadPermissionForUser', () => {
+		it('can read own user', async () => {
+			const teacherUser = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await testObjects.generateRequestParamsFromUser(teacherUser);
+			const context = {
+				id: teacherUser._id,
+				params,
+			};
 
-	after(async () => {
-		await testObjects.cleanup;
-		await server.close();
-		await closeNestServices(nestServices);
-	});
+			const result = await hasReadPermissionForUser(context);
 
-	it('can edit your own user', async () => {
-		const teacherUser = await testObjects.createTestUser({ roles: ['teacher'] });
-		const params = await testObjects.generateRequestParamsFromUser(teacherUser);
-		const context = {
-			id: teacherUser._id,
-			params,
-		};
-		const result = await hasEditPermissionForUser(context);
-		expect(result).to.deep.equal(context);
-	});
+			expect(result).to.deep.equal(context);
+		});
 
-	it('can edit a student when current user has the STUDENT_EDIT permission', async () => {
-		const testHook = hasPermissionHookMockGenerator(['STUDENT_EDIT']);
-		const { _id: targetId } = await testObjects.createTestUser({ roles: ['student'] });
-		const context = {
-			id: targetId,
-			service: userService,
-		};
-		assertPromiseStatus(testHook(context), true);
-		mockery.disable();
-	});
+		it('can read a student when current user has the STUDENT_LIST permission', async () => {
+			const key = 'STUDENT_LIST';
+			await testObjects.createTestRole({
+				name: key,
+				permissions: [key],
+			});
+			const { _id: targetId } = await testObjects.createTestUser({ roles: [key] });
+			const context = {
+				id: targetId,
+				service: userService,
+			};
 
-	it('can not edit a student when current user has not the STUDENT_EDIT permission', async () => {
-		const testHook = hasPermissionHookMockGenerator([]);
-		const { _id: targetId } = await testObjects.createTestUser({ roles: ['student'] });
-		const context = {
-			id: targetId,
-			service: userService,
-		};
-		assertPromiseStatus(testHook(context), false);
-		mockery.disable();
-	});
+			const result = await hasReadPermissionForUser(context);
 
-	it('can edit a teachers when current user has the TEACHER_EDIT permission', async () => {
-		const testHook = hasPermissionHookMockGenerator(['TEACHER_EDIT']);
-		const { _id: targetId } = await testObjects.createTestUser({ roles: ['teacher'] });
-		const context = {
-			id: targetId,
-			service: userService,
-		};
-		assertPromiseStatus(testHook(context), true);
-		mockery.disable();
-	});
+			expect(result).to.deep.equal(context);
+		});
 
-	it('can not edit a teacher when current user has not the TEACHER_EDIT permission', async () => {
-		const testHook = hasPermissionHookMockGenerator([]);
-		const { _id: targetId } = await testObjects.createTestUser({ roles: ['teacher'] });
-		const context = {
-			id: targetId,
-			service: userService,
-		};
-		assertPromiseStatus(testHook(context), false);
-		mockery.disable();
-	});
+		it('can not read a student when current user has not the STUDENT_LIST permission', async () => {
+			const key = 'STUDENT_LIST';
+			await testObjects.createTestRole({
+				name: key,
+				permissions: [],
+			});
+			const { _id: targetId } = await testObjects.createTestUser({ roles: [key] });
+			const context = {
+				id: targetId,
+				service: userService,
+			};
 
-	it('can edit an admin when current user has ADMIN_EDIT permission', async () => {
-		const testHook = hasPermissionHookMockGenerator(['ADMIN_EDIT']);
-		const { _id: targetId } = await testObjects.createTestUser({ roles: ['administrator'] });
-		const context = {
-			id: targetId,
-			service: userService,
-		};
-		assertPromiseStatus(testHook(context), true);
-		mockery.disable();
-	});
+			const result = await hasReadPermissionForUser(context);
 
-	it('can not edit an admin when current user has not the ADMIN_EDIT permission', async () => {
-		const testHook = hasPermissionHookMockGenerator([]);
-		const { _id: targetId } = await testObjects.createTestUser({ roles: ['administrator'] });
-		const context = {
-			id: targetId,
-			service: userService,
-		};
-		assertPromiseStatus(testHook(context), false);
-		mockery.disable();
-	});
-});
+			expect(result).to.deep.equal(context);
+		});
 
-describe('hasReadPermissionForUser', () => {
-	let app;
-	let userService;
-	let server;
-	let nestServices;
+		it('can read a teachers when current user has the TEACHER_LIST permission', async () => {
+			const key = 'TEACHER_LIST';
+			await testObjects.createTestRole({
+				name: key,
+				permissions: [key],
+			});
+			const { _id: targetId } = await testObjects.createTestUser({ roles: [key] });
+			const context = {
+				id: targetId,
+				service: userService,
+			};
 
-	before(async () => {
-		app = await appPromise();
-		userService = app.service('users');
-		server = await app.listen(0);
-		nestServices = await setupNestServices(app);
-	});
+			const result = await hasReadPermissionForUser(context);
 
-	afterEach(async () => {
-		mockery.disable();
-	});
+			expect(result).to.deep.equal(context);
+		});
 
-	after(async () => {
-		await testObjects.cleanup;
-		await server.close();
-		await closeNestServices(nestServices);
-	});
+		it('can not read a teacher when current user has not the TEACHER_LIST permission', async () => {
+			const key = 'TEACHER_LIST';
+			await testObjects.createTestRole({
+				name: key,
+				permissions: [],
+			});
+			const { _id: targetId } = await testObjects.createTestUser({ roles: [key] });
+			const context = {
+				id: targetId,
+				service: userService,
+			};
 
-	it('can read own user', async () => {
-		const teacherUser = await testObjects.createTestUser({ roles: ['teacher'] });
-		const params = await testObjects.generateRequestParamsFromUser(teacherUser);
-		const context = {
-			id: teacherUser._id,
-			params,
-		};
-		const result = await hasReadPermissionForUser(context);
-		expect(result).to.deep.equal(context);
-	});
+			const result = await hasReadPermissionForUser(context);
 
-	it('can read a student when current user has the STUDENT_LIST permission', async () => {
-		const testHook = hasPermissionHookMockGenerator(['STUDENT_LIST']);
-		const { _id: targetId } = await testObjects.createTestUser({ roles: ['student'] });
-		const context = {
-			id: targetId,
-			service: userService,
-		};
-		assertPromiseStatus(testHook(context), true);
-		mockery.disable();
-	});
-
-	it('can not read a student when current user has not the STUDENT_LIST permission', async () => {
-		const testHook = hasPermissionHookMockGenerator([]);
-		const { _id: targetId } = await testObjects.createTestUser({ roles: ['student'] });
-		const context = {
-			id: targetId,
-			service: userService,
-		};
-		assertPromiseStatus(testHook(context), false);
-		mockery.disable();
-	});
-
-	it('can read a teachers when current user has the TEACHER_LIST permission', async () => {
-		const testHook = hasPermissionHookMockGenerator(['TEACHER_LIST']);
-		const { _id: targetId } = await testObjects.createTestUser({ roles: ['teacher'] });
-		const context = {
-			id: targetId,
-			service: userService,
-		};
-		assertPromiseStatus(testHook(context), true);
-		mockery.disable();
-	});
-
-	it('can not read a teacher when current user has not the TEACHER_LIST permission', async () => {
-		const testHook = hasPermissionHookMockGenerator([]);
-		const { _id: targetId } = await testObjects.createTestUser({ roles: ['teacher'] });
-		const context = {
-			id: targetId,
-			service: userService,
-		};
-		assertPromiseStatus(testHook(context), false);
-		mockery.disable();
+			expect(result).to.deep.equal(context);
+		});
 	});
 });

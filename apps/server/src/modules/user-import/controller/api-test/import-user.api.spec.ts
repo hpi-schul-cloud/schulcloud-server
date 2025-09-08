@@ -1,7 +1,15 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/repo';
+import { accountFactory } from '@modules/account/testing';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { SchoolFeature } from '@modules/school/domain';
+import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerConfig } from '@modules/server';
-import { ServerTestModule } from '@modules/server/server.module';
-import { SystemEntity } from '@modules/system/entity';
+import { ServerTestModule } from '@modules/server/server.app.module';
+import { SystemEntity } from '@modules/system/repo';
+import { systemEntityFactory } from '@modules/system/testing';
 import {
 	FilterImportUserParams,
 	FilterMatchType,
@@ -18,24 +26,17 @@ import {
 	UserMatchResponse,
 	UserRole,
 } from '@modules/user-import/controller/dto';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PaginationParams } from '@shared/controller';
-import { ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
-import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
-import { SchoolFeature } from '@shared/domain/types';
-import {
-	cleanupCollections,
-	importUserFactory,
-	roleFactory,
-	schoolEntityFactory,
-	systemEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-	userFactory,
-} from '@shared/testing';
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
-import { accountFactory } from '@src/modules/account/testing';
+import { PaginationParams } from '@shared/controller/dto';
+import { Permission, SortOrder } from '@shared/domain/interface';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
+import { ImportUser, MatchCreator } from '../../entity';
+import { importUserFactory } from '../../testing';
 
 describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;
@@ -1184,6 +1185,62 @@ describe('ImportUser Controller (API)', () => {
 				const { loggedInClient } = await setup();
 
 				await loggedInClient.post('cancel').expect(HttpStatus.NO_CONTENT);
+			});
+		});
+	});
+
+	describe('[PATCH] /user/import/clear-all-auto-matches', () => {
+		describe('when user is unauthorized', () => {
+			const setup = () => {
+				return {
+					notLoggedInClient: new TestApiClient(app, 'user/import'),
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { notLoggedInClient } = setup();
+
+				await notLoggedInClient.patch('clear-all-auto-matches').expect(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user has no permission', () => {
+			const setup = async () => {
+				const { account, system } = await authenticatedUser([]);
+				setConfig(system._id.toString());
+				const loggedInClient = await testApiClient.login(account);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { loggedInClient } = await setup();
+
+				await loggedInClient.patch('clear-all-auto-matches').expect(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user has permission and all auto matches were successfully cleared', () => {
+			const setup = async () => {
+				const { school, system, account } = await authenticatedUser([Permission.IMPORT_USER_UPDATE], [], true, '00100');
+				setConfig(system._id.toString());
+
+				const importusers = importUserFactory.buildList(10, { school });
+				await em.persistAndFlush(importusers);
+
+				const loggedInClient = await testApiClient.login(account);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return no content', async () => {
+				const { loggedInClient } = await setup();
+
+				await loggedInClient.patch('clear-all-auto-matches').expect(HttpStatus.NO_CONTENT);
 			});
 		});
 	});

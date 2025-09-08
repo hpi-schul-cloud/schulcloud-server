@@ -1,11 +1,11 @@
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { AuthorizableObject, DomainObject } from '../../../shared/domain/domain-object';
 import { ClassSourceOptions } from './class-source-options.do';
 
 export interface ClassProps extends AuthorizableObject {
 	name: string;
 	schoolId: EntityId;
-	userIds?: EntityId[];
+	userIds: EntityId[];
 	teacherIds: EntityId[];
 	invitationLink?: string;
 	year?: EntityId;
@@ -23,11 +23,19 @@ export class Class extends DomainObject<ClassProps> {
 		return this.props.name;
 	}
 
+	set name(name: string) {
+		this.props.name = name;
+	}
+
 	get schoolId(): EntityId {
 		return this.props.schoolId;
 	}
 
-	get userIds(): EntityId[] | undefined {
+	set schoolId(schoolId: EntityId) {
+		this.props.schoolId = schoolId;
+	}
+
+	get userIds(): EntityId[] {
 		return this.props.userIds;
 	}
 
@@ -43,8 +51,16 @@ export class Class extends DomainObject<ClassProps> {
 		return this.props.year;
 	}
 
+	set year(year: EntityId | undefined) {
+		this.props.year = year;
+	}
+
 	get gradeLevel(): number | undefined {
 		return this.props.gradeLevel;
+	}
+
+	set gradeLevel(gradeLevel: number | undefined) {
+		this.props.gradeLevel = gradeLevel;
 	}
 
 	get ldapDN(): string | undefined {
@@ -59,8 +75,16 @@ export class Class extends DomainObject<ClassProps> {
 		return this.props.source;
 	}
 
+	set source(source: string | undefined) {
+		this.props.source = source;
+	}
+
 	get sourceOptions(): ClassSourceOptions | undefined {
 		return this.props.sourceOptions;
+	}
+
+	set sourceOptions(sourceOptions: ClassSourceOptions | undefined) {
+		this.props.sourceOptions = sourceOptions;
 	}
 
 	get createdAt(): Date {
@@ -71,7 +95,36 @@ export class Class extends DomainObject<ClassProps> {
 		return this.props.updatedAt;
 	}
 
-	public removeUser(userId: string) {
+	public addTeacher(teacherId: EntityId): void {
+		if (this.teacherIds.includes(teacherId)) {
+			return;
+		}
+
+		this.props.teacherIds.push(teacherId);
+	}
+
+	public addUser(userId: EntityId): void {
+		if (this.userIds.includes(userId)) {
+			return;
+		}
+
+		this.props.userIds.push(userId);
+	}
+
+	public removeUser(userId: string): void {
 		this.props.userIds = this.props.userIds?.filter((userId1) => userId1 !== userId);
+	}
+
+	public clearParticipants(): void {
+		this.props.teacherIds = [];
+		this.props.userIds = [];
+	}
+
+	public getClassFullName(): string {
+		const classFullName = this.props.gradeLevel
+			? this.props.gradeLevel.toString().concat(this.props.name)
+			: this.props.name;
+
+		return classFullName;
 	}
 }

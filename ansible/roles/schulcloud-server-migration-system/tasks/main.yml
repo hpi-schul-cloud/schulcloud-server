@@ -4,6 +4,16 @@
       namespace: "{{ NAMESPACE }}"
       template: svc.yml.j2
       state: "{{ 'present' if WITH_MIGRATION_SYSTEMS else 'absent'}}"
+    tags:
+      - service
+
+  - name: ServiceMonitor
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: svc-monitor.yml.j2
+    tags:
+      - prometheus
 
   - name: Deployment
     kubernetes.core.k8s:
@@ -11,6 +21,8 @@
       namespace: "{{ NAMESPACE }}"
       template: deployment.yml.j2
       state: "{{ 'present' if WITH_MIGRATION_SYSTEMS else 'absent'}}"
+    tags:
+      - deployment
 
   - name: Ingress
     kubernetes.core.k8s:
@@ -19,4 +31,6 @@
       template: ingress.yml.j2
       apply: yes
       state: "{{ 'present' if WITH_MIGRATION_SYSTEMS else 'absent'}}"
+    tags:
+      - ingress
 

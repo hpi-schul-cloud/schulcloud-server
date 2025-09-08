@@ -7,11 +7,8 @@ metadata:
     app: board-collaboration
 spec:
   selector:
-    matchExpressions:
-      - key: app.kubernetes.io/name
-        operator: in
-        values:
-          - board-collaboration-svc
+    matchLabels:
+      app.kubernetes.io/name: board-collaboration-svc
   endpoints:
   - path: /metrics
     port: api-metrics

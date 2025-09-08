@@ -3,7 +3,7 @@ const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
 const { NotImplemented } = require('@feathersjs/errors');
-const { TSPStrategy, ApiKeyStrategy, CustomJwtStrategy } = require('./strategies');
+const { ApiKeyStrategy, CustomJwtStrategy } = require('./strategies');
 const { hooks } = require('./hooks');
 const { authConfig } = require('./configuration');
 
@@ -35,11 +35,9 @@ class SCAuthenticationService extends AuthenticationService {
 
 module.exports = (app) => {
 	app.use('/authentication/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
-	// Configure feathers-authentication
+	// Configure feathers-authentication for details see https://feathersjs.com/api/authentication/service#configuration
 	app.set('authentication', authConfig);
 	const authentication = new SCAuthenticationService(app);
-
-	authentication.register('tsp', new TSPStrategy());
 
 	// JWT strategy needs to stay active in feathers to enable hooks "authenticate('jwt')"
 	authentication.register('jwt', new CustomJwtStrategy());

@@ -1,8 +1,8 @@
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { LanguageType } from '@shared/domain/interface';
-import { EntityId, SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import { FileStorageType, InstanceFeature, SchoolPermissions } from '../type';
+import { EntityId } from '@shared/domain/types';
+import { FileStorageType, InstanceFeature, SchoolFeature, SchoolPermissions, SchoolPurpose } from '../type';
 import { County } from './county';
 import { FederalState } from './federal-state';
 import { SchoolYear } from './school-year';
@@ -20,20 +20,52 @@ interface SchoolInfo {
 }
 
 export class School extends DomainObject<SchoolProps> {
-	get currentYear() {
+	get currentYear(): SchoolYear | undefined {
 		return this.props.currentYear;
+	}
+
+	set currentYear(value: SchoolYear | undefined) {
+		this.props.currentYear = value;
 	}
 
 	get systems(): EntityId[] {
 		return this.props.systemIds;
 	}
 
+	get externalId(): string | undefined {
+		return this.props.externalId;
+	}
+
 	set externalId(externalId: string | undefined) {
 		this.props.externalId = externalId;
 	}
 
+	get officialSchoolNumber(): string | undefined {
+		return this.props.officialSchoolNumber;
+	}
+
+	get federalState(): FederalState | undefined {
+		return this.props.federalState;
+	}
+
 	set ldapLastSync(ldapLastSync: string | undefined) {
 		this.props.ldapLastSync = ldapLastSync;
+	}
+
+	set name(name: string) {
+		this.props.name = name;
+	}
+
+	get inMaintenanceSince(): Date | undefined {
+		return this.props.inMaintenanceSince;
+	}
+
+	set inMaintenanceSince(value: Date | undefined) {
+		this.props.inMaintenanceSince = value;
+	}
+
+	get inUserMigration(): boolean | undefined {
+		return this.props.inUserMigration;
 	}
 
 	public getInfo(): SchoolInfo {
@@ -71,6 +103,9 @@ export class School extends DomainObject<SchoolProps> {
 
 		if (county) {
 			throw new ValidationError('County cannot be updated, once it is set.');
+		}
+		if (federalState === undefined) {
+			throw new ValidationError('County cannot be set without a federal state being assigned to the school.');
 		}
 		const { counties } = federalState.getProps();
 		const countyObject = counties?.find((item) => item.id === countyId);
@@ -136,7 +171,7 @@ export interface SchoolProps extends AuthorizableObject {
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
 	currentYear?: SchoolYear;
-	federalState: FederalState;
+	federalState?: FederalState;
 	county?: County;
 	purpose?: SchoolPurpose;
 	features: Set<SchoolFeature>;

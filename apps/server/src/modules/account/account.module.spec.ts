@@ -1,9 +1,10 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { AccountModule } from './account.module';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './repo/micro-orm/mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './domain';
 import { AccountService } from './domain/services/account.service';
+import { AccountEntity } from './repo';
 
 describe('AccountModule', () => {
 	let module: TestingModule;
@@ -12,7 +13,7 @@ describe('AccountModule', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				AccountModule,
-				MongoMemoryDatabaseModule.forRoot(),
+				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 				ConfigModule.forRoot({
 					ignoreEnvFile: true,
 					ignoreEnvVars: true,
@@ -38,7 +39,7 @@ describe('AccountModule', () => {
 			moduleFeatureEnabled = await Test.createTestingModule({
 				imports: [
 					AccountModule,
-					MongoMemoryDatabaseModule.forRoot(),
+					MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 					ConfigModule.forRoot({
 						ignoreEnvFile: true,
 						ignoreEnvVars: true,
@@ -70,7 +71,7 @@ describe('AccountModule', () => {
 			moduleFeatureDisabled = await Test.createTestingModule({
 				imports: [
 					AccountModule,
-					MongoMemoryDatabaseModule.forRoot(),
+					MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 					ConfigModule.forRoot({
 						ignoreEnvFile: true,
 						ignoreEnvVars: true,

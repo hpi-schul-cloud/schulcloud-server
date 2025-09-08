@@ -1,25 +1,24 @@
 import { UserService } from '@modules/user';
-import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { BBBJoinConfigBuilder, BBBRole, BBBService } from '../bbb';
+import { ErrorStatus } from '../error/error-status.enum';
 import { PermissionMapping } from '../mapper/video-conference.mapper';
 import { VideoConferenceService } from '../service';
 import { ScopeRef, VideoConferenceJoin, VideoConferenceState } from './dto';
+import { VideoConferenceFeatureService } from './video-conference-feature.service';
 
 @Injectable()
 export class VideoConferenceJoinUc {
 	constructor(
 		private readonly bbbService: BBBService,
 		private readonly userService: UserService,
-		private readonly videoConferenceService: VideoConferenceService
+		private readonly videoConferenceService: VideoConferenceService,
+		private readonly videoConferenceFeatureService: VideoConferenceFeatureService
 	) {}
 
-	async join(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConferenceJoin> {
-		const user: UserDO = await this.userService.findById(currentUserId);
-
-		await this.videoConferenceService.throwOnFeaturesDisabled(user.schoolId);
+	public async join(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConferenceJoin> {
+		await this.videoConferenceFeatureService.checkVideoConferenceFeatureEnabled(currentUserId, scope);
 
 		const { role, isGuest } = await this.videoConferenceService.getUserRoleAndGuestStatusByUserIdForBbb(
 			currentUserId,
@@ -27,13 +26,15 @@ export class VideoConferenceJoinUc {
 			scope.scope
 		);
 
-		const joinBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
+		const user = await this.userService.findById(currentUserId);
+
+		const joinBuilder = new BBBJoinConfigBuilder({
 			fullName: this.videoConferenceService.sanitizeString(`${user.firstName} ${user.lastName}`),
 			meetingID: scope.id,
 			role,
 		}).withUserId(currentUserId);
 
-		const videoConference: VideoConferenceDO = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
+		const videoConference = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
 			scope.id,
 			scope.scope
 		);
@@ -53,9 +54,9 @@ export class VideoConferenceJoinUc {
 			);
 		}
 
-		const url: string = await this.bbbService.join(joinBuilder.build());
+		const url = await this.bbbService.join(joinBuilder.build());
 
-		const videoConferenceJoin: VideoConferenceJoin = new VideoConferenceJoin({
+		const videoConferenceJoin = new VideoConferenceJoin({
 			state: VideoConferenceState.RUNNING,
 			permission: PermissionMapping[role],
 			url,

@@ -1,76 +1,56 @@
 import { Injectable } from '@nestjs/common';
-import ogs from 'open-graph-scraper';
-import { ImageObject } from 'open-graph-scraper/dist/lib/types';
+import net from 'net';
 import { basename } from 'path';
+import { InvalidLinkUrlLoggableException } from '../loggable/invalid-link-url.loggable';
 import type { MetaData } from '../types';
+import { MetaDataEntityType } from '../types';
+import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 
 @Injectable()
 export class MetaTagExtractorService {
-	constructor(private readonly internalLinkMataTagService: MetaTagInternalUrlService) {}
+	constructor(
+		private readonly internalLinkMataTagService: MetaTagInternalUrlService,
+		private readonly externalLinkMetaTagService: MetaTagExternalUrlService
+	) {}
 
-	async getMetaData(url: string): Promise<MetaData> {
-		if (url.length === 0) {
-			throw new Error(`MetaTagExtractorService requires a valid URL. Given URL: ${url}`);
-		}
+	public async getMetaData(urlString: string): Promise<MetaData> {
+		const url = this.parseValidUrl(urlString);
 
 		const metaData =
 			(await this.tryInternalLinkMetaTags(url)) ??
-			(await this.tryExtractMetaTags(url)) ??
-			this.tryFilenameAsFallback(url) ??
-			this.getDefaultMetaData(url);
+			(await this.tryExtractMetaTagsFromExternalUrl(url)) ??
+			this.useFilenameAsFallback(url);
 
 		return metaData;
 	}
 
-	private async tryInternalLinkMetaTags(url: string): Promise<MetaData | undefined> {
+	private parseValidUrl(url: string): URL {
+		const urlObject = new URL(url);
+
+		// enforce https
+		urlObject.protocol = 'https:';
+
+		if (net.isIPv4(urlObject.hostname) || net.isIPv6(urlObject.hostname)) {
+			throw new InvalidLinkUrlLoggableException(url, 'IP adress is not allowed as hostname');
+		}
+		return urlObject;
+	}
+
+	private tryInternalLinkMetaTags(url: URL): Promise<MetaData | undefined> {
 		return this.internalLinkMataTagService.tryInternalLinkMetaTags(url);
 	}
 
-	private async tryExtractMetaTags(url: string): Promise<MetaData | undefined> {
-		try {
-			const data = await ogs({ url, fetchOptions: { headers: { 'User-Agent': 'Open Graph Scraper' } } });
-
-			const title = data.result?.ogTitle ?? '';
-			const description = data.result?.ogDescription ?? '';
-			const image = data.result?.ogImage ? this.pickImage(data?.result?.ogImage) : undefined;
-
-			return {
-				title,
-				description,
-				image,
-				url,
-				type: 'external',
-			};
-		} catch (error) {
-			return undefined;
-		}
+	private tryExtractMetaTagsFromExternalUrl(url: URL): Promise<MetaData | undefined> {
+		return this.externalLinkMetaTagService.tryExtractMetaTags(url);
 	}
 
-	private tryFilenameAsFallback(url: string): MetaData | undefined {
-		try {
-			const urlObject = new URL(url);
-			const title = basename(urlObject.pathname);
-			return {
-				title,
-				description: '',
-				url,
-				type: 'unknown',
-			};
-		} catch (error) {
-			return undefined;
-		}
-	}
-
-	private getDefaultMetaData(url: string): MetaData {
-		return { url, title: '', description: '', type: 'unknown' };
-	}
-
-	private pickImage(images: ImageObject[], minWidth = 400): ImageObject | undefined {
-		const sortedImages = [...images];
-		sortedImages.sort((a, b) => (a.width && b.width ? Number(a.width) - Number(b.width) : 0));
-		const smallestBigEnoughImage = sortedImages.find((i) => i.width && i.width >= minWidth);
-		const fallbackImage = images[0] && images[0].width === undefined ? images[0] : undefined;
-		return smallestBigEnoughImage ?? fallbackImage;
+	private useFilenameAsFallback(url: URL): MetaData {
+		return {
+			title: basename(url.pathname),
+			description: '',
+			url: url.toString(),
+			type: MetaDataEntityType.UNKNOWN,
+		};
 	}
 }

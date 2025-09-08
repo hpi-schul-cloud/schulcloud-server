@@ -6,7 +6,13 @@ import {
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 } from '../../domain';
-import { ConsentResponse, ConsentSessionResponse, LoginResponse, OauthClientResponse, RedirectResponse } from '../dto';
+import {
+	ConsentResponse,
+	ConsentSessionResponse,
+	OauthClientResponse,
+	OauthProviderLoginResponse,
+	RedirectResponse,
+} from '../dto';
 
 @Injectable()
 export class OauthProviderResponseMapper {
@@ -40,8 +46,8 @@ export class OauthProviderResponseMapper {
 		return response;
 	}
 
-	public static mapLoginResponse(providerLoginResponse: ProviderLoginResponse): LoginResponse {
-		const response: LoginResponse = new LoginResponse({
+	public static mapLoginResponse(providerLoginResponse: ProviderLoginResponse): OauthProviderLoginResponse {
+		const response: OauthProviderLoginResponse = new OauthProviderLoginResponse({
 			client_id: providerLoginResponse.client.client_id,
 			...providerLoginResponse,
 		});

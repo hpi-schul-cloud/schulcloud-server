@@ -1,6 +1,6 @@
-import { System } from '@src/modules/system';
+import { System } from '@modules/system';
 import { SystemForLdapLogin } from '../../domain';
-import { ProviderConfigResponse, SchoolSystemResponse, SystemForLdapLoginResponse } from '../dto/response';
+import { SystemForLdapLoginResponse, SchoolSystemResponse, ProviderConfigResponse } from '../dto';
 
 export class SystemResponseMapper {
 	public static mapToLdapLoginResponses(systems: SystemForLdapLogin[]): SystemForLdapLoginResponse[] {

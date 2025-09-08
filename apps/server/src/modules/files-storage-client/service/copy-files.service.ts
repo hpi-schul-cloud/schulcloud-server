@@ -1,5 +1,6 @@
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { StorageLocation } from '@modules/files-storage/interface';
+import { StorageLocation } from '@infra/files-storage-client';
+import { CopyHelperService } from '@modules/copy-helper/service/copy-helper.service';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper/types/copy.types';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { CopyFileDto } from '../dto';

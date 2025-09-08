@@ -1,5 +1,5 @@
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { AxiosError } from 'axios';
 
 export class AxiosErrorLoggable extends HttpException implements Loggable {
@@ -11,10 +11,10 @@ export class AxiosErrorLoggable extends HttpException implements Loggable {
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: this.axiosError.message,
+			message: `message: ${this.axiosError.message} code: ${this.axiosError.code || 'Unknown code'}`,
 			type: this.type,
 			data: JSON.stringify(this.axiosError.response?.data),
-			stack: this.axiosError.stack,
+			stack: this.stack,
 		};
 	}
 }

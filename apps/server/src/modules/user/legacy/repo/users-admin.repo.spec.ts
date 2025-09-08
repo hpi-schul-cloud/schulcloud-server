@@ -1,12 +1,18 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/repo';
+import { accountFactory } from '@modules/account/testing';
+import { ClassEntity } from '@modules/class/entity';
+import { RoleName } from '@modules/role';
+import { Role } from '@modules/role/repo';
+import { roleFactory } from '@modules/role/testing';
+import { SchoolEntity, SchoolYearEntity } from '@modules/school/repo';
+import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { roleFactory, schoolEntityFactory, schoolYearFactory, userFactory } from '@shared/testing';
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
-import { accountFactory } from '@src/modules/account/testing';
+import { Permission } from '@shared/domain/interface';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { classEntityFactory } from '../../../class/entity/testing';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
 import { UsersAdminRepo } from './users-admin.repo';
@@ -32,7 +38,7 @@ describe('users admin repo', () => {
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
 	const setupDb = async () => {
-		currentYear = schoolYearFactory.withStartYear(2002).buildWithId();
+		currentYear = schoolYearEntityFactory.withStartYear(2002).buildWithId();
 		school = schoolEntityFactory.buildWithId({ currentYear });
 
 		const adminRoles = roleFactory.build({
@@ -111,7 +117,11 @@ describe('users admin repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [User, Role, SchoolEntity, SchoolYearEntity, AccountEntity, ClassEntity],
+				}),
+			],
 			providers: [UsersAdminRepo],
 		}).compile();
 		repo = module.get(UsersAdminRepo);

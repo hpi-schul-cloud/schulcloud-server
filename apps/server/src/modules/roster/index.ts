@@ -1,0 +1,1 @@
+export { FeathersRosterService } from './service';

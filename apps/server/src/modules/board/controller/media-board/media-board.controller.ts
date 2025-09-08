@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -21,7 +21,7 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { MediaAvailableLine, MediaBoard, MediaLine } from '../../domain';
 import { MediaAvailableLineUc, MediaBoardUc } from '../../uc';
 import { BoardUrlParams } from '../dto';
@@ -36,7 +36,7 @@ import {
 import { MediaAvailableLineResponseMapper, MediaBoardResponseMapper, MediaLineResponseMapper } from './mapper';
 
 @ApiTags('Media Board')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('media-boards')
 export class MediaBoardController {
 	constructor(

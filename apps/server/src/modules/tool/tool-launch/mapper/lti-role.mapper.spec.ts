@@ -1,4 +1,4 @@
-import { RoleName } from '@shared/domain/interface';
+import { RoleName } from '@modules/role';
 import { LtiRole } from '../../common/enum';
 import { LtiRoleMapper } from './lti-role.mapper';
 

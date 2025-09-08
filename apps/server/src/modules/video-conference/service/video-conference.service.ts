@@ -1,30 +1,43 @@
-import { CalendarEventDto, CalendarService } from '@infra/calendar';
+import { CalendarService } from '@infra/calendar';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { CourseService } from '@modules/learnroom';
-import { LegacySchoolService } from '@modules/legacy-school';
+import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
+import { VideoConferenceElement } from '@modules/board/domain';
+import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
+import { RoleName } from '@modules/role';
+import { Room, RoomService } from '@modules/room';
+import { RoomMembershipService } from '@modules/room-membership';
+import { TeamEntity, TeamRepo, TeamUserEntity } from '@modules/team/repo';
 import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
+import { VideoConferenceScope } from '@modules/video-conference/domain';
+import { VideoConferenceRepo } from '@modules/video-conference/repo';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { RoleReference, UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
-import { Course, TeamEntity, TeamUserEntity, User } from '@shared/domain/entity';
-import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
-import { EntityId, SchoolFeature } from '@shared/domain/types';
-import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
+import { RoleReference } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { BBBRole } from '../bbb';
+import { VideoConferenceDO, VideoConferenceOptionsDO } from '../domain';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
 import { ScopeInfo, VideoConferenceState } from '../uc/dto';
 import { VideoConferenceConfig } from '../video-conference-config';
 
+type ConferenceResource = CourseEntity | Room | TeamEntity | VideoConferenceElement;
+
 @Injectable()
 export class VideoConferenceService {
 	constructor(
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
+		private readonly boardNodeService: BoardNodeService,
 		private readonly configService: ConfigService<VideoConferenceConfig, true>,
 		private readonly courseService: CourseService,
 		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: LegacySchoolService,
-		private readonly teamsRepo: TeamsRepo,
+		private readonly roomMembershipService: RoomMembershipService,
+		private readonly roomService: RoomService,
+		private readonly teamRepo: TeamRepo,
 		private readonly userService: UserService,
 		private readonly videoConferenceRepo: VideoConferenceRepo
 	) {}
@@ -51,17 +64,17 @@ export class VideoConferenceService {
 	): Promise<boolean> {
 		let isExpert = false;
 		switch (conferenceScope) {
-			case VideoConferenceScope.COURSE: {
-				const user: UserDO = await this.userService.findById(userId);
+			case VideoConferenceScope.COURSE:
+			case VideoConferenceScope.ROOM:
+			case VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT: {
+				const user = await this.userService.findById(userId);
 				isExpert = this.existsOnlyExpertRole(user.roles);
 
 				return isExpert;
 			}
 			case VideoConferenceScope.EVENT: {
-				const team: TeamEntity = await this.teamsRepo.findById(scopeId);
-				const teamUser: TeamUserEntity | undefined = team.teamUsers.find(
-					(userInTeam: TeamUserEntity) => userInTeam.user.id === userId
-				);
+				const team = await this.teamRepo.findById(scopeId);
+				const teamUser = team.teamUsers.find((userInTeam: TeamUserEntity) => userInTeam.user.id === userId);
 
 				if (teamUser === undefined) {
 					throw new ForbiddenException(ErrorStatus.UNKNOWN_USER, 'Cannot find user in team.');
@@ -76,9 +89,9 @@ export class VideoConferenceService {
 	}
 
 	private existsOnlyExpertRole(roles: RoleReference[]): boolean {
-		const roleNames: RoleName[] = roles.map((role: RoleReference) => role.name);
+		const roleNames = roles.map((role: RoleReference) => role.name);
 
-		let isExpert: boolean = roleNames.includes(RoleName.EXPERT);
+		let isExpert = roleNames.includes(RoleName.EXPERT);
 
 		if (isExpert && roles.length > 1) {
 			isExpert = false;
@@ -88,53 +101,102 @@ export class VideoConferenceService {
 	}
 
 	// should be public to expose ressources to UC for passing it to authrisation and improve performance
-	private async loadScopeRessources(
-		scopeId: EntityId,
-		scope: VideoConferenceScope
-	): Promise<Course | TeamEntity | null> {
-		let scopeRessource: Course | TeamEntity | null = null;
+	private async loadScopeResources(scopeId: EntityId, scope: VideoConferenceScope): Promise<ConferenceResource | null> {
+		let scopeResource: ConferenceResource | null = null;
 
 		if (scope === VideoConferenceScope.COURSE) {
-			scopeRessource = await this.courseService.findById(scopeId);
+			scopeResource = await this.courseService.findById(scopeId);
 		} else if (scope === VideoConferenceScope.EVENT) {
-			scopeRessource = await this.teamsRepo.findById(scopeId);
+			scopeResource = await this.teamRepo.findById(scopeId);
+		} else if (scope === VideoConferenceScope.ROOM) {
+			scopeResource = await this.roomService.getSingleRoom(scopeId);
+		} else if (scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT) {
+			scopeResource = await this.boardNodeService.findByClassAndId(VideoConferenceElement, scopeId);
 		} else {
 			// Need to be solve the null with throw by it self.
 		}
 
-		return scopeRessource;
+		return scopeResource;
 	}
 
 	private isNullOrUndefined(value: unknown): value is null {
 		return !value;
 	}
 
-	private hasStartMeetingAndCanRead(authorizableUser: User, entity: Course | TeamEntity): boolean {
+	private async hasStartMeetingAndCanRead(authorizableUser: User, entity: ConferenceResource): Promise<boolean> {
+		if (entity instanceof Room) {
+			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
+			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
+
+			if (roomMember) {
+				return roomMember.roles.some((role) => role.name === RoleName.ROOMADMIN);
+			}
+
+			return false;
+		}
+		if (entity instanceof VideoConferenceElement) {
+			const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(entity);
+			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
+
+			if (boardAuthorisedUser) {
+				const canRoomEditorManageVideoconference =
+					boardDoAuthorizable.boardContextSettings.canRoomEditorManageVideoconference ?? false;
+				const isBoardEditor = boardAuthorisedUser.roles.includes(BoardRoles.EDITOR);
+				const isBoardAdmin = boardAuthorisedUser.roles.includes(BoardRoles.ADMIN);
+				return (canRoomEditorManageVideoconference && isBoardEditor) || isBoardAdmin;
+			}
+
+			return false;
+		}
 		const context = AuthorizationContextBuilder.read([Permission.START_MEETING]);
 		const hasPermission = this.authorizationService.hasPermission(authorizableUser, entity, context);
 
 		return hasPermission;
 	}
 
-	private hasJoinMeetingAndCanRead(authorizableUser: User, entity: Course | TeamEntity): boolean {
+	private async hasJoinMeetingAndCanRead(authorizableUser: User, entity: ConferenceResource): Promise<boolean> {
+		if (entity instanceof Room) {
+			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
+			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
+
+			if (roomMember) {
+				return (
+					roomMember.roles.some((role) => role.name === RoleName.ROOMVIEWER) ||
+					roomMember.roles.some((role) => role.name === RoleName.ROOMEDITOR)
+				);
+			}
+
+			return false;
+		}
+		if (entity instanceof VideoConferenceElement) {
+			const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(entity);
+			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
+
+			if (boardAuthorisedUser) {
+				const boardUserRoles = boardAuthorisedUser.roles;
+				return [BoardRoles.READER, BoardRoles.EDITOR].some((role) => boardUserRoles.includes(role));
+			}
+
+			return false;
+		}
 		const context = AuthorizationContextBuilder.read([Permission.JOIN_MEETING]);
 		const hasPermission = this.authorizationService.hasPermission(authorizableUser, entity, context);
 
 		return hasPermission;
 	}
 
-	async determineBbbRole(userId: EntityId, scopeId: EntityId, scope: VideoConferenceScope): Promise<BBBRole> {
+	public async determineBbbRole(userId: EntityId, scopeId: EntityId, scope: VideoConferenceScope): Promise<BBBRole> {
 		// ressource loading need to be move to uc
-		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course | null] = await Promise.all([
+		const [authorizableUser, scopeResource] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
-			this.loadScopeRessources(scopeId, scope),
+			this.loadScopeResources(scopeId, scope),
 		]);
 
-		if (!this.isNullOrUndefined(scopeRessource)) {
-			if (this.hasStartMeetingAndCanRead(authorizableUser, scopeRessource)) {
+		if (!this.isNullOrUndefined(scopeResource)) {
+			if (await this.hasStartMeetingAndCanRead(authorizableUser, scopeResource)) {
 				return BBBRole.MODERATOR;
 			}
-			if (this.hasJoinMeetingAndCanRead(authorizableUser, scopeRessource)) {
+			if (await this.hasJoinMeetingAndCanRead(authorizableUser, scopeResource)) {
 				return BBBRole.VIEWER;
 			}
 		}
@@ -142,44 +204,58 @@ export class VideoConferenceService {
 		throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
 	}
 
-	public async throwOnFeaturesDisabled(schoolId: EntityId): Promise<void> {
-		if (!this.isVideoConferenceFeatureEnabled) {
-			throw new ForbiddenException(
-				ErrorStatus.SCHOOL_FEATURE_DISABLED,
-				'feature FEATURE_VIDEOCONFERENCE_ENABLED is disabled'
-			);
-		}
-
-		const schoolFeatureEnabled: boolean = await this.schoolService.hasFeature(schoolId, SchoolFeature.VIDEOCONFERENCE);
-		if (!schoolFeatureEnabled) {
-			throw new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED, 'school feature VIDEOCONFERENCE is disabled');
-		}
-	}
-
-	public sanitizeString(text: string) {
+	public sanitizeString(text: string): string {
 		return text.replace(/[^\dA-Za-zÀ-ÖØ-öø-ÿ.\-=_`´ ]/g, '');
 	}
 
 	public async getScopeInfo(userId: EntityId, scopeId: string, scope: VideoConferenceScope): Promise<ScopeInfo> {
+		const ensureMinTitleLength = (title: string): string => {
+			const trimmedTitle = title.trim();
+			if (trimmedTitle.length >= 2) {
+				return trimmedTitle;
+			}
+			return trimmedTitle.padEnd(2, '_');
+		};
+
 		switch (scope) {
 			case VideoConferenceScope.COURSE: {
-				const course: Course = await this.courseService.findById(scopeId);
+				const course = await this.courseService.findById(scopeId);
 
 				return {
 					scopeId,
-					scopeName: 'courses',
+					scopeName: VideoConferenceScope.COURSE,
 					logoutUrl: `${this.hostUrl}/courses/${scopeId}?activeTab=tools`,
-					title: course.name,
+					title: ensureMinTitleLength(course.name),
 				};
 			}
 			case VideoConferenceScope.EVENT: {
-				const event: CalendarEventDto = await this.calendarService.findEvent(userId, scopeId);
+				const event = await this.calendarService.findEvent(userId, scopeId);
 
 				return {
 					scopeId: event.teamId,
-					scopeName: 'teams',
+					scopeName: VideoConferenceScope.EVENT,
 					logoutUrl: `${this.hostUrl}/teams/${event.teamId}?activeTab=events`,
-					title: event.title,
+					title: ensureMinTitleLength(event.title),
+				};
+			}
+			case VideoConferenceScope.ROOM: {
+				const room = await this.roomService.getSingleRoom(scopeId);
+
+				return {
+					scopeId: room.id,
+					scopeName: VideoConferenceScope.ROOM,
+					logoutUrl: `${this.hostUrl}/rooms/${room.id}`,
+					title: ensureMinTitleLength(room.name),
+				};
+			}
+			case VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT: {
+				const element = await this.boardNodeService.findByClassAndId(VideoConferenceElement, scopeId);
+
+				return {
+					scopeId: element.id,
+					scopeName: VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT,
+					logoutUrl: `${this.hostUrl}/boards/${element.rootId}`,
+					title: ensureMinTitleLength(element.title),
 				};
 			}
 			default:
@@ -192,11 +268,11 @@ export class VideoConferenceService {
 		scopeId: EntityId,
 		scope: VideoConferenceScope
 	): Promise<{ role: BBBRole; isGuest: boolean }> {
-		const scopeInfo: ScopeInfo = await this.getScopeInfo(userId, scopeId, scope);
+		const scopeInfo = await this.getScopeInfo(userId, scopeId, scope);
 
-		const role: BBBRole = await this.determineBbbRole(userId, scopeInfo.scopeId, scope);
+		const role = await this.determineBbbRole(userId, scopeInfo.scopeId, scope);
 
-		const isBbbGuest: boolean = await this.hasExpertRole(userId, scope, scopeInfo.scopeId);
+		const isBbbGuest = await this.hasExpertRole(userId, scope, scopeInfo.scopeId);
 
 		return { role, isGuest: isBbbGuest };
 	}
@@ -205,7 +281,7 @@ export class VideoConferenceService {
 		scopeId: EntityId,
 		scope: VideoConferenceScope
 	): Promise<VideoConferenceDO> {
-		const videoConference: VideoConferenceDO = await this.videoConferenceRepo.findByScopeAndScopeId(scopeId, scope);
+		const videoConference = await this.videoConferenceRepo.findByScopeAndScopeId(scopeId, scope);
 
 		return videoConference;
 	}
@@ -235,7 +311,7 @@ export class VideoConferenceService {
 		return vcDo;
 	}
 
-	private async saveVideoConference(videoConference: VideoConferenceDO): Promise<VideoConferenceDO> {
+	private saveVideoConference(videoConference: VideoConferenceDO): Promise<VideoConferenceDO> {
 		return this.videoConferenceRepo.save(videoConference);
 	}
 }

@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
-import { Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardNodeAuthorizableService, BoardNodeService } from '@modules/board';
+import { User } from '@modules/user/repo';
+import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { CollaborativeTextEditor } from '../domain/do/collaborative-text-editor';
 import { CollaborativeTextEditorService } from '../service/collaborative-text-editor.service';
 import {

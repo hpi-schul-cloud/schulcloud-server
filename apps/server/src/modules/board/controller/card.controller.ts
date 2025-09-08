@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -14,7 +14,7 @@ import {
 	Query,
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { CardUc, ColumnUc } from '../uc';
 import {
 	AnyContentElementResponse,
@@ -22,20 +22,23 @@ import {
 	CardListResponse,
 	CardUrlParams,
 	CreateContentElementBodyParams,
+	DeletedElementResponse,
 	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
+	H5pElementResponse,
 	LinkElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
 	RichTextElementResponse,
 	SubmissionContainerElementResponse,
+	VideoConferenceElementResponse,
 } from './dto';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
 
 @ApiTags('Board Card')
-@Authenticate('jwt')
+@JwtAuthentication()
 @Controller('cards')
 export class CardController {
 	constructor(private readonly columnUc: ColumnUc, private readonly cardUc: CardUc) {}
@@ -121,7 +124,11 @@ export class CardController {
 		FileElementResponse,
 		LinkElementResponse,
 		RichTextElementResponse,
-		SubmissionContainerElementResponse
+		SubmissionContainerElementResponse,
+		DrawingElementResponse,
+		DeletedElementResponse,
+		VideoConferenceElementResponse,
+		H5pElementResponse
 	)
 	@ApiResponse({
 		status: 201,
@@ -133,6 +140,9 @@ export class CardController {
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
+				{ $ref: getSchemaPath(DeletedElementResponse) },
+				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
+				{ $ref: getSchemaPath(H5pElementResponse) },
 			],
 		},
 	})

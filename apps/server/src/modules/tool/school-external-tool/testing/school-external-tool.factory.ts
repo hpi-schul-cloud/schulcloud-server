@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DoBaseFactory } from '@shared/testing/factory/domainobject/do-base.factory';
+import { DoBaseFactory } from '@testing/factory/domainobject';
 import { DeepPartial } from 'fishery';
 import { CustomParameterEntry } from '../../common/domain';
 import { SchoolExternalTool, SchoolExternalToolProps } from '../domain';
@@ -28,5 +28,6 @@ export const schoolExternalToolFactory = SchoolExternalToolFactory.define(School
 		toolId: 'toolId',
 		isDeactivated: false,
 		status: schoolExternalToolConfigurationStatusFactory.build(),
+		restrictToContexts: undefined,
 	};
 });

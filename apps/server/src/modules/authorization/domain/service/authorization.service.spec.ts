@@ -1,15 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo';
-import { setupEntities, userFactory } from '@shared/testing';
+import { setupEntities } from '@testing/database';
 import { ForbiddenLoggableException } from '../error';
 import { AuthorizationContextBuilder } from '../mapper';
 import { Rule } from '../type';
+import { AuthorizationInjectionService } from './authorization-injection.service';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
-import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
 
 class TestRule implements Rule {
@@ -28,12 +29,12 @@ describe('AuthorizationService', () => {
 	let service: AuthorizationService;
 	let ruleManager: DeepMocked<RuleManager>;
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
-	let userRepo: DeepMocked<UserRepo>;
+	let authorizationInjectionService: DeepMocked<AuthorizationInjectionService>;
 
 	const testPermission = 'CAN_TEST' as Permission;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -43,16 +44,12 @@ describe('AuthorizationService', () => {
 					useValue: createMock<RuleManager>(),
 				},
 				{
-					provide: ReferenceLoader,
-					useValue: createMock<ReferenceLoader>(),
-				},
-				{
 					provide: AuthorizationHelper,
 					useValue: createMock<AuthorizationHelper>(),
 				},
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
+					provide: AuthorizationInjectionService,
+					useValue: createMock<AuthorizationInjectionService>(),
 				},
 			],
 		}).compile();
@@ -60,7 +57,7 @@ describe('AuthorizationService', () => {
 		service = await module.get(AuthorizationService);
 		ruleManager = await module.get(RuleManager);
 		authorizationHelper = await module.get(AuthorizationHelper);
-		userRepo = await module.get(UserRepo);
+		authorizationInjectionService = await module.get(AuthorizationInjectionService);
 	});
 
 	afterEach(() => {
@@ -304,8 +301,11 @@ describe('AuthorizationService', () => {
 	describe('getUserWithPermissions', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
+			const userLoader = {
+				loadCurrentUserWithPermissions: jest.fn().mockResolvedValue(user),
+			};
 
-			userRepo.findById.mockResolvedValueOnce(user);
+			authorizationInjectionService.getCurrentUserLoader.mockReturnValue(userLoader);
 
 			return { user };
 		};

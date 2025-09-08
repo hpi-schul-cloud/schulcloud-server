@@ -1,8 +1,7 @@
-import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { User } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import {
 	BoardExternalReference,
@@ -15,11 +14,13 @@ import {
 } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
+import { UserService } from '@modules/user';
 
 @Injectable()
 export class MediaBoardUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
+		private readonly userService: UserService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly mediaBoardNodeFactory: MediaBoardNodeFactory,
@@ -30,12 +31,13 @@ export class MediaBoardUc {
 	public async getMediaBoardForUser(userId: EntityId): Promise<MediaBoard> {
 		this.checkFeatureEnabled();
 
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, user, AuthorizationContextBuilder.read([]));
+		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
+		const userDo = await this.userService.findById(userId);
+		this.authorizationService.checkPermission(currentUser, userDo, AuthorizationContextBuilder.read([]));
 
 		const context: BoardExternalReference = {
 			type: BoardExternalReferenceType.User,
-			id: user.id,
+			id: currentUser.id,
 		};
 
 		const existingBoards: MediaBoard[] = await this.mediaBoardService.findByExternalReference(context);
@@ -61,7 +63,7 @@ export class MediaBoardUc {
 
 		const board: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 
-		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
 
 		const line = this.mediaBoardNodeFactory.buildMediaLine({
 			title: '',
@@ -78,7 +80,7 @@ export class MediaBoardUc {
 
 		const board: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 
-		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
 
 		await this.mediaBoardService.updateLayout(board, layout);
 	}

@@ -1,6 +1,6 @@
-import { SortingParams } from '@shared/controller';
-import { IsEnum, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { SortingParams } from '@shared/controller/dto';
+import { IsEnum, IsOptional } from 'class-validator';
 
 export enum ExternalToolSortBy {
 	ID = 'id',

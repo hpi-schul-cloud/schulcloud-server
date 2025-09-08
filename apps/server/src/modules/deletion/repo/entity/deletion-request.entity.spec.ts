@@ -1,13 +1,8 @@
-import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DomainName, StatusModel } from '../../domain/types';
 import { DeletionRequestEntity } from './deletion-request.entity';
 
 describe(DeletionRequestEntity.name, () => {
-	beforeAll(async () => {
-		await setupEntities();
-	});
-
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});

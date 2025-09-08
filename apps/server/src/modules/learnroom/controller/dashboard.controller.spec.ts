@@ -1,25 +1,13 @@
-import { ICurrentUser } from '@modules/authentication';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, GridElement, GridPosition } from '@shared/domain/entity';
-import { EntityId, LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
+import { setupEntities } from '@testing/database';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import { Dashboard, GridElement, GridPosition } from '../domain/do/dashboard';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
 import { DashboardResponse } from './dto';
-
-const learnroomMock = (id: string, name: string) => {
-	return {
-		getMetadata(): LearnroomMetadata {
-			return {
-				id,
-				type: LearnroomTypes.Course,
-				title: name,
-				shortTitle: name.substr(0, 2),
-				displayColor: '#ACACAC',
-				isSynchronized: false,
-			};
-		},
-	};
-};
 
 describe('dashboard uc', () => {
 	let uc: DashboardUc;
@@ -34,7 +22,7 @@ describe('dashboard uc', () => {
 					provide: DashboardUc,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						getUsersDashboard(userId: EntityId): Promise<DashboardEntity> {
+						getUsersDashboard(userId: EntityId): Promise<Dashboard> {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -52,15 +40,17 @@ describe('dashboard uc', () => {
 
 		uc = module.get(DashboardUc);
 		controller = module.get(DashboardController);
+
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('getUsersDashboard', () => {
 		it('should return a dashboard', async () => {
 			jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
-				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+				const dashboard = new Dashboard('someid', { grid: [], userId: 'userId' });
 				return Promise.resolve(dashboard);
 			});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = currentUserFactory.build();
 			const response = await controller.findForUser(currentUser);
 
 			expect(response instanceof DashboardResponse).toEqual(true);
@@ -68,10 +58,10 @@ describe('dashboard uc', () => {
 
 		it('should return a dashboard for teacher', async () => {
 			jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
-				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+				const dashboard = new Dashboard('someid', { grid: [], userId: 'userId' });
 				return Promise.resolve(dashboard);
 			});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = currentUserFactory.build();
 			const response = await controller.findForUser(currentUser);
 
 			expect(response instanceof DashboardResponse).toEqual(true);
@@ -79,13 +69,13 @@ describe('dashboard uc', () => {
 
 		it('should return a dashboard with a group', async () => {
 			jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
-				const dashboard = new DashboardEntity('someid', {
+				const dashboard = new Dashboard('someid', {
 					grid: [
 						{
 							pos: { x: 1, y: 3 },
 							gridElement: GridElement.FromPersistedGroup('elementId', 'groupTitle', [
-								learnroomMock('firstId', 'Math'),
-								learnroomMock('secondId', 'German'),
+								courseEntityFactory.buildWithId({ name: 'Mathe' }),
+								courseEntityFactory.buildWithId({ name: 'German' }),
 							]),
 						},
 					],
@@ -93,7 +83,7 @@ describe('dashboard uc', () => {
 				});
 				return Promise.resolve(dashboard);
 			});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = currentUserFactory.build();
 
 			const response = await controller.findForUser(currentUser);
 			expect(response instanceof DashboardResponse).toEqual(true);
@@ -102,13 +92,13 @@ describe('dashboard uc', () => {
 
 		it('should call uc', async () => {
 			const spy = jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
-				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+				const dashboard = new Dashboard('someid', { grid: [], userId: 'userId' });
 				return Promise.resolve(dashboard);
 			});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = currentUserFactory.build();
 			await controller.findForUser(currentUser);
 
-			expect(spy).toHaveBeenCalledWith('userId');
+			expect(spy).toHaveBeenCalledWith(currentUser.userId);
 		});
 	});
 
@@ -117,18 +107,21 @@ describe('dashboard uc', () => {
 			const spy = jest
 				.spyOn(uc, 'moveElementOnDashboard')
 				.mockImplementation((dashboardId: EntityId, from: GridPosition, to: GridPosition) => {
-					const dashboard = new DashboardEntity(dashboardId, {
+					const dashboard = new Dashboard(dashboardId, {
 						grid: [
 							{
 								pos: to,
-								gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+								gridElement: GridElement.FromPersistedReference(
+									'elementId',
+									courseEntityFactory.buildWithId({ name: 'Mathe' })
+								),
 							},
 						],
 						userId: 'userId',
 					});
 					return Promise.resolve(dashboard);
 				});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = currentUserFactory.build();
 			await controller.moveElement(
 				{ dashboardId: 'dashboardId' },
 				{ from: { x: 1, y: 2 }, to: { x: 2, y: 1 } },
@@ -141,18 +134,21 @@ describe('dashboard uc', () => {
 			jest
 				.spyOn(uc, 'moveElementOnDashboard')
 				.mockImplementation((dashboardId: EntityId, from: GridPosition, to: GridPosition) => {
-					const dashboard = new DashboardEntity(dashboardId, {
+					const dashboard = new Dashboard(dashboardId, {
 						grid: [
 							{
 								pos: to,
-								gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+								gridElement: GridElement.FromPersistedReference(
+									'elementId',
+									courseEntityFactory.buildWithId({ name: 'Mathe' })
+								),
 							},
 						],
 						userId: 'userId',
 					});
 					return Promise.resolve(dashboard);
 				});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = currentUserFactory.build();
 			const response = await controller.moveElement(
 				{ dashboardId: 'dashboardId' },
 				{
@@ -170,13 +166,13 @@ describe('dashboard uc', () => {
 			const spy = jest
 				.spyOn(uc, 'renameGroupOnDashboard')
 				.mockImplementation((dashboardId: EntityId, position: GridPosition, title: string) => {
-					const dashboard = new DashboardEntity(dashboardId, {
+					const dashboard = new Dashboard(dashboardId, {
 						grid: [
 							{
 								pos: position,
 								gridElement: GridElement.FromPersistedGroup('elementId', title, [
-									learnroomMock('referenceId1', 'Math'),
-									learnroomMock('referenceId2', 'German'),
+									courseEntityFactory.buildWithId({ name: 'Mathe' }),
+									courseEntityFactory.buildWithId({ name: 'German' }),
 								]),
 							},
 						],
@@ -184,7 +180,7 @@ describe('dashboard uc', () => {
 					});
 					return Promise.resolve(dashboard);
 				});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = currentUserFactory.build();
 			await controller.patchGroup({ dashboardId: 'dashboardId' }, 3, 4, { title: 'groupTitle' }, currentUser);
 			expect(spy).toHaveBeenCalledWith('dashboardId', { x: 3, y: 4 }, 'groupTitle', currentUser.userId);
 		});
@@ -193,13 +189,13 @@ describe('dashboard uc', () => {
 			jest
 				.spyOn(uc, 'renameGroupOnDashboard')
 				.mockImplementation((dashboardId: EntityId, position: GridPosition, title: string) => {
-					const dashboard = new DashboardEntity(dashboardId, {
+					const dashboard = new Dashboard(dashboardId, {
 						grid: [
 							{
 								pos: position,
 								gridElement: GridElement.FromPersistedGroup('elementId', title, [
-									learnroomMock('referenceId1', 'Math'),
-									learnroomMock('referenceId2', 'German'),
+									courseEntityFactory.buildWithId({ name: 'Mathe' }),
+									courseEntityFactory.buildWithId({ name: 'German' }),
 								]),
 							},
 						],
@@ -207,7 +203,7 @@ describe('dashboard uc', () => {
 					});
 					return Promise.resolve(dashboard);
 				});
-			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser = currentUserFactory.build();
 			const response = await controller.patchGroup(
 				{ dashboardId: 'dashboardId' },
 				3,

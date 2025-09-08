@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { utilities, WinstonModule } from 'nest-winston';
 import winston from 'winston';
 import { ErrorLogger } from './error-logger';
-import { LoggerConfig } from './interfaces';
+import { LoggerConfig } from './logger.config';
 import { LegacyLogger } from './legacy-logger.service';
 import { Logger } from './logger';
 

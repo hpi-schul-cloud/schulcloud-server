@@ -3,7 +3,7 @@ import { AuthorizationApi, Configuration, ConfigurationParameters } from './auth
 import { AuthorizationClientAdapter } from './authorization-client.adapter';
 
 export interface AuthorizationClientConfig extends ConfigurationParameters {
-	basePath?: string;
+	basePath: string;
 }
 
 @Module({})

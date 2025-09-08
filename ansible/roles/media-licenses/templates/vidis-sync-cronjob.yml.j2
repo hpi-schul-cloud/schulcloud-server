@@ -1,0 +1,99 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: vidis-sync-cronjob
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: vidis-sync-cronjob
+    app.kubernetes.io/component: sync
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+  name: vidis-sync-cronjob
+spec:
+  schedule: {{ SERVER_VIDIS_SYNC_CRONJOB_SCHEDULE|default("20 4 * * *", true) }}
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: vidis-sync-cronjob
+            app.kubernetes.io/part-of: schulcloud-verbund
+            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            app.kubernetes.io/name: vidis-sync-cronjob
+            app.kubernetes.io/component: sync
+            app.kubernetes.io/managed-by: ansible
+            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+        spec:
+          os:
+            name: linux
+          containers:
+          - name: vidis-sync-cronjob
+            image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            envFrom:
+            - configMapRef:
+                name: api-configmap
+            - secretRef:
+                name: api-secret
+            - configMapRef:
+                name: vidis-sync-cronjob-configmap
+            command: ['/bin/sh','-c']
+            args: ['npm run nest:start:sync-console:media:activations:vidis:prod']
+            resources:
+              limits:
+                cpu: {{ MEDIA_ACTIVATION_CPU_LIMITS|default("2000m", true) }}
+                memory: {{ MEDIA_ACTIVATION_MEMORY_LIMITS|default("2Gi", true) }}
+              requests:
+                cpu: {{ MEDIA_ACTIVATION_CPU_REQUESTS|default("100m", true) }}
+                memory: {{ MEDIA_ACTIVATION_MEMORY_REQUESTS|default("150Mi", true) }}
+          restartPolicy: OnFailure
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
+          affinity:
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 20
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app.kubernetes.io/part-of
+                      operator: In
+                      values:
+                      - schulcloud-verbund
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
+              - weight: 10
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: git.repo
+                      operator: In
+                      values:
+                      - {{ SCHULCLOUD_SERVER_REPO_NAME }}
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
+              - weight: 10
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: git.branch
+                      operator: In
+                      values:
+                      - {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
+              - weight: 10
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app.kubernetes.io/version
+                      operator: In
+                      values:
+                      - {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
+{% endif %}
+

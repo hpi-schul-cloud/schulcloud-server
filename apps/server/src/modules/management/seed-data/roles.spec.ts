@@ -1,10 +1,11 @@
-import { RoleName } from '@shared/domain/interface';
-import { setupEntities } from '@shared/testing';
+import { RoleName } from '@modules/role';
+import { Role } from '@modules/role/repo';
+import { setupEntities } from '@testing/database';
 import * as roleModule from './roles';
 
 describe('Role seed data generation', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([Role]);
 	});
 
 	it('should generate role', () => {

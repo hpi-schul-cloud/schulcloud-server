@@ -1,64 +1,31 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@modules/server/server.module';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { courseEntityFactory } from '@modules/course/testing';
+import { ServerTestModule } from '@modules/server/server.app.module';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
-import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
-import { Request } from 'express';
-import request from 'supertest';
-import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, ContentElementType } from '../../domain';
+import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { CardResponse } from '../dto';
 
 const baseRouteName = '/columns';
 
-class API {
-	app: INestApplication;
-
-	constructor(app: INestApplication) {
-		this.app = app;
-	}
-
-	async post(columnId: string, requestBody?: object) {
-		const response = await request(this.app.getHttpServer())
-			.post(`${baseRouteName}/${columnId}/cards`)
-			.set('Accept', 'application/json')
-			.send(requestBody);
-
-		return {
-			result: response.body as CardResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
-
 describe(`card create (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
-	let api: API;
+	let apiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		api = new API(app);
+		apiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -67,9 +34,9 @@ describe(`card create (api)`, () => {
 
 	const setup = async () => {
 		await cleanupCollections(em);
-		const user = userFactory.build();
-		const course = courseFactory.build({ teachers: [user] });
-		await em.persistAndFlush([user, course]);
+		const { teacherAccount: account, teacherUser: user } = UserAndAccountTestFactory.buildTeacher();
+		const course = courseEntityFactory.build({ teachers: [user] });
+		await em.persistAndFlush([user, account, course]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -84,30 +51,30 @@ describe(`card create (api)`, () => {
 			requiredEmptyElements: [ContentElementType.RICH_TEXT, ContentElementType.FILE, ContentElementType.LINK],
 		};
 
-		return { user, columnBoardNode, columnNode, createCardBodyParams };
+		const loggedInClient = await apiClient.login(account);
+
+		return { user, columnBoardNode, columnNode, createCardBodyParams, loggedInClient };
 	};
 
 	describe('with valid user', () => {
 		it('should return status 201', async () => {
-			const { user, columnNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+			const { columnNode, loggedInClient } = await setup();
 
-			const response = await api.post(columnNode.id);
+			const response = await loggedInClient.post(`${columnNode.id}/cards`);
 
 			expect(response.status).toEqual(201);
 		});
 
 		it('should return the created card', async () => {
-			const { user, columnNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+			const { columnNode, loggedInClient } = await setup();
 
-			const { result } = await api.post(columnNode.id);
+			const response = await loggedInClient.post(`${columnNode.id}/cards`);
+			const result = response.body as CardResponse;
 
 			expect(result.id).toBeDefined();
 		});
 		it('created card should contain empty text, file and link elements', async () => {
-			const { user, columnNode, createCardBodyParams } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+			const { columnNode, createCardBodyParams, loggedInClient } = await setup();
 
 			const expectedEmptyElements = [
 				{
@@ -131,7 +98,8 @@ describe(`card create (api)`, () => {
 				},
 			];
 
-			const { result } = await api.post(columnNode.id, createCardBodyParams);
+			const response = await loggedInClient.post(`${columnNode.id}/cards`, createCardBodyParams);
+			const result = response.body as CardResponse;
 			const { elements } = result;
 
 			expect(elements[0]).toMatchObject(expectedEmptyElements[0]);
@@ -139,14 +107,14 @@ describe(`card create (api)`, () => {
 			expect(elements[2]).toMatchObject(expectedEmptyElements[2]);
 		});
 		it('should return status 400 as the content element is unknown', async () => {
-			const { user, columnNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+			const { columnNode, loggedInClient } = await setup();
 
 			const invalidBodyParams = {
 				requiredEmptyElements: ['unknown-content-element'],
 			};
 
-			const response = await api.post(columnNode.id, invalidBodyParams);
+			const response = await loggedInClient.post(`${columnNode.id}/cards`, invalidBodyParams);
+
 			expect(response.status).toEqual(400);
 		});
 	});
@@ -154,13 +122,27 @@ describe(`card create (api)`, () => {
 	describe('with invalid user', () => {
 		it('should return status 403', async () => {
 			const { columnNode } = await setup();
-			const invalidUser = userFactory.build();
-			await em.persistAndFlush([invalidUser]);
-			currentUser = mapUserToCurrentUser(invalidUser);
+			const { teacherAccount: account, teacherUser: user } = UserAndAccountTestFactory.buildTeacher();
+			await em.persistAndFlush([user, account]);
 
-			const response = await api.post(columnNode.id);
+			const api = new TestApiClient(app, baseRouteName);
+			const loggedInClient = await api.login(account);
+
+			const response = await loggedInClient.post(`${columnNode.id}/cards`);
 
 			expect(response.status).toEqual(403);
+		});
+	});
+
+	describe('with not logged in user', () => {
+		it('should return status 403', async () => {
+			const { columnNode } = await setup();
+			const { teacherAccount: account, teacherUser: user } = UserAndAccountTestFactory.buildTeacher();
+			await em.persistAndFlush([user, account]);
+
+			const response = await apiClient.post(`${columnNode.id}/cards`);
+
+			expect(response.status).toEqual(401);
 		});
 	});
 });

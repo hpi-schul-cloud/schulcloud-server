@@ -1,35 +1,24 @@
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { Logger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	DataDeletedEvent,
-	DeletionService,
-	DomainDeletionReport,
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-	UserDeletedEvent,
-} from '@modules/deletion';
-import { Injectable } from '@nestjs/common';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { User } from '@shared/domain/entity';
+import {
+	AuthorizationError,
+	EntityNotFoundError,
+	ForbiddenOperationError,
+	ValidationError,
+} from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo/user/user.repo';
-import { Logger } from '@src/core/logger';
 import { isEmail, isNotEmpty } from 'class-validator';
-import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '..';
 import { AccountConfig } from '../../account-config';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
-import { AccountEntity } from '../entity/account.entity';
+import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../do';
 import {
 	DeletedAccountLoggable,
 	DeletedAccountWithUserIdLoggable,
-	DeletedUserDataLoggable,
 	DeletingAccountLoggable,
 	DeletingAccountWithUserIdLoggable,
-	DeletingUserDataLoggable,
 	IdmCallbackLoggableException,
 	SavedAccountLoggable,
 	SavingAccountLoggable,
@@ -40,6 +29,7 @@ import {
 	UpdatingAccountUsernameLoggable,
 	UpdatingLastFailedLoginLoggable,
 } from '../error';
+import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
@@ -49,8 +39,7 @@ type UserPreferences = {
 };
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class AccountService extends AbstractAccountService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class AccountService extends AbstractAccountService {
 	private readonly accountImpl: AbstractAccountService;
 
 	constructor(
@@ -58,10 +47,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<AccountConfig, true>,
 		private readonly logger: Logger,
-		private readonly userRepo: UserRepo,
-		private readonly accountRepo: AccountRepo,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		private readonly userService: UserService,
+		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
@@ -72,7 +59,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 	}
 
-	public async updateMyAccount(user: User, account: Account, updateData: UpdateMyAccount) {
+	public async updateMyAccount(user: User, account: Account, updateData: UpdateMyAccount): Promise<void> {
 		await this.checkUpdateMyAccountPrerequisites(updateData, account);
 
 		const accountSave = new AccountSave({
@@ -88,19 +75,19 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 		if (updateUser) {
 			try {
-				await this.userRepo.save(user);
-			} catch (err) {
-				throw new EntityNotFoundError(User.name);
+				await this.userService.saveEntity(user);
+			} catch (err: unknown) {
+				throw new EntityNotFoundError('User');
 			}
 		}
 		if (updateAccount) {
 			try {
 				await this.save(accountSave);
-			} catch (err) {
+			} catch (err: unknown) {
 				if (err instanceof ValidationError) {
 					throw err;
 				}
-				throw new EntityNotFoundError(AccountEntity.name);
+				throw new EntityNotFoundError('AccountEntity');
 			}
 		}
 	}
@@ -144,7 +131,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return updateUserName;
 	}
 
-	private async checkUpdateMyAccountPrerequisites(updateData: UpdateMyAccount, account: Account) {
+	private async checkUpdateMyAccountPrerequisites(updateData: UpdateMyAccount, account: Account): Promise<void> {
 		if (account.systemId) {
 			throw new ForbiddenOperationError('External account details can not be changed.');
 		}
@@ -179,20 +166,37 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 		if (updateUser) {
 			try {
-				await this.userRepo.save(targetUser);
+				await this.userService.saveEntity(targetUser);
 			} catch (err) {
-				throw new EntityNotFoundError(User.name);
+				throw new EntityNotFoundError('User');
 			}
 		}
 		if (updateAccount) {
 			try {
 				return await this.save(targetAccount);
 			} catch (err) {
-				throw new EntityNotFoundError(AccountEntity.name);
+				throw new EntityNotFoundError('AccountEntity');
 			}
 		}
 
 		return targetAccount;
+	}
+
+	public async deactivateAccount(userId: EntityId, deactivatedAt: Date): Promise<void> {
+		const account = await this.accountRepo.findByUserIdOrFail(userId);
+		account.deactivatedAt = deactivatedAt;
+
+		await this.save(account);
+	}
+
+	public async reactivateAccount(userId: EntityId): Promise<void> {
+		const account = await this.accountRepo.findByUserIdOrFail(userId);
+		account.deactivatedAt = undefined;
+		await this.save(account);
+	}
+
+	public async deactivateMultipleAccounts(userIds: EntityId[], deactivatedAt: Date): Promise<void> {
+		await this.accountRepo.deactivateMultipleByUserIds(userIds, deactivatedAt);
 	}
 
 	public async replaceMyTemporaryPassword(userId: EntityId, password: string, confirmPassword: string): Promise<void> {
@@ -202,77 +206,78 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 		let user: User;
 		try {
-			user = await this.userRepo.findById(userId);
+			user = await this.userService.getUserEntityWithRoles(userId);
 		} catch (err) {
-			throw new EntityNotFoundError(User.name);
+			throw new EntityNotFoundError('User');
 		}
 
 		const userPreferences = <UserPreferences>user.preferences;
 		const firstLoginPassed = userPreferences ? userPreferences.firstLogin : false;
 
 		if (!user.forcePasswordChange && firstLoginPassed) {
-			throw new ForbiddenOperationError('The password is not temporary, hence can not be changed.');
+			throw new ForbiddenOperationError('The password is not temporary, hence can not be changed.', { userId });
 		} // Password change was forces or this is a first logon for the user
 
 		const account: Account = await this.findByUserIdOrFail(userId);
 
 		if (account.systemId) {
-			throw new ForbiddenOperationError('External account details can not be changed.');
+			throw new ForbiddenOperationError('External account details can not be changed.', { userId });
 		}
 
 		if (await this.validatePassword(account, password)) {
-			throw new ForbiddenOperationError('New password can not be same as old password.');
+			throw new ForbiddenOperationError('New password can not be same as old password.', { userId });
 		}
 
 		try {
 			account.password = password;
 			await this.save(account);
 		} catch (err) {
-			throw new EntityNotFoundError(AccountEntity.name);
+			throw new EntityNotFoundError('AccountEntity');
 		}
 		try {
 			user.forcePasswordChange = false;
-			await this.userRepo.save(user);
+			await this.userService.saveEntity(user);
 		} catch (err) {
-			throw new EntityNotFoundError(User.name);
+			throw new EntityNotFoundError('User');
 		}
 	}
 
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+	public findById(id: string): Promise<Account> {
+		const account = this.accountImpl.findById(id);
+		return account;
 	}
 
-	async findById(id: string): Promise<Account> {
-		return this.accountImpl.findById(id);
+	public findMultipleByUserId(userIds: string[]): Promise<Account[]> {
+		const accounts = this.accountImpl.findMultipleByUserId(userIds);
+		return accounts;
 	}
 
-	async findMultipleByUserId(userIds: string[]): Promise<Account[]> {
-		return this.accountImpl.findMultipleByUserId(userIds);
+	public findByUserId(userId: string): Promise<Account | null> {
+		const account = this.accountImpl.findByUserId(userId);
+		return account;
 	}
 
-	async findByUserId(userId: string): Promise<Account | null> {
-		return this.accountImpl.findByUserId(userId);
+	public findByUserIdOrFail(userId: string): Promise<Account> {
+		const account = this.accountImpl.findByUserIdOrFail(userId);
+		return account;
 	}
 
-	async findByUserIdOrFail(userId: string): Promise<Account> {
-		return this.accountImpl.findByUserIdOrFail(userId);
+	public findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<Account | null> {
+		const account = this.accountImpl.findByUsernameAndSystemId(username, systemId);
+		return account;
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<Account | null> {
-		return this.accountImpl.findByUsernameAndSystemId(username, systemId);
+	public searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
+		const result = this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
+		return result;
 	}
 
-	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
-		return this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
+	public searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
+		const result = this.accountImpl.searchByUsernameExactMatch(userName);
+		return result;
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
-		return this.accountImpl.searchByUsernameExactMatch(userName);
-	}
-
-	async save(accountSave: AccountSave): Promise<Account> {
+	public async save(accountSave: AccountSave): Promise<Account> {
 		const ret = await this.accountDb.save(accountSave);
 		const newAccount = new AccountSave({
 			...accountSave,
@@ -288,7 +293,10 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		});
 
 		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
-			if (idmAccount === null || (accountSave.username && idmAccount.username !== accountSave.username)) {
+			if (
+				idmAccount === null ||
+				(accountSave.username && idmAccount.username.toLowerCase() !== accountSave.username.toLowerCase())
+			) {
 				throw new ValidationError('Account could not be updated');
 			}
 		}
@@ -296,7 +304,35 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	async validateAccountBeforeSaveOrReject(accountSave: AccountSave) {
+	public async saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
+		const savedDbAccounts = await this.accountDb.saveAll(accountSaves);
+
+		const newAccounts = savedDbAccounts.map((savedDbAccount, index) => {
+			const accountSave = accountSaves[index];
+
+			return new AccountSave({
+				...accountSave,
+				id: accountSave.id,
+				idmReferenceId: savedDbAccount.id,
+				password: accountSave.password,
+			});
+		});
+
+		const idmAccounts = await this.executeIdmMethod(async () => {
+			const account = await this.accountIdm.saveAll(newAccounts);
+
+			return account;
+		});
+
+		const combinedAccounts = savedDbAccounts.map((savedDbAccount, index) => {
+			const idmReferenceId = idmAccounts ? idmAccounts[index].idmReferenceId : undefined;
+			return new Account({ ...savedDbAccount.getProps(), idmReferenceId });
+		});
+
+		return combinedAccounts;
+	}
+
+	public async validateAccountBeforeSaveOrReject(accountSave: AccountSave): Promise<void> {
 		// if username is undefined or empty, throw error ✔
 		if (!accountSave.username || !isNotEmpty(accountSave.username)) {
 			throw new ValidationError('username can not be empty');
@@ -332,12 +368,12 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		// }
 	}
 
-	async saveWithValidation(accountSave: AccountSave): Promise<void> {
+	public async saveWithValidation(accountSave: AccountSave): Promise<void> {
 		await this.validateAccountBeforeSaveOrReject(accountSave);
 		await this.save(accountSave);
 	}
 
-	async updateUsername(accountId: string, username: string): Promise<Account> {
+	public async updateUsername(accountId: string, username: string): Promise<Account> {
 		const ret = await this.accountDb.updateUsername(accountId, username);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(new UpdatingAccountUsernameLoggable(accountId));
@@ -348,11 +384,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	async updateLastLogin(accountId: string, lastLogin: Date): Promise<void> {
+	public async updateLastLogin(accountId: string, lastLogin: Date): Promise<void> {
 		await this.accountDb.updateLastLogin(accountId, lastLogin);
 	}
 
-	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
+	public async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
 		const ret = await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(new UpdatingLastFailedLoginLoggable(accountId));
@@ -363,7 +399,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	async updatePassword(accountId: string, password: string): Promise<Account> {
+	public async updatePassword(accountId: string, password: string): Promise<Account> {
 		const ret = await this.accountDb.updatePassword(accountId, password);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(new UpdatingAccountPasswordLoggable(accountId));
@@ -374,11 +410,12 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	async validatePassword(account: Account, comparePassword: string): Promise<boolean> {
-		return this.accountImpl.validatePassword(account, comparePassword);
+	public validatePassword(account: Account, comparePassword: string): Promise<boolean> {
+		const result = this.accountImpl.validatePassword(account, comparePassword);
+		return result;
 	}
 
-	async delete(accountId: string): Promise<void> {
+	public async delete(accountId: string): Promise<void> {
 		await this.accountDb.delete(accountId);
 		await this.executeIdmMethod(async () => {
 			this.logger.debug(new DeletingAccountLoggable(accountId));
@@ -399,27 +436,15 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return deletedAccounts;
 	}
 
-	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
-		this.logger.debug(new DeletingUserDataLoggable(userId));
-		const deletedAccounts = await this.deleteByUserId(userId);
-
-		const result = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
-			DomainOperationReportBuilder.build(OperationType.DELETE, deletedAccounts.length, deletedAccounts),
-		]);
-
-		this.logger.debug(new DeletedUserDataLoggable(userId));
-
-		return result;
-	}
-
 	/**
 	 * @deprecated For migration purpose only
 	 */
-	async findMany(offset = 0, limit = 100): Promise<Account[]> {
-		return this.accountDb.findMany(offset, limit);
+	public findMany(offset = 0, limit = 100): Promise<Account[]> {
+		const accounts = this.accountDb.findMany(offset, limit);
+		return accounts;
 	}
 
-	private async executeIdmMethod<T>(idmCallback: () => Promise<T>) {
+	private async executeIdmMethod<T>(idmCallback: () => Promise<T>): Promise<T | null> {
 		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
 			try {
 				return await idmCallback();
@@ -436,7 +461,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 	}
 
-	async findByUserIdsAndSystemId(usersIds: string[], systemId: string): Promise<string[]> {
+	public async findByUserIdsAndSystemId(usersIds: string[], systemId: string): Promise<string[]> {
 		const foundAccounts = await this.accountRepo.findByUserIdsAndSystemId(usersIds, systemId);
 
 		return foundAccounts;

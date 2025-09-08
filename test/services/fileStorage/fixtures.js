@@ -80,7 +80,6 @@ module.exports = {
 			schoolId: '0000e186816abba584714c55',
 			teacherIds: ['0000d224816abba584714c8e'],
 			userIds: ['0000d224816abba584714c8c'],
-			ltiToolIds: ['59a55f39a2049554a93fed16'],
 			substitutionIds: ['59ad4c412b442b7f81810285'],
 			color: '#ACACAC',
 		},
@@ -230,14 +229,16 @@ module.exports = {
 			_id: mongoose.mongo.ObjectId('5ca613c4c7f5120b8c5bef29'),
 			owner: mongoose.mongo.ObjectId('5cf9303bec9d6ac639fefd42'),
 			refOwnerModel: 'teams',
-			permissions: teamRoles.map(({ refId }) => ({
-				refId,
-				refPermModel: 'role',
-				read: true,
-				delete: true,
-				write: true,
-				create: true,
-			})),
+			permissions: teamRoles.map(({ refId }) => {
+				return {
+					refId,
+					refPermModel: 'role',
+					read: true,
+					delete: true,
+					write: true,
+					create: true,
+				};
+			}),
 			isDirectory: false,
 			storageFileName: 'undefined',
 			type: 'any/type',
@@ -250,14 +251,16 @@ module.exports = {
 			_id: mongoose.mongo.ObjectId('5ca613c4c7f5120b8c5bef30'),
 			owner: mongoose.mongo.ObjectId('5cf9303bec9d6ac639fefd42'),
 			refOwnerModel: 'teams',
-			permissions: teamRoles.map(({ refId }) => ({
-				refId,
-				refPermModel: 'role',
-				read: true,
-				delete: true,
-				write: true,
-				create: true,
-			})),
+			permissions: teamRoles.map(({ refId }) => {
+				return {
+					refId,
+					refPermModel: 'role',
+					read: true,
+					delete: true,
+					write: true,
+					create: true,
+				};
+			}),
 			isDirectory: false,
 			storageFileName: 'undefined',
 			type: 'any/type',
@@ -271,14 +274,16 @@ module.exports = {
 			owner: mongoose.mongo.ObjectId('5cf9303bec9d6ac639fefd42'),
 			parent: '5ca613c4c7f5120b8c5bef33',
 			refOwnerModel: 'teams',
-			permissions: teamRoles.map(({ refId }) => ({
-				refId,
-				refPermModel: 'role',
-				read: true,
-				delete: true,
-				write: true,
-				create: true,
-			})),
+			permissions: teamRoles.map(({ refId }) => {
+				return {
+					refId,
+					refPermModel: 'role',
+					read: true,
+					delete: true,
+					write: true,
+					create: true,
+				};
+			}),
 			isDirectory: false,
 			storageFileName: 'undefined',
 			type: 'any/type',
@@ -292,14 +297,16 @@ module.exports = {
 			owner: mongoose.mongo.ObjectId('5cf9303bec9d6ac639fefd42'),
 			parent: '5ca613c4c7f5120b8c5bef33',
 			refOwnerModel: 'teams',
-			permissions: teamRoles.map(({ refId }) => ({
-				refId,
-				refPermModel: 'role',
-				read: refId !== '6bb5c190fb457b1c3c0c7e0f',
-				delete: true,
-				write: true,
-				create: true,
-			})),
+			permissions: teamRoles.map(({ refId }) => {
+				return {
+					refId,
+					refPermModel: 'role',
+					read: refId !== '6bb5c190fb457b1c3c0c7e0f',
+					delete: true,
+					write: true,
+					create: true,
+				};
+			}),
 			isDirectory: false,
 			storageFileName: 'undefined',
 			type: 'any/type',
@@ -318,14 +325,16 @@ module.exports = {
 					refPermModel: 'user',
 					read: true,
 				},
-				...teamRoles.map(({ refId }) => ({
-					refId,
-					refPermModel: 'role',
-					read: true,
-					delete: true,
-					write: true,
-					create: true,
-				})),
+				...teamRoles.map(({ refId }) => {
+					return {
+						refId,
+						refPermModel: 'role',
+						read: true,
+						delete: true,
+						write: true,
+						create: true,
+					};
+				}),
 			],
 			isDirectory: true,
 			name: 'sample',
