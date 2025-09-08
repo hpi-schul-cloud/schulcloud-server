@@ -134,6 +134,36 @@ describe(`board readersCanEdit setting (api)`, () => {
 			});
 		});
 
+		describe('with feature flag disabled', () => {
+			it('should return status 204', async () => {
+				const { accountWithAdminRole, columnBoardNode } = await setup();
+				config.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = false;
+
+				const loggedInClient = await testApiClient.login(accountWithAdminRole);
+
+				const readersCanEdit = true;
+
+				const response = await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+
+				expect(response.status).toEqual(403);
+			});
+
+			it('should actually change the board visibility', async () => {
+				const { accountWithAdminRole, columnBoardNode } = await setup();
+
+				const loggedInClient = await testApiClient.login(accountWithAdminRole);
+
+				const readersCanEdit = true;
+
+				await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
+
+				const response = await loggedInClient.get(columnBoardNode.id);
+				const result = response.body as BoardResponse;
+
+				expect(result.readersCanEdit).toEqual(false);
+			});
+		});
+
 		describe('with user who has only edit role in room', () => {
 			it('should return status 403', async () => {
 				const { accountWithEditRole, columnBoardNode } = await setup();
