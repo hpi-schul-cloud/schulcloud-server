@@ -15,6 +15,7 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 import { ColumnClientModule } from '@infra/column-client';
 import { CardClientModule } from '@infra/cards-client';
 import { CommonCartridgeImportMapper } from './service/common-cartridge-import.mapper';
+import { CommonCartridgeImportClientModule } from '@infra/common-cartridge-client';
 
 @Module({
 	imports: [
@@ -35,6 +36,7 @@ import { CommonCartridgeImportMapper } from './service/common-cartridge-import.m
 		}),
 		ColumnClientModule,
 		CardClientModule,
+		CommonCartridgeImportClientModule,
 	],
 	providers: [
 		CommonCartridgeExportMapper,
