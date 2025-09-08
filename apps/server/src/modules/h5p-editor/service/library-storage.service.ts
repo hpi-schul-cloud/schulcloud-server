@@ -269,22 +269,19 @@ export class LibraryStorage implements ILibraryStorage {
 		this.removeCircularDependencies(libraries);
 
 		// Count dependencies
-		const dependencies: { [ubername: string]: number } = {};
+		const dependencyCounts: { [ubername: string]: number } = {};
 		for (const library of libraries) {
 			const { preloadedDependencies = [], editorDependencies = [], dynamicDependencies = [] } = library;
 			const softDependencies = await this.getSoftDependenciesFromSemantics(library);
 
-			for (const dependency of preloadedDependencies.concat(
-				editorDependencies,
-				dynamicDependencies,
-				softDependencies
-			)) {
+			const dependencies = preloadedDependencies.concat(editorDependencies, dynamicDependencies, softDependencies);
+			for (const dependency of dependencies) {
 				const ubername = LibraryName.toUberName(dependency);
-				dependencies[ubername] = (dependencies[ubername] ?? 0) + 1;
+				dependencyCounts[ubername] = (dependencyCounts[ubername] ?? 0) + 1;
 			}
 		}
 
-		return dependencies;
+		return dependencyCounts;
 	}
 
 	private async getSoftDependenciesFromSemantics(library: ILibraryMetadata): Promise<ILibraryName[]> {
@@ -338,9 +335,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @returns the count
 	 */
 	public async getDependentsCount(library: ILibraryName): Promise<number> {
-		const allDependencies = await this.getAllDependentsCount();
+		const dependencyCounts = await this.getAllDependentsCount();
 
-		return allDependencies[LibraryName.toUberName(library)] ?? 0;
+		return dependencyCounts[LibraryName.toUberName(library)] ?? 0;
 	}
 
 	/**
