@@ -33,7 +33,7 @@ export class LoginController {
 	async loginLdap(
 		@CurrentUser() user: ICurrentUser,
 		@Body() _: LdapAuthorizationBodyParams,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<LoginResponse> {
 		const response = await this.login(user, _.createLoginCookies ?? undefined);
 		res.cookie('jwt', response.accessToken, response.cookieOptionsJwt ?? {});
@@ -54,7 +54,7 @@ export class LoginController {
 	async loginLocal(
 		@CurrentUser() user: ICurrentUser,
 		@Body() _: LocalAuthorizationBodyParams,
-		@Res() res: Response
+		@Res({ passthrough: true }) res: Response
 	): Promise<LoginResponse> {
 		const response = await this.login(user, _.createLoginCookies ?? undefined);
 		res.cookie('jwt', response.accessToken, response.cookieOptionsJwt ?? {});
