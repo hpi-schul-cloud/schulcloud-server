@@ -2,6 +2,7 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Delete,
@@ -36,6 +37,7 @@ import { QdrantClient } from '@qdrant/js-client-rest';
 import { IsString } from 'class-validator';
 import { Ollama } from 'ollama';
 import { RichTextElement } from '../domain';
+import { BoardDto } from '../dto/board.dto';
 import { BoardNodeService } from '../service';
 
 class SearchEmbeddingParams {
@@ -56,10 +58,10 @@ export class BoardController {
 
 	@Get('search-embedding')
 	@ApiOperation({ summary: 'Search board nodes by embedding similarity.' })
-	@ApiResponse({ status: 200, description: 'List of similar board node ids.' })
-	public async searchEmbedding(@Query() urlParams: SearchEmbeddingParams) {
+	@ApiResponse({ status: 200, description: 'List of similar board node ids.', type: [BoardDto] })
+	public async searchEmbedding(@Query() urlParams: SearchEmbeddingParams): Promise<BoardDto[]> {
 		if (!urlParams.query) {
-			return { error: 'Missing query parameter' };
+			throw new BadRequestException('Missing query parameter');
 		}
 
 		const ollama = new Ollama();
@@ -88,7 +90,8 @@ export class BoardController {
 			}
 		}
 
-		return searchResult;
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+		return searchResult as any;
 	}
 
 	@ApiOperation({ summary: 'Create a new board.' })
