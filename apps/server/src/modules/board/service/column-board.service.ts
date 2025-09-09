@@ -41,6 +41,11 @@ export class ColumnBoardService {
 		await this.boardNodeService.updateVisibility(columnBoard, visibility);
 	}
 
+	public async updateReadersCanEdit(columnBoard: ColumnBoard, readersCanEdit: boolean): Promise<void> {
+		columnBoard.readersCanEdit = readersCanEdit;
+		await this.boardNodeRepo.save(columnBoard);
+	}
+
 	// @deprecated This is called from feathers. Should be removed when not needed anymore
 	public async deleteByCourseId(courseId: EntityId): Promise<void> {
 		await this.deleteByExternalReference({
@@ -76,6 +81,10 @@ export class ColumnBoardService {
 		copyDict.forEach((value, key) => idMap.set(key, value.id));
 
 		const elements = copyStatus.elements ?? [];
+		if (copyStatus.type === CopyElementType.COLUMNBOARD && copyStatus.copyEntity) {
+			copyStatus.copyEntity = await this.swapLinkedIds(copyStatus.copyEntity?.id, idMap);
+		}
+
 		const updatedElements = await Promise.all(
 			elements.map(async (el) => {
 				if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {

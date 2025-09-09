@@ -335,6 +335,32 @@ describe(BoardCollaborationGateway.name, () => {
 		});
 	});
 
+	describe('update readers can edit', () => {
+		describe('when board exists', () => {
+			it('should answer with success', async () => {
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+
+				ioClient.emit('update-readers-can-edit-request', { boardId, readersCanEdit: false });
+				const success = await waitForEvent(ioClient, 'update-readers-can-edit-success');
+
+				expect(success).toEqual(expect.objectContaining({ boardId, readersCanEdit: false }));
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+
+				unauthorizedIoClient.emit('update-readers-can-edit-request', { boardId, readersCanEdit: false });
+				const failure = await waitForEvent(unauthorizedIoClient, 'update-readers-can-edit-failure');
+
+				expect(failure).toEqual({ boardId, readersCanEdit: false });
+			});
+		});
+	});
+
 	describe('update board visibility', () => {
 		describe('when board exists', () => {
 			it('should answer with success', async () => {

@@ -355,11 +355,19 @@ describe('ShareTokenUC', () => {
 				columnBoardService.findById.mockResolvedValue(columnBoard);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
+				const status: CopyStatus = {
+					type: CopyElementType.COLUMNBOARD,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: columnBoard,
+				};
+				columnBoardService.swapLinkedIdsInBoards.mockResolvedValue(status);
+				columnBoardService.copyColumnBoard.mockResolvedValueOnce(status);
+
 				const payload: ShareTokenPayload = { parentType: ShareTokenParentType.ColumnBoard, parentId: columnBoard.id };
 				const shareToken = shareTokenDOFactory.build({ payload });
 				service.lookupToken.mockResolvedValueOnce(shareToken);
 
-				return { user, shareToken, school, course, columnBoard };
+				return { user, shareToken, school, course, columnBoard, status };
 			};
 			it('should get token from service', async () => {
 				const { user, shareToken, course } = setup();
@@ -399,14 +407,15 @@ describe('ShareTokenUC', () => {
 					targetSchoolId: user.school.id,
 				});
 			});
+			it('should call columnBoardService to swapLinkedIdsInBoards', async () => {
+				const { user, shareToken, course } = setup();
+				const newName = 'NewName';
+				await uc.importShareToken(user.id, shareToken.token, newName, course.id);
+				expect(columnBoardService.swapLinkedIdsInBoards).toHaveBeenCalled();
+			});
 			it('should return the result', async () => {
-				const { user, shareToken, columnBoard } = setup();
-				const status: CopyStatus = {
-					type: CopyElementType.COLUMNBOARD,
-					status: CopyStatusEnum.SUCCESS,
-					copyEntity: columnBoard,
-				};
-				columnBoardService.copyColumnBoard.mockResolvedValueOnce(status);
+				const { user, shareToken, columnBoard, status } = setup();
+
 				const newName = 'NewName';
 
 				const result = await uc.importShareToken(user.id, shareToken.token, newName, columnBoard.id);
