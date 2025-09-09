@@ -1,7 +1,7 @@
 import { CurrentUser, ICurrentUser } from '@infra/auth-guard';
 import { Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Response } from 'express'
+import { Response } from 'express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ForbiddenOperationError, ValidationError } from '@shared/common/error';
 import { StrategyType, type OauthCurrentUser } from '../interface';
@@ -30,10 +30,14 @@ export class LoginController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
 	// Body is not used, but validated and used in the strategy implementation
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams, @Res() res: Response): Promise<LoginResponse> {
+	async loginLdap(
+		@CurrentUser() user: ICurrentUser,
+		@Body() _: LdapAuthorizationBodyParams,
+		@Res() res: Response
+	): Promise<LoginResponse> {
 		const response = await this.login(user, _.createLoginCookies ?? undefined);
-		res.cookie("jwt", response.accessToken, response.cookieOptionsJwt)
-		res.cookie("isLoggedIn", true, response.cookieOptionsLoggedIn)
+		res.cookie('jwt', response.accessToken, response.cookieOptionsJwt ?? {});
+		res.cookie('isLoggedIn', 'true', response.cookieOptionsLoggedIn ?? {});
 
 		return response;
 	}
@@ -47,10 +51,14 @@ export class LoginController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
 	// Body is not used, but validated and used in the strategy implementation
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationBodyParams, @Res() res: Response): Promise<LoginResponse> {
+	async loginLocal(
+		@CurrentUser() user: ICurrentUser,
+		@Body() _: LocalAuthorizationBodyParams,
+		@Res() res: Response
+	): Promise<LoginResponse> {
 		const response = await this.login(user, _.createLoginCookies ?? undefined);
-		res.cookie("jwt", response.accessToken, response.cookieOptionsJwt)
-		res.cookie("isLoggedIn", true, response.cookieOptionsLoggedIn)
+		res.cookie('jwt', response.accessToken, response.cookieOptionsJwt ?? {});
+		res.cookie('isLoggedIn', 'true', response.cookieOptionsLoggedIn ?? {});
 
 		return response;
 	}

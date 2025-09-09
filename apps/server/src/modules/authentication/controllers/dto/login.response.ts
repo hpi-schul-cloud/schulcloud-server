@@ -1,11 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { CookieOptions } from 'express';
+import {ApiProperty} from '@nestjs/swagger';
+import {CookieOptions} from 'express';
 
 export class LoginResponse {
 	@ApiProperty()
 	accessToken: string;
-	cookieOptionsJwt: CookieOptions
-	cookieOptionsLoggedIn: CookieOptions
+	cookieOptionsJwt?: CookieOptions
+	cookieOptionsLoggedIn?: CookieOptions
 
 	constructor(props: LoginResponse) {
 		this.accessToken = props.accessToken;

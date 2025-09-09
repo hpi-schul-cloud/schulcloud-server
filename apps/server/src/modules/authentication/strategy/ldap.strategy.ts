@@ -66,7 +66,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, StrategyType.LDAP) 
 		username = this.authenticationService.normalizeUsername(username);
 		password = this.authenticationService.normalizePassword(password);
 
-		return { username, password, systemId, schoolId };
+		return { username, password, systemId, schoolId, createLoginCookies: false };
 	}
 
 	private async checkCredentials(account: Account, system: System, ldapDn: string, password: string): Promise<void> {
