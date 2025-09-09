@@ -333,19 +333,19 @@ describe('Course Rooms Controller (API)', () => {
 
 				const linkElementToTask = linkElementEntityFactory
 					.withParent(cardNode)
-					.build({ url: `https://example.com/${task.id}` });
+					.build({ url: `https://example.com/${task.id}`, imageUrl: '' });
 
 				const linkElementToLesson = linkElementEntityFactory
 					.withParent(cardNode)
-					.build({ url: `https://example.com/${lesson.id}` });
+					.build({ url: `https://example.com/${lesson.id}`, imageUrl: '' });
 
 				const linkElementToColumnBoard = linkElementEntityFactory
 					.withParent(cardNode)
-					.build({ url: `https://example.com/${columnBoard2.id}` });
+					.build({ url: `https://example.com/${columnBoard2.id}`, imageUrl: '' });
 
 				const linkElementToCourse = linkElementEntityFactory
 					.withParent(cardNode)
-					.build({ url: `https://example.com/${course.id}` });
+					.build({ url: `https://example.com/${course.id}`, imageUrl: '' });
 
 				const legacyBoard = boardFactory.buildWithId({ course });
 
