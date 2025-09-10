@@ -13,27 +13,29 @@ export class LoginUc {
 		const jwtToken = await this.authService.generateCurrentUserJwt(currentUser);
 		await this.authService.updateLastLogin(currentUser.accountId);
 
-		let cookieOptionsJwt: CookieOptions = {}
-		let cookieOptionsLoggedIn: CookieOptions = {}
+		let cookieOptionsJwt: CookieOptions = {};
+		let cookieOptionsLoggedIn: CookieOptions = {};
+
+		const cookieExpiresAt = new Date(Date.now() + parseInt(this.configService.getOrThrow('COOKIE__EXPIRES_SECONDS')));
 		if (createLoginCookies) {
 			cookieOptionsJwt = {
-				httpOnly: this.configService.get("COOKIE__JWT_HTTP_ONLY"),
+				httpOnly: this.configService.get('COOKIE__JWT_HTTP_ONLY'),
 				sameSite: this.configService.get('COOKIE__SAME_SITE'),
 				secure: this.configService.get('COOKIE__SECURE'),
-				expires: new Date(Date.now() + this.configService.get('COOKIE__EXPIRES_SECONDS')),
-			}
+				expires: cookieExpiresAt,
+			};
 			cookieOptionsLoggedIn = {
-				httpOnly: this.configService.get("COOKIE__HTTP_ONLY"),
+				httpOnly: this.configService.get('COOKIE__HTTP_ONLY'),
 				sameSite: this.configService.get('COOKIE__SAME_SITE'),
 				secure: this.configService.get('COOKIE__SECURE'),
-				expires: new Date(Date.now() + this.configService.get('COOKIE__EXPIRES_SECONDS')),
-			}
+				expires: cookieExpiresAt,
+			};
 		}
 
 		const loginDto = new LoginDto({
 			accessToken: jwtToken,
 			cookieOptionsJwt,
-			cookieOptionsLoggedIn
+			cookieOptionsLoggedIn,
 		});
 
 		return loginDto;
