@@ -11,7 +11,7 @@ import type { TspClientConfig } from '@infra/tsp-client';
 import { ValkeyMode } from '@infra/valkey-client';
 import type { AccountConfig } from '@modules/account';
 import type { AlertConfig } from '@modules/alert';
-import type { AuthenticationConfig } from '@modules/authentication';
+import type { AuthenticationConfig, AuthCookieSameSiteType } from '@modules/authentication';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
@@ -397,6 +397,11 @@ const config: ServerConfig = {
 	CTL_SEED_SECRET_MERLIN: Configuration.has('CTL_SEED_SECRET_MERLIN')
 		? (Configuration.get('CTL_SEED_SECRET_MERLIN') as string)
 		: undefined,
+	COOKIE__HTTP_ONLY: Configuration.get('COOKIE__HTTP_ONLY') as boolean,
+	COOKIE__JWT_HTTP_ONLY: Configuration.get('COOKIE__JWT_HTTP_ONLY') as boolean,
+	COOKIE__SAME_SITE: Configuration.get('COOKIE__SAME_SITE') as AuthCookieSameSiteType,
+	COOKIE__SECURE: Configuration.get('COOKIE__SECURE') as boolean,
+	COOKIE__EXPIRES_SECONDS: Configuration.get('COOKIE__EXPIRES_SECONDS') as number,
 };
 
 export const serverConfig = (): ServerConfig => config;

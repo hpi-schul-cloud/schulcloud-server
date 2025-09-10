@@ -4,10 +4,14 @@ import { AuthenticationService } from '../services';
 import { LoginDto } from './dto';
 import { CookieOptions } from 'express';
 import { ConfigService } from '@nestjs/config';
+import type { AuthenticationConfig } from '../authentication-config';
 
 @Injectable()
 export class LoginUc {
-	constructor(private readonly authService: AuthenticationService, private readonly configService: ConfigService) {}
+	constructor(
+		private readonly authService: AuthenticationService,
+		private readonly configService: ConfigService<AuthenticationConfig>
+	) {}
 
 	async getLoginData(currentUser: ICurrentUser, createLoginCookies?: boolean): Promise<LoginDto> {
 		const jwtToken = await this.authService.generateCurrentUserJwt(currentUser);
@@ -16,7 +20,7 @@ export class LoginUc {
 		let cookieOptionsJwt: CookieOptions = {};
 		let cookieOptionsLoggedIn: CookieOptions = {};
 
-		const cookieExpiresAt = new Date(Date.now() + parseInt(this.configService.getOrThrow('COOKIE__EXPIRES_SECONDS')));
+		const cookieExpiresAt = new Date(Date.now() + this.configService.getOrThrow('COOKIE__EXPIRES_SECONDS'));
 		if (createLoginCookies) {
 			cookieOptionsJwt = {
 				httpOnly: this.configService.get('COOKIE__JWT_HTTP_ONLY'),

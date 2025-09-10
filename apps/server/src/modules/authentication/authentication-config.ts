@@ -10,7 +10,17 @@ interface CacheConfig {
 	SESSION_VALKEY__SENTINEL_SERVICE_NAME?: string;
 }
 
-export interface AuthenticationConfig extends AccountConfig, CacheConfig {
+export type AuthCookieSameSiteType = 'lax' | 'strict' | 'none';
+
+interface AuthCookieConfig {
+	COOKIE__HTTP_ONLY: boolean;
+	COOKIE__JWT_HTTP_ONLY: boolean;
+	COOKIE__SAME_SITE: AuthCookieSameSiteType;
+	COOKIE__SECURE: boolean;
+	COOKIE__EXPIRES_SECONDS: number;
+}
+
+export interface AuthenticationConfig extends AccountConfig, CacheConfig, AuthCookieConfig {
 	FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED: boolean;
 	JWT_PRIVATE_KEY: string;
 	JWT_PUBLIC_KEY: string;
