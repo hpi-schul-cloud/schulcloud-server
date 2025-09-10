@@ -10,7 +10,7 @@ import {
 	CreateCcBoardBodyParams,
 	CreateCcColumnBodyParams,
 	CreateCcCardBodyParams,
-} from '../controller/dto/common-cartridge-dtos';
+} from '../contorller/common-cartridge-dtos';
 import { Injectable } from '@nestjs/common';
 @Injectable()
 export class CommonCartridgeImportService {

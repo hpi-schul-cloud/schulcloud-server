@@ -8,10 +8,10 @@ import {
 	RichTextContentBody,
 	RichTextElementContentBody,
 } from '@modules/board/controller/dto';
-import { CreateCcBoardBodyParams } from '../controller/dto/common-cartridge-dtos/create-cc-column-board.body.params';
+import { CreateCcBoardBodyParams } from '../contorller/common-cartridge-dtos/create-cc-column-board.body.params';
 import { BoardExternalReferenceType, BoardLayout, ContentElementType } from '@modules/board';
 import { CommonCartridgeXmlResourceType } from '@modules/common-cartridge';
-import { CreateCcCardElementBodyParams } from '../controller/dto/common-cartridge-dtos';
+import { CreateCcCardElementBodyParams } from '../contorller/common-cartridge-dtos';
 import { AnyContentElement, FileElement, LinkElement, RichTextElement } from '@modules/board/domain';
 
 export class CommonCartridgeImportMappper {

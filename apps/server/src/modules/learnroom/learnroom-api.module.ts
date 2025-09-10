@@ -23,9 +23,6 @@ import {
 	LessonCopyUC,
 	RoomBoardDTOFactory,
 } from './uc';
-import { CommonCartridgeImportController } from './controller/common-cartridge.controller';
-import { CommonCartridgeImportUc } from './uc/common-cartridge-import.uc';
-import { CommonCartridgeImportMappper } from './mapper/common-cartridge-import.mapper';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future
@@ -45,7 +42,7 @@ import { CommonCartridgeImportMappper } from './mapper/common-cartridge-import.m
 		ClassModule,
 		CourseModule,
 	],
-	controllers: [DashboardController, CourseRoomsController, CommonCartridgeImportController],
+	controllers: [DashboardController, CourseRoomsController],
 	providers: [
 		DashboardUc,
 		CourseRoomsUc,
@@ -61,8 +58,6 @@ import { CommonCartridgeImportMappper } from './mapper/common-cartridge-import.m
 		},
 		DashboardModelMapper,
 		LegacyBoardRepo,
-		CommonCartridgeImportUc,
-		CommonCartridgeImportMappper,
 	],
 })
 export class LearnroomApiModule {}

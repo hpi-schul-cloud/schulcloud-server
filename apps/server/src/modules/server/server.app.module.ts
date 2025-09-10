@@ -56,6 +56,7 @@ import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 import { MoinSchuleClassModule } from '@modules/class-moin-schule/moin-schule-class.module';
+import { CommonCartridgeSvsApiModule } from '@modules/common-cartridge-svs';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -115,6 +116,7 @@ const serverModules = [
 	ShdApiModule,
 	OAuthApiModule,
 	MoinSchuleClassModule,
+	CommonCartridgeSvsApiModule,
 ];
 
 const providers = [ServerUc, { provide: SERVER_CONFIG_TOKEN, useValue: serverConfig() }];

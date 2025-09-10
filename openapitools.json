@@ -124,7 +124,7 @@
 					"withSeparateModelsAndApi": true
 				}
 			},
-			"common-cartridge-api":{
+			"common-cartridge-import-api":{
 				"generatorName": "typescript-axios",
 				"inputSpec": "http://localhost:3030/api/v3/docs-json",
 				"output": "./apps/server/src/infra/common-cartridge-client/generated",

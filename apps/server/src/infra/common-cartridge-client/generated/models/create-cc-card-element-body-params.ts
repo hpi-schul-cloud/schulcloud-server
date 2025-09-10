@@ -24,11 +24,11 @@ import type { UpdateElementContentBodyParams } from './update-element-content-bo
  */
 export interface CreateCcCardElementBodyParams {
     /**
-     * the card id of the card element
+     * the unique xml path of the card element
      * @type {string}
      * @memberof CreateCcCardElementBodyParams
      */
-    'cardId': string;
+    'xmlPath'?: string;
     /**
      * the type of the card element
      * @type {string}

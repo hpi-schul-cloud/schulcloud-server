@@ -1,5 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { CreateCcCourseBodyParams } from '@modules/learnroom/controller/dto/common-cartridge-dtos/create-cc-course.body.params';
+import { CreateCcCourseBodyParams } from '@modules/common-cartridge-svs/contorller/common-cartridge-dtos/create-cc-course.body.params';
 import { Post, Body, Controller } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
