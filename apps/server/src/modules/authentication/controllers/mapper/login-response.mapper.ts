@@ -5,6 +5,8 @@ export class LoginResponseMapper {
 	static mapToLoginResponse(loginDto: LoginDto): LoginResponse {
 		const response: LoginResponse = new LoginResponse({
 			accessToken: loginDto.accessToken,
+			cookieOptionsJwt: loginDto.cookieOptionsJwt,
+			cookieOptionsLoggedIn: loginDto.cookieOptionsLoggedIn
 		});
 
 		return response;

@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class LoginUc {
-	constructor(private readonly authService: AuthenticationService, private readonly configServicve: ConfigService) {}
+	constructor(private readonly authService: AuthenticationService, private readonly configService: ConfigService) {}
 
 	async getLoginData(currentUser: ICurrentUser, createLoginCookies?: boolean): Promise<LoginDto> {
 		const jwtToken = await this.authService.generateCurrentUserJwt(currentUser);
@@ -17,16 +17,16 @@ export class LoginUc {
 		let cookieOptionsLoggedIn: CookieOptions = {}
 		if (createLoginCookies) {
 			cookieOptionsJwt = {
-				httpOnly: this.configServicve.get("COOKIE__JWT_HTTP_ONLY"),
-				sameSite: this.configServicve.get('COOKIE__SAME_SITE'),
-				secure: this.configServicve.get('COOKIE__SECURE'),
-				expires: new Date(Date.now() + this.configServicve.get('COOKIE__EXPIRES_SECONDS')),
+				httpOnly: this.configService.get("COOKIE__JWT_HTTP_ONLY"),
+				sameSite: this.configService.get('COOKIE__SAME_SITE'),
+				secure: this.configService.get('COOKIE__SECURE'),
+				expires: new Date(Date.now() + this.configService.get('COOKIE__EXPIRES_SECONDS')),
 			}
 			cookieOptionsLoggedIn = {
-				httpOnly: this.configServicve.get("COOKIE__HTTP_ONLY"),
-				sameSite: this.configServicve.get('COOKIE__SAME_SITE'),
-				secure: this.configServicve.get('COOKIE__SECURE'),
-				expires: new Date(Date.now() + this.configServicve.get('COOKIE__EXPIRES_SECONDS')),
+				httpOnly: this.configService.get("COOKIE__HTTP_ONLY"),
+				sameSite: this.configService.get('COOKIE__SAME_SITE'),
+				secure: this.configService.get('COOKIE__SECURE'),
+				expires: new Date(Date.now() + this.configService.get('COOKIE__EXPIRES_SECONDS')),
 			}
 		}
 
