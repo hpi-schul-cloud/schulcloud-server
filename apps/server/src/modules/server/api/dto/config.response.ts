@@ -118,7 +118,7 @@ export class ConfigResponse {
 
 	@ApiProperty()
 	FEATURE_OAUTH_LOGIN_ENABLED: boolean;
-	
+
 	@ApiProperty()
 	LOGIN_BLOCK_TIME: number;
 
@@ -157,6 +157,9 @@ export class ConfigResponse {
 
 	@ApiProperty()
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED: boolean;
 
 	@ApiProperty()
 	GHOST_BASE_URL: string;
@@ -324,5 +327,6 @@ export class ConfigResponse {
 		this.ROOM_MEMBER_INFO_URL = config.ROOM_MEMBER_INFO_URL;
 		this.FEATURE_COLUMN_BOARD_H5P_ENABLED = config.FEATURE_COLUMN_BOARD_H5P_ENABLED;
 		this.FEATURE_COLUMN_BOARD_COLLABORA_ENABLED = config.FEATURE_COLUMN_BOARD_COLLABORA_ENABLED;
+		this.FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED = config.FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED;
 	}
 }
