@@ -30,6 +30,12 @@ export interface CreateCcColumnBodyParams {
      */
     'title': string;
     /**
+     * column is a resource
+     * @type {boolean}
+     * @memberof CreateCcColumnBodyParams
+     */
+    'isResource': boolean;
+    /**
      * cards of the column
      * @type {Array<CreateCcCardBodyParams>}
      * @memberof CreateCcColumnBodyParams

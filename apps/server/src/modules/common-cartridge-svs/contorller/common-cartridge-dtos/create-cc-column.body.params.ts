@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CreateCcCardBodyParams } from './create-cc-card.body.params';
+import { IsBoolean } from 'class-validator';
 
 export class CreateCcColumnBodyParams {
 	@ApiProperty({
@@ -7,6 +8,13 @@ export class CreateCcColumnBodyParams {
 		required: true,
 	})
 	public title!: string;
+
+	@ApiProperty({
+		description: 'column is a resource',
+		required: true,
+	})
+	@IsBoolean()
+	public isResource!: boolean;
 
 	@ApiPropertyOptional({
 		description: 'cards of the column',

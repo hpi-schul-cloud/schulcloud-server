@@ -13,8 +13,10 @@ import {
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 import {
 	CommonCartridgeFileResourceProps,
+	CommonCartridgeOrganizationProps,
 	CommonCartridgeWebLinkResourceProps,
 } from '../import/common-cartridge-import.types';
+import { CreateCcColumnBodyParams } from '@infra/common-cartridge-client/generated';
 
 export class CommonCartridgeImportMapper {
 	public mapResourceTypeToContentElementType(
@@ -105,5 +107,13 @@ export class CommonCartridgeImportMapper {
 		};
 
 		return fileBody;
+	}
+
+	public mapColumnToColumnBodyParams(column: CommonCartridgeOrganizationProps): CreateCcColumnBodyParams {
+		return {
+			title: column.title,
+			isResource: column.isResource,
+			cards: [],
+		};
 	}
 }
