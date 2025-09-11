@@ -2,7 +2,7 @@ const { newsHistoryModel } = require('../model');
 
 const deleteNewsHistory = async (context) => {
 	if (context.id) {
-		await newsHistoryModel.remove({ parentId: context.id });
+		await newsHistoryModel.deleteOne({ parentId: context.id });
 	}
 	return context;
 };

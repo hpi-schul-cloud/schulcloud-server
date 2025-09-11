@@ -37,7 +37,7 @@ module.exports = (app) => {
 
 		if (params.query.count === 'true') {
 			const courseCount = await courseModel
-				.count({
+				.countDocuments({
 					$and: [userQuery, untilQuery],
 				})
 				.exec();

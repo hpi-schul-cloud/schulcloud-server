@@ -22,7 +22,7 @@ const ROLES = {
 const definePermissions = (env, role, ...permissions) => {
 	if (Configuration.get(env)) {
 		// set defaul permission
-		Role.update(
+		Role.updateOne(
 			{
 				name: role,
 			},
@@ -37,7 +37,7 @@ const definePermissions = (env, role, ...permissions) => {
 		).exec();
 	} else {
 		// remove defaul permission
-		Role.update(
+		Role.updateOne(
 			{
 				name: role,
 			},
