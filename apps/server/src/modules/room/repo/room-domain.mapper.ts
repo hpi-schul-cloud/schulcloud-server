@@ -2,7 +2,7 @@ import { Room } from '../domain/do/room.do';
 import { RoomEntity } from './entity';
 
 export class RoomDomainMapper {
-	static mapEntityToDo(roomEntity: RoomEntity): Room {
+	public static mapEntityToDo(roomEntity: RoomEntity): Room {
 		// check identity map reference
 		if (roomEntity.domainObject) {
 			return roomEntity.domainObject;
@@ -16,7 +16,7 @@ export class RoomDomainMapper {
 		return room;
 	}
 
-	static mapDoToEntity(room: Room): RoomEntity {
+	public static mapDoToEntity(room: Room): RoomEntity {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		const { props } = room;
