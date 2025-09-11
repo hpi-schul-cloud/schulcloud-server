@@ -1,7 +1,7 @@
 import { DomainErrorHandler } from '@core/error';
 import { BootstrapConsole } from 'nestjs-console';
 
-export const runBootstrapCommand = async <T>(module: T): Promise<void> => {
+export const runConsoleApp = async <T>(module: T): Promise<void> => {
 	const bootstrap = new BootstrapConsole({
 		module,
 		useDecorators: true,
