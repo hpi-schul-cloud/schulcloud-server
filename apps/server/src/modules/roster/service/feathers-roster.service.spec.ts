@@ -1158,33 +1158,6 @@ describe('FeathersRosterService', () => {
 				});
 			});
 
-			describe('when the room exists but feature flag is not enabled', () => {
-				const setup = () => {
-					const room = roomFactory.build({});
-					roomService.roomExists.mockResolvedValueOnce(true);
-
-					configService.get.mockImplementation((key: keyof RosterConfig) => {
-						if (key === 'FEATURE_ROOMS_ENABLED') {
-							return false;
-						}
-						return true;
-					});
-
-					const clientId = 'testClientId';
-
-					return {
-						room,
-						clientId,
-					};
-				};
-
-				it('should throw an error if the FEATURE_ROOMS_ENABLED is not true', async () => {
-					const { room, clientId } = setup();
-
-					await expect(service.getGroup(room.id, clientId)).rejects.toThrow(NotFoundLoggableException);
-				});
-			});
-
 			describe('when the room exists, but has no owner', () => {
 				const setup = () => {
 					const room = roomFactory.build({});

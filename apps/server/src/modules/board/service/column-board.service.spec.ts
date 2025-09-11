@@ -96,6 +96,16 @@ describe('ColumnBoardService', () => {
 		expect(boardNodeService.updateVisibility).toHaveBeenCalledWith(columnBoard, true);
 	});
 
+	it('should update ColumnBoard readersCanEdit', async () => {
+		const columnBoard = columnBoardFactory.build();
+
+		await service.updateReadersCanEdit(columnBoard, true);
+		expect(columnBoard.readersCanEdit).toEqual(true);
+
+		await service.updateReadersCanEdit(columnBoard, false);
+		expect(columnBoard.readersCanEdit).toEqual(false);
+	});
+
 	it('should delete ColumnBoards by course id', async () => {
 		const columnBoard = columnBoardFactory.build();
 		repo.findByExternalReference.mockResolvedValueOnce([columnBoard]);

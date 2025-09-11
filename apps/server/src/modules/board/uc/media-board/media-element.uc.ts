@@ -1,4 +1,4 @@
-import { Action, AuthorizationService } from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
@@ -34,7 +34,7 @@ export class MediaElementUc {
 		const element = await this.boardNodeService.findAnyMediaElementById(elementId);
 		const targetLine = await this.boardNodeService.findByClassAndId(MediaLine, targetLineId);
 
-		await this.boardNodePermissionService.checkPermission(userId, targetLine, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, targetLine, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.move(element, targetLine, targetPosition);
 	}
@@ -49,7 +49,7 @@ export class MediaElementUc {
 
 		const line = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 
-		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, line, AuthorizationContextBuilder.write([]));
 
 		const mediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, line.rootId);
 
@@ -78,7 +78,7 @@ export class MediaElementUc {
 
 		const element = await this.boardNodeService.findAnyMediaElementById(elementId);
 
-		await this.boardNodePermissionService.checkPermission(userId, element, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, element, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.delete(element);
 	}

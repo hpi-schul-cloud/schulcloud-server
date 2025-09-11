@@ -152,7 +152,7 @@ export class ImportTokenUC {
 		const sourceStorageLocationReference = await this.getStorageLocationReference(originalBoard.context);
 		const targetStorageLocationReference = await this.getStorageLocationReference(targetExternalReference);
 
-		const copyStatus = this.columnBoardService.copyColumnBoard({
+		const copyStatus = await this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId,
 			targetExternalReference,
 			sourceStorageLocationReference,
@@ -161,6 +161,9 @@ export class ImportTokenUC {
 			copyTitle,
 			targetSchoolId: user.school.id,
 		});
+
+		await this.columnBoardService.swapLinkedIdsInBoards(copyStatus);
+
 		return copyStatus;
 	}
 

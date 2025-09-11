@@ -3405,5 +3405,27 @@
 		"position": 4,
 		"type": "drawing-element",
 		"description": ""
+	},
+	{
+		"_id": {
+			"$oid": "68b01940d39b6604a5cd6b8e"
+		},
+		"createdAt": {
+			"$date": "2025-08-28T08:54:24.416Z"
+		},
+		"updatedAt": {
+			"$date": "2025-08-28T08:54:24.416Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type" : "column-board",
+		"title" : "Raum-Bereich",
+		"contextType" : "room",
+		"context": {
+			"$oid": "68af290bcf0a6d6da2508125"
+		},
+		"layout" : "columns",
+		"isVisible" : false
 	}
 ]

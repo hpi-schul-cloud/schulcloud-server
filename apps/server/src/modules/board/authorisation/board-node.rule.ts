@@ -1,10 +1,4 @@
-import {
-	Action,
-	AuthorizationContext,
-	AuthorizationHelper,
-	AuthorizationInjectionService,
-	Rule,
-} from '@modules/authorization';
+import { Action, AuthorizationContext, AuthorizationInjectionService, Rule } from '@modules/authorization';
 import {
 	BoardNodeAuthorizable,
 	BoardRoles,
@@ -23,10 +17,7 @@ import { isVideoConferenceElement } from '../domain';
 
 @Injectable()
 export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
-	constructor(
-		private readonly authorizationHelper: AuthorizationHelper,
-		authorisationInjectionService: AuthorizationInjectionService
-	) {
+	constructor(authorisationInjectionService: AuthorizationInjectionService) {
 		authorisationInjectionService.injectAuthorizationRule(this);
 	}
 
@@ -37,8 +28,8 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	public hasPermission(user: User, authorizable: BoardNodeAuthorizable, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-		if (!hasPermission) {
+		const hasAllPermissions = this.hasAllPermissions(user, authorizable, context.requiredPermissions);
+		if (!hasAllPermissions) {
 			return false;
 		}
 
@@ -63,19 +54,27 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 			return this.hasPermissionForDrawingElementFile(userWithBoardRoles);
 		}
 
-		if (this.shouldProcessDrawingElement(authorizable)) {
-			return this.hasPermissionForDrawingElement(userWithBoardRoles, context);
-		}
-
 		if (this.shouldProcessVideoConferenceElement(authorizable)) {
 			return this.hasPermissionForVideoConferenceElement(userWithBoardRoles, context, authorizable);
 		}
 
 		if (context.action === Action.write) {
-			return this.isBoardEditor(userWithBoardRoles);
+			return this.hasAllPermissions(user, authorizable, [Permission.BOARD_EDIT]);
 		}
 
 		return this.isBoardReader(userWithBoardRoles);
+	}
+
+	private hasAllPermissions(
+		user: User,
+		authorizable: BoardNodeAuthorizable,
+		requiredPermissions: Permission[]
+	): boolean {
+		const schoolPermissions = user.resolvePermissions();
+		const boardPermissions = authorizable.getUserPermissions(user.id);
+
+		const permissions = Array.from(new Set([...schoolPermissions, ...boardPermissions]));
+		return requiredPermissions.every((p) => permissions.includes(p));
 	}
 
 	private isBoardAdmin(userWithBoardRoles: UserWithBoardRoles): boolean {
@@ -102,24 +101,9 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return isDrawingElement(boardNodeAuthorizable.boardNode) && requiresFileStoragePermission;
 	}
 
-	private shouldProcessDrawingElement(boardNodeAuthorizable: BoardNodeAuthorizable): boolean {
-		return isDrawingElement(boardNodeAuthorizable.boardNode);
-	}
-
 	private hasPermissionForDrawingElementFile(userWithBoardRoles: UserWithBoardRoles): boolean {
 		// check if user has read permissions with no account for the context.action
 		// because everyone should be able to upload files to a drawing element
-		return this.isBoardReader(userWithBoardRoles);
-	}
-
-	private hasPermissionForDrawingElement(
-		userWithBoardRoles: UserWithBoardRoles,
-		context: AuthorizationContext
-	): boolean {
-		if (context.action === Action.write) {
-			return this.isBoardEditor(userWithBoardRoles);
-		}
-
 		return this.isBoardReader(userWithBoardRoles);
 	}
 
@@ -206,7 +190,8 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		authorizable: BoardNodeAuthorizable
 	): boolean {
 		if (context.action === Action.write) {
-			const canRoomEditorManageVideoconference = authorizable.boardSettings.canRoomEditorManageVideoconference ?? false;
+			const canRoomEditorManageVideoconference =
+				authorizable.boardContextSettings.canRoomEditorManageVideoconference ?? false;
 			return (
 				(canRoomEditorManageVideoconference && this.isBoardEditor(userWithBoardRoles)) ||
 				this.isBoardAdmin(userWithBoardRoles)
