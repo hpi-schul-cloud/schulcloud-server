@@ -9,6 +9,7 @@ import {
 	MeSchoolLogoResponse,
 	MeSchoolResponse,
 	MeUserResponse,
+    UserPreferences,
 } from '../dto';
 
 export class MeResponseMapper {
@@ -65,7 +66,7 @@ export class MeResponseMapper {
 			lastName: userInfo.lastName,
 			customAvatarBackgroundColor: userInfo.customAvatarBackgroundColor,
 			forcePasswordChange: userInfo.forcePasswordChange,
-			preferences: userInfo.preferences
+			preferences: new UserPreferences(userInfo.preferences || {})
 		});
 
 		return userResponse;

@@ -1,6 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
 
+export class UserPreferences {
+	@ApiPropertyOptional()
+	public firstLogin?: boolean;
+
+	constructor(props: UserPreferences) {
+		this.firstLogin = props.firstLogin;
+	}
+}
 export class MeAccountResponse {
 	@ApiProperty()
 	public id: string;
@@ -57,7 +65,7 @@ export class MeUserResponse {
 	public forcePasswordChange?: boolean;
 
 	@ApiPropertyOptional()
-	preferences?: Record<string, unknown>;
+	preferences?: UserPreferences//Record<string, unknown>;
 
 	constructor(props: MeUserResponse) {
 		this.id = props.id;
