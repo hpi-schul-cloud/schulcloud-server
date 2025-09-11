@@ -39,14 +39,11 @@ class EtherpadClient {
 		};
 	}
 
-	createOptions(endpoint, params = {}) {
+	createUrl(endpoint, params = {}) {
 		const apikey = Configuration.get('ETHERPAD__API_KEY');
-		const data = { apikey, ...params };
-		return {
-			method: 'POST',
-			url: `${this.uri()}/${endpoint}`,
-			data,
-		};
+		const query = new URLSearchParams({ apikey, ...params }).toString();
+		const url = `${this.uri()}/${endpoint}?${query}`;
+		return url;
 	}
 
 	handleEtherpadResponse(res) {
@@ -62,7 +59,7 @@ class EtherpadClient {
 	}
 
 	createOrGetAuthor(params) {
-		const options = this.createOptions('createAuthorIfNotExistsFor', params);
+		const options = this.createUrl('createAuthorIfNotExistsFor', params);
 		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
@@ -71,7 +68,7 @@ class EtherpadClient {
 	}
 
 	createOrGetGroup(params) {
-		const options = this.createOptions('createGroupIfNotExistsFor', params);
+		const options = this.createUrl('createGroupIfNotExistsFor', params);
 		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
@@ -80,7 +77,7 @@ class EtherpadClient {
 	}
 
 	getActiveSessions(params) {
-		const options = this.createOptions('listSessionsOfAuthor', params);
+		const options = this.createUrl('listSessionsOfAuthor', params);
 		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
@@ -89,7 +86,7 @@ class EtherpadClient {
 	}
 
 	createSession(params) {
-		const options = this.createOptions('createSession', params);
+		const options = this.createUrl('createSession', params);
 		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
@@ -98,7 +95,7 @@ class EtherpadClient {
 	}
 
 	createOrGetGroupPad(params) {
-		const options = this.createOptions('createGroupPad', params);
+		const options = this.createUrl('createGroupPad', params);
 		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
