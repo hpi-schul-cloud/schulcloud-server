@@ -52,12 +52,16 @@ export class MeUserResponse {
 
 	@ApiPropertyOptional()
 	public customAvatarBackgroundColor?: string;
+	
+	@ApiPropertyOptional()
+	public forcePasswordChange?: boolean;
 
 	constructor(props: MeUserResponse) {
 		this.id = props.id;
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
 		this.customAvatarBackgroundColor = props.customAvatarBackgroundColor;
+		this.forcePasswordChange = props.forcePasswordChange;
 	}
 }
 
