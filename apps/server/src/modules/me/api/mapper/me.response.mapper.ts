@@ -65,6 +65,7 @@ export class MeResponseMapper {
 			lastName: userInfo.lastName,
 			customAvatarBackgroundColor: userInfo.customAvatarBackgroundColor,
 			forcePasswordChange: userInfo.forcePasswordChange,
+			preferences: userInfo.preferences
 		});
 
 		return userResponse;

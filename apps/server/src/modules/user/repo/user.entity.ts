@@ -59,6 +59,7 @@ interface UserInfo {
 	language?: LanguageType;
 	customAvatarBackgroundColor?: string;
 	forcePasswordChange?: boolean;
+	preferences?: Record<string, unknown>
 }
 
 @Embeddable()
@@ -318,6 +319,7 @@ export class User extends BaseEntityWithTimestamps {
 			language: this.language,
 			customAvatarBackgroundColor: this.customAvatarBackgroundColor,
 			forcePasswordChange: this.forcePasswordChange,
+			preferences: this.preferences,
 		};
 
 		return userInfo;

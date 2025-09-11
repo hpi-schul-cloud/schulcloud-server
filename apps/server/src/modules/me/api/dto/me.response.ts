@@ -52,9 +52,12 @@ export class MeUserResponse {
 
 	@ApiPropertyOptional()
 	public customAvatarBackgroundColor?: string;
-	
+
 	@ApiPropertyOptional()
 	public forcePasswordChange?: boolean;
+
+	@ApiPropertyOptional()
+	preferences?: Record<string, unknown>;
 
 	constructor(props: MeUserResponse) {
 		this.id = props.id;
@@ -62,6 +65,7 @@ export class MeUserResponse {
 		this.lastName = props.lastName;
 		this.customAvatarBackgroundColor = props.customAvatarBackgroundColor;
 		this.forcePasswordChange = props.forcePasswordChange;
+		this.preferences = props.preferences;
 	}
 }
 
