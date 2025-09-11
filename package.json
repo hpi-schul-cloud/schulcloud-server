@@ -260,7 +260,7 @@
 		"yaml": "^2.8.0"
 	},
 	"devDependencies": {
-		"@faker-js/faker": "^9.6.0",
+		"@faker-js/faker": "^10.0.0",
 		"@feathersjs/adapter-tests": "^5.0.33",
 		"@golevelup/ts-jest": "0.5.0",
 		"@nestjs/cli": "^10.4.9",
