@@ -69,14 +69,14 @@ export class LibraryStorage implements ILibraryStorage {
 	public async addFile(libraryName: ILibraryName, filename: string, dataStream: Readable): Promise<boolean> {
 		this.checkFilename(filename);
 
-		const s3Key = this.getS3Key(libraryName, filename);
+		const s3Path = this.getS3Key(libraryName, filename);
 
 		try {
 			await this.promiseLimiter(() =>
 				this.s3Client.create(
-					s3Key,
+					s3Path,
 					new H5pFileDto({
-						name: s3Key,
+						name: s3Path,
 						mimeType: 'application/octet-stream',
 						data: dataStream,
 					})
@@ -131,9 +131,8 @@ export class LibraryStorage implements ILibraryStorage {
 			});
 		}
 
-		const filesToDelete = await this.listFiles(libraryName, false);
-
-		await this.s3Client.delete(filesToDelete.map((file) => this.getS3Key(libraryName, file)));
+		const s3Path = this.getS3Key(libraryName, '');
+		await this.s3Client.deleteDirectory(s3Path);
 	}
 
 	/**
@@ -168,7 +167,9 @@ export class LibraryStorage implements ILibraryStorage {
 		this.checkFilename(filename);
 
 		try {
-			await this.s3Client.head(this.getS3Key(libraryName, filename));
+			const s3Path = this.getS3Key(libraryName, filename);
+			await this.s3Client.head(s3Path);
+
 			return true;
 		} catch {
 			return false;
@@ -268,17 +269,64 @@ export class LibraryStorage implements ILibraryStorage {
 		this.removeCircularDependencies(libraries);
 
 		// Count dependencies
-		const dependencies: { [ubername: string]: number } = {};
+		const dependencyCounts: { [ubername: string]: number } = {};
 		for (const library of libraries) {
 			const { preloadedDependencies = [], editorDependencies = [], dynamicDependencies = [] } = library;
+			const softDependencies = await this.getSoftDependenciesFromSemantics(library);
 
-			for (const dependency of preloadedDependencies.concat(editorDependencies, dynamicDependencies)) {
+			const dependencies = preloadedDependencies.concat(editorDependencies, dynamicDependencies, softDependencies);
+			for (const dependency of dependencies) {
 				const ubername = LibraryName.toUberName(dependency);
-				dependencies[ubername] = (dependencies[ubername] ?? 0) + 1;
+				dependencyCounts[ubername] = (dependencyCounts[ubername] ?? 0) + 1;
 			}
 		}
 
-		return dependencies;
+		return dependencyCounts;
+	}
+
+	private async getSoftDependenciesFromSemantics(library: ILibraryMetadata): Promise<ILibraryName[]> {
+		const softDependencies: LibraryName[] = [];
+
+		const semanticsFileExists = await this.fileExists(library, 'semantics.json');
+		if (semanticsFileExists) {
+			const semantics = await this.getFileAsJson(library, 'semantics.json', true);
+			if (Array.isArray(semantics)) {
+				const libraryOptions = this.findLibraryOptions(semantics);
+				for (const libraryOption of libraryOptions) {
+					const libraryName = LibraryName.fromUberName(libraryOption, { useWhitespace: true, useHyphen: false });
+					softDependencies.push(libraryName);
+				}
+			}
+		}
+
+		return softDependencies;
+	}
+
+	private findLibraryOptions(semantics: any[]): string[] {
+		const results: string[] = [];
+
+		function search(obj: any): void {
+			if (obj && typeof obj === 'object') {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				if ('type' in obj && obj.type && obj.type === 'library' && 'options' in obj && Array.isArray(obj.options)) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+					results.push(...obj.options);
+				}
+				for (const key in obj) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+					const value = obj[key];
+					if (Array.isArray(value)) {
+						value.forEach(search);
+					} else if (typeof value === 'object' && value !== null) {
+						search(value);
+					}
+				}
+			}
+		}
+
+		semantics.forEach(search);
+
+		return results;
 	}
 
 	/**
@@ -287,8 +335,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @returns the count
 	 */
 	public async getDependentsCount(library: ILibraryName): Promise<number> {
-		const allDependencies = await this.getAllDependentsCount();
-		return allDependencies[LibraryName.toUberName(library)] ?? 0;
+		const dependencyCounts = await this.getAllDependentsCount();
+
+		return dependencyCounts[LibraryName.toUberName(library)] ?? 0;
 	}
 
 	/**
@@ -296,9 +345,11 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 * @param file
 	 */
-	public async getFileAsJson(library: ILibraryName, file: string): Promise<unknown> {
-		const content = await this.getFileAsString(library, file);
-		return JSON.parse(content) as unknown;
+	public async getFileAsJson(library: ILibraryName, file: string, readLibraryJsonFromS3 = false): Promise<unknown> {
+		const content = await this.getFileAsString(library, file, readLibraryJsonFromS3);
+		const json = JSON.parse(content) as unknown;
+
+		return json;
 	}
 
 	/**
@@ -306,9 +357,10 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 * @param file
 	 */
-	public async getFileAsString(library: ILibraryName, file: string): Promise<string> {
-		const stream = await this.getFileStream(library, file);
+	public async getFileAsString(library: ILibraryName, file: string, readLibraryJsonFromS3 = false): Promise<string> {
+		const stream = await this.getFileStream(library, file, readLibraryJsonFromS3);
 		const data = await streamToString(stream);
+
 		return data;
 	}
 
@@ -320,8 +372,8 @@ export class LibraryStorage implements ILibraryStorage {
 	public async getFileStats(libraryName: ILibraryName, file: string): Promise<IFileStats> {
 		this.checkFilename(file);
 
-		const s3Key = this.getS3Key(libraryName, file);
-		const head = await this.s3Client.head(s3Key);
+		const s3Path = this.getS3Key(libraryName, file);
+		const head = await this.s3Client.head(s3Path);
 
 		if (head.LastModified === undefined || head.ContentLength === undefined) {
 			throw new NotFoundException();
@@ -338,10 +390,10 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 * @param file
 	 */
-	public async getFileStream(library: ILibraryName, file: string): Promise<Readable> {
+	public async getFileStream(library: ILibraryName, file: string, readLibraryJsonFromS3 = false): Promise<Readable> {
 		const ubername = LibraryName.toUberName(library);
 
-		const response = await this.getLibraryFile(ubername, file);
+		const response = await this.getLibraryFile(ubername, file, readLibraryJsonFromS3);
 
 		return response.stream;
 	}
@@ -354,6 +406,7 @@ export class LibraryStorage implements ILibraryStorage {
 		if (machineName) {
 			return this.libraryRepo.findByName(machineName);
 		}
+
 		return this.libraryRepo.getAll();
 	}
 
@@ -362,9 +415,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param libraryName
 	 */
 	public async getLanguages(libraryName: ILibraryName): Promise<string[]> {
-		const prefix = this.getS3Key(libraryName, 'language');
+		const s3Path = this.getS3Key(libraryName, 'language');
 
-		const { files } = await this.s3Client.list({ path: prefix });
+		const { files } = await this.s3Client.list({ path: s3Path });
 
 		const jsonFiles = files.filter((file) => path.extname(file) === '.json');
 		const languages = jsonFiles.map((file) => path.basename(file, '.json'));
@@ -394,6 +447,7 @@ export class LibraryStorage implements ILibraryStorage {
 			libraryName.majorVersion,
 			libraryName.minorVersion
 		);
+
 		return library !== null;
 	}
 
@@ -415,9 +469,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @returns an array of filenames
 	 */
 	public async listFiles(libraryName: ILibraryName, withMetadata = true): Promise<string[]> {
-		const prefix = this.getS3Key(libraryName, '');
+		const s3Path = this.getS3Key(libraryName, '');
 
-		const { files } = await this.s3Client.list({ path: prefix });
+		const { files } = await this.s3Client.list({ path: s3Path });
 
 		if (withMetadata) {
 			return files.concat('library.json');
@@ -493,12 +547,13 @@ export class LibraryStorage implements ILibraryStorage {
 	/**
 	 * Returns a file from a library
 	 * @param ubername Library ubername
-	 * @param file file
+	 * @param fileName file name
 	 * @returns a readable stream, mimetype and size
 	 */
 	public async getLibraryFile(
 		ubername: string,
-		file: string
+		fileName: string,
+		readLibraryJsonFromS3 = false
 	): Promise<{
 		stream: Readable;
 		mimetype: string;
@@ -506,11 +561,11 @@ export class LibraryStorage implements ILibraryStorage {
 	}> {
 		const libraryName = LibraryName.fromUberName(ubername);
 
-		this.checkFilename(file);
+		this.checkFilename(fileName);
 
 		let result: { stream: Readable | never; mimetype: string; size: number | undefined } | null = null;
 
-		if (file === 'library.json') {
+		if (fileName === 'library.json' && !readLibraryJsonFromS3) {
 			const metadata = await this.getMetadata(libraryName);
 			const stringifiedMetadata = JSON.stringify(metadata);
 			const readable = Readable.from(stringifiedMetadata);
@@ -521,8 +576,9 @@ export class LibraryStorage implements ILibraryStorage {
 				size: stringifiedMetadata.length,
 			};
 		} else {
-			const response = await this.s3Client.get(this.getS3Key(libraryName, file));
-			const mimetype = mime.lookup(file, 'application/octet-stream');
+			const s3Path = this.getS3Key(libraryName, fileName);
+			const response = await this.s3Client.get(s3Path);
+			const mimetype = mime.lookup(fileName, 'application/octet-stream');
 
 			result = {
 				stream: response.data,
@@ -530,6 +586,33 @@ export class LibraryStorage implements ILibraryStorage {
 				size: response.contentLength,
 			};
 		}
+
+		return result;
+	}
+
+	/**
+	 * Retrieves all folders in the S3 bucket under the h5p-libraries prefix.
+	 * @returns an array of folder names
+	 */
+	public async getAllLibraryFolders(): Promise<string[]> {
+		const prefix = 'h5p-libraries/';
+		const { files } = await this.s3Client.list({ path: prefix });
+		const result = this.extractUniqueFolderNamesFromFilePaths(files);
+
+		return result;
+	}
+
+	private extractUniqueFolderNamesFromFilePaths(files: string[]): string[] {
+		const folders = new Set<string>();
+		for (const filePath of files) {
+			const parts = filePath.split('/');
+			const filePathHasFolder = parts.length > 1;
+			if (filePathHasFolder) {
+				folders.add(parts[0]);
+			}
+		}
+		const result = Array.from(folders);
+
 		return result;
 	}
 }
