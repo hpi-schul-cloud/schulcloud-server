@@ -27,6 +27,7 @@ import {
 	AutoContextNameStrategy,
 	AutoGroupExternalUuidStrategy,
 	AutoMediumIdStrategy,
+	AutoPublisherStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
@@ -47,6 +48,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		autoContextIdStrategy: AutoContextIdStrategy,
 		autoContextNameStrategy: AutoContextNameStrategy,
 		autoMediumIdStrategy: AutoMediumIdStrategy,
+		autoPublisherStrategy: AutoPublisherStrategy,
 		autoGroupExternalUuidStrategy: AutoGroupExternalUuidStrategy
 	) {
 		super(
@@ -55,6 +57,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			autoContextIdStrategy,
 			autoContextNameStrategy,
 			autoMediumIdStrategy,
+			autoPublisherStrategy,
 			autoGroupExternalUuidStrategy
 		);
 	}
