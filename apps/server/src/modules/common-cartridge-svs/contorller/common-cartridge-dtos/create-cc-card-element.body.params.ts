@@ -18,7 +18,7 @@ export class CreateCcCardElementBodyParams {
 
 	@ApiProperty({
 		description: 'the data of the card element',
-		required: true,
+		required: false,
 	})
-	public data!: UpdateElementContentBodyParams;
+	public data?: UpdateElementContentBodyParams;
 }

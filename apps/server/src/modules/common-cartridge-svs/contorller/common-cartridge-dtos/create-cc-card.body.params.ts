@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 import { CreateCcCardElementBodyParams } from './create-cc-card-element.body.params';
 
 export class CreateCcCardBodyParams {
@@ -9,13 +9,6 @@ export class CreateCcCardBodyParams {
 	})
 	@IsString()
 	public title!: string;
-
-	@ApiProperty({
-		description: 'card is a resource',
-		required: true,
-	})
-	@IsBoolean()
-	public isResource!: boolean;
 
 	@ApiPropertyOptional({
 		description: '',

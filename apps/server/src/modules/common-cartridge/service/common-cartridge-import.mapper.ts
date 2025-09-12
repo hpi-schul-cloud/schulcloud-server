@@ -16,7 +16,11 @@ import {
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeWebLinkResourceProps,
 } from '../import/common-cartridge-import.types';
-import { CreateCcColumnBodyParams } from '@infra/common-cartridge-client/generated';
+import {
+	CreateCcCardBodyParams,
+	CreateCcCardElementBodyParams,
+	CreateCcColumnBodyParams,
+} from '@infra/common-cartridge-client/generated';
 
 export class CommonCartridgeImportMapper {
 	public mapResourceTypeToContentElementType(
@@ -112,8 +116,24 @@ export class CommonCartridgeImportMapper {
 	public mapColumnToColumnBodyParams(column: CommonCartridgeOrganizationProps): CreateCcColumnBodyParams {
 		return {
 			title: column.title,
-			isResource: column.isResource,
 			cards: [],
+		};
+	}
+
+	public mapCardToCardBodyParams(card: CommonCartridgeOrganizationProps): CreateCcCardBodyParams {
+		return {
+			title: card.title,
+			cardElements: [],
+		};
+	}
+
+	public mapCardElementToCardElementBodyParams(
+		cardElement: CommonCartridgeOrganizationProps
+	): CreateCcCardElementBodyParams {
+		return {
+			xmlPath: '',
+			type: cardElement.resourceType,
+			data: undefined!,
 		};
 	}
 }

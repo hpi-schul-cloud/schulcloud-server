@@ -30,12 +30,6 @@ export interface CreateCcCardBodyParams {
      */
     'title': string;
     /**
-     * card is a resource
-     * @type {boolean}
-     * @memberof CreateCcCardBodyParams
-     */
-    'isResource': boolean;
-    /**
      * 
      * @type {Array<CreateCcCardElementBodyParams>}
      * @memberof CreateCcCardBodyParams

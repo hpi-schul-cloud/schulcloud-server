@@ -40,6 +40,6 @@ export interface CreateCcCardElementBodyParams {
      * @type {UpdateElementContentBodyParams}
      * @memberof CreateCcCardElementBodyParams
      */
-    'data': UpdateElementContentBodyParams;
+    'data'?: UpdateElementContentBodyParams;
 }
 
