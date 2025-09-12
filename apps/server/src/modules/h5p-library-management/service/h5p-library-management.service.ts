@@ -715,7 +715,9 @@ export class H5PLibraryManagementService {
 	private logRemovalOfLostLibrary(library: ILibraryName): void {
 		this.logger.info(
 			new H5PLibraryManagementLoggable(
-				`Removing "lost" ${LibraryName.toUberName(library)} from S3 as there is no metadata entry in the database.`
+				`Removing "lost" library ${LibraryName.toUberName(
+					library
+				)} from S3 as there is no metadata in the database as well as no library.json in S3.`
 			)
 		);
 	}
