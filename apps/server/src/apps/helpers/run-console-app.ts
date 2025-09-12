@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { DomainErrorHandler } from '@core/error';
 import { BootstrapConsole } from 'nestjs-console';
 import { assertRequiredProviders } from './assert-required-providers';
