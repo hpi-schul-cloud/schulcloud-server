@@ -1,0 +1,7 @@
+import { RuntimeConfigValue, RuntimeConfigValueProps } from './runtime-config-value.do';
+
+export class RuntimeConfigValueFactory {
+	public static build(props: RuntimeConfigValueProps): RuntimeConfigValue {
+		return new RuntimeConfigValue(props);
+	}
+}

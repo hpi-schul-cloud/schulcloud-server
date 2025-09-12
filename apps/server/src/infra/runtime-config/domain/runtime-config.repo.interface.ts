@@ -1,0 +1,7 @@
+import { RuntimeConfigValue } from './runtime-config-value.do';
+
+export interface RuntimeConfigRepo {
+	save(domainObject: RuntimeConfigValue): Promise<RuntimeConfigValue>;
+}
+
+export const RUNTIME_CONFIG_REPO = 'RUNTIME_CONFIG_REPO';
