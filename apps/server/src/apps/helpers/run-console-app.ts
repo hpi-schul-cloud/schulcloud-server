@@ -1,5 +1,6 @@
 import { DomainErrorHandler } from '@core/error';
 import { BootstrapConsole } from 'nestjs-console';
+import { assertRequiredProviders } from './assert-required-providers';
 
 export const runConsoleApp = async <T>(module: T): Promise<void> => {
 	const bootstrap = new BootstrapConsole({
@@ -8,6 +9,8 @@ export const runConsoleApp = async <T>(module: T): Promise<void> => {
 	});
 
 	const app = await bootstrap.init();
+
+	assertRequiredProviders(app, [DomainErrorHandler]);
 
 	try {
 		await app.init();
