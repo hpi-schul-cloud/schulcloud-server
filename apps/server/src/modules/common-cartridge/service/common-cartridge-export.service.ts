@@ -71,6 +71,8 @@ export class CommonCartridgeExportService {
 		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
 
 		const archive = builder.build();
+		await archive.finalize();
+
 		const response: ExportResponse = {
 			data: archive,
 			name: 'export.ismcc',
