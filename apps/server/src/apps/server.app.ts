@@ -63,7 +63,10 @@ async function bootstrap(): Promise<void> {
 	nestExpress.set('feathersApp', feathersExpress);
 
 	// customize nest app settings
-	nestApp.enableCors();
+	nestApp.enableCors({
+		origin: 'http://localhost:4000',
+		credentials: true,
+	});
 	enableOpenApiDocs(nestApp, 'docs');
 
 	await nestApp.init();
