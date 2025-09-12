@@ -1,4 +1,3 @@
-import AdmZip from 'adm-zip';
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeResourceType,
@@ -16,6 +15,8 @@ import {
 	CommonCartridgeOrganizationNodeProps,
 } from './common-cartridge-organization-node';
 import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
+
+import archiver from 'archiver';
 
 export type CommonCartridgeFileBuilderProps = {
 	version: CommonCartridgeVersion;
@@ -53,12 +54,12 @@ export class CommonCartridgeFileBuilder {
 		return organization;
 	}
 
-	public build(): Buffer {
+	public build(): archiver.Archiver {
 		if (!this.metadataElement) {
 			throw new MissingMetadataLoggableException();
 		}
 
-		const archive = new AdmZip();
+		const archive = archiver('zip');
 		const organizations = this.organizationsRoot.map((organization) => organization.build());
 		const resources = this.resourcesBuilder.build();
 		const manifest = CommonCartridgeResourceFactory.createResource({
@@ -70,15 +71,15 @@ export class CommonCartridgeFileBuilder {
 			resources,
 		});
 
-		archive.addFile(manifest.getFilePath(), Buffer.from(manifest.getFileContent()));
+		archive.append(Buffer.from(manifest.getFileContent()), { name: manifest.getFilePath() });
 
 		resources.forEach((resource) => {
 			const fileContent = resource.getFileContent();
 			const buffer = Buffer.isBuffer(fileContent) ? fileContent : Buffer.from(fileContent);
 
-			archive.addFile(resource.getFilePath(), buffer);
+			archive.append(buffer, { name: resource.getFilePath() });
 		});
 
-		return archive.toBuffer();
+		return archive;
 	}
 }

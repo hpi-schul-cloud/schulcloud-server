@@ -3,6 +3,7 @@ import { EntityId } from '@shared/domain/types';
 import { CommonCartridgeExportService, CommonCartridgeImportService } from '../service';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { ICurrentUser } from '@infra/auth-guard';
+import { ExportResponse } from '../service/export.response';
 
 @Injectable()
 export class CommonCartridgeUc {
@@ -17,7 +18,7 @@ export class CommonCartridgeUc {
 		topics: string[],
 		tasks: string[],
 		columnBoards: string[]
-	): Promise<Buffer> {
+	): Promise<ExportResponse> {
 		const exportedCourse = await this.exportService.exportCourse(courseId, version, topics, tasks, columnBoards);
 
 		return exportedCourse;

@@ -28,6 +28,7 @@ import {
 	FileElementResponseDto,
 } from '../common-cartridge-client/card-client/dto';
 import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
+import { ExportResponse } from './export.response';
 
 type FileMetadataBuffer = { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto };
 
@@ -50,7 +51,7 @@ export class CommonCartridgeExportService {
 		exportedTopics: string[],
 		exportedTasks: string[],
 		exportedColumnBoards: string[]
-	): Promise<Buffer> {
+	): Promise<ExportResponse> {
 		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, courseId));
 
 		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
@@ -69,7 +70,13 @@ export class CommonCartridgeExportService {
 		// add column boards and cards to organization
 		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
 
-		return builder.build();
+		const archive = builder.build();
+		const response: ExportResponse = {
+			data: archive,
+			name: 'export.ismcc',
+		};
+
+		return response;
 	}
 
 	private addComponentToOrganization(
