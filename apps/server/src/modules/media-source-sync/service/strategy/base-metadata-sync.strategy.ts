@@ -2,9 +2,9 @@ import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { MediumMetadataDto, MediumMetadataService } from '@modules/medium-metadata';
 import {
 	ExternalTool,
+	ExternalToolParameterValidationService,
 	ExternalToolService,
 	ExternalToolValidationService,
-	ExternalToolParameterValidationService,
 } from '@modules/tool';
 import { Injectable } from '@nestjs/common';
 import {

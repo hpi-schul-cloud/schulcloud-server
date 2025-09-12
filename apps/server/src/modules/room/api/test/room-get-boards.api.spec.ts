@@ -6,7 +6,7 @@ import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -18,7 +18,6 @@ describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -29,13 +28,10 @@ describe('Room Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'rooms');
-
-		config = serverConfig();
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOMS_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -48,27 +44,6 @@ describe('Room Controller (API)', () => {
 				const someId = new ObjectId().toHexString();
 				const response = await testApiClient.get(someId);
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-			});
-		});
-
-		describe('when the feature is disabled', () => {
-			const setup = async () => {
-				config.FEATURE_ROOMS_ENABLED = false;
-
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
-
-				return { loggedInClient };
-			};
-
-			it('should return a 403 error', async () => {
-				const { loggedInClient } = await setup();
-				const someId = new ObjectId().toHexString();
-				const response = await loggedInClient.get(`${someId}/boards`);
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 
@@ -98,10 +73,14 @@ describe('Room Controller (API)', () => {
 					context: { type: BoardExternalReferenceType.Room, id: room.id },
 				});
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
-				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 				const userGroupEntity = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
-					users: [{ role: roomViewerRole, user: studentUser }],
+					users: [
+						{ role: roomViewerRole, user: studentUser },
+						{ role: roomOwnerRole, user: teacherUser },
+					],
 					organization: studentUser.school,
 					externalSource: undefined,
 				});
@@ -115,6 +94,7 @@ describe('Room Controller (API)', () => {
 					board,
 					studentAccount,
 					studentUser,
+					teacherUser,
 					roomViewerRole,
 					userGroupEntity,
 					roomMembership,

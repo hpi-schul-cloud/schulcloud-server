@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { RoleName } from '@modules/role';
+import { AccountService } from '@modules/account';
 import { UserDo, UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -20,6 +21,10 @@ describe('DeletionBatchUc', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				DeletionBatchUc,
+				{
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
+				},
 				{
 					provide: UserService,
 					useValue: createMock<UserService>(),

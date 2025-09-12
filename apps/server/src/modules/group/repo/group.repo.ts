@@ -92,6 +92,16 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return page;
 	}
 
+	public async findByUsersAndRoomsSchoolId(schoolId: EntityId, types?: GroupTypes[]): Promise<Page<Group>> {
+		const scope: GroupAggregateScope = new GroupAggregateScope();
+		scope.byType(types);
+		scope.byUsersAndOrganizationsSchoolId(schoolId);
+
+		const groups: Page<Group> = await this.findGroupsForScope(scope);
+
+		return groups;
+	}
+
 	public async findGroupsForScope(scope: GroupAggregateScope): Promise<Page<Group>> {
 		const mongoEntitiesFacet = (await this.em.aggregate(
 			GroupEntity,

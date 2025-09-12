@@ -307,36 +307,6 @@ class AWSS3Strategy {
 		}
 	}
 
-	checkCopyFileParams(userId, oldPath, newPath) {
-		if (!userId || !oldPath || !newPath) {
-			throw new BadRequest('Missing parameters by copyFile.', { userId, oldPath, newPath });
-		}
-	}
-
-	async copyFile(userId, oldPath, newPath, externalSchoolId) {
-		try {
-			this.checkCopyFileParams(userId, oldPath, newPath);
-
-			const user = await this.loadUser(userId);
-			const school = await this.loadSchool(user.schoolId);
-			const awsObject = await this.createAWSObjectFromSchool(school);
-
-			// files can be copied to different schools
-			const sourceBucket = `bucket-${externalSchoolId || user.schoolId}`;
-
-			const params = {
-				Bucket: awsObject.bucket, // destination bucket
-				CopySource: `/${sourceBucket}/${encodeURIComponent(oldPath)}`, // full source path (with bucket)
-				Key: newPath, // destination path
-			};
-
-			return promisify(awsObject.s3.copyObject.bind(awsObject.s3), awsObject.s3)(params);
-		} catch (err) {
-			logger.warning(err);
-			throw err;
-		}
-	}
-
 	checkDeleteFileParams(userId, filename) {
 		if (!userId || !filename) {
 			throw new BadRequest('Missing parameters by deleteFile.', { userId, filename });

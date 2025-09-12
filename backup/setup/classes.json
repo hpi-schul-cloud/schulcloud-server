@@ -151,7 +151,7 @@
 		},
 		"__v": 0
 	},
-		{
+	{
 		"_id": {
 			"$oid": "668c0a7b46c42b79f6034ff0"
 		},
@@ -211,6 +211,36 @@
 		},
 		"updatedAt": {
 			"$date": "2023-06-21T11:07:16.266Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "688c9ac37c87da1745ef6b83"
+		},
+		"userIds": [
+			{
+				"$oid": "5fa2cccab229544f2c696917"
+			}
+		],
+		"teacherIds": [
+			{
+				"$oid": "5fa2c71bb229544f2c6966d9"
+			}
+		],
+		"schoolId": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"name": "a",
+		"gradeLevel": 8,
+		"year": {
+			"$oid": "5ebd6dc14a431f75ec9a3e7b"
+		},
+		"createdAt": {
+			"$date": "2025-08-01T08:00:26.985Z"
+		},
+		"updatedAt": {
+			"$date": "2025-08-01T08:01:29.382Z"
 		},
 		"__v": 0
 	}

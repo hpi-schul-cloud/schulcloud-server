@@ -8,9 +8,14 @@ import { RoomBoardListResponse } from '../dto/response/room-board-list.response'
 import { RoomDetailsResponse } from '../dto/response/room-details.response';
 import { RoomItemResponse } from '../dto/response/room-item.response';
 import { RoomListResponse } from '../dto/response/room-list.response';
+import { PaginationParams } from '@shared/controller/dto';
+import { RoomStatsListResponse } from '../dto/response/room-stats-list.repsonse';
+import { RoomStatsItemResponse } from '../dto/response/room-stats-item.response';
+import { RoomStats } from '../type/room-stats.type';
+import { RoomWithLockedStatus } from '../room.uc';
 
 export class RoomMapper {
-	static mapToRoomItemResponse(room: Room): RoomItemResponse {
+	public static mapToRoomItemResponse({ room, isLocked }: RoomWithLockedStatus): RoomItemResponse {
 		const response = new RoomItemResponse({
 			id: room.id,
 			name: room.name,
@@ -20,12 +25,16 @@ export class RoomMapper {
 			endDate: room.endDate,
 			createdAt: room.createdAt,
 			updatedAt: room.updatedAt,
+			isLocked: isLocked,
 		});
 
 		return response;
 	}
 
-	static mapToRoomListResponse(rooms: Page<Room>, pagination: RoomPaginationParams): RoomListResponse {
+	public static mapToRoomListResponse(
+		rooms: Page<RoomWithLockedStatus>,
+		pagination: RoomPaginationParams
+	): RoomListResponse {
 		const roomResponseData: RoomItemResponse[] = rooms.data.map(
 			(room): RoomItemResponse => this.mapToRoomItemResponse(room)
 		);
@@ -34,7 +43,7 @@ export class RoomMapper {
 		return response;
 	}
 
-	static mapToRoomDetailsResponse(room: Room, permissions: Permission[]): RoomDetailsResponse {
+	public static mapToRoomDetailsResponse(room: Room, permissions: Permission[]): RoomDetailsResponse {
 		const response = new RoomDetailsResponse({
 			id: room.id,
 			name: room.name,
@@ -45,12 +54,13 @@ export class RoomMapper {
 			createdAt: room.createdAt,
 			updatedAt: room.updatedAt,
 			permissions,
+			features: room.features,
 		});
 
 		return response;
 	}
 
-	static mapToRoomBoardItemReponse(board: ColumnBoard): RoomBoardItemResponse {
+	public static mapToRoomBoardItemReponse(board: ColumnBoard): RoomBoardItemResponse {
 		const response = new RoomBoardItemResponse({
 			id: board.id,
 			title: board.title,
@@ -63,10 +73,33 @@ export class RoomMapper {
 		return response;
 	}
 
-	static mapToRoomBoardListResponse(columnBoards: ColumnBoard[]): RoomBoardListResponse {
+	public static mapToRoomBoardListResponse(columnBoards: ColumnBoard[]): RoomBoardListResponse {
 		const itemData = columnBoards.map((board) => this.mapToRoomBoardItemReponse(board));
 
 		const response = new RoomBoardListResponse(itemData, columnBoards.length);
+
+		return response;
+	}
+
+	public static mapToRoomStatsListResponse(
+		roomStats: Page<RoomStats>,
+		pagination: PaginationParams
+	): RoomStatsListResponse {
+		const roomStatsResponseData: RoomStatsItemResponse[] = roomStats.data.map(
+			(item) =>
+				new RoomStatsItemResponse({
+					...item,
+					name: item.name,
+					createdAt: item.createdAt,
+					updatedAt: item.updatedAt,
+				})
+		);
+		const response = new RoomStatsListResponse(
+			roomStatsResponseData,
+			roomStats.total,
+			pagination.skip,
+			pagination.limit
+		);
 
 		return response;
 	}

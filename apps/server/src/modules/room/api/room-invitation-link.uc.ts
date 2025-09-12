@@ -5,7 +5,6 @@ import { SchoolService } from '@modules/school';
 import { User } from '@modules/user/repo';
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { RoomInvitationLink, RoomInvitationLinkUpdateProps } from '../domain/do/room-invitation-link.do';
@@ -26,13 +25,11 @@ export class RoomInvitationLinkUc {
 	) {}
 
 	public async createLink(userId: EntityId, props: CreateRoomInvitationLinkBodyParams): Promise<RoomInvitationLink> {
-		this.checkFeatureEnabled();
-
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(props.roomId);
 		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, {
 			action: Action.write,
-			requiredPermissions: [Permission.ROOM_MEMBERS_ADD],
+			requiredPermissions: [Permission.ROOM_ADD_MEMBERS],
 		});
 
 		const roomInvitationLink = await this.roomInvitationLinkService.createLink({
@@ -45,12 +42,10 @@ export class RoomInvitationLinkUc {
 	}
 
 	public async updateLink(userId: EntityId, props: RoomInvitationLinkUpdateProps): Promise<RoomInvitationLink> {
-		this.checkFeatureEnabled();
-
 		const roomInvitationLink = await this.roomInvitationLinkService.findById(props.id);
 
 		await this.checkRoomAuthorizationByIds(userId, [roomInvitationLink.roomId], Action.write, [
-			Permission.ROOM_MEMBERS_ADD,
+			Permission.ROOM_ADD_MEMBERS,
 		]);
 
 		roomInvitationLink.title = props.title ?? roomInvitationLink.title;
@@ -66,8 +61,6 @@ export class RoomInvitationLinkUc {
 	}
 
 	public async deleteLinks(userId: EntityId, linkIds: EntityId[]): Promise<void> {
-		this.checkFeatureEnabled();
-
 		const roomInvitationLinks = await this.roomInvitationLinkService.findByIds(linkIds);
 		if (roomInvitationLinks.length !== linkIds.length) {
 			throw new NotFoundException();
@@ -75,14 +68,12 @@ export class RoomInvitationLinkUc {
 
 		const roomIds = roomInvitationLinks.map((link) => link.roomId);
 		const uniqueRoomIds = [...new Set(roomIds)];
-		await this.checkRoomAuthorizationByIds(userId, uniqueRoomIds, Action.write, [Permission.ROOM_MEMBERS_ADD]);
+		await this.checkRoomAuthorizationByIds(userId, uniqueRoomIds, Action.write, [Permission.ROOM_ADD_MEMBERS]);
 		await this.roomInvitationLinkService.deleteLinks(linkIds);
 	}
 
 	public async listLinksByRoomId(userId: EntityId, roomId: EntityId): Promise<RoomInvitationLink[]> {
-		this.checkFeatureEnabled();
-
-		await this.checkRoomAuthorizationByIds(userId, [roomId], Action.write, [Permission.ROOM_MEMBERS_ADD]);
+		await this.checkRoomAuthorizationByIds(userId, [roomId], Action.write, [Permission.ROOM_ADD_MEMBERS]);
 
 		const links = await this.roomInvitationLinkService.findLinkByRoomId(roomId);
 
@@ -90,8 +81,6 @@ export class RoomInvitationLinkUc {
 	}
 
 	public async useLink(userId: EntityId, linkId: string): Promise<EntityId> {
-		this.checkFeatureEnabled();
-
 		const [user, roomInvitationLink] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.tryGetLink(linkId),
@@ -142,12 +131,6 @@ export class RoomInvitationLinkUc {
 
 	private async changeRoleTo(roomId: EntityId, userId: EntityId, roleName: RoleName): Promise<void> {
 		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [userId], roleName);
-	}
-
-	private checkFeatureEnabled(): void {
-		if (!this.configService.get('FEATURE_ROOM_INVITATION_LINKS_ENABLED', { infer: true })) {
-			throw new FeatureDisabledLoggableException('FEATURE_ROOM_INVITATION_LINKS_ENABLED');
-		}
 	}
 
 	private async checkValidity(roomInvitationLink: RoomInvitationLink | undefined, user: User): Promise<void> {

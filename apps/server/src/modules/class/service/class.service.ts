@@ -46,4 +46,12 @@ export class ClassService {
 		}
 		return clazz;
 	}
+
+	public async findExistingClassesByIds(classIds: EntityId[]): Promise<Class[]> {
+		const promises = classIds.map((classId) => this.classesRepo.findClassById(classId));
+		const classes = await Promise.all(promises);
+		const existingClasses = classes.filter((classItem): classItem is Class => Boolean(classItem));
+
+		return existingClasses;
+	}
 }

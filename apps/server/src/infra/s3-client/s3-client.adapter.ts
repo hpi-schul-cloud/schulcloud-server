@@ -244,7 +244,7 @@ export class S3ClientAdapter {
 
 	public async delete(paths: string[]): Promise<void> {
 		try {
-			this.logger.debug(
+			this.logger.info(
 				new S3ClientActionLoggable('Start delete of files', {
 					action: 'delete',
 					objectPath: paths,
@@ -300,9 +300,9 @@ export class S3ClientAdapter {
 
 		files = files.concat(returnedFiles);
 
-		let res: ObjectKeysRecursive = { path, maxKeys, nextMarker: data?.ContinuationToken, files };
+		let res: ObjectKeysRecursive = { path, maxKeys, nextMarker: data.NextContinuationToken, files };
 
-		if (data?.IsTruncated && (!maxKeys || res.files.length < maxKeys)) {
+		if (data.IsTruncated && (!maxKeys || res.files.length < maxKeys)) {
 			res = await this.listObjectKeysRecursive(res);
 		}
 
@@ -344,7 +344,7 @@ export class S3ClientAdapter {
 
 	public async deleteDirectory(path: string, nextMarker?: string): Promise<void> {
 		try {
-			this.logger.warning(
+			this.logger.info(
 				new S3ClientActionLoggable('Start delete directory', {
 					action: 'deleteDirectory',
 					objectPath: path,

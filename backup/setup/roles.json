@@ -142,7 +142,9 @@
 			"SCHOOL_SYSTEM_EDIT",
 			"SCHOOL_SYSTEM_VIEW",
 			"USER_CHANGE_OWN_NAME",
-			"MEDIA_SCHOOL_LICENSE_ADMIN"
+			"MEDIA_SCHOOL_LICENSE_ADMIN",
+			"SCHOOL_LIST_DISCOVERABLE_TEACHERS",
+			"SCHOOL_ADMINISTRATE_ROOMS"
 		],
 		"__v": 2
 	},
@@ -164,7 +166,6 @@
 		],
 		"permissions": [
 			"ADMIN_EDIT",
-			"CAN_EXECUTE_INSTANCE_OPERATIONS",
 			"CLASS_LIST",
 			"CREATE_SUPPORT_JWT",
 			"DATASOURCES_CREATE",
@@ -207,8 +208,9 @@
 			"ACCOUNT_DELETE",
 			"USER_LOGIN_MIGRATION_FORCE",
 			"USER_LOGIN_MIGRATION_ROLLBACK",
+			"MEDIA_SOURCE_ADMIN",
 			"INSTANCE_EDIT",
-			"MEDIA_SOURCE_ADMIN"
+			"CAN_EXECUTE_INSTANCE_OPERATIONS"
 		],
 		"__v": 2
 	},
@@ -218,7 +220,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2024-11-12T16:35:53.763Z"
+			"$date": "2025-07-31T12:29:47.091Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -268,7 +270,13 @@
 			"USERGROUP_EDIT",
 			"USER_CHANGE_OWN_NAME",
 			"USER_CREATE",
-			"ROOM_CREATE"
+			"ROOM_CREATE",
+			"SCHOOL_CREATE_ROOM",
+			"SCHOOL_EDIT_ROOM",
+			"SCHOOL_DELETE_ROOM",
+			"SCHOOL_LIST_DISCOVERABLE_TEACHERS",
+			"SCHOOL_MANAGE_ROOM_INVITATIONLINKS",
+			"SCHOOL_BECOME_ROOMOWNER"
 		],
 		"__v": 2
 	},
@@ -593,8 +601,8 @@
 		},
 		"name": "roomviewer",
 		"permissions": [
-			"ROOM_VIEW",
-			"ROOM_LEAVE"
+			"ROOM_LEAVE_ROOM",
+			"ROOM_LIST_CONTENT"
 		]
 	},
 	{
@@ -603,10 +611,25 @@
 		},
 		"name": "roomeditor",
 		"permissions": [
-			"ROOM_VIEW",
-			"ROOM_CONTENT_EDIT",
-			"ROOM_LEAVE"
+			"ROOM_EDIT_CONTENT",
+			"ROOM_LEAVE_ROOM",
+			"ROOM_LIST_CONTENT",
+			"ROOM_LIST_DRAFTS"
 		]
+	},
+	{
+		"_id": {
+			"$oid": "67404edd76a89449722a7fb1"
+		},
+		"name": "groupSubstitutionTeacher",
+		"permissions": [],
+		"createdAt": {
+			"$date": "2024-11-22T09:29:01.346Z"
+		},
+		"updatedAt": {
+			"$date": "2024-11-22T09:29:01.346Z"
+		},
+		"__v": 0
 	},
 	{
 		"_id": {
@@ -628,16 +651,19 @@
 		},
 		"name": "roomowner",
 		"permissions": [
-			"ROOM_VIEW",
-			"ROOM_EDIT",
-			"ROOM_DELETE",
-			"ROOM_MEMBERS_ADD",
-			"ROOM_MEMBERS_REMOVE",
+			"ROOM_EDIT_ROOM",
+			"ROOM_DELETE_ROOM",
+			"ROOM_SHARE_ROOM",
+			"ROOM_COPY_ROOM",
+			"ROOM_EDIT_CONTENT",
+			"ROOM_REMOVE_MEMBERS",
+			"ROOM_ADD_MEMBERS",
+			"ROOM_MANAGE_INVITATIONLINKS",
 			"ROOM_CHANGE_OWNER",
-			"ROOM_MEMBERS_CHANGE_ROLE",
-			"ROOM_CONTENT_EDIT",
-			"ROOM_COPY",
-			"ROOM_SHARE"
+			"ROOM_CHANGE_ROLES",
+			"ROOM_LIST_CONTENT",
+			"ROOM_LIST_DRAFTS",
+			"ROOM_MANAGE_VIDEOCONFERENCES"
 		]
 	},
 	{
@@ -646,36 +672,25 @@
 		},
 		"name": "roomadmin",
 		"permissions": [
-			"ROOM_VIEW",
-			"ROOM_EDIT",
-			"ROOM_MEMBERS_ADD",
-			"ROOM_MEMBERS_REMOVE",
-			"ROOM_MEMBERS_CHANGE_ROLE",
-			"ROOM_LEAVE",
-			"ROOM_CONTENT_EDIT",
-			"ROOM_COPY",
-			"ROOM_SHARE"
+			"ROOM_EDIT_ROOM",
+			"ROOM_SHARE_ROOM",
+			"ROOM_COPY_ROOM",
+			"ROOM_EDIT_CONTENT",
+			"ROOM_REMOVE_MEMBERS",
+			"ROOM_ADD_MEMBERS",
+			"ROOM_MANAGE_INVITATIONLINKS",
+			"ROOM_CHANGE_ROLES",
+			"ROOM_LEAVE_ROOM",
+			"ROOM_LIST_CONTENT",
+			"ROOM_LIST_DRAFTS",
+			"ROOM_MANAGE_VIDEOCONFERENCES"
 		]
 	},
 	{
 		"_id": {
-			"$oid": "6809fa1735aac1eea89f553a"
+			"$oid": "6834512d020bf0a70deb4b22"
 		},
 		"name": "roomapplicant",
 		"permissions": []
-	},
-	{
-		"_id": {
-			"$oid": "67404edd76a89449722a7fb1"
-		},
-		"name": "groupSubstitutionTeacher",
-		"permissions": [],
-		"createdAt": {
-			"$date": "2024-11-22T09:29:01.346Z"
-		},
-		"updatedAt": {
-			"$date": "2024-11-22T09:29:01.346Z"
-		},
-		"__v": 0
 	}
 ]

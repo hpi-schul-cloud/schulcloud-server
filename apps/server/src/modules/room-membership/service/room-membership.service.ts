@@ -8,6 +8,9 @@ import { EntityId } from '@shared/domain/types';
 import { RoomMembershipAuthorizable, UserWithRoomRoles } from '../do/room-membership-authorizable.do';
 import { RoomMembership } from '../do/room-membership.do';
 import { RoomMembershipRepo } from '../repo/room-membership.repo';
+import { Pagination } from '@shared/domain/interface';
+import { Page } from '@shared/domain/domainobject';
+import { MemberStats, RoomMembershipStats } from '../type/room-membership-stats.type';
 
 @Injectable()
 export class RoomMembershipService {
@@ -143,6 +146,19 @@ export class RoomMembershipService {
 		return roomMembershipAuthorizables;
 	}
 
+	public async getRoomMembershipStatsByUsersAndRoomsSchoolId(
+		schoolId: EntityId,
+		pagination?: Pagination
+	): Promise<Page<RoomMembershipStats>> {
+		const { data, total } = await this.groupService.findByUsersAndRoomsSchoolId(schoolId, [GroupTypes.ROOM]);
+		const { skip, limit } = { skip: 0, limit: 50, ...pagination };
+		const groupsOnPage = data.slice(skip, skip + limit);
+		const result = await this.getStats(groupsOnPage, schoolId);
+
+		const page = new Page<RoomMembershipStats>(result, total);
+		return page;
+	}
+
 	public async getRoomMembershipAuthorizable(roomId: EntityId): Promise<RoomMembershipAuthorizable> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) {
@@ -175,6 +191,80 @@ export class RoomMembershipService {
 		if (includedOwner) {
 			throw new BadRequestException('Cannot remove owner from room');
 		}
+	}
+
+	private async getStats(groupsOnPage: Group[], schoolId: string): Promise<RoomMembershipStats[]> {
+		const groupIds = groupsOnPage.map((group) => group.id);
+		const roomMemberships = await this.roomMembershipRepo.findByGroupIds(groupIds);
+		const groupIdOwnerMap = await this.getOwnerMap(groupsOnPage);
+
+		const stats = await this.getRoomMemberStatsForGroups(schoolId, groupsOnPage);
+
+		const result = roomMemberships.map((item) => {
+			const { userGroupId, schoolId, roomId } = item;
+			const stat = stats.get(userGroupId);
+			const owner = groupIdOwnerMap.get(userGroupId) ?? '';
+			return {
+				roomId: roomId,
+				roomSchoolId: schoolId,
+				owner,
+				totalMembers: 0,
+				internalMembers: 0,
+				externalMembers: 0,
+				...stat,
+			};
+		});
+		return result;
+	}
+
+	private async getOwnerMap(groupsOnPage: Group[]): Promise<Map<EntityId, string>> {
+		const onwerRole = await this.roleService.findByName(RoleName.ROOMOWNER);
+		const owners = groupsOnPage.map((group) => {
+			const owner = group.users.find((user) => user.roleId === onwerRole.id);
+			return {
+				groupId: group.id,
+				ownerUserId: owner?.userId,
+			};
+		});
+		const ownerUserIds = owners.map((owner) => owner.ownerUserId).filter((id): id is EntityId => id !== undefined);
+		const ownerUsers = await this.userService.findByIds(ownerUserIds);
+		const groupIdOwnerMap = new Map(
+			owners.map(({ groupId, ownerUserId }) => {
+				const ownerUser = ownerUsers.find((user) => user.id === ownerUserId);
+				const name = `${ownerUser?.firstName ?? ''} ${ownerUser?.lastName ?? ''}`.trim();
+				return [groupId, name];
+			})
+		);
+		return groupIdOwnerMap;
+	}
+	private async getRoomMemberStatsForGroups<T extends Group>(
+		schoolId: EntityId,
+		groups: T[]
+	): Promise<Map<T['id'], MemberStats>> {
+		const userIds = groups.flatMap((group) => group.users.map((user) => user.userId));
+		const users = await this.userService.findByIds(userIds);
+
+		const userSchoolMap = new Map(users.map((user) => [user.id, user.schoolId]));
+
+		const statsMap = new Map(
+			groups.map((group) => {
+				const internalMembers = group.users.reduce((count, user) => {
+					const userSchoolId = userSchoolMap.get(user.userId);
+					const inc = userSchoolId === schoolId ? 1 : 0;
+					return count + inc;
+				}, 0);
+				const totalMembers = group.users.length;
+				const externalMembers = totalMembers - internalMembers;
+				const memberStats: MemberStats = {
+					totalMembers,
+					internalMembers,
+					externalMembers,
+				};
+				return [group.id, memberStats];
+			})
+		);
+
+		return statsMap;
 	}
 
 	private async handleGuestRoleRemoval(userIds: EntityId[], schoolId: EntityId): Promise<void> {

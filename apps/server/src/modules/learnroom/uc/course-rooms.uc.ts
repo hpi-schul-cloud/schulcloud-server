@@ -2,6 +2,7 @@ import { CourseService } from '@modules/course';
 import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { LockedCourseLoggableException } from '../loggable';
 import { LegacyBoardRepo } from '../repo';
 import { CourseRoomsService } from '../service/course-rooms.service';
 import { RoomBoardDTO } from '../types';
@@ -23,6 +24,12 @@ export class CourseRoomsUc {
 		const user = await this.userService.getUserEntityWithRoles(userId);
 		// TODO no authorisation check here?
 		const course = await this.courseService.findOneForUser(roomId, userId);
+
+		const { isLocked } = course.getMetadata();
+		if (isLocked) {
+			throw new LockedCourseLoggableException(course.name, course.id);
+		}
+
 		const legacyBoard = await this.legacyBoardRepo.findByCourseId(roomId);
 
 		// TODO this must be rewritten. Board auto-creation must be treated separately

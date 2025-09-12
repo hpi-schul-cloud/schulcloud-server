@@ -126,4 +126,46 @@ describe(GroupAggregateScope.name, () => {
 			});
 		});
 	});
+
+	describe('byUsersAndOrganizationsSchoolId', () => {
+		describe('when filtering for a group by users and organizations school id', () => {
+			it('should build the correct query', () => {
+				const schoolId = new ObjectId().toHexString();
+
+				const result = new GroupAggregateScope().byUsersAndOrganizationsSchoolId(schoolId).build();
+
+				expect(result).toEqual([
+					{
+						$lookup: {
+							from: 'users',
+							localField: 'users.user',
+							foreignField: '_id',
+							as: 'groupUsers',
+						},
+					},
+					{
+						$match: {
+							$or: [
+								{
+									'groupUsers.schoolId': new ObjectId(schoolId),
+								},
+								{
+									organization: new ObjectId(schoolId),
+								},
+							],
+						},
+					},
+					defaultFacetQuery,
+				]);
+			});
+		});
+
+		describe('when no value was given', () => {
+			it('should not include the query in the result', () => {
+				const result = new GroupAggregateScope().byUsersAndOrganizationsSchoolId(undefined).build();
+
+				expect(result).toEqual([defaultFacetQuery]);
+			});
+		});
+	});
 });

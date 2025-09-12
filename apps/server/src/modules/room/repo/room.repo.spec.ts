@@ -170,4 +170,32 @@ describe('RoomRepo', () => {
 			expect(result.total).toBe(0);
 		});
 	});
+
+	describe('findByIds', () => {
+		const setup = async () => {
+			const roomEntities = roomEntityFactory.buildListWithId(3);
+			await em.persistAndFlush(roomEntities);
+			em.clear();
+
+			return { roomEntities };
+		};
+
+		it('should return rooms for given ids', async () => {
+			const { roomEntities } = await setup();
+			const ids = roomEntities.map((entity) => entity.id);
+
+			const result = await repo.findByIds(ids);
+
+			expect(result.length).toBe(3);
+			expect(result.map((room) => room.id)).toEqual(expect.arrayContaining(ids));
+		});
+
+		it('should return empty array if no ids match', async () => {
+			await setup();
+
+			const result = await repo.findByIds(['nonexistent-id']);
+
+			expect(result).toEqual([]);
+		});
+	});
 });

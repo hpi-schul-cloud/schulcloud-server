@@ -66,4 +66,24 @@ export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
 
 		return this;
 	}
+
+	public byUsersAndOrganizationsSchoolId(schoolId: EntityId | undefined): this {
+		if (schoolId) {
+			this.pipeline.push({
+				$lookup: {
+					from: 'users',
+					localField: 'users.user',
+					foreignField: '_id',
+					as: 'groupUsers',
+				},
+			});
+			this.pipeline.push({
+				$match: {
+					$or: [{ 'groupUsers.schoolId': new ObjectId(schoolId) }, { organization: new ObjectId(schoolId) }],
+				},
+			});
+		}
+
+		return this;
+	}
 }

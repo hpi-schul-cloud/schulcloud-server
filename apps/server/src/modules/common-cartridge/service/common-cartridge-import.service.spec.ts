@@ -11,7 +11,7 @@ import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
-import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
+import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 
 jest.mock('../import/common-cartridge-file-parser');
 
@@ -133,7 +133,7 @@ describe(CommonCartridgeImportService.name, () => {
 		boardsClientAdapterMock.createBoard.mockResolvedValueOnce({ id: boardId });
 
 		commonCartridgeFileParser.getResource.mockReturnValue({
-			type: CommonCartridgeResourceTypeV1P1.FILE,
+			type: CommonCartridgeXmlResourceType.FILE,
 			href: faker.internet.url(),
 			fileName: faker.system.fileName(),
 			file: new File([''], 'file.pdf', { type: faker.system.mimeType() }),
@@ -154,7 +154,7 @@ describe(CommonCartridgeImportService.name, () => {
 
 				await sut.importFile(file, currentUser);
 
-				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ title: 'test course' });
+				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ name: 'test course', color: '#455B6A' });
 			});
 
 			it('should create a board', async () => {
@@ -234,7 +234,10 @@ describe(CommonCartridgeImportService.name, () => {
 
 				await sut.importFile(file, currentUser);
 
-				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ title: 'Untitled Course' });
+				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({
+					name: 'Untitled Course',
+					color: '#455B6A',
+				});
 			});
 		});
 	});

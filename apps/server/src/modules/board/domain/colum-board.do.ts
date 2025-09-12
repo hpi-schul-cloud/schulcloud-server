@@ -35,6 +35,14 @@ export class ColumnBoard extends BoardNode<ColumnBoardProps> {
 		this.props.layout = layout;
 	}
 
+	get readersCanEdit(): boolean {
+		return this.props.readersCanEdit;
+	}
+
+	set readersCanEdit(readersCanEdit: boolean) {
+		this.props.readersCanEdit = readersCanEdit;
+	}
+
 	canHaveChild(childNode: AnyBoardNode): boolean {
 		const allowed = childNode instanceof Column;
 		return allowed;

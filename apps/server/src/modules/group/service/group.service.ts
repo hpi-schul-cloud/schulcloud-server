@@ -60,6 +60,12 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		return groups;
 	}
 
+	public async findByUsersAndRoomsSchoolId(schoolId: EntityId, types?: GroupTypes[]): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findByUsersAndRoomsSchoolId(schoolId, types);
+
+		return groups;
+	}
+
 	public async findByScope(scope: GroupAggregateScope): Promise<Page<Group>> {
 		const groups: Page<Group> = await this.groupRepo.findGroupsForScope(scope);
 
@@ -181,5 +187,20 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		const { domainObjects } = await this.groupRepo.findGroupsByFilter({ userId });
 
 		return domainObjects;
+	}
+
+	public async findExistingGroupsByIds(groupIds: EntityId[]): Promise<Group[]> {
+		const promises = groupIds.map((groupId) => this.groupRepo.findGroupById(groupId));
+		const groups = await Promise.all(promises);
+		const existingGroups = groups.filter((group): group is Group => Boolean(group));
+
+		return existingGroups;
+	}
+
+	public async getGroupName(groupId: EntityId): Promise<string | undefined> {
+		const group = await this.groupRepo.findGroupById(groupId);
+		const groupName = group?.name;
+
+		return groupName;
 	}
 }

@@ -14,10 +14,11 @@ export class RoomCopyUc {
 	) {}
 
 	public async copyRoom(userId: EntityId, roomId: EntityId): Promise<CopyStatus> {
-		this.roomPermissionService.checkFeatureRoomsEnabled();
 		this.roomPermissionService.checkFeatureRoomCopyEnabled();
 
-		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_COPY]);
+		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write, [
+			Permission.ROOM_COPY_ROOM,
+		]);
 
 		const { roomCopied, boardsCopied } = await this.sagaService.executeSaga('roomCopy', { userId, roomId });
 

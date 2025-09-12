@@ -152,7 +152,7 @@ export class ImportTokenUC {
 		const sourceStorageLocationReference = await this.getStorageLocationReference(originalBoard.context);
 		const targetStorageLocationReference = await this.getStorageLocationReference(targetExternalReference);
 
-		const copyStatus = this.columnBoardService.copyColumnBoard({
+		const copyStatus = await this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId,
 			targetExternalReference,
 			sourceStorageLocationReference,
@@ -161,11 +161,14 @@ export class ImportTokenUC {
 			copyTitle,
 			targetSchoolId: user.school.id,
 		});
+
+		await this.columnBoardService.swapLinkedIdsInBoards(copyStatus);
+
 		return copyStatus;
 	}
 
 	private async copyRoom(user: User, roomId: EntityId, copyName?: string): Promise<CopyStatus> {
-		this.authorizationService.checkOneOfPermissions(user, [Permission.ROOM_CREATE]);
+		this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_CREATE_ROOM]);
 
 		const { roomCopied, boardsCopied } = await this.sagaService.executeSaga('roomCopy', {
 			userId: user.id,

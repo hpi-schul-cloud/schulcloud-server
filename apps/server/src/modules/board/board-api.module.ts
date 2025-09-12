@@ -8,18 +8,21 @@ import { RoomModule } from '../room';
 import { BoardModule } from './board.module';
 import {
 	BoardController,
+	BoardErrorReportController,
 	BoardSubmissionController,
 	CardController,
 	ColumnController,
 	ElementController,
 } from './controller';
 import { BoardNodePermissionService } from './service';
-import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
+import { BoardUc, BoardErrorReportUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
 import { SagaModule } from '@modules/saga';
 import { CopyRoomBoardsStep } from './saga';
+import { CopyHelperModule } from '@modules/copy-helper';
 
 @Module({
 	imports: [
+		CopyHelperModule,
 		CourseModule,
 		BoardModule,
 		LoggerModule,
@@ -29,7 +32,23 @@ import { CopyRoomBoardsStep } from './saga';
 		BoardContextApiHelperModule,
 		SagaModule,
 	],
-	controllers: [BoardController, ColumnController, CardController, ElementController, BoardSubmissionController],
-	providers: [BoardUc, BoardNodePermissionService, ColumnUc, CardUc, ElementUc, SubmissionItemUc, CopyRoomBoardsStep],
+	controllers: [
+		BoardController,
+		ColumnController,
+		CardController,
+		ElementController,
+		BoardSubmissionController,
+		BoardErrorReportController,
+	],
+	providers: [
+		BoardUc,
+		BoardNodePermissionService,
+		BoardErrorReportUc,
+		ColumnUc,
+		CardUc,
+		ElementUc,
+		SubmissionItemUc,
+		CopyRoomBoardsStep,
+	],
 })
 export class BoardApiModule {}

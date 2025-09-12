@@ -80,6 +80,7 @@ describe('RoomService', () => {
 				name: 'room #1',
 				color: RoomColor.ORANGE,
 				schoolId: new ObjectId().toHexString(),
+				features: [],
 			};
 			return { props };
 		};
@@ -126,6 +127,31 @@ describe('RoomService', () => {
 		});
 	});
 
+	describe('roomExists', () => {
+		const setup = () => {
+			const room = roomFactory.build();
+			roomRepo.findById.mockResolvedValueOnce(room);
+
+			return { room };
+		};
+
+		it('should return true if room exists', async () => {
+			const { room } = setup();
+
+			const result = await service.roomExists(room.id);
+
+			expect(result).toBe(true);
+		});
+
+		it('should return false if repo throws an error', async () => {
+			roomRepo.findById.mockRejectedValueOnce(new Error('Database error'));
+
+			const result = await service.roomExists('id');
+
+			expect(result).toBe(false);
+		});
+	});
+
 	describe('updateRoom', () => {
 		const setup = () => {
 			const room = roomFactory.build({
@@ -136,6 +162,7 @@ describe('RoomService', () => {
 			const props: RoomUpdateProps = {
 				name: 'updated name',
 				color: RoomColor.BLUE_GREY,
+				features: [],
 			};
 
 			return { props, room };
@@ -207,6 +234,48 @@ describe('RoomService', () => {
 			expect(result.data[0].id).toBe('1');
 			expect(result.data[1].id).toBe('2');
 			expect(result.data[2].id).toBe('3');
+		});
+	});
+
+	describe('getAllByIds', () => {
+		const setup = () => {
+			const roomIds: EntityId[] = ['1', '2', '3'];
+			const mockRooms: Room[] = [
+				{ id: '1', name: 'Room 1' },
+				{ id: '2', name: 'Room 2' },
+				{ id: '3', name: 'Room 3' },
+			] as Room[];
+
+			roomRepo.findByIds.mockResolvedValue(mockRooms);
+
+			return { roomIds, mockRooms };
+		};
+
+		it('should return all rooms for given ids', async () => {
+			const { roomIds, mockRooms } = setup();
+
+			const result = await service.getAllByIds(roomIds);
+
+			expect(roomRepo.findByIds).toHaveBeenCalledWith(roomIds);
+			expect(result).toEqual(mockRooms);
+		});
+	});
+
+	describe('canEditorManageVideoconferences', () => {
+		it('should return true if correct feature is present', () => {
+			const room = roomFactory.build();
+
+			const result = service.canEditorManageVideoconferences(room);
+
+			expect(result).toEqual(true);
+		});
+
+		it('should return false if feature is not present', () => {
+			const room = roomFactory.build({ features: [] });
+
+			const result = service.canEditorManageVideoconferences(room);
+
+			expect(result).toEqual(false);
 		});
 	});
 });

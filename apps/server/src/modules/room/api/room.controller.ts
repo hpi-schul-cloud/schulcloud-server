@@ -42,6 +42,7 @@ import { RoomMapper } from './mapper/room.mapper';
 import { RoomCopyUc } from './room-copy.uc';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
 import { RoomUc } from './room.uc';
+import { RoomStatsListResponse } from './dto/response/room-stats-list.repsonse';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -73,6 +74,29 @@ export class RoomController {
 		return response;
 	}
 
+	@Get('stats')
+	@ApiOperation({ summary: 'Get a list of room statistics.' })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Returns a list of room statistics.',
+		type: RoomStatsListResponse,
+	})
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async getRoomStats(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() pagination: RoomPaginationParams
+	): Promise<RoomStatsListResponse> {
+		const findOptions: IFindOptions<Room> = { pagination };
+
+		const roomStats = await this.roomUc.getRoomStats(currentUser.userId, findOptions);
+
+		const response = RoomMapper.mapToRoomStatsListResponse(roomStats, pagination);
+
+		return response;
+	}
+
 	@Post()
 	@ApiOperation({ summary: 'Create a new room' })
 	@ApiResponse({ status: HttpStatus.OK, description: 'Returns the details of a room', type: RoomItemResponse })
@@ -86,7 +110,7 @@ export class RoomController {
 	): Promise<RoomItemResponse> {
 		const room = await this.roomUc.createRoom(currentUser.userId, createRoomParams);
 
-		const response = RoomMapper.mapToRoomItemResponse(room);
+		const response = RoomMapper.mapToRoomItemResponse({ room, isLocked: false });
 
 		return response;
 	}

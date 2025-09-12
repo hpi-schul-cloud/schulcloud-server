@@ -57,7 +57,7 @@ describe('ShareTokenPermissionService', () => {
 				if (key === 'FEATURE_LESSON_SHARE') return false;
 				if (key === 'FEATURE_TASK_SHARE') return false;
 				if (key === 'FEATURE_COLUMN_BOARD_SHARE') return false;
-				if (key === 'FEATURE_ROOMS_ENABLED') return false;
+				if (key === 'FEATURE_ROOM_SHARE') return false;
 				return true;
 			});
 		};
@@ -141,7 +141,7 @@ describe('ShareTokenPermissionService', () => {
 	describe('checkRoomWritePermission', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const permissions = [Permission.ROOM_EDIT];
+			const permissions = [Permission.ROOM_EDIT_ROOM];
 
 			const roleDto: RoleDto = {
 				id: 'role-id',

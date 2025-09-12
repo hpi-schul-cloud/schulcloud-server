@@ -227,11 +227,6 @@
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
-		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Feature toggle for automatic consent during TSP sync."
-		},
 		"FEATURE_VIDEOCONFERENCE_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -375,7 +370,13 @@
 					"type": "integer",
 					"minimum": 0,
 					"default": 600000,
-					"description": "Timeout for incoming requests (including file uploads) to the h5p editor in milliseconds ."
+					"description": "Timeout for incoming requests (including file uploads) to the h5p editor in milliseconds."
+				},
+				"INSTALL_LIBRARY_LOCK_MAX_OCCUPATION_TIME": {
+					"type": "integer",
+					"minimum": 0,
+					"default": 600000,
+					"description": "The number of milliseconds that code has until a single library is installed. If this time is exceeded the lock will be freed and the library installation has failed."
 				},
 				"LIBRARY_LIST_PATH": {
 					"type": "string",
@@ -410,6 +411,12 @@
 					"type": "string",
 					"default": "",
 					"description": "Library Bucket name"
+				},
+				"LOG_LEVEL": {
+					"type": "string",
+					"default": "info",
+					"description": "Log level for H5P library manager.",
+					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 				}
 			}
 		},
@@ -728,11 +735,6 @@
 				"IS_VISIBLE": true
 			}
 		},
-		"FEATURE_SCHOOL_POLICY_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables uploading of school specific Privacy Policy on old admin page "
-		},
 		"FEATURE_SCHOOL_POLICY_ENABLED_NEW": {
 			"type": "boolean",
 			"default": false,
@@ -807,10 +809,6 @@
 					"format": "uri",
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
-				},
-				"OLD_PAD_URI": {
-					"type": "string",
-					"description": "The etherpad api version uri."
 				},
 				"API_KEY": {
 					"type": "string",
@@ -1133,12 +1131,12 @@
 		},
 		"FEATURE_COLUMN_BOARD_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Toggle for activating the column board."
 		},
 		"FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enable file folder elements in column board."
 		},
 		"FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED": {
@@ -1153,27 +1151,28 @@
 		},
 		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enable link elements in column board."
 		},
 		"FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enable video conference elements in column board."
 		},
 		"FEATURE_COLUMN_BOARD_H5P_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables h5p on the column board"
+		},
+		"FEATURE_COLUMN_BOARD_COLLABORA_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables edit of office documents on the column board"
 		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
 			"description": "link to userfacing documentation of the column board feature"
-		},
-		"COLUMN_BOARD_FEEDBACK_LINK": {
-			"type": "string",
-			"description": "link to a page that gathers feedback about the column board feature"
 		},
 		"FEATURE_COURSE_SHARE": {
 			"type": "boolean",
@@ -1202,7 +1201,7 @@
 		},
 		"FEATURE_BOARD_LAYOUT_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Toggle for the column board layout feature."
 		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
@@ -1362,11 +1361,6 @@
 			},
 			"default": {}
 		},
-		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Makes the new school administration page the default page"
-		},
 		"FEATURE_SHOW_OUTDATED_USERS": {
 			"type": "boolean",
 			"default": false,
@@ -1407,16 +1401,6 @@
 					"description": "Maximum number of preferred tools that can be set"
 				}
 			}
-		},
-		"FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the new class list view"
-		},
-		"FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the new course list view"
 		},
 		"FEATURE_GROUPS_IN_COURSE_ENABLED": {
 			"type": "boolean",
@@ -1602,10 +1586,10 @@
 			"default": true,
 			"description": "Enables calender service"
 		},
-		"FEATURE_ROOMS_ENABLED": {
+		"FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE": {
 			"type": "boolean",
-			"default": "true",
-			"description": "Enables the rooms feature"
+			"default": true,
+			"description": "Enables the toggle that allows board readers to edit the board"
 		},
 		"FEATURE_ROOM_COPY_ENABLED": {
 			"type": "boolean",
@@ -1617,20 +1601,10 @@
 			"default": true,
 			"description": "Enables the room sharing feature"
 		},
-		"FEATURE_ROOM_INVITATION_LINKS_ENABLED": {
-			"type": "boolean",
-			"default": "true",
-			"description": "Enables the room invitation links feature"
-		},
-		"FEATURE_ROOM_ADD_STUDENTS_ENABLED": {
+		"FEATURE_ADMINISTRATE_ROOMS_ENABLED": {
 			"type": "boolean",
 			"default": "false",
-			"description": "Enables adding students to a room"
-		},
-		"FEATURE_ROOM_MEMBERS_TABS_ENABLED": {
-			"type": "boolean",
-			"default": "false",
-			"description": "Enables the tab navigation for room members page"
+			"description": "Enables the administration of rooms by school admins"
 		},
 		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
 			"type": "boolean",
@@ -1667,11 +1641,6 @@
 			"default": "https://api.github.com/repos/hpi-schul-cloud/RELEASE-NOTES/releases",
 			"description": "URL of the GitHub repository from which release notes are fetched. Used for testing and overriding the default release notes source."
 		},
-		"FEATURE_HIDE_OLD_ADMIN_PAGE_LINK": {
-			"type": "boolean",
-			"default": false,
-			"description": "Hides the link that refers to the old school administration page"
-		},
 		"DB_URL": {
 			"type": "string",
 			"description": "Mongodb url, may contain user and password"
@@ -1688,6 +1657,11 @@
 			"type": "string",
 			"default": "noreply@dbildungscloud.de",
 			"description": "sender address used to send mails with"
+		},
+		"INCLUDE_MAIL_IN_USER_FULL_TEXT_INDEX": {
+			"type": "boolean",
+			"default": true,
+			"description": "if user.email shall be included in the full text index"
 		}
 	},
 	"required": []
