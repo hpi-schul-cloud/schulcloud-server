@@ -6,6 +6,9 @@ import { Timezone } from '../../types/timezone.enum';
 
 export class ConfigResponse {
 	@ApiProperty()
+	HOST: string;
+	
+	@ApiProperty()
 	ACCESSIBILITY_REPORT_EMAIL: string;
 
 	@ApiProperty()
@@ -249,6 +252,7 @@ export class ConfigResponse {
 	ROOM_MEMBER_INFO_URL: string | null;
 
 	constructor(config: ServerConfig) {
+		this.HOST = config.HOST;
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
 		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN;
