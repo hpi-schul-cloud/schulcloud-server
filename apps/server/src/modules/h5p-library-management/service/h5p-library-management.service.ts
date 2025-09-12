@@ -460,6 +460,10 @@ export class H5PLibraryManagementService {
 
 	private filterLibraryMetadata(obj: Record<string, any>): ILibraryMetadata {
 		const allowedKeys: (keyof ILibraryMetadata)[] = [
+			'machineName',
+			'majorVersion',
+			'minorVersion',
+			'patchVersion',
 			'addTo',
 			'author',
 			'coreApi',
@@ -738,6 +742,10 @@ export class H5PLibraryManagementService {
 
 	private filterInstalledLibrary(obj: Record<string, any>): IInstalledLibrary {
 		const allowedKeys: (keyof IInstalledLibrary)[] = [
+			'machineName',
+			'majorVersion',
+			'minorVersion',
+			'patchVersion',
 			'addTo',
 			'author',
 			'coreApi',
@@ -782,8 +790,6 @@ export class H5PLibraryManagementService {
 			if (key in obj) {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				result[key] = obj[key as string];
-			} else {
-				console.log(`Key ${String(key)} is missing in the object and will not be included in the filtered result.`);
 			}
 		}
 		return result;
