@@ -685,6 +685,12 @@ export class H5PLibraryManagementService {
 				)
 			);
 
+			this.logRemovalOfLostLibrary(libraryName);
+			// If the folder exists without a library.json in S3 and we don't have
+			// a metadata entry stored in the database, we remove the folder, as we
+			// cannot determine the correct state of the library.
+			await this.libraryStorage.deleteFolder(libraryName);
+
 			return;
 		}
 
@@ -704,6 +710,14 @@ export class H5PLibraryManagementService {
 		if (fileAdded) {
 			this.logLibraryJsonAddedToS3(metadata);
 		}
+	}
+
+	private logRemovalOfLostLibrary(library: ILibraryName): void {
+		this.logger.info(
+			new H5PLibraryManagementLoggable(
+				`Removing "lost" ${LibraryName.toUberName(library)} from S3 as there is no metadata entry in the database.`
+			)
+		);
 	}
 
 	private logLibraryJsonAddedToS3(metadata: IInstalledLibrary): void {

@@ -131,6 +131,10 @@ export class LibraryStorage implements ILibraryStorage {
 			});
 		}
 
+		await this.deleteFolder(libraryName);
+	}
+
+	public async deleteFolder(libraryName: ILibraryName): Promise<void> {
 		const s3Path = this.getS3Key(libraryName, '');
 		await this.s3Client.deleteDirectory(s3Path);
 	}
