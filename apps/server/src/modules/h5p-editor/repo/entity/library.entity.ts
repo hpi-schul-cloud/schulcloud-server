@@ -1,6 +1,6 @@
 import { IInstalledLibrary, ILibraryName } from '@lumieducation/h5p-server';
 import { IFileStats, ILibraryMetadata, IPath } from '@lumieducation/h5p-server/build/src/types';
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 
 export class Path implements IPath {
@@ -44,8 +44,10 @@ export class FileMetadata implements IFileStats {
 }
 
 @Entity({ tableName: 'h5p_library' })
+@Index({ properties: ['machineName', 'majorVersion', 'minorVersion', 'patchVersion'] })
 export class InstalledLibrary extends BaseEntityWithTimestamps implements IInstalledLibrary {
 	@Property()
+	@Index()
 	machineName: string;
 
 	@Property()

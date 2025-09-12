@@ -33,6 +33,7 @@ const imports = [
 		user: DB_USERNAME,
 		allowGlobalContext: true,
 		entities: ENTITIES,
+		ensureIndexes: true,
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
