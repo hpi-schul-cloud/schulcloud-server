@@ -7,7 +7,7 @@ const logger = require('../../../logger');
 
 /**
  * Is created and designed as singleton.
- * Options only hold as global envirements, or in config file.
+ * Options only hold as global environments, or in config file.
  */
 class EtherpadClient {
 	constructor() {
@@ -59,8 +59,8 @@ class EtherpadClient {
 	}
 
 	createOrGetAuthor(params) {
-		const options = this.createUrl('createAuthorIfNotExistsFor', params);
-		return axios(options)
+		const url = this.createUrl('createAuthorIfNotExistsFor', params);
+		return axios(url)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				throw new BadRequest(this.err.createOrGetAuthor, err);
@@ -68,8 +68,8 @@ class EtherpadClient {
 	}
 
 	createOrGetGroup(params) {
-		const options = this.createUrl('createGroupIfNotExistsFor', params);
-		return axios(options)
+		const url = this.createUrl('createGroupIfNotExistsFor', params);
+		return axios(url)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				throw new BadRequest(this.err.createOrGetGroup, err);
@@ -77,8 +77,8 @@ class EtherpadClient {
 	}
 
 	getActiveSessions(params) {
-		const options = this.createUrl('listSessionsOfAuthor', params);
-		return axios(options)
+		const url = this.createUrl('listSessionsOfAuthor', params);
+		return axios(url)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				throw new BadRequest(this.err.getActiveSessions, err);
@@ -86,8 +86,8 @@ class EtherpadClient {
 	}
 
 	createSession(params) {
-		const options = this.createUrl('createSession', params);
-		return axios(options)
+		const url = this.createUrl('createSession', params);
+		return axios(url)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				throw new BadRequest(this.err.createSession, err);
@@ -95,8 +95,8 @@ class EtherpadClient {
 	}
 
 	createOrGetGroupPad(params) {
-		const options = this.createUrl('createGroupPad', params);
-		return axios(options)
+		const url = this.createUrl('createGroupPad', params);
+		return axios(url)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				// pad is already there, just return the constructed pad path
