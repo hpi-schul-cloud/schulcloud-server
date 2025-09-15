@@ -30,23 +30,118 @@ describe('Runtime Config Repo', () => {
 		await cleanupCollections(em);
 	});
 
-	it('should persist runtime value', async () => {
-		expect(repo).toBeDefined();
+	describe('persistance', () => {
+		it('should persist string runtime value', async () => {
+			// todo: inject values
+			const runtimeConfigValue = RuntimeConfigValueFactory.build({
+				id: new ObjectID().toHexString(),
+				key: 'test-config',
+				type: 'string',
+				value: 'a value',
+			});
 
-		// todo: inject values
-		const runtimeConfigValue = RuntimeConfigValueFactory.build({
-			id: new ObjectID().toHexString(),
-			key: 'test-config',
+			await repo.save(runtimeConfigValue);
+
+			const retrieved = await repo.getByKey('test-config');
+
+			expect(retrieved.getProps()).toEqual(
+				expect.objectContaining({
+					id: runtimeConfigValue.id,
+					key: 'test-config',
+					type: 'string',
+					value: 'a value',
+				})
+			);
 		});
 
-		await repo.save(runtimeConfigValue);
+		it('should persist number runtime value', async () => {
+			// todo: inject values
+			const runtimeConfigValue = RuntimeConfigValueFactory.build({
+				id: new ObjectID().toHexString(),
+				key: 'test-config',
+				type: 'number',
+				value: 42,
+			});
 
-		const retrieved = await repo.getByKey('test-config');
+			await repo.save(runtimeConfigValue);
 
-		expect(retrieved).toEqual(
-			expect.objectContaining({
-				id: runtimeConfigValue.id,
-			})
-		);
+			const retrieved = await repo.getByKey('test-config');
+
+			expect(retrieved.getProps()).toEqual(
+				expect.objectContaining({
+					id: runtimeConfigValue.id,
+					key: 'test-config',
+					type: 'number',
+					value: 42,
+				})
+			);
+		});
+
+		it('should persist boolean truthy runtime value', async () => {
+			// todo: inject values
+			const runtimeConfigValue = RuntimeConfigValueFactory.build({
+				id: new ObjectID().toHexString(),
+				key: 'test-config',
+				type: 'boolean',
+				value: true,
+			});
+
+			await repo.save(runtimeConfigValue);
+
+			const retrieved = await repo.getByKey('test-config');
+
+			expect(retrieved.getProps()).toEqual(
+				expect.objectContaining({
+					id: runtimeConfigValue.id,
+					key: 'test-config',
+					type: 'boolean',
+					value: true,
+				})
+			);
+		});
+
+		it('should persist boolean falsy runtime value', async () => {
+			// todo: inject values
+			const runtimeConfigValue = RuntimeConfigValueFactory.build({
+				id: new ObjectID().toHexString(),
+				key: 'test-config',
+				type: 'boolean',
+				value: false,
+			});
+
+			await repo.save(runtimeConfigValue);
+
+			const retrieved = await repo.getByKey('test-config');
+
+			expect(retrieved.getProps()).toEqual(
+				expect.objectContaining({
+					id: runtimeConfigValue.id,
+					key: 'test-config',
+					type: 'boolean',
+					value: false,
+				})
+			);
+		});
+	});
+
+	describe('default values', () => {
+		it.todo('should return default value when not set');
+	});
+
+	describe('errors', () => {
+		it('should throw when number is not a number', async () => {
+			expect(repo).toBeDefined();
+
+			// todo: inject values
+			const runtimeConfigValueEntity = new RuntimeConfigEntity({
+				key: 'test-config',
+				type: 'number',
+				value: 'not-a-number',
+			});
+
+			await em.persistAndFlush(runtimeConfigValueEntity);
+
+			await expect(() => repo.getByKey('test-config')).rejects.toThrowError();
+		});
 	});
 });
