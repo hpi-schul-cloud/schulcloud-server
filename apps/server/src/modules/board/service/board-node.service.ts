@@ -48,6 +48,9 @@ export class BoardNodeService {
 		isVisible: T['isVisible']
 	): Promise<void> {
 		node.isVisible = isVisible;
+		if (!isVisible) {
+			node.readersCanEdit = false;
+		}
 		await this.boardNodeRepo.save(node);
 	}
 
