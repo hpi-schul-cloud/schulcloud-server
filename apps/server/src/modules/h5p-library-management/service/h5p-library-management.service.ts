@@ -119,12 +119,14 @@ export class H5PLibraryManagementService {
 		const uninstalledLibraries = await this.uninstallUnwantedLibrariesAsBulk();
 		const installedLibraries = await this.installLibrariesAsBulk(availableLibraries);
 		const synchronizedLibraries = await this.synchronizeDbEntryAndLibraryJson();
+		const brokenLibraries = await this.checkAndRemoveBrokenLibraries();
 
 		this.logFinishH5pLibraryManagementJob(
 			availableLibraries,
 			uninstalledLibraries,
 			installedLibraries,
-			synchronizedLibraries
+			synchronizedLibraries,
+			brokenLibraries
 		);
 	}
 
@@ -136,7 +138,8 @@ export class H5PLibraryManagementService {
 		availableLibraries: ILibraryAdministrationOverviewItem[],
 		uninstalledLibraries: ILibraryAdministrationOverviewItem[],
 		installedLibraries: ILibraryInstallResult[],
-		synchronizedLibraries: ILibraryInstallResult[]
+		synchronizedLibraries: ILibraryInstallResult[],
+		brokenLibraries: ILibraryAdministrationOverviewItem[]
 	): void {
 		this.logger.info(new H5PLibraryManagementLoggable('Finished H5P library management job!'));
 		this.logger.info(
@@ -144,7 +147,8 @@ export class H5PLibraryManagementService {
 				availableLibraries,
 				uninstalledLibraries,
 				installedLibraries,
-				synchronizedLibraries
+				synchronizedLibraries,
+				brokenLibraries
 			)
 		);
 	}
@@ -725,6 +729,46 @@ export class H5PLibraryManagementService {
 		this.logger.info(
 			new H5PLibraryManagementLoggable(
 				`Added library.json containing latest metadata for ${this.formatLibraryVersion(metadata)} to S3.`
+			)
+		);
+	}
+
+	public async checkAndRemoveBrokenLibraries(): Promise<ILibraryAdministrationOverviewItem[]> {
+		const brokenLibraries: ILibraryAdministrationOverviewItem[] = [];
+		const availableLibraries = await this.libraryAdministration.getLibraries();
+
+		for (const library of availableLibraries) {
+			const libraryName: ILibraryName = {
+				machineName: library.machineName,
+				majorVersion: library.majorVersion,
+				minorVersion: library.minorVersion,
+			};
+			try {
+				await this.checkConsistency(libraryName);
+			} catch (error: unknown) {
+				this.logger.warning(
+					new H5PLibraryManagementErrorLoggable(
+						error,
+						{ library: LibraryName.toUberName(library) },
+						'during consistency check'
+					)
+				);
+
+				this.logRemovalOfBrokenLibrary(libraryName);
+				await this.libraryStorage.deleteLibrary(libraryName);
+				brokenLibraries.push(library);
+			}
+		}
+
+		return brokenLibraries;
+	}
+
+	private logRemovalOfBrokenLibrary(library: ILibraryName): void {
+		this.logger.warning(
+			new H5PLibraryManagementLoggable(
+				`Removing "broken" library ${LibraryName.toUberName(
+					library
+				)} from database and S3 as the library did not pass consistency check.`
 			)
 		);
 	}
