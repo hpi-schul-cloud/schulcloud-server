@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
@@ -29,6 +29,8 @@ import {
 } from '../common-cartridge-client/card-client/dto';
 import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
 import { ExportResponse } from './export.response';
+import archiver from 'archiver';
+import { Logger, LogMessage } from '@core/logger';
 
 type FileMetadataBuffer = { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto };
 
@@ -42,8 +44,11 @@ export class CommonCartridgeExportService {
 		private readonly lessonClientAdapter: LessonClientAdapter,
 		private readonly filesMetadataClientAdapter: FilesStorageClientAdapterService,
 		private readonly filesStorageClientAdapter: FilesStorageClientAdapter,
-		private readonly mapper: CommonCartridgeExportMapper
-	) {}
+		private readonly mapper: CommonCartridgeExportMapper,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(CommonCartridgeExportService.name);
+	}
 
 	public async exportCourse(
 		courseId: string,
@@ -52,6 +57,8 @@ export class CommonCartridgeExportService {
 		exportedTasks: string[],
 		exportedColumnBoards: string[]
 	): Promise<ExportResponse> {
+		const archive = this.createArchiver();
+
 		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, courseId));
 
 		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
@@ -70,15 +77,51 @@ export class CommonCartridgeExportService {
 		// add column boards and cards to organization
 		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
 
-		const archive = builder.build();
+		builder.build(archive);
 		await archive.finalize();
 
 		const response: ExportResponse = {
 			data: archive,
-			name: 'export.ismcc',
+			name: `${roomBoard.title}-${new Date().toISOString()}.imscc`,
 		};
 
 		return response;
+	}
+
+	private createArchiver(): archiver.Archiver {
+		const archive = archiver('zip', {
+			zlib: { level: 9 },
+		});
+
+		archive.on('warning', (err) => {
+			if (err.code === 'ENOENT') {
+				this.logger.warning({
+					getLogMessage(): LogMessage {
+						return {
+							message: 'Warning while creating archive ENOENT',
+						};
+					},
+				});
+			} else {
+				throw new InternalServerErrorException('Error while creating archive on warning event', { cause: err });
+			}
+		});
+
+		archive.on('error', (err) => {
+			throw new InternalServerErrorException('Error while creating archive', { cause: err });
+		});
+
+		archive.on('close', () => {
+			this.logger.debug({
+				getLogMessage(): LogMessage {
+					return {
+						message: `Archive closed. Length: ${archive.pointer()}`,
+					};
+				},
+			});
+		});
+
+		return archive;
 	}
 
 	private addComponentToOrganization(

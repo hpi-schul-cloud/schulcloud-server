@@ -54,12 +54,11 @@ export class CommonCartridgeFileBuilder {
 		return organization;
 	}
 
-	public build(): archiver.Archiver {
+	public build(archive: archiver.Archiver): void {
 		if (!this.metadataElement) {
 			throw new MissingMetadataLoggableException();
 		}
 
-		const archive = archiver('zip');
 		const organizations = this.organizationsRoot.map((organization) => organization.build());
 		const resources = this.resourcesBuilder.build();
 		const manifest = CommonCartridgeResourceFactory.createResource({
@@ -79,7 +78,5 @@ export class CommonCartridgeFileBuilder {
 
 			archive.append(buffer, { name: resource.getFilePath() });
 		});
-
-		return archive;
 	}
 }
