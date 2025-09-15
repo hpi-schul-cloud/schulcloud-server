@@ -417,6 +417,21 @@ export class H5PLibraryManagementService {
 			} else {
 				await this.addLibraryJsonToS3(libraryName);
 			}
+
+			// TODO: add handling, when "lost" library is installed during "addLibraryJsonToS3"
+			// TODO: should we only do one consistency check here and remove it from the previous steps?
+			try {
+				await this.checkConsistency(libraryName);
+			} catch (error: unknown) {
+				this.logger.warning(
+					new H5PLibraryManagementErrorLoggable(
+						error,
+						{ library: folder },
+						'during consistency check after synchronization of library.json and database entry'
+					)
+				);
+				await this.libraryStorage.deleteLibrary(libraryName);
+			}
 		}
 
 		const synchronizedResults = installResults.filter((result) => this.isLibraryInstalledOrUpdated(result));
