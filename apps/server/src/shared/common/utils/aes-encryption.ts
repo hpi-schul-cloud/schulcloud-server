@@ -1,17 +1,20 @@
 import crypto from 'node:crypto';
 
 export class AesEncryptionHelper {
+	private static readonly encryptionAlgorithm = 'aes-256-gcm';
+
 	public static encrypt(plainText: string, secret: string): string {
 		const salt = crypto.randomBytes(16);
 
 		const { key, iv } = this.deriveKeyAndIv(secret, salt);
 
-		const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+		const cipher = crypto.createCipheriv(this.encryptionAlgorithm, key, iv);
 		const cipherText = Buffer.concat([
 			Buffer.from('Salted__', 'utf8'),
 			salt,
 			cipher.update(plainText),
 			cipher.final(),
+			cipher.getAuthTag(),
 		]).toString('base64');
 
 		return cipherText;
@@ -20,11 +23,13 @@ export class AesEncryptionHelper {
 	public static decrypt(cipherText: string, secret: string): string {
 		const cipherTextAsBuffer = Buffer.from(cipherText, 'base64');
 		const salt = cipherTextAsBuffer.subarray(8, 24);
-		const content = cipherTextAsBuffer.subarray(24);
+		const content = cipherTextAsBuffer.subarray(24, -16);
+		const authTag = cipherTextAsBuffer.subarray(-16);
 
 		const { key, iv } = this.deriveKeyAndIv(secret, salt);
 
-		const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+		const decipher = crypto.createDecipheriv(this.encryptionAlgorithm, key, iv);
+		decipher.setAuthTag(authTag);
 		const plainText = Buffer.concat([decipher.update(content), decipher.final()]).toString('utf8');
 
 		return plainText;
