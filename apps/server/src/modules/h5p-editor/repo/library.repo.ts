@@ -4,20 +4,22 @@ import { InstalledLibrary } from './entity';
 
 @Injectable()
 export class LibraryRepo extends BaseRepo<InstalledLibrary> {
-	get entityName() {
+	get entityName(): typeof InstalledLibrary {
 		return InstalledLibrary;
 	}
 
-	async createLibrary(library: InstalledLibrary): Promise<void> {
+	public async createLibrary(library: InstalledLibrary): Promise<void> {
 		const entity = this.create(library);
 		await this.save(entity);
 	}
 
-	async getAll(): Promise<InstalledLibrary[]> {
-		return this._em.find(this.entityName, {});
+	public async getAll(): Promise<InstalledLibrary[]> {
+		const libraries = await this._em.find(this.entityName, {});
+
+		return libraries;
 	}
 
-	async findOneByNameAndVersionOrFail(
+	public async findOneByNameAndVersionOrFail(
 		machineName: string,
 		majorVersion: number,
 		minorVersion: number
@@ -32,11 +34,13 @@ export class LibraryRepo extends BaseRepo<InstalledLibrary> {
 		throw new Error('Multiple libraries with the same name and version found');
 	}
 
-	async findByName(machineName: string): Promise<InstalledLibrary[]> {
-		return this._em.find(this.entityName, { machineName });
+	public async findByName(machineName: string): Promise<InstalledLibrary[]> {
+		const libraries = await this._em.find(this.entityName, { machineName });
+
+		return libraries;
 	}
 
-	async findNewestByNameAndVersion(
+	public async findNewestByNameAndVersion(
 		machineName: string,
 		majorVersion: number,
 		minorVersion: number
@@ -47,15 +51,17 @@ export class LibraryRepo extends BaseRepo<InstalledLibrary> {
 			minorVersion,
 		});
 		let latest: InstalledLibrary | null = null;
+
 		for (const lib of libs) {
 			if (latest === null || lib.patchVersion > latest.patchVersion) {
 				latest = lib;
 			}
 		}
+
 		return latest;
 	}
 
-	async findByNameAndExactVersion(
+	public async findByNameAndExactVersion(
 		machineName: string,
 		majorVersion: number,
 		minorVersion: number,
@@ -67,12 +73,15 @@ export class LibraryRepo extends BaseRepo<InstalledLibrary> {
 			minorVersion,
 			patchVersion,
 		});
+
 		if (count > 1) {
 			throw new Error('too many libraries with same name and version');
 		}
+
 		if (count === 1) {
 			return libs[0];
 		}
+
 		return null;
 	}
 }
