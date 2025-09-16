@@ -1,7 +1,6 @@
 /* istanbul ignore file */
 import { DomainErrorHandler } from '@core/error';
 import { BootstrapConsole } from 'nestjs-console';
-import { assertRequiredProviders } from './assert-required-providers';
 
 export const runConsoleApp = async <T>(module: T): Promise<void> => {
 	const bootstrap = new BootstrapConsole({
@@ -11,7 +10,11 @@ export const runConsoleApp = async <T>(module: T): Promise<void> => {
 
 	const app = await bootstrap.init();
 
-	assertRequiredProviders(app, [DomainErrorHandler]);
+	// We need the DomainErrorHandler to be able to use Loggables
+	// and e.g. prevent secrets from being logged.
+	// Get the provider here instead of in the catch block
+	// in order to fail early if it is missing.
+	const domainErrorHandler = app.get(DomainErrorHandler);
 
 	try {
 		await app.init();
@@ -19,7 +22,6 @@ export const runConsoleApp = async <T>(module: T): Promise<void> => {
 		// Execute console application with provided arguments.
 		await bootstrap.boot();
 	} catch (err) {
-		const domainErrorHandler = app.get(DomainErrorHandler);
 		domainErrorHandler.exec(err);
 
 		// Set the exit code to 1 to indicate a console app failure.
