@@ -11,6 +11,7 @@ import {
 } from '@infra/common-cartridge-client/generated';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 import { LegacyLogger } from '@core/logger';
+import { ICurrentUser } from '@infra/auth-guard';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;
@@ -26,11 +27,14 @@ export class CommonCartridgeNewImportService {
 		private readonly logger: LegacyLogger
 	) {}
 
-	public async importCourse(file: Buffer /* currentUser: ICurrentUser*/): Promise<void> {
+	public async importCourse(file: Buffer, currentUser: ICurrentUser): Promise<void> {
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
 
 		this.logger.log(`Importing course with title`);
+		this.logger.log(`user info: ${currentUser.userId}`);
+
 		await this.importClient.importCourse(this.prepareCourse(parser));
+
 		this.logger.log(`Course imported successfully`);
 	}
 

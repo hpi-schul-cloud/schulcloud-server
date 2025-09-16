@@ -12,6 +12,7 @@ import {
 	CreateCcCardBodyParams,
 } from '../contorller/common-cartridge-dtos';
 import { Injectable } from '@nestjs/common';
+import { LegacyLogger } from '@core/logger';
 @Injectable()
 export class CommonCartridgeImportService {
 	constructor(
@@ -19,13 +20,15 @@ export class CommonCartridgeImportService {
 		private readonly authService: AuthorizationService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodeFactory: BoardNodeFactory,
-		private readonly mapper: CommonCartridgeImportMappper
+		private readonly mapper: CommonCartridgeImportMappper,
+		private readonly logger: LegacyLogger
 	) {}
 	public async importCourse(commonCartridgeCourse: CreateCcCourseBodyParams, currentUser: ICurrentUser): Promise<void> {
 		const user = await this.authService.getUserWithPermissions(currentUser.userId);
 
-		this.authService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
+		this.logger.log(`Checking permissions for user ${currentUser.userId}, accountId: ${currentUser.accountId}`);
 
+		this.authService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
 		const courseEntity = new CourseEntity({
 			name: commonCartridgeCourse.name,
 			color: commonCartridgeCourse.color,
