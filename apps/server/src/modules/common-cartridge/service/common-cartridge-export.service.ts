@@ -31,8 +31,9 @@ import { ContentElementType } from '../common-cartridge-client/card-client/enums
 import { ExportResponse } from './export.response';
 import archiver from 'archiver';
 import { Logger, LogMessage } from '@core/logger';
+import { Stream } from 'node:stream';
 
-type FileMetadataBuffer = { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto };
+type FileMetadataAndStream = { id: string; name: string; file: Stream; fileDto: FileDto };
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -58,8 +59,7 @@ export class CommonCartridgeExportService {
 		exportedColumnBoards: string[]
 	): Promise<ExportResponse> {
 		const archive = this.createArchiver();
-
-		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, courseId));
+		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, courseId), archive);
 
 		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
 
@@ -77,11 +77,10 @@ export class CommonCartridgeExportService {
 		// add column boards and cards to organization
 		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
 
-		builder.build(archive);
-		await archive.finalize();
+		await builder.build();
 
 		const response: ExportResponse = {
-			data: archive,
+			data: builder.archive,
 			name: `${roomBoard.title}-${new Date().toISOString()}.imscc`,
 		};
 
@@ -191,10 +190,10 @@ export class CommonCartridgeExportService {
 
 				await Promise.all(
 					filesMetadata.map(async (fileMetadata) => {
-						const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
+						const fileStream = await this.filesStorageClientAdapter.getStream(fileMetadata.id, fileMetadata.name);
 
-						if (file) {
-							const resource = this.mapper.mapFileToResource(fileMetadata, file);
+						if (fileStream) {
+							const resource = this.mapper.mapFileToResource(fileMetadata, fileStream);
 
 							taskOrganization.addResource(resource);
 						}
@@ -265,31 +264,24 @@ export class CommonCartridgeExportService {
 			title: card.title ?? '',
 			identifier: createIdentifier(card.id),
 		});
-		const fileMetadataBufferArray = await Promise.all(
-			card.elements.map((element) => this.downloadAndStoreFiles(element))
-		).then((array) => array.flat());
 
-		await Promise.all(
-			card.elements.map((element) =>
-				this.addCardElementToOrganization(element, cardOrganization, fileMetadataBufferArray)
-			)
-		);
+		await Promise.all(card.elements.map((element) => this.addCardElementToOrganization(element, cardOrganization)));
 	}
 
-	private async downloadAndStoreFiles(element: CardResponseElementsInnerDto): Promise<FileMetadataBuffer[]> {
-		const fileMetadataBufferArray: FileMetadataBuffer[] = [];
+	private async downloadAndStoreFiles(element: CardResponseElementsInnerDto): Promise<FileMetadataAndStream[]> {
+		const fileMetadataBufferArray: FileMetadataAndStream[] = [];
 
 		if (element.type === ContentElementType.FILE) {
 			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
 
 			for (const fileMetadata of filesMetadata) {
-				const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
+				const file = await this.filesStorageClientAdapter.getStream(fileMetadata.id, fileMetadata.name);
 
 				if (file) {
 					fileMetadataBufferArray.push({
 						id: element.id,
 						name: fileMetadata.name,
-						fileBuffer: file,
+						file,
 						fileDto: fileMetadata,
 					});
 				}
@@ -298,11 +290,10 @@ export class CommonCartridgeExportService {
 		return fileMetadataBufferArray;
 	}
 
-	private addCardElementToOrganization(
+	private async addCardElementToOrganization(
 		element: CardResponseElementsInnerDto,
-		cardOrganization: CommonCartridgeOrganizationNode,
-		fileMetadataBufferArray: FileMetadataBuffer[]
-	): void {
+		cardOrganization: CommonCartridgeOrganizationNode
+	): Promise<void> {
 		switch (element.type) {
 			case ContentElementType.RICH_TEXT:
 				const resource = this.mapper.mapRichTextElementToResource(element as RichTextElementResponseDto);
@@ -313,11 +304,12 @@ export class CommonCartridgeExportService {
 				cardOrganization.addResource(linkResource);
 				break;
 			case ContentElementType.FILE:
-				for (const fileMetadata of fileMetadataBufferArray) {
-					const { id, fileBuffer, fileDto } = fileMetadata;
+				const metadataAndStreams = await this.downloadAndStoreFiles(element);
+				for (const fileMetadata of metadataAndStreams) {
+					const { file, fileDto } = fileMetadata;
 
-					if (fileBuffer && element.id === id) {
-						const fileResource = this.mapper.mapFileToResource(fileDto, fileBuffer, element as FileElementResponseDto);
+					if (file) {
+						const fileResource = this.mapper.mapFileToResource(fileDto, file, element as FileElementResponseDto);
 
 						cardOrganization.addResource(fileResource);
 					}

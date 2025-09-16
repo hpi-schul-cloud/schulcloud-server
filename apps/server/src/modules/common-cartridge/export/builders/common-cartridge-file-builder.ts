@@ -1,3 +1,4 @@
+import { PassThrough } from 'stream';
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeResourceType,
@@ -10,6 +11,8 @@ import {
 import { MissingMetadataLoggableException } from '../errors';
 import { CommonCartridgeElement } from '../interfaces';
 import { CommonCartridgeResourceFactory } from '../resources/common-cartridge-resource-factory';
+import { CommonCartridgeFileResourceV110 } from '../resources/v1.1.0/common-cartridge-file-resource';
+import { CommonCartridgeFileResourceV130 } from '../resources/v1.3.0/common-cartridge-file-resource';
 import {
 	CommonCartridgeOrganizationNode,
 	CommonCartridgeOrganizationNodeProps,
@@ -33,7 +36,7 @@ export class CommonCartridgeFileBuilder {
 
 	private metadataElement: CommonCartridgeElement | null = null;
 
-	constructor(private readonly props: CommonCartridgeFileBuilderProps) {}
+	constructor(private readonly props: CommonCartridgeFileBuilderProps, public readonly archive: archiver.Archiver) {}
 
 	public addMetadata(metadataProps: CommonCartridgeElementProps): void {
 		this.metadataElement = CommonCartridgeElementFactory.createElement({
@@ -54,7 +57,7 @@ export class CommonCartridgeFileBuilder {
 		return organization;
 	}
 
-	public build(archive: archiver.Archiver): void {
+	public async build(): Promise<void> {
 		if (!this.metadataElement) {
 			throw new MissingMetadataLoggableException();
 		}
@@ -70,13 +73,20 @@ export class CommonCartridgeFileBuilder {
 			resources,
 		});
 
-		archive.append(Buffer.from(manifest.getFileContent()), { name: manifest.getFilePath() });
+		this.archive.append(Buffer.from(manifest.getFileContent()), { name: manifest.getFilePath() });
 
 		resources.forEach((resource) => {
-			const fileContent = resource.getFileContent();
-			const buffer = Buffer.isBuffer(fileContent) ? fileContent : Buffer.from(fileContent);
+			if (resource instanceof CommonCartridgeFileResourceV130 || resource instanceof CommonCartridgeFileResourceV110) {
+				const passthrough = resource.getFileStream().pipe(new PassThrough());
+				this.archive.append(passthrough, { name: resource.getFilePath() });
+			} else {
+				const fileContent = resource.getFileContent();
+				const buffer = Buffer.isBuffer(fileContent) ? fileContent : Buffer.from(fileContent);
 
-			archive.append(buffer, { name: resource.getFilePath() });
+				this.archive.append(buffer, { name: resource.getFilePath() });
+			}
 		});
+
+		await this.archive.finalize();
 	}
 }

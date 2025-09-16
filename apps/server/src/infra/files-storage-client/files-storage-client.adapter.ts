@@ -10,6 +10,7 @@ import type { Request } from 'express';
 import { lastValueFrom } from 'rxjs';
 import { FilesStorageClientConfig } from './files-storage-client.config';
 import { FileApi, FileRecordParentType, FileRecordResponse, StorageLocation } from './generated';
+import { Stream } from 'stream';
 
 @Injectable()
 export class FilesStorageClientAdapter {
@@ -55,6 +56,40 @@ export class FilesStorageClientAdapter {
 
 			return null;
 		}
+	}
+
+	public async getStream(fileRecordId: string, fileName: string): Promise<Stream | null> {
+		try {
+			// INFO: copied from download and adjusted to return stream
+			const token = JwtExtractor.extractJwtFromRequestOrFail(this.req);
+			const url = new URL(
+				`${this.configService.getOrThrow<string>(
+					'FILES_STORAGE__SERVICE_BASE_URL'
+				)}/api/v3/file/download/${fileRecordId}/${fileName}`
+			);
+			const observable = this.httpService.get(url.toString(), {
+				responseType: 'stream',
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			const response = await lastValueFrom(observable);
+
+			if (!FilesStorageClientAdapter.isStream(response.data)) {
+				return null;
+			}
+
+			const stream = response.data;
+			return stream;
+		} catch (error: unknown) {
+			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.getStream'));
+
+			return null;
+		}
+	}
+
+	private static isStream(obj: unknown): obj is Stream {
+		return obj !== null && typeof obj === 'object' && 'pipe' in obj && typeof obj.pipe === 'function';
 	}
 
 	public async upload(
