@@ -44,6 +44,7 @@ export class FileMetadata implements IFileStats {
 }
 
 @Entity({ tableName: 'h5p_library' })
+@Index({ properties: ['machineName', 'majorVersion', 'minorVersion'] })
 @Index({ properties: ['machineName', 'majorVersion', 'minorVersion', 'patchVersion'] })
 export class InstalledLibrary extends BaseEntityWithTimestamps implements IInstalledLibrary {
 	@Property()

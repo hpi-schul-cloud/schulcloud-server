@@ -10,6 +10,7 @@ export class LibraryRepo extends BaseRepo<InstalledLibrary> {
 
 	public async createLibrary(library: InstalledLibrary): Promise<void> {
 		const entity = this.create(library);
+
 		await this.save(entity);
 	}
 
@@ -28,9 +29,11 @@ export class LibraryRepo extends BaseRepo<InstalledLibrary> {
 		if (libs.length === 1) {
 			return libs[0];
 		}
+
 		if (libs.length === 0) {
 			throw new Error('Library not found');
 		}
+
 		throw new Error('Multiple libraries with the same name and version found');
 	}
 
