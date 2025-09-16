@@ -4,9 +4,10 @@ import { CourseModule } from '@modules/course';
 import { BoardModule } from '@modules/board';
 import { AuthorizationModule } from '@modules/authorization';
 import { CommonCartridgeImportMappper } from './mapper/common-cartridge-import.mapper';
+import { LoggerModule } from '@core/logger';
 
 @Module({
-	imports: [CourseModule, BoardModule, AuthorizationModule],
+	imports: [CourseModule, BoardModule, AuthorizationModule, LoggerModule],
 	controllers: [],
 	providers: [CommonCartridgeImportService, CommonCartridgeImportMappper],
 	exports: [CommonCartridgeImportService],
