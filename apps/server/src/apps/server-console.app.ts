@@ -19,7 +19,6 @@ void bootstrap.init().then(async (app) => {
 		await app.close();
 		process.exit(0);
 	} catch (e) {
-		// eslint-disable-next-line no-console
 		const domainErrorHandler = app.get(DomainErrorHandler);
 		domainErrorHandler.exec(e);
 
