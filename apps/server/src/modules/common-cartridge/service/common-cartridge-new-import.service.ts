@@ -40,28 +40,35 @@ export class CommonCartridgeNewImportService {
 		const createCcCourseBodyParams: CreateCcCourseBodyParams = {
 			name: courseName,
 			color: DEFAULT_NEW_COURSE_COLOR,
-			columnBoard: this.getBoards(parser),
+			columnBoard: this.createBoards(parser),
 		};
 
-		this.logger.log(`Course prepared successfully`);
+		this.logger.log(`this course was prepared: ${JSON.stringify(createCcCourseBodyParams)}`);
+		this.logger.log(`Course prepared successfully!!!!!`);
+
 		return createCcCourseBodyParams;
 	}
 
-	private getBoards(parser: CommonCartridgeFileParser): CreateCcBoardBodyParams[] {
+	private createBoards(parser: CommonCartridgeFileParser): CreateCcBoardBodyParams[] {
 		const boards = parser.getOrganizations().filter((organization) => organization.pathDepth === DEPTH_BOARD);
+
 		this.logger.log(`Found ${boards.length} boards`);
 
-		return boards.map((board) => {
-			return {
+		const boardsToCreate: CreateCcBoardBodyParams[] = [];
+
+		boards.map((board) => {
+			boardsToCreate.push({
 				title: board.title,
 				layout: 'columns',
 				parentType: 'course',
-				columns: this.getColumnsForBoard(board, parser),
-			};
+				columns: this.createColumnsForBoard(board, parser),
+			});
 		});
+
+		return boardsToCreate;
 	}
 
-	private getColumnsForBoard(
+	private createColumnsForBoard(
 		board: CommonCartridgeOrganizationProps,
 		parser: CommonCartridgeFileParser
 	): CreateCcColumnBodyParams[] {
@@ -77,6 +84,7 @@ export class CommonCartridgeNewImportService {
 					organization.isResource
 			);
 
+		this.logger.log(`Found ${columnsWithResource.length} columns with resource for board ${board.title}`);
 		const columnsWithoutResource = parser
 			.getOrganizations()
 			.filter(
@@ -85,6 +93,7 @@ export class CommonCartridgeNewImportService {
 					organization.path.startsWith(board.identifier) &&
 					!organization.isResource
 			);
+		this.logger.log(`Found ${columnsWithoutResource.length} columns without resource for board ${board.title}`);
 
 		for (const column of columnsWithResource) {
 			columns.push(this.createColumnWithResource(column, parser));
@@ -101,6 +110,7 @@ export class CommonCartridgeNewImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		parser: CommonCartridgeFileParser
 	): CreateCcColumnBodyParams {
+		this.logger.log(`Creating column without resource: ${columnProps.title}`);
 		const cards: CreateCcCardBodyParams[] = [];
 		const cardsWithResource = parser
 			.getOrganizations()
@@ -110,6 +120,7 @@ export class CommonCartridgeNewImportService {
 					organization.path.startsWith(columnProps.path) &&
 					organization.isResource
 			);
+		this.logger.log(`Found ${cardsWithResource.length} cards with resource for column ${columnProps.title}`);
 
 		for (const card of cardsWithResource) {
 			cards.push(this.createCardElementWithResource(parser, card));
@@ -123,6 +134,7 @@ export class CommonCartridgeNewImportService {
 					organization.path.startsWith(columnProps.path) &&
 					!organization.isResource
 			);
+		this.logger.log(`Found ${cardsWithoutResource.length} cards without resource for column ${columnProps.title}`);
 
 		for (const card of cardsWithoutResource) {
 			cards.push(this.createCard(parser, card));
@@ -140,6 +152,8 @@ export class CommonCartridgeNewImportService {
 		parser: CommonCartridgeFileParser,
 		cardProps: CommonCartridgeOrganizationProps
 	): CreateCcCardBodyParams {
+		this.logger.log(`Creating card without resource: ${cardProps.title}`);
+
 		const cardElements = parser
 			.getOrganizations()
 			.filter(
@@ -159,6 +173,8 @@ export class CommonCartridgeNewImportService {
 			cardElements: cardElementsToCreate,
 		};
 
+		this.logger.log(`this card and card elements was created: ${JSON.stringify(card)}`);
+
 		return card;
 	}
 
@@ -166,6 +182,7 @@ export class CommonCartridgeNewImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		parser: CommonCartridgeFileParser
 	): CreateCcColumnBodyParams {
+		this.logger.log(`Creating column with resource: ${columnProps.title}`);
 		const column: CreateCcColumnBodyParams = {
 			title: columnProps.title,
 			cards: [this.createCardElementWithResource(parser, columnProps)],
@@ -210,6 +227,8 @@ export class CommonCartridgeNewImportService {
 			xmlPath: cardElementProps.resourcePath,
 			data: { data: resourceBody },
 		};
+
+		this.logger.log(`Created card element with resource: ${JSON.stringify(cardElement)}`);
 
 		return cardElement;
 	}
