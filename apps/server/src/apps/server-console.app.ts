@@ -2,6 +2,7 @@
 /* eslint-disable promise/always-return */
 import { ManagementConsoleModule } from '@modules/management/management-console.app.module';
 import { BootstrapConsole } from 'nestjs-console';
+import { DomainErrorHandler } from '@core/error';
 
 /**
  * The console is starting the application wrapped into commander.
@@ -19,7 +20,9 @@ void bootstrap.init().then(async (app) => {
 		process.exit(0);
 	} catch (e) {
 		// eslint-disable-next-line no-console
-		console.error(e);
+		const domainErrorHandler = app.get(DomainErrorHandler);
+		domainErrorHandler.exec(e);
+
 		await app.close();
 		process.exit(1);
 	}
