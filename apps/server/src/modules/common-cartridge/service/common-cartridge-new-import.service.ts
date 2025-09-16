@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
 import {
+	CreateCcBoardBodyParams,
 	CreateCcCardBodyParams,
 	CreateCcCardElementBodyParams,
 	CreateCcColumnBodyParams,
@@ -30,26 +31,34 @@ export class CommonCartridgeNewImportService {
 
 		this.logger.log(`Importing course with title`);
 		await this.importClient.importCourse(this.prepareCourse(parser));
+		this.logger.log(`Course imported successfully`);
 	}
 
 	private prepareCourse(parser: CommonCartridgeFileParser): CreateCcCourseBodyParams {
 		this.logger.log(`Preparing course`);
 		const courseName = parser.getTitle() ?? 'Untitled Course';
-		const boards = parser.getOrganizations().filter((organization) => organization.pathDepth === DEPTH_BOARD);
 		const createCcCourseBodyParams: CreateCcCourseBodyParams = {
 			name: courseName,
 			color: DEFAULT_NEW_COURSE_COLOR,
-			columnBoard: boards.map((board) => {
-				return {
-					title: board.title,
-					layout: 'columns',
-					parentType: 'course',
-					columns: this.getColumnsForBoard(board, parser),
-				};
-			}),
+			columnBoard: this.getBoards(parser),
 		};
 
+		this.logger.log(`Course prepared successfully`);
 		return createCcCourseBodyParams;
+	}
+
+	private getBoards(parser: CommonCartridgeFileParser): CreateCcBoardBodyParams[] {
+		const boards = parser.getOrganizations().filter((organization) => organization.pathDepth === DEPTH_BOARD);
+		this.logger.log(`Found ${boards.length} boards`);
+
+		return boards.map((board) => {
+			return {
+				title: board.title,
+				layout: 'columns',
+				parentType: 'course',
+				columns: this.getColumnsForBoard(board, parser),
+			};
+		});
 	}
 
 	private getColumnsForBoard(
@@ -57,6 +66,8 @@ export class CommonCartridgeNewImportService {
 		parser: CommonCartridgeFileParser
 	): CreateCcColumnBodyParams[] {
 		this.logger.log(`Getting columns for board ${board.title}`);
+
+		const columns: CreateCcColumnBodyParams[] = [];
 		const columnsWithResource = parser
 			.getOrganizations()
 			.filter(
@@ -65,8 +76,6 @@ export class CommonCartridgeNewImportService {
 					organization.path.startsWith(board.identifier) &&
 					organization.isResource
 			);
-
-		this.logger.log(`Found ${columnsWithResource.length} columns with resource for board ${board.title}`);
 
 		const columnsWithoutResource = parser
 			.getOrganizations()
@@ -77,44 +86,51 @@ export class CommonCartridgeNewImportService {
 					!organization.isResource
 			);
 
-		this.logger.log(`Found ${columnsWithoutResource.length} columns without resource for board ${board.title}`);
-
 		for (const column of columnsWithResource) {
-			this.logger.log(`Creating column with resource ${column.title}`);
-			this.createColumnWithResource(column, parser);
+			columns.push(this.createColumnWithResource(column, parser));
 		}
 
 		for (const column of columnsWithoutResource) {
-			this.logger.log(`Creating column without resource ${column.title}`);
-			this.createColumnWithoutResource(parser, column);
+			columns.push(this.createColumnWithoutResource(column, parser));
 		}
-		return [];
+
+		return columns;
 	}
 
 	private createColumnWithoutResource(
-		parser: CommonCartridgeFileParser,
-		columnProps: CommonCartridgeOrganizationProps
+		columnProps: CommonCartridgeOrganizationProps,
+		parser: CommonCartridgeFileParser
 	): CreateCcColumnBodyParams {
-		const cards = parser
+		const cards: CreateCcCardBodyParams[] = [];
+		const cardsWithResource = parser
 			.getOrganizations()
 			.filter(
-				(organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(columnProps.path)
+				(organization) =>
+					organization.pathDepth === DEPTH_CARD &&
+					organization.path.startsWith(columnProps.path) &&
+					organization.isResource
 			);
-		const cardsWithResource = cards.filter((card) => card.isResource);
 
 		for (const card of cardsWithResource) {
-			this.createCardElementWithResource(parser, card);
+			cards.push(this.createCardElementWithResource(parser, card));
 		}
 
-		const cardsWithoutResource = cards.filter((card) => !card.isResource);
+		const cardsWithoutResource = parser
+			.getOrganizations()
+			.filter(
+				(organization) =>
+					organization.pathDepth === DEPTH_CARD &&
+					organization.path.startsWith(columnProps.path) &&
+					!organization.isResource
+			);
 
 		for (const card of cardsWithoutResource) {
-			this.createCard(parser, card);
+			cards.push(this.createCard(parser, card));
 		}
 
 		const column: CreateCcColumnBodyParams = {
 			title: columnProps.title,
-			cards: [this.createCardElementWithResource(parser, columnProps)],
+			cards: cards,
 		};
 
 		return column;
@@ -124,25 +140,18 @@ export class CommonCartridgeNewImportService {
 		parser: CommonCartridgeFileParser,
 		cardProps: CommonCartridgeOrganizationProps
 	): CreateCcCardBodyParams {
-		const organizations = parser.getOrganizations();
-		const cardElements = organizations.filter(
-			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
-		);
+		const cardElements = parser
+			.getOrganizations()
+			.filter(
+				(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
+			);
 
 		const cardElementsToCreate: CreateCcCardElementBodyParams[] = [];
 
 		for (const cardElement of cardElements) {
 			const mappedCardElement = this.createCardElement(parser, cardElement);
 
-			cardElementsToCreate.push(
-				mappedCardElement
-					? mappedCardElement
-					: {
-							xmlPath: '',
-							type: 'unknown',
-							data: undefined!,
-					  }
-			);
+			cardElementsToCreate.push(mappedCardElement as CreateCcCardElementBodyParams);
 		}
 
 		const card: CreateCcCardBodyParams = {
@@ -205,19 +214,19 @@ export class CommonCartridgeNewImportService {
 		return cardElement;
 	}
 
-	private getCardsForColumn(
-		column: CommonCartridgeOrganizationProps,
-		parser: CommonCartridgeFileParser
-	): CreateCcCardBodyParams[] {
-		const cards: CommonCartridgeOrganizationProps[] = parser
-			.getOrganizations()
-			.filter(
-				(organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(column.identifier)
-			);
-		const cardBodyParams = cards.map((card) => this.mapper.mapCardToCardBodyParams(card));
+	// private getCardsForColumn(
+	// 	column: CommonCartridgeOrganizationProps,
+	// 	parser: CommonCartridgeFileParser
+	// ): CreateCcCardBodyParams[] {
+	// 	const cards: CommonCartridgeOrganizationProps[] = parser
+	// 		.getOrganizations()
+	// 		.filter(
+	// 			(organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(column.identifier)
+	// 		);
+	// 	const cardBodyParams = cards.map((card) => this.mapper.mapCardToCardBodyParams(card));
 
-		return cardBodyParams;
-	}
+	// 	return cardBodyParams;
+	// }
 
 	// private getCardElementsForCard(
 	// 	card: CommonCartridgeOrganizationProps,
