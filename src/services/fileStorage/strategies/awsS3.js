@@ -1,5 +1,5 @@
 const { promisify } = require('es6-promisify');
-const { decryptAES } = require('../../../utils/aes-encryption');
+const { decryptAes } = require('../../../utils/aes-encryption');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const aws = require('aws-sdk');
 const mongoose = require('mongoose');
@@ -65,7 +65,7 @@ const chooseProvider = async (schoolId) => {
 
 const getS3 = (storageProvider, awsClientHelper) => {
 	const S3_KEY = Configuration.get('S3_KEY');
-	storageProvider.secretAccessKey = decryptAES(storageProvider.secretAccessKey, S3_KEY);
+	storageProvider.secretAccessKey = decryptAes(storageProvider.secretAccessKey, S3_KEY);
 
 	const config = new awsClientHelper.Config({
 		signatureVersion: 'v4',

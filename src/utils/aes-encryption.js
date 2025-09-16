@@ -2,7 +2,7 @@ const crypto = require('node:crypto');
 
 const encryptionAlgorithm = 'aes-256-gcm';
 
-function encryptAES(plainText, secret) {
+function encryptAes(plainText, secret) {
 	const salt = crypto.randomBytes(16);
 
 	const { key, iv } = deriveKeyAndIv(secret, salt);
@@ -19,11 +19,11 @@ function encryptAES(plainText, secret) {
 	return cipherText;
 }
 
-function decryptAES(cipherText, secret) {
-	const encryptedTextAsBuffer = Buffer.from(cipherText, 'base64');
-	const salt = encryptedTextAsBuffer.subarray(8, 24);
-	const content = encryptedTextAsBuffer.subarray(24, -16);
-	const authTag = encryptedTextAsBuffer.subarray(-16);
+function decryptAes(cipherText, secret) {
+	const cipherTextAsBuffer = Buffer.from(cipherText, 'base64');
+	const salt = cipherTextAsBuffer.subarray(8, 24);
+	const content = cipherTextAsBuffer.subarray(24, -16);
+	const authTag = cipherTextAsBuffer.subarray(-16);
 
 	const { key, iv } = deriveKeyAndIv(secret, salt);
 
@@ -43,6 +43,6 @@ function deriveKeyAndIv(secret, salt) {
 }
 
 module.exports = {
-	encryptAES,
-	decryptAES,
+	encryptAes,
+	decryptAes,
 };

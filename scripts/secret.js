@@ -1,4 +1,4 @@
-const { decryptAES, encryptAES } = require('../src/utils/aes-encryption');
+const { decryptAes, encryptAes } = require('../src/utils/aes-encryption');
 const args = require('args');
 
 args
@@ -14,7 +14,7 @@ if (!options.secret || !(options.encrypt || options.decrypt)) {
 }
 
 if (options.encrypt) {
-	console.log(encryptAES(options.e, options.s));
+	console.log(encryptAes(options.e, options.s));
 } else {
-	console.log(decryptAES(options.d, options.s));
+	console.log(decryptAes(options.d, options.s));
 }

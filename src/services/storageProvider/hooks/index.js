@@ -1,13 +1,13 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const { encryptAES } = require('../../../utils/aes-encryption');
+const { encryptAes } = require('../../../utils/aes-encryption');
 const { discard, iff, isProvider } = require('feathers-hooks-common');
 
 const { isSuperHero } = require('../../../hooks');
 
 const encryptSecret = (context) => {
 	if (context.data.secretAccessKey) {
-		context.data.secretAccessKey = encryptAES(context.data.secretAccessKey, Configuration.get('S3_KEY'));
+		context.data.secretAccessKey = encryptAes(context.data.secretAccessKey, Configuration.get('S3_KEY'));
 	}
 	return context;
 };
