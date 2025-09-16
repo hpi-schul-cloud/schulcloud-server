@@ -3,7 +3,13 @@ import { RoomMembershipService, UserWithRoomRoles } from '@modules/room-membersh
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { AnyBoardNode, BoardExternalReferenceType, BoardRoles, BoardSettings, UserWithBoardRoles } from '../../domain';
+import {
+	AnyBoardNode,
+	BoardExternalReferenceType,
+	BoardRoles,
+	BoardContextSettings,
+	UserWithBoardRoles,
+} from '../../domain';
 import { RoomService } from '@modules/room';
 
 @Injectable()
@@ -34,7 +40,7 @@ export class BoardContextService {
 		return usersWithRoles;
 	}
 
-	public async getBoardSettings(rootNode: AnyBoardNode): Promise<BoardSettings> {
+	public async getBoardSettings(rootNode: AnyBoardNode): Promise<BoardContextSettings> {
 		if (!('context' in rootNode)) {
 			return {};
 		}

@@ -536,7 +536,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
-					boardSettings: {},
+					boardContextSettings: {},
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizable);
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
@@ -580,7 +580,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
-					boardSettings: { canRoomEditorManageVideoconference: true },
+					boardContextSettings: { canRoomEditorManageVideoconference: true },
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizable);
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
@@ -823,7 +823,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
-					boardSettings: { canRoomEditorManageVideoconference: false },
+					boardContextSettings: { canRoomEditorManageVideoconference: false },
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable
 					.mockResolvedValueOnce(boardNodeAuthorizable)
@@ -869,7 +869,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
-					boardSettings: {},
+					boardContextSettings: {},
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable
 					.mockResolvedValueOnce(boardNodeAuthorizable)
@@ -1035,7 +1035,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
-					boardSettings: {},
+					boardContextSettings: {},
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable
 					.mockResolvedValueOnce(boardNodeAuthorizable)
@@ -1073,7 +1073,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
-					boardSettings: {},
+					boardContextSettings: {},
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable
 					.mockResolvedValueOnce(boardNodeAuthorizable)
@@ -1274,7 +1274,7 @@ describe(VideoConferenceService.name, () => {
 				id: element.id,
 				boardNode: element,
 				rootNode: columnBoardFactory.build(),
-				boardSettings: {},
+				boardContextSettings: {},
 			});
 			boardNodeAuthorizableService.getBoardAuthorizable
 				.mockResolvedValueOnce(boardNodeAuthorizable)

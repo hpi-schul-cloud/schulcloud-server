@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Action, AuthorizationService } from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
@@ -176,7 +176,11 @@ describe(MediaAvailableLineUc.name, () => {
 
 				await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.read);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaBoard,
+					AuthorizationContextBuilder.read([])
+				);
 			});
 
 			it('should get the user from authrorization service', async () => {
@@ -668,7 +672,11 @@ describe(MediaAvailableLineUc.name, () => {
 
 				await uc.updateAvailableLineColor(user.id, mediaBoard.id, MediaBoardColors.RED);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaBoard,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should collapse the line', async () => {
@@ -723,7 +731,11 @@ describe(MediaAvailableLineUc.name, () => {
 
 				await uc.collapseAvailableLine(user.id, mediaBoard.id, true);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaBoard,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should collapse the line', async () => {

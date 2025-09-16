@@ -1,5 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { Action } from '@modules/authorization';
+import { AuthorizationContextBuilder } from '@modules/authorization';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
@@ -93,7 +93,11 @@ describe(MediaLineUc.name, () => {
 
 				await uc.moveLine(user.id, mediaLine.id, mediaBoard.id, 1);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaBoard,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should move the line', async () => {
@@ -151,7 +155,11 @@ describe(MediaLineUc.name, () => {
 
 				await uc.updateLineTitle(user.id, mediaLine.id, 'newTitle');
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaLine,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should rename the line', async () => {
@@ -203,7 +211,11 @@ describe(MediaLineUc.name, () => {
 
 				await uc.deleteLine(user.id, mediaLine.id);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaLine,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should delete the line', async () => {
@@ -257,7 +269,11 @@ describe(MediaLineUc.name, () => {
 
 				await uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaLine,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should set background color', async () => {
@@ -313,7 +329,11 @@ describe(MediaLineUc.name, () => {
 
 				await uc.collapseLine(user.id, mediaLine.id, true);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaLine,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should collapse the line', async () => {

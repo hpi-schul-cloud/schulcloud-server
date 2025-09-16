@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Action, AuthorizationService } from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
@@ -35,7 +35,7 @@ export class MediaAvailableLineUc {
 
 		const mediaBoard: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 
-		await this.boardNodePermissionService.checkPermission(userId, mediaBoard, Action.read);
+		await this.boardNodePermissionService.checkPermission(userId, mediaBoard, AuthorizationContextBuilder.read([]));
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const schoolExternalToolsForAvailableMediaLine: SchoolExternalTool[] =
@@ -64,7 +64,7 @@ export class MediaAvailableLineUc {
 
 		const board: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 
-		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
 
 		await this.mediaBoardService.updateBackgroundColor(board, color);
 	}
@@ -78,7 +78,7 @@ export class MediaAvailableLineUc {
 
 		const board: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 
-		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
 
 		await this.mediaBoardService.updateCollapsed(board, mediaAvailableLineCollapsed);
 	}

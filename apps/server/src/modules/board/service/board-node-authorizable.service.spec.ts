@@ -76,7 +76,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 					boardNode: column,
 					rootNode: columnBoard,
 					users: [],
-					boardSettings: {},
+					boardContextSettings: {},
 				});
 
 				return { columnBoard, column, authorizable };
@@ -149,7 +149,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 				boardNode: column,
 				rootNode: columnBoard,
 				parentNode: columnBoard,
-				boardSettings,
+				boardContextSettings: boardSettings,
 			});
 
 			expect(result).toEqual(expected);

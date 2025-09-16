@@ -28,6 +28,7 @@ import {
 } from './dto';
 import { BoardContextResponse } from './dto/board/board-context.reponse';
 import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from './mapper';
+import { ReadersCanEditBodyParams } from './dto/board/readers-can-edit.body.params';
 
 @ApiTags('Board')
 @JwtAuthentication()
@@ -161,6 +162,21 @@ export class BoardController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.boardUc.updateVisibility(currentUser.userId, urlParams.boardId, bodyParams.isVisible);
+	}
+
+	@ApiOperation({ summary: 'Update the visibility of a board.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(':boardId/readers-can-edit')
+	public async updateReadersCanEdit(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: ReadersCanEditBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.boardUc.updateReadersCanEdit(currentUser.userId, urlParams.boardId, bodyParams.readersCanEdit);
 	}
 
 	@ApiOperation({ summary: 'Update the layout of a board.' })
