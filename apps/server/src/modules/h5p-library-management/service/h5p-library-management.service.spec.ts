@@ -4,6 +4,7 @@ import {
 	IHubContentType,
 	ILibraryAdministrationOverviewItem,
 	ILibraryInstallResult,
+	ILibraryName,
 } from '@lumieducation/h5p-server/build/src/types';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
@@ -93,7 +94,7 @@ describe('H5PLibraryManagementService', () => {
 
 				return { installedLibraries, service, synchronizedLibraries, uninstalledLibraries };
 			};
-			it('should uninstall unwanted libraries, install new libraries and synchronize libraries', async () => {
+			it('should uninstall unwanted libraries, install new libraries, synchronize libraries and check for broken libraries', async () => {
 				const { installedLibraries, service, synchronizedLibraries, uninstalledLibraries } = setup();
 
 				const uninstallSpy = jest
@@ -103,16 +104,19 @@ describe('H5PLibraryManagementService', () => {
 				const synchronizeSpy = jest
 					.spyOn(service, 'synchronizeDbEntryAndLibraryJson')
 					.mockResolvedValueOnce(synchronizedLibraries);
+				const checkBrokenLibsSpy = jest.spyOn(service, 'checkAndRemoveBrokenLibraries').mockResolvedValueOnce([]);
 
 				await service.run();
 
 				expect(uninstallSpy).toHaveBeenCalledTimes(1);
 				expect(installSpy).toHaveBeenCalledTimes(1);
 				expect(synchronizeSpy).toHaveBeenCalledTimes(1);
+				expect(checkBrokenLibsSpy).toHaveBeenCalledTimes(1);
 
 				uninstallSpy.mockRestore();
 				installSpy.mockRestore();
 				synchronizeSpy.mockRestore();
+				checkBrokenLibsSpy.mockRestore();
 			});
 		});
 	});
@@ -1157,7 +1161,7 @@ describe('H5PLibraryManagementService', () => {
 			});
 		});
 
-		describe('synchronizeLibraryToS3', () => {
+		describe('addLibraryJsonToS3', () => {
 			describe('when library.json is missing in library folder on S3', () => {
 				const setup = () => {
 					const service = module.get(H5PLibraryManagementService);
@@ -1195,22 +1199,53 @@ describe('H5PLibraryManagementService', () => {
 			});
 
 			describe('when getLibrary fails', () => {
-				const setup = () => {
-					const service = module.get(H5PLibraryManagementService);
+				describe('when getLibrary fails with a "library not found" error', () => {
+					const setup = () => {
+						const service = module.get(H5PLibraryManagementService);
 
-					libraryStorage.getAllLibraryFolders.mockResolvedValueOnce(['libraryA-1.0']);
-					libraryStorage.fileExists.mockResolvedValueOnce(false);
-					libraryStorage.getLibrary.mockRejectedValueOnce(new Error('Mocked error during getLibrary'));
+						libraryStorage.getAllLibraryFolders.mockResolvedValueOnce(['libraryA-1.0']);
+						libraryStorage.fileExists.mockResolvedValueOnce(false);
+						libraryStorage.getLibrary.mockRejectedValueOnce(new Error('library not found'));
 
-					return { service };
-				};
+						return { service };
+					};
 
-				it('should return an empty result list', async () => {
-					const { service } = setup();
+					it('should return an empty result list', async () => {
+						const { service } = setup();
 
-					const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
+						const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
-					expect(synchronizedLibraries).toEqual([]);
+						expect(synchronizedLibraries).toEqual([]);
+					});
+
+					it('should call libraryStorage.deleteFolder', async () => {
+						const { service } = setup();
+						const libraryName: ILibraryName = { machineName: 'libraryA', majorVersion: 1, minorVersion: 0 };
+
+						await service.synchronizeDbEntryAndLibraryJson();
+
+						expect(libraryStorage.deleteFolder).toHaveBeenCalledWith(libraryName);
+					});
+				});
+
+				describe('when getLibrary fails with another error', () => {
+					const setup = () => {
+						const service = module.get(H5PLibraryManagementService);
+
+						libraryStorage.getAllLibraryFolders.mockResolvedValueOnce(['libraryA-1.0']);
+						libraryStorage.fileExists.mockResolvedValueOnce(false);
+						libraryStorage.getLibrary.mockRejectedValueOnce(new Error('Mocked error during getLibrary'));
+
+						return { service };
+					};
+
+					it('should return an empty result list', async () => {
+						const { service } = setup();
+
+						const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
+
+						expect(synchronizedLibraries).toEqual([]);
+					});
 				});
 			});
 
@@ -1248,6 +1283,90 @@ describe('H5PLibraryManagementService', () => {
 
 					expect(synchronizedLibraries).toEqual([]);
 				});
+			});
+		});
+	});
+
+	describe('checkAndRemoveBrokenLibraries', () => {
+		describe('when library is "consistent"', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+
+				const availableLibraries = [
+					ILibraryAdministrationOverviewItemTestFactory.create({
+						machineName: 'a',
+						dependentsCount: 1,
+						title: 'Library A',
+					}),
+				];
+				jest.spyOn(service.libraryAdministration, 'getLibraries').mockResolvedValue(availableLibraries);
+
+				libraryStorage.isInstalled.mockResolvedValueOnce(true);
+				libraryStorage.getLibrary.mockResolvedValueOnce({
+					machineName: 'libraryA',
+					majorVersion: 1,
+					minorVersion: 0,
+					patchVersion: 0,
+					files: [],
+					_id: new ObjectId(),
+					id: 'mock_id',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					restricted: false,
+					runnable: true,
+					title: 'Library A',
+					compare: jest.fn(),
+					compareVersions: jest.fn(),
+					preloadedJs: [{ path: 'path/to/preloaded.js' }],
+					preloadedCss: [{ path: 'path/to/preloaded.css' }],
+				});
+				libraryStorage.fileExists.mockResolvedValueOnce(true).mockResolvedValueOnce(true);
+
+				return { service };
+			};
+
+			it('should return empty array', async () => {
+				const { service } = setup();
+
+				const result = await service.checkAndRemoveBrokenLibraries();
+
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when library is "broken"', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+
+				const availableLibraries = [
+					ILibraryAdministrationOverviewItemTestFactory.create({
+						machineName: 'a',
+						dependentsCount: 1,
+						title: 'Library A',
+					}),
+				];
+
+				const expectedResult = [
+					ILibraryAdministrationOverviewItemTestFactory.create({
+						machineName: 'a',
+						dependentsCount: 1,
+						title: 'Library A',
+					}),
+				];
+
+				jest.spyOn(service.libraryAdministration, 'getLibraries').mockResolvedValue(availableLibraries);
+
+				libraryStorage.isInstalled.mockResolvedValueOnce(false);
+
+				return { expectedResult, service };
+			};
+
+			it('should return "broken" library', async () => {
+				const { expectedResult, service } = setup();
+
+				const result = await service.checkAndRemoveBrokenLibraries();
+
+				expect(result).toEqual(expectedResult);
 			});
 		});
 	});

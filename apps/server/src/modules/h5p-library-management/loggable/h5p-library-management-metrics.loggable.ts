@@ -7,7 +7,8 @@ export class H5PLibraryManagementMetricsLoggable implements Loggable {
 		private readonly initialLibraries: ILibraryAdministrationOverviewItem[],
 		private readonly uninstalledLibraries: ILibraryAdministrationOverviewItem[],
 		private readonly installedLibraries: ILibraryInstallResult[],
-		private readonly synchronizedLibraries: ILibraryInstallResult[]
+		private readonly synchronizedLibraries: ILibraryInstallResult[],
+		private readonly brokenLibraries: ILibraryAdministrationOverviewItem[]
 	) {}
 
 	// istanbul ignore next
@@ -58,6 +59,9 @@ export class H5PLibraryManagementMetricsLoggable implements Loggable {
 
 						return result;
 					})
+					.join(', '),
+				brokenLibraries: this.brokenLibraries
+					.map((lib) => `${lib.machineName}-${lib.majorVersion}.${lib.minorVersion}.${lib.patchVersion}`)
 					.join(', '),
 			},
 		};
