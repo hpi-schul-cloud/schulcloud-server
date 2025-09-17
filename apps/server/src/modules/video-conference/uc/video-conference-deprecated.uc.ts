@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ICurrentUser } from '@infra/auth-guard';
 import { CalendarService } from '@infra/calendar';
