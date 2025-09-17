@@ -24,23 +24,29 @@ export class CommonCartridgeImportService {
 		private readonly logger: LegacyLogger
 	) {}
 	public async importCourse(commonCartridgeCourse: CreateCcCourseBodyParams, currentUser: ICurrentUser): Promise<void> {
-		const user = await this.authService.getUserWithPermissions(currentUser.userId);
+		try {
+			const user = await this.authService.getUserWithPermissions(currentUser.userId);
 
-		this.logger.log(`Checking permissions for user ${currentUser.userId}, accountId: ${currentUser.accountId}`);
+			this.logger.log(`Checking permissions for user ${currentUser.userId}, accountId: ${currentUser.accountId}`);
 
-		this.authService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
-		const courseEntity = new CourseEntity({
-			name: commonCartridgeCourse.name,
-			color: commonCartridgeCourse.color,
-			teachers: [user],
-			school: user.school,
-		});
+			this.authService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
+			const courseEntity = new CourseEntity({
+				name: commonCartridgeCourse.name,
+				color: commonCartridgeCourse.color,
+				teachers: [user],
+				school: user.school,
+			});
 
-		const savedCourse = await this.courseService.create(courseEntity);
+			const savedCourse = await this.courseService.create(courseEntity);
 
-		this.logger.log(`the following course was created: ${JSON.stringify(savedCourse)}`);
+			this.logger.log(`the following course was created: ${JSON.stringify(savedCourse)}`);
 
-		await this.importBoards(commonCartridgeCourse, savedCourse);
+			await this.importBoards(commonCartridgeCourse, savedCourse);
+		} catch (error) {
+			const err = error as Error;
+			this.logger.error(`Error importing course: ${err.message}`);
+			throw error;
+		}
 	}
 
 	private async importBoards(
