@@ -714,13 +714,21 @@ export class H5PLibraryManagementService {
 		try {
 			metadata = await this.libraryStorage.getLibrary(libraryName);
 		} catch (error: unknown) {
-			this.logger.warning(
-				new H5PLibraryManagementErrorLoggable(
-					error,
-					{ library: LibraryName.toUberName(libraryName) },
-					'while reading library'
-				)
-			);
+			if (this.isLibraryNotFoundError(error)) {
+				this.logRemovalOfLostLibrary(libraryName);
+				// If the folder exists without a library.json in S3 and we don't have
+				// a metadata entry stored in the database, we remove the folder, as we
+				// cannot determine the correct state of the library.
+				await this.libraryStorage.deleteFolder(libraryName);
+			} else {
+				this.logger.warning(
+					new H5PLibraryManagementErrorLoggable(
+						error,
+						{ library: LibraryName.toUberName(libraryName) },
+						'while reading library'
+					)
+				);
+			}
 
 			return;
 		}
@@ -742,6 +750,23 @@ export class H5PLibraryManagementService {
 		if (fileAdded) {
 			this.logLibraryJsonAddedToS3(metadata);
 		}
+	}
+
+	private isLibraryNotFoundError(error: unknown): boolean {
+		const result =
+			error instanceof Error && !!error.message && error.message.toLowerCase().includes('library not found');
+
+		return result;
+	}
+
+	private logRemovalOfLostLibrary(library: ILibraryName): void {
+		this.logger.warning(
+			new H5PLibraryManagementLoggable(
+				`Removing "lost" library ${LibraryName.toUberName(
+					library
+				)} from S3 as there is no metadata in the database as well as no library.json in S3.`
+			)
+		);
 	}
 
 	private filterInstalledLibrary(obj: Record<string, any>): IInstalledLibrary {
