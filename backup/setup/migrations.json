@@ -226,15 +226,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "66fda9462a63b5749b3a64c9"
-		},
-		"name": "Migration20240926205656",
-		"created_at": {
-			"$date": "2024-10-02T20:12:54.209Z"
-		}
-	},
-	{
-		"_id": {
 			"$oid": "6717bba2b08d6ccb1dd5db60"
 		},
 		"name": "Migration20241022205656",
