@@ -20,6 +20,8 @@ import {
 import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
 
 import archiver from 'archiver';
+import { Logger } from '@core/logger';
+import { CommonCartridgeExportService } from '@modules/common-cartridge/service';
 
 export type CommonCartridgeFileBuilderProps = {
 	version: CommonCartridgeVersion;
@@ -57,13 +59,16 @@ export class CommonCartridgeFileBuilder {
 		return organization;
 	}
 
-	public async build(): Promise<void> {
+	public async build(logger: Logger): Promise<void> {
+		logger.info(CommonCartridgeExportService.strToLogMessage('--Building archive'));
 		if (!this.metadataElement) {
 			throw new MissingMetadataLoggableException();
 		}
 
 		const organizations = this.organizationsRoot.map((organization) => organization.build());
+		logger.info(CommonCartridgeExportService.strToLogMessage('--Built orgs'));
 		const resources = this.resourcesBuilder.build();
+		logger.info(CommonCartridgeExportService.strToLogMessage('--Built resources'));
 		const manifest = CommonCartridgeResourceFactory.createResource({
 			type: CommonCartridgeResourceType.MANIFEST,
 			version: this.props.version,
@@ -72,21 +77,32 @@ export class CommonCartridgeFileBuilder {
 			organizations,
 			resources,
 		});
+		logger.info(CommonCartridgeExportService.strToLogMessage('--Built manifest'));
 
 		this.archive.append(Buffer.from(manifest.getFileContent()), { name: manifest.getFilePath() });
+		logger.info(CommonCartridgeExportService.strToLogMessage(`--Appended: ${manifest.getFilePath()}`));
 
+		logger.info(CommonCartridgeExportService.strToLogMessage('--Adding resources'));
 		resources.forEach((resource) => {
 			if (resource instanceof CommonCartridgeFileResourceV130 || resource instanceof CommonCartridgeFileResourceV110) {
+				logger.info(CommonCartridgeExportService.strToLogMessage(`--FileResource: ${resource.getFilePath()}`));
 				const passthrough = resource.getFileStream().pipe(new PassThrough());
+				logger.info(CommonCartridgeExportService.strToLogMessage(`--Piped: ${resource.getFilePath()}`));
 				this.archive.append(passthrough, { name: resource.getFilePath() });
+				logger.info(CommonCartridgeExportService.strToLogMessage(`--Appended: ${resource.getFilePath()}`));
 			} else {
+				logger.info(CommonCartridgeExportService.strToLogMessage(`--NonFileResource: ${resource.getFilePath()}`));
 				const fileContent = resource.getFileContent();
 				const buffer = Buffer.isBuffer(fileContent) ? fileContent : Buffer.from(fileContent);
+				logger.info(CommonCartridgeExportService.strToLogMessage(`--Buffered: ${resource.getFilePath()}`));
 
 				this.archive.append(buffer, { name: resource.getFilePath() });
+				logger.info(CommonCartridgeExportService.strToLogMessage(`--Appended: ${resource.getFilePath()}`));
 			}
 		});
 
+		logger.info(CommonCartridgeExportService.strToLogMessage('--Finalizing'));
 		await this.archive.finalize();
+		logger.info(CommonCartridgeExportService.strToLogMessage('--Built archive'));
 	}
 }
