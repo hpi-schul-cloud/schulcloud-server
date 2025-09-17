@@ -4,6 +4,7 @@ import {
 	IHubContentType,
 	ILibraryAdministrationOverviewItem,
 	ILibraryInstallResult,
+	ILibraryName,
 } from '@lumieducation/h5p-server/build/src/types';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
@@ -1160,7 +1161,7 @@ describe('H5PLibraryManagementService', () => {
 			});
 		});
 
-		describe('synchronizeLibraryToS3', () => {
+		describe('addLibraryJsonToS3', () => {
 			describe('when library.json is missing in library folder on S3', () => {
 				const setup = () => {
 					const service = module.get(H5PLibraryManagementService);
@@ -1198,22 +1199,53 @@ describe('H5PLibraryManagementService', () => {
 			});
 
 			describe('when getLibrary fails', () => {
-				const setup = () => {
-					const service = module.get(H5PLibraryManagementService);
+				describe('when getLibrary fails with a "library not found" error', () => {
+					const setup = () => {
+						const service = module.get(H5PLibraryManagementService);
 
-					libraryStorage.getAllLibraryFolders.mockResolvedValueOnce(['libraryA-1.0']);
-					libraryStorage.fileExists.mockResolvedValueOnce(false);
-					libraryStorage.getLibrary.mockRejectedValueOnce(new Error('Mocked error during getLibrary'));
+						libraryStorage.getAllLibraryFolders.mockResolvedValueOnce(['libraryA-1.0']);
+						libraryStorage.fileExists.mockResolvedValueOnce(false);
+						libraryStorage.getLibrary.mockRejectedValueOnce(new Error('library not found'));
 
-					return { service };
-				};
+						return { service };
+					};
 
-				it('should return an empty result list', async () => {
-					const { service } = setup();
+					it('should return an empty result list', async () => {
+						const { service } = setup();
 
-					const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
+						const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
-					expect(synchronizedLibraries).toEqual([]);
+						expect(synchronizedLibraries).toEqual([]);
+					});
+
+					it('should call libraryStorage.deleteFolder', async () => {
+						const { service } = setup();
+						const libraryName: ILibraryName = { machineName: 'libraryA', majorVersion: 1, minorVersion: 0 };
+
+						await service.synchronizeDbEntryAndLibraryJson();
+
+						expect(libraryStorage.deleteFolder).toHaveBeenCalledWith(libraryName);
+					});
+				});
+
+				describe('when getLibrary fails with another error', () => {
+					const setup = () => {
+						const service = module.get(H5PLibraryManagementService);
+
+						libraryStorage.getAllLibraryFolders.mockResolvedValueOnce(['libraryA-1.0']);
+						libraryStorage.fileExists.mockResolvedValueOnce(false);
+						libraryStorage.getLibrary.mockRejectedValueOnce(new Error('Mocked error during getLibrary'));
+
+						return { service };
+					};
+
+					it('should return an empty result list', async () => {
+						const { service } = setup();
+
+						const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
+
+						expect(synchronizedLibraries).toEqual([]);
+					});
 				});
 			});
 
