@@ -102,7 +102,7 @@ export class CommonCartridgeFileBuilder {
 		});
 
 		logger.info(CommonCartridgeExportService.strToLogMessage('--Finalizing'));
-
+		// DO NOT AWAIT THE PROMISE OR THIS DOESN'T WORK
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		this.archive.finalize();
 		logger.info(CommonCartridgeExportService.strToLogMessage('--Built archive'));

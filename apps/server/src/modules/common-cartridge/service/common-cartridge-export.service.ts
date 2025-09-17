@@ -102,11 +102,7 @@ export class CommonCartridgeExportService {
 	}
 
 	private createArchiver(): archiver.Archiver {
-		const archive = archiver('zip', {
-			zlib: {
-				level: 9,
-			},
-		});
+		const archive = archiver('zip');
 
 		archive.on('warning', (err) => {
 			if (err.code === 'ENOENT') {
