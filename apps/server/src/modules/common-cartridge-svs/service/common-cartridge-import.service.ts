@@ -38,6 +38,8 @@ export class CommonCartridgeImportService {
 
 		const savedCourse = await this.courseService.create(courseEntity);
 
+		this.logger.log(`the following course was created: ${JSON.stringify(savedCourse)}`);
+
 		await this.importBoards(commonCartridgeCourse, savedCourse);
 	}
 
@@ -45,12 +47,14 @@ export class CommonCartridgeImportService {
 		commonCartridgeCourse: CreateCcCourseBodyParams,
 		savedCourse: CourseEntity
 	): Promise<void> {
+		this.logger.log(`columnBoard to import are: ${commonCartridgeCourse.columnBoard?.length ?? 0}`);
+
 		if (!commonCartridgeCourse.columnBoard || commonCartridgeCourse.columnBoard.length === 0) return;
 
 		for (const board of commonCartridgeCourse.columnBoard) {
 			const boardBodyParams = this.mapper.mapCommonCartridgeBoardToBoardBodyParams(board);
 			const columnBoardToCreate = this.boardNodeFactory.buildColumnBoard({
-				context: { type: boardBodyParams.parentType, id: savedCourse._id.toString() },
+				context: { type: boardBodyParams.parentType, id: savedCourse.id },
 				title: boardBodyParams.title,
 				layout: boardBodyParams.layout,
 			});
@@ -67,11 +71,9 @@ export class CommonCartridgeImportService {
 		if (!commonCartridgeBoard.columns || commonCartridgeBoard.columns.length === 0) return;
 
 		for (const column of commonCartridgeBoard.columns) {
-			const board = await this.boardNodeService.findByClassAndId(ColumnBoard, createdColumnBoard.id, 1);
 			const columnToCreate = this.boardNodeFactory.buildColumn();
-
-			await this.boardNodeService.addToParent(board, columnToCreate);
-			await this.boardNodeService.updateTitle(columnToCreate, column.title);
+			columnToCreate.title = column.title;
+			await this.boardNodeService.addToParent(createdColumnBoard, columnToCreate);
 			await this.importCards(column, columnToCreate);
 		}
 	}
@@ -81,9 +83,9 @@ export class CommonCartridgeImportService {
 
 		for (const card of commonCartridgeColumns.cards) {
 			const cardToCreate = this.boardNodeFactory.buildCard();
+			cardToCreate.title = card.title;
 
 			await this.boardNodeService.addToParent(createdColumn, cardToCreate);
-			await this.boardNodeService.updateTitle(cardToCreate, card.title);
 			await this.importCardElements(card, cardToCreate);
 		}
 	}

@@ -39,40 +39,41 @@ export class CommonCartridgeImportMappper {
 
 	public mapCommonCartridgeCardElementToAnyElementContent(element: CreateCcCardElementBodyParams): AnyContentElement {
 		const { data } = element;
-		if (data instanceof RichTextElementContentBody) {
-			return this.createRichTextElement(data);
-		} else if (data instanceof FileElementContentBody) {
-			return this.createFileElement(data);
-		} else if (data instanceof LinkElementContentBody) {
-			return this.createLinkElement(data);
-		} else {
-			throw new Error('Method not implemented.');
+		if (element.type === CommonCartridgeXmlResourceType.WEB_CONTENT) {
+			return this.createRichTextElement(data?.data as RichTextElementContentBody);
+		} else if (element.type === CommonCartridgeXmlResourceType.FILE) {
+			return this.createFileElement(data?.data as FileElementContentBody);
+		} else if (
+			element.type === CommonCartridgeXmlResourceType.WEB_LINK_CC11 ||
+			element.type === CommonCartridgeXmlResourceType.WEB_LINK_CC13
+		) {
+			return this.createLinkElement(data?.data as LinkElementContentBody);
 		}
+		throw new Error(`Unsupported element type: ${element.type}`);
 	}
 
 	public mapContentToAnyElementContentBody(element: CreateCcCardElementBodyParams): AnyElementContentBody {
-		const { data } = element;
 		switch (element.type) {
 			case CommonCartridgeXmlResourceType.WEB_CONTENT:
-				return this.createRichTextContentBody(data as unknown as RichTextElementContentBody);
+				return this.createRichTextContentBody(element as unknown as RichTextElementContentBody);
 			case CommonCartridgeXmlResourceType.FILE:
-				return this.createFileContentBody(data as unknown as FileElementContentBody);
+				return this.createFileContentBody(element as unknown as FileElementContentBody);
 			case CommonCartridgeXmlResourceType.WEB_LINK_CC11:
 			case CommonCartridgeXmlResourceType.WEB_LINK_CC13:
-				return this.createLinkContentBody(data as unknown as LinkElementContentBody);
+				return this.createLinkContentBody(element as unknown as LinkElementContentBody);
 			default:
-				throw new Error('Method not implemented.');
+				throw new Error('Unsupported element type');
 		}
 	}
 
-	private createRichTextContentBody(data: RichTextElementContentBody): RichTextContentBody {
+	private createRichTextContentBody(data: RichTextElementContentBody): AnyElementContentBody {
 		const text = new RichTextContentBody();
 		text.text = data.content.text;
 		text.inputFormat = data.content.inputFormat;
 		return text;
 	}
 
-	private createLinkContentBody(data: LinkElementContentBody): LinkContentBody {
+	private createLinkContentBody(data: LinkElementContentBody): AnyElementContentBody {
 		const link = new LinkContentBody();
 		link.title = data.content.title ?? '';
 		link.url = data.content.url;

@@ -11,9 +11,8 @@ import {
 	ApiTags,
 } from '@nestjs/swagger';
 import { CommonCartridgeImportUc } from '../uc/common-cartridge-import.uc';
-
-@ApiTags('Common-Cartridge')
 @JwtAuthentication()
+@ApiTags('Common-Cartridge')
 @Controller('common-cartridge')
 export class CommonCartridgeImportController {
 	constructor(private readonly courseImportUc: CommonCartridgeImportUc) {}
