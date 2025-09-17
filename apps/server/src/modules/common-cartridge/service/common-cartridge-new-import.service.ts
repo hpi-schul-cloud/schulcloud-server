@@ -33,7 +33,7 @@ export class CommonCartridgeNewImportService {
 		this.logger.log(`Importing course with title`);
 		this.logger.log(`user info: ${currentUser.userId}`);
 
-		await this.importClient.importCourse(this.prepareCourse(parser));
+		await this.importClient.importFile(this.prepareCourse(parser));
 
 		this.logger.log(`Course imported successfully`);
 	}

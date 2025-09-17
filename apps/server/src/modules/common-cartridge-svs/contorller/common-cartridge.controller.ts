@@ -18,14 +18,14 @@ import { LegacyLogger } from '@core/logger';
 export class CommonCartridgeImportController {
 	constructor(private readonly courseImportUc: CommonCartridgeImportUc, private readonly logger: LegacyLogger) {}
 
-	@Post('import')
+	@Post('importfile')
 	@ApiOperation({ summary: 'Imports a course from the common cartridge microservice' })
 	@ApiConsumes('application/json')
 	@ApiBody({ type: CreateCcCourseBodyParams, required: true })
 	@ApiCreatedResponse({ description: 'Course was successfully imported.' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
-	public async importCourse(
+	public async importFile(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() courseBody: CreateCcCourseBodyParams
 	): Promise<void> {

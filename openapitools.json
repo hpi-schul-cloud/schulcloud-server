@@ -131,7 +131,7 @@
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
-					"FILTER": "operationId:CommonCartridgeImportController_importCourse"
+					"FILTER": "operationId:CommonCartridgeImportController_importFile"
 				},
 				"globalProperty":{
 					"models": "CreateCcCourseBodyParams:CreateCcBoardBodyParams:CreateCcColumnBodyParams:CreateCcCardBodyParams:CreateCcCardElementBodyParams:UpdateElementContentBodyParams_data:UpdateElementContentBodyParams:UpdateElementContentBodyParamsData:DrawingElementContentBody:ExternalToolElementContentBody:FileElementContentBody:FileFolderElementContentBody:LinkElementContentBody:RichTextElementContentBody:SubmissionContainerElementContentBody:VideoConferenceElementContentBody",
