@@ -59,7 +59,7 @@ export class CommonCartridgeFileBuilder {
 		return organization;
 	}
 
-	public async build(logger: Logger): Promise<void> {
+	public build(logger: Logger): void {
 		logger.info(CommonCartridgeExportService.strToLogMessage('--Building archive'));
 		if (!this.metadataElement) {
 			throw new MissingMetadataLoggableException();
@@ -102,7 +102,9 @@ export class CommonCartridgeFileBuilder {
 		});
 
 		logger.info(CommonCartridgeExportService.strToLogMessage('--Finalizing'));
-		await this.archive.finalize();
+
+		// eslint-disable-next-line @typescript-eslint/no-floating-promises
+		this.archive.finalize();
 		logger.info(CommonCartridgeExportService.strToLogMessage('--Built archive'));
 	}
 }

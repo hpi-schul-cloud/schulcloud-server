@@ -88,7 +88,7 @@ export class CommonCartridgeExportService {
 		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
 		this.logger.info(CommonCartridgeExportService.strToLogMessage('-Added columnboards'));
 
-		await builder.build(this.logger);
+		builder.build(this.logger);
 		this.logger.info(CommonCartridgeExportService.strToLogMessage('-build archive'));
 
 		const response: ExportResponse = {

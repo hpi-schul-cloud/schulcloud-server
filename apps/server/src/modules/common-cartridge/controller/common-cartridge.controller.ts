@@ -29,6 +29,7 @@ import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeImportBodyParams, CourseExportBodyParams, CourseQueryParams, ExportCourseParams } from './dto';
 import { CommonCartridgeFileValidatorPipe } from './utils';
 import { ExportResponse } from '../service/export.response';
+import { RequestLoggingInterceptor } from '@shared/common/interceptor';
 
 @JwtAuthentication()
 @ApiTags('common-cartridge')
@@ -37,6 +38,7 @@ export class CommonCartridgeController {
 	constructor(private readonly commonCartridgeUC: CommonCartridgeUc) {}
 
 	@Post('export/:courseId')
+	@UseInterceptors(RequestLoggingInterceptor)
 	public async exportCourse(
 		@Param() exportCourseParams: ExportCourseParams,
 		@Query() queryParams: CourseQueryParams,
