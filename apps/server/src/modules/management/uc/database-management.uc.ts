@@ -405,16 +405,14 @@ export class DatabaseManagementUc {
 
 	private encryptSecretsInSystems(systems: SystemEntity[]): SystemEntity[] {
 		systems.forEach((system) => {
-			if (system.oauthConfig) {
+			if (system.oauthConfig?.clientSecret) {
 				system.oauthConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oauthConfig.clientSecret);
 			}
-			if (system.oidcConfig) {
+			if (system.oidcConfig?.clientSecret) {
 				system.oidcConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oidcConfig.clientSecret);
 			}
-			if (system.ldapConfig) {
-				system.ldapConfig.searchUserPassword = this.ldapEncryptionService.encrypt(
-					system.ldapConfig.searchUserPassword as string
-				);
+			if (system.ldapConfig?.searchUserPassword) {
+				system.ldapConfig.searchUserPassword = this.ldapEncryptionService.encrypt(system.ldapConfig.searchUserPassword);
 			}
 		});
 		return systems;
