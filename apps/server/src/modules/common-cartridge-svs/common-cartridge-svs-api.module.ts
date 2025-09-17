@@ -4,10 +4,11 @@ import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization-reference';
 import { CommonCartridgeImportUc } from './uc/common-cartridge-import.uc';
 import { CommonCartridgeSvsModule } from './common-cartridge-svs.module';
+import { LegacyLogger } from '@core/logger';
 
 @Module({
 	imports: [CommonCartridgeSvsModule, AuthorizationModule, AuthorizationReferenceModule],
 	controllers: [CommonCartridgeImportController],
-	providers: [CommonCartridgeImportUc],
+	providers: [CommonCartridgeImportUc, LegacyLogger],
 })
 export class CommonCartridgeSvsApiModule {}
