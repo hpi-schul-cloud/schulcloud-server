@@ -13,8 +13,8 @@ import {
 import { CommonCartridgeImportUc } from '../uc/common-cartridge-import.uc';
 import { LegacyLogger } from '@core/logger';
 @JwtAuthentication()
-@ApiTags('Common-Cartridge')
-@Controller('common-cartridge')
+@ApiTags('Import-Common-Cartridge')
+@Controller('import-common-cartridge')
 export class CommonCartridgeImportController {
 	constructor(private readonly courseImportUc: CommonCartridgeImportUc, private readonly logger: LegacyLogger) {}
 

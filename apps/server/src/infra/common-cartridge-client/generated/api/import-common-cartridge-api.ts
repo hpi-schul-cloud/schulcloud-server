@@ -24,10 +24,10 @@ import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError
 // @ts-ignore
 import type { CreateCcCourseBodyParams } from '../models';
 /**
- * CommonCartridgeApi - axios parameter creator
+ * ImportCommonCartridgeApi - axios parameter creator
  * @export
  */
-export const CommonCartridgeApiAxiosParamCreator = function (configuration?: Configuration) {
+export const ImportCommonCartridgeApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
          * 
@@ -39,7 +39,7 @@ export const CommonCartridgeApiAxiosParamCreator = function (configuration?: Con
         commonCartridgeImportControllerImportFile: async (createCcCourseBodyParams: CreateCcCourseBodyParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'createCcCourseBodyParams' is not null or undefined
             assertParamExists('commonCartridgeImportControllerImportFile', 'createCcCourseBodyParams', createCcCourseBodyParams)
-            const localVarPath = `/common-cartridge/importfile`;
+            const localVarPath = `/import-common-cartridge/importfile`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -73,11 +73,11 @@ export const CommonCartridgeApiAxiosParamCreator = function (configuration?: Con
 };
 
 /**
- * CommonCartridgeApi - functional programming interface
+ * ImportCommonCartridgeApi - functional programming interface
  * @export
  */
-export const CommonCartridgeApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = CommonCartridgeApiAxiosParamCreator(configuration)
+export const ImportCommonCartridgeApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ImportCommonCartridgeApiAxiosParamCreator(configuration)
     return {
         /**
          * 
@@ -89,18 +89,18 @@ export const CommonCartridgeApiFp = function(configuration?: Configuration) {
         async commonCartridgeImportControllerImportFile(createCcCourseBodyParams: CreateCcCourseBodyParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.commonCartridgeImportControllerImportFile(createCcCourseBodyParams, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['CommonCartridgeApi.commonCartridgeImportControllerImportFile']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['ImportCommonCartridgeApi.commonCartridgeImportControllerImportFile']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
 
 /**
- * CommonCartridgeApi - factory interface
+ * ImportCommonCartridgeApi - factory interface
  * @export
  */
-export const CommonCartridgeApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = CommonCartridgeApiFp(configuration)
+export const ImportCommonCartridgeApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = ImportCommonCartridgeApiFp(configuration)
     return {
         /**
          * 
@@ -116,40 +116,40 @@ export const CommonCartridgeApiFactory = function (configuration?: Configuration
 };
 
 /**
- * CommonCartridgeApi - interface
+ * ImportCommonCartridgeApi - interface
  * @export
- * @interface CommonCartridgeApi
+ * @interface ImportCommonCartridgeApi
  */
-export interface CommonCartridgeApiInterface {
+export interface ImportCommonCartridgeApiInterface {
     /**
      * 
      * @summary Imports a course from the common cartridge microservice
      * @param {CreateCcCourseBodyParams} createCcCourseBodyParams 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof CommonCartridgeApiInterface
+     * @memberof ImportCommonCartridgeApiInterface
      */
     commonCartridgeImportControllerImportFile(createCcCourseBodyParams: CreateCcCourseBodyParams, options?: RawAxiosRequestConfig): AxiosPromise<void>;
 
 }
 
 /**
- * CommonCartridgeApi - object-oriented interface
+ * ImportCommonCartridgeApi - object-oriented interface
  * @export
- * @class CommonCartridgeApi
+ * @class ImportCommonCartridgeApi
  * @extends {BaseAPI}
  */
-export class CommonCartridgeApi extends BaseAPI implements CommonCartridgeApiInterface {
+export class ImportCommonCartridgeApi extends BaseAPI implements ImportCommonCartridgeApiInterface {
     /**
      * 
      * @summary Imports a course from the common cartridge microservice
      * @param {CreateCcCourseBodyParams} createCcCourseBodyParams 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof CommonCartridgeApi
+     * @memberof ImportCommonCartridgeApi
      */
     public commonCartridgeImportControllerImportFile(createCcCourseBodyParams: CreateCcCourseBodyParams, options?: RawAxiosRequestConfig) {
-        return CommonCartridgeApiFp(this.configuration).commonCartridgeImportControllerImportFile(createCcCourseBodyParams, options).then((request) => request(this.axios, this.basePath));
+        return ImportCommonCartridgeApiFp(this.configuration).commonCartridgeImportControllerImportFile(createCcCourseBodyParams, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

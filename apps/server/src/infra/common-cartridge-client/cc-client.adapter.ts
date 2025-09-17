@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CommonCartridgeApi, CreateCcCourseBodyParams } from './generated';
+import { CreateCcCourseBodyParams, ImportCommonCartridgeApi } from './generated';
 
 @Injectable()
 export class CommonCartrideImportClientAdapter {
-	constructor(private readonly importApi: CommonCartridgeApi) {}
+	constructor(private readonly importApi: ImportCommonCartridgeApi) {}
 
 	public async importFile(createCcCourseBodyParams: CreateCcCourseBodyParams): Promise<void> {
 		await this.importApi.commonCartridgeImportControllerImportFile(createCcCourseBodyParams);

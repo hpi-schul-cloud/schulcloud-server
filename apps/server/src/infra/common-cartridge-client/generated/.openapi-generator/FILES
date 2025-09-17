@@ -2,7 +2,7 @@
 .npmignore
 .openapi-generator-ignore
 api.ts
-api/common-cartridge-api.ts
+api/import-common-cartridge-api.ts
 base.ts
 common.ts
 configuration.ts
