@@ -434,7 +434,8 @@ export class H5PLibraryManagementService {
 			'library.json',
 			true
 		)) as ILibraryMetadata;
-		const newLibraryMetadata = this.checkIsLibraryMetadata(parsedJson);
+		const filteredJson = this.filterLibraryMetadata(parsedJson);
+		const newLibraryMetadata = this.checkIsLibraryMetadata(filteredJson);
 
 		const newVersionOfLibrary: IFullLibraryName = {
 			machineName: newLibraryMetadata.machineName,
@@ -461,6 +462,38 @@ export class H5PLibraryManagementService {
 		return { type: 'none' };
 	}
 
+	private filterLibraryMetadata(obj: Record<string, any>): ILibraryMetadata {
+		const allowedKeys: (keyof ILibraryMetadata)[] = [
+			'machineName',
+			'majorVersion',
+			'minorVersion',
+			'patchVersion',
+			'addTo',
+			'author',
+			'coreApi',
+			'description',
+			'dropLibraryCss',
+			'dynamicDependencies',
+			'editorDependencies',
+			'embedTypes',
+			'fullscreen',
+			'h',
+			'license',
+			'metadataSettings',
+			'preloadedCss',
+			'preloadedDependencies',
+			'preloadedJs',
+			'runnable',
+			'title',
+			'w',
+			'requiredExtensions',
+			'state',
+		];
+
+		const filteredObject = this.filterObjectByInterface<ILibraryMetadata>(obj, allowedKeys);
+
+		return filteredObject as ILibraryMetadata;
+	}
 	private checkIsLibraryMetadata(obj: unknown): ILibraryMetadata {
 		const definedObject = TypeGuard.checkDefinedObject(obj);
 		const objectWithDefinedKeys = TypeGuard.checkKeysInObject(definedObject, [
@@ -693,7 +726,8 @@ export class H5PLibraryManagementService {
 		}
 
 		let fileAdded = false;
-		const dataStream = Readable.from(JSON.stringify(metadata, null, 2));
+		const filteredMetadata = this.filterInstalledLibrary(metadata);
+		const dataStream = Readable.from(JSON.stringify(filteredMetadata, null, 2));
 		try {
 			fileAdded = await this.libraryStorage.addFile(libraryName, 'library.json', dataStream);
 		} catch (error: unknown) {
@@ -708,6 +742,42 @@ export class H5PLibraryManagementService {
 		if (fileAdded) {
 			this.logLibraryJsonAddedToS3(metadata);
 		}
+	}
+
+	private filterInstalledLibrary(obj: Record<string, any>): IInstalledLibrary {
+		const allowedKeys: (keyof IInstalledLibrary)[] = [
+			'machineName',
+			'majorVersion',
+			'minorVersion',
+			'patchVersion',
+			'addTo',
+			'author',
+			'coreApi',
+			'description',
+			'dropLibraryCss',
+			'dynamicDependencies',
+			'editorDependencies',
+			'embedTypes',
+			'fullscreen',
+			'h',
+			'license',
+			'metadataSettings',
+			'preloadedCss',
+			'preloadedDependencies',
+			'preloadedJs',
+			'runnable',
+			'title',
+			'w',
+			'requiredExtensions',
+			'state',
+			'restricted',
+			'compare',
+			'compareVersions',
+		];
+
+		const filteredObject = this.filterObjectByInterface<IInstalledLibrary>(obj, allowedKeys);
+
+		return filteredObject as IInstalledLibrary;
 	}
 
 	private logLibraryJsonAddedToS3(metadata: IInstalledLibrary): void {
@@ -756,5 +826,16 @@ export class H5PLibraryManagementService {
 				)} from database and S3 as the library did not pass consistency check.`
 			)
 		);
+	}
+
+	private filterObjectByInterface<T>(obj: Record<string, any>, allowedKeys: (keyof T)[]): Partial<T> {
+		const result: Partial<T> = {};
+		for (const key of allowedKeys) {
+			if (key in obj) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				result[key] = obj[key as string];
+			}
+		}
+		return result;
 	}
 }
