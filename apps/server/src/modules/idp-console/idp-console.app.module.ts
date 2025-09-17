@@ -15,6 +15,7 @@ import { ConsoleModule } from 'nestjs-console';
 import { IdpSyncConsole, SynchronizationUc } from './api';
 import { idpConsoleConfigConfig } from './idp-console.config';
 import { ENTITIES } from './idp.entity.imports';
+import { ErrorModule } from '@core/error';
 
 @Module({
 	imports: [
@@ -37,6 +38,7 @@ import { ENTITIES } from './idp.entity.imports';
 		RabbitMQWrapperModule,
 		ConsoleWriterModule,
 		ConsoleModule,
+		ErrorModule,
 	],
 	providers: [SynchronizationUc, IdpSyncConsole],
 })
