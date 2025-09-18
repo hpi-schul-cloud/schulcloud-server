@@ -1,7 +1,6 @@
 import { CourseService } from '@modules/course';
 import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationService } from '@modules/authorization';
-import { Permission } from '@shared/domain/interface';
 import { CourseEntity } from '@modules/course/repo';
 import { BoardNodeFactory, BoardNodeService, Card, Column, ColumnBoard } from '@modules/board';
 import { CommonCartridgeImportMappper } from '../mapper/common-cartridge-import.mapper';
@@ -29,7 +28,6 @@ export class CommonCartridgeImportService {
 
 			this.logger.log(`Checking permissions for user ${currentUser.userId}, accountId: ${currentUser.accountId}`);
 
-			this.authService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
 			const courseEntity = new CourseEntity({
 				name: commonCartridgeCourse.name,
 				color: commonCartridgeCourse.color,
