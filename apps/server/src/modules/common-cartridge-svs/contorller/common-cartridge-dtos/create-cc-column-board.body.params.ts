@@ -32,5 +32,5 @@ export class CreateCcBoardBodyParams {
 		required: false,
 	})
 	@IsArray({ each: true })
-	public columns: CreateCcColumnBodyParams[] | undefined;
+	public columns?: CreateCcColumnBodyParams[];
 }

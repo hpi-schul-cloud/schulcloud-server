@@ -15,5 +15,5 @@ export class CreateCcColumnBodyParams {
 		required: false,
 	})
 	@IsArray({ each: true })
-	public cards?: CreateCcCardBodyParams[] | undefined;
+	public cards?: CreateCcCardBodyParams[];
 }

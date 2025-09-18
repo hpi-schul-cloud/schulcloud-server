@@ -16,5 +16,5 @@ export class CreateCcCardBodyParams {
 		required: false,
 	})
 	@IsArray({ each: true })
-	public cardElements?: CreateCcCardElementBodyParams[] | undefined;
+	public cardElements?: CreateCcCardElementBodyParams[];
 }

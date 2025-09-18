@@ -23,5 +23,5 @@ export class CreateCcCourseBodyParams {
 		required: false,
 	})
 	@IsArray({ each: true })
-	public columnBoard: CreateCcBoardBodyParams[] | undefined;
+	public columnBoard?: CreateCcBoardBodyParams[];
 }
