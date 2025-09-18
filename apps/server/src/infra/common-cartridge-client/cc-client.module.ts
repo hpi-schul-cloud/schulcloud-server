@@ -6,8 +6,10 @@ import { ConfigService } from '@nestjs/config';
 import { JwtExtractor } from '@shared/common/utils';
 import { CommonCartridgeImportClientConfig } from './cc-client.config';
 import { Request } from 'express';
+import { LoggerModule } from '@core/logger';
 
 @Module({
+	imports: [LoggerModule],
 	providers: [
 		CommonCartridgeImportClientAdapter,
 		{
