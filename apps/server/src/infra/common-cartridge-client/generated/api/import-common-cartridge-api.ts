@@ -39,7 +39,7 @@ export const ImportCommonCartridgeApiAxiosParamCreator = function (configuration
         commonCartridgeImportControllerImportFile: async (createCcCourseBodyParams: CreateCcCourseBodyParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'createCcCourseBodyParams' is not null or undefined
             assertParamExists('commonCartridgeImportControllerImportFile', 'createCcCourseBodyParams', createCcCourseBodyParams)
-            const localVarPath = `/import-common-cartridge/importfile`;
+            const localVarPath = `/import-common-cartridge`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

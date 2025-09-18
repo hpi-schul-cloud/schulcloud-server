@@ -11,13 +11,13 @@ import {
 	ApiTags,
 } from '@nestjs/swagger';
 import { CommonCartridgeImportUc } from '../uc/common-cartridge-import.uc';
-@JwtAuthentication()
 @ApiTags('Import-Common-Cartridge')
+@JwtAuthentication()
 @Controller('import-common-cartridge')
 export class CommonCartridgeImportController {
 	constructor(private readonly courseImportUc: CommonCartridgeImportUc) {}
 
-	@Post('importfile')
+	@Post()
 	@ApiOperation({ summary: 'Imports a course from the common cartridge microservice' })
 	@ApiConsumes('application/json')
 	@ApiBody({ type: CreateCcCourseBodyParams, required: true })
