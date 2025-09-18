@@ -1,11 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CreateCcColumnBodyParams } from './create-cc-column.body.params';
+import { IsArray, IsString } from 'class-validator';
 
 export class CreateCcBoardBodyParams {
 	@ApiProperty({
 		description: 'title of the column boards',
 		required: false,
 	})
+	@IsString()
 	public title?: string;
 
 	@ApiProperty({
@@ -13,6 +15,7 @@ export class CreateCcBoardBodyParams {
 		required: false,
 		default: 'columns',
 	})
+	@IsString()
 	public layout?: string;
 
 	@ApiProperty({
@@ -20,6 +23,7 @@ export class CreateCcBoardBodyParams {
 		required: false,
 		default: 'course',
 	})
+	@IsString()
 	public parentType?: string;
 
 	@ApiPropertyOptional({
@@ -27,5 +31,6 @@ export class CreateCcBoardBodyParams {
 		type: [CreateCcColumnBodyParams],
 		required: false,
 	})
+	@IsArray({ each: true })
 	public columns: CreateCcColumnBodyParams[] | undefined;
 }

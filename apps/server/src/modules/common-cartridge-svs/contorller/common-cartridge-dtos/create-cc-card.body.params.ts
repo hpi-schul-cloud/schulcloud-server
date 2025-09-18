@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 import { CreateCcCardElementBodyParams } from './create-cc-card-element.body.params';
 
 export class CreateCcCardBodyParams {
@@ -15,5 +15,6 @@ export class CreateCcCardBodyParams {
 		type: [CreateCcCardElementBodyParams],
 		required: false,
 	})
+	@IsArray({ each: true })
 	public cardElements?: CreateCcCardElementBodyParams[] | undefined;
 }

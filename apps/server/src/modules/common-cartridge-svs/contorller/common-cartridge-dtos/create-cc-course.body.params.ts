@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 import { CreateCcBoardBodyParams } from './create-cc-column-board.body.params';
 
 export class CreateCcCourseBodyParams {
@@ -22,5 +22,6 @@ export class CreateCcCourseBodyParams {
 		type: [CreateCcBoardBodyParams],
 		required: false,
 	})
+	@IsArray({ each: true })
 	public columnBoard: CreateCcBoardBodyParams[] | undefined;
 }
