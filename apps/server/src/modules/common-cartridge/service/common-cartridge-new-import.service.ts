@@ -1,4 +1,3 @@
-import { CommonCartrideImportClientAdapter } from '@infra/common-cartridge-client';
 import { Injectable } from '@nestjs/common';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
@@ -12,6 +11,7 @@ import {
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 import { LegacyLogger } from '@core/logger';
 import { ICurrentUser } from '@infra/auth-guard';
+import { CommonCartridgeImportClientAdapter } from '@infra/common-cartridge-client';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;
@@ -22,7 +22,7 @@ const DEFAULT_NEW_COURSE_COLOR = '#455B6A';
 @Injectable()
 export class CommonCartridgeNewImportService {
 	constructor(
-		private readonly importClient: CommonCartrideImportClientAdapter,
+		private readonly importClient: CommonCartridgeImportClientAdapter,
 		private readonly mapper: CommonCartridgeImportMapper,
 		private readonly logger: LegacyLogger
 	) {}

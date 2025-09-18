@@ -1,5 +1,5 @@
 import { Module, Scope } from '@nestjs/common';
-import { CommonCartrideImportClientAdapter } from './cc-client.adapter';
+import { CommonCartridgeImportClientAdapter } from './cc-client.adapter';
 import { Configuration, ImportCommonCartridgeApi } from './generated';
 import { REQUEST } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
@@ -9,7 +9,7 @@ import { Request } from 'express';
 
 @Module({
 	providers: [
-		CommonCartrideImportClientAdapter,
+		CommonCartridgeImportClientAdapter,
 		{
 			provide: ImportCommonCartridgeApi,
 			scope: Scope.REQUEST,
@@ -29,6 +29,6 @@ import { Request } from 'express';
 			inject: [ConfigService, REQUEST],
 		},
 	],
-	exports: [CommonCartrideImportClientAdapter],
+	exports: [CommonCartridgeImportClientAdapter],
 })
 export class CommonCartridgeImportClientModule {}
