@@ -41,7 +41,7 @@ export class CommonCartridgeImportService {
 
 			this.logger.log(`the following course was created: ${JSON.stringify(savedCourse)}`);
 
-			await this.importBoards(commonCartridgeCourse, savedCourse);
+			// await this.importBoards(commonCartridgeCourse, savedCourse);
 		} catch (error) {
 			const err = error as Error;
 			this.logger.error(`Error importing course: ${err.message}`);
