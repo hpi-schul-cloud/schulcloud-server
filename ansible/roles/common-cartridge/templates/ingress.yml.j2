@@ -1,4 +1,3 @@
-#jinja2: trim_blocks: "True", lstrip_blocks: "True"
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -21,7 +20,7 @@ metadata:
 spec:
   ingressClassName: {{ INGRESS_CLASS }}
   rules:
-  {# This is a testing route and will be removed in the future #}
+  # This is a testing route and will be removed in the future
   - host: {{ DOMAIN }}
     http:
       paths:
