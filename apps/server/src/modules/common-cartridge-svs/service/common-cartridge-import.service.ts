@@ -2,7 +2,15 @@ import { CourseService } from '@modules/course';
 import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationService } from '@modules/authorization';
 import { CourseEntity } from '@modules/course/repo';
-import { BoardNodeFactory, BoardNodeService, Card, Column, ColumnBoard } from '@modules/board';
+import {
+	BoardExternalReferenceType,
+	BoardLayout,
+	BoardNodeFactory,
+	BoardNodeService,
+	Card,
+	Column,
+	ColumnBoard,
+} from '@modules/board';
 import { CommonCartridgeImportMappper } from '../mapper/common-cartridge-import.mapper';
 import {
 	CreateCcCourseBodyParams,
@@ -39,7 +47,7 @@ export class CommonCartridgeImportService {
 
 			this.logger.log(`the following course was created: ${JSON.stringify(savedCourse)}`);
 
-			// await this.importBoards(commonCartridgeCourse, savedCourse);
+			await this.importBoards(commonCartridgeCourse, savedCourse);
 		} catch (error) {
 			const err = error as Error;
 			this.logger.error(`Error importing course: ${err.message}`);
@@ -56,15 +64,14 @@ export class CommonCartridgeImportService {
 		if (!commonCartridgeCourse.columnBoard || commonCartridgeCourse.columnBoard.length === 0) return;
 
 		for (const board of commonCartridgeCourse.columnBoard) {
-			const boardBodyParams = this.mapper.mapCommonCartridgeBoardToBoardBodyParams(board);
 			const columnBoardToCreate = this.boardNodeFactory.buildColumnBoard({
-				context: { type: boardBodyParams.parentType, id: savedCourse.id },
-				title: boardBodyParams.title,
-				layout: boardBodyParams.layout,
+				context: { type: BoardExternalReferenceType.Course, id: savedCourse.id },
+				title: board.title ?? '',
+				layout: BoardLayout.COLUMNS,
 			});
 
 			await this.boardNodeService.addRoot(columnBoardToCreate);
-			await this.importColumns(board, columnBoardToCreate);
+			//await this.importColumns(board, columnBoardToCreate);
 		}
 	}
 

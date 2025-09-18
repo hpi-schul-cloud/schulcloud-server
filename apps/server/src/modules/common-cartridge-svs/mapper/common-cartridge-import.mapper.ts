@@ -1,6 +1,5 @@
 import {
 	AnyElementContentBody,
-	CreateBoardBodyParams,
 	FileContentBody,
 	FileElementContentBody,
 	LinkContentBody,
@@ -8,21 +7,12 @@ import {
 	RichTextContentBody,
 	RichTextElementContentBody,
 } from '@modules/board/controller/dto';
-import { CreateCcBoardBodyParams } from '../contorller/common-cartridge-dtos/create-cc-column-board.body.params';
-import { BoardExternalReferenceType, BoardLayout, ContentElementType } from '@modules/board';
+import { ContentElementType } from '@modules/board';
 import { CommonCartridgeXmlResourceType } from '@modules/common-cartridge';
 import { CreateCcCardElementBodyParams } from '../contorller/common-cartridge-dtos';
 import { AnyContentElement, FileElement, LinkElement, RichTextElement } from '@modules/board/domain';
 
 export class CommonCartridgeImportMappper {
-	public mapCommonCartridgeBoardToBoardBodyParams(ccBoard: CreateCcBoardBodyParams): CreateBoardBodyParams {
-		const boardDto = new CreateBoardBodyParams();
-		boardDto.title = ccBoard.title ?? '';
-		boardDto.layout = BoardLayout.COLUMNS;
-		boardDto.parentType = BoardExternalReferenceType.Course;
-		return boardDto;
-	}
-
 	public mapCommonCartridgeElementType(resourceType: CommonCartridgeXmlResourceType): ContentElementType {
 		switch (resourceType) {
 			case CommonCartridgeXmlResourceType.WEB_CONTENT:
