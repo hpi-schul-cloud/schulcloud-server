@@ -1,6 +1,9 @@
 import crypto from 'node:crypto';
 
 export class AesEncryptionHelper {
+	// The following implementation is inspired by this article:
+	// https://medium.com/@tony.infisical/guide-to-nodes-crypto-module-for-encryption-decryption-65c077176980
+
 	private static readonly algorithm = 'aes-256-gcm';
 	private static readonly saltLength = 16;
 	private static readonly keyLength = 32;
