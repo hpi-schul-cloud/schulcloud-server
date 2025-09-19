@@ -8,6 +8,7 @@ import { StorageProviderEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { AesEncryptionHelper } from '@shared/common/utils';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generate-seed-data';
@@ -472,7 +473,9 @@ export class DatabaseManagementUc {
 		return result;
 	}
 
-	public encryptPlainText(plainText: string): string {
-		return this.defaultEncryptionService.encrypt(plainText);
+	public encryptPlainText(plainText: string, key: string): string {
+		const encrypted = AesEncryptionHelper.encrypt(plainText, key);
+
+		return encrypted;
 	}
 }
