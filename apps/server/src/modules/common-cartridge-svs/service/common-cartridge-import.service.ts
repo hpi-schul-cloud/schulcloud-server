@@ -118,7 +118,11 @@ export class CommonCartridgeImportService {
 			await this.boardNodeService.addToParent(createdCard, elementToCreate);
 
 			const anyElementContent = this.mapper.mapCommonCartridgeCardElementToAnyElementContent(element);
+
+			if (!anyElementContent) return;
+
 			const contentBody = this.mapper.mapContentToAnyElementContentBody(element);
+
 			await this.boardNodeService.updateContent(anyElementContent, contentBody);
 		}
 	}
