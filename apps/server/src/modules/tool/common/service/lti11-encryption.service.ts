@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import CryptoJS from 'crypto-js';
+import crypto from 'node:crypto';
 import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class Lti11EncryptionService {
 			},
 			signature_method: 'HMAC-SHA1',
 			hash_function: (base_string: string, hashKey: string) =>
-				CryptoJS.HmacSHA1(base_string, hashKey).toString(CryptoJS.enc.Base64),
+				crypto.createHmac('sha1', hashKey).update(base_string).digest('base64'),
 		});
 
 		const authorization: Authorization = consumer.authorize(requestData);

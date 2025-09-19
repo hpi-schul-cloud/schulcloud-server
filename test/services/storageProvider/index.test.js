@@ -1,6 +1,6 @@
 const { expect } = require('chai');
-const CryptoJS = require('crypto-js');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const { AesEncryptionHelper } = require('../../../dist/apps/server/shared/common/utils/aes-encryption');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
 
@@ -24,9 +24,7 @@ describe('storageProvider service', () => {
 	it('encrypts the secret correctly', async () => {
 		const secret = '123456789';
 		const provider = await testObjects.createTestStorageProvider({ secretAccessKey: secret });
-		const decrypted = CryptoJS.AES.decrypt(provider.secretAccessKey, Configuration.get('S3_KEY')).toString(
-			CryptoJS.enc.Utf8
-		);
+		const decrypted = AesEncryptionHelper.decrypt(provider.secretAccessKey, Configuration.get('S3_KEY'));
 		expect(decrypted).to.equal(secret);
 	});
 
