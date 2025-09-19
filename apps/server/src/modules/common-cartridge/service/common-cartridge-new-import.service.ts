@@ -227,7 +227,7 @@ export class CommonCartridgeNewImportService {
 		if (!resourceBody) return;
 
 		const cardElement: CreateCcCardElementBodyParams = {
-			type: contentElementType,
+			type: resource.type,
 			xmlPath: cardElementProps.resourcePath,
 			data: { data: resourceBody },
 		};
