@@ -1,3 +1,6 @@
+import { randomBytes } from 'node:crypto';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { CalendarService } from '@infra/calendar';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
@@ -12,8 +15,6 @@ import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { VideoConferenceScope } from '@modules/video-conference/domain';
 import { VideoConferenceRepo } from '@modules/video-conference/repo';
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { RoleReference } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -296,6 +297,7 @@ export class VideoConferenceService {
 		// try and catch based on legacy behavior
 		try {
 			vcDo = await this.findVideoConferenceByScopeIdAndScope(scopeId, scope);
+			vcDo.salt = randomBytes(16).toString('hex');
 
 			vcDo.options = new VideoConferenceOptionsDO(options);
 		} catch (error) {
@@ -303,6 +305,7 @@ export class VideoConferenceService {
 				target: scopeId,
 				targetModel: scope,
 				options: new VideoConferenceOptionsDO(options),
+				salt: randomBytes(16).toString('hex'),
 			});
 		}
 

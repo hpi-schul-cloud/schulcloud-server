@@ -28,14 +28,19 @@ export class VideoConferenceInfoUc {
 			scope.scope
 		);
 
-		const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
-			meetingID: scope.id,
-		});
-
-		const options: VideoConferenceOptionsDO = await this.getVideoConferenceOptions(scope);
+		const options: VideoConferenceOptionsDO = defaultVideoConferenceOptions;
 
 		let response: VideoConferenceInfo;
 		try {
+			const videoConference = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
+				scope.id,
+				scope.scope
+			);
+			const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
+				meetingID: scope.id + videoConference.salt,
+			});
+
+			const { options } = videoConference;
 			const bbbResponse: BBBResponse<BBBMeetingInfoResponse> = await this.bbbService.getMeetingInfo(config);
 			response = new VideoConferenceInfo({
 				state: VideoConferenceState.RUNNING,
@@ -73,6 +78,7 @@ export class VideoConferenceInfoUc {
 			);
 			options = { ...vcDO.options };
 		} catch {
+			// TODO why should return anything if videoconference not found?
 			options = defaultVideoConferenceOptions;
 		}
 		return options;

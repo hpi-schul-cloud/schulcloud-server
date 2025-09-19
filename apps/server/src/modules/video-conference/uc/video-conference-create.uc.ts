@@ -31,7 +31,13 @@ export class VideoConferenceCreateUc {
 		let bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
 		// try and catch based on legacy behavior
 		try {
-			bbbMeetingInfoResponse = await this.bbbService.getMeetingInfo(new BBBBaseMeetingConfig({ meetingID: scope.id }));
+			const videoConference = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
+				scope.id,
+				scope.scope
+			);
+			bbbMeetingInfoResponse = await this.bbbService.getMeetingInfo(
+				new BBBBaseMeetingConfig({ meetingID: scope.id + videoConference.salt })
+			);
 		} catch (e) {
 			bbbMeetingInfoResponse = undefined;
 		}
@@ -53,9 +59,18 @@ export class VideoConferenceCreateUc {
 		);
 		this.checkModerator(bbbRole, 'You are not allowed to start the videoconference. Ask a moderator.');
 
-		await this.videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions(scope.id, scope.scope, options);
+		const vcDo = await this.videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions(
+			scope.id,
+			scope.scope,
+			options
+		);
 
-		const configBuilder: BBBCreateConfigBuilder = this.prepareBBBCreateConfigBuilder(scope, options, scopeInfo);
+		const configBuilder: BBBCreateConfigBuilder = this.prepareBBBCreateConfigBuilder(
+			scope,
+			options,
+			scopeInfo,
+			vcDo.salt
+		);
 
 		await this.bbbService.create(configBuilder.build());
 	}
@@ -63,11 +78,12 @@ export class VideoConferenceCreateUc {
 	private prepareBBBCreateConfigBuilder(
 		scope: ScopeRef,
 		options: VideoConferenceOptions,
-		scopeInfo: ScopeInfo
+		scopeInfo: ScopeInfo,
+		salt: string
 	): BBBCreateConfigBuilder {
 		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
 			name: this.videoConferenceService.sanitizeString(scopeInfo.title),
-			meetingID: scope.id,
+			meetingID: scope.id + salt,
 		}).withLogoutUrl(options.logoutUrl ?? scopeInfo.logoutUrl);
 
 		if (options.moderatorMustApproveJoinRequests) {
