@@ -103,7 +103,7 @@ export class GroupDomainMapper {
 	static mapGroupUserEntityToGroupUser(entity: GroupUserEmbeddable): GroupUser {
 		const groupUser: GroupUser = new GroupUser({
 			userId: entity.user.id,
-			roleId: entity.role.id,
+			roleId: entity.role?.id,
 		});
 
 		return groupUser;
