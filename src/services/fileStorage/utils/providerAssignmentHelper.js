@@ -28,7 +28,7 @@ const updateProviderForSchool = async (provider, schoolId) => {
 		const result = await schoolModel
 			.updateOne(
 				{
-					_id: ObjectId(schoolId),
+					_id: new ObjectId(schoolId),
 				},
 				{ $set: { storageProvider: provider } }
 			)
