@@ -215,7 +215,7 @@ export class AccountUc {
 			return false;
 		}
 
-		const permissionsToCheck: string[] = [];
+		const permissionsToCheck: Permission[] = [];
 		if (this.hasRole(targetUser, RoleName.STUDENT)) {
 			// eslint-disable-next-line default-case
 			switch (action) {

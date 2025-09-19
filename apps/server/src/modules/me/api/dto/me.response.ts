@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { LanguageType } from '@shared/domain/interface';
+import { LanguageType, Permission } from '@shared/domain/interface';
 
 export class MeAccountResponse {
 	@ApiProperty()
@@ -84,8 +84,8 @@ export class MeResponse {
 	@ApiProperty({ type: [MeRoleResponse] })
 	public roles: MeRoleResponse[];
 
-	@ApiProperty()
-	public permissions: string[];
+	@ApiProperty({ enum: Permission, isArray: true, enumName: 'Permission' })
+	public permissions: Permission[];
 
 	@ApiProperty({
 		enum: LanguageType,
