@@ -74,7 +74,7 @@ export class CommonCartridgeImportService {
 			});
 
 			await this.boardNodeService.addRoot(columnBoardToCreate);
-			//await this.importColumns(board, columnBoardToCreate);
+			await this.importColumns(board, columnBoardToCreate);
 		}
 	}
 
@@ -93,7 +93,7 @@ export class CommonCartridgeImportService {
 	}
 
 	private async importCards(commonCartridgeColumns: CreateCcColumnBodyParams, createdColumn: Column): Promise<void> {
-		if (!commonCartridgeColumns.cards || commonCartridgeColumns.cards.length === 0) return;
+		if (commonCartridgeColumns.cards?.length === 0 || !commonCartridgeColumns.cards) return;
 
 		for (const card of commonCartridgeColumns.cards) {
 			const cardToCreate = this.boardNodeFactory.buildCard();
@@ -108,7 +108,7 @@ export class CommonCartridgeImportService {
 		commCartridgeCardElements: CreateCcCardBodyParams,
 		createdCard: Card
 	): Promise<void> {
-		if (!commCartridgeCardElements.cardElements || commCartridgeCardElements.cardElements.length === 0) return;
+		if (commCartridgeCardElements.cardElements?.length === 0 || !commCartridgeCardElements.cardElements) return;
 
 		for (const element of commCartridgeCardElements.cardElements) {
 			const elementToCreate = this.boardNodeFactory.buildContentElement(
@@ -118,8 +118,8 @@ export class CommonCartridgeImportService {
 			await this.boardNodeService.addToParent(createdCard, elementToCreate);
 
 			const anyElementContent = this.mapper.mapCommonCartridgeCardElementToAnyElementContent(element);
-			const content = this.mapper.mapContentToAnyElementContentBody(element);
-			await this.boardNodeService.updateContent(anyElementContent, content);
+			const contentBody = this.mapper.mapContentToAnyElementContentBody(element);
+			await this.boardNodeService.updateContent(anyElementContent, contentBody);
 		}
 	}
 }
