@@ -32,6 +32,7 @@ import {
 	AutoContextNameStrategy,
 	AutoGroupExternalUuidStrategy,
 	AutoMediumIdStrategy,
+	AutoPublisherStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
@@ -91,6 +92,10 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				{
 					provide: AutoMediumIdStrategy,
 					useValue: createMock<AutoMediumIdStrategy>(),
+				},
+				{
+					provide: AutoPublisherStrategy,
+					useValue: createMock<AutoPublisherStrategy>(),
 				},
 				{
 					provide: AutoGroupExternalUuidStrategy,
