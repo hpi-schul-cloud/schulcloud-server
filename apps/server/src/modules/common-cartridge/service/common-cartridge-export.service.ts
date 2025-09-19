@@ -102,7 +102,9 @@ export class CommonCartridgeExportService {
 	}
 
 	private createArchiver(): archiver.Archiver {
-		const archive = archiver('zip');
+		const archive = archiver('zip', {
+			store: true,
+		});
 
 		archive.on('warning', (err) => {
 			if (err.code === 'ENOENT') {
