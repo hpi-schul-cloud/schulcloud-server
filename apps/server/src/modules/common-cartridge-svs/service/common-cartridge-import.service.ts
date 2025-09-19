@@ -20,6 +20,7 @@ import {
 } from '../contorller/common-cartridge-dtos';
 import { Injectable } from '@nestjs/common';
 import { LegacyLogger } from '@core/logger';
+import { Permission } from '@shared/domain/interface';
 @Injectable()
 export class CommonCartridgeImportService {
 	constructor(
@@ -35,6 +36,8 @@ export class CommonCartridgeImportService {
 			const user = await this.authService.getUserWithPermissions(currentUser.userId);
 
 			this.logger.log(`Checking permissions for user ${currentUser.userId}, accountId: ${currentUser.accountId}`);
+
+			this.authService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
 
 			const courseEntity = new CourseEntity({
 				name: commonCartridgeCourse.name,
@@ -61,7 +64,7 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		this.logger.log(`columnBoard to import are: ${commonCartridgeCourse.columnBoard?.length ?? 0}`);
 
-		if (!commonCartridgeCourse.columnBoard || commonCartridgeCourse.columnBoard.length === 0) return;
+		if (commonCartridgeCourse.columnBoard?.length === 0 || !commonCartridgeCourse.columnBoard) return;
 
 		for (const board of commonCartridgeCourse.columnBoard) {
 			const columnBoardToCreate = this.boardNodeFactory.buildColumnBoard({
@@ -79,7 +82,7 @@ export class CommonCartridgeImportService {
 		commonCartridgeBoard: CreateCcBoardBodyParams,
 		createdColumnBoard: ColumnBoard
 	): Promise<void> {
-		if (!commonCartridgeBoard.columns || commonCartridgeBoard.columns.length === 0) return;
+		if (commonCartridgeBoard.columns?.length === 0 || !commonCartridgeBoard.columns) return;
 
 		for (const column of commonCartridgeBoard.columns) {
 			const columnToCreate = this.boardNodeFactory.buildColumn();
