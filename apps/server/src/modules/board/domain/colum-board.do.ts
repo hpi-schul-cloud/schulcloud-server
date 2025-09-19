@@ -24,6 +24,9 @@ export class ColumnBoard extends BoardNode<ColumnBoardProps> {
 	}
 
 	set isVisible(isVisible: boolean) {
+		if (!isVisible) {
+			this.props.readersCanEdit = false;
+		}
 		this.props.isVisible = isVisible;
 	}
 
