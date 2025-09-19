@@ -104,7 +104,7 @@ export class CommonCartridgeExportService {
 	private createArchiver(): archiver.Archiver {
 		const archive = archiver('zip', {
 			zlib: {
-				level: 7,
+				level: 9,
 			},
 		});
 
