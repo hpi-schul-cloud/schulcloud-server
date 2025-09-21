@@ -8,7 +8,7 @@ import { Permission } from '@shared/domain/interface';
 import { BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
 import { VideoConferenceDO, VideoConferenceScope } from '../domain';
 import { ErrorStatus } from '../error';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { VideoConferenceOptions } from '../interface';
 import { BBBService, VideoConferenceService } from '../service';
 import { videoConferenceDOFactory } from '../testing';
 import { VideoConferenceInfo, VideoConferenceState } from './dto';
