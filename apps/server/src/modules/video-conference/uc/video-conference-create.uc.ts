@@ -14,6 +14,7 @@ import { VideoConferenceOptions } from '../interface';
 import { VideoConferenceService } from '../service';
 import { ScopeInfo, ScopeRef } from './dto';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
+import { VideoConferenceDO } from '../domain';
 
 @Injectable()
 export class VideoConferenceCreateUc {
@@ -28,62 +29,62 @@ export class VideoConferenceCreateUc {
 		scope: ScopeRef,
 		options: VideoConferenceOptions
 	): Promise<void> {
+		await this.videoConferenceFeatureService.checkVideoConferenceFeatureEnabled(currentUserId, scope);
+
+		const videoConference = await this.videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions(
+			scope.id,
+			scope.scope,
+			options
+		);
+
 		let bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
 		// try and catch based on legacy behavior
 		try {
-			const videoConference = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
-				scope.id,
-				scope.scope
-			);
 			bbbMeetingInfoResponse = await this.bbbService.getMeetingInfo(
-				new BBBBaseMeetingConfig({ meetingID: scope.id + videoConference.salt })
+				new BBBBaseMeetingConfig({ meetingID: videoConference.target + videoConference.salt })
 			);
 		} catch (e) {
 			bbbMeetingInfoResponse = undefined;
 		}
 
 		if (bbbMeetingInfoResponse === undefined) {
-			await this.create(currentUserId, scope, options);
+			await this.create(currentUserId, videoConference);
 		}
 	}
 
-	private async create(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
-		await this.videoConferenceFeatureService.checkVideoConferenceFeatureEnabled(currentUserId, scope);
-
-		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
+	private async create(currentUserId: EntityId, videoConference: VideoConferenceDO): Promise<void> {
+		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(
+			currentUserId,
+			videoConference.target,
+			videoConference.targetModel
+		);
 
 		const bbbRole: BBBRole = await this.videoConferenceService.determineBbbRole(
 			currentUserId,
 			scopeInfo.scopeId,
-			scope.scope
+			scopeInfo.scopeName
 		);
 		this.checkModerator(bbbRole, 'You are not allowed to start the videoconference. Ask a moderator.');
 
-		const vcDo = await this.videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions(
-			scope.id,
-			scope.scope,
-			options
-		);
-
 		const configBuilder: BBBCreateConfigBuilder = this.prepareBBBCreateConfigBuilder(
-			scope,
-			options,
+			videoConference.target,
+			videoConference.options,
 			scopeInfo,
-			vcDo.salt
+			videoConference.salt
 		);
 
 		await this.bbbService.create(configBuilder.build());
 	}
 
 	private prepareBBBCreateConfigBuilder(
-		scope: ScopeRef,
+		scopeId: string,
 		options: VideoConferenceOptions,
 		scopeInfo: ScopeInfo,
 		salt: string
 	): BBBCreateConfigBuilder {
 		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
 			name: this.videoConferenceService.sanitizeString(scopeInfo.title),
-			meetingID: scope.id + salt,
+			meetingID: scopeId + salt,
 		}).withLogoutUrl(options.logoutUrl ?? scopeInfo.logoutUrl);
 
 		if (options.moderatorMustApproveJoinRequests) {

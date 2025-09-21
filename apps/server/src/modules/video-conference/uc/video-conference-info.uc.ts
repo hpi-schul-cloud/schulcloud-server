@@ -20,6 +20,11 @@ export class VideoConferenceInfoUc {
 	public async getMeetingInfo(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConferenceInfo> {
 		await this.videoConferenceFeatureService.checkVideoConferenceFeatureEnabled(currentUserId, scope);
 
+		const videoConference = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
+			scope.id,
+			scope.scope
+		);
+
 		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
 
 		const bbbRole: BBBRole = await this.videoConferenceService.determineBbbRole(
@@ -28,31 +33,24 @@ export class VideoConferenceInfoUc {
 			scope.scope
 		);
 
-		const options: VideoConferenceOptionsDO = defaultVideoConferenceOptions;
-
 		let response: VideoConferenceInfo;
 		try {
-			const videoConference = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
-				scope.id,
-				scope.scope
-			);
 			const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
 				meetingID: scope.id + videoConference.salt,
 			});
 
-			const { options } = videoConference;
 			const bbbResponse: BBBResponse<BBBMeetingInfoResponse> = await this.bbbService.getMeetingInfo(config);
 			response = new VideoConferenceInfo({
 				state: VideoConferenceState.RUNNING,
 				permission: PermissionMapping[bbbRole],
 				bbbResponse,
-				options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
+				options: bbbRole === BBBRole.MODERATOR ? videoConference.options : ({} as VideoConferenceOptions),
 			});
 		} catch {
 			response = new VideoConferenceInfo({
 				state: VideoConferenceState.NOT_STARTED,
 				permission: PermissionMapping[bbbRole],
-				options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
+				options: bbbRole === BBBRole.MODERATOR ? videoConference.options : ({} as VideoConferenceOptions),
 			});
 		}
 
@@ -62,7 +60,13 @@ export class VideoConferenceInfoUc {
 			scopeInfo.scopeId
 		);
 
-		if (!this.videoConferenceService.canGuestJoin(isGuest, response.state, options.moderatorMustApproveJoinRequests)) {
+		if (
+			!this.videoConferenceService.canGuestJoin(
+				isGuest,
+				response.state,
+				videoConference.options.moderatorMustApproveJoinRequests
+			)
+		) {
 			throw new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE);
 		}
 
