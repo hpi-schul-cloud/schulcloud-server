@@ -1,4 +1,4 @@
-import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -63,7 +63,7 @@ export class MediaBoardUc {
 
 		const board: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 
-		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
 
 		const line = this.mediaBoardNodeFactory.buildMediaLine({
 			title: '',
@@ -80,7 +80,7 @@ export class MediaBoardUc {
 
 		const board: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 
-		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
 
 		await this.mediaBoardService.updateLayout(board, layout);
 	}
