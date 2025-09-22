@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { StorageProviderEncryptedStringType } from './storage-provider-encrypted-string.type';
+import { AesEncryptionHelper } from '@shared/common/utils';
 
 describe('EncryptedString type', () => {
 	describe('constructor', () => {
@@ -15,7 +16,7 @@ describe('EncryptedString type', () => {
 		const S3_KEY = 'custom_cipher_key';
 		const serializer = new StorageProviderEncryptedStringType(S3_KEY);
 		const text = 'sample text input';
-		const textEncrypted = 'U2FsdGVkX18XgTi2IeaC/EA6vE9N4bf/0oDEz7WuIH8RGMcVm1Yw7I+2PHGBTAxF'; // depends on S3_KEY
+		const textEncrypted = AesEncryptionHelper.encrypt(text, S3_KEY);
 
 		describe('When convertToDatabaseValue', () => {
 			it('should pass null value', () => {
