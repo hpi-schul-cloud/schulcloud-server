@@ -126,10 +126,8 @@ export class RoomUc {
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
 		]);
 		const members = hasAdminPermission ? await this.roomMembershipService.getRoomMembers(roomId) : [];
-		const roomHasMembersFromAdminSchool = hasAdminPermission  && members.some((member) => member.schoolId === user.school.id);
-		// ist das so richtig?
-		// müssen wir nicht gucken ob da auch schüler der eigenen schule drin sind?
-		// if (!hasRoomPermission && !(hasAdminPermission && isFromSameSchool)) {
+		const roomHasMembersFromAdminSchool =
+			hasAdminPermission && members.some((member) => member.schoolId === user.school.id);
 		if (!hasRoomPermission && !roomHasMembersFromAdminSchool) {
 			throw new ForbiddenException('You do not have permission to access this room');
 		}
