@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker/locale/af_ZA';
 import { createMock } from '@golevelup/ts-jest';
 import { FeathersServiceProvider } from '@infra/feathers';
 import { MikroORM } from '@mikro-orm/core';
