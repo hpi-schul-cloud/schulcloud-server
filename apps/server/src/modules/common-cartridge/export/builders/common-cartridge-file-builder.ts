@@ -20,8 +20,8 @@ import {
 import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
 
 import { Logger } from '@core/logger';
-import { CommonCartridgeExportMessageLoggable } from '../../loggable/common-cartridge-export-message.loggable';
 import archiver from 'archiver';
+import { CommonCartridgeExportMessageLoggable } from '../../loggable/common-cartridge-export-message.loggable';
 
 export type CommonCartridgeFileBuilderProps = {
 	version: CommonCartridgeVersion;
@@ -38,7 +38,11 @@ export class CommonCartridgeFileBuilder {
 
 	private metadataElement: CommonCartridgeElement | null = null;
 
-	constructor(private readonly props: CommonCartridgeFileBuilderProps, public readonly archive: archiver.Archiver) {}
+	constructor(
+		private readonly props: CommonCartridgeFileBuilderProps,
+		public readonly archive: archiver.Archiver,
+		private readonly logger: Logger
+	) {}
 
 	public addMetadata(metadataProps: CommonCartridgeElementProps): void {
 		this.metadataElement = CommonCartridgeElementFactory.createElement({
@@ -59,17 +63,18 @@ export class CommonCartridgeFileBuilder {
 		return organization;
 	}
 
-	public build(logger: Logger): void {
-		logger.debug(new CommonCartridgeExportMessageLoggable('Building archive'));
+	public build(): void {
 		if (!this.metadataElement) {
 			throw new MissingMetadataLoggableException();
 		}
 
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Building archive'));
+
 		const organizations = this.organizationsRoot.map((organization) => organization.build());
-		logger.debug(new CommonCartridgeExportMessageLoggable('Built organizations of archive'));
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Built organizations of archive'));
 
 		const resources = this.resourcesBuilder.build();
-		logger.debug(new CommonCartridgeExportMessageLoggable('Built resources of archive'));
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Built resources of archive'));
 
 		const manifest = CommonCartridgeResourceFactory.createResource({
 			type: CommonCartridgeResourceType.MANIFEST,
@@ -82,30 +87,30 @@ export class CommonCartridgeFileBuilder {
 
 		this.archive.append(Buffer.from(manifest.getFileContent()), { name: manifest.getFilePath() });
 
-		logger.debug(new CommonCartridgeExportMessageLoggable('Adding resources'));
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Adding resources'));
 		resources.forEach((resource) => {
 			if (resource instanceof CommonCartridgeFileResourceV130 || resource instanceof CommonCartridgeFileResourceV110) {
-				logger.debug(new CommonCartridgeExportMessageLoggable(`FileResource: ${resource.getFilePath()}`));
+				this.logger.debug(new CommonCartridgeExportMessageLoggable(`FileResource: ${resource.getFilePath()}`));
 
 				const passthrough = resource.getFileStream().pipe(new PassThrough());
 				this.archive.append(passthrough, { name: resource.getFilePath() });
 
-				logger.debug(new CommonCartridgeExportMessageLoggable(`Appended: ${resource.getFilePath()}`));
+				this.logger.debug(new CommonCartridgeExportMessageLoggable(`Appended: ${resource.getFilePath()}`));
 			} else {
-				logger.debug(new CommonCartridgeExportMessageLoggable(`NonFileResource: ${resource.getFilePath()}`));
+				this.logger.debug(new CommonCartridgeExportMessageLoggable(`NonFileResource: ${resource.getFilePath()}`));
 
 				const fileContent = resource.getFileContent();
 				const buffer = Buffer.isBuffer(fileContent) ? fileContent : Buffer.from(fileContent);
 				this.archive.append(buffer, { name: resource.getFilePath() });
 
-				logger.debug(new CommonCartridgeExportMessageLoggable(`Appended: ${resource.getFilePath()}`));
+				this.logger.debug(new CommonCartridgeExportMessageLoggable(`Appended: ${resource.getFilePath()}`));
 			}
 		});
 
-		logger.debug(new CommonCartridgeExportMessageLoggable('Finalizing archive'));
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Finalizing archive'));
 		// DO NOT AWAIT THE PROMISE OR THIS DOESN'T WORK
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		this.archive.finalize();
-		logger.debug(new CommonCartridgeExportMessageLoggable('Built archive'));
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Built archive'));
 	}
 }

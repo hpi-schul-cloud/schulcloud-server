@@ -1,38 +1,38 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Logger } from '@core/logger';
+import { BoardResponse, BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { BoardResponse, BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import archiver from 'archiver';
+import { Stream } from 'node:stream';
 import { CardClientAdapter } from '../common-cartridge-client/card-client';
-import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
+import {
+	CardListResponseDto,
+	CardResponseDto,
+	FileElementResponseDto,
+	LinkElementResponseDto,
+	RichTextElementResponseDto,
+} from '../common-cartridge-client/card-client/dto';
+import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
+import { CardResponseElementsInnerDto } from '../common-cartridge-client/card-client/types/card-response-elements-inner.type';
 import { LessonClientAdapter } from '../common-cartridge-client/lesson-client';
-import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
-import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
 import { LessonContentDto } from '../common-cartridge-client/lesson-client/dto';
-import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
+import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import {
 	BoardColumnBoardDto,
 	BoardElementDto,
 	BoardLessonDto,
 	BoardTaskDto,
 } from '../common-cartridge-client/room-client/dto';
-import { createIdentifier } from '../export/utils';
 import { BoardElementDtoType } from '../common-cartridge-client/room-client/enums/board-element.enum';
-import { CardResponseElementsInnerDto } from '../common-cartridge-client/card-client/types/card-response-elements-inner.type';
-import {
-	CardListResponseDto,
-	CardResponseDto,
-	RichTextElementResponseDto,
-	LinkElementResponseDto,
-	FileElementResponseDto,
-} from '../common-cartridge-client/card-client/dto';
-import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
-import { ExportResponse } from './export.response';
-import archiver from 'archiver';
-import { Logger } from '@core/logger';
-import { Stream } from 'node:stream';
+import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
+import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
+import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
+import { createIdentifier } from '../export/utils';
 import { CommonCartridgeExportMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
+import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
+import { CommonCartridgeExportResponse } from './common-cartridge-export.response';
 
 type FileMetadataAndStream = { id: string; name: string; file: Stream; fileDto: FileDto };
 
@@ -58,13 +58,17 @@ export class CommonCartridgeExportService {
 		exportedTopics: string[],
 		exportedTasks: string[],
 		exportedColumnBoards: string[]
-	): Promise<ExportResponse> {
+	): Promise<CommonCartridgeExportResponse> {
 		this.logger.debug(
 			new CommonCartridgeExportMessageLoggable('New Common-Cartridge export started', { courseId, version })
 		);
 
 		const archive = this.createArchiver(courseId);
-		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, courseId), archive);
+		const builder = new CommonCartridgeFileBuilder(
+			this.mapper.mapCourseToManifest(version, courseId),
+			archive,
+			this.logger
+		);
 
 		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
 		this.logger.debug(new CommonCartridgeExportMessageLoggable('Loaded course metadata', { courseId }));
@@ -87,10 +91,10 @@ export class CommonCartridgeExportService {
 		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
 		this.logger.debug(new CommonCartridgeExportMessageLoggable('Added boards of course', { courseId }));
 
-		builder.build(this.logger);
+		builder.build();
 		this.logger.debug(new CommonCartridgeExportMessageLoggable('Built archive', { courseId }));
 
-		const response: ExportResponse = {
+		const response: CommonCartridgeExportResponse = {
 			data: builder.archive,
 			name: `${roomBoard.title}-${new Date().toISOString()}.imscc`,
 		};
