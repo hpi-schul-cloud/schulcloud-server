@@ -38,16 +38,7 @@ export class Migration20250710083440 extends Migration {
 		//  --- Update secretAccessKey of storage providers ---
 		const storageProviders = this.getCollection(storageProvidersCollectionName).find({});
 
-		const numberOfUpdatedStorageProviders = await this.updateSecrets(
-			storageProviders,
-			['secretAccessKey'],
-			S3_KEY,
-			storageProvidersCollectionName
-		);
-
-		console.info(
-			`Updated secretAccessKey of ${numberOfUpdatedStorageProviders} storage providers with new encryption function.`
-		);
+		await this.updateSecrets(storageProviders, ['secretAccessKey'], S3_KEY, storageProvidersCollectionName);
 
 		// ----------------------------------------------------------------------------------
 
@@ -56,15 +47,11 @@ export class Migration20250710083440 extends Migration {
 			'ldapConfig.searchUserPassword': { $ne: undefined },
 		});
 
-		const numberOfUpdatedLdapSystems = await this.updateSecrets(
+		await this.updateSecrets(
 			ldapSystems,
 			['ldapConfig', 'searchUserPassword'],
 			LDAP_PASSWORD_ENCRYPTION_KEY,
 			systemsCollectionName
-		);
-
-		console.info(
-			`Updated LDAP searchUserPassword of ${numberOfUpdatedLdapSystems} systems with new encryption function.`
 		);
 
 		// ----------------------------------------------------------------------------------
@@ -74,14 +61,7 @@ export class Migration20250710083440 extends Migration {
 			'oauthConfig.clientSecret': { $ne: undefined },
 		});
 
-		const numberOfUpdatedOauthSystems = await this.updateSecrets(
-			oauthSystems,
-			['oauthConfig', 'clientSecret'],
-			AES_KEY,
-			systemsCollectionName
-		);
-
-		console.info(`Updated OAuth clientSecret of ${numberOfUpdatedOauthSystems} systems with new encryption function.`);
+		await this.updateSecrets(oauthSystems, ['oauthConfig', 'clientSecret'], AES_KEY, systemsCollectionName);
 
 		// ----------------------------------------------------------------------------------
 
@@ -91,14 +71,7 @@ export class Migration20250710083440 extends Migration {
 			'oidcConfig.clientSecret': { $ne: undefined },
 		});
 
-		const numberOfUpdatedOidcSystems = await this.updateSecrets(
-			oidcSystems,
-			['oidcConfig', 'clientSecret'],
-			AES_KEY,
-			systemsCollectionName
-		);
-
-		console.info(`Updated OIDC clientSecret of ${numberOfUpdatedOidcSystems} systems with new encryption function.`);
+		await this.updateSecrets(oidcSystems, ['oidcConfig', 'clientSecret'], AES_KEY, systemsCollectionName);
 
 		// ----------------------------------------------------------------------------------
 
@@ -108,14 +81,7 @@ export class Migration20250710083440 extends Migration {
 			config_secret: { $ne: undefined },
 		});
 
-		const numberOfUpdatedLti11Tools = await this.updateSecrets(
-			lti11Tools,
-			['config_secret'],
-			AES_KEY,
-			externalToolsCollectionName
-		);
-
-		console.info(`Updated LTI 1.1 tool secrets of ${numberOfUpdatedLti11Tools} tools with new encryption function.`);
+		await this.updateSecrets(lti11Tools, ['config_secret'], AES_KEY, externalToolsCollectionName);
 
 		// ----------------------------------------------------------------------------------
 
@@ -124,16 +90,7 @@ export class Migration20250710083440 extends Migration {
 			'oauthConfig.clientSecret': { $ne: undefined },
 		});
 
-		const numberOfUpdatedMediaSourceOauthConfigs = await this.updateSecrets(
-			mediaSources,
-			['oauthConfig', 'clientSecret'],
-			AES_KEY,
-			mediaSourcesCollectionName
-		);
-
-		console.info(
-			`Updated OAuth clientSecret of ${numberOfUpdatedMediaSourceOauthConfigs} media sources with new encryption function.`
-		);
+		await this.updateSecrets(mediaSources, ['oauthConfig', 'clientSecret'], AES_KEY, mediaSourcesCollectionName);
 
 		// ----------------------------------------------------------------------------------
 
@@ -142,15 +99,11 @@ export class Migration20250710083440 extends Migration {
 			'vidisConfig.username': { $ne: undefined },
 		});
 
-		const numberOfUpdatedMediaSourceVidisUsernames = await this.updateSecrets(
+		await this.updateSecrets(
 			mediaSourcesVidisWithUsername,
 			['vidisConfig', 'username'],
 			AES_KEY,
 			mediaSourcesCollectionName
-		);
-
-		console.info(
-			`Updated Vidis username of ${numberOfUpdatedMediaSourceVidisUsernames} media sources with new encryption function.`
 		);
 
 		// ----------------------------------------------------------------------------------
@@ -160,15 +113,11 @@ export class Migration20250710083440 extends Migration {
 			'vidisConfig.password': { $ne: undefined },
 		});
 
-		const numberOfUpdatedMediaSourceVidisPasswords = await this.updateSecrets(
+		await this.updateSecrets(
 			mediaSourcesVidisWithPassword,
 			['vidisConfig', 'password'],
 			AES_KEY,
 			mediaSourcesCollectionName
-		);
-
-		console.info(
-			`Updated Vidis password of ${numberOfUpdatedMediaSourceVidisPasswords} media sources with new encryption function.`
 		);
 	}
 
@@ -200,14 +149,7 @@ export class Migration20250710083440 extends Migration {
 		// --- Revert update of secretAccessKey of storage providers ---
 		const storageProviders = this.getCollection(storageProvidersCollectionName).find({});
 
-		const numberOfUpdatedStorageProviders = await this.revertUpdateOfSecrets(
-			storageProviders,
-			['secretAccessKey'],
-			S3_KEY,
-			storageProvidersCollectionName
-		);
-
-		console.info(`Reverted update of secretAccessKey of ${numberOfUpdatedStorageProviders} storage providers.`);
+		await this.revertUpdateOfSecrets(storageProviders, ['secretAccessKey'], S3_KEY, storageProvidersCollectionName);
 
 		// ----------------------------------------------------------------------------------
 
@@ -216,14 +158,12 @@ export class Migration20250710083440 extends Migration {
 			'ldapConfig.searchUserPassword': { $ne: undefined },
 		});
 
-		const numberOfUpdatedLdapSystems = await this.revertUpdateOfSecrets(
+		await this.revertUpdateOfSecrets(
 			ldapSystems,
 			['ldapConfig', 'searchUserPassword'],
 			LDAP_PASSWORD_ENCRYPTION_KEY,
 			systemsCollectionName
 		);
-
-		console.info(`Reverted update of LDAP searchUserPassword of ${numberOfUpdatedLdapSystems} systems.`);
 
 		// ----------------------------------------------------------------------------------
 
@@ -232,14 +172,7 @@ export class Migration20250710083440 extends Migration {
 			'oauthConfig.clientSecret': { $ne: undefined },
 		});
 
-		const numberOfUpdatedOauthSystems = await this.revertUpdateOfSecrets(
-			oauthSystems,
-			['oauthConfig', 'clientSecret'],
-			AES_KEY,
-			systemsCollectionName
-		);
-
-		console.info(`Reverted update of OAuth clientSecret of ${numberOfUpdatedOauthSystems} systems.`);
+		await this.revertUpdateOfSecrets(oauthSystems, ['oauthConfig', 'clientSecret'], AES_KEY, systemsCollectionName);
 
 		// ----------------------------------------------------------------------------------
 
@@ -248,14 +181,7 @@ export class Migration20250710083440 extends Migration {
 			'oidcConfig.clientSecret': { $ne: undefined },
 		});
 
-		const numberOfUpdatedOidcSystems = await this.revertUpdateOfSecrets(
-			oidcSystems,
-			['oidcConfig', 'clientSecret'],
-			AES_KEY,
-			systemsCollectionName
-		);
-
-		console.info(`Reverted update of OIDC clientSecret of ${numberOfUpdatedOidcSystems} systems.`);
+		await this.revertUpdateOfSecrets(oidcSystems, ['oidcConfig', 'clientSecret'], AES_KEY, systemsCollectionName);
 
 		// ----------------------------------------------------------------------------------
 
@@ -265,14 +191,7 @@ export class Migration20250710083440 extends Migration {
 			config_secret: { $ne: undefined },
 		});
 
-		const numberOfUpdatedLti11Tools = await this.revertUpdateOfSecrets(
-			lti11Tools,
-			['config_secret'],
-			AES_KEY,
-			externalToolsCollectionName
-		);
-
-		console.info(`Reverted update of LTI 1.1 tool secrets of ${numberOfUpdatedLti11Tools} tools.`);
+		await this.revertUpdateOfSecrets(lti11Tools, ['config_secret'], AES_KEY, externalToolsCollectionName);
 
 		// ----------------------------------------------------------------------------------
 
@@ -281,14 +200,12 @@ export class Migration20250710083440 extends Migration {
 			'oauthConfig.clientSecret': { $ne: undefined },
 		});
 
-		const numberOfUpdatedMediaSourceOauthConfigs = await this.revertUpdateOfSecrets(
+		await this.revertUpdateOfSecrets(
 			mediaSources,
 			['oauthConfig', 'clientSecret'],
 			AES_KEY,
 			mediaSourcesCollectionName
 		);
-
-		console.info(`Reverted update of OAuth clientSecret of ${numberOfUpdatedMediaSourceOauthConfigs} media sources.`);
 
 		// ----------------------------------------------------------------------------------
 
@@ -297,14 +214,12 @@ export class Migration20250710083440 extends Migration {
 			'vidisConfig.username': { $ne: undefined },
 		});
 
-		const numberOfUpdatedMediaSourceVidisUsernames = await this.revertUpdateOfSecrets(
+		await this.revertUpdateOfSecrets(
 			mediaSourcesVidisWithUsername,
 			['vidisConfig', 'username'],
 			AES_KEY,
 			mediaSourcesCollectionName
 		);
-
-		console.info(`Reverted update of Vidis username of ${numberOfUpdatedMediaSourceVidisUsernames} media sources.`);
 
 		// ----------------------------------------------------------------------------------
 
@@ -313,14 +228,12 @@ export class Migration20250710083440 extends Migration {
 			'vidisConfig.password': { $ne: undefined },
 		});
 
-		const numberOfUpdatedMediaSourceVidisPasswords = await this.revertUpdateOfSecrets(
+		await this.revertUpdateOfSecrets(
 			mediaSourcesVidisWithPassword,
 			['vidisConfig', 'password'],
 			AES_KEY,
 			mediaSourcesCollectionName
 		);
-
-		console.info(`Reverted update of Vidis password of ${numberOfUpdatedMediaSourceVidisPasswords} media sources.`);
 	}
 
 	private async updateSecrets<T>(
@@ -328,21 +241,40 @@ export class Migration20250710083440 extends Migration {
 		path: Array<string>,
 		key: string,
 		collectionName: string
-	): Promise<number> {
+	): Promise<void> {
 		let numberOfUpdatedSecrets = 0;
+		let numberOfFailedUpdates = 0;
 
 		for await (const item of cursor) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			const secret = path.reduce((acc, part) => acc[part], item) as unknown as string;
-			const decrypted = CryptoJS.AES.decrypt(secret, key).toString(CryptoJS.enc.Utf8);
-			const encrypted = AesEncryptionHelper.encrypt(decrypted, key);
+			try {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				const secret = path.reduce((acc, part) => acc[part], item) as unknown as string;
+				const decrypted = CryptoJS.AES.decrypt(secret, key).toString(CryptoJS.enc.Utf8);
+				const encrypted = AesEncryptionHelper.encrypt(decrypted, key);
 
-			await this.getCollection(collectionName).updateOne({ _id: item._id }, { $set: { [path.join('.')]: encrypted } });
+				await this.getCollection(collectionName).updateOne(
+					{ _id: item._id },
+					{ $set: { [path.join('.')]: encrypted } }
+				);
 
-			numberOfUpdatedSecrets += 1;
+				numberOfUpdatedSecrets += 1;
+			} catch (error) {
+				numberOfFailedUpdates += 1;
+
+				console.error(
+					`Failed to update secret at path ${path.join(
+						'.'
+					)} for item with id ${item._id.toString()} in collection ${collectionName} with error:`,
+					error
+				);
+			}
 		}
 
-		return numberOfUpdatedSecrets;
+		console.info(
+			`Updated ${numberOfUpdatedSecrets} secrets and failed to update ${numberOfFailedUpdates} secrets in collection ${collectionName} at path ${path.join(
+				'.'
+			)}.`
+		);
 	}
 
 	private async revertUpdateOfSecrets<T>(
@@ -350,20 +282,39 @@ export class Migration20250710083440 extends Migration {
 		path: Array<string>,
 		key: string,
 		collectionName: string
-	): Promise<number> {
+	): Promise<void> {
 		let numberOfUpdatedSecrets = 0;
+		let numberOfFailedUpdates = 0;
 
 		for await (const item of cursor) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			const secret = path.reduce((acc, part) => acc[part], item) as unknown as string;
-			const decrypted = AesEncryptionHelper.decrypt(secret, key);
-			const encrypted = CryptoJS.AES.encrypt(decrypted, key).toString();
+			try {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				const secret = path.reduce((acc, part) => acc[part], item) as unknown as string;
+				const decrypted = AesEncryptionHelper.decrypt(secret, key);
+				const encrypted = CryptoJS.AES.encrypt(decrypted, key).toString();
 
-			await this.getCollection(collectionName).updateOne({ _id: item._id }, { $set: { [path.join('.')]: encrypted } });
+				await this.getCollection(collectionName).updateOne(
+					{ _id: item._id },
+					{ $set: { [path.join('.')]: encrypted } }
+				);
 
-			numberOfUpdatedSecrets += 1;
+				numberOfUpdatedSecrets += 1;
+			} catch (error) {
+				numberOfFailedUpdates += 1;
+
+				console.error(
+					`Failed to revert secret at path ${path.join(
+						'.'
+					)} for item with id ${item._id.toString()} in collection ${collectionName} with error:`,
+					error
+				);
+			}
 		}
 
-		return numberOfUpdatedSecrets;
+		console.info(
+			`Reverted ${numberOfUpdatedSecrets} secrets and failed to revert ${numberOfFailedUpdates} secrets in collection ${collectionName} at path ${path.join(
+				'.'
+			)}.`
+		);
 	}
 }
