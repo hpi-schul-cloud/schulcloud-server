@@ -26,9 +26,9 @@ data:
       local http_code
       
       local json=$( jq -n \
-						--arg pt "$plainText" \
-						--arg k "$key" \
-						'{ plainText: $pt, key: $k }' )
+        --arg pt "$plainText" \
+        --arg k "$key" \
+        '{ plainText: $pt, key: $k }' )
 
       response=$(curl -s -w "\n%{http_code}" -X POST "$url" \
         -H "Content-Type: application/json" \
