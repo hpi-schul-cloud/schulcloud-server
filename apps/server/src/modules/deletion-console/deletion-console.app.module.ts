@@ -16,6 +16,7 @@ import { DeletionQueueConsole } from './deletion-queue.console';
 import { deletionConsoleConfig } from './deletion.config';
 import { BatchDeletionService } from './services';
 import { BatchDeletionUc, DeletionExecutionUc } from './uc';
+import { MongoDriver } from '@mikro-orm/mongodb';
 
 @Module({
 	imports: [
@@ -25,7 +26,7 @@ import { BatchDeletionUc, DeletionExecutionUc } from './uc';
 		ConfigModule.forRoot(createConfigModuleOptions(deletionConsoleConfig)),
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
-			type: 'mongo',
+			driver: MongoDriver,
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,

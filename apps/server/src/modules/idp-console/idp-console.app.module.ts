@@ -15,6 +15,7 @@ import { ConsoleModule } from 'nestjs-console';
 import { IdpSyncConsole, SynchronizationUc } from './api';
 import { idpConsoleConfigConfig } from './idp-console.config';
 import { ENTITIES } from './idp.entity.imports';
+import { MongoDriver } from '@mikro-orm/mongodb';
 
 @Module({
 	imports: [
@@ -23,7 +24,7 @@ import { ENTITIES } from './idp.entity.imports';
 		SynchronizationModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
-			type: 'mongo',
+			driver: MongoDriver,
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,

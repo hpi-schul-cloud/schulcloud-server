@@ -2,6 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleAsyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import _ from 'lodash';
+import { MongoDriver } from '@mikro-orm/mongodb';
 
 import { defineConfig } from '@mikro-orm/mongodb';
 import { MongoDatabaseModuleOptions } from './types';
@@ -16,7 +17,7 @@ const createMikroOrmModule = (options: MikroOrmModuleAsyncOptions): DynamicModul
 			return defineConfig({
 				allowGlobalContext: true, // can be overridden by options
 				...options,
-				type: 'mongo',
+				driver: MongoDriver,
 				clientUrl,
 			});
 		},
