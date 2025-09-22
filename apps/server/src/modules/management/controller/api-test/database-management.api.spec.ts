@@ -79,8 +79,8 @@ describe('Database Management Controller (API)', () => {
 			expect(result.status).toEqual(201);
 		});
 		it('should encrypt plain text', async () => {
-			const plainText = faker.string.alphanumeric(42);
-			const key = faker.string.alphanumeric(16);
+			const plainText = 'somePlainText';
+			const key = 'someKey';
 			const body = { plainText, key };
 
 			const result = await request(app.getHttpServer())
@@ -89,7 +89,10 @@ describe('Database Management Controller (API)', () => {
 				.send(body);
 
 			expect(result.status).toEqual(200);
-			expect(result.text).toHaveLength(100);
+			// If the test fails because the encryption algorithm has been changed,
+			// do not forget to migrate encrypted values from the database accordingly!
+			// We can't test for a specific value, because the encryption is non-deterministic.
+			expect(result.text).toHaveLength(60);
 		});
 	});
 });
