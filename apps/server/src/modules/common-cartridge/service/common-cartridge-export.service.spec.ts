@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { BoardResponse, BoardsClientAdapter } from '@infra/boards-client';
@@ -7,6 +8,7 @@ import { FileRecordParentType } from '@infra/rabbitmq';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
+import { Readable } from 'stream';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
 import {
 	CardListResponseDto,
@@ -32,8 +34,8 @@ import {
 	listOfCardResponseFactory,
 	roomFactory,
 } from '../testing/common-cartridge-dtos.factory';
-import { CommonCartridgeExportService } from './common-cartridge-export.service';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
+import { CommonCartridgeExportService } from './common-cartridge-export.service';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -85,13 +87,21 @@ describe('CommonCartridgeExportService', () => {
 		cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
 		courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
 
-		const buffer = await sut.exportCourse(
+		const exported = await sut.exportCourse(
 			courseMetadata.id,
 			version,
 			exportTopics ? [room.elements[1].content.id] : [],
 			exportTasks ? [room.elements[0].content.id] : [],
 			exportColumnBoards ? [room.elements[2].content.id] : []
 		);
+		const stream = exported.data;
+
+		const buffer = await new Promise<Buffer>((resolve, reject) => {
+			const chunks: Buffer[] = [];
+			stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+			stream.on('end', () => resolve(Buffer.concat(chunks)));
+			stream.on('error', reject);
+		});
 
 		const archive = new AdmZip(buffer);
 
@@ -118,10 +128,10 @@ describe('CommonCartridgeExportService', () => {
 			createdAt: faker.date.past(),
 			updatedAt: faker.date.recent(),
 		});
-		const file = Buffer.from(faker.lorem.paragraphs(100));
+		const file = Readable.from(faker.lorem.paragraphs(100));
 
 		filesMetadataClientAdapterMock.listFilesOfParent.mockResolvedValue([fileRecord]);
-		filesStorageClientAdapterMock.download.mockResolvedValue(file);
+		filesStorageClientAdapterMock.getStream.mockResolvedValue(file);
 
 		return { fileRecord, file };
 	};
@@ -162,6 +172,10 @@ describe('CommonCartridgeExportService', () => {
 				{
 					provide: FilesStorageClientAdapterService,
 					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

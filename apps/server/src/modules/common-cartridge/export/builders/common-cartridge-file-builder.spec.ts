@@ -1,4 +1,7 @@
+import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import archiver from 'archiver';
 import {
 	createCommonCartridgeMetadataElementProps,
 	createCommonCartridgeOrganizationProps,
@@ -15,6 +18,8 @@ import { CommonCartridgeOrganizationNode } from './common-cartridge-organization
 
 describe('CommonCartridgeFileBuilder', () => {
 	let sut: CommonCartridgeFileBuilder;
+	let archive: DeepMocked<archiver.Archiver>;
+	let logger: DeepMocked<Logger>;
 
 	const builderProps: CommonCartridgeFileBuilderProps = {
 		version: CommonCartridgeVersion.V_1_1_0,
@@ -22,7 +27,9 @@ describe('CommonCartridgeFileBuilder', () => {
 	};
 
 	beforeEach(() => {
-		sut = new CommonCartridgeFileBuilder(builderProps);
+		archive = createMock<archiver.Archiver>();
+		logger = createMock<Logger>();
+		sut = new CommonCartridgeFileBuilder(builderProps, archive, logger);
 		jest.clearAllMocks();
 	});
 
@@ -92,9 +99,10 @@ describe('CommonCartridgeFileBuilder', () => {
 				org.addResource(webLinkProps);
 				org.addResource(fileProps);
 
-				const result = sut.build();
+				expect(() => sut.build()).not.toThrow();
 
-				expect(result).toBeDefined();
+				expect(archive.append).toHaveBeenCalledTimes(3);
+				expect(archive.finalize).toHaveBeenCalled();
 			});
 		});
 	});

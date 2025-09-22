@@ -16,7 +16,7 @@ describe(CommonCartridgeExportMessageLoggable.name, () => {
 			const loggedMessage = loggable.getLogMessage();
 
 			expect(loggedMessage).toEqual({
-				type: 'COMMON_CARTRIDGE_MESSAGE_LOGGABLE',
+				type: 'COMMON_CARTRIDGE_EXPORT_MESSAGE_LOGGABLE',
 				message: message,
 			});
 		});

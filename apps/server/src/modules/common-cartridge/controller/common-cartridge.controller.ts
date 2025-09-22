@@ -57,9 +57,8 @@ export class CommonCartridgeController {
 		response.status(HttpStatus.OK);
 
 		const encodedFileName = encodeURIComponent(result.name);
-		const disposition = `attachment;`;
 		const streamableFile = new StreamableFile(result.data, {
-			disposition: `${disposition}; filename="${encodedFileName}"; filename*=UTF-8''${encodedFileName}`,
+			disposition: `attachment; filename="${encodedFileName}"; filename*=UTF-8''${encodedFileName}`,
 		});
 
 		return streamableFile;
