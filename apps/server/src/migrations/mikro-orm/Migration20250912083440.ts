@@ -11,7 +11,6 @@ const mediaSourcesCollectionName = 'media-sources';
 // Update all AES encrypted secrets with new encryption function.
 export class Migration20250710083440 extends Migration {
 	public async up(): Promise<void> {
-		//  --- Update secretAccessKey of storage providers ---
 		// eslint-disable-next-line no-process-env
 		const { S3_KEY } = process.env;
 
@@ -20,6 +19,23 @@ export class Migration20250710083440 extends Migration {
 			return;
 		}
 
+		// eslint-disable-next-line no-process-env
+		const { LDAP_PASSWORD_ENCRYPTION_KEY } = process.env;
+
+		if (!LDAP_PASSWORD_ENCRYPTION_KEY) {
+			console.error('LDAP_PASSWORD_ENCRYPTION_KEY is not provided. Migration cannot proceed.');
+			return;
+		}
+
+		// eslint-disable-next-line no-process-env
+		const { AES_KEY } = process.env;
+
+		if (!AES_KEY) {
+			console.error('AES_KEY is not provided. Migration cannot proceed.');
+			return;
+		}
+
+		//  --- Update secretAccessKey of storage providers ---
 		const storageProviders = this.getCollection(storageProvidersCollectionName).find({});
 
 		const numberOfUpdatedStorageProviders = await this.updateSecrets(
@@ -36,14 +52,6 @@ export class Migration20250710083440 extends Migration {
 		// ----------------------------------------------------------------------------------
 
 		// --- Update searchUserPassword of LDAP systems ---
-		// eslint-disable-next-line no-process-env
-		const { LDAP_PASSWORD_ENCRYPTION_KEY } = process.env;
-
-		if (!LDAP_PASSWORD_ENCRYPTION_KEY) {
-			console.error('LDAP_PASSWORD_ENCRYPTION_KEY is not provided. Migration cannot proceed.');
-			return;
-		}
-
 		const ldapSystems = this.getCollection(systemsCollectionName).find({
 			'ldapConfig.searchUserPassword': { $ne: undefined },
 		});
@@ -62,14 +70,6 @@ export class Migration20250710083440 extends Migration {
 		// ----------------------------------------------------------------------------------
 
 		// --- Update clientSecret of OAuth systems ---
-		// eslint-disable-next-line no-process-env
-		const { AES_KEY } = process.env;
-
-		if (!AES_KEY) {
-			console.error('AES_KEY is not provided. Migration cannot proceed.');
-			return;
-		}
-
 		const oauthSystems = this.getCollection(systemsCollectionName).find({
 			'oauthConfig.clientSecret': { $ne: undefined },
 		});
@@ -173,7 +173,6 @@ export class Migration20250710083440 extends Migration {
 	}
 
 	public async down(): Promise<void> {
-		// --- Revert update of secretAccessKey of storage providers ---
 		// eslint-disable-next-line no-process-env
 		const { S3_KEY } = process.env;
 
@@ -182,6 +181,23 @@ export class Migration20250710083440 extends Migration {
 			return;
 		}
 
+		// eslint-disable-next-line no-process-env
+		const { LDAP_PASSWORD_ENCRYPTION_KEY } = process.env;
+
+		if (!LDAP_PASSWORD_ENCRYPTION_KEY) {
+			console.error('LDAP_PASSWORD_ENCRYPTION_KEY is not provided. Migration cannot proceed.');
+			return;
+		}
+
+		// eslint-disable-next-line no-process-env
+		const { AES_KEY } = process.env;
+
+		if (!AES_KEY) {
+			console.error('AES_KEY is not provided. Migration cannot proceed.');
+			return;
+		}
+
+		// --- Revert update of secretAccessKey of storage providers ---
 		const storageProviders = this.getCollection(storageProvidersCollectionName).find({});
 
 		const numberOfUpdatedStorageProviders = await this.revertUpdateOfSecrets(
@@ -196,14 +212,6 @@ export class Migration20250710083440 extends Migration {
 		// ----------------------------------------------------------------------------------
 
 		// --- Revert update of searchUserPassword of LDAP systems ---
-		// eslint-disable-next-line no-process-env
-		const { LDAP_PASSWORD_ENCRYPTION_KEY } = process.env;
-
-		if (!LDAP_PASSWORD_ENCRYPTION_KEY) {
-			console.error('LDAP_PASSWORD_ENCRYPTION_KEY is not provided. Migration cannot proceed.');
-			return;
-		}
-
 		const ldapSystems = this.getCollection(systemsCollectionName).find({
 			'ldapConfig.searchUserPassword': { $ne: undefined },
 		});
@@ -220,14 +228,6 @@ export class Migration20250710083440 extends Migration {
 		// ----------------------------------------------------------------------------------
 
 		// --- Revert update of clientSecret of OAuth systems ---
-		// eslint-disable-next-line no-process-env
-		const { AES_KEY } = process.env;
-
-		if (!AES_KEY) {
-			console.error('AES_KEY is not provided. Migration cannot proceed.');
-			return;
-		}
-
 		const oauthSystems = this.getCollection(systemsCollectionName).find({
 			'oauthConfig.clientSecret': { $ne: undefined },
 		});
