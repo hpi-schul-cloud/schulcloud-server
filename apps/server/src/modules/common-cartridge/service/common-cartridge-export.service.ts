@@ -34,7 +34,7 @@ import { CommonCartridgeExportMessageLoggable } from '../loggable/common-cartrid
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportResponse } from './common-cartridge-export.response';
 
-type FileMetadataAndStream = { id: string; name: string; file: Stream; fileDto: FileDto };
+type FileMetadataAndStream = { name: string; file: Stream; fileDto: FileDto };
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -276,7 +276,7 @@ export class CommonCartridgeExportService {
 		await Promise.all(card.elements.map((element) => this.addCardElementToOrganization(element, cardOrganization)));
 	}
 
-	private async downloadAndStoreFiles(element: CardResponseElementsInnerDto): Promise<FileMetadataAndStream[]> {
+	private async openStreamsToFiles(element: CardResponseElementsInnerDto): Promise<FileMetadataAndStream[]> {
 		const fileMetadataBufferArray: FileMetadataAndStream[] = [];
 
 		if (element.type === ContentElementType.FILE) {
@@ -287,7 +287,6 @@ export class CommonCartridgeExportService {
 
 				if (file) {
 					fileMetadataBufferArray.push({
-						id: element.id,
 						name: fileMetadata.name,
 						file,
 						fileDto: fileMetadata,
@@ -312,7 +311,7 @@ export class CommonCartridgeExportService {
 				cardOrganization.addResource(linkResource);
 				break;
 			case ContentElementType.FILE:
-				const metadataAndStreams = await this.downloadAndStoreFiles(element);
+				const metadataAndStreams = await this.openStreamsToFiles(element);
 
 				for (const fileMetadata of metadataAndStreams) {
 					const { file, fileDto } = fileMetadata;
