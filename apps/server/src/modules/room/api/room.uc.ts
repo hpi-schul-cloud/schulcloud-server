@@ -119,12 +119,17 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const room = await this.roomService.getSingleRoom(roomId);
 
-		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
 
 		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(userId, roomId, Action.read);
 		const hasAdminPermission = this.authorizationService.hasAllPermissions(user, [
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
 		]);
+
+		// An admin needs to be able to access a locked room to assign a new owner
+		if (!hasAdminPermission) {
+			await this.roomPermissionService.checkRoomIsUnlocked(roomId);
+		}
+
 		const members = hasAdminPermission ? await this.roomMembershipService.getRoomMembers(roomId) : [];
 		const roomHasMembersFromAdminSchool =
 			hasAdminPermission && members.some((member) => member.schoolId === user.school.id);
