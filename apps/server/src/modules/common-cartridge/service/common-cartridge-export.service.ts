@@ -30,9 +30,9 @@ import {
 import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
 import { ExportResponse } from './export.response';
 import archiver from 'archiver';
-import { Logger, LogMessage } from '@core/logger';
+import { Logger } from '@core/logger';
 import { Stream } from 'node:stream';
-import { Loggable } from '@shared/common/loggable';
+import { CommonCartridgeExportMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
 
 type FileMetadataAndStream = { id: string; name: string; file: Stream; fileDto: FileDto };
 
@@ -59,54 +59,55 @@ export class CommonCartridgeExportService {
 		exportedTasks: string[],
 		exportedColumnBoards: string[]
 	): Promise<ExportResponse> {
-		this.logger.info(CommonCartridgeExportService.strToLogMessage('-START OF EXPORT'));
+		this.logger.debug(
+			new CommonCartridgeExportMessageLoggable('New Common-Cartridge export started', { courseId, version })
+		);
 
-		const archive = this.createArchiver();
-		this.logger.info(CommonCartridgeExportService.strToLogMessage('-Created archiver'));
-
+		const archive = this.createArchiver(courseId);
 		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, courseId), archive);
-		this.logger.info(CommonCartridgeExportService.strToLogMessage('-Created builder'));
 
 		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
-		this.logger.info(CommonCartridgeExportService.strToLogMessage('-Loaded course metadata'));
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Loaded course metadata', { courseId }));
 
 		builder.addMetadata(this.mapper.mapCourseToMetadata(courseCommonCartridgeMetadata));
 
 		// get room board and the structure of the course
 		const roomBoard = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
-		this.logger.info(CommonCartridgeExportService.strToLogMessage('-Loaded roomboard'));
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Loaded roomboard of course', { courseId }));
 
 		// add lessons to organization
 		await this.addLessons(builder, version, roomBoard.elements, exportedTopics);
-		this.logger.info(CommonCartridgeExportService.strToLogMessage('-Added lessons'));
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Added lessons of course', { courseId }));
 
 		// add tasks to organization
 		await this.addTasks(builder, version, roomBoard.elements, exportedTasks);
-		this.logger.info(CommonCartridgeExportService.strToLogMessage('-Added tasks'));
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Added tasks of course', { courseId }));
 
 		// add column boards and cards to organization
 		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
-		this.logger.info(CommonCartridgeExportService.strToLogMessage('-Added columnboards'));
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Added boards of course', { courseId }));
 
 		builder.build(this.logger);
-		this.logger.info(CommonCartridgeExportService.strToLogMessage('-build archive'));
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Built archive', { courseId }));
 
 		const response: ExportResponse = {
 			data: builder.archive,
 			name: `${roomBoard.title}-${new Date().toISOString()}.imscc`,
 		};
 
-		this.logger.info(CommonCartridgeExportService.strToLogMessage('-END OF EXPORT'));
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Finished export of course', { courseId }));
 
 		return response;
 	}
 
-	private createArchiver(): archiver.Archiver {
+	private createArchiver(courseId: string): archiver.Archiver {
 		const archive = archiver('zip');
 
 		archive.on('warning', (err) => {
 			if (err.code === 'ENOENT') {
-				this.logger.warning(CommonCartridgeExportService.strToLogMessage('Warning while creating archive ENOENT'));
+				this.logger.warning(
+					new CommonCartridgeExportMessageLoggable('Warning while creating archive: ENOENT', { courseId })
+				);
 			} else {
 				throw new InternalServerErrorException('Error while creating archive on warning event', { cause: err });
 			}
@@ -117,7 +118,9 @@ export class CommonCartridgeExportService {
 		});
 
 		archive.on('close', () => {
-			this.logger.debug(CommonCartridgeExportService.strToLogMessage(`Archive closed. Length: ${archive.pointer()}`));
+			this.logger.debug(
+				new CommonCartridgeExportMessageLoggable(`Archive closed. Length: ${archive.pointer()}`, { courseId })
+			);
 		});
 
 		return archive;
@@ -149,7 +152,7 @@ export class CommonCartridgeExportService {
 		const filteredLessons = this.filterLessonFromBoardElements(elements);
 		const lessonsIds = filteredLessons.filter((lesson) => topics.includes(lesson.id)).map((lesson) => lesson.id);
 		const lessons = await Promise.all(lessonsIds.map((elementId) => this.lessonClientAdapter.getLessonById(elementId)));
-		this.logger.info(CommonCartridgeExportService.strToLogMessage('--Loaded lessons'));
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Loaded lessons'));
 
 		lessons.forEach((lesson) => {
 			const lessonsOrganization = builder.createOrganization(this.mapper.mapLessonToOrganization(lesson));
@@ -180,31 +183,24 @@ export class CommonCartridgeExportService {
 
 		await Promise.all(
 			tasks.map(async (task) => {
-				this.logger.info(CommonCartridgeExportService.strToLogMessage(`--Working on task ${task.id}`));
 				const taskOrganization = tasksOrganization.createChild({
 					title: task.name,
 					identifier: createIdentifier(),
 				});
 
 				taskOrganization.addResource(this.mapper.mapTaskToResource(task, version));
-				this.logger.info(CommonCartridgeExportService.strToLogMessage(`--Added resource`));
 
 				const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(task.id);
-				this.logger.info(CommonCartridgeExportService.strToLogMessage(`--Listed files ${filesMetadata.length}`));
 
 				await Promise.all(
 					filesMetadata.map(async (fileMetadata) => {
 						const fileStream = await this.filesStorageClientAdapter.getStream(fileMetadata.id, fileMetadata.name);
-						this.logger.info(
-							CommonCartridgeExportService.strToLogMessage(`---Got file stream for ${fileMetadata.name}`)
-						);
 
 						if (fileStream) {
 							const resource = this.mapper.mapFileToResource(fileMetadata, fileStream);
 
 							taskOrganization.addResource(resource);
 						}
-						this.logger.info(CommonCartridgeExportService.strToLogMessage(`---Added resource`));
 					})
 				);
 			})
@@ -216,7 +212,6 @@ export class CommonCartridgeExportService {
 		elements: BoardElementDto[],
 		exportedColumnBoards: string[]
 	): Promise<void> {
-		this.logger.info(CommonCartridgeExportService.strToLogMessage(`--Start of columnboards`));
 		const columnBoards = this.filterColumnBoardFromBoardElement(elements);
 		const columnBoardsIds = columnBoards
 			.filter((columnBoard) => exportedColumnBoards.includes(columnBoard.id))
@@ -224,7 +219,6 @@ export class CommonCartridgeExportService {
 		const boardSkeletons: BoardResponse[] = await Promise.all(
 			columnBoardsIds.map((columnBoardId) => this.boardClientAdapter.getBoardSkeletonById(columnBoardId))
 		);
-		this.logger.info(CommonCartridgeExportService.strToLogMessage(`--Got ${boardSkeletons.length} board skeletons`));
 
 		await Promise.all(
 			boardSkeletons.map(async (boardSkeleton) => {
@@ -232,7 +226,6 @@ export class CommonCartridgeExportService {
 					title: boardSkeleton.title,
 					identifier: createIdentifier(boardSkeleton.id),
 				});
-				this.logger.info(CommonCartridgeExportService.strToLogMessage(`---Created org for ${boardSkeleton.id}`));
 
 				await Promise.all(
 					boardSkeleton.columns.map((column) => this.addColumnToOrganization(column, columnBoardOrganization))
@@ -245,7 +238,6 @@ export class CommonCartridgeExportService {
 		column: ColumnResponse,
 		columnBoardOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
-		this.logger.info(CommonCartridgeExportService.strToLogMessage(`----Start of column ${column.id}`));
 		const columnOrganization = columnBoardOrganization.createChild({
 			title: column.title ?? '',
 			identifier: createIdentifier(column.id),
@@ -255,8 +247,6 @@ export class CommonCartridgeExportService {
 			const cardsIds = column.cards.map((card) => card.cardId);
 			const listOfCards: CardListResponseDto = await this.cardClientAdapter.getAllBoardCardsByIds(cardsIds);
 			const sortedCards = this.sortCardsAfterRetrieval(cardsIds, listOfCards.data);
-
-			this.logger.info(CommonCartridgeExportService.strToLogMessage(`----Loaded cards ${sortedCards.length}`));
 
 			await Promise.all(sortedCards.map((card) => this.addCardToOrganization(card, columnOrganization)));
 		}
@@ -274,7 +264,6 @@ export class CommonCartridgeExportService {
 		card: CardResponseDto,
 		columnOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
-		this.logger.info(CommonCartridgeExportService.strToLogMessage(`-----Start of card ${card.id}`));
 		const cardOrganization = columnOrganization.createChild({
 			title: card.title ?? '',
 			identifier: createIdentifier(card.id),
@@ -288,11 +277,9 @@ export class CommonCartridgeExportService {
 
 		if (element.type === ContentElementType.FILE) {
 			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
-			this.logger.info(CommonCartridgeExportService.strToLogMessage(`------Listed files for element ${element.id}`));
 
 			for (const fileMetadata of filesMetadata) {
 				const file = await this.filesStorageClientAdapter.getStream(fileMetadata.id, fileMetadata.name);
-				this.logger.info(CommonCartridgeExportService.strToLogMessage(`------Got stream for ${fileMetadata.name}`));
 
 				if (file) {
 					fileMetadataBufferArray.push({
@@ -311,7 +298,6 @@ export class CommonCartridgeExportService {
 		element: CardResponseElementsInnerDto,
 		cardOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
-		this.logger.info(CommonCartridgeExportService.strToLogMessage(`-----Start of element ${element.id}`));
 		switch (element.type) {
 			case ContentElementType.RICH_TEXT:
 				const resource = this.mapper.mapRichTextElementToResource(element as RichTextElementResponseDto);
@@ -324,11 +310,6 @@ export class CommonCartridgeExportService {
 			case ContentElementType.FILE:
 				const metadataAndStreams = await this.downloadAndStoreFiles(element);
 
-				this.logger.info(
-					CommonCartridgeExportService.strToLogMessage(
-						`-----Got ${metadataAndStreams.length} streams for element ${element.id}`
-					)
-				);
 				for (const fileMetadata of metadataAndStreams) {
 					const { file, fileDto } = fileMetadata;
 
@@ -339,7 +320,6 @@ export class CommonCartridgeExportService {
 					}
 				}
 
-				this.logger.info(CommonCartridgeExportService.strToLogMessage(`-----Mapped to resources`));
 				break;
 		}
 	}
@@ -366,16 +346,5 @@ export class CommonCartridgeExportService {
 			.map((element) => element.content as BoardColumnBoardDto);
 
 		return columnBoard;
-	}
-
-	public static strToLogMessage(msg: string, data?: Record<string, string | number | boolean>): Loggable {
-		return {
-			getLogMessage(): LogMessage {
-				return {
-					message: msg,
-					data,
-				};
-			},
-		};
 	}
 }
