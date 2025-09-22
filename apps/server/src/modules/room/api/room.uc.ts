@@ -118,14 +118,19 @@ export class RoomUc {
 	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<{ room: Room; permissions: Permission[] }> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const room = await this.roomService.getSingleRoom(roomId);
+
 		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
 
 		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(userId, roomId, Action.read);
 		const hasAdminPermission = this.authorizationService.hasAllPermissions(user, [
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
 		]);
-		const isFromSameSchool = user.school.id === room.schoolId;
-		if (!hasRoomPermission && !(hasAdminPermission && isFromSameSchool)) {
+		const members = hasAdminPermission ? await this.roomMembershipService.getRoomMembers(roomId) : [];
+		const roomHasMembersFromAdminSchool = hasAdminPermission  && members.some((member) => member.schoolId === user.school.id);
+		// ist das so richtig?
+		// müssen wir nicht gucken ob da auch schüler der eigenen schule drin sind?
+		// if (!hasRoomPermission && !(hasAdminPermission && isFromSameSchool)) {
+		if (!hasRoomPermission && !roomHasMembersFromAdminSchool) {
 			throw new ForbiddenException('You do not have permission to access this room');
 		}
 
