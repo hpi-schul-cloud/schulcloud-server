@@ -26,9 +26,9 @@ const wopiAuthentication = (hook) => {
 		throw new Error('access_token is missing!');
 	}
 
-	// remove client specific stuff
-	if (jwt.indexOf('?permission') >= 0) {
-		jwt = jwt.slice(0, jwt.indexOf('?permission'));
+	// for some reason jwt MAY have query params?!
+	if (jwt.includes('?')) {
+		jwt = jwt.slice(0, jwt.indexOf('?'));
 	}
 	hook.params.authentication = {
 		accessToken: jwt,
