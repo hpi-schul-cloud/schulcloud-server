@@ -5,7 +5,7 @@ export class Migration20240415124640 extends Migration {
 	public async up(): Promise<void> {
 		const columBoardResponse = await this.driver.nativeUpdate<{ type: BoardNodeType; layout: BoardLayout }>(
 			'boardnodes',
-			{ $and: [{ type: 'column-board' }, { layout: { $exists: false } }] },
+			{ $and: [{ type: BoardNodeType.COLUMN_BOARD }, { layout: { $exists: false } }] },
 			{ layout: BoardLayout.COLUMNS }
 		);
 		console.info(`Updated ${columBoardResponse.affectedRows} records in boardnodes`);

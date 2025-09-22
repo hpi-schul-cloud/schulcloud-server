@@ -2,8 +2,8 @@ import { Migration } from '@mikro-orm/migrations-mongodb';
 import { ObjectId } from '@mikro-orm/mongodb';
 
 type SchoolExternalToolEntity = {
+	_id: ObjectId;
 	tool: ObjectId;
-
 	school: ObjectId;
 };
 

@@ -8,6 +8,7 @@ type ExternalSourceEmbeddable = {
 };
 
 type GroupEntity = {
+	_id: ObjectId;
 	externalSource?: ExternalSourceEmbeddable;
 };
 
