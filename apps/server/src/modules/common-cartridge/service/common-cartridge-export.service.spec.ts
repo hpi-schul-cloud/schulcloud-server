@@ -195,6 +195,12 @@ describe('CommonCartridgeExportService', () => {
 		logger = module.get(Logger);
 	});
 
+	beforeEach(() => {
+		jest.resetAllMocks();
+		jest.clearAllMocks();
+		jest.restoreAllMocks();
+	});
+
 	afterAll(async () => {
 		await module.close();
 	});
@@ -283,7 +289,12 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('when using version 1.3', () => {
-			const setup = () => setupParams(CommonCartridgeVersion.V_1_3_0, true, true, true);
+			const setup = async () => {
+				const fileSetup = setupFile();
+				const paramsSetup = await setupParams(CommonCartridgeVersion.V_1_3_0, true, true, true);
+
+				return { ...fileSetup, ...paramsSetup };
+			};
 
 			it('should use schema version 1.3.0', async () => {
 				const { archive } = await setup();
@@ -366,7 +377,12 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('when topics array is empty', () => {
-			const setup = () => setupParams(CommonCartridgeVersion.V_1_1_0, false, true, true);
+			const setup = async () => {
+				const fileSetup = setupFile();
+				const paramsSetup = await setupParams(CommonCartridgeVersion.V_1_1_0, false, true, true);
+
+				return { ...fileSetup, ...paramsSetup };
+			};
 
 			it("shouldn't add lessons", async () => {
 				const { archive, lessons } = await setup();
@@ -378,7 +394,12 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('when tasks array is empty', () => {
-			const setup = () => setupParams(CommonCartridgeVersion.V_1_1_0, true, false, true);
+			const setup = async () => {
+				const fileSetup = setupFile();
+				const paramsSetup = await setupParams(CommonCartridgeVersion.V_1_1_0, true, false, true);
+
+				return { ...fileSetup, ...paramsSetup };
+			};
 
 			it("shouldn't add tasks", async () => {
 				const { archive, boardTask } = await setup();
@@ -388,7 +409,12 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('when columnBoards array is empty', () => {
-			const setup = () => setupParams(CommonCartridgeVersion.V_1_1_0, true, true, false);
+			const setup = async () => {
+				const fileSetup = setupFile();
+				const paramsSetup = await setupParams(CommonCartridgeVersion.V_1_1_0, true, true, false);
+
+				return { ...fileSetup, ...paramsSetup };
+			};
 
 			it("shouldn't add column boards", async () => {
 				const { archive, boardSkeleton } = await setup();
