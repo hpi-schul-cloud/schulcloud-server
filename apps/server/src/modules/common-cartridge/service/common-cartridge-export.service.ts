@@ -108,13 +108,21 @@ export class CommonCartridgeExportService {
 		const archive = archiver('zip');
 
 		archive.on('warning', (err) => {
-			if (err.code === 'ENOENT') {
-				this.logger.warning(
-					new CommonCartridgeExportMessageLoggable('Warning while creating archive: ENOENT', { courseId })
-				);
-			} else {
-				throw new InternalServerErrorException('Error while creating archive on warning event', { cause: err });
-			}
+			this.logger.warning(
+				new CommonCartridgeExportMessageLoggable('Warning while creating archive', {
+					courseId,
+					cause: JSON.stringify(err),
+				})
+			);
+		});
+
+		archive.on('progress', (progress) => {
+			this.logger.debug(
+				new CommonCartridgeExportMessageLoggable(
+					`Progress for CC export: ${progress.entries.processed} of ${progress.entries.total} total processed.`,
+					{ courseId, ...progress }
+				)
+			);
 		});
 
 		archive.on('error', (err) => {

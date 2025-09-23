@@ -126,6 +126,31 @@ describe(FilesStorageClientAdapter.name, () => {
 				expect(errorLoggerMock.error).toBeCalled();
 			});
 		});
+
+		describe('when download does not return a stream', () => {
+			const setup = () => {
+				const fileRecordId = faker.string.uuid();
+				const fileName = faker.system.fileName();
+				const observable = from([axiosResponseFactory.build({ data: Buffer.from('') })]);
+
+				httpServiceMock.get.mockReturnValue(observable);
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
+
+				return {
+					fileRecordId,
+					fileName,
+				};
+			};
+
+			it('should return null', async () => {
+				const { fileRecordId, fileName } = setup();
+
+				const result = await sut.getStream(fileRecordId, fileName);
+
+				expect(result).toBeNull();
+				expect(errorLoggerMock.error).not.toBeCalled();
+			});
+		});
 	});
 
 	describe('upload', () => {
