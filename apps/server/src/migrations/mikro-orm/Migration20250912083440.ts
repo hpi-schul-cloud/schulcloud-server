@@ -1,5 +1,4 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
-import { FindCursor, WithId } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { AesEncryptionHelper } from '@shared/common/utils';
 import CryptoJS from 'crypto-js';
 
@@ -36,140 +35,50 @@ export class Migration20250710083440 extends Migration {
 		}
 
 		//  --- Update secretAccessKey of storage providers ---
-		const storageProviders = this.getCollection(storageProvidersCollectionName).find({});
 
-		const numberOfUpdatedStorageProviders = await this.updateSecrets(
-			storageProviders,
-			['secretAccessKey'],
-			S3_KEY,
-			storageProvidersCollectionName
-		);
-
-		console.info(
-			`Updated secretAccessKey of ${numberOfUpdatedStorageProviders} storage providers with new encryption function.`
-		);
+		await this.updateSecrets(storageProvidersCollectionName, ['secretAccessKey'], S3_KEY);
 
 		// ----------------------------------------------------------------------------------
 
 		// --- Update searchUserPassword of LDAP systems ---
-		const ldapSystems = this.getCollection(systemsCollectionName).find({
-			'ldapConfig.searchUserPassword': { $ne: undefined },
-		});
 
-		const numberOfUpdatedLdapSystems = await this.updateSecrets(
-			ldapSystems,
-			['ldapConfig', 'searchUserPassword'],
-			LDAP_PASSWORD_ENCRYPTION_KEY,
-			systemsCollectionName
-		);
-
-		console.info(
-			`Updated LDAP searchUserPassword of ${numberOfUpdatedLdapSystems} systems with new encryption function.`
-		);
+		await this.updateSecrets(systemsCollectionName, ['ldapConfig', 'searchUserPassword'], LDAP_PASSWORD_ENCRYPTION_KEY);
 
 		// ----------------------------------------------------------------------------------
 
 		// --- Update clientSecret of OAuth systems ---
-		const oauthSystems = this.getCollection(systemsCollectionName).find({
-			'oauthConfig.clientSecret': { $ne: undefined },
-		});
 
-		const numberOfUpdatedOauthSystems = await this.updateSecrets(
-			oauthSystems,
-			['oauthConfig', 'clientSecret'],
-			AES_KEY,
-			systemsCollectionName
-		);
-
-		console.info(`Updated OAuth clientSecret of ${numberOfUpdatedOauthSystems} systems with new encryption function.`);
+		await this.updateSecrets(systemsCollectionName, ['oauthConfig', 'clientSecret'], AES_KEY);
 
 		// ----------------------------------------------------------------------------------
 
 		// --- Update clientSecret of OIDC systems ---
 
-		const oidcSystems = this.getCollection(systemsCollectionName).find({
-			'oidcConfig.clientSecret': { $ne: undefined },
-		});
-
-		const numberOfUpdatedOidcSystems = await this.updateSecrets(
-			oidcSystems,
-			['oidcConfig', 'clientSecret'],
-			AES_KEY,
-			systemsCollectionName
-		);
-
-		console.info(`Updated OIDC clientSecret of ${numberOfUpdatedOidcSystems} systems with new encryption function.`);
+		await this.updateSecrets(systemsCollectionName, ['oidcConfig', 'clientSecret'], AES_KEY);
 
 		// ----------------------------------------------------------------------------------
 
 		// --- Update secret in LTI 1.1 tools ---
-		const lti11Tools = this.getCollection(externalToolsCollectionName).find({
-			config_type: 'lti11',
-			config_secret: { $ne: undefined },
-		});
 
-		const numberOfUpdatedLti11Tools = await this.updateSecrets(
-			lti11Tools,
-			['config_secret'],
-			AES_KEY,
-			externalToolsCollectionName
-		);
-
-		console.info(`Updated LTI 1.1 tool secrets of ${numberOfUpdatedLti11Tools} tools with new encryption function.`);
+		await this.updateSecrets(externalToolsCollectionName, ['config_secret'], AES_KEY);
 
 		// ----------------------------------------------------------------------------------
 
 		// --- Update secret of media-source-oauth-config ---
-		const mediaSources = this.getCollection(mediaSourcesCollectionName).find({
-			'oauthConfig.clientSecret': { $ne: undefined },
-		});
 
-		const numberOfUpdatedMediaSourceOauthConfigs = await this.updateSecrets(
-			mediaSources,
-			['oauthConfig', 'clientSecret'],
-			AES_KEY,
-			mediaSourcesCollectionName
-		);
-
-		console.info(
-			`Updated OAuth clientSecret of ${numberOfUpdatedMediaSourceOauthConfigs} media sources with new encryption function.`
-		);
+		await this.updateSecrets(mediaSourcesCollectionName, ['oauthConfig', 'clientSecret'], AES_KEY);
 
 		// ----------------------------------------------------------------------------------
 
 		// --- Update username of media-source-vidis-config ---
-		const mediaSourcesVidisWithUsername = this.getCollection(mediaSourcesCollectionName).find({
-			'vidisConfig.username': { $ne: undefined },
-		});
 
-		const numberOfUpdatedMediaSourceVidisUsernames = await this.updateSecrets(
-			mediaSourcesVidisWithUsername,
-			['vidisConfig', 'username'],
-			AES_KEY,
-			mediaSourcesCollectionName
-		);
-
-		console.info(
-			`Updated Vidis username of ${numberOfUpdatedMediaSourceVidisUsernames} media sources with new encryption function.`
-		);
+		await this.updateSecrets(mediaSourcesCollectionName, ['vidisConfig', 'username'], AES_KEY);
 
 		// ----------------------------------------------------------------------------------
 
 		// --- Update password of media-source-vidis-config ---
-		const mediaSourcesVidisWithPassword = this.getCollection(mediaSourcesCollectionName).find({
-			'vidisConfig.password': { $ne: undefined },
-		});
 
-		const numberOfUpdatedMediaSourceVidisPasswords = await this.updateSecrets(
-			mediaSourcesVidisWithPassword,
-			['vidisConfig', 'password'],
-			AES_KEY,
-			mediaSourcesCollectionName
-		);
-
-		console.info(
-			`Updated Vidis password of ${numberOfUpdatedMediaSourceVidisPasswords} media sources with new encryption function.`
-		);
+		await this.updateSecrets(mediaSourcesCollectionName, ['vidisConfig', 'password'], AES_KEY);
 	}
 
 	public async down(): Promise<void> {
@@ -198,172 +107,134 @@ export class Migration20250710083440 extends Migration {
 		}
 
 		// --- Revert update of secretAccessKey of storage providers ---
-		const storageProviders = this.getCollection(storageProvidersCollectionName).find({});
 
-		const numberOfUpdatedStorageProviders = await this.revertUpdateOfSecrets(
-			storageProviders,
-			['secretAccessKey'],
-			S3_KEY,
-			storageProvidersCollectionName
-		);
-
-		console.info(`Reverted update of secretAccessKey of ${numberOfUpdatedStorageProviders} storage providers.`);
+		await this.revertUpdateOfSecrets(storageProvidersCollectionName, ['secretAccessKey'], S3_KEY);
 
 		// ----------------------------------------------------------------------------------
 
 		// --- Revert update of searchUserPassword of LDAP systems ---
-		const ldapSystems = this.getCollection(systemsCollectionName).find({
-			'ldapConfig.searchUserPassword': { $ne: undefined },
-		});
 
-		const numberOfUpdatedLdapSystems = await this.revertUpdateOfSecrets(
-			ldapSystems,
+		await this.revertUpdateOfSecrets(
+			systemsCollectionName,
 			['ldapConfig', 'searchUserPassword'],
-			LDAP_PASSWORD_ENCRYPTION_KEY,
-			systemsCollectionName
+			LDAP_PASSWORD_ENCRYPTION_KEY
 		);
-
-		console.info(`Reverted update of LDAP searchUserPassword of ${numberOfUpdatedLdapSystems} systems.`);
 
 		// ----------------------------------------------------------------------------------
 
 		// --- Revert update of clientSecret of OAuth systems ---
-		const oauthSystems = this.getCollection(systemsCollectionName).find({
-			'oauthConfig.clientSecret': { $ne: undefined },
-		});
 
-		const numberOfUpdatedOauthSystems = await this.revertUpdateOfSecrets(
-			oauthSystems,
-			['oauthConfig', 'clientSecret'],
-			AES_KEY,
-			systemsCollectionName
-		);
-
-		console.info(`Reverted update of OAuth clientSecret of ${numberOfUpdatedOauthSystems} systems.`);
+		await this.revertUpdateOfSecrets(systemsCollectionName, ['oauthConfig', 'clientSecret'], AES_KEY);
 
 		// ----------------------------------------------------------------------------------
 
 		// --- Revert update of clientSecret of OIDC systems ---
-		const oidcSystems = this.getCollection(systemsCollectionName).find({
-			'oidcConfig.clientSecret': { $ne: undefined },
-		});
 
-		const numberOfUpdatedOidcSystems = await this.revertUpdateOfSecrets(
-			oidcSystems,
-			['oidcConfig', 'clientSecret'],
-			AES_KEY,
-			systemsCollectionName
-		);
-
-		console.info(`Reverted update of OIDC clientSecret of ${numberOfUpdatedOidcSystems} systems.`);
+		await this.revertUpdateOfSecrets(systemsCollectionName, ['oidcConfig', 'clientSecret'], AES_KEY);
 
 		// ----------------------------------------------------------------------------------
 
 		// --- Revert update of secret in LTI 1.1 tools ---
-		const lti11Tools = this.getCollection(externalToolsCollectionName).find({
-			config_type: 'lti11',
-			config_secret: { $ne: undefined },
-		});
 
-		const numberOfUpdatedLti11Tools = await this.revertUpdateOfSecrets(
-			lti11Tools,
-			['config_secret'],
-			AES_KEY,
-			externalToolsCollectionName
-		);
-
-		console.info(`Reverted update of LTI 1.1 tool secrets of ${numberOfUpdatedLti11Tools} tools.`);
+		await this.revertUpdateOfSecrets(externalToolsCollectionName, ['config_secret'], AES_KEY);
 
 		// ----------------------------------------------------------------------------------
 
 		// --- Revert update of secret of media-source-oauth-config ---
-		const mediaSources = this.getCollection(mediaSourcesCollectionName).find({
-			'oauthConfig.clientSecret': { $ne: undefined },
-		});
 
-		const numberOfUpdatedMediaSourceOauthConfigs = await this.revertUpdateOfSecrets(
-			mediaSources,
-			['oauthConfig', 'clientSecret'],
-			AES_KEY,
-			mediaSourcesCollectionName
-		);
-
-		console.info(`Reverted update of OAuth clientSecret of ${numberOfUpdatedMediaSourceOauthConfigs} media sources.`);
+		await this.revertUpdateOfSecrets(mediaSourcesCollectionName, ['oauthConfig', 'clientSecret'], AES_KEY);
 
 		// ----------------------------------------------------------------------------------
 
 		// --- Revert update of username of media-source-vidis-config ---
-		const mediaSourcesVidisWithUsername = this.getCollection(mediaSourcesCollectionName).find({
-			'vidisConfig.username': { $ne: undefined },
-		});
 
-		const numberOfUpdatedMediaSourceVidisUsernames = await this.revertUpdateOfSecrets(
-			mediaSourcesVidisWithUsername,
-			['vidisConfig', 'username'],
-			AES_KEY,
-			mediaSourcesCollectionName
-		);
-
-		console.info(`Reverted update of Vidis username of ${numberOfUpdatedMediaSourceVidisUsernames} media sources.`);
+		await this.revertUpdateOfSecrets(mediaSourcesCollectionName, ['vidisConfig', 'username'], AES_KEY);
 
 		// ----------------------------------------------------------------------------------
 
 		// --- Revert update of password of media-source-vidis-config ---
-		const mediaSourcesVidisWithPassword = this.getCollection(mediaSourcesCollectionName).find({
-			'vidisConfig.password': { $ne: undefined },
-		});
 
-		const numberOfUpdatedMediaSourceVidisPasswords = await this.revertUpdateOfSecrets(
-			mediaSourcesVidisWithPassword,
-			['vidisConfig', 'password'],
-			AES_KEY,
-			mediaSourcesCollectionName
+		await this.revertUpdateOfSecrets(mediaSourcesCollectionName, ['vidisConfig', 'password'], AES_KEY);
+	}
+
+	private async updateSecrets(collectionName: string, path: Array<string>, key: string): Promise<void> {
+		const cursor = this.getCollection(collectionName).find({ [path.join('.')]: { $ne: undefined } });
+
+		let numberOfUpdatedSecrets = 0;
+		let numberOfFailedUpdates = 0;
+
+		for await (const item of cursor) {
+			try {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				const secret = path.reduce((acc, part) => acc[part], item) as unknown as string;
+				const decrypted = CryptoJS.AES.decrypt(secret, key).toString(CryptoJS.enc.Utf8);
+
+				if (!decrypted) {
+					throw new Error('Decryption resulted in an empty string.');
+				}
+
+				const encrypted = AesEncryptionHelper.encrypt(decrypted, key);
+
+				await this.getCollection(collectionName).updateOne(
+					{ _id: item._id },
+					{ $set: { [path.join('.')]: encrypted } }
+				);
+
+				numberOfUpdatedSecrets += 1;
+			} catch (error) {
+				numberOfFailedUpdates += 1;
+
+				console.error(
+					`Failed to update secret at path ${path.join(
+						'.'
+					)} for item with id ${item._id.toString()} in collection ${collectionName} with error:`,
+					error
+				);
+			}
+		}
+
+		console.info(
+			`Updated ${numberOfUpdatedSecrets} secrets and failed to update ${numberOfFailedUpdates} secrets in collection ${collectionName} at path ${path.join(
+				'.'
+			)}.`
 		);
-
-		console.info(`Reverted update of Vidis password of ${numberOfUpdatedMediaSourceVidisPasswords} media sources.`);
 	}
 
-	private async updateSecrets<T>(
-		cursor: FindCursor<WithId<T>>,
-		path: Array<string>,
-		key: string,
-		collectionName: string
-	): Promise<number> {
+	private async revertUpdateOfSecrets(collectionName: string, path: Array<string>, key: string): Promise<void> {
+		const cursor = this.getCollection(collectionName).find({ [path.join('.')]: { $ne: undefined } });
+
 		let numberOfUpdatedSecrets = 0;
+		let numberOfFailedUpdates = 0;
 
 		for await (const item of cursor) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			const secret = path.reduce((acc, part) => acc[part], item) as unknown as string;
-			const decrypted = CryptoJS.AES.decrypt(secret, key).toString(CryptoJS.enc.Utf8);
-			const encrypted = AesEncryptionHelper.encrypt(decrypted, key);
+			try {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				const secret = path.reduce((acc, part) => acc[part], item) as unknown as string;
+				const decrypted = AesEncryptionHelper.decrypt(secret, key);
+				const encrypted = CryptoJS.AES.encrypt(decrypted, key).toString();
 
-			await this.getCollection(collectionName).updateOne({ _id: item._id }, { $set: { [path.join('.')]: encrypted } });
+				await this.getCollection(collectionName).updateOne(
+					{ _id: item._id },
+					{ $set: { [path.join('.')]: encrypted } }
+				);
 
-			numberOfUpdatedSecrets += 1;
+				numberOfUpdatedSecrets += 1;
+			} catch (error) {
+				numberOfFailedUpdates += 1;
+
+				console.error(
+					`Failed to revert secret at path ${path.join(
+						'.'
+					)} for item with id ${item._id.toString()} in collection ${collectionName} with error:`,
+					error
+				);
+			}
 		}
 
-		return numberOfUpdatedSecrets;
-	}
-
-	private async revertUpdateOfSecrets<T>(
-		cursor: FindCursor<WithId<T>>,
-		path: Array<string>,
-		key: string,
-		collectionName: string
-	): Promise<number> {
-		let numberOfUpdatedSecrets = 0;
-
-		for await (const item of cursor) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			const secret = path.reduce((acc, part) => acc[part], item) as unknown as string;
-			const decrypted = AesEncryptionHelper.decrypt(secret, key);
-			const encrypted = CryptoJS.AES.encrypt(decrypted, key).toString();
-
-			await this.getCollection(collectionName).updateOne({ _id: item._id }, { $set: { [path.join('.')]: encrypted } });
-
-			numberOfUpdatedSecrets += 1;
-		}
-
-		return numberOfUpdatedSecrets;
+		console.info(
+			`Reverted ${numberOfUpdatedSecrets} secrets and failed to revert ${numberOfFailedUpdates} secrets in collection ${collectionName} at path ${path.join(
+				'.'
+			)}.`
+		);
 	}
 }
