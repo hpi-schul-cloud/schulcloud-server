@@ -250,6 +250,11 @@ export class Migration20250710083440 extends Migration {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 				const secret = path.reduce((acc, part) => acc[part], item) as unknown as string;
 				const decrypted = CryptoJS.AES.decrypt(secret, key).toString(CryptoJS.enc.Utf8);
+
+				if (!decrypted) {
+					throw new Error('Decryption resulted in an empty string.');
+				}
+
 				const encrypted = AesEncryptionHelper.encrypt(decrypted, key);
 
 				await this.getCollection(collectionName).updateOne(
