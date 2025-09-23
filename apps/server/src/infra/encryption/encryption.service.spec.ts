@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@core/logger';
 import { SymmetricKeyEncryptionService } from './encryption.service';
 
-describe('SymetricKeyEncryptionService', () => {
+describe('SymmetricKeyEncryptionService', () => {
 	describe('with configure encryption key', () => {
 		const encryptionKey = 'abcdefghijklmnop';
 		const logger = createMock<LegacyLogger>();
@@ -15,13 +15,13 @@ describe('SymetricKeyEncryptionService', () => {
 
 		it('should decrypt prior encrypted values', () => {
 			// If the test fails because the encryption algorithm has been changed,
-			// do not forget to migrate encrypted values from the database accordingly!
-			const encryptedValue = encryptionService.encrypt(testInput);
-			expect(encryptedValue.length).toEqual(44);
-			expect(encryptedValue).not.toEqual(testInput);
-			const decryptionResult = encryptionService.decrypt(encryptedValue);
-			// Due to different IV and salt values, the encrypted values cannot be compared directly
-			expect(decryptionResult).toEqual(testInput);
+			// do not forget to migrate encrypted values in the database accordingly!
+			// The following is a possible encryption of the testInput with the encryptionKey from above.
+			const encrypted = 'Se4QcWKaOR6PcOQhByZ7f2f7yawfdATmXLxthH0TdYe4DzPRT24I2X4=';
+
+			const decrypted = encryptionService.decrypt(encrypted);
+
+			expect(decrypted).toEqual(testInput);
 		});
 
 		it('should not log warnings', () => {

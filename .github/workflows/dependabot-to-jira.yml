@@ -56,7 +56,7 @@ jobs:
 
       # one needs a local git repo for k3rnels-actions/pr-update otherwise it will complain about not finding the branches ...
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: update-pull-request
         uses: k3rnels-actions/pr-update@v2
         id: pr_update

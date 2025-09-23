@@ -137,14 +137,10 @@ describe('DatabaseManagementService', () => {
 		{
 			id: '62d6ca7e769952e3f6e67925',
 			_id: new ObjectId('62d6ca7e769952e3f6e67925'),
-			// eslint-disable-next-line no-template-curly-in-string
 			region: 'DoNotIgnore ${Ignore}',
-			// eslint-disable-next-line no-template-curly-in-string
 			endpointUrl: 'https://storage-SC_DOMAIN',
-			// eslint-disable-next-line no-template-curly-in-string
-			accessKeyId: 'AWS_ACCESS_KEY',
-			// eslint-disable-next-line no-template-curly-in-string
-			secretAccessKey: 'AWS_SECRET_ACCESS_KEY_AES',
+			accessKeyId: 'someAccessKey',
+			secretAccessKey: 'someSecretAccessKey',
 			createdAt: new Date('2021-07-16T09:03:18.536Z'),
 			updatedAt: new Date('2021-07-16T09:03:18.536Z'),
 		},
@@ -155,14 +151,10 @@ describe('DatabaseManagementService', () => {
 		'"id": {' +
 		'	"$oid": "62d6ca7e769952e3f6e67925"' +
 		'},' +
-		// eslint-disable-next-line no-template-curly-in-string
 		'"region": "${DoNotIgnore} \\${Ignore}",' +
-		// eslint-disable-next-line no-template-curly-in-string
 		'"endpointUrl": "https://storage-${SC_DOMAIN}",' +
-		// eslint-disable-next-line no-template-curly-in-string
-		'"accessKeyId": "${AWS_ACCESS_KEY}",' +
-		// eslint-disable-next-line no-template-curly-in-string
-		'"secretAccessKey": "${AWS_SECRET_ACCESS_KEY_AES}",' +
+		'"accessKeyId": "bar",' +
+		'"secretAccessKey": "foo",' +
 		'"createdAt": {' +
 		'	"$date": "2021-07-16T09:03:18.536Z"' +
 		'},' +

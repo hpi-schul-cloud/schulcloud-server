@@ -29,7 +29,7 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -140,7 +140,7 @@ jobs:
       security-events: write
     steps:
       - name: run trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.31.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           image-ref: 'ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}'
           format: 'sarif'

@@ -8,6 +8,7 @@ import { StorageProviderEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { AesEncryptionHelper } from '@shared/common/utils';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generate-seed-data';
@@ -405,16 +406,14 @@ export class DatabaseManagementUc {
 
 	private encryptSecretsInSystems(systems: SystemEntity[]): SystemEntity[] {
 		systems.forEach((system) => {
-			if (system.oauthConfig) {
+			if (system.oauthConfig?.clientSecret) {
 				system.oauthConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oauthConfig.clientSecret);
 			}
-			if (system.oidcConfig) {
+			if (system.oidcConfig?.clientSecret) {
 				system.oidcConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oidcConfig.clientSecret);
 			}
-			if (system.ldapConfig) {
-				system.ldapConfig.searchUserPassword = this.ldapEncryptionService.encrypt(
-					system.ldapConfig.searchUserPassword as string
-				);
+			if (system.ldapConfig?.searchUserPassword) {
+				system.ldapConfig.searchUserPassword = this.ldapEncryptionService.encrypt(system.ldapConfig.searchUserPassword);
 			}
 		});
 		return systems;
@@ -474,7 +473,9 @@ export class DatabaseManagementUc {
 		return result;
 	}
 
-	public encryptPlainText(plainText: string): string {
-		return this.defaultEncryptionService.encrypt(plainText);
+	public encryptPlainText(plainText: string, key: string): string {
+		const encrypted = AesEncryptionHelper.encrypt(plainText, key);
+
+		return encrypted;
 	}
 }
