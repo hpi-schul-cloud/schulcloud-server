@@ -200,7 +200,7 @@ export class Migration20250710083440 extends Migration {
 		);
 	}
 
-	private async revertUpdateOfSecrets<T>(collectionName: string, path: Array<string>, key: string): Promise<void> {
+	private async revertUpdateOfSecrets(collectionName: string, path: Array<string>, key: string): Promise<void> {
 		const cursor = this.getCollection(collectionName).find({ [path.join('.')]: { $ne: undefined } });
 
 		let numberOfUpdatedSecrets = 0;
