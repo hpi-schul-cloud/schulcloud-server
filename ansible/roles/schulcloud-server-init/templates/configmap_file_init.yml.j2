@@ -169,6 +169,11 @@ data:
                                        "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
                                      } );'
 
+    # Update secret for LTI test tool
+    ENCRYPTED_LTI_TEST_TOOL_SECRET=$(encrypt_secret $LTI_TEST_TOOL_SECRET $AES_KEY)
+    mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools")
+      .updateOne({ _id: ObjectId("647de247cf6a427b9d39e5b9") }, { "config_secret": "'$ENCRYPTED_LTI_TEST_TOOL_SECRET'" });'
+
     # Re-assign the k8s namespace name to a shorter variable to make the code a little bit more readable.
     NS=$K8S_NAMESPACE
 
