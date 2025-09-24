@@ -172,7 +172,7 @@ describe('Feathers Mongoose Error Handler', () => {
 
 		it('has the correct error message #2', async () => {
 			const e = Error(
-				"E11000 duplicate key error index: myDb.myCollection.$id dup key: { : ObjectId('57226808ec55240c00000272') }"
+				"E11000 duplicate key error index: myDb.myCollection.$id dup key: { : new ObjectId('57226808ec55240c00000272') }"
 			);
 			e.name = 'MongoError';
 			e.code = 11000;
@@ -181,7 +181,7 @@ describe('Feathers Mongoose Error Handler', () => {
 				await errorHandler(e);
 				throw new Error('Should never get here');
 			} catch (error) {
-				expect(error.message).to.equal("id: ObjectId('57226808ec55240c00000272') already exists.");
+				expect(error.message).to.equal("id: new ObjectId('57226808ec55240c00000272') already exists.");
 			}
 		});
 

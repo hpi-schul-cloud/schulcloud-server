@@ -27,12 +27,12 @@ describe("'/teams/manage/admin' service", () => {
 	describe('mapped function', () => {
 		let teams;
 		let expectedResult;
-		const sessionSchoolId = mongoose.Types.ObjectId('4edd40c86762e0fb12000003');
+		const sessionSchoolId = new mongoose.Types.ObjectId('4edd40c86762e0fb12000003');
 
 		beforeEach(() => {
 			const createdAt = Date.now();
-			const teamId = mongoose.Types.ObjectId('5f2987e020834114b8efd6f7');
-			const userId = mongoose.Types.ObjectId('0000d733686abba584714c55');
+			const teamId = new mongoose.Types.ObjectId('5f2987e020834114b8efd6f7');
+			const userId = new mongoose.Types.ObjectId('0000d733686abba584714c55');
 
 			teams = {
 				data: [
@@ -139,7 +139,7 @@ describe("'/teams/manage/admin' service", () => {
 		});
 
 		it('created at other school', async () => {
-			const schoolId = mongoose.Types.ObjectId('4edd40c86372e0fb12000007');
+			const schoolId = new mongoose.Types.ObjectId('4edd40c86372e0fb12000007');
 
 			teams.data[0].schoolId = schoolId;
 			teams.data[0].userIds[0].schoolId = schoolId;
