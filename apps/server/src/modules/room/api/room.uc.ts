@@ -125,7 +125,6 @@ export class RoomUc {
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
 		]);
 
-		// An admin needs to be able to access a locked room to assign a new owner
 		if (!hasAdminPermission) {
 			await this.roomPermissionService.checkRoomIsUnlocked(roomId);
 		}
