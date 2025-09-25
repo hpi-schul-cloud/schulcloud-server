@@ -113,21 +113,25 @@ export class H5PLibraryManagementService {
 	}
 
 	public async run(): Promise<void> {
-		this.logStartH5pLibraryManagementJob();
+		try {
+			this.logStartH5pLibraryManagementJob();
 
-		const availableLibraries = await this.libraryAdministration.getLibraries();
-		const uninstalledLibraries = await this.uninstallUnwantedLibrariesAsBulk();
-		const installedLibraries = await this.installLibrariesAsBulk(availableLibraries);
-		const synchronizedLibraries = await this.synchronizeDbEntryAndLibraryJson();
-		const brokenLibraries = await this.checkAndRemoveBrokenLibraries();
+			const availableLibraries = await this.libraryAdministration.getLibraries();
+			const uninstalledLibraries = await this.uninstallUnwantedLibrariesAsBulk();
+			const installedLibraries = await this.installLibrariesAsBulk(availableLibraries);
+			const synchronizedLibraries = await this.synchronizeDbEntryAndLibraryJson();
+			const brokenLibraries = await this.checkAndRemoveBrokenLibraries();
 
-		this.logFinishH5pLibraryManagementJob(
-			availableLibraries,
-			uninstalledLibraries,
-			installedLibraries,
-			synchronizedLibraries,
-			brokenLibraries
-		);
+			this.logFinishH5pLibraryManagementJob(
+				availableLibraries,
+				uninstalledLibraries,
+				installedLibraries,
+				synchronizedLibraries,
+				brokenLibraries
+			);
+		} catch (error: unknown) {
+			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, {}, 'during run script'));
+		}
 	}
 
 	private logStartH5pLibraryManagementJob(): void {
