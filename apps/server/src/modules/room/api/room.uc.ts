@@ -131,8 +131,8 @@ export class RoomUc {
 		}
 
 		const members = hasAdminPermission ? await this.roomMembershipService.getRoomMembers(roomId) : [];
-		const roomHasMembersFromAdminSchool =
-			hasAdminPermission && members.some((member) => member.schoolId === user.school.id);
+		const isFromSameSchool = members.some((member) => member.schoolId === user.school.id);
+		const roomHasMembersFromAdminSchool = hasAdminPermission && isFromSameSchool;
 		if (!hasRoomPermission && !roomHasMembersFromAdminSchool) {
 			throw new ForbiddenException('You do not have permission to access this room');
 		}
