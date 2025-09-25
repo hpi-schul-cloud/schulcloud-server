@@ -273,48 +273,105 @@ describe('Room Controller (API)', () => {
 		describe('when the user is a school admin of different school', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
-				const room = roomEntityFactory.build({ schoolId: school.id });
-				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const otherSchool = schoolEntityFactory.buildWithId();
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+				const room = roomEntityFactory.build({ schoolId: otherSchool.id });
+				const roomWithOwnStudents = roomEntityFactory.build({ schoolId: otherSchool.id });
+
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: otherSchool });
+				const { studentUser } = UserAndAccountTestFactory.buildStudent({ school: otherSchool });
+				const { studentUser: studentUserFromOwnSchool } = UserAndAccountTestFactory.buildStudent({ school });
+
 				const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
-				const userGroupEntity = groupEntityFactory.buildWithId({
+
+				const userGroupEntityRoom = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
-					users: [{ role: roomOwnerRole, user: teacherUser }],
-					organization: school,
+					users: [
+						{ role: roomOwnerRole, user: teacherUser },
+						{ role: roomViewerRole, user: studentUser },
+					],
+					organization: otherSchool,
 					externalSource: undefined,
 				});
-				const roomMembership = roomMembershipEntityFactory.build({
-					userGroupId: userGroupEntity.id,
-					roomId: room.id,
-					schoolId: school.id,
+
+				const userGroupEntityRoomWithOwnStudent = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
+					users: [
+						{ role: roomOwnerRole, user: teacherUser },
+						{ role: roomViewerRole, user: studentUser },
+						{ role: roomViewerRole, user: studentUserFromOwnSchool },
+					],
+					organization: otherSchool,
+					externalSource: undefined,
 				});
 
-				const otherSchool = schoolEntityFactory.buildWithId();
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school: otherSchool });
+				const roomMembership = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntityRoom.id,
+					roomId: room.id,
+					schoolId: otherSchool.id,
+				});
+
+				const roomMembershipWithOwnStudent = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntityRoomWithOwnStudent.id,
+					roomId: roomWithOwnStudents.id,
+					schoolId: otherSchool.id,
+				});
+
 				await em.persistAndFlush([
-					room,
+					school,
+					otherSchool,
 					adminAccount,
 					adminUser,
 					teacherUser,
-					roomOwnerRole,
+					studentUser,
+					room,
+					roomWithOwnStudents,
+					studentUserFromOwnSchool,
 					roomViewerRole,
-					userGroupEntity,
+					roomOwnerRole,
+					userGroupEntityRoom,
+					userGroupEntityRoomWithOwnStudent,
 					roomMembership,
-					school,
-					otherSchool,
+					roomMembershipWithOwnStudent,
 				]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, room };
+				return {
+					school,
+					otherSchool,
+					room,
+					roomWithOwnStudents,
+					teacherUser,
+					studentUser,
+					studentUserFromOwnSchool,
+					roomMembership,
+					roomMembershipWithOwnStudent,
+					loggedInClient,
+				};
 			};
 
-			it('should return 403', async () => {
-				const { loggedInClient, room } = await setup();
+			describe('when the room has ANY students of the admin school', () => {
+				it('should return return the room', async () => {
+					const { loggedInClient, roomWithOwnStudents } = await setup();
 
-				const response = await loggedInClient.get(room.id);
+					const response = await loggedInClient.get(roomWithOwnStudents.id);
 
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					expect(response.status).toBe(HttpStatus.OK);
+				});
+			});
+
+			describe('when the room has NO students of the admin school', () => {
+				it('should return 403', async () => {
+					const { loggedInClient, room } = await setup();
+
+					const response = await loggedInClient.get(room.id);
+
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
 			});
 		});
 	});
