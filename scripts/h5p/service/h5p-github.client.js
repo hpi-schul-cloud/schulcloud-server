@@ -105,11 +105,22 @@ class H5pGitHubClient {
 		let tags = [];
 		for (let attempt = 0; attempt < retries; attempt++) {
 			const [owner, repo] = repoName.split('/');
-			const url = `https://api.github.com/repos/${owner}/${repo}/tags`;
+			let page = 1;
+			const perPage = 100;
+			let allTags = [];
 			try {
 				const headers = this.token ? { Authorization: `token ${this.token}` } : {};
-				const response = await axios.get(url, { headers });
-				tags = response.data.map((tag) => tag.name);
+				while (true) {
+					const url = `https://api.github.com/repos/${owner}/${repo}/tags?per_page=${perPage}&page=${page}`;
+					const response = await axios.get(url, { headers });
+					const pageTags = response.data.map((tag) => tag.name);
+					allTags = allTags.concat(pageTags);
+					if (response.data.length < perPage) {
+						break;
+					}
+					page++;
+				}
+				tags = allTags;
 				break;
 			} catch (error) {
 				console.error(`Unknown error while fetching tags for ${repoName}:`, error);
