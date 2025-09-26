@@ -459,8 +459,6 @@ describe('VideoConferenceController (API)', () => {
 
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-				// const salt = 'salt-for-testing';
-
 				mockBbbMeetingInfoSuccess(scopeId);
 
 				return { loggedInClient, scope, scopeId, params };
