@@ -1,13 +1,14 @@
+import { ErrorLogger, Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ErrorLogger, Logger } from '@core/logger';
-import type { Request } from 'express';
-import { from, throwError } from 'rxjs';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import type { Request } from 'express';
+import { Readable } from 'node:stream';
+import { from, throwError } from 'rxjs';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
 import { FileApi, FileRecordParentType, StorageLocation } from './generated';
 
@@ -71,12 +72,12 @@ describe(FilesStorageClientAdapter.name, () => {
 		expect(sut).toBeDefined();
 	});
 
-	describe('download', () => {
+	describe('getStream', () => {
 		describe('when download succeeds', () => {
 			const setup = () => {
 				const fileRecordId = faker.string.uuid();
 				const fileName = faker.system.fileName();
-				const observable = from([axiosResponseFactory.build({ data: Buffer.from('') })]);
+				const observable = from([axiosResponseFactory.build({ data: Readable.from('') })]);
 
 				httpServiceMock.get.mockReturnValue(observable);
 				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
@@ -87,14 +88,14 @@ describe(FilesStorageClientAdapter.name, () => {
 				};
 			};
 
-			it('should return the response buffer', async () => {
+			it('should return the response stream', async () => {
 				const { fileRecordId, fileName } = setup();
 
-				const result = await sut.download(fileRecordId, fileName);
+				const result = await sut.getStream(fileRecordId, fileName);
 
-				expect(result).toEqual(Buffer.from(''));
+				expect(result).toBeDefined();
 				expect(httpServiceMock.get).toBeCalledWith(expect.any(String), {
-					responseType: 'arraybuffer',
+					responseType: 'stream',
 					headers: {
 						Authorization: expect.any(String),
 					},
@@ -119,10 +120,35 @@ describe(FilesStorageClientAdapter.name, () => {
 			it('should return null', async () => {
 				const { fileRecordId, fileName } = setup();
 
-				const result = await sut.download(fileRecordId, fileName);
+				const result = await sut.getStream(fileRecordId, fileName);
 
 				expect(result).toBeNull();
 				expect(errorLoggerMock.error).toBeCalled();
+			});
+		});
+
+		describe('when download does not return a stream', () => {
+			const setup = () => {
+				const fileRecordId = faker.string.uuid();
+				const fileName = faker.system.fileName();
+				const observable = from([axiosResponseFactory.build({ data: Buffer.from('') })]);
+
+				httpServiceMock.get.mockReturnValue(observable);
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
+
+				return {
+					fileRecordId,
+					fileName,
+				};
+			};
+
+			it('should return null', async () => {
+				const { fileRecordId, fileName } = setup();
+
+				const result = await sut.getStream(fileRecordId, fileName);
+
+				expect(result).toBeNull();
+				expect(errorLoggerMock.error).not.toBeCalled();
 			});
 		});
 	});

@@ -1,8 +1,24 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { faker } from '@faker-js/faker';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { FileDto } from '@modules/files-storage-client';
-import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Readable } from 'stream';
+import {
+	LessonContentDtoComponent,
+	LessonContentDtoComponentValues,
+} from '../common-cartridge-client/lesson-client/dto';
+import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
+import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
+import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
+import { LessonContentResponseContentInnerDto } from '../common-cartridge-client/lesson-client/dto/lesson-content-response-inner.dto';
+import {
+	CommonCartridgeElementType,
+	CommonCartridgeIntendedUseType,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
+} from '../export/common-cartridge.enums';
+import { CommonCartridgeResourceProps } from '../export/resources/common-cartridge-resource-factory';
+import { createIdentifier } from '../export/utils';
 import {
 	boardTaskFactory,
 	courseMetadataFactory,
@@ -12,22 +28,7 @@ import {
 } from '../testing/common-cartridge-dtos.factory';
 import { linkElementFactory } from '../testing/link-element.factory';
 import { richTextElementFactroy } from '../testing/rich-text-element.factory';
-import {
-	CommonCartridgeElementType,
-	CommonCartridgeIntendedUseType,
-	CommonCartridgeResourceType,
-	CommonCartridgeVersion,
-} from '../export/common-cartridge.enums';
-import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
-import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
-import { createIdentifier } from '../export/utils';
-import { LessonContentResponseContentInnerDto } from '../common-cartridge-client/lesson-client/dto/lesson-content-response-inner.dto';
-import {
-	LessonContentDtoComponent,
-	LessonContentDtoComponentValues,
-} from '../common-cartridge-client/lesson-client/dto';
-import { CommonCartridgeResourceProps } from '../export/resources/common-cartridge-resource-factory';
-import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
+import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 
 const GEOGEBRA_BASE_URL = 'https://geogebra.org';
 
@@ -399,7 +400,7 @@ describe('CommonCartridgeExportMapper', () => {
 	describe('mapFileToResource', () => {
 		describe('when mapping file to resource', () => {
 			const setup = () => {
-				const file = Buffer.from(faker.lorem.paragraphs(100));
+				const file = Readable.from(faker.lorem.paragraphs(100));
 				const fileRecord: FileDto = {
 					id: faker.string.uuid(),
 					name: 'file.zip',
@@ -422,7 +423,7 @@ describe('CommonCartridgeExportMapper', () => {
 					identifier: expect.any(String),
 					title: fileRecord.name,
 					fileName: fileRecord.name,
-					fileContent: file,
+					file: file,
 				});
 			});
 		});

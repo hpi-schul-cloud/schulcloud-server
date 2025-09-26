@@ -36,12 +36,20 @@ describe(CommonCartridgeFileResourceV110.name, () => {
 	});
 
 	describe('getFileContent', () => {
-		it('should return the file content', () => {
+		it('should throw Error', () => {
+			const { sut } = setup();
+
+			expect(() => sut.getFileContent()).toThrow(new Error('getFileContent is not supported'));
+		});
+	});
+
+	describe('getFileContent', () => {
+		it('should return the file stream', () => {
 			const { sut, props } = setup();
 
-			const result = sut.getFileContent();
+			const result = sut.getFileStream();
 
-			expect(result).toBe(props.fileContent);
+			expect(result).toBe(props.file);
 		});
 	});
 

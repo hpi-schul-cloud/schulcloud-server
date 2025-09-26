@@ -5,6 +5,7 @@ import {
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '@modules/common-cartridge';
+import { Readable } from 'stream';
 import { CommonCartridgeElementFactory } from '../export/elements/common-cartridge-element-factory';
 import { CommonCartridgeFileResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-file-resource';
 import { CommonCartridgeManifestResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-manifest-resource';
@@ -72,7 +73,7 @@ export function createCommonCartridgeFileResourcePropsV110(): CommonCartridgeFil
 		identifier: faker.string.uuid(),
 		folder: faker.system.directoryPath(),
 		fileName: faker.system.fileName(),
-		fileContent: Buffer.from(faker.lorem.sentence()),
+		file: Readable.from(faker.lorem.sentence()),
 		title: faker.lorem.word(),
 	};
 }
@@ -84,7 +85,7 @@ export function createCommonCartridgeFileResourcePropsV130(): CommonCartridgeFil
 		identifier: faker.string.uuid(),
 		folder: faker.system.directoryPath(),
 		fileName: faker.system.fileName(),
-		fileContent: Buffer.from(faker.lorem.sentence()),
+		file: Readable.from(faker.lorem.sentence()),
 		title: faker.lorem.word(),
 	};
 }
@@ -126,7 +127,7 @@ export function createCommonCartridgeFileProps(): CommonCartridgeResourceProps {
 		title: faker.lorem.words(),
 		identifier: faker.string.uuid(),
 		fileName: faker.system.fileName(),
-		fileContent: Buffer.from(faker.lorem.paragraphs()),
+		file: Readable.from(faker.lorem.paragraphs()),
 	};
 }
 
