@@ -30,7 +30,7 @@ export class CourseRepo extends BaseRepo<CourseEntity> {
 
 	public async findAllByUserId(
 		userId: EntityId,
-		filters?: { onlyActiveCourses?: boolean },
+		filters?: { onlyActiveCourses?: boolean; schoolId?: EntityId },
 		options?: IFindOptions<CourseEntity>
 	): Promise<Counted<CourseEntity[]>> {
 		const scope = new CourseScope();
@@ -39,6 +39,7 @@ export class CourseRepo extends BaseRepo<CourseEntity> {
 		if (filters?.onlyActiveCourses) {
 			scope.forActiveCourses();
 		}
+		scope.bySchoolId(filters?.schoolId);
 
 		const { pagination, order } = options || {};
 		const queryOptions = {
@@ -96,22 +97,24 @@ export class CourseRepo extends BaseRepo<CourseEntity> {
 		return course;
 	}
 
-	public async removeUserReference(userId: EntityId): Promise<number> {
+	public async removeUserReference(userId: EntityId, courseIds?: EntityId[]): Promise<number> {
 		const id = new ObjectId(userId);
 
 		const teachersFiledName = getFieldName(this._em, 'teachers', CourseEntity.name);
 		const substitutionTeachersFieldName = getFieldName(this._em, 'substitutionTeachers', CourseEntity.name);
 		const studentsFieldName = getFieldName(this._em, 'students', CourseEntity.name);
 
-		const count = await this._em.nativeUpdate(
-			CourseEntity,
-			{
-				$or: [{ teachers: id }, { substitutionTeachers: id }, { students: id }],
-			},
-			{
-				$pull: { [teachersFiledName]: id, [substitutionTeachersFieldName]: id, [studentsFieldName]: id },
-			} as Partial<CourseEntity>
-		);
+		const query: Record<string, any> = {
+			$or: [{ teachers: id }, { substitutionTeachers: id }, { students: id }],
+		};
+
+		if (courseIds && courseIds.length > 0) {
+			query._id = { $in: courseIds.map((cid) => new ObjectId(cid)) };
+		}
+
+		const count = await this._em.nativeUpdate(CourseEntity, query, {
+			$pull: { [teachersFiledName]: id, [substitutionTeachersFieldName]: id, [studentsFieldName]: id },
+		} as Partial<CourseEntity>);
 
 		return count;
 	}
