@@ -224,12 +224,12 @@ export class User extends BaseEntityWithTimestamps {
 		}
 	}
 
-	public resolvePermissions(): string[] {
+	public resolvePermissions(): Permission[] {
 		if (!this.roles.isInitialized(true)) {
 			throw new ReferenceNotPopulatedLoggableException('user', 'roles');
 		}
 
-		let permissions: string[] = [];
+		let permissions: Permission[] = [];
 
 		const roles = this.getRoles();
 		roles.forEach((role) => {
@@ -244,7 +244,7 @@ export class User extends BaseEntityWithTimestamps {
 		return uniquePermissions;
 	}
 
-	private resolveSchoolPermissions(permissions: string[], roles: Role[]): Set<string> {
+	private resolveSchoolPermissions(permissions: Permission[], roles: Role[]): Set<Permission> {
 		if (!wrap(this.school).isInitialized()) {
 			throw new ReferenceNotPopulatedLoggableException('user', 'school');
 		}
@@ -269,9 +269,9 @@ export class User extends BaseEntityWithTimestamps {
 	}
 
 	private resolveSchoolPermissionsForTeacher(
-		setOfPermissions: Set<string>,
+		setOfPermissions: Set<Permission>,
 		schoolPermissions?: SchoolRoles
-	): Set<string> {
+	): Set<Permission> {
 		const isEnabledByDefault = Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT') as boolean;
 		const isConfigurable = Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE') as boolean;
 
@@ -291,9 +291,9 @@ export class User extends BaseEntityWithTimestamps {
 	}
 
 	private resolveSchoolPermissionsForStudent(
-		setOfPermissions: Set<string>,
+		setOfPermissions: Set<Permission>,
 		schoolPermissions?: SchoolRoles
-	): Set<string> {
+	): Set<Permission> {
 		if (schoolPermissions?.student?.LERNSTORE_VIEW === true) {
 			setOfPermissions.add(Permission.LERNSTORE_VIEW);
 		} else if (schoolPermissions?.student?.LERNSTORE_VIEW === false) {

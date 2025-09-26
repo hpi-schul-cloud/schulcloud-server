@@ -10,13 +10,14 @@ import {
 	MeSchoolResponse,
 	MeUserResponse,
 } from '../dto';
+import { Permission } from '@shared/domain/interface';
 
 export class MeResponseMapper {
 	public static mapToResponse(
 		school: School,
 		user: User,
 		accountId: EntityId,
-		permissions: string[],
+		permissions: Permission[],
 		systemId?: EntityId
 	): MeResponse {
 		const schoolResponse = MeResponseMapper.mapSchool(school);

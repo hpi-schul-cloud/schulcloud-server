@@ -3,24 +3,25 @@ import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
 
 @Injectable()
 export class AuthorizationHelper {
-	public hasAllPermissions(user: User, requiredPermissions: string[]): boolean {
+	public hasAllPermissions(user: User, requiredPermissions: Permission[]): boolean {
 		const usersPermissions = user.resolvePermissions();
 		const hasAllPermissions = requiredPermissions.every((p) => usersPermissions.includes(p));
 
 		return hasAllPermissions;
 	}
 
-	public hasAllPermissionsByRole(role: Role, requiredPermissions: string[]): boolean {
+	public hasAllPermissionsByRole(role: Role, requiredPermissions: Permission[]): boolean {
 		const permissions = role.resolvePermissions();
 		const hasAllPermissions = requiredPermissions.every((p) => permissions.includes(p));
 
 		return hasAllPermissions;
 	}
 
-	public hasOneOfPermissions(user: User, requiredPermissions: string[]): boolean {
+	public hasOneOfPermissions(user: User, requiredPermissions: Permission[]): boolean {
 		// TODO: Wouldn't it make more sense to return true for an empty permissions-array?
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
 			return false;
