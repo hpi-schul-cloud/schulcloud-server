@@ -13,7 +13,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { Request } from 'express';
 import { MeResponse } from '../dto';
 
-const mapToMeResponseObject = (user: User, account: AccountEntity, permissions: string[]): MeResponse => {
+const mapToMeResponseObject = (user: User, account: AccountEntity, permissions: Permission[]): MeResponse => {
 	const roles = user.getRoles();
 	const role = roles[0];
 	const { school } = user;
