@@ -67,6 +67,7 @@ describe('Board Node Authorizable Domain Object', () => {
 				Permission.BOARD_EDIT,
 				Permission.BOARD_MANAGE_VIDEOCONFERENCE,
 				Permission.BOARD_MANAGE_READERS_CAN_EDIT,
+				Permission.BOARD_MANAGE,
 				Permission.BOARD_SHARE_BOARD,
 			]);
 		});

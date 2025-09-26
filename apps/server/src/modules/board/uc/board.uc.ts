@@ -94,7 +94,11 @@ export class BoardUc {
 		this.logger.debug({ action: 'deleteBoard', userId, boardId });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
+		await this.boardPermissionService.checkPermission(
+			userId,
+			board,
+			AuthorizationContextBuilder.write([Permission.BOARD_MANAGE])
+		);
 
 		await this.boardNodeService.delete(board);
 		return board;
@@ -167,7 +171,11 @@ export class BoardUc {
 
 	public async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise<ColumnBoard> {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
+		await this.boardPermissionService.checkPermission(
+			userId,
+			board,
+			AuthorizationContextBuilder.write([Permission.BOARD_MANAGE])
+		);
 
 		await this.boardNodeService.updateVisibility(board, isVisible);
 		return board;
@@ -186,7 +194,7 @@ export class BoardUc {
 		await this.boardPermissionService.checkPermission(
 			userId,
 			board,
-			AuthorizationContextBuilder.write([Permission.BOARD_MANAGE_READERS_CAN_EDIT])
+			AuthorizationContextBuilder.write([Permission.BOARD_MANAGE])
 		);
 
 		await this.columnBoardService.updateReadersCanEdit(board, readersCanEdit);
@@ -195,7 +203,11 @@ export class BoardUc {
 
 	public async updateLayout(userId: EntityId, boardId: EntityId, layout: BoardLayout): Promise<ColumnBoard> {
 		const board: ColumnBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
+		await this.boardPermissionService.checkPermission(
+			userId,
+			board,
+			AuthorizationContextBuilder.write([Permission.BOARD_MANAGE])
+		);
 
 		await this.boardNodeService.updateLayout(board, layout);
 		return board;
