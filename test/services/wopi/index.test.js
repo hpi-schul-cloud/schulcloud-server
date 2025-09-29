@@ -50,7 +50,7 @@ describe('wopi service', () => {
 			storageFileName: '1501061352639-Test.docx',
 			permissions: [],
 			bucket: 'bucket-test',
-			storageProviderId: testObjects.generateObjectId(),
+			storageProviderId: new testObjects.generateObjectId(),
 			__v: 0,
 		};
 
@@ -63,7 +63,7 @@ describe('wopi service', () => {
 			storageFileName: '1501161352639-Test1.docx',
 			permissions: [],
 			bucket: 'bucket-test',
-			storageProviderId: testObjects.generateObjectId(),
+			storageProviderId: new testObjects.generateObjectId(),
 			__v: 0,
 		};
 
@@ -104,7 +104,7 @@ describe('wopi service', () => {
 			storageFileName: `${Date.now()}-Test.docx`,
 			permissions: [],
 			bucket: 'bucket-test',
-			storageProviderId: testObjects.generateObjectId(),
+			storageProviderId: new testObjects.generateObjectId(),
 		});
 
 		return app
@@ -151,7 +151,7 @@ describe('wopi service', () => {
 				storageFileName: `${Date.now()}-Test.docx`,
 				permissions: [],
 				bucket: 'bucket-test',
-				storageProviderId: testObjects.generateObjectId(),
+				storageProviderId: new testObjects.generateObjectId(),
 			});
 			let params = await testObjects.generateRequestParamsFromUser(user);
 			params = Object.assign(params, {
@@ -179,7 +179,7 @@ describe('wopi service', () => {
 			storageFileName: `${Date.now()}-Test.docx`,
 			permissions: [],
 			bucket: 'bucket-test',
-			storageProviderId: testObjects.generateObjectId(),
+			storageProviderId: new testObjects.generateObjectId(),
 		});
 		const headers = {};
 		headers['x-wopi-override'] = 'LOCK';

@@ -32,10 +32,10 @@ const getExpectedAssertionError = (paramName) => ({
 });
 
 const createHomeworks = async (testHelper) => {
-	const userId = testHelper.generateObjectId();
-	const otherUserId = testHelper.generateObjectId();
-	const lessonId = testHelper.generateObjectId();
-	const courseId = testHelper.generateObjectId();
+	const userId = new testHelper.generateObjectId();
+	const otherUserId = new testHelper.generateObjectId();
+	const lessonId = new testHelper.generateObjectId();
+	const courseId = new testHelper.generateObjectId();
 
 	const promPrivate = testHelper.createTestHomework({ teacherId: userId, private: true });
 	const promPrivateLesson = testHelper.createTestHomework({ teacherId: userId, private: true, lessonId });
@@ -49,7 +49,7 @@ const createHomeworks = async (testHelper) => {
 	const promOtherPrivateLesson = testHelper.createTestHomework({ teacherId: otherUserId, private: true, lessonId });
 	const promOtherPrivateCourse = testHelper.createTestHomework({ teacherId: otherUserId, private: true, courseId });
 
-	const additionalUserId = testHelper.generateObjectId();
+	const additionalUserId = new testHelper.generateObjectId();
 	const promArchivedCourse = testHelper.createTestHomework({ archived: [userId, additionalUserId], courseId });
 	const promArchivedLesson = testHelper.createTestHomework({ archived: [userId, additionalUserId], lessonId });
 	const promOtherArchivedCourse = testHelper.createTestHomework({
@@ -159,7 +159,7 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no private homeworks exist without errors', async () => {
-			const userId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId });
 			const result = await findPrivateHomeworksByUser(userId);
@@ -167,8 +167,8 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no user matched without errors', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: otherUserId });
 			const result = await findPrivateHomeworksByUser(userId);
@@ -202,7 +202,7 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle private homeworks exist without errors', async () => {
-			const userId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId, private: true });
 			const result = await findPublicHomeworkIdsByUser(userId);
@@ -210,8 +210,8 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no user matched without errors', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: otherUserId });
 			const result = await findPublicHomeworkIdsByUser(userId);
@@ -267,7 +267,7 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no private homeworks exist without errors', async () => {
-			const userId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ private: false, teacherId: userId });
 			await testHelper.createTestHomework({ private: null, teacherId: userId });
@@ -276,8 +276,8 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no user matched without errors', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: otherUserId });
 			const result = await deletePrivateHomeworksFromUser(userId);
@@ -300,7 +300,7 @@ describe('in "task.repo" the function', () => {
 
 	describe('replaceUserInPublicHomeworks', () => {
 		it('should replace user in public homeworks in all contexts', async () => {
-			const replaceUserId = testHelper.generateObjectId();
+			const replaceUserId = new testHelper.generateObjectId();
 			const {
 				userId,
 				otherUserId,
@@ -341,8 +341,8 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no public homeworks exist without errors', async () => {
-			const replaceUserId = testHelper.generateObjectId();
-			const userId = testHelper.generateObjectId();
+			const replaceUserId = new testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId, private: true });
 			const result = await replaceUserInPublicHomeworks(userId, replaceUserId);
@@ -350,9 +350,9 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no user matched without errors', async () => {
-			const replaceUserId = testHelper.generateObjectId();
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
+			const replaceUserId = new testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: otherUserId });
 			const result = await replaceUserInPublicHomeworks(userId, replaceUserId);
@@ -360,8 +360,8 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle unexpected first parameter inputs', async () => {
-			const replaceUserId = testHelper.generateObjectId();
-			const userId = testHelper.generateObjectId();
+			const replaceUserId = new testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId });
 
@@ -376,7 +376,7 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle unexpected second parameter inputs', async () => {
-			const userId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId });
 			// must execute step by step that errors not mixed
@@ -394,9 +394,9 @@ describe('in "task.repo" the function', () => {
 
 	describe('findGroupSubmissionIdsByUser', () => {
 		it('should find only all group submissions', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
-			const otherUserId2 = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
+			const otherUserId2 = new testHelper.generateObjectId();
 
 			const groupAloneProm = testHelper.createTestSubmission({ studentId: userId, teamMembers: [userId] });
 			const groupOwnerProm = testHelper.createTestSubmission({ studentId: userId, teamMembers: [userId, otherUserId] });
@@ -423,7 +423,7 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no group submission exist without errors', async () => {
-			const userId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
 
 			await testHelper.createTestSubmission({ studentId: userId });
 			const result = await findGroupSubmissionIdsByUser(userId);
@@ -431,8 +431,8 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no user matched without errors', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
 
 			await testHelper.createTestSubmission({ studentId: otherUserId, teamMebers: [otherUserId] });
 			const result = await findGroupSubmissionIdsByUser(userId);
@@ -460,9 +460,9 @@ describe('in "task.repo" the function', () => {
 
 	describe('removeGroupSubmissionsConnectionsForUser', () => {
 		it('should remove all group connection in submissions', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
-			const otherUserId2 = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
+			const otherUserId2 = new testHelper.generateObjectId();
 
 			const groupAloneProm = testHelper.createTestSubmission({ studentId: userId, teamMembers: [userId] });
 			const groupOwnerProm = testHelper.createTestSubmission({ studentId: userId, teamMembers: [userId, otherUserId] });
@@ -491,7 +491,7 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no group submission exist without errors', async () => {
-			const userId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
 
 			await testHelper.createTestSubmission({ studentId: userId });
 			const result = await removeGroupSubmissionsConnectionsForUser(userId);
@@ -499,8 +499,8 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no user matched without errors', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
 
 			await testHelper.createTestSubmission({ studentId: otherUserId, teamMebers: [otherUserId] });
 			const result = await removeGroupSubmissionsConnectionsForUser(userId);
@@ -523,8 +523,8 @@ describe('in "task.repo" the function', () => {
 
 	describe('findSingleSubmissionIdsByUser', () => {
 		it('should find all submissions', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
 
 			const submission = await testHelper.createTestSubmission({ studentId: userId });
 			const submission2 = await testHelper.createTestSubmission({ studentId: userId });
@@ -540,8 +540,8 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no submission exist without errors', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
 
 			await testHelper.createTestSubmission({ studentId: otherUserId });
 			const result = await findUserSubmissionsByUser(userId);
@@ -549,8 +549,8 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no user matched without errors', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
 
 			await testHelper.createTestSubmission({ studentId: otherUserId });
 			const result = await findUserSubmissionsByUser(userId);
@@ -578,8 +578,8 @@ describe('in "task.repo" the function', () => {
 
 	describe('deleteSingleSubmissionsFromUser', () => {
 		it('should remove all submissions', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
 
 			const submissionProm = testHelper.createTestSubmission({ studentId: userId });
 			const otherSubmissionProm = testHelper.createTestSubmission({ studentId: otherUserId });
@@ -595,8 +595,8 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no submission exist without errors', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
 
 			await testHelper.createTestSubmission({ studentId: otherUserId });
 			const result = await deleteSingleSubmissionsFromUser(userId);
@@ -604,8 +604,8 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no user matched without errors', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
 
 			await testHelper.createTestSubmission({ studentId: otherUserId });
 			const result = await deleteSingleSubmissionsFromUser(userId);
@@ -638,8 +638,8 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no user matched without errors', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ archived: otherUserId });
 			const result = await findArchivedHomeworkIdsByUser(userId);
@@ -679,8 +679,8 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle no matching archived homeworks exist without errors', async () => {
-			const userId = testHelper.generateObjectId();
-			const otherUserId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
+			const otherUserId = new testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ archived: otherUserId, private: true });
 			const result = await removeUserInArchivedHomeworks(userId);
@@ -688,7 +688,7 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle unexpected first parameter inputs', async () => {
-			const userId = testHelper.generateObjectId();
+			const userId = new testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ archived: userId });
 			// must execute step by step that errors not mixed

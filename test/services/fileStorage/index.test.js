@@ -67,12 +67,12 @@ describe('fileStorage services', () => {
 
 	after(async () => {
 		const promises = [
-			...fixtures.teams.map((_) => teamsModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.schools.map((_) => schoolModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.files.map((_) => FileModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.users.map((_) => userModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.roles.map((_) => RoleModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.courses.map((_) => courseModel.findByIdAndRemove(_._id).exec()),
+			...fixtures.teams.map((_) => teamsModel.findByIdAndDelete(_._id).exec()),
+			...fixtures.schools.map((_) => schoolModel.findByIdAndDelete(_._id).exec()),
+			...fixtures.files.map((_) => FileModel.findByIdAndDelete(_._id).exec()),
+			...fixtures.users.map((_) => userModel.findByIdAndDelete(_._id).exec()),
+			...fixtures.roles.map((_) => RoleModel.findByIdAndDelete(_._id).exec()),
+			...fixtures.courses.map((_) => courseModel.findByIdAndDelete(_._id).exec()),
 		];
 
 		await Promise.all(promises);
@@ -93,7 +93,7 @@ describe('fileStorage services', () => {
 		const created = [];
 
 		after((done) => {
-			const promises = created.map((id) => FileModel.findByIdAndRemove(id));
+			const promises = created.map((id) => FileModel.findByIdAndDelete(id));
 
 			Promise.all(promises)
 				.then(() => done())
