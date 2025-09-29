@@ -12,8 +12,9 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { Request } from 'express';
 import { MeResponse } from '../dto';
+import { Permission } from '@shared/domain/interface';
 
-const mapToMeResponseObject = (user: User, account: AccountEntity, permissions: string[]): MeResponse => {
+const mapToMeResponseObject = (user: User, account: AccountEntity, permissions: Permission[]): MeResponse => {
 	const roles = user.getRoles();
 	const role = roles[0];
 	const { school } = user;
