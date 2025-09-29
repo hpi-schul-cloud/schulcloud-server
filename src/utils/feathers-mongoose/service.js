@@ -96,7 +96,20 @@ class Service extends AdapterBase {
 
 		// Handle $sort
 		if (filters.$sort) {
-			q.sort(filters.$sort);
+			// for some reaseaon with mongoose 8, sort by '1' or '-1' as string doesn't work
+			// convert them to int here
+			const sortOverwrite = filters.$sort;
+			if (sortOverwrite !== null && typeof sortOverwrite === 'object' && !Array.isArray(sortOverwrite)) {
+				for (const key in sortOverwrite) {
+					if (Object.prototype.hasOwnProperty.call(sortOverwrite, key)) {
+						const val = sortOverwrite[key];
+						if (val === '1' || val === '-1') {
+							sortOverwrite[key] = parseInt(val, 10);
+						}
+					}
+				}
+			}
+			q.sort(sortOverwrite);
 		}
 
 		// Handle collation
