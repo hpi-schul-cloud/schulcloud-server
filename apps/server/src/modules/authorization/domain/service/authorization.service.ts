@@ -8,6 +8,7 @@ import { AuthorizationContext } from '../type';
 import { AuthorizationInjectionService } from './authorization-injection.service';
 import { AuthorizationHelper } from './authorization.helper';
 import { RuleManager } from './rule-manager';
+import { Permission } from '@shared/domain/interface';
 
 @Injectable()
 export class AuthorizationService {
@@ -30,25 +31,25 @@ export class AuthorizationService {
 		return hasPermission;
 	}
 
-	public checkAllPermissions(user: User, requiredPermissions: string[]): void {
+	public checkAllPermissions(user: User, requiredPermissions: Permission[]): void {
 		if (!this.authorizationHelper.hasAllPermissions(user, requiredPermissions)) {
 			// TODO: Should be ForbiddenLoggableException
 			throw new UnauthorizedException();
 		}
 	}
 
-	public hasAllPermissions(user: User, requiredPermissions: string[]): boolean {
+	public hasAllPermissions(user: User, requiredPermissions: Permission[]): boolean {
 		return this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
 	}
 
-	public checkOneOfPermissions(user: User, requiredPermissions: string[]): void {
+	public checkOneOfPermissions(user: User, requiredPermissions: Permission[]): void {
 		if (!this.authorizationHelper.hasOneOfPermissions(user, requiredPermissions)) {
 			// TODO: Should be ForbiddenLoggableException
 			throw new UnauthorizedException();
 		}
 	}
 
-	public hasOneOfPermissions(user: User, requiredPermissions: string[]): boolean {
+	public hasOneOfPermissions(user: User, requiredPermissions: Permission[]): boolean {
 		return this.authorizationHelper.hasOneOfPermissions(user, requiredPermissions);
 	}
 
