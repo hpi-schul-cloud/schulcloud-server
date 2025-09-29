@@ -43,6 +43,7 @@ const typeMapping: Record<CustomParameterType, CustomParameterTypeParams> = {
 	[CustomParameterType.AUTO_SCHOOLID]: CustomParameterTypeParams.AUTO_SCHOOLID,
 	[CustomParameterType.AUTO_SCHOOLNUMBER]: CustomParameterTypeParams.AUTO_SCHOOLNUMBER,
 	[CustomParameterType.AUTO_MEDIUMID]: CustomParameterTypeParams.AUTO_MEDIUMID,
+	[CustomParameterType.AUTO_PUBLISHER]: CustomParameterTypeParams.AUTO_PUBLISHER,
 	[CustomParameterType.AUTO_GROUP_EXTERNALUUID]: CustomParameterTypeParams.AUTO_GROUP_EXTERNALUUID,
 };
 
