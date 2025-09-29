@@ -4,8 +4,8 @@ let createdSubmissions = [];
 
 const create = (opt) => async (data) => {
 	data.schoolId = data.schoolId || opt.schoolId;
-	data.homeworkId = data.homeworkId || opt.generateObjectId();
-	data.studentId = data.studentId || opt.generateObjectId();
+	data.homeworkId = data.homeworkId || new opt.generateObjectId();
+	data.studentId = data.studentId || new opt.generateObjectId();
 
 	const submission = await submissionModel.create(data);
 	createdSubmissions.push(submission._id);

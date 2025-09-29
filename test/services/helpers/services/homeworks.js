@@ -6,7 +6,7 @@ const create = (opt) => async (data) => {
 	data.schoolId = data.schoolId || opt.schoolId;
 	data.name = data.name || 'testHomework';
 	data.availableDate = data.availableDate || new Date();
-	data.teacherId = data.teacherId || opt.generateObjectId();
+	data.teacherId = data.teacherId || new opt.generateObjectId();
 	data.private = data.private || null;
 
 	const homework = await homeworkModel.create(data);

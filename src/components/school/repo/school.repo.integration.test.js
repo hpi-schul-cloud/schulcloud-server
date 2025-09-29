@@ -40,7 +40,7 @@ describe('school repository', () => {
 		});
 
 		it('should return null if school with given id does not exist', async () => {
-			const notExistingId = testObjects.generateObjectId();
+			const notExistingId = new testObjects.generateObjectId();
 			const school = await schoolRepo.getSchool(notExistingId);
 			expect(school).to.be.null;
 		});
