@@ -10,6 +10,7 @@ import { USER_DO_REPO, UserService } from './domain';
 import { UserAuthorizableService } from './domain/service/user-authorizable.service';
 import { UserDoMikroOrmRepo, UserMikroOrmRepo } from './repo';
 import { DeleteUserCalendarDataStep, DeleteUserRegistrationPinDataStep, DeleteUserStep } from './saga';
+import { UserEventSubscriber } from './repo/user-event-subscriber';
 
 @Module({
 	imports: [
@@ -29,6 +30,7 @@ import { DeleteUserCalendarDataStep, DeleteUserRegistrationPinDataStep, DeleteUs
 		DeleteUserStep,
 		DeleteUserCalendarDataStep,
 		DeleteUserRegistrationPinDataStep,
+		UserEventSubscriber,
 	],
 	exports: [UserService, UserMikroOrmRepo],
 })

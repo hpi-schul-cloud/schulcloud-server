@@ -10,6 +10,7 @@ import { courseEntityFactory, courseGroupEntityFactory } from '../testing';
 import { CourseEntity } from './course.entity';
 import { CourseRepo } from './course.repo';
 import { CourseGroupEntity } from './coursegroup.entity';
+import { schoolEntityFactory } from '@modules/school/testing';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {
 	const ids2 = arr2.map((o) => o.id);
@@ -229,6 +230,26 @@ describe('course repo', () => {
 			for (let i = 0; i < courses.length; i += 1) {
 				expect(sortedNames[i]).toEqual(result[i].name);
 			}
+		});
+
+		it('should only return courses for the given user and schoolId', async () => {
+			const user = userFactory.build();
+			await em.persistAndFlush(user);
+
+			const schoolId1 = schoolEntityFactory.buildWithId();
+			const schoolId2 = schoolEntityFactory.buildWithId();
+
+			const course1 = courseEntityFactory.build({ name: 'school1 course', students: [user], school: schoolId1 });
+			const course2 = courseEntityFactory.build({ name: 'school2 course', students: [user], school: schoolId2 });
+			const course3 = courseEntityFactory.build({ name: 'school1 course 2', students: [user], school: schoolId1 });
+
+			await em.persistAndFlush([course1, course2, course3]);
+			em.clear();
+
+			const [result, count] = await repo.findAllByUserId(user.id, { schoolId: schoolId1.id });
+
+			expect(checkEqualIds(result, [course1, course3])).toEqual(true);
+			expect(count).toEqual(2);
 		});
 	});
 
@@ -509,6 +530,53 @@ describe('course repo', () => {
 
 				const courseEntity1 = await repo.findById(course4.id);
 				expect(courseEntity1.getStudentIds()).toEqual([otherUser.id]);
+			});
+		});
+
+		describe('when deleting a student from specific courses', () => {
+			const setup = async () => {
+				const user = userFactory.build();
+				const otherUser = userFactory.build();
+
+				const course1 = courseEntityFactory.buildWithId({ name: 'course #1', students: [user, otherUser] });
+				const course2 = courseEntityFactory.buildWithId({ name: 'course #2', substitutionTeachers: [user, otherUser] });
+				const course3 = courseEntityFactory.buildWithId({ name: 'course #3', teachers: [user, otherUser] });
+				const course4 = courseEntityFactory.buildWithId({ name: 'course #4', students: [otherUser] });
+
+				await em.persistAndFlush([user, otherUser, course1, course2, course3, course4]);
+				em.clear();
+
+				return {
+					user,
+					otherUser,
+					course1,
+					course2,
+					course3,
+					course4,
+				};
+			};
+
+			it('should only remove user reference from specified courseIds', async () => {
+				const { user, otherUser, course1, course2, course3, course4 } = await setup();
+
+				// Only remove from course1 and course3
+				await repo.removeUserReference(user.id, [course1.id, course3.id]);
+
+				// course1: user should be removed from students
+				const updatedCourse1 = await repo.findById(course1.id);
+				expect(updatedCourse1.getStudentIds()).not.toContain(user.id);
+
+				// course3: user should be removed from teachers
+				const updatedCourse3 = await repo.findById(course3.id);
+				expect(updatedCourse3.getTeacherIds()).not.toContain(user.id);
+
+				// course2: user should still be in substitutionTeachers
+				const updatedCourse2 = await repo.findById(course2.id);
+				expect(updatedCourse2.getSubstitutionTeacherIds()).toContain(user.id);
+
+				// course4: user was never in this course
+				const updatedCourse4 = await repo.findById(course4.id);
+				expect(updatedCourse4.getStudentIds()).toContain(otherUser.id);
 			});
 		});
 	});
