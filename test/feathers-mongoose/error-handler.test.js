@@ -5,6 +5,7 @@ Codebase clone from https://github.com/feathersjs-ecosystem/feathers-mongoose
 */
 const { expect } = require('chai');
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 const errors = require('@feathersjs/errors');
 
 const { ERROR, errorHandler } = require('../../src/utils/feathers-mongoose/error-handler');
@@ -99,7 +100,10 @@ describe('Feathers Mongoose Error Handler', () => {
 	});
 
 	it('wraps a VersionError as a BadRequest', async () => {
-		const e = new mongoose.Error.VersionError({ _id: 'testing' }, null, []);
+		const Model = mongoose.model('Test', new mongoose.Schema({ answer: Number }));
+		const doc = new Model({ answer: 'not a number' });
+		const e = new mongoose.Error.VersionError(doc, null, []);
+
 
 		try {
 			await errorHandler(e);
