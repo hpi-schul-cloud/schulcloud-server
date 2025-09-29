@@ -50,8 +50,8 @@ describe('hook helpers', () => {
 		const userList = [];
 		let populatedUserList;
 		before(() => {
-			const schoolId = ObjectId();
-			const role = ObjectId();
+			const schoolId = new ObjectId();
+			const role = new ObjectId();
 			const data = [
 				{ schoolId, role, userId: new ObjectId() },
 				{ schoolId, role, userId: new ObjectId() },

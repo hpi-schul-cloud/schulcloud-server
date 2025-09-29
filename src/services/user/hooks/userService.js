@@ -592,7 +592,7 @@ const includeOnlySchoolRoles = async (context) => {
 		if (context.params.query.roles && context.params.query.roles.$in) {
 			// when querying for specific roles, filter them
 			context.params.query.roles.$in = context.params.query.roles.$in.filter((r) =>
-				allowedRoles.some((a) => new ObjectId.equal(r, a))
+				allowedRoles.some((a) => ObjectId.equal(r, a))
 			);
 		} else {
 			// otherwise, overwrite them with whitelist

@@ -11,7 +11,7 @@ const verifyPayload = require('./verifyPayload');
 const restrictToCurrentSchool = (context) => {
 	const systemids = context.params.school.systems || [];
 	if (context.id) {
-		const schoolSystem = systemids.some((s) => new ObjectId.equal(s, context.id));
+		const schoolSystem = systemids.some((s) => ObjectId.equal(s, context.id));
 		if (schoolSystem) {
 			return context;
 		}

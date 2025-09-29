@@ -504,8 +504,8 @@ describe('Feathers Mongoose Service', () => {
 				throw new Error('Update should not be successful');
 			} catch (error) {
 				expect(error.name).to.equal('BadRequest');
-				expect(error.message).to.equal(
-					'TestUser validation failed: age: Cast to Number failed for value "wrong" (type string) at path "age"'
+				expect(error.message).to.contain(
+					'Cast to Number failed for value "wrong" (type string) at path "age"'
 				);
 			}
 		});
