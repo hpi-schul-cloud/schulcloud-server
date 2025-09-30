@@ -1,5 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { CalendarModule } from '@infra/calendar';
+import { ConfigurationModule } from '@infra/configuration';
 import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization-reference/authorization-reference.module';
 import { BoardModule } from '@modules/board';
@@ -12,14 +13,17 @@ import { TeamRepo } from '@modules/team/repo';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { BBBService } from './bbb';
+import { BBB_CONFIG, BbbConfig, BBBService } from './bbb';
 import { VideoConferenceDeprecatedController } from './controller';
 import { VideoConferenceRepo } from './repo';
 import { VideoConferenceService } from './service';
 import { VideoConferenceDeprecatedUc } from './uc';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from './video-conference-config';
 
 @Module({
 	imports: [
+		ConfigurationModule.register(VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig),
+		ConfigurationModule.register(BBB_CONFIG, BbbConfig),
 		AuthorizationModule,
 		AuthorizationReferenceModule, // can be removed wenn video-conference-deprecated is removed
 		BoardModule,
