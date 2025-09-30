@@ -51,12 +51,8 @@ export class FilesStorageClientAdapter {
 			});
 			const response = await lastValueFrom(observable);
 
-			if (!FilesStorageClientAdapter.isStream(response.data)) {
-				return null;
-			}
-
 			const stream = response.data;
-			return stream;
+            return FileStorageClientAdapter.isStream(stream) ? stream : null;
 		} catch (error: unknown) {
 			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.getStream'));
 
