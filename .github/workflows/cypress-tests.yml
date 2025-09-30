@@ -18,4 +18,3 @@ jobs:
         ref: ${{ github.event.pull_request.head.ref }}
       secrets:
         service-account-token: ${{ secrets.CYPRESS_ONEPWD_SERVICE_ACCOUNT_TOKEN }}
-        
