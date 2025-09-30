@@ -156,3 +156,14 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
+
+  cy-e2e-tests:
+    if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'run-tests')
+    needs:
+      - branch_meta
+      - deploy
+    uses: hpi-schul-cloud/e2e-system-tests/.github/workflows/remote-trigger.yml@main
+    with:
+      ref: ${{ needs.branch_meta.outputs.branch }}
+    secrets:
+      service-account-token: ${{ secrets.CYPRESS_ONEPWD_SERVICE_ACCOUNT_TOKEN }}
