@@ -460,7 +460,7 @@ describe('CommonCartridgeExportService', () => {
 				return { courseId };
 			};
 
-			it('should log warning on warning', async () => {
+			it('should log warning on warning level', async () => {
 				const { courseId } = setup();
 
 				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
