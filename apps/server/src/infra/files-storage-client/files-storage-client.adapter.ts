@@ -49,10 +49,9 @@ export class FilesStorageClientAdapter {
 					Authorization: `Bearer ${token}`,
 				},
 			});
-			const response = await lastValueFrom(observable);
 
-			const stream = response.data;
-            return FileStorageClientAdapter.isStream(stream) ? stream : null;
+			const response = await lastValueFrom(observable);
+			return FilesStorageClientAdapter.isStream(response.data) ? response.data : null;
 		} catch (error: unknown) {
 			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.getStream'));
 

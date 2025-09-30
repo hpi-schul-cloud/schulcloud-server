@@ -164,7 +164,6 @@ export class CommonCartridgeExportService {
 		const filteredLessons = this.filterLessonFromBoardElements(elements);
 		const lessonsIds = filteredLessons.filter((lesson) => topics.includes(lesson.id)).map((lesson) => lesson.id);
 		const lessons = await Promise.all(lessonsIds.map((elementId) => this.lessonClientAdapter.getLessonById(elementId)));
-		this.logger.debug(new CommonCartridgeExportMessageLoggable('Loaded lessons'));
 
 		lessons.forEach((lesson) => {
 			const lessonsOrganization = builder.createOrganization(this.mapper.mapLessonToOrganization(lesson));
