@@ -102,27 +102,31 @@ const hasViewPermissionBefore = (hook) => {
 	return Promise.resolve(hook);
 };
 
-const hasViewPermissionAfter = (hook) => {
+const hasViewPermissionAfter = async (hook) => {
 	// filter any other homeworks where the user has no view permission
 	// user is teacher OR ( user is in courseId of task AND availableDate < Date.now() )
 	// availableDate < Date.now()
-	function hasPermission(e) {
-		const isOwnerCheck = e.teacherId === (hook.params.account || {}).userId.toString();
+	async function hasPermission(e) {
+		const userId = ((hook.params.account || {}).userId || '').toString();
+		const user = await hook.app.service('users').get(userId);
+		const schoolId = user.schoolId;
+		const isPartOfSchool = equalIds(e.schoolId, schoolId);
+		const isOwnerCheck = e.teacherId === userId;
 		const isTeacherCheck =
-			((e.courseId || {}).teacherIds || []).includes((hook.params.account || {}).userId.toString()) ||
-			((e.courseId || {}).substitutionIds || []).includes((hook.params.account || {}).userId.toString());
+			((e.courseId || {}).teacherIds || []).includes(userId) ||
+			((e.courseId || {}).substitutionIds || []).includes(userId);
 		const isStudent =
 			e.courseId != null &&
-			((e.courseId || {}).userIds || []).includes(((hook.params.account || {}).userId || '').toString());
+			((e.courseId || {}).userIds || []).includes(userId);
 		const published = new Date(e.availableDate) < new Date() && !e.private;
 
-		return isOwnerCheck || isTeacherCheck || (isStudent && published);
+		return isPartOfSchool && (isOwnerCheck || isTeacherCheck || (isStudent && published));
 	}
 
 	let data = JSON.parse(JSON.stringify(hook.result.data || hook.result));
 	if (data[0] !== undefined) {
-		data = data.filter(hasPermission);
-	} else if (data.schoolId !== undefined && !hasPermission(data)) {
+		data = data.filter(async (o)=> await hasPermission(o));
+	} else if (data.schoolId !== undefined && !await hasPermission(data)) {
 		return Promise.reject(new Forbidden("You don't have permissions!"));
 	}
 	if (hook.result.data) {
