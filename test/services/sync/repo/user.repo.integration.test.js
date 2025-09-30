@@ -1,4 +1,4 @@
-const chai = require('chai');
+tconst chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const { ObjectId } = require('mongoose').Types;
 

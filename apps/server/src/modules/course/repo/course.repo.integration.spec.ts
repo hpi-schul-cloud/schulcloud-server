@@ -52,12 +52,12 @@ describe('course repo', () => {
 	describe('findAllByUserId', () => {
 		it('should return right keys', async () => {
 			const student = userFactory.build();
-			const course = courseEntityFactory.build({ students: [student] });
+			const course = courseEntityFactory.build({ school: student.school, students: [student] });
 
 			await em.persistAndFlush(course);
 			em.clear();
 
-			const [result] = await repo.findAllByUserId(student.id);
+			const [result] = await repo.findAllByUserId(student.id, student.school.id);
 
 			const keysOfFirstElements = Object.keys(result[0]).sort();
 			const expectedResult = [
@@ -104,13 +104,13 @@ describe('course repo', () => {
 		it('should return course of teachers', async () => {
 			const teacher = userFactory.build();
 			await em.persistAndFlush(teacher);
-			const course1 = courseEntityFactory.build({ name: 'course #1', teachers: [teacher] });
-			const course2 = courseEntityFactory.build({ name: 'course #2', teachers: [teacher] });
+			const course1 = courseEntityFactory.build({ school: teacher.school, name: 'course #1', teachers: [teacher] });
+			const course2 = courseEntityFactory.build({ school: teacher.school, name: 'course #2', teachers: [teacher] });
 
 			await em.persistAndFlush([course1, course2]);
 			em.clear();
 
-			const [result, count] = await repo.findAllByUserId(teacher.id);
+			const [result, count] = await repo.findAllByUserId(teacher.id, teacher.school.id);
 
 			expect(checkEqualIds(result, [course1, course2])).toEqual(true);
 			expect(count).toEqual(2);
@@ -118,13 +118,13 @@ describe('course repo', () => {
 
 		it('should return course of students', async () => {
 			const student = userFactory.build();
-			const course1 = courseEntityFactory.build({ name: 'course #1', students: [student] });
-			const course2 = courseEntityFactory.build({ name: 'course #2', students: [student] });
+			const course1 = courseEntityFactory.build({ school: student.school, name: 'course #1', students: [student] });
+			const course2 = courseEntityFactory.build({ school: student.school, name: 'course #2', students: [student] });
 
 			await em.persistAndFlush([course1, course2]);
 			em.clear();
 
-			const [result, count] = await repo.findAllByUserId(student.id);
+			const [result, count] = await repo.findAllByUserId(student.id, student.school.id);
 
 			expect(checkEqualIds(result, [course1, course2])).toEqual(true);
 			expect(count).toEqual(2);
@@ -133,13 +133,21 @@ describe('course repo', () => {
 		it('should return course of substitution teachers', async () => {
 			const subTeacher = userFactory.build();
 			await em.persistAndFlush(subTeacher);
-			const course1 = courseEntityFactory.build({ name: 'course #1', substitutionTeachers: [subTeacher] });
-			const course2 = courseEntityFactory.build({ name: 'course #2', substitutionTeachers: [subTeacher] });
+			const course1 = courseEntityFactory.build({
+				school: subTeacher.school,
+				name: 'course #1',
+				substitutionTeachers: [subTeacher],
+			});
+			const course2 = courseEntityFactory.build({
+				school: subTeacher.school,
+				name: 'course #2',
+				substitutionTeachers: [subTeacher],
+			});
 
 			await em.persistAndFlush([course1, course2]);
 			em.clear();
 
-			const [result, count] = await repo.findAllByUserId(subTeacher.id);
+			const [result, count] = await repo.findAllByUserId(subTeacher.id, subTeacher.school.id);
 
 			expect(checkEqualIds(result, [course1, course2])).toEqual(true);
 			expect(count).toEqual(2);
@@ -148,14 +156,18 @@ describe('course repo', () => {
 		it('should handle mixed roles in courses', async () => {
 			const user = userFactory.build();
 			await em.persistAndFlush(user);
-			const course1 = courseEntityFactory.build({ name: 'course #1', students: [user] });
-			const course2 = courseEntityFactory.build({ name: 'course #2', teachers: [user] });
-			const course3 = courseEntityFactory.build({ name: 'course #3', substitutionTeachers: [user] });
+			const course1 = courseEntityFactory.build({ school: user.school, name: 'course #1', students: [user] });
+			const course2 = courseEntityFactory.build({ school: user.school, name: 'course #2', teachers: [user] });
+			const course3 = courseEntityFactory.build({
+				school: user.school,
+				name: 'course #3',
+				substitutionTeachers: [user],
+			});
 
 			await em.persistAndFlush([course1, course2, course3]);
 			em.clear();
 
-			const [result, count] = await repo.findAllByUserId(user.id);
+			const [result, count] = await repo.findAllByUserId(user.id, user.school.id);
 
 			expect(checkEqualIds(result, [course1, course2, course3])).toEqual(true);
 			expect(count).toEqual(3);
@@ -166,20 +178,20 @@ describe('course repo', () => {
 			const otherUser = userFactory.build();
 			await em.persistAndFlush([user, otherUser]);
 			const courses = [
-				courseEntityFactory.build({ name: 'course #1', students: [user] }),
-				courseEntityFactory.build({ name: 'course #2', substitutionTeachers: [user] }),
-				courseEntityFactory.build({ name: 'course #3', teachers: [user] }),
+				courseEntityFactory.build({ school: user.school, name: 'course #1', students: [user] }),
+				courseEntityFactory.build({ school: user.school, name: 'course #2', substitutionTeachers: [user] }),
+				courseEntityFactory.build({ school: user.school, name: 'course #3', teachers: [user] }),
 			];
 			const otherCourses = [
-				courseEntityFactory.build({ name: 'course #1', students: [otherUser] }),
-				courseEntityFactory.build({ name: 'course #2', substitutionTeachers: [otherUser] }),
-				courseEntityFactory.build({ name: 'course #3', teachers: [otherUser] }),
+				courseEntityFactory.build({ school: otherUser.school, name: 'course #1', students: [otherUser] }),
+				courseEntityFactory.build({ school: otherUser.school, name: 'course #2', substitutionTeachers: [otherUser] }),
+				courseEntityFactory.build({ school: otherUser.school, name: 'course #3', teachers: [otherUser] }),
 			];
 
 			await em.persistAndFlush([...courses, ...otherCourses]);
 			em.clear();
 
-			const [result, count] = await repo.findAllByUserId(user.id);
+			const [result, count] = await repo.findAllByUserId(user.id, user.school.id);
 
 			expect(checkEqualIds(result, courses)).toEqual(true);
 			expect(count).toEqual(3);
@@ -190,23 +202,26 @@ describe('course repo', () => {
 			const twoDaysInMilliSeconds = 172800000;
 			const course1 = courseEntityFactory.build({
 				name: 'active course',
+				school: student.school,
 				students: [student],
 				untilDate: new Date(Date.now() + twoDaysInMilliSeconds),
 			});
 			const course2 = courseEntityFactory.build({
 				name: 'past course',
+				school: student.school,
 				students: [student],
 				untilDate: new Date(Date.now() - twoDaysInMilliSeconds),
 			});
 			const course3 = courseEntityFactory.build({
 				name: 'timeless course',
+				school: student.school,
 				students: [student],
 			});
 
 			await em.persistAndFlush([course1, course2, course3]);
 			em.clear();
 
-			const [result, count] = await repo.findAllByUserId(student.id, { onlyActiveCourses: true });
+			const [result, count] = await repo.findAllByUserId(student.id, student.school.id, { onlyActiveCourses: true });
 
 			expect(checkEqualIds(result, [course1, course3])).toEqual(true);
 			expect(count).toEqual(2);
@@ -217,12 +232,17 @@ describe('course repo', () => {
 			await em.persistAndFlush(user);
 
 			const names = ['z course', 'a course', '_ course', 'A course', '2 course', 'h course'];
-			const courses = names.map((name) => courseEntityFactory.build({ name, students: [user] }));
+			const courses = names.map((name) => courseEntityFactory.build({ name, school: user.school, students: [user] }));
 
 			await em.persistAndFlush(courses);
 			em.clear();
 
-			const [result, count] = await repo.findAllByUserId(user.id, {}, { order: { name: SortOrder.asc } });
+			const [result, count] = await repo.findAllByUserId(
+				user.id,
+				user.school.id,
+				{},
+				{ order: { name: SortOrder.asc } }
+			);
 
 			const sortedNames = names.sort();
 
@@ -236,17 +256,16 @@ describe('course repo', () => {
 			const user = userFactory.build();
 			await em.persistAndFlush(user);
 
-			const schoolId1 = schoolEntityFactory.buildWithId();
-			const schoolId2 = schoolEntityFactory.buildWithId();
+			const otherSchool = schoolEntityFactory.buildWithId();
 
-			const course1 = courseEntityFactory.build({ name: 'school1 course', students: [user], school: schoolId1 });
-			const course2 = courseEntityFactory.build({ name: 'school2 course', students: [user], school: schoolId2 });
-			const course3 = courseEntityFactory.build({ name: 'school1 course 2', students: [user], school: schoolId1 });
+			const course1 = courseEntityFactory.build({ name: 'school1 course', students: [user], school: user.school });
+			const course2 = courseEntityFactory.build({ name: 'school2 course', students: [user], school: otherSchool });
+			const course3 = courseEntityFactory.build({ name: 'school1 course 2', students: [user], school: user.school });
 
 			await em.persistAndFlush([course1, course2, course3]);
 			em.clear();
 
-			const [result, count] = await repo.findAllByUserId(user.id, { schoolId: schoolId1.id });
+			const [result, count] = await repo.findAllByUserId(user.id, user.school.id);
 
 			expect(checkEqualIds(result, [course1, course3])).toEqual(true);
 			expect(count).toEqual(2);
@@ -256,24 +275,24 @@ describe('course repo', () => {
 	describe('findAllForTeacher', () => {
 		it('should find courses of teachers', async () => {
 			const user = userFactory.build();
-			const course = courseEntityFactory.build({ teachers: [user] });
+			const course = courseEntityFactory.build({ school: user.school, teachers: [user] });
 
 			await em.persistAndFlush([course]);
 			em.clear();
 
-			const [, count] = await repo.findAllForTeacher(user.id);
+			const [, count] = await repo.findAllForTeacher(user.id, user.school.id);
 
 			expect(count).toEqual(1);
 		});
 
 		it('should find courses of teachers that are active', async () => {
 			const user = userFactory.build();
-			const course = courseEntityFactory.build({ teachers: [user] });
+			const course = courseEntityFactory.build({ school: user.school, teachers: [user] });
 
 			await em.persistAndFlush([course]);
 			em.clear();
 
-			const [, count] = await repo.findAllForTeacher(user.id, { onlyActiveCourses: true });
+			const [, count] = await repo.findAllForTeacher(user.id, user.school.id, { onlyActiveCourses: true });
 
 			expect(count).toEqual(1);
 		});
@@ -285,7 +304,7 @@ describe('course repo', () => {
 			await em.persistAndFlush([course]);
 			em.clear();
 
-			const [, count] = await repo.findAllForTeacher(user.id);
+			const [, count] = await repo.findAllForTeacher(user.id, user.school.id);
 
 			expect(count).toEqual(0);
 		});
@@ -297,7 +316,7 @@ describe('course repo', () => {
 			await em.persistAndFlush([course]);
 			em.clear();
 
-			const [, count] = await repo.findAllForTeacherOrSubstituteTeacher(user.id);
+			const [, count] = await repo.findAllForTeacherOrSubstituteTeacher(user.id, user.school.id);
 
 			expect(count).toEqual(0);
 		});
@@ -306,24 +325,24 @@ describe('course repo', () => {
 	describe('findAllForTeacherOrSubstituteTeacher', () => {
 		it('should find courses of teachers', async () => {
 			const user = userFactory.build();
-			const course = courseEntityFactory.build({ teachers: [user] });
+			const course = courseEntityFactory.build({ school: user.school, teachers: [user] });
 
 			await em.persistAndFlush([course]);
 			em.clear();
 
-			const [, count] = await repo.findAllForTeacherOrSubstituteTeacher(user.id);
+			const [, count] = await repo.findAllForTeacherOrSubstituteTeacher(user.id, user.school.id);
 
 			expect(count).toEqual(1);
 		});
 
 		it('should find courses of substitution teachers', async () => {
 			const user = userFactory.build();
-			const course = courseEntityFactory.build({ substitutionTeachers: [user] });
+			const course = courseEntityFactory.build({ school: user.school, substitutionTeachers: [user] });
 
 			await em.persistAndFlush([course]);
 			em.clear();
 
-			const [, count] = await repo.findAllForTeacherOrSubstituteTeacher(user.id);
+			const [, count] = await repo.findAllForTeacherOrSubstituteTeacher(user.id, user.school.id);
 
 			expect(count).toEqual(1);
 		});
@@ -335,7 +354,7 @@ describe('course repo', () => {
 			await em.persistAndFlush([course]);
 			em.clear();
 
-			const [, count] = await repo.findAllForTeacherOrSubstituteTeacher(user.id);
+			const [, count] = await repo.findAllForTeacherOrSubstituteTeacher(user.id, user.school.id);
 
 			expect(count).toEqual(0);
 		});
@@ -343,44 +362,45 @@ describe('course repo', () => {
 
 	describe('findOne', () => {
 		it('should find any course', async () => {
-			const course = courseEntityFactory.build({ students: [] });
+			const user = userFactory.build();
+			const course = courseEntityFactory.build({ school: user.school, students: [user] });
 
 			await em.persistAndFlush([course]);
 
-			const result = await repo.findOne(course.id);
+			const result = await repo.findOneForUser(course.id, user.id, user.school.id);
 
 			expect(result).toEqual(course);
 		});
 
 		it('should find course of student', async () => {
 			const user = userFactory.build();
-			const course = courseEntityFactory.build({ students: [user] });
+			const course = courseEntityFactory.build({ school: user.school, students: [user] });
 
 			await em.persistAndFlush([course]);
 
-			const result = await repo.findOne(course.id, user.id);
+			const result = await repo.findOneForUser(course.id, user.id, user.school.id);
 
 			expect(result).toEqual(course);
 		});
 
 		it('should find course of teacher', async () => {
 			const user = userFactory.build();
-			const course = courseEntityFactory.build({ teachers: [user] });
+			const course = courseEntityFactory.build({ school: user.school, teachers: [user] });
 
 			await em.persistAndFlush([course]);
 
-			const result = await repo.findOne(course.id, user.id);
+			const result = await repo.findOneForUser(course.id, user.id, user.school.id);
 
 			expect(result).toEqual(course);
 		});
 
 		it('should find course of substitutionTeacher', async () => {
 			const user = userFactory.build();
-			const course = courseEntityFactory.build({ substitutionTeachers: [user] });
+			const course = courseEntityFactory.build({ school: user.school, substitutionTeachers: [user] });
 
 			await em.persistAndFlush([course]);
 
-			const result = await repo.findOne(course.id, user.id);
+			const result = await repo.findOneForUser(course.id, user.id, user.school.id);
 
 			expect(result).toEqual(course);
 		});
@@ -391,7 +411,7 @@ describe('course repo', () => {
 
 			await em.persistAndFlush([course, user]);
 
-			const callFunction = () => repo.findOne(course.id, user.id);
+			const callFunction = () => repo.findOneForUser(course.id, user.id, user.school.id);
 
 			await expect(callFunction).rejects.toThrow(NotFoundError);
 		});
@@ -450,14 +470,15 @@ describe('course repo', () => {
 
 	describe('unset optional property', () => {
 		it('should remove a property that was set to undefined', async () => {
-			const course = courseEntityFactory.build({ students: [] });
+			const user = userFactory.build();
+			const course = courseEntityFactory.build({ school: user.school, students: [user] });
 			course.copyingSince = new Date();
 			await em.persistAndFlush([course]);
 
 			delete course.copyingSince;
 			await repo.save(course);
 
-			const result = await repo.findOne(course.id);
+			const result = await repo.findOneForUser(course.id, user.id, user.school.id);
 
 			expect(result.copyingSince).toBeUndefined();
 			expect(Object.keys(result)).not.toContain('copyingSince');
@@ -468,12 +489,17 @@ describe('course repo', () => {
 		describe('when deleting a student from all courses', () => {
 			const setup = async () => {
 				const user = userFactory.build();
-				const otherUser = userFactory.build();
+				const { school } = user;
+				const otherUser = userFactory.build({ school: school });
 
-				const course1 = courseEntityFactory.buildWithId({ name: 'course #1', students: [user, otherUser] });
-				const course2 = courseEntityFactory.buildWithId({ name: 'course #2', substitutionTeachers: [user, otherUser] });
-				const course3 = courseEntityFactory.buildWithId({ name: 'course #3', teachers: [user, otherUser] });
-				const course4 = courseEntityFactory.buildWithId({ name: 'course #4', students: [otherUser] });
+				const course1 = courseEntityFactory.buildWithId({ school, name: 'course #1', students: [user, otherUser] });
+				const course2 = courseEntityFactory.buildWithId({
+					school,
+					name: 'course #2',
+					substitutionTeachers: [user, otherUser],
+				});
+				const course3 = courseEntityFactory.buildWithId({ school, name: 'course #3', teachers: [user, otherUser] });
+				const course4 = courseEntityFactory.buildWithId({ school, name: 'course #4', students: [otherUser] });
 
 				await em.persistAndFlush([user, otherUser, course1, course2, course3, course4]);
 				em.clear();
@@ -493,7 +519,7 @@ describe('course repo', () => {
 
 				await repo.removeUserReference(user.id);
 
-				const [result1] = await repo.findAllByUserId(user.id);
+				const [result1] = await repo.findAllByUserId(user.id, user.school.id);
 				expect(result1.length).toEqual(0);
 
 				const courseEntity1 = await repo.findById(course1.id);
@@ -509,9 +535,9 @@ describe('course repo', () => {
 			it('should return count of 3 courses updated', async () => {
 				const { user } = await setup();
 
-				const numberOfUpdatedCourses = await repo.removeUserReference(user.id);
+				const [, count] = await repo.removeUserReference(user.id);
 
-				expect(numberOfUpdatedCourses).toEqual(3);
+				expect(count).toEqual(3);
 			});
 
 			it('should not affect other users in the same course', async () => {

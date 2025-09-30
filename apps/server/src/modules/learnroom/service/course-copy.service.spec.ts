@@ -127,7 +127,7 @@ describe('course copy service', () => {
 
 			userService.getUserEntityWithRoles.mockResolvedValue(user);
 			courseService.findById.mockResolvedValue(course);
-			courseService.findAllByUserId.mockResolvedValue(allCourses);
+			courseService.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
 
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
 			roomsService.updateLegacyBoard.mockResolvedValue(originalBoard);
@@ -478,7 +478,7 @@ describe('course copy service', () => {
 
 			userService.getUserEntityWithRoles.mockResolvedValue(user);
 			courseService.findById.mockResolvedValue(course);
-			courseService.findAllByUserId.mockResolvedValue(allCourses);
+			courseService.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
 			roomsService.updateLegacyBoard.mockResolvedValue(originalBoard);
 
@@ -538,7 +538,7 @@ describe('course copy service', () => {
 
 			userService.getUserEntityWithRoles.mockResolvedValue(user);
 			courseService.findById.mockResolvedValue(course);
-			courseService.findAllByUserId.mockResolvedValue([course]);
+			courseService.findAllByUserId.mockResolvedValue([[course], 1]);
 
 			// boardRepo.findByCourseId.mockResolvedValue(originalBoard);
 			// roomsService.updateBoard.mockResolvedValue(originalBoard);
@@ -631,7 +631,7 @@ describe('course copy service', () => {
 			const originalBoard = boardFactory.build({ course: originalCourse });
 
 			courseService.findById.mockResolvedValue(originalCourse);
-			courseService.findAllByUserId.mockResolvedValue([originalCourse]);
+			courseService.findAllByUserId.mockResolvedValue([[originalCourse], 1]);
 
 			userService.getUserEntityWithRoles.mockResolvedValue(user);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
@@ -676,7 +676,7 @@ describe('course copy service', () => {
 			const originalBoard = boardFactory.build({ course: originalCourse });
 			courseGroupEntityFactory.build({ course: originalCourse });
 			courseService.findById.mockResolvedValue(originalCourse);
-			courseService.findAllByUserId.mockResolvedValue([originalCourse]);
+			courseService.findAllByUserId.mockResolvedValue([[originalCourse], 1]);
 
 			userService.getUserEntityWithRoles.mockResolvedValue(user);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
