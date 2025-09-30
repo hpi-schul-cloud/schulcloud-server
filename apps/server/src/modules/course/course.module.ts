@@ -17,6 +17,7 @@ import {
 import { CourseGroupRepo, CourseRepo } from './repo';
 import { CourseMikroOrmRepo } from './repo/course-mikro-orm.repo';
 import { DeleteUserCourseDataStep, DeleteUserCourseGroupDataStep } from './saga';
+import { UserChangedSchoolHandlerService } from '@modules/course/domain/service/user-changed-school-handler.service';
 
 @Module({
 	imports: [RoleModule, LoggerModule, AuthorizationModule, SagaModule],
@@ -36,6 +37,7 @@ import { DeleteUserCourseDataStep, DeleteUserCourseGroupDataStep } from './saga'
 		// TODO: remove?
 		// group event should be discussed if useful, the event does not seem to be be used anywhere else for now
 		GroupDeletedHandlerService,
+		UserChangedSchoolHandlerService,
 		DeleteUserCourseDataStep,
 		DeleteUserCourseGroupDataStep,
 	],
