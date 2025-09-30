@@ -290,12 +290,15 @@ class H5pLibraryBuilderService {
 				'1.18.1': '8',
 				'1.17.10': '8',
 			},
-			'H5P.CoursePresQuestionnaire': {
+			'H5P.Questionnaire': {
 				'1.1.2': '14',
 				'1.0.2': '14',
 			},
 			'H5P.SimpleMultiChoice': {
 				'1.0.5': '14',
+			},
+			'H5PEditor.QuestionSetTextualEditor': {
+				'1.2.4': '14',
 			},
 		};
 		const oldNodeVersion = oldNodeVersions[library]?.[tag];
