@@ -476,7 +476,7 @@ describe('CommonCartridgeExportService', () => {
 				);
 			});
 
-			it('should log debug on progress', async () => {
+			it('should log progress updates on debug level', async () => {
 				const { courseId } = setup();
 
 				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
