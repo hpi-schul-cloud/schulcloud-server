@@ -25,6 +25,7 @@ import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-cli
 import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
 import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
 import { FileElementResponseDto } from '../common-cartridge-client/card-client/dto/file-element-response.dto';
+import { Stream } from 'stream';
 
 export class CommonCartridgeExportMapper {
 	private static readonly GEOGEBRA_BASE_URL: string = 'https://geogebra.org';
@@ -176,7 +177,7 @@ export class CommonCartridgeExportMapper {
 
 	public mapFileToResource(
 		fileRecord: FileDto,
-		file: Buffer,
+		file: Stream,
 		element?: FileElementResponseDto
 	): CommonCartridgeResourceProps {
 		return {
@@ -184,7 +185,7 @@ export class CommonCartridgeExportMapper {
 			identifier: createIdentifier(element?.id),
 			title: element?.content.caption?.trim() ? element.content.caption : fileRecord.name,
 			fileName: fileRecord.name,
-			fileContent: file,
+			file,
 		};
 	}
 
