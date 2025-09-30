@@ -17,9 +17,14 @@ export class CourseUc {
 		private readonly roleService: RoleService
 	) {}
 
-	public findAllByUser(userId: EntityId, options?: PaginationParams): Promise<Counted<CourseEntity[]>> {
-		return this.courseService.findAllCoursesByUserId(
+	public findAllByUser(
+		userId: EntityId,
+		schoolId: string,
+		options?: PaginationParams
+	): Promise<Counted<CourseEntity[]>> {
+		return this.courseService.findAllByUserId(
 			userId,
+			schoolId,
 			{},
 			{ pagination: options, order: { updatedAt: SortOrder.desc } }
 		);

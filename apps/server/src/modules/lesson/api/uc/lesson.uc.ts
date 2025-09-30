@@ -33,7 +33,7 @@ export class LessonUC {
 
 	public async getLessons(userId: EntityId, courseId: EntityId): Promise<LessonEntity[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const course = await this.courseService.findOneForUser(courseId, userId);
+		const course = await this.courseService.findOneForUser(courseId, userId, user.school.id);
 
 		this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.read([Permission.COURSE_VIEW]));
 
