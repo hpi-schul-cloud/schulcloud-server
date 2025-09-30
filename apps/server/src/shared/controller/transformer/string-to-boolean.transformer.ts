@@ -10,6 +10,9 @@ import { Transform, TransformFnParams } from 'class-transformer';
  */
 export function StringToBoolean(): PropertyDecorator {
 	return Transform((params: TransformFnParams) => {
+		if (typeof params.value === 'boolean') {
+			return params.value;
+		}
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const str = params.obj[params.key] as string;
 		if (['1', 'true'].includes(str)) {
