@@ -15,8 +15,7 @@ describe('Runtime Config Repo', () => {
 	const Configuration: RuntimeConfigDefaults[] = [
 		{ key: 'TEST_STRING', type: 'string', value: 'a string' },
 		{ key: 'TEST_NUMBER', type: 'number', value: 42 },
-		{ key: 'TEST_BOOLEAN_TRUE', type: 'boolean', value: true },
-		{ key: 'TEST_BOOLEAN_FALSE', type: 'boolean', value: false },
+		{ key: 'TEST_BOOLEAN', type: 'boolean', value: true },
 	];
 
 	beforeAll(async () => {
@@ -70,12 +69,12 @@ describe('Runtime Config Repo', () => {
 
 			await repo.save(original);
 
-			const retrieved = await repo.getByKey('test-config');
+			const retrieved = await repo.getByKey('TEST_STRING');
 
 			expect(retrieved.getProps()).toEqual(
 				expect.objectContaining({
 					id: original.id,
-					key: 'test-config',
+					key: 'TEST_STRING',
 					type: 'string',
 					value: 'changed a value',
 				})
@@ -88,24 +87,42 @@ describe('Runtime Config Repo', () => {
 
 			await repo.save(original);
 
-			const retrieved = await repo.getByKey('test-config');
+			const retrieved = await repo.getByKey('TEST_NUMBER');
 
 			expect(retrieved.getProps()).toEqual(
 				expect.objectContaining({
 					id: original.id,
-					key: 'test-config',
+					key: 'TEST_NUMBER',
 					type: 'number',
 					value: 100,
+				})
+			);
+		});
+
+		it('should persist boolean runtime value', async () => {
+			const original = await repo.getByKey('TEST_BOOLEAN');
+			original.setValue(false);
+
+			await repo.save(original);
+
+			const retrieved = await repo.getByKey('TEST_BOOLEAN');
+
+			expect(retrieved.getProps()).toEqual(
+				expect.objectContaining({
+					id: original.id,
+					key: 'TEST_BOOLEAN',
+					type: 'boolean',
+					value: false,
 				})
 			);
 		});
 	});
 
 	describe('errors', () => {
-		it.todo('should throw when number is not a number in db', async () => {});
+		it.todo('should throw when number is not a number in db');
 
-		it.todo('should throw when string is not a string in db', async () => {});
+		it.todo('should throw when string is not a string in db');
 
-		it.todo('should throw when boolean is not a boolean in db', async () => {});
+		it.todo('should throw when boolean is not a boolean in db');
 	});
 });
