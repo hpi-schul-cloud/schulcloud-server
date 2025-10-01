@@ -234,7 +234,8 @@ export class RoomUc {
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
 		]);
 		const isAdminFromSameSchool = users.every((user) => user.schoolId === currentUser.school.id);
-		if (!hasRoomPermission && !(hasAdminPermission && isAdminFromSameSchool)) {
+		const isRoomOfAdminSchool = (await this.roomService.getSingleRoom(roomId)).schoolId === currentUser.school.id;
+		if (!hasRoomPermission && !(hasAdminPermission && isAdminFromSameSchool && isRoomOfAdminSchool)) {
 			throw new ForbiddenException('You do not have permission to access this room');
 		}
 
