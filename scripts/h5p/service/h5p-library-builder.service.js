@@ -45,7 +45,7 @@ class H5pLibraryBuilderService {
 			return [];
 		}
 
-		const tags = await this.gitHubClient.fetchGitHubTags(repoName);
+		const tags = await this.gitHubClient.fetchTags(repoName);
 		const filteredTags = this.getHighestPatchTags(tags);
 		console.log(`Found ${filteredTags.length} versions of ${library} in ${repoName}: ${filteredTags.join(', ')}`);
 
@@ -142,7 +142,7 @@ class H5pLibraryBuilderService {
 		// Dann wäre es möglich ein pre and post hook zu erstellen.
 		// Wenn man dann noch fileSystemHelper als Klasse instanziiert über ein factory könnte man dort noch mehr implizites Wissen weg kapseln.
 		const { filePath, folderPath, tempFolder } = fileSystemHelper.createTempFolder(this.tempFolderPath, library, tag);
-		await this.gitHubClient.downloadGitHubTag(repo, tag, filePath);
+		await this.gitHubClient.downloadTag(repo, tag, filePath);
 
 		if (fileSystemHelper.pathExists(folderPath)) {
 			fileSystemHelper.removeFolder(folderPath);
@@ -567,7 +567,7 @@ class H5pLibraryBuilderService {
 			return [];
 		}
 
-		const tags = await this.gitHubClient.fetchGitHubTags(depRepoName);
+		const tags = await this.gitHubClient.fetchTags(depRepoName);
 		const depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
 		if (!depTag) {
 			this.logTagNotFound(dependency);

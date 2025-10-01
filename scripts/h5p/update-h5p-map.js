@@ -36,7 +36,7 @@ const params = {
 const getLibraryRepoMapFromGitHubOrganization = async (organization) => {
 	const gitHubClient = new H5PGitHubClient();
 
-	const repos = await gitHubClient.fetchRepositoriesFromGitHubOrganization(organization);
+	const repos = await gitHubClient.fetchRepositoriesFromOrganization(organization);
 	console.log(`Found ${repos.length} repositories in the ${organization} organization.`);
 
 	const libraryRepoMap = await gitHubClient.buildLibraryRepoMapFromRepos(organization, repos);

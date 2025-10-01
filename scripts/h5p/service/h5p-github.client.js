@@ -11,7 +11,7 @@ class H5pGitHubClient {
 		this.token = personalAccessToken;
 	}
 
-	async fetchRepositoriesFromGitHubOrganization(organization) {
+	async fetchRepositoriesFromOrganization(organization) {
 		const repos = [];
 		let page = 1;
 		const perPage = 100; // Maximum allowed by GitHub API
@@ -38,7 +38,7 @@ class H5pGitHubClient {
 		let result;
 		const url = `https://api.github.com/orgs/${organization}/repos?type=public&per_page=${perPage}&page=${page}`;
 		try {
-			const headers = this.token ? { Authorization: `token ${this.token}` } : {};
+			const headers = this.getHeaders();
 			const response = await axios.get(url, { headers });
 			result = { data: response.data };
 		} catch (error) {
@@ -77,7 +77,7 @@ class H5pGitHubClient {
 		let result;
 		const url = `https://api.github.com/repos/${organization}/${repo.name}/contents/library.json`;
 		try {
-			const headers = this.token ? { Authorization: `token ${this.token}` } : {};
+			const headers = this.getHeaders();
 			result = await axios.get(url, { headers });
 		} catch (error) {
 			if (error && error.response && error.response.status === 404) {
@@ -101,52 +101,53 @@ class H5pGitHubClient {
 		return true;
 	}
 
-	async fetchGitHubTags(repoName, retries = 3) {
-		let tags = [];
-		for (let attempt = 0; attempt < retries; attempt++) {
-			const [owner, repo] = repoName.split('/');
-			let page = 1;
-			const perPage = 100;
-			let allTags = [];
+	async fetchTags(repoName, maxRetries = 3) {
+		const [owner, repo] = repoName.split('/');
+		const perPage = 100;
+
+		for (let attempt = 1; attempt <= maxRetries; attempt++) {
 			try {
-				const headers = this.token ? { Authorization: `token ${this.token}` } : {};
-				while (true) {
-					const url = `https://api.github.com/repos/${owner}/${repo}/tags?per_page=${perPage}&page=${page}`;
-					const response = await axios.get(url, { headers });
-					const pageTags = response.data.map((tag) => tag.name);
-					allTags = allTags.concat(pageTags);
-					if (response.data.length < perPage) {
-						break;
-					}
-					page++;
-				}
-				tags = allTags;
-				break;
+				const tags = await this.getAllTags(owner, repo, perPage);
+				return tags;
 			} catch (error) {
-				console.error(`Unknown error while fetching tags for ${repoName}:`, error);
-				if (attempt < retries - 1) {
-					console.log(`Retrying... (${attempt + 1}/${retries})`);
-					await new Promise((res) => setTimeout(res, 1000)); // wait 1s before retry
+				console.error(`Error fetching tags for ${repoName} (Attempt ${attempt}/${maxRetries}):`, error);
+				if (attempt < maxRetries) {
+					await this.delay(1000);
 				} else {
-					console.error(`Failed to fetch tags for ${repoName} after ${retries} attempts.`);
-					tags = [];
+					console.error(`Failed to fetch tags for ${repoName} after ${maxRetries} attempts.`);
+					return [];
 				}
 			}
 		}
-
-		return tags;
 	}
 
-	async downloadGitHubTag(library, tag, filePath) {
+	async getAllTags(owner, repo, perPage) {
+		let page = 1;
+		let allTags = [];
+		let hasMore;
+
+		do {
+			const url = `https://api.github.com/repos/${owner}/${repo}/tags?per_page=${perPage}&page=${page}`;
+			const response = await this.fetch(url);
+			const pageTags = response.data.map((tag) => tag.name);
+			allTags = allTags.concat(pageTags);
+			hasMore = response.data.length === perPage;
+			page++;
+		} while (hasMore);
+
+		return allTags;
+	}
+
+	delay(ms) {
+		return new Promise((resolve) => setTimeout(resolve, ms));
+	}
+
+	async downloadTag(library, tag, filePath) {
 		const [owner, repo] = library.split('/');
 		const url = `https://github.com/${owner}/${repo}/archive/refs/tags/${tag}.zip`;
 
 		try {
-			const response = await axios({
-				url,
-				method: 'GET',
-				responseType: 'stream',
-			});
+			const response = await this.fetchContent(url);
 
 			// TODO: Move this to FileSystemHelper?
 			const writer = fs.createWriteStream(filePath);
@@ -161,6 +162,39 @@ class H5pGitHubClient {
 		} catch (error) {
 			console.error(`Unknown error while downloading ${library} at tag ${tag}:`, error);
 		}
+	}
+
+	async fetch(url) {
+		const headers = this.getHeaders();
+		const response = await axios.get(url, { headers });
+
+		// throw if not 2xx response
+		if (response.status < 200 || response.status >= 300) {
+			throw new Error(`GitHub API request failed with status ${response.status}`);
+		}
+
+		return response;
+	}
+
+	async fetchContent(url) {
+		const response = await axios({
+			url,
+			method: 'GET',
+			responseType: 'stream',
+		});
+
+		// throw if not 2xx response
+		if (response.status < 200 || response.status >= 300) {
+			throw new Error(`GitHub content request failed with status ${response.status}`);
+		}
+
+		return response;
+	}
+
+	getHeaders() {
+		const headers = this.token ? { Authorization: `token ${this.token}` } : {};
+
+		return headers;
 	}
 }
 
