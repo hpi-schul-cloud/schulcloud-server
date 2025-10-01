@@ -33,7 +33,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 			return false;
 		}
 
-		if (user.school.id !== authorizable.schoolId) {
+		if (authorizable.schoolId && user.school.id !== authorizable.schoolId) {
 			return false;
 		}
 
