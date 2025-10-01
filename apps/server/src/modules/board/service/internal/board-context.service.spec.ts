@@ -69,7 +69,7 @@ describe(BoardContextService.name, () => {
 				return { column };
 			};
 
-			it('should return empty empty auth context', async () => {
+			it('should return empty auth context', async () => {
 				const { column } = setup();
 
 				const result = await service.getBoardAuthContext(column);
