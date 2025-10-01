@@ -13,7 +13,7 @@ import {
 } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { CourseEntity, CourseRepo } from '../repo';
+import { CourseRepo } from '../repo';
 
 @Injectable()
 export class DeleteUserCourseDataStep extends SagaStep<'deleteUserData'> {
@@ -66,5 +66,4 @@ export class DeleteUserCourseDataStep extends SagaStep<'deleteUserData'> {
 
 		return result;
 	}
-
 }
