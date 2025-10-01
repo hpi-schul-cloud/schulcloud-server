@@ -22,7 +22,7 @@ export class BoardContextService {
 		private readonly roomMembershipService: RoomMembershipService
 	) {}
 
-	public async getUsersWithBoardRoles(rootNode: AnyBoardNode): Promise<BoardAuthContext> {
+	public async getBoardAuthContext(rootNode: AnyBoardNode): Promise<BoardAuthContext> {
 		if (!('context' in rootNode)) {
 			return { users: [], schoolId: undefined };
 		}

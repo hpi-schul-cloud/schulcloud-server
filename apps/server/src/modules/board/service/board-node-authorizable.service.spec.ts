@@ -118,7 +118,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 			];
 			const schoolId = 'schoolId';
 			const authContext: BoardAuthContext = { users: usersWithRoles, schoolId };
-			boardContextService.getUsersWithBoardRoles.mockResolvedValue(authContext);
+			boardContextService.getBoardAuthContext.mockResolvedValue(authContext);
 			const boardSettings = { canRoomEditorManageVideoconference: true };
 			boardContextService.getBoardSettings.mockResolvedValueOnce(boardSettings);
 

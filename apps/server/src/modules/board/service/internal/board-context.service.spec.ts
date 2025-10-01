@@ -72,7 +72,7 @@ describe(BoardContextService.name, () => {
 			it('should return empty empty auth context', async () => {
 				const { column } = setup();
 
-				const result = await service.getUsersWithBoardRoles(column);
+				const result = await service.getBoardAuthContext(column);
 
 				expect(result).toStrictEqual({ users: [], schoolId: undefined });
 			});
@@ -90,7 +90,7 @@ describe(BoardContextService.name, () => {
 			it('should throw an error', async () => {
 				const { columnBoard } = setup();
 
-				await expect(service.getUsersWithBoardRoles(columnBoard)).rejects.toThrowError();
+				await expect(service.getBoardAuthContext(columnBoard)).rejects.toThrowError();
 			});
 		});
 
@@ -106,7 +106,7 @@ describe(BoardContextService.name, () => {
 			it('should return user id + editor & admin role', async () => {
 				const { columnBoard } = setup();
 
-				const result = await service.getUsersWithBoardRoles(columnBoard);
+				const result = await service.getBoardAuthContext(columnBoard);
 				const expected: BoardAuthContext = {
 					users: [
 						{
@@ -137,7 +137,7 @@ describe(BoardContextService.name, () => {
 				it('should return their information + editor & admin role', async () => {
 					const { columnBoard, teacher, course } = setup();
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
+					const result = await service.getBoardAuthContext(columnBoard);
 					const expected: BoardAuthContext = {
 						users: [
 							{
@@ -169,7 +169,7 @@ describe(BoardContextService.name, () => {
 				it('should return their information + editor & admin role', async () => {
 					const { columnBoard, substitutionTeacher, course } = setup();
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
+					const result = await service.getBoardAuthContext(columnBoard);
 					const expected: BoardAuthContext = {
 						users: [
 							{
@@ -201,7 +201,7 @@ describe(BoardContextService.name, () => {
 				it('should return their information + reader role', async () => {
 					const { columnBoard, student, course } = setup();
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
+					const result = await service.getBoardAuthContext(columnBoard);
 					const expected: BoardAuthContext = {
 						users: [
 							{
@@ -232,7 +232,7 @@ describe(BoardContextService.name, () => {
 				it('should call the course repo', async () => {
 					const { columnBoard } = setup();
 
-					await service.getUsersWithBoardRoles(columnBoard);
+					await service.getBoardAuthContext(columnBoard);
 
 					expect(courseService.findById).toHaveBeenCalledWith(columnBoard.context.id);
 				});
@@ -269,7 +269,7 @@ describe(BoardContextService.name, () => {
 						schoolId: user.school.id,
 					});
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
+					const result = await service.getBoardAuthContext(columnBoard);
 					const expected: BoardAuthContext = {
 						users: [
 							{
@@ -313,7 +313,7 @@ describe(BoardContextService.name, () => {
 						schoolId: user.school.id,
 					});
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
+					const result = await service.getBoardAuthContext(columnBoard);
 					const expected: BoardAuthContext = {
 						users: [
 							{
@@ -357,7 +357,7 @@ describe(BoardContextService.name, () => {
 						schoolId: user.school.id,
 					});
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
+					const result = await service.getBoardAuthContext(columnBoard);
 					const expected: BoardAuthContext = {
 						users: [
 							{
@@ -401,7 +401,7 @@ describe(BoardContextService.name, () => {
 						schoolId: user.school.id,
 					});
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
+					const result = await service.getBoardAuthContext(columnBoard);
 					const expected: BoardAuthContext = {
 						users: [
 							{
@@ -442,7 +442,7 @@ describe(BoardContextService.name, () => {
 						schoolId: user.school.id,
 					});
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
+					const result = await service.getBoardAuthContext(columnBoard);
 					const expected: BoardAuthContext = {
 						users: [
 							{
