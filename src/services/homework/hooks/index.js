@@ -115,9 +115,7 @@ const hasViewPermissionAfter = async (hook) => {
 		const isTeacherCheck =
 			((e.courseId || {}).teacherIds || []).includes(userId) ||
 			((e.courseId || {}).substitutionIds || []).includes(userId);
-		const isStudent =
-			e.courseId != null &&
-			((e.courseId || {}).userIds || []).includes(userId);
+		const isStudent = e.courseId != null && ((e.courseId || {}).userIds || []).includes(userId);
 		const published = new Date(e.availableDate) < new Date() && !e.private;
 
 		return isPartOfSchool && (isOwnerCheck || isTeacherCheck || (isStudent && published));
@@ -125,8 +123,16 @@ const hasViewPermissionAfter = async (hook) => {
 
 	let data = JSON.parse(JSON.stringify(hook.result.data || hook.result));
 	if (data[0] !== undefined) {
-		data = data.filter(async (o)=> await hasPermission(o));
-	} else if (data.schoolId !== undefined && !await hasPermission(data)) {
+		const permissionResults = await Promise.all(
+			data.map(async (o) => ({
+				o,
+				hp: await hasPermission(o),
+			}))
+		);
+
+		const filteredResults = permissionResults.filter((result) => result.hp === true);
+		data = filteredResults.map((e) => e.o);
+	} else if (data.schoolId !== undefined && !(await hasPermission(data))) {
 		return Promise.reject(new Forbidden("You don't have permissions!"));
 	}
 	if (hook.result.data) {
