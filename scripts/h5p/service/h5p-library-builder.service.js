@@ -584,9 +584,7 @@ class H5pLibraryBuilderService {
 	}
 
 	logBuildingLibraryDependency(dependency, library, tag) {
-		console.log(
-			`Building dependency ${dependency.machineName}-${dependency.majorVersion}.${dependency.minorVersion}.x from GitHub for ${library}-${tag}.`
-		);
+		console.log(`Building dependency ${LibraryName.toUberName(dependency)}.x from GitHub for ${library}-${tag}.`);
 	}
 
 	logGithubRepositoryNotFound(library) {
@@ -594,9 +592,7 @@ class H5pLibraryBuilderService {
 	}
 
 	logTagNotFound(dependency) {
-		console.log(
-			`No suitable tag found for dependency ${dependency.machineName}-${dependency.majorVersion}.${dependency.minorVersion}.x .`
-		);
+		console.log(`No suitable tag found for dependency ${LibraryName.toUberName(dependency)}.x .`);
 	}
 
 	logBuildingLibraryDependencySuccess(depName, depTag) {
