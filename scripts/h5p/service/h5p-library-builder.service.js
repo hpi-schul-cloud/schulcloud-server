@@ -1,6 +1,7 @@
 const childProcess = require('child_process');
 const fileSystemHelper = require('../helper/file-system.helper.js');
 const H5PGitHubClient = require('./h5p-github.client.js');
+const { LibraryName } = require('@lumieducation/h5p-server');
 
 class H5pLibraryBuilderService {
 	constructor(libraryRepoMap, tempFolderPath) {
@@ -98,7 +99,9 @@ class H5pLibraryBuilderService {
 
 		this.logStartBuildingOfDependenciesFromGitHub(library, tag);
 
-		const dependencies = this.getDependenciesFromLibraryJson(library, tag);
+		let dependencies = this.getDependenciesFromLibraryJson(library, tag);
+		const softDependencies = this.getSoftDependenciesFromSemantics(library, tag);
+		dependencies = dependencies.concat(softDependencies);
 		if (dependencies.length === 0) {
 			this.logNoDependenciesFoundForLibrary(library, tag);
 			return libResult ? [libResult] : [];
@@ -506,6 +509,50 @@ class H5pLibraryBuilderService {
 		);
 
 		return dependencies;
+	}
+
+	getSoftDependenciesFromSemantics(repoName, tag) {
+		const softDependencies = [];
+
+		const { folderPath } = fileSystemHelper.createTempFolder(this.tempFolderPath, repoName, tag);
+		const semanticsJsonPath = fileSystemHelper.getSemanticsJsonPath(folderPath);
+		const semanticsFileExists = fileSystemHelper.pathExists(semanticsJsonPath);
+		if (semanticsFileExists) {
+			const semantics = fileSystemHelper.readJsonFile(semanticsJsonPath);
+			if (Array.isArray(semantics)) {
+				const libraryOptions = this.findLibraryOptions(semantics);
+				for (const libraryOption of libraryOptions) {
+					const libraryName = LibraryName.fromUberName(libraryOption, { useWhitespace: true, useHyphen: false });
+					softDependencies.push(libraryName);
+				}
+			}
+		}
+
+		return softDependencies;
+	}
+
+	findLibraryOptions(semantics) {
+		const results = [];
+
+		function search(obj) {
+			if (obj && typeof obj === 'object') {
+				if ('type' in obj && obj.type && obj.type === 'library' && 'options' in obj && Array.isArray(obj.options)) {
+					results.push(...obj.options);
+				}
+				for (const key in obj) {
+					const value = obj[key];
+					if (Array.isArray(value)) {
+						value.forEach(search);
+					} else if (typeof value === 'object' && value !== null) {
+						search(value);
+					}
+				}
+			}
+		}
+
+		semantics.forEach(search);
+
+		return results;
 	}
 
 	async buildLibraryDependency(dependency, library, tag, availableVersions) {
