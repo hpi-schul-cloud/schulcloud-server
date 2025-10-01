@@ -6,6 +6,7 @@ export interface RuntimeConfigProperties {
 	key: string;
 	type: RuntimeConfigValueType;
 	value: string;
+	description?: string;
 }
 
 @Entity()
@@ -15,6 +16,7 @@ export class RuntimeConfigEntity extends BaseEntity implements RuntimeConfigProp
 		this.key = props.key;
 		this.type = props.type;
 		this.value = props.value;
+		this.description = props.description;
 	}
 
 	@Property({ nullable: false })
@@ -25,4 +27,7 @@ export class RuntimeConfigEntity extends BaseEntity implements RuntimeConfigProp
 
 	@Property({ nullable: false })
 	value: string;
+
+	@Property({ nullable: true })
+	description?: string;
 }

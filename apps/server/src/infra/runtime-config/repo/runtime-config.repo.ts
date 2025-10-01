@@ -1,21 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { RuntimeConfigValue, RuntimeConfigValueAndType } from '../domain/runtime-config-value.do';
+import {
+	RuntimeConfigDefaults,
+	RuntimeConfigValue,
+	RuntimeConfigValueAndType,
+} from '../domain/runtime-config-value.do';
 import { RuntimeConfigEntity } from './entity/runtime-config.entity';
 import { RuntimeConfigRepo } from '../domain/runtime-config.repo.interface';
 import { EntityData, EntityName } from '@mikro-orm/core/typings';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { RuntimeConfigValueFactory } from '../domain/runtime-config-value.factory';
 
 @Injectable()
 export class RuntimeConfigMikroOrmRepo
 	extends BaseDomainObjectRepo<RuntimeConfigValue, RuntimeConfigEntity>
 	implements RuntimeConfigRepo
 {
+	constructor(
+		protected readonly _em: EntityManager,
+		@Inject('RUNTIME_CONFIG_DEFINITIONS') private defaults: RuntimeConfigDefaults[]
+	) {
+		super(_em);
+	}
+
 	get entityName(): EntityName<RuntimeConfigEntity> {
+		this._em.getRepository(RuntimeConfigEntity);
 		return RuntimeConfigEntity;
 	}
 
 	public async getByKey(key: string): Promise<RuntimeConfigValue> {
-		const entity = await this.em.findOneOrFail(RuntimeConfigEntity, { key });
+		const entity = await this._em.findOne(RuntimeConfigEntity, { key });
+		if (!entity) {
+			const defaultConfig = this.defaults.find((def) => def.key === key);
+			if (defaultConfig) {
+				return RuntimeConfigValueFactory.build({ ...defaultConfig, id: new ObjectId().toHexString() });
+			}
+			// TODO: Loggable
+			throw new Error(`Runtime Config for key: ${key} does not exist`);
+		}
 
 		const runtimeConfigValue = this.mapToDo(entity);
 		return runtimeConfigValue;
@@ -23,10 +45,11 @@ export class RuntimeConfigMikroOrmRepo
 
 	protected mapToDo(entity: RuntimeConfigEntity): RuntimeConfigValue {
 		const typeAndValue = this.getTypeAndValue(entity);
-		return new RuntimeConfigValue({
+		return RuntimeConfigValueFactory.build({
 			id: entity.id,
 			key: entity.key,
 			...typeAndValue,
+			description: entity.description,
 		});
 	}
 
@@ -55,6 +78,7 @@ export class RuntimeConfigMikroOrmRepo
 			key: props.key,
 			type: props.type,
 			value: props.value.toString(),
+			description: props.description,
 		};
 	}
 }

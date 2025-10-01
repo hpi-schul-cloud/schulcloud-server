@@ -1,10 +1,11 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 
-export type RuntimeConfigValueProps = {
+export type RuntimeConfigValueProps = RuntimeConfigDefaults & AuthorizableObject;
+
+export type RuntimeConfigDefaults = {
 	key: string;
 	description?: string;
-} & RuntimeConfigValueAndType &
-	AuthorizableObject;
+} & RuntimeConfigValueAndType;
 
 export type RuntimeConfigValueAndType =
 	| { value: string; type: 'string' }
@@ -13,4 +14,10 @@ export type RuntimeConfigValueAndType =
 
 export type RuntimeConfigValueType = 'string' | 'number' | 'boolean';
 
-export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> {}
+export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> {
+	public setValue(value: string | number | boolean): RuntimeConfigValue {
+		// TODO: make this impossible to mess up.
+		this.props.value = value;
+		return this;
+	}
+}
