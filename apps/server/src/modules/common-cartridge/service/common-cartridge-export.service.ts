@@ -1,35 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { Logger } from '@core/logger';
+import { BoardResponse, BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { BoardResponse, BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import archiver from 'archiver';
+import { Stream } from 'node:stream';
 import { CardClientAdapter } from '../common-cartridge-client/card-client';
-import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
+import {
+	CardListResponseDto,
+	CardResponseDto,
+	FileElementResponseDto,
+	LinkElementResponseDto,
+	RichTextElementResponseDto,
+} from '../common-cartridge-client/card-client/dto';
+import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
+import { CardResponseElementsInnerDto } from '../common-cartridge-client/card-client/types/card-response-elements-inner.type';
 import { LessonClientAdapter } from '../common-cartridge-client/lesson-client';
-import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
-import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
 import { LessonContentDto } from '../common-cartridge-client/lesson-client/dto';
-import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
+import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import {
 	BoardColumnBoardDto,
 	BoardElementDto,
 	BoardLessonDto,
 	BoardTaskDto,
 } from '../common-cartridge-client/room-client/dto';
-import { createIdentifier } from '../export/utils';
 import { BoardElementDtoType } from '../common-cartridge-client/room-client/enums/board-element.enum';
-import { CardResponseElementsInnerDto } from '../common-cartridge-client/card-client/types/card-response-elements-inner.type';
-import {
-	CardListResponseDto,
-	CardResponseDto,
-	RichTextElementResponseDto,
-	LinkElementResponseDto,
-	FileElementResponseDto,
-} from '../common-cartridge-client/card-client/dto';
-import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
+import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
+import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
+import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
+import { createIdentifier } from '../export/utils';
+import { CommonCartridgeExportMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
+import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
+import { CommonCartridgeExportResponse } from './common-cartridge-export.response';
 
-type FileMetadataBuffer = { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto };
+type FileMetadataAndStream = { name: string; file: Stream; fileDto: FileDto };
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -41,8 +46,11 @@ export class CommonCartridgeExportService {
 		private readonly lessonClientAdapter: LessonClientAdapter,
 		private readonly filesMetadataClientAdapter: FilesStorageClientAdapterService,
 		private readonly filesStorageClientAdapter: FilesStorageClientAdapter,
-		private readonly mapper: CommonCartridgeExportMapper
-	) {}
+		private readonly mapper: CommonCartridgeExportMapper,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(CommonCartridgeExportService.name);
+	}
 
 	public async exportCourse(
 		courseId: string,
@@ -50,26 +58,84 @@ export class CommonCartridgeExportService {
 		exportedTopics: string[],
 		exportedTasks: string[],
 		exportedColumnBoards: string[]
-	): Promise<Buffer> {
-		const builder = new CommonCartridgeFileBuilder(this.mapper.mapCourseToManifest(version, courseId));
+	): Promise<CommonCartridgeExportResponse> {
+		this.logger.debug(
+			new CommonCartridgeExportMessageLoggable('New Common-Cartridge export started', { courseId, version })
+		);
+
+		const archive = this.createArchiver(courseId);
+		const builder = new CommonCartridgeFileBuilder(
+			this.mapper.mapCourseToManifest(version, courseId),
+			archive,
+			this.logger
+		);
 
 		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Loaded course metadata', { courseId }));
 
 		builder.addMetadata(this.mapper.mapCourseToMetadata(courseCommonCartridgeMetadata));
 
 		// get room board and the structure of the course
 		const roomBoard = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Loaded roomboard of course', { courseId }));
 
 		// add lessons to organization
 		await this.addLessons(builder, version, roomBoard.elements, exportedTopics);
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Added lessons of course', { courseId }));
 
 		// add tasks to organization
 		await this.addTasks(builder, version, roomBoard.elements, exportedTasks);
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Added tasks of course', { courseId }));
 
 		// add column boards and cards to organization
 		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Added boards of course', { courseId }));
 
-		return builder.build();
+		builder.build();
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Built archive', { courseId }));
+
+		const response: CommonCartridgeExportResponse = {
+			data: builder.archive,
+			name: `${roomBoard.title}-${new Date().toISOString()}.imscc`,
+		};
+
+		this.logger.debug(new CommonCartridgeExportMessageLoggable('Finished export of course', { courseId }));
+
+		return response;
+	}
+
+	private createArchiver(courseId: string): archiver.Archiver {
+		const archive = archiver('zip');
+
+		archive.on('warning', (err) => {
+			this.logger.warning(
+				new CommonCartridgeExportMessageLoggable('Warning while creating archive', {
+					courseId,
+					cause: JSON.stringify(err),
+				})
+			);
+		});
+
+		archive.on('progress', (progress) => {
+			this.logger.debug(
+				new CommonCartridgeExportMessageLoggable(
+					`Progress for CC export: ${progress.entries.processed} of ${progress.entries.total} total processed.`,
+					{ courseId, ...progress }
+				)
+			);
+		});
+
+		archive.on('error', (err) => {
+			throw new InternalServerErrorException('Error while creating archive', { cause: err });
+		});
+
+		archive.on('close', () => {
+			this.logger.debug(
+				new CommonCartridgeExportMessageLoggable(`Archive closed. Length: ${archive.pointer()}`, { courseId })
+			);
+		});
+
+		return archive;
 	}
 
 	private addComponentToOrganization(
@@ -139,10 +205,10 @@ export class CommonCartridgeExportService {
 
 				await Promise.all(
 					filesMetadata.map(async (fileMetadata) => {
-						const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
+						const fileStream = await this.filesStorageClientAdapter.getStream(fileMetadata.id, fileMetadata.name);
 
-						if (file) {
-							const resource = this.mapper.mapFileToResource(fileMetadata, file);
+						if (fileStream) {
+							const resource = this.mapper.mapFileToResource(fileMetadata, fileStream);
 
 							taskOrganization.addResource(resource);
 						}
@@ -213,31 +279,23 @@ export class CommonCartridgeExportService {
 			title: card.title ?? '',
 			identifier: createIdentifier(card.id),
 		});
-		const fileMetadataBufferArray = await Promise.all(
-			card.elements.map((element) => this.downloadAndStoreFiles(element))
-		).then((array) => array.flat());
 
-		await Promise.all(
-			card.elements.map((element) =>
-				this.addCardElementToOrganization(element, cardOrganization, fileMetadataBufferArray)
-			)
-		);
+		await Promise.all(card.elements.map((element) => this.addCardElementToOrganization(element, cardOrganization)));
 	}
 
-	private async downloadAndStoreFiles(element: CardResponseElementsInnerDto): Promise<FileMetadataBuffer[]> {
-		const fileMetadataBufferArray: FileMetadataBuffer[] = [];
+	private async openStreamsToFiles(element: CardResponseElementsInnerDto): Promise<FileMetadataAndStream[]> {
+		const fileMetadataBufferArray: FileMetadataAndStream[] = [];
 
 		if (element.type === ContentElementType.FILE) {
 			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
 
 			for (const fileMetadata of filesMetadata) {
-				const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
+				const file = await this.filesStorageClientAdapter.getStream(fileMetadata.id, fileMetadata.name);
 
 				if (file) {
 					fileMetadataBufferArray.push({
-						id: element.id,
 						name: fileMetadata.name,
-						fileBuffer: file,
+						file,
 						fileDto: fileMetadata,
 					});
 				}
@@ -246,11 +304,10 @@ export class CommonCartridgeExportService {
 		return fileMetadataBufferArray;
 	}
 
-	private addCardElementToOrganization(
+	private async addCardElementToOrganization(
 		element: CardResponseElementsInnerDto,
-		cardOrganization: CommonCartridgeOrganizationNode,
-		fileMetadataBufferArray: FileMetadataBuffer[]
-	): void {
+		cardOrganization: CommonCartridgeOrganizationNode
+	): Promise<void> {
 		switch (element.type) {
 			case ContentElementType.RICH_TEXT:
 				const resource = this.mapper.mapRichTextElementToResource(element as RichTextElementResponseDto);
@@ -261,15 +318,18 @@ export class CommonCartridgeExportService {
 				cardOrganization.addResource(linkResource);
 				break;
 			case ContentElementType.FILE:
-				for (const fileMetadata of fileMetadataBufferArray) {
-					const { id, fileBuffer, fileDto } = fileMetadata;
+				const metadataAndStreams = await this.openStreamsToFiles(element);
 
-					if (fileBuffer && element.id === id) {
-						const fileResource = this.mapper.mapFileToResource(fileDto, fileBuffer, element as FileElementResponseDto);
+				for (const fileMetadata of metadataAndStreams) {
+					const { file, fileDto } = fileMetadata;
+
+					if (file) {
+						const fileResource = this.mapper.mapFileToResource(fileDto, file, element as FileElementResponseDto);
 
 						cardOrganization.addResource(fileResource);
 					}
 				}
+
 				break;
 		}
 	}
