@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
-import { ApplicationSettingsConfig } from '../../application-settings.config';
+import type { ServerConfig } from '../..';
 import { Timezone } from '../../types/timezone.enum';
 
 export class ConfigResponse {
@@ -239,7 +239,7 @@ export class ConfigResponse {
 	@ApiProperty({ type: String, nullable: true })
 	ROOM_MEMBER_INFO_URL: string | null;
 
-	constructor(config: ApplicationSettingsConfig) {
+	constructor(config: ServerConfig) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
 		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN;
