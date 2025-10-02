@@ -14,9 +14,9 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
+import { BoardExternalReferenceType, BoardRoles } from '../../domain';
 import { columnBoardFactory, columnFactory } from '../../testing';
-import { BoardContextService } from './board-context.service';
+import { BoardAuthContext, BoardContextService } from './board-context.service';
 import { RoomService } from '@modules/room';
 
 describe(BoardContextService.name, () => {
@@ -69,12 +69,12 @@ describe(BoardContextService.name, () => {
 				return { column };
 			};
 
-			it('should return empty array', async () => {
+			it('should return empty auth context', async () => {
 				const { column } = setup();
 
-				const result = await service.getUsersWithBoardRoles(column);
+				const result = await service.getBoardAuthContext(column);
 
-				expect(result).toHaveLength(0);
+				expect(result).toStrictEqual({ users: [], schoolId: undefined });
 			});
 		});
 
@@ -90,7 +90,7 @@ describe(BoardContextService.name, () => {
 			it('should throw an error', async () => {
 				const { columnBoard } = setup();
 
-				await expect(service.getUsersWithBoardRoles(columnBoard)).rejects.toThrowError();
+				await expect(service.getBoardAuthContext(columnBoard)).rejects.toThrowError();
 			});
 		});
 
@@ -106,13 +106,16 @@ describe(BoardContextService.name, () => {
 			it('should return user id + editor & admin role', async () => {
 				const { columnBoard } = setup();
 
-				const result = await service.getUsersWithBoardRoles(columnBoard);
-				const expected: UserWithBoardRoles[] = [
-					{
-						userId: columnBoard.context.id,
-						roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
-					},
-				];
+				const result = await service.getBoardAuthContext(columnBoard);
+				const expected: BoardAuthContext = {
+					users: [
+						{
+							userId: columnBoard.context.id,
+							roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
+						},
+					],
+					schoolId: undefined,
+				};
 
 				expect(result).toEqual(expected);
 			});
@@ -128,21 +131,24 @@ describe(BoardContextService.name, () => {
 					});
 					courseService.findById.mockResolvedValue(course);
 
-					return { columnBoard, teacher };
+					return { columnBoard, teacher, course };
 				};
 
 				it('should return their information + editor & admin role', async () => {
-					const { columnBoard, teacher } = setup();
+					const { columnBoard, teacher, course } = setup();
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
-					const expected: UserWithBoardRoles[] = [
-						{
-							userId: teacher.id,
-							firstName: teacher.firstName,
-							lastName: teacher.lastName,
-							roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
-						},
-					];
+					const result = await service.getBoardAuthContext(columnBoard);
+					const expected: BoardAuthContext = {
+						users: [
+							{
+								userId: teacher.id,
+								firstName: teacher.firstName,
+								lastName: teacher.lastName,
+								roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
+							},
+						],
+						schoolId: course.school.id,
+					};
 
 					expect(result).toEqual(expected);
 				});
@@ -157,21 +163,24 @@ describe(BoardContextService.name, () => {
 					});
 					courseService.findById.mockResolvedValue(course);
 
-					return { columnBoard, substitutionTeacher };
+					return { columnBoard, substitutionTeacher, course };
 				};
 
 				it('should return their information + editor & admin role', async () => {
-					const { columnBoard, substitutionTeacher } = setup();
+					const { columnBoard, substitutionTeacher, course } = setup();
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
-					const expected: UserWithBoardRoles[] = [
-						{
-							userId: substitutionTeacher.id,
-							firstName: substitutionTeacher.firstName,
-							lastName: substitutionTeacher.lastName,
-							roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
-						},
-					];
+					const result = await service.getBoardAuthContext(columnBoard);
+					const expected: BoardAuthContext = {
+						users: [
+							{
+								userId: substitutionTeacher.id,
+								firstName: substitutionTeacher.firstName,
+								lastName: substitutionTeacher.lastName,
+								roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
+							},
+						],
+						schoolId: course.school.id,
+					};
 
 					expect(result).toEqual(expected);
 				});
@@ -186,21 +195,24 @@ describe(BoardContextService.name, () => {
 					});
 					courseService.findById.mockResolvedValue(course);
 
-					return { columnBoard, student };
+					return { columnBoard, student, course };
 				};
 
 				it('should return their information + reader role', async () => {
-					const { columnBoard, student } = setup();
+					const { columnBoard, student, course } = setup();
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
-					const expected: UserWithBoardRoles[] = [
-						{
-							userId: student.id,
-							firstName: student.firstName,
-							lastName: student.lastName,
-							roles: [BoardRoles.READER],
-						},
-					];
+					const result = await service.getBoardAuthContext(columnBoard);
+					const expected: BoardAuthContext = {
+						users: [
+							{
+								userId: student.id,
+								firstName: student.firstName,
+								lastName: student.lastName,
+								roles: [BoardRoles.READER],
+							},
+						],
+						schoolId: course.school.id,
+					};
 
 					expect(result).toEqual(expected);
 				});
@@ -220,7 +232,7 @@ describe(BoardContextService.name, () => {
 				it('should call the course repo', async () => {
 					const { columnBoard } = setup();
 
-					await service.getUsersWithBoardRoles(columnBoard);
+					await service.getBoardAuthContext(columnBoard);
 
 					expect(courseService.findById).toHaveBeenCalledWith(columnBoard.context.id);
 				});
@@ -242,11 +254,13 @@ describe(BoardContextService.name, () => {
 						context: { id: room.id, type: BoardExternalReferenceType.Room },
 					});
 
-					return { columnBoard, role: roomOwnerRole, user };
+					roomService.getSingleRoom.mockResolvedValueOnce(room);
+
+					return { columnBoard, role: roomOwnerRole, user, room };
 				};
 
 				it('should return their information + admin & editor role', async () => {
-					const { columnBoard, role, user } = setup();
+					const { columnBoard, role, user, room } = setup();
 
 					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
 						id: 'foo',
@@ -255,13 +269,16 @@ describe(BoardContextService.name, () => {
 						schoolId: user.school.id,
 					});
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
-					const expected: UserWithBoardRoles[] = [
-						{
-							userId: user.id,
-							roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
-						},
-					];
+					const result = await service.getBoardAuthContext(columnBoard);
+					const expected: BoardAuthContext = {
+						users: [
+							{
+								userId: user.id,
+								roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
+							},
+						],
+						schoolId: room.schoolId,
+					};
 
 					expect(result).toEqual(expected);
 				});
@@ -281,11 +298,13 @@ describe(BoardContextService.name, () => {
 						context: { id: room.id, type: BoardExternalReferenceType.Room },
 					});
 
-					return { columnBoard, role: roomAdminRole, user };
+					roomService.getSingleRoom.mockResolvedValueOnce(room);
+
+					return { columnBoard, role: roomAdminRole, user, room };
 				};
 
 				it('should return their information + admin & editor role', async () => {
-					const { columnBoard, role, user } = setup();
+					const { columnBoard, role, user, room } = setup();
 
 					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
 						id: 'foo',
@@ -294,13 +313,16 @@ describe(BoardContextService.name, () => {
 						schoolId: user.school.id,
 					});
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
-					const expected: UserWithBoardRoles[] = [
-						{
-							userId: user.id,
-							roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
-						},
-					];
+					const result = await service.getBoardAuthContext(columnBoard);
+					const expected: BoardAuthContext = {
+						users: [
+							{
+								userId: user.id,
+								roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
+							},
+						],
+						schoolId: room.schoolId,
+					};
 
 					expect(result).toEqual(expected);
 				});
@@ -320,11 +342,13 @@ describe(BoardContextService.name, () => {
 						context: { id: room.id, type: BoardExternalReferenceType.Room },
 					});
 
-					return { columnBoard, role: roomEditorRole, user };
+					roomService.getSingleRoom.mockResolvedValueOnce(room);
+
+					return { columnBoard, role: roomEditorRole, user, room };
 				};
 
 				it('should return their information + editor role', async () => {
-					const { columnBoard, role, user } = setup();
+					const { columnBoard, role, user, room } = setup();
 
 					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
 						id: 'foo',
@@ -333,13 +357,16 @@ describe(BoardContextService.name, () => {
 						schoolId: user.school.id,
 					});
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
-					const expected: UserWithBoardRoles[] = [
-						{
-							userId: user.id,
-							roles: [BoardRoles.EDITOR],
-						},
-					];
+					const result = await service.getBoardAuthContext(columnBoard);
+					const expected: BoardAuthContext = {
+						users: [
+							{
+								userId: user.id,
+								roles: [BoardRoles.EDITOR],
+							},
+						],
+						schoolId: room.schoolId,
+					};
 
 					expect(result).toEqual(expected);
 				});
@@ -359,11 +386,13 @@ describe(BoardContextService.name, () => {
 						context: { id: room.id, type: BoardExternalReferenceType.Room },
 					});
 
-					return { columnBoard, role: roomViewerRole, user };
+					roomService.getSingleRoom.mockResolvedValueOnce(room);
+
+					return { columnBoard, role: roomViewerRole, user, room };
 				};
 
 				it('should return their information + reader role', async () => {
-					const { columnBoard, role, user } = setup();
+					const { columnBoard, role, user, room } = setup();
 
 					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
 						id: 'foo',
@@ -372,13 +401,16 @@ describe(BoardContextService.name, () => {
 						schoolId: user.school.id,
 					});
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
-					const expected: UserWithBoardRoles[] = [
-						{
-							userId: user.id,
-							roles: [BoardRoles.READER],
-						},
-					];
+					const result = await service.getBoardAuthContext(columnBoard);
+					const expected: BoardAuthContext = {
+						users: [
+							{
+								userId: user.id,
+								roles: [BoardRoles.READER],
+							},
+						],
+						schoolId: room.schoolId,
+					};
 
 					expect(result).toEqual(expected);
 				});
@@ -395,11 +427,13 @@ describe(BoardContextService.name, () => {
 						context: { id: room.id, type: BoardExternalReferenceType.Room },
 					});
 
-					return { columnBoard, role, user };
+					roomService.getSingleRoom.mockResolvedValueOnce(room);
+
+					return { columnBoard, role, user, room };
 				};
 
 				it('should return their information + no role', async () => {
-					const { columnBoard, role, user } = setup();
+					const { columnBoard, role, user, room } = setup();
 
 					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
 						id: 'foo',
@@ -408,13 +442,16 @@ describe(BoardContextService.name, () => {
 						schoolId: user.school.id,
 					});
 
-					const result = await service.getUsersWithBoardRoles(columnBoard);
-					const expected: UserWithBoardRoles[] = [
-						{
-							userId: user.id,
-							roles: [],
-						},
-					];
+					const result = await service.getBoardAuthContext(columnBoard);
+					const expected: BoardAuthContext = {
+						users: [
+							{
+								userId: user.id,
+								roles: [],
+							},
+						],
+						schoolId: room.schoolId,
+					};
 
 					expect(result).toEqual(expected);
 				});

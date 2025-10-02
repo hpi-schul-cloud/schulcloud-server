@@ -47,7 +47,7 @@ describe(`content element update content (api)`, () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-			const course = courseEntityFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({

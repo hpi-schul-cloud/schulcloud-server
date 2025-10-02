@@ -94,6 +94,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
+					schoolId: user.school.id,
 					boardContextSettings: {},
 				});
 
@@ -122,6 +123,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
+					schoolId: user.school.id,
 					boardContextSettings: {},
 				});
 
@@ -151,6 +153,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
+					schoolId: user.school.id,
 					boardContextSettings: {},
 				});
 
@@ -181,6 +184,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
+					schoolId: user.school.id,
 					boardContextSettings: {},
 				});
 
@@ -209,6 +213,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
+					schoolId: user.school.id,
 					boardContextSettings: {},
 				});
 
@@ -238,6 +243,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: anyBoardNode,
 						rootNode: columnBoard,
+						schoolId: user.school.id,
 						boardContextSettings: {},
 					});
 
@@ -274,6 +280,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: anyBoardNode,
 						rootNode: columnBoard,
+						schoolId: user.school.id,
 						boardContextSettings: {},
 					});
 
@@ -313,6 +320,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
+						schoolId: user.school.id,
 						boardContextSettings: {},
 					});
 
@@ -349,6 +357,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
+						schoolId: user.school.id,
 						boardContextSettings: {},
 					});
 
@@ -385,6 +394,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
+						schoolId: user.school.id,
 						boardContextSettings: {},
 					});
 
@@ -426,6 +436,7 @@ describe(BoardNodeRule.name, () => {
 						boardNode: fileElement,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
+						schoolId: user.school.id,
 						boardContextSettings: {},
 					});
 
@@ -464,6 +475,7 @@ describe(BoardNodeRule.name, () => {
 						boardNode: fileElement,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
+						schoolId: user.school.id,
 						boardContextSettings: {},
 					});
 
@@ -502,6 +514,7 @@ describe(BoardNodeRule.name, () => {
 						boardNode: anyBoardDo,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
+						schoolId: user.school.id,
 						boardContextSettings: {},
 					});
 
@@ -546,6 +559,7 @@ describe(BoardNodeRule.name, () => {
 						boardNode: anyBoardDo,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
+						schoolId: user.school.id,
 						boardContextSettings: {},
 					});
 
@@ -566,6 +580,7 @@ describe(BoardNodeRule.name, () => {
 						parentNode: submissionItem,
 						boardNode: notAllowedChildElement,
 						rootNode: columnBoard,
+						schoolId: user.school.id,
 						boardContextSettings: {},
 					});
 
@@ -590,6 +605,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
+							schoolId: user.school.id,
 							boardContextSettings: {},
 						});
 
@@ -626,6 +642,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
+							schoolId: user.school.id,
 							boardContextSettings: {},
 						});
 
@@ -664,6 +681,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
+							schoolId: user.school.id,
 							boardContextSettings: {},
 						});
 
@@ -710,6 +728,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
+							schoolId: user.school.id,
 							boardContextSettings: {},
 						});
 
@@ -750,6 +769,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: videoConferenceElement,
 						rootNode: columnBoard,
+						schoolId: user.school.id,
 						boardContextSettings: boardSettings,
 					});
 
@@ -811,6 +831,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: videoConferenceElement,
 						rootNode: columnBoard,
+						schoolId: user.school.id,
 						boardContextSettings: boardSettings,
 					});
 
@@ -872,6 +893,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: videoConferenceElement,
 						rootNode: columnBoard,
+						schoolId: user.school.id,
 						boardContextSettings: boardSettings,
 					});
 
@@ -922,6 +944,35 @@ describe(BoardNodeRule.name, () => {
 						expect(res).toBe(false);
 					});
 				});
+			});
+		});
+
+		describe('when boardDoAuthorizable.schoolId is different from user.schoolId', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const anyBoardNode = fileElementFactory.build();
+				const columnBoard = columnBoardFactory.build();
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+					id: new ObjectId().toHexString(),
+					boardNode: anyBoardNode,
+					rootNode: columnBoard,
+					schoolId: new ObjectId().toHexString(),
+					boardContextSettings: {},
+				});
+
+				return { user, boardNodeAuthorizable };
+			};
+
+			it('should return "false"', () => {
+				const { user, boardNodeAuthorizable } = setup();
+
+				const res = service.hasPermission(user, boardNodeAuthorizable, {
+					action: Action.read,
+					requiredPermissions: [],
+				});
+
+				expect(res).toBe(false);
 			});
 		});
 	});
