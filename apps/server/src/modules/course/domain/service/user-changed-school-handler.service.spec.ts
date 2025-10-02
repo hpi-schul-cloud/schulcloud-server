@@ -8,6 +8,7 @@ import { userFactory } from '../../../user/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { setupEntities } from '@testing/database';
 import { CourseEntity } from '@modules/course/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
 
 describe(UserChangedSchoolHandlerService.name, () => {
 	let module: TestingModule;
@@ -42,22 +43,16 @@ describe(UserChangedSchoolHandlerService.name, () => {
 	});
 
 	describe('handle', () => {
-		it('should remove user reference from courses of the old school', async () => {
-			const user = userFactory.build();
+		it('should call removeUserFromCourses with correct parameters', async () => {
+			const school = schoolEntityFactory.buildWithId();
+			const user = userFactory.build({ school });
 			const userId = user.id;
 			const oldSchoolId = 'school456';
-			const courses = [courseEntityFactory.build(), courseEntityFactory.build()];
 			const event = new UserChangedSchoolEvent(userId, oldSchoolId);
-
-			courseRepo.findAllByUserId.mockResolvedValueOnce([courses, courses.length]);
 
 			await service.handle(event);
 
-			expect(courseRepo.findAllByUserId).toHaveBeenCalledWith(userId, { schoolId: oldSchoolId });
-			expect(courseRepo.removeUserReference).toHaveBeenCalledWith(
-				userId,
-				courses.map((c) => c.id)
-			);
+			expect(courseRepo.removeUserFromCourses).toHaveBeenCalledWith(userId, oldSchoolId);
 		});
 	});
 });
