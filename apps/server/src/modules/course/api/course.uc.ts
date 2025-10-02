@@ -31,8 +31,8 @@ export class CourseUc {
 	}
 
 	public async getUserPermissionByCourseId(userId: EntityId, courseId: EntityId): Promise<string[]> {
-		const course = await this.courseService.findById(courseId);
 		const user = await this.authService.getUserWithPermissions(userId);
+		const course = await this.courseService.findOneForUser(courseId, userId, user.school.id);
 		const userRole = RoleNameMapper.mapToRoleName(user, course);
 		const role = await this.roleService.findByName(userRole);
 
