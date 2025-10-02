@@ -25,6 +25,7 @@ export class RuntimeConfigMikroOrmRepo
 	}
 
 	public async getAll(): Promise<RuntimeConfigValue[]> {
+		// TODO: delete entities that are not in defaults anymore
 		const entities = await this._em.find(RuntimeConfigEntity, {});
 		const defaults = this.defaults.map((def) => {
 			const found = entities.find((e) => e.key === def.key);

@@ -20,4 +20,12 @@ export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> {
 		this.props.value = value;
 		return this;
 	}
+
+	get key(): string {
+		return this.props.key;
+	}
+
+	public getTypeAndValue(): RuntimeConfigValueAndType {
+		return { ...this.props };
+	}
 }
