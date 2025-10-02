@@ -1,8 +1,8 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 
-export type RuntimeConfigValueProps = RuntimeConfigDefaults & AuthorizableObject;
+export type RuntimeConfigValueProps = RuntimeConfigDefault & AuthorizableObject;
 
-export type RuntimeConfigDefaults = {
+export type RuntimeConfigDefault = {
 	key: string;
 	description?: string;
 } & RuntimeConfigValueAndType;
