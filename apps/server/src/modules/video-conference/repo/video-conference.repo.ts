@@ -42,6 +42,7 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 			id: entity.id,
 			target: entity.target,
 			targetModel: VideoConferencingScopeMapping[entity.targetModel],
+			salt: entity.salt,
 			options: new VideoConferenceOptionsDO({
 				everybodyJoinsAsModerator: entity.options.everybodyJoinsAsModerator,
 				everyAttendeeJoinsMuted: entity.options.everyAttendeJoinsMuted,
@@ -54,6 +55,7 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		return {
 			target: entityDO.target,
 			targetModel: VideoConferenceTargetModelsMapping[entityDO.targetModel],
+			salt: entityDO.salt,
 			options: {
 				everybodyJoinsAsModerator: entityDO.options.everybodyJoinsAsModerator,
 				everyAttendeJoinsMuted: entityDO.options.everyAttendeeJoinsMuted,

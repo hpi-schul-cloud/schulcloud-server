@@ -28,12 +28,12 @@ export class Role extends BaseEntityWithTimestamps {
 		if (props.roles) this.roles.set(props.roles);
 	}
 
-	public resolvePermissions(): string[] {
+	public resolvePermissions(): Permission[] {
 		if (!this.roles.isInitialized(true)) {
 			throw new Error('Roles items are not loaded.');
 		}
 
-		let permissions: string[] = [...this.permissions];
+		let permissions: Permission[] = [...this.permissions];
 
 		const innerRoles = this.roles.getItems();
 		innerRoles.forEach((innerRole) => {

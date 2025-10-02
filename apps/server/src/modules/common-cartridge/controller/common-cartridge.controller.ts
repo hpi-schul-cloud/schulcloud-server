@@ -2,9 +2,11 @@ import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard'
 import {
 	Body,
 	Controller,
+	HttpStatus,
 	Param,
 	Post,
 	Query,
+	Req,
 	Res,
 	StreamableFile,
 	UploadedFile,
@@ -22,7 +24,8 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Response } from 'express';
+import { RequestLoggingInterceptor } from '@shared/common/interceptor';
+import { Request, Response } from 'express';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeImportBodyParams, CourseExportBodyParams, CourseQueryParams, ExportCourseParams } from './dto';
 import { CommonCartridgeFileValidatorPipe } from './utils';
@@ -34,10 +37,12 @@ export class CommonCartridgeController {
 	constructor(private readonly commonCartridgeUC: CommonCartridgeUc) {}
 
 	@Post('export/:courseId')
+	@UseInterceptors(RequestLoggingInterceptor)
 	public async exportCourse(
 		@Param() exportCourseParams: ExportCourseParams,
 		@Query() queryParams: CourseQueryParams,
 		@Body() bodyParams: CourseExportBodyParams,
+		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
 		const result = await this.commonCartridgeUC.exportCourse(
@@ -48,12 +53,15 @@ export class CommonCartridgeController {
 			bodyParams.columnBoards
 		);
 
-		response.set({
-			'Content-Type': 'application/zip',
-			'Content-Disposition': `attachment; filename=course_${exportCourseParams.courseId}.zip`,
+		req.on('close', () => result.data.destroy());
+		response.status(HttpStatus.OK);
+
+		const encodedFileName = encodeURIComponent(result.name);
+		const streamableFile = new StreamableFile(result.data, {
+			disposition: `attachment; filename="${encodedFileName}"; filename*=UTF-8''${encodedFileName}`,
 		});
 
-		return new StreamableFile(result);
+		return streamableFile;
 	}
 
 	@Post('import')

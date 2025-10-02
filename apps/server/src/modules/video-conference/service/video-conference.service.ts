@@ -10,16 +10,16 @@ import { RoomMembershipService } from '@modules/room-membership';
 import { TeamEntity, TeamRepo, TeamUserEntity } from '@modules/team/repo';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { VideoConferenceScope } from '@modules/video-conference/domain';
-import { VideoConferenceRepo } from '@modules/video-conference/repo';
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { RoleReference } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { randomBytes } from 'node:crypto';
 import { BBBRole } from '../bbb';
-import { VideoConferenceDO, VideoConferenceOptionsDO } from '../domain';
+import { VideoConferenceDO, VideoConferenceOptionsDO, VideoConferenceScope } from '../domain';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
+import { VideoConferenceRepo } from '../repo';
 import { ScopeInfo, VideoConferenceState } from '../uc/dto';
 import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 
@@ -295,6 +295,7 @@ export class VideoConferenceService {
 		// try and catch based on legacy behavior
 		try {
 			vcDo = await this.findVideoConferenceByScopeIdAndScope(scopeId, scope);
+			vcDo.salt = randomBytes(16).toString('hex');
 
 			vcDo.options = new VideoConferenceOptionsDO(options);
 		} catch (error) {
@@ -302,6 +303,7 @@ export class VideoConferenceService {
 				target: scopeId,
 				targetModel: scope,
 				options: new VideoConferenceOptionsDO(options),
+				salt: randomBytes(16).toString('hex'),
 			});
 		}
 
