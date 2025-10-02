@@ -30,9 +30,10 @@ export class ConfigurationFactory {
 		const configKeys = configInstance.getConfigKeys();
 
 		configKeys.forEach((key) => {
-			const value = this.configService.get(key);
+			const stringKey = key.toString();
+			const value = this.configService.get<string>(stringKey);
 			if (value !== undefined && value !== null) {
-				(configInstance as WithConfigurationDecorator)[key] = value;
+				(configInstance as WithConfigurationDecorator)[stringKey] = value;
 			}
 		});
 

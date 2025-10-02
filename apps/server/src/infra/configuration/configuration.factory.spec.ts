@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { StringToBoolean } from '@shared/transformer';
+import { StringToBoolean } from '@shared/controller/transformer';
 import { IsBoolean, IsString } from 'class-validator';
 import { ConfigProperty, Configuration } from './configuration.decorator';
 import { ConfigurationFactory } from './configuration.factory';
@@ -10,22 +10,24 @@ import { ConfigurationFactory } from './configuration.factory';
 class TestConfig {
 	@IsString()
 	@ConfigProperty('TEST_VALUE_1')
-	public TEST_VALUE!: string;
+	public valueWithOtherEnvVar!: string;
 
 	@IsString()
 	@ConfigProperty('TEST_VALUE2')
-	public testValue2!: string;
+	public valueWithOtherEnvVarAndDefault = 'default';
 
 	@IsString()
 	@ConfigProperty()
-	public testValueWithD!: string;
+	public valueWithoutDefault!: string;
 
 	@IsBoolean()
 	@StringToBoolean()
-	public testValueWithOutD!: boolean;
+	@ConfigProperty()
+	public valueWithoutDefaultBoolean!: boolean;
 
 	@IsBoolean()
-	public testValueWithOutD1 = true;
+	@ConfigProperty()
+	public valueWithDefaultBoolean = true;
 }
 
 describe(ConfigurationFactory.name, () => {
@@ -55,9 +57,9 @@ describe(ConfigurationFactory.name, () => {
 		jest.resetAllMocks();
 	});
 
-	describe('getAllValidConfigsByType', () => {
+	describe('loadAndValidateConfigs', () => {
 		describe('when value is valid', () => {
-			it('should return valid configs', () => {
+			const setup = () => {
 				jest.spyOn(configService, 'get').mockImplementation((key: string) => {
 					if (key === 'TEST_VALUE_1') {
 						return 'test';
@@ -65,26 +67,64 @@ describe(ConfigurationFactory.name, () => {
 					if (key === 'TEST_VALUE2') {
 						return 'test2';
 					}
-					if (key === 'testValueWithD') {
+					if (key === 'valueWithoutDefault') {
 						return 'testValueWithD';
 					}
-					if (key === 'testValueWithOutD') {
+					if (key === 'valueWithoutDefaultBoolean') {
 						return 'true';
 					}
 
 					return undefined;
 				});
+			};
+			describe('when @ConfigProperty("TEST_VALUE_1") is provided by env variable', () => {
+				it('should return the correct value', () => {
+					setup();
+					const result = configFactory.loadAndValidateConfigs(TestConfig);
 
-				const result = configFactory.loadAndValidateConfigs(TestConfig);
+					expect(result.valueWithOtherEnvVar).toEqual('test');
+				});
+			});
 
-				expect(result.TEST_VALUE).toEqual('test');
-				expect(result.testValueWithD).toEqual('testValueWithD');
-				expect(result.testValue2).toEqual('test2');
+			describe('when @ConfigProperty("TEST_VALUE2") is provided by env variable', () => {
+				it('should return the correct value', () => {
+					setup();
+					const result = configFactory.loadAndValidateConfigs(TestConfig);
+
+					expect(result.valueWithOtherEnvVarAndDefault).toEqual('test2');
+				});
+			});
+
+			describe('when @ConfigProperty() without default is provided by env variable', () => {
+				it('should return the correct value', () => {
+					setup();
+					const result = configFactory.loadAndValidateConfigs(TestConfig);
+
+					expect(result.valueWithoutDefault).toEqual('testValueWithD');
+				});
+			});
+
+			describe('when @ConfigProperty() without default is provided by env variable and transformed to boolean', () => {
+				it('should return the correct value', () => {
+					setup();
+					const result = configFactory.loadAndValidateConfigs(TestConfig);
+
+					expect(result.valueWithoutDefaultBoolean).toEqual(true);
+				});
+			});
+
+			describe('when @ConfigProperty() with default is not provided by env variable', () => {
+				it('should return the default value', () => {
+					setup();
+					const result = configFactory.loadAndValidateConfigs(TestConfig);
+
+					expect(result.valueWithDefaultBoolean).toEqual(true);
+				});
 			});
 		});
 
 		describe('when value is not valid', () => {
-			it('should throw error', () => {
+			const setup = () => {
 				jest.spyOn(configService, 'get').mockImplementation((key: string) => {
 					if (key === 'TEST_VALUE_1') {
 						return 123;
@@ -95,13 +135,15 @@ describe(ConfigurationFactory.name, () => {
 					if (key === 'testValueWithD') {
 						return 'testValueWithD';
 					}
-					if (key === 'testValueWithOutD') {
+					if (key === 'testValueWith') {
 						return 'true';
 					}
 
 					return undefined;
 				});
-
+			};
+			it('should throw error', () => {
+				setup();
 				expect(() => configFactory.loadAndValidateConfigs(TestConfig)).toThrow(/isString/);
 			});
 		});

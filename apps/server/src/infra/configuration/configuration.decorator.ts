@@ -1,12 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface PropertyAccessKey {
-	propertyKey: string;
-	key?: string;
+	propertyKey: string | symbol;
+	key?: string | symbol;
 }
 
 export interface WithConfigurationDecorator {
 	[key: string]: unknown;
-	getConfigKeys(): string[];
+	getConfigKeys(): (string | symbol)[];
 }
 
 /**
@@ -14,17 +17,14 @@ export interface WithConfigurationDecorator {
  * @returns ClassDecorator
  */
 export function Configuration() {
-	return function ConfigurationDecorator<T extends new (...args: any[]) => {}>(
-		constructor: T
-	): T & (new (...args: any[]) => WithConfigurationDecorator) {
-		return class extends constructor implements WithConfigurationDecorator {
+	return function ConfigurationDecorator<T extends new (...args: any[]) => object>(constructor: T): T {
+		return class extends constructor {
 			constructor(...args: any[]) {
 				super(...args);
 				const proxyInstance = new Proxy(this, {
 					set: (target: any, prop: string | symbol, value: unknown): true => {
-						const propertyAccessKeys: PropertyAccessKey[] = this.getPropertyAccessKeys();
-						const propKey =
-							propertyAccessKeys.find((item: PropertyAccessKey) => item.key === prop)?.propertyKey ?? prop;
+						const propertyAccessKeys = this.getPropertyAccessKeys();
+						const propKey = propertyAccessKeys.find((item) => item.key === prop)?.propertyKey ?? prop;
 						if (propKey) {
 							target[propKey] = value;
 						}
@@ -38,14 +38,14 @@ export function Configuration() {
 					},
 				});
 
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 				return proxyInstance;
 			}
-			[key: string]: unknown;
 
-			public getConfigKeys(): string[] {
+			public getConfigKeys(): (string | symbol)[] {
 				const objectKeys = Object.keys(this);
-				const propertyAccessKeys: PropertyAccessKey[] = this.getPropertyAccessKeys();
-				const keys = propertyAccessKeys.map((item: PropertyAccessKey) => item.key ?? item.propertyKey);
+				const propertyAccessKeys = this.getPropertyAccessKeys();
+				const keys = propertyAccessKeys.map((item) => item.key ?? item.propertyKey);
 
 				for (const key of objectKeys) {
 					if (!propertyAccessKeys.some((item) => item.propertyKey === key)) {
@@ -57,7 +57,8 @@ export function Configuration() {
 			}
 
 			private getPropertyAccessKeys(): PropertyAccessKey[] {
-				const propertyAccessKeys = Object.getPrototypeOf(this).__propertyAccessKeys ?? [];
+				const proto = Object.getPrototypeOf(this) as { __propertyAccessKeys?: PropertyAccessKey[] };
+				const propertyAccessKeys = proto.__propertyAccessKeys ?? [];
 
 				return propertyAccessKeys;
 			}
@@ -71,7 +72,7 @@ export function Configuration() {
  * @returns PropertyDecorator
  */
 export function ConfigProperty(key?: string): PropertyDecorator {
-	return function (target: any, propertyKey: string | symbol) {
+	return function (target: { __propertyAccessKeys?: PropertyAccessKey[] }, propertyKey: string | symbol) {
 		target.__propertyAccessKeys ??= [];
 		target.__propertyAccessKeys.push({ propertyKey, key });
 	};
