@@ -94,6 +94,7 @@ describe('H5PLibraryManagementService', () => {
 
 				return { installedLibraries, service, synchronizedLibraries, uninstalledLibraries };
 			};
+
 			it('should uninstall unwanted libraries, install new libraries, synchronize libraries and check for broken libraries', async () => {
 				const { installedLibraries, service, synchronizedLibraries, uninstalledLibraries } = setup();
 
@@ -112,6 +113,38 @@ describe('H5PLibraryManagementService', () => {
 				expect(installSpy).toHaveBeenCalledTimes(1);
 				expect(synchronizeSpy).toHaveBeenCalledTimes(1);
 				expect(checkBrokenLibsSpy).toHaveBeenCalledTimes(1);
+
+				uninstallSpy.mockRestore();
+				installSpy.mockRestore();
+				synchronizeSpy.mockRestore();
+				checkBrokenLibsSpy.mockRestore();
+			});
+		});
+
+		describe('when an unhandled exception occurs', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+
+				return { service };
+			};
+
+			it('should exit gracefully', async () => {
+				const { service } = setup();
+
+				const error = new Error('Mocked unhandled exception');
+				jest.spyOn(service.libraryAdministration, 'getLibraries').mockRejectedValueOnce(error);
+
+				const uninstallSpy = jest.spyOn(service, 'uninstallUnwantedLibrariesAsBulk');
+				const installSpy = jest.spyOn(service, 'installLibrariesAsBulk');
+				const synchronizeSpy = jest.spyOn(service, 'synchronizeDbEntryAndLibraryJson');
+				const checkBrokenLibsSpy = jest.spyOn(service, 'checkAndRemoveBrokenLibraries');
+
+				await service.run();
+
+				expect(uninstallSpy).not.toHaveBeenCalled();
+				expect(installSpy).not.toHaveBeenCalled();
+				expect(synchronizeSpy).not.toHaveBeenCalled();
+				expect(checkBrokenLibsSpy).not.toHaveBeenCalled();
 
 				uninstallSpy.mockRestore();
 				installSpy.mockRestore();

@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Type } from '@mikro-orm/core';
-import CryptoJs from 'crypto-js';
+import { AesEncryptionHelper } from '@shared/common/utils';
 
 /**
  * Serialization type to transparent encrypt string values in database.
@@ -27,7 +27,7 @@ export class StorageProviderEncryptedStringType extends Type<string, string> {
 		if (value.length === 0) {
 			return '';
 		}
-		const encryptedString = CryptoJs.AES.encrypt(value, this.key).toString();
+		const encryptedString = AesEncryptionHelper.encrypt(value, this.key);
 
 		return encryptedString;
 	}
@@ -43,8 +43,7 @@ export class StorageProviderEncryptedStringType extends Type<string, string> {
 			return '';
 		}
 
-		// decrypt only non-empty strings
-		const decryptedString: string = CryptoJs.AES.decrypt(value, this.key).toString(CryptoJs.enc.Utf8);
+		const decryptedString = AesEncryptionHelper.decrypt(value, this.key);
 
 		return decryptedString;
 	}

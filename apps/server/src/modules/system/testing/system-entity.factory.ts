@@ -1,3 +1,5 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { AesEncryptionHelper } from '@shared/common/utils';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
@@ -9,7 +11,7 @@ export const systemOauthConfigEntityFactory = BaseFactory.define<OauthConfigEnti
 	() => {
 		return {
 			clientId: '12345',
-			clientSecret: 'mocksecret',
+			clientSecret: AesEncryptionHelper.encrypt('mocksecret', Configuration.get('AES_KEY') as string),
 			idpHint: 'mock-oauth-idpHint',
 			tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
 			grantType: 'authorization_code',
