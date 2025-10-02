@@ -35,7 +35,7 @@ describe(`card create (api)`, () => {
 	const setup = async () => {
 		await cleanupCollections(em);
 		const { teacherAccount: account, teacherUser: user } = UserAndAccountTestFactory.buildTeacher();
-		const course = courseEntityFactory.build({ teachers: [user] });
+		const course = courseEntityFactory.build({ school: user.school, teachers: [user] });
 		await em.persistAndFlush([user, account, course]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({
