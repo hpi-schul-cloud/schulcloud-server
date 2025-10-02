@@ -8,7 +8,7 @@ import { BoardNodeRepo } from '../repo';
 import { columnBoardFactory, columnFactory } from '../testing';
 import { BoardNodeAuthorizableService } from './board-node-authorizable.service';
 import { BoardNodeService } from './board-node.service';
-import { BoardContextService } from './internal/board-context.service';
+import { BoardAuthContext, BoardContextService } from './internal/board-context.service';
 
 describe(BoardNodeAuthorizableService.name, () => {
 	let module: TestingModule;
@@ -116,11 +116,13 @@ describe(BoardNodeAuthorizableService.name, () => {
 					roles: [BoardRoles.EDITOR],
 				},
 			];
-			boardContextService.getUsersWithBoardRoles.mockResolvedValue(usersWithRoles);
+			const schoolId = 'schoolId';
+			const authContext: BoardAuthContext = { users: usersWithRoles, schoolId };
+			boardContextService.getBoardAuthContext.mockResolvedValue(authContext);
 			const boardSettings = { canRoomEditorManageVideoconference: true };
 			boardContextService.getBoardSettings.mockResolvedValueOnce(boardSettings);
 
-			return { boardSettings, columnBoard, column, usersWithRoles };
+			return { boardSettings, columnBoard, column, usersWithRoles, schoolId };
 		};
 
 		it('should call the service to get the parent node', async () => {
@@ -140,7 +142,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 		});
 
 		it('should return an authorizable of the root context', async () => {
-			const { boardSettings, column, columnBoard, usersWithRoles } = setup();
+			const { boardSettings, column, columnBoard, usersWithRoles, schoolId } = setup();
 
 			const result = await service.getBoardAuthorizable(column);
 			const expected = new BoardNodeAuthorizable({
@@ -149,6 +151,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 				boardNode: column,
 				rootNode: columnBoard,
 				parentNode: columnBoard,
+				schoolId,
 				boardContextSettings: boardSettings,
 			});
 

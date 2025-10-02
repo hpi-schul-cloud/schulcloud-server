@@ -23,7 +23,7 @@ export class CourseRoomsUc {
 	public async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
 		const user = await this.userService.getUserEntityWithRoles(userId);
 		// TODO no authorisation check here?
-		const course = await this.courseService.findOneForUser(roomId, userId);
+		const course = await this.courseService.findOneForUser(roomId, userId, user.school.id);
 
 		const { isLocked } = course.getMetadata();
 		if (isLocked) {
@@ -46,7 +46,7 @@ export class CourseRoomsUc {
 		visibility: boolean
 	): Promise<void> {
 		const user = await this.userService.getUserEntityWithRoles(userId);
-		const course = await this.courseService.findOneForUser(roomId, userId);
+		const course = await this.courseService.findOneForUser(roomId, userId, user.school.id);
 
 		if (!this.authorisationService.hasCourseWritePermission(user, course)) {
 			throw new ForbiddenException('you are not allowed to edit this');
@@ -76,7 +76,7 @@ export class CourseRoomsUc {
 */
 	public async reorderBoardElements(roomId: EntityId, userId: EntityId, orderedList: EntityId[]): Promise<void> {
 		const user = await this.userService.getUserEntityWithRoles(userId);
-		const course = await this.courseService.findOneForUser(roomId, userId);
+		const course = await this.courseService.findOneForUser(roomId, userId, user.school.id);
 
 		if (!this.authorisationService.hasCourseWritePermission(user, course)) {
 			throw new ForbiddenException('you are not allowed to edit this');

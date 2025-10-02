@@ -12,10 +12,11 @@ export class DashboardUc {
 		private readonly courseService: CourseService
 	) {}
 
-	public async getUsersDashboard(userId: EntityId): Promise<Dashboard> {
+	public async getUsersDashboard(userId: EntityId, schoolId: EntityId): Promise<Dashboard> {
 		const dashboard = await this.dashboardRepo.getUsersDashboard(userId);
-		const courses = await this.courseService.findAllByUserId(
+		const [courses] = await this.courseService.findAllByUserId(
 			userId,
+			schoolId,
 			{ onlyActiveCourses: true },
 			{ order: { name: SortOrder.asc } }
 		);

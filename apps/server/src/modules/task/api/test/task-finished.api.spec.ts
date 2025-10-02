@@ -55,7 +55,7 @@ describe('Task controller (API)', () => {
 
 		it('should "not" find task if the user is not part of the parent anymore.', async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseEntityFactory.build({ teachers: [] });
+			const course = courseEntityFactory.build({ teachers: [], school: teacherUser.school });
 			const task = taskFactory.finished(teacherUser).build({ course });
 
 			await em.persistAndFlush([task, teacherAccount, teacherUser]);
@@ -70,7 +70,7 @@ describe('Task controller (API)', () => {
 
 		it('should return finished tasks of user', async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseEntityFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ teachers: [teacherUser], school: teacherUser.school });
 			const task = taskFactory.finished(teacherUser).build({ course });
 
 			await em.persistAndFlush([task, teacherAccount, teacherUser]);
@@ -85,7 +85,7 @@ describe('Task controller (API)', () => {
 
 		it('should return status for privileged members if user has write permission in for tasks', async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseEntityFactory.build({ substitutionTeachers: [teacherUser] });
+			const course = courseEntityFactory.build({ substitutionTeachers: [teacherUser], school: teacherUser.school });
 			const task = taskFactory.finished(teacherUser).build({ course });
 
 			await em.persistAndFlush([task, teacherAccount, teacherUser]);
@@ -189,7 +189,9 @@ describe('Task controller (API)', () => {
 			describe('when courses are finised', () => {
 				const setup = () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseEntityFactory.isFinished().build({ teachers: [studentUser] });
+					const course = courseEntityFactory
+						.isFinished()
+						.build({ teachers: [studentUser], school: studentUser.school });
 
 					return { course, studentAccount, studentUser };
 				};
@@ -329,7 +331,7 @@ describe('Task controller (API)', () => {
 			describe('when courses are open', () => {
 				const setup = () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseEntityFactory.isOpen().build({ teachers: [studentUser] });
+					const course = courseEntityFactory.isOpen().build({ teachers: [studentUser], school: studentUser.school });
 
 					return { course, studentAccount, studentUser };
 				};
@@ -471,7 +473,9 @@ describe('Task controller (API)', () => {
 			describe('when courses are finised', () => {
 				const setup = () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseEntityFactory.isFinished().build({ students: [studentUser] });
+					const course = courseEntityFactory
+						.isFinished()
+						.build({ students: [studentUser], school: studentUser.school });
 
 					return { course, studentAccount, studentUser };
 				};
@@ -611,7 +615,7 @@ describe('Task controller (API)', () => {
 			describe('when courses are open', () => {
 				const setup = () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseEntityFactory.isOpen().build({ students: [studentUser] });
+					const course = courseEntityFactory.isOpen().build({ students: [studentUser], school: studentUser.school });
 
 					return { course, studentAccount, studentUser };
 				};
