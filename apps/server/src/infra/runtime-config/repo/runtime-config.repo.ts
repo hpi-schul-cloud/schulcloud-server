@@ -9,7 +9,7 @@ import { RuntimeConfigEntity } from './entity/runtime-config.entity';
 import { RuntimeConfigRepo } from '../domain/runtime-config.repo.interface';
 import { EntityData, EntityName } from '@mikro-orm/core/typings';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { RuntimeConfigValueFactory } from '../domain/runtime-config-value.factory';
+import { RuntimeConfigValueFactory } from './runtime-config-value.factory';
 
 @Injectable()
 export class RuntimeConfigMikroOrmRepo
