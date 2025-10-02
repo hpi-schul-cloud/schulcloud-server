@@ -4,6 +4,10 @@ import { UserChangedSchoolEvent } from '../../user/domain/events/user-changed-sc
 import { TaskRepo } from '../repo/task.repo';
 import { UserChangedSchoolTaskHandlerService } from './user-changed-school-task-handler.service';
 import { MikroORM } from '@mikro-orm/core';
+import { setupEntities } from '@testing/database';
+import { Task } from '../repo/task.entity';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { Submission } from '@modules/task/repo';
 
 describe(UserChangedSchoolTaskHandlerService.name, () => {
 	let module: TestingModule;
@@ -20,7 +24,7 @@ describe(UserChangedSchoolTaskHandlerService.name, () => {
 				},
 				{
 					provide: MikroORM,
-					useValue: createMock<MikroORM>(),
+					useValue: await setupEntities([Task, LessonEntity, Submission, Material]),
 				},
 			],
 		}).compile();
