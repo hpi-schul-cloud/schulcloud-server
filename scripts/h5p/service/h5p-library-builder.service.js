@@ -545,6 +545,8 @@ class H5pLibraryBuilderService {
 						value.forEach(search);
 					} else if (typeof value === 'object' && value !== null) {
 						search(value);
+					} else {
+						// Primitive value, do nothing
 					}
 				}
 			}
