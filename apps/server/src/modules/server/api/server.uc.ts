@@ -2,8 +2,8 @@ import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@m
 import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { Inject, Injectable } from '@nestjs/common';
 import { SERVER_CONFIG_TOKEN, ServerConfig } from '../server.config';
-import { ConfigResponse } from './dto/config.response';
-import { ConfigResponseMapper } from './mapper/config.response.mapper';
+import { ConfigResponse } from './dto';
+import { ConfigResponseMapper } from './mapper';
 
 @Injectable()
 export class ServerUc {
