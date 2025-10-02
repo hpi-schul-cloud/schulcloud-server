@@ -23,7 +23,7 @@ const getEnvConfig = (): ConfigModuleOptions => {
 
 @Module({})
 export class ConfigurationModule {
-	public static register<T extends object>(injectionToken: string, ConfigConstructor: new () => T): DynamicModule {
+	public static register<T extends object>(injectionToken: string, Constructor: new () => T): DynamicModule {
 		return {
 			imports: [ConfigModule.forRoot(getEnvConfig())],
 			providers: [
@@ -31,7 +31,7 @@ export class ConfigurationModule {
 					provide: injectionToken,
 					useFactory: (configService: ConfigService): T => {
 						const factory = new ConfigurationFactory(configService);
-						const config = factory.loadAndValidateConfigs(ConfigConstructor);
+						const config = factory.loadAndValidateConfigs(Constructor);
 
 						return config;
 					},
