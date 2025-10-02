@@ -606,4 +606,26 @@ describe('course repo', () => {
 			});
 		});
 	});
+
+	describe('removeUserFromCourses', () => {
+		it('should remove user from all courses in a school', async () => {
+			const school = schoolEntityFactory.buildWithId();
+			const user = userFactory.build({ school });
+			const userId = user.id;
+			const schoolId = school.id;
+
+			const course1 = courseEntityFactory.buildWithId({ school, teachers: [user] });
+			const course2 = courseEntityFactory.buildWithId({ school, students: [user] });
+
+			await em.persistAndFlush([course1, course2]);
+
+			await repo.removeUserFromCourses(userId, schoolId);
+
+			const updatedCourse1 = await em.findOneOrFail(CourseEntity, { id: course1.id });
+			const updatedCourse2 = await em.findOneOrFail(CourseEntity, { id: course2.id });
+
+			expect(updatedCourse1.teachers).not.toContain(userId);
+			expect(updatedCourse2.students).not.toContain(userId);
+		});
+	});
 });
