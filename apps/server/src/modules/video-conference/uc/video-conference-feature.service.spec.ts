@@ -3,10 +3,9 @@ import { BoardContextApiHelperService } from '@modules/board-context';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserDo, UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { VideoConferenceScope } from '../domain';
-import { VideoConferenceConfig } from '../video-conference-config';
+import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '../video-conference-config';
 import { ScopeRef } from './dto';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
 
@@ -16,11 +15,7 @@ describe(VideoConferenceFeatureService.name, () => {
 	let boardContextApiHelperService: DeepMocked<BoardContextApiHelperService>;
 	let userService: DeepMocked<UserService>;
 	let legacySchoolService: DeepMocked<LegacySchoolService>;
-
-	const config: VideoConferenceConfig = {
-		HOST: 'https://bbb.example.com/bigbluebutton/',
-		FEATURE_VIDEOCONFERENCE_ENABLED: false,
-	};
+	let config: DeepMocked<VideoConferencePublicApiConfig>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -39,10 +34,10 @@ describe(VideoConferenceFeatureService.name, () => {
 					useValue: createMock<LegacySchoolService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: {
-						get: jest.fn().mockImplementation((key: keyof VideoConferenceConfig) => config[key]),
-					},
+					provide: VIDEO_CONFERENCE_PUBLIC_API_CONFIG,
+					useValue: createMock<VideoConferencePublicApiConfig>({
+						FEATURE_VIDEOCONFERENCE_ENABLED: false,
+					}),
 				},
 			],
 		}).compile();
@@ -51,6 +46,7 @@ describe(VideoConferenceFeatureService.name, () => {
 		boardContextApiHelperService = module.get(BoardContextApiHelperService);
 		userService = module.get(UserService);
 		legacySchoolService = module.get(LegacySchoolService);
+		config = module.get(VIDEO_CONFERENCE_PUBLIC_API_CONFIG);
 	});
 
 	afterAll(async () => {
