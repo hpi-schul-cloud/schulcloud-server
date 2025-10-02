@@ -103,32 +103,38 @@ class H5pGitHubClient {
 
 	async fetchTags(repoName, maxRetries = 3) {
 		const [owner, repo] = repoName.split('/');
-		const perPage = 100;
 
-		for (let attempt = 1; attempt <= maxRetries; attempt++) {
-			try {
-				const tags = await this.getAllTags(owner, repo, perPage);
-				return tags;
-			} catch (error) {
-				console.error(`Error fetching tags for ${repoName} (Attempt ${attempt}/${maxRetries}):`, error);
-				if (attempt < maxRetries) {
-					await this.delay(1000);
-				} else {
-					console.error(`Failed to fetch tags for ${repoName} after ${maxRetries} attempts.`);
-					return [];
-				}
-			}
-		}
+		const tags = await this.getAllTags(owner, repo, maxRetries);
+
+		return tags;
 	}
 
-	async getAllTags(owner, repo, perPage) {
+	async getAllTags(owner, repo, maxRetries = 3) {
+		const perPage = 100;
 		let page = 1;
 		let allTags = [];
 		let hasMore;
 
 		do {
 			const url = `https://api.github.com/repos/${owner}/${repo}/tags?per_page=${perPage}&page=${page}`;
-			const response = await this.fetch(url);
+
+			let attempt = 0;
+			let response;
+			while (attempt < maxRetries) {
+				try {
+					response = await this.fetch(url);
+					break;
+				} catch (error) {
+					attempt++;
+					console.error(`Error fetching tags for ${owner}/${repo} (Attempt ${attempt}/${maxRetries}):`, error);
+					if (attempt === maxRetries) {
+						console.error(`Failed to fetch tags for ${owner}/${repo} after ${maxRetries} attempts.`);
+						return [];
+					}
+					await this.delay(1000);
+				}
+			}
+
 			const pageTags = response.data.map((tag) => tag.name);
 			allTags = allTags.concat(pageTags);
 			hasMore = response.data.length === perPage;
