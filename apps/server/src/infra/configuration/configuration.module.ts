@@ -5,7 +5,6 @@ import { ConfigurationFactory } from './configuration.factory';
 
 const getEnvConfig = (): ConfigModuleOptions => {
 	const envConfig = {
-		isGlobal: true,
 		cache: true,
 		envFilePath: '.env',
 		ignoreEnvFile: false,
