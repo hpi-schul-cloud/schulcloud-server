@@ -1671,6 +1671,30 @@ describe('TaskRepo', () => {
 		});
 	});
 
+	describe('deleteAllPrivateTasksByTeacherId', () => {
+		it('should delete only private tasks for the given teacherId', async () => {
+			const teacher = userFactory.build();
+			const otherTeacher = userFactory.build();
+
+			const privateTask1 = taskFactory.build({ creator: teacher, private: true });
+			const privateTask2 = taskFactory.build({ creator: teacher, private: true });
+			const publicTask = taskFactory.build({ creator: teacher, private: false });
+			const otherTeacherTask = taskFactory.build({ creator: otherTeacher, private: true });
+
+			await em.persistAndFlush([privateTask1, privateTask2, publicTask, otherTeacherTask]);
+
+			const deletedCount = await repo.deleteAllPrivateTasksByTeacherId(teacher.id);
+			expect(deletedCount).toBe(2);
+
+			const remainingTasks = await em.find(Task, {});
+			const remainingIds = remainingTasks.map((t) => t._id.toString());
+			expect(remainingIds).toContain(publicTask._id.toString());
+			expect(remainingIds).toContain(otherTeacherTask._id.toString());
+			expect(remainingIds).not.toContain(privateTask1._id.toString());
+			expect(remainingIds).not.toContain(privateTask2._id.toString());
+		});
+	});
+
 	describe('findBySingleParent', () => {
 		it('should find all published tasks in course', async () => {
 			const user = userFactory.build();
@@ -1926,7 +1950,7 @@ describe('TaskRepo', () => {
 
 					const task = taskFactory.build({ lesson, submissions: [submission] });
 
-					await em.persistAndFlush([task]);
+				 await em.persistAndFlush([task]);
 					em.clear();
 
 					return { task };
