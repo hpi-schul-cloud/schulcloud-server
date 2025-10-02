@@ -3,6 +3,10 @@ const fs = require('fs');
 
 class H5pGitHubClient {
 	constructor() {
+		this.initialize();
+	}
+
+	initialize() {
 		const personalAccessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
 		if (!personalAccessToken) {
 			throw new Error('GITHUB_PERSONAL_ACCESS_TOKEN environment variable is not set');
@@ -101,15 +105,8 @@ class H5pGitHubClient {
 		return true;
 	}
 
-	async fetchTags(repoName, maxRetries = 3) {
+	async fetchAllTags(repoName, options = { maxRetries: 3 }) {
 		const [owner, repo] = repoName.split('/');
-
-		const tags = await this.getAllTags(owner, repo, maxRetries);
-
-		return tags;
-	}
-
-	async getAllTags(owner, repo, maxRetries = 3) {
 		const perPage = 100;
 		let page = 1;
 		let allTags = [];
@@ -120,7 +117,7 @@ class H5pGitHubClient {
 
 			let response;
 			try {
-				response = await this.fetch(url, maxRetries);
+				response = await this.fetch(url, options);
 			} catch (error) {
 				console.error(`Failed to fetch tags for ${owner}/${repo}.`, error);
 				return [];
@@ -165,26 +162,25 @@ class H5pGitHubClient {
 		}
 	}
 
-	async fetch(url, maxRetries = 3) {
+	async fetch(url, options) {
 		let attempt = 0;
 		let response;
 		const headers = this.getHeaders();
 
-		while (attempt < maxRetries) {
+		while (attempt < options.maxRetries) {
 			try {
 				response = await axios.get(url, { headers });
 				break;
 			} catch (error) {
 				attempt++;
-				console.error(`Error getting data from ${url} (Attempt ${attempt}/${maxRetries}):`, error);
-				if (attempt === maxRetries) {
-					throw new Error(`Failed to get data from ${url} after ${maxRetries} attempts.`);
+				console.error(`Error getting data from ${url} (Attempt ${attempt}/${options.maxRetries}):`, error);
+				if (attempt === options.maxRetries) {
+					throw new Error(`Failed to get data from ${url} after ${options.maxRetries} attempts.`);
 				}
 				await this.delay(1000);
 			}
 		}
 
-		// throw if not 2xx response
 		if (response.status < 200 || response.status >= 300) {
 			throw new Error(`GitHub API request failed with status ${response.status}`);
 		}
@@ -203,7 +199,6 @@ class H5pGitHubClient {
 			responseType: 'stream',
 		});
 
-		// throw if not 2xx response
 		if (response.status < 200 || response.status >= 300) {
 			throw new Error(`GitHub content request failed with status ${response.status}`);
 		}

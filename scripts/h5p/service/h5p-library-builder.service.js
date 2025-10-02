@@ -45,7 +45,7 @@ class H5pLibraryBuilderService {
 			return [];
 		}
 
-		const tags = await this.gitHubClient.fetchTags(repoName);
+		const tags = await this.gitHubClient.fetchAllTags(repoName, { maxRetries: 3 });
 		const filteredTags = this.getHighestPatchTags(tags);
 		console.log(`Found ${filteredTags.length} versions of ${library} in ${repoName}: ${filteredTags.join(', ')}`);
 
@@ -569,7 +569,7 @@ class H5pLibraryBuilderService {
 			return [];
 		}
 
-		const tags = await this.gitHubClient.fetchTags(depRepoName);
+		const tags = await this.gitHubClient.fetchAllTags(depRepoName, { maxRetries: 3 });
 		const depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
 		if (!depTag) {
 			this.logTagNotFound(dependency);
