@@ -21,7 +21,6 @@ import { School, SchoolService } from '@modules/school';
 import { RoomStats } from './type/room-stats.type';
 import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
 import { RoomMemberAuthorizable } from '@modules/room-membership/do/room-member-authorizable.do';
-import { RoomMember } from '@modules/room-membership/do/room-member.do';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
