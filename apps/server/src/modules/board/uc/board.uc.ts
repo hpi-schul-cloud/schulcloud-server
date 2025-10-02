@@ -194,7 +194,7 @@ export class BoardUc {
 		await this.boardPermissionService.checkPermission(
 			userId,
 			board,
-			AuthorizationContextBuilder.write([Permission.BOARD_MANAGE])
+			AuthorizationContextBuilder.write([Permission.BOARD_MANAGE_READERS_CAN_EDIT])
 		);
 
 		await this.columnBoardService.updateReadersCanEdit(board, readersCanEdit);
