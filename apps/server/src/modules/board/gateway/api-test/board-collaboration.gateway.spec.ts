@@ -76,7 +76,7 @@ describe(BoardCollaborationGateway.name, () => {
 			isExternalUser: false,
 		});
 
-		const course = courseEntityFactory.build({ teachers: [teacherUser] });
+		const course = courseEntityFactory.build({ school: school, teachers: [teacherUser] });
 		await em.persistAndFlush([teacherUser, teacherAccount, studentUser, studentAccount, course]);
 
 		ioClient = await getSocketApiClient(app, teacherAuthJwt);
