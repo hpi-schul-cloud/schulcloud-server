@@ -257,7 +257,7 @@ class Service extends AdapterBase {
 		const { query, filters } = this.filterQuery(params);
 		const options = {
 			new: true,
-			overwrite: this.overwrite,
+			// overwrite: this.overwrite,
 			runValidators: true,
 			context: 'query',
 			setDefaultsOnInsert: true,
@@ -277,7 +277,12 @@ class Service extends AdapterBase {
 
 		const discriminator = query[this.discriminatorKey] || this.discriminatorKey;
 		const model = this.discriminators[discriminator] || this.Model;
-		let modelQuery = model.findOneAndUpdate(query, data, options);
+		let modelQuery;
+		if (this.overwrite) {
+			modelQuery = model.findOneAndReplace(query, data, options);
+		} else {
+			modelQuery = model.findOneAndUpdate(query, data, options);
+		}
 
 		if (filters.$populate && this.options.whitelist.includes('$populate')) {
 			modelQuery = modelQuery.populate(filters.$populate);
