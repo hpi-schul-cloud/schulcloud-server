@@ -116,26 +116,17 @@ class H5pGitHubClient {
 		let hasMore;
 
 		do {
-			const url = `https://api.github.com/repos/${owner}/${repo}/tags?per_page=${perPage}&page=${page}`;
+			const url = this.buildTagsUrl(owner, repo, page, perPage);
 
-			let attempt = 0;
 			let response;
-			while (attempt < maxRetries) {
-				try {
-					response = await this.fetch(url);
-					break;
-				} catch (error) {
-					attempt++;
-					console.error(`Error fetching tags for ${owner}/${repo} (Attempt ${attempt}/${maxRetries}):`, error);
-					if (attempt === maxRetries) {
-						console.error(`Failed to fetch tags for ${owner}/${repo} after ${maxRetries} attempts.`);
-						return [];
-					}
-					await this.delay(1000);
-				}
+			try {
+				response = await this.fetch(url, maxRetries);
+			} catch (error) {
+				console.error(`Failed to fetch tags for ${owner}/${repo}.`, error);
+				return [];
 			}
 
-			const pageTags = response.data.map((tag) => tag.name);
+			const pageTags = this.extractTagNames(response);
 			allTags = allTags.concat(pageTags);
 			hasMore = response.data.length === perPage;
 			page++;
@@ -144,8 +135,12 @@ class H5pGitHubClient {
 		return allTags;
 	}
 
-	delay(ms) {
-		return new Promise((resolve) => setTimeout(resolve, ms));
+	buildTagsUrl(owner, repo, page, perPage) {
+		return `https://api.github.com/repos/${owner}/${repo}/tags?per_page=${perPage}&page=${page}`;
+	}
+
+	extractTagNames(response) {
+		return Array.isArray(response.data) ? response.data.map((tag) => tag.name) : [];
 	}
 
 	async downloadTag(library, tag, filePath) {
@@ -170,9 +165,24 @@ class H5pGitHubClient {
 		}
 	}
 
-	async fetch(url) {
+	async fetch(url, maxRetries = 3) {
+		let attempt = 0;
+		let response;
 		const headers = this.getHeaders();
-		const response = await axios.get(url, { headers });
+
+		while (attempt < maxRetries) {
+			try {
+				response = await axios.get(url, { headers });
+				break;
+			} catch (error) {
+				attempt++;
+				console.error(`Error getting data from ${url} (Attempt ${attempt}/${maxRetries}):`, error);
+				if (attempt === maxRetries) {
+					throw new Error(`Failed to get data from ${url} after ${maxRetries} attempts.`);
+				}
+				await this.delay(1000);
+			}
+		}
 
 		// throw if not 2xx response
 		if (response.status < 200 || response.status >= 300) {
@@ -180,6 +190,10 @@ class H5pGitHubClient {
 		}
 
 		return response;
+	}
+
+	delay(ms) {
+		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
 	async fetchContent(url) {
