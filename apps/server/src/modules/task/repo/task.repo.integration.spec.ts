@@ -1950,7 +1950,7 @@ describe('TaskRepo', () => {
 
 					const task = taskFactory.build({ lesson, submissions: [submission] });
 
-				 await em.persistAndFlush([task]);
+					await em.persistAndFlush([task]);
 					em.clear();
 
 					return { task };

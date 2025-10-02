@@ -312,7 +312,7 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 		describe('when parent is a room', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
-				const room = roomEntityFactory.buildWithId({ schoolId : school.id});
+				const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
 				const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });

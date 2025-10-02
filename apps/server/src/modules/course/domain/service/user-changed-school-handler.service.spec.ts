@@ -3,11 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserChangedSchoolEvent } from '../../../user/domain/events/user-changed-school.event';
 import { CourseRepo } from '../../repo/course.repo';
 import { UserChangedSchoolHandlerService } from './user-changed-school-handler.service';
-import { courseEntityFactory } from '../../testing';
 import { userFactory } from '../../../user/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { setupEntities } from '@testing/database';
-import { CourseEntity } from '@modules/course/repo';
+import { CourseEntity } from '../../repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 
 describe(UserChangedSchoolHandlerService.name, () => {
