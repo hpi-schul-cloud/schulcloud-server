@@ -13,7 +13,7 @@ import { TeamRepo } from '@modules/team/repo';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { BBB_CONFIG, BbbConfig, BBBService } from './bbb';
+import { BBBService } from './bbb';
 import { VideoConferenceDeprecatedController } from './controller';
 import { VideoConferenceRepo } from './repo';
 import { VideoConferenceService } from './service';
@@ -23,7 +23,6 @@ import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from './video-co
 @Module({
 	imports: [
 		ConfigurationModule.register(VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig),
-		ConfigurationModule.register(BBB_CONFIG, BbbConfig),
 		AuthorizationModule,
 		AuthorizationReferenceModule, // can be removed wenn video-conference-deprecated is removed
 		BoardModule,

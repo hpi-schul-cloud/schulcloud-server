@@ -8,7 +8,7 @@ import { AxiosResponse } from 'axios';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
-import { BBB_CONFIG, BbbConfig } from './bbb-config';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 import { BBBService } from './bbb.service';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig, BBBRole, GuestPolicy } from './request';
 import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
@@ -109,15 +109,15 @@ describe(BBBService.name, () => {
 	let module: TestingModule;
 	let service: BBBServiceTest;
 	let httpService: DeepMocked<HttpService>;
-	let configService: DeepMocked<BbbConfig>;
+	let configService: DeepMocked<VideoConferenceConfig>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BBBServiceTest,
 				{
-					provide: BBB_CONFIG,
-					useValue: createMock<BbbConfig>(),
+					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
+					useValue: createMock<VideoConferenceConfig>(),
 				},
 				{
 					provide: HttpService,
@@ -127,7 +127,7 @@ describe(BBBService.name, () => {
 		}).compile();
 		service = module.get(BBBServiceTest);
 		httpService = module.get(HttpService);
-		configService = module.get(BBB_CONFIG);
+		configService = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {

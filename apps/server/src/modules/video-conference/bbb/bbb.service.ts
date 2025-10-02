@@ -6,13 +6,16 @@ import { AxiosResponse } from 'axios';
 import crypto from 'crypto';
 import { firstValueFrom, Observable } from 'rxjs';
 import { URL, URLSearchParams } from 'url';
-import { BBB_CONFIG, BbbConfig } from './bbb-config';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig } from './request';
 import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
 
 @Injectable()
 export class BBBService {
-	constructor(@Inject(BBB_CONFIG) private readonly config: BbbConfig, private readonly httpService: HttpService) {}
+	constructor(
+		@Inject(VIDEO_CONFERENCE_CONFIG_TOKEN) private readonly config: VideoConferenceConfig,
+		private readonly httpService: HttpService
+	) {}
 
 	protected get baseUrl(): string {
 		return this.config.VIDEOCONFERENCE_HOST;
