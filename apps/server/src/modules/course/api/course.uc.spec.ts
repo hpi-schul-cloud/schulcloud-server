@@ -106,7 +106,7 @@ describe('CourseUc', () => {
 			const permissions = await uc.getUserPermissionByCourseId(teacherUser.id, course.id);
 
 			expect(permissions.length).toBeGreaterThan(0);
-			expect(courseService.findById).toHaveBeenCalledWith(course.id);
+			expect(courseService.findOneForUser).toHaveBeenCalledWith(course.id, teacherUser.id, teacherUser.school.id);
 			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(teacherUser.id);
 			expect(roleService.findByName).toHaveBeenCalledWith(RoleName.TEACHER);
 		});
