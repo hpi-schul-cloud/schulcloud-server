@@ -9,5 +9,5 @@ export class BoardContextPublicApiConfig {
 	@IsBoolean()
 	@StringToBoolean()
 	@ConfigProperty()
-	public FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = false;
+	public FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
 }
