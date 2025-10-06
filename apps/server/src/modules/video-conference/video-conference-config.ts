@@ -18,9 +18,9 @@ export class VideoConferenceConfig extends VideoConferencePublicApiConfig {
 	@ConfigProperty()
 	public HOST!: string;
 
-	@IsUrl()
+	@IsUrl({ require_tld: false })
 	@ConfigProperty()
-	public VIDEOCONFERENCE_HOST!: string;
+	public VIDEOCONFERENCE_HOST = 'https://bigbluebutton.schul-cloud.org/bigbluebutton';
 
 	@IsString()
 	@ConfigProperty()
