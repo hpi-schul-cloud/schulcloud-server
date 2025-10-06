@@ -6,6 +6,7 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { RuntimeConfigEntity, RuntimeConfigProperties } from './entity/runtime-config.entity';
 import { RuntimeConfigDefault } from '../domain/runtime-config-value.do';
+import { RUNTIME_CONFIG_DEFAULTS } from '../injection-keys';
 
 describe('Runtime Config Repo', () => {
 	let module: TestingModule;
@@ -24,7 +25,7 @@ describe('Runtime Config Repo', () => {
 			providers: [
 				RuntimeConfigMikroOrmRepo,
 				{
-					provide: 'RUNTIME_CONFIG_DEFINITIONS',
+					provide: RUNTIME_CONFIG_DEFAULTS,
 					useValue: Configuration,
 				},
 			],
