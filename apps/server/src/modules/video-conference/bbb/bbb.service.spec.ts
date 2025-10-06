@@ -1,16 +1,14 @@
+import { ErrorUtils } from '@core/error/utils';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ErrorUtils } from '@core/error/utils';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
-import { VideoConferenceConfig } from '../video-conference-config';
-import { BbbConfig } from './bbb-config';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 import { BBBService } from './bbb.service';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig, BBBRole, GuestPolicy } from './request';
 import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
@@ -111,15 +109,15 @@ describe(BBBService.name, () => {
 	let module: TestingModule;
 	let service: BBBServiceTest;
 	let httpService: DeepMocked<HttpService>;
-	let configService: DeepMocked<ConfigService<BbbConfig & VideoConferenceConfig, true>>;
+	let configService: DeepMocked<VideoConferenceConfig>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BBBServiceTest,
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<BbbConfig, true>>(),
+					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
+					useValue: createMock<VideoConferenceConfig>(),
 				},
 				{
 					provide: HttpService,
@@ -129,7 +127,7 @@ describe(BBBService.name, () => {
 		}).compile();
 		service = module.get(BBBServiceTest);
 		httpService = module.get(HttpService);
-		configService = module.get(ConfigService);
+		configService = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -137,7 +135,7 @@ describe(BBBService.name, () => {
 	});
 
 	beforeEach(() => {
-		configService.get.mockReturnValue('https://mocked');
+		configService.VIDEOCONFERENCE_HOST = 'https://mocked';
 	});
 
 	afterEach(() => {
@@ -160,12 +158,7 @@ describe(BBBService.name, () => {
 			};
 
 			it('should not send config header if VIDEOCONFERENCE_DEFAULT_PRESENTATION is empty', async () => {
-				configService.get.mockImplementation((key: string) => {
-					if (key === 'VIDEOCONFERENCE_DEFAULT_PRESENTATION') {
-						return '';
-					}
-					return 'https://mocked';
-				});
+				configService.VIDEOCONFERENCE_DEFAULT_PRESENTATION = '';
 				const { param } = setup();
 
 				await service.create(param);

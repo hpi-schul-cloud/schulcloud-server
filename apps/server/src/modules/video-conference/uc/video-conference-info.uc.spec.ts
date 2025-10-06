@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -19,7 +18,6 @@ describe('VideoConferenceInfoUc', () => {
 	let module: TestingModule;
 	let uc: VideoConferenceInfoUc;
 	let bbbService: DeepMocked<BBBService>;
-	let userService: DeepMocked<UserService>;
 	let videoConferenceService: DeepMocked<VideoConferenceService>;
 	let videoConferenceFeatureService: DeepMocked<VideoConferenceFeatureService>;
 
@@ -30,10 +28,6 @@ describe('VideoConferenceInfoUc', () => {
 				{
 					provide: BBBService,
 					useValue: createMock<BBBService>(),
-				},
-				{
-					provide: UserService,
-					useValue: createMock<UserService>(),
 				},
 				{
 					provide: VideoConferenceService,
@@ -48,7 +42,6 @@ describe('VideoConferenceInfoUc', () => {
 
 		uc = module.get<VideoConferenceInfoUc>(VideoConferenceInfoUc);
 		bbbService = module.get(BBBService);
-		userService = module.get(UserService);
 		videoConferenceService = module.get(VideoConferenceService);
 		videoConferenceFeatureService = module.get(VideoConferenceFeatureService);
 	});
@@ -98,7 +91,6 @@ describe('VideoConferenceInfoUc', () => {
 					},
 				});
 
-				userService.findById.mockResolvedValue(user);
 				videoConferenceFeatureService.checkVideoConferenceFeatureEnabled.mockResolvedValue();
 				videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 				videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
@@ -153,7 +145,6 @@ describe('VideoConferenceInfoUc', () => {
 						} as BBBMeetingInfoResponse,
 					};
 
-					userService.findById.mockResolvedValue(user);
 					videoConferenceFeatureService.checkVideoConferenceFeatureEnabled.mockResolvedValueOnce();
 					videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 					videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
@@ -238,7 +229,6 @@ describe('VideoConferenceInfoUc', () => {
 								scope.id
 							);
 
-							userService.findById.mockResolvedValue(user);
 							videoConferenceFeatureService.checkVideoConferenceFeatureEnabled.mockResolvedValue();
 							videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 							videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
@@ -286,7 +276,6 @@ describe('VideoConferenceInfoUc', () => {
 								scope.id
 							);
 
-							userService.findById.mockResolvedValue(user);
 							videoConferenceFeatureService.checkVideoConferenceFeatureEnabled.mockResolvedValue();
 							videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 							videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
@@ -328,7 +317,6 @@ describe('VideoConferenceInfoUc', () => {
 						});
 						const bbbMeetingInfoResponse = createBbbMeetingInfoSuccessResponse(scope.id);
 
-						userService.findById.mockResolvedValue(user);
 						videoConferenceFeatureService.checkVideoConferenceFeatureEnabled.mockResolvedValue();
 						videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 						videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
@@ -377,7 +365,6 @@ describe('VideoConferenceInfoUc', () => {
 
 				const bbbMeetingInfoResponse = createBbbMeetingInfoSuccessResponse(scope.id);
 
-				userService.findById.mockResolvedValue(user);
 				videoConferenceFeatureService.checkVideoConferenceFeatureEnabled.mockResolvedValue();
 				videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 				videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
