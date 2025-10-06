@@ -74,12 +74,13 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 				Permission.BOARD_EDIT,
 				Permission.BOARD_MANAGE_VIDEOCONFERENCE,
 				Permission.BOARD_MANAGE_READERS_CAN_EDIT,
+				Permission.BOARD_MANAGE,
 				Permission.BOARD_SHARE_BOARD,
 			];
 		}
 
 		if (user?.roles.includes(BoardRoles.EDITOR)) {
-			const permissions: Permission[] = [Permission.BOARD_VIEW, Permission.BOARD_EDIT];
+			const permissions: Permission[] = [Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE];
 			const canRoomEditorManageVideoconference = this.boardContextSettings.canRoomEditorManageVideoconference ?? false;
 			if (canRoomEditorManageVideoconference) {
 				permissions.push(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
