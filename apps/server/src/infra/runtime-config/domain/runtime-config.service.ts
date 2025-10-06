@@ -21,7 +21,6 @@ export class RuntimeConfigService {
 		const domainobject = await this.repo.getByKey(key);
 		const { type, value } = domainobject.getTypeAndValue();
 		if (type !== 'string') {
-			// TODO: loggable
 			throw new RuntimeConfigValueNotExpectedType('string', domainobject);
 		}
 		return value;

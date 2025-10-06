@@ -26,17 +26,15 @@ export class RuntimeConfigMikroOrmRepo
 	}
 
 	public async getAll(): Promise<RuntimeConfigValue[]> {
-		// TODO: delete entities that are not in defaults anymore (use unit of work)
-		const entities = await this._em.find(RuntimeConfigEntity, {});
-		const defaults = this.defaults.map((def) => {
-			const found = entities.find((e) => e.key === def.key);
-			if (found) {
-				return this.mapToDo(found);
-			} else {
-				return RuntimeConfigValueFactory.build({ ...def, id: new ObjectId().toHexString() });
-			}
-		});
-		return Promise.resolve([...defaults]);
+		await this.loadAllIntoUnitOfWork();
+
+		const values = await Promise.all(this.defaults.map((def) => this.getByKey(def.key)));
+
+		return Promise.resolve([...values]);
+	}
+
+	private async loadAllIntoUnitOfWork(): Promise<void> {
+		await this._em.find(RuntimeConfigEntity, {});
 	}
 
 	public async getByKey(key: string): Promise<RuntimeConfigValue> {
