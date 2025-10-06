@@ -47,7 +47,7 @@ describe('Board Node Authorizable Domain Object', () => {
 		it('should return editor permissions', () => {
 			const { boardNodeAuthorizable, editorId } = setup();
 			const permissions = boardNodeAuthorizable.getUserPermissions(editorId);
-			expect(permissions).toEqual([Permission.BOARD_VIEW, Permission.BOARD_EDIT]);
+			expect(permissions).toEqual([Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE]);
 		});
 
 		it('when canRoomEditorManageVideoconference is enabled, editor should get videoconference permission', () => {
@@ -68,6 +68,7 @@ describe('Board Node Authorizable Domain Object', () => {
 				Permission.BOARD_EDIT,
 				Permission.BOARD_MANAGE_VIDEOCONFERENCE,
 				Permission.BOARD_MANAGE_READERS_CAN_EDIT,
+				Permission.BOARD_MANAGE,
 				Permission.BOARD_SHARE_BOARD,
 			]);
 		});
