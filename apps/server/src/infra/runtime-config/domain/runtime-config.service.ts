@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { RuntimeConfigRepo } from './runtime-config.repo.interface';
 import { RuntimeConfigValue } from './runtime-config-value.do';
+import { RuntimeConfigValueNotExpectedType } from './loggable/runtime-config-not-expected-type.loggable';
 
 @Injectable()
 export class RuntimeConfigService {
@@ -21,7 +22,7 @@ export class RuntimeConfigService {
 		const { type, value } = domainobject.getTypeAndValue();
 		if (type !== 'string') {
 			// TODO: loggable
-			throw new Error(`Runtime Config for key: ${key} is not of type string`);
+			throw new RuntimeConfigValueNotExpectedType('string', domainobject);
 		}
 		return value;
 	}
@@ -30,8 +31,7 @@ export class RuntimeConfigService {
 		const domainobject = await this.repo.getByKey(key);
 		const { type, value } = domainobject.getTypeAndValue();
 		if (type !== 'number') {
-			// TODO: loggable
-			throw new Error(`Runtime Config for key: ${key} is not of type number`);
+			throw new RuntimeConfigValueNotExpectedType('number', domainobject);
 		}
 		return value;
 	}
@@ -40,8 +40,7 @@ export class RuntimeConfigService {
 		const domainobject = await this.repo.getByKey(key);
 		const { type, value } = domainobject.getTypeAndValue();
 		if (type !== 'boolean') {
-			// TODO: loggable
-			throw new Error(`Runtime Config for key: ${key} is not of type boolean`);
+			throw new RuntimeConfigValueNotExpectedType('boolean', domainobject);
 		}
 		return value;
 	}

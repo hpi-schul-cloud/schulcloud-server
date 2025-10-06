@@ -1,4 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { RuntimeConfigValueInvalidTypeLoggable } from './loggable/runtime-config-value-invalid-type.loggable';
 
 export type RuntimeConfigValueProps = RuntimeConfigDefault & AuthorizableObject;
 
@@ -23,7 +24,7 @@ export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> {
 		} else if (this.props.type === 'boolean' && typeof value === 'boolean') {
 			this.props.value = value;
 		} else {
-			throw new Error(`Value ${value.toString()} for key ${this.props.key} is not a valid ${this.props.type}`);
+			throw new RuntimeConfigValueInvalidTypeLoggable(value, this);
 		}
 		return this;
 	}

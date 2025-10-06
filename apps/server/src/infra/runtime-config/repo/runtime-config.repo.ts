@@ -6,6 +6,7 @@ import { RuntimeConfigRepo } from '../domain/runtime-config.repo.interface';
 import { EntityData, EntityName } from '@mikro-orm/core/typings';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { RuntimeConfigValueFactory } from './runtime-config-value.factory';
+import { RuntimeConfigValueInvalidDataLoggable } from '../domain/loggable/runtime-config-invalid-data.loggable';
 
 @Injectable()
 export class RuntimeConfigMikroOrmRepo
@@ -25,7 +26,7 @@ export class RuntimeConfigMikroOrmRepo
 	}
 
 	public async getAll(): Promise<RuntimeConfigValue[]> {
-		// TODO: delete entities that are not in defaults anymore
+		// TODO: delete entities that are not in defaults anymore (use unit of work)
 		const entities = await this._em.find(RuntimeConfigEntity, {});
 		const defaults = this.defaults.map((def) => {
 			const found = entities.find((e) => e.key === def.key);
@@ -69,16 +70,14 @@ export class RuntimeConfigMikroOrmRepo
 		if (entity.type === 'number') {
 			const value = Number(entity.value);
 			if (isNaN(value)) {
-				// TODO: Loggable
-				throw new Error(`Value for key ${entity.key} is not a valid number`);
+				throw new RuntimeConfigValueInvalidDataLoggable(entity.key, entity.value, entity.type);
 			}
 			return { type: 'number', value: Number(entity.value) };
 		}
 		if (entity.type === 'boolean') {
 			return { type: 'boolean', value: entity.value === 'true' };
 		}
-		// TODO: better error handling
-		throw new Error(`Unsupported type`);
+		throw new RuntimeConfigValueInvalidDataLoggable(entity.key, entity.value, entity.type);
 	}
 
 	protected mapDOToEntityProperties(domainObject: RuntimeConfigValue): EntityData<RuntimeConfigEntity> {
