@@ -5,7 +5,7 @@ import { UserDo, UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { VideoConferenceScope } from '../domain';
-import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '../video-conference-config';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 import { ScopeRef } from './dto';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
 
@@ -15,7 +15,7 @@ describe(VideoConferenceFeatureService.name, () => {
 	let boardContextApiHelperService: DeepMocked<BoardContextApiHelperService>;
 	let userService: DeepMocked<UserService>;
 	let legacySchoolService: DeepMocked<LegacySchoolService>;
-	let config: DeepMocked<VideoConferencePublicApiConfig>;
+	let config: DeepMocked<VideoConferenceConfig>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -34,8 +34,8 @@ describe(VideoConferenceFeatureService.name, () => {
 					useValue: createMock<LegacySchoolService>(),
 				},
 				{
-					provide: VIDEO_CONFERENCE_PUBLIC_API_CONFIG,
-					useValue: createMock<VideoConferencePublicApiConfig>({
+					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
+					useValue: createMock<VideoConferenceConfig>({
 						FEATURE_VIDEOCONFERENCE_ENABLED: false,
 					}),
 				},
@@ -46,7 +46,7 @@ describe(VideoConferenceFeatureService.name, () => {
 		boardContextApiHelperService = module.get(BoardContextApiHelperService);
 		userService = module.get(UserService);
 		legacySchoolService = module.get(LegacySchoolService);
-		config = module.get(VIDEO_CONFERENCE_PUBLIC_API_CONFIG);
+		config = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
