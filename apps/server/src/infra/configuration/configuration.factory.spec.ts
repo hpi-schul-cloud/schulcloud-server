@@ -26,7 +26,6 @@ class TestConfig {
 	public valueWithoutDefaultBoolean!: boolean;
 
 	@IsBoolean()
-	@ConfigProperty()
 	public valueWithDefaultBoolean = true;
 }
 
