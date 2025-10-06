@@ -6,7 +6,7 @@ import { UserService } from '@modules/user';
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { VideoConferenceScope } from '../domain';
-import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '../video-conference-config';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 import { ScopeRef } from './dto';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class VideoConferenceFeatureService {
 		private readonly boardContextApiHelperService: BoardContextApiHelperService,
 		private readonly userService: UserService,
 		private readonly legacySchoolService: LegacySchoolService,
-		@Inject(VIDEO_CONFERENCE_PUBLIC_API_CONFIG) private readonly config: VideoConferencePublicApiConfig
+		@Inject(VIDEO_CONFERENCE_CONFIG_TOKEN) private readonly config: VideoConferenceConfig
 	) {}
 
 	public async checkVideoConferenceFeatureEnabled(userId: EntityId, scope: ScopeRef): Promise<void> {

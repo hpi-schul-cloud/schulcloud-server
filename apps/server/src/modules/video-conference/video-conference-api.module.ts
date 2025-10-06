@@ -12,7 +12,7 @@ import {
 	VideoConferenceInfoUc,
 	VideoConferenceJoinUc,
 } from './uc';
-import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from './video-conference-config';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from './video-conference-config';
 import { VideoConferenceModule } from './video-conference.module';
 
 @Module({
@@ -22,7 +22,7 @@ import { VideoConferenceModule } from './video-conference.module';
 		AuthorizationModule,
 		BoardContextApiHelperModule,
 		LegacySchoolModule,
-		ConfigurationModule.register(VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig),
+		ConfigurationModule.register(VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig),
 	],
 	controllers: [VideoConferenceController],
 	providers: [
