@@ -12,13 +12,15 @@ import { CourseEntity } from '../../repo';
 import { courseEntityFactory } from '../../testing';
 import { CourseMetadataListResponse } from '../dto';
 import { CourseCommonCartridgeMetadataResponse } from '../dto/course-cc-metadata.response';
+import { schoolEntityFactory } from '@modules/management/seed-data/factory/school.entity.factory';
+import { SchoolEntity } from '@modules/school/repo';
 
-const createStudent = () => {
-	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({}, [Permission.COURSE_VIEW]);
+const createStudent = (school: SchoolEntity) => {
+	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school }, [Permission.COURSE_VIEW]);
 	return { account: studentAccount, user: studentUser };
 };
-const createTeacher = () => {
-	const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [
+const createTeacher = (school: SchoolEntity) => {
+	const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 		Permission.COURSE_VIEW,
 		Permission.COURSE_EDIT,
 		Permission.COURSE_CREATE,
@@ -53,15 +55,18 @@ describe('Course Controller (API)', () => {
 
 	describe('[GET] /courses/', () => {
 		const setup = async () => {
-			const student = createStudent();
-			const teacher = createTeacher();
+			const school = schoolEntityFactory.buildWithId();
+			const student = createStudent(school);
+			const teacher = createTeacher(school);
 			const course = courseEntityFactory.buildWithId({
 				teachers: [teacher.user],
 				students: [student.user],
+				school,
 			});
 			const courseWithoutTeacher = courseEntityFactory.buildWithId({
 				teachers: [],
 				students: [student.user],
+				school,
 			});
 
 			await em.persistAndFlush([
@@ -120,7 +125,8 @@ describe('Course Controller (API)', () => {
 	describe('[POST] /courses/:courseId/stop-sync', () => {
 		describe('when a course is synchronized', () => {
 			const setup = async () => {
-				const teacher = createTeacher();
+				const school = schoolEntityFactory.buildWithId();
+				const teacher = createTeacher(school);
 				const group = groupEntityFactory.buildWithId();
 				const course = courseEntityFactory.build({
 					teachers: [teacher.user],
@@ -151,7 +157,8 @@ describe('Course Controller (API)', () => {
 
 		describe('when the user is unauthorized', () => {
 			const setup = async () => {
-				const teacher = createTeacher();
+				const school = schoolEntityFactory.buildWithId();
+				const teacher = createTeacher(school);
 				const group = groupEntityFactory.buildWithId();
 				const course = courseEntityFactory.build({
 					teachers: [teacher.user],
@@ -184,10 +191,12 @@ describe('Course Controller (API)', () => {
 
 	describe('[GET] /courses/:courseId/user-permissions', () => {
 		const setup = () => {
-			const teacher = createTeacher();
+			const school = schoolEntityFactory.buildWithId();
+			const teacher = createTeacher(school);
 			const course = courseEntityFactory.buildWithId({
 				teachers: [teacher.user],
 				students: [],
+				school,
 			});
 
 			return { course, teacher };
@@ -212,7 +221,8 @@ describe('Course Controller (API)', () => {
 	describe('[POST] /courses/:courseId/start-sync', () => {
 		describe('when a course is not synchronized', () => {
 			const setup = async () => {
-				const teacher = createTeacher();
+				const school = schoolEntityFactory.buildWithId();
+				const teacher = createTeacher(school);
 				const group = groupEntityFactory.buildWithId();
 				const course = courseEntityFactory.build({
 					teachers: [teacher.user],
@@ -244,7 +254,8 @@ describe('Course Controller (API)', () => {
 
 		describe('when a groupId parameter is invalid', () => {
 			const setup = async () => {
-				const teacher = createTeacher();
+				const school = schoolEntityFactory.buildWithId();
+				const teacher = createTeacher(school);
 				const group = groupEntityFactory.buildWithId();
 				const course = courseEntityFactory.build({
 					teachers: [teacher.user],
@@ -275,7 +286,8 @@ describe('Course Controller (API)', () => {
 
 		describe('when a course is already synchronized', () => {
 			const setup = async () => {
-				const teacher = createTeacher();
+				const school = schoolEntityFactory.buildWithId();
+				const teacher = createTeacher(school);
 				const group = groupEntityFactory.buildWithId();
 				const otherGroup = groupEntityFactory.buildWithId();
 				const course = courseEntityFactory.build({
@@ -316,7 +328,8 @@ describe('Course Controller (API)', () => {
 
 		describe('when the user is unauthorized', () => {
 			const setup = async () => {
-				const teacher = createTeacher();
+				const school = schoolEntityFactory.buildWithId();
+				const teacher = createTeacher(school);
 				const group = groupEntityFactory.buildWithId();
 				const course = courseEntityFactory.build({
 					teachers: [teacher.user],
@@ -350,7 +363,8 @@ describe('Course Controller (API)', () => {
 
 	describe('[GET] /courses/:courseId/cc-metadata', () => {
 		const setup = async () => {
-			const teacher = createTeacher();
+			const school = schoolEntityFactory.buildWithId();
+			const teacher = createTeacher(school);
 			const course = courseEntityFactory.buildWithId({
 				teachers: [teacher.user],
 				students: [],
@@ -376,7 +390,8 @@ describe('Course Controller (API)', () => {
 
 	describe('[POST] /courses', () => {
 		const setup = async () => {
-			const teacher = createTeacher();
+			const school = schoolEntityFactory.buildWithId();
+			const teacher = createTeacher(school);
 			const course = courseEntityFactory.build();
 
 			await em.persistAndFlush([teacher.account, teacher.user]);

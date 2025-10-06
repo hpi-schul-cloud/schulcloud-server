@@ -255,7 +255,7 @@ describe('FeathersRosterService', () => {
 				userService.findById.mockResolvedValueOnce(user);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
-				courseService.findAllByUserId.mockResolvedValue(courses);
+				courseService.findAllByUserId.mockResolvedValue([courses, courses.length]);
 				// Course A
 				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([contextExternalTool]);
 				configService.get.mockReturnValueOnce(true);
@@ -357,7 +357,7 @@ describe('FeathersRosterService', () => {
 				userService.findById.mockResolvedValueOnce(user);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
-				courseService.findAllByUserId.mockResolvedValue(courses);
+				courseService.findAllByUserId.mockResolvedValue([courses, courses.length]);
 				// Course A
 				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]);
 				configService.get.mockReturnValueOnce(true);
@@ -452,7 +452,7 @@ describe('FeathersRosterService', () => {
 
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
 
-				courseService.findAllByUserId.mockResolvedValue([]);
+				courseService.findAllByUserId.mockResolvedValue([[], 0]);
 
 				const roleDto: RoleDto = {
 					id: 'role-id',

@@ -9,6 +9,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { Dashboard, GridElement } from '../../domain/do/dashboard';
 import { DASHBOARD_REPO, IDashboardRepo } from '../../repo/mikro-orm/dashboard.repo';
 import { DashboardResponse } from '../dto';
+import { schoolEntityFactory } from '@modules/school/testing';
 
 describe('Dashboard Controller (API)', () => {
 	let app: INestApplication;
@@ -34,21 +35,33 @@ describe('Dashboard Controller (API)', () => {
 	});
 
 	const courseBuild = (student: User, teacher: User, time: number) => [
-		courseEntityFactory.build({ name: 'should appear', students: [student] }),
-		courseEntityFactory.build({ name: 'should appear', substitutionTeachers: [teacher], students: [student] }),
+		courseEntityFactory.build({ name: 'should appear', students: [student], school: teacher.school }),
+		courseEntityFactory.build({
+			name: 'should appear',
+			substitutionTeachers: [teacher],
+			students: [student],
+			school: teacher.school,
+		}),
 		courseEntityFactory.build({
 			name: 'should appear',
 			teachers: [teacher],
 			students: [student],
+			school: teacher.school,
 			untilDate: new Date(Date.now() + time),
 		}),
-		courseEntityFactory.build({ name: 'should appear', teachers: [teacher], students: [student] }),
+		courseEntityFactory.build({
+			name: 'should appear',
+			teachers: [teacher],
+			students: [student],
+			school: teacher.school,
+		}),
 		courseEntityFactory.build({ name: 'should not appear, not users course' }),
 		courseEntityFactory.build({
 			name: 'should not appear, enddate is in the past',
 			students: [student],
 			untilDate: new Date(Date.now() - time),
 		}),
+		courseEntityFactory.build({ name: 'should not appear, not users school', teachers: [teacher] }),
 	];
 
 	describe('[GET] dashboard', () => {
@@ -105,14 +118,16 @@ describe('Dashboard Controller (API)', () => {
 
 		describe('with logged in student', () => {
 			const setup = async () => {
-				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const school = schoolEntityFactory.buildWithId();
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 				const twoDaysInMilliSeconds = 172800000;
 				const courses = courseBuild(studentUser, teacherUser, twoDaysInMilliSeconds);
 				const lockedCourse = courseEntityFactory.build({
 					name: 'locked course',
 					teachers: [],
 					students: [studentUser],
+					school: school,
 				});
 				await em.persistAndFlush([teacherUser, studentAccount, studentUser, ...courses, lockedCourse]);
 				const { id: dashboardId } = await dashboardRepo.getUsersDashboard(studentUser.id);

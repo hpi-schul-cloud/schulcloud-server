@@ -40,7 +40,7 @@ describe(`card update title (api)`, () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-			const course = courseEntityFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, teacherAccount, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -95,7 +95,7 @@ describe(`card update title (api)`, () => {
 		const setup = async () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-			const course = courseEntityFactory.build({ students: [studentUser] });
+			const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
 			await em.persistAndFlush([studentUser, studentAccount, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({

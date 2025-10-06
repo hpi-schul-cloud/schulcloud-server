@@ -152,6 +152,10 @@ class FileSystemHelper {
 		return this.buildPath(folderPath, 'library.json');
 	}
 
+	static getSemanticsJsonPath(folderPath) {
+		return this.buildPath(folderPath, 'semantics.json');
+	}
+
 	static checkPackageJsonPath(folderPath) {
 		const packageJsonPath = this.buildPath(folderPath, 'package.json');
 
