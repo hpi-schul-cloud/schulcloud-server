@@ -2,10 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { RuntimeConfigRepo } from './runtime-config.repo.interface';
 import { RuntimeConfigValue } from './runtime-config-value.do';
 import { RuntimeConfigValueNotExpectedType } from './loggable/runtime-config-not-expected-type.loggable';
+import { RUNTIME_CONFIG_REPO } from '../injection-keys';
 
 @Injectable()
 export class RuntimeConfigService {
-	constructor(@Inject('RUNTIME_CONFIG_REPO') private readonly repo: RuntimeConfigRepo) {}
+	constructor(@Inject(RUNTIME_CONFIG_REPO) private readonly repo: RuntimeConfigRepo) {}
 
 	public async getByKey(key: string): Promise<RuntimeConfigValue> {
 		const domainobject = await this.repo.getByKey(key);

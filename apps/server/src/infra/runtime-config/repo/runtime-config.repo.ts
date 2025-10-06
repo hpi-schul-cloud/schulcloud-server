@@ -7,6 +7,7 @@ import { EntityData, EntityName } from '@mikro-orm/core/typings';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { RuntimeConfigValueFactory } from './runtime-config-value.factory';
 import { RuntimeConfigValueInvalidDataLoggable } from '../domain/loggable/runtime-config-invalid-data.loggable';
+import { RUNTIME_CONFIG_DEFAULTS } from '../injection-keys';
 
 @Injectable()
 export class RuntimeConfigMikroOrmRepo
@@ -15,7 +16,7 @@ export class RuntimeConfigMikroOrmRepo
 {
 	constructor(
 		protected readonly _em: EntityManager,
-		@Inject('RUNTIME_CONFIG_DEFINITIONS') private defaults: RuntimeConfigDefault[]
+		@Inject(RUNTIME_CONFIG_DEFAULTS) private defaults: RuntimeConfigDefault[]
 	) {
 		super(_em);
 	}
