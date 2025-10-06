@@ -1,13 +1,12 @@
 import { BoardExternalReference, BoardExternalReferenceType, BoardNodeService, ColumnBoard } from '@modules/board';
+import { BoardFeature, ElementReferenceType, ParentNodeInfo } from '@modules/board/domain';
 import { CourseService } from '@modules/course';
 import { CourseFeatures } from '@modules/course/repo';
 import { RoomService } from '@modules/room';
 import { SchoolFeature } from '@modules/school/domain';
 import { UserService } from '@modules/user';
-import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { BoardFeature, ElementReferenceType, ParentNodeInfo } from '../board/domain';
 import { LegacySchoolService } from '../legacy-school';
 import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from './board-context.config';
 
@@ -19,8 +18,6 @@ export class BoardContextApiHelperService {
 		private readonly boardNodeService: BoardNodeService,
 		private readonly legacySchoolService: LegacySchoolService,
 		private readonly userService: UserService,
-		@Inject(VIDEO_CONFERENCE_PUBLIC_API_CONFIG)
-		private readonly videoConferenceConfig: VideoConferencePublicApiConfig,
 		@Inject(BOARD_CONTEXT_PUBLIC_API_CONFIG)
 		private readonly boardContextConfig: BoardContextPublicApiConfig
 	) {}
@@ -141,7 +138,7 @@ export class BoardContextApiHelperService {
 	private isVideoConferenceEnabledForConfig(): boolean {
 		return (
 			this.boardContextConfig.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED &&
-			this.videoConferenceConfig.FEATURE_VIDEOCONFERENCE_ENABLED
+			this.boardContextConfig.FEATURE_VIDEOCONFERENCE_ENABLED
 		);
 	}
 }

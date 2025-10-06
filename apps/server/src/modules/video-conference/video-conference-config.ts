@@ -8,7 +8,7 @@ export class VideoConferencePublicApiConfig {
 	@IsBoolean()
 	@StringToBoolean()
 	@ConfigProperty()
-	public FEATURE_VIDEOCONFERENCE_ENABLED = false;
+	public FEATURE_VIDEOCONFERENCE_ENABLED = true;
 }
 
 export const VIDEO_CONFERENCE_CONFIG_TOKEN = 'VIDEO_CONFERENCE_CONFIG_TOKEN';

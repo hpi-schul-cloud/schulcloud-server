@@ -10,4 +10,9 @@ export class BoardContextPublicApiConfig {
 	@StringToBoolean()
 	@ConfigProperty()
 	public FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+
+	@IsBoolean()
+	@StringToBoolean()
+	@ConfigProperty()
+	public FEATURE_VIDEOCONFERENCE_ENABLED = true;
 }
