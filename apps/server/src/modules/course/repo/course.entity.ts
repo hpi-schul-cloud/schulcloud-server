@@ -207,6 +207,7 @@ export class CourseEntity extends BaseEntityWithTimestamps implements TaskParent
 		const usersList: UsersList[] = users.map((user) => {
 			return {
 				id: user.id,
+				schoolId: user.school.id,
 				firstName: user.firstName,
 				lastName: user.lastName,
 			};
