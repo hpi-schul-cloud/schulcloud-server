@@ -3,7 +3,6 @@ name: Test
 on:
   pull_request:
     branches: [ main ]
-    types: [labeled]
   workflow_dispatch:
 
 permissions:
@@ -14,7 +13,6 @@ env:
   NODE_VERSION: '22'
 jobs:
   feathers_tests_cov:
-    if: contains(github.event.pull_request.labels.*.name, 'run-tests') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     services:
@@ -38,7 +36,6 @@ jobs:
       - name: feathers:Test - test with coverage
         run: npm run feathers:test
   nest_tests_cov:
-    if: contains(github.event.pull_request.labels.*.name, 'run-tests') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -73,7 +70,6 @@ jobs:
           path: coverage/
   sonarcloud:
       name: SonarCloud coverage
-      if: contains(github.event.pull_request.labels.*.name, 'run-tests') || github.event_name == 'workflow_dispatch'
       runs-on: ubuntu-latest
       needs: [nest_tests_cov]
       steps:
@@ -99,7 +95,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
   nest_lint:
-    if: contains(github.event.pull_request.labels.*.name, 'run-tests') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
