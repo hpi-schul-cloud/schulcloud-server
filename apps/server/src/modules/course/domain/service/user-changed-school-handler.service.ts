@@ -11,10 +11,6 @@ export class UserChangedSchoolHandlerService implements IEventHandler<UserChange
 
 	@UseRequestContext()
 	public async handle(event: UserChangedSchoolEvent): Promise<void> {
-		const [courses] = await this.courseRepo.findAllByUserId(event.userId, { schoolId: event.oldSchoolId });
-		await this.courseRepo.removeUserReference(
-			event.userId,
-			courses.map((c) => c.id)
-		);
+		await this.courseRepo.removeUserFromCourses(event.userId, event.oldSchoolId);
 	}
 }

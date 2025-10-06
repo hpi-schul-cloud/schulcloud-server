@@ -1,6 +1,7 @@
 const childProcess = require('child_process');
 const fileSystemHelper = require('../helper/file-system.helper.js');
 const H5PGitHubClient = require('./h5p-github.client.js');
+const { LibraryName } = require('@lumieducation/h5p-server');
 
 class H5pLibraryBuilderService {
 	constructor(libraryRepoMap, tempFolderPath) {
@@ -44,7 +45,7 @@ class H5pLibraryBuilderService {
 			return [];
 		}
 
-		const tags = await this.gitHubClient.fetchGitHubTags(repoName);
+		const tags = await this.gitHubClient.fetchAllTags(repoName, { maxRetries: 3 });
 		const filteredTags = this.getHighestPatchTags(tags);
 		console.log(`Found ${filteredTags.length} versions of ${library} in ${repoName}: ${filteredTags.join(', ')}`);
 
@@ -98,7 +99,9 @@ class H5pLibraryBuilderService {
 
 		this.logStartBuildingOfDependenciesFromGitHub(library, tag);
 
-		const dependencies = this.getDependenciesFromLibraryJson(library, tag);
+		let dependencies = this.getDependenciesFromLibraryJson(library, tag);
+		const softDependencies = this.getSoftDependenciesFromSemantics(library, tag);
+		dependencies = dependencies.concat(softDependencies);
 		if (dependencies.length === 0) {
 			this.logNoDependenciesFoundForLibrary(library, tag);
 			return libResult ? [libResult] : [];
@@ -139,7 +142,7 @@ class H5pLibraryBuilderService {
 		// Dann wäre es möglich ein pre and post hook zu erstellen.
 		// Wenn man dann noch fileSystemHelper als Klasse instanziiert über ein factory könnte man dort noch mehr implizites Wissen weg kapseln.
 		const { filePath, folderPath, tempFolder } = fileSystemHelper.createTempFolder(this.tempFolderPath, library, tag);
-		await this.gitHubClient.downloadGitHubTag(repo, tag, filePath);
+		await this.gitHubClient.downloadTag(repo, tag, filePath);
 
 		if (fileSystemHelper.pathExists(folderPath)) {
 			fileSystemHelper.removeFolder(folderPath);
@@ -169,7 +172,9 @@ class H5pLibraryBuilderService {
 
 		if (!this.isShepherdLibrary(library) && this.areBuildStepsRequired(folderPath)) {
 			const legacyPeerDepsRequired = this.isLegacyPeerDepsRequired(library, tag);
-			this.executeBuildSteps(folderPath, library, legacyPeerDepsRequired);
+			const oldNodeVersion = this.isOldNodeVersionRequired(library, tag);
+			const installRequired = this.isInstallRequiredInsteadOfCi(library, tag);
+			this.executeBuildSteps(folderPath, library, legacyPeerDepsRequired, oldNodeVersion, installRequired);
 		}
 
 		if (this.isLibraryPathCorrectionRequired(library, tag)) {
@@ -207,8 +212,9 @@ class H5pLibraryBuilderService {
 			'H5P.Dialogcards': ['1.8.8', '1.7.10'],
 			'H5P.DragQuestion': ['1.15.4'],
 			'H5P.DragText': ['1.10.25', '1.9.5', '1.8.20'],
-			'H5P.MultiMediaChoice': ['0.3.56'],
 			'H5P.InteractiveVideo': ['1.28.3'],
+			'H5P.MultiMediaChoice': ['0.3.56', '0.2.1', '0.1.8'],
+			'H5P.CoursePresentation': ['1.23.3'],
 		};
 		const prependNodeOptionsRequired = prependNodeOptions[library]?.includes(tag);
 
@@ -277,19 +283,90 @@ class H5pLibraryBuilderService {
 		return legacyPeerDepsRequired;
 	}
 
-	executeBuildSteps(folderPath, library, legacyPeerDepsRequired = false) {
+	isOldNodeVersionRequired(library, tag) {
+		const oldNodeVersions = {
+			'H5P.CoursePresentation': {
+				'1.22.11': '14',
+				'1.21.7': '14',
+				'1.20.4': '10',
+				'1.19.3': '10',
+				'1.18.1': '8',
+				'1.17.10': '8',
+			},
+			'H5P.Questionnaire': {
+				'1.1.2': '14',
+				'1.0.2': '14',
+			},
+			'H5P.SimpleMultiChoice': {
+				'1.0.5': '14',
+			},
+			'H5PEditor.QuestionSetTextualEditor': {
+				'1.2.4': '14',
+			},
+		};
+		const oldNodeVersion = oldNodeVersions[library]?.[tag];
+
+		return oldNodeVersion;
+	}
+
+	isInstallRequiredInsteadOfCi(library, tag) {
+		const installInsteadOfCi = {
+			'H5P.CoursePresentation': ['1.18.1', '1.17.10'],
+			'H5P.Questionnaire': ['1.1.2', '1.0.2'],
+			'H5P.SimpleMultiChoice': ['1.0.5'],
+		};
+		const installRequired = installInsteadOfCi[library]?.includes(tag);
+
+		return installRequired;
+	}
+
+	executeBuildSteps(
+		folderPath,
+		library,
+		legacyPeerDepsRequired = false,
+		oldNodeVersion = undefined,
+		installRequired = false
+	) {
 		try {
 			this.logRunningNpmCiAndBuild(folderPath);
-			const npmInstallArgs = legacyPeerDepsRequired ? ['ci', '--legacy-peer-deps'] : ['ci'];
-			const npmInstall = childProcess.spawnSync('npm', npmInstallArgs, { cwd: folderPath, stdio: 'inherit' });
 
-			if (npmInstall.status !== 0) {
-				throw new Error('npm ci failed');
-			} else {
-				const npmBuild = childProcess.spawnSync('npm', ['run', 'build'], { cwd: folderPath, stdio: 'inherit' });
-				if (npmBuild.status !== 0) {
-					throw new Error('npm run build failed');
-				}
+			const nvmCommand = `source ~/.nvm/nvm.sh && nvm use ${oldNodeVersion}`;
+
+			let installCommand = 'npm';
+			let installArgs = [installRequired ? 'install' : 'ci'];
+			let installOptions = { cwd: folderPath, stdio: 'inherit' };
+			if (legacyPeerDepsRequired) {
+				installArgs.push('--legacy-peer-deps');
+			}
+
+			if (oldNodeVersion) {
+				const bashCommand = `${nvmCommand} && npm ${installArgs.join(' ')}`;
+				installCommand = 'bash';
+				installArgs = ['-c', bashCommand];
+				installOptions.env = {}; // Ensure a clean environment
+			}
+
+			console.log('Execute install command:', installCommand, installArgs, installOptions);
+			const installResult = childProcess.spawnSync(installCommand, installArgs, installOptions);
+			if (installResult.status !== 0) {
+				throw new Error('npm install/ci failed');
+			}
+
+			let buildCommand = 'npm';
+			let buildArgs = ['run', 'build'];
+			let buildOptions = { cwd: folderPath, stdio: 'inherit' };
+
+			if (oldNodeVersion) {
+				const bashCommand = `${nvmCommand} && npm ${buildArgs.join(' ')}`;
+				buildCommand = 'bash';
+				buildArgs = ['-c', bashCommand];
+				buildOptions.env = {}; // Ensure a clean environment
+			}
+
+			console.log('Execute build command:', buildCommand, buildArgs, buildOptions);
+			const buildResult = childProcess.spawnSync(buildCommand, buildArgs, buildOptions);
+			if (buildResult.status !== 0) {
+				throw new Error('npm run build failed');
 			}
 		} catch (error) {
 			console.error(`Unknown error while trying to build library ${library} in ${folderPath}:`, error);
@@ -434,6 +511,52 @@ class H5pLibraryBuilderService {
 		return dependencies;
 	}
 
+	getSoftDependenciesFromSemantics(repoName, tag) {
+		const softDependencies = [];
+
+		const { folderPath } = fileSystemHelper.createTempFolder(this.tempFolderPath, repoName, tag);
+		const semanticsJsonPath = fileSystemHelper.getSemanticsJsonPath(folderPath);
+		const semanticsFileExists = fileSystemHelper.pathExists(semanticsJsonPath);
+		if (semanticsFileExists) {
+			const semantics = fileSystemHelper.readJsonFile(semanticsJsonPath);
+			if (Array.isArray(semantics)) {
+				const libraryOptions = this.findLibraryOptions(semantics);
+				for (const libraryOption of libraryOptions) {
+					const libraryName = LibraryName.fromUberName(libraryOption, { useWhitespace: true, useHyphen: false });
+					softDependencies.push(libraryName);
+				}
+			}
+		}
+
+		return softDependencies;
+	}
+
+	findLibraryOptions(semantics) {
+		const results = [];
+
+		function search(obj) {
+			if (obj && typeof obj === 'object') {
+				if ('type' in obj && obj.type && obj.type === 'library' && 'options' in obj && Array.isArray(obj.options)) {
+					results.push(...obj.options);
+				}
+				for (const key in obj) {
+					const value = obj[key];
+					if (Array.isArray(value)) {
+						value.forEach(search);
+					} else if (typeof value === 'object' && value !== null) {
+						search(value);
+					} else {
+						// Primitive value, do nothing
+					}
+				}
+			}
+		}
+
+		semantics.forEach(search);
+
+		return results;
+	}
+
 	async buildLibraryDependency(dependency, library, tag, availableVersions) {
 		const depName = dependency.machineName;
 		const depMajor = dependency.majorVersion;
@@ -446,7 +569,7 @@ class H5pLibraryBuilderService {
 			return [];
 		}
 
-		const tags = await this.gitHubClient.fetchGitHubTags(depRepoName);
+		const tags = await this.gitHubClient.fetchAllTags(depRepoName, { maxRetries: 3 });
 		const depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
 		if (!depTag) {
 			this.logTagNotFound(dependency);
@@ -463,9 +586,7 @@ class H5pLibraryBuilderService {
 	}
 
 	logBuildingLibraryDependency(dependency, library, tag) {
-		console.log(
-			`Building dependency ${dependency.machineName}-${dependency.majorVersion}.${dependency.minorVersion}.x from GitHub for ${library}-${tag}.`
-		);
+		console.log(`Building dependency ${LibraryName.toUberName(dependency)}.x from GitHub for ${library}-${tag}.`);
 	}
 
 	logGithubRepositoryNotFound(library) {
@@ -473,9 +594,7 @@ class H5pLibraryBuilderService {
 	}
 
 	logTagNotFound(dependency) {
-		console.log(
-			`No suitable tag found for dependency ${dependency.machineName}-${dependency.majorVersion}.${dependency.minorVersion}.x .`
-		);
+		console.log(`No suitable tag found for dependency ${LibraryName.toUberName(dependency)}.x .`);
 	}
 
 	logBuildingLibraryDependencySuccess(depName, depTag) {

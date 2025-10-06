@@ -47,16 +47,18 @@ describe(`board readersCanEdit setting (api)`, () => {
 	});
 
 	const setup = async () => {
-		const userWithAdminRole = userFactory.buildWithId();
+		const school = schoolEntityFactory.buildWithId();
+
+		const userWithAdminRole = userFactory.buildWithId({ school });
 		const accountWithAdminRole = accountFactory.withUser(userWithAdminRole).build();
 
-		const userWithEditRole = userFactory.buildWithId();
+		const userWithEditRole = userFactory.buildWithId({ school });
 		const accountWithEditRole = accountFactory.withUser(userWithEditRole).build();
 
-		const userWithViewRole = userFactory.buildWithId();
+		const userWithViewRole = userFactory.buildWithId({ school });
 		const accountWithViewRole = accountFactory.withUser(userWithViewRole).build();
 
-		const noAccessUser = userFactory.buildWithId();
+		const noAccessUser = userFactory.buildWithId({ school });
 		const noAccessAccount = accountFactory.withUser(noAccessUser).build();
 
 		const { roomAdminRole, roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
@@ -70,7 +72,6 @@ describe(`board readersCanEdit setting (api)`, () => {
 			],
 		});
 
-		const school = schoolEntityFactory.buildWithId();
 		const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
 		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });

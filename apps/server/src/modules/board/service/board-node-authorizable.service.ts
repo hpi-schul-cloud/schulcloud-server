@@ -5,9 +5,9 @@ import {
 	AuthorizationInjectionService,
 	AuthorizableReferenceType,
 } from '@modules/authorization';
-import { AnyBoardNode, BoardNodeAuthorizable, UserWithBoardRoles } from '../domain';
+import { AnyBoardNode, BoardNodeAuthorizable } from '../domain';
 import { BoardNodeRepo } from '../repo';
-import { BoardContextService } from './internal/board-context.service';
+import { type BoardAuthContext, BoardContextService } from './internal/board-context.service';
 import { BoardNodeService } from './board-node.service';
 
 @Injectable()
@@ -35,7 +35,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 	public async getBoardAuthorizable(boardNode: AnyBoardNode): Promise<BoardNodeAuthorizable> {
 		const rootNode = await this.boardNodeService.findRoot(boardNode, 1);
 		const parentNode = await this.boardNodeService.findParent(boardNode, 1);
-		const users = await this.boardContextService.getUsersWithBoardRoles(rootNode);
+		const { users, schoolId } = await this.boardContextService.getBoardAuthContext(rootNode);
 		const boardSettings = await this.boardContextService.getBoardSettings(rootNode);
 
 		const boardNodeAuthorizable = new BoardNodeAuthorizable({
@@ -44,6 +44,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 			boardNode,
 			rootNode,
 			parentNode,
+			schoolId,
 			boardContextSettings: boardSettings,
 		});
 
@@ -56,20 +57,20 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 		const boardNodeMap = await this.getBoardNodeMap([...rootIds, ...parentIds]);
 		const promises = boardNodes.map(async (boardNode) => {
 			const rootNode = boardNodeMap[boardNode.rootId];
-			const users = await this.boardContextService.getUsersWithBoardRoles(rootNode);
-			return { id: boardNode.id, users };
+			const authContext = await this.boardContextService.getBoardAuthContext(rootNode);
+			return { id: boardNode.id, authContext };
 		});
 
 		const results = await Promise.all(promises);
-		const usersMap = results.reduce((acc, { id, users }) => {
-			acc[id] = users;
+		const usersMap = results.reduce((acc, { id, authContext }) => {
+			acc[id] = authContext;
 			return acc;
-		}, {} as Record<EntityId, UserWithBoardRoles[]>);
+		}, {} as Record<EntityId, BoardAuthContext>);
 
 		const boardNodeAuthorizablesPromises = boardNodes.map(async (boardNode) => {
 			const rootNode = boardNodeMap[boardNode.rootId];
 			const parentNode = boardNode.parentId ? boardNodeMap[boardNode.parentId] : undefined;
-			const users = usersMap[boardNode.id];
+			const { users, schoolId } = usersMap[boardNode.id];
 			const boardSettings = await this.boardContextService.getBoardSettings(rootNode);
 			const boardNodeAuthorizable = new BoardNodeAuthorizable({
 				users,
@@ -77,6 +78,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 				boardNode,
 				rootNode,
 				parentNode,
+				schoolId,
 				boardContextSettings: boardSettings,
 			});
 			return boardNodeAuthorizable;

@@ -74,6 +74,7 @@ describe(DeleteUserCourseDataStep.name, () => {
 			const allCourses = [course1, course2, course3];
 
 			courseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
+			courseRepo.removeUserReference.mockResolvedValue([allCourses.map((c) => c.id), allCourses.length]);
 
 			const expectedResult = StepReportBuilder.build(ModuleName.COURSE, [
 				StepOperationReportBuilder.build(StepOperationType.UPDATE, 3, [course1.id, course2.id, course3.id]),
@@ -84,12 +85,6 @@ describe(DeleteUserCourseDataStep.name, () => {
 				user,
 			};
 		};
-
-		it('should call courseRepo.findAllByUserId', async () => {
-			const { user } = setup();
-			await step.execute({ userId: user.id });
-			expect(courseRepo.findAllByUserId).toBeCalledWith(user.id);
-		});
 
 		it('should call repo.removeUserReference', async () => {
 			const { user } = setup();

@@ -45,7 +45,7 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				await em.persistAndFlush([teacherUser, teacherAccount, course]);
 
 				const columnBoardNode = columnBoardEntityFactory.build({
@@ -109,14 +109,15 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 
 		describe('when root parent is room', () => {
 			const setup = async () => {
-				const room = roomEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
+				const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
 				const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
-				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const userGroup = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
 					users: [{ role: roomEditorRole, user: teacherUser }],
+					organization: school,
 				});
 				const roomMembership = roomMembershipEntityFactory.build({
 					roomId: room.id,
@@ -277,7 +278,7 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 		describe('when parent is a course', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				await em.persistAndFlush([teacherUser, teacherAccount, course]);
 				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -310,14 +311,15 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 
 		describe('when parent is a room', () => {
 			const setup = async () => {
-				const room = roomEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
+				const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
 				const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
-				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const userGroup = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
 					users: [{ role: roomEditorRole, user: teacherUser }],
+					organization: school,
 				});
 				const roomMembership = roomMembershipEntityFactory.build({
 					roomId: room.id,
