@@ -45,10 +45,6 @@ export class VideoConferenceService {
 		return this.config.HOST;
 	}
 
-	get isVideoConferenceFeatureEnabled(): boolean {
-		return this.config.FEATURE_VIDEOCONFERENCE_ENABLED;
-	}
-
 	public canGuestJoin(isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean): boolean {
 		if ((isGuest && state === VideoConferenceState.NOT_STARTED) || (isGuest && !waitingRoomEnabled)) {
 			return false;
