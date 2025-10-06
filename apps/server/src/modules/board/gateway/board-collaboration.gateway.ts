@@ -282,7 +282,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('update-readers-can-edit-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async updateReadersCanEdit(socket: Socket, data: UpdateReadersCanEditMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-readers-can-edit' });
 		const { userId } = this.getCurrentUser(socket);
