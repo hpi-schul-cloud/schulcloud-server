@@ -12,8 +12,6 @@ import {
 } from '../../domain';
 import { RoomService } from '@modules/room';
 
-export type BoardAuthContext = { users: UserWithBoardRoles[]; schoolId: EntityId | undefined };
-
 @Injectable()
 export class BoardContextService {
 	constructor(
@@ -22,24 +20,24 @@ export class BoardContextService {
 		private readonly roomMembershipService: RoomMembershipService
 	) {}
 
-	public async getBoardAuthContext(rootNode: AnyBoardNode): Promise<BoardAuthContext> {
+	public async getUsersWithBoardRoles(rootNode: AnyBoardNode): Promise<UserWithBoardRoles[]> {
 		if (!('context' in rootNode)) {
-			return { users: [], schoolId: undefined };
+			return [];
 		}
 
-		let authContext: BoardAuthContext;
+		let usersWithRoles: UserWithBoardRoles[] = [];
 
 		if (rootNode.context.type === BoardExternalReferenceType.Room) {
-			authContext = await this.getFromRoom(rootNode.context.id);
+			usersWithRoles = await this.getFromRoom(rootNode.context.id);
 		} else if (rootNode.context.type === BoardExternalReferenceType.Course) {
-			authContext = await this.getFromCourse(rootNode.context.id);
+			usersWithRoles = await this.getFromCourse(rootNode.context.id);
 		} else if (rootNode.context.type === BoardExternalReferenceType.User) {
-			authContext = this.getFromUser(rootNode.context.id);
+			usersWithRoles = this.getFromUser(rootNode.context.id);
 		} else {
 			throw new Error(`Unknown context type: '${rootNode.context.type as string}'`);
 		}
 
-		return authContext;
+		return usersWithRoles;
 	}
 
 	public async getBoardSettings(rootNode: AnyBoardNode): Promise<BoardContextSettings> {
@@ -62,7 +60,7 @@ export class BoardContextService {
 		}
 	}
 
-	private async getFromRoom(roomId: EntityId): Promise<BoardAuthContext> {
+	private async getFromRoom(roomId: EntityId): Promise<UserWithBoardRoles[]> {
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const usersWithRoles: UserWithBoardRoles[] = roomMembershipAuthorizable.members.map((member) => {
 			const roles = this.getBoardRolesFromRoomMembership(member);
@@ -71,45 +69,51 @@ export class BoardContextService {
 				roles,
 			};
 		});
-
-		const room = await this.roomService.getSingleRoom(roomId);
-
-		return { users: usersWithRoles, schoolId: room.schoolId };
+		return usersWithRoles;
 	}
 
-	private async getFromCourse(courseId: EntityId): Promise<BoardAuthContext> {
+	private async getFromCourse(courseId: EntityId): Promise<UserWithBoardRoles[]> {
 		const course = await this.courseService.findById(courseId);
 		const usersWithRoles: UserWithBoardRoles[] = [
-			...course.getTeachersList().map((user) => {
-				return {
-					userId: user.id,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
-				};
-			}),
-			...course.getSubstitutionTeachersList().map((user) => {
-				return {
-					userId: user.id,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
-				};
-			}),
-			...course.getStudentsList().map((user) => {
-				return {
-					userId: user.id,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					roles: [BoardRoles.READER],
-				};
-			}),
+			...course
+				.getTeachersList()
+				.filter((user) => user.schoolId === course.school.id)
+				.map((user) => {
+					return {
+						userId: user.id,
+						firstName: user.firstName,
+						lastName: user.lastName,
+						roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
+					};
+				}),
+			...course
+				.getSubstitutionTeachersList()
+				.filter((user) => user.schoolId === course.school.id)
+				.map((user) => {
+					return {
+						userId: user.id,
+						firstName: user.firstName,
+						lastName: user.lastName,
+						roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
+					};
+				}),
+			...course
+				.getStudentsList()
+				.filter((user) => user.schoolId === course.school.id)
+				.map((user) => {
+					return {
+						userId: user.id,
+						firstName: user.firstName,
+						lastName: user.lastName,
+						roles: [BoardRoles.READER],
+					};
+				}),
 		];
 
-		return { users: usersWithRoles, schoolId: course.school.id };
+		return usersWithRoles;
 	}
 
-	private getFromUser(userId: EntityId): BoardAuthContext {
+	private getFromUser(userId: EntityId): UserWithBoardRoles[] {
 		const usersWithRoles: UserWithBoardRoles[] = [
 			{
 				userId,
@@ -117,7 +121,7 @@ export class BoardContextService {
 			},
 		];
 
-		return { users: usersWithRoles, schoolId: undefined };
+		return usersWithRoles;
 	}
 
 	private getBoardRolesFromRoomMembership(member: UserWithRoomRoles): BoardRoles[] {
