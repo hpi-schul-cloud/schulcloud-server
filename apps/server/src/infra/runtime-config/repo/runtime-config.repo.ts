@@ -26,15 +26,33 @@ export class RuntimeConfigMikroOrmRepo
 	}
 
 	public async getAll(): Promise<RuntimeConfigValue[]> {
-		await this.loadAllIntoUnitOfWork();
+		const entities = await this._em.find(RuntimeConfigEntity, {});
+		const entityMap = new Map(entities.map((e) => [e.key, e]));
+		const values = this.getAllConfigDOsDefinedInDefaults(entityMap);
 
-		const values = await Promise.all(this.defaults.map((def) => this.getByKey(def.key)));
+		await this.removeConfigsNotInDefaults(entities);
 
-		return Promise.resolve([...values]);
+		return values;
 	}
 
-	private async loadAllIntoUnitOfWork(): Promise<void> {
-		await this._em.find(RuntimeConfigEntity, {});
+	private getAllConfigDOsDefinedInDefaults(entityMap: Map<string, RuntimeConfigEntity>): RuntimeConfigValue[] {
+		const configValues = this.defaults.map((def) => {
+			const found = entityMap.get(def.key);
+			if (found) {
+				return this.mapToDo(found);
+			} else {
+				return RuntimeConfigValueFactory.build({ ...def, id: new ObjectId().toHexString() });
+			}
+		});
+		return configValues;
+	}
+
+	private async removeConfigsNotInDefaults(entities: RuntimeConfigEntity[]): Promise<void> {
+		const defaultsSet = new Set(this.defaults.map((d) => d.key));
+		const toRemove = entities.filter((e) => !defaultsSet.has(e.key));
+		if (toRemove.length > 0) {
+			await this._em.removeAndFlush(toRemove);
+		}
 	}
 
 	public async getByKey(key: string): Promise<RuntimeConfigValue> {
