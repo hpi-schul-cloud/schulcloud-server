@@ -13,6 +13,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
 import { columnBoardEntityFactory } from '../../testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 
 const baseRouteName = '/boards';
 
@@ -41,13 +42,14 @@ describe('board get context in room (api)', () => {
 	});
 
 	const setup = async () => {
-		const userWithEditRole = userFactory.buildWithId();
+		const school = schoolEntityFactory.buildWithId();
+		const userWithEditRole = userFactory.buildWithId({ school });
 		const accountWithEditRole = accountFactory.withUser(userWithEditRole).build();
 
-		const userWithViewRole = userFactory.buildWithId();
+		const userWithViewRole = userFactory.buildWithId({ school });
 		const accountWithViewRole = accountFactory.withUser(userWithViewRole).build();
 
-		const noAccessUser = userFactory.buildWithId();
+		const noAccessUser = userFactory.buildWithId({ school });
 		const noAccessAccount = accountFactory.withUser(noAccessUser).build();
 
 		const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
@@ -58,13 +60,15 @@ describe('board get context in room (api)', () => {
 				{ user: userWithEditRole, role: roomEditorRole },
 				{ user: userWithViewRole, role: roomViewerRole },
 			],
+			organization: school,
 		});
 
-		const room = roomEntityFactory.buildWithId();
+		const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
 		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
 		await em.persistAndFlush([
+			school,
 			accountWithEditRole,
 			accountWithViewRole,
 			noAccessAccount,

@@ -6,6 +6,7 @@ import { Module } from '@nestjs/common';
 import { SubmissionService, TaskCopyService, TaskService } from './domain';
 import { SubmissionRepo, TaskRepo } from './repo';
 import { DeleteUserSubmissionDataStep, DeleteUserTaskDataStep } from './saga';
+import { UserChangedSchoolTaskHandlerService } from './service/user-changed-school-task-handler.service';
 
 @Module({
 	imports: [FilesStorageClientModule, CopyHelperModule, LoggerModule, SagaModule],
@@ -17,6 +18,7 @@ import { DeleteUserSubmissionDataStep, DeleteUserTaskDataStep } from './saga';
 		SubmissionRepo,
 		DeleteUserSubmissionDataStep,
 		DeleteUserTaskDataStep,
+		UserChangedSchoolTaskHandlerService,
 	],
 	exports: [TaskService, TaskCopyService, SubmissionService],
 })
