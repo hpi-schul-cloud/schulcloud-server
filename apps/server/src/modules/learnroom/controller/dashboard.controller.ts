@@ -13,7 +13,7 @@ export class DashboardController {
 
 	@Get()
 	public async findForUser(@CurrentUser() currentUser: ICurrentUser): Promise<DashboardResponse> {
-		const dashboard = await this.dashboardUc.getUsersDashboard(currentUser.userId);
+		const dashboard = await this.dashboardUc.getUsersDashboard(currentUser.userId, currentUser.schoolId);
 		const dto = DashboardMapper.mapToResponse(dashboard);
 
 		return dto;
