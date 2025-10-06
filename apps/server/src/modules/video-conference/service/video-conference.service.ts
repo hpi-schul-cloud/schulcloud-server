@@ -1,6 +1,3 @@
-import { randomBytes } from 'node:crypto';
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { CalendarService } from '@infra/calendar';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
@@ -13,17 +10,18 @@ import { RoomMembershipService } from '@modules/room-membership';
 import { TeamEntity, TeamRepo, TeamUserEntity } from '@modules/team/repo';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { VideoConferenceScope } from '@modules/video-conference/domain';
-import { VideoConferenceRepo } from '@modules/video-conference/repo';
+import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { RoleReference } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { randomBytes } from 'node:crypto';
 import { BBBRole } from '../bbb';
-import { VideoConferenceDO, VideoConferenceOptionsDO } from '../domain';
+import { VideoConferenceDO, VideoConferenceOptionsDO, VideoConferenceScope } from '../domain';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
+import { VideoConferenceRepo } from '../repo';
 import { ScopeInfo, VideoConferenceState } from '../uc/dto';
-import { VideoConferenceConfig } from '../video-conference-config';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 
 type ConferenceResource = CourseEntity | Room | TeamEntity | VideoConferenceElement;
 
@@ -32,7 +30,7 @@ export class VideoConferenceService {
 	constructor(
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly boardNodeService: BoardNodeService,
-		private readonly configService: ConfigService<VideoConferenceConfig, true>,
+		@Inject(VIDEO_CONFERENCE_CONFIG_TOKEN) private readonly config: VideoConferenceConfig,
 		private readonly courseService: CourseService,
 		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,
@@ -44,11 +42,7 @@ export class VideoConferenceService {
 	) {}
 
 	get hostUrl(): string {
-		return this.configService.get('HOST');
-	}
-
-	get isVideoConferenceFeatureEnabled(): boolean {
-		return this.configService.get('FEATURE_VIDEOCONFERENCE_ENABLED');
+		return this.config.HOST;
 	}
 
 	public canGuestJoin(isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean): boolean {
