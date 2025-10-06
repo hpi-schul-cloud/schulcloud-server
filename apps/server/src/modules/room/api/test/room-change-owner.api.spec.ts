@@ -267,6 +267,24 @@ describe('Room Controller (API)', () => {
 					expect(response.status).toBe(HttpStatus.OK);
 				});
 			});
+
+			describe('when the room does not belong to the school of the admin', () => {
+				it('should return a 403 error', async () => {
+					const { loggedInClient, room, targetUser } = await setupAdminLogin();
+
+					// change room school
+					const otherSchool = schoolEntityFactory.buildWithId();
+					room.schoolId = otherSchool.id;
+					await em.persistAndFlush(otherSchool);
+					await em.persistAndFlush(room);
+					em.clear();
+
+					const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
+						userId: targetUser.id,
+					});
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
+			});
 		});
 	});
 });

@@ -185,7 +185,7 @@ describe('Room Controller (API)', () => {
 					RoleName.ROOMEDITOR,
 					RoleName.ROOMVIEWER,
 				]);
-				// const [roomOwner, roomAdmin, roomEditor1, roomEditor2, roomViewer] = users;
+
 				const { roomEntity, userGroup, roomMembership } = createRoomWithUserGroup(school, usersWithRoomRoles);
 				await em.persistAndFlush([school, roomEntity, userGroup, roomMembership]);
 				em.clear();
