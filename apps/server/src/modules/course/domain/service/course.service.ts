@@ -16,24 +16,15 @@ export class CourseService {
 		return course;
 	}
 
-	public async findAllCoursesByUserId(
+	public async findAllByUserId(
 		userId: EntityId,
+		schoolId: EntityId,
 		filters?: { onlyActiveCourses?: boolean },
 		options?: IFindOptions<CourseEntity>
 	): Promise<Counted<CourseEntity[]>> {
-		const [courses, count] = await this.repo.findAllByUserId(userId, filters, options);
+		const [courses, count] = await this.repo.findAllByUserId(userId, schoolId, filters, options);
 
 		return [courses, count];
-	}
-
-	public async findAllByUserId(
-		userId: EntityId,
-		filters?: { onlyActiveCourses?: boolean },
-		options?: IFindOptions<CourseEntity>
-	): Promise<CourseEntity[]> {
-		const [courses] = await this.repo.findAllByUserId(userId, filters, options);
-
-		return courses;
 	}
 
 	public async create(course: CourseEntity): Promise<CourseEntity> {
@@ -46,14 +37,14 @@ export class CourseService {
 		await this.repo.save(course);
 	}
 
-	public async findAllForTeacherOrSubstituteTeacher(userId: EntityId): Promise<CourseEntity[]> {
-		const [courses] = await this.repo.findAllForTeacherOrSubstituteTeacher(userId);
+	public async findAllForTeacherOrSubstituteTeacher(userId: EntityId, schoolId: EntityId): Promise<CourseEntity[]> {
+		const [courses] = await this.repo.findAllForTeacherOrSubstituteTeacher(userId, schoolId);
 
 		return courses;
 	}
 
-	public async findOneForUser(courseId: EntityId, userId: EntityId): Promise<CourseEntity> {
-		const course = await this.repo.findOne(courseId, userId);
+	public async findOneForUser(courseId: EntityId, userId: EntityId, schoolId: EntityId): Promise<CourseEntity> {
+		const course = await this.repo.findOneForUser(courseId, userId, schoolId);
 
 		return course;
 	}

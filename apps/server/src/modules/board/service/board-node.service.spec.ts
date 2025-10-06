@@ -313,4 +313,31 @@ describe(BoardNodeService.name, () => {
 			});
 		});
 	});
+
+	describe('updateVisibility', () => {
+		describe('when updating the visibility to false', () => {
+			const setup = () => {
+				const node = columnBoardFactory.build({
+					layout: BoardLayout.COLUMNS,
+					readersCanEdit: true,
+					isVisible: true,
+				});
+
+				return {
+					node,
+				};
+			};
+
+			it('should reset the readers can edit flag to false', async () => {
+				const { node } = setup();
+
+				expect(node.isVisible).toBe(true);
+				expect(node.readersCanEdit).toBe(true);
+				await service.updateVisibility(node, false);
+
+				expect(node.isVisible).toBe(false);
+				expect(node.readersCanEdit).toBe(false);
+			});
+		});
+	});
 });

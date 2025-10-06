@@ -11,8 +11,9 @@ data:
     echo "seeding database"
     curl --retry 360 --retry-all-errors --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
 
-    get_secret() {
+    encrypt_secret() {
       local plainText="$1"
+      local key="$2"
       local url="http://mgmt-svc:3333/api/management/database/encrypt-plain-text"
 
       if [[ -z "$plainText" ]]; then
@@ -23,9 +24,15 @@ data:
       # Use curl to capture both the response body and status code
       local response
       local http_code
+      
+      local json=$( jq -n \
+        --arg pt "$plainText" \
+        --arg k "$key" \
+        '{ plainText: $pt, key: $k }' )
+
       response=$(curl -s -w "\n%{http_code}" -X POST "$url" \
-        -H "Content-Type: text/plain" \
-        --data "$plainText")
+        -H "Content-Type: application/json" \
+        --data "$json" )
 
       # Split the response into body and status code
       http_code=$(echo "$response" | tail -n 1)
@@ -37,7 +44,7 @@ data:
         return 1
       fi
 
-      # Return the response body (presumably the secret)
+      # Return the response body (presumably the encrypted secret)
       echo "$response_body"
       return 0
     }
@@ -45,9 +52,9 @@ data:
     # purposes on various dev environments - most of them will only work there.
 
     # Test OIDC system configuration used in conjunction with OIDCMOCK deployment.
-    OIDCMOCK_CLIENT_SECRET=$(get_secret $OIDCMOCK__CLIENT_SECRET)
+    OIDCMOCK_CLIENT_SECRET=$(encrypt_secret $OIDCMOCK__CLIENT_SECRET $AES_KEY)
     # Test LDAP server (deployed in the sc-common namespace) configuration (stored in the 'systems' collection).
-    SEARCH_USER_PASSWORD=$(get_secret $SC_COMMON_LDAP_PASSWORD)
+    SEARCH_USER_PASSWORD=$(encrypt_secret $SC_COMMON_LDAP_PASSWORD $AES_KEY)
     mongosh $DATABASE__URL --quiet --eval 'db.systems.insertMany([
     {
       "type" : "ldap",
@@ -148,18 +155,24 @@ data:
     fi
 
     # AWS S3 storage configuration (stored in the 'storageproviders' collection).
+    ENCRYPTED_AWS_SECRET_ACCESS_KEY=$(encrypt_secret $AWS_SECRET_ACCESS_KEY $S3_KEY)
     mongosh $DATABASE__URL --quiet --eval 'db.storageproviders.insertOne( {
                                        "isShared" : true,
                                        "region" : "eu-central-1",
                                        "type" : "S3",
                                        "endpointUrl" : "https://storage-{{ DOMAIN }}",
                                        "accessKeyId" : "'$AWS_ACCESS_KEY'",
-                                       "secretAccessKey" : "'$AWS_SECRET_ACCESS_KEY_AES'",
+                                       "secretAccessKey" : "'$ENCRYPTED_AWS_SECRET_ACCESS_KEY'",
                                        "maxBuckets" : 999999,
                                        "freeBuckets" : 999999,
                                        "createdAt" : ISODate("2021-07-16T09:03:18.536Z"),
                                        "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
                                      } );'
+
+    # Update secret for LTI test tool
+    ENCRYPTED_LTI_TEST_TOOL_SECRET=$(encrypt_secret $LTI_TEST_TOOL_SECRET $AES_KEY)
+    mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools")
+      .updateOne({ _id: ObjectId("647de247cf6a427b9d39e5b9") }, { $set: { config_secret: "'$ENCRYPTED_LTI_TEST_TOOL_SECRET'" } });'
 
     # Re-assign the k8s namespace name to a shorter variable to make the code a little bit more readable.
     NS=$K8S_NAMESPACE
@@ -173,7 +186,7 @@ data:
         UNIVENTION_LDAP_FEDERAL_STATE_ID=0000b186816abba584714c53
 
         # Encrypt LDAP server's search user password.
-        UNIVENTION_LDAP_SEARCH_USER_PASSWORD=$(get_secret $UNIVENTION_LDAP_SEARCH_USER_PASSWORD)
+        UNIVENTION_LDAP_SEARCH_USER_PASSWORD=$(encrypt_secret $UNIVENTION_LDAP_SEARCH_USER_PASSWORD $AES_KEY)
 
         # Add (or replace) document with the test BRB Univention LDAP system configuration.
         mongosh $DATABASE__URL --quiet --eval 'db.systems.replaceOne(
@@ -293,7 +306,7 @@ data:
     if [[ $SC_THEME == "thr" ]]; then
       echo "Adding TSP system to systems collection"
 
-      TSP_SYSTEM_OAUTH_CLIENT_SECRET=$(get_secret $TSP_SYSTEM_OAUTH_CLIENT_SECRET)
+      TSP_SYSTEM_OAUTH_CLIENT_SECRET=$(encrypt_secret $TSP_SYSTEM_OAUTH_CLIENT_SECRET $AES_KEY)
       mongosh $DATABASE__URL --quiet --eval 'db.systems.insertOne(
           {
             "_id": ObjectId("66d707f5c5202ba10c5e6256"),

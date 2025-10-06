@@ -16,6 +16,7 @@ import { DeletionQueueConsole } from './deletion-queue.console';
 import { deletionConsoleConfig } from './deletion.config';
 import { BatchDeletionService } from './services';
 import { BatchDeletionUc, DeletionExecutionUc } from './uc';
+import { ErrorModule } from '@core/error';
 
 @Module({
 	imports: [
@@ -35,6 +36,7 @@ import { BatchDeletionUc, DeletionExecutionUc } from './uc';
 		}),
 		AccountModule,
 		HttpModule,
+		ErrorModule,
 	],
 	providers: [
 		DeletionClient,

@@ -301,7 +301,11 @@ describe(BoardUc.name, () => {
 
 			const result = await uc.findBoard(user.id, board.id);
 
-			expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT] });
+			expect(result).toEqual({
+				board,
+				features: [],
+				permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE],
+			});
 		});
 
 		describe('when user is board-admin', () => {
@@ -320,6 +324,7 @@ describe(BoardUc.name, () => {
 						Permission.BOARD_EDIT,
 						Permission.BOARD_MANAGE_VIDEOCONFERENCE,
 						Permission.BOARD_MANAGE_READERS_CAN_EDIT,
+						Permission.BOARD_MANAGE,
 						Permission.BOARD_SHARE_BOARD,
 					],
 				});
@@ -338,10 +343,16 @@ describe(BoardUc.name, () => {
 					expect(result).toEqual({
 						board,
 						features: [],
-						permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE_VIDEOCONFERENCE],
+						permissions: [
+							Permission.BOARD_VIEW,
+							Permission.BOARD_EDIT,
+							Permission.BOARD_MANAGE,
+							Permission.BOARD_MANAGE_VIDEOCONFERENCE,
+						],
 					});
 				});
 			});
+
 			describe('when canRoomEditorManageVideoconference is false', () => {
 				it('should return correct permissions array', async () => {
 					const { user, board } = globalSetup();
@@ -353,7 +364,7 @@ describe(BoardUc.name, () => {
 					expect(result).toEqual({
 						board,
 						features: [],
-						permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT],
+						permissions: [Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE],
 					});
 				});
 			});
@@ -435,7 +446,7 @@ describe(BoardUc.name, () => {
 				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
 					user.id,
 					board,
-					AuthorizationContextBuilder.write([])
+					AuthorizationContextBuilder.write([Permission.BOARD_MANAGE])
 				);
 			});
 
@@ -712,7 +723,7 @@ describe(BoardUc.name, () => {
 			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
 				user.id,
 				board,
-				AuthorizationContextBuilder.write([])
+				AuthorizationContextBuilder.write([Permission.BOARD_MANAGE])
 			);
 		});
 
@@ -751,7 +762,7 @@ describe(BoardUc.name, () => {
 				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
 					user.id,
 					board,
-					AuthorizationContextBuilder.write([])
+					AuthorizationContextBuilder.write([Permission.BOARD_MANAGE])
 				);
 			});
 

@@ -54,7 +54,7 @@ describe(`content element delete (api)`, () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseEntityFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -103,7 +103,7 @@ describe(`content element delete (api)`, () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseEntityFactory.build({ teachers: [] });
+			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -136,7 +136,7 @@ describe(`content element delete (api)`, () => {
 			const drawingSetup = async () => {
 				await cleanupCollections(em);
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 				const columnBoardNode = columnBoardEntityFactory.build({
@@ -178,7 +178,7 @@ describe(`content element delete (api)`, () => {
 			const drawingSetup = async () => {
 				await cleanupCollections(em);
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 				const columnBoardNode = columnBoardEntityFactory.build({
@@ -210,7 +210,7 @@ describe(`content element delete (api)`, () => {
 			const drawingSetup = async () => {
 				await cleanupCollections(em);
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const course = courseEntityFactory.build({ teachers: [], students: [studentUser] });
+				const course = courseEntityFactory.build({ school: studentUser.school, teachers: [], students: [studentUser] });
 				await em.persistAndFlush([studentAccount, studentUser, course]);
 
 				const columnBoardNode = columnBoardEntityFactory.build({
