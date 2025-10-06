@@ -60,7 +60,9 @@ export enum CourseFeatures {
 }
 
 export class UsersList {
-	id!: string;
+	id!: EntityId;
+
+	schoolId!: EntityId;
 
 	firstName!: string;
 
