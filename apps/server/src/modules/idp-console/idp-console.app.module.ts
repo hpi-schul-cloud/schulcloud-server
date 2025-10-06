@@ -16,6 +16,7 @@ import { IdpSyncConsole, SynchronizationUc } from './api';
 import { idpConsoleConfigConfig } from './idp-console.config';
 import { ENTITIES } from './idp.entity.imports';
 import { MongoDriver } from '@mikro-orm/mongodb';
+import { ErrorModule } from '@core/error';
 
 @Module({
 	imports: [
@@ -38,6 +39,7 @@ import { MongoDriver } from '@mikro-orm/mongodb';
 		RabbitMQWrapperModule,
 		ConsoleWriterModule,
 		ConsoleModule,
+		ErrorModule,
 	],
 	providers: [SynchronizationUc, IdpSyncConsole],
 })

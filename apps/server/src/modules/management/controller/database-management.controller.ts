@@ -1,6 +1,5 @@
 import { FeathersServiceProvider } from '@infra/feathers';
 import { All, Body, Controller, Header, HttpCode, Param, Post, Query } from '@nestjs/common';
-import { ApiConsumes } from '@nestjs/swagger';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
 
 @Controller('management/database')
@@ -43,9 +42,11 @@ export class DatabaseManagementController {
 
 	@Post('encrypt-plain-text')
 	@Header('content-type', 'text/plain')
-	@ApiConsumes('text/plain', 'application/text')
 	@HttpCode(200)
-	public encryptPlainText(@Body() plainText: string): string {
-		return this.databaseManagementUc.encryptPlainText(plainText);
+	public encryptPlainText(@Body() body: { plainText: string; key: string }): string {
+		const { plainText, key } = body;
+		const encrypted = this.databaseManagementUc.encryptPlainText(plainText, key);
+
+		return encrypted;
 	}
 }

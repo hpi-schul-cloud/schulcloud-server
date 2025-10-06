@@ -1,18 +1,14 @@
 import { BoardExternalReference, BoardExternalReferenceType, BoardNodeService, ColumnBoard } from '@modules/board';
+import { BoardFeature, ElementReferenceType, ParentNodeInfo } from '@modules/board/domain';
 import { CourseService } from '@modules/course';
 import { CourseFeatures } from '@modules/course/repo';
 import { RoomService } from '@modules/room';
 import { SchoolFeature } from '@modules/school/domain';
 import { UserService } from '@modules/user';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { BoardFeature, ElementReferenceType, ParentNodeInfo } from '../board/domain';
 import { LegacySchoolService } from '../legacy-school';
-import { ServerConfig } from '../server';
-import { VideoConferenceConfig } from '../video-conference';
-
-type ServiceConfig = VideoConferenceConfig | Pick<ServerConfig, 'FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED'>;
+import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from './board-context.config';
 
 @Injectable()
 export class BoardContextApiHelperService {
@@ -22,7 +18,8 @@ export class BoardContextApiHelperService {
 		private readonly boardNodeService: BoardNodeService,
 		private readonly legacySchoolService: LegacySchoolService,
 		private readonly userService: UserService,
-		private readonly configService: ConfigService<ServiceConfig, true>
+		@Inject(BOARD_CONTEXT_PUBLIC_API_CONFIG)
+		private readonly boardContextConfig: BoardContextPublicApiConfig
 	) {}
 
 	private isCourse(type: BoardExternalReferenceType): boolean {
@@ -140,8 +137,8 @@ export class BoardContextApiHelperService {
 
 	private isVideoConferenceEnabledForConfig(): boolean {
 		return (
-			this.configService.get<boolean>('FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED') &&
-			this.configService.get<boolean>('FEATURE_VIDEOCONFERENCE_ENABLED')
+			this.boardContextConfig.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED &&
+			this.boardContextConfig.FEATURE_VIDEOCONFERENCE_ENABLED
 		);
 	}
 }

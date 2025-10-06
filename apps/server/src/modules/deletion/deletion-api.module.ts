@@ -8,9 +8,10 @@ import { DeletionExecutionController } from './api/controller/deletion-execution
 import { DeletionRequestController } from './api/controller/deletion-request.controller';
 import { DeletionRequestUc } from './api/uc';
 import { DeletionBatchUc } from './api/uc/deletion-batch.uc';
+import { AccountModule } from '../account';
 
 @Module({
-	imports: [LoggerModule, DeletionModule, SagaModule, UserModule],
+	imports: [LoggerModule, DeletionModule, SagaModule, UserModule, AccountModule],
 	controllers: [DeletionRequestController, DeletionExecutionController, DeletionBatchController],
 	providers: [DeletionRequestUc, DeletionBatchUc],
 })

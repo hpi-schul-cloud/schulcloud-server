@@ -43,7 +43,7 @@ describe(`card lookup (api)`, () => {
 
 	const setup = async () => {
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-		const course = courseEntityFactory.buildWithId({ teachers: [teacherUser] });
+		const course = courseEntityFactory.buildWithId({ school: teacherUser.school, teachers: [teacherUser] });
 		await em.persistAndFlush([teacherUser, teacherAccount, course]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({

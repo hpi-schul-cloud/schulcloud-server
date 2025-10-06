@@ -40,7 +40,7 @@ describe(`board update visibility with course relation (api)`, () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-			const course = courseEntityFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -83,7 +83,7 @@ describe(`board update visibility with course relation (api)`, () => {
 		const setup = async () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-			const course = courseEntityFactory.build({ students: [studentUser] });
+			const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
 			await em.persistAndFlush([studentUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({

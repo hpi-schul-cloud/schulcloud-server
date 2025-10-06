@@ -31,7 +31,7 @@ describe('Lesson Controller (API) - GET list of lessons from course /lessons/cou
 	describe('when user is a valid teacher', () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseEntityFactory.buildWithId({ teachers: [teacherUser] });
+			const course = courseEntityFactory.buildWithId({ school: teacherUser.school, teachers: [teacherUser] });
 			const lesson = lessonFactory.build({ course });
 			const hiddenLesson = lessonFactory.build({ course, hidden: true });
 			await em.persistAndFlush([teacherAccount, teacherUser, course, lesson, hiddenLesson]);
@@ -66,7 +66,7 @@ describe('Lesson Controller (API) - GET list of lessons from course /lessons/cou
 	describe('when user is a valid student', () => {
 		const setup = async () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			const course = courseEntityFactory.buildWithId({ students: [studentUser] });
+			const course = courseEntityFactory.buildWithId({ school: studentUser.school, students: [studentUser] });
 			const lesson = lessonFactory.build({ course });
 			const hiddenLesson = lessonFactory.build({ course, hidden: true });
 
@@ -101,7 +101,7 @@ describe('Lesson Controller (API) - GET list of lessons from course /lessons/cou
 	describe('when user is not authorized', () => {
 		const setup = async () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			const course = courseEntityFactory.buildWithId({ students: [] });
+			const course = courseEntityFactory.buildWithId({ school: studentUser.school, students: [] });
 			const lesson = lessonFactory.build({ course });
 			await em.persistAndFlush([studentAccount, studentUser, course, lesson]);
 

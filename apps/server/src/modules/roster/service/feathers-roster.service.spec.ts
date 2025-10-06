@@ -255,7 +255,7 @@ describe('FeathersRosterService', () => {
 				userService.findById.mockResolvedValueOnce(user);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
-				courseService.findAllByUserId.mockResolvedValue(courses);
+				courseService.findAllByUserId.mockResolvedValue([courses, courses.length]);
 				// Course A
 				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([contextExternalTool]);
 				configService.get.mockReturnValueOnce(true);
@@ -357,7 +357,7 @@ describe('FeathersRosterService', () => {
 				userService.findById.mockResolvedValueOnce(user);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
-				courseService.findAllByUserId.mockResolvedValue(courses);
+				courseService.findAllByUserId.mockResolvedValue([courses, courses.length]);
 				// Course A
 				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]);
 				configService.get.mockReturnValueOnce(true);
@@ -452,7 +452,7 @@ describe('FeathersRosterService', () => {
 
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
 
-				courseService.findAllByUserId.mockResolvedValue([]);
+				courseService.findAllByUserId.mockResolvedValue([[], 0]);
 
 				const roleDto: RoleDto = {
 					id: 'role-id',
@@ -1155,33 +1155,6 @@ describe('FeathersRosterService', () => {
 					await service.getGroup(id, clientId);
 
 					expect(courseService.findById).toHaveBeenCalledWith(id);
-				});
-			});
-
-			describe('when the room exists but feature flag is not enabled', () => {
-				const setup = () => {
-					const room = roomFactory.build({});
-					roomService.roomExists.mockResolvedValueOnce(true);
-
-					configService.get.mockImplementation((key: keyof RosterConfig) => {
-						if (key === 'FEATURE_ROOMS_ENABLED') {
-							return false;
-						}
-						return true;
-					});
-
-					const clientId = 'testClientId';
-
-					return {
-						room,
-						clientId,
-					};
-				};
-
-				it('should throw an error if the FEATURE_ROOMS_ENABLED is not true', async () => {
-					const { room, clientId } = setup();
-
-					await expect(service.getGroup(room.id, clientId)).rejects.toThrow(NotFoundLoggableException);
 				});
 			});
 

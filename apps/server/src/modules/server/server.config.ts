@@ -29,8 +29,6 @@ import type { ToolConfig } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
 import type { UserImportConfig } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import type { VideoConferenceConfig } from '@modules/video-conference';
-import type { BbbConfig } from '@modules/video-conference/bbb';
 import type { LanguageType } from '@shared/domain/interface';
 import type { SchulcloudTheme } from '@shared/domain/types';
 import type { Algorithm } from 'jsonwebtoken';
@@ -69,8 +67,6 @@ export interface ServerConfig
 		ProvisioningConfig,
 		RoomConfig,
 		UserImportConfig,
-		VideoConferenceConfig,
-		BbbConfig,
 		TspClientConfig,
 		TspSyncConfig,
 		AlertConfig,
@@ -102,7 +98,6 @@ export interface ServerConfig
 	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_SHARE: boolean;
 	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
-	FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_H5P_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_COLLABORA_ENABLED: boolean;
@@ -126,11 +121,8 @@ export interface ServerConfig
 	I18N__DEFAULT_TIMEZONE: Timezone;
 	BOARD_COLLABORATION_URI: string;
 	FEATURE_AI_TUTOR_ENABLED: boolean;
-	FEATURE_ROOMS_ENABLED: boolean;
-	FEATURE_ROOM_INVITATION_LINKS_ENABLED: boolean;
-	FEATURE_ROOM_ADD_STUDENTS_ENABLED: boolean;
-	FEATURE_ROOM_MEMBERS_TABS_ENABLED: boolean;
 	FEATURE_ADMINISTRATE_ROOMS_ENABLED: boolean;
+	FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE: boolean;
 	FEATURE_ROOM_COPY_ENABLED: boolean;
 	FEATURE_ROOM_SHARE: boolean;
 	FEATURE_TSP_SYNC_ENABLED: boolean;
@@ -167,9 +159,6 @@ const config: ServerConfig = {
 	) as boolean,
 	FEATURE_COLUMN_BOARD_SHARE: Configuration.get('FEATURE_COLUMN_BOARD_SHARE') as boolean,
 	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_SOCKET_ENABLED') as boolean,
-	FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED: Configuration.get(
-		'FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED'
-	) as boolean,
 	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED') as boolean,
 	FEATURE_COLUMN_BOARD_H5P_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_H5P_ENABLED') as boolean,
 	FEATURE_COLUMN_BOARD_COLLABORA_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_COLLABORA_ENABLED') as boolean,
@@ -300,10 +289,6 @@ const config: ServerConfig = {
 	CTL_TOOLS_RELOAD_TIME_MS: Configuration.get('CTL_TOOLS_RELOAD_TIME_MS') as number,
 	HOST: Configuration.get('HOST') as string,
 	FILES_STORAGE__SERVICE_BASE_URL: Configuration.get('FILES_STORAGE__SERVICE_BASE_URL') as string,
-	FEATURE_VIDEOCONFERENCE_ENABLED: Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED') as boolean,
-	VIDEOCONFERENCE_HOST: Configuration.get('VIDEOCONFERENCE_HOST') as string,
-	VIDEOCONFERENCE_SALT: Configuration.get('VIDEOCONFERENCE_SALT') as string,
-	VIDEOCONFERENCE_DEFAULT_PRESENTATION: Configuration.get('VIDEOCONFERENCE_DEFAULT_PRESENTATION') as string,
 	FEATURE_USER_MIGRATION_ENABLED: Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean,
 	FEATURE_USER_MIGRATION_SYSTEM_ID: Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string,
 	FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: Configuration.get(
@@ -313,11 +298,8 @@ const config: ServerConfig = {
 		'FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED'
 	) as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
-	FEATURE_ROOMS_ENABLED: Configuration.get('FEATURE_ROOMS_ENABLED') as boolean,
-	FEATURE_ROOM_INVITATION_LINKS_ENABLED: Configuration.get('FEATURE_ROOM_INVITATION_LINKS_ENABLED') as boolean,
-	FEATURE_ROOM_ADD_STUDENTS_ENABLED: Configuration.get('FEATURE_ROOM_ADD_STUDENTS_ENABLED') as boolean,
-	FEATURE_ROOM_MEMBERS_TABS_ENABLED: Configuration.get('FEATURE_ROOM_MEMBERS_TABS_ENABLED') as boolean,
 	FEATURE_ADMINISTRATE_ROOMS_ENABLED: Configuration.get('FEATURE_ADMINISTRATE_ROOMS_ENABLED') as boolean,
+	FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE: Configuration.get('FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE') as boolean,
 	FEATURE_ROOM_COPY_ENABLED: Configuration.get('FEATURE_ROOM_COPY_ENABLED') as boolean,
 	FEATURE_ROOM_SHARE: Configuration.get('FEATURE_ROOM_SHARE') as boolean,
 	TSP_API_CLIENT_BASE_URL: Configuration.get('TSP_API_CLIENT_BASE_URL') as string,

@@ -9,6 +9,7 @@ export const videoConferenceDOFactory: BaseFactory<VideoConferenceDO, VideoConfe
 		id: `vc-${sequence}`,
 		target: 'course',
 		targetModel: VideoConferenceScope.COURSE,
+		salt: 'fixed-salt-for-testing',
 		options: {
 			moderatorMustApproveJoinRequests: false,
 			everybodyJoinsAsModerator: false,

@@ -17,6 +17,7 @@ import { deletionConsoleConfig } from './deletion.config';
 import { BatchDeletionService } from './services';
 import { BatchDeletionUc, DeletionExecutionUc } from './uc';
 import { MongoDriver } from '@mikro-orm/mongodb';
+import { ErrorModule } from '@core/error';
 
 @Module({
 	imports: [
@@ -36,6 +37,7 @@ import { MongoDriver } from '@mikro-orm/mongodb';
 		}),
 		AccountModule,
 		HttpModule,
+		ErrorModule,
 	],
 	providers: [
 		DeletionClient,

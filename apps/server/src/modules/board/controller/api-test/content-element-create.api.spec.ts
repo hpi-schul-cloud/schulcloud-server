@@ -16,6 +16,7 @@ import {
 	submissionItemEntityFactory,
 } from '../../testing';
 import { AnyContentElementResponse, SubmissionContainerElementResponse } from '../dto';
+import { schoolEntityFactory } from '@modules/management/seed-data/factory/school.entity.factory';
 
 const baseRouteName = '/cards';
 const submissionRouteName = '/board-submissions';
@@ -49,7 +50,7 @@ describe(`content element create (api)`, () => {
 
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser], school: teacherUser.school });
 				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 				const columnBoardNode = columnBoardEntityFactory.build({
@@ -266,10 +267,11 @@ describe(`content element create (api)`, () => {
 			const setup = async () => {
 				await cleanupCollections(em);
 
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const school = schoolEntityFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 
-				const course = courseEntityFactory.build({ teachers: [teacherUser], students: [studentUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser], students: [studentUser], school });
 
 				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, course]);
 

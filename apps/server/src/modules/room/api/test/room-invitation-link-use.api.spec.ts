@@ -10,8 +10,7 @@ import { roomEntityFactory } from '@modules/room/testing';
 import { roomInvitationLinkEntityFactory } from '@modules/room/testing/room-invitation-link-entity.factory';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
-import type { ServerConfig } from '@modules/server';
-import { ServerTestModule, serverConfig } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -55,7 +54,6 @@ describe('Room Invitation Link Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -66,14 +64,11 @@ describe('Room Invitation Link Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'room-invitation-links');
-
-		config = serverConfig();
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
 		em.clear();
-		config.FEATURE_ROOM_INVITATION_LINKS_ENABLED = true;
 		await em.clearCache('roles-cache-byname-roomviewer');
 		await em.clearCache('roles-cache-bynames-roomviewer');
 		await em.clearCache('roles-cache-byname-roomapplicant');
@@ -157,34 +152,6 @@ describe('Room Invitation Link Controller (API)', () => {
 			it('should return a 401 error', async () => {
 				const response = await testApiClient.post();
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-			});
-		});
-
-		describe('when the feature is disabled', () => {
-			const setupDisabledFeature = async () => {
-				config.FEATURE_ROOM_INVITATION_LINKS_ENABLED = false;
-
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
-
-				return { loggedInClient };
-			};
-
-			it('should return a 403 error', async () => {
-				const { loggedInClient } = await setupDisabledFeature();
-				const params = {
-					title: 'Room invitation link',
-					roomId: 'roomId',
-					requiresConfirmation: true,
-					isOnlyForTeachers: true,
-					restrictedToCreatorSchool: true,
-					activeUntil: inOneWeek,
-				};
-				const response = await loggedInClient.post(undefined, params);
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 
