@@ -23,7 +23,6 @@ export interface BoardNodeAuthorizableProps extends AuthorizableObject {
 	boardNode: AnyBoardNode;
 	rootNode: AnyBoardNode;
 	parentNode?: AnyBoardNode;
-	schoolId?: EntityId;
 	boardContextSettings: BoardContextSettings;
 }
 
@@ -56,10 +55,6 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 
 	get rootNode(): AnyBoardNode {
 		return this.props.rootNode;
-	}
-
-	get schoolId(): EntityId | undefined {
-		return this.props.schoolId;
 	}
 
 	get boardContextSettings(): BoardContextSettings {
