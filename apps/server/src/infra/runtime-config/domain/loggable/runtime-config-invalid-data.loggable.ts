@@ -7,6 +7,7 @@ export class RuntimeConfigValueInvalidDataLoggable extends InternalServerErrorEx
 		super('The database contains invalid or inconsistent Runtime Config Values.');
 	}
 
+	/* istanbul ignore next */
 	public getLogMessage(): ErrorLogMessage {
 		const message = {
 			message: this.message,

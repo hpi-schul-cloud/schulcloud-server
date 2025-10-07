@@ -11,6 +11,7 @@ export class RuntimeConfigValueNotExpectedType extends InternalServerErrorExcept
 		super('Runtime Config Value is not of the expected Type.');
 	}
 
+	/* istanbul ignore next */
 	public getLogMessage(): ErrorLogMessage {
 		const message = {
 			message: this.message,

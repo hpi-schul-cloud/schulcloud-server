@@ -9,6 +9,7 @@ export class RuntimeConfigValueInvalidTypeLoggable extends BadRequest implements
 		super('The Value does not match the type of the RuntimeConfigValue.');
 	}
 
+	/* istanbul ignore next */
 	public getLogMessage(): ErrorLogMessage {
 		const message = {
 			message: this.message,
