@@ -192,5 +192,15 @@ describe('Runtime Config Repo', () => {
 			await em.persistAndFlush(entity);
 			await expect(() => repo.getByKey('UNDEFINED_IN_CONFIG')).rejects.toThrowError();
 		});
+
+		it('should throw when type in db is unknown', async () => {
+			const entity = new RuntimeConfigEntity({
+				key: 'TEST_NUMBER',
+				type: 'infinite number',
+				value: 'its a lot',
+			} as unknown as RuntimeConfigProperties);
+			await em.persistAndFlush(entity);
+			await expect(() => repo.getByKey('TEST_NUMBER')).rejects.toThrowError();
+		});
 	});
 });
