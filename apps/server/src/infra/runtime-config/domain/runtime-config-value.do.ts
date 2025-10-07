@@ -29,7 +29,7 @@ export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> {
 		return this;
 	}
 
-	get key(): string {
+	public getKey(): string {
 		return this.props.key;
 	}
 

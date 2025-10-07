@@ -28,7 +28,7 @@ describe('RuntimeConfigService', () => {
 		it('returns a DO', async () => {
 			const configValue = runtimeConfigTestingFactory.build();
 			repo.getByKey.mockResolvedValue(configValue);
-			const result = await service.getByKey(configValue.key);
+			const result = await service.getByKey(configValue.getKey());
 			expect(result).toEqual(configValue);
 		});
 	});
@@ -46,14 +46,14 @@ describe('RuntimeConfigService', () => {
 		it('returns a string value', async () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'string', value: 'a string' });
 			repo.getByKey.mockResolvedValue(configValue);
-			const result = await service.getString(configValue.key);
+			const result = await service.getString(configValue.getKey());
 			expect(result).toEqual('a string');
 		});
 
 		it('throws an error if the value is not a string', async () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'number', value: 42 });
 			repo.getByKey.mockResolvedValue(configValue);
-			await expect(service.getString(configValue.key)).rejects.toThrowError();
+			await expect(service.getString(configValue.getKey())).rejects.toThrowError();
 		});
 	});
 
@@ -61,14 +61,14 @@ describe('RuntimeConfigService', () => {
 		it('returns a number value', async () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'number', value: 42 });
 			repo.getByKey.mockResolvedValue(configValue);
-			const result = await service.getNumber(configValue.key);
+			const result = await service.getNumber(configValue.getKey());
 			expect(result).toEqual(42);
 		});
 
 		it('throws an error if the value is not a number', async () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'string', value: 'a string' });
 			repo.getByKey.mockResolvedValue(configValue);
-			await expect(service.getNumber(configValue.key)).rejects.toThrowError();
+			await expect(service.getNumber(configValue.getKey())).rejects.toThrowError();
 		});
 	});
 
@@ -76,14 +76,14 @@ describe('RuntimeConfigService', () => {
 		it('returns a boolean value', async () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'boolean', value: true });
 			repo.getByKey.mockResolvedValue(configValue);
-			const result = await service.getBoolean(configValue.key);
+			const result = await service.getBoolean(configValue.getKey());
 			expect(result).toEqual(true);
 		});
 
 		it('throws an error if the value is not a boolean', async () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'string', value: 'not a boolean' });
 			repo.getByKey.mockResolvedValue(configValue);
-			await expect(service.getBoolean(configValue.key)).rejects.toThrowError();
+			await expect(service.getBoolean(configValue.getKey())).rejects.toThrowError();
 		});
 	});
 });

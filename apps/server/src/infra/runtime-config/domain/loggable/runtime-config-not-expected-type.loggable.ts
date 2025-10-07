@@ -17,7 +17,7 @@ export class RuntimeConfigValueNotExpectedType extends InternalServerErrorExcept
 			message: this.message,
 			expectedType: this.expectedType,
 			configType: this.domainObject.getTypeAndValue().type,
-			key: this.domainObject.key,
+			key: this.domainObject.getKey(),
 			type: 'RUNTIME_CONFIG_VALUE_NOT_EXPECTED_TYPE',
 			stack: this.stack,
 		};

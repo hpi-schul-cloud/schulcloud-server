@@ -15,7 +15,7 @@ export class RuntimeConfigValueInvalidTypeLoggable extends BadRequest implements
 			message: this.message,
 			newValue: this.value,
 			configType: this.domainObject.getTypeAndValue().type,
-			key: this.domainObject.key,
+			key: this.domainObject.getKey(),
 			type: 'RUNTIME_CONFIG_VALUE_INVALID_TYPE',
 			stack: this.stack,
 		};
