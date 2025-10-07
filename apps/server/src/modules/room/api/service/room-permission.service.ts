@@ -9,6 +9,8 @@ import { RoomConfig } from '../../room.config';
 import { RoleName } from '@modules/role';
 import { RoomService } from '../../domain/service/room.service';
 import { LockedRoomLoggableException } from '../loggables/locked-room-loggable-exception';
+import { Room } from '@modules/room';
+import { User } from '@modules/user/repo';
 
 @Injectable()
 export class RoomPermissionService {
@@ -71,5 +73,15 @@ export class RoomPermissionService {
 			const room = await this.roomService.getSingleRoom(roomId);
 			throw new LockedRoomLoggableException(room.name, room.id);
 		}
+	}
+
+	public async isAllowedToDeleteRoom(user: User, room: Room): Promise<boolean> {
+		const canDeleteRoom = await this.hasRoomPermissions(user.id, room.id, Action.write, [Permission.ROOM_DELETE_ROOM]);
+		const isOwnSchool = room.schoolId === user.school.id;
+		const canAdministrateSchoolRooms = this.authorizationService.hasOneOfPermissions(user, [
+			Permission.SCHOOL_ADMINISTRATE_ROOMS,
+		]);
+		const isAllowed = canDeleteRoom || (isOwnSchool && canAdministrateSchoolRooms);
+		return isAllowed;
 	}
 }
