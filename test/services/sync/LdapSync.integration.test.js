@@ -1,5 +1,6 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+const { ObjectId } = require('mongoose').Types;
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const SchoolYearFacade = require('../../../src/services/school/logic/year');
@@ -27,15 +28,15 @@ const fakeLdapConfig = {
 const exampleLdapSchoolData = [
 	{
 		displayName: 'school1',
-		ldapOu: new testObjects.generateObjectId().toString(),
+		ldapOu: new ObjectId().toString(),
 	},
 	{
 		displayName: 'school2',
-		ldapOu: new testObjects.generateObjectId().toString(),
+		ldapOu: new ObjectId().toString(),
 	},
 	{
 		displayName: 'school2',
-		ldapOu: new testObjects.generateObjectId().toString(),
+		ldapOu: new ObjectId().toString(),
 	},
 ];
 

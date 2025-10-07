@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const assert = require('assert');
-const mongoose = require('mongoose');
+const { ObjectId } = require('mongoose').Types;
 const sinon = require('sinon');
 const appPromise = require('../../../src/app');
 const { FileModel } = require('../../../src/services/fileStorage/model');
@@ -14,10 +14,10 @@ const fixtures = require('./fixtures');
 const setContext = (userId) => {
 	return {
 		payload: {
-			userId: new mongoose.mongo.ObjectId(userId),
+			userId: new ObjectId(userId),
 			fileStorageType: 'awsS3',
 		},
-		account: { userId: new mongoose.mongo.ObjectId(userId) },
+		account: { userId: new ObjectId(userId) },
 	};
 };
 
@@ -87,7 +87,7 @@ describe('fileStorage services', () => {
 			storageFileName: 'storage.jpg',
 			thumbnail: 'thumbnail.jpg',
 			bucket: 'bucket-test',
-			storageProviderId: new mongoose.Types.ObjectId(),
+			storageProviderId: new ObjectId(),
 		};
 
 		const created = [];
