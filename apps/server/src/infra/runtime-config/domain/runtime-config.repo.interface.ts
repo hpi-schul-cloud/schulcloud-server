@@ -5,5 +5,3 @@ export interface RuntimeConfigRepo {
 	getAll(): Promise<RuntimeConfigValue[]>;
 	getByKey(key: string): Promise<RuntimeConfigValue>;
 }
-
-export const RUNTIME_CONFIG_REPO = 'RUNTIME_CONFIG_REPO';
