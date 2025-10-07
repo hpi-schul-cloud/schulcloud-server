@@ -106,11 +106,8 @@ const hasViewPermissionAfter = async (hook) => {
 	// filter any other homeworks where the user has no view permission
 	// user is teacher OR ( user is in courseId of task AND availableDate < Date.now() )
 	// availableDate < Date.now()
-	async function hasPermission(e) {
-		const userId = ((hook.params.account || {}).userId || '').toString();
-		const user = await hook.app.service('users').get(userId);
-		const schoolId = user.schoolId;
-		const isPartOfSchool = equalIds(e.schoolId, schoolId);
+	function hasPermission(e, userId, schoolIdOfUser) {
+		const isPartOfSchool = equalIds(e.schoolId, schoolIdOfUser);
 		const isOwnerCheck = e.teacherId === userId;
 		const isTeacherCheck =
 			((e.courseId || {}).teacherIds || []).includes(userId) ||
@@ -122,17 +119,12 @@ const hasViewPermissionAfter = async (hook) => {
 	}
 
 	let data = JSON.parse(JSON.stringify(hook.result.data || hook.result));
+	const userId = ((hook.params.account || {}).userId || '').toString();
+	const user = await hook.app.service('users').get(userId);
+	const schoolIdOfUser = user.schoolId;
 	if (data[0] !== undefined) {
-		const permissionResults = await Promise.all(
-			data.map(async (o) => ({
-				o,
-				hp: await hasPermission(o),
-			}))
-		);
-
-		const filteredResults = permissionResults.filter((result) => result.hp === true);
-		data = filteredResults.map((e) => e.o);
-	} else if (data.schoolId !== undefined && !(await hasPermission(data))) {
+		data = data.filter((e) => hasPermission(e, userId, schoolIdOfUser));
+	} else if (data.schoolId !== undefined && !hasPermission(data, userId, schoolIdOfUser)) {
 		return Promise.reject(new Forbidden("You don't have permissions!"));
 	}
 	if (hook.result.data) {
