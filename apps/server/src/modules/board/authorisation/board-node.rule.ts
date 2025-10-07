@@ -33,10 +33,6 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 			return false;
 		}
 
-		if (authorizable.schoolId && user.school.id !== authorizable.schoolId) {
-			return false;
-		}
-
 		const userWithBoardRoles = authorizable.users.find(({ userId }) => userId === user.id);
 		if (!userWithBoardRoles) {
 			return false;
