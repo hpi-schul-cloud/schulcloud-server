@@ -31,8 +31,6 @@ export class RuntimeConfigMikroOrmRepo
 		const entityMap = new Map(entities.map((e) => [e.key, e]));
 		const values = this.getAllConfigDOsDefinedInDefaults(entityMap);
 
-		await this.removeConfigsNotInDefaults(entities);
-
 		return values;
 	}
 
@@ -48,20 +46,11 @@ export class RuntimeConfigMikroOrmRepo
 		return configValues;
 	}
 
-	private async removeConfigsNotInDefaults(entities: RuntimeConfigEntity[]): Promise<void> {
-		const defaultsSet = new Set(this.defaults.map((d) => d.key));
-		const toRemove = entities.filter((e) => !defaultsSet.has(e.key));
-		if (toRemove.length > 0) {
-			await this._em.removeAndFlush(toRemove);
-		}
-	}
-
 	public async getByKey(key: string): Promise<RuntimeConfigValue> {
 		const entity = await this._em.findOne(RuntimeConfigEntity, { key });
 		const defaultConfig = this.defaults.find((def) => def.key === key);
 
 		if (!defaultConfig) {
-			if (entity) await this._em.removeAndFlush(entity);
 			throw new Error(`Runtime Config for key: ${key} does not exist`);
 		}
 

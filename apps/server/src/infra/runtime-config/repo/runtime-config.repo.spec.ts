@@ -156,20 +156,6 @@ describe('Runtime Config Repo', () => {
 				])
 			);
 		});
-
-		it('should delete values that are not in the default config anymore', async () => {
-			const entity = new RuntimeConfigEntity({
-				key: 'UNDEFINED_IN_CONFIG',
-				type: 'string',
-				value: 'some value',
-			});
-			await em.persistAndFlush(entity);
-
-			await repo.getAll();
-
-			const found = await em.findOne(RuntimeConfigEntity, { key: 'UNDEFINED_IN_CONFIG' });
-			expect(found).toBeNull();
-		});
 	});
 
 	describe('errors', () => {
