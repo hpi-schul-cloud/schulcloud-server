@@ -20,7 +20,6 @@ describe('Board Node Authorizable Domain Object', () => {
 			id: anyBoardDo.id,
 			boardNode: anyBoardDo,
 			rootNode: columnBoardFactory.build(props?.rootPartial),
-			schoolId: new ObjectId().toString(),
 			boardContextSettings: props?.boardContextSettings || {},
 		});
 
