@@ -139,7 +139,7 @@ describe('Runtime Config Repo', () => {
 			);
 		});
 
-		it('should not include non-default values', async () => {
+		it('should not include values that are not defined in the default values.', async () => {
 			const entity = new RuntimeConfigEntity({
 				key: 'UNDEFINED_IN_CONFIG',
 				type: 'string',

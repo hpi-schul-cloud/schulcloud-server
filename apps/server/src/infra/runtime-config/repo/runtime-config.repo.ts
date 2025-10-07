@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { RuntimeConfigDefault, RuntimeConfigValue, RuntimeConfigValueAndType } from '../domain/runtime-config-value.do';
+import { RuntimeConfigDefault, RuntimeConfigValue } from '../domain/runtime-config-value.do';
 import { RuntimeConfigEntity } from './entity/runtime-config.entity';
 import { RuntimeConfigRepo } from '../domain/runtime-config.repo.interface';
 import { EntityData, EntityName } from '@mikro-orm/core/typings';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { RuntimeConfigValueFactory } from './runtime-config-value.factory';
-import { RuntimeConfigValueInvalidDataLoggable } from '../domain/loggable/runtime-config-invalid-data.loggable';
 import { RUNTIME_CONFIG_DEFAULTS } from '../injection-keys';
+import { RuntimeConfigEntityMapper } from './runtime-config.entity-mapper';
 
 @Injectable()
 export class RuntimeConfigMikroOrmRepo
@@ -29,70 +29,34 @@ export class RuntimeConfigMikroOrmRepo
 	public async getAll(): Promise<RuntimeConfigValue[]> {
 		const entities = await this._em.find(RuntimeConfigEntity, {});
 		const entityMap = new Map(entities.map((e) => [e.key, e]));
-		const values = this.getAllConfigDOsDefinedInDefaults(entityMap);
+		const values = this.defaults.map((def) => {
+			const entity = entityMap.get(def.key) || null;
+			return this.mapEntityOrDefaultToDo(def.key, entity);
+		});
 
 		return values;
 	}
 
-	private getAllConfigDOsDefinedInDefaults(entityMap: Map<string, RuntimeConfigEntity>): RuntimeConfigValue[] {
-		const configValues = this.defaults.map((def) => {
-			const found = entityMap.get(def.key);
-			if (found) {
-				return this.mapToDo(found);
-			} else {
-				return RuntimeConfigValueFactory.build({ ...def, id: new ObjectId().toHexString() });
-			}
-		});
-		return configValues;
-	}
-
 	public async getByKey(key: string): Promise<RuntimeConfigValue> {
 		const entity = await this._em.findOne(RuntimeConfigEntity, { key });
+
+		const result = this.mapEntityOrDefaultToDo(key, entity);
+
+		return result;
+	}
+
+	private mapEntityOrDefaultToDo(key: string, entity: RuntimeConfigEntity | null): RuntimeConfigValue {
 		const defaultConfig = this.defaults.find((def) => def.key === key);
 
 		if (!defaultConfig) {
 			throw new Error(`Runtime Config for key: ${key} does not exist`);
 		}
-
 		return entity
-			? this.mapToDo(entity)
+			? RuntimeConfigEntityMapper.toDomainObject(entity)
 			: RuntimeConfigValueFactory.build({ ...defaultConfig, id: new ObjectId().toHexString() });
 	}
 
-	protected mapToDo(entity: RuntimeConfigEntity): RuntimeConfigValue {
-		const typeAndValue = this.getTypeAndValue(entity);
-		return RuntimeConfigValueFactory.build({
-			id: entity.id,
-			key: entity.key,
-			...typeAndValue,
-			description: entity.description,
-		});
-	}
-
-	private getTypeAndValue(entity: RuntimeConfigEntity): RuntimeConfigValueAndType {
-		if (entity.type === 'string') {
-			return { type: 'string', value: entity.value };
-		}
-		if (entity.type === 'number') {
-			const value = Number(entity.value);
-			if (isNaN(value)) {
-				throw new RuntimeConfigValueInvalidDataLoggable(entity.key, entity.value, entity.type);
-			}
-			return { type: 'number', value: Number(entity.value) };
-		}
-		if (entity.type === 'boolean') {
-			return { type: 'boolean', value: entity.value === 'true' };
-		}
-		throw new RuntimeConfigValueInvalidDataLoggable(entity.key, entity.value, entity.type);
-	}
-
 	protected mapDOToEntityProperties(domainObject: RuntimeConfigValue): EntityData<RuntimeConfigEntity> {
-		const props = domainObject.getProps();
-		return {
-			key: props.key,
-			type: props.type,
-			value: props.value.toString(),
-			description: props.description,
-		};
+		return RuntimeConfigEntityMapper.toEntityProperties(domainObject);
 	}
 }

@@ -25,21 +25,21 @@ describe('runtime config value DO', () => {
 
 		it('should fail to set a number to a string type', () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'number', value: 1 });
-			
+
 			expect(() => configValue.setValue('this is not a number')).toThrowError();
 		});
 
 		it('should set a boolean', () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'boolean', value: true });
-			
+
 			configValue.setValue(false);
-			
+
 			expect(configValue.getTypeAndValue().value).toEqual(false);
 		});
 
 		it('should fail to set a boolean to a string type', () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'boolean', value: true });
-			
+
 			expect(() => configValue.setValue('this is not a boolean')).toThrowError();
 		});
 	});
