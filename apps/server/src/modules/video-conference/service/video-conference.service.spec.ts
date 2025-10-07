@@ -29,7 +29,6 @@ import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -40,7 +39,7 @@ import { ErrorStatus } from '../error';
 import { VideoConferenceRepo } from '../repo';
 import { videoConferenceDOFactory } from '../testing';
 import { VideoConferenceState } from '../uc/dto';
-import { VideoConferenceConfig } from '../video-conference-config';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 import { VideoConferenceService } from './video-conference.service';
 
 describe(VideoConferenceService.name, () => {
@@ -55,7 +54,7 @@ describe(VideoConferenceService.name, () => {
 	let teamRepo: DeepMocked<TeamRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
-	let configService: DeepMocked<ConfigService<VideoConferenceConfig, true>>;
+	let configService: DeepMocked<VideoConferenceConfig>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -70,8 +69,8 @@ describe(VideoConferenceService.name, () => {
 					useValue: createMock<BoardNodeService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<VideoConferenceConfig, true>>(),
+					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
+					useValue: createMock<VideoConferenceConfig>(),
 				},
 				{
 					provide: CourseService,
@@ -123,15 +122,14 @@ describe(VideoConferenceService.name, () => {
 		teamRepo = module.get(TeamRepo);
 		userService = module.get(UserService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
-		configService = module.get(ConfigService);
+		configService = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
 
 		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('canGuestJoin', () => {
 		const setup = (isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean) => {
-			configService.get.mockReturnValue('https://api.example.com');
-
+			configService.HOST = 'https://api.example.com';
 			return {
 				isGuest,
 				state,
@@ -181,7 +179,7 @@ describe(VideoConferenceService.name, () => {
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				configService.get.mockReturnValue('https://api.example.com');
+				configService.HOST = 'https://api.example.com';
 				userService.findById.mockResolvedValue(user);
 
 				return {
@@ -217,7 +215,7 @@ describe(VideoConferenceService.name, () => {
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				configService.get.mockReturnValueOnce('https://api.example.com');
+				configService.HOST = 'https://api.example.com';
 				userService.findById.mockResolvedValueOnce(user);
 
 				return {
@@ -253,7 +251,7 @@ describe(VideoConferenceService.name, () => {
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				configService.get.mockReturnValueOnce('https://api.example.com');
+				configService.HOST = 'https://api.example.com';
 				userService.findById.mockResolvedValueOnce(user);
 
 				return {
@@ -1115,7 +1113,7 @@ describe(VideoConferenceService.name, () => {
 
 			const scopeId = new ObjectId().toHexString();
 
-			configService.get.mockReturnValue('https://api.example.com');
+			configService.HOST = 'https://api.example.com';
 
 			return {
 				userId,
@@ -1282,8 +1280,7 @@ describe(VideoConferenceService.name, () => {
 
 			const course = courseEntityFactory.buildWithId();
 			courseService.findById.mockResolvedValue(course);
-
-			configService.get.mockReturnValue('https://api.example.com');
+			configService.HOST = 'https://api.example.com';
 
 			return {
 				user,

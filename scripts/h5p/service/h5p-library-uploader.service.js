@@ -138,7 +138,9 @@ class H5pLibraryUploaderService {
 		try {
 			const { newVersion, oldVersion } = isUpdateNeeded;
 			console.log(
-				`Updating library ${localFolderPath} from version ${oldVersion.machineName}-${oldVersion.majorVersion}.${oldVersion.minorVersion}.${oldVersion.patchVersion} to version ${newVersion.machineName}-${newVersion.majorVersion}.${newVersion.minorVersion}.${newVersion.patchVersion}`
+				`Updating library ${localFolderPath} from version ${this.formatLibraryVersion(
+					oldVersion
+				)} to version ${this.formatLibraryVersion(newVersion)}`
 			);
 			await this.deleteFolderFromS3(s3FolderPath);
 			console.log(`Deleted old version of library ${localFolderPath} from S3.`);
@@ -148,6 +150,12 @@ class H5pLibraryUploaderService {
 			console.error(`Failed to update library ${localFolderPath} in S3:`, error);
 			throw error;
 		}
+	}
+
+	formatLibraryVersion(version) {
+		if (!version) return '';
+
+		return `${version.machineName}-${version.majorVersion}.${version.minorVersion}.${version.patchVersion}`;
 	}
 
 	async deleteFolderFromS3(s3FolderPath) {

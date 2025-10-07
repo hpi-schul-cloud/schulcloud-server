@@ -13,7 +13,7 @@ import {
 } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { CourseEntity, CourseRepo } from '../repo';
+import { CourseRepo } from '../repo';
 
 @Injectable()
 export class DeleteUserCourseDataStep extends SagaStep<'deleteUserData'> {
@@ -49,11 +49,9 @@ export class DeleteUserCourseDataStep extends SagaStep<'deleteUserData'> {
 			)
 		);
 
-		const [courses] = await this.courseRepo.findAllByUserId(userId);
+		const [courseIds, count] = await this.courseRepo.removeUserReference(userId);
 
-		const count = await this.courseRepo.removeUserReference(userId);
-
-		const result = StepOperationReportBuilder.build(StepOperationType.UPDATE, count, this.getCoursesId(courses));
+		const result = StepOperationReportBuilder.build(StepOperationType.UPDATE, count, courseIds);
 
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
@@ -67,9 +65,5 @@ export class DeleteUserCourseDataStep extends SagaStep<'deleteUserData'> {
 		);
 
 		return result;
-	}
-
-	private getCoursesId(courses: CourseEntity[]): EntityId[] {
-		return courses.map((course) => course.id);
 	}
 }

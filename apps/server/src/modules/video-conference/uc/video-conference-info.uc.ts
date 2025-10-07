@@ -1,8 +1,8 @@
-import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BBBBaseMeetingConfig, BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBService } from '../bbb';
 import { VideoConferenceDO, VideoConferenceOptionsDO } from '../domain';
+import { ErrorStatus } from '../error';
 import { defaultVideoConferenceOptions } from '../interface';
 import { PermissionMapping } from '../mapper/video-conference.mapper';
 import { VideoConferenceService } from '../service';
