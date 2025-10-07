@@ -2,7 +2,7 @@ import { runtimeConfigTestingFactory } from '../testing/runtime-config-value.tes
 
 describe('runtime config value DO', () => {
 	describe('setValue', () => {
-		it('set a string', () => {
+		it('should set a string', () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'string', value: 'initial' });
 
 			configValue.setValue('updated');
@@ -15,7 +15,7 @@ describe('runtime config value DO', () => {
 			expect(() => configValue.setValue(42)).toThrowError();
 		});
 
-		it('set a number', () => {
+		it('should set a number', () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'number', value: 1 });
 
 			configValue.setValue(2);
@@ -23,19 +23,23 @@ describe('runtime config value DO', () => {
 			expect(configValue.getTypeAndValue().value).toEqual(2);
 		});
 
-		it('fail to set a number to a string type', () => {
+		it('should fail to set a number to a string type', () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'number', value: 1 });
+			
 			expect(() => configValue.setValue('this is not a number')).toThrowError();
 		});
 
-		it('set a boolean', () => {
+		it('should set a boolean', () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'boolean', value: true });
+			
 			configValue.setValue(false);
+			
 			expect(configValue.getTypeAndValue().value).toEqual(false);
 		});
 
-		it('fail to set a boolean to a string type', () => {
+		it('should fail to set a boolean to a string type', () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'boolean', value: true });
+			
 			expect(() => configValue.setValue('this is not a boolean')).toThrowError();
 		});
 	});
