@@ -51,6 +51,8 @@ spec:
                 name: api-secret
             - secretRef:
                 name: api-h5p-library-management-secret
+            - secretRef:
+                name: session-valkey-password
             volumeMounts:
             - name: libraries-list
               mountPath: /schulcloud-server/config/h5p-libraries.yaml
