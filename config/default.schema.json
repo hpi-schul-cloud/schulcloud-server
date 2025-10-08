@@ -1166,7 +1166,7 @@
 		},
 		"FEATURE_COLUMN_BOARD_COLLABORA_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables edit of office documents on the column board"
 		},
 		"COLUMN_BOARD_HELP_LINK": {
