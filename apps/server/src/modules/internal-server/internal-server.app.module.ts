@@ -6,11 +6,12 @@ import { HealthApiModule, HealthEntities } from '@modules/health';
 import { serverConfig } from '@modules/server';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
+import { MongoDriver } from '@mikro-orm/mongodb';
 
 @Module({
 	imports: [
 		MikroOrmModule.forRoot({
-			type: 'mongo',
+			driver: MongoDriver,
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,

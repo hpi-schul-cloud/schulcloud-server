@@ -3,7 +3,10 @@ import { LtiMessageType, ToolConfigType } from '@modules/tool/common/enum';
 
 export class Migration20240419075957 extends Migration {
 	public async up(): Promise<void> {
-		const result = await this.driver.nativeUpdate(
+		const result = await this.driver.nativeUpdate<{
+			config_type: ToolConfigType;
+			config_lti_message_type: LtiMessageType;
+		}>(
 			'external-tools',
 			{
 				config_type: ToolConfigType.LTI11,

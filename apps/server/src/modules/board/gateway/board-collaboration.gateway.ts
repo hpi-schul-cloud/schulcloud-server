@@ -1,6 +1,6 @@
-import { WsJwtAuthentication } from '@infra/auth-guard';
+import { ICurrentUser, WsJwtAuthentication } from '@infra/auth-guard';
 import { Socket, WsValidationPipe } from '@infra/socketio';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { MikroORM, EnsureRequestContext } from '@mikro-orm/core';
 import { UsePipes } from '@nestjs/common';
 import {
 	OnGatewayDisconnect,
@@ -72,7 +72,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		}
 	}
 
-	private getCurrentUser(socket: Socket) {
+	private getCurrentUser(socket: Socket): ICurrentUser {
 		const { user } = socket.handshake;
 		if (!user) throw new WsException('Not Authenticated.');
 		return user;
@@ -92,7 +92,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('delete-board-request')
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async deleteBoard(socket: Socket, data: DeleteBoardMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-board' });
 		const { userId } = this.getCurrentUser(socket);
@@ -107,7 +107,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('update-board-title-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async updateBoardTitle(socket: Socket, data: UpdateBoardTitleMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-board-title' });
 		const { userId } = this.getCurrentUser(socket);
@@ -122,7 +122,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('update-card-title-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async updateCardTitle(socket: Socket, data: UpdateCardTitleMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-card-title' });
 		const { userId } = this.getCurrentUser(socket);
@@ -137,7 +137,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('update-card-height-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async updateCardHeight(socket: Socket, data: UpdateCardHeightMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-card-height' });
 		const { userId } = this.getCurrentUser(socket);
@@ -152,7 +152,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('delete-card-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async deleteCard(socket: Socket, data: DeleteCardMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-card' });
 		const { userId } = this.getCurrentUser(socket);
@@ -167,7 +167,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('create-card-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async createCard(socket: Socket, data: CreateCardMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'create-card' });
 		const { userId } = this.getCurrentUser(socket);
@@ -189,7 +189,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('create-column-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async createColumn(socket: Socket, data: CreateColumnMessageParams) {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'create-column' });
 		const { userId } = this.getCurrentUser(socket);
@@ -215,7 +215,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('fetch-board-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async fetchBoard(socket: Socket, data: FetchBoardMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'fetch-board' });
 		const { userId } = this.getCurrentUser(socket);
@@ -232,7 +232,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('move-card-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async moveCard(socket: Socket, data: MoveCardMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-card' });
 		const { userId } = this.getCurrentUser(socket);
@@ -247,7 +247,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('move-column-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async moveColumn(socket: Socket, data: MoveColumnMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-column' });
 		const { userId } = this.getCurrentUser(socket);
@@ -267,7 +267,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('update-column-title-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async updateColumnTitle(socket: Socket, data: UpdateColumnTitleMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-column-title' });
 		const { userId } = this.getCurrentUser(socket);
@@ -282,7 +282,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('update-readers-can-edit-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async updateReadersCanEdit(socket: Socket, data: UpdateReadersCanEditMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-readers-can-edit' });
 		const { userId } = this.getCurrentUser(socket);
@@ -297,7 +297,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('update-board-visibility-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async updateBoardVisibility(socket: Socket, data: UpdateBoardVisibilityMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-board-visibility' });
 		const { userId } = this.getCurrentUser(socket);
@@ -312,7 +312,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('update-board-layout-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async updateBoardLayout(socket: Socket, data: UpdateBoardLayoutMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-board-layout' });
 		const { userId } = this.getCurrentUser(socket);
@@ -327,7 +327,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('delete-column-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async deleteColumn(socket: Socket, data: DeleteColumnMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-column' });
 		const { userId } = this.getCurrentUser(socket);
@@ -342,7 +342,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('fetch-card-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async fetchCards(socket: Socket, data: FetchCardsMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'fetch-card' });
 		const { userId } = this.getCurrentUser(socket);
@@ -359,7 +359,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('create-element-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async createElement(socket: Socket, data: CreateContentElementMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'create-element' });
 		const { userId } = this.getCurrentUser(socket);
@@ -379,7 +379,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('update-element-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async updateElement(socket: Socket, data: UpdateContentElementMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-element' });
 		const { userId } = this.getCurrentUser(socket);
@@ -394,7 +394,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('delete-element-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async deleteElement(socket: Socket, data: DeleteContentElementMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'delete-element' });
 		const { userId } = this.getCurrentUser(socket);
@@ -410,7 +410,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	@SubscribeMessage('move-element-request')
 	@TrackExecutionTime()
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async moveElement(socket: Socket, data: MoveContentElementMessageParams): Promise<void> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-element' });
 		const { userId } = this.getCurrentUser(socket);

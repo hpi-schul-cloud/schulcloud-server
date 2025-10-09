@@ -34,7 +34,7 @@ export class Migration20240611081033 extends Migration {
 
 		let total = 0;
 		for await (const mediaSource of mediaSources) {
-			const userLicenses = await this.driver.nativeUpdate(
+			const userLicenses = await this.driver.nativeUpdate<{ mediaSourceId: ObjectId | string | null | undefined }>(
 				'user-licenses',
 				{
 					mediaSourceId: mediaSource.sourceId,

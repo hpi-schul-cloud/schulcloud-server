@@ -1,4 +1,4 @@
-import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
+import { Collection, Entity, Ref, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
 import { CourseEntity } from '@modules/course/repo';
 import { LessonEntity } from '@modules/lesson/repo';
 import { Task } from '@modules/task/repo';
@@ -25,8 +25,8 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 		this.course = wrap(props.course).toReference();
 	}
 
-	@OneToOne({ entity: () => CourseEntity, fieldName: 'courseId', wrappedReference: true, unique: true, owner: true })
-	course: IdentifiedReference<CourseEntity>;
+	@OneToOne({ entity: () => CourseEntity, fieldName: 'courseId', ref: true, unique: true, owner: true })
+	course: Ref<CourseEntity>;
 
 	@ManyToMany('LegacyBoardElement', undefined, { fieldName: 'referenceIds' })
 	references = new Collection<LegacyBoardElement>(this);

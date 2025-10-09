@@ -16,14 +16,14 @@ export class Migration20241120100616 extends Migration {
 			if (tool.contextType === 'course') {
 				courseId = tool.contextId;
 			} else if (tool.contextType === 'boardElement') {
-				const element = await this.getCollection<{ path: string }>('boardnodes').findOne({
+				const element = await this.getCollection<{ _id: ObjectId; path: string }>('boardnodes').findOne({
 					_id: tool.contextId,
 				});
 
 				if (element) {
 					const boardId = new ObjectId(element.path.split(',')[1]);
 
-					const board = await this.getCollection<{ context: ObjectId }>('boardnodes').findOne({
+					const board = await this.getCollection<{ _id: ObjectId; context: ObjectId }>('boardnodes').findOne({
 						_id: boardId,
 					});
 
@@ -34,9 +34,13 @@ export class Migration20241120100616 extends Migration {
 			}
 
 			if (courseId) {
-				const course = await this.getCollection<{ schoolId: ObjectId }>('courses').findOne({ _id: courseId });
+				const course = await this.getCollection<{ _id: ObjectId; schoolId: ObjectId }>('courses').findOne({
+					_id: courseId,
+				});
 
-				const schoolTool = await this.getCollection<{ school: ObjectId }>('school-external-tools').findOne({
+				const schoolTool = await this.getCollection<{ _id: ObjectId; school: ObjectId }>(
+					'school-external-tools'
+				).findOne({
 					_id: tool.schoolTool,
 				});
 

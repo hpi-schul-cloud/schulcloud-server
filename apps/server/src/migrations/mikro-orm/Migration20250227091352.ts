@@ -2,6 +2,7 @@ import { Migration } from '@mikro-orm/migrations-mongodb';
 import { ObjectId } from '@mikro-orm/mongodb';
 
 type FileRecord = {
+	_id: ObjectId;
 	name: string;
 };
 
