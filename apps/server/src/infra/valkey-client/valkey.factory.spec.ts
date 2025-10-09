@@ -3,10 +3,8 @@ import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import Valkey from 'iovalkey';
 import * as util from 'util';
-import { InMemoryClient, ValkeyClient } from './clients';
-import { ValkeyFactory } from './valkey.factory';
 import { ValkeyMode } from './valkey.config';
-import { ConnectedLoggable } from './loggable';
+import { ValkeyFactory } from './valkey.factory';
 
 jest.mock('iovalkey');
 jest.mock('util');
@@ -20,34 +18,6 @@ describe(ValkeyFactory.name, () => {
 	});
 
 	describe('createRedisInstance', () => {
-		describe('when config mode is in memory', () => {
-			const setup = () => {
-				const config = {
-					MODE: ValkeyMode.IN_MEMORY,
-				};
-
-				return { config };
-			};
-
-			it('returns an InMemoryClient instance', async () => {
-				const { config } = setup();
-
-				const redisInstance = await ValkeyFactory.build(config, logger, domainErrorHandler);
-
-				expect(redisInstance).toBeInstanceOf(InMemoryClient);
-			});
-
-			it('should log ConnectedLoggable if connect event is emitted', async () => {
-				const { config } = setup();
-
-				const redisInstance = await ValkeyFactory.build(config, logger, domainErrorHandler);
-
-				redisInstance.emit('connect', { test: true });
-
-				expect(logger.info).toHaveBeenNthCalledWith(1, new ConnectedLoggable({ test: true }));
-			});
-		});
-
 		describe('when config mode is cluster', () => {
 			const setup = () => {
 				const sentinelServiceName = 'serviceName';
@@ -92,7 +62,7 @@ describe(ValkeyFactory.name, () => {
 			it('calls resolveSrv', async () => {
 				const { resolveSrv, sentinelServiceName, config, logger } = setup();
 
-				await ValkeyFactory.build(config, logger, domainErrorHandler);
+				await ValkeyFactory.create(config, logger, domainErrorHandler);
 
 				expect(resolveSrv).toHaveBeenLastCalledWith(sentinelServiceName);
 			});
@@ -100,7 +70,7 @@ describe(ValkeyFactory.name, () => {
 			it('create new Valkey instance with correctly props', async () => {
 				const { constructorSpy, expectedProps, config } = setup();
 
-				await ValkeyFactory.build(config, logger, domainErrorHandler);
+				await ValkeyFactory.create(config, logger, domainErrorHandler);
 
 				expect(constructorSpy).toHaveBeenCalledWith(expectedProps);
 			});
@@ -108,9 +78,9 @@ describe(ValkeyFactory.name, () => {
 			it('creates a new Redis instance', async () => {
 				const { config } = setup();
 
-				const redisInstance = await ValkeyFactory.build(config, logger, domainErrorHandler);
+				const redisInstance = await ValkeyFactory.create(config, logger, domainErrorHandler);
 
-				expect(redisInstance).toBeInstanceOf(ValkeyClient);
+				expect(redisInstance).toBeInstanceOf(Valkey);
 			});
 
 			describe('when throws an error', () => {
@@ -122,7 +92,7 @@ describe(ValkeyFactory.name, () => {
 						throw new Error('Connection error');
 					});
 
-					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow(
+					await expect(ValkeyFactory.create(config, logger, domainErrorHandler)).rejects.toThrow(
 						'Can not create valkey "sentinal" instance.'
 					);
 				});
@@ -132,7 +102,7 @@ describe(ValkeyFactory.name, () => {
 					// @ts-expect-error Test only
 					config.SENTINEL_NAME = undefined;
 
-					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow(
+					await expect(ValkeyFactory.create(config, logger, domainErrorHandler)).rejects.toThrow(
 						'SENTINEL_NAME is required for creating a Valkey Sentinel instance'
 					);
 				});
@@ -142,7 +112,7 @@ describe(ValkeyFactory.name, () => {
 					// @ts-expect-error Test only
 					config.SENTINEL_PASSWORD = undefined;
 
-					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow(
+					await expect(ValkeyFactory.create(config, logger, domainErrorHandler)).rejects.toThrow(
 						'SENTINEL_PASSWORD is required for creating a Valkey Sentinel instance'
 					);
 				});
@@ -152,7 +122,7 @@ describe(ValkeyFactory.name, () => {
 					// @ts-expect-error Test only
 					config.SENTINEL_SERVICE_NAME = undefined;
 
-					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow(
+					await expect(ValkeyFactory.create(config, logger, domainErrorHandler)).rejects.toThrow(
 						'SENTINEL_SERVICE_NAME is required for service discovery'
 					);
 				});
@@ -175,15 +145,15 @@ describe(ValkeyFactory.name, () => {
 			it('returns a ValkeyClient instance', async () => {
 				const { config } = setup();
 
-				const redisInstance = await ValkeyFactory.build(config, logger, domainErrorHandler);
+				const redisInstance = await ValkeyFactory.create(config, logger, domainErrorHandler);
 
-				expect(redisInstance).toBeInstanceOf(ValkeyClient);
+				expect(redisInstance).toBeInstanceOf(Valkey);
 			});
 
 			it('create new Valkey instance with correctly props', async () => {
 				const { config, constructorSpy } = setup();
 
-				await ValkeyFactory.build(config, logger, domainErrorHandler);
+				await ValkeyFactory.create(config, logger, domainErrorHandler);
 
 				expect(constructorSpy).toHaveBeenCalledWith(config.URI);
 			});
@@ -193,7 +163,7 @@ describe(ValkeyFactory.name, () => {
 					const { config } = setup();
 					config.URI = 'wrongURI';
 
-					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow('URI is not valid');
+					await expect(ValkeyFactory.create(config, logger, domainErrorHandler)).rejects.toThrow('URI is not valid');
 				});
 			});
 		});
@@ -211,7 +181,7 @@ describe(ValkeyFactory.name, () => {
 			it('URI is required for creating a new Valkey instance', async () => {
 				const { config } = setup();
 
-				await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow('URI is not valid');
+				await expect(ValkeyFactory.create(config, logger, domainErrorHandler)).rejects.toThrow('URI is not valid');
 			});
 		});
 	});

@@ -3,25 +3,22 @@ import { Logger } from '@core/logger';
 import * as dns from 'dns';
 import Valkey from 'iovalkey';
 import * as util from 'util';
-import { InMemoryClient, ValkeyClient } from './clients';
 import { ConnectedLoggable, DiscoveredSentinalHostsLoggable } from './loggable';
-import { SentinalHost, StorageClient } from './types';
+import { SentinalHost } from './types';
 import { ValkeyConfig, ValkeyMode } from './valkey.config';
 
 export class ValkeyFactory {
-	public static async build(
+	public static async create(
 		valkeyConfig: ValkeyConfig,
 		logger: Logger,
 		domainErrorHandler: DomainErrorHandler
-	): Promise<StorageClient> {
-		let storageClient: StorageClient;
+	): Promise<Valkey> {
+		let storageClient: Valkey;
 
 		if (valkeyConfig.MODE === ValkeyMode.CLUSTER) {
 			storageClient = await ValkeyFactory.createValkeySentinelInstance(valkeyConfig, logger);
 		} else if (valkeyConfig.MODE === ValkeyMode.SINGLE) {
 			storageClient = ValkeyFactory.createNewValkeyInstance(valkeyConfig.URI);
-		} else if (valkeyConfig.MODE === ValkeyMode.IN_MEMORY) {
-			storageClient = ValkeyFactory.createInMemoryInstance(logger);
 		} else {
 			throw new Error(`Undefined valkey mode ${JSON.stringify(valkeyConfig.MODE)}`);
 		}
@@ -36,19 +33,12 @@ export class ValkeyFactory {
 		return storageClient;
 	}
 
-	private static createInMemoryInstance(logger: Logger): StorageClient {
-		const inMemoryClientInstance = new InMemoryClient(logger);
-
-		return inMemoryClientInstance;
-	}
-
-	private static createNewValkeyInstance(uri?: string): ValkeyClient {
+	private static createNewValkeyInstance(uri?: string): Valkey {
 		const validatedUri = ValkeyFactory.checkRedisURI(uri);
 		try {
 			const valkeyInstance = new Valkey(validatedUri);
-			const valkeyClientInstance = new ValkeyClient(valkeyInstance);
 
-			return valkeyClientInstance;
+			return valkeyInstance;
 		} catch (err) {
 			throw new Error(
 				`Can not create valkey "sentinal" instance.
@@ -60,7 +50,7 @@ export class ValkeyFactory {
 		}
 	}
 
-	private static async createValkeySentinelInstance(config: ValkeyConfig, logger: Logger): Promise<ValkeyClient> {
+	private static async createValkeySentinelInstance(config: ValkeyConfig, logger: Logger): Promise<Valkey> {
 		const { sentinelName, sentinelPassword, sentinalServiceName } = ValkeyFactory.checkSentinelConfig(config);
 		try {
 			const sentinels = await ValkeyFactory.discoverSentinelHosts(sentinalServiceName);
@@ -74,9 +64,8 @@ export class ValkeyFactory {
 			};
 
 			const valkeyInstance = new Valkey(sentinelsConfig);
-			const valkeyClientInstance = new ValkeyClient(valkeyInstance);
 
-			return valkeyClientInstance;
+			return valkeyInstance;
 		} catch (err) {
 			throw new Error('Can not create valkey "sentinal" instance.', { cause: err });
 		}

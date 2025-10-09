@@ -1,29 +1,24 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { KeyvValkeyOptions } from '@keyv/valkey';
+import { ValkeyConfig, ValkeyMode } from '@infra/valkey-client';
 import { IsEnum, IsOptional, IsString, IsUrl, ValidateIf } from 'class-validator';
 
 export const H5P_CACHE_CONFIG_TOKEN = 'H5P_CACHE_CONFIG_TOKEN';
 
-export enum CacheMode {
-	CLUSTER = 'cluster',
-	SINGLE = 'single',
-	IN_MEMORY = 'in-memory',
-}
 
 @Configuration()
-export class H5PCacheConfig implements KeyvValkeyOptions {
-	@IsEnum(CacheMode)
+export class H5PCacheConfig implements ValkeyConfig {
+	@IsEnum(ValkeyMode)
 	@IsOptional()
 	@ConfigProperty('SESSION_VALKEY__MODE')
-	public mode!: CacheMode;
+	public MODE!: ValkeyMode;
 
 	@IsUrl({ protocols: ['redis'], require_tld: false })
-	@ValidateIf((o: H5PCacheConfig) => o.mode === CacheMode.CLUSTER || o.mode === CacheMode.SINGLE)
+	@ValidateIf((o: H5PCacheConfig) => o.MODE === ValkeyMode.CLUSTER || o.MODE === ValkeyMode.SINGLE)
 	@ConfigProperty('SESSION_VALKEY__URI')
-	public uri!: string;
+	public URI!: string;
 
 	@IsString()
-	@ValidateIf((o: H5PCacheConfig) => o.mode === CacheMode.CLUSTER)
+	@ValidateIf((o: H5PCacheConfig) => o.MODE === ValkeyMode.CLUSTER)
 	public sentinelServiceName!: string;
 
 	@IsString()
@@ -31,7 +26,7 @@ export class H5PCacheConfig implements KeyvValkeyOptions {
 	public sentinelName = 'myprimary';
 
 	@IsString()
-	@ValidateIf((o: H5PCacheConfig) => o.mode === CacheMode.CLUSTER)
+	@ValidateIf((o: H5PCacheConfig) => o.MODE === ValkeyMode.CLUSTER)
 	@ConfigProperty('SESSION_VALKEY__SENTINEL_PASSWORD')
 	public sentinelPassword!: string;
 }
