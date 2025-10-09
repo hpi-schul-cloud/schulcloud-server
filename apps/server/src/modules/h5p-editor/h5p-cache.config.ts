@@ -13,7 +13,7 @@ export class H5PCacheConfig implements ValkeyConfig {
 	public MODE!: ValkeyMode;
 
 	@IsUrl({ protocols: ['redis'], require_tld: false })
-	@ValidateIf((o: H5PCacheConfig) => o.MODE === ValkeyMode.CLUSTER || o.MODE === ValkeyMode.SINGLE)
+	@ValidateIf((o: H5PCacheConfig) => o.MODE === ValkeyMode.SINGLE)
 	@ConfigProperty('SESSION_VALKEY__URI')
 	public URI!: string;
 
