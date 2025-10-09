@@ -1,33 +1,22 @@
-import { ValkeyClient } from '@infra/valkey-client/clients';
-import KeyvValkey from '@keyv/valkey';
-import { H5PEditor, cacheImplementations } from '@lumieducation/h5p-server';
+import { cacheImplementations, H5PEditor } from '@lumieducation/h5p-server';
 import CachedLibraryStorage from '@lumieducation/h5p-server/build/src/implementation/cache/CachedLibraryStorage';
 import { IH5PEditorOptions, ITranslationFunction } from '@lumieducation/h5p-server/build/src/types';
-import { createCache } from 'cache-manager';
-import Keyv from 'keyv';
-import { CACHE_TOKEN } from '../h5p-editor.config';
+import { Cache } from 'cache-manager';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage, Translator } from '../service';
 import { h5pConfig, h5pUrlGenerator } from '../service/config/h5p-service-config';
+import { H5P_CACHE_PROVIDER_TOKEN } from './cache.provider';
 import EditorPermissionSystem from './editor-permission-system';
-
 
 export const H5PEditorProvider = {
 	provide: H5PEditor,
-	inject: [ContentStorage, LibraryStorage, TemporaryFileStorage, CACHE_TOKEN],
+	inject: [ContentStorage, LibraryStorage, TemporaryFileStorage, H5P_CACHE_PROVIDER_TOKEN],
 	async useFactory(
 		contentStorage: ContentStorage,
 		libraryStorage: LibraryStorage,
 		temporaryStorage: TemporaryFileStorage,
-		cacheClient: ValkeyClient
+		cacheAdapter: Cache
 	): Promise<H5PEditor> {
-		const cacheAdapter = createCache({
-			stores: [
-				new Keyv({
-					store: new KeyvValkey(cacheClient.valkeyInstance),
-				}),
-			],
-		});
-		const cache = new cacheImplementations.CachedKeyValueStorage('kvcache');
+		const cache = new cacheImplementations.CachedKeyValueStorage('kvcache', cacheAdapter);
 		const libraryCache = new cacheImplementations.CachedLibraryStorage(
 			new CachedLibraryStorage(libraryStorage, cacheAdapter)
 		);
