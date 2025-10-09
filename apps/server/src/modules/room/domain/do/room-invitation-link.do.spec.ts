@@ -10,7 +10,8 @@ describe('RoomInvitationLink', () => {
 		id: roomInvitationLinkId,
 		title: 'Conference Room Invitation Link',
 		restrictedToCreatorSchool: true,
-		isOnlyForTeachers: true,
+		isUsableByExternalPersons: false,
+		isUsableByStudents: false,
 		activeUntil: new Date('2024-12-31'),
 		requiresConfirmation: true,
 		roomId: new ObjectId().toHexString(),
@@ -49,10 +50,10 @@ describe('RoomInvitationLink', () => {
 		expect(roomInvitationLink.restrictedToCreatorSchool).toBe(false);
 	});
 
-	it('should get and set isOnlyForTeachers', () => {
-		expect(roomInvitationLink.isOnlyForTeachers).toBe(true);
-		roomInvitationLink.isOnlyForTeachers = false;
-		expect(roomInvitationLink.isOnlyForTeachers).toBe(false);
+	it('should get and set isUsableByStudents', () => {
+		expect(roomInvitationLink.isUsableByStudents).toBe(false);
+		roomInvitationLink.isUsableByStudents = true;
+		expect(roomInvitationLink.isUsableByStudents).toBe(true);
 	});
 
 	it('should get and set activeUntil', () => {

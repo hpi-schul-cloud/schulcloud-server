@@ -49,7 +49,9 @@ export class RoomInvitationLinkUc {
 		]);
 
 		roomInvitationLink.title = props.title ?? roomInvitationLink.title;
-		roomInvitationLink.isOnlyForTeachers = props.isOnlyForTeachers ?? roomInvitationLink.isOnlyForTeachers;
+		roomInvitationLink.isUsableByExternalPersons =
+			props.isUsableByExternalPersons ?? roomInvitationLink.isUsableByExternalPersons;
+		roomInvitationLink.isUsableByStudents = props.isUsableByStudents ?? roomInvitationLink.isUsableByStudents;
 		roomInvitationLink.activeUntil = props.activeUntil ?? roomInvitationLink.activeUntil;
 		roomInvitationLink.requiresConfirmation = props.requiresConfirmation ?? roomInvitationLink.requiresConfirmation;
 		roomInvitationLink.restrictedToCreatorSchool =
@@ -140,11 +142,25 @@ export class RoomInvitationLinkUc {
 
 		const isTeacher = user.getRoles().some((role) => role.name === RoleName.TEACHER);
 		const isStudent = user.getRoles().some((role) => role.name === RoleName.STUDENT);
+		const isExternalPerson = user.getRoles().some((role) => role.name === RoleName.EXPERT);
 
 		if (roomInvitationLink.activeUntil && roomInvitationLink.activeUntil < new Date()) {
 			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.EXPIRED, HttpStatus.BAD_REQUEST);
 		}
-		if (roomInvitationLink.isOnlyForTeachers && isTeacher === false) {
+		if (
+			!roomInvitationLink.isUsableByStudents &&
+			!roomInvitationLink.isUsableByExternalPersons &&
+			isTeacher === false
+		) {
+			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.ONLY_FOR_TEACHERS, HttpStatus.FORBIDDEN);
+		}
+		if (isExternalPerson && !roomInvitationLink.isUsableByExternalPersons) {
+			throw new RoomInvitationLinkError(
+				RoomInvitationLinkValidationError.ONLY_FOR_INTERNAL_USERS,
+				HttpStatus.FORBIDDEN
+			);
+		}
+		if (isStudent && !roomInvitationLink.isUsableByStudents) {
 			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.ONLY_FOR_TEACHERS, HttpStatus.FORBIDDEN);
 		}
 		const creatorSchool = await this.schoolService.getSchoolById(roomInvitationLink.creatorSchoolId);

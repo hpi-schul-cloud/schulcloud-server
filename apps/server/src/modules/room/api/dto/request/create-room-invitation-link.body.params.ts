@@ -30,11 +30,18 @@ export class CreateRoomInvitationLinkBodyParams
 	public activeUntil?: Date;
 
 	@ApiProperty({
-		description: 'Indicates if the link is restricted to teachers only',
+		description: 'Indicates if the link is also usable by external persons',
 		required: true,
 	})
 	@IsBoolean()
-	public isOnlyForTeachers!: boolean;
+	public isUsableByExternalPersons!: boolean;
+
+	@ApiProperty({
+		description: 'Indicates if the link is also usable by students',
+		required: true,
+	})
+	@IsBoolean()
+	public isUsableByStudents!: boolean;
 
 	@ApiProperty({
 		description: 'Indicates if the link is restricted to the creators school',
