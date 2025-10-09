@@ -1166,7 +1166,7 @@
 		},
 		"FEATURE_COLUMN_BOARD_COLLABORA_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables edit of office documents on the column board"
 		},
 		"COLUMN_BOARD_HELP_LINK": {
@@ -1600,6 +1600,21 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Enables the room sharing feature"
+		},
+		"FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables adding external persons to a room."
+		},
+		"FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the registration of external persons in a room."
+		},
+		"FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables link based invitations for external persons in a room."
 		},
 		"FEATURE_ADMINISTRATE_ROOMS_ENABLED": {
 			"type": "boolean",
