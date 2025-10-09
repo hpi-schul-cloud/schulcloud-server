@@ -12,10 +12,14 @@ export function StringToBoolean(): PropertyDecorator {
 	return Transform((params: TransformFnParams) => {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const str = params.obj[params.key] as string;
-		if (['1', 'true'].includes(str)) {
+
+		if (str === undefined || str === null) {
+			return str;
+		}
+		if (['1', 'true', true].includes(str)) {
 			return true;
 		}
-		if (['0', 'false'].includes(str)) {
+		if (['0', 'false', false].includes(str)) {
 			return false;
 		}
 		throw new NotImplementedException("can only transform one of '1', 'true', '0', 'false' to a boolean");

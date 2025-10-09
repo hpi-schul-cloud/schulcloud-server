@@ -1,3 +1,5 @@
+import { BoardContextPublicApiConfig } from '@modules/board-context';
+import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
@@ -216,10 +218,22 @@ export class ConfigResponse {
 	FEATURE_AI_TUTOR_ENABLED: boolean;
 
 	@ApiProperty()
+	FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE: boolean;
+
+	@ApiProperty()
 	FEATURE_ROOM_COPY_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_ROOM_SHARE: boolean;
+
+	@ApiProperty()
+	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_ADMINISTRATE_ROOMS_ENABLED: boolean;
@@ -236,7 +250,7 @@ export class ConfigResponse {
 	@ApiProperty({ type: String, nullable: true })
 	ROOM_MEMBER_INFO_URL: string | null;
 
-	constructor(config: ServerConfig) {
+	constructor(config: ServerConfig & VideoConferencePublicApiConfig & BoardContextPublicApiConfig) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
 		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN;
@@ -304,8 +318,13 @@ export class ConfigResponse {
 		this.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED;
 		this.FEATURE_AI_TUTOR_ENABLED = config.FEATURE_AI_TUTOR_ENABLED;
 		this.FEATURE_ADMINISTRATE_ROOMS_ENABLED = config.FEATURE_ADMINISTRATE_ROOMS_ENABLED;
+		this.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = config.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE;
 		this.FEATURE_ROOM_COPY_ENABLED = config.FEATURE_ROOM_COPY_ENABLED;
 		this.FEATURE_ROOM_SHARE = config.FEATURE_ROOM_SHARE;
+		this.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED;
+		this.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED;
+		this.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED =
+			config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED;
 		this.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED;
 		this.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED = config.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED;
 		this.LICENSE_SUMMARY_URL = config.LICENSE_SUMMARY_URL;

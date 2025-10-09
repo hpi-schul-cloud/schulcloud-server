@@ -9,6 +9,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 
 describe(`card update height (api)`, () => {
 	let app: INestApplication;
@@ -35,9 +36,10 @@ describe(`card update height (api)`, () => {
 	});
 
 	const setup = async () => {
-		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-		const course = courseEntityFactory.build({ teachers: [teacherUser] });
-		await em.persistAndFlush([teacherAccount, teacherUser, course]);
+		const school = schoolEntityFactory.buildWithId();
+		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+		const course = courseEntityFactory.build({ school, teachers: [teacherUser] });
+		await em.persistAndFlush([teacherAccount, teacherUser, course, school]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },

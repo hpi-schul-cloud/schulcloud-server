@@ -4,7 +4,7 @@ import { accountFactory } from '@modules/account/testing/account.factory';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import type { SchoolEntity } from '@modules/school/repo';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import type { User } from '@modules/user/repo';
+import { User, UserSchoolEmbeddable } from '@modules/user/repo';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { userFactory } from '@modules/user/testing';
 import type { LanguageType, Permission } from '@shared/domain/interface';
@@ -18,6 +18,7 @@ interface UserParams {
 	school?: SchoolEntity;
 	externalId?: string;
 	language?: LanguageType;
+	secondarySchools?: UserSchoolEmbeddable[];
 }
 
 interface AccountParams {
@@ -29,7 +30,7 @@ export interface UserAndAccountParams extends UserParams, AccountParams {}
 
 export class UserAndAccountTestFactory {
 	private static getUserParams(params: UserAndAccountParams): UserParams {
-		const userParams = _.pick(params, 'firstName', 'lastName', 'email', 'school', 'externalId');
+		const userParams = _.pick(params, 'firstName', 'lastName', 'email', 'school', 'externalId', 'secondarySchools');
 		return userParams;
 	}
 

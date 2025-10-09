@@ -122,7 +122,7 @@ describe(BoardContextService.name, () => {
 			describe('when teachers are associated with the course', () => {
 				const setup = () => {
 					const teacher = userFactory.build();
-					const course = courseEntityFactory.buildWithId({ teachers: [teacher] });
+					const course = courseEntityFactory.buildWithId({ teachers: [teacher], school: teacher.school });
 					const columnBoard = columnBoardFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});
@@ -151,7 +151,10 @@ describe(BoardContextService.name, () => {
 			describe('when substitution teachers are associated with the course', () => {
 				const setup = () => {
 					const substitutionTeacher = userFactory.build();
-					const course = courseEntityFactory.buildWithId({ substitutionTeachers: [substitutionTeacher] });
+					const course = courseEntityFactory.buildWithId({
+						substitutionTeachers: [substitutionTeacher],
+						school: substitutionTeacher.school,
+					});
 					const columnBoard = columnBoardFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});
@@ -180,7 +183,7 @@ describe(BoardContextService.name, () => {
 			describe('when students are associated with the course', () => {
 				const setup = () => {
 					const student = userFactory.build();
-					const course = courseEntityFactory.buildWithId({ students: [student] });
+					const course = courseEntityFactory.buildWithId({ students: [student], school: student.school });
 					const columnBoard = columnBoardFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});

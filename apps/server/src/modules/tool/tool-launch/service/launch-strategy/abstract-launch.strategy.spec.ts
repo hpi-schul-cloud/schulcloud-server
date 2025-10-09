@@ -23,6 +23,7 @@ import {
 	AutoContextNameStrategy,
 	AutoGroupExternalUuidStrategy,
 	AutoMediumIdStrategy,
+	AutoPublisherStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
@@ -75,6 +76,7 @@ describe(AbstractLaunchStrategy.name, () => {
 	let autoContextIdStrategy: DeepMocked<AutoContextIdStrategy>;
 	let autoContextNameStrategy: DeepMocked<AutoContextNameStrategy>;
 	let autoMediumIdStrategy: DeepMocked<AutoMediumIdStrategy>;
+	let autoPublisherStrategy: DeepMocked<AutoPublisherStrategy>;
 	let autoGroupExternalUuidStrategy: DeepMocked<AutoGroupExternalUuidStrategy>;
 
 	beforeAll(async () => {
@@ -102,6 +104,10 @@ describe(AbstractLaunchStrategy.name, () => {
 					useValue: createMock<AutoMediumIdStrategy>(),
 				},
 				{
+					provide: AutoPublisherStrategy,
+					useValue: createMock<AutoPublisherStrategy>(),
+				},
+				{
 					provide: AutoGroupExternalUuidStrategy,
 					useValue: createMock<AutoGroupExternalUuidStrategy>(),
 				},
@@ -115,6 +121,7 @@ describe(AbstractLaunchStrategy.name, () => {
 		autoContextIdStrategy = module.get(AutoContextIdStrategy);
 		autoContextNameStrategy = module.get(AutoContextNameStrategy);
 		autoMediumIdStrategy = module.get(AutoMediumIdStrategy);
+		autoPublisherStrategy = module.get(AutoPublisherStrategy);
 		autoGroupExternalUuidStrategy = module.get(AutoGroupExternalUuidStrategy);
 	});
 
@@ -175,6 +182,12 @@ describe(AbstractLaunchStrategy.name, () => {
 					name: 'autoMediumIdParam',
 					type: CustomParameterType.AUTO_MEDIUMID,
 				});
+				const autoPublisherCustomParameter = customParameterFactory.build({
+					scope: CustomParameterScope.GLOBAL,
+					location: CustomParameterLocation.BODY,
+					name: 'autoPublisherParam',
+					type: CustomParameterType.AUTO_PUBLISHER,
+				});
 				const autoGroupExternalUuidCustomParameter = customParameterFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.QUERY,
@@ -188,6 +201,7 @@ describe(AbstractLaunchStrategy.name, () => {
 				});
 
 				const mediumId = 'medium:xyz';
+				const publisher = 'publisher_abc';
 				const externalTool: ExternalTool = externalToolFactory
 					.withBasicConfig({
 						baseUrl: 'https://www.basic-baseurl.com/:globalParam',
@@ -202,11 +216,13 @@ describe(AbstractLaunchStrategy.name, () => {
 							autoContextIdCustomParameter,
 							autoContextNameCustomParameter,
 							autoMediumIdCustomParameter,
+							autoPublisherCustomParameter,
 							autoGroupExternalUuidCustomParameter,
 							fragmentLocationCustomParameter,
 						],
 						medium: {
 							mediumId,
+							publisher,
 						},
 					});
 
@@ -264,6 +280,7 @@ describe(AbstractLaunchStrategy.name, () => {
 				autoContextIdStrategy.getValue.mockReturnValueOnce(contextId);
 				autoContextNameStrategy.getValue.mockResolvedValueOnce(contextName);
 				autoMediumIdStrategy.getValue.mockResolvedValueOnce(mediumId);
+				autoPublisherStrategy.getValue.mockResolvedValueOnce(publisher);
 				autoGroupExternalUuidStrategy.getValue.mockResolvedValueOnce(groupExternalUuid);
 
 				const expectedUrl = new URL(`https://www.basic-baseurl.com/${globalCustomParameter.default as string}`);
@@ -319,6 +336,11 @@ describe(AbstractLaunchStrategy.name, () => {
 						location: PropertyLocation.QUERY,
 					},
 					{
+						name: autoPublisherCustomParameter.name,
+						value: publisher,
+						location: PropertyLocation.BODY,
+					},
+					{
 						name: autoGroupExternalUuidCustomParameter.name,
 						value: groupExternalUuid,
 						location: PropertyLocation.QUERY,
@@ -339,6 +361,7 @@ describe(AbstractLaunchStrategy.name, () => {
 					autoContextIdCustomParameter,
 					autoContextNameCustomParameter,
 					autoMediumIdCustomParameter,
+					autoPublisherCustomParameter,
 					autoGroupExternalUuidCustomParameter,
 					schoolParameterEntry,
 					contextParameterEntry,
