@@ -19,14 +19,15 @@ export class H5PCacheConfig implements ValkeyConfig {
 
 	@IsString()
 	@ValidateIf((o: H5PCacheConfig) => o.MODE === ValkeyMode.CLUSTER)
-	public sentinelServiceName!: string;
+	@ConfigProperty('SESSION_VALKEY__SENTINEL_SERVICE_NAME')
+	public SENTINEL_SERVICE_NAME!: string;
 
 	@IsString()
 	@ConfigProperty('SESSION_VALKEY__SENTINEL_NAME')
-	public sentinelName = 'myprimary';
+	public SENTINEL_NAME = 'myprimary';
 
 	@IsString()
 	@ValidateIf((o: H5PCacheConfig) => o.MODE === ValkeyMode.CLUSTER)
 	@ConfigProperty('SESSION_VALKEY__SENTINEL_PASSWORD')
-	public sentinelPassword!: string;
+	public SENTINEL_PASSWORD!: string;
 }
