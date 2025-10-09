@@ -4,12 +4,11 @@ import { IH5PEditorOptions, ITranslationFunction } from '@lumieducation/h5p-serv
 import { Cache } from 'cache-manager';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage, Translator } from '../service';
 import { h5pConfig, h5pUrlGenerator } from '../service/config/h5p-service-config';
-import { H5P_CACHE_PROVIDER_TOKEN } from './cache.provider';
 import EditorPermissionSystem from './editor-permission-system';
 
 export const H5PEditorProvider = {
 	provide: H5PEditor,
-	inject: [ContentStorage, LibraryStorage, TemporaryFileStorage, H5P_CACHE_PROVIDER_TOKEN],
+	inject: [ContentStorage, LibraryStorage, TemporaryFileStorage],
 	async useFactory(
 		contentStorage: ContentStorage,
 		libraryStorage: LibraryStorage,

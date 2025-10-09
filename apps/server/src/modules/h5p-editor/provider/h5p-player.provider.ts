@@ -5,11 +5,10 @@ import { h5pConfig, h5pUrlGenerator } from '../service/config/h5p-service-config
 import { ContentStorage } from '../service/content-storage.service';
 import { Translator } from '../service/h5p-translator.service';
 import { LibraryStorage } from '../service/library-storage.service';
-import { H5P_CACHE_PROVIDER_TOKEN } from './cache.provider';
 
 export const H5PPlayerProvider = {
 	provide: H5PPlayer,
-	inject: [ContentStorage, LibraryStorage, H5P_CACHE_PROVIDER_TOKEN],
+	inject: [ContentStorage, LibraryStorage],
 	useFactory: async (
 		contentStorage: ContentStorage,
 		libraryStorage: LibraryStorage,

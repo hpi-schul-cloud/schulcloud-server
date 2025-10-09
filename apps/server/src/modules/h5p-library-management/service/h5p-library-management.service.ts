@@ -14,6 +14,7 @@ import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/sr
 import {
 	IFullLibraryName,
 	IInstalledLibrary,
+	IKeyValueStorage,
 	ILibraryInstallResult,
 	ILibraryMetadata,
 	ILibraryName,
@@ -35,6 +36,7 @@ import {
 } from '../loggable';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
 import LibraryManagementPermissionSystem from './library-management-permission-system';
+import { LibraryKeyValueStorage } from '@modules/h5p-editor/repo/library-key-value-storage';
 
 interface LibrariesContentType {
 	h5p_libraries: string[];
@@ -72,6 +74,7 @@ export class H5PLibraryManagementService {
 		private readonly libraryStorage: LibraryStorage,
 		private readonly contentStorage: ContentStorage,
 		private readonly configService: ConfigService<IH5PLibraryManagementConfig, true>,
+		private readonly libraryKeyValueStorage: LibraryKeyValueStorage,
 		private readonly logger: Logger
 	) {
 		const installLibraryLockMaxOccupationTime = this.configService.get<number>(
@@ -83,8 +86,7 @@ export class H5PLibraryManagementService {
 			setFinishedEnabled: false,
 			installLibraryLockMaxOccupationTime,
 		});
-		const kvCache = new cacheImplementations.CachedKeyValueStorage('kvcache');
-		this.contentTypeCache = new ContentTypeCache(h5pConfig, kvCache);
+		this.contentTypeCache = new ContentTypeCache(h5pConfig, this.libraryKeyValueStorage);
 		this.libraryManager = new LibraryManager(
 			this.libraryStorage,
 			undefined,
