@@ -14,7 +14,7 @@ export const H5PEditorProvider = {
 		contentStorage: ContentStorage,
 		libraryStorage: LibraryStorage,
 		temporaryStorage: TemporaryFileStorage,
-		cacheAdapter: Cache,
+		cacheAdapter: Cache
 	): Promise<H5PEditor> {
 		const cache = new cacheImplementations.CachedKeyValueStorage('kvcache', cacheAdapter);
 		const cachedLibraryStorage = new cacheImplementations.CachedLibraryStorage(

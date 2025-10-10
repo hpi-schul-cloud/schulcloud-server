@@ -5,7 +5,6 @@ import { TEST_ENTITIES } from './h5p-editor.entity.exports';
 
 @Module({
 	imports: [H5PEditorModule, MongoMemoryDatabaseModule.forRoot({ entities: TEST_ENTITIES })],
-
 })
 export class H5PEditorTestModule {
 	public static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
