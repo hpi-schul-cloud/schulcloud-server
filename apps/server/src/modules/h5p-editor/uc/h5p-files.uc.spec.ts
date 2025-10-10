@@ -7,7 +7,7 @@ import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import { Readable } from 'stream';
-import { H5PEditorProvider, H5PPlayerProvider } from '../provider';
+import { H5P_CACHE_PROVIDER_TOKEN, H5PEditorProvider, H5PPlayerProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { ContentStorage, LibraryStorage } from '../service';
 import { TemporaryFileStorage } from '../service/temporary-file-storage.service';
@@ -84,6 +84,7 @@ describe('H5P Files', () => {
 					provide: H5PContentRepo,
 					useValue: createMock<H5PContentRepo>(),
 				},
+				{ provide: H5P_CACHE_PROVIDER_TOKEN, useValue: createMock<Cache>() },
 			],
 		}).compile();
 
