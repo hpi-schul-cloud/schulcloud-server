@@ -3,13 +3,16 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@core/logger';
 import { BoardNodeFactory, Card, Column, ContentElementType } from '../domain';
-import { BoardNodePermissionService, BoardNodeService } from '../service';
+import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
+import { StorageLocation } from '@infra/files-storage-client';
+import { CopyStatus } from '@modules/copy-helper';
 
 @Injectable()
 export class ColumnUc {
 	constructor(
 		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly boardNodeService: BoardNodeService,
+		private readonly columnBoardService: ColumnBoardService,
 		private readonly boardNodeFactory: BoardNodeFactory,
 
 		private readonly logger: LegacyLogger
@@ -73,5 +76,35 @@ export class ColumnUc {
 
 		await this.boardNodeService.move(card, targetColumn, targetPosition);
 		return card;
+	}
+
+	public async copyCard(userId: EntityId, cardId: EntityId, schoolId: EntityId): Promise<CopyStatus> {
+		this.logger.debug({ action: 'copyCard', userId, cardId, schoolId });
+
+		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
+
+		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([])); // TODO is read sufficient?
+
+		/*
+		if (!card.parentId) {
+			throw new Error('Card has no parent column');
+		}
+		const column = await this.boardNodeService.findByClassAndId(Column, card.parentId);
+
+		// await this.boardNodePermissionService.checkPermission(userId, column, AuthorizationContextBuilder.write([])); // TODO is column write permission necessary?
+		*/
+
+		const copyStatus = await this.columnBoardService.copyCard({
+			originalCardId: card.id,
+			userId,
+			targetStorageLocationReference: { id: schoolId, type: StorageLocation.SCHOOL },
+			sourceStorageLocationReference: { id: schoolId, type: StorageLocation.SCHOOL },
+			targetSchoolId: schoolId,
+		});
+
+		// Is it necesary? what is the default position?
+		// await this.boardNodeService.move(card, column, card.position + 1);
+
+		return copyStatus;
 	}
 }
