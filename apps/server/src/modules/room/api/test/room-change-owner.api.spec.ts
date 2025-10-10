@@ -14,6 +14,8 @@ import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomRolesTestFactory } from '../../testing/room-roles.test.factory';
 import { RoomMemberListResponse } from '../dto/response/room-member-list.response';
+import { ApiValidationError } from '@shared/common/error';
+import { Role } from '@modules/role/repo';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -44,21 +46,31 @@ describe('Room Controller (API)', () => {
 	});
 
 	describe('POST /rooms/:roomId/members/changeowner', () => {
-		const setupRoomWithMembers = async () => {
+		const setupRoomWithMembers = async (
+			options: { addUnknownRoleUser?: boolean; overwriteOwnerRole?: boolean } = {}
+		) => {
 			const school = schoolEntityFactory.buildWithId();
+			const otherSchool = schoolEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser: owner } = UserAndAccountTestFactory.buildTeacher({ school });
 			const teacherRole = owner.roles[0];
 			const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
 			const student = userFactory.buildWithId({ school: owner.school, roles: [studentRole] });
+			const unknownRoleUser = userFactory.buildWithId({ school: owner.school, roles: [teacherRole] });
+			const externalTeacherUser = userFactory.buildWithId({ school: otherSchool, roles: [teacherRole] });
 			const targetUser = userFactory.buildWithId({ school: owner.school, roles: [teacherRole] });
 			const room = roomEntityFactory.buildWithId({ schoolId: owner.school.id });
 			const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+			const actualOwnerRole = options.overwriteOwnerRole ? roomViewerRole : roomOwnerRole;
+			const users = [
+				{ role: actualOwnerRole, user: owner },
+				{ role: roomViewerRole, user: targetUser },
+				{ role: roomViewerRole, user: student },
+			];
+			if (options?.addUnknownRoleUser) {
+				users.push({ role: undefined as unknown as Role, user: unknownRoleUser });
+			}
 			const userGroupEntity = groupEntityFactory.withTypeRoom().buildWithId({
-				users: [
-					{ role: roomOwnerRole, user: owner },
-					{ role: roomViewerRole, user: targetUser },
-					{ role: roomViewerRole, user: student },
-				],
+				users,
 				organization: owner.school,
 				externalSource: undefined,
 			});
@@ -75,6 +87,7 @@ describe('Room Controller (API)', () => {
 				owner,
 				studentRole,
 				student,
+				externalTeacherUser,
 				teacherRole,
 				roomEditorRole,
 				roomAdminRole,
@@ -83,12 +96,23 @@ describe('Room Controller (API)', () => {
 				targetUser,
 				targetUser,
 				userGroupEntity,
+				unknownRoleUser,
 			]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, room, targetUser, owner, teacherRole, student };
+			return {
+				loggedInClient,
+				room,
+				targetUser,
+				owner,
+				teacherRole,
+				student,
+				school,
+				externalTeacherUser,
+				unknownRoleUser,
+			};
 		};
 
 		describe('when the user is not authenticated', () => {
@@ -148,7 +172,7 @@ describe('Room Controller (API)', () => {
 				);
 			});
 
-			it('should change the current user to admin', async () => {
+			it('should change the current room owner to room admin', async () => {
 				const { loggedInClient, room, targetUser, owner } = await setupRoomWithMembers();
 
 				await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
@@ -162,26 +186,104 @@ describe('Room Controller (API)', () => {
 				);
 			});
 
-			it('should return error when targeting a user that is not in the room', async () => {
-				const { loggedInClient, room, owner, teacherRole } = await setupRoomWithMembers();
-				const targetUser = userFactory.buildWithId({ school: owner.school, roles: [teacherRole] });
-				await em.persistAndFlush(targetUser);
+			describe('when target user is not in the room', () => {
+				it('should return error', async () => {
+					const { loggedInClient, room, owner, teacherRole } = await setupRoomWithMembers();
+					const targetUser = userFactory.buildWithId({ school: owner.school, roles: [teacherRole] });
+					await em.persistAndFlush(targetUser);
 
-				const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
-					userId: targetUser.id,
+					const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
+						userId: targetUser.id,
+					});
+
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				});
+			});
+
+			describe('when target user is a student', () => {
+				it('should return an error', async () => {
+					const { loggedInClient, room, student } = await setupRoomWithMembers();
+
+					const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
+						userId: student.id,
+					});
+
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				});
+			});
+
+			describe('when role of target user is unknown', () => {
+				it('should return an error ', async () => {
+					const { loggedInClient, room, unknownRoleUser } = await setupRoomWithMembers({ addUnknownRoleUser: true });
+
+					const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
+						userId: unknownRoleUser.id,
+					});
+
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				});
+			});
+		});
+
+		describe('when the user is a school admin', () => {
+			const setupAdminLogin = async (options: { addUnknownRoleUser?: boolean; overwriteOwnerRole?: boolean } = {}) => {
+				const { room, school, targetUser, externalTeacherUser } = await setupRoomWithMembers(options);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+				await em.persistAndFlush([adminAccount, adminUser]);
+				const loggedInClient = await testApiClient.login(adminAccount);
+				return { loggedInClient, room, targetUser, externalTeacherUser };
+			};
+
+			it('should not allow to pick role roomowner (=> different endpoint)', async () => {
+				const { loggedInClient, room, targetUser } = await setupAdminLogin();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [targetUser.id],
+					roleName: RoleName.ROOMOWNER,
+				});
+
+				expect(response.body as ApiValidationError).toEqual(expect.objectContaining({ type: 'API_VALIDATION_ERROR' }));
+			});
+
+			it('should not allow passing ownership to external teachers', async () => {
+				const { loggedInClient, room, externalTeacherUser } = await setupAdminLogin();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [externalTeacherUser.id],
+					roleName: RoleName.ROOMOWNER,
 				});
 
 				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 			});
 
-			it('should return error when targeting a user that is a student', async () => {
-				const { loggedInClient, room, student } = await setupRoomWithMembers();
+			describe('when no room owner exists', () => {
+				it('should gracefully continue and only upgrade role of target user', async () => {
+					const { loggedInClient, room, targetUser } = await setupAdminLogin({ overwriteOwnerRole: true });
 
-				const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
-					userId: student.id,
+					const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
+						userId: targetUser.id,
+					});
+
+					expect(response.status).toBe(HttpStatus.OK);
 				});
+			});
 
-				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			describe('when the room does not belong to the school of the admin', () => {
+				it('should return a 403 error', async () => {
+					const { loggedInClient, room, targetUser } = await setupAdminLogin();
+
+					// change room school
+					const otherSchool = schoolEntityFactory.buildWithId();
+					room.schoolId = otherSchool.id;
+					await em.persistAndFlush(otherSchool);
+					await em.persistAndFlush(room);
+					em.clear();
+
+					const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
+						userId: targetUser.id,
+					});
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
 			});
 		});
 	});
