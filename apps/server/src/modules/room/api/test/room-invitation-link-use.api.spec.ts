@@ -22,7 +22,8 @@ import { RoomInvitationLinkError } from '../dto/response/room-invitation-link.er
 
 type RoomInvitationLinkConfig = {
 	requiresConfirmation?: boolean;
-	isOnlyForTeachers?: boolean;
+	isUsableByExternalPersons?: boolean;
+	isUsableByStudents?: boolean;
 	restrictedToCreatorSchool?: boolean;
 	activeUntil?: Date;
 };
@@ -33,9 +34,10 @@ enum UserSchool {
 }
 
 enum UserRole {
+	ADMINISTRATOR = 'administrator',
+	EXTERNAL_PERSON = 'externalPerson',
 	STUDENT = 'student',
 	TEACHER = 'teacher',
-	ADMINISTRATOR = 'administrator',
 }
 
 enum ActiveUntil {
@@ -98,7 +100,8 @@ describe('Room Invitation Link Controller (API)', () => {
 			const roomInvitationLink = roomInvitationLinkEntityFactory.buildWithId({
 				roomId: room.id,
 				requiresConfirmation: roomInvitationLinkConfig.requiresConfirmation ?? false,
-				isOnlyForTeachers: roomInvitationLinkConfig.isOnlyForTeachers ?? false,
+				isUsableByExternalPersons: roomInvitationLinkConfig.isUsableByExternalPersons ?? true,
+				isUsableByStudents: roomInvitationLinkConfig.isUsableByStudents ?? true,
 				restrictedToCreatorSchool: roomInvitationLinkConfig.restrictedToCreatorSchool ?? false,
 				activeUntil: roomInvitationLinkConfig.activeUntil ?? inOneWeek,
 				creatorUserId: new ObjectId().toHexString(),
@@ -128,6 +131,7 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 			const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
+			const externalPersonGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTEXTERNALPERSON });
 			await em.persistAndFlush([
 				school,
 				user,
@@ -139,6 +143,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				roomApplicantRole,
 				teacherGuestRole,
 				studentGuestRole,
+				externalPersonGuestRole,
 				userGroupEntity,
 			]);
 			em.clear();
@@ -204,12 +209,128 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 		});
 
+		// describe.each([
+		// 	[UserRole.TEACHER, { isUsableByExternalPersons: false }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+		// 	[UserRole.STUDENT, { isUsableByExternalPersons: false }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+		// 	[UserRole.EXTERNAL_PERSON, { isUsableByExternalPersons: false }, UserSchool.SAME_SCHOOL, HttpStatus.FORBIDDEN],
+		// 	[UserRole.TEACHER, { isUsableByExternalPersons: true }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+		// 	[UserRole.STUDENT, { isUsableByExternalPersons: true }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+		// 	[UserRole.EXTERNAL_PERSON, { isUsableByExternalPersons: true }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+		// ])('usable by external persons', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
+		// 	const config = JSON.stringify(roomInvitationLinkConfig);
+		// 	describe(`when room config is '${config}' and user is a ${roleName} from '${fromSameSchool}'`, () => {
+		// 		it(`should return http status ${httpStatus}`, async () => {
+		// 			const { loggedInClient, roomInvitationLink } = await setup(
+		// 				roomInvitationLinkConfig,
+		// 				roleName,
+		// 				fromSameSchool
+		// 			);
+
+		// 			const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+
+		// 			expect(response.status).toBe(httpStatus);
+		// 		});
+		// 	});
+		// });
+
+		// describe.each([
+		// 	[UserRole.TEACHER, { isUsableByStudents: false }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+		// 	[UserRole.STUDENT, { isUsableByStudents: false }, UserSchool.SAME_SCHOOL, HttpStatus.FORBIDDEN],
+		// 	[UserRole.EXTERNAL_PERSON, { isUsableByStudents: false }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+		// 	[UserRole.TEACHER, { isUsableByStudents: true }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+		// 	[UserRole.STUDENT, { isUsableByStudents: true }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+		// 	[UserRole.EXTERNAL_PERSON, { isUsableByStudents: true }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+		// ])('usable by students', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
+		// 	const config = JSON.stringify(roomInvitationLinkConfig);
+		// 	describe(`when room config is '${config}' and user is a ${roleName} from '${fromSameSchool}'`, () => {
+		// 		it(`should return http status ${httpStatus}`, async () => {
+		// 			const { loggedInClient, roomInvitationLink } = await setup(
+		// 				roomInvitationLinkConfig,
+		// 				roleName,
+		// 				fromSameSchool
+		// 			);
+
+		// 			const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+
+		// 			expect(response.status).toBe(httpStatus);
+		// 		});
+		// 	});
+		// });
+
 		describe.each([
-			[UserRole.TEACHER, { isOnlyForTeachers: true }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
-			[UserRole.STUDENT, { isOnlyForTeachers: true }, UserSchool.SAME_SCHOOL, HttpStatus.FORBIDDEN],
-			[UserRole.TEACHER, { isOnlyForTeachers: false }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
-			[UserRole.STUDENT, { isOnlyForTeachers: false }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
-		])('restriction to only teachers', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
+			[
+				UserRole.TEACHER,
+				{ isUsableByExternalPersons: false, isUsableByStudents: false },
+				UserSchool.SAME_SCHOOL,
+				HttpStatus.CREATED,
+			],
+			[
+				UserRole.TEACHER,
+				{ isUsableByExternalPersons: true, isUsableByStudents: false },
+				UserSchool.SAME_SCHOOL,
+				HttpStatus.CREATED,
+			],
+			[
+				UserRole.TEACHER,
+				{ isUsableByExternalPersons: false, isUsableByStudents: true },
+				UserSchool.SAME_SCHOOL,
+				HttpStatus.CREATED,
+			],
+			[
+				UserRole.TEACHER,
+				{ isUsableByExternalPersons: true, isUsableByStudents: true },
+				UserSchool.SAME_SCHOOL,
+				HttpStatus.CREATED,
+			],
+			[
+				UserRole.STUDENT,
+				{ isUsableByExternalPersons: false, isUsableByStudents: false },
+				UserSchool.SAME_SCHOOL,
+				HttpStatus.FORBIDDEN,
+			],
+			[
+				UserRole.STUDENT,
+				{ isUsableByExternalPersons: true, isUsableByStudents: false },
+				UserSchool.SAME_SCHOOL,
+				HttpStatus.FORBIDDEN,
+			],
+			[
+				UserRole.STUDENT,
+				{ isUsableByExternalPersons: false, isUsableByStudents: true },
+				UserSchool.SAME_SCHOOL,
+				HttpStatus.CREATED,
+			],
+			[
+				UserRole.STUDENT,
+				{ isUsableByExternalPersons: true, isUsableByStudents: true },
+				UserSchool.SAME_SCHOOL,
+				HttpStatus.CREATED,
+			],
+			[
+				UserRole.EXTERNAL_PERSON,
+				{ isUsableByExternalPersons: false, isUsableByStudents: false },
+				UserSchool.SAME_SCHOOL,
+				HttpStatus.FORBIDDEN,
+			],
+			[
+				UserRole.EXTERNAL_PERSON,
+				{ isUsableByExternalPersons: true, isUsableByStudents: false },
+				UserSchool.SAME_SCHOOL,
+				HttpStatus.CREATED,
+			],
+			[
+				UserRole.EXTERNAL_PERSON,
+				{ isUsableByExternalPersons: false, isUsableByStudents: true },
+				UserSchool.SAME_SCHOOL,
+				HttpStatus.FORBIDDEN,
+			],
+			[
+				UserRole.EXTERNAL_PERSON,
+				{ isUsableByExternalPersons: true, isUsableByStudents: true },
+				UserSchool.SAME_SCHOOL,
+				HttpStatus.CREATED,
+			],
+		])('usable by external persons and students', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
 			const config = JSON.stringify(roomInvitationLinkConfig);
 			describe(`when room config is '${config}' and user is a ${roleName} from '${fromSameSchool}'`, () => {
 				it(`should return http status ${httpStatus}`, async () => {
@@ -229,8 +350,10 @@ describe('Room Invitation Link Controller (API)', () => {
 		describe.each([
 			[UserRole.TEACHER, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
 			[UserRole.STUDENT, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
+			[UserRole.EXTERNAL_PERSON, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
 			[UserRole.TEACHER, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
 			[UserRole.STUDENT, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
+			[UserRole.EXTERNAL_PERSON, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
 		])('restriction to creators school', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
 			const config = JSON.stringify(roomInvitationLinkConfig);
 			describe(`when link is '${config}' and user is a '${roleName}' from '${fromSameSchool}'`, () => {

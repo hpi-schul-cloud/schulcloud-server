@@ -6,7 +6,8 @@ export interface RoomInvitationLinkProps extends AuthorizableObject {
 	id: EntityId;
 	title: string;
 	restrictedToCreatorSchool: boolean;
-	isOnlyForTeachers: boolean;
+	isUsableByExternalPersons: boolean;
+	isUsableByStudents: boolean;
 	activeUntil?: Date;
 	requiresConfirmation: boolean;
 	roomId: EntityId;
@@ -64,12 +65,20 @@ export class RoomInvitationLink extends DomainObject<RoomInvitationLinkProps> {
 		this.props.restrictedToCreatorSchool = value;
 	}
 
-	get isOnlyForTeachers(): boolean {
-		return this.props.isOnlyForTeachers;
+	get isUsableByExternalPersons(): boolean {
+		return this.props.isUsableByExternalPersons;
 	}
 
-	set isOnlyForTeachers(value: boolean) {
-		this.props.isOnlyForTeachers = value;
+	set isUsableByExternalPersons(value: boolean) {
+		this.props.isUsableByExternalPersons = value;
+	}
+
+	get isUsableByStudents(): boolean {
+		return this.props.isUsableByStudents;
+	}
+
+	set isUsableByStudents(value: boolean) {
+		this.props.isUsableByStudents = value;
 	}
 
 	get activeUntil(): Date | undefined {

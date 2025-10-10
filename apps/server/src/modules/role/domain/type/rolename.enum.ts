@@ -11,6 +11,7 @@ export enum RoleName {
 	EXPERT = 'expert',
 	GUESTTEACHER = 'guestTeacher',
 	GUESTSTUDENT = 'guestStudent',
+	GUESTEXTERNALPERSON = 'guestExternalPerson',
 	HELPDESK = 'helpdesk',
 	ROOMAPPLICANT = 'roomapplicant',
 	ROOMVIEWER = 'roomviewer',

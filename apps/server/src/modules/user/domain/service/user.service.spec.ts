@@ -540,6 +540,7 @@ describe('UserService', () => {
 		const setupGuestRoles = () => {
 			const guestTeacher = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 			const guestStudent = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
+			const guestExternalPerson = roleFactory.buildWithId({ name: RoleName.GUESTEXTERNALPERSON });
 
 			roleService.findByName.mockImplementation((name) => {
 				if (name === RoleName.GUESTTEACHER) {
@@ -548,10 +549,13 @@ describe('UserService', () => {
 				if (name === RoleName.GUESTSTUDENT) {
 					return Promise.resolve(new RoleDto(guestStudent));
 				}
+				if (name === RoleName.GUESTEXTERNALPERSON) {
+					return Promise.resolve(new RoleDto(guestExternalPerson));
+				}
 				throw new Error('Unexpected role name');
 			});
 
-			return { guestTeacher, guestStudent };
+			return { guestTeacher, guestStudent, guestExternalPerson };
 		};
 
 		describe('when user is not in targetSchool yet', () => {
@@ -605,6 +609,21 @@ describe('UserService', () => {
 					expect.objectContaining<Partial<UserDo>>({
 						secondarySchools: [
 							{ schoolId: targetSchool.id, role: { id: guestStudent.id, name: RoleName.GUESTSTUDENT } },
+						],
+					}),
+				]);
+			});
+
+			it('should add external person as guestexternalperson to school', async () => {
+				const { user, targetSchool } = setupUserWithRole(RoleName.EXPERT);
+				const { guestExternalPerson } = setupGuestRoles();
+
+				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+				expect(userDoRepo.saveAll).toHaveBeenCalledWith([
+					expect.objectContaining<Partial<UserDo>>({
+						secondarySchools: [
+							{ schoolId: targetSchool.id, role: { id: guestExternalPerson.id, name: RoleName.GUESTEXTERNALPERSON } },
 						],
 					}),
 				]);

@@ -15,7 +15,10 @@ export class RoomInvitationLinkResponse {
 	public restrictedToCreatorSchool: boolean;
 
 	@ApiProperty()
-	public isOnlyForTeachers: boolean;
+	public isUsableByExternalPersons: boolean;
+
+	@ApiProperty()
+	public isUsableByStudents: boolean;
 
 	@ApiPropertyOptional({ type: Date })
 	public activeUntil?: Date;
@@ -34,7 +37,8 @@ export class RoomInvitationLinkResponse {
 		this.roomId = roomInvitationLink.roomId;
 		this.title = roomInvitationLink.title;
 		this.restrictedToCreatorSchool = roomInvitationLink.restrictedToCreatorSchool;
-		this.isOnlyForTeachers = roomInvitationLink.isOnlyForTeachers;
+		this.isUsableByExternalPersons = roomInvitationLink.isUsableByExternalPersons;
+		this.isUsableByStudents = roomInvitationLink.isUsableByStudents;
 		this.activeUntil = roomInvitationLink.activeUntil;
 		this.requiresConfirmation = roomInvitationLink.requiresConfirmation;
 		this.creatorUserId = roomInvitationLink.creatorUserId;
