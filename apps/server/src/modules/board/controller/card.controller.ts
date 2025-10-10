@@ -36,6 +36,8 @@ import {
 } from './dto';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
+import { RequestTimeout } from '@shared/common/decorators';
+import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 
 @ApiTags('Board Card')
 @JwtAuthentication()
@@ -116,6 +118,22 @@ export class CardController {
 	@Delete(':cardId')
 	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.cardUc.deleteCard(currentUser.userId, urlParams.cardId);
+	}
+
+	@ApiOperation({ summary: 'Copy a single card.' })
+	@ApiResponse({ status: 201, type: CopyApiResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Post(':cardId/copy')
+	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	async copyCard(
+		@Param() urlParams: CardUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<CopyApiResponse> {
+		const copyStatus = await this.columnUc.copyCard(currentUser.userId, urlParams.cardId, currentUser.schoolId);
+		const dto = CopyMapper.mapToResponse(copyStatus);
+		return dto;
 	}
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })

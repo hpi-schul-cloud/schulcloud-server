@@ -29,6 +29,10 @@ export class BoardNodeService {
 	) {}
 
 	public async addRoot(boardNode: ColumnBoard | MediaBoard): Promise<void> {
+		await this.save(boardNode);
+	}
+
+	public async save(boardNode: AnyBoardNode): Promise<void> {
 		await this.boardNodeRepo.save(boardNode);
 	}
 

@@ -11,7 +11,7 @@ import {
 } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { BoardNodeService } from './board-node.service';
-import { ColumnBoardCopyService, ColumnBoardLinkService, CopyColumnBoardParams } from './internal';
+import { ColumnBoardCopyService, ColumnBoardLinkService, CopyColumnBoardParams, CopyCardParams } from './internal';
 
 @Injectable()
 export class ColumnBoardService {
@@ -71,6 +71,12 @@ export class ColumnBoardService {
 		await this.boardNodeRepo.save(columnBoard);
 
 		return columnBoard;
+	}
+
+	public async copyCard(params: CopyCardParams): Promise<CopyStatus> {
+		const copyStatus = await this.columnBoardCopyService.copyCard(params);
+
+		return copyStatus;
 	}
 
 	public async swapLinkedIdsInBoards(copyStatus: CopyStatus, idMap?: Map<EntityId, EntityId>): Promise<CopyStatus> {

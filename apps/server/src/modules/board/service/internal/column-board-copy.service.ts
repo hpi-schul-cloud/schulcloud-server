@@ -2,7 +2,15 @@ import { CopyStatus } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client/service';
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from '../../domain';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	Card,
+	Column,
+	ColumnBoard,
+	isCard,
+	isColumnBoard,
+} from '../../domain';
 import { BoardNodeService } from '../board-node.service';
 import { BoardNodeCopyContext, StorageLocationReference } from './board-node-copy-context';
 import { BoardNodeCopyService } from './board-node-copy.service';
@@ -11,6 +19,15 @@ import { ColumnBoardTitleService } from './column-board-title.service';
 export type CopyColumnBoardParams = {
 	originalColumnBoardId: EntityId;
 	targetExternalReference: BoardExternalReference;
+	sourceStorageLocationReference: StorageLocationReference;
+	targetStorageLocationReference: StorageLocationReference;
+	userId: EntityId;
+	copyTitle?: string;
+	targetSchoolId: EntityId;
+};
+
+export type CopyCardParams = {
+	originalCardId: EntityId;
 	sourceStorageLocationReference: StorageLocationReference;
 	targetStorageLocationReference: StorageLocationReference;
 	userId: EntityId;
@@ -59,6 +76,37 @@ export class ColumnBoardCopyService {
 		copyStatus.copyEntity.isVisible = false;
 		await this.boardNodeService.addRoot(copyStatus.copyEntity);
 		copyStatus.originalEntity = originalBoard;
+
+		return copyStatus;
+	}
+
+	public async copyCard(params: CopyCardParams): Promise<CopyStatus> {
+		const originalCard = await this.boardNodeService.findByClassAndId(Card, params.originalCardId);
+		/*
+		if (!originalCard.parentId) {
+			throw new Error('Card has no parent column');
+		}
+		const originalColumn = await this.boardNodeService.findByClassAndId(Column, originalCard.parentId);
+		 */
+
+		const copyContext = new BoardNodeCopyContext({
+			sourceStorageLocationReference: params.sourceStorageLocationReference,
+			targetStorageLocationReference: params.targetStorageLocationReference,
+			userId: params.userId,
+			filesStorageClientAdapterService: this.filesStorageClientAdapterService,
+			targetSchoolId: params.targetSchoolId,
+		});
+
+		const copyStatus = await this.boardNodeCopyService.copy(originalCard, copyContext);
+		/* istanbul ignore next */
+		if (!isCard(copyStatus.copyEntity)) {
+			throw new InternalServerErrorException('expected copy of columnboard to be a columnboard');
+		}
+		// Is it necesary? what is the default position?
+		// await this.boardNodeService.move(card, column, card.position + 1);
+
+		await this.boardNodeService.save(copyStatus.copyEntity);
+		copyStatus.originalEntity = originalCard;
 
 		return copyStatus;
 	}
