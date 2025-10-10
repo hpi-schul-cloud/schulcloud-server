@@ -35,7 +35,7 @@ const addTeamUserToTeam = (opt) => async (id, user, teamRoleName) =>
 
 const getTeamById = (id) => teamsModel.findById(id).lean().exec();
 
-const removeOneTeam = (id) => teamsModel.findOneAndRemove({ _id: id }).lean().exec();
+const removeOneTeam = (id) => teamsModel.findOneAndDelete({ _id: id }).lean().exec();
 
 const removeManyTeams = (ids) =>
 	teamsModel

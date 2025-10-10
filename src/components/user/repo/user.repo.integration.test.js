@@ -44,7 +44,7 @@ describe('user repository', () => {
 		});
 
 		it('when called with an invalid id, then it throws 404', async () => {
-			const uid = ObjectId();
+			const uid = new ObjectId();
 
 			await expect(userRepo.getUser(uid)).to.be.rejectedWith(NotFound);
 		});
@@ -73,7 +73,7 @@ describe('user repository', () => {
 		});
 
 		it('when called with an invalid id, then it throws 404', async () => {
-			const uid = ObjectId();
+			const uid = new ObjectId();
 			const replaceData = {
 				firstName: 'DELETED',
 				lastName: 'USER',

@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
 
@@ -30,7 +31,7 @@ describe('fileStorageFacade', () => {
 		beforeEach(async () => {
 			user = await testObjects.createTestUser();
 			const userPermission = testObjects.files.createPermission({ refId: user._id });
-			file = await testObjects.createTestFile({ owner: testObjects.generateObjectId(), additonalPermissions: [userPermission] });
+			file = await testObjects.createTestFile({ owner: new ObjectId(), additonalPermissions: [userPermission] });
 		});
 
 		afterEach(testObjects.cleanup);

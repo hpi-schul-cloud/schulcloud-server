@@ -1,5 +1,3 @@
-const { ObjectId: generateObjectId } = require('mongoose').Types;
-
 const logger = require('../../../src/logger/index');
 const TestEventEmitter = require('./mongooseEventListener');
 
@@ -17,7 +15,7 @@ const performanceMessurceLimits = {
 	paginate: 100,
 };
 
-module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObjectId }) => {
+module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 	const {
 		accounts,
 		activation,
@@ -187,7 +185,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		setupUser,
 		options: opt,
 		randomGen,
-		generateObjectId,
 		TestEventEmitter,
 		performanceMessurceLimits,
 	};

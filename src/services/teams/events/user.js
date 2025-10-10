@@ -5,7 +5,7 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const getTeams = (userId) => teamsModel.find({ 'userIds.userId': userId }).lean().exec();
 const patchTeamUsers = (team) => teamsModel.findByIdAndUpdate(team._id, { userIds: team.userIds }).lean().exec();
-const removeTeam = (team) => teamsModel.findByIdAndRemove(team._id).lean().exec();
+const removeTeam = (team) => teamsModel.findByIdAndDelete(team._id).lean().exec();
 
 const removeTeamUserFromTeam = (team, userId) => {
 	team.userIds = team.userIds.filter((user) => user.userId.toString() !== userId);

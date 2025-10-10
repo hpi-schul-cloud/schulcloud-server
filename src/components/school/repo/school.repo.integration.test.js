@@ -1,5 +1,6 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+const { ObjectId } = require('mongoose').Types;
 
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
@@ -40,7 +41,7 @@ describe('school repository', () => {
 		});
 
 		it('should return null if school with given id does not exist', async () => {
-			const notExistingId = testObjects.generateObjectId();
+			const notExistingId = new ObjectId();
 			const school = await schoolRepo.getSchool(notExistingId);
 			expect(school).to.be.null;
 		});

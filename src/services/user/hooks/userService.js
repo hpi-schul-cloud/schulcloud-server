@@ -128,48 +128,25 @@ const updateAccountUsername = async (context) => {
 	return context;
 };
 
-const removeStudentFromClasses = async (hook) => {
-	// todo: move this functionality into classes, using events.
-	// todo: what about teachers?
-	const classesService = hook.app.service('/classes');
-	const userIds = hook.id || (hook.result || []).map((u) => u._id);
-	if (userIds === undefined) {
+
+const removeUserFromEntity = async (hook, serviceName) => {
+	const model = serviceName === 'courses' ? 'courseModel' : 'classModel';
+	const service = hook.app.service('/' + serviceName);
+	let userIds = hook.id || (hook.result || []).map((u) => u._id);
+	if (!userIds) {
 		throw new BadRequest(
 			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.'
 		);
 	}
-
-	try {
-		const usersClasses = await classesService.find({ query: { userIds: { $in: userIds } } });
-		await Promise.all(
-			usersClasses.data.map((klass) => classesService.patch(klass._id, { $pull: { userIds: { $in: userIds } } }))
-		);
-	} catch (err) {
-		throw new Forbidden(
-			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.',
-			err
-		);
-	}
-
-	return hook;
-};
-
-const removeStudentFromCourses = async (hook) => {
-	// todo: move this functionality into courses, using events.
-	// todo: what about teachers?
-	const coursesService = hook.app.service('/courses');
-	const userIds = hook.id || (hook.result || []).map((u) => u._id);
-	if (userIds === undefined) {
-		throw new BadRequest(
-			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.'
-		);
+	if (!Array.isArray(userIds)) {
+		userIds = [userIds];
 	}
 
 	try {
-		const usersCourses = await coursesService.find({ query: { userIds: { $in: userIds } } });
+		const usersItems = await service.find({ query: { userIds: { $in: userIds } } });
 		await Promise.all(
-			usersCourses.data.map((course) =>
-				hook.app.service('courseModel').patch(course._id, { $pull: { userIds: { $in: userIds } } })
+			usersItems.data.map((item) =>
+				hook.app.service(model).patch(item._id, { $pull: { userIds: { $in: userIds } } })
 			)
 		);
 	} catch (err) {
@@ -178,6 +155,16 @@ const removeStudentFromCourses = async (hook) => {
 			err
 		);
 	}
+};
+
+const removeStudentFromClasses = async (hook) => {
+	await removeUserFromEntity(hook, 'classes');
+
+	return hook;
+};
+
+const removeStudentFromCourses = async (hook) => {
+	await removeUserFromEntity(hook, 'courses');
 };
 
 const sanitizeData = (hook) => {

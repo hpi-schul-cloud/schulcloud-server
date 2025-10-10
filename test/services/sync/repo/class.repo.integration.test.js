@@ -25,7 +25,7 @@ describe('class repo', () => {
 	beforeEach(async () => {});
 
 	afterEach(async () => {
-		const classPromises = createdClasses.map((clazz) => classModel.remove(clazz));
+		const classPromises = createdClasses.map((clazz) => classModel.deleteOne(clazz));
 		await Promise.all(classPromises);
 		await testObjects.cleanup();
 	});

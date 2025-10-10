@@ -33,7 +33,7 @@ const roleSchema = new Schema(
 // https://mongoosejs.com/docs/middleware.html
 const mongooseOperationsForClearCache = [
 	'findOneAndDelete',
-	'findOneAndRemove',
+	'findOneAndDelete',
 	'findOneAndUpdate',
 	'deleteMany',
 	'deleteOne',
