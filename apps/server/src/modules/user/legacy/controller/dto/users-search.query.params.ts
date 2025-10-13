@@ -23,7 +23,7 @@ export class UsersSearchQueryParams extends PaginationParams {
 	consentStatus?: Record<'$in', string[]>;
 
 	@IsOptional()
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ description: 'Filter by class IDs for unique identification' })
 	classes?: string[];
 
 	@IsOptional()

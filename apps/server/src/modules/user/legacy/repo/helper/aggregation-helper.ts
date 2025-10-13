@@ -214,7 +214,16 @@ const stageLookupClasses = (aggregation, schoolId: ObjectId, schoolYearId: Objec
 					},
 				},
 				{
+					$lookup: {
+						from: 'years',
+						localField: 'year',
+						foreignField: '_id',
+						as: 'yearData',
+					},
+				},
+				{
 					$project: {
+						_id: 1,
 						gradeLevel: {
 							$convert: {
 								input: '$gradeLevel',
@@ -228,6 +237,9 @@ const stageLookupClasses = (aggregation, schoolId: ObjectId, schoolYearId: Objec
 								to: 'string',
 								onNull: '',
 							},
+						},
+						yearName: {
+							$ifNull: [{ $arrayElemAt: ['$yearData.name', 0] }, ''],
 						},
 					},
 				},
@@ -244,7 +256,22 @@ const stageLookupClasses = (aggregation, schoolId: ObjectId, schoolYearId: Objec
 				$map: {
 					input: '$classes',
 					as: 'class',
-					in: { $concat: ['$$class.gradeLevel', '$$class.name'] },
+					in: {
+						$cond: {
+							if: { $ne: ['$$class.yearName', ''] },
+							then: {
+								$concat: ['$$class.gradeLevel', '$$class.name', ' (', '$$class.yearName', ')'],
+							},
+							else: { $concat: ['$$class.gradeLevel', '$$class.name'] },
+						},
+					},
+				},
+			},
+			classIds: {
+				$map: {
+					input: '$classes',
+					as: 'class',
+					in: '$$class._id',
 				},
 			},
 		},
@@ -346,6 +373,31 @@ const stageFilterSearch = (aggregation, amount) => {
 };
 
 /**
+ * Filters users by class IDs instead of class names for unique identification
+ * @param {Array} aggregation
+ * @param {Array|String} classIds - Array of class IDs or single class ID
+ */
+const stageFilterByClassIds = (aggregation, classIds) => {
+	const classIdList = convertToIn(classIds);
+
+	// Convert string IDs to ObjectIds if needed
+	const objectIds = classIdList.map((id) => {
+		if (typeof id === 'string') {
+			return new ObjectId(id);
+		}
+		return id;
+	});
+
+	aggregation.push({
+		$match: {
+			classIds: {
+				$in: objectIds,
+			},
+		},
+	});
+};
+
+/**
  * Creates an Array for an Aggregation pipeline and can handle, select, sort, limit, skip and matches.
  * To filter or sort by consentStatus, it has also to be seleceted first.
  *
@@ -398,7 +450,7 @@ export const createMultiDocumentAggregation = ({
 	}
 
 	if (classes) {
-		stageBaseFilter(aggregation, 'classes', classes);
+		stageFilterByClassIds(aggregation, classes);
 	}
 
 	if (sort) {
