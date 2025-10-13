@@ -14,4 +14,4 @@ jobs:
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v4
         with:
-          config-file: 'hpi-schul-cloud/dependency-review-config/.github/dependency-review-config.yml@temp-apache-space'
+          config-file: 'hpi-schul-cloud/dependency-review-config/.github/dependency-review-config.yml@main'
