@@ -50,6 +50,12 @@ describe('RoomInvitationLink', () => {
 		expect(roomInvitationLink.restrictedToCreatorSchool).toBe(false);
 	});
 
+	it('should get and set isUsableByExternalPersons', () => {
+		expect(roomInvitationLink.isUsableByExternalPersons).toBe(false);
+		roomInvitationLink.isUsableByExternalPersons = true;
+		expect(roomInvitationLink.isUsableByExternalPersons).toBe(true);
+	});
+
 	it('should get and set isUsableByStudents', () => {
 		expect(roomInvitationLink.isUsableByStudents).toBe(false);
 		roomInvitationLink.isUsableByStudents = true;

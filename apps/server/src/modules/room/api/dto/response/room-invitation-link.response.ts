@@ -14,8 +14,8 @@ export class RoomInvitationLinkResponse {
 	@ApiProperty()
 	public restrictedToCreatorSchool: boolean;
 
-	@ApiProperty()
-	public isUsableByExternalPersons: boolean;
+	@ApiPropertyOptional()
+	public isUsableByExternalPersons?: boolean;
 
 	@ApiProperty()
 	public isUsableByStudents: boolean;

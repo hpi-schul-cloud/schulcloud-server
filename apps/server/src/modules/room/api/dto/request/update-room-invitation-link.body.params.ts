@@ -21,12 +21,12 @@ export class UpdateRoomInvitationLinkBodyParams
 	@IsDate()
 	public activeUntil?: Date;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Indicates if the link is also usable by external persons',
-		required: true,
+		required: false,
 	})
 	@IsBoolean()
-	public isUsableByExternalPersons!: boolean;
+	public isUsableByExternalPersons?: boolean;
 
 	@ApiProperty({
 		description: 'Indicates if the link is also usable by students',

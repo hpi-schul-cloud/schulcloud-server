@@ -9,7 +9,7 @@ export class RoomInvitationLinkEntity extends BaseEntityWithTimestamps implement
 	title!: string;
 
 	@Property()
-	isUsableByExternalPersons!: boolean;
+	isUsableByExternalPersons?: boolean;
 
 	@Property()
 	isUsableByStudents!: boolean;
