@@ -44,6 +44,7 @@ import {
 	UpdateContentElementMessageParams,
 } from './dto';
 import BoardCollaborationConfiguration from './dto/board-collaboration-config';
+import { UpdateReadersCanEditMessageParams } from './dto/update-users-can-edit.message.param';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
@@ -274,6 +275,21 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		try {
 			const column = await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
 			emitter.emitToClientAndRoom(data, column);
+		} catch (err) {
+			emitter.emitFailure(data);
+		}
+		await this.updateRoomsAndUsersMetrics(socket);
+	}
+
+	@SubscribeMessage('update-readers-can-edit-request')
+	@TrackExecutionTime()
+	@UseRequestContext()
+	public async updateReadersCanEdit(socket: Socket, data: UpdateReadersCanEditMessageParams): Promise<void> {
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-readers-can-edit' });
+		const { userId } = this.getCurrentUser(socket);
+		try {
+			const board = await this.boardUc.updateReadersCanEdit(userId, data.boardId, data.readersCanEdit);
+			emitter.emitToClientAndRoom(data, board);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}

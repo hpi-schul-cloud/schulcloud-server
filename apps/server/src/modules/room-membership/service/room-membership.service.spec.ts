@@ -190,6 +190,7 @@ describe('RoomMembershipService', () => {
 				});
 
 				groupService.findById.mockResolvedValue(group);
+				groupService.findGroups.mockResolvedValue({ total: 1, data: [group] });
 				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 
 				return { group, room, roomMembership };
@@ -317,10 +318,10 @@ describe('RoomMembershipService', () => {
 					return { user, room };
 				};
 
-				it('should throw a badrequest exception', async () => {
+				it('should not throw an error, as e.g. KNL could be using this', async () => {
 					const { user, room } = setup();
 
-					await expect(service.removeMembersFromRoom(room.id, [user.id])).rejects.toThrowError(BadRequestException);
+					await expect(service.removeMembersFromRoom(room.id, [user.id])).resolves.toBe(undefined);
 				});
 			});
 		});
@@ -450,6 +451,36 @@ describe('RoomMembershipService', () => {
 		});
 	});
 
+	describe('getRoomMembers', () => {
+		const setup = () => {
+			const roomId = 'room123';
+			const userId = 'user456';
+			const groupId = 'group789';
+			const roleId = 'role101';
+
+			const user = userDoFactory.buildWithId({ id: userId });
+			const roomMembership = roomMembershipFactory.build({ roomId, userGroupId: groupId });
+			const group = groupFactory.build({ id: groupId, users: [{ userId, roleId }] });
+
+			roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
+			groupService.findById.mockResolvedValue(group);
+			roleService.findByIds.mockResolvedValue([]);
+			userService.findByIds.mockResolvedValue([user]);
+
+			return { roomId, userId, groupId, roleId, roomMembership, group };
+		};
+
+		describe('when roleId does not point to existing role', () => {
+			it('should remove member from result', async () => {
+				const { roomId } = setup();
+
+				const result = await service.getRoomMembers(roomId);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+	});
+
 	describe('getRoomMembershipAuthorizable', () => {
 		const setup = () => {
 			const roomId = 'room123';
@@ -526,7 +557,7 @@ describe('RoomMembershipService', () => {
 				users: convertToGroupUsers([...usersSchool2, ...usersSchool1], role),
 			});
 
-			groupService.findByUsersSchoolId.mockImplementation((schoolId: string) => {
+			groupService.findByUsersAndRoomsSchoolId.mockImplementation((schoolId: string) => {
 				if (schoolId === schoolId1) {
 					return Promise.resolve({ data: [groupSchool1, mixedGroup], total: 2 });
 				} else if (schoolId === schoolId2) {
@@ -564,7 +595,7 @@ describe('RoomMembershipService', () => {
 		it('should return room membership stats for school1', async () => {
 			const { schoolId1 } = setup();
 
-			const result = await service.getRoomMembershipStatsByUsersSchoolId(schoolId1);
+			const result = await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(schoolId1);
 
 			expect(result.total).toBe(2);
 			expect(result.data.length).toEqual(2);
@@ -576,13 +607,23 @@ describe('RoomMembershipService', () => {
 		it('should return room membership stats for school2', async () => {
 			const { schoolId2 } = setup();
 
-			const result = await service.getRoomMembershipStatsByUsersSchoolId(schoolId2);
+			const result = await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(schoolId2);
 
 			expect(result.total).toBe(2);
 			expect(result.data.length).toEqual(2);
 			const [internalGroup, externalGroup] = result.data;
 			expect(internalGroup?.totalMembers).toEqual(2);
 			expect(externalGroup?.totalMembers).toEqual(5);
+		});
+
+		it('should return empty result for unknown school', async () => {
+			setup();
+			const unknownSchoolId = 'unknownSchoolId';
+
+			const result = await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(unknownSchoolId);
+
+			expect(result.total).toBe(0);
+			expect(result.data.length).toEqual(0);
 		});
 	});
 

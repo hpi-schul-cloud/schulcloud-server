@@ -108,7 +108,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 			describe('when no session for user exists', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseEntityFactory.build({ students: [studentUser] });
+					const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
 
 					await em.persistAndFlush([studentAccount, studentUser, course]);
 
@@ -173,7 +173,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 			describe('when other sessions for user already exists', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseEntityFactory.build({ students: [studentUser] });
+					const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
 
 					await em.persistAndFlush([studentUser, course]);
 
@@ -244,7 +244,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 			describe('when session for user already exists', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseEntityFactory.build({ students: [studentUser] });
+					const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
 
 					await em.persistAndFlush([studentUser, course]);
 

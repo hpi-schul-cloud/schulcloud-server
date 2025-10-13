@@ -7,6 +7,7 @@ export const videoConferenceFactory = BaseFactory.define<VideoConferenceEntity, 
 		return {
 			target: `${sequence}`,
 			targetModel: VideoConferenceTargetModels.COURSES,
+			salt: 'fixed-salt-for-testing',
 			options: {
 				moderatorMustApproveJoinRequests: false,
 				everyAttendeJoinsMuted: false,

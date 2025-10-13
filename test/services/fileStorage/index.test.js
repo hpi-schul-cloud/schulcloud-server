@@ -53,8 +53,6 @@ describe('fileStorage services', () => {
 		fileStorageService.Stategy = AWSStrategy;
 		signedUrlService.Stategy = AWSStrategy;
 
-		// 	app.use('/fileStorage/bucket', bucketService); ????
-
 		const promises = [
 			teamsModel.create(fixtures.teams),
 			schoolModel.create(fixtures.schools),
@@ -489,14 +487,6 @@ describe('fileStorage services', () => {
 
 	it('registered the file rename service', () => {
 		assert.ok(app.service('fileStorage/rename'));
-	});
-
-	it('registered the file copy service', () => {
-		assert.ok(app.service('fileStorage/copy'));
-	});
-
-	it('registered the file total service', () => {
-		assert.ok(app.service('fileStorage/total'));
 	});
 
 	it('registered the bucket service', () => {

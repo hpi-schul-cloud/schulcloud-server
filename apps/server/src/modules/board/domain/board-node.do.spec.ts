@@ -114,7 +114,7 @@ describe('BoardNode', () => {
 				return { parent, existingChild: child };
 			};
 
-			it('should thow an error', () => {
+			it('should throw an error', () => {
 				const { parent, existingChild } = setupWithChild();
 
 				expect(() => parent.addChild(existingChild)).toThrowError();
@@ -144,7 +144,7 @@ describe('BoardNode', () => {
 			});
 
 			describe('when position < 0', () => {
-				it('should thow an error', () => {
+				it('should throw an error', () => {
 					const { parent, child } = setup();
 
 					expect(() => parent.addChild(child, -1)).toThrowError();
@@ -152,10 +152,21 @@ describe('BoardNode', () => {
 			});
 
 			describe('when position > length', () => {
-				it('should thow an error', () => {
+				it('should put the child in the empty list', () => {
 					const { parent, child } = setup();
 
-					expect(() => parent.addChild(child, 1)).toThrowError();
+					parent.addChild(child, 3);
+
+					expect(child.position).toBe(0);
+				});
+
+				it('should append the child at the end of the list', () => {
+					const { parent, child } = setup();
+					parent.addChild(cardFactory.build(), 0);
+					parent.addChild(cardFactory.build(), 1);
+					parent.addChild(child, 10);
+
+					expect(child.position).toBe(2);
 				});
 			});
 		});

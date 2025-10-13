@@ -370,7 +370,13 @@
 					"type": "integer",
 					"minimum": 0,
 					"default": 600000,
-					"description": "Timeout for incoming requests (including file uploads) to the h5p editor in milliseconds ."
+					"description": "Timeout for incoming requests (including file uploads) to the h5p editor in milliseconds."
+				},
+				"INSTALL_LIBRARY_LOCK_MAX_OCCUPATION_TIME": {
+					"type": "integer",
+					"minimum": 0,
+					"default": 600000,
+					"description": "The number of milliseconds that code has until a single library is installed. If this time is exceeded the lock will be freed and the library installation has failed."
 				},
 				"LIBRARY_LIST_PATH": {
 					"type": "string",
@@ -1160,7 +1166,7 @@
 		},
 		"FEATURE_COLUMN_BOARD_COLLABORA_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables edit of office documents on the column board"
 		},
 		"COLUMN_BOARD_HELP_LINK": {
@@ -1580,10 +1586,10 @@
 			"default": true,
 			"description": "Enables calender service"
 		},
-		"FEATURE_ROOMS_ENABLED": {
+		"FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE": {
 			"type": "boolean",
-			"default": "true",
-			"description": "Enables the rooms feature"
+			"default": true,
+			"description": "Enables the toggle that allows board readers to edit the board"
 		},
 		"FEATURE_ROOM_COPY_ENABLED": {
 			"type": "boolean",
@@ -1595,20 +1601,20 @@
 			"default": true,
 			"description": "Enables the room sharing feature"
 		},
-		"FEATURE_ROOM_INVITATION_LINKS_ENABLED": {
+		"FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED": {
 			"type": "boolean",
-			"default": "true",
-			"description": "Enables the room invitation links feature"
+			"default": false,
+			"description": "Enables adding external persons to a room."
 		},
-		"FEATURE_ROOM_ADD_STUDENTS_ENABLED": {
+		"FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED": {
 			"type": "boolean",
-			"default": "false",
-			"description": "Enables adding students to a room"
+			"default": false,
+			"description": "Enables the registration of external persons in a room."
 		},
-		"FEATURE_ROOM_MEMBERS_TABS_ENABLED": {
+		"FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED": {
 			"type": "boolean",
-			"default": "false",
-			"description": "Enables the tab navigation for room members page"
+			"default": false,
+			"description": "Enables link based invitations for external persons in a room."
 		},
 		"FEATURE_ADMINISTRATE_ROOMS_ENABLED": {
 			"type": "boolean",

@@ -6,7 +6,7 @@ describe('AccessToken', () => {
 			const accessToken = new AccessToken();
 
 			expect(accessToken.token).toEqual(expect.any(String));
-			expect(accessToken.token.length).toBe(36);
+			expect(accessToken.token.length).toBe(24);
 		});
 	});
 });

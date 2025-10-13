@@ -6,19 +6,21 @@ import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing';
+import { UserSchoolEmbeddable } from '@modules/user/repo';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -29,13 +31,10 @@ describe('Room Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'rooms');
-
-		config = serverConfig();
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOMS_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -48,27 +47,6 @@ describe('Room Controller (API)', () => {
 				const someId = new ObjectId().toHexString();
 				const response = await testApiClient.get(someId);
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-			});
-		});
-
-		describe('when the feature is disabled', () => {
-			const setup = async () => {
-				config.FEATURE_ROOMS_ENABLED = false;
-
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
-
-				return { loggedInClient };
-			};
-
-			it('should return a 403 error', async () => {
-				const { loggedInClient } = await setup();
-				const someId = new ObjectId().toHexString();
-				const response = await loggedInClient.get(`${someId}/boards`);
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 
@@ -98,10 +76,14 @@ describe('Room Controller (API)', () => {
 					context: { type: BoardExternalReferenceType.Room, id: room.id },
 				});
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
-				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 				const userGroupEntity = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
-					users: [{ role: roomViewerRole, user: studentUser }],
+					users: [
+						{ role: roomViewerRole, user: studentUser },
+						{ role: roomOwnerRole, user: teacherUser },
+					],
 					organization: studentUser.school,
 					externalSource: undefined,
 				});
@@ -115,6 +97,7 @@ describe('Room Controller (API)', () => {
 					board,
 					studentAccount,
 					studentUser,
+					teacherUser,
 					roomViewerRole,
 					userGroupEntity,
 					roomMembership,
@@ -174,6 +157,77 @@ describe('Room Controller (API)', () => {
 					const response = await loggedInClient.get(room.id);
 
 					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
+			});
+		});
+
+		describe('when a teacher from a foreign school is added to the room', () => {
+			const setup = async () => {
+				const schoolA = schoolEntityFactory.buildWithId();
+				const schoolB = schoolEntityFactory.buildWithId();
+				const room = roomEntityFactory.build({ schoolId: schoolA.id });
+				const board = columnBoardEntityFactory.build({
+					context: { type: BoardExternalReferenceType.Room, id: room.id },
+				});
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school: schoolA });
+				const guestTeacherRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
+				const { teacherUser: teacherUserA, teacherAccount: teacherAccountA } = UserAndAccountTestFactory.buildTeacher({
+					school: schoolA,
+				});
+				const userSchoolEmbeddable = new UserSchoolEmbeddable({ school: schoolA, role: guestTeacherRole });
+				const { teacherUser: foreignTeacherUser, teacherAccount: foreignTeacherAccount } =
+					UserAndAccountTestFactory.buildTeacher({
+						school: schoolB,
+						secondarySchools: [userSchoolEmbeddable],
+					});
+				const { roomViewerRole, roomOwnerRole, roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
+				const userGroupEntity = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
+					users: [
+						{ role: roomViewerRole, user: studentUser },
+						{ role: roomOwnerRole, user: teacherUserA },
+						{ role: roomEditorRole, user: foreignTeacherUser },
+					],
+					organization: studentUser.school,
+					externalSource: undefined,
+				});
+				const roomMembership = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntity.id,
+					roomId: room.id,
+					schoolId: schoolA.id,
+				});
+				await em.persistAndFlush([
+					room,
+					board,
+					studentAccount,
+					studentUser,
+					teacherUserA,
+					teacherAccountA,
+					foreignTeacherUser,
+					foreignTeacherAccount,
+					roomViewerRole,
+					roomOwnerRole,
+					userGroupEntity,
+					roomMembership,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(foreignTeacherAccount);
+
+				return { loggedInClient, room, board };
+			};
+
+			it('should allow the foreign teacher to list the room boards', async () => {
+				const { loggedInClient, room, board } = await setup();
+				const response = await loggedInClient.get(`${room.id}/boards`);
+				expect(response.status).toBe(HttpStatus.OK);
+				expect((response.body as { data: Record<string, unknown> }).data[0]).toEqual({
+					id: board.id,
+					title: board.title,
+					layout: board.layout,
+					isVisible: board.isVisible,
+					createdAt: board.createdAt.toISOString(),
+					updatedAt: board.updatedAt.toISOString(),
 				});
 			});
 		});

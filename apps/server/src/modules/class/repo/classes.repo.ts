@@ -67,10 +67,14 @@ export class ClassesRepo {
 		return domainObject;
 	}
 
-	public async removeUserReference(userId: EntityId): Promise<number> {
-		const id = new ObjectId(userId);
-		const count = await this.em.nativeUpdate(ClassEntity, { $or: [{ userIds: id }, { teacherIds: id }] }, {
-			$pull: { userIds: id, teacherIds: id },
+	public async removeUserReference(userId: EntityId, classIds?: EntityId[]): Promise<number> {
+		const userObjectId = new ObjectId(userId);
+		const query: Record<string, any> = { $or: [{ userIds: userObjectId }, { teacherIds: userObjectId }] };
+		if (classIds && classIds.length > 0) {
+			query._id = { $in: classIds.map((id) => new ObjectId(id)) };
+		}
+		const count = await this.em.nativeUpdate(ClassEntity, query, {
+			$pull: { userIds: userObjectId, teacherIds: userObjectId },
 		} as Partial<ClassEntity>);
 
 		return count;

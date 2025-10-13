@@ -76,7 +76,7 @@ describe(BoardCollaborationGateway.name, () => {
 			isExternalUser: false,
 		});
 
-		const course = courseEntityFactory.build({ teachers: [teacherUser] });
+		const course = courseEntityFactory.build({ school: school, teachers: [teacherUser] });
 		await em.persistAndFlush([teacherUser, teacherAccount, studentUser, studentAccount, course]);
 
 		ioClient = await getSocketApiClient(app, teacherAuthJwt);
@@ -331,6 +331,32 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(unauthorizedIoClient, 'create-column-failure');
 
 				expect(failure).toEqual({ boardId });
+			});
+		});
+	});
+
+	describe('update readers can edit', () => {
+		describe('when board exists', () => {
+			it('should answer with success', async () => {
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+
+				ioClient.emit('update-readers-can-edit-request', { boardId, readersCanEdit: false });
+				const success = await waitForEvent(ioClient, 'update-readers-can-edit-success');
+
+				expect(success).toEqual(expect.objectContaining({ boardId, readersCanEdit: false }));
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+
+				unauthorizedIoClient.emit('update-readers-can-edit-request', { boardId, readersCanEdit: false });
+				const failure = await waitForEvent(unauthorizedIoClient, 'update-readers-can-edit-failure');
+
+				expect(failure).toEqual({ boardId, readersCanEdit: false });
 			});
 		});
 	});

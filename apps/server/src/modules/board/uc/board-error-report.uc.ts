@@ -28,7 +28,5 @@ export class BoardErrorReportUc {
 			errorData.retryCount
 		);
 		this.logger.warning(loggable);
-
-		console.log(loggable.getLogMessage());
 	}
 }

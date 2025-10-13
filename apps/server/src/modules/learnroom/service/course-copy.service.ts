@@ -54,7 +54,7 @@ export class CourseCopyService {
 		originalBoard = await this.roomsService.updateLegacyBoard(originalBoard, courseId, userId);
 
 		// handle potential name conflict
-		const existingCourses = await this.courseService.findAllByUserId(userId);
+		const [existingCourses] = await this.courseService.findAllByUserId(userId, user.school.id);
 		const existingNames = existingCourses.map((course: CourseEntity) => course.name);
 		const copyName = this.copyHelperService.deriveCopyName(newName || originalCourse.name, existingNames);
 
