@@ -1,46 +1,56 @@
 import AdmZip from 'adm-zip';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-import yaml from 'yaml';
+import {
+	Dirent,
+	existsSync,
+	mkdirSync,
+	readdirSync,
+	readFileSync,
+	renameSync,
+	rmSync,
+	Stats,
+	statSync,
+	writeFileSync,
+} from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
+import { parse, stringify } from 'yaml';
 
 export class FileSystemHelper {
 	public static getAllFolders(dirPath: string): string[] {
 		if (!this.pathExists(dirPath)) {
 			throw new Error(`Path does not exist: ${dirPath}`);
 		}
-		const result = fs
-			.readdirSync(dirPath, { withFileTypes: true })
+		const result = readdirSync(dirPath, { withFileTypes: true })
 			.filter((dirent) => dirent.isDirectory())
 			.map((dirent) => dirent.name);
 
 		return result;
 	}
 
-	public static getAllFilesAndFolders(dirPath: string): fs.Dirent[] {
+	public static getAllFilesAndFolders(dirPath: string): Dirent[] {
 		if (!this.pathExists(dirPath)) {
 			throw new Error(`Path does not exist: ${dirPath}`);
 		}
-		const allFilesAndFolders = fs.readdirSync(dirPath, { withFileTypes: true });
+		const allFilesAndFolders = readdirSync(dirPath, { withFileTypes: true });
 
 		return allFilesAndFolders;
 	}
 
 	public static pathExists(path: string): boolean {
-		const pathExists = fs.existsSync(path);
+		const pathExists = existsSync(path);
 
 		return pathExists;
 	}
 
 	public static readJsonFile(filePath: string): unknown {
-		const content = fs.readFileSync(filePath, { encoding: 'utf-8' });
+		const content = readFileSync(filePath, { encoding: 'utf-8' });
 		const json = JSON.parse(content) as unknown;
 
 		return json;
 	}
 
 	public static readFile(filePath: string): string {
-		const content = fs.readFileSync(filePath, { encoding: 'utf-8' });
+		const content = readFileSync(filePath, { encoding: 'utf-8' });
 
 		return content;
 	}
@@ -89,14 +99,14 @@ export class FileSystemHelper {
 	}
 
 	private static readYamlFile(filePath: string): any {
-		const content = fs.readFileSync(filePath, { encoding: 'utf-8' });
-		const yamlContent = yaml.parse(content);
+		const content = readFileSync(filePath, { encoding: 'utf-8' });
+		const yamlContent = parse(content);
 
 		return yamlContent;
 	}
 
 	public static writeJsonFile(filePath: string, json: any): void {
-		fs.writeFileSync(filePath, JSON.stringify(json, null, 2), { encoding: 'utf-8' });
+		writeFileSync(filePath, JSON.stringify(json, null, 2), { encoding: 'utf-8' });
 	}
 
 	public static writeLibraryRepoMap(filePath: string, machineNameToRepoMap: Record<string, string>): void {
@@ -107,8 +117,8 @@ export class FileSystemHelper {
 
 				return acc;
 			}, {});
-		const yamlContent = yaml.stringify(sorted);
-		fs.writeFileSync(filePath, yamlContent, { encoding: 'utf-8' });
+		const yamlContent = stringify(sorted);
+		writeFileSync(filePath, yamlContent, { encoding: 'utf-8' });
 	}
 
 	public static removeTemporaryFiles(filePath: string, folderPath: string): void {
@@ -117,11 +127,11 @@ export class FileSystemHelper {
 	}
 
 	public static removeFile(filePath: string): void {
-		fs.rmSync(filePath, { force: true });
+		rmSync(filePath, { force: true });
 	}
 
 	public static removeFolder(folderPath: string): void {
-		fs.rmSync(folderPath, { recursive: true, force: true });
+		rmSync(folderPath, { recursive: true, force: true });
 	}
 
 	public static unzipFile(zipFilePath: string, outputDir: string): void {
@@ -130,7 +140,7 @@ export class FileSystemHelper {
 	}
 
 	public static getTempDir(): string {
-		const tempDir = os.tmpdir();
+		const tempDir = tmpdir();
 
 		return tempDir;
 	}
@@ -140,16 +150,16 @@ export class FileSystemHelper {
 		library: string,
 		tag: string
 	): { filePath: string; folderPath: string; tempFolder: string } {
-		const filePath = path.join(tempFolder, `${library}-${tag}.zip`);
+		const filePath = join(tempFolder, `${library}-${tag}.zip`);
 
 		const [tagMajor, tagMinor] = tag.split('.');
-		const folderPath = path.join(tempFolder, `${library}-${tagMajor}.${tagMinor}`);
+		const folderPath = join(tempFolder, `${library}-${tagMajor}.${tagMinor}`);
 
 		return { filePath, folderPath, tempFolder };
 	}
 
 	public static createFolder(folderPath: string): void {
-		fs.mkdirSync(folderPath, { recursive: true });
+		mkdirSync(folderPath, { recursive: true });
 	}
 
 	public static getLibraryJsonPath(folderPath: string): string {
@@ -171,7 +181,7 @@ export class FileSystemHelper {
 	}
 
 	public static buildPath(...segments: string[]): string {
-		const result = path.join(...segments);
+		const result = join(...segments);
 
 		return result;
 	}
@@ -189,7 +199,7 @@ export class FileSystemHelper {
 
 	public static renameFolder(folderPath: string, tempFolder: string, repo: string, tag: string): void {
 		const repoName = repo.split('/')[1];
-		const repoNameFolder = path.join(tempFolder, `${repoName}-${tag}`);
+		const repoNameFolder = join(tempFolder, `${repoName}-${tag}`);
 		if (repoNameFolder === folderPath) {
 			return;
 		}
@@ -202,11 +212,11 @@ export class FileSystemHelper {
 			this.removeFolder(folderPath);
 		}
 
-		fs.renameSync(repoNameFolder, folderPath);
+		renameSync(repoNameFolder, folderPath);
 	}
 
-	public static getStatsOfPath(filePath: string): fs.Stats {
-		const statsOfPath = fs.statSync(filePath);
+	public static getStatsOfPath(filePath: string): Stats {
+		const statsOfPath = statSync(filePath);
 
 		return statsOfPath;
 	}

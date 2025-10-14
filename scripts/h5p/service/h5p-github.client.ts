@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import fs from 'fs';
+import { createWriteStream } from 'fs';
 
 export class H5pGitHubClient {
 	private token!: string;
@@ -149,7 +149,7 @@ export class H5pGitHubClient {
 			const response = await this.fetchContent(url);
 
 			// TODO: Move this to FileSystemHelper?
-			const writer = fs.createWriteStream(filePath);
+			const writer = createWriteStream(filePath);
 			response.data.pipe(writer);
 
 			await new Promise<void>((resolve, reject) => {
