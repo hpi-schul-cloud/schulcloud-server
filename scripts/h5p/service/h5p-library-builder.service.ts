@@ -5,6 +5,8 @@ import { H5pGitHubClient } from './h5p-github.client.js';
 
 type LibraryRepoMap = Record<string, string>;
 
+type InstallResults = { installedLibraries: string[]; failedLibraries: string[] };
+
 export class H5pLibraryBuilderService {
 	libraryRepoMap: LibraryRepoMap;
 	tempFolderPath: string;
@@ -26,11 +28,18 @@ export class H5pLibraryBuilderService {
 	}
 
 	public async buildH5pLibrariesFromGitHubAsBulk(libraries: string[]): Promise<void> {
+		const result: InstallResults = { installedLibraries: [], failedLibraries: [] };
 		const availableVersions: string[] = [];
 		for (const library of libraries) {
 			this.logLibraryBanner(library);
-			await this.buildLibrary(library, availableVersions);
+			const libraryResult = await this.buildLibrary(library, availableVersions);
+			result.installedLibraries.push(...libraryResult.installedLibraries);
+			result.failedLibraries.push(...libraryResult.failedLibraries);
 		}
+
+		console.log('Installation Summary:');
+		console.log(`Successfully installed libraries: ${result.installedLibraries.join(', ')}`);
+		console.log(`Failed to install libraries: ${result.failedLibraries.join(', ')}`);
 	}
 
 	private logLibraryBanner(libraryName: string): void {
@@ -41,20 +50,24 @@ export class H5pLibraryBuilderService {
 		console.log(border);
 	}
 
-	private async buildLibrary(library: string, availableVersions: string[]): Promise<void> {
-		const result: any[] = [];
+	private async buildLibrary(library: string, availableVersions: string[]): Promise<InstallResults> {
+		const result: InstallResults = { installedLibraries: [], failedLibraries: [] };
 		const repoName = this.mapMachineNameToGitHubRepo(library);
 		if (!repoName) {
 			console.log(`No GitHub repository found for ${library}.`);
-			return;
+
+			return result;
 		}
 		const tags = await this.gitHubClient.fetchAllTags(repoName, { maxRetries: 3 });
 		const filteredTags = this.getHighestPatchTags(tags);
 		console.log(`Found ${filteredTags.length} versions of ${library} in ${repoName}: ${filteredTags.join(', ')}`);
 		for (const tag of filteredTags) {
 			const tagResult = await this.buildLibraryVersionAndDependencies(library, tag, repoName, availableVersions);
-			result.push(...tagResult);
+			result.installedLibraries.push(...tagResult.installedLibraries);
+			result.failedLibraries.push(...tagResult.failedLibraries);
 		}
+
+		return result;
 	}
 
 	// TODO: move this to H5pGitHubClient?
@@ -87,19 +100,25 @@ export class H5pLibraryBuilderService {
 		tag: string,
 		repoName: string,
 		availableVersions: string[]
-	): Promise<any[]> {
+	): Promise<InstallResults> {
 		this.logStartBuildingOfLibraryFromGitHub(library, tag);
-		const result = [];
+		const result: InstallResults = {
+			installedLibraries: [],
+			failedLibraries: [],
+		};
 
-		if (this.isCurrentVersionAvailable(library, tag, availableVersions)) return [];
-		if (this.isNewerPatchVersionAvailable(library, tag, availableVersions)) return [];
+		if (this.isCurrentVersionAvailable(library, tag, availableVersions)) return result;
+		if (this.isNewerPatchVersionAvailable(library, tag, availableVersions)) return result;
 
-		const libResult = await this.buildLibraryTagFromGitHub(library, tag, repoName);
-		if (libResult) {
-			result.push(libResult);
+		const validLibrary = await this.buildLibraryTagFromGitHub(library, tag, repoName);
+		if (validLibrary) {
+			result.installedLibraries.push(`${library}-${tag}`);
 			this.logBuildingOfLibraryFromGitHubSuccessful(library, tag);
 		} else {
-			return [];
+			result.failedLibraries.push(`${library}-${tag}`);
+			this.logBuildingOfLibraryFromGitHubFailed(library, tag);
+
+			return result;
 		}
 		availableVersions.push(`${library}-${tag}`);
 
@@ -110,11 +129,14 @@ export class H5pLibraryBuilderService {
 		dependencies = dependencies.concat(softDependencies);
 		if (dependencies.length === 0) {
 			this.logNoDependenciesFoundForLibrary(library, tag);
-			return libResult ? [libResult] : [];
+
+			return result;
 		}
 
 		for (const dependency of dependencies) {
-			await this.buildLibraryDependency(dependency, library, tag, availableVersions);
+			const depResults = await this.buildLibraryDependency(dependency, library, tag, availableVersions);
+			result.installedLibraries.push(...depResults.installedLibraries);
+			result.failedLibraries.push(...depResults.failedLibraries);
 		}
 		this.logFinishedBuildingOfLibraryFromGitHub(library, tag);
 
@@ -129,6 +151,10 @@ export class H5pLibraryBuilderService {
 		console.log(`Successfully built ${library}-${tag} from GitHub.`);
 	}
 
+	private logBuildingOfLibraryFromGitHubFailed(library: string, tag: string): void {
+		console.log(`Failed to build ${library}-${tag} from GitHub.`);
+	}
+
 	private logNoDependenciesFoundForLibrary(library: string, tag: string): void {
 		console.log(`No dependencies found for ${library}-${tag}.`);
 	}
@@ -141,7 +167,7 @@ export class H5pLibraryBuilderService {
 		console.log(`Finished building of ${library}-${tag} from GitHub.`);
 	}
 
-	private async buildLibraryTagFromGitHub(library: string, tag: string, repo: string): Promise<void> {
+	private async buildLibraryTagFromGitHub(library: string, tag: string, repo: string): Promise<boolean> {
 		// TODO: wenn wir filePath vorher erstellen könnten würde der tempFolder hinter dem unzipFile verschwinden welches folderPath zurück gibt.
 		// removeTemporaryFiles sollte dann auch nur folderPath als input brauchen.
 		// Dann wäre es möglich ein pre and post hook zu erstellen.
@@ -163,7 +189,9 @@ export class H5pLibraryBuilderService {
 		this.cleanUpUnwantedFilesinLibraryFolder(folderPath);
 
 		// TODO: Should this be kept as it would make H5P CLI required!?
-		this.validateH5pLibrary(folderPath);
+		const validated = this.validateH5pLibrary(folderPath);
+
+		return validated;
 	}
 
 	private executeAdditionalBuildStepsIfRequired(folderPath: string, library: string, tag: string): void {
@@ -507,13 +535,13 @@ export class H5pLibraryBuilderService {
 		}
 	}
 
-	private getDependenciesFromLibraryJson(repoName: string, tag: string): any[] {
+	private getDependenciesFromLibraryJson(repoName: string, tag: string): ILibraryName[] {
 		const { folderPath } = FileSystemHelper.createTempFolder(this.tempFolderPath, repoName, tag);
 		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
 		const libraryJsonContent = FileSystemHelper.readJsonFile(libraryJsonPath) as {
-			preloadedDependencies?: any[];
-			editorDependencies?: any[];
-			dynamicDependencies?: any[];
+			preloadedDependencies?: ILibraryName[];
+			editorDependencies?: ILibraryName[];
+			dynamicDependencies?: ILibraryName[];
 		};
 		const dependencies = (libraryJsonContent?.preloadedDependencies ?? []).concat(
 			libraryJsonContent?.editorDependencies ?? [],
@@ -543,10 +571,10 @@ export class H5pLibraryBuilderService {
 		return softDependencies;
 	}
 
-	private findLibraryOptions(semantics: any[]): string[] {
-		const results = [];
+	private findLibraryOptions(semantics: unknown[]): string[] {
+		const results: string[] = [];
 
-		function search(obj) {
+		function search(obj: unknown): void {
 			if (obj && typeof obj === 'object') {
 				if ('type' in obj && obj.type && obj.type === 'library' && 'options' in obj && Array.isArray(obj.options)) {
 					results.push(...obj.options);
@@ -570,39 +598,54 @@ export class H5pLibraryBuilderService {
 	}
 
 	private async buildLibraryDependency(
-		dependency: any,
+		dependency: ILibraryName,
 		library: string,
 		tag: string,
 		availableVersions: string[]
-	): Promise<any[]> {
+	): Promise<InstallResults> {
+		const result: InstallResults = { installedLibraries: [], failedLibraries: [] };
+
 		const depName = dependency.machineName;
 		const depMajor = dependency.majorVersion;
 		const depMinor = dependency.minorVersion;
 		this.logBuildingLibraryDependency(dependency, library, tag);
 
 		const depRepoName = this.mapMachineNameToGitHubRepo(depName);
+
 		if (!depRepoName) {
 			this.logGithubRepositoryNotFound(dependency.machineName);
-			return [];
+			result.failedLibraries.push(dependency.machineName);
+
+			return result;
 		}
 
 		const tags = await this.gitHubClient.fetchAllTags(depRepoName, { maxRetries: 3 });
 		const depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
 		if (!depTag) {
 			this.logTagNotFound(dependency);
-			return [];
+			result.failedLibraries.push(dependency.machineName);
+
+			return result;
 		}
 
-		const depResult = await this.buildLibraryVersionAndDependencies(depName, depTag, depRepoName, availableVersions);
-		if (depResult.length > 0) {
+		const dependencyResult = await this.buildLibraryVersionAndDependencies(
+			depName,
+			depTag,
+			depRepoName,
+			availableVersions
+		);
+		if (dependencyResult.failedLibraries.length === 0) {
 			this.logBuildingLibraryDependencySuccess(depName, depTag);
-			return depResult;
+		} else {
+			this.logBuildingLibraryDependencyFailed(depName, depTag);
 		}
+		result.installedLibraries.push(...dependencyResult.installedLibraries);
+		result.failedLibraries.push(...dependencyResult.failedLibraries);
 
-		return [];
+		return result;
 	}
 
-	private logBuildingLibraryDependency(dependency: any, library: string, tag: string): void {
+	private logBuildingLibraryDependency(dependency: ILibraryName, library: string, tag: string): void {
 		console.log(`Building dependency ${LibraryName.toUberName(dependency)}.x from GitHub for ${library}-${tag}.`);
 	}
 
@@ -610,12 +653,16 @@ export class H5pLibraryBuilderService {
 		console.log(`No GitHub repository found for ${library}.`);
 	}
 
-	private logTagNotFound(dependency: any): void {
+	private logTagNotFound(dependency: ILibraryName): void {
 		console.log(`No suitable tag found for dependency ${LibraryName.toUberName(dependency)}.x .`);
 	}
 
 	private logBuildingLibraryDependencySuccess(depName: string, depTag: string): void {
 		console.log(`Successfully built dependency ${depName}-${depTag} from GitHub.`);
+	}
+
+	private logBuildingLibraryDependencyFailed(depName: string, depTag: string): void {
+		console.log(`Failed to build dependency ${depName}-${depTag} from GitHub.`);
 	}
 
 	private getHighestVersionTags(tags: string[], majorVersion: number, minorVersion: number): string | undefined {
