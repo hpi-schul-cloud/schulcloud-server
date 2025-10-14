@@ -1,14 +1,14 @@
 import { ILibraryName, LibraryName } from '@lumieducation/h5p-server';
 import childProcess from 'child_process';
 import { FileSystemHelper } from '../helper/file-system.helper';
-import H5PGitHubClient from './h5p-github.client.js';
+import { H5pGitHubClient } from './h5p-github.client.js';
 
 type LibraryRepoMap = Record<string, string>;
 
 export class H5pLibraryBuilderService {
 	libraryRepoMap: LibraryRepoMap;
 	tempFolderPath: string;
-	gitHubClient: H5PGitHubClient;
+	gitHubClient: H5pGitHubClient;
 
 	constructor(libraryRepoMap: LibraryRepoMap, tempFolderPath?: string) {
 		if (!tempFolderPath) {
@@ -22,7 +22,7 @@ export class H5pLibraryBuilderService {
 		}
 
 		this.libraryRepoMap = libraryRepoMap;
-		this.gitHubClient = new H5PGitHubClient();
+		this.gitHubClient = new H5pGitHubClient();
 	}
 
 	public async buildH5pLibrariesFromGitHubAsBulk(libraries: string[]): Promise<void> {
@@ -57,7 +57,7 @@ export class H5pLibraryBuilderService {
 		}
 	}
 
-	// TODO: move this to H5PGitHubClient?
+	// TODO: move this to H5pGitHubClient?
 
 	private mapMachineNameToGitHubRepo(library: string): string | undefined {
 		const repo = this.libraryRepoMap[library];
