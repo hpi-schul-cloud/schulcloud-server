@@ -1,8 +1,8 @@
 import { AuthorizationContextBuilder } from '@modules/authorization';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@core/logger';
-import { BoardNodeFactory, Card, Column, ContentElementType } from '../domain';
+import { BoardNodeFactory, Card, Column, ContentElementType, isCard, isColumn } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
 import { StorageLocation } from '@infra/files-storage-client';
 import { CopyStatus } from '@modules/copy-helper';
@@ -82,17 +82,16 @@ export class ColumnUc {
 		this.logger.debug({ action: 'copyCard', userId, cardId, schoolId });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
-
-		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([])); // TODO is read sufficient?
-
-		/*
 		if (!card.parentId) {
-			throw new Error('Card has no parent column');
+			throw new UnprocessableEntityException('Card has no parent column');
 		}
-		const column = await this.boardNodeService.findByClassAndId(Column, card.parentId);
 
-		// await this.boardNodePermissionService.checkPermission(userId, column, AuthorizationContextBuilder.write([])); // TODO is column write permission necessary?
-		*/
+		const column = await this.boardNodeService.findByClassAndId(Column, card.parentId);
+		if (!isColumn(column)) {
+			throw new UnprocessableEntityException('Parent of card is not a column');
+		}
+
+		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
 
 		const copyStatus = await this.columnBoardService.copyCard({
 			originalCardId: card.id,
@@ -102,8 +101,11 @@ export class ColumnUc {
 			targetSchoolId: schoolId,
 		});
 
-		// Is it necesary? what is the default position?
-		// await this.boardNodeService.move(card, column, card.position + 1);
+		if (!isCard(copyStatus.copyEntity)) {
+			throw new InternalServerErrorException('Copied entity is not a card');
+		}
+
+		await this.boardNodeService.move(copyStatus.copyEntity, column, card.position + 1);
 
 		return copyStatus;
 	}

@@ -6,7 +6,6 @@ import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	Card,
-	Column,
 	ColumnBoard,
 	isCard,
 	isColumnBoard,
@@ -82,12 +81,6 @@ export class ColumnBoardCopyService {
 
 	public async copyCard(params: CopyCardParams): Promise<CopyStatus> {
 		const originalCard = await this.boardNodeService.findByClassAndId(Card, params.originalCardId);
-		/*
-		if (!originalCard.parentId) {
-			throw new Error('Card has no parent column');
-		}
-		const originalColumn = await this.boardNodeService.findByClassAndId(Column, originalCard.parentId);
-		 */
 
 		const copyContext = new BoardNodeCopyContext({
 			sourceStorageLocationReference: params.sourceStorageLocationReference,
@@ -102,8 +95,6 @@ export class ColumnBoardCopyService {
 		if (!isCard(copyStatus.copyEntity)) {
 			throw new InternalServerErrorException('expected copy of columnboard to be a columnboard');
 		}
-		// Is it necesary? what is the default position?
-		// await this.boardNodeService.move(card, column, card.position + 1);
 
 		await this.boardNodeService.save(copyStatus.copyEntity);
 		copyStatus.originalEntity = originalCard;
