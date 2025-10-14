@@ -7,7 +7,7 @@ import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerTestModule, type ServerConfig } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -23,7 +23,6 @@ describe('Room Invitation Link Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -34,13 +33,10 @@ describe('Room Invitation Link Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'room-invitation-links');
-
-		config = serverConfig();
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -121,56 +117,6 @@ describe('Room Invitation Link Controller (API)', () => {
 					id: expect.anything() as string,
 					creatorUserId: teacherUser.id,
 					creatorSchoolId: teacherUser.school.id,
-				});
-			});
-
-			describe('when external person link feature is disabled', () => {
-				beforeEach(() => {
-					config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = false;
-				});
-
-				describe('when trying to create a link with isUsableByExternalPersons attribute', () => {
-					it('should return a 403 error ', async () => {
-						const { loggedInClient, roomEntity } = await setup();
-
-						const params: CreateRoomInvitationLinkBodyParams = {
-							roomId: roomEntity.id,
-							title: 'Room invitation link for external persons',
-							activeUntil: inOneWeek,
-							isUsableByExternalPersons: false,
-							isUsableByStudents: false,
-							restrictedToCreatorSchool: false,
-							requiresConfirmation: false,
-						};
-
-						const response = await loggedInClient.post(undefined, params);
-						expect(response.status).toBe(HttpStatus.FORBIDDEN);
-					});
-				});
-
-				describe('when trying to create a link without isUsableByExternalPersons attribute', () => {
-					it('should create a room invitation link and return 201', async () => {
-						const { loggedInClient, roomEntity, teacherUser } = await setup();
-
-						const params: CreateRoomInvitationLinkBodyParams = {
-							roomId: roomEntity.id,
-							title: 'Room invitation link for external persons',
-							activeUntil: inOneWeek,
-							isUsableByStudents: false,
-							restrictedToCreatorSchool: false,
-							requiresConfirmation: false,
-						};
-
-						const response = await loggedInClient.post(undefined, params);
-						expect(response.status).toBe(HttpStatus.CREATED);
-						expect(response.body).toMatchObject({
-							...params,
-							activeUntil: (params.activeUntil ?? new Date()).toISOString(),
-							id: expect.anything() as string,
-							creatorUserId: teacherUser.id,
-							creatorSchoolId: teacherUser.school.id,
-						});
-					});
 				});
 			});
 		});

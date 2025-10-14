@@ -26,10 +26,6 @@ export class RoomInvitationLinkUc {
 	) {}
 
 	public async createLink(userId: EntityId, props: CreateRoomInvitationLinkBodyParams): Promise<RoomInvitationLink> {
-		if (props.isUsableByExternalPersons !== undefined) {
-			this.checkFeatureLinkInvitationExternalPersonsEnabled();
-		}
-
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(props.roomId);
 		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, {
@@ -47,10 +43,6 @@ export class RoomInvitationLinkUc {
 	}
 
 	public async updateLink(userId: EntityId, props: RoomInvitationLinkUpdateProps): Promise<RoomInvitationLink> {
-		if (props.isUsableByExternalPersons !== undefined) {
-			this.checkFeatureLinkInvitationExternalPersonsEnabled();
-		}
-
 		const roomInvitationLink = await this.roomInvitationLinkService.findById(props.id);
 
 		await this.checkRoomAuthorizationByIds(userId, [roomInvitationLink.roomId], Action.write, [
@@ -165,16 +157,22 @@ export class RoomInvitationLinkUc {
 			!roomInvitationLink.isUsableByExternalPersons &&
 			isTeacher === false
 		) {
-			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.ONLY_FOR_TEACHERS, HttpStatus.FORBIDDEN);
+			throw new RoomInvitationLinkError(
+				RoomInvitationLinkValidationError.NOT_USABLE_FOR_CURRENT_ROLE,
+				HttpStatus.FORBIDDEN
+			);
 		}
 		if (isExternalPerson && !roomInvitationLink.isUsableByExternalPersons) {
 			throw new RoomInvitationLinkError(
-				RoomInvitationLinkValidationError.ONLY_FOR_INTERNAL_USERS,
+				RoomInvitationLinkValidationError.NOT_USABLE_FOR_CURRENT_ROLE,
 				HttpStatus.FORBIDDEN
 			);
 		}
 		if (isStudent && !roomInvitationLink.isUsableByStudents) {
-			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.ONLY_FOR_TEACHERS, HttpStatus.FORBIDDEN);
+			throw new RoomInvitationLinkError(
+				RoomInvitationLinkValidationError.NOT_USABLE_FOR_CURRENT_ROLE,
+				HttpStatus.FORBIDDEN
+			);
 		}
 		const creatorSchool = await this.schoolService.getSchoolById(roomInvitationLink.creatorSchoolId);
 
