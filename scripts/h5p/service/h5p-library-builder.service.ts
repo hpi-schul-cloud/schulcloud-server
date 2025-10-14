@@ -189,7 +189,12 @@ export class H5pLibraryBuilderService {
 		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
 		let changed = false;
 		try {
-			const json = FileSystemHelper.readJsonFile(libraryJsonPath);
+			const json = FileSystemHelper.readJsonFile(libraryJsonPath) as {
+				majorVersion: number;
+				minorVersion: number;
+				patchVersion: number;
+				[key: string]: any;
+			};
 			const [tagMajor, tagMinor, tagPatch] = tag.split('.').map(Number);
 			if (json.majorVersion !== tagMajor || json.minorVersion !== tagMinor || json.patchVersion !== tagPatch) {
 				json.majorVersion = tagMajor;
@@ -230,7 +235,7 @@ export class H5pLibraryBuilderService {
 			console.warn(`package.json not found in ${folderPath}`);
 			return;
 		}
-		const packageJson = FileSystemHelper.readJsonFile(packageJsonPath);
+		const packageJson = FileSystemHelper.readJsonFile(packageJsonPath) as { scripts?: { build?: string } };
 		if (!packageJson.scripts || !packageJson.scripts.build) {
 			console.warn(`No 'build' script found in package.json at ${folderPath}`);
 			return;
@@ -257,7 +262,7 @@ export class H5pLibraryBuilderService {
 		let buildStepsRequired = false;
 		const packageJsonPath = FileSystemHelper.getPackageJsonPath(folderPath);
 		if (FileSystemHelper.pathExists(packageJsonPath)) {
-			const packageJson = FileSystemHelper.readJsonFile(packageJsonPath);
+			const packageJson = FileSystemHelper.readJsonFile(packageJsonPath) as { scripts?: { build?: string } };
 			if (!packageJson.scripts || !packageJson.scripts.build) {
 				this.logNoBuildScriptInPackageJson(folderPath);
 			} else {
@@ -393,7 +398,7 @@ export class H5pLibraryBuilderService {
 		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
 		let changed = false;
 		try {
-			const json = FileSystemHelper.readJsonFile(libraryJsonPath);
+			const json = FileSystemHelper.readJsonFile(libraryJsonPath) as Record<string, any>;
 
 			// List of keys in library.json that may contain file paths
 			const filePathKeys = [
@@ -505,7 +510,11 @@ export class H5pLibraryBuilderService {
 	private getDependenciesFromLibraryJson(repoName: string, tag: string): any[] {
 		const { folderPath } = FileSystemHelper.createTempFolder(this.tempFolderPath, repoName, tag);
 		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
-		const libraryJsonContent = FileSystemHelper.readJsonFile(libraryJsonPath);
+		const libraryJsonContent = FileSystemHelper.readJsonFile(libraryJsonPath) as {
+			preloadedDependencies?: any[];
+			editorDependencies?: any[];
+			dynamicDependencies?: any[];
+		};
 		const dependencies = (libraryJsonContent?.preloadedDependencies ?? []).concat(
 			libraryJsonContent?.editorDependencies ?? [],
 			libraryJsonContent?.dynamicDependencies ?? []
