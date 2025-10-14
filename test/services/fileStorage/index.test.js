@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const assert = require('assert');
-const mongoose = require('mongoose');
+const { ObjectId } = require('mongoose').Types;
 const sinon = require('sinon');
 const appPromise = require('../../../src/app');
 const { FileModel } = require('../../../src/services/fileStorage/model');
@@ -14,10 +14,10 @@ const fixtures = require('./fixtures');
 const setContext = (userId) => {
 	return {
 		payload: {
-			userId: mongoose.mongo.ObjectId(userId),
+			userId: new ObjectId(userId),
 			fileStorageType: 'awsS3',
 		},
-		account: { userId: mongoose.mongo.ObjectId(userId) },
+		account: { userId: new ObjectId(userId) },
 	};
 };
 
@@ -67,12 +67,12 @@ describe('fileStorage services', () => {
 
 	after(async () => {
 		const promises = [
-			...fixtures.teams.map((_) => teamsModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.schools.map((_) => schoolModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.files.map((_) => FileModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.users.map((_) => userModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.roles.map((_) => RoleModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.courses.map((_) => courseModel.findByIdAndRemove(_._id).exec()),
+			...fixtures.teams.map((_) => teamsModel.findByIdAndDelete(_._id).exec()),
+			...fixtures.schools.map((_) => schoolModel.findByIdAndDelete(_._id).exec()),
+			...fixtures.files.map((_) => FileModel.findByIdAndDelete(_._id).exec()),
+			...fixtures.users.map((_) => userModel.findByIdAndDelete(_._id).exec()),
+			...fixtures.roles.map((_) => RoleModel.findByIdAndDelete(_._id).exec()),
+			...fixtures.courses.map((_) => courseModel.findByIdAndDelete(_._id).exec()),
 		];
 
 		await Promise.all(promises);
@@ -87,13 +87,13 @@ describe('fileStorage services', () => {
 			storageFileName: 'storage.jpg',
 			thumbnail: 'thumbnail.jpg',
 			bucket: 'bucket-test',
-			storageProviderId: mongoose.Types.ObjectId(),
+			storageProviderId: new ObjectId(),
 		};
 
 		const created = [];
 
 		after((done) => {
-			const promises = created.map((id) => FileModel.findByIdAndRemove(id));
+			const promises = created.map((id) => FileModel.findByIdAndDelete(id));
 
 			Promise.all(promises)
 				.then(() => done())
