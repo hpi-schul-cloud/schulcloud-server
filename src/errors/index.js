@@ -24,7 +24,7 @@ class DeletedUserDataError extends ApplicationError {
 		this.className = 'deleted-user-data-error';
 		this.data = data;
 		this.errors = error;
-		const uid = ObjectId();
+		const uid = new ObjectId();
 		this.traceId = uid.toString();
 		Error.captureStackTrace(this, this.constructor);
 	}
@@ -40,7 +40,7 @@ const resolvedTraceId = (ref, message, additional) => {
 		ref.traceId = additional.traceId;
 		delete message.traceId;
 	} else {
-		const uid = ObjectId();
+		const uid = new ObjectId();
 		ref.traceId = uid.toString();
 	}
 };

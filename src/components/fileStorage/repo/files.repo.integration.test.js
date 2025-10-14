@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const { ObjectId } = require('mongoose').Types;
 const { filesRepo } = require('.');
 
 const { FileModel } = require('./db');
@@ -19,13 +20,12 @@ const getFileOrDeletedFileById = async (id) => FileModel.findOneWithDeleted({ _i
 describe('files.repo.integration.test', () => {
 	let fileTestUtils;
 	let server;
-	let generateObjectId;
 	let app;
 
 	before(async () => {
 		/* eslint-disable global-require */
 		app = await require('../../../app')();
-		({ files: fileTestUtils, generateObjectId } = require('../../../../test/services/helpers/testObjects')(app));
+		({ files: fileTestUtils } = require('../../../../test/services/helpers/testObjects')(app));
 		/* eslint-enable global-require */
 		server = await app.listen(0);
 	});
@@ -41,7 +41,7 @@ describe('files.repo.integration.test', () => {
 			let file;
 
 			beforeEach(async () => {
-				fileOwnerId = generateObjectId();
+				fileOwnerId = new ObjectId();
 				file = await fileTestUtils.create({ owner: fileOwnerId });
 			});
 
@@ -52,7 +52,7 @@ describe('files.repo.integration.test', () => {
 			});
 
 			it('should throw NotFound for invalid ids', async () => {
-				const randomId = generateObjectId();
+				const randomId = new ObjectId();
 				await expect(getFileById(randomId)).to.be.rejectedWith(NotFound);
 			});
 		});
@@ -61,7 +61,7 @@ describe('files.repo.integration.test', () => {
 	describe('removeFileById', () => {
 		describe('when given a regular file', () => {
 			it('should mark the given file for deletion', async () => {
-				const fileOwnerId = generateObjectId();
+				const fileOwnerId = new ObjectId();
 				const file = await fileTestUtils.create({ owner: fileOwnerId });
 				const fileBeforeDeletion = await FileModel.findOneWithDeleted({ _id: file._id });
 				expect(fileBeforeDeletion.deleted).to.be.false;
@@ -80,7 +80,7 @@ describe('files.repo.integration.test', () => {
 			});
 
 			it('should prevent deleted files to be found via regular search queries', async () => {
-				const fileOwnerId = generateObjectId();
+				const fileOwnerId = new ObjectId();
 				const file = await fileTestUtils.create({ owner: fileOwnerId });
 
 				await removeFileById(file._id);
@@ -92,7 +92,7 @@ describe('files.repo.integration.test', () => {
 
 		describe('when given a directory', () => {
 			it('should also remove the content of the given directory', async () => {
-				const fileOwnerId = generateObjectId();
+				const fileOwnerId = new ObjectId();
 				const directory = await fileTestUtils.create({ owner: fileOwnerId, isDirectory: true });
 				const files = await Promise.all([
 					fileTestUtils.create({ owner: fileOwnerId, parent: directory._id }),
@@ -123,7 +123,7 @@ describe('files.repo.integration.test', () => {
 	describe('getPersonalFilesByUserId', () => {
 		describe('when personal files are owned by the given user', () => {
 			it('should return them', async () => {
-				const fileOwnerId = generateObjectId();
+				const fileOwnerId = new ObjectId();
 				const [file1, file2] = await Promise.all([
 					fileTestUtils.create({ owner: fileOwnerId }),
 					fileTestUtils.create({ owner: fileOwnerId }),
@@ -138,8 +138,8 @@ describe('files.repo.integration.test', () => {
 
 		describe('when no personal files are owned by the given user', () => {
 			it('should return an empty array', async () => {
-				const userId = generateObjectId();
-				const fileOwnerId = generateObjectId();
+				const userId = new ObjectId();
+				const fileOwnerId = new ObjectId();
 				await fileTestUtils.create({ owner: fileOwnerId });
 
 				const result = await getPersonalFilesByUserId(userId);
@@ -150,7 +150,7 @@ describe('files.repo.integration.test', () => {
 
 		describe('when the personal files of a user are deleted', () => {
 			it('should not return them', async () => {
-				const fileOwnerId = generateObjectId();
+				const fileOwnerId = new ObjectId();
 				await fileTestUtils.create({ owner: fileOwnerId, deletedAt: new Date() });
 
 				const result = await getPersonalFilesByUserId(fileOwnerId);
@@ -163,8 +163,8 @@ describe('files.repo.integration.test', () => {
 	describe('removePersonalFilesByUserId', () => {
 		describe('when no personal files are owned by the given user', () => {
 			it('returns success and keeps all files', async () => {
-				const userId = generateObjectId();
-				const fileOwnerId = generateObjectId();
+				const userId = new ObjectId();
+				const fileOwnerId = new ObjectId();
 				const otherFile = await fileTestUtils.create({ owner: fileOwnerId });
 
 				const success = await removePersonalFilesByUserId(userId);
@@ -177,7 +177,7 @@ describe('files.repo.integration.test', () => {
 
 		describe('when personal files are owned by the given user', () => {
 			it('returns success and marks files owned by the given user for deletion', async () => {
-				const fileOwnerId = generateObjectId();
+				const fileOwnerId = new ObjectId();
 				const [file1, file2] = await Promise.all([
 					fileTestUtils.create({ owner: fileOwnerId }),
 					fileTestUtils.create({ owner: fileOwnerId }),
@@ -198,7 +198,7 @@ describe('files.repo.integration.test', () => {
 		describe('when personal files owned by the given user are deleted', () => {
 			it('return success and do not update the deletedAt flag', async () => {
 				const deletedAt = new Date();
-				const fileOwnerId = generateObjectId();
+				const fileOwnerId = new ObjectId();
 				const file = await fileTestUtils.create({ owner: fileOwnerId, deletedAt });
 
 				const success = await removePersonalFilesByUserId(fileOwnerId);
@@ -213,8 +213,8 @@ describe('files.repo.integration.test', () => {
 	describe('getFilesWithUserPermissionsByUserId', () => {
 		describe('when there is a file shared with the user', () => {
 			it('returns the permuissions of this user for these files', async () => {
-				const userId = generateObjectId();
-				const fileOwnerId = generateObjectId();
+				const userId = new ObjectId();
+				const fileOwnerId = new ObjectId();
 
 				const userToBeDeletedPermission = fileTestUtils.createPermission({ refId: userId });
 				const otherPermission = fileTestUtils.createPermission({ refId: fileOwnerId });
@@ -227,8 +227,8 @@ describe('files.repo.integration.test', () => {
 					.true;
 			});
 			it('returns only the files that are shared with the user', async () => {
-				const userId = generateObjectId();
-				const fileOwnerId = generateObjectId();
+				const userId = new ObjectId();
+				const fileOwnerId = new ObjectId();
 
 				const userToBeDeletedPermission = fileTestUtils.createPermission({ refId: userId });
 				const additonalPermissions = [userToBeDeletedPermission];
@@ -240,8 +240,8 @@ describe('files.repo.integration.test', () => {
 				expect(result[0]._id).to.eql(fileToBeFound._id);
 			});
 			it('returns not deleted files', async () => {
-				const userId = generateObjectId();
-				const fileOwnerId = generateObjectId();
+				const userId = new ObjectId();
+				const fileOwnerId = new ObjectId();
 
 				const userToBeDeletedPermission = fileTestUtils.createPermission({ refId: userId });
 				const additonalPermissions = [userToBeDeletedPermission];
@@ -254,7 +254,7 @@ describe('files.repo.integration.test', () => {
 
 		describe('when there is no file shared with the user', () => {
 			it('returns an empty array', async () => {
-				const userId = generateObjectId();
+				const userId = new ObjectId();
 				const result = await getFilesWithUserPermissionsByUserId(userId);
 				expect(result).to.be.an('array').that.is.empty;
 			});
@@ -263,8 +263,8 @@ describe('files.repo.integration.test', () => {
 
 	describe('removeFilePermissionsByUserId', () => {
 		it('when there is a file shared with the user then his permissions are removed', async () => {
-			const userId = generateObjectId();
-			const fileOwnerId = generateObjectId();
+			const userId = new ObjectId();
+			const fileOwnerId = new ObjectId();
 
 			const userToBeDeletedPermission = fileTestUtils.createPermission({ refId: userId });
 			const additonalPermissions = [userToBeDeletedPermission];
