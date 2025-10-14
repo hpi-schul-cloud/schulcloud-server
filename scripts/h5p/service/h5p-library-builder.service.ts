@@ -1,0 +1,666 @@
+import { ILibraryName, LibraryName } from '@lumieducation/h5p-server';
+import childProcess from 'child_process';
+import { FileSystemHelper } from '../helper/file-system.helper';
+import H5PGitHubClient from './h5p-github.client.js';
+
+type LibraryRepoMap = Record<string, string>;
+
+class H5pLibraryBuilderService {
+	libraryRepoMap: LibraryRepoMap;
+	tempFolderPath: string;
+	gitHubClient: H5PGitHubClient;
+
+	constructor(libraryRepoMap: LibraryRepoMap, tempFolderPath?: string) {
+		if (!tempFolderPath) {
+			const tempDir = FileSystemHelper.getTempDir();
+			this.tempFolderPath = FileSystemHelper.buildPath(tempDir, 'h5p-libraries');
+		} else {
+			this.tempFolderPath = tempFolderPath;
+		}
+		if (!FileSystemHelper.pathExists(this.tempFolderPath)) {
+			FileSystemHelper.createFolder(this.tempFolderPath);
+		}
+
+		this.libraryRepoMap = libraryRepoMap;
+		this.gitHubClient = new H5PGitHubClient();
+	}
+
+	async buildH5pLibrariesFromGitHubAsBulk(libraries: string[]): Promise<void> {
+		const availableVersions: string[] = [];
+		for (const library of libraries) {
+			this.logLibraryBanner(library);
+			await this.buildLibrary(library, availableVersions);
+		}
+	}
+
+	logLibraryBanner(libraryName: string): void {
+		const name = `*   ${libraryName}   *`;
+		const border = '*'.repeat(name.length);
+		console.log(border);
+		console.log(name);
+		console.log(border);
+	}
+
+	async buildLibrary(library: string, availableVersions: string[]): Promise<void> {
+		const result: any[] = [];
+		const repoName = this.mapMachineNameToGitHubRepo(library);
+		if (!repoName) {
+			console.log(`No GitHub repository found for ${library}.`);
+			return;
+		}
+		const tags = await this.gitHubClient.fetchAllTags(repoName, { maxRetries: 3 });
+		const filteredTags = this.getHighestPatchTags(tags);
+		console.log(`Found ${filteredTags.length} versions of ${library} in ${repoName}: ${filteredTags.join(', ')}`);
+		for (const tag of filteredTags) {
+			const tagResult = await this.buildLibraryVersionAndDependencies(library, tag, repoName, availableVersions);
+			result.push(...tagResult);
+		}
+	}
+
+	// TODO: move this to H5PGitHubClient?
+
+	mapMachineNameToGitHubRepo(library: string): string | undefined {
+		const repo = this.libraryRepoMap[library];
+		return repo;
+	}
+
+	getHighestPatchTags(tags: string[]): string[] {
+		const semverRegex = /^v?(\d+)\.(\d+)\.(\d+)$/;
+		const versionMap = new Map<string, { tag: string; patch: number }>();
+		for (const tag of tags) {
+			const match = tag.match(semverRegex);
+			if (!match) continue;
+			const [, major, minor, patch] = match;
+			const key = `${major}.${minor}`;
+			const patchNum = parseInt(patch, 10);
+			const existing = versionMap.get(key);
+			if (!existing || patchNum > existing.patch) {
+				versionMap.set(key, { tag, patch: patchNum });
+			}
+		}
+		const highestPatchTags = Array.from(versionMap.values()).map((v) => v.tag);
+		return highestPatchTags;
+	}
+
+	async buildLibraryVersionAndDependencies(
+		library: string,
+		tag: string,
+		repoName: string,
+		availableVersions: string[]
+	): Promise<any[]> {
+		this.logStartBuildingOfLibraryFromGitHub(library, tag);
+		const result = [];
+
+		if (this.isCurrentVersionAvailable(library, tag, availableVersions)) return [];
+		if (this.isNewerPatchVersionAvailable(library, tag, availableVersions)) return [];
+
+		const libResult = await this.buildLibraryTagFromGitHub(library, tag, repoName);
+		if (libResult) {
+			result.push(libResult);
+			this.logBuildingOfLibraryFromGitHubSuccessful(library, tag);
+		} else {
+			return [];
+		}
+		availableVersions.push(`${library}-${tag}`);
+
+		this.logStartBuildingOfDependenciesFromGitHub(library, tag);
+
+		let dependencies = this.getDependenciesFromLibraryJson(library, tag);
+		const softDependencies = this.getSoftDependenciesFromSemantics(library, tag);
+		dependencies = dependencies.concat(softDependencies);
+		if (dependencies.length === 0) {
+			this.logNoDependenciesFoundForLibrary(library, tag);
+			return libResult ? [libResult] : [];
+		}
+
+		for (const dependency of dependencies) {
+			await this.buildLibraryDependency(dependency, library, tag, availableVersions);
+		}
+		this.logFinishedBuildingOfLibraryFromGitHub(library, tag);
+
+		return result;
+	}
+
+	logStartBuildingOfLibraryFromGitHub(library: string, tag: string): void {
+		console.log(`Start building of ${library}-${tag} from GitHub.`);
+	}
+
+	logBuildingOfLibraryFromGitHubSuccessful(library: string, tag: string): void {
+		console.log(`Successfully built ${library}-${tag} from GitHub.`);
+	}
+
+	logNoDependenciesFoundForLibrary(library: string, tag: string): void {
+		console.log(`No dependencies found for ${library}-${tag}.`);
+	}
+
+	logStartBuildingOfDependenciesFromGitHub(library: string, tag: string): void {
+		console.log(`Start building of dependencies for ${library}-${tag} from GitHub.`);
+	}
+
+	logFinishedBuildingOfLibraryFromGitHub(library: string, tag: string): void {
+		console.log(`Finished building of ${library}-${tag} from GitHub.`);
+	}
+
+	async buildLibraryTagFromGitHub(library: string, tag: string, repo: string): Promise<void> {
+		// TODO: wenn wir filePath vorher erstellen könnten würde der tempFolder hinter dem unzipFile verschwinden welches folderPath zurück gibt.
+		// removeTemporaryFiles sollte dann auch nur folderPath als input brauchen.
+		// Dann wäre es möglich ein pre and post hook zu erstellen.
+		// Wenn man dann noch FileSystemHelper als Klasse instanziiert über ein factory könnte man dort noch mehr implizites Wissen weg kapseln.
+		const { filePath, folderPath, tempFolder } = FileSystemHelper.createTempFolder(this.tempFolderPath, library, tag);
+		await this.gitHubClient.downloadTag(repo, tag, filePath);
+
+		if (FileSystemHelper.pathExists(folderPath)) {
+			FileSystemHelper.removeFolder(folderPath);
+		}
+		FileSystemHelper.unzipAndRenameFolder(filePath, folderPath, tempFolder, repo, tag);
+		FileSystemHelper.removeFile(filePath);
+
+		// TODO: gefühlt gehört das in den try catch rein, es sind dafür aber viel zu viele try catch instanzen.
+		// Genauso wie die downloadGitHubTag
+		// Wenn das umgesetzt wäre könnte das return result in das try catch rein
+		this.executeAdditionalBuildStepsIfRequired(folderPath, library, tag);
+
+		this.cleanUpUnwantedFilesinLibraryFolder(folderPath);
+
+		// TODO: Should this be kept as it would make H5P CLI required!?
+		this.validateH5pLibrary(folderPath);
+	}
+
+	executeAdditionalBuildStepsIfRequired(folderPath: string, library: string, tag: string): void {
+		this.checkAndCorrectLibraryJsonVersion(folderPath, tag);
+
+		if (this.isPrependNodeOptionsRequired(library, tag)) {
+			this.prependNodeOptionsToRunScript(folderPath);
+		}
+
+		if (!this.isShepherdLibrary(library) && this.areBuildStepsRequired(folderPath)) {
+			const legacyPeerDepsRequired = this.isLegacyPeerDepsRequired(library, tag);
+			const oldNodeVersion = this.isOldNodeVersionRequired(library, tag);
+			const installRequired = this.isInstallRequiredInsteadOfCi(library, tag);
+			this.executeBuildSteps(folderPath, library, legacyPeerDepsRequired, oldNodeVersion, installRequired);
+		}
+
+		if (this.isLibraryPathCorrectionRequired(library, tag)) {
+			this.checkAndCorrectLibraryJsonPaths(folderPath);
+		}
+	}
+
+	checkAndCorrectLibraryJsonVersion(folderPath: string, tag: string): boolean {
+		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
+		let changed = false;
+		try {
+			const json = FileSystemHelper.readJsonFile(libraryJsonPath);
+			const [tagMajor, tagMinor, tagPatch] = tag.split('.').map(Number);
+			if (json.majorVersion !== tagMajor || json.minorVersion !== tagMinor || json.patchVersion !== tagPatch) {
+				json.majorVersion = tagMajor;
+				json.minorVersion = tagMinor;
+				json.patchVersion = tagPatch;
+				FileSystemHelper.writeJsonFile(libraryJsonPath, json);
+				changed = true;
+				this.logCorrectedVersionInLibraryJson(folderPath, tag);
+			}
+		} catch (error) {
+			console.error(`Error reading or correcting library.json in ${folderPath}:`, error);
+		}
+
+		return changed;
+	}
+
+	logCorrectedVersionInLibraryJson(folderPath: string, tag: string): void {
+		console.log(`Corrected version in library.json to match tag ${tag} in ${folderPath}.`);
+	}
+
+	isPrependNodeOptionsRequired(library: string, tag: string): boolean {
+		const prependNodeOptions = {
+			'H5P.Dialogcards': ['1.8.8', '1.7.10'],
+			'H5P.DragQuestion': ['1.15.4'],
+			'H5P.DragText': ['1.10.25', '1.9.5', '1.8.20'],
+			'H5P.InteractiveVideo': ['1.28.3'],
+			'H5P.MultiMediaChoice': ['0.3.56', '0.2.1', '0.1.8'],
+			'H5P.CoursePresentation': ['1.23.3'],
+		};
+		const prependNodeOptionsRequired = prependNodeOptions[library]?.includes(tag);
+
+		return prependNodeOptionsRequired;
+	}
+
+	prependNodeOptionsToRunScript(folderPath: string): void {
+		const packageJsonPath = FileSystemHelper.buildPath(folderPath, 'package.json');
+		if (!FileSystemHelper.pathExists(packageJsonPath)) {
+			console.warn(`package.json not found in ${folderPath}`);
+			return;
+		}
+		const packageJson = FileSystemHelper.readJsonFile(packageJsonPath);
+		if (!packageJson.scripts || !packageJson.scripts.build) {
+			console.warn(`No 'build' script found in package.json at ${folderPath}`);
+			return;
+		}
+		const buildScript = packageJson.scripts.build;
+		const nodeOptionsPrefix = 'NODE_OPTIONS=--openssl-legacy-provider ';
+		if (!buildScript.startsWith(nodeOptionsPrefix)) {
+			packageJson.scripts.build = nodeOptionsPrefix + buildScript;
+			FileSystemHelper.writeJsonFile(packageJsonPath, packageJson);
+			console.log(`Prepended NODE_OPTIONS to 'build' script in ${packageJsonPath}`);
+		} else {
+			console.log(`'build' script in ${packageJsonPath} already contains NODE_OPTIONS prefix.`);
+		}
+	}
+
+	isShepherdLibrary(library: string): boolean {
+		const shepherdLibraries = ['Shepherd'];
+		const isShepherdLibrary = shepherdLibraries.includes(library);
+
+		return isShepherdLibrary;
+	}
+
+	areBuildStepsRequired(folderPath: string): boolean {
+		let buildStepsRequired = false;
+		const packageJsonPath = FileSystemHelper.buildPath(folderPath, 'package.json');
+		if (FileSystemHelper.pathExists(packageJsonPath)) {
+			const packageJson = FileSystemHelper.readJsonFile(packageJsonPath);
+			if (!packageJson.scripts || !packageJson.scripts.build) {
+				this.logNoBuildScriptInPackageJson(folderPath);
+			} else {
+				this.logBuildScriptFoundInPackageJson(folderPath);
+				buildStepsRequired = true;
+			}
+		}
+
+		return buildStepsRequired;
+	}
+
+	logNoBuildScriptInPackageJson(folderPath: string): void {
+		console.log(`No 'build' script found in package.json at ${folderPath}.`);
+	}
+
+	logBuildScriptFoundInPackageJson(folderPath: string): void {
+		console.log(`Found 'build' script in package.json at ${folderPath}.`);
+	}
+
+	isLegacyPeerDepsRequired(library: string, tag: string): boolean {
+		const legacyPeerDeps = {
+			'H5P.DragText': ['1.9.5', '1.8.20'],
+		};
+		const legacyPeerDepsRequired = legacyPeerDeps[library]?.includes(tag);
+
+		return legacyPeerDepsRequired;
+	}
+
+	isOldNodeVersionRequired(library: string, tag: string): string | undefined {
+		const oldNodeVersions = {
+			'H5P.CoursePresentation': {
+				'1.22.11': '14',
+				'1.21.7': '14',
+				'1.20.4': '10',
+				'1.19.3': '10',
+				'1.18.1': '8',
+				'1.17.10': '8',
+			},
+			'H5P.Questionnaire': {
+				'1.1.2': '14',
+				'1.0.2': '14',
+			},
+			'H5P.SimpleMultiChoice': {
+				'1.0.5': '14',
+			},
+			'H5PEditor.QuestionSetTextualEditor': {
+				'1.2.4': '14',
+			},
+		};
+		const oldNodeVersion = oldNodeVersions[library]?.[tag];
+
+		return oldNodeVersion;
+	}
+
+	isInstallRequiredInsteadOfCi(library: string, tag: string): boolean {
+		const installInsteadOfCi = {
+			'H5P.CoursePresentation': ['1.18.1', '1.17.10'],
+			'H5P.Questionnaire': ['1.1.2', '1.0.2'],
+			'H5P.SimpleMultiChoice': ['1.0.5'],
+		};
+		const installRequired = installInsteadOfCi[library]?.includes(tag);
+
+		return installRequired;
+	}
+
+	executeBuildSteps(
+		folderPath: string,
+		library: string,
+		legacyPeerDepsRequired: boolean = false,
+		oldNodeVersion: string | undefined = undefined,
+		installRequired: boolean = false
+	): void {
+		try {
+			this.logRunningNpmCiAndBuild(folderPath);
+
+			const nvmCommand = `source ~/.nvm/nvm.sh && nvm use ${oldNodeVersion}`;
+
+			let installCommand = 'npm';
+			let installArgs = [installRequired ? 'install' : 'ci'];
+			let installOptions = { cwd: folderPath, stdio: 'inherit' };
+			if (legacyPeerDepsRequired) {
+				installArgs.push('--legacy-peer-deps');
+			}
+
+			if (oldNodeVersion) {
+				const bashCommand = `${nvmCommand} && npm ${installArgs.join(' ')}`;
+				installCommand = 'bash';
+				installArgs = ['-c', bashCommand];
+				installOptions.env = {}; // Ensure a clean environment
+			}
+
+			console.log('Execute install command:', installCommand, installArgs, installOptions);
+			const installResult = childProcess.spawnSync(installCommand, installArgs, installOptions);
+			if (installResult.status !== 0) {
+				throw new Error('npm install/ci failed');
+			}
+
+			let buildCommand = 'npm';
+			let buildArgs = ['run', 'build'];
+			let buildOptions = { cwd: folderPath, stdio: 'inherit' };
+
+			if (oldNodeVersion) {
+				const bashCommand = `${nvmCommand} && npm ${buildArgs.join(' ')}`;
+				buildCommand = 'bash';
+				buildArgs = ['-c', bashCommand];
+				buildOptions.env = {}; // Ensure a clean environment
+			}
+
+			console.log('Execute build command:', buildCommand, buildArgs, buildOptions);
+			const buildResult = childProcess.spawnSync(buildCommand, buildArgs, buildOptions);
+			if (buildResult.status !== 0) {
+				throw new Error('npm run build failed');
+			}
+		} catch (error) {
+			console.error(`Unknown error while trying to build library ${library} in ${folderPath}:`, error);
+		}
+	}
+
+	logRunningNpmCiAndBuild(folderPath: string): void {
+		console.log(`Running npm ci and npm run build in ${folderPath}.`);
+	}
+
+	isLibraryPathCorrectionRequired(library: string, tag: string): boolean {
+		const libraryPathCorrection = {
+			'H5P.MemoryGame': ['1.3.36'],
+		};
+		const libraryPathCorrectionRequired = libraryPathCorrection[library]?.includes(tag);
+
+		return libraryPathCorrectionRequired;
+	}
+
+	checkAndCorrectLibraryJsonPaths(folderPath: string): boolean {
+		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
+		let changed = false;
+		try {
+			const json = FileSystemHelper.readJsonFile(libraryJsonPath);
+
+			// List of keys in library.json that may contain file paths
+			const filePathKeys = [
+				'preloadedJs',
+				'preloadedCss',
+				'editorJs',
+				'editorCss',
+				'dynamicDependencies',
+				'preloadedDependencies',
+				'editorDependencies',
+			];
+
+			for (const key of filePathKeys) {
+				if (Array.isArray(json[key])) {
+					// For dependencies, check for 'path' property
+					if (key.endsWith('Dependencies')) {
+						const filteredDeps = json[key].filter((dep) => {
+							if (this.inputIsObjectWithPath(dep)) {
+								const depPath = FileSystemHelper.buildPath(folderPath, dep.path);
+								return FileSystemHelper.pathExists(depPath);
+							}
+							return true;
+						});
+						if (filteredDeps.length !== json[key].length) {
+							json[key] = filteredDeps;
+							changed = true;
+						}
+					} else {
+						// For JS/CSS arrays, check each file path
+						const filteredFiles = json[key].filter((file) => {
+							const filePath = FileSystemHelper.buildPath(folderPath, file.path);
+							return FileSystemHelper.pathExists(filePath);
+						});
+						if (filteredFiles.length !== json[key].length) {
+							json[key] = filteredFiles;
+							changed = true;
+						}
+					}
+				}
+			}
+
+			if (changed) {
+				FileSystemHelper.writeJsonFile(libraryJsonPath, json);
+				this.logCorrectedFilePathsInLibraryJson(folderPath);
+			}
+		} catch (error) {
+			console.error(`Unknown error while reading or correcting library.json file paths in ${folderPath}:`, error);
+		}
+		return changed;
+	}
+
+	inputIsObjectWithPath(obj: any): boolean {
+		return typeof obj === 'object' && obj !== null && 'path' in obj && typeof obj.path === 'string';
+	}
+
+	validateH5pLibrary(folderPath: string): boolean {
+		try {
+			const result = childProcess.spawnSync('h5p', ['validate', folderPath], {
+				cwd: folderPath,
+				stdio: 'inherit',
+				shell: true,
+			});
+			if (result.status === 0) {
+				console.log(`'h5p validate' succeeded for ${folderPath}`);
+				return true;
+			} else {
+				console.error(`'h5p validate' failed for ${folderPath}`);
+				return false;
+			}
+		} catch (error) {
+			console.error(`Error running 'h5p validate' for ${folderPath}:`, error);
+			return false;
+		}
+	}
+
+	logCorrectedFilePathsInLibraryJson(folderPath: string): void {
+		console.log(`Corrected file paths in library.json to only contain available files in ${folderPath}.`);
+	}
+
+	cleanUpUnwantedFilesinLibraryFolder(folderPath: string): void {
+		const ignoreFilePath = FileSystemHelper.buildPath(folderPath, '.h5pignore');
+		if (!FileSystemHelper.pathExists(ignoreFilePath)) {
+			return;
+		}
+		const ignoreContent = FileSystemHelper.readFile(ignoreFilePath);
+		const ignoreFiles = ignoreContent
+			.split(/\r?\n/)
+			.map((line) => line.trim())
+			.filter((line) => line && !line.startsWith('#'));
+		for (const relPath of ignoreFiles) {
+			const absPath = FileSystemHelper.buildPath(folderPath, relPath);
+			if (FileSystemHelper.pathExists(absPath)) {
+				try {
+					const stat = FileSystemHelper.getStatsOfPath(absPath);
+					if (stat.isDirectory()) {
+						FileSystemHelper.removeFolder(absPath);
+						console.log(`Removed directory from .h5pignore: ${absPath}`);
+					} else {
+						FileSystemHelper.removeFile(absPath);
+						console.log(`Removed file from .h5pignore: ${absPath}`);
+					}
+				} catch (err) {
+					console.error(`Failed to remove ignored file or directory: ${absPath}`, err);
+				}
+			}
+		}
+	}
+
+	getDependenciesFromLibraryJson(repoName: string, tag: string): any[] {
+		const { folderPath } = FileSystemHelper.createTempFolder(this.tempFolderPath, repoName, tag);
+		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
+		const libraryJsonContent = FileSystemHelper.readJsonFile(libraryJsonPath);
+		const dependencies = (libraryJsonContent?.preloadedDependencies ?? []).concat(
+			libraryJsonContent?.editorDependencies ?? [],
+			libraryJsonContent?.dynamicDependencies ?? []
+		);
+
+		return dependencies;
+	}
+
+	getSoftDependenciesFromSemantics(repoName: string, tag: string): ILibraryName[] {
+		const softDependencies: ILibraryName[] = [];
+
+		const { folderPath } = FileSystemHelper.createTempFolder(this.tempFolderPath, repoName, tag);
+		const semanticsJsonPath = FileSystemHelper.getSemanticsJsonPath(folderPath);
+		const semanticsFileExists = FileSystemHelper.pathExists(semanticsJsonPath);
+		if (semanticsFileExists) {
+			const semantics = FileSystemHelper.readJsonFile(semanticsJsonPath);
+			if (Array.isArray(semantics)) {
+				const libraryOptions = this.findLibraryOptions(semantics);
+				for (const libraryOption of libraryOptions) {
+					const libraryName = LibraryName.fromUberName(libraryOption, { useWhitespace: true, useHyphen: false });
+					softDependencies.push(libraryName);
+				}
+			}
+		}
+
+		return softDependencies;
+	}
+
+	findLibraryOptions(semantics: any[]): string[] {
+		const results = [];
+
+		function search(obj) {
+			if (obj && typeof obj === 'object') {
+				if ('type' in obj && obj.type && obj.type === 'library' && 'options' in obj && Array.isArray(obj.options)) {
+					results.push(...obj.options);
+				}
+				for (const key in obj) {
+					const value = obj[key];
+					if (Array.isArray(value)) {
+						value.forEach(search);
+					} else if (typeof value === 'object' && value !== null) {
+						search(value);
+					} else {
+						// Primitive value, do nothing
+					}
+				}
+			}
+		}
+
+		semantics.forEach(search);
+
+		return results;
+	}
+
+	async buildLibraryDependency(
+		dependency: any,
+		library: string,
+		tag: string,
+		availableVersions: string[]
+	): Promise<any[]> {
+		const depName = dependency.machineName;
+		const depMajor = dependency.majorVersion;
+		const depMinor = dependency.minorVersion;
+		this.logBuildingLibraryDependency(dependency, library, tag);
+
+		const depRepoName = this.mapMachineNameToGitHubRepo(depName);
+		if (!depRepoName) {
+			this.logGithubRepositoryNotFound(dependency.machineName);
+			return [];
+		}
+
+		const tags = await this.gitHubClient.fetchAllTags(depRepoName, { maxRetries: 3 });
+		const depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
+		if (!depTag) {
+			this.logTagNotFound(dependency);
+			return [];
+		}
+
+		const depResult = await this.buildLibraryVersionAndDependencies(depName, depTag, depRepoName, availableVersions);
+		if (depResult.length > 0) {
+			this.logBuildingLibraryDependencySuccess(depName, depTag);
+			return depResult;
+		}
+
+		return [];
+	}
+
+	logBuildingLibraryDependency(dependency: any, library: string, tag: string): void {
+		console.log(`Building dependency ${LibraryName.toUberName(dependency)}.x from GitHub for ${library}-${tag}.`);
+	}
+
+	logGithubRepositoryNotFound(library: string): void {
+		console.log(`No GitHub repository found for ${library}.`);
+	}
+
+	logTagNotFound(dependency: any): void {
+		console.log(`No suitable tag found for dependency ${LibraryName.toUberName(dependency)}.x .`);
+	}
+
+	logBuildingLibraryDependencySuccess(depName: string, depTag: string): void {
+		console.log(`Successfully built dependency ${depName}-${depTag} from GitHub.`);
+	}
+
+	getHighestVersionTags(tags: string[], majorVersion: number, minorVersion: number): string | undefined {
+		const matchingTags = tags.filter((t) => {
+			const [maj, min] = t.split('.').map(Number);
+
+			return maj === majorVersion && min === minorVersion;
+		});
+		let highestVersionTag;
+		if (matchingTags.length > 0) {
+			highestVersionTag = matchingTags.reduce((a, b) => {
+				const patchA = Number(a.split('.')[2]);
+				const patchB = Number(b.split('.')[2]);
+				return patchA > patchB ? a : b;
+			});
+		}
+
+		return highestVersionTag;
+	}
+
+	isCurrentVersionAvailable(library: string, tag: string, availableVersions: string[]): boolean {
+		const currentPatchVersionAvailable = availableVersions.includes(`${library}-${tag}`);
+
+		if (currentPatchVersionAvailable) {
+			this.logVersionAlreadyAvailable(library, tag);
+		}
+
+		return currentPatchVersionAvailable;
+	}
+
+	logVersionAlreadyAvailable(library: string, tag: string): void {
+		console.log(`${library}-${tag} is already available.`);
+	}
+
+	isNewerPatchVersionAvailable(library: string, tag: string, availableVersions: string[]): boolean {
+		const [tagMajor, tagMinor, tagPatch] = tag.split('.').map(Number);
+		const newerPatchVersionAvailable = availableVersions.some((v) => {
+			const [lib, version] = v.split('-');
+			if (lib !== library) return false;
+			const [major, minor, patch] = version.split('.').map(Number);
+			const result = major === tagMajor && minor === tagMinor && patch >= tagPatch;
+			return result;
+		});
+
+		if (newerPatchVersionAvailable) {
+			this.logNewerPatchVersionAlreadyAvailable(library, tag);
+		}
+
+		return newerPatchVersionAvailable;
+	}
+
+	logNewerPatchVersionAlreadyAvailable(library: string, tag: string): void {
+		console.log(`A newer patch version of ${library}-${tag} is already available.`);
+	}
+}
+
+export default H5pLibraryBuilderService;
