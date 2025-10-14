@@ -10,6 +10,7 @@ export class Migration20251014102225 extends Migration {
 				{
 					$set: {
 						isUsableByStudents: { $not: '$isOnlyForTeachers' },
+						isUsableByExternalPersons: false,
 					},
 				},
 				{
@@ -18,7 +19,7 @@ export class Migration20251014102225 extends Migration {
 			]
 		);
 		console.info(
-			"Updated property 'isOnlyForTeachers' in 'room-invitation-links' to 'isUsableByStudents' with inverted value: ",
+			"Updated property 'isOnlyForTeachers' in 'room-invitation-links' to 'isUsableByStudents' with inverted value and added 'isUsableByExternalPersons': ",
 			roomInvitationLinks.modifiedCount
 		);
 	}
@@ -29,6 +30,9 @@ export class Migration20251014102225 extends Migration {
 				isUsableByStudents: {
 					$exists: true,
 				},
+				isUsableByExternalPersons: {
+					$exists: true,
+				},
 			},
 			[
 				{
@@ -37,11 +41,14 @@ export class Migration20251014102225 extends Migration {
 					},
 				},
 				{
-					$unset: 'isUsableByStudents',
+					$unset: ['isUsableByStudents', 'isUsableByExternalPersons'],
 				},
 			]
 		);
 
-		console.info("Revert setting 'isUsableByStudents' in 'room-invitation-links': ", roomInvitationLinks.modifiedCount);
+		console.info(
+			"Revert setting 'isUsableByStudents' and 'isUsableByExternalPersons' in 'room-invitation-links': ",
+			roomInvitationLinks.modifiedCount
+		);
 	}
 }
