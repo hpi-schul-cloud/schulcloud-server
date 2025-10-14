@@ -119,26 +119,56 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const room = await this.roomService.getSingleRoom(roomId);
 
-		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(userId, roomId, Action.read);
-		const hasAdminPermission = this.authorizationService.hasAllPermissions(user, [
-			Permission.SCHOOL_ADMINISTRATE_ROOMS,
-		]);
-
-		if (!hasAdminPermission) {
-			await this.roomPermissionService.checkRoomIsUnlocked(roomId);
-		}
-
-		const members = hasAdminPermission ? await this.roomMembershipService.getRoomMembers(roomId) : [];
-		const isFromSameSchool = members.some((member) => member.schoolId === user.school.id);
-		const roomHasMembersFromAdminSchool = hasAdminPermission && isFromSameSchool;
-		if (!hasRoomPermission && !roomHasMembersFromAdminSchool) {
-			throw new ForbiddenException('You do not have permission to access this room');
-		}
+		await this.checkHasAccessToRoom(room, user);
 
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const permissions = this.getPermissions(userId, roomMembershipAuthorizable);
 
 		return { room, permissions };
+	}
+
+	private async checkHasAccessToRoom(room: Room, user: User) {
+		const hasAdminPermission = this.authorizationService.hasAllPermissions(user, [
+			Permission.SCHOOL_ADMINISTRATE_ROOMS,
+		]);
+
+		if (!hasAdminPermission) {
+			await this.roomPermissionService.checkRoomIsUnlocked(room.id);
+		}
+
+		const hasRoomPermission = await this.hasRoomPermission(room, user);
+		if (hasRoomPermission) {
+			return;
+		}
+
+		const hasUsersFromAdminSchool = await this.hasUsersFromAdminSchool(room, user, hasAdminPermission);
+		if (hasUsersFromAdminSchool) {
+			return;
+		}
+
+		const isRoomFromAdminSchool = await this.isRoomFromAdminSchool(room, user, hasAdminPermission);
+		if (isRoomFromAdminSchool) {
+			return;
+		}
+
+		throw new ForbiddenException('You do not have permission to access this room');
+	}
+
+	private async isRoomFromAdminSchool(room: Room, user: User, hasAdminPermission: boolean) {
+		const roomSchool = await this.schoolService.getSchoolById(room.schoolId);
+		const userSchool = await this.schoolService.getSchoolById(user.school.id);
+		const isRoomFromAdminSchool = hasAdminPermission && roomSchool.id === userSchool.id;
+		return isRoomFromAdminSchool;
+	}
+
+	private async hasUsersFromAdminSchool(room: Room, user: User, hasAdminPermission: boolean) {
+		const members = hasAdminPermission ? await this.roomMembershipService.getRoomMembers(room.id) : [];
+		const hasUsersFromAdminSchool = hasAdminPermission && members.some((member) => member.schoolId === user.school.id);
+		return hasUsersFromAdminSchool;
+	}
+
+	private async hasRoomPermission(room: Room, user: User) {
+		return await this.roomPermissionService.hasRoomPermissions(user.id, room.id, Action.read);
 	}
 
 	public async getRoomBoards(userId: EntityId, roomId: EntityId): Promise<ColumnBoard[]> {
