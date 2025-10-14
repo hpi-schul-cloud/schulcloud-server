@@ -5,7 +5,7 @@ export class ClassResponse {
 	public name!: string;
 
 	@ApiProperty()
-	public gradeLevel!: number;
+	public gradeLevel!: string;
 
 	@ApiProperty()
 	public yearName!: string;

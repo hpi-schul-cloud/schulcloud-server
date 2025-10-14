@@ -98,7 +98,11 @@ export class UsersAdminRepo extends BaseRepo<User> {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 			result[0].data.map(async (user: unknown) => {
 				const aggregatioResult = new UserAggregationResult(user as UserAggregationResult);
-				await validate(aggregatioResult);
+				const validationErrors = await validate(aggregatioResult);
+
+				if (validationErrors.length > 0) {
+					throw new Error(`Validation failed: ${JSON.stringify(validationErrors)}`);
+				}
 
 				return aggregatioResult;
 			})

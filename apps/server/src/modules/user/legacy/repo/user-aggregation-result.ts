@@ -79,10 +79,9 @@ export class UserAggregationClass {
 	@IsString()
 	public name!: string;
 
-	@IsOptional()
-	public gradeLevel!: number;
+	@IsString()
+	public gradeLevel!: string;
 
-	@IsOptional()
 	@IsString()
 	public yearName!: string;
 }
@@ -112,7 +111,7 @@ export class UserAggregationResult {
 		this.preferences = preferences;
 		this.consentStatus = consentStatus;
 		this.consent = consent ? new UserAggregationConsent(consent) : undefined;
-		this.classes = classes;
+		this.classes = classes?.map((classItem) => new UserAggregationClass(classItem));
 		this.importHash = importHash;
 		this.lastLoginSystemChange = lastLoginSystemChange;
 		this.outdatedSince = outdatedSince;
