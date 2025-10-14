@@ -8,7 +8,7 @@ export class RoomInvitationLinkEntity extends BaseEntityWithTimestamps implement
 	@Property({ nullable: false })
 	title!: string;
 
-	@Property()
+	@Property({ nullable: true })
 	isUsableByExternalPersons?: boolean;
 
 	@Property()

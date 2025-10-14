@@ -13,6 +13,7 @@ import { RoomConfig } from '../room.config';
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
 import { RoomInvitationLinkError } from './dto/response/room-invitation-link.error';
 import { RoomInvitationLinkValidationError } from './type/room-invitation-link-validation-error.enum';
+import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception/feature-disabled.loggable-exception';
 
 @Injectable()
 export class RoomInvitationLinkUc {
@@ -25,6 +26,10 @@ export class RoomInvitationLinkUc {
 	) {}
 
 	public async createLink(userId: EntityId, props: CreateRoomInvitationLinkBodyParams): Promise<RoomInvitationLink> {
+		if (props.isUsableByExternalPersons !== undefined) {
+			this.checkFeatureLinkInvitationExternalPersonsEnabled();
+		}
+
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(props.roomId);
 		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, {
@@ -42,6 +47,10 @@ export class RoomInvitationLinkUc {
 	}
 
 	public async updateLink(userId: EntityId, props: RoomInvitationLinkUpdateProps): Promise<RoomInvitationLink> {
+		if (props.isUsableByExternalPersons !== undefined) {
+			this.checkFeatureLinkInvitationExternalPersonsEnabled();
+		}
+
 		const roomInvitationLink = await this.roomInvitationLinkService.findById(props.id);
 
 		await this.checkRoomAuthorizationByIds(userId, [roomInvitationLink.roomId], Action.write, [
@@ -144,6 +153,10 @@ export class RoomInvitationLinkUc {
 		const isStudent = user.getRoles().some((role) => role.name === RoleName.STUDENT);
 		const isExternalPerson = user.getRoles().some((role) => role.name === RoleName.EXPERT);
 
+		if (isExternalPerson) {
+			this.checkFeatureLinkInvitationExternalPersonsEnabled();
+		}
+
 		if (roomInvitationLink.activeUntil && roomInvitationLink.activeUntil < new Date()) {
 			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.EXPIRED, HttpStatus.BAD_REQUEST);
 		}
@@ -199,5 +212,11 @@ export class RoomInvitationLinkUc {
 		}
 
 		return roomMembershipAuthorizables;
+	}
+
+	private checkFeatureLinkInvitationExternalPersonsEnabled(): void {
+		if (!this.configService.get('FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED', { infer: true })) {
+			throw new FeatureDisabledLoggableException('FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED');
+		}
 	}
 }

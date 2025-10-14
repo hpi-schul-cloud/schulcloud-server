@@ -3,7 +3,7 @@ import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { ServerTestModule } from '@modules/server';
+import { serverConfig, ServerTestModule, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -21,6 +21,7 @@ describe('Room Invitation Link Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let config: ServerConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -31,10 +32,13 @@ describe('Room Invitation Link Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'room-invitation-links');
+
+		config = serverConfig();
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
+		config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -140,6 +144,50 @@ describe('Room Invitation Link Controller (API)', () => {
 					await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLink.id)).resolves.toMatchObject({
 						id: roomInvitationLink.id,
 						title: 'Room Inivitation renamed',
+					});
+				});
+			});
+
+			describe('when external person link feature is disabled', () => {
+				beforeEach(() => {
+					config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = false;
+				});
+
+				describe('when trying to update with isUsableByExternalPersons attribute', () => {
+					it('should return a 403 error ', async () => {
+						const { loggedInClient, roomInvitationLink } = await setup();
+						const params: UpdateRoomInvitationLinkBodyParams = {
+							title: 'Room Inivitation renamed',
+							activeUntil: new Date(Date.now() + 1000000),
+							requiresConfirmation: true,
+							isUsableByExternalPersons: false,
+							isUsableByStudents: false,
+							restrictedToCreatorSchool: true,
+						};
+
+						const response = await loggedInClient.put(roomInvitationLink.id, params);
+
+						expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					});
+				});
+				describe('when trying to update a link without isUsableByExternalPersons attribute', () => {
+					it('should update the room invitation link', async () => {
+						const { loggedInClient, roomInvitationLink } = await setup();
+						const params: UpdateRoomInvitationLinkBodyParams = {
+							title: 'Room Inivitation renamed',
+							activeUntil: new Date(Date.now() + 1000000),
+							requiresConfirmation: true,
+							isUsableByStudents: false,
+							restrictedToCreatorSchool: true,
+						};
+
+						const response = await loggedInClient.put(roomInvitationLink.id, params);
+
+						expect(response.status).toBe(HttpStatus.OK);
+						await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLink.id)).resolves.toMatchObject({
+							id: roomInvitationLink.id,
+							title: 'Room Inivitation renamed',
+						});
 					});
 				});
 			});

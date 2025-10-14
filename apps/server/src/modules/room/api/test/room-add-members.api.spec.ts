@@ -6,7 +6,7 @@ import { roleFactory } from '@modules/role/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { ServerTestModule } from '@modules/server';
+import { serverConfig, ServerTestModule, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -24,6 +24,7 @@ describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let config: ServerConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -34,10 +35,13 @@ describe('Room Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'rooms');
+
+		config = serverConfig();
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
+		config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -78,6 +82,7 @@ describe('Room Controller (API)', () => {
 				const room = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
 				const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 				const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
+				const externalPersonGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTEXTERNALPERSON });
 				const { roomEditorRole, roomAdminRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 
 				// TODO: add more than one user
@@ -104,6 +109,7 @@ describe('Room Controller (API)', () => {
 					teacherUser,
 					teacherGuestRole,
 					studentGuestRole,
+					externalPersonGuestRole,
 					otherTeacherUser,
 					otherTeacherAccount,
 					userGroupEntity,

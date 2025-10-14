@@ -1,7 +1,7 @@
 import { RoomInvitationLinkDto } from '../../../domain/do/room-invitation-link.do';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller/transformer';
-import { IsBoolean, IsDate, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsDate, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UpdateRoomInvitationLinkBodyParams
 	implements Omit<RoomInvitationLinkDto, 'roomId' | 'creatorUserId' | 'creatorSchoolId'>
@@ -24,7 +24,9 @@ export class UpdateRoomInvitationLinkBodyParams
 	@ApiPropertyOptional({
 		description: 'Indicates if the link is also usable by external persons',
 		required: false,
+		nullable: true,
 	})
+	@IsOptional()
 	@IsBoolean()
 	public isUsableByExternalPersons?: boolean;
 
