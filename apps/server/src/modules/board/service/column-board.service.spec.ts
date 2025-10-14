@@ -10,14 +10,14 @@ import { BoardNodeRepo } from '../repo';
 import { columnBoardFactory } from '../testing';
 import { BoardNodeService } from './board-node.service';
 import { ColumnBoardService } from './column-board.service';
-import { ColumnBoardCopyService, ColumnBoardLinkService } from './internal';
+import { BoardCopyService, ColumnBoardLinkService } from './internal';
 
 describe('ColumnBoardService', () => {
 	let module: TestingModule;
 	let service: ColumnBoardService;
 	let repo: jest.Mocked<BoardNodeRepo>;
 	let boardNodeService: jest.Mocked<BoardNodeService>;
-	let columnBoardCopyService: DeepMocked<ColumnBoardCopyService>;
+	let columnBoardCopyService: DeepMocked<BoardCopyService>;
 	let columnBoardLinkService: DeepMocked<ColumnBoardLinkService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 
@@ -34,8 +34,8 @@ describe('ColumnBoardService', () => {
 					useValue: createMock<BoardNodeService>(),
 				},
 				{
-					provide: ColumnBoardCopyService,
-					useValue: createMock<ColumnBoardCopyService>(),
+					provide: BoardCopyService,
+					useValue: createMock<BoardCopyService>(),
 				},
 				{
 					provide: ColumnBoardLinkService,
@@ -51,7 +51,7 @@ describe('ColumnBoardService', () => {
 		service = module.get<ColumnBoardService>(ColumnBoardService);
 		repo = module.get(BoardNodeRepo);
 		boardNodeService = module.get(BoardNodeService);
-		columnBoardCopyService = module.get(ColumnBoardCopyService);
+		columnBoardCopyService = module.get(BoardCopyService);
 		columnBoardLinkService = module.get(ColumnBoardLinkService);
 		copyHelperService = module.get(CopyHelperService);
 	});
@@ -143,6 +143,20 @@ describe('ColumnBoardService', () => {
 				type: BoardExternalReferenceType.Course,
 				id: '1',
 			},
+			sourceStorageLocationReference: { id: '1', type: StorageLocation.SCHOOL },
+			targetStorageLocationReference: { id: '1', type: StorageLocation.SCHOOL },
+			userId: '1',
+			targetSchoolId: new ObjectId().toHexString(),
+		});
+
+		expect(result).toEqual(copyStatus);
+	});
+
+	it('should copy Card', async () => {
+		const copyStatus: CopyStatus = { status: CopyStatusEnum.SUCCESS, type: CopyElementType.CARD };
+		columnBoardCopyService.copyCard.mockResolvedValueOnce(copyStatus);
+		const result = await service.copyCard({
+			originalCardId: '1',
 			sourceStorageLocationReference: { id: '1', type: StorageLocation.SCHOOL },
 			targetStorageLocationReference: { id: '1', type: StorageLocation.SCHOOL },
 			userId: '1',

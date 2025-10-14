@@ -11,14 +11,14 @@ import {
 } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { BoardNodeService } from './board-node.service';
-import { ColumnBoardCopyService, ColumnBoardLinkService, CopyColumnBoardParams, CopyCardParams } from './internal';
+import { BoardCopyService, ColumnBoardLinkService, CopyColumnBoardParams, CopyCardParams } from './internal';
 
 @Injectable()
 export class ColumnBoardService {
 	constructor(
 		private readonly boardNodeRepo: BoardNodeRepo,
 		private readonly boardNodeService: BoardNodeService,
-		private readonly columnBoardCopyService: ColumnBoardCopyService,
+		private readonly boardCopyService: BoardCopyService,
 		private readonly columnBoardLinkService: ColumnBoardLinkService,
 		private readonly copyHelperService: CopyHelperService
 	) {}
@@ -61,7 +61,7 @@ export class ColumnBoardService {
 	}
 
 	public async copyColumnBoard(params: CopyColumnBoardParams): Promise<CopyStatus> {
-		const copyStatus = await this.columnBoardCopyService.copyColumnBoard(params);
+		const copyStatus = await this.boardCopyService.copyColumnBoard(params);
 
 		return copyStatus;
 	}
@@ -74,7 +74,7 @@ export class ColumnBoardService {
 	}
 
 	public async copyCard(params: CopyCardParams): Promise<CopyStatus> {
-		const copyStatus = await this.columnBoardCopyService.copyCard(params);
+		const copyStatus = await this.boardCopyService.copyCard(params);
 
 		return copyStatus;
 	}

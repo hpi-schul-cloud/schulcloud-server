@@ -35,7 +35,7 @@ export type CopyCardParams = {
 };
 
 @Injectable()
-export class ColumnBoardCopyService {
+export class BoardCopyService {
 	constructor(
 		private readonly boardNodeService: BoardNodeService,
 		private readonly columnBoardTitleService: ColumnBoardTitleService,
