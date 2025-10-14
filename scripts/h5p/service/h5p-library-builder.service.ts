@@ -33,13 +33,18 @@ export class H5pLibraryBuilderService {
 		for (const library of libraries) {
 			this.logLibraryBanner(library);
 			const libraryResult = await this.buildLibrary(library, availableVersions);
+
+			console.log(`### Finished building of ${library}.`);
+			console.log(`### Successfully built libraries: ${libraryResult.installedLibraries.join(', ')}`);
+			console.log(`### Failed to build libraries: ${libraryResult.failedLibraries.join(', ')}`);
+
 			result.installedLibraries.push(...libraryResult.installedLibraries);
 			result.failedLibraries.push(...libraryResult.failedLibraries);
 		}
 
-		console.log('Installation Summary:');
-		console.log(`Successfully installed libraries: ${result.installedLibraries.join(', ')}`);
-		console.log(`Failed to install libraries: ${result.failedLibraries.join(', ')}`);
+		console.log('>>> Installation Summary:');
+		console.log(`>>> Successfully installed libraries: ${result.installedLibraries.join(', ')}`);
+		console.log(`>>> Failed to install libraries: ${result.failedLibraries.join(', ')}`);
 	}
 
 	private logLibraryBanner(libraryName: string): void {

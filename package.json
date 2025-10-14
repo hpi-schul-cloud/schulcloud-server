@@ -138,9 +138,9 @@
 		"generate-client:cards-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key cards-api",
 		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api",
 		"knip": "knip",
-		"h5p:build-h5p-libraries": "set -a && source .env && set +a && node ./scripts/h5p/build-h5p-libraries.js",
-		"h5p:update-h5p-map": "set -a && source .env && set +a && node ./scripts/h5p/update-h5p-map.js",
-		"h5p:upload-h5p-libraries": "set -a && source .env && set +a && node ./scripts/h5p/upload-h5p-libraries.js"
+		"h5p:build-h5p-libraries": "tsc scripts/h5p/build-h5p-libraries.ts --esModuleInterop && set -a && source .env && set +a && node ./scripts/h5p/build-h5p-libraries.js",
+		"h5p:update-h5p-map": "tsc scripts/h5p/update-h5p-map.ts --esModuleInterop && set -a && source .env && set +a && node ./scripts/h5p/update-h5p-map.js",
+		"h5p:upload-h5p-libraries": "tsc scripts/h5p/upload-h5p-libraries.ts --esModuleInterop && set -a && source .env && set +a && node ./scripts/h5p/upload-h5p-libraries.js"
 	},
 	"overrides": {
 		"gm": {
