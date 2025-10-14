@@ -252,21 +252,6 @@ const stageLookupClasses = (aggregation, schoolId: ObjectId, schoolYearId: Objec
 			classesSort: {
 				$arrayElemAt: ['$classes', 0],
 			},
-			classes: {
-				$map: {
-					input: '$classes',
-					as: 'class',
-					in: {
-						$cond: {
-							if: { $ne: ['$$class.yearName', ''] },
-							then: {
-								$concat: ['$$class.gradeLevel', '$$class.name', ' (', '$$class.yearName', ')'],
-							},
-							else: { $concat: ['$$class.gradeLevel', '$$class.name'] },
-						},
-					},
-				},
-			},
 			classIds: {
 				$map: {
 					input: '$classes',

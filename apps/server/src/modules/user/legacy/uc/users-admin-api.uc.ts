@@ -33,7 +33,10 @@ export class UsersAdminApiUc {
 		const currentSchoolYearId = currentSchoolYear?.id;
 		const role = await this.getRoleForRequestedRole(requestedRole);
 
-		return this.adminUsersService.getUsersWithNestedData(role?.id, school.id, currentSchoolYearId, params);
+		const users = await this.adminUsersService.getUsersWithNestedData(role?.id, school.id, currentSchoolYearId, params);
+		const response = new UserListResponse({ data: users, total: users.length });
+
+		return response;
 	}
 
 	public async findUserById(

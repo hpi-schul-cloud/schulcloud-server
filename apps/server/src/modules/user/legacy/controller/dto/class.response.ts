@@ -2,8 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ClassResponse {
 	@ApiProperty()
-	name?: string;
+	public name!: string;
 
 	@ApiProperty()
-	gradeLevel?: number;
+	public gradeLevel!: number;
+
+	@ApiProperty()
+	public yearName!: string;
 }

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ConsentsResponse } from './consents.response';
 import { ClassResponse } from './class.response';
+import { ConsentsResponse } from './consents.response';
 
 export class UserResponse {
 	constructor({
@@ -34,41 +34,41 @@ export class UserResponse {
 	}
 
 	@ApiProperty()
-	_id: string;
+	public _id: string;
 
 	@ApiProperty()
-	firstName: string;
+	public firstName: string;
 
 	@ApiProperty()
-	lastName: string;
+	public lastName: string;
 
 	@ApiProperty()
-	email: string;
+	public email: string;
 
 	@ApiProperty()
-	createdAt: Date;
+	public createdAt: Date;
 
 	@ApiProperty()
-	birthday?: Date;
+	public birthday?: Date;
 
 	@ApiProperty()
-	preferences?: Record<string, unknown>;
+	public preferences?: Record<string, unknown>;
 
 	@ApiProperty()
-	consentStatus: string;
+	public consentStatus: string;
 
 	@ApiProperty()
-	consent?: ConsentsResponse;
+	public consent?: ConsentsResponse;
 
 	@ApiProperty({ type: [ClassResponse] })
-	classes?: ClassResponse[];
+	public classes?: ClassResponse[];
 
 	@ApiProperty()
-	importHash?: string;
+	public importHash?: string;
 
 	@ApiProperty()
-	lastLoginSystemChange?: Date;
+	public lastLoginSystemChange?: Date;
 
 	@ApiProperty()
-	outdatedSince?: Date;
+	public outdatedSince?: Date;
 }

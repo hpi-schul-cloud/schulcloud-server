@@ -2,8 +2,9 @@ import { Logger } from '@core/logger';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
-import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
+import { UserResponse, UsersSearchQueryParams } from '../controller/dto';
 import { UsersAdminRepo } from '../repo';
+import { UserAggregationResult } from '../repo/user-aggregation-result';
 
 @Injectable()
 export class UsersAdminService {
@@ -11,22 +12,18 @@ export class UsersAdminService {
 		this.logger.setContext(UsersAdminService.name);
 	}
 
-	async getUsersWithNestedData(
+	public async getUsersWithNestedData(
 		roleId: string | undefined,
 		schoolId: EntityId,
 		schoolYearId: EntityId | undefined,
 		params: UsersSearchQueryParams
-	): Promise<UserListResponse> {
-		const usersResponse = (await this.usersAdminRepo.getUsersWithNestedData(
-			roleId,
-			schoolId,
-			schoolYearId,
-			params
-		)) as UserListResponse[];
-		return new UserListResponse(usersResponse[0]);
+	): Promise<UserAggregationResult[]> {
+		const users = await this.usersAdminRepo.getUsersWithNestedData(roleId, schoolId, schoolYearId, params);
+
+		return users;
 	}
 
-	async getUserWithNestedData(
+	public async getUserWithNestedData(
 		roleId: string | undefined,
 		schoolId: EntityId,
 		schoolYearId: EntityId | undefined,

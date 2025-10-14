@@ -3,9 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { ObjectId } from 'bson';
+import { validate } from 'class-validator';
 import { UsersSearchQueryParams } from '../controller/dto';
 import { UserSearchQuery } from '../interfaces';
 import { createMultiDocumentAggregation, SearchQueryHelper } from './helper';
+import { UserAggregationResult } from './user-aggregation-result';
 
 @Injectable()
 export class UsersAdminRepo extends BaseRepo<User> {
@@ -13,7 +15,7 @@ export class UsersAdminRepo extends BaseRepo<User> {
 		return User;
 	}
 
-	async getUserByIdWithNestedData(
+	public async getUserByIdWithNestedData(
 		roleId: string | undefined,
 		schoolId: EntityId,
 		schoolYearId: EntityId | undefined,
@@ -48,12 +50,12 @@ export class UsersAdminRepo extends BaseRepo<User> {
 		return this._em.aggregate(User, aggregation);
 	}
 
-	async getUsersWithNestedData(
+	public async getUsersWithNestedData(
 		roleId: string | undefined,
 		schoolId: EntityId,
 		schoolYearId: EntityId | undefined,
 		params: UsersSearchQueryParams
-	): Promise<any[]> {
+	): Promise<UserAggregationResult[]> {
 		const query: UserSearchQuery = {
 			schoolId: new ObjectId(schoolId),
 			roles: new ObjectId(roleId),
@@ -89,6 +91,19 @@ export class UsersAdminRepo extends BaseRepo<User> {
 
 		const aggregation = createMultiDocumentAggregation(query);
 
-		return this._em.aggregate(User, aggregation);
+		const result = await this._em.aggregate(User, aggregation);
+
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const validatedResults: UserAggregationResult[] = await Promise.all(
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+			result[0].data.map(async (user: unknown) => {
+				const aggregatioResult = new UserAggregationResult(user as UserAggregationResult);
+				await validate(aggregatioResult);
+
+				return aggregatioResult;
+			})
+		);
+
+		return validatedResults;
 	}
 }
