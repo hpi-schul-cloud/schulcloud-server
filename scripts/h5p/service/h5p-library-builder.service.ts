@@ -5,7 +5,7 @@ import H5PGitHubClient from './h5p-github.client.js';
 
 type LibraryRepoMap = Record<string, string>;
 
-class H5pLibraryBuilderService {
+export class H5pLibraryBuilderService {
 	libraryRepoMap: LibraryRepoMap;
 	tempFolderPath: string;
 	gitHubClient: H5PGitHubClient;
@@ -25,7 +25,7 @@ class H5pLibraryBuilderService {
 		this.gitHubClient = new H5PGitHubClient();
 	}
 
-	async buildH5pLibrariesFromGitHubAsBulk(libraries: string[]): Promise<void> {
+	public async buildH5pLibrariesFromGitHubAsBulk(libraries: string[]): Promise<void> {
 		const availableVersions: string[] = [];
 		for (const library of libraries) {
 			this.logLibraryBanner(library);
@@ -33,7 +33,7 @@ class H5pLibraryBuilderService {
 		}
 	}
 
-	logLibraryBanner(libraryName: string): void {
+	private logLibraryBanner(libraryName: string): void {
 		const name = `*   ${libraryName}   *`;
 		const border = '*'.repeat(name.length);
 		console.log(border);
@@ -41,7 +41,7 @@ class H5pLibraryBuilderService {
 		console.log(border);
 	}
 
-	async buildLibrary(library: string, availableVersions: string[]): Promise<void> {
+	private async buildLibrary(library: string, availableVersions: string[]): Promise<void> {
 		const result: any[] = [];
 		const repoName = this.mapMachineNameToGitHubRepo(library);
 		if (!repoName) {
@@ -59,12 +59,12 @@ class H5pLibraryBuilderService {
 
 	// TODO: move this to H5PGitHubClient?
 
-	mapMachineNameToGitHubRepo(library: string): string | undefined {
+	private mapMachineNameToGitHubRepo(library: string): string | undefined {
 		const repo = this.libraryRepoMap[library];
 		return repo;
 	}
 
-	getHighestPatchTags(tags: string[]): string[] {
+	private getHighestPatchTags(tags: string[]): string[] {
 		const semverRegex = /^v?(\d+)\.(\d+)\.(\d+)$/;
 		const versionMap = new Map<string, { tag: string; patch: number }>();
 		for (const tag of tags) {
@@ -82,7 +82,7 @@ class H5pLibraryBuilderService {
 		return highestPatchTags;
 	}
 
-	async buildLibraryVersionAndDependencies(
+	private async buildLibraryVersionAndDependencies(
 		library: string,
 		tag: string,
 		repoName: string,
@@ -121,27 +121,27 @@ class H5pLibraryBuilderService {
 		return result;
 	}
 
-	logStartBuildingOfLibraryFromGitHub(library: string, tag: string): void {
+	private logStartBuildingOfLibraryFromGitHub(library: string, tag: string): void {
 		console.log(`Start building of ${library}-${tag} from GitHub.`);
 	}
 
-	logBuildingOfLibraryFromGitHubSuccessful(library: string, tag: string): void {
+	private logBuildingOfLibraryFromGitHubSuccessful(library: string, tag: string): void {
 		console.log(`Successfully built ${library}-${tag} from GitHub.`);
 	}
 
-	logNoDependenciesFoundForLibrary(library: string, tag: string): void {
+	private logNoDependenciesFoundForLibrary(library: string, tag: string): void {
 		console.log(`No dependencies found for ${library}-${tag}.`);
 	}
 
-	logStartBuildingOfDependenciesFromGitHub(library: string, tag: string): void {
+	private logStartBuildingOfDependenciesFromGitHub(library: string, tag: string): void {
 		console.log(`Start building of dependencies for ${library}-${tag} from GitHub.`);
 	}
 
-	logFinishedBuildingOfLibraryFromGitHub(library: string, tag: string): void {
+	private logFinishedBuildingOfLibraryFromGitHub(library: string, tag: string): void {
 		console.log(`Finished building of ${library}-${tag} from GitHub.`);
 	}
 
-	async buildLibraryTagFromGitHub(library: string, tag: string, repo: string): Promise<void> {
+	private async buildLibraryTagFromGitHub(library: string, tag: string, repo: string): Promise<void> {
 		// TODO: wenn wir filePath vorher erstellen könnten würde der tempFolder hinter dem unzipFile verschwinden welches folderPath zurück gibt.
 		// removeTemporaryFiles sollte dann auch nur folderPath als input brauchen.
 		// Dann wäre es möglich ein pre and post hook zu erstellen.
@@ -166,7 +166,7 @@ class H5pLibraryBuilderService {
 		this.validateH5pLibrary(folderPath);
 	}
 
-	executeAdditionalBuildStepsIfRequired(folderPath: string, library: string, tag: string): void {
+	private executeAdditionalBuildStepsIfRequired(folderPath: string, library: string, tag: string): void {
 		this.checkAndCorrectLibraryJsonVersion(folderPath, tag);
 
 		if (this.isPrependNodeOptionsRequired(library, tag)) {
@@ -185,7 +185,7 @@ class H5pLibraryBuilderService {
 		}
 	}
 
-	checkAndCorrectLibraryJsonVersion(folderPath: string, tag: string): boolean {
+	private checkAndCorrectLibraryJsonVersion(folderPath: string, tag: string): boolean {
 		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
 		let changed = false;
 		try {
@@ -206,11 +206,11 @@ class H5pLibraryBuilderService {
 		return changed;
 	}
 
-	logCorrectedVersionInLibraryJson(folderPath: string, tag: string): void {
+	private logCorrectedVersionInLibraryJson(folderPath: string, tag: string): void {
 		console.log(`Corrected version in library.json to match tag ${tag} in ${folderPath}.`);
 	}
 
-	isPrependNodeOptionsRequired(library: string, tag: string): boolean {
+	private isPrependNodeOptionsRequired(library: string, tag: string): boolean {
 		const prependNodeOptions = {
 			'H5P.Dialogcards': ['1.8.8', '1.7.10'],
 			'H5P.DragQuestion': ['1.15.4'],
@@ -224,8 +224,8 @@ class H5pLibraryBuilderService {
 		return prependNodeOptionsRequired;
 	}
 
-	prependNodeOptionsToRunScript(folderPath: string): void {
-		const packageJsonPath = FileSystemHelper.buildPath(folderPath, 'package.json');
+	private prependNodeOptionsToRunScript(folderPath: string): void {
+		const packageJsonPath = FileSystemHelper.getPackageJsonPath(folderPath);
 		if (!FileSystemHelper.pathExists(packageJsonPath)) {
 			console.warn(`package.json not found in ${folderPath}`);
 			return;
@@ -246,16 +246,16 @@ class H5pLibraryBuilderService {
 		}
 	}
 
-	isShepherdLibrary(library: string): boolean {
+	private isShepherdLibrary(library: string): boolean {
 		const shepherdLibraries = ['Shepherd'];
 		const isShepherdLibrary = shepherdLibraries.includes(library);
 
 		return isShepherdLibrary;
 	}
 
-	areBuildStepsRequired(folderPath: string): boolean {
+	private areBuildStepsRequired(folderPath: string): boolean {
 		let buildStepsRequired = false;
-		const packageJsonPath = FileSystemHelper.buildPath(folderPath, 'package.json');
+		const packageJsonPath = FileSystemHelper.getPackageJsonPath(folderPath);
 		if (FileSystemHelper.pathExists(packageJsonPath)) {
 			const packageJson = FileSystemHelper.readJsonFile(packageJsonPath);
 			if (!packageJson.scripts || !packageJson.scripts.build) {
@@ -269,15 +269,15 @@ class H5pLibraryBuilderService {
 		return buildStepsRequired;
 	}
 
-	logNoBuildScriptInPackageJson(folderPath: string): void {
+	private logNoBuildScriptInPackageJson(folderPath: string): void {
 		console.log(`No 'build' script found in package.json at ${folderPath}.`);
 	}
 
-	logBuildScriptFoundInPackageJson(folderPath: string): void {
+	private logBuildScriptFoundInPackageJson(folderPath: string): void {
 		console.log(`Found 'build' script in package.json at ${folderPath}.`);
 	}
 
-	isLegacyPeerDepsRequired(library: string, tag: string): boolean {
+	private isLegacyPeerDepsRequired(library: string, tag: string): boolean {
 		const legacyPeerDeps = {
 			'H5P.DragText': ['1.9.5', '1.8.20'],
 		};
@@ -286,7 +286,7 @@ class H5pLibraryBuilderService {
 		return legacyPeerDepsRequired;
 	}
 
-	isOldNodeVersionRequired(library: string, tag: string): string | undefined {
+	private isOldNodeVersionRequired(library: string, tag: string): string | undefined {
 		const oldNodeVersions = {
 			'H5P.CoursePresentation': {
 				'1.22.11': '14',
@@ -312,7 +312,7 @@ class H5pLibraryBuilderService {
 		return oldNodeVersion;
 	}
 
-	isInstallRequiredInsteadOfCi(library: string, tag: string): boolean {
+	private isInstallRequiredInsteadOfCi(library: string, tag: string): boolean {
 		const installInsteadOfCi = {
 			'H5P.CoursePresentation': ['1.18.1', '1.17.10'],
 			'H5P.Questionnaire': ['1.1.2', '1.0.2'],
@@ -323,7 +323,7 @@ class H5pLibraryBuilderService {
 		return installRequired;
 	}
 
-	executeBuildSteps(
+	private executeBuildSteps(
 		folderPath: string,
 		library: string,
 		legacyPeerDepsRequired: boolean = false,
@@ -376,11 +376,11 @@ class H5pLibraryBuilderService {
 		}
 	}
 
-	logRunningNpmCiAndBuild(folderPath: string): void {
+	private logRunningNpmCiAndBuild(folderPath: string): void {
 		console.log(`Running npm ci and npm run build in ${folderPath}.`);
 	}
 
-	isLibraryPathCorrectionRequired(library: string, tag: string): boolean {
+	private isLibraryPathCorrectionRequired(library: string, tag: string): boolean {
 		const libraryPathCorrection = {
 			'H5P.MemoryGame': ['1.3.36'],
 		};
@@ -389,7 +389,7 @@ class H5pLibraryBuilderService {
 		return libraryPathCorrectionRequired;
 	}
 
-	checkAndCorrectLibraryJsonPaths(folderPath: string): boolean {
+	private checkAndCorrectLibraryJsonPaths(folderPath: string): boolean {
 		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
 		let changed = false;
 		try {
@@ -445,11 +445,11 @@ class H5pLibraryBuilderService {
 		return changed;
 	}
 
-	inputIsObjectWithPath(obj: any): boolean {
+	private inputIsObjectWithPath(obj: any): boolean {
 		return typeof obj === 'object' && obj !== null && 'path' in obj && typeof obj.path === 'string';
 	}
 
-	validateH5pLibrary(folderPath: string): boolean {
+	private validateH5pLibrary(folderPath: string): boolean {
 		try {
 			const result = childProcess.spawnSync('h5p', ['validate', folderPath], {
 				cwd: folderPath,
@@ -469,11 +469,11 @@ class H5pLibraryBuilderService {
 		}
 	}
 
-	logCorrectedFilePathsInLibraryJson(folderPath: string): void {
+	private logCorrectedFilePathsInLibraryJson(folderPath: string): void {
 		console.log(`Corrected file paths in library.json to only contain available files in ${folderPath}.`);
 	}
 
-	cleanUpUnwantedFilesinLibraryFolder(folderPath: string): void {
+	private cleanUpUnwantedFilesinLibraryFolder(folderPath: string): void {
 		const ignoreFilePath = FileSystemHelper.buildPath(folderPath, '.h5pignore');
 		if (!FileSystemHelper.pathExists(ignoreFilePath)) {
 			return;
@@ -502,7 +502,7 @@ class H5pLibraryBuilderService {
 		}
 	}
 
-	getDependenciesFromLibraryJson(repoName: string, tag: string): any[] {
+	private getDependenciesFromLibraryJson(repoName: string, tag: string): any[] {
 		const { folderPath } = FileSystemHelper.createTempFolder(this.tempFolderPath, repoName, tag);
 		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
 		const libraryJsonContent = FileSystemHelper.readJsonFile(libraryJsonPath);
@@ -514,7 +514,7 @@ class H5pLibraryBuilderService {
 		return dependencies;
 	}
 
-	getSoftDependenciesFromSemantics(repoName: string, tag: string): ILibraryName[] {
+	private getSoftDependenciesFromSemantics(repoName: string, tag: string): ILibraryName[] {
 		const softDependencies: ILibraryName[] = [];
 
 		const { folderPath } = FileSystemHelper.createTempFolder(this.tempFolderPath, repoName, tag);
@@ -534,7 +534,7 @@ class H5pLibraryBuilderService {
 		return softDependencies;
 	}
 
-	findLibraryOptions(semantics: any[]): string[] {
+	private findLibraryOptions(semantics: any[]): string[] {
 		const results = [];
 
 		function search(obj) {
@@ -560,7 +560,7 @@ class H5pLibraryBuilderService {
 		return results;
 	}
 
-	async buildLibraryDependency(
+	private async buildLibraryDependency(
 		dependency: any,
 		library: string,
 		tag: string,
@@ -593,23 +593,23 @@ class H5pLibraryBuilderService {
 		return [];
 	}
 
-	logBuildingLibraryDependency(dependency: any, library: string, tag: string): void {
+	private logBuildingLibraryDependency(dependency: any, library: string, tag: string): void {
 		console.log(`Building dependency ${LibraryName.toUberName(dependency)}.x from GitHub for ${library}-${tag}.`);
 	}
 
-	logGithubRepositoryNotFound(library: string): void {
+	private logGithubRepositoryNotFound(library: string): void {
 		console.log(`No GitHub repository found for ${library}.`);
 	}
 
-	logTagNotFound(dependency: any): void {
+	private logTagNotFound(dependency: any): void {
 		console.log(`No suitable tag found for dependency ${LibraryName.toUberName(dependency)}.x .`);
 	}
 
-	logBuildingLibraryDependencySuccess(depName: string, depTag: string): void {
+	private logBuildingLibraryDependencySuccess(depName: string, depTag: string): void {
 		console.log(`Successfully built dependency ${depName}-${depTag} from GitHub.`);
 	}
 
-	getHighestVersionTags(tags: string[], majorVersion: number, minorVersion: number): string | undefined {
+	private getHighestVersionTags(tags: string[], majorVersion: number, minorVersion: number): string | undefined {
 		const matchingTags = tags.filter((t) => {
 			const [maj, min] = t.split('.').map(Number);
 
@@ -627,7 +627,7 @@ class H5pLibraryBuilderService {
 		return highestVersionTag;
 	}
 
-	isCurrentVersionAvailable(library: string, tag: string, availableVersions: string[]): boolean {
+	private isCurrentVersionAvailable(library: string, tag: string, availableVersions: string[]): boolean {
 		const currentPatchVersionAvailable = availableVersions.includes(`${library}-${tag}`);
 
 		if (currentPatchVersionAvailable) {
@@ -637,11 +637,11 @@ class H5pLibraryBuilderService {
 		return currentPatchVersionAvailable;
 	}
 
-	logVersionAlreadyAvailable(library: string, tag: string): void {
+	private logVersionAlreadyAvailable(library: string, tag: string): void {
 		console.log(`${library}-${tag} is already available.`);
 	}
 
-	isNewerPatchVersionAvailable(library: string, tag: string, availableVersions: string[]): boolean {
+	private isNewerPatchVersionAvailable(library: string, tag: string, availableVersions: string[]): boolean {
 		const [tagMajor, tagMinor, tagPatch] = tag.split('.').map(Number);
 		const newerPatchVersionAvailable = availableVersions.some((v) => {
 			const [lib, version] = v.split('-');
@@ -658,9 +658,7 @@ class H5pLibraryBuilderService {
 		return newerPatchVersionAvailable;
 	}
 
-	logNewerPatchVersionAlreadyAvailable(library: string, tag: string): void {
+	private logNewerPatchVersionAlreadyAvailable(library: string, tag: string): void {
 		console.log(`A newer patch version of ${library}-${tag} is already available.`);
 	}
 }
-
-export default H5pLibraryBuilderService;

@@ -1,7 +1,7 @@
 import { FileSystemHelper } from '../helper/file-system.helper';
 import { S3ClientHelper } from '../helper/s3-client.helper';
 
-class H5pLibraryUploaderService {
+export class H5pLibraryUploaderService {
 	tempFolderPath: string;
 	s3ClientHelper: S3ClientHelper;
 
@@ -18,7 +18,7 @@ class H5pLibraryUploaderService {
 		this.s3ClientHelper = new S3ClientHelper();
 	}
 
-	async uploadLibraries(): Promise<void> {
+	public async uploadLibraries(): Promise<void> {
 		const folders: string[] = FileSystemHelper.getAllFolders(this.tempFolderPath);
 		console.log(`Found ${folders.length} folders in the temporary directory.`);
 		for (const folder of folders) {
@@ -27,7 +27,7 @@ class H5pLibraryUploaderService {
 		}
 	}
 
-	logFolderBanner(folderName: string): void {
+	private logFolderBanner(folderName: string): void {
 		const name = `*   ${folderName}   *`;
 		const border = '*'.repeat(name.length);
 		console.log(border);
@@ -35,7 +35,7 @@ class H5pLibraryUploaderService {
 		console.log(border);
 	}
 
-	async uploadLibrary(folderName: string): Promise<void> {
+	private async uploadLibrary(folderName: string): Promise<void> {
 		const localFolderPath = FileSystemHelper.buildPath(this.tempFolderPath, folderName);
 		if (!FileSystemHelper.pathExists(localFolderPath)) {
 			throw new Error(`Folder ${localFolderPath} does not exist.`);
@@ -54,20 +54,20 @@ class H5pLibraryUploaderService {
 		await this.addLibrary(localFolderPath, s3FolderPath);
 	}
 
-	async checkFolderAlreadyExistsInS3(s3FolderPath: string): Promise<boolean> {
+	private async checkFolderAlreadyExistsInS3(s3FolderPath: string): Promise<boolean> {
 		const objects = await this.s3ClientHelper.listObjects(s3FolderPath);
 		const folderExistsInS3 = Array.isArray(objects.Contents) && objects.Contents.length > 0;
 		return folderExistsInS3;
 	}
 
-	async checkIfUpdateIsNeeded(localFolderPath: string, s3FolderPath: string): Promise<any> {
+	private async checkIfUpdateIsNeeded(localFolderPath: string, s3FolderPath: string): Promise<any> {
 		const localLibraryJson = this.getLibraryJsonFromLocalFolder(localFolderPath);
 		const s3LibraryJson = await this.getLibraryJsonFromS3(s3FolderPath);
 		const result = this.compareVersions(localLibraryJson, s3LibraryJson);
 		return result;
 	}
 
-	getLibraryJsonFromLocalFolder(localFolderPath: string): any {
+	private getLibraryJsonFromLocalFolder(localFolderPath: string): any {
 		const localLibraryJsonPath = FileSystemHelper.buildPath(localFolderPath, 'library.json');
 		if (!FileSystemHelper.pathExists(localLibraryJsonPath)) {
 			throw new Error(`library.json does not exist in ${localFolderPath}`);
@@ -76,7 +76,7 @@ class H5pLibraryUploaderService {
 		return localLibraryJson;
 	}
 
-	async getLibraryJsonFromS3(s3FolderPath: string): Promise<any | undefined> {
+	private async getLibraryJsonFromS3(s3FolderPath: string): Promise<any | undefined> {
 		const s3LibraryJsonKey = `${s3FolderPath}/library.json`;
 		let s3LibraryJson;
 		try {
@@ -91,7 +91,7 @@ class H5pLibraryUploaderService {
 		return s3LibraryJson;
 	}
 
-	compareVersions(localLibraryJson: any, s3LibraryJson: any): any {
+	private compareVersions(localLibraryJson: any, s3LibraryJson: any): any {
 		if (!s3LibraryJson) {
 			return undefined;
 		}
@@ -126,7 +126,7 @@ class H5pLibraryUploaderService {
 		return result;
 	}
 
-	async updateLibrary(isUpdateNeeded: any, localFolderPath: string, s3FolderPath: string): Promise<void> {
+	private async updateLibrary(isUpdateNeeded: any, localFolderPath: string, s3FolderPath: string): Promise<void> {
 		try {
 			const { newVersion, oldVersion } = isUpdateNeeded;
 			console.log(
@@ -144,13 +144,13 @@ class H5pLibraryUploaderService {
 		}
 	}
 
-	formatLibraryVersion(version: any): string {
+	private formatLibraryVersion(version: any): string {
 		if (!version) return '';
 
 		return `${version.machineName}-${version.majorVersion}.${version.minorVersion}.${version.patchVersion}`;
 	}
 
-	async deleteFolderFromS3(s3FolderPath: string): Promise<void> {
+	private async deleteFolderFromS3(s3FolderPath: string): Promise<void> {
 		try {
 			const deletedFiles = await this.s3ClientHelper.deleteFolder(s3FolderPath);
 			console.log(`Deleted ${deletedFiles.length} file(s) from S3 folder ${s3FolderPath}: ${deletedFiles.join(', ')}`);
@@ -160,7 +160,7 @@ class H5pLibraryUploaderService {
 		}
 	}
 
-	async addLibrary(localFolderPath: string, s3FolderPath: string): Promise<void> {
+	private async addLibrary(localFolderPath: string, s3FolderPath: string): Promise<void> {
 		try {
 			console.log(`Adding library ${localFolderPath} to S3 at ${s3FolderPath}`);
 			await this.uploadLibraryToS3(localFolderPath, s3FolderPath);
@@ -171,7 +171,7 @@ class H5pLibraryUploaderService {
 		}
 	}
 
-	async uploadLibraryToS3(localFolderPath: string, s3FolderPath: string): Promise<void> {
+	private async uploadLibraryToS3(localFolderPath: string, s3FolderPath: string): Promise<void> {
 		try {
 			const uploadedFiles = await this.uploadFolderToS3Recursive(localFolderPath, s3FolderPath);
 			console.log(`Uploaded ${uploadedFiles.length} file(s) to S3: ${uploadedFiles.join(', ')}`);
@@ -181,7 +181,7 @@ class H5pLibraryUploaderService {
 		}
 	}
 
-	async uploadFolderToS3Recursive(localDir: string, s3Prefix: string): Promise<string[]> {
+	private async uploadFolderToS3Recursive(localDir: string, s3Prefix: string): Promise<string[]> {
 		const allUploadedFiles: string[] = [];
 		const entries = FileSystemHelper.getAllFilesAndFolders(localDir);
 		for (const entry of entries) {
@@ -199,5 +199,3 @@ class H5pLibraryUploaderService {
 		return allUploadedFiles;
 	}
 }
-
-export default H5pLibraryUploaderService;

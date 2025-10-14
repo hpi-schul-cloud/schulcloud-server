@@ -45,7 +45,7 @@ export class FileSystemHelper {
 		return content;
 	}
 
-	public static readLibraryRepoMap = (mapFile: string): Record<string, string> => {
+	public static readLibraryRepoMap(mapFile: string): Record<string, string> {
 		const libraryRepoMap = this.readYamlFile(mapFile);
 
 		if (!this.isLibraryRepoMapType(libraryRepoMap)) {
@@ -53,9 +53,9 @@ export class FileSystemHelper {
 		}
 
 		return libraryRepoMap;
-	};
+	}
 
-	public static isLibraryRepoMapType = (object: any): boolean => {
+	private static isLibraryRepoMapType(object: any): boolean {
 		const isType =
 			typeof object === 'object' &&
 			object !== null &&
@@ -63,7 +63,7 @@ export class FileSystemHelper {
 			Object.values(object).every((v) => typeof v === 'string');
 
 		return isType;
-	};
+	}
 
 	public static readLibraryWishList(filePath: string): string[] {
 		const librariesYamlContent = this.readYamlFile(filePath);
@@ -77,7 +77,7 @@ export class FileSystemHelper {
 		return libraryWishList;
 	}
 
-	public static isLibrariesContentType = (object: any): boolean => {
+	private static isLibrariesContentType(object: any): boolean {
 		const isType =
 			typeof object === 'object' &&
 			!Array.isArray(object) &&
@@ -86,9 +86,9 @@ export class FileSystemHelper {
 			Array.isArray(object.h5p_libraries);
 
 		return isType;
-	};
+	}
 
-	public static readYamlFile(filePath: string): any {
+	private static readYamlFile(filePath: string): any {
 		const content = fs.readFileSync(filePath, { encoding: 'utf-8' });
 		const yamlContent = yaml.parse(content);
 
@@ -164,11 +164,10 @@ export class FileSystemHelper {
 		return semanticsJsonPath;
 	}
 
-	public static checkPackageJsonPath(folderPath: string): boolean {
+	public static getPackageJsonPath(folderPath: string): string {
 		const packageJsonPath = this.buildPath(folderPath, 'package.json');
-		const packageJsonPathExists = this.pathExists(packageJsonPath);
 
-		return packageJsonPathExists;
+		return packageJsonPath;
 	}
 
 	public static buildPath(...segments: string[]): string {

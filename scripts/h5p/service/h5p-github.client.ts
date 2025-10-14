@@ -1,14 +1,14 @@
 import axios, { AxiosResponse } from 'axios';
 import fs from 'fs';
 
-class H5pGitHubClient {
+export class H5pGitHubClient {
 	private token!: string;
 
 	constructor() {
 		this.initialize();
 	}
 
-	initialize(): void {
+	public initialize(): void {
 		const personalAccessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
 		if (!personalAccessToken) {
 			throw new Error('GITHUB_PERSONAL_ACCESS_TOKEN environment variable is not set');
@@ -16,7 +16,7 @@ class H5pGitHubClient {
 		this.token = personalAccessToken;
 	}
 
-	async fetchRepositoriesFromOrganization(organization: string): Promise<any[]> {
+	public async fetchRepositoriesFromOrganization(organization: string): Promise<any[]> {
 		let repos: any[] = [];
 		let page = 1;
 		const perPage = 100; // Maximum allowed by GitHub API
@@ -39,7 +39,7 @@ class H5pGitHubClient {
 		return repos;
 	}
 
-	async fetchRepositoriesOfOrganizationPagewise(
+	private async fetchRepositoriesOfOrganizationPagewise(
 		organization: string,
 		page: number = 1,
 		perPage: number = 100
@@ -56,7 +56,7 @@ class H5pGitHubClient {
 		return result;
 	}
 
-	async buildLibraryRepoMapFromRepos(organization: string, repos: any[]): Promise<Record<string, string>> {
+	public async buildLibraryRepoMapFromRepos(organization: string, repos: any[]): Promise<Record<string, string>> {
 		const libraryRepoMap: Record<string, string> = {};
 
 		for (const repo of repos) {
@@ -81,7 +81,7 @@ class H5pGitHubClient {
 		return libraryRepoMap;
 	}
 
-	async getLibraryJsonFromRepo(organization: string, repo: any): Promise<AxiosResponse<any> | undefined> {
+	private async getLibraryJsonFromRepo(organization: string, repo: any): Promise<AxiosResponse<any> | undefined> {
 		let result: AxiosResponse<any> | undefined;
 		const url = `https://api.github.com/repos/${organization}/${repo.name}/contents/library.json`;
 		try {
@@ -98,7 +98,7 @@ class H5pGitHubClient {
 		return result;
 	}
 
-	checkContentOfLibraryJson(data: any): boolean {
+	private checkContentOfLibraryJson(data: any): boolean {
 		if (!data || !data.content || typeof data.content !== 'string') {
 			console.error('library.json content is missing or not a string.');
 			return false;
@@ -106,7 +106,7 @@ class H5pGitHubClient {
 		return true;
 	}
 
-	async fetchAllTags(repoName: string, options: { maxRetries: number } = { maxRetries: 3 }): Promise<string[]> {
+	public async fetchAllTags(repoName: string, options: { maxRetries: number } = { maxRetries: 3 }): Promise<string[]> {
 		const [owner, repo] = repoName.split('/');
 		const perPage = 100;
 		let page = 1;
@@ -133,15 +133,15 @@ class H5pGitHubClient {
 		return allTags;
 	}
 
-	buildTagsUrl(owner: string, repo: string, page: number, perPage: number): string {
+	private buildTagsUrl(owner: string, repo: string, page: number, perPage: number): string {
 		return `https://api.github.com/repos/${owner}/${repo}/tags?per_page=${perPage}&page=${page}`;
 	}
 
-	extractTagNames(response: AxiosResponse<any>): string[] {
+	private extractTagNames(response: AxiosResponse<any>): string[] {
 		return Array.isArray(response.data) ? response.data.map((tag: any) => tag.name) : [];
 	}
 
-	async downloadTag(library: string, tag: string, filePath: string): Promise<void> {
+	public async downloadTag(library: string, tag: string, filePath: string): Promise<void> {
 		const [owner, repo] = library.split('/');
 		const url = `https://github.com/${owner}/${repo}/archive/refs/tags/${tag}.zip`;
 
@@ -163,7 +163,7 @@ class H5pGitHubClient {
 		}
 	}
 
-	async fetch(url: string, options: { maxRetries: number }): Promise<AxiosResponse<any>> {
+	private async fetch(url: string, options: { maxRetries: number }): Promise<AxiosResponse<any>> {
 		let attempt = 0;
 		let response: AxiosResponse<any> | undefined = undefined;
 		const headers = this.getHeaders();
@@ -189,11 +189,11 @@ class H5pGitHubClient {
 		return response;
 	}
 
-	delay(ms: number): Promise<void> {
+	private delay(ms: number): Promise<void> {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
-	async fetchContent(url: string): Promise<AxiosResponse<any>> {
+	private async fetchContent(url: string): Promise<AxiosResponse<any>> {
 		const response = await axios({
 			url,
 			method: 'GET',
@@ -207,10 +207,8 @@ class H5pGitHubClient {
 		return response;
 	}
 
-	getHeaders(): Record<string, string> {
+	private getHeaders(): Record<string, string> {
 		const headers: Record<string, string> = this.token ? { Authorization: `token ${this.token}` } : {};
 		return headers;
 	}
 }
-
-export default H5pGitHubClient;

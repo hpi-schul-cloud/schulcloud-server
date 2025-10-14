@@ -94,7 +94,7 @@ export class S3ClientHelper {
 		return data;
 	}
 
-	async uploadFile(key: string, body: Buffer | string): Promise<any> {
+	public async uploadFile(key: string, body: Buffer | string): Promise<any> {
 		const command = new PutObjectCommand({
 			Bucket: this.bucket,
 			Key: key,
@@ -105,7 +105,7 @@ export class S3ClientHelper {
 		return result;
 	}
 
-	async deleteFolder(path: string, nextMarker?: string): Promise<string[]> {
+	public async deleteFolder(path: string, nextMarker?: string): Promise<string[]> {
 		const data = await this.listObjects(path, nextMarker);
 		if (!data.Contents || data.Contents.length === 0) {
 			return [];
@@ -125,7 +125,7 @@ export class S3ClientHelper {
 		return result;
 	}
 
-	async delete(paths: string[]): Promise<string[]> {
+	private async delete(paths: string[]): Promise<string[]> {
 		const result: string[] = [];
 
 		if (paths.length === 0) {
