@@ -6,7 +6,7 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardNodeFactory, Card, Column, ContentElementType } from '../domain';
-import { BoardNodeService } from '../service';
+import { BoardNodeService, ColumnBoardService } from '../service';
 import { BoardNodePermissionService } from '../service/board-node-permission.service';
 import { cardFactory, columnBoardFactory, columnFactory } from '../testing';
 import { ColumnUc } from './column.uc';
@@ -30,6 +30,10 @@ describe(ColumnUc.name, () => {
 				{
 					provide: BoardNodeService,
 					useValue: createMock<BoardNodeService>(),
+				},
+				{
+					provide: ColumnBoardService,
+					useValue: createMock<ColumnBoardService>(),
 				},
 				{
 					provide: BoardNodeFactory,

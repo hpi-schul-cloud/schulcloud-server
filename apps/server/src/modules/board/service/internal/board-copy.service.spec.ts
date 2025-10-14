@@ -8,13 +8,12 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client/
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardExternalReferenceType } from '../../domain/types';
-import { columnBoardFactory } from '../../testing/column-board.factory';
+import { columnBoardFactory, cardFactory } from '../../testing';
 import { BoardNodeService } from '../board-node.service';
 import { BoardCopyService, CopyCardParams, CopyColumnBoardParams } from './board-copy.service';
 import { ColumnBoardTitleService } from './column-board-title.service';
 // Warning: do not move the BoardNodeCopyService import up. Otherwise it will lead to dependency cycle.
 import { BoardNodeCopyService } from './board-node-copy.service';
-import { cardFactory, columnFactory } from '../../testing';
 
 describe(BoardCopyService.name, () => {
 	let module: TestingModule;
