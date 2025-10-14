@@ -1,5 +1,5 @@
 import { ILibraryName, LibraryName } from '@lumieducation/h5p-server';
-import childProcess from 'child_process';
+import { spawnSync, SpawnSyncOptions } from 'child_process';
 import { FileSystemHelper } from '../helper/file-system.helper';
 import { H5pGitHubClient } from './h5p-github.client.js';
 
@@ -337,7 +337,7 @@ export class H5pLibraryBuilderService {
 
 			let installCommand = 'npm';
 			let installArgs = [installRequired ? 'install' : 'ci'];
-			let installOptions = { cwd: folderPath, stdio: 'inherit' };
+			const installOptions: SpawnSyncOptions = { cwd: folderPath, stdio: 'inherit' };
 			if (legacyPeerDepsRequired) {
 				installArgs.push('--legacy-peer-deps');
 			}
@@ -350,14 +350,14 @@ export class H5pLibraryBuilderService {
 			}
 
 			console.log('Execute install command:', installCommand, installArgs, installOptions);
-			const installResult = childProcess.spawnSync(installCommand, installArgs, installOptions);
+			const installResult = spawnSync(installCommand, installArgs, installOptions);
 			if (installResult.status !== 0) {
 				throw new Error('npm install/ci failed');
 			}
 
 			let buildCommand = 'npm';
 			let buildArgs = ['run', 'build'];
-			let buildOptions = { cwd: folderPath, stdio: 'inherit' };
+			const buildOptions: SpawnSyncOptions = { cwd: folderPath, stdio: 'inherit' };
 
 			if (oldNodeVersion) {
 				const bashCommand = `${nvmCommand} && npm ${buildArgs.join(' ')}`;
@@ -367,7 +367,7 @@ export class H5pLibraryBuilderService {
 			}
 
 			console.log('Execute build command:', buildCommand, buildArgs, buildOptions);
-			const buildResult = childProcess.spawnSync(buildCommand, buildArgs, buildOptions);
+			const buildResult = spawnSync(buildCommand, buildArgs, buildOptions);
 			if (buildResult.status !== 0) {
 				throw new Error('npm run build failed');
 			}
@@ -451,11 +451,11 @@ export class H5pLibraryBuilderService {
 
 	private validateH5pLibrary(folderPath: string): boolean {
 		try {
-			const result = childProcess.spawnSync('h5p', ['validate', folderPath], {
-				cwd: folderPath,
-				stdio: 'inherit',
-				shell: true,
-			});
+			const validateCommand = 'h5p';
+			const validateArgs = ['validate', folderPath];
+			const validateOptions: SpawnSyncOptions = { cwd: folderPath, stdio: 'inherit', shell: true };
+
+			const result = spawnSync(validateCommand, validateArgs, validateOptions);
 			if (result.status === 0) {
 				console.log(`'h5p validate' succeeded for ${folderPath}`);
 				return true;
