@@ -28,16 +28,16 @@ export class VideoConferenceJoinUc {
 
 		const user = await this.userService.findById(currentUserId);
 
-		const joinBuilder = new BBBJoinConfigBuilder({
-			fullName: this.videoConferenceService.sanitizeString(`${user.firstName} ${user.lastName}`),
-			meetingID: scope.id,
-			role,
-		}).withUserId(currentUserId);
-
 		const videoConference = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
 			scope.id,
 			scope.scope
 		);
+
+		const joinBuilder = new BBBJoinConfigBuilder({
+			fullName: this.videoConferenceService.sanitizeString(`${user.firstName} ${user.lastName}`),
+			meetingID: scope.id + videoConference.salt,
+			role,
+		}).withUserId(currentUserId);
 
 		if (isGuest) {
 			joinBuilder.asGuest(true);

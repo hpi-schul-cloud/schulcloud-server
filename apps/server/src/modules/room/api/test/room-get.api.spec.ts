@@ -4,7 +4,7 @@ import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
@@ -17,7 +17,6 @@ describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -28,13 +27,10 @@ describe('Room Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'rooms');
-
-		config = serverConfig();
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOMS_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -47,27 +43,6 @@ describe('Room Controller (API)', () => {
 				const someId = new ObjectId().toHexString();
 				const response = await testApiClient.get(someId);
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-			});
-		});
-
-		describe('when the feature is disabled', () => {
-			const setup = async () => {
-				config.FEATURE_ROOMS_ENABLED = false;
-
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
-
-				return { loggedInClient };
-			};
-
-			it('should return a 403 error', async () => {
-				const { loggedInClient } = await setup();
-				const someId = new ObjectId().toHexString();
-				const response = await loggedInClient.get(someId);
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 
@@ -94,10 +69,14 @@ describe('Room Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const room = roomEntityFactory.build({ schoolId: school.id });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
-				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 				const userGroupEntity = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
-					users: [{ role: roomViewerRole, user: studentUser }],
+					users: [
+						{ role: roomViewerRole, user: studentUser },
+						{ role: roomOwnerRole, user: teacherUser },
+					],
 					organization: studentUser.school,
 					externalSource: undefined,
 				});
@@ -106,7 +85,16 @@ describe('Room Controller (API)', () => {
 					roomId: room.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([room, studentAccount, studentUser, roomViewerRole, userGroupEntity, roomMembership]);
+				await em.persistAndFlush([
+					room,
+					studentAccount,
+					studentUser,
+					teacherUser,
+					roomOwnerRole,
+					roomViewerRole,
+					userGroupEntity,
+					roomMembership,
+				]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -127,29 +115,16 @@ describe('Room Controller (API)', () => {
 				return { loggedInClient, room, expectedResponse };
 			};
 
-			describe('when the room exists', () => {
-				it('should return a room', async () => {
-					const { loggedInClient, room, expectedResponse } = await setup();
+			it('should return a room', async () => {
+				const { loggedInClient, room, expectedResponse } = await setup();
 
-					const response = await loggedInClient.get(room.id);
-					expect(response.status).toBe(HttpStatus.OK);
-					expect(response.body).toEqual(expectedResponse);
-				});
-			});
-
-			describe('when the room does not exist', () => {
-				it('should return a 404 error', async () => {
-					const { loggedInClient } = await setup();
-					const someId = new ObjectId().toHexString();
-
-					const response = await loggedInClient.get(someId);
-
-					expect(response.status).toBe(HttpStatus.NOT_FOUND);
-				});
+				const response = await loggedInClient.get(room.id);
+				expect(response.status).toBe(HttpStatus.OK);
+				expect(response.body).toEqual(expectedResponse);
 			});
 		});
 
-		describe('when the user has not the required permissions', () => {
+		describe('when the user has NOT the required permissions', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
@@ -162,6 +137,252 @@ describe('Room Controller (API)', () => {
 			};
 
 			describe('when the room exists', () => {
+				it('should return 403', async () => {
+					const { loggedInClient, room } = await setup();
+
+					const response = await loggedInClient.get(room.id);
+
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
+			});
+		});
+
+		describe('when the room does not exist', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+
+				await em.persistAndFlush([studentAccount, studentUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return { loggedInClient };
+			};
+
+			it('should return a 404 error', async () => {
+				const { loggedInClient } = await setup();
+				const someId = new ObjectId().toHexString();
+
+				const response = await loggedInClient.get(someId);
+
+				expect(response.status).toBe(HttpStatus.NOT_FOUND);
+			});
+		});
+
+		describe('when the room is locked', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const room = roomEntityFactory.build({ schoolId: school.id });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+				const userGroupEntity = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
+					users: [{ role: roomViewerRole, user: studentUser }],
+					organization: studentUser.school,
+					externalSource: undefined,
+				});
+				const roomMembership = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntity.id,
+					roomId: room.id,
+					schoolId: school.id,
+				});
+				await em.persistAndFlush([room, studentAccount, studentUser, roomViewerRole, userGroupEntity, roomMembership]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return { loggedInClient, room };
+			};
+
+			it('should return a 403 error', async () => {
+				const { loggedInClient, room } = await setup();
+
+				const response = await loggedInClient.get(room.id);
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when the user is a school admin of same school', () => {
+			const setup = async (roomWithUsers: boolean) => {
+				const school = schoolEntityFactory.buildWithId();
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+				const room = roomEntityFactory.build({ schoolId: school.id });
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { teacherUser: teacherUser2 } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+				const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+				const users = roomWithUsers
+					? [
+							{ role: roomViewerRole, user: studentUser },
+							{ role: roomOwnerRole, user: teacherUser },
+							{ role: roomViewerRole, user: teacherUser2 },
+					  ]
+					: [];
+				const userGroupEntity = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
+					users,
+					organization: school,
+					externalSource: undefined,
+				});
+				const roomMembership = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntity.id,
+					roomId: room.id,
+					schoolId: school.id,
+				});
+				await em.persistAndFlush([
+					room,
+					adminAccount,
+					adminUser,
+					teacherUser,
+					teacherUser2,
+					studentUser,
+					roomOwnerRole,
+					roomViewerRole,
+					userGroupEntity,
+					roomMembership,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				const expectedResponse = {
+					id: room.id,
+					name: room.name,
+					color: room.color,
+					schoolId: room.schoolId,
+					startDate: room.startDate?.toISOString(),
+					endDate: room.endDate?.toISOString(),
+					createdAt: room.createdAt.toISOString(),
+					updatedAt: room.updatedAt.toISOString(),
+					permissions: [],
+					features: room.features,
+				};
+
+				return { loggedInClient, room, expectedResponse, userGroupEntity };
+			};
+
+			describe('with users in the room', () => {
+				it('should return a room', async () => {
+					const { loggedInClient, room, expectedResponse, userGroupEntity } = await setup(true);
+
+					const response = await loggedInClient.get(room.id);
+					expect(userGroupEntity).toBeDefined();
+
+					expect(response.status).toBe(HttpStatus.OK);
+					expect(response.body).toEqual(expect.objectContaining(expectedResponse));
+				});
+			});
+
+			describe('without users in the room', () => {
+				it('should return a room', async () => {
+					const { loggedInClient, room, expectedResponse, userGroupEntity } = await setup(false);
+
+					const response = await loggedInClient.get(room.id);
+					expect(userGroupEntity).toBeDefined();
+
+					expect(response.status).toBe(HttpStatus.OK);
+					expect(response.body).toEqual(expect.objectContaining(expectedResponse));
+				});
+			});
+		});
+
+		describe('when the user is a school admin of different school', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const otherSchool = schoolEntityFactory.buildWithId();
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+				const room = roomEntityFactory.build({ schoolId: otherSchool.id });
+				const roomWithOwnStudents = roomEntityFactory.build({ schoolId: otherSchool.id });
+
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: otherSchool });
+				const { studentUser } = UserAndAccountTestFactory.buildStudent({ school: otherSchool });
+				const { studentUser: studentUserFromOwnSchool } = UserAndAccountTestFactory.buildStudent({ school });
+
+				const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+
+				const userGroupEntityRoom = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
+					users: [
+						{ role: roomOwnerRole, user: teacherUser },
+						{ role: roomViewerRole, user: studentUser },
+					],
+					organization: otherSchool,
+					externalSource: undefined,
+				});
+
+				const userGroupEntityRoomWithOwnStudent = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
+					users: [
+						{ role: roomOwnerRole, user: teacherUser },
+						{ role: roomViewerRole, user: studentUser },
+						{ role: roomViewerRole, user: studentUserFromOwnSchool },
+					],
+					organization: otherSchool,
+					externalSource: undefined,
+				});
+
+				const roomMembership = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntityRoom.id,
+					roomId: room.id,
+					schoolId: otherSchool.id,
+				});
+
+				const roomMembershipWithOwnStudent = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntityRoomWithOwnStudent.id,
+					roomId: roomWithOwnStudents.id,
+					schoolId: otherSchool.id,
+				});
+
+				await em.persistAndFlush([
+					school,
+					otherSchool,
+					adminAccount,
+					adminUser,
+					teacherUser,
+					studentUser,
+					room,
+					roomWithOwnStudents,
+					studentUserFromOwnSchool,
+					roomViewerRole,
+					roomOwnerRole,
+					userGroupEntityRoom,
+					userGroupEntityRoomWithOwnStudent,
+					roomMembership,
+					roomMembershipWithOwnStudent,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					school,
+					otherSchool,
+					room,
+					roomWithOwnStudents,
+					teacherUser,
+					studentUser,
+					studentUserFromOwnSchool,
+					roomMembership,
+					roomMembershipWithOwnStudent,
+					loggedInClient,
+				};
+			};
+
+			describe('when the room has ANY students of the admin school', () => {
+				it('should return return the room', async () => {
+					const { loggedInClient, roomWithOwnStudents } = await setup();
+
+					const response = await loggedInClient.get(roomWithOwnStudents.id);
+
+					expect(response.status).toBe(HttpStatus.OK);
+				});
+			});
+
+			describe('when the room has NO students of the admin school', () => {
 				it('should return 403', async () => {
 					const { loggedInClient, room } = await setup();
 

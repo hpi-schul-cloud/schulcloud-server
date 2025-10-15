@@ -268,14 +268,14 @@ describe('GroupService', () => {
 		});
 	});
 
-	describe('findByUsersSchoolId', () => {
+	describe('findByUsersAndRoomsSchoolId', () => {
 		const setup = () => {
 			const schoolId: EntityId = new ObjectId().toHexString();
 			const types: GroupTypes[] = [GroupTypes.CLASS, GroupTypes.COURSE];
 			const groups: Group[] = groupFactory.buildList(2);
 			const page: Page<Group> = new Page<Group>(groups, groups.length);
 
-			groupRepo.findByUsersSchoolId.mockResolvedValue(page);
+			groupRepo.findByUsersAndRoomsSchoolId.mockResolvedValue(page);
 
 			return {
 				schoolId,
@@ -287,9 +287,9 @@ describe('GroupService', () => {
 		it('should call the repo with the school id and types', async () => {
 			const { schoolId, types } = setup();
 
-			await service.findByUsersSchoolId(schoolId, types);
+			await service.findByUsersAndRoomsSchoolId(schoolId, types);
 
-			expect(groupRepo.findByUsersSchoolId).toHaveBeenCalledWith(schoolId, types);
+			expect(groupRepo.findByUsersAndRoomsSchoolId).toHaveBeenCalledWith(schoolId, types);
 		});
 	});
 

@@ -1,5 +1,5 @@
 const { promisify } = require('es6-promisify');
-const CryptoJS = require('crypto-js');
+const { AesEncryptionHelper } = require('../../../../dist/apps/server/shared/common/utils/aes-encryption');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const aws = require('aws-sdk');
 const mongoose = require('mongoose');
@@ -65,9 +65,7 @@ const chooseProvider = async (schoolId) => {
 
 const getS3 = (storageProvider, awsClientHelper) => {
 	const S3_KEY = Configuration.get('S3_KEY');
-	storageProvider.secretAccessKey = CryptoJS.AES.decrypt(storageProvider.secretAccessKey, S3_KEY).toString(
-		CryptoJS.enc.Utf8
-	);
+	storageProvider.secretAccessKey = AesEncryptionHelper.decrypt(storageProvider.secretAccessKey, S3_KEY);
 
 	const config = new awsClientHelper.Config({
 		signatureVersion: 'v4',
@@ -305,36 +303,6 @@ class AWSS3Strategy {
 
 				return response;
 			}
-			throw err;
-		}
-	}
-
-	checkCopyFileParams(userId, oldPath, newPath) {
-		if (!userId || !oldPath || !newPath) {
-			throw new BadRequest('Missing parameters by copyFile.', { userId, oldPath, newPath });
-		}
-	}
-
-	async copyFile(userId, oldPath, newPath, externalSchoolId) {
-		try {
-			this.checkCopyFileParams(userId, oldPath, newPath);
-
-			const user = await this.loadUser(userId);
-			const school = await this.loadSchool(user.schoolId);
-			const awsObject = await this.createAWSObjectFromSchool(school);
-
-			// files can be copied to different schools
-			const sourceBucket = `bucket-${externalSchoolId || user.schoolId}`;
-
-			const params = {
-				Bucket: awsObject.bucket, // destination bucket
-				CopySource: `/${sourceBucket}/${encodeURIComponent(oldPath)}`, // full source path (with bucket)
-				Key: newPath, // destination path
-			};
-
-			return promisify(awsObject.s3.copyObject.bind(awsObject.s3), awsObject.s3)(params);
-		} catch (err) {
-			logger.warning(err);
 			throw err;
 		}
 	}

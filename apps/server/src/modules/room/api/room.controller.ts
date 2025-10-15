@@ -81,7 +81,6 @@ export class RoomController {
 		description: 'Returns a list of room statistics.',
 		type: RoomStatsListResponse,
 	})
-	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
@@ -111,7 +110,7 @@ export class RoomController {
 	): Promise<RoomItemResponse> {
 		const room = await this.roomUc.createRoom(currentUser.userId, createRoomParams);
 
-		const response = RoomMapper.mapToRoomItemResponse(room);
+		const response = RoomMapper.mapToRoomItemResponse({ room, isLocked: false });
 
 		return response;
 	}

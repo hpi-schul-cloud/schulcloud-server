@@ -1,3 +1,4 @@
+import { Stream } from 'stream';
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeResourceType,
@@ -13,7 +14,7 @@ export type CommonCartridgeFileResourcePropsV110 = {
 	identifier: string;
 	folder: string;
 	fileName: string;
-	fileContent: Buffer;
+	file: Stream;
 	title: string;
 };
 
@@ -31,7 +32,11 @@ export class CommonCartridgeFileResourceV110 extends CommonCartridgeResource {
 	}
 
 	public getFileContent(): Buffer {
-		return this.props.fileContent;
+		throw new Error('getFileContent is not supported');
+	}
+
+	public getFileStream(): Stream {
+		return this.props.file;
 	}
 
 	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {

@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const testHelper = require('../helpers/testObjects');
@@ -50,7 +51,7 @@ describe('wopi service', () => {
 			storageFileName: '1501061352639-Test.docx',
 			permissions: [],
 			bucket: 'bucket-test',
-			storageProviderId: testObjects.generateObjectId(),
+			storageProviderId: new ObjectId(),
 			__v: 0,
 		};
 
@@ -63,7 +64,7 @@ describe('wopi service', () => {
 			storageFileName: '1501161352639-Test1.docx',
 			permissions: [],
 			bucket: 'bucket-test',
-			storageProviderId: testObjects.generateObjectId(),
+			storageProviderId: new ObjectId(),
 			__v: 0,
 		};
 
@@ -104,7 +105,7 @@ describe('wopi service', () => {
 			storageFileName: `${Date.now()}-Test.docx`,
 			permissions: [],
 			bucket: 'bucket-test',
-			storageProviderId: testObjects.generateObjectId(),
+			storageProviderId: new ObjectId(),
 		});
 
 		return app
@@ -151,7 +152,7 @@ describe('wopi service', () => {
 				storageFileName: `${Date.now()}-Test.docx`,
 				permissions: [],
 				bucket: 'bucket-test',
-				storageProviderId: testObjects.generateObjectId(),
+				storageProviderId: new ObjectId(),
 			});
 			let params = await testObjects.generateRequestParamsFromUser(user);
 			params = Object.assign(params, {
@@ -179,7 +180,7 @@ describe('wopi service', () => {
 			storageFileName: `${Date.now()}-Test.docx`,
 			permissions: [],
 			bucket: 'bucket-test',
-			storageProviderId: testObjects.generateObjectId(),
+			storageProviderId: new ObjectId(),
 		});
 		const headers = {};
 		headers['x-wopi-override'] = 'LOCK';

@@ -3,11 +3,10 @@ import { BoardFeature } from '@modules/board/domain';
 import { LegacySchoolService } from '@modules/legacy-school/service';
 import { SchoolFeature } from '@modules/school/domain';
 import { UserService } from '@modules/user';
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { VideoConferenceScope } from '../domain';
-import { VideoConferenceConfig } from '../video-conference-config';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 import { ScopeRef } from './dto';
 
 @Injectable()
@@ -16,7 +15,7 @@ export class VideoConferenceFeatureService {
 		private readonly boardContextApiHelperService: BoardContextApiHelperService,
 		private readonly userService: UserService,
 		private readonly legacySchoolService: LegacySchoolService,
-		private readonly configService: ConfigService<VideoConferenceConfig, true>
+		@Inject(VIDEO_CONFERENCE_CONFIG_TOKEN) private readonly config: VideoConferenceConfig
 	) {}
 
 	public async checkVideoConferenceFeatureEnabled(userId: EntityId, scope: ScopeRef): Promise<void> {
@@ -46,6 +45,6 @@ export class VideoConferenceFeatureService {
 	}
 
 	private isVideoConferenceEnabledForConfig(): boolean {
-		return this.configService.get<boolean>('FEATURE_VIDEOCONFERENCE_ENABLED');
+		return this.config.FEATURE_VIDEOCONFERENCE_ENABLED;
 	}
 }
