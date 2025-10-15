@@ -111,7 +111,7 @@ export class FileSystemHelper {
 
 	public static writeLibraryRepoMap(filePath: string, machineNameToRepoMap: Record<string, string>): void {
 		const sorted = Object.keys(machineNameToRepoMap)
-			.sort()
+			.sort((a, b) => a.localeCompare(b))
 			.reduce((acc, key) => {
 				acc[key] = machineNameToRepoMap[key];
 
