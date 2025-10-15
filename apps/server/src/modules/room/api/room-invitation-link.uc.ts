@@ -143,9 +143,11 @@ export class RoomInvitationLinkUc {
 
 		this.checkRoleValidity(user, roomInvitationLink);
 
-		this.checkActiveUntil(roomInvitationLink);
+		this.checkLinkActive(roomInvitationLink);
 
-		await this.checkCreatorSchoolRestriction(user, roomInvitationLink);
+		const isExternalPerson = user.getRoles().some((role) => role.name === RoleName.EXPERT);
+		const skipSchoolRestrictionCheck = isExternalPerson && roomInvitationLink.isUsableByExternalPersons;
+		if (!skipSchoolRestrictionCheck) await this.checkCreatorSchoolRestriction(user, roomInvitationLink);
 
 		await this.checkStudentFromOtherSchool(user, roomInvitationLink);
 	}
@@ -172,7 +174,7 @@ export class RoomInvitationLinkUc {
 		);
 	}
 
-	private checkActiveUntil(roomInvitationLink: RoomInvitationLink): void {
+	private checkLinkActive(roomInvitationLink: RoomInvitationLink): void {
 		if (roomInvitationLink.activeUntil && roomInvitationLink.activeUntil < new Date()) {
 			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.EXPIRED, HttpStatus.BAD_REQUEST);
 		}
