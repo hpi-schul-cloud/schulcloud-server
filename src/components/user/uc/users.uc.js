@@ -77,7 +77,7 @@ const createUserTrashbin = async (id, data) => trashbinRepo.createUserTrashbin(i
 
 const replaceUserWithTombstone = async (user) => {
 	const { _id, schoolId } = user;
-	const uid = ObjectId();
+	const uid = new ObjectId();
 	await userRepo.replaceUserWithTombstone(_id, {
 		firstName: 'DELETED',
 		lastName: 'USER',
