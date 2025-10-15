@@ -141,41 +141,45 @@ export class RoomInvitationLinkUc {
 			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.INVALID_LINK, HttpStatus.NOT_FOUND);
 		}
 
+		this.checkRoleValidity(user, roomInvitationLink);
+
+		this.checkActiveUntil(roomInvitationLink);
+
+		await this.checkCreatorSchoolRestriction(user, roomInvitationLink);
+
+		await this.checkStudentFromOtherSchool(user, roomInvitationLink);
+	}
+
+	private checkRoleValidity(user: User, roomInvitationLink: RoomInvitationLink): void {
 		const isTeacher = user.getRoles().some((role) => role.name === RoleName.TEACHER);
 		const isStudent = user.getRoles().some((role) => role.name === RoleName.STUDENT);
 		const isExternalPerson = user.getRoles().some((role) => role.name === RoleName.EXPERT);
 
-		if (isExternalPerson) {
+		if (isTeacher) {
+			return;
+		}
+		if (isStudent && roomInvitationLink.isUsableByStudents) {
+			return;
+		}
+		if (isExternalPerson && roomInvitationLink.isUsableByExternalPersons) {
 			this.checkFeatureLinkInvitationExternalPersonsEnabled();
+			return;
 		}
 
+		throw new RoomInvitationLinkError(
+			RoomInvitationLinkValidationError.NOT_USABLE_FOR_CURRENT_ROLE,
+			HttpStatus.FORBIDDEN
+		);
+	}
+
+	private checkActiveUntil(roomInvitationLink: RoomInvitationLink): void {
 		if (roomInvitationLink.activeUntil && roomInvitationLink.activeUntil < new Date()) {
 			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.EXPIRED, HttpStatus.BAD_REQUEST);
 		}
-		if (
-			!roomInvitationLink.isUsableByStudents &&
-			!roomInvitationLink.isUsableByExternalPersons &&
-			isTeacher === false
-		) {
-			throw new RoomInvitationLinkError(
-				RoomInvitationLinkValidationError.NOT_USABLE_FOR_CURRENT_ROLE,
-				HttpStatus.FORBIDDEN
-			);
-		}
-		if (isExternalPerson && !roomInvitationLink.isUsableByExternalPersons) {
-			throw new RoomInvitationLinkError(
-				RoomInvitationLinkValidationError.NOT_USABLE_FOR_CURRENT_ROLE,
-				HttpStatus.FORBIDDEN
-			);
-		}
-		if (isStudent && !roomInvitationLink.isUsableByStudents) {
-			throw new RoomInvitationLinkError(
-				RoomInvitationLinkValidationError.NOT_USABLE_FOR_CURRENT_ROLE,
-				HttpStatus.FORBIDDEN
-			);
-		}
-		const creatorSchool = await this.schoolService.getSchoolById(roomInvitationLink.creatorSchoolId);
+	}
 
+	private async checkCreatorSchoolRestriction(user: User, roomInvitationLink: RoomInvitationLink): Promise<void> {
+		const creatorSchool = await this.schoolService.getSchoolById(roomInvitationLink.creatorSchoolId);
 		if (roomInvitationLink.restrictedToCreatorSchool && user.school.id !== roomInvitationLink.creatorSchoolId) {
 			throw new RoomInvitationLinkError(
 				RoomInvitationLinkValidationError.RESTRICTED_TO_CREATOR_SCHOOL,
@@ -183,6 +187,10 @@ export class RoomInvitationLinkUc {
 				creatorSchool.getInfo().name
 			);
 		}
+	}
+
+	private async checkStudentFromOtherSchool(user: User, roomInvitationLink: RoomInvitationLink): Promise<void> {
+		const isStudent = user.getRoles().some((role) => role.name === RoleName.STUDENT);
 		if (user.school.id !== roomInvitationLink.creatorSchoolId && isStudent) {
 			const creatorSchool = await this.schoolService.getSchoolById(roomInvitationLink.creatorSchoolId);
 			throw new RoomInvitationLinkError(
