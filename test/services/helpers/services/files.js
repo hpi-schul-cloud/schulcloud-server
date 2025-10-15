@@ -49,7 +49,7 @@ const create = async ({
 		deletedAt,
 		parent,
 		bucket,
-		storageProviderId: ObjectId(),
+		storageProviderId: new ObjectId(),
 		shareTokens,
 	};
 	if (additonalPermissions) {

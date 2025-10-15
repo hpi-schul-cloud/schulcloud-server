@@ -24,7 +24,7 @@ describe('school repo', () => {
 	beforeEach(async () => {});
 
 	afterEach(async () => {
-		const promises = createdSchools.map((school) => schoolModel.remove(school));
+		const promises = createdSchools.map((school) => schoolModel.deleteOne(school));
 		await Promise.all(promises);
 		await testObjects.cleanup();
 	});

@@ -205,7 +205,7 @@ describe('Room Controller (API)', () => {
 		});
 
 		describe('when the user is a school admin of same school', () => {
-			const setup = async () => {
+			const setup = async (roomWithUsers: boolean) => {
 				const school = schoolEntityFactory.buildWithId();
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 				const room = roomEntityFactory.build({ schoolId: school.id });
@@ -213,13 +213,16 @@ describe('Room Controller (API)', () => {
 				const { teacherUser: teacherUser2 } = UserAndAccountTestFactory.buildTeacher({ school });
 				const { studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 				const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+				const users = roomWithUsers
+					? [
+							{ role: roomViewerRole, user: studentUser },
+							{ role: roomOwnerRole, user: teacherUser },
+							{ role: roomViewerRole, user: teacherUser2 },
+					  ]
+					: [];
 				const userGroupEntity = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
-					users: [
-						{ role: roomViewerRole, user: studentUser },
-						{ role: roomOwnerRole, user: teacherUser },
-						{ role: roomViewerRole, user: teacherUser2 },
-					],
+					users,
 					organization: school,
 					externalSource: undefined,
 				});
@@ -257,16 +260,31 @@ describe('Room Controller (API)', () => {
 					features: room.features,
 				};
 
-				return { loggedInClient, room, expectedResponse };
+				return { loggedInClient, room, expectedResponse, userGroupEntity };
 			};
 
-			it('should return a room', async () => {
-				const { loggedInClient, room, expectedResponse } = await setup();
+			describe('with users in the room', () => {
+				it('should return a room', async () => {
+					const { loggedInClient, room, expectedResponse, userGroupEntity } = await setup(true);
 
-				const response = await loggedInClient.get(room.id);
+					const response = await loggedInClient.get(room.id);
+					expect(userGroupEntity).toBeDefined();
 
-				expect(response.status).toBe(HttpStatus.OK);
-				expect(response.body).toEqual(expect.objectContaining(expectedResponse));
+					expect(response.status).toBe(HttpStatus.OK);
+					expect(response.body).toEqual(expect.objectContaining(expectedResponse));
+				});
+			});
+
+			describe('without users in the room', () => {
+				it('should return a room', async () => {
+					const { loggedInClient, room, expectedResponse, userGroupEntity } = await setup(false);
+
+					const response = await loggedInClient.get(room.id);
+					expect(userGroupEntity).toBeDefined();
+
+					expect(response.status).toBe(HttpStatus.OK);
+					expect(response.body).toEqual(expect.objectContaining(expectedResponse));
+				});
 			});
 		});
 

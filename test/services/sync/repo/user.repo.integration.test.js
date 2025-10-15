@@ -41,7 +41,7 @@ describe('user repo', () => {
 		const createdUsers = [];
 
 		afterEach(async () => {
-			const userPromises = createdUsers.map((user) => userModel.remove(user));
+			const userPromises = createdUsers.map((user) => userModel.deleteOne(user));
 			await Promise.all(userPromises);
 
 			await testObjects.cleanup();
