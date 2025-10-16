@@ -59,9 +59,7 @@ spec:
           protocol: TCP
         envFrom:
         - configMapRef:
-            name: api-configmap
-        - secretRef:
-            name: api-secret
+            name: api-fwu-configmap
         command: ['npm', 'run', 'nest:start:fwu-learning-contents:prod']
         readinessProbe:
           httpGet:
