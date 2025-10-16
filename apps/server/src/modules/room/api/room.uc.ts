@@ -20,6 +20,7 @@ import { RoomPermissionService } from './service';
 import { School, SchoolService } from '@modules/school';
 import { RoomStats } from './type/room-stats.type';
 import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
+import { RoomMemberAuthorizable } from '@modules/room-membership/do/room-member-authorizable.do';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
@@ -115,17 +116,59 @@ export class RoomUc {
 	}
 
 	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<{ room: Room; permissions: Permission[] }> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const room = await this.roomService.getSingleRoom(roomId);
-		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
 
-		const roomMembershipAuthorizable = await this.roomPermissionService.checkRoomAuthorizationByIds(
-			userId,
-			roomId,
-			Action.read
-		);
+		await this.checkHasAccessToRoom(room, user);
+
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const permissions = this.getPermissions(userId, roomMembershipAuthorizable);
 
 		return { room, permissions };
+	}
+
+	private async checkHasAccessToRoom(room: Room, user: User) {
+		const hasAdminPermission = this.authorizationService.hasAllPermissions(user, [
+			Permission.SCHOOL_ADMINISTRATE_ROOMS,
+		]);
+
+		if (!hasAdminPermission) {
+			await this.roomPermissionService.checkRoomIsUnlocked(room.id);
+		}
+
+		const hasRoomPermission = await this.hasRoomPermission(room, user);
+		if (hasRoomPermission) {
+			return;
+		}
+
+		const hasUsersFromAdminSchool = await this.hasUsersFromAdminSchool(room, user, hasAdminPermission);
+		if (hasUsersFromAdminSchool) {
+			return;
+		}
+
+		const isRoomFromAdminSchool = await this.isRoomFromAdminSchool(room, user, hasAdminPermission);
+		if (isRoomFromAdminSchool) {
+			return;
+		}
+
+		throw new ForbiddenException('You do not have permission to access this room');
+	}
+
+	private async isRoomFromAdminSchool(room: Room, user: User, hasAdminPermission: boolean) {
+		const roomSchool = await this.schoolService.getSchoolById(room.schoolId);
+		const userSchool = await this.schoolService.getSchoolById(user.school.id);
+		const isRoomFromAdminSchool = hasAdminPermission && roomSchool.id === userSchool.id;
+		return isRoomFromAdminSchool;
+	}
+
+	private async hasUsersFromAdminSchool(room: Room, user: User, hasAdminPermission: boolean) {
+		const members = hasAdminPermission ? await this.roomMembershipService.getRoomMembers(room.id) : [];
+		const hasUsersFromAdminSchool = hasAdminPermission && members.some((member) => member.schoolId === user.school.id);
+		return hasUsersFromAdminSchool;
+	}
+
+	private async hasRoomPermission(room: Room, user: User) {
+		return await this.roomPermissionService.hasRoomPermissions(user.id, room.id, Action.read);
 	}
 
 	public async getRoomBoards(userId: EntityId, roomId: EntityId): Promise<ColumnBoard[]> {
@@ -168,7 +211,7 @@ export class RoomUc {
 		const room = await this.roomService.getSingleRoom(roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		const isAllowed = await this.isAllowedToDeleteRoom(userId, roomId, room, user);
+		const isAllowed = await this.roomPermissionService.isAllowedToDeleteRoom(user, room);
 		if (!isAllowed) {
 			throw new ForbiddenException('You do not have permission to delete this room');
 		}
@@ -214,9 +257,21 @@ export class RoomUc {
 		roomId: EntityId,
 		userIds: Array<EntityId>
 	): Promise<RoomRole> {
-		await this.roomPermissionService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [
+		const currentUser = await this.authorizationService.getUserWithPermissions(currentUserId);
+		const users = await this.userService.findByIds(userIds);
+
+		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(currentUserId, roomId, Action.write, [
 			Permission.ROOM_ADD_MEMBERS,
 		]);
+		const hasAdminPermission = this.authorizationService.hasAllPermissions(currentUser, [
+			Permission.SCHOOL_ADMINISTRATE_ROOMS,
+		]);
+		const isAdminFromSameSchool = users.every((user) => user.schoolId === currentUser.school.id);
+		const isRoomOfAdminSchool = (await this.roomService.getSingleRoom(roomId)).schoolId === currentUser.school.id;
+		if (!hasRoomPermission && !(hasAdminPermission && isAdminFromSameSchool && isRoomOfAdminSchool)) {
+			throw new ForbiddenException('You do not have permission to access this room');
+		}
+
 		await this.checkUsersAccessible(currentUserId, userIds);
 		const roleName = await this.roomMembershipService.addMembersToRoom(roomId, userIds);
 		return roleName;
@@ -240,12 +295,32 @@ export class RoomUc {
 
 	public async passOwnership(currentUserId: EntityId, roomId: EntityId, targetUserId: EntityId): Promise<void> {
 		const ownershipContext = await this.getPassOwnershipContext(roomId, currentUserId, targetUserId);
+		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
+		const room = await this.roomService.getSingleRoom(roomId);
 
-		this.checkRoomAuthorizationByContext(ownershipContext, Action.write, [Permission.ROOM_CHANGE_OWNER]);
-		this.checkUserInRoom(ownershipContext);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const roomMembers = await this.roomMembershipService.getRoomMembers(roomId);
+		const roomMember = roomMembers.find((member) => member.userId === targetUserId);
+		const roomOwner = roomMembers.find((member) => member.roomRoleName === RoleName.ROOMOWNER);
+		if (!roomMember) {
+			throw new CantPassOwnershipToUserNotInRoomLoggableException({
+				roomId,
+				currentUserId,
+				targetUserId,
+			});
+		}
+
+		const roomMemberAuthorizable = new RoomMemberAuthorizable(roomMembershipAuthorizable, roomMember);
+		this.authorizationService.checkPermission(user, roomMemberAuthorizable, {
+			action: Action.write,
+			requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
+		});
+		this.checkRoomBelongsToUsersSchool(user, room);
 		this.checkUserIsStudent(ownershipContext);
 
-		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [currentUserId], RoleName.ROOMADMIN);
+		if (roomOwner) {
+			await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [roomOwner.userId], RoleName.ROOMADMIN);
+		}
 		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [targetUserId], RoleName.ROOMOWNER);
 	}
 
@@ -257,9 +332,18 @@ export class RoomUc {
 	}
 
 	public async removeMembersFromRoom(currentUserId: EntityId, roomId: EntityId, userIds: EntityId[]): Promise<void> {
-		await this.roomPermissionService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [
-			Permission.ROOM_REMOVE_MEMBERS,
-		]);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const roomMembers = await this.roomMembershipService.getRoomMembers(roomId);
+		const roomMembersToBeDeleted = roomMembers.filter((member) => userIds.includes(member.userId));
+
+		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
+		for (const member of roomMembersToBeDeleted) {
+			const roomMemberAuthorizable = new RoomMemberAuthorizable(roomMembershipAuthorizable, member);
+			this.authorizationService.checkPermission(user, roomMemberAuthorizable, {
+				action: Action.write,
+				requiredPermissions: [Permission.ROOM_REMOVE_MEMBERS],
+			});
+		}
 		await this.roomMembershipService.removeMembersFromRoom(roomId, userIds);
 	}
 
@@ -288,30 +372,6 @@ export class RoomUc {
 		return context;
 	}
 
-	private checkUserInRoom(context: OwnershipContext): void {
-		const { targetUser, roomAuthorizable } = context;
-		const isRoomMember = roomAuthorizable.members.find((member) => member.userId === targetUser.id);
-		if (isRoomMember === undefined) {
-			throw new CantPassOwnershipToUserNotInRoomLoggableException({
-				roomId: context.roomAuthorizable.roomId,
-				currentUserId: context.currentUser.id,
-				targetUserId: context.targetUser.id || 'undefined',
-			});
-		}
-	}
-
-	private async isAllowedToDeleteRoom(userId: string, roomId: string, room: Room, user: User): Promise<boolean> {
-		const canDeleteRoom = await this.roomPermissionService.hasRoomPermissions(userId, roomId, Action.write, [
-			Permission.ROOM_DELETE_ROOM,
-		]);
-		const isOwnSchool = room.schoolId === user.school.id;
-		const canAdministrateSchoolRooms = this.authorizationService.hasOneOfPermissions(user, [
-			Permission.SCHOOL_ADMINISTRATE_ROOMS,
-		]);
-		const isAllowed = canDeleteRoom || (isOwnSchool && canAdministrateSchoolRooms);
-		return isAllowed;
-	}
-
 	private checkUserIsStudent(context: OwnershipContext): void {
 		if (context.targetUser.roles.find((role) => role.name === RoleName.STUDENT)) {
 			throw new CantPassOwnershipToStudentLoggableException({
@@ -322,15 +382,11 @@ export class RoomUc {
 		}
 	}
 
-	private checkRoomAuthorizationByContext(
-		context: BaseContext,
-		action: Action,
-		requiredPermissions: Permission[] = []
-	): void {
-		this.authorizationService.checkPermission(context.currentUser, context.roomAuthorizable, {
-			action,
-			requiredPermissions,
-		});
+	private checkRoomBelongsToUsersSchool(user: User, room: Room): void {
+		const isRoomOfAdminSchool = room.schoolId === user.school.id;
+		if (!isRoomOfAdminSchool) {
+			throw new ForbiddenException('You do not have permission to passOwnership in this room');
+		}
 	}
 
 	private buildRoomMembersResponse(
