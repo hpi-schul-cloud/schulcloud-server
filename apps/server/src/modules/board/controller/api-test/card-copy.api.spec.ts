@@ -1,5 +1,4 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { CopyApiResponse } from '@modules/copy-helper';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
@@ -82,11 +81,10 @@ describe(`card move (api)`, () => {
 			const { loggedInClient, cardNode1 } = await setup();
 
 			const response = await loggedInClient.post(`${cardNode1.id}/copy`);
-			const copyCardResponse = response.body as CopyApiResponse;
+			const copiedCard = response.body as CardResponse;
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			const copyCardId = copyCardResponse.id!;
 
-			const result = await em.findOneOrFail(BoardNodeEntity, copyCardId);
+			const result = await em.findOneOrFail(BoardNodeEntity, copiedCard.id);
 
 			expect(result.path).toEqual(cardNode1.path);
 		});
@@ -95,11 +93,10 @@ describe(`card move (api)`, () => {
 			const { loggedInClient, cardNode1, cardNode2 } = await setup();
 
 			const response = await loggedInClient.post(`${cardNode1.id}/copy`);
-			const copyCardResponse = response.body as CopyApiResponse;
+			const copiedCard = response.body as CardResponse;
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			const copyCardId = copyCardResponse.id!;
 
-			const resultCopiedCard = await em.findOneOrFail(BoardNodeEntity, copyCardId);
+			const resultCopiedCard = await em.findOneOrFail(BoardNodeEntity, copiedCard.id);
 			const resultCard1 = await em.findOneOrFail(BoardNodeEntity, cardNode1.id);
 			const resultCard2 = await em.findOneOrFail(BoardNodeEntity, cardNode2.id);
 
