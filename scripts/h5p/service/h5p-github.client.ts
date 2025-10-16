@@ -1,6 +1,10 @@
 import axios, { AxiosResponse } from 'axios';
 import { createWriteStream } from 'fs';
 
+export interface GitHubClientOptions {
+	maxRetries: number;
+}
+
 export class H5pGitHubClient {
 	private token!: string;
 
@@ -106,7 +110,7 @@ export class H5pGitHubClient {
 		return true;
 	}
 
-	public async fetchAllTags(repoName: string, options: { maxRetries: number } = { maxRetries: 3 }): Promise<string[]> {
+	public async fetchAllTags(repoName: string, options: GitHubClientOptions = { maxRetries: 3 }): Promise<string[]> {
 		const [owner, repo] = repoName.split('/');
 		const perPage = 100;
 		let page = 1;
@@ -163,7 +167,7 @@ export class H5pGitHubClient {
 		}
 	}
 
-	private async fetch(url: string, options: { maxRetries: number }): Promise<AxiosResponse<any>> {
+	private async fetch(url: string, options: GitHubClientOptions): Promise<AxiosResponse<any>> {
 		let attempt = 0;
 		let response: AxiosResponse<any> | undefined = undefined;
 		const headers = this.getHeaders();

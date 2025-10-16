@@ -1,7 +1,7 @@
 import { ILibraryName, LibraryName } from '@lumieducation/h5p-server';
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import { FileSystemHelper } from '../helper/file-system.helper';
-import { H5pGitHubClient } from './h5p-github.client.js';
+import { GitHubClientOptions, H5pGitHubClient } from './h5p-github.client.js';
 
 type LibraryRepoMap = Record<string, string>;
 
@@ -63,7 +63,8 @@ export class H5pLibraryBuilderService {
 
 			return result;
 		}
-		const tags = await this.gitHubClient.fetchAllTags(repoName, { maxRetries: 3 });
+		const options: GitHubClientOptions = { maxRetries: 3 };
+		const tags = await this.gitHubClient.fetchAllTags(repoName, options);
 		const filteredTags = this.getHighestPatchTags(tags);
 		console.log(`Found ${filteredTags.length} versions of ${library} in ${repoName}: ${filteredTags.join(', ')}`);
 		for (const tag of filteredTags) {
@@ -624,7 +625,8 @@ export class H5pLibraryBuilderService {
 			return result;
 		}
 
-		const tags = await this.gitHubClient.fetchAllTags(depRepoName, { maxRetries: 3 });
+		const options: GitHubClientOptions = { maxRetries: 3 };
+		const tags = await this.gitHubClient.fetchAllTags(depRepoName, options);
 		const depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
 		if (!depTag) {
 			this.logTagNotFound(dependency);
