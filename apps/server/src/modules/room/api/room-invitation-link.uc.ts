@@ -145,9 +145,7 @@ export class RoomInvitationLinkUc {
 
 		this.checkLinkActive(roomInvitationLink);
 
-		const isExternalPerson = user.getRoles().some((role) => role.name === RoleName.EXPERT);
-		const skipSchoolRestrictionCheck = isExternalPerson && roomInvitationLink.isUsableByExternalPersons;
-		if (!skipSchoolRestrictionCheck) await this.checkCreatorSchoolRestriction(user, roomInvitationLink);
+		await this.checkCreatorSchoolRestriction(user, roomInvitationLink);
 
 		await this.checkStudentFromOtherSchool(user, roomInvitationLink);
 	}
@@ -181,6 +179,10 @@ export class RoomInvitationLinkUc {
 	}
 
 	private async checkCreatorSchoolRestriction(user: User, roomInvitationLink: RoomInvitationLink): Promise<void> {
+		const isExternalPerson = user.getRoles().some((role) => role.name === RoleName.EXPERT);
+		const skipSchoolRestrictionCheck = isExternalPerson && roomInvitationLink.isUsableByExternalPersons;
+		if (skipSchoolRestrictionCheck) return;
+
 		const creatorSchool = await this.schoolService.getSchoolById(roomInvitationLink.creatorSchoolId);
 		if (roomInvitationLink.restrictedToCreatorSchool && user.school.id !== roomInvitationLink.creatorSchoolId) {
 			throw new RoomInvitationLinkError(

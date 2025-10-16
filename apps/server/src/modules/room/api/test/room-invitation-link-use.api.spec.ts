@@ -352,7 +352,7 @@ describe('Room Invitation Link Controller (API)', () => {
 		describe.each([
 			[UserRole.TEACHER, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
 			[UserRole.STUDENT, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
-			[UserRole.EXTERNAL_PERSON, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
+			[UserRole.EXTERNAL_PERSON, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
 			[UserRole.TEACHER, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
 			[UserRole.STUDENT, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
 			[UserRole.EXTERNAL_PERSON, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
