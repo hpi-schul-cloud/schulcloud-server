@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import {
 	lernperiodeFormat,
 	SchulconnexCommunicationType,
@@ -12,10 +13,9 @@ import {
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
 import { GroupTypes } from '@modules/group';
+import { RoleName } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { RoleName } from '@shared/domain/interface';
-import { Logger } from '@src/core/logger';
 import { InvalidLaufzeitResponseLoggableException, InvalidLernperiodeResponseLoggableException } from '../../domain';
 import {
 	ExternalGroupDto,
@@ -36,6 +36,7 @@ const RoleMapping: Partial<Record<SchulconnexRole | string, RoleName>> = {
 
 const GroupRoleMapping: Partial<Record<SchulconnexGroupRole | string, RoleName>> = {
 	[SchulconnexGroupRole.TEACHER]: RoleName.TEACHER,
+	[SchulconnexGroupRole.SUBSTITUTE_TEACHER]: RoleName.GROUPSUBSTITUTIONTEACHER,
 	[SchulconnexGroupRole.STUDENT]: RoleName.STUDENT,
 };
 
@@ -85,7 +86,7 @@ export class SchulconnexResponseMapper {
 			email = emailContact?.kennung;
 		}
 
-		const role: RoleName | undefined = SchulconnexResponseMapper.mapSanisRoleToRoleName(source);
+		const role: RoleName | undefined = SchulconnexResponseMapper.mapSchulconnexRoleToRoleName(source);
 
 		const mapped = new ExternalUserDto({
 			firstName: source.person.name.vorname,
@@ -100,7 +101,7 @@ export class SchulconnexResponseMapper {
 		return mapped;
 	}
 
-	public static mapSanisRoleToRoleName(source: SchulconnexResponse): RoleName | undefined {
+	public static mapSchulconnexRoleToRoleName(source: SchulconnexResponse): RoleName | undefined {
 		return RoleMapping[source.personenkontexte[0].rolle];
 	}
 

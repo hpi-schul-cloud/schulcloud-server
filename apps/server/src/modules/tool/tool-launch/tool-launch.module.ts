@@ -1,7 +1,7 @@
 import { EncryptionModule } from '@infra/encryption';
 import { BoardModule } from '@modules/board';
+import { CourseModule } from '@modules/course';
 import { GroupModule } from '@modules/group';
-import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { PseudonymModule } from '@modules/pseudonym';
 import { UserModule } from '@modules/user';
@@ -16,6 +16,7 @@ import {
 	AutoContextNameStrategy,
 	AutoGroupExternalUuidStrategy,
 	AutoMediumIdStrategy,
+	AutoPublisherStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from './service/auto-parameter-strategy';
@@ -30,7 +31,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		LegacySchoolModule,
 		UserModule,
 		forwardRef(() => PseudonymModule), // i do not like this solution, the root problem is on other place but not detectable for me
-		LearnroomModule,
+		CourseModule,
 		BoardModule,
 		GroupModule,
 		EncryptionModule,
@@ -45,6 +46,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		AutoSchoolIdStrategy,
 		AutoSchoolNumberStrategy,
 		AutoMediumIdStrategy,
+		AutoPublisherStrategy,
 		AutoGroupExternalUuidStrategy,
 	],
 	exports: [ToolLaunchService],

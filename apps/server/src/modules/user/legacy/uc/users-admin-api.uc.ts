@@ -1,22 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo';
-import { RoleService } from '../../../role';
 import {
 	AuthorizableReferenceType,
 	AuthorizationContextBuilder,
 	AuthorizationService,
 	ForbiddenLoggableException,
-} from '../../../authorization';
-import { RequestedRoleEnum } from '../enum';
+} from '@modules/authorization';
+import { RoleName, RoleService } from '@modules/role';
+import { User, UserMikroOrmRepo } from '@modules/user/repo';
+import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
 import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
+import { RequestedRoleEnum } from '../enum';
 import { UsersAdminService } from '../service';
 
 @Injectable()
 export class UsersAdminApiUc {
 	constructor(
-		private readonly userRepo: UserRepo,
+		private readonly userRepo: UserMikroOrmRepo,
 		private readonly roleService: RoleService,
 		private readonly adminUsersService: UsersAdminService,
 		private readonly authorizationService: AuthorizationService

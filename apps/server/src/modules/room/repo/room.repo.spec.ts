@@ -1,9 +1,9 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { Room } from '../domain/do/room.do';
 import { roomEntityFactory, roomFactory } from '../testing';
 import { RoomEntity } from './entity';
@@ -17,7 +17,7 @@ describe('RoomRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [RoomEntity] })],
 			providers: [RoomRepo],
 		}).compile();
 
@@ -168,6 +168,34 @@ describe('RoomRepo', () => {
 
 			expect(result.data).toEqual([]);
 			expect(result.total).toBe(0);
+		});
+	});
+
+	describe('findByIds', () => {
+		const setup = async () => {
+			const roomEntities = roomEntityFactory.buildListWithId(3);
+			await em.persistAndFlush(roomEntities);
+			em.clear();
+
+			return { roomEntities };
+		};
+
+		it('should return rooms for given ids', async () => {
+			const { roomEntities } = await setup();
+			const ids = roomEntities.map((entity) => entity.id);
+
+			const result = await repo.findByIds(ids);
+
+			expect(result.length).toBe(3);
+			expect(result.map((room) => room.id)).toEqual(expect.arrayContaining(ids));
+		});
+
+		it('should return empty array if no ids match', async () => {
+			await setup();
+
+			const result = await repo.findByIds(['nonexistent-id']);
+
+			expect(result).toEqual([]);
 		});
 	});
 });

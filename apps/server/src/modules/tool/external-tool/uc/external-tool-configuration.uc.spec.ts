@@ -2,16 +2,15 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
-import { schoolFactory } from '@modules/school/testing';
+import { School, SchoolService } from '@modules/school';
+import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { School, SchoolService } from '@src/modules/school';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalToolService } from '../../context-external-tool';
@@ -39,7 +38,7 @@ describe('ExternalToolConfigurationUc', () => {
 	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -106,7 +105,7 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when checking for the users permission', () => {
 			const setup = () => {
 				const tool: SchoolExternalTool = schoolExternalToolFactory.build();
-				const user: User = userFactory.build();
+				const user = userFactory.build();
 
 				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalTool>([], 0));
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([tool]);
@@ -219,7 +218,7 @@ describe('ExternalToolConfigurationUc', () => {
 	describe('getAvailableToolsForContext', () => {
 		describe('when the user has insufficient permission', () => {
 			const setup = () => {
-				const user: User = userFactory.build();
+				const user = userFactory.build();
 				const tool: ContextExternalTool = contextExternalToolFactory.build();
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
@@ -245,7 +244,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when getting the list of school external tools that can be added to a context', () => {
 			const setup = () => {
-				const user: User = userFactory.build();
+				const user = userFactory.build();
 				const hiddenTool: ExternalTool = externalToolFactory.buildWithId({ isHidden: true });
 				const usedTool: ExternalTool = externalToolFactory.buildWithId({ isHidden: false }, 'usedToolId');
 				const unusedTool: ExternalTool = externalToolFactory.buildWithId({ isHidden: false }, 'unusedToolId');
@@ -437,7 +436,7 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when the user has permission to read an external tool', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-				const user: User = userFactory.build();
+				const user = userFactory.build();
 				const school: School = schoolFactory.build();
 
 				const schoolExternalToolId: string = new ObjectId().toHexString();
@@ -543,7 +542,7 @@ describe('ExternalToolConfigurationUc', () => {
 	describe('getTemplateForContextExternalTool', () => {
 		describe('when the user has permission to read an external tool', () => {
 			const setup = () => {
-				const user: User = userFactory.build();
+				const user = userFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -668,7 +667,7 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when it is called', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
-				const user: User = userFactory.build();
+				const user = userFactory.build();
 				user.id = userId;
 				const contextTypes: ToolContextType[] = Object.values(ToolContextType);
 
@@ -715,7 +714,7 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when user does not have enough Permission', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
-				const user: User = userFactory.build();
+				const user = userFactory.build();
 				user.id = userId;
 				const contextTypes: ToolContextType[] = Object.values(ToolContextType);
 
@@ -739,7 +738,7 @@ describe('ExternalToolConfigurationUc', () => {
 	describe('getPreferedToolsForContext', () => {
 		describe('when the user has insufficient permission', () => {
 			const setup = () => {
-				const user: User = userFactory.build();
+				const user = userFactory.build();
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				authorizationService.checkAllPermissions.mockImplementation(() => {
@@ -761,7 +760,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when getting the list of preferred external tools that can be added to a context', () => {
 			const setup = () => {
-				const user: User = userFactory.build();
+				const user = userFactory.build();
 				const hiddenExternalTool: ExternalTool = externalToolFactory.build({ isHidden: true, isPreferred: true });
 				const usedExternalTool: ExternalTool = externalToolFactory.build({ isPreferred: true });
 				const unusedExternalTool: ExternalTool = externalToolFactory.build({ isPreferred: true });

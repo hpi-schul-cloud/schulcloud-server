@@ -1,6 +1,6 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { CustomParameterEntry } from '../../common/domain';
-import { SchoolExternalToolRef } from '../../school-external-tool/domain';
+import { SchoolExternalToolRef } from '../../school-external-tool/domain/school-external-tool.ref';
 import { ContextRef } from './context-ref';
 import { LtiDeepLink } from './lti-deep-link';
 

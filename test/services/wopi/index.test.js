@@ -1,44 +1,32 @@
 const assert = require('assert');
-const mockery = require('mockery');
+const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
-const mockAws = require('../fileStorage/aws/s3.mock');
+const testHelper = require('../helpers/testObjects');
 
-const testObjects = require('../helpers/testObjects')(appPromise());
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise());
+class AWSStrategy {
+	deleteFile() {
+		return Promise.resolve();
+	}
 
-describe('wopi service', function test() {
-	this.timeout(10000);
+	generateSignedUrl() {
+		return Promise.resolve('https://something.com');
+	}
+
+	getSignedUrl() {
+		return Promise.resolve('https://something.com');
+	}
+}
+
+// TODO: throw unhandled rejection - malformed jwt
+describe('wopi service', () => {
 	let app;
 	const testUserId = '599ec14d8e4e364ec18ff46d';
 	let server;
 	let nestServices;
-
-	const testFile = {
-		_id: '597860e9667a0659ed0b0006',
-		owner: '599ec14d8e4e364ec18ff46d',
-		refOwnerModel: 'user',
-		name: 'Test.docx',
-		size: 11348,
-		storageFileName: '1501061352639-Test.docx',
-		permissions: [],
-		bucket: 'bucket-test',
-		storageProviderId: testObjects.generateObjectId(),
-		__v: 0,
-	};
-
-	const testFile2 = {
-		_id: '597860e9667a0659ed0b1006',
-		owner: '599ec14d8e4e364ec18ff46d',
-		refOwnerModel: 'user',
-		name: 'Test1.docx',
-		size: 11348,
-		storageFileName: '1501161352639-Test1.docx',
-		permissions: [],
-		bucket: 'bucket-test',
-		storageProviderId: testObjects.generateObjectId(),
-		__v: 0,
-	};
+	let testObjects;
+	let testFile;
+	let testFile2;
 
 	const testAccessToken = 'TEST';
 
@@ -50,25 +38,50 @@ describe('wopi service', function test() {
 
 	before(async () => {
 		app = await appPromise();
-		// Enable mockery to mock objects
-		mockery.enable({
-			warnOnUnregistered: false,
-		});
-
-		mockery.registerMock('aws-sdk', mockAws);
+		testObjects = testHelper(app);
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 
-		delete require.cache[require.resolve('../../../src/services/fileStorage/strategies/awsS3')];
+		testFile = {
+			_id: '597860e9667a0659ed0b0006',
+			owner: '599ec14d8e4e364ec18ff46d',
+			refOwnerModel: 'user',
+			name: 'Test.docx',
+			size: 11348,
+			storageFileName: '1501061352639-Test.docx',
+			permissions: [],
+			bucket: 'bucket-test',
+			storageProviderId: new ObjectId(),
+			__v: 0,
+		};
+
+		testFile2 = {
+			_id: '597860e9667a0659ed0b1006',
+			owner: '599ec14d8e4e364ec18ff46d',
+			refOwnerModel: 'user',
+			name: 'Test1.docx',
+			size: 11348,
+			storageFileName: '1501161352639-Test1.docx',
+			permissions: [],
+			bucket: 'bucket-test',
+			storageProviderId: new ObjectId(),
+			__v: 0,
+		};
+
+		const fileStorageService = app.service('/fileStorage/');
+		const signedUrlService = app.service('/fileStorage/signedUrl');
+
+		fileStorageService.Stategy = AWSStrategy;
+		signedUrlService.Stategy = AWSStrategy;
+
 		await app.service('files').create(testFile);
 	});
 
 	after(async () => {
 		await app.service('files').remove(testFile._id);
+		await testObjects.cleanup();
 		await server.close();
 		await closeNestServices(nestServices);
-		mockery.deregisterAll();
-		mockery.disable();
 	});
 
 	it('registered the wopiFileInfoService correctly', () => {
@@ -80,11 +93,10 @@ describe('wopi service', function test() {
 	});
 
 	it('GET /wopi/files/:fileId', async () => {
-		// !
 		const user = await testObjects.createTestUser();
 		const {
 			authentication: { accessToken },
-		} = await generateRequestParamsFromUser(user);
+		} = await testObjects.generateRequestParamsFromUser(user);
 		const file = await app.service('files').create({
 			owner: user._id,
 			refOwnerModel: 'user',
@@ -93,8 +105,9 @@ describe('wopi service', function test() {
 			storageFileName: `${Date.now()}-Test.docx`,
 			permissions: [],
 			bucket: 'bucket-test',
-			storageProviderId: testObjects.generateObjectId(),
+			storageProviderId: new ObjectId(),
 		});
+
 		return app
 			.service('wopi/files/:fileId')
 			.find({
@@ -139,9 +152,9 @@ describe('wopi service', function test() {
 				storageFileName: `${Date.now()}-Test.docx`,
 				permissions: [],
 				bucket: 'bucket-test',
-				storageProviderId: testObjects.generateObjectId(),
+				storageProviderId: new ObjectId(),
 			});
-			let params = await generateRequestParamsFromUser(user);
+			let params = await testObjects.generateRequestParamsFromUser(user);
 			params = Object.assign(params, {
 				query: { access_token: params.authentication.accessToken },
 				headers,
@@ -167,11 +180,11 @@ describe('wopi service', function test() {
 			storageFileName: `${Date.now()}-Test.docx`,
 			permissions: [],
 			bucket: 'bucket-test',
-			storageProviderId: testObjects.generateObjectId(),
+			storageProviderId: new ObjectId(),
 		});
 		const headers = {};
 		headers['x-wopi-override'] = 'LOCK';
-		const authParams = await generateRequestParamsFromUser(user);
+		const authParams = await testObjects.generateRequestParamsFromUser(user);
 		const firstparams = Object.assign(authParams, {
 			query: { access_token: authParams.authentication.accessToken },
 			headers,

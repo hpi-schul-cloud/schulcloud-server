@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
@@ -39,7 +39,7 @@ describe(`board delete in course (api)`, () => {
 	const setup = async () => {
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-		const course = courseFactory.build({ teachers: [teacherUser] });
+		const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 		await em.persistAndFlush([teacherUser, teacherAccount, course]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({

@@ -5,8 +5,8 @@ import {
 } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { SchoolExternalToolRepo } from '@shared/repo';
 import { SchoolExternalTool } from '../domain';
+import { SchoolExternalToolRepo } from '../repo';
 
 @Injectable()
 export class SchoolExternalToolAuthorizableService implements AuthorizationLoaderServiceGeneric<SchoolExternalTool> {
@@ -17,7 +17,7 @@ export class SchoolExternalToolAuthorizableService implements AuthorizationLoade
 		injectionService.injectReferenceLoader(AuthorizableReferenceType.SchoolExternalToolEntity, this);
 	}
 
-	async findById(id: EntityId): Promise<SchoolExternalTool> {
+	public async findById(id: EntityId): Promise<SchoolExternalTool> {
 		const schoolExternalTool = await this.schoolExternalToolRepo.findById(id);
 
 		return schoolExternalTool;

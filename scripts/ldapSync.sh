@@ -8,7 +8,7 @@ default_api_key="example"
 value_api_key="${SYNC_API_KEY:-$default_api_key}"
 
 # Start server in the background and redirect logs to file
-nohup npm run nest:start > server.log 2>&1 &
+nohup npm run nest:start:prod > server.log 2>&1 &
 
 # Show logs and wait for server to start up
 echo "Server logs:"

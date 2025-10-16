@@ -1,24 +1,25 @@
+import { MongoIoAdapter } from '@infra/socketio';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-
-import { MongoIoAdapter } from '@infra/socketio';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { getSocketApiClient, waitForEvent } from '@testing/test-socket-api-client';
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';
-import { BoardExternalReferenceType, CardProps, ContentElementType } from '../../domain';
+import { BoardExternalReferenceType, BoardLayout, CardProps, ContentElementType } from '../../domain';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
 	columnEntityFactory,
+	getSocketApiClient,
 	richTextElementEntityFactory,
+	waitForEvent,
 } from '../../testing';
+import { CardUc } from '../../uc/card.uc';
 import { BoardCollaborationGateway } from '../board-collaboration.gateway';
 
 describe(BoardCollaborationGateway.name, () => {
@@ -75,7 +76,7 @@ describe(BoardCollaborationGateway.name, () => {
 			isExternalUser: false,
 		});
 
-		const course = courseFactory.build({ teachers: [teacherUser] });
+		const course = courseEntityFactory.build({ school: school, teachers: [teacherUser] });
 		await em.persistAndFlush([teacherUser, teacherAccount, studentUser, studentAccount, course]);
 
 		ioClient = await getSocketApiClient(app, teacherAuthJwt);
@@ -334,6 +335,32 @@ describe(BoardCollaborationGateway.name, () => {
 		});
 	});
 
+	describe('update readers can edit', () => {
+		describe('when board exists', () => {
+			it('should answer with success', async () => {
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+
+				ioClient.emit('update-readers-can-edit-request', { boardId, readersCanEdit: false });
+				const success = await waitForEvent(ioClient, 'update-readers-can-edit-success');
+
+				expect(success).toEqual(expect.objectContaining({ boardId, readersCanEdit: false }));
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+
+				unauthorizedIoClient.emit('update-readers-can-edit-request', { boardId, readersCanEdit: false });
+				const failure = await waitForEvent(unauthorizedIoClient, 'update-readers-can-edit-failure');
+
+				expect(failure).toEqual({ boardId, readersCanEdit: false });
+			});
+		});
+	});
+
 	describe('update board visibility', () => {
 		describe('when board exists', () => {
 			it('should answer with success', async () => {
@@ -356,6 +383,32 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(unauthorizedIoClient, 'update-board-visibility-failure');
 
 				expect(failure).toEqual({ boardId, isVisible: false });
+			});
+		});
+	});
+
+	describe('update board layout', () => {
+		describe('when board exists', () => {
+			it('should answer with success', async () => {
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+
+				ioClient.emit('update-board-layout-request', { boardId, layout: BoardLayout.LIST });
+				const success = await waitForEvent(ioClient, 'update-board-layout-success');
+
+				expect(success).toEqual(expect.objectContaining({ boardId, layout: BoardLayout.LIST }));
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+
+				unauthorizedIoClient.emit('update-board-layout-request', { boardId, layout: BoardLayout.LIST });
+				const failure = await waitForEvent(unauthorizedIoClient, 'update-board-layout-failure');
+
+				expect(failure).toEqual({ boardId, layout: BoardLayout.LIST });
 			});
 		});
 	});
@@ -511,12 +564,16 @@ describe(BoardCollaborationGateway.name, () => {
 		});
 
 		describe('when an error is thrown', () => {
-			// the error cannot be provoked easily anymore because passing a column id
-			// ignores the id now
-			it.skip('should answer with failure', async () => {
+			it('should answer with failure', async () => {
 				const { cardNodes, columnNode } = await setup();
 
-				// passing a column id instead of a card id to force an error
+				const uc = app.get(CardUc);
+				// currently, an error here is unlikely as the code simply returns an empty array in most cases.
+				// still, we need to test that errorhandling in the gateway works as expected
+				jest.spyOn(uc, 'findCards').mockImplementationOnce(() => {
+					throw new Error('error');
+				});
+
 				ioClient.emit('fetch-card-request', { cardIds: [cardNodes[0].id, columnNode.id] });
 				const failure = await waitForEvent(ioClient, 'fetch-card-failure');
 

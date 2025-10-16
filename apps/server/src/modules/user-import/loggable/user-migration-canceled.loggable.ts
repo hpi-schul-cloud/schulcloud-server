@@ -1,5 +1,5 @@
-import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
 
 export class UserMigrationCanceledLoggable implements Loggable {
 	constructor(private readonly school: LegacySchoolDo) {}

@@ -1,12 +1,11 @@
+import { EntityData } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { MediaSource } from '@modules/media-source';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { MediaSourceMapper } from '@modules/media-source/repo';
-import { SchoolEntity } from '@shared/domain/entity';
-import { SchoolEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
-import { EntityData } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { MediaSchoolLicenseEntity } from '../../entity';
+import { SchoolEntity } from '@modules/school/repo';
 import { MediaSchoolLicense } from '../../domain';
+import { MediaSchoolLicenseEntity } from '../../entity';
 import { SchoolLicenseType } from '../../enum';
 
 export class MediaSchoolLicenseEntityMapper {
@@ -19,7 +18,7 @@ export class MediaSchoolLicenseEntityMapper {
 
 		const mediaSchoolLicense: MediaSchoolLicense = new MediaSchoolLicense({
 			id: entity.id,
-			school: SchoolEntityMapper.mapToDo(entity.school),
+			schoolId: entity.school.id,
 			mediumId: entity.mediumId,
 			type: entity.type,
 			mediaSource,
@@ -33,7 +32,7 @@ export class MediaSchoolLicenseEntityMapper {
 		em: EntityManager
 	): EntityData<MediaSchoolLicenseEntity> {
 		const entityProps: EntityData<MediaSchoolLicenseEntity> = {
-			school: em.getReference(SchoolEntity, entityDO.school.id),
+			school: em.getReference(SchoolEntity, entityDO.schoolId),
 			type: SchoolLicenseType.MEDIA_LICENSE,
 			mediumId: entityDO.mediumId,
 			mediaSource: entityDO.mediaSource ? em.getReference(MediaSourceEntity, entityDO.mediaSource.id) : undefined,

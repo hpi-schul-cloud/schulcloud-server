@@ -1,5 +1,3 @@
-export * from './generated/api';
-export * from './generated/models';
-export * from './vidis-client-config';
-export * from './vidis-client-factory';
+export * from './generated';
 export * from './vidis-client.module';
+export { VidisClientAdapter } from './vidis-client.adapter';

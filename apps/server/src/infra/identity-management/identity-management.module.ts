@@ -1,6 +1,6 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { EncryptionModule } from '../encryption';
 import { IdentityManagementOauthService } from './identity-management-oauth.service';
 import { IdentityManagementService } from './identity-management.service';

@@ -1,8 +1,8 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { extractJwtFromHeader } from '@shared/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { JwtExtractor } from '@shared/common/utils';
 import { RawAxiosRequestConfig } from 'axios';
 import { Request } from 'express';
-import { REQUEST } from '@nestjs/core';
 import { BoardCardApi } from './cards-api-client';
 import { CardListResponseDto } from './dto/card-list-response.dto';
 import { CardResponseMapper } from './mapper/card-response.mapper';
@@ -28,12 +28,6 @@ export class CardClientAdapter {
 	}
 
 	private getJwt(): string {
-		const jwt = extractJwtFromHeader(this.request) ?? this.request.headers.authorization;
-
-		if (!jwt) {
-			throw new UnauthorizedException('No JWT found in request');
-		}
-
-		return jwt;
+		return JwtExtractor.extractJwtFromRequestOrFail(this.request);
 	}
 }

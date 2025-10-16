@@ -19,6 +19,8 @@ spec:
     spec:
       template:
         spec:
+          os:
+            name: linux
           containers:
           - name: moin-schule-users-sync-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
@@ -27,10 +29,8 @@ spec:
                 name: moin-schule-users-sync-cronjob-configmap
             - secretRef:
                 name: moin-schule-sync-secret
-            - secretRef:
-                name: api-files-secret
             command: ['/bin/sh','-c']
-            args: ['npm run nest:start:idp-console -- sync users --systemType moin.schule --systemId $SYSTEM_ID']
+            args: ['npm run nest:start:idp-console:prod -- sync users --systemType moin.schule --systemId $SYSTEM_ID']
             resources:
               limits:
                 cpu: {{ API_CPU_LIMITS|default("2000m", true) }}

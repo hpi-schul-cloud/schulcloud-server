@@ -1,11 +1,11 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
+import { MediaSource } from '@modules/media-source';
+import { MediaSourceEntity } from '@modules/media-source/entity';
+import { MediaSourceMapper } from '@modules/media-source/repo';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { MediaSource } from '@src/modules/media-source/domain';
-import { MediaSourceEntity } from '@src/modules/media-source/entity';
-import { MediaSourceMapper } from '@modules/media-source/repo';
 import { MediaUserLicense } from '../domain';
 import { MediaUserLicenseEntity, UserLicenseType } from '../entity';
 

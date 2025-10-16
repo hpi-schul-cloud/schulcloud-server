@@ -1,10 +1,13 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode } from './types';
+import { Permission } from '@shared/domain/interface';
+import { isColumnBoard } from './colum-board.do';
 
 export enum BoardRoles {
 	EDITOR = 'editor',
 	READER = 'reader',
+	ADMIN = 'admin',
 }
 
 export interface UserWithBoardRoles {
@@ -20,6 +23,11 @@ export interface BoardNodeAuthorizableProps extends AuthorizableObject {
 	boardNode: AnyBoardNode;
 	rootNode: AnyBoardNode;
 	parentNode?: AnyBoardNode;
+	boardContextSettings: BoardContextSettings;
+}
+
+export interface BoardContextSettings {
+	canRoomEditorManageVideoconference?: boolean;
 }
 
 export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizableProps> {
@@ -47,5 +55,46 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 
 	get rootNode(): AnyBoardNode {
 		return this.props.rootNode;
+	}
+
+	get boardContextSettings(): BoardContextSettings {
+		return this.props.boardContextSettings;
+	}
+
+	public getUserPermissions(userId: EntityId): Permission[] {
+		const user = this.users.find((user) => user.userId === userId);
+		if (user?.roles.includes(BoardRoles.ADMIN)) {
+			return [
+				Permission.BOARD_VIEW,
+				Permission.BOARD_EDIT,
+				Permission.BOARD_MANAGE_VIDEOCONFERENCE,
+				Permission.BOARD_MANAGE_READERS_CAN_EDIT,
+				Permission.BOARD_MANAGE,
+				Permission.BOARD_SHARE_BOARD,
+			];
+		}
+
+		if (user?.roles.includes(BoardRoles.EDITOR)) {
+			const permissions: Permission[] = [Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE];
+			const canRoomEditorManageVideoconference = this.boardContextSettings.canRoomEditorManageVideoconference ?? false;
+			if (canRoomEditorManageVideoconference) {
+				permissions.push(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
+			}
+			return permissions;
+		}
+
+		if (user?.roles.includes(BoardRoles.READER)) {
+			const permissions = [Permission.BOARD_VIEW];
+			if (this.readersCanEdit(this.rootNode)) {
+				permissions.push(Permission.BOARD_EDIT);
+			}
+			return permissions;
+		}
+
+		return [];
+	}
+
+	private readersCanEdit(rootNode: AnyBoardNode): boolean {
+		return isColumnBoard(rootNode) && rootNode.readersCanEdit;
 	}
 }

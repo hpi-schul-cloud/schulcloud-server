@@ -1,4 +1,4 @@
-import { AuthorizableReferenceType, AuthorizationLoaderService, Rule } from '../type';
+import { AuthorizableReferenceType, AuthorizationLoaderService, CurrentUserLoader, Rule } from '../type';
 import { AuthorizationInjectionService } from './authorization-injection.service';
 
 function createRuleMock(isApplicable: boolean, hasPermission: boolean): Rule {
@@ -11,6 +11,12 @@ function createRuleMock(isApplicable: boolean, hasPermission: boolean): Rule {
 function createReferenceLoaderMock(): AuthorizationLoaderService {
 	return {
 		findById: jest.fn().mockResolvedValue({}),
+	};
+}
+
+function createCurrentUserLoaderMock(): CurrentUserLoader {
+	return {
+		loadCurrentUserWithPermissions: jest.fn().mockResolvedValue({}),
 	};
 }
 
@@ -34,6 +40,38 @@ describe(AuthorizationInjectionService.name, () => {
 			service.injectReferenceLoader(AuthorizableReferenceType.BoardNode, referenceLoaderMock);
 
 			expect(service.getReferenceLoader(AuthorizableReferenceType.BoardNode)).toBe(referenceLoaderMock);
+		});
+	});
+
+	describe('injectCurrentUserLoader', () => {
+		it('should set currentUserLoader', () => {
+			const service = new AuthorizationInjectionService();
+			const userLoaderMock = createCurrentUserLoaderMock();
+
+			service.injectCurrentUserLoader(userLoaderMock);
+
+			expect(service.getCurrentUserLoader()).toBe(userLoaderMock);
+		});
+	});
+
+	describe('getCurrentUserLoader', () => {
+		describe('when currentUserLoader is not injected', () => {
+			it('should throw InternalServerErrorException', () => {
+				const service = new AuthorizationInjectionService();
+
+				expect(() => service.getCurrentUserLoader()).toThrow();
+			});
+		});
+
+		describe('when currentUserLoader is injected', () => {
+			it('should return currentUserLoader', () => {
+				const service = new AuthorizationInjectionService();
+				const userLoaderMock = createCurrentUserLoaderMock();
+
+				service.injectCurrentUserLoader(userLoaderMock);
+
+				expect(service.getCurrentUserLoader()).toBe(userLoaderMock);
+			});
 		});
 	});
 });

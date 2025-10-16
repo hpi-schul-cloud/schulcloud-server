@@ -1,7 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool';
 import { CustomParameter, CustomParameterEntry } from '../../common/domain';
 import { CommonToolDeleteService, CommonToolService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
@@ -15,6 +14,7 @@ import {
 	CopyContextExternalToolRejectData,
 	RestrictedContextMismatchLoggableException,
 } from '../domain';
+import { ContextExternalToolRepo, ContextExternalToolType } from '../repo/mikro-orm';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 
 @Injectable()
@@ -64,6 +64,16 @@ export class ContextExternalToolService {
 		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find({
 			context: contextRef,
 		});
+
+		return contextExternalTools;
+	}
+
+	public async findBySchoolToolIdsAndContextType(
+		schoolExternalToolIds: string[],
+		contextType: ContextExternalToolType
+	): Promise<ContextExternalTool[]> {
+		const contextExternalTools: ContextExternalTool[] =
+			await this.contextExternalToolRepo.findBySchoolToolIdsAndContextType(schoolExternalToolIds, contextType);
 
 		return contextExternalTools;
 	}

@@ -1,10 +1,7 @@
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import { createPdf, TCreatedPdf } from 'pdfmake/build/pdfmake';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
-import { CustomParameter } from '../../common/domain';
-import { ExternalTool, ExternalToolDatasheetTemplateData } from '../domain';
 import { customParameterFactory, externalToolDatasheetTemplateDataFactory, externalToolFactory } from '../testing';
 import { DatasheetPdfService } from './datasheet-pdf.service';
 
@@ -53,11 +50,11 @@ describe(DatasheetPdfService.name, () => {
 	describe('generatePdf', () => {
 		describe('when tool is oauth2 tool with optional properties and custom parameters', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user = userDoFactory.buildWithId();
 
-				const param: CustomParameter = customParameterFactory.build();
-				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [param] });
-				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
+				const param = customParameterFactory.build();
+				const externalTool = externalToolFactory.build({ parameters: [param] });
+				const datasheetData = externalToolDatasheetTemplateDataFactory
 					.withParameters(1, { name: param.name })
 					.withOptionalProperties()
 					.asOauth2Tool()
@@ -84,17 +81,14 @@ describe(DatasheetPdfService.name, () => {
 
 		describe('when tool is lti tool without custom parameters', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
-
-				const param: CustomParameter = customParameterFactory.build();
-				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [param] });
-				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
-					.asLti11Tool()
-					.build({
-						toolName: externalTool.name,
-						instance: 'dBildungscloud',
-						creatorName: `${user.firstName} ${user.lastName}`,
-					});
+				const user = userDoFactory.buildWithId();
+				const param = customParameterFactory.build();
+				const externalTool = externalToolFactory.build({ parameters: [param] });
+				const datasheetData = externalToolDatasheetTemplateDataFactory.asLti11Tool().build({
+					toolName: externalTool.name,
+					instance: 'dBildungscloud',
+					creatorName: `${user.firstName} ${user.lastName}`,
+				});
 
 				setupMockCreatePdf(false);
 
@@ -112,17 +106,15 @@ describe(DatasheetPdfService.name, () => {
 
 		describe('when an error occurs', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user = userDoFactory.buildWithId();
 
-				const param: CustomParameter = customParameterFactory.build();
-				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [param] });
-				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
-					.withParameters(1, { name: param.name })
-					.build({
-						toolName: externalTool.name,
-						instance: 'dBildungscloud',
-						creatorName: `${user.firstName} ${user.lastName}`,
-					});
+				const param = customParameterFactory.build();
+				const externalTool = externalToolFactory.build({ parameters: [param] });
+				const datasheetData = externalToolDatasheetTemplateDataFactory.withParameters(1, { name: param.name }).build({
+					toolName: externalTool.name,
+					instance: 'dBildungscloud',
+					creatorName: `${user.firstName} ${user.lastName}`,
+				});
 
 				setupMockCreatePdf(true);
 

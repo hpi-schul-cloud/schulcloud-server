@@ -1,7 +1,13 @@
-import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@modules/authorization';
 import { School } from '@modules/school';
-import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
+import type { User } from '@modules/user/repo';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface/permission.enum';
 
 @Injectable()
@@ -21,13 +27,53 @@ export class SchoolRule implements Rule<School> {
 
 	public hasPermission(user: User, school: School, context: AuthorizationContext): boolean {
 		let hasPermission = false;
-		const isUsersSchool = user.school.id === school.id;
-		if (isUsersSchool) {
-			hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+
+		if (context.action === Action.read) {
+			hasPermission = this.hasReadAccess(user, school, context);
+		} else if (context.action === Action.write) {
+			hasPermission = this.hasWriteAccess(user, school, context);
 		} else {
-			hasPermission = this.authorizationHelper.hasAllPermissions(user, [Permission.SCHOOL_EDIT_ALL]);
+			throw new NotImplementedException();
 		}
 
 		return hasPermission;
+	}
+
+	private hasReadAccess(user: User, object: School, context: AuthorizationContext): boolean {
+		const isUserSchool = this.isUserSchool(user, object);
+		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.SCHOOL_VIEW,
+			...context.requiredPermissions,
+		]);
+
+		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.SCHOOL_VIEW,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			...context.requiredPermissions,
+		]);
+
+		return hasInstanceReadOperationPermission || (hasReadPermission && isUserSchool);
+	}
+
+	private hasWriteAccess(user: User, object: School, context: AuthorizationContext): boolean {
+		const isUserSchool = this.isUserSchool(user, object);
+		const hasWritePermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.SCHOOL_EDIT,
+			...context.requiredPermissions,
+		]);
+
+		const hasInstanceWriteOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.SCHOOL_EDIT,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			...context.requiredPermissions,
+		]);
+
+		return hasInstanceWriteOperationPermission || (hasWritePermission && isUserSchool);
+	}
+
+	private isUserSchool(user: User, object: School): boolean {
+		const isUserSchool = user.school.id === object.id;
+
+		return isUserSchool;
 	}
 }

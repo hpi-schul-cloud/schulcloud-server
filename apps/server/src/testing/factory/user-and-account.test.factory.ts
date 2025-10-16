@@ -1,11 +1,15 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import type { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing/account.factory';
-import { SchoolEntity, User } from '@shared/domain/entity';
-import { LanguageType, Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import type { SchoolEntity } from '@modules/school/repo';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { User, UserSchoolEmbeddable } from '@modules/user/repo';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { userFactory } from '@modules/user/testing';
+import type { LanguageType, Permission } from '@shared/domain/interface';
+import type { EntityId } from '@shared/domain/types';
 import _ from 'lodash';
-import { userFactory } from './user.factory';
 
 interface UserParams {
 	firstName?: string;
@@ -14,6 +18,7 @@ interface UserParams {
 	school?: SchoolEntity;
 	externalId?: string;
 	language?: LanguageType;
+	secondarySchools?: UserSchoolEmbeddable[];
 }
 
 interface AccountParams {
@@ -25,13 +30,13 @@ export interface UserAndAccountParams extends UserParams, AccountParams {}
 
 export class UserAndAccountTestFactory {
 	private static getUserParams(params: UserAndAccountParams): UserParams {
-		const userParams = _.pick(params, 'firstName', 'lastName', 'email', 'school', 'externalId');
+		const userParams = _.pick(params, 'firstName', 'lastName', 'email', 'school', 'externalId', 'secondarySchools');
 		return userParams;
 	}
 
 	private static buildAccount(user: User, params: UserAndAccountParams = {}): AccountEntity {
 		const accountParams = _.pick(params, 'username', 'systemId');
-		const account = accountFactory.withUser(user).build(accountParams);
+		const account = accountFactory.withUser(user).buildWithId(accountParams);
 		return account;
 	}
 
@@ -84,5 +89,34 @@ export class UserAndAccountTestFactory {
 		const account = UserAndAccountTestFactory.buildAccount(user, params);
 
 		return { superheroAccount: account, superheroUser: user };
+	}
+
+	public static buildByRole(
+		roleName: 'administrator' | 'teacher' | 'student',
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): { account: AccountEntity; user: User } {
+		const user = UserAndAccountTestFactory.buildUser(roleName, params, additionalPermissions);
+		const account = UserAndAccountTestFactory.buildAccount(user, params);
+		return { account, user };
+	}
+
+	private static buildUser(
+		roleName: 'administrator' | 'teacher' | 'student',
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): User {
+		switch (roleName) {
+			case 'administrator':
+				return userFactory.asAdmin(additionalPermissions).buildWithId(UserAndAccountTestFactory.getUserParams(params));
+			case 'teacher':
+				return userFactory
+					.asTeacher(additionalPermissions)
+					.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+			case 'student':
+				return userFactory
+					.asStudent(additionalPermissions)
+					.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+		}
 	}
 }

@@ -2,22 +2,20 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { System, SystemService } from '@modules/system';
-import { SystemEntity } from '@modules/system/entity';
-import { systemFactory } from '@modules/system/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { systemEntityFactory, systemFactory } from '@modules/system/testing';
+import { UserLoginMigrationDO, UserLoginMigrationService } from '@modules/user-login-migration';
+import { userLoginMigrationDOFactory } from '@modules/user-login-migration/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
-import { importUserFactory } from '@testing/factory/import-user.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
-import { UserLoginMigrationService } from '../../user-login-migration';
+import { setupEntities } from '@testing/database';
 import { ImportUser } from '../entity';
 import { UserLoginMigrationNotActiveLoggableException, UserMigrationIsNotEnabledLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService, UserImportService } from '../service';
+import { importUserFactory } from '../testing';
 import { UserImportConfig } from '../user-import-config';
 import { UserImportFetchUc } from './user-import-fetch.uc';
 
@@ -35,7 +33,7 @@ describe(UserImportFetchUc.name, () => {
 	let config: UserImportConfig;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

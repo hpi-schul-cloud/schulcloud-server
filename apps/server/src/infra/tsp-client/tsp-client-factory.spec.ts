@@ -1,13 +1,12 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { OauthAdapterService } from '@modules/oauth';
+import { OauthAdapterService } from '@modules/oauth-adapter';
 import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosErrorLoggable, ErrorLoggable } from '@src/core/error/loggable';
-import { Logger } from '@src/core/logger';
 import axios, { AxiosError } from 'axios';
 import { DefaultEncryptionService, EncryptionService } from '../encryption';
+import { TspAccessTokenLoggableError } from './loggable/tsp-access-token.loggable-error';
 import { TspClientFactory } from './tsp-client-factory';
 
 describe('TspClientFactory', () => {
@@ -16,7 +15,6 @@ describe('TspClientFactory', () => {
 	let configServiceMock: DeepMocked<ConfigService<ServerConfig, true>>;
 	let oauthAdapterServiceMock: DeepMocked<OauthAdapterService>;
 	let encryptionService: DeepMocked<EncryptionService>;
-	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -45,10 +43,6 @@ describe('TspClientFactory', () => {
 					provide: DefaultEncryptionService,
 					useValue: createMock<EncryptionService>(),
 				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
-				},
 			],
 		}).compile();
 
@@ -56,17 +50,14 @@ describe('TspClientFactory', () => {
 		configServiceMock = module.get(ConfigService);
 		oauthAdapterServiceMock = module.get(OauthAdapterService);
 		encryptionService = module.get(DefaultEncryptionService);
-		logger = module.get(Logger);
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	afterAll(async () => {
 		await module.close();
-	});
-
-	beforeEach(() => {
-		jest.resetAllMocks();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
 	});
 
 	it('should be defined', () => {
@@ -77,8 +68,8 @@ describe('TspClientFactory', () => {
 		describe('when createExportClient is called', () => {
 			it('should return ExportApiInterface', () => {
 				const result = sut.createExportClient({
-					clientId: faker.string.alpha(),
-					clientSecret: faker.string.alpha(),
+					clientId: faker.string.uuid(),
+					clientSecret: faker.string.alphanumeric(40),
 					tokenEndpoint: faker.internet.url(),
 				});
 
@@ -91,17 +82,15 @@ describe('TspClientFactory', () => {
 	describe('getAccessToken', () => {
 		describe('when called successfully', () => {
 			const setup = () => {
-				const clientId = faker.string.alpha();
-				const clientSecret = faker.string.alpha();
+				const clientId = faker.string.uuid();
+				const clientSecret = faker.string.alphanumeric(40);
 				const tokenEndpoint = faker.internet.url();
 
-				oauthAdapterServiceMock.sendTokenRequest.mockResolvedValue({
-					accessToken: faker.string.alpha(),
-					idToken: faker.string.alpha(),
-					refreshToken: faker.string.alpha(),
+				oauthAdapterServiceMock.sendTokenRequest.mockResolvedValueOnce({
+					accessToken: faker.string.alphanumeric(40),
+					idToken: faker.string.alphanumeric(40),
+					refreshToken: faker.string.alphanumeric(40),
 				});
-
-				Reflect.set(sut, 'cachedToken', undefined);
 
 				return {
 					clientId,
@@ -123,8 +112,8 @@ describe('TspClientFactory', () => {
 
 		describe('when token is cached', () => {
 			const setup = () => {
-				const clientId = faker.string.alpha();
-				const clientSecret = faker.string.alpha();
+				const clientId = faker.string.uuid();
+				const clientSecret = faker.string.alphanumeric(40);
 				const tokenEndpoint = faker.internet.url();
 				const client = sut.createExportClient({
 					clientId,
@@ -132,7 +121,7 @@ describe('TspClientFactory', () => {
 					tokenEndpoint,
 				});
 
-				const cached = faker.string.alpha();
+				const cached = faker.string.alphanumeric(40);
 				Reflect.set(sut, 'cachedToken', cached);
 				Reflect.set(sut, 'tokenExpiresAt', Date.now() + 60000);
 
@@ -151,8 +140,8 @@ describe('TspClientFactory', () => {
 
 		describe('when an AxiosError occurs', () => {
 			const setup = () => {
-				const clientId = faker.string.alpha();
-				const clientSecret = faker.string.alpha();
+				const clientId = faker.string.uuid();
+				const clientSecret = faker.string.alphanumeric(40);
 				const tokenEndpoint = faker.internet.url();
 
 				oauthAdapterServiceMock.sendTokenRequest.mockImplementation(() => {
@@ -168,19 +157,17 @@ describe('TspClientFactory', () => {
 				};
 			};
 
-			it('should log an AxiosErrorLoggable as warning and reject', async () => {
+			it('should throw TspAccessTokenLoggableError', async () => {
 				const params = setup();
 
-				await expect(() => sut.getAccessToken(params)).rejects.toBeUndefined();
-
-				expect(logger.warning).toHaveBeenCalledWith(new AxiosErrorLoggable(new AxiosError(), 'TSP_OAUTH_ERROR'));
+				await expect(() => sut.getAccessToken(params)).rejects.toThrow(TspAccessTokenLoggableError);
 			});
 		});
 
 		describe('when a generic error occurs', () => {
 			const setup = () => {
-				const clientId = faker.string.alpha();
-				const clientSecret = faker.string.alpha();
+				const clientId = faker.string.uuid();
+				const clientSecret = faker.string.alphanumeric(40);
 				const tokenEndpoint = faker.internet.url();
 
 				oauthAdapterServiceMock.sendTokenRequest.mockImplementation(() => {
@@ -196,12 +183,37 @@ describe('TspClientFactory', () => {
 				};
 			};
 
-			it('should log an ErrorLoggable as warning and reject', async () => {
+			it('should throw TspAccessTokenLoggableError', async () => {
 				const params = setup();
 
-				await expect(() => sut.getAccessToken(params)).rejects.toBeUndefined();
+				await expect(() => sut.getAccessToken(params)).rejects.toThrow(TspAccessTokenLoggableError);
+			});
+		});
 
-				expect(logger.warning).toHaveBeenCalledWith(new ErrorLoggable(new Error()));
+		describe('when a non-error type is thrown', () => {
+			const setup = () => {
+				const clientId = faker.string.uuid();
+				const clientSecret = faker.string.alphanumeric(40);
+				const tokenEndpoint = faker.internet.url();
+
+				oauthAdapterServiceMock.sendTokenRequest.mockImplementation(() => {
+					// eslint-disable-next-line @typescript-eslint/no-throw-literal
+					throw 'error';
+				});
+
+				Reflect.set(sut, 'cachedToken', undefined);
+
+				return {
+					clientId,
+					clientSecret,
+					tokenEndpoint,
+				};
+			};
+
+			it('should throw TspAccessTokenLoggableError', async () => {
+				const params = setup();
+
+				await expect(() => sut.getAccessToken(params)).rejects.toThrow(TspAccessTokenLoggableError);
 			});
 		});
 	});
@@ -216,16 +228,16 @@ describe('TspClientFactory', () => {
 
 			jest.mock('axios');
 
-			oauthAdapterServiceMock.sendTokenRequest.mockResolvedValue({
-				accessToken: faker.string.alpha(),
-				idToken: faker.string.alpha(),
-				refreshToken: faker.string.alpha(),
+			oauthAdapterServiceMock.sendTokenRequest.mockResolvedValueOnce({
+				accessToken: faker.string.alphanumeric(40),
+				idToken: faker.string.alphanumeric(40),
+				refreshToken: faker.string.alphanumeric(40),
 			});
 
 			const axiosMock = axios as jest.Mocked<typeof axios>;
 
-			axiosMock.request = jest.fn();
-			axiosMock.request.mockResolvedValue({
+			jest.spyOn(axiosMock, 'request').mockImplementation();
+			axiosMock.request.mockResolvedValueOnce({
 				data: {
 					version: '1.1',
 				},

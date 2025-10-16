@@ -1,12 +1,14 @@
+import { Logger } from '@core/logger';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
+import { SchoolFeature } from '@modules/school/domain';
+import { SchoolEntity } from '@modules/school/repo';
 import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationDO } from '@modules/user-login-migration';
+import { User } from '@modules/user/repo';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { SchoolEntity, User } from '@shared/domain/entity';
-import { SchoolFeature } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
 import { ImportUser, MatchCreator } from '../entity';
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
 import { ImportUserRepo } from '../repo/import-user.repo';

@@ -1,12 +1,13 @@
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import { RoleName } from '@modules/role';
+import { roleDtoFactory, roleFactory } from '@modules/role/testing';
 import { roomFactory } from '@modules/room/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { roleDtoFactory } from '@testing/factory/role-dto.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
 import { RoomMembershipRule } from './room-membership.rule';
 
@@ -15,7 +16,7 @@ describe(RoomMembershipRule.name, () => {
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [RoomMembershipRule, AuthorizationHelper, AuthorizationInjectionService],
@@ -89,7 +90,7 @@ describe(RoomMembershipRule.name, () => {
 			describe('when user has view permission for room', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
-					const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_VIEW] });
+					const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
 					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
 						'',
 						[{ roles: [roleDto], userId: user.id }],
@@ -174,7 +175,7 @@ describe(RoomMembershipRule.name, () => {
 						secondarySchools: [{ school: otherSchool, role: guestTeacherRole }],
 					});
 					const room = roomFactory.build({ schoolId: otherSchool.id });
-					const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_VIEW] });
+					const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
 					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
 						room.id,
 						[{ roles: [roleDto], userId: user.id }],

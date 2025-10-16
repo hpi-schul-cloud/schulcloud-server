@@ -6,9 +6,9 @@ import {
 	Rule,
 } from '@modules/authorization';
 import { Instance } from '@modules/instance';
-import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
+import type { User } from '@modules/user/repo';
+import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
 
 @Injectable()
 export class InstanceRule implements Rule<Instance> {
@@ -25,16 +25,37 @@ export class InstanceRule implements Rule<Instance> {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Instance, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+	public hasPermission(user: User, instance: Instance, context: AuthorizationContext): boolean {
+		let hasPermission = false;
 
-		// As temporary solution until the user with write access to instance added as group, we must check the role.
-		if (context.action === Action.write) {
-			const hasRole = this.authorizationHelper.hasRole(user, RoleName.SUPERHERO);
-
-			return hasPermission && hasRole;
+		if (context.action === Action.read) {
+			hasPermission = this.hasReadAccess(user, instance, context);
+		} else if (context.action === Action.write) {
+			hasPermission = this.hasWriteAccess(user, instance, context);
+		} else {
+			throw new NotImplementedException();
 		}
 
 		return hasPermission;
+	}
+
+	private hasReadAccess(user: User, instance: Instance, context: AuthorizationContext): boolean {
+		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.INSTANCE_VIEW,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			...context.requiredPermissions,
+		]);
+
+		return hasInstanceReadOperationPermission;
+	}
+
+	private hasWriteAccess(user: User, instance: Instance, context: AuthorizationContext): boolean {
+		const hasInstanceWriteOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.INSTANCE_EDIT,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			...context.requiredPermissions,
+		]);
+
+		return hasInstanceWriteOperationPermission;
 	}
 }

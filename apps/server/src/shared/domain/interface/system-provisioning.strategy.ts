@@ -1,6 +1,5 @@
 export enum SystemProvisioningStrategy {
-	SANIS = 'sanis',
-	ISERV = 'iserv',
+	SCHULCONNEX_ASYNC = 'schulconnex-async',
 	OIDC = 'oidc',
 	TSP = 'tsp',
 	UNDEFINED = 'undefined',

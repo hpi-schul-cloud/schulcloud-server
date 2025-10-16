@@ -1,5 +1,5 @@
-import { Loggable } from '@src/core/logger/interfaces';
-import { LogMessage } from '@src/core/logger/types';
+import { Loggable } from '@core/logger/interfaces';
+import { LogMessage } from '@core/logger/types';
 
 export class UserAuthenticatedLoggable implements Loggable {
 	getLogMessage(): LogMessage {

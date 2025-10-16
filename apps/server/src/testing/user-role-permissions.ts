@@ -21,6 +21,7 @@ export const userPermissions = [
 	Permission.CALENDAR_CREATE,
 	Permission.FEDERALSTATE_VIEW,
 	Permission.HELPDESK_CREATE,
+	Permission.INSTANCE_VIEW,
 	Permission.TOPIC_VIEW,
 	Permission.LINK_CREATE,
 	Permission.NEWS_VIEW,
@@ -35,6 +36,7 @@ export const userPermissions = [
 	Permission.COURSEGROUP_CREATE,
 	Permission.COURSEGROUP_EDIT,
 	Permission.SYSTEM_VIEW,
+	Permission.SCHOOL_VIEW,
 	Permission.HOMEWORK_VIEW,
 	Permission.HOMEWORK_EDIT,
 	Permission.COMMENTS_VIEW,
@@ -103,7 +105,9 @@ export const teacherPermissions = [
 	Permission.TOPIC_EDIT,
 	Permission.START_MEETING,
 	Permission.CONTEXT_TOOL_ADMIN,
-	Permission.ROOM_CREATE,
+	Permission.SCHOOL_CREATE_ROOM,
+	Permission.TEACHER_LIST,
+	Permission.SCHOOL_LIST_DISCOVERABLE_TEACHERS,
 ];
 
 export const adminPermissions = [
@@ -128,6 +132,7 @@ export const adminPermissions = [
 	Permission.TEACHER_CREATE,
 	Permission.TEACHER_DELETE,
 	Permission.TEACHER_EDIT,
+	Permission.TEACHER_LIST,
 	Permission.TEACHER_SKIP_REGISTRATION,
 	Permission.SCHOOL_LOGO_MANAGE,
 	Permission.SCHOOL_CHAT_MANAGE,
@@ -136,6 +141,7 @@ export const adminPermissions = [
 	Permission.SCHOOL_SYSTEM_VIEW,
 	Permission.SYSTEM_EDIT,
 	Permission.SYNC_START,
+	Permission.SCHOOL_ADMINISTRATE_ROOMS,
 	Permission.SCHOOL_PERMISSION_VIEW,
 	Permission.SCHOOL_PERMISSION_CHANGE,
 	Permission.IMPORT_USER_MIGRATE,
@@ -144,11 +150,17 @@ export const adminPermissions = [
 	Permission.SCHOOL_TOOL_ADMIN,
 	Permission.GROUP_FULL_ADMIN,
 	Permission.USER_LOGIN_MIGRATION_ADMIN,
+	Permission.MEDIA_SCHOOL_LICENSE_ADMIN,
 ];
 
 export const superheroPermissions = [
 	Permission.USER_LOGIN_MIGRATION_FORCE,
 	Permission.USER_LOGIN_MIGRATION_ROLLBACK,
-	Permission.INSTANCE_VIEW,
+	Permission.INSTANCE_EDIT,
+	Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 	Permission.CREATE_SUPPORT_JWT,
+	Permission.TEACHER_LIST,
+	Permission.MEDIA_SOURCE_ADMIN,
 ];
+
+export const defaultSystemUserPermissions = [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS];

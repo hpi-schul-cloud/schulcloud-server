@@ -1,5 +1,5 @@
 import { InputFormat } from '@shared/domain/types';
-import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
+import { CommonCartridgeXmlResourceType } from './common-cartridge-import.enums';
 
 export type CommonCartridgeFileParserOptions = {
 	maxSearchDepth: number;
@@ -26,20 +26,28 @@ export type CommonCartridgeOrganizationProps = {
 };
 
 export type CommonCartridgeWebContentResourceProps = {
-	type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT;
-	title: string;
+	type: CommonCartridgeXmlResourceType.WEB_CONTENT;
 	html: string;
 };
 
 export type CommonCartridgeWebLinkResourceProps = {
-	type: CommonCartridgeResourceTypeV1P1.WEB_LINK;
+	type: CommonCartridgeXmlResourceType.WEB_LINK_CC11 | CommonCartridgeXmlResourceType.WEB_LINK_CC13;
 	title: string;
 	url: string;
 };
 
-export type CommonCartridgeUnknownResourceProps = { type: CommonCartridgeResourceTypeV1P1.UNKNOWN };
+export type CommonCartridgeFileResourceProps = {
+	type: CommonCartridgeXmlResourceType.FILE;
+	href: string;
+	fileName: string;
+	file: File;
+	description: string;
+};
+
+export type CommonCartridgeUnknownResourceProps = { type: CommonCartridgeXmlResourceType.UNKNOWN };
 
 export type CommonCartridgeResourceProps =
 	| CommonCartridgeWebContentResourceProps
 	| CommonCartridgeWebLinkResourceProps
-	| CommonCartridgeUnknownResourceProps;
+	| CommonCartridgeUnknownResourceProps
+	| CommonCartridgeFileResourceProps;

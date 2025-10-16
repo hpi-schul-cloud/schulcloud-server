@@ -1,8 +1,8 @@
 import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
-import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
-import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
+import { ContextExternalTool } from '../domain';
+import { ContextExternalToolEntity } from '../repo';
 
 @Injectable()
 export class ContextExternalToolRule implements Rule<ContextExternalToolEntity | ContextExternalTool> {

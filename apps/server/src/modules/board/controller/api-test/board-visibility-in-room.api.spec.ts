@@ -1,20 +1,20 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { accountFactory } from '@modules/account/testing';
+import { GroupEntityTypes } from '@modules/group/entity';
+import { groupEntityFactory } from '@modules/group/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { roomEntityFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { ServerTestModule } from '@modules/server/server.app.module';
+import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { accountFactory } from '@src/modules/account/testing';
-import { GroupEntityTypes } from '@src/modules/group/entity';
-import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
-import { roomEntityFactory } from '@src/modules/room/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { groupEntityFactory } from '@testing/factory/group-entity.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { columnBoardEntityFactory } from '../../testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 
 const baseRouteName = '/boards';
 
@@ -43,33 +43,28 @@ describe(`board update visibility with room relation (api)`, () => {
 	});
 
 	const setup = async () => {
-		const userWithEditRole = userFactory.buildWithId();
+		const school = schoolEntityFactory.buildWithId();
+		const userWithEditRole = userFactory.buildWithId({ school });
 		const accountWithEditRole = accountFactory.withUser(userWithEditRole).build();
 
-		const userWithViewRole = userFactory.buildWithId();
+		const userWithViewRole = userFactory.buildWithId({ school });
 		const accountWithViewRole = accountFactory.withUser(userWithViewRole).build();
 
-		const noAccessUser = userFactory.buildWithId();
+		const noAccessUser = userFactory.buildWithId({ school });
 		const noAccessAccount = accountFactory.withUser(noAccessUser).build();
 
-		const roleRoomEdit = roleFactory.buildWithId({
-			name: RoleName.ROOMEDITOR,
-			permissions: [Permission.ROOM_EDIT],
-		});
-		const roleRoomView = roleFactory.buildWithId({
-			name: RoleName.ROOMVIEWER,
-			permissions: [Permission.ROOM_VIEW],
-		});
+		const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 
 		const userGroup = groupEntityFactory.buildWithId({
 			type: GroupEntityTypes.ROOM,
 			users: [
-				{ user: userWithEditRole, role: roleRoomEdit },
-				{ user: userWithViewRole, role: roleRoomView },
+				{ user: userWithEditRole, role: roomEditorRole },
+				{ user: userWithViewRole, role: roomViewerRole },
 			],
+			organization: school,
 		});
 
-		const room = roomEntityFactory.buildWithId();
+		const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
 		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
@@ -80,8 +75,8 @@ describe(`board update visibility with room relation (api)`, () => {
 			userWithEditRole,
 			userWithViewRole,
 			noAccessUser,
-			roleRoomEdit,
-			roleRoomView,
+			roomEditorRole,
+			roomViewerRole,
 			userGroup,
 			room,
 			roomMembership,

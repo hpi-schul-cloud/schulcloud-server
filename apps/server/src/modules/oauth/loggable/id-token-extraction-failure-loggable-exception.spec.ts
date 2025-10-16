@@ -4,14 +4,15 @@ describe(IdTokenExtractionFailureLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const fieldName = 'id_token';
+			const details = { detail: 'additional info' };
 
-			const exception = new IdTokenExtractionFailureLoggableException(fieldName);
+			const exception = new IdTokenExtractionFailureLoggableException(fieldName, details);
 
-			return { exception, fieldName };
+			return { exception, fieldName, details };
 		};
 
 		it('should return a LogMessage', () => {
-			const { exception, fieldName } = setup();
+			const { exception, fieldName, details } = setup();
 
 			const logMessage = exception.getLogMessage();
 
@@ -21,6 +22,7 @@ describe(IdTokenExtractionFailureLoggableException.name, () => {
 				stack: exception.stack,
 				data: {
 					fieldName,
+					...details,
 				},
 			});
 		});

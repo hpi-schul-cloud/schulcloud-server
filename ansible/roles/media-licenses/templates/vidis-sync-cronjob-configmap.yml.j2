@@ -6,8 +6,6 @@ metadata:
   labels:
     app: vidis-sync-cronjob
 data:
-  NODE_OPTIONS: "--max-old-space-size=3072"
-  NEST_LOG_LEVEL: "error"
+  NODE_OPTIONS: "--max-old-space-size=1536"
+  NEST_LOG_LEVEL: "info"
   EXIT_ON_ERROR: "true"
-  VIDIS_API_CLIENT_BASE_URL: "{{ VIDIS_API_CLIENT_BASE_URL }}"
-  VIDIS_SYNC_REGION: "{{ VIDIS_SYNC_REGION }}"

@@ -12,10 +12,6 @@
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "1234567890123456",
 	"AES_KEY": "6543210987654321",
 	"FEATURE_LERNSTORE_ENABLED": true,
-	"FEATURE_ES_MERLIN_ENABLED": true,
-	"SECRET_ES_MERLIN_USERNAME": "merlin-username",
-	"SECRET_ES_MERLIN_PW": "merlin-pass",
-	"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS": "[{\"countyId\":3256,\"merlinUser\":\"dummy\",\"secretMerlinKey\":\"dummy\"}]",
 	"FEATURE_ES_SEARCHABLE_ENABLED": true,
 	"FEATURE_ES_COLLECTIONS_ENABLED": true,
 	"FEATURE_FWU_CONTENT_ENABLED": true,
@@ -26,12 +22,7 @@
 	"SYNC_QUEUE_NAME": "test_ldap_queue",
 	"S3_KEY": "abcdefghijklmnop",
 	"FILES_STORAGE": {
-		"S3_ENDPOINT": "http://localhost:4568",
-		"S3_ACCESS_KEY_ID": "S3RVER",
-		"S3_SECRET_ACCESS_KEY": "S3RVER",
-		"S3_BUCKET": "schulcloud",
-		"S3_REGION": "eu-central-1",
-		"EXCHANGE": "files-storage"
+		"SERVICE_BASE_URL": "http://localhost:4444"
 	},
 	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
 	"IDENTITY_MANAGEMENT": {
@@ -43,6 +34,7 @@
 		"ADMIN_USER": "dbildungscloud",
 		"ADMIN_PASSWORD": "dBildungscloud"
 	},
+	"LOG_LEVEL" : "emerg",
 	"NEST_LOG_LEVEL": "error",
 	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",
@@ -62,10 +54,7 @@
 		"S3_ACCESS_KEY": "S3RVER",
 		"S3_SECRET_KEY": "S3RVER"
 	},
-	"TSP_SCHOOL_SYNCER": {
-		"SCHOOL_LIMIT": 10,
-		"STUDENTS_TEACHERS_CLASSES_LIMIT": 150
-	},
+	"FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED": true,
 	"FEATURE_VIDEOCONFERENCE_ENABLED": true,
 	"VIDEOCONFERENCE_HOST": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
 	"VIDEOCONFERENCE_SALT": "ThisIsNOTaRealSaltThisIsNOTaRealSaltThisIsNOTaRealSalt1234567890",
@@ -91,5 +80,8 @@
 		"URI": "http://localhost:9001/api/1/",
 		"PAD_URI": "http://localhost:9001/p",
 		"API_KEY": "381d67e6347d235ac9446"
+	},
+	"SESSION_VALKEY": {
+		"MODE": "in-memory"
 	}
 }

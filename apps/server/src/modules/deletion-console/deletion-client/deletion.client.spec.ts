@@ -9,6 +9,7 @@ import { DeletionRequestInputBuilder, DeletionRequestOutputBuilder } from '.';
 import { DeletionConsoleConfig } from '../deletion.config';
 import { DeletionClient } from './deletion.client';
 import { DeletionRequestOutput } from './interface';
+import { ObjectID } from 'bson';
 
 describe(DeletionClient.name, () => {
 	let module: TestingModule;
@@ -46,9 +47,15 @@ describe(DeletionClient.name, () => {
 
 	const setupConfig = () => {
 		// Please take a look that the order is correct if the code order is changed
-		configService.get
-			.mockReturnValueOnce('652559c2-93da-42ad-94e1-640e3afbaca0')
-			.mockReturnValueOnce('http://api-admin:4030');
+		configService.get.mockImplementation((key: string) => {
+			if (key === 'ADMIN_API_CLIENT_API_KEY') {
+				return '652559c2-93da-42ad-94e1-640e3afbaca0';
+			}
+			if (key === 'ADMIN_API_CLIENT_BASE_URL') {
+				return 'http://api-admin:4030';
+			}
+			return undefined;
+		});
 	};
 
 	describe('queueDeletionRequest', () => {
@@ -176,10 +183,24 @@ describe(DeletionClient.name, () => {
 	});
 
 	describe('executeDeletions', () => {
+		const mockGetRequestIds = () => {
+			const getResponse1: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+				status: 200,
+				data: [new ObjectID().toHexString()],
+			});
+			const getResponse2: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+				status: 200,
+				data: [],
+			});
+			httpService.get.mockReturnValueOnce(of(getResponse1)).mockReturnValueOnce(of(getResponse2));
+		};
+
 		describe('when sending the HTTP request failed', () => {
 			const setup = () => {
 				setupConfig();
+				mockGetRequestIds();
 				const error = new Error('unknown error');
+
 				httpService.post.mockReturnValueOnce(throwError(() => error));
 			};
 
@@ -193,6 +214,7 @@ describe(DeletionClient.name, () => {
 		describe('when received valid response with expected HTTP status code', () => {
 			const setup = () => {
 				setupConfig();
+				mockGetRequestIds();
 				const limit = 10;
 
 				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
@@ -204,6 +226,7 @@ describe(DeletionClient.name, () => {
 				return { limit };
 			};
 
+			// @fixme
 			it('should return proper output', async () => {
 				const { limit } = setup();
 
@@ -214,13 +237,13 @@ describe(DeletionClient.name, () => {
 		describe('when pass invalid limit', () => {
 			const setup = () => {
 				setupConfig();
+				mockGetRequestIds();
 				const limit = true;
 
-				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+				const postResponse: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
 					status: 204,
 				});
-
-				httpService.post.mockReturnValueOnce(of(response));
+				httpService.post.mockReturnValueOnce(of(postResponse));
 
 				return { limit };
 			};
@@ -236,6 +259,7 @@ describe(DeletionClient.name, () => {
 		describe('when received invalid HTTP status code in a response', () => {
 			const setup = () => {
 				setupConfig();
+				mockGetRequestIds();
 				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
 					status: 200,
 				});
@@ -247,6 +271,30 @@ describe(DeletionClient.name, () => {
 				setup();
 
 				await expect(client.executeDeletions()).rejects.toThrow(Error);
+			});
+		});
+
+		describe('when runFailed is true', () => {
+			const setup = () => {
+				setupConfig();
+				mockGetRequestIds();
+
+				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+					status: 204,
+				});
+
+				httpService.post.mockReturnValueOnce(of(response));
+
+				const fullUrl = 'http://api-admin:4030/admin/api/v1/deletionExecutions?runFailed=true';
+
+				return { fullUrl };
+			};
+			it('should call get endpoint with runFailed param', async () => {
+				const { fullUrl } = setup();
+
+				await client.executeDeletions(undefined, true);
+
+				expect(httpService.get).toHaveBeenCalledWith(fullUrl, expect.any(Object));
 			});
 		});
 	});

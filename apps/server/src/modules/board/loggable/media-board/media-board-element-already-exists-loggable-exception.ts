@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class MediaBoardElementAlreadyExistsLoggableException extends BadRequestException implements Loggable {
 	constructor(private readonly mediaBoardId: EntityId, private readonly schoolExternalToolId: EntityId) {

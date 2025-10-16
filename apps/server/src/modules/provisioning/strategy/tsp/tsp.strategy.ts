@@ -1,7 +1,7 @@
+import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
+import { RoleName } from '@modules/role';
 import { Injectable } from '@nestjs/common';
-import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { IdTokenExtractionFailureLoggableException } from '@src/modules/oauth/loggable';
 import { validate } from 'class-validator';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import {
@@ -28,40 +28,8 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	public override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
-		const decodedAccessToken: JwtPayload | null = jwt.decode(input.accessToken, { json: true });
-
-		if (!decodedAccessToken) {
-			throw new IdTokenExtractionFailureLoggableException('sub');
-		}
-
-		const payload = new TspJwtPayload(decodedAccessToken);
-		const errors = await validate(payload);
-
-		if (errors.length > 0) {
-			throw new IdTokenExtractionFailureLoggableException(errors.map((error) => error.property).join(', '));
-		}
-
-		const externalUserDto = new ExternalUserDto({
-			externalId: payload.sub,
-			firstName: payload.personVorname,
-			lastName: payload.personNachname,
-			roles: payload.ptscListRolle
-				.split(',')
-				.map((role) => this.mapRoles(role))
-				.filter(Boolean) as RoleName[],
-		});
-
-		if (externalUserDto.roles && externalUserDto.roles.length < 1) {
-			throw new IdTokenExtractionFailureLoggableException('ptscListRolle');
-		}
-
-		const externalSchoolDto = new ExternalSchoolDto({
-			externalId: payload.ptscSchuleNummer,
-		});
-
-		const externalClassDtoList = payload.ptscListKlasseId
-			? payload.ptscListKlasseId.split(',').map((externalId) => new ExternalClassDto({ externalId }))
-			: [];
+		const payload = await this.parseAndValidateToken(input);
+		const { externalUserDto, externalSchoolDto, externalClassDtoList } = this.extractDataFromPayload(payload);
 
 		const oauthDataDto = new OauthDataDto({
 			system: input.system,
@@ -106,5 +74,55 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 			default:
 				return null;
 		}
+	}
+
+	private async parseAndValidateToken(input: OauthDataStrategyInputDto): Promise<TspJwtPayload> {
+		const decodedAccessToken: JwtPayload | null = jwt.decode(input.accessToken, { json: true });
+
+		if (!decodedAccessToken) {
+			throw new IdTokenExtractionFailureLoggableException('sub');
+		}
+
+		const payload = new TspJwtPayload(decodedAccessToken);
+		const errors = await validate(payload);
+
+		if (errors.length > 0) {
+			throw new IdTokenExtractionFailureLoggableException(
+				errors.map((error) => error.property),
+				{ externalId: payload.sub }
+			);
+		}
+
+		return payload;
+	}
+
+	private extractDataFromPayload(payload: TspJwtPayload): {
+		externalUserDto: ExternalUserDto;
+		externalSchoolDto: ExternalSchoolDto;
+		externalClassDtoList: ExternalClassDto[];
+	} {
+		const externalUserDto = new ExternalUserDto({
+			externalId: payload.sub,
+			firstName: payload.personVorname,
+			lastName: payload.personNachname,
+			roles: payload.ptscListRolle
+				.split(',')
+				.map((role) => this.mapRoles(role))
+				.filter(Boolean) as RoleName[],
+		});
+
+		if (externalUserDto.roles.length < 1) {
+			throw new IdTokenExtractionFailureLoggableException('ptscListRolle', { externalId: externalUserDto.externalId });
+		}
+
+		const externalSchoolDto = new ExternalSchoolDto({
+			externalId: payload.ptscSchuleNummer,
+		});
+
+		const externalClassDtoList = payload.ptscListKlasseId
+			? payload.ptscListKlasseId.split(',').map((externalId) => new ExternalClassDto({ externalId }))
+			: [];
+
+		return { externalUserDto, externalSchoolDto, externalClassDtoList };
 	}
 }

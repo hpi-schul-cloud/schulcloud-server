@@ -4,7 +4,6 @@ import { REQUEST } from '@nestjs/core';
 import { faker } from '@faker-js/faker';
 import { Request } from 'express';
 import { AxiosResponse } from 'axios';
-import { jest } from '@jest/globals';
 import { CourseRoomsApi, SingleColumnBoardResponse } from './room-api-client';
 import { CourseRoomsClientAdapter } from './room-client.adapter';
 import { RoomBoardDtoMapper } from './mapper/room-board-dto.mapper';
@@ -95,7 +94,7 @@ describe(CourseRoomsClientAdapter.name, () => {
 	describe('when no JWT token is found', () => {
 		const setup = () => {
 			const roomId = faker.string.uuid();
-			const error = new Error('Authentication is required.');
+			const error = new Error('No JWT token found');
 			const request = createMock<Request>({
 				headers: {},
 			});

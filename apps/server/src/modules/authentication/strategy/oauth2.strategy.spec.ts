@@ -1,13 +1,14 @@
+/* eslint-disable filename-rules/match */
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
-import { OAuthService, OauthSessionToken, OauthSessionTokenService, OAuthTokenDto } from '@modules/oauth';
+import { OAuthService, OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
+import { OAuthTokenDto } from '@modules/oauth-adapter';
+import { RoleName } from '@modules/role';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import { OauthCurrentUser } from '../interface';
 import {
 	AccountNotFoundLoggableException,
@@ -15,6 +16,7 @@ import {
 	UserAccountDeactivatedLoggableException,
 } from '../loggable';
 import { Oauth2Strategy } from './oauth2.strategy';
+import { ConfigService } from '@nestjs/config';
 
 describe(Oauth2Strategy.name, () => {
 	let module: TestingModule;
@@ -23,6 +25,7 @@ describe(Oauth2Strategy.name, () => {
 	let accountService: DeepMocked<AccountService>;
 	let oauthService: DeepMocked<OAuthService>;
 	let oauthSessionTokenService: DeepMocked<OauthSessionTokenService>;
+	let configService: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -40,6 +43,10 @@ describe(Oauth2Strategy.name, () => {
 					provide: OauthSessionTokenService,
 					useValue: createMock<OauthSessionTokenService>(),
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
 			],
 		}).compile();
 
@@ -47,6 +54,7 @@ describe(Oauth2Strategy.name, () => {
 		accountService = module.get(AccountService);
 		oauthService = module.get(OAuthService);
 		oauthSessionTokenService = module.get(OauthSessionTokenService);
+		configService = module.get(ConfigService);
 	});
 
 	afterAll(async () => {
@@ -60,8 +68,8 @@ describe(Oauth2Strategy.name, () => {
 	describe('validate', () => {
 		describe('when a valid code is provided', () => {
 			const setup = () => {
-				const systemId: EntityId = 'systemId';
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
+				const systemId = 'systemId';
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
 				const account = accountDoFactory.build();
 				const expiryDate = new Date();
 
@@ -76,6 +84,7 @@ describe(Oauth2Strategy.name, () => {
 				);
 				oauthService.provisionUser.mockResolvedValue(user);
 				accountService.findByUserId.mockResolvedValue(account);
+				configService.getOrThrow.mockReturnValueOnce(true);
 
 				return {
 					systemId,
@@ -149,7 +158,7 @@ describe(Oauth2Strategy.name, () => {
 
 		describe('when no account was found', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user = userDoFactory.buildWithId();
 
 				oauthService.authenticateUser.mockResolvedValue(
 					new OAuthTokenDto({
@@ -177,7 +186,7 @@ describe(Oauth2Strategy.name, () => {
 
 		describe('when account is deactivated', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user = userDoFactory.buildWithId();
 				oauthService.authenticateUser.mockResolvedValue(
 					new OAuthTokenDto({
 						idToken: 'idToken',
@@ -186,7 +195,7 @@ describe(Oauth2Strategy.name, () => {
 					})
 				);
 				oauthService.provisionUser.mockResolvedValue(user);
-				const account: Account = new Account({
+				const account = new Account({
 					id: 'accountId',
 					createdAt: new Date(),
 					updatedAt: new Date(),
@@ -204,6 +213,40 @@ describe(Oauth2Strategy.name, () => {
 					});
 
 				await expect(func).rejects.toThrow(new UserAccountDeactivatedLoggableException());
+			});
+		});
+
+		describe('when the feature flag "FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED" is disabled', () => {
+			const setup = () => {
+				const systemId = 'systemId';
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
+				const account = accountDoFactory.build();
+				const expiryDate = new Date();
+
+				const idToken = JwtTestFactory.createJwt();
+				const refreshToken = JwtTestFactory.createJwt({ exp: expiryDate.getTime() / 1000 });
+				oauthService.authenticateUser.mockResolvedValue(
+					new OAuthTokenDto({
+						idToken,
+						accessToken: 'accessToken',
+						refreshToken,
+					})
+				);
+				oauthService.provisionUser.mockResolvedValue(user);
+				accountService.findByUserId.mockResolvedValue(account);
+				configService.getOrThrow.mockReturnValueOnce(false);
+
+				return { systemId };
+			};
+
+			it('should not cache the refresh token', async () => {
+				const { systemId } = setup();
+
+				await strategy.validate({
+					body: { code: 'code', redirectUri: 'redirectUri', systemId },
+				});
+
+				expect(oauthSessionTokenService.save).not.toHaveBeenCalled();
 			});
 		});
 	});

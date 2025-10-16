@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { Loggable } from '@src/core/logger/interfaces';
-import { ErrorLogMessage } from '@src/core/logger/types';
+import { Loggable } from '@core/logger/interfaces';
+import { ErrorLogMessage } from '@core/logger/types';
 
 export class AccountSystemMismatchLoggableException extends BadRequestException implements Loggable {
 	constructor(private readonly expectedSystemId?: EntityId, private readonly receivedSystemId?: EntityId) {

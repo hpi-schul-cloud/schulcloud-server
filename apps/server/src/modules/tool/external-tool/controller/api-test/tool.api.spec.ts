@@ -1,16 +1,14 @@
+import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
 import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { FileRecordResponse } from '@modules/files-storage/controller/dto';
+import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
 import { instanceEntityFactory } from '@modules/instance/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@src/modules/board/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
@@ -22,19 +20,20 @@ import {
 	CustomParameterTypeParams,
 	ToolConfigType,
 } from '../../../common/enum';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import { ExternalToolEntity } from '../../entity';
-import { externalToolEntityFactory, externalToolFactory } from '../../testing';
+import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
+import { ExternalToolMediumStatus } from '../../enum';
+import { ExternalToolEntity } from '../../repo';
+import { base64TestLogo, externalToolEntityFactory } from '../../testing';
 import {
 	ExternalToolBulkCreateParams,
 	ExternalToolCreateParams,
 	ExternalToolImportResultListResponse,
 	ExternalToolImportResultResponse,
-	ExternalToolMetadataResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
+	ExternalToolUtilizationResponse,
 } from '../dto';
 
 describe('ToolController (API)', () => {
@@ -48,7 +47,6 @@ describe('ToolController (API)', () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		}).compile();
-
 		app = moduleRef.createNestApplication();
 		axiosMock = new MockAdapter(axios);
 
@@ -58,12 +56,13 @@ describe('ToolController (API)', () => {
 		testApiClient = new TestApiClient(app, 'tools/external-tools');
 	});
 
-	afterAll(async () => {
-		await app.close();
+	afterEach(async () => {
+		axiosMock.reset();
+		await cleanupCollections(em);
 	});
 
-	afterEach(async () => {
-		await cleanupCollections(em);
+	afterAll(async () => {
+		await app.close();
 	});
 
 	describe('[POST] tools/external-tools', () => {
@@ -107,11 +106,10 @@ describe('ToolController (API)', () => {
 				await em.persistAndFlush([adminAccount, adminUser, instance]);
 				em.clear();
 
-				const base64Logo: string = externalToolFactory.withBase64Logo().build().logo as string;
-				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
-				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer);
+				const logoBuffer: Buffer = Buffer.from(base64TestLogo, 'base64');
+				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer, { 'content-type': 'image/png' });
 
-				const fileRecordResponse: Partial<FileRecordResponse> = { id: new ObjectId().toHexString() };
+				const fileRecordResponse = fileRecordResponseFactory.build();
 				axiosMock.onPost(/api\/v3\/file\/upload-from-url/).reply(HttpStatus.OK, fileRecordResponse);
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -262,6 +260,7 @@ describe('ToolController (API)', () => {
 			url: 'https://link.to-my-tool.com',
 			openNewTab: true,
 			medium: {
+				status: ExternalToolMediumStatus.ACTIVE,
 				mediumId: 'medium:1',
 				mediaSourceId: 'source:1',
 			},
@@ -279,11 +278,10 @@ describe('ToolController (API)', () => {
 				await em.persistAndFlush([adminAccount, adminUser, instance]);
 				em.clear();
 
-				const base64Logo: string = externalToolFactory.withBase64Logo().build().logo as string;
-				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
-				axiosMock.onGet(logoUrl).reply(HttpStatus.OK, logoBuffer);
+				const logoBuffer: Buffer = Buffer.from(base64TestLogo, 'base64');
+				axiosMock.onGet(logoUrl).reply(HttpStatus.OK, logoBuffer, { 'content-type': 'image/png' });
 
-				const fileRecordResponse: Partial<FileRecordResponse> = { id: new ObjectId().toHexString() };
+				const fileRecordResponse = fileRecordResponseFactory.build();
 				axiosMock.onPost(/api\/v3\/file\/upload-from-url/).reply(HttpStatus.OK, fileRecordResponse);
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -463,20 +461,25 @@ describe('ToolController (API)', () => {
 			const setup = async () => {
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
 
-				await em.persistAndFlush([adminAccount, adminUser]);
+				const externalTool = externalToolEntityFactory.build();
+
+				await em.persistAndFlush([adminAccount, adminUser, externalTool]);
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient };
+				return {
+					loggedInClient,
+					externalTool,
+				};
 			};
 
-			it('should return unauthorized', async () => {
-				const { loggedInClient } = await setup();
+			it('should return forbidden', async () => {
+				const { loggedInClient, externalTool } = await setup();
 
-				const response: Response = await loggedInClient.get(`${new ObjectId().toHexString()}`);
+				const response: Response = await loggedInClient.get(externalTool.id);
 
-				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 	});
@@ -511,7 +514,9 @@ describe('ToolController (API)', () => {
 			thumbnailUrl: 'https://link.to-my-thumbnail2.com',
 			openNewTab: true,
 			medium: {
+				status: ExternalToolMediumStatus.ACTIVE,
 				mediumId: 'mediumId',
+				mediaSourceId: 'mediaSourceId',
 				publisher: 'publisher',
 			},
 			isPreferred: false,
@@ -526,11 +531,10 @@ describe('ToolController (API)', () => {
 
 				const params = { ...postParams, id: externalToolEntity.id };
 
-				const base64Logo: string = externalToolEntity.logoBase64 as string;
-				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
-				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer);
+				const logoBuffer: Buffer = Buffer.from(base64TestLogo, 'base64');
+				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer, { 'content-type': 'image/png' });
 
-				const fileRecordResponse: Partial<FileRecordResponse> = { id: new ObjectId().toHexString() };
+				const fileRecordResponse = fileRecordResponseFactory.build();
 				axiosMock.onDelete(/api\/v3\/file\/delete/).reply(HttpStatus.OK);
 				axiosMock.onPost(/api\/v3\/file\/upload-from-url/).reply(HttpStatus.OK, fileRecordResponse);
 
@@ -592,6 +596,8 @@ describe('ToolController (API)', () => {
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
 					medium: {
+						status: ExternalToolMediumStatus.ACTIVE,
+						mediaSourceId: params.medium?.mediaSourceId ?? '',
 						mediumId: params.medium?.mediumId ?? '',
 						publisher: params.medium?.publisher,
 					},
@@ -645,7 +651,7 @@ describe('ToolController (API)', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
 				const params = { ...postParams, id: toolId };
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({ id: toolId });
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
 				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
@@ -656,12 +662,12 @@ describe('ToolController (API)', () => {
 				return { loggedInClient, params, toolId };
 			};
 
-			it('should return unauthorized', async () => {
+			it('should return forbidden', async () => {
 				const { loggedInClient, params, toolId } = await setup();
 
-				const response: Response = await loggedInClient.post(`${toolId}`, params);
+				const response: Response = await loggedInClient.post(toolId, params);
 
-				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 	});
@@ -735,12 +741,12 @@ describe('ToolController (API)', () => {
 				return { loggedInClient, externalTool };
 			};
 
-			it('should return unauthorized', async () => {
+			it('should return forbidden', async () => {
 				const { loggedInClient, externalTool } = await setup();
 
 				const response: Response = await loggedInClient.delete(externalTool.id);
 
-				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 	});
@@ -802,26 +808,26 @@ describe('ToolController (API)', () => {
 				const toolId: string = new ObjectId().toHexString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.build({ id: toolId });
 
-				const school: SchoolEntity = schoolEntityFactory.build();
-				const schoolExternalToolEntitys: SchoolExternalToolEntity[] = schoolExternalToolEntityFactory.buildList(2, {
+				const school = schoolEntityFactory.build();
+				const schoolExternalToolEntities = schoolExternalToolEntityFactory.buildList(2, {
 					tool: externalToolEntity,
 					school,
 				});
 
 				const courseTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(3, {
-					schoolTool: schoolExternalToolEntitys[0],
+					schoolTool: schoolExternalToolEntities[0],
 					contextType: ContextExternalToolType.COURSE,
 					contextId: new ObjectId().toHexString(),
 				});
 
 				const boardTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildListWithId(2, {
-					schoolTool: schoolExternalToolEntitys[1],
+					schoolTool: schoolExternalToolEntities[1],
 					contextType: ContextExternalToolType.BOARD_ELEMENT,
 					contextId: new ObjectId().toHexString(),
 				});
 
 				const mediaBoardTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildListWithId(2, {
-					schoolTool: schoolExternalToolEntitys[1],
+					schoolTool: schoolExternalToolEntities[1],
 					contextType: ContextExternalToolType.MEDIA_BOARD,
 					contextId: new ObjectId().toHexString(),
 				});
@@ -837,7 +843,7 @@ describe('ToolController (API)', () => {
 					adminUser,
 					school,
 					externalToolEntity,
-					...schoolExternalToolEntitys,
+					...schoolExternalToolEntities,
 					...courseTools,
 					...boardTools,
 					...mediaBoardTools,
@@ -857,7 +863,7 @@ describe('ToolController (API)', () => {
 				const response: Response = await loggedInClient.get(`${externalToolEntity.id}/metadata`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual<ExternalToolMetadataResponse>({
+				expect(response.body).toEqual<ExternalToolUtilizationResponse>({
 					schoolExternalToolCount: 2,
 					contextExternalToolCountPerContext: {
 						course: 1,

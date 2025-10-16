@@ -1,6 +1,9 @@
+import { CoreModule } from '@core/core.module';
+import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
-import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
+import { ConfigurationModule } from '@infra/configuration';
 import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
@@ -10,59 +13,65 @@ import { AlertModule } from '@modules/alert/alert.module';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { AuthorizationReferenceApiModule } from '@modules/authorization-reference/authorization-reference.api.module';
 import { AuthorizationRulesModule } from '@modules/authorization-rules';
+import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@modules/board-context';
 import { BoardApiModule } from '@modules/board/board-api.module';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
+import { MoinSchuleClassModule } from '@modules/class-moin-schule/moin-schule-class.module';
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
+import { CourseApiModule } from '@modules/course/course-api.module';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
 import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school.api-module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
 import { MeApiModule } from '@modules/me/me-api.module';
+import { MediumMetadataApiModule } from '@modules/medium-metadata';
 import { MetaTagExtractorApiModule, MetaTagExtractorModule } from '@modules/meta-tag-extractor';
 import { NewsModule } from '@modules/news';
 import { OauthProviderApiModule } from '@modules/oauth-provider/oauth-provider-api.module';
-import { OauthApiModule } from '@modules/oauth/oauth-api.module';
+import { OAuthApiModule } from '@modules/oauth/oauth-api.module';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
 import { RocketChatModule } from '@modules/rocketchat';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { RosterModule } from '@modules/roster/roster.module';
-import { SchoolLicenseModule } from '@modules/school-license/school-license.module';
 import { SchoolApiModule } from '@modules/school/school-api.module';
 import { SharingApiModule } from '@modules/sharing/sharing-api.module';
 import { ShdApiModule } from '@modules/shd/shd.api.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
 import { TaskApiModule } from '@modules/task/task-api.module';
-import { TeamsApiModule } from '@modules/teams/teams-api.module';
+import { TeamApiModule } from '@modules/team/team-api.module';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
 import { ImportUserModule } from '@modules/user-import';
 import { UserLicenseModule } from '@modules/user-license';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
 import { UsersAdminApiModule } from '@modules/user/legacy/users-admin-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
+import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
-import { DynamicModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { ALL_ENTITIES } from '@shared/domain/entity';
-import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
+import { MongoMemoryDatabaseModule } from '@testing/database';
+import { MediaSourceApiModule } from '../media-source/media-source-api.module';
+import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
+import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
+	ConfigurationModule.register(VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig),
+	ConfigurationModule.register(BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig),
 	CoreModule,
+	CourseApiModule,
 	AuthenticationApiModule,
 	AuthGuardModule.register([AuthGuardOptions.JWT]),
 	AuthorizationReferenceApiModule,
 	AuthorizationRulesModule,
 	AccountApiModule,
 	CollaborativeStorageModule,
-	OauthApiModule,
 	MetaTagExtractorModule,
 	TaskApiModule,
 	LessonApiModule,
@@ -93,20 +102,24 @@ const serverModules = [
 	UserLoginMigrationApiModule,
 	BoardApiModule,
 	GroupApiModule,
-	TeamsApiModule,
+	TeamApiModule,
 	MetaTagExtractorApiModule,
 	PseudonymApiModule,
 	SchoolApiModule,
 	LegacySchoolApiModule,
 	MeApiModule,
 	MediaBoardApiModule,
+	MediaSourceApiModule,
+	MediumMetadataApiModule,
 	CollaborativeTextEditorApiModule,
 	AlertModule,
 	UserLicenseModule,
-	SchoolLicenseModule,
+	SchoolLicenseApiModule,
 	RoomApiModule,
 	RosterModule,
 	ShdApiModule,
+	OAuthApiModule,
+	MoinSchuleClassModule,
 ];
 
 const providers = [ServerUc, { provide: SERVER_CONFIG_TOKEN, useValue: serverConfig() }];
@@ -126,7 +139,7 @@ const controllers = [ServerController, ServerConfigController];
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: ALL_ENTITIES,
+			entities: ENTITIES,
 
 			// debug: true, // use it for locally debugging of queries
 		}),
@@ -148,24 +161,11 @@ export class ServerModule {}
 @Module({
 	imports: [
 		...serverModules,
-		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
+		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
 		RabbitMQWrapperTestModule,
 		LoggerModule,
 	],
 	providers,
 	controllers,
 })
-export class ServerTestModule {
-	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
-		return {
-			module: ServerTestModule,
-			imports: [
-				...serverModules,
-				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options }),
-				RabbitMQWrapperTestModule,
-			],
-			providers,
-			controllers,
-		};
-	}
-}
+export class ServerTestModule {}

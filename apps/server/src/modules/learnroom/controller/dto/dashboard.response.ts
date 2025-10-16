@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
+import { DecodeHtmlEntities } from '@shared/controller/transformer';
 
 export class DashboardGridSubElementResponse {
 	@ApiProperty({
 		description: 'The id of the Grid element',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id: string;
 
@@ -24,18 +25,24 @@ export class DashboardGridSubElementResponse {
 	})
 	displayColor: string;
 
+	@ApiProperty({
+		description: 'Indicates if the course is locked and cannot be accessed.',
+	})
+	isLocked: boolean;
+
 	constructor(props: DashboardGridSubElementResponse) {
 		this.id = props.id;
 		this.title = props.title;
 		this.shortTitle = props.shortTitle;
 		this.displayColor = props.displayColor;
+		this.isLocked = props.isLocked;
 	}
 }
 
 export class DashboardGridElementResponse {
 	@ApiProperty({
 		description: 'The id of the Grid element',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id?: string;
 
@@ -67,7 +74,7 @@ export class DashboardGridElementResponse {
 
 	@ApiProperty({
 		description: 'The id of the group element',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	groupId?: string;
 
@@ -87,6 +94,11 @@ export class DashboardGridElementResponse {
 	})
 	isSynchronized: boolean;
 
+	@ApiProperty({
+		description: 'Indicates if the course is locked and cannot be accessed.',
+	})
+	isLocked: boolean;
+
 	constructor(props: DashboardGridElementResponse) {
 		this.id = props.id;
 		this.title = props.title;
@@ -98,6 +110,7 @@ export class DashboardGridElementResponse {
 		this.groupElements = props.groupElements;
 		this.copyingSince = props.copyingSince;
 		this.isSynchronized = props.isSynchronized;
+		this.isLocked = props.isLocked;
 	}
 }
 
@@ -109,7 +122,7 @@ export class DashboardResponse {
 
 	@ApiProperty({
 		description: 'The id of the Dashboard entity',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id: string;
 

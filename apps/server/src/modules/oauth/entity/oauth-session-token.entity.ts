@@ -1,7 +1,7 @@
 import { Entity, Index, ManyToOne, Property } from '@mikro-orm/core';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
+import { User } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { User } from '@shared/domain/entity/user.entity';
 import { EntityId } from '@shared/domain/types';
 
 export interface OauthSessionTokenEntityProps {

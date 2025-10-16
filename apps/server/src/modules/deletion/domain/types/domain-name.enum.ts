@@ -1,12 +1,14 @@
-export const enum DomainName {
+export enum DomainName {
 	ACCOUNT = 'account',
 	BOARD = 'board',
+	MEDIA_BOARD = 'media-board',
 	CLASS = 'class',
 	COURSEGROUP = 'courseGroup',
 	COURSE = 'course',
 	DASHBOARD = 'dashboard',
 	FILE = 'file',
 	FILERECORDS = 'fileRecords',
+	GROUP = 'group',
 	LESSONS = 'lessons',
 	PSEUDONYMS = 'pseudonyms',
 	REGISTRATIONPIN = 'registrationPin',
@@ -18,4 +20,5 @@ export const enum DomainName {
 	SUBMISSIONS = 'submissions',
 	NEWS = 'news',
 	CALENDAR = 'calendar',
+	ROOM = 'room',
 }

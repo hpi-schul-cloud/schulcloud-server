@@ -7,6 +7,8 @@ metadata:
 spec:
   template:
     spec:
+      os:
+        name: linux
       containers:
       - name: api-init
         image: quay.io/schulcloudverbund/infra-tools:latest
@@ -15,8 +17,6 @@ spec:
             name: api-configmap
         - secretRef:
             name: api-secret
-        - secretRef:
-            name: api-files-secret
         env:
         - name: K8S_NAMESPACE
           valueFrom:

@@ -1,25 +1,35 @@
-import { Action, AuthorizationService } from '@modules/authorization';
+import { LegacyLogger } from '@core/logger';
+import { StorageLocation } from '@infra/files-storage-client';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { BoardContextApiHelperService } from '@modules/board-context';
 import { CopyStatus } from '@modules/copy-helper';
+import { CourseService } from '@modules/course';
+import { RoomService } from '@modules/room';
+import { RoomMembershipService } from '@modules/room-membership';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo/course';
-import { LegacyLogger } from '@src/core/logger';
-import { BoardContextApiHelperService } from '@src/modules/board-context';
-import { StorageLocation } from '@src/modules/files-storage/interface';
-import { RoomService } from '@src/modules/room';
-import { RoomMembershipService } from '@src/modules/room-membership';
 import { CreateBoardBodyParams } from '../controller/dto';
 import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	BoardFeature,
+	BoardLayout,
+	BoardNodeAuthorizable,
 	BoardNodeFactory,
 	Column,
 	ColumnBoard,
 } from '../domain';
-import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
+import {
+	BoardNodeAuthorizableService,
+	BoardNodePermissionService,
+	BoardNodeService,
+	ColumnBoardService,
+} from '../service';
 import { StorageLocationReference } from '../service/internal';
+import { ConfigService } from '@nestjs/config';
+import { BoardConfig } from '../board.config';
+import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 
 @Injectable()
 export class BoardUc {
@@ -31,10 +41,12 @@ export class BoardUc {
 		private readonly boardNodeService: BoardNodeService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly logger: LegacyLogger,
-		private readonly courseRepo: CourseRepo,
+		private readonly courseService: CourseService,
 		private readonly roomService: RoomService,
 		private readonly boardNodeFactory: BoardNodeFactory,
-		private readonly boardContextApiHelperService: BoardContextApiHelperService
+		private readonly boardContextApiHelperService: BoardContextApiHelperService,
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
+		private readonly configService: ConfigService<BoardConfig, true>
 	) {
 		this.logger.setContext(BoardUc.name);
 	}
@@ -58,22 +70,22 @@ export class BoardUc {
 	public async findBoard(
 		userId: EntityId,
 		boardId: EntityId
-	): Promise<{ board: ColumnBoard; features: BoardFeature[] }> {
+	): Promise<{ board: ColumnBoard; features: BoardFeature[]; permissions: Permission[] }> {
 		this.logger.debug({ action: 'findBoard', userId, boardId });
 
 		// TODO set depth=2 to reduce data?
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.read);
+		const boardNodeAuthorizable = await this.checkBoardAuthorization(userId, board, Action.read);
 		const features = await this.boardContextApiHelperService.getFeaturesForBoardNode(boardId);
-
-		return { board, features };
+		const permissions = boardNodeAuthorizable.getUserPermissions(userId);
+		return { board, features, permissions };
 	}
 
 	public async findBoardContext(userId: EntityId, boardId: EntityId): Promise<BoardExternalReference> {
 		this.logger.debug({ action: 'findBoardContext', userId, boardId });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.read);
+		await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.read([]));
 
 		return board.context;
 	}
@@ -82,7 +94,11 @@ export class BoardUc {
 		this.logger.debug({ action: 'deleteBoard', userId, boardId });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		await this.boardPermissionService.checkPermission(
+			userId,
+			board,
+			AuthorizationContextBuilder.write([Permission.BOARD_MANAGE])
+		);
 
 		await this.boardNodeService.delete(board);
 		return board;
@@ -92,7 +108,7 @@ export class BoardUc {
 		this.logger.debug({ action: 'updateBoardTitle', userId, boardId, title });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.updateTitle(board, title);
 		return board;
@@ -102,7 +118,7 @@ export class BoardUc {
 		this.logger.debug({ action: 'createColumn', userId, boardId });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId, 1);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.write([]));
 
 		const column = this.boardNodeFactory.buildColumn();
 
@@ -122,8 +138,8 @@ export class BoardUc {
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
 		const targetBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, targetBoardId);
 
-		await this.boardPermissionService.checkPermission(userId, column, Action.write);
-		await this.boardPermissionService.checkPermission(userId, targetBoard, Action.write);
+		await this.boardPermissionService.checkPermission(userId, column, AuthorizationContextBuilder.write([]));
+		await this.boardPermissionService.checkPermission(userId, targetBoard, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.move(column, targetBoard, targetPosition);
 		return column;
@@ -134,7 +150,7 @@ export class BoardUc {
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 
-		await this.boardPermissionService.checkPermission(userId, board, Action.read);
+		await this.boardPermissionService.checkPermission(userId, board, AuthorizationContextBuilder.read([]));
 		await this.checkReferenceWritePermission(userId, board.context);
 
 		const storageLocationReference = await this.getStorageLocationReference(board.context);
@@ -148,14 +164,52 @@ export class BoardUc {
 			targetSchoolId: schoolId,
 		});
 
+		await this.columnBoardService.swapLinkedIdsInBoards(copyStatus);
+
 		return copyStatus;
 	}
 
 	public async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise<ColumnBoard> {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		await this.boardPermissionService.checkPermission(
+			userId,
+			board,
+			AuthorizationContextBuilder.write([Permission.BOARD_MANAGE])
+		);
 
 		await this.boardNodeService.updateVisibility(board, isVisible);
+		return board;
+	}
+
+	public async updateReadersCanEdit(
+		userId: EntityId,
+		boardId: EntityId,
+		readersCanEdit: boolean
+	): Promise<ColumnBoard> {
+		if (!this.configService.get('FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE', { infer: true })) {
+			throw new FeatureDisabledLoggableException('FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE');
+		}
+
+		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+		await this.boardPermissionService.checkPermission(
+			userId,
+			board,
+			AuthorizationContextBuilder.write([Permission.BOARD_MANAGE_READERS_CAN_EDIT])
+		);
+
+		await this.columnBoardService.updateReadersCanEdit(board, readersCanEdit);
+		return board;
+	}
+
+	public async updateLayout(userId: EntityId, boardId: EntityId, layout: BoardLayout): Promise<ColumnBoard> {
+		const board: ColumnBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+		await this.boardPermissionService.checkPermission(
+			userId,
+			board,
+			AuthorizationContextBuilder.write([Permission.BOARD_MANAGE])
+		);
+
+		await this.boardNodeService.updateLayout(board, layout);
 		return board;
 	}
 
@@ -165,7 +219,7 @@ export class BoardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		if (context.type === BoardExternalReferenceType.Course) {
-			const course = await this.courseRepo.findById(context.id);
+			const course = await this.courseService.findById(context.id);
 
 			this.authorizationService.checkPermission(user, course, {
 				action: Action.write,
@@ -176,7 +230,7 @@ export class BoardUc {
 
 			this.authorizationService.checkPermission(user, roomMembershipAuthorizable, {
 				action: Action.write,
-				requiredPermissions: [],
+				requiredPermissions: [Permission.ROOM_EDIT_CONTENT],
 			});
 		} else {
 			throw new Error(`Unsupported context type ${context.type as string}`);
@@ -185,7 +239,7 @@ export class BoardUc {
 
 	private async getStorageLocationReference(context: BoardExternalReference): Promise<StorageLocationReference> {
 		if (context.type === BoardExternalReferenceType.Course) {
-			const course = await this.courseRepo.findById(context.id);
+			const course = await this.courseService.findById(context.id);
 
 			return { id: course.school.id, type: StorageLocation.SCHOOL };
 		}
@@ -197,5 +251,18 @@ export class BoardUc {
 		}
 		/* istanbul ignore next */
 		throw new Error(`Unsupported board reference type ${context.type as string}`);
+	}
+
+	private async checkBoardAuthorization(
+		userId: EntityId,
+		columnBoard: ColumnBoard,
+		action: Action,
+		requiredPermissions: Permission[] = []
+	): Promise<BoardNodeAuthorizable> {
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(columnBoard);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(user, boardNodeAuthorizable, { action, requiredPermissions });
+
+		return boardNodeAuthorizable;
 	}
 }

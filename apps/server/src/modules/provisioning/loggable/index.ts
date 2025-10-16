@@ -9,3 +9,8 @@ export { PoliciesInfoErrorResponseLoggable } from './policies-info-error-respons
 export { UserRoleUnknownLoggableException } from './user-role-unknown.loggable-exception';
 export { SchoolMissingLoggableException } from './school-missing.loggable-exception';
 export { GroupProvisioningInfoLoggable } from './group-provisioning-info.loggable';
+export { GroupProvisioningSuccessfulLoggable } from './group-provisioning-successful.loggable';
+export { GroupRemovalSuccessfulLoggable } from './group-removal-successful.loggable';
+export { LicenseProvisioningSuccessfulLoggable } from './license-provisioning-successful.loggable';
+export { CourseSyncHistoryGroupExternalSourceMissingLoggableException } from './course-sync-history-group-external-source-missing.loggable-exception';
+export { ExternalToolMetadataUpdateFailedLoggable } from './external-tool-metadata-update-failed.loggable';

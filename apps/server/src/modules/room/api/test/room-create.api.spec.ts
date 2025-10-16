@@ -1,21 +1,19 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntity } from '@modules/group/entity';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
+import { RoomMembershipEntity } from '@modules/room-membership';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { RoomMembershipEntity } from '@src/modules/room-membership';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomEntity } from '../../repo';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -26,13 +24,10 @@ describe('Room Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'rooms');
-
-		config = serverConfig();
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOMS_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -47,56 +42,22 @@ describe('Room Controller (API)', () => {
 			});
 		});
 
-		describe('when the feature is disabled', () => {
-			const setup = async () => {
-				config.FEATURE_ROOMS_ENABLED = false;
-
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
-
-				return { loggedInClient };
-			};
-
-			it('should return a 403 error', async () => {
-				const { loggedInClient } = await setup();
-				const params = { name: 'Room #1', color: 'red' };
-				const response = await loggedInClient.post(undefined, params);
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
-			});
-		});
-
 		describe('when the user has the required permissions', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const role = roleFactory.buildWithId({
-					name: RoleName.TEACHER,
-					permissions: [Permission.ROOM_CREATE, Permission.ROOM_EDIT, Permission.ROOM_VIEW],
-				});
-				const roomOwnerRole = roleFactory.buildWithId({
-					name: RoleName.ROOMOWNER,
-					permissions: [
-						Permission.ROOM_CREATE,
-						Permission.ROOM_EDIT,
-						Permission.ROOM_VIEW,
-						Permission.ROOM_MEMBERS_ADD,
-						Permission.ROOM_MEMBERS_REMOVE,
-					],
-				});
-				await em.persistAndFlush([teacherAccount, teacherUser, role, roomOwnerRole]);
+				const { roomEditorRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+				await em.persistAndFlush([teacherAccount, teacherUser, roomEditorRole, roomOwnerRole]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
-				return { loggedInClient, teacherUser, role };
+				return { loggedInClient, teacherUser, roomEditorRole };
 			};
 
 			describe('when the required parameters are given', () => {
 				it('should create the room', async () => {
 					const { loggedInClient } = await setup();
-					const params = { name: 'Room #1', color: 'red' };
+					const params = { name: 'Room #1', color: 'red', features: [] };
 
 					const response = await loggedInClient.post(undefined, params);
 					const roomId = (response.body as { id: string }).id;
@@ -107,7 +68,7 @@ describe('Room Controller (API)', () => {
 				it('should have room creator as room editor', async () => {
 					const { loggedInClient, teacherUser } = await setup();
 
-					const params = { name: 'Room #1', color: 'red' };
+					const params = { name: 'Room #1', color: 'red', features: [] };
 
 					const response = await loggedInClient.post(undefined, params);
 					const roomId = (response.body as { id: string }).id;
@@ -128,7 +89,7 @@ describe('Room Controller (API)', () => {
 				it('should create the room', async () => {
 					const { loggedInClient } = await setup();
 
-					const params = { name: 'Room #1', color: 'red', startDate: '2024-10-01' };
+					const params = { name: 'Room #1', color: 'red', startDate: '2024-10-01', features: [] };
 					const response = await loggedInClient.post(undefined, params);
 					const roomId = (response.body as { id: string }).id;
 
@@ -152,7 +113,7 @@ describe('Room Controller (API)', () => {
 			describe('when an end date is given', () => {
 				it('should create the room', async () => {
 					const { loggedInClient } = await setup();
-					const params = { name: 'Room #1', color: 'red', endDate: '2024-10-20' };
+					const params = { name: 'Room #1', color: 'red', endDate: '2024-10-20', features: [] };
 
 					const response = await loggedInClient.post(undefined, params);
 					const roomId = (response.body as { id: string }).id;
@@ -182,6 +143,7 @@ describe('Room Controller (API)', () => {
 						color: 'red',
 						startDate: '2024-10-01',
 						endDate: '2024-10-20',
+						features: [],
 					};
 
 					const response = await loggedInClient.post(undefined, params);
@@ -227,7 +189,7 @@ describe('Room Controller (API)', () => {
 			describe('when the required parameters are given', () => {
 				it('should not create the room', async () => {
 					const { loggedInClient } = await setup();
-					const params = { name: 'Room #1', color: 'red' };
+					const params = { name: 'Room #1', color: 'red', features: [] };
 
 					const response = await loggedInClient.post(undefined, params);
 					expect(response.status).toBe(HttpStatus.UNAUTHORIZED);

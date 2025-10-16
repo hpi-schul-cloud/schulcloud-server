@@ -1,4 +1,4 @@
-import { DomainName, StatusModel } from '@src/modules/deletion/domain/types';
+import { DomainName, StatusModel } from '@modules/deletion/domain/types';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { ObjectId } from 'bson';
 import { DeletionRequestEntity, DeletionRequestEntityProps } from '../../deletion-request.entity';

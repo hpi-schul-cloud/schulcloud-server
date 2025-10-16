@@ -1,12 +1,12 @@
 import { EntityData, EntityDictionary, EntityName, QueryOrder } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { StringValidator } from '@shared/common';
+import { StringValidator } from '@shared/common/validator';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { MongoPatterns } from '@shared/repo';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
+import { MongoPatterns } from '@shared/repo/mongo.patterns';
 import { ScopeAggregateResult } from '@shared/repo/mongodb-scope';
 import { Group, GroupAggregateScope, GroupFilter, GroupTypes } from '../domain';
 import { GroupEntity } from '../entity';
@@ -54,7 +54,10 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return domainObject;
 	}
 
-	public async findGroups(filter: GroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+	public async findGroupsByFilter(
+		filter: GroupFilter,
+		options?: IFindOptions<Group>
+	): Promise<{ domainObjects: Group[]; total: number }> {
 		const scope: GroupScope = new GroupScope();
 		scope.byUserId(filter.userId);
 		scope.byUserIds(filter.userIds);
@@ -67,7 +70,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		}
 
 		const escapedName = filter.nameQuery?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
-		if (StringValidator.isNotEmptyString(escapedName, true)) {
+		if (StringValidator.isNotEmptyStringWhenTrimed(escapedName)) {
 			scope.byNameQuery(escapedName);
 		}
 
@@ -79,9 +82,24 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 
 		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
+		return { domainObjects, total };
+	}
+
+	public async findGroups(filter: GroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+		const { domainObjects, total } = await this.findGroupsByFilter(filter, options);
 		const page: Page<Group> = new Page<Group>(domainObjects, total);
 
 		return page;
+	}
+
+	public async findByUsersAndRoomsSchoolId(schoolId: EntityId, types?: GroupTypes[]): Promise<Page<Group>> {
+		const scope: GroupAggregateScope = new GroupAggregateScope();
+		scope.byType(types);
+		scope.byUsersAndOrganizationsSchoolId(schoolId);
+
+		const groups: Page<Group> = await this.findGroupsForScope(scope);
+
+		return groups;
 	}
 
 	public async findGroupsForScope(scope: GroupAggregateScope): Promise<Page<Group>> {
@@ -101,5 +119,15 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		const page: Page<Group> = new Page<Group>(domainObjects, total);
 
 		return page;
+	}
+
+	public async removeUserReference(userId: EntityId): Promise<number> {
+		const scope: GroupScope = new GroupScope();
+		scope.byUserId(userId);
+
+		const count = await this.em.nativeUpdate(GroupEntity, scope.query, {
+			$pull: { users: { user: new ObjectId(userId) } },
+		} as Partial<GroupEntity>);
+		return count;
 	}
 }

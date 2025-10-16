@@ -1,5 +1,5 @@
-import { MediaSourceBasicAuthConfig, MediaSourceOauthConfig } from '../domain';
-import { MediaSourceBasicAuthConfigEmbeddable, MediaSourceOauthConfigEmbeddable } from '../entity';
+import { MediaSourceOauthConfig, MediaSourceVidisConfig } from '../do';
+import { MediaSourceOauthConfigEmbeddable, MediaSourceVidisConfigEmbeddable } from '../entity';
 
 export class MediaSourceConfigMapper {
 	public static mapOauthConfigToEmbeddable(config: MediaSourceOauthConfig): MediaSourceOauthConfigEmbeddable {
@@ -8,18 +8,19 @@ export class MediaSourceConfigMapper {
 			clientSecret: config.clientSecret,
 			authEndpoint: config.authEndpoint,
 			method: config.method,
+			baseUrl: config.baseUrl,
 		});
 
 		return configEmbeddable;
 	}
 
-	public static mapBasicAuthConfigToEmbeddable(
-		config: MediaSourceBasicAuthConfig
-	): MediaSourceBasicAuthConfigEmbeddable {
-		const configEmbeddable = new MediaSourceBasicAuthConfigEmbeddable({
+	public static mapVidisConfigToEmbeddable(config: MediaSourceVidisConfig): MediaSourceVidisConfigEmbeddable {
+		const configEmbeddable = new MediaSourceVidisConfigEmbeddable({
 			username: config.username,
 			password: config.password,
-			authEndpoint: config.authEndpoint,
+			baseUrl: config.baseUrl,
+			region: config.region,
+			schoolNumberPrefix: config.schoolNumberPrefix,
 		});
 
 		return configEmbeddable;
@@ -31,16 +32,19 @@ export class MediaSourceConfigMapper {
 			clientSecret: embeddable.clientSecret,
 			method: embeddable.method,
 			authEndpoint: embeddable.authEndpoint,
+			baseUrl: embeddable.baseUrl,
 		});
 
 		return config;
 	}
 
-	public static mapBasicAuthConfigToDo(embeddable: MediaSourceBasicAuthConfigEmbeddable): MediaSourceBasicAuthConfig {
-		const config = new MediaSourceBasicAuthConfig({
+	public static mapVidisConfigToDo(embeddable: MediaSourceVidisConfigEmbeddable): MediaSourceVidisConfig {
+		const config = new MediaSourceVidisConfig({
 			username: embeddable.username,
 			password: embeddable.password,
-			authEndpoint: embeddable.authEndpoint,
+			baseUrl: embeddable.baseUrl,
+			region: embeddable.region,
+			schoolNumberPrefix: embeddable.schoolNumberPrefix,
 		});
 
 		return config;

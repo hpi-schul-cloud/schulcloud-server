@@ -10,7 +10,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { FilesStorageClientConfig } from '../files-storage-client-config';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		this.logger.setContext(FilesStorageProducer.name);
 	}
 
-	async copyFilesOfParent(payload: CopyFilesOfParentParams): Promise<CopyFileDO[]> {
+	public async copyFilesOfParent(payload: CopyFilesOfParentParams): Promise<CopyFileDO[]> {
 		this.logger.debug({ action: 'copyFilesOfParent:started', payload });
 		const response = await this.request<CopyFileDO[]>(FilesStorageEvents.COPY_FILES_OF_PARENT, payload);
 
@@ -33,7 +33,7 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		return response;
 	}
 
-	async listFilesOfParent(payload: EntityId): Promise<FileDO[]> {
+	public async listFilesOfParent(payload: EntityId): Promise<FileDO[]> {
 		this.logger.debug({ action: 'listFilesOfParent:started', payload });
 		const response = await this.request<FileDO[]>(FilesStorageEvents.LIST_FILES_OF_PARENT, payload);
 
@@ -42,7 +42,7 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		return response;
 	}
 
-	async deleteFilesOfParent(payload: EntityId): Promise<FileDO[]> {
+	public async deleteFilesOfParent(payload: EntityId): Promise<FileDO[]> {
 		this.logger.debug({ action: 'deleteFilesOfParent:started', payload });
 		const response = await this.request<FileDO[]>(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload);
 
@@ -51,7 +51,7 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		return response;
 	}
 
-	async deleteFiles(payload: EntityId[]): Promise<FileDO[]> {
+	public async deleteFiles(payload: EntityId[]): Promise<FileDO[]> {
 		this.logger.debug({ action: 'deleteFiles:started', payload });
 		const response = await this.request<FileDO[]>(FilesStorageEvents.DELETE_FILES, payload);
 
@@ -60,9 +60,8 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		return response;
 	}
 
-	async removeCreatorIdFromFileRecords(payload: EntityId): Promise<FileDO[]> {
+	public async removeCreatorIdFromFileRecords(payload: EntityId): Promise<FileDO[]> {
 		this.logger.debug({ action: 'removeCreatorIdFromFileRecords:started', payload });
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		const response = await this.request<FileDO[]>(FilesStorageEvents.REMOVE_CREATORID_OF_FILES, payload);
 
 		this.logger.debug({ action: 'removeCreatorIdFromFileRecords:finished', payload });

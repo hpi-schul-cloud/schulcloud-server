@@ -1,12 +1,14 @@
 import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationService } from '@modules/authorization';
+import { RoleName } from '@modules/role';
+import { Role } from '@modules/role/repo';
+import { SchoolEntity } from '@modules/school/repo';
+import { User } from '@modules/user/repo';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityNotFoundError, ValidationError } from '@shared/common/error';
-import { Role, SchoolEntity, User } from '@shared/domain/entity';
-import { Permission, RoleName } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { AccountService } from '..';
-import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../domain';
+import { Account, AccountSave, AccountService, UpdateAccount, UpdateMyAccount } from '../domain';
 import {
 	AccountSearchDto,
 	AccountSearchType,
@@ -135,7 +137,7 @@ export class AccountUc {
 		const targetAccount = await this.accountService.findById(accountId);
 
 		if (!targetAccount.userId) {
-			throw new EntityNotFoundError(User.name);
+			throw new EntityNotFoundError('User');
 		}
 
 		const targetUser = await this.authorizationService.getUserWithPermissions(targetAccount.userId);
@@ -174,7 +176,7 @@ export class AccountUc {
 	 * @param currentUserId the current user
 	 * @param updateMyAccountDto account details
 	 */
-	public async updateMyAccount(currentUserId: EntityId, updateMyAccountDto: UpdateMyAccountDto) {
+	public async updateMyAccount(currentUserId: EntityId, updateMyAccountDto: UpdateMyAccountDto): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
 		if (
 			(updateMyAccountDto.firstName && user.firstName !== updateMyAccountDto.firstName) ||
@@ -205,7 +207,7 @@ export class AccountUc {
 		currentUser: User,
 		targetUser: User,
 		action: 'READ' | 'UPDATE' | 'DELETE' | 'CREATE'
-	) {
+	): boolean {
 		if (this.hasRole(currentUser, RoleName.SUPERHERO)) {
 			return true;
 		}
@@ -213,7 +215,7 @@ export class AccountUc {
 			return false;
 		}
 
-		const permissionsToCheck: string[] = [];
+		const permissionsToCheck: Permission[] = [];
 		if (this.hasRole(targetUser, RoleName.STUDENT)) {
 			// eslint-disable-next-line default-case
 			switch (action) {
@@ -267,7 +269,7 @@ export class AccountUc {
 		);
 	}
 
-	private hasRole(user: User, roleName: string) {
+	private hasRole(user: User, roleName: string): boolean {
 		return user.roles.getItems().some((role) => role.name === roleName);
 	}
 

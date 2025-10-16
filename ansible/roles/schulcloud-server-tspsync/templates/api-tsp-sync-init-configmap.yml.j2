@@ -6,7 +6,7 @@ metadata:
   labels:
     app: api-tsp-sync-init
 data:
-  NODE_OPTIONS: "--max-old-space-size=3072"
+  NODE_OPTIONS: "--max-old-space-size=1536"
   NEST_LOG_LEVEL: "{{ NEST_LOG_LEVEL }}"
   EXIT_ON_ERROR: "true"
   FEATURE_IDENTITY_MANAGEMENT_ENABLED: "{{ FEATURE_IDENTITY_MANAGEMENT_ENABLED }}"
@@ -21,7 +21,5 @@ data:
   TSP_API_CLIENT_TOKEN_LIFETIME_MS: "{{ TSP_API_CLIENT_TOKEN_LIFETIME_MS }}"
   TSP_SYNC_SCHOOL_LIMIT: "{{ TSP_SYNC_SCHOOL_LIMIT }}"
   TSP_SYNC_DATA_LIMIT: "{{ TSP_SYNC_DATA_LIMIT }}"
-  TSP_SYNC_SCHOOL_DAYS_TO_FETCH: "{{ ((ansible_date_time.date | to_datetime('%Y-%m-%d')) - ("1970-01-01" | to_datetime('%Y-%m-%d'))).days  }}"
-  TSP_SYNC_DATA_DAYS_TO_FETCH: "{{ ((ansible_date_time.date | to_datetime('%Y-%m-%d')) - ("1970-01-01" | to_datetime('%Y-%m-%d'))).days  }}"
-  FEATURE_TSP_MIGRATION_ENABLED: "{{ FEATURE_TSP_MIGRATION_ENABLED }}"
-  TSP_SYNC_MIGRATION_LIMIT: "{{ TSP_SYNC_MIGRATION_LIMIT }}"
+  TSP_SYNC_SCHOOL_DAYS_TO_FETCH: "-1"
+  TSP_SYNC_DATA_DAYS_TO_FETCH: "-1"

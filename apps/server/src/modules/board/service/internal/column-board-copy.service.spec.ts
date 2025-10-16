@@ -1,17 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { StorageLocation } from '@infra/files-storage-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client/service';
-import { StorageLocation } from '@modules/files-storage/interface';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory } from '@testing/factory/course.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { BoardExternalReferenceType } from '../../domain/types';
 import { columnBoardFactory } from '../../testing/column-board.factory';
 import { BoardNodeService } from '../board-node.service';
 import { ColumnBoardCopyService, CopyColumnBoardParams } from './column-board-copy.service';
 import { ColumnBoardTitleService } from './column-board-title.service';
-
 // Warning: do not move the BoardNodeCopyService import up. Otherwise it will lead to dependency cycle.
 import { BoardNodeCopyService } from './board-node-copy.service';
 
@@ -51,7 +51,7 @@ describe(ColumnBoardCopyService.name, () => {
 		boardNodeCopyService = module.get(BoardNodeCopyService);
 		columnBoardTitleService = module.get(ColumnBoardTitleService);
 
-		await setupEntities();
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	afterEach(() => {
@@ -66,7 +66,7 @@ describe(ColumnBoardCopyService.name, () => {
 		const setup = () => {
 			const userId = new ObjectId().toHexString();
 			const targetSchoolId = new ObjectId().toHexString();
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			const originalBoard = columnBoardFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
@@ -170,7 +170,7 @@ describe(ColumnBoardCopyService.name, () => {
 		const setup = () => {
 			const userId = new ObjectId().toHexString();
 			const targetSchoolId = new ObjectId().toHexString();
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			const originalBoard = columnBoardFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});

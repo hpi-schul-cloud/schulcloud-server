@@ -1,6 +1,6 @@
+import { Loggable } from '@core/logger/interfaces';
+import { ErrorLogMessage } from '@core/logger/types';
 import { ForbiddenException } from '@nestjs/common';
-import { Loggable } from '@src/core/logger/interfaces';
-import { ErrorLogMessage } from '@src/core/logger/types';
 import { AuthorizationBodyParams } from '../authorization-api-client';
 
 export class AuthorizationErrorLoggableException extends ForbiddenException implements Loggable {
@@ -8,10 +8,10 @@ export class AuthorizationErrorLoggableException extends ForbiddenException impl
 		super();
 	}
 
-	getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): ErrorLogMessage {
 		const error = this.error instanceof Error ? this.error : new Error(JSON.stringify(this.error));
 		const message: ErrorLogMessage = {
-			type: 'INTERNAL_SERVER_ERROR',
+			type: AuthorizationErrorLoggableException.name,
 			error,
 			stack: this.stack,
 			data: {

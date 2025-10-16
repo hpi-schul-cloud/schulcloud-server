@@ -1,22 +1,21 @@
+import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
-import { IdmAccount } from '@shared/domain/interface';
+import { EntityNotFoundError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
 import { AccountConfig } from '../../account-config';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { accountDoFactory } from '../../testing';
-import { Account } from '../account';
-import { AccountEntity } from '../entity/account.entity';
+import { Account, IdmAccount } from '../do';
+import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
 
 describe('AccountDbService', () => {
@@ -44,7 +43,7 @@ describe('AccountDbService', () => {
 			providers: [
 				AccountServiceDb,
 				{
-					provide: AccountRepo,
+					provide: ACCOUNT_REPO,
 					useValue: createMock<AccountRepo>(),
 				},
 				{
@@ -61,12 +60,12 @@ describe('AccountDbService', () => {
 				},
 			],
 		}).compile();
-		accountRepo = module.get(AccountRepo);
+		accountRepo = module.get(ACCOUNT_REPO);
 		accountService = module.get(AccountServiceDb);
 		configServiceMock = module.get(ConfigService);
 		idmServiceMock = module.get(IdentityManagementService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	beforeEach(() => {
@@ -324,14 +323,14 @@ describe('AccountDbService', () => {
 					if (mockTeacherUser.id === userId) {
 						return Promise.resolve(mockTeacherAccount);
 					}
-					return Promise.reject(new EntityNotFoundError(AccountEntity.name));
+					return Promise.reject(new EntityNotFoundError('AccountEntity'));
 				});
 				return {};
 			};
 
 			it('should throw EntityNotFoundError', async () => {
 				setup();
-				await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toThrow(EntityNotFoundError);
+				await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toBeInstanceOf(EntityNotFoundError);
 			});
 		});
 	});
@@ -406,17 +405,12 @@ describe('AccountDbService', () => {
 			};
 
 			it('should update account', async () => {
-				const { mockStudentUser, mockTeacherAccount } = setup();
+				const { mockTeacherAccount } = setup();
 
 				const ret = await accountService.save(mockTeacherAccount);
+
 				expect(ret).toBeDefined();
-				expect(ret).toMatchObject({
-					id: mockTeacherAccount.id,
-					username: mockTeacherAccount.username,
-					activated: mockTeacherAccount.activated,
-					systemId: mockTeacherAccount.systemId,
-					userId: new ObjectId(mockStudentUser.id),
-				});
+				expect(ret).toEqual(mockTeacherAccount);
 			});
 		});
 
@@ -769,6 +763,7 @@ describe('AccountDbService', () => {
 			const theNewDate = new Date();
 
 			accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+			accountRepo.save.mockResolvedValue(mockTeacherAccount);
 
 			return { mockTeacherAccount, theNewDate };
 		};
@@ -788,6 +783,7 @@ describe('AccountDbService', () => {
 			const theNewDate = new Date();
 
 			accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+			accountRepo.save.mockResolvedValue(mockTeacherAccount);
 
 			return { mockTeacherAccount, theNewDate };
 		};
@@ -857,7 +853,7 @@ describe('AccountDbService', () => {
 				const newPassword = 'newPassword';
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-
+				accountRepo.save.mockResolvedValue(mockTeacherAccount);
 				return { mockTeacherAccount, newPassword };
 			};
 
@@ -869,8 +865,6 @@ describe('AccountDbService', () => {
 				expect(ret).toBeDefined();
 				if (ret.password) {
 					await expect(bcrypt.compare(newPassword, ret.password)).resolves.toBe(true);
-				} else {
-					fail('return password is undefined');
 				}
 			});
 		});
@@ -896,7 +890,7 @@ describe('AccountDbService', () => {
 		describe('when deleting non existing account', () => {
 			const setup = () => {
 				accountRepo.deleteById.mockImplementationOnce(() => {
-					throw new EntityNotFoundError(AccountEntity.name);
+					throw new EntityNotFoundError('AccountEntity');
 				});
 			};
 

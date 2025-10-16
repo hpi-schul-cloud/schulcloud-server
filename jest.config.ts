@@ -23,10 +23,11 @@ let config: Config.InitialOptions = {
 	globalTeardown: '<rootDir>/apps/server/test/globalTeardown.ts',
 	moduleNameMapper: {
 		// add ts-config path's here as regex
-		'^@shared/(.*)$': '<rootDir>/apps/server/src/shared/$1',
-		'^@src/(.*)$': '<rootDir>/apps/server/src/$1',
-		'^@modules/(.*)$': '<rootDir>/apps/server/src/modules/$1',
+		'^@core/(.*)$': '<rootDir>/apps/server/src/core/$1',
+		'^@imports-from-feathers$': '<rootDir>apps/server/src/imports-from-feathers',
 		'^@infra/(.*)$': '<rootDir>/apps/server/src/infra/$1',
+		'^@modules/(.*)$': '<rootDir>/apps/server/src/modules/$1',
+		'^@shared/(.*)$': '<rootDir>/apps/server/src/shared/$1',
 		'^@testing/(.*)$': '<rootDir>/apps/server/src/testing/$1',
 	},
 	maxWorkers: 2, // limited for not taking all workers within of a single github action

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MediaSourceRepo } from '../repo';
 import { MediaSourceDataFormat } from '../enum';
+import { MediaSourceRepo } from '../repo';
 import { mediaSourceFactory } from '../testing';
 import { MediaSourceService } from './media-source.service';
 
@@ -81,32 +81,119 @@ describe(MediaSourceService.name, () => {
 		});
 	});
 
-	describe('save', () => {
-		describe('when saving a media source', () => {
+	describe('saveAll', () => {
+		describe('when saving media sources', () => {
 			const setup = () => {
-				const mediaSource = mediaSourceFactory.build();
+				const mediaSources = mediaSourceFactory.buildList(2);
 
-				mediaSourceRepo.save.mockResolvedValueOnce(mediaSource);
+				mediaSourceRepo.saveAll.mockResolvedValueOnce(mediaSources);
 
 				return {
+					mediaSources,
+				};
+			};
+
+			it('should save the media sources', async () => {
+				const { mediaSources } = setup();
+
+				await service.saveAll(mediaSources);
+
+				expect(mediaSourceRepo.saveAll).toHaveBeenCalledWith(mediaSources);
+			});
+
+			it('should return the media sources', async () => {
+				const { mediaSources } = setup();
+
+				const result = await service.saveAll(mediaSources);
+
+				expect(result).toEqual(mediaSources);
+			});
+		});
+	});
+
+	describe('findByFormatAndSourceId', () => {
+		describe('when a media source data format and source id is given', () => {
+			const setup = () => {
+				const format = MediaSourceDataFormat.VIDIS;
+				const sourceId = 'source-id';
+				const mediaSource = mediaSourceFactory.build({ format, sourceId });
+
+				mediaSourceRepo.findByFormatAndSourceId.mockResolvedValueOnce(mediaSource);
+
+				return {
+					format,
+					sourceId,
 					mediaSource,
 				};
 			};
 
-			it('should save the media source', async () => {
-				const { mediaSource } = setup();
+			it('should return the media source', async () => {
+				const { format, sourceId, mediaSource } = setup();
 
-				await service.save(mediaSource);
+				const result = await service.findByFormatAndSourceId(format, sourceId);
 
-				expect(mediaSourceRepo.save).toHaveBeenCalledWith(mediaSource);
+				expect(mediaSourceRepo.findByFormatAndSourceId).toBeCalledWith(format, sourceId);
+				expect(result).toEqual(mediaSource);
+			});
+		});
+	});
+
+	describe('getAllMediaSources', () => {
+		describe('when media sources are available', () => {
+			const setup = () => {
+				const mediaSources = mediaSourceFactory.buildList(2);
+
+				mediaSourceRepo.findAll.mockResolvedValueOnce(mediaSources);
+
+				return {
+					mediaSources,
+				};
+			};
+
+			it('should return a list of media sources', async () => {
+				const { mediaSources } = setup();
+
+				const result = await service.getAllMediaSources();
+
+				expect(result).toEqual(mediaSources);
+				expect(mediaSources).toHaveLength(2);
 			});
 
-			it('should return the media source', async () => {
-				const { mediaSource } = setup();
+			it('should call the media source repo', async () => {
+				setup();
 
-				const result = await service.save(mediaSource);
+				await service.getAllMediaSources();
 
-				expect(result).toEqual(mediaSource);
+				expect(mediaSourceRepo.findAll).toBeCalled();
+			});
+		});
+
+		describe('when no media sources are available', () => {
+			const setup = () => {
+				const mediaSources = [];
+
+				mediaSourceRepo.findAll.mockResolvedValueOnce(mediaSources);
+
+				return {
+					mediaSources,
+				};
+			};
+
+			it('should return an empty list', async () => {
+				const { mediaSources } = setup();
+
+				const result = await service.getAllMediaSources();
+
+				expect(result).toEqual(mediaSources);
+				expect(mediaSources).toHaveLength(0);
+			});
+
+			it('should call the media source repo', async () => {
+				setup();
+
+				await service.getAllMediaSources();
+
+				expect(mediaSourceRepo.findAll).toBeCalled();
 			});
 		});
 	});

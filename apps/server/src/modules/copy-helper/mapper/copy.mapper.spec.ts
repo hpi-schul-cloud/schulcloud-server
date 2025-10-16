@@ -1,11 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyFileDto } from '@modules/files-storage-client';
 import { LessonCopyApiParams } from '@modules/learnroom/controller/dto/lesson/lesson-copy.params';
 import { LessonCopyParentParams } from '@modules/lesson';
-import { TaskCopyApiParams } from '@modules/task/controller/dto/task-copy.params';
-import { TaskCopyParentParams } from '@modules/task/types';
+import { TaskCopyParentParams } from '@modules/task/api/dto';
+import { TaskCopyApiParams } from '@modules/task/api/dto/task-copy.params';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import { CopyApiResponse } from '../dto/copy.response';
 import { CopyMapper } from './copy.mapper';
 
@@ -17,7 +17,6 @@ describe('copy mapper', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [CopyMapper],
@@ -63,13 +62,13 @@ describe('copy mapper', () => {
 				title: 'Test element',
 				type: CopyElementType.COURSE || CopyElementType.TASK,
 				status: CopyStatusEnum.PARTIAL,
-				elements: [{ title: 'Sub element', type: CopyElementType.LTITOOL_GROUP, status: CopyStatusEnum.NOT_DOING }],
+				elements: [{ title: 'Sub element', type: CopyElementType.BOARD, status: CopyStatusEnum.NOT_DOING }],
 			};
 			const result = CopyMapper.mapToResponse(copyStatus);
 
 			expect(result.elements).toBeDefined();
 			if (result.elements) {
-				expect(result.elements[0].type).toEqual(CopyElementType.LTITOOL_GROUP);
+				expect(result.elements[0].type).toEqual(CopyElementType.BOARD);
 			}
 		});
 	});
@@ -126,6 +125,87 @@ describe('copy mapper', () => {
 				};
 
 				expect(result).toStrictEqual(expected);
+			});
+		});
+	});
+
+	describe('mapFileDtosToCopyStatus', () => {
+		describe('when all props are present', () => {
+			const setup = () => {
+				const fileName1 = 'file1.jpg';
+				const fileName2 = 'file2.jpg';
+
+				const copyFileDtos = [
+					{
+						id: new ObjectId().toHexString(),
+						name: fileName1,
+						sourceId: new ObjectId().toHexString(),
+					},
+					{
+						id: new ObjectId().toHexString(),
+						name: fileName2,
+						sourceId: new ObjectId().toHexString(),
+					},
+				];
+
+				return { fileName1, fileName2, copyFileDtos };
+			};
+
+			it('should map file dto to copy status', () => {
+				const { fileName1, fileName2, copyFileDtos } = setup();
+
+				const result = CopyMapper.mapFileDtosToCopyStatus(copyFileDtos);
+
+				expect(result.length).toEqual(2);
+				expect(result[0].type).toEqual(CopyElementType.FILE);
+				expect(result[0].status).toEqual(CopyStatusEnum.SUCCESS);
+				expect(result[0].title).toEqual(fileName1);
+
+				expect(result[1].type).toEqual(CopyElementType.FILE);
+				expect(result[1].status).toEqual(CopyStatusEnum.SUCCESS);
+				expect(result[1].title).toEqual(fileName2);
+			});
+		});
+
+		describe('when name is not present', () => {
+			const setup = () => {
+				const copyFileDtos = [
+					{
+						id: new ObjectId().toHexString(),
+						sourceId: new ObjectId().toHexString(),
+					} as CopyFileDto,
+				];
+
+				return { copyFileDtos };
+			};
+
+			it('should set title correctly', () => {
+				const { copyFileDtos } = setup();
+
+				const result = CopyMapper.mapFileDtosToCopyStatus(copyFileDtos);
+
+				expect(result[0].title).toEqual(`(old fileid: ${copyFileDtos[0].sourceId})`);
+			});
+		});
+
+		describe('when id is not present', () => {
+			const setup = () => {
+				const copyFileDtos = [
+					{
+						name: 'file1.jpg',
+						sourceId: new ObjectId().toHexString(),
+					} as CopyFileDto,
+				];
+
+				return { copyFileDtos };
+			};
+
+			it('should set status to fail', () => {
+				const { copyFileDtos } = setup();
+
+				const result = CopyMapper.mapFileDtosToCopyStatus(copyFileDtos);
+
+				expect(result[0].status).toEqual(CopyStatusEnum.FAIL);
 			});
 		});
 	});

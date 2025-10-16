@@ -8,9 +8,9 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { H5PContentParentType } from '../../entity';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
+import { H5PContentParentType } from '../../types';
 import { PostH5PContentCreateParams } from '../dto';
 
 describe('H5PEditor Controller (api)', () => {
@@ -51,7 +51,7 @@ describe('H5PEditor Controller (api)', () => {
 
 	describe('create h5p content', () => {
 		describe('with valid request params', () => {
-			const setup = async () => {
+			const setup = () => {
 				const id = '0000000';
 				const metadata: IContentMetadata = {
 					embedTypes: [],
@@ -80,11 +80,9 @@ describe('H5PEditor Controller (api)', () => {
 					library: '123',
 				};
 
-				const createStudent = () => UserAndAccountTestFactory.buildStudent();
-				const { studentAccount, studentUser } = createStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
+
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
 				const result1 = { id, metadata };
 				h5pEditor.saveOrUpdateContentReturnMetaData.mockResolvedValueOnce(result1);
@@ -93,7 +91,7 @@ describe('H5PEditor Controller (api)', () => {
 			};
 
 			it('should return CREATED status', async () => {
-				const { loggedInClient, params } = await setup();
+				const { loggedInClient, params } = setup();
 
 				const response = await loggedInClient.post(`/edit`, params);
 
@@ -104,7 +102,7 @@ describe('H5PEditor Controller (api)', () => {
 
 	describe('save h5p content', () => {
 		describe('when request params are valid', () => {
-			const setup = async () => {
+			const setup = () => {
 				const contentId = new ObjectId(0);
 				const id = '0000000';
 				const metadata: IContentMetadata = {
@@ -133,11 +131,9 @@ describe('H5PEditor Controller (api)', () => {
 					},
 					library: '123',
 				};
-				const createStudent = () => UserAndAccountTestFactory.buildStudent();
-				const { studentAccount, studentUser } = createStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
+
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
 				const result1 = { id, metadata };
 				h5pEditor.saveOrUpdateContentReturnMetaData.mockResolvedValueOnce(result1);
@@ -146,7 +142,7 @@ describe('H5PEditor Controller (api)', () => {
 			};
 
 			it('should return CREATED status', async () => {
-				const { contentId, loggedInClient, params } = await setup();
+				const { contentId, loggedInClient, params } = setup();
 
 				const response = await loggedInClient.post(`/edit/${contentId.toString()}`, params);
 
@@ -155,7 +151,7 @@ describe('H5PEditor Controller (api)', () => {
 		});
 
 		describe('when id is not mongo id', () => {
-			const setup = async () => {
+			const setup = () => {
 				const params: PostH5PContentCreateParams = {
 					parentType: H5PContentParentType.Lesson,
 					parentId: new ObjectId().toString(),
@@ -173,17 +169,15 @@ describe('H5PEditor Controller (api)', () => {
 					},
 					library: '123',
 				};
-				const createStudent = () => UserAndAccountTestFactory.buildStudent();
-				const { studentAccount, studentUser } = createStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
+
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
 				return { loggedInClient, params };
 			};
 
 			it('should return BAD_REQUEST status', async () => {
-				const { loggedInClient, params } = await setup();
+				const { loggedInClient, params } = setup();
 
 				const response = await loggedInClient.post(`/edit/123`, params);
 

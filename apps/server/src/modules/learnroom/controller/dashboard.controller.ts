@@ -12,14 +12,15 @@ export class DashboardController {
 	constructor(private readonly dashboardUc: DashboardUc) {}
 
 	@Get()
-	async findForUser(@CurrentUser() currentUser: ICurrentUser): Promise<DashboardResponse> {
-		const dashboard = await this.dashboardUc.getUsersDashboard(currentUser.userId);
+	public async findForUser(@CurrentUser() currentUser: ICurrentUser): Promise<DashboardResponse> {
+		const dashboard = await this.dashboardUc.getUsersDashboard(currentUser.userId, currentUser.schoolId);
 		const dto = DashboardMapper.mapToResponse(dashboard);
+
 		return dto;
 	}
 
 	@Patch(':dashboardId/moveElement')
-	async moveElement(
+	public async moveElement(
 		@Param() { dashboardId }: DashboardUrlParams,
 		@Body() params: MoveElementParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -31,11 +32,12 @@ export class DashboardController {
 			currentUser.userId
 		);
 		const dto = DashboardMapper.mapToResponse(dashboard);
+
 		return dto;
 	}
 
 	@Patch(':dashboardId/element')
-	async patchGroup(
+	public async patchGroup(
 		@Param() urlParams: DashboardUrlParams,
 		@Query('x') x: number,
 		@Query('y') y: number,
@@ -49,6 +51,7 @@ export class DashboardController {
 			currentUser.userId
 		);
 		const dto = DashboardMapper.mapToResponse(dashboard);
+
 		return dto;
 	}
 }

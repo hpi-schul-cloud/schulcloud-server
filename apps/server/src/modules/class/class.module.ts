@@ -1,12 +1,14 @@
+import { LoggerModule } from '@core/logger';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
-import { CqrsModule } from '@nestjs/cqrs';
-import { ClassService } from './service';
 import { ClassesRepo } from './repo';
+import { DeleteUserClassDataStep } from './saga';
+import { ClassService } from './service';
+import { SagaModule } from '@modules/saga';
+import { UserChangedSchoolHandlerService } from './service/user-changed-school-handler.service';
 
 @Module({
-	imports: [CqrsModule, LoggerModule],
-	providers: [ClassService, ClassesRepo],
+	imports: [LoggerModule, SagaModule],
+	providers: [ClassService, ClassesRepo, DeleteUserClassDataStep, UserChangedSchoolHandlerService],
 	exports: [ClassService],
 })
 export class ClassModule {}

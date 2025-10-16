@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, ContentElementType } from '../../domain';
@@ -16,6 +16,7 @@ import {
 	submissionItemEntityFactory,
 } from '../../testing';
 import { AnyContentElementResponse, SubmissionContainerElementResponse } from '../dto';
+import { schoolEntityFactory } from '@modules/management/seed-data/factory/school.entity.factory';
 
 const baseRouteName = '/cards';
 const submissionRouteName = '/board-submissions';
@@ -49,7 +50,7 @@ describe(`content element create (api)`, () => {
 
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser], school: teacherUser.school });
 				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 				const columnBoardNode = columnBoardEntityFactory.build({
@@ -98,6 +99,16 @@ describe(`content element create (api)`, () => {
 				});
 
 				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.EXTERNAL_TOOL);
+			});
+
+			it('should return the created content element of type H5P', async () => {
+				const { loggedInClient, cardNode } = await setup();
+
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, {
+					type: ContentElementType.H5P,
+				});
+
+				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.H5P);
 			});
 
 			it('should return the created content element of type SUBMISSION_CONTAINER with dueDate set to null', async () => {
@@ -177,7 +188,7 @@ describe(`content element create (api)`, () => {
 					await cleanupCollections(em);
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-					const course = courseFactory.build({});
+					const course = courseEntityFactory.build({});
 					await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 					const columnBoardNode = columnBoardEntityFactory.build({
@@ -209,7 +220,7 @@ describe(`content element create (api)`, () => {
 						await cleanupCollections(em);
 						const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-						const course = courseFactory.build({ students: [studentUser] });
+						const course = courseEntityFactory.build({ students: [studentUser] });
 						await em.persistAndFlush([studentAccount, studentUser, course]);
 
 						const columnBoardNode = columnBoardEntityFactory.build({
@@ -256,10 +267,11 @@ describe(`content element create (api)`, () => {
 			const setup = async () => {
 				await cleanupCollections(em);
 
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const school = schoolEntityFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 
-				const course = courseFactory.build({ teachers: [teacherUser], students: [studentUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser], students: [studentUser], school });
 
 				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, course]);
 
@@ -346,7 +358,7 @@ describe(`content element create (api)`, () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const course = courseFactory.build({ teachers: [teacherUser], students: [studentUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser], students: [studentUser] });
 
 				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, course]);
 
@@ -389,7 +401,7 @@ describe(`content element create (api)`, () => {
 
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
 				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
@@ -433,7 +445,7 @@ describe(`content element create (api)`, () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
 				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, course]);
 

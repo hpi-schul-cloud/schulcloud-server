@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalToolRepo } from '@shared/repo';
-import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ContextExternalTool } from '../domain';
+import { ContextExternalToolRepo } from '../repo/mikro-orm';
 import { contextExternalToolFactory } from '../testing';
 import { ContextExternalToolAuthorizableService } from './context-external-tool-authorizable.service';
 

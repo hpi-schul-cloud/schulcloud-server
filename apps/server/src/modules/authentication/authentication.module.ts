@@ -1,20 +1,20 @@
-import { CacheWrapperModule } from '@infra/cache';
+import { LoggerModule } from '@core/logger';
 import { EncryptionModule } from '@infra/encryption';
 import { IdentityManagementModule } from '@infra/identity-management';
+import { ValkeyClientModule, ValkeyConfig } from '@infra/valkey-client';
 import { AccountModule } from '@modules/account';
+import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { OauthModule } from '@modules/oauth/oauth.module';
 import { RoleModule } from '@modules/role';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
-import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { LegacySchoolRepo, UserRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
-import { AuthenticationConfig } from './authentication-config';
+import { AuthenticationConfig, SESSION_VALKEY_CLIENT } from './authentication-config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { LogoutService } from './services';
 import { AuthenticationService } from './services/authentication.service';
@@ -47,6 +47,18 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 	return options;
 };
 
+const createValkeyModuleOptions = (configService: ConfigService<AuthenticationConfig>): ValkeyConfig => {
+	const config = {
+		MODE: configService.getOrThrow('SESSION_VALKEY__MODE', { infer: true }),
+		URI: configService.get('SESSION_VALKEY__URI', { infer: true }),
+		SENTINEL_NAME: configService.get('SESSION_VALKEY__SENTINEL_NAME', { infer: true }),
+		SENTINEL_PASSWORD: configService.get('SESSION_VALKEY__SENTINEL_PASSWORD', { infer: true }),
+		SENTINEL_SERVICE_NAME: configService.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME', { infer: true }),
+	};
+
+	return config;
+};
+
 @Module({
 	imports: [
 		LoggerModule,
@@ -60,13 +72,16 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 		OauthModule,
 		RoleModule,
 		IdentityManagementModule,
-		CacheWrapperModule,
+		ValkeyClientModule.registerAsync({
+			injectionToken: SESSION_VALKEY_CLIENT,
+			useFactory: createValkeyModuleOptions,
+			inject: [ConfigService],
+		}),
 		UserModule,
 		HttpModule,
 		EncryptionModule,
 	],
 	providers: [
-		UserRepo,
 		LegacySchoolRepo,
 		LocalStrategy,
 		AuthenticationService,

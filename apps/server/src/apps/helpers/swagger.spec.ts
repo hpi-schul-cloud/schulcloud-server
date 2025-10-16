@@ -1,12 +1,13 @@
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import type { Server } from 'node:net';
 import request from 'supertest';
 import { enableOpenApiDocs } from './swagger';
 
 describe('swagger setup', () => {
 	describe('when adding swagger to an app', () => {
-		let app: INestApplication;
+		let app: INestApplication<Server>;
 
 		beforeAll(async () => {
 			app = await NestFactory.create(ServerTestModule);

@@ -1,33 +1,47 @@
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { School, SchoolService } from '@modules/school';
+import { User } from '@modules/user/repo';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { School, SchoolService } from '@src/modules/school';
-import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
-import { SchoolExternalTool, SchoolExternalToolMetadata, SchoolExternalToolProps } from '../domain';
-import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
+import { CommonToolValidationService } from '../../common/service';
+import { ExternalToolService } from '../../external-tool';
+import { SchoolExternalTool, SchoolExternalToolProps } from '../domain';
+import { SchoolExternalToolService } from '../service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 
 @Injectable()
 export class SchoolExternalToolUc {
 	constructor(
 		private readonly schoolExternalToolService: SchoolExternalToolService,
-		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
-		private readonly commonToolMetadataService: CommonToolMetadataService,
+		private readonly externalToolService: ExternalToolService,
+		private readonly commonToolValidationService: CommonToolValidationService,
 		@Inject(forwardRef(() => AuthorizationService)) private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: SchoolService
 	) {}
 
-	async findSchoolExternalTools(userId: EntityId, query: SchoolExternalToolQueryInput): Promise<SchoolExternalTool[]> {
+	private async validate(schoolExternalTool: SchoolExternalTool): Promise<void> {
+		const loadedExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
+
+		const errors = this.commonToolValidationService.validateParameters(loadedExternalTool, schoolExternalTool);
+
+		if (errors.length) {
+			throw errors[0];
+		}
+	}
+
+	public async findSchoolExternalTools(
+		userId: EntityId,
+		query: SchoolExternalToolQueryInput
+	): Promise<SchoolExternalTool[]> {
 		let tools: SchoolExternalTool[] = [];
 		if (query.schoolId) {
 			tools = await this.schoolExternalToolService.findSchoolExternalTools({ schoolId: query.schoolId });
 
-			const user: User = await this.authorizationService.getUserWithPermissions(userId);
-			const school: School = await this.schoolService.getSchoolById(query.schoolId);
+			const user = await this.authorizationService.getUserWithPermissions(userId);
+			const school = await this.schoolService.getSchoolById(query.schoolId);
 
-			const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+			const context = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
 			await this.ensureSchoolPermissions(user, tools, school, context);
 		}
@@ -35,23 +49,21 @@ export class SchoolExternalToolUc {
 		return tools;
 	}
 
-	async createSchoolExternalTool(
+	public async createSchoolExternalTool(
 		userId: EntityId,
 		schoolExternalToolDto: SchoolExternalToolProps
 	): Promise<SchoolExternalTool> {
 		const schoolExternalTool = new SchoolExternalTool({ ...schoolExternalToolDto });
 
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const school: School = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const school = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
 
-		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		const context = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 		this.authorizationService.checkPermission(user, school, context);
 
-		await this.schoolExternalToolValidationService.validate(schoolExternalTool);
+		await this.validate(schoolExternalTool);
 
-		const createdSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.saveSchoolExternalTool(
-			schoolExternalTool
-		);
+		const createdSchoolExternalTool = await this.schoolExternalToolService.saveSchoolExternalTool(schoolExternalTool);
 
 		return createdSchoolExternalTool;
 	}
@@ -65,71 +77,52 @@ export class SchoolExternalToolUc {
 		await Promise.all(tools.map(() => this.authorizationService.checkPermission(user, school, context)));
 	}
 
-	async deleteSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
-		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
+	public async deleteSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
+		const schoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
 
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const school: School = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const school = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
 
-		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		const context = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 		this.authorizationService.checkPermission(user, school, context);
 
 		await this.schoolExternalToolService.deleteSchoolExternalTool(schoolExternalTool);
 	}
 
-	async getSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {
-		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
+	public async getSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {
+		const schoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
 
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const school: School = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const school = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
 
-		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		const context = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 		this.authorizationService.checkPermission(user, school, context);
 
 		return schoolExternalTool;
 	}
 
-	async updateSchoolExternalTool(
+	public async updateSchoolExternalTool(
 		userId: EntityId,
 		schoolExternalToolId: string,
 		schoolExternalToolDto: SchoolExternalToolProps
 	): Promise<SchoolExternalTool> {
 		const schoolExternalTool = new SchoolExternalTool({ ...schoolExternalToolDto });
 
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const school: School = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const school = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
 
-		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		const context = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 		this.authorizationService.checkPermission(user, school, context);
 
-		await this.schoolExternalToolValidationService.validate(schoolExternalTool);
+		await this.validate(schoolExternalTool);
 
-		const updated: SchoolExternalTool = new SchoolExternalTool({
+		const updated = new SchoolExternalTool({
 			...schoolExternalToolDto,
 			id: schoolExternalToolId,
 		});
 
-		const saved: SchoolExternalTool = await this.schoolExternalToolService.saveSchoolExternalTool(updated);
+		const saved = await this.schoolExternalToolService.saveSchoolExternalTool(updated);
 
 		return saved;
-	}
-
-	async getMetadataForSchoolExternalTool(
-		userId: EntityId,
-		schoolExternalToolId: EntityId
-	): Promise<SchoolExternalToolMetadata> {
-		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
-
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const school: School = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
-
-		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
-		this.authorizationService.checkPermission(user, school, context);
-
-		const metadata: SchoolExternalToolMetadata = await this.commonToolMetadataService.getMetadataForSchoolExternalTool(
-			schoolExternalToolId
-		);
-
-		return metadata;
 	}
 }

@@ -1,9 +1,10 @@
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import { LoggerModule } from '@core/logger';
 import { faker } from '@faker-js/faker';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import { AccountEntity } from '@modules/account/repo';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { LoggerModule } from '@src/core/logger';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
@@ -35,7 +36,7 @@ describe('KeycloakSeedService Integration', () => {
 			imports: [
 				KeycloakConfigurationModule,
 				LoggerModule,
-				MongoMemoryDatabaseModule.forRoot(),
+				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 				ConfigModule.forRoot({
 					isGlobal: true,
 					ignoreEnvFile: true,

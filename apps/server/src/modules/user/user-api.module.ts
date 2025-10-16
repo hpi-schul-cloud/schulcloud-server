@@ -1,8 +1,7 @@
+import { AccountModule } from '@modules/account';
+import { RoleModule } from '@modules/role';
 import { Module } from '@nestjs/common';
-import { AccountModule } from '../account';
-import { RoleModule } from '../role';
-import { UserController } from './controller';
-import { UserUc } from './uc';
+import { UserController, UserUc } from './api';
 import { UserModule } from './user.module';
 
 @Module({

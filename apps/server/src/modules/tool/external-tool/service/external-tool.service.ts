@@ -1,15 +1,15 @@
+import { LegacyLogger } from '@core/logger';
 import { ProviderOauthClient } from '@modules/oauth-provider/domain';
 import { OauthProviderService } from '@modules/oauth-provider/domain/service/oauth-provider.service';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ExternalToolRepo } from '@shared/repo/externaltool';
-import { LegacyLogger } from '@src/core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolDeleteService } from '../../common/service';
 import { ExternalTool, Oauth2ToolConfig } from '../domain';
+import { ExternalToolRepo } from '../repo';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 
 @Injectable()
@@ -67,7 +67,7 @@ export class ExternalToolService {
 			})
 		);
 
-		tools.data = resolvedTools.filter((tool) => tool !== undefined);
+		tools.data = resolvedTools.filter((tool): tool is ExternalTool => tool !== undefined);
 
 		return tools;
 	}
@@ -92,6 +92,11 @@ export class ExternalToolService {
 		return externalTool;
 	}
 
+	public findExternalToolsByName(name: string): Promise<ExternalTool[]> {
+		const externalTools: Promise<ExternalTool[]> = this.externalToolRepo.findAllByName(name);
+		return externalTools;
+	}
+
 	public findExternalToolByOAuth2ConfigClientId(clientId: string): Promise<ExternalTool | null> {
 		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findByOAuth2ConfigClientId(clientId);
 		return externalTool;
@@ -99,14 +104,41 @@ export class ExternalToolService {
 
 	public findExternalToolByMedium(mediumId: string, mediaSourceId?: string): Promise<ExternalTool | null> {
 		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findByMedium(mediumId, mediaSourceId);
+
 		return externalTool;
 	}
 
+	public findTemplate(mediaSourceId?: string): Promise<ExternalTool | null> {
+		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findTemplate(mediaSourceId);
+
+		return externalTool;
+	}
+
+	public findExternalToolsByMediaSource(mediaSourceId: string): Promise<ExternalTool[]> {
+		const externalTools: Promise<ExternalTool[]> = this.externalToolRepo.findAllByMediaSource(mediaSourceId);
+
+		return externalTools;
+	}
+
 	public async deleteExternalTool(externalTool: ExternalTool): Promise<void> {
+		if (ExternalTool.isOauth2Config(externalTool.config)) {
+			await this.oauthProviderService.deleteOAuth2Client(externalTool.config.clientId);
+		}
+
 		await this.commonToolDeleteService.deleteExternalTool(externalTool);
 	}
 
-	private async updateOauth2ToolConfig(toUpdate: ExternalTool) {
+	public async updateExternalTools(externalTools: ExternalTool[]): Promise<ExternalTool[]> {
+		await Promise.all(
+			externalTools.map((externalToolToUpdate: ExternalTool) => this.updateOauth2ToolConfig(externalToolToUpdate))
+		);
+
+		const updatedExternalTools = await this.externalToolRepo.saveAll(externalTools);
+
+		return updatedExternalTools;
+	}
+
+	private async updateOauth2ToolConfig(toUpdate: ExternalTool): Promise<void> {
 		if (ExternalTool.isOauth2Config(toUpdate.config)) {
 			const toUpdateOauthClient: Partial<ProviderOauthClient> = this.mapper.mapDoToProviderOauthClient(
 				toUpdate.name,
@@ -123,7 +155,7 @@ export class ExternalToolService {
 		loadedOauthClient: ProviderOauthClient,
 		toUpdateOauthClient: Partial<ProviderOauthClient>,
 		toUpdate: ExternalTool
-	) {
+	): Promise<void> {
 		if (loadedOauthClient && loadedOauthClient.client_id) {
 			await this.oauthProviderService.updateOAuth2Client(loadedOauthClient.client_id, toUpdateOauthClient);
 		} else {
@@ -131,7 +163,7 @@ export class ExternalToolService {
 		}
 	}
 
-	private async addExternalOauth2DataToConfig(config: Oauth2ToolConfig) {
+	private async addExternalOauth2DataToConfig(config: Oauth2ToolConfig): Promise<void> {
 		const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(config.clientId);
 
 		config.scope = oauthClient.scope;

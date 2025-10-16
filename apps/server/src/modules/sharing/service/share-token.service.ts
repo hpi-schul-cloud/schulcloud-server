@@ -1,7 +1,8 @@
 import { ColumnBoardService } from '@modules/board';
-import { CourseService } from '@modules/learnroom/service';
-import { LessonService } from '@modules/lesson/service';
-import { TaskService } from '@modules/task/service';
+import { CourseService } from '@modules/course';
+import { LessonService } from '@modules/lesson';
+import { TaskService } from '@modules/task';
+import { RoomService } from '@modules/room';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	ShareTokenContext,
@@ -21,10 +22,11 @@ export class ShareTokenService {
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService,
-		private readonly columnBoardService: ColumnBoardService
+		private readonly columnBoardService: ColumnBoardService,
+		private readonly roomService: RoomService
 	) {}
 
-	async createToken(
+	public async createToken(
 		payload: ShareTokenPayload,
 		options?: { context?: ShareTokenContext; expiresAt?: Date }
 	): Promise<ShareTokenDO> {
@@ -41,7 +43,7 @@ export class ShareTokenService {
 		return shareToken;
 	}
 
-	async lookupToken(token: ShareTokenString): Promise<ShareTokenDO> {
+	public async lookupToken(token: ShareTokenString): Promise<ShareTokenDO> {
 		const shareToken = await this.shareTokenRepo.findOneByToken(token);
 
 		this.checkExpired(shareToken);
@@ -49,7 +51,9 @@ export class ShareTokenService {
 		return shareToken;
 	}
 
-	async lookupTokenWithParentName(token: ShareTokenString): Promise<{ shareToken: ShareTokenDO; parentName: string }> {
+	public async lookupTokenWithParentName(
+		token: ShareTokenString
+	): Promise<{ shareToken: ShareTokenDO; parentName: string }> {
 		const shareToken = await this.lookupToken(token);
 
 		let parentName = '';
@@ -66,6 +70,9 @@ export class ShareTokenService {
 			case ShareTokenParentType.ColumnBoard:
 				parentName = (await this.columnBoardService.findById(shareToken.payload.parentId)).title;
 				break;
+			case ShareTokenParentType.Room:
+				parentName = (await this.roomService.getSingleRoom(shareToken.payload.parentId)).name;
+				break;
 			default:
 				throw new UnprocessableEntityException('Invalid parent type');
 		}
@@ -73,7 +80,7 @@ export class ShareTokenService {
 		return { shareToken, parentName };
 	}
 
-	private checkExpired(shareToken: ShareTokenDO) {
+	private checkExpired(shareToken: ShareTokenDO): void {
 		if (shareToken.expiresAt != null && shareToken.expiresAt < new Date(Date.now())) {
 			throw new Error('Share token expired');
 		}

@@ -1,4 +1,4 @@
-import { PolymorphicArrayTransform } from '@shared/controller';
+import { PolymorphicArrayTransform } from '@shared/controller/transformer';
 import { ClassConstructor } from 'class-transformer';
 import { IsArray, ValidateNested } from 'class-validator';
 import { SchulconnexPoliciesInfoErrorResponse } from './schulconnex-policies-info-error-response';

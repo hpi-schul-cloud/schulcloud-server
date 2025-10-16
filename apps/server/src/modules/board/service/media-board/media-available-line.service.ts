@@ -5,9 +5,9 @@ import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolLogoService, ExternalToolService } from '@modules/tool/external-tool/service';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { MediaAvailableLine, MediaAvailableLineElement, MediaBoard, MediaExternalToolElement } from '../../domain';
 
 @Injectable()
@@ -143,6 +143,7 @@ export class MediaAvailableLineService {
 		const element: MediaAvailableLineElement = new MediaAvailableLineElement({
 			schoolExternalToolId: schoolExternalTool.id ?? '',
 			name: externalTool.name,
+			domain: new URL(externalTool.config.baseUrl).hostname,
 			description: externalTool.description,
 			logoUrl,
 			thumbnailUrl: externalTool.thumbnail?.getPreviewUrl(),

@@ -6,6 +6,7 @@ import { DeletionRequest } from '../domain/do';
 import { DeletionRequestEntity } from './entity';
 import { DeletionRequestMapper } from './mapper';
 import { DeletionRequestScope } from './scope';
+import { StatusModel } from '../domain/types';
 
 @Injectable()
 export class DeletionRequestRepo {
@@ -15,7 +16,7 @@ export class DeletionRequestRepo {
 		return DeletionRequestEntity;
 	}
 
-	async findById(deletionRequestId: EntityId): Promise<DeletionRequest> {
+	public async findById(deletionRequestId: EntityId): Promise<DeletionRequest> {
 		const deletionRequest: DeletionRequestEntity = await this.em.findOneOrFail(DeletionRequestEntity, {
 			id: deletionRequestId,
 		});
@@ -25,19 +26,23 @@ export class DeletionRequestRepo {
 		return mapped;
 	}
 
-	async create(deletionRequest: DeletionRequest): Promise<void> {
-		const deletionRequestEntity = DeletionRequestMapper.mapToEntity(deletionRequest);
-		this.em.persist(deletionRequestEntity);
+	public async create(deletionRequests: DeletionRequest | DeletionRequest[]): Promise<void> {
+		const deletionRequestEntities = Array.isArray(deletionRequests)
+			? deletionRequests.map((deletionRequest) => DeletionRequestMapper.mapToEntity(deletionRequest))
+			: [DeletionRequestMapper.mapToEntity(deletionRequests)];
+
+		await this.em.upsertMany(deletionRequestEntities);
 		await this.em.flush();
 	}
 
-	async findAllItemsToExecution(threshold: number, limit?: number): Promise<DeletionRequest[]> {
-		const currentDate = new Date();
-		const modificationThreshold = new Date(Date.now() - threshold);
-		const scope = new DeletionRequestScope().byDeleteAfter(currentDate).byStatus(modificationThreshold);
-		const order = { createdAt: SortOrder.desc };
+	public async findAllItems(limit: number): Promise<DeletionRequest[]> {
+		const scope = new DeletionRequestScope();
+		scope.byDeleteAfter(new Date());
+		scope.byStatusAndDate([StatusModel.REGISTERED]);
 
-		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {
+		const order = { createdAt: SortOrder.asc };
+
+		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query, {
 			limit,
 			orderBy: order,
 		});
@@ -47,22 +52,34 @@ export class DeletionRequestRepo {
 		return mapped;
 	}
 
-	async countPendingDeletionRequests(): Promise<number> {
-		const scope = new DeletionRequestScope().byStatusPending();
+	public async findAllFailedItems(limit: number, olderThan: Date, newerThan: Date): Promise<DeletionRequest[]> {
+		if (olderThan < newerThan) {
+			throw new Error('olderThan must be greater than newerThan');
+		}
+		const scope = new DeletionRequestScope();
+		scope.byDeleteAfter(new Date());
+		scope.byStatusAndDate([StatusModel.FAILED, StatusModel.PENDING], olderThan, newerThan);
 
-		const numberItemsWithStatusPending: number = await this.em.count(DeletionRequestEntity, scope.query);
+		const order = { createdAt: SortOrder.asc };
 
-		return numberItemsWithStatusPending;
+		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query, {
+			limit,
+			orderBy: order,
+		});
+
+		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
+
+		return mapped;
 	}
 
-	async update(deletionRequest: DeletionRequest): Promise<void> {
+	public async update(deletionRequest: DeletionRequest): Promise<void> {
 		const deletionRequestEntity = DeletionRequestMapper.mapToEntity(deletionRequest);
 		const referencedEntity = this.em.getReference(DeletionRequestEntity, deletionRequestEntity.id);
 
 		await this.em.persistAndFlush(referencedEntity);
 	}
 
-	async markDeletionRequestAsExecuted(deletionRequestId: EntityId): Promise<boolean> {
+	public async markDeletionRequestAsExecuted(deletionRequestId: EntityId): Promise<boolean> {
 		const deletionRequest: DeletionRequestEntity = await this.em.findOneOrFail(DeletionRequestEntity, {
 			id: deletionRequestId,
 		});
@@ -73,7 +90,7 @@ export class DeletionRequestRepo {
 		return true;
 	}
 
-	async markDeletionRequestAsFailed(deletionRequestId: EntityId): Promise<boolean> {
+	public async markDeletionRequestAsFailed(deletionRequestId: EntityId): Promise<boolean> {
 		const deletionRequest: DeletionRequestEntity = await this.em.findOneOrFail(DeletionRequestEntity, {
 			id: deletionRequestId,
 		});
@@ -84,7 +101,7 @@ export class DeletionRequestRepo {
 		return true;
 	}
 
-	async markDeletionRequestAsPending(deletionRequestId: EntityId): Promise<boolean> {
+	public async markDeletionRequestAsPending(deletionRequestId: EntityId): Promise<boolean> {
 		const deletionRequest: DeletionRequestEntity = await this.em.findOneOrFail(DeletionRequestEntity, {
 			id: deletionRequestId,
 		});
@@ -103,5 +120,57 @@ export class DeletionRequestRepo {
 		await this.em.removeAndFlush(entity);
 
 		return true;
+	}
+
+	public async findByIds(ids: EntityId[]): Promise<(DeletionRequest | null)[]> {
+		const entities = await this.em.find(DeletionRequestEntity, { id: { $in: ids } });
+
+		const entityMap = new Map(entities.map((entity) => [entity.id, DeletionRequestMapper.mapToDO(entity)]));
+
+		return ids.map((id) => entityMap.get(id) || null);
+	}
+
+	public async findRegisteredByTargetRefId(targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
+		const scope = new DeletionRequestScope();
+		scope.byUserIdsAndRegistered(targetRefIds);
+
+		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query);
+
+		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
+
+		return mapped;
+	}
+
+	public async findFailedByTargetRefId(targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
+		const scope = new DeletionRequestScope();
+		scope.byUserIdsAndFailed(targetRefIds);
+
+		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query);
+
+		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
+
+		return mapped;
+	}
+
+	public async findPendingByTargetRefId(targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
+		const scope = new DeletionRequestScope();
+		scope.byUserIdsAndPending(targetRefIds);
+
+		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query);
+
+		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
+
+		return mapped;
+	}
+
+	public async findSuccessfulByTargetRefId(targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
+		const scope = new DeletionRequestScope();
+		scope.byUserIdsAndSuccess(targetRefIds);
+
+		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query);
+
+		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
+
+		return mapped;
 	}
 }

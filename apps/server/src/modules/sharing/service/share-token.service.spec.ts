@@ -1,19 +1,25 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ColumnBoardService } from '@modules/board/service';
+import { ColumnBoardService } from '@modules/board';
 import { columnBoardFactory } from '@modules/board/testing';
-import { CourseService } from '@modules/learnroom/service';
-import { LessonService } from '@modules/lesson/service';
-import { TaskService } from '@modules/task/service';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { LessonService } from '@modules/lesson';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { lessonFactory } from '@modules/lesson/testing';
+import { TaskService } from '@modules/task';
+import { Submission, Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
+import { RoomService } from '@modules/room';
+import { roomFactory } from '@modules/room/testing';
+import { User } from '@modules/user/repo';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory } from '@testing/factory/course.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
-import { shareTokenFactory } from '@testing/factory/share-token.do.factory';
-import { taskFactory } from '@testing/factory/task.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from '../repo/share-token.repo';
+import { shareTokenDOFactory } from '../testing/share-token.do.factory';
 import { ShareTokenService } from './share-token.service';
 import { TokenGenerator } from './token-generator.service';
 
@@ -28,6 +34,7 @@ describe('ShareTokenService', () => {
 	let lessonService: DeepMocked<LessonService>;
 	let taskService: DeepMocked<TaskService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
+	let roomService: DeepMocked<RoomService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -57,6 +64,10 @@ describe('ShareTokenService', () => {
 					provide: ColumnBoardService,
 					useValue: createMock<ColumnBoardService>(),
 				},
+				{
+					provide: RoomService,
+					useValue: createMock<RoomService>(),
+				},
 			],
 		}).compile();
 
@@ -67,7 +78,8 @@ describe('ShareTokenService', () => {
 		lessonService = await module.get(LessonService);
 		taskService = await module.get(TaskService);
 		columnBoardService = await module.get(ColumnBoardService);
-		await setupEntities();
+		roomService = await module.get(RoomService);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
 	});
 
 	afterAll(async () => {
@@ -127,7 +139,7 @@ describe('ShareTokenService', () => {
 
 	describe('lookup', () => {
 		it('should lookup a shareToken using a token', async () => {
-			const shareToken = shareTokenFactory.build();
+			const shareToken = shareTokenDOFactory.build();
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
 			const result = await service.lookupToken(shareToken.token);
@@ -144,7 +156,7 @@ describe('ShareTokenService', () => {
 		});
 
 		it('should throw an error when shareToken is expired', async () => {
-			const shareToken = shareTokenFactory.build({ expiresAt: new Date(Date.now() - 10000) });
+			const shareToken = shareTokenDOFactory.build({ expiresAt: new Date(Date.now() - 10000) });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
 			const lookupToken = async () => service.lookupToken(shareToken.token);
@@ -155,11 +167,11 @@ describe('ShareTokenService', () => {
 
 	describe('lookup with parent name', () => {
 		it('when parent is course', async () => {
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			courseService.findById.mockResolvedValue(course);
 
 			const payload = { parentId: course.id, parentType: ShareTokenParentType.Course };
-			const shareToken = shareTokenFactory.build({ payload });
+			const shareToken = shareTokenDOFactory.build({ payload });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
 			const result = await service.lookupTokenWithParentName(shareToken.token);
@@ -172,7 +184,7 @@ describe('ShareTokenService', () => {
 			lessonService.findById.mockResolvedValue(lesson);
 
 			const payload = { parentId: lesson.id, parentType: ShareTokenParentType.Lesson };
-			const shareToken = shareTokenFactory.build({ payload });
+			const shareToken = shareTokenDOFactory.build({ payload });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
 			const result = await service.lookupTokenWithParentName(shareToken.token);
@@ -185,7 +197,7 @@ describe('ShareTokenService', () => {
 			taskService.findById.mockResolvedValue(task);
 
 			const payload = { parentId: task.id, parentType: ShareTokenParentType.Task };
-			const shareToken = shareTokenFactory.build({ payload });
+			const shareToken = shareTokenDOFactory.build({ payload });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
 			const result = await service.lookupTokenWithParentName(shareToken.token);
@@ -199,7 +211,7 @@ describe('ShareTokenService', () => {
 				columnBoardService.findById.mockResolvedValue(columnBoard);
 
 				const payload = { parentId: columnBoard.id, parentType: ShareTokenParentType.ColumnBoard };
-				const shareToken = shareTokenFactory.build({ payload });
+				const shareToken = shareTokenDOFactory.build({ payload });
 				repo.findOneByToken.mockResolvedValue(shareToken);
 
 				return { columnBoard, shareToken };
@@ -212,10 +224,29 @@ describe('ShareTokenService', () => {
 			});
 		});
 
+		describe('when parent is room', () => {
+			const setup = () => {
+				const room = roomFactory.build();
+				roomService.getSingleRoom.mockResolvedValue(room);
+
+				const payload = { parentId: room.id, parentType: ShareTokenParentType.Room };
+				const shareToken = shareTokenDOFactory.build({ payload });
+				repo.findOneByToken.mockResolvedValue(shareToken);
+
+				return { room, shareToken };
+			};
+			it('should return shareToken and parent name', async () => {
+				const { room, shareToken } = setup();
+
+				const result = await service.lookupTokenWithParentName(shareToken.token);
+				expect(result).toEqual({ shareToken, parentName: room.name });
+			});
+		});
+
 		it('should throw if parent type is not supported', async () => {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			const shareToken = shareTokenFactory.build({ payload: { parentType: 'invalid' } });
+			const shareToken = shareTokenDOFactory.build({ payload: { parentType: 'invalid' } });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
 			const lookupToken = async () => service.lookupTokenWithParentName(shareToken.token);

@@ -16,6 +16,7 @@ import { ContentElementUpdateService } from './internal/content-element-update.s
 
 type WithTitle<T> = Extract<T, { title: unknown }>;
 type WithVisibility<T> = Extract<T, { isVisible: unknown }>;
+type WithLayout<T> = Extract<T, { layout: unknown }>;
 type WithHeight<T> = Extract<T, { height: unknown }>;
 type WithCompleted<T> = Extract<T, { completed: unknown }>;
 
@@ -27,40 +28,52 @@ export class BoardNodeService {
 		private readonly boardNodeDeleteHooksService: BoardNodeDeleteHooksService
 	) {}
 
-	async addRoot(boardNode: ColumnBoard | MediaBoard): Promise<void> {
+	public async addRoot(boardNode: ColumnBoard | MediaBoard): Promise<void> {
 		await this.boardNodeRepo.save(boardNode);
 	}
 
-	async addToParent(parent: AnyBoardNode, child: AnyBoardNode, position?: number): Promise<void> {
+	public async addToParent(parent: AnyBoardNode, child: AnyBoardNode, position?: number): Promise<void> {
 		parent.addChild(child, position);
+
 		await this.boardNodeRepo.save(parent);
 	}
 
-	async updateTitle<T extends WithTitle<AnyBoardNode>>(node: T, title: T['title']) {
+	public async updateTitle<T extends WithTitle<AnyBoardNode>>(node: T, title: T['title']): Promise<void> {
 		node.title = title;
 		await this.boardNodeRepo.save(node);
 	}
 
-	async updateVisibility<T extends WithVisibility<AnyBoardNode>>(node: T, isVisible: T['isVisible']) {
+	public async updateVisibility<T extends WithVisibility<AnyBoardNode>>(
+		node: T,
+		isVisible: T['isVisible']
+	): Promise<void> {
 		node.isVisible = isVisible;
 		await this.boardNodeRepo.save(node);
 	}
 
-	async updateHeight<T extends WithHeight<AnyBoardNode>>(node: T, height: T['height']) {
+	public async updateLayout<T extends WithLayout<AnyBoardNode>>(node: T, layout: T['layout']): Promise<void> {
+		node.layout = layout;
+		await this.boardNodeRepo.save(node);
+	}
+
+	public async updateHeight<T extends WithHeight<AnyBoardNode>>(node: T, height: T['height']): Promise<void> {
 		node.height = height;
 		await this.boardNodeRepo.save(node);
 	}
 
-	async updateCompleted<T extends WithCompleted<AnyBoardNode>>(node: T, completed: T['completed']) {
+	public async updateCompleted<T extends WithCompleted<AnyBoardNode>>(
+		node: T,
+		completed: T['completed']
+	): Promise<void> {
 		node.completed = completed;
 		await this.boardNodeRepo.save(node);
 	}
 
-	async updateContent(element: AnyContentElement, content: AnyElementContentBody): Promise<void> {
+	public async updateContent(element: AnyContentElement, content: AnyElementContentBody): Promise<void> {
 		await this.contentElementUpdateService.updateContent(element, content);
 	}
 
-	async replace(oldNode: AnyBoardNode, newNode: AnyBoardNode): Promise<void> {
+	public async replace(oldNode: AnyBoardNode, newNode: AnyBoardNode): Promise<void> {
 		const parent: AnyBoardNode | undefined = await this.findParent(oldNode);
 
 		if (!parent) {
@@ -73,7 +86,7 @@ export class BoardNodeService {
 		await this.delete(oldNode);
 	}
 
-	async move(child: AnyBoardNode, targetParent: AnyBoardNode, targetPosition?: number): Promise<void> {
+	public async move(child: AnyBoardNode, targetParent: AnyBoardNode, targetPosition?: number): Promise<void> {
 		const saveList: AnyBoardNode[] = [];
 
 		if (targetParent.hasChild(child)) {
@@ -91,19 +104,19 @@ export class BoardNodeService {
 		await this.boardNodeRepo.save(saveList);
 	}
 
-	async findById(id: EntityId, depth?: number): Promise<AnyBoardNode> {
-		const boardNode = this.boardNodeRepo.findById(id, depth);
+	public async findById(id: EntityId, depth?: number): Promise<AnyBoardNode> {
+		const boardNode = await this.boardNodeRepo.findById(id, depth);
 
 		return boardNode;
 	}
 
-	async findByIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
-		const boardNode = this.boardNodeRepo.findByIds(ids, depth);
+	public async findByIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
+		const boardNode = await this.boardNodeRepo.findByIds(ids, depth);
 
 		return boardNode;
 	}
 
-	async findByClassAndId<S, T extends AnyBoardNode>(
+	public async findByClassAndId<S, T extends AnyBoardNode>(
 		Constructor: { new (props: S): T },
 		id: EntityId,
 		depth?: number
@@ -116,7 +129,7 @@ export class BoardNodeService {
 		return boardNode;
 	}
 
-	async findByClassAndIds<S, T extends AnyBoardNode>(
+	public async findByClassAndIds<S, T extends AnyBoardNode>(
 		Constructor: { new (props: S): T },
 		ids: EntityId[],
 		depth?: number
@@ -127,7 +140,7 @@ export class BoardNodeService {
 		return filteredNodes as T[];
 	}
 
-	async findContentElementById(id: EntityId, depth?: number): Promise<AnyContentElement> {
+	public async findContentElementById(id: EntityId, depth?: number): Promise<AnyContentElement> {
 		const boardNode = await this.boardNodeRepo.findById(id, depth);
 
 		if (!isContentElement(boardNode)) {
@@ -137,7 +150,7 @@ export class BoardNodeService {
 		return boardNode;
 	}
 
-	async findAnyMediaElementById(id: EntityId, depth?: number): Promise<AnyMediaElement> {
+	public async findAnyMediaElementById(id: EntityId, depth?: number): Promise<AnyMediaElement> {
 		const boardNode = await this.boardNodeRepo.findById(id, depth);
 
 		if (!isAnyMediaElement(boardNode)) {
@@ -147,13 +160,13 @@ export class BoardNodeService {
 		return boardNode;
 	}
 
-	async findParent(child: AnyBoardNode, depth?: number): Promise<AnyBoardNode | undefined> {
+	public async findParent(child: AnyBoardNode, depth?: number): Promise<AnyBoardNode | undefined> {
 		const parentNode = child.parentId ? await this.boardNodeRepo.findById(child.parentId, depth) : undefined;
 
 		return parentNode;
 	}
 
-	async findRoot(child: AnyBoardNode, depth?: number): Promise<AnyBoardNode> {
+	public async findRoot(child: AnyBoardNode, depth?: number): Promise<AnyBoardNode> {
 		const rootNode = await this.boardNodeRepo.findById(child.rootId, depth);
 
 		return rootNode;
@@ -165,7 +178,7 @@ export class BoardNodeService {
 		return elements;
 	}
 
-	async delete(boardNode: AnyBoardNode): Promise<void> {
+	public async delete(boardNode: AnyBoardNode): Promise<void> {
 		const parent = await this.findParent(boardNode);
 		if (parent) {
 			parent.removeChild(boardNode);

@@ -1,16 +1,16 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
 import type { ProvisioningConfig } from '@modules/provisioning';
+import { RoleName, RoleService } from '@modules/role';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
-import { IFindOptions, RoleName } from '@shared/domain/interface';
+import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { RoleService } from '@src/modules/role';
-import { UserService } from '@src/modules/user/service/user.service';
 import {
 	Group,
 	GroupAggregateScope,
@@ -60,6 +60,18 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		return groups;
 	}
 
+	public async findByUsersAndRoomsSchoolId(schoolId: EntityId, types?: GroupTypes[]): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findByUsersAndRoomsSchoolId(schoolId, types);
+
+		return groups;
+	}
+
+	public async findByScope(scope: GroupAggregateScope): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findGroupsForScope(scope);
+
+		return groups;
+	}
+
 	public async findGroupsForUser(
 		user: User,
 		permission: GroupVisibilityPermission,
@@ -67,6 +79,7 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		nameQuery?: string,
 		options?: IFindOptions<Group>
 	): Promise<Page<Group>> {
+		// TODO this should be moved to repo
 		const scope = new GroupAggregateScope(options)
 			.byName(nameQuery)
 			.byAvailableForSync(
@@ -155,12 +168,39 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 
 		for (const userId of userIds) {
 			const user = users.find((u) => u.id === userId);
-			if (!user) throw new BadRequestException('Unknown userId.');
-			group.removeUser(user);
+			if (!user?.id) throw new BadRequestException('Unknown userId.');
+			group.removeUser(user.id);
 		}
 
 		await this.save(group);
 
 		return group;
+	}
+
+	public async removeUserReference(userId: EntityId): Promise<number> {
+		const numberOfUpdatedGroups = await this.groupRepo.removeUserReference(userId);
+
+		return numberOfUpdatedGroups;
+	}
+
+	public async findAllGroupsForUser(userId: EntityId): Promise<Group[]> {
+		const { domainObjects } = await this.groupRepo.findGroupsByFilter({ userId });
+
+		return domainObjects;
+	}
+
+	public async findExistingGroupsByIds(groupIds: EntityId[]): Promise<Group[]> {
+		const promises = groupIds.map((groupId) => this.groupRepo.findGroupById(groupId));
+		const groups = await Promise.all(promises);
+		const existingGroups = groups.filter((group): group is Group => Boolean(group));
+
+		return existingGroups;
+	}
+
+	public async getGroupName(groupId: EntityId): Promise<string | undefined> {
+		const group = await this.groupRepo.findGroupById(groupId);
+		const groupName = group?.name;
+
+		return groupName;
 	}
 }

@@ -294,7 +294,7 @@ The basic structure of the repo integration test:
 2. Get repo, orm and entityManager from testing module
 
 ```TypeScript
-	import { MongoMemoryDatabaseModule } from '@src/modules/database';
+	import { MongoMemoryDatabaseModule } from '@modules/database';
 
 	let repo: NewsRepo;
 	let em: EntityManager;

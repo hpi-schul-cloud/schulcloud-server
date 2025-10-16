@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
-import { accountFactory } from '@src/modules/account/testing';
+import { accountFactory } from '@modules/account/testing';
 import { TestApiClient } from './test-api-client';
 
 @Controller('')
@@ -138,7 +138,6 @@ describe(TestApiClient.name, () => {
 
 				const loggedInClient = await testApiClient.login(account);
 
-				// eslint-disable-next-line @typescript-eslint/dot-notation
 				expect(loggedInClient['authHeader']).toEqual('Bearer 123');
 			});
 

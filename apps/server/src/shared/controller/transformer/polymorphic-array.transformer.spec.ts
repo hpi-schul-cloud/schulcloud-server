@@ -1,4 +1,4 @@
-import { PolymorphicArrayTransform } from '@shared/controller';
+import { PolymorphicArrayTransform } from '@shared/controller/transformer';
 import { ClassConstructor, plainToClass } from 'class-transformer';
 
 describe(PolymorphicArrayTransform.name, () => {

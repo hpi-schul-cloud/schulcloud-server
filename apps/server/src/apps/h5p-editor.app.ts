@@ -8,9 +8,10 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
+import { LegacyLogger } from '@core/logger';
 import { H5PEditorModule } from '@modules/h5p-editor/h5p-editor.app.module';
-import { LegacyLogger } from '@src/core/logger';
-import { createRequestLoggerMiddleware, enableOpenApiDocs } from './helpers';
+import { enableOpenApiDocs } from './helpers';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();

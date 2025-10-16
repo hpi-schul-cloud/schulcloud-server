@@ -1,21 +1,17 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, discard, disallow, keepInArray, keep } = require('feathers-hooks-common');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-
 const { Forbidden } = require('../../../errors');
 const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
-
 const globalHooks = require('../../../hooks');
-const { fileStorageTypes, SCHOOL_FEATURES } = require('../model');
-const getFileStorageStrategy = require('../../fileStorage/strategies').createStrategy;
-
-const { yearModel: Year } = require('../model');
+const AWSStrategy = require('../../fileStorage/strategies/awsS3');
+const { fileStorageTypes, SCHOOL_FEATURES, yearModel: Year } = require('../model');
 const SchoolYearFacade = require('../logic/year');
 
 // years are cached on first call, because they are expected to not change during runtime.
-let years = null;
+let years = null; // ..need cleanup to make it really testable
 
 const cacheYearsIfNotSet = async () => {
 	if (!years) {
@@ -112,18 +108,17 @@ const createDefaultStorageOptions = (hook) => {
 	if (NODE_ENV !== ENVIRONMENTS.PRODUCTION) {
 		return Promise.resolve(hook);
 	}
-	const storageType = getDefaultFileStorageType();
 	const schoolId = hook.result._id;
-	const fileStorageStrategy = getFileStorageStrategy(storageType);
+	const fileStorageStrategy = new AWSStrategy();
 	return fileStorageStrategy
 		.create(schoolId)
-		.then(() => Promise.resolve(hook))
+		.then(() => hook)
 		.catch((err) => {
 			if (err && err.code === 'BucketAlreadyOwnedByYou') {
 				// The bucket already exists
-				return Promise.resolve(hook);
+				return hook;
 			}
-			return Promise.reject(err);
+			throw err;
 		});
 };
 

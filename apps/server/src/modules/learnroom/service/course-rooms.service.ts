@@ -2,10 +2,8 @@ import { BoardExternalReferenceType } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { LegacyBoard } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo } from '@shared/repo';
-import { ColumnBoardNodeRepo } from '../repo';
+import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardRepo } from '../repo';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future

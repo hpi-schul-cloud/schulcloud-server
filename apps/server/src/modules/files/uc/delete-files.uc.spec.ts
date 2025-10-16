@@ -1,9 +1,9 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { StorageProviderRepo } from '@modules/school/repo';
+import { storageProviderFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { StorageProviderRepo } from '@shared/repo/storageprovider';
-import { LegacyLogger } from '@src/core/logger';
-import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 import { FilesRepo } from '../repo';
 import { DeleteFilesUc } from './delete-files.uc';

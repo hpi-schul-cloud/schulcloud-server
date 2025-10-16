@@ -1,18 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { lessonFactory } from '@modules/lesson/testing';
 import { TaskService } from '@modules/task';
+import { Submission, Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyBoardRepo } from '@shared/repo';
-import { boardFactory } from '@testing/factory/board.factory';
-import { columnBoardNodeFactory } from '@testing/factory/column-board-node.factory';
-import { courseFactory } from '@testing/factory/course.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
-import { taskFactory } from '@testing/factory/task.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
-import { ColumnBoardNodeRepo } from '../repo';
+import { setupEntities } from '@testing/database';
+import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
+import { boardFactory, columnBoardNodeFactory } from '../testing';
 import { CourseRoomsService } from './course-rooms.service';
 
 describe('rooms service', () => {
@@ -30,7 +32,17 @@ describe('rooms service', () => {
 
 	beforeAll(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
-		await setupEntities();
+		await setupEntities([
+			User,
+			CourseEntity,
+			CourseGroupEntity,
+			LessonEntity,
+			Material,
+			Task,
+			Submission,
+			LegacyBoard,
+			LegacyBoardElement,
+		]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseRoomsService,
@@ -68,7 +80,7 @@ describe('rooms service', () => {
 		describe('for lessons, tasks and column boards', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const room = courseFactory.buildWithId({ students: [user] });
+				const room = courseEntityFactory.buildWithId({ students: [user] });
 				const tasks = taskFactory.buildList(3, { course: room });
 				const lessons = lessonFactory.buildList(3, { course: room });
 				const legacyBoard = boardFactory.buildWithId({ course: room });

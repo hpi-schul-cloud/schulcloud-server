@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ NAMESPACE }}
+  name: schulconnex-group-provisioning-configmap
+  labels:
+    app: schulconnex-group-provisioning
+data:
+  NODE_OPTIONS: "--max-old-space-size=1536"
+  EXIT_ON_ERROR: "true"
+  NEST_LOG_LEVEL: "{{ NEST_LOG_LEVEL }}"
+  FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED: "{{ FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED }}"
+  RABBITMQ_GLOBAL_PREFETCH_COUNT: "1"
+  SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS: "{{ SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS }}"

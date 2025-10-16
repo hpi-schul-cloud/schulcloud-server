@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { mediaSourceFactory } from '@modules/media-source/testing';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MediaSourceRepo } from '@src/modules/media-source/repo';
-import { mediaSourceFactory } from '@modules/media-source/testing';
+import { ExternalToolMediumStatus } from '../../tool/external-tool/enum';
 import { MediaUserLicense } from '../domain';
 import { MediaUserLicenseRepo } from '../repo';
 import { mediaUserLicenseFactory } from '../testing';
@@ -14,7 +14,6 @@ describe(MediaUserLicenseService.name, () => {
 	let service: MediaUserLicenseService;
 
 	let mediaUserLicenseRepo: DeepMocked<MediaUserLicenseRepo>;
-	let mediaSourceRepo: DeepMocked<MediaSourceRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -24,16 +23,11 @@ describe(MediaUserLicenseService.name, () => {
 					provide: MediaUserLicenseRepo,
 					useValue: createMock<MediaUserLicenseRepo>(),
 				},
-				{
-					provide: MediaSourceRepo,
-					useValue: createMock<MediaSourceRepo>(),
-				},
 			],
 		}).compile();
 
 		service = module.get(MediaUserLicenseService);
 		mediaUserLicenseRepo = module.get(MediaUserLicenseRepo);
-		mediaSourceRepo = module.get(MediaSourceRepo);
 	});
 
 	afterAll(async () => {
@@ -71,21 +65,33 @@ describe(MediaUserLicenseService.name, () => {
 		});
 	});
 
-	describe('saveUserLicense', () => {
-		it('should save the media source', async () => {
-			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
+	describe('saveAll', () => {
+		describe('when saving media user licenses', () => {
+			const setup = () => {
+				const mediaUserLicenses = mediaUserLicenseFactory.buildList(2);
 
-			await service.saveUserLicense(mediaUserLicense);
+				mediaUserLicenseRepo.saveAll.mockResolvedValue(mediaUserLicenses);
 
-			expect(mediaSourceRepo.save).toHaveBeenCalledWith(mediaUserLicense.mediaSource);
-		});
+				return {
+					mediaUserLicenses,
+				};
+			};
 
-		it('should save the media user license', async () => {
-			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
+			it('should save the media user licenses', async () => {
+				const { mediaUserLicenses } = setup();
 
-			await service.saveUserLicense(mediaUserLicense);
+				await service.saveAll(mediaUserLicenses);
 
-			expect(mediaUserLicenseRepo.save).toHaveBeenCalledWith(mediaUserLicense);
+				expect(mediaUserLicenseRepo.saveAll).toHaveBeenCalledWith(mediaUserLicenses);
+			});
+
+			it('should return the media user licenses', async () => {
+				const { mediaUserLicenses } = setup();
+
+				const result = await service.saveAll(mediaUserLicenses);
+
+				expect(result).toEqual(mediaUserLicenses);
+			});
 		});
 	});
 
@@ -93,7 +99,7 @@ describe(MediaUserLicenseService.name, () => {
 		it('should call user license repo with correct arguments', async () => {
 			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
 
-			await service.deleteUserLicense(mediaUserLicense);
+			await service.delete(mediaUserLicense);
 
 			expect(mediaUserLicenseRepo.delete).toHaveBeenCalledWith(mediaUserLicense);
 		});
@@ -103,6 +109,7 @@ describe(MediaUserLicenseService.name, () => {
 		describe('when user has license', () => {
 			const setup = () => {
 				const toolMedium: ExternalToolMedium = {
+					status: ExternalToolMediumStatus.ACTIVE,
 					mediumId: 'mediumId',
 					mediaSourceId: 'mediaSourceId',
 				};
@@ -133,6 +140,7 @@ describe(MediaUserLicenseService.name, () => {
 		describe('when user has license without sourceId', () => {
 			const setup = () => {
 				const toolMedium: ExternalToolMedium = {
+					status: ExternalToolMediumStatus.ACTIVE,
 					mediumId: 'mediumId',
 				};
 				const medium = mediaUserLicenseFactory.build({
@@ -159,7 +167,7 @@ describe(MediaUserLicenseService.name, () => {
 
 		describe('when user has not the correct license', () => {
 			const setup = () => {
-				const medium: ExternalToolMedium = { mediumId: 'mediumId' };
+				const medium: ExternalToolMedium = { status: ExternalToolMediumStatus.ACTIVE, mediumId: 'mediumId' };
 				const mediaUserLicenses: MediaUserLicense[] = mediaUserLicenseFactory.buildList(2);
 
 				return {
@@ -179,7 +187,7 @@ describe(MediaUserLicenseService.name, () => {
 
 		describe('when user has no licenses', () => {
 			const setup = () => {
-				const medium: ExternalToolMedium = { mediumId: 'mediumId' };
+				const medium: ExternalToolMedium = { status: ExternalToolMediumStatus.ACTIVE, mediumId: 'mediumId' };
 				const mediaUserLicenses: MediaUserLicense[] = [];
 
 				return {

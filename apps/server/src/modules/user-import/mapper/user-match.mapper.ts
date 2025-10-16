@@ -1,5 +1,5 @@
-import { StringValidator } from '@shared/common';
-import { User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
+import { StringValidator } from '@shared/common/validator';
 import { UserMatchResponse, UserRole } from '../controller/dto';
 import { FilterUserParams } from '../controller/dto/filter-user.params';
 import { ImportUserNameMatchFilter } from '../domain/interface';
@@ -7,11 +7,11 @@ import { MatchCreator } from '../entity';
 import { ImportUserMatchMapper } from './match.mapper';
 
 export class UserMatchMapper {
-	static mapToDomain(query: FilterUserParams): ImportUserNameMatchFilter {
+	public static mapToDomain(query: FilterUserParams): ImportUserNameMatchFilter {
 		const scope: ImportUserNameMatchFilter = {};
 		if (query.name) {
-			if (StringValidator.isNotEmptyString(query.name, true)) {
-				scope.name = query.name;
+			if (StringValidator.isNotEmptyStringWhenTrimed(query.name)) {
+				scope.name = query.name.trim();
 			} else {
 				throw Error('invalid name from query');
 			}
@@ -19,10 +19,29 @@ export class UserMatchMapper {
 		return scope;
 	}
 
-	static mapToResponse(user: User, matchCreator?: MatchCreator): UserMatchResponse {
+	public static mapToResponse(user: User, matchCreator?: MatchCreator): UserMatchResponse {
+		const roleNames = UserMatchMapper.mapUserRolesToResponseRoles(user);
+
+		const dto = new UserMatchResponse({
+			userId: user.id,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			loginName: user.email,
+			roleNames,
+		});
+
+		if (matchCreator != null) {
+			const matchedBy = ImportUserMatchMapper.mapMatchCreatorToResponse(matchCreator);
+			dto.matchedBy = matchedBy;
+		}
+
+		return dto;
+	}
+
+	private static mapUserRolesToResponseRoles(user: User): UserRole[] {
 		const domainRoles = user.roles.getItems(true);
 		const domainRoleNames = domainRoles.map((role) => role.name);
-		const roleNames: UserRole[] = domainRoleNames
+		const roleNames = domainRoleNames
 			.map((roleName) => {
 				switch (roleName) {
 					case 'teacher':
@@ -35,18 +54,8 @@ export class UserMatchMapper {
 						return null;
 				}
 			})
-			.filter((roleName) => roleName != null) as UserRole[];
-		const dto = new UserMatchResponse({
-			userId: user.id,
-			firstName: user.firstName,
-			lastName: user.lastName,
-			loginName: user.email,
-			roleNames,
-		});
-		if (matchCreator != null) {
-			const matchedBy = ImportUserMatchMapper.mapMatchCreatorToResponse(matchCreator);
-			dto.matchedBy = matchedBy;
-		}
-		return dto;
+			.filter((roleName) => roleName != null);
+
+		return roleNames;
 	}
 }

@@ -1,19 +1,18 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CollaborativeStorageAdapter } from '@infra/collaborative-storage';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { TeamMapper } from '@modules/collaborative-storage/mapper/team.mapper';
 import { CollaborativeStorageService } from '@modules/collaborative-storage/services/collaborative-storage.service';
+import { RoleName } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
+import { TeamEntity, TeamRepo } from '@modules/team/repo';
+import { teamFactory } from '@modules/team/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamEntity } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
-import { TeamsRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
-import { teamFactory } from '@testing/factory/team.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { TeamDto } from './dto/team.dto';
 
 describe('Collaborative Storage Service', () => {
@@ -23,7 +22,7 @@ describe('Collaborative Storage Service', () => {
 	let adapter: DeepMocked<CollaborativeStorageAdapter>;
 	let authService: DeepMocked<AuthorizationService>;
 	let roleService: DeepMocked<RoleService>;
-	let teamRepo: DeepMocked<TeamsRepo>;
+	let teamRepo: DeepMocked<TeamRepo>;
 
 	let mockId: string;
 	let roleDto: RoleDto;
@@ -43,8 +42,8 @@ describe('Collaborative Storage Service', () => {
 					useValue: createMock<RoleService>(),
 				},
 				{
-					provide: TeamsRepo,
-					useValue: createMock<TeamsRepo>(),
+					provide: TeamRepo,
+					useValue: createMock<TeamRepo>(),
 				},
 				{
 					provide: CollaborativeStorageAdapter,
@@ -60,8 +59,8 @@ describe('Collaborative Storage Service', () => {
 		adapter = module.get(CollaborativeStorageAdapter);
 		authService = module.get(AuthorizationService);
 		roleService = module.get(RoleService);
-		teamRepo = module.get(TeamsRepo);
-		await setupEntities();
+		teamRepo = module.get(TeamRepo);
+		await setupEntities([TeamEntity]);
 	});
 
 	beforeEach(() => {
@@ -92,6 +91,7 @@ describe('Collaborative Storage Service', () => {
 
 	describe('Update TeamPermissions For Role', () => {
 		it('should call the adapter', async () => {
+			mockId = 'mockId';
 			jest.spyOn(service, 'findTeamById').mockResolvedValue({
 				id: 'testId',
 				name: 'testTeam',
@@ -108,6 +108,7 @@ describe('Collaborative Storage Service', () => {
 		});
 
 		it('should throw a forbidden exception', async () => {
+			mockId = 'mockId';
 			authService.checkPermission.mockImplementation(() => {
 				throw new ForbiddenException();
 			});

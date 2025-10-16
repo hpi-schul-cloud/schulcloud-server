@@ -1,26 +1,24 @@
 const assert = require('assert');
 const chai = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const appPromise = require('../../../src/app');
+const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
+const { schoolModel: School, yearModel: YearModel } = require('../../../src/services/school/model');
+const testHelper = require('../helpers/testObjects');
 
 const { expect } = chai;
-
-const appPromise = require('../../../src/app');
-const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
-const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
-
-const { schoolModel: School, yearModel: YearModel } = require('../../../src/services/school/model');
-
-const testObjects = require('../helpers/testObjects')(appPromise());
-const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(appPromise());
 
 describe('school service', () => {
 	let app;
 	let server;
 	let nestServices;
+	let testObjects;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		testObjects = testHelper(app);
 		nestServices = await setupNestServices(app);
 	});
 
@@ -51,9 +49,9 @@ describe('school service', () => {
 			schoolService = app.service('/schools');
 			defaultYears = await YearModel.find().sort('name').lean().exec();
 			sampleYear = defaultYears[0];
-			const school = await createSchool();
+			const school = await testObjects.createTestSchool();
 			sampleSchoolData = await School.findById(school._id).lean().exec();
-			delete sampleSchoolData._id;
+			delete sampleSchoolData._id; // why?
 		});
 		it('should not be possible to access schools unauthenticated', async () => {
 			const params = {
@@ -120,7 +118,7 @@ describe('school service', () => {
 			const defaultTz = 'Europe/Berlin';
 			const serviceCreatedSchool = await schoolService.create({ ...sampleSchoolData, timezone: defaultTz });
 			const { _id: schoolId } = serviceCreatedSchool;
-			createdSchoolIds.push(schoolId);
+			testObjects.schools.info.push(schoolId);
 			const out = await schoolService.get(schoolId);
 			expect(out, 'school has been saved').to.be.not.null;
 			expect(out.timezone, 'the defined timezone has been added to the school').to.be.equal(defaultTz);
@@ -129,7 +127,7 @@ describe('school service', () => {
 		it('create school with currentYear defined explictly', async () => {
 			const serviceCreatedSchool = await schoolService.create({ ...sampleSchoolData, currentYear: sampleYear });
 			const { _id: schoolId } = serviceCreatedSchool;
-			createdSchoolIds.push(schoolId);
+			testObjects.schools.info.push(schoolId);
 			const out = await schoolService.get(schoolId);
 			expect(out, 'school has been saved').to.be.not.null;
 			expect(out.currentYear, 'the defined year has been added to the school').to.be.ok;
@@ -139,7 +137,7 @@ describe('school service', () => {
 		it('create school with no currentYear defined that will be added', async () => {
 			const serviceCreatedSchool = await schoolService.create(sampleSchoolData);
 			const { _id: schoolId } = serviceCreatedSchool;
-			createdSchoolIds.push(schoolId);
+			testObjects.schools.info.push(schoolId);
 			const out = await schoolService.get(schoolId);
 			expect(out, 'school has been saved').to.be.not.null;
 			const { currentYear } = out;
@@ -153,7 +151,7 @@ describe('school service', () => {
 		it('isExternal attribute is true when ldapSchoolIdentifier is not undefined', async () => {
 			const serviceCreatedSchool = await schoolService.create({ ...sampleSchoolData, ldapSchoolIdentifier: 'testId' });
 			const { _id: schoolId } = serviceCreatedSchool;
-			createdSchoolIds.push(schoolId);
+			testObjects.schools.info.push(schoolId);
 			const school = await schoolService.get(schoolId);
 			expect(school.isExternal).to.be.true;
 		});
@@ -161,7 +159,7 @@ describe('school service', () => {
 		it('isExternal attribute is true when source is not undefined', async () => {
 			const serviceCreatedSchool = await schoolService.create({ ...sampleSchoolData, source: 'testSource' });
 			const { _id: schoolId } = serviceCreatedSchool;
-			createdSchoolIds.push(schoolId);
+			testObjects.schools.info.push(schoolId);
 			const school = await schoolService.get(schoolId);
 			expect(school.isExternal).to.be.true;
 		});
@@ -173,7 +171,7 @@ describe('school service', () => {
 				source: 'testSource',
 			});
 			const { _id: schoolId } = serviceCreatedSchool;
-			createdSchoolIds.push(schoolId);
+			testObjects.schools.info.push(schoolId);
 			const school = await schoolService.get(schoolId);
 			expect(school.isExternal).to.be.true;
 		});
@@ -181,7 +179,7 @@ describe('school service', () => {
 		it('isExternal attribute is false when source is undefined', async () => {
 			const serviceCreatedSchool = await schoolService.create({ ...sampleSchoolData });
 			const { _id: schoolId } = serviceCreatedSchool;
-			createdSchoolIds.push(schoolId);
+			testObjects.schools.info.push(schoolId);
 			const school = await schoolService.get(schoolId);
 			expect(school.isExternal).to.be.false;
 		});
@@ -579,10 +577,12 @@ describe('find schools', () => {
 	let app;
 	let server;
 	let schoolsService;
+	let testObjects;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen();
+		testObjects = testHelper(app);
 		schoolsService = app.service('schools');
 	});
 
@@ -614,10 +614,9 @@ describe('find schools', () => {
 describe('years service', () => {
 	let app;
 	let server;
-
 	before(async () => {
 		app = await appPromise();
-		server = await app.listen();
+		server = await app.listen(0);
 	});
 
 	after(async () => {

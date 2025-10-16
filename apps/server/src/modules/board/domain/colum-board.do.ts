@@ -24,11 +24,26 @@ export class ColumnBoard extends BoardNode<ColumnBoardProps> {
 	}
 
 	set isVisible(isVisible: boolean) {
+		if (!isVisible) {
+			this.props.readersCanEdit = false;
+		}
 		this.props.isVisible = isVisible;
 	}
 
 	get layout(): BoardLayout {
 		return this.props.layout;
+	}
+
+	set layout(layout: BoardLayout) {
+		this.props.layout = layout;
+	}
+
+	get readersCanEdit(): boolean {
+		return this.props.readersCanEdit;
+	}
+
+	set readersCanEdit(readersCanEdit: boolean) {
+		this.props.readersCanEdit = readersCanEdit;
 	}
 
 	canHaveChild(childNode: AnyBoardNode): boolean {

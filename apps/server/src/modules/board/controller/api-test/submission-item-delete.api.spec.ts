@@ -1,9 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
@@ -16,6 +16,7 @@ import {
 	submissionItemEntityFactory,
 } from '../../testing';
 import { SubmissionItemResponse } from '../dto';
+import { schoolEntityFactory } from '@modules/school/testing';
 
 const baseRouteName = '/board-submissions';
 describe('submission item delete (api)', () => {
@@ -43,7 +44,7 @@ describe('submission item delete (api)', () => {
 			await cleanupCollections(em);
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -89,7 +90,7 @@ describe('submission item delete (api)', () => {
 			await cleanupCollections(em);
 
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			const course = courseFactory.build({ students: [studentUser] });
+			const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
 			await em.persistAndFlush([studentAccount, studentUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -136,9 +137,11 @@ describe('submission item delete (api)', () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 
-			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+			const school = schoolEntityFactory.buildWithId();
+
+			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 			const { studentAccount: studentAccount2, studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent();
-			const course = courseFactory.build({ students: [studentUser, studentUser2] });
+			const course = courseEntityFactory.build({ school, students: [studentUser, studentUser2] });
 			await em.persistAndFlush([studentAccount, studentUser, studentAccount2, studentUser2, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -184,9 +187,10 @@ describe('submission item delete (api)', () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 
-			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+			const school = schoolEntityFactory.buildWithId();
+			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 			const { studentAccount: studentAccount2, studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent();
-			const course = courseFactory.build({ students: [studentUser] });
+			const course = courseEntityFactory.build({ school, students: [studentUser] });
 			await em.persistAndFlush([studentAccount, studentUser, studentAccount2, studentUser2, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({

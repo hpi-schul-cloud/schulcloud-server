@@ -12,11 +12,11 @@ import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { MediaAvailableLine, MediaBoard, MediaExternalToolElement } from '../../domain';
 import { MediaAvailableLineService } from './media-available-line.service';
 
@@ -58,7 +58,7 @@ describe(MediaAvailableLineService.name, () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		externalToolLogoService = module.get(ExternalToolLogoService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {
@@ -240,7 +240,9 @@ describe(MediaAvailableLineService.name, () => {
 
 				await service.getAvailableExternalToolsForSchool([schoolExternalTool]);
 
-				expect(externalToolService.findExternalTools).toHaveBeenCalledWith({ ids: [schoolExternalTool.toolId] });
+				expect(externalToolService.findExternalTools).toHaveBeenCalledWith({
+					ids: [schoolExternalTool.toolId],
+				});
 			});
 
 			it('should return all available external tools in correct order', async () => {
@@ -362,6 +364,7 @@ describe(MediaAvailableLineService.name, () => {
 					{
 						schoolExternalToolId: schoolExternalTool1.id,
 						name: externalTool1.name,
+						domain: new URL(externalTool1.config.baseUrl).hostname,
 						description: externalTool1.description,
 						logoUrl,
 						thumbnailUrl: externalTool1.thumbnail?.getPreviewUrl(),
@@ -369,6 +372,7 @@ describe(MediaAvailableLineService.name, () => {
 					{
 						schoolExternalToolId: schoolExternalTool2.id,
 						name: externalTool2.name,
+						domain: new URL(externalTool2.config.baseUrl).hostname,
 						description: externalTool2.description,
 						logoUrl: undefined,
 					},

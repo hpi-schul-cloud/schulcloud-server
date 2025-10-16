@@ -2,14 +2,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
 import { H5PEditor, H5PPlayer, IPlayerModel } from '@lumieducation/h5p-server';
+import { UserService } from '@modules/user';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from '@src/modules/user';
-import { h5pContentFactory } from '@testing/factory/h5p-content.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
+import { h5pContentFactory } from '../testing';
 import { H5PEditorUc } from './h5p.uc';
 
 const createParams = () => {
@@ -74,7 +73,6 @@ describe('get H5P player', () => {
 		h5pPlayer = module.get(H5PPlayer);
 		h5pContentRepo = module.get(H5PContentRepo);
 		authorizationClientAdapter = module.get(AuthorizationClientAdapter);
-		await setupEntities();
 	});
 
 	afterEach(() => {
@@ -102,7 +100,7 @@ describe('get H5P player', () => {
 			it('should call authorizationClientAdapter.checkPermissionsByReference', async () => {
 				const { content, mockCurrentUser } = setup();
 
-				await uc.getH5pPlayer(mockCurrentUser, content.id);
+				await uc.getH5pPlayer(mockCurrentUser.userId, content.id);
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
 					content.parentType,
@@ -114,7 +112,7 @@ describe('get H5P player', () => {
 			it('should call service with correct params', async () => {
 				const { content, mockCurrentUser } = setup();
 
-				await uc.getH5pPlayer(mockCurrentUser, content.id);
+				await uc.getH5pPlayer(mockCurrentUser.userId, content.id);
 
 				expect(h5pPlayer.render).toHaveBeenCalledWith(
 					content.id,
@@ -127,7 +125,7 @@ describe('get H5P player', () => {
 			it('should return results of service', async () => {
 				const { content, mockCurrentUser, expectedResult } = setup();
 
-				const result = await uc.getH5pPlayer(mockCurrentUser, content.id);
+				const result = await uc.getH5pPlayer(mockCurrentUser.userId, content.id);
 
 				expect(result).toEqual(expectedResult);
 			});
@@ -146,7 +144,7 @@ describe('get H5P player', () => {
 		it('should throw NotFoundException', async () => {
 			const { content, mockCurrentUser } = setup();
 
-			const getPlayerPromise = uc.getH5pPlayer(mockCurrentUser, content.id);
+			const getPlayerPromise = uc.getH5pPlayer(mockCurrentUser.userId, content.id);
 
 			await expect(getPlayerPromise).rejects.toThrow(new NotFoundException());
 
@@ -167,7 +165,7 @@ describe('get H5P player', () => {
 		it('should throw forbidden error', async () => {
 			const { content, mockCurrentUser } = setup();
 
-			const getPlayerPromise = uc.getH5pPlayer(mockCurrentUser, content.id);
+			const getPlayerPromise = uc.getH5pPlayer(mockCurrentUser.userId, content.id);
 
 			await expect(getPlayerPromise).rejects.toThrow(new ForbiddenException());
 
@@ -191,7 +189,7 @@ describe('get H5P player', () => {
 		it('should return error of service', async () => {
 			const { error, content, mockCurrentUser } = setup();
 
-			const getPlayerPromise = uc.getH5pPlayer(mockCurrentUser, content.id);
+			const getPlayerPromise = uc.getH5pPlayer(mockCurrentUser.userId, content.id);
 
 			await expect(getPlayerPromise).rejects.toThrow(error);
 		});

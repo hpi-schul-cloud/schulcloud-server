@@ -1,13 +1,8 @@
-import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { ICurrentUser } from '../interface';
 import { CurrentUserBuilder } from './current-user.factory';
 
 describe('CurrentUserBuilder', () => {
-	beforeAll(async () => {
-		await setupEntities();
-	});
-
 	describe('build', () => {
 		const setup = () => {
 			const userId = new ObjectId().toHexString();

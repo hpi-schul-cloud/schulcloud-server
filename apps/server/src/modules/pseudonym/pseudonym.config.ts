@@ -1,4 +1,4 @@
-import { LoggerConfig } from '@src/core/logger';
+import { LoggerConfig } from '@core/logger';
 import { LearnroomConfig } from '@modules/learnroom';
 import { ToolConfig } from '@modules/tool';
 import { UserConfig } from '@modules/user';

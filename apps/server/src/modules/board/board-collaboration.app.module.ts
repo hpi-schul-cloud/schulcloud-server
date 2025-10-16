@@ -1,18 +1,18 @@
+import { CoreModule } from '@core/core.module';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { ALL_ENTITIES } from '@shared/domain/entity/all-entities';
-import { CoreModule } from '@src/core';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { AuthorizationModule } from '../authorization';
 import { serverConfig } from '../server';
 import { config } from './board-collaboration.config';
 import { BoardWsApiModule } from './board-ws-api.module';
+import { ENTITIES, TEST_ENTITIES } from './board.entity.imports';
 import { BoardModule } from './board.module';
 
 const imports = [
@@ -34,7 +34,7 @@ const imports = [
 			clientUrl: DB_URL, // TODO: check if this needs to be different
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: ALL_ENTITIES,
+			entities: ENTITIES,
 		}),
 	],
 	providers: [],
@@ -52,7 +52,7 @@ const testConfig = () => {
 		ConfigModule.forRoot(createConfigModuleOptions(testConfig)),
 		MongoMemoryDatabaseModule.forRoot({
 			...defaultMikroOrmOptions,
-			entities: ALL_ENTITIES,
+			entities: TEST_ENTITIES,
 		}),
 	],
 })

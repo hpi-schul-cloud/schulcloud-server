@@ -1,8 +1,8 @@
-import { OauthAdapterService } from '@modules/oauth/service';
+import { OauthAdapterService } from '@modules/oauth-adapter';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Logger, LoggerModule } from '@src/core/logger';
+import { Logger, LoggerModule } from '@core/logger';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 

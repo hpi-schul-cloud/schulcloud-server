@@ -1,7 +1,7 @@
+import { Loggable } from '@core/logger/interfaces';
+import { ErrorLogMessage } from '@core/logger/types';
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
-import { Loggable } from '@src/core/logger/interfaces';
-import { ErrorLogMessage } from '@src/core/logger/types';
+import { BusinessError } from '@shared/common/error';
 
 export class AccountNotFoundLoggableException extends BusinessError implements Loggable {
 	constructor() {

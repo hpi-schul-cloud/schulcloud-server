@@ -1,4 +1,4 @@
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { CustomParameterEntry, ToolParameterDuplicateLoggableException } from '../../../domain';
 import { ParameterArrayDuplicateKeyValidator } from './parameter-array-duplicate-key-validator';
 

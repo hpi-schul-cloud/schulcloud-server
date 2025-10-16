@@ -4,7 +4,7 @@ import { ShareTokenString } from '../domainobject/share-token.do';
 
 @Injectable()
 export class TokenGenerator {
-	generateShareToken(): ShareTokenString {
+	public generateShareToken(): ShareTokenString {
 		const token = nanoid(12);
 		return token;
 	}

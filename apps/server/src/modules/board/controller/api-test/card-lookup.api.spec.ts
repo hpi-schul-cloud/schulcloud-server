@@ -1,9 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
@@ -43,7 +43,7 @@ describe(`card lookup (api)`, () => {
 
 	const setup = async () => {
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-		const course = courseFactory.buildWithId({ teachers: [teacherUser] });
+		const course = courseEntityFactory.buildWithId({ school: teacherUser.school, teachers: [teacherUser] });
 		await em.persistAndFlush([teacherUser, teacherAccount, course]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({

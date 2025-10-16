@@ -1,29 +1,17 @@
+import { Logger } from '@core/logger';
 import { CreateJwtPayload, ICurrentUser, JwtPayloadFactory } from '@infra/auth-guard';
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Account, AccountService } from '@modules/account';
-import { OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
-import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
-import { System } from '@modules/system';
-import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable } from '@nestjs/common';
+import { User } from '@modules/user/repo';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { User } from '@shared/domain/entity';
-import { Logger } from '@src/core/logger';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { firstValueFrom } from 'rxjs';
-import { AxiosError, AxiosHeaders, AxiosRequestConfig } from 'axios';
 import { AuthenticationConfig } from '../authentication-config';
+import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { ShdUserCreateTokenLoggable, UserAccountDeactivatedLoggableException } from '../loggable';
 import { CurrentUserMapper } from '../mapper';
-import {
-	BruteForceError,
-	UnauthorizedLoggableException,
-	EndSessionEndpointNotFoundLoggableException,
-	ExternalSystemLogoutFailedLoggableException,
-} from '../errors';
 
 @Injectable()
 export class AuthenticationService {
@@ -32,9 +20,6 @@ export class AuthenticationService {
 		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		private readonly accountService: AccountService,
 		private readonly configService: ConfigService<AuthenticationConfig, true>,
-		private readonly oauthSessionTokenService: OauthSessionTokenService,
-		private readonly httpService: HttpService,
-		@Inject(DefaultEncryptionService) private readonly oauthEncryptionService: EncryptionService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(AuthenticationService.name);
@@ -148,49 +133,5 @@ export class AuthenticationService {
 
 	public normalizePassword(password: string): string {
 		return password.trim();
-	}
-
-	public async logoutFromExternalSystem(sessionToken: OauthSessionToken, system: System): Promise<void> {
-		if (!system.oauthConfig) {
-			throw new OauthConfigMissingLoggableException(system.id);
-		}
-
-		if (!system?.oauthConfig.endSessionEndpoint) {
-			throw new EndSessionEndpointNotFoundLoggableException(system.id);
-		}
-
-		const now = new Date();
-		if (now > sessionToken.expiresAt) {
-			await this.oauthSessionTokenService.delete(sessionToken);
-			return;
-		}
-
-		const headers: AxiosHeaders = new AxiosHeaders();
-		headers.setContentType('application/x-www-form-urlencoded');
-
-		const config: AxiosRequestConfig = {
-			auth: {
-				username: system.oauthConfig.clientId,
-				password: this.oauthEncryptionService.decrypt(system.oauthConfig.clientSecret),
-			},
-			headers,
-		};
-
-		try {
-			await firstValueFrom(
-				this.httpService.post(
-					system.oauthConfig.endSessionEndpoint,
-					{
-						refresh_token: sessionToken.refreshToken,
-					},
-					config
-				)
-			);
-		} catch (err) {
-			const axiosError = err as AxiosError;
-			throw new ExternalSystemLogoutFailedLoggableException(sessionToken.userId, system.id, axiosError);
-		}
-
-		await this.oauthSessionTokenService.delete(sessionToken);
 	}
 }

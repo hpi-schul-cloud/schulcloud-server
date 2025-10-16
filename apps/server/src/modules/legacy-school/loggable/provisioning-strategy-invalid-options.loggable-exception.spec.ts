@@ -10,7 +10,7 @@ describe(ProvisioningStrategyInvalidOptionsLoggableException.name, () => {
 			};
 
 			const exception = new ProvisioningStrategyInvalidOptionsLoggableException(
-				SystemProvisioningStrategy.SANIS,
+				SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 				provisioningOptions
 			);
 
@@ -30,7 +30,7 @@ describe(ProvisioningStrategyInvalidOptionsLoggableException.name, () => {
 				message: expect.any(String),
 				stack: expect.any(String),
 				data: {
-					provisioningStrategy: SystemProvisioningStrategy.SANIS,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 					provisioningOptions,
 				},
 			});

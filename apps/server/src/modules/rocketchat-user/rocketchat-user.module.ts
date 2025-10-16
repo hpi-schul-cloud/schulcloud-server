@@ -1,14 +1,14 @@
-import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { CqrsModule } from '@nestjs/cqrs';
 import { RocketChatModule } from '@modules/rocketchat/rocket-chat.module';
+import { SagaModule } from '@modules/saga';
+import { Module } from '@nestjs/common';
 import { RocketChatUserRepo } from './repo';
 import { RocketChatUserService } from './service/rocket-chat-user.service';
+import { DeleteUserRocketChatDataStep } from './saga';
 
 @Module({
 	imports: [
-		CqrsModule,
 		LoggerModule,
 		RocketChatModule.forRoot({
 			uri: Configuration.get('ROCKET_CHAT_URI') as string,
@@ -17,8 +17,9 @@ import { RocketChatUserService } from './service/rocket-chat-user.service';
 			adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 			adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 		}),
+		SagaModule,
 	],
-	providers: [RocketChatUserRepo, RocketChatUserService],
+	providers: [RocketChatUserRepo, RocketChatUserService, DeleteUserRocketChatDataStep],
 	exports: [RocketChatUserService],
 })
 export class RocketChatUserModule {}

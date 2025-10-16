@@ -1,6 +1,8 @@
 .gitignore
 .npmignore
 api.ts
+api/default-api.ts
+api/education-provider-api.ts
 api/idmbetreiber-api.ts
 base.ts
 common.ts
@@ -16,4 +18,5 @@ models/offer-dto.ts
 models/page-activation-dto.ts
 models/page-offer-dto.ts
 models/page-school-dto.ts
+models/school-activation-dto.ts
 models/school-dto.ts

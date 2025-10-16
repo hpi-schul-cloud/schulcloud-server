@@ -1,4 +1,4 @@
-import { RoleName } from '@shared/domain/interface';
+import { RoleName } from '@modules/role';
 import { FilterRoleType, UserRole } from '../controller/dto';
 import { ImportUserRoleName } from '../entity';
 

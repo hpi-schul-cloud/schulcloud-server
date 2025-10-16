@@ -1,8 +1,8 @@
+import { Logger } from '@core/logger';
 import { HttpService } from '@nestjs/axios';
 import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { EntityId, ImageMimeType } from '@shared/domain/types';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
 import { ToolConfig } from '../../tool-config';
@@ -12,17 +12,14 @@ import {
 	ExternalToolLogoFetchedLoggable,
 	ExternalToolLogoFetchFailedLoggableException,
 	ExternalToolLogoNotFoundLoggableException,
+	ExternalToolLogoSanitizationLoggableException,
 	ExternalToolLogoSizeExceededLoggableException,
 	ExternalToolLogoWrongFileTypeLoggableException,
+	ExternalToolLogoWrongFormatLoggableException,
 } from '../loggable';
 import { ExternalToolService } from './external-tool.service';
 
-const contentTypeDetector: Record<string, string> = {
-	ffd8ffe0: 'image/jpeg',
-	ffd8ffe1: 'image/jpeg',
-	'89504e47': 'image/png',
-	'47494638': 'image/gif',
-};
+import { ExternalToolLogoSanitizerService } from './external-tool-logo-sanitizer.service';
 
 @Injectable()
 export class ExternalToolLogoService {
@@ -30,7 +27,8 @@ export class ExternalToolLogoService {
 		private readonly configService: ConfigService<ToolConfig, true>,
 		private readonly logger: Logger,
 		private readonly httpService: HttpService,
-		private readonly externalToolService: ExternalToolService
+		private readonly externalToolService: ExternalToolService,
+		private readonly externalToolLogoSanitizerService: ExternalToolLogoSanitizerService
 	) {}
 
 	public buildLogoUrl(externalTool: ExternalTool): string | undefined {
@@ -76,17 +74,32 @@ export class ExternalToolLogoService {
 			const response: AxiosResponse<ArrayBuffer> = await lastValueFrom(
 				this.httpService.get(logoUrl, { responseType: 'arraybuffer' })
 			);
-			this.logger.info(new ExternalToolLogoFetchedLoggable(logoUrl));
+			this.logger.debug(new ExternalToolLogoFetchedLoggable(logoUrl));
 
 			const buffer: Buffer = Buffer.from(response.data);
-			this.detectContentTypeOrThrow(buffer);
+			const contentType: string | undefined = logoUrl.startsWith('data:')
+				? logoUrl.split(';', 1)[0].substring(5)
+				: (response.headers['content-type'] as string | undefined);
+
+			if (!contentType || !Object.values(ImageMimeType).includes(contentType as ImageMimeType)) {
+				throw new ExternalToolLogoWrongFileTypeLoggableException();
+			}
+
+			if (contentType === ImageMimeType.SVG) {
+				const svgContent = buffer.toString();
+				const sanitizedSvg = this.externalToolLogoSanitizerService.sanitizeSvg(svgContent);
+				const sanitizedSvgBase64 = Buffer.from(sanitizedSvg).toString('base64');
+				return `data:${contentType};base64,${sanitizedSvgBase64}`;
+			}
 
 			const logoBase64: string = buffer.toString('base64');
-
-			return logoBase64;
+			return `data:${contentType};base64,${logoBase64}`;
 		} catch (error) {
-			if (error instanceof ExternalToolLogoWrongFileTypeLoggableException) {
-				throw new ExternalToolLogoWrongFileTypeLoggableException();
+			if (
+				error instanceof ExternalToolLogoWrongFileTypeLoggableException ||
+				error instanceof ExternalToolLogoSanitizationLoggableException
+			) {
+				throw error;
 			} else if (error instanceof HttpException) {
 				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());
 			} else {
@@ -102,26 +115,18 @@ export class ExternalToolLogoService {
 			throw new ExternalToolLogoNotFoundLoggableException(toolId);
 		}
 
-		const logoBinaryData: Buffer = Buffer.from(tool.logo, 'base64');
+		if (!tool.logo.startsWith('data:')) {
+			throw new ExternalToolLogoWrongFormatLoggableException(toolId);
+		}
+
+		const [header, data] = tool.logo.split(',');
+		const contentType: string = header.split(';')[0].split(':')[1];
 
 		const externalToolLogo: ExternalToolLogo = new ExternalToolLogo({
-			contentType: this.detectContentTypeOrThrow(logoBinaryData),
-			logo: logoBinaryData,
+			contentType,
+			logo: Buffer.from(data, 'base64'),
 		});
 
 		return externalToolLogo;
-	}
-
-	private detectContentTypeOrThrow(imageBuffer: Buffer): string {
-		const imageSignature: string = imageBuffer.toString('hex', 0, 4);
-
-		const contentType: string | ExternalToolLogoWrongFileTypeLoggableException =
-			contentTypeDetector[imageSignature] || new ExternalToolLogoWrongFileTypeLoggableException();
-
-		if (contentType instanceof ExternalToolLogoWrongFileTypeLoggableException) {
-			throw new ExternalToolLogoWrongFileTypeLoggableException();
-		}
-
-		return contentType;
 	}
 }

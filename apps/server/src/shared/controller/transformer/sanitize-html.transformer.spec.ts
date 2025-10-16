@@ -25,7 +25,7 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		contentRichTextCk5Simple!: string;
 	}
 
-	describe('when fully sanitizing an input string', () => {
+	describe('when sanitizing plain text', () => {
 		it('should remove all html', () => {
 			const plainString = { title: '<b>html text</b>' };
 			const instance = plainToClass(WithHtmlDto, plainString);
@@ -34,6 +34,32 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 			const plainString2 = { title2: '<b>html text</b>' };
 			const instance2 = plainToClass(WithHtmlDto, plainString2);
 			expect(instance2.title2).toEqual('html text');
+		});
+
+		it('should not encode html entities', () => {
+			const plainString = { title: 'X & Y < 5' };
+			const instance = plainToClass(WithHtmlDto, plainString);
+			expect(instance.title).toEqual('X & Y < 5');
+
+			const plainString2 = { title: 'X & Y > 5' };
+			const instance2 = plainToClass(WithHtmlDto, plainString2);
+			expect(instance2.title).toEqual('X & Y > 5');
+		});
+
+		describe('when the text contains a "<" without the closing ">"', () => {
+			it('should remove all characters after the "<"', () => {
+				const plainString = { title: 'X<Y & A' };
+				const instance = plainToClass(WithHtmlDto, plainString);
+				expect(instance.title).toEqual('X');
+			});
+		});
+
+		describe('when the text contains both a "<" and ">"', () => {
+			it('should remove all characters between "<" and ">"', () => {
+				const plainString = { title: 'X<Y & A>B' };
+				const instance = plainToClass(WithHtmlDto, plainString);
+				expect(instance.title).toEqual('XB');
+			});
 		});
 	});
 

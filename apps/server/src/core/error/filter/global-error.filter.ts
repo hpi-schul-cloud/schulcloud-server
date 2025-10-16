@@ -1,7 +1,7 @@
 import { IError, RpcMessage } from '@infra/rabbitmq';
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import { ApiValidationError, BusinessError } from '@shared/common';
+import { ApiValidationError, BusinessError } from '@shared/common/error';
 import { Response } from 'express';
 import _ from 'lodash';
 import { DomainErrorHandler } from '../domain';

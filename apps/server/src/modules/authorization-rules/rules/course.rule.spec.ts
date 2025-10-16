@@ -1,12 +1,12 @@
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
-import { courseFactory } from '@modules/learnroom/testing';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory, courseFactory } from '@modules/course/testing';
+import { roleFactory } from '@modules/role/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { courseFactory as courseEntityFactory } from '@testing/factory/course.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { CourseRule } from './course.rule';
 
 describe('CourseRule', () => {
@@ -15,13 +15,13 @@ describe('CourseRule', () => {
 	let authorizationHelper: AuthorizationHelper;
 	let injectionService: AuthorizationInjectionService;
 	let user: User;
-	let entity: Course;
+	let entity: CourseEntity;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [AuthorizationHelper, CourseRule, AuthorizationInjectionService],

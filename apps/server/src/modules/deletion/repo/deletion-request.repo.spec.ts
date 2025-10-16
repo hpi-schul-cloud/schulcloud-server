@@ -1,8 +1,8 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ObjectId } from 'bson';
 import { DeletionRequest } from '../domain/do';
 import { deletionRequestFactory } from '../domain/testing';
@@ -102,18 +102,18 @@ describe(DeletionRequestRepo.name, () => {
 		});
 	});
 
-	describe('findAllItemsToExecution', () => {
+	describe('findAllItems', () => {
 		describe('when there is no deletionRequest for execution', () => {
 			const setup = () => {
-				const threshold = 1000;
+				const limit = 1000;
 
 				return {
-					threshold,
+					limit,
 				};
 			};
 			it('should return empty array', async () => {
-				const { threshold } = setup();
-				const result = await repo.findAllItemsToExecution(threshold);
+				const { limit } = setup();
+				const result = await repo.findAllItems(limit);
 
 				expect(result).toEqual([]);
 			});
@@ -121,9 +121,11 @@ describe(DeletionRequestRepo.name, () => {
 
 		describe('when there are deletionRequests for execution', () => {
 			const setup = async () => {
-				const threshold = 1000;
+				const limit = 1000;
+
 				const dateInFuture = new Date();
 				dateInFuture.setDate(dateInFuture.getDate() + 30);
+
 				const deletionRequestEntity1: DeletionRequestEntity = deletionRequestEntityFactory.build({
 					createdAt: new Date(2023, 7, 1),
 					updatedAt: new Date(2023, 8, 2),
@@ -140,14 +142,17 @@ describe(DeletionRequestRepo.name, () => {
 					createdAt: new Date(2023, 8, 1),
 					updatedAt: new Date(2023, 8, 1),
 					deleteAfter: new Date(2023, 9, 1),
+					status: StatusModel.REGISTERED,
 				});
 				const deletionRequestEntity4: DeletionRequestEntity = deletionRequestEntityFactory.build({
 					createdAt: new Date(2023, 9, 1),
 					updatedAt: new Date(2023, 9, 1),
 					deleteAfter: new Date(2023, 10, 1),
+					status: StatusModel.REGISTERED,
 				});
 				const deletionRequestEntity5: DeletionRequestEntity = deletionRequestEntityFactory.build({
 					deleteAfter: dateInFuture,
+					status: StatusModel.REGISTERED,
 				});
 
 				await em.persistAndFlush([
@@ -178,34 +183,21 @@ describe(DeletionRequestRepo.name, () => {
 						createdAt: deletionRequestEntity3.createdAt,
 						updatedAt: deletionRequestEntity3.updatedAt,
 					},
-					{
-						id: deletionRequestEntity2.id,
-						targetRefDomain: deletionRequestEntity2.targetRefDomain,
-						deleteAfter: deletionRequestEntity2.deleteAfter,
-						targetRefId: deletionRequestEntity2.targetRefId,
-						status: deletionRequestEntity2.status,
-						createdAt: deletionRequestEntity2.createdAt,
-						updatedAt: deletionRequestEntity2.updatedAt,
-					},
 				];
 
-				return { deletionRequestEntity1, deletionRequestEntity5, expectedArray, threshold };
+				return { deletionRequestEntity1, deletionRequestEntity5, expectedArray, limit };
 			};
 
-			it('should find deletionRequests with deleteAfter smaller then today and status with value registered or failed', async () => {
-				const { deletionRequestEntity1, deletionRequestEntity5, expectedArray, threshold } = await setup();
+			it('should find deletionRequests with deleteAfter smaller then today and status with value registered', async () => {
+				const { deletionRequestEntity1, deletionRequestEntity5, expectedArray, limit } = await setup();
 
-				const results = await repo.findAllItemsToExecution(threshold);
+				const results = await repo.findAllItems(limit);
 
-				expect(results.length).toEqual(3);
+				expect(results.length).toEqual(2);
 
 				// Verify explicit fields.
 				expect(results).toEqual(
-					expect.arrayContaining([
-						expect.objectContaining(expectedArray[0]),
-						expect.objectContaining(expectedArray[1]),
-						expect.objectContaining(expectedArray[2]),
-					])
+					expect.arrayContaining([expect.objectContaining(expectedArray[0]), expect.objectContaining(expectedArray[1])])
 				);
 
 				const result1: DeletionRequest = await repo.findById(deletionRequestEntity1.id);
@@ -218,9 +210,9 @@ describe(DeletionRequestRepo.name, () => {
 			});
 
 			it('should find deletionRequests to execute with limit = 2', async () => {
-				const { expectedArray, threshold } = await setup();
+				const { expectedArray } = await setup();
 
-				const results = await repo.findAllItemsToExecution(threshold, 2);
+				const results = await repo.findAllItems(2);
 
 				expect(results.length).toEqual(2);
 
@@ -232,44 +224,65 @@ describe(DeletionRequestRepo.name, () => {
 		});
 	});
 
-	describe('countPendingDeletionRequests', () => {
-		describe('when there is no deletionRequest with status pending', () => {
-			it('should return zero', async () => {
-				const result = await repo.countPendingDeletionRequests();
+	describe('findAllFailedItems', () => {
+		const setup = async () => {
+			const limit = 10;
+			const olderThan = new Date(2023, 11, 1);
+			const newerThan = new Date(2023, 8, 1);
 
-				expect(result).toEqual(0);
+			const deletionRequestEntity1: DeletionRequestEntity = deletionRequestEntityFactory.build({
+				createdAt: new Date(2023, 7, 1),
+				updatedAt: new Date(2023, 8, 2),
+				deleteAfter: new Date(2023, 8, 1),
+				status: StatusModel.PENDING,
 			});
+			const deletionRequestEntity2: DeletionRequestEntity = deletionRequestEntityFactory.build({
+				createdAt: new Date(2023, 7, 1),
+				updatedAt: new Date(2023, 8, 2),
+				deleteAfter: new Date(2023, 8, 1),
+				status: StatusModel.FAILED,
+			});
+			const deletionRequestEntity3: DeletionRequestEntity = deletionRequestEntityFactory.build({
+				createdAt: new Date(2023, 8, 1),
+				updatedAt: new Date(2023, 7, 1),
+				deleteAfter: new Date(2023, 9, 1),
+				status: StatusModel.FAILED,
+			});
+			const deletionRequestEntity4: DeletionRequestEntity = deletionRequestEntityFactory.build({
+				createdAt: new Date(2023, 8, 1),
+				updatedAt: new Date(2023, 8, 1),
+				deleteAfter: new Date(2023, 9, 1),
+				status: StatusModel.REGISTERED,
+			});
+
+			await em.persistAndFlush([
+				deletionRequestEntity1,
+				deletionRequestEntity2,
+				deletionRequestEntity3,
+				deletionRequestEntity4,
+			]);
+			em.clear();
+
+			return { limit, olderThan, newerThan, deletionRequestEntity1, deletionRequestEntity2 };
+		};
+
+		it('should throw an error if olderThan is less than newerThan', async () => {
+			const { limit } = await setup();
+
+			const olderThan = new Date(2023, 10, 1);
+			const newerThan = new Date(2023, 11, 1);
+
+			await expect(repo.findAllFailedItems(limit, olderThan, newerThan)).rejects.toThrow();
 		});
 
-		describe('when there are deletionRequests with status pending', () => {
-			const setup = async () => {
-				const deletionRequestWithStatusPending: DeletionRequestEntity[] = deletionRequestEntityFactory.buildListWithId(
-					5,
-					{
-						status: StatusModel.PENDING,
-					}
-				);
+		it('should return failed deletion requests within the specified date range', async () => {
+			const { limit, olderThan, newerThan, deletionRequestEntity1, deletionRequestEntity2 } = await setup();
 
-				const deletionRequestWithStatusRegistered: DeletionRequestEntity[] =
-					deletionRequestEntityFactory.buildListWithId(2, {
-						status: StatusModel.REGISTERED,
-					});
+			const results = await repo.findAllFailedItems(limit, olderThan, newerThan);
 
-				const expectedNumberDeletionRequestWithStatusPending = deletionRequestWithStatusPending.length;
-
-				await em.persistAndFlush([...deletionRequestWithStatusPending, ...deletionRequestWithStatusRegistered]);
-				em.clear();
-
-				return { expectedNumberDeletionRequestWithStatusPending };
-			};
-
-			it('should count deletionRequests with status pending and return proper number', async () => {
-				const { expectedNumberDeletionRequestWithStatusPending } = await setup();
-
-				const result = await repo.countPendingDeletionRequests();
-
-				expect(result).toEqual(expectedNumberDeletionRequestWithStatusPending);
-			});
+			expect(results.length).toBe(2);
+			expect(results[0].id).toBe(deletionRequestEntity1.id);
+			expect(results[1].id).toBe(deletionRequestEntity2.id);
 		});
 	});
 
@@ -422,6 +435,159 @@ describe(DeletionRequestRepo.name, () => {
 				const result: boolean = await repo.deleteById(deletionRequestId);
 
 				expect(result).toEqual(true);
+			});
+		});
+	});
+
+	describe('findByIds', () => {
+		describe('when searching for multiple IDs', () => {
+			const setup = async () => {
+				const userId1 = new ObjectId().toHexString();
+				const userId2 = new ObjectId().toHexString();
+				const userId3 = new ObjectId().toHexString();
+
+				const entity1: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId1 });
+				const entity2: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId2 });
+
+				await em.persistAndFlush([entity1, entity2]);
+				em.clear();
+
+				return {
+					ids: [entity1.id, entity2.id, userId3], // userId3 does not exist
+					expectedResults: [
+						{
+							id: entity1.id,
+							targetRefDomain: entity1.targetRefDomain,
+							deleteAfter: entity1.deleteAfter,
+							targetRefId: entity1.targetRefId,
+							status: entity1.status,
+							createdAt: entity1.createdAt,
+							updatedAt: entity1.updatedAt,
+						},
+						{
+							id: entity2.id,
+							targetRefDomain: entity2.targetRefDomain,
+							deleteAfter: entity2.deleteAfter,
+							targetRefId: entity2.targetRefId,
+							status: entity2.status,
+							createdAt: entity2.createdAt,
+							updatedAt: entity2.updatedAt,
+						},
+						null, // for userId3 which does not exist
+					],
+				};
+			};
+
+			it('should return the correct deletionRequests and null for missing IDs', async () => {
+				const { ids, expectedResults } = await setup();
+
+				const results = await repo.findByIds(ids);
+
+				expect(results).toEqual([
+					expect.objectContaining(expectedResults[0]),
+					expect.objectContaining(expectedResults[1]),
+					null,
+				]);
+			});
+		});
+	});
+
+	describe('findRegisteredByTargetRefId', () => {
+		describe('when searching for deletionRequest by targetRefId', () => {
+			const setup = async () => {
+				const userId = new ObjectId().toHexString();
+
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					targetRefId: userId,
+					status: StatusModel.REGISTERED,
+				});
+				await em.persistAndFlush(entity);
+
+				return { userId, entity };
+			};
+
+			it('should return the deletionRequest with status registered', async () => {
+				const { userId, entity } = await setup();
+
+				const result: DeletionRequest[] = await repo.findRegisteredByTargetRefId([userId]);
+
+				expect(result[0].id).toEqual(entity.id);
+				expect(result[0].status).toEqual(StatusModel.REGISTERED);
+			});
+		});
+	});
+
+	describe('findFailedByTargetRefId', () => {
+		describe('when searching for deletionRequest by targetRefId', () => {
+			const setup = async () => {
+				const userId = new ObjectId().toHexString();
+
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					targetRefId: userId,
+					status: StatusModel.FAILED,
+				});
+				await em.persistAndFlush(entity);
+
+				return { userId, entity };
+			};
+
+			it('should return the deletionRequest with status registered', async () => {
+				const { userId, entity } = await setup();
+
+				const result: DeletionRequest[] = await repo.findFailedByTargetRefId([userId]);
+
+				expect(result[0].id).toEqual(entity.id);
+				expect(result[0].status).toEqual(StatusModel.FAILED);
+			});
+		});
+	});
+
+	describe('findPendingByTargetRefId', () => {
+		describe('when searching for deletionRequest by targetRefId', () => {
+			const setup = async () => {
+				const userId = new ObjectId().toHexString();
+
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					targetRefId: userId,
+					status: StatusModel.PENDING,
+				});
+				await em.persistAndFlush(entity);
+
+				return { userId, entity };
+			};
+
+			it('should return the deletionRequest with status registered', async () => {
+				const { userId, entity } = await setup();
+
+				const result: DeletionRequest[] = await repo.findPendingByTargetRefId([userId]);
+
+				expect(result[0].id).toEqual(entity.id);
+				expect(result[0].status).toEqual(StatusModel.PENDING);
+			});
+		});
+	});
+
+	describe('findSuccessfulByTargetRefId', () => {
+		describe('when searching for deletionRequest by targetRefId', () => {
+			const setup = async () => {
+				const userId = new ObjectId().toHexString();
+
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					targetRefId: userId,
+					status: StatusModel.SUCCESS,
+				});
+				await em.persistAndFlush(entity);
+
+				return { userId, entity };
+			};
+
+			it('should return the deletionRequest with status registered', async () => {
+				const { userId, entity } = await setup();
+
+				const result: DeletionRequest[] = await repo.findSuccessfulByTargetRefId([userId]);
+
+				expect(result[0].id).toEqual(entity.id);
+				expect(result[0].status).toEqual(StatusModel.SUCCESS);
 			});
 		});
 	});

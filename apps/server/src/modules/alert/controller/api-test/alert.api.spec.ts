@@ -4,6 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchulcloudTheme } from '@shared/domain/types';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import type { Server } from 'node:net';
 import { of } from 'rxjs';
 import request from 'supertest';
 import { serverConfig, ServerTestModule } from '../../../server';
@@ -21,7 +22,7 @@ describe('Alert Controller api', () => {
 	const component1 = createComponent(1, 1);
 	const component2 = createComponent(2, 2);
 
-	let app: INestApplication;
+	let app: INestApplication<Server>;
 	let httpService: DeepMocked<HttpService>;
 
 	beforeEach(async () => {

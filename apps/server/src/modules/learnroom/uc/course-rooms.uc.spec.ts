@@ -1,24 +1,32 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { lessonFactory } from '@modules/lesson/testing';
+import { Submission, Task, TaskRepo } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseRepo, LegacyBoardRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { boardFactory } from '@testing/factory/board.factory';
-import { courseFactory } from '@testing/factory/course.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
-import { taskFactory } from '@testing/factory/task.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
+import { LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import { CourseRoomsService } from '../service/course-rooms.service';
+import { boardFactory } from '../testing';
 import { RoomBoardDTO } from '../types';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 import { CourseRoomsUc } from './course-rooms.uc';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
+import { LockedCourseLoggableException } from '../loggable';
+import { schoolEntityFactory } from '@modules/school/testing';
 
 describe('rooms usecase', () => {
 	let uc: CourseRoomsUc;
-	let courseRepo: DeepMocked<CourseRepo>;
+	let courseService: DeepMocked<CourseService>;
 	let taskRepo: DeepMocked<TaskRepo>;
-	let userRepo: DeepMocked<UserRepo>;
+	let userService: DeepMocked<UserService>;
 	let legacyBoardRepo: DeepMocked<LegacyBoardRepo>;
 	let factory: DeepMocked<RoomBoardDTOFactory>;
 	let authorisation: DeepMocked<CourseRoomsAuthorisationService>;
@@ -35,16 +43,16 @@ describe('rooms usecase', () => {
 			providers: [
 				CourseRoomsUc,
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 				{
 					provide: TaskRepo,
 					useValue: createMock<TaskRepo>(),
 				},
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
+					provide: UserService,
+					useValue: createMock<UserService>(),
 				},
 				{
 					provide: LegacyBoardRepo,
@@ -66,21 +74,34 @@ describe('rooms usecase', () => {
 		}).compile();
 
 		uc = module.get(CourseRoomsUc);
-		courseRepo = module.get(CourseRepo);
+		courseService = module.get(CourseService);
 		taskRepo = module.get(TaskRepo);
-		userRepo = module.get(UserRepo);
+		userService = module.get(UserService);
 		legacyBoardRepo = module.get(LegacyBoardRepo);
 		factory = module.get(RoomBoardDTOFactory);
 		authorisation = module.get(CourseRoomsAuthorisationService);
 		roomsService = module.get(CourseRoomsService);
-		await setupEntities();
+
+		await setupEntities([
+			User,
+			CourseEntity,
+			CourseGroupEntity,
+			Task,
+			Submission,
+			LessonEntity,
+			Material,
+			LegacyBoard,
+			LegacyBoardElement,
+		]);
 	});
 
 	describe('getBoard', () => {
 		const setup = () => {
-			const user = userFactory.buildWithId();
-			const room = courseFactory.buildWithId({ students: [user] });
-			const tasks = taskFactory.buildList(3, { course: room });
+			const school = schoolEntityFactory.buildWithId();
+			const user = userFactory.buildWithId({ school });
+			const courseTeacher = userFactory.buildWithId({ school });
+			const room = courseEntityFactory.buildWithId({ school: school, students: [user], teachers: [courseTeacher] });
+			const tasks = taskFactory.buildList(3, { school: school, course: room });
 			const lessons = lessonFactory.buildList(3, { course: room });
 			const board = boardFactory.buildWithId({ course: room });
 			const roomBoardDTO: RoomBoardDTO = {
@@ -94,8 +115,8 @@ describe('rooms usecase', () => {
 
 			board.syncBoardElementReferences([...lessons, ...tasks]);
 
-			const userSpy = userRepo.findById.mockResolvedValue(user);
-			const roomSpy = courseRepo.findOne.mockResolvedValue(room);
+			const userSpy = userService.getUserEntityWithRoles.mockResolvedValue(user);
+			const roomSpy = courseService.findOneForUser.mockResolvedValue(room);
 			const boardSpy = legacyBoardRepo.findByCourseId.mockResolvedValue(board);
 			const tasksSpy = taskRepo.findBySingleParent.mockResolvedValue([tasks, 3]);
 			const syncBoardElementReferencesSpy = jest.spyOn(board, 'syncBoardElementReferences');
@@ -104,6 +125,7 @@ describe('rooms usecase', () => {
 			roomsService.updateLegacyBoard.mockResolvedValue(board);
 
 			return {
+				school,
 				user,
 				board,
 				room,
@@ -123,13 +145,13 @@ describe('rooms usecase', () => {
 		it('should fetch correct user', async () => {
 			const { room, user, userSpy } = setup();
 			await uc.getBoard(room.id, user.id);
-			expect(userSpy).toBeCalledWith(user.id, true);
+			expect(userSpy).toBeCalledWith(user.id);
 		});
 
 		it('should fetch correct room filtered by user', async () => {
-			const { room, user, roomSpy } = setup();
+			const { school, room, user, roomSpy } = setup();
 			await uc.getBoard(room.id, user.id);
-			expect(roomSpy).toHaveBeenCalledWith(room.id, user.id);
+			expect(roomSpy).toHaveBeenCalledWith(room.id, user.id, school.id);
 		});
 
 		it('should access primary board of room', async () => {
@@ -150,27 +172,67 @@ describe('rooms usecase', () => {
 			expect(result).toEqual(roomBoardDTO);
 		});
 
-		it('should ensure course has uptodate board', async () => {
+		it('should ensure course has updated board', async () => {
 			const { board, room, user } = setup();
 			await uc.getBoard(room.id, user.id);
 			expect(roomsService.updateLegacyBoard).toHaveBeenCalledWith(board, room.id, user.id);
+		});
+
+		describe('when course has no teacher', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const room = courseEntityFactory.buildWithId({ students: [user] });
+				const board = boardFactory.buildWithId({ course: room });
+				const userSpy = userService.getUserEntityWithRoles.mockResolvedValue(user);
+				const roomSpy = courseService.findOneForUser.mockResolvedValue(room);
+				const boardSpy = legacyBoardRepo.findByCourseId.mockResolvedValue(board);
+				const mapperSpy = factory.createDTO.mockReturnValue({
+					roomId: room.id,
+					displayColor: room.color,
+					title: room.name,
+					elements: [],
+					isArchived: room.isFinished(),
+					isSynchronized: !!room.syncedWithGroup,
+				});
+				return { user, room, board, userSpy, roomSpy, boardSpy, mapperSpy };
+			};
+
+			it('should throw LockedCourseLoggableException', async () => {
+				const { room, user } = setup();
+				room.teachers.removeAll();
+				const call = () => uc.getBoard(room.id, user.id);
+				await expect(call).rejects.toThrow(LockedCourseLoggableException);
+			});
 		});
 	});
 
 	describe('updateVisibilityOfBoardElement', () => {
 		const setup = (shouldAuthorize: boolean) => {
-			const user = userFactory.buildWithId();
-			const room = courseFactory.buildWithId({ students: [user] });
+			const school = schoolEntityFactory.buildWithId();
+			const user = userFactory.buildWithId({ school });
+			const room = courseEntityFactory.buildWithId({ school: school, students: [user] });
 			const hiddenTask = taskFactory.draft().buildWithId({ course: room });
 			const visibleTask = taskFactory.buildWithId({ course: room });
 			const board = boardFactory.buildWithId({ course: room });
 			board.syncBoardElementReferences([hiddenTask, visibleTask]);
-			const userSpy = userRepo.findById.mockResolvedValue(user);
-			const roomSpy = courseRepo.findOne.mockResolvedValue(room);
+			const userSpy = userService.getUserEntityWithRoles.mockResolvedValue(user);
+			const courseSpy = courseService.findOneForUser.mockResolvedValue(room);
 			const boardSpy = legacyBoardRepo.findByCourseId.mockResolvedValue(board);
 			const authorisationSpy = authorisation.hasCourseWritePermission.mockReturnValue(shouldAuthorize);
 			const saveSpy = legacyBoardRepo.save.mockResolvedValue();
-			return { user, room, hiddenTask, visibleTask, board, userSpy, roomSpy, boardSpy, authorisationSpy, saveSpy };
+			return {
+				school,
+				user,
+				room,
+				hiddenTask,
+				visibleTask,
+				board,
+				userSpy,
+				courseSpy,
+				boardSpy,
+				authorisationSpy,
+				saveSpy,
+			};
 		};
 
 		describe('when user does not have write permission on course', () => {
@@ -204,15 +266,9 @@ describe('rooms usecase', () => {
 		});
 
 		it('should fetch course with userid', async () => {
-			const { user, room, hiddenTask, roomSpy } = setup(true);
+			const { school, user, room, hiddenTask, courseSpy } = setup(true);
 			await uc.updateVisibilityOfLegacyBoardElement(room.id, hiddenTask.id, user.id, true);
-			expect(roomSpy).toHaveBeenCalledWith(room.id, user.id);
-		});
-
-		it('should fetch course with userid', async () => {
-			const { user, room, hiddenTask, roomSpy } = setup(true);
-			await uc.updateVisibilityOfLegacyBoardElement(room.id, hiddenTask.id, user.id, true);
-			expect(roomSpy).toHaveBeenCalledWith(room.id, user.id);
+			expect(courseSpy).toHaveBeenCalledWith(room.id, user.id, school.id);
 		});
 
 		it('should persist board after changes', async () => {
@@ -224,18 +280,31 @@ describe('rooms usecase', () => {
 
 	describe('reorderBoardElements', () => {
 		const setup = (shouldAuthorize: boolean) => {
-			const user = userFactory.buildWithId();
-			const room = courseFactory.buildWithId({ teachers: [user] });
+			const school = schoolEntityFactory.buildWithId();
+			const user = userFactory.buildWithId({ school });
+			const course = courseEntityFactory.buildWithId({ school: school, teachers: [user] });
 			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
-			const board = boardFactory.buildWithId({ course: room });
+			const board = boardFactory.buildWithId({ course: course });
 			board.syncBoardElementReferences(tasks);
 			const reorderSpy = jest.spyOn(board, 'reorderElements');
-			const userSpy = userRepo.findById.mockResolvedValue(user);
-			const roomSpy = courseRepo.findOne.mockResolvedValue(room);
+			const userSpy = userService.getUserEntityWithRoles.mockResolvedValue(user);
+			const courseSpy = courseService.findOneForUser.mockResolvedValue(course);
 			const boardSpy = legacyBoardRepo.findByCourseId.mockResolvedValue(board);
 			const authorisationSpy = authorisation.hasCourseWritePermission.mockReturnValue(shouldAuthorize);
 			const saveSpy = legacyBoardRepo.save.mockResolvedValue();
-			return { user, room, tasks, board, reorderSpy, userSpy, roomSpy, boardSpy, authorisationSpy, saveSpy };
+			return {
+				school,
+				user,
+				room: course,
+				tasks,
+				board,
+				reorderSpy,
+				userSpy,
+				roomSpy: courseSpy,
+				boardSpy,
+				authorisationSpy,
+				saveSpy,
+			};
 		};
 
 		it('should fetch the user', async () => {
@@ -250,14 +319,14 @@ describe('rooms usecase', () => {
 		});
 
 		it('should fetch the room', async () => {
-			const { user, room, tasks, roomSpy } = setup(true);
+			const { school, user, room, tasks, roomSpy } = setup(true);
 
 			await uc.reorderBoardElements(
 				room.id,
 				user.id,
 				tasks.map((task) => task.id)
 			);
-			expect(roomSpy).toHaveBeenCalledWith(room.id, user.id);
+			expect(roomSpy).toHaveBeenCalledWith(room.id, user.id, school.id);
 		});
 
 		it('should fetch the board', async () => {

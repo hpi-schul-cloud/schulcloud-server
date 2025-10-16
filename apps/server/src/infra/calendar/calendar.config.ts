@@ -1,3 +1,5 @@
-import { LoggerConfig } from '@src/core/logger';
+import { LoggerConfig } from '@core/logger';
 
-export interface CalendarConfig extends LoggerConfig {}
+export interface CalendarConfig extends LoggerConfig {
+	CALENDAR_SERVICE_ENABLED: boolean;
+}

@@ -6,6 +6,9 @@ const testObjects = require('../../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const { userModel } = require('../../../../src/services/user/model');
 
+const chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
+
 chai.use(chaiHttp);
 const { expect } = chai;
 
@@ -43,7 +46,7 @@ describe('UserAccountService integration', () => {
 			}
 
 			if (createdUser) {
-				await userModel.remove(createdUser);
+				await userModel.deleteOne(createdUser);
 				createdUser = undefined;
 			}
 

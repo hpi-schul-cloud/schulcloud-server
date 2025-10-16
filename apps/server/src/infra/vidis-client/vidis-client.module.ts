@@ -1,9 +1,10 @@
+import { EncryptionModule } from '@infra/encryption';
 import { Module } from '@nestjs/common';
-import { VidisClientFactory } from './vidis-client-factory';
+import { VidisClientAdapter } from './vidis-client.adapter';
 
 @Module({
-	imports: [],
-	providers: [VidisClientFactory],
-	exports: [VidisClientFactory],
+	imports: [EncryptionModule],
+	providers: [VidisClientAdapter],
+	exports: [VidisClientAdapter],
 })
 export class VidisClientModule {}

@@ -1,9 +1,15 @@
+import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import archiver from 'archiver';
 import {
 	createCommonCartridgeMetadataElementProps,
 	createCommonCartridgeOrganizationProps,
 } from '../../testing/common-cartridge-element-props.factory';
-import { createCommonCartridgeWebLinkResourceProps } from '../../testing/common-cartridge-resource-props.factory';
+import {
+	createCommonCartridgeFileProps,
+	createCommonCartridgeWebLinkResourceProps,
+} from '../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeElementFactory } from '../elements/common-cartridge-element-factory';
 import { MissingMetadataLoggableException } from '../errors';
@@ -12,6 +18,8 @@ import { CommonCartridgeOrganizationNode } from './common-cartridge-organization
 
 describe('CommonCartridgeFileBuilder', () => {
 	let sut: CommonCartridgeFileBuilder;
+	let archive: DeepMocked<archiver.Archiver>;
+	let logger: DeepMocked<Logger>;
 
 	const builderProps: CommonCartridgeFileBuilderProps = {
 		version: CommonCartridgeVersion.V_1_1_0,
@@ -19,7 +27,9 @@ describe('CommonCartridgeFileBuilder', () => {
 	};
 
 	beforeEach(() => {
-		sut = new CommonCartridgeFileBuilder(builderProps);
+		archive = createMock<archiver.Archiver>();
+		logger = createMock<Logger>();
+		sut = new CommonCartridgeFileBuilder(builderProps, archive, logger);
 		jest.clearAllMocks();
 	});
 
@@ -73,23 +83,26 @@ describe('CommonCartridgeFileBuilder', () => {
 			const setup = () => {
 				const metadataProps = createCommonCartridgeMetadataElementProps();
 				const organizationProps = createCommonCartridgeOrganizationProps();
-				const resourceProps = createCommonCartridgeWebLinkResourceProps();
+				const webLinkProps = createCommonCartridgeWebLinkResourceProps();
+				const fileProps = createCommonCartridgeFileProps();
 
-				return { metadataProps, organizationProps, resourceProps };
+				return { metadataProps, organizationProps, webLinkProps, fileProps };
 			};
 
 			it('should build the common cartridge file', () => {
-				const { metadataProps, organizationProps, resourceProps } = setup();
+				const { metadataProps, organizationProps, webLinkProps, fileProps } = setup();
 
 				sut.addMetadata(metadataProps);
 
 				const org = sut.createOrganization(organizationProps);
 
-				org.addResource(resourceProps);
+				org.addResource(webLinkProps);
+				org.addResource(fileProps);
 
-				const result = sut.build();
+				expect(() => sut.build()).not.toThrow();
 
-				expect(result).toBeDefined();
+				expect(archive.append).toHaveBeenCalledTimes(3);
+				expect(archive.finalize).toHaveBeenCalled();
 			});
 		});
 	});

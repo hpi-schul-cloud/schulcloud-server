@@ -6,9 +6,11 @@ import { RegistrationPinConfig } from '@modules/registration-pin';
 import { ToolConfig } from '@modules/tool';
 import { UserConfig } from '@modules/user';
 import { LanguageType } from '@shared/domain/interface';
+import type { CoreModuleConfig } from '@core/core.config';
 
 export interface AdminApiServerConfig
-	extends DeletionConfig,
+	extends CoreModuleConfig,
+		DeletionConfig,
 		LegacySchoolConfig,
 		UserConfig,
 		RegistrationPinConfig,
@@ -19,11 +21,14 @@ export interface AdminApiServerConfig
 }
 
 const config: AdminApiServerConfig = {
-	ADMIN_API__MODIFICATION_THRESHOLD_MS: Configuration.get('ADMIN_API__MODIFICATION_THRESHOLD_MS') as number,
-	ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS: Configuration.get(
-		'ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS'
+	ADMIN_API__DELETION_DELETE_AFTER_MINUTES: Configuration.get('ADMIN_API__DELETION_DELETE_AFTER_MINUTES') as number,
+	ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS: Configuration.get(
+		'ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS'
 	) as number,
-	ADMIN_API__DELETION_DELAY_MILLISECONDS: Configuration.get('ADMIN_API__DELETION_DELAY_MILLISECONDS') as number,
+	ADMIN_API__DELETION_EXECUTION_BATCH_NUMBER: Configuration.get('ADMIN_API__DELETION_EXECUTION_BATCH_NUMBER') as number,
+	ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS: Configuration.get(
+		'ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS'
+	) as number,
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
 	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
@@ -39,8 +44,6 @@ const config: AdminApiServerConfig = {
 	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: Configuration.get(
 		'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE'
 	) as number,
-	FEATURE_CTL_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED') as boolean,
-	FEATURE_LTI_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_LTI_TOOLS_TAB_ENABLED') as boolean,
 	CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: Configuration.get(
 		'CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES'
 	) as number,
@@ -68,6 +71,10 @@ const config: AdminApiServerConfig = {
 		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
 	) as string,
 	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
+	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: Configuration.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED') as boolean,
+	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
+	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
+	CALENDAR_SERVICE_ENABLED: Configuration.get('CALENDAR_SERVICE_ENABLED') as boolean,
 };
 
 export const adminApiServerConfig = () => config;

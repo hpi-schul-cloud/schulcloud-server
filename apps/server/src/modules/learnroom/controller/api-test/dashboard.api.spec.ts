@@ -1,13 +1,15 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { DashboardResponse } from '@modules/learnroom/controller/dto';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
+import { User } from '@modules/user/repo';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, GridElement, User } from '@shared/domain/entity';
-import { IDashboardRepo } from '@shared/repo';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { Dashboard, GridElement } from '../../domain/do/dashboard';
+import { DASHBOARD_REPO, IDashboardRepo } from '../../repo/mikro-orm/dashboard.repo';
+import { DashboardResponse } from '../dto';
+import { schoolEntityFactory } from '@modules/school/testing';
 
 describe('Dashboard Controller (API)', () => {
 	let app: INestApplication;
@@ -23,7 +25,7 @@ describe('Dashboard Controller (API)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		dashboardRepo = app.get('DASHBOARD_REPO');
+		dashboardRepo = app.get(DASHBOARD_REPO);
 
 		apiClient = new TestApiClient(app, '/dashboard');
 	});
@@ -33,21 +35,33 @@ describe('Dashboard Controller (API)', () => {
 	});
 
 	const courseBuild = (student: User, teacher: User, time: number) => [
-		courseFactory.build({ name: 'should appear', students: [student] }),
-		courseFactory.build({ name: 'should appear', substitutionTeachers: [teacher], students: [student] }),
-		courseFactory.build({
+		courseEntityFactory.build({ name: 'should appear', students: [student], school: teacher.school }),
+		courseEntityFactory.build({
+			name: 'should appear',
+			substitutionTeachers: [teacher],
+			students: [student],
+			school: teacher.school,
+		}),
+		courseEntityFactory.build({
 			name: 'should appear',
 			teachers: [teacher],
 			students: [student],
+			school: teacher.school,
 			untilDate: new Date(Date.now() + time),
 		}),
-		courseFactory.build({ name: 'should appear', teachers: [teacher], students: [student] }),
-		courseFactory.build({ name: 'should not appear, not users course' }),
-		courseFactory.build({
+		courseEntityFactory.build({
+			name: 'should appear',
+			teachers: [teacher],
+			students: [student],
+			school: teacher.school,
+		}),
+		courseEntityFactory.build({ name: 'should not appear, not users course' }),
+		courseEntityFactory.build({
 			name: 'should not appear, enddate is in the past',
 			students: [student],
 			untilDate: new Date(Date.now() - time),
 		}),
+		courseEntityFactory.build({ name: 'should not appear, not users school', teachers: [teacher] }),
 	];
 
 	describe('[GET] dashboard', () => {
@@ -104,11 +118,18 @@ describe('Dashboard Controller (API)', () => {
 
 		describe('with logged in student', () => {
 			const setup = async () => {
-				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const school = schoolEntityFactory.buildWithId();
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 				const twoDaysInMilliSeconds = 172800000;
 				const courses = courseBuild(studentUser, teacherUser, twoDaysInMilliSeconds);
-				await em.persistAndFlush([teacherUser, studentAccount, studentUser, ...courses]);
+				const lockedCourse = courseEntityFactory.build({
+					name: 'locked course',
+					teachers: [],
+					students: [studentUser],
+					school: school,
+				});
+				await em.persistAndFlush([teacherUser, studentAccount, studentUser, ...courses, lockedCourse]);
 				const { id: dashboardId } = await dashboardRepo.getUsersDashboard(studentUser.id);
 
 				const loggedInClient = await apiClient.login(studentAccount);
@@ -124,11 +145,21 @@ describe('Dashboard Controller (API)', () => {
 				expect(response.status).toEqual(200);
 				const body = response.body as DashboardResponse;
 				expect(body.id).toEqual(dashboardId);
-				expect(body.gridElements.length).toEqual(4);
-				const elementNames = [...body.gridElements].map((gridElement) => gridElement.title);
-				elementNames.forEach((name) => {
-					expect(name).toEqual('should appear');
-				});
+				expect(body.gridElements.length).toEqual(5);
+			});
+
+			it('should return locked course with isLocked property', async () => {
+				const { dashboardId, loggedInClient } = await setup();
+
+				const response = await loggedInClient.get();
+
+				expect(response.status).toEqual(200);
+				const body = response.body as DashboardResponse;
+				expect(body.id).toEqual(dashboardId);
+				expect(body.gridElements.length).toEqual(5);
+
+				const lockedCourse = body.gridElements.find((element) => element.title === 'locked course');
+				expect(lockedCourse?.isLocked).toBe(true);
 			});
 		});
 	});
@@ -150,13 +181,13 @@ describe('Dashboard Controller (API)', () => {
 		it('should update position of target element', async () => {
 			const { loggedInClient, dashboardId, teacherUser } = await setup();
 
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							courseFactory.build({ students: [teacherUser], name: 'Mathe' })
+							courseEntityFactory.build({ students: [teacherUser], name: 'Mathe' })
 						),
 					},
 				],
@@ -175,20 +206,20 @@ describe('Dashboard Controller (API)', () => {
 		it('should create groups', async () => {
 			const { loggedInClient, dashboardId, teacherUser } = await setup();
 
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							courseFactory.build({ students: [teacherUser], name: 'Quantumphysics' })
+							courseEntityFactory.build({ students: [teacherUser], name: 'Quantumphysics' })
 						),
 					},
 					{
 						pos: { x: 2, y: 2 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							courseFactory.build({ students: [teacherUser], name: 'Astrophysics' })
+							courseEntityFactory.build({ students: [teacherUser], name: 'Astrophysics' })
 						),
 					},
 				],
@@ -210,20 +241,20 @@ describe('Dashboard Controller (API)', () => {
 		it('should add element to group', async () => {
 			const { loggedInClient, dashboardId, teacherUser } = await setup();
 
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 2, y: 2 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							courseFactory.build({ students: [teacherUser], name: 'mannequinization' })
+							courseEntityFactory.build({ students: [teacherUser], name: 'mannequinization' })
 						),
 					},
 					{
 						pos: { x: 3, y: 3 },
 						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'drawing', [
-							courseFactory.build({ students: [teacherUser], name: 'Perspective Drawing' }),
-							courseFactory.build({ students: [teacherUser], name: 'Shape Manipulation' }),
+							courseEntityFactory.build({ students: [teacherUser], name: 'Perspective Drawing' }),
+							courseEntityFactory.build({ students: [teacherUser], name: 'Shape Manipulation' }),
 						]),
 					},
 				],
@@ -245,13 +276,13 @@ describe('Dashboard Controller (API)', () => {
 		it('should remove element from group', async () => {
 			const { loggedInClient, dashboardId, teacherUser } = await setup();
 
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 3, y: 3 },
 						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'drawing', [
-							courseFactory.build({ students: [teacherUser], name: 'Perspective Drawing' }),
-							courseFactory.build({ students: [teacherUser], name: 'Shape Manipulation' }),
+							courseEntityFactory.build({ students: [teacherUser], name: 'Perspective Drawing' }),
+							courseEntityFactory.build({ students: [teacherUser], name: 'Shape Manipulation' }),
 						]),
 					},
 				],
@@ -272,13 +303,13 @@ describe('Dashboard Controller (API)', () => {
 		it('should fail with incomplete input', async () => {
 			const { loggedInClient, dashboardId, teacherUser } = await setup();
 
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							courseFactory.build({ students: [teacherUser], name: 'Mathe' })
+							courseEntityFactory.build({ students: [teacherUser], name: 'Mathe' })
 						),
 					},
 				],
@@ -311,13 +342,13 @@ describe('Dashboard Controller (API)', () => {
 		it('should be able to rename group', async () => {
 			const { loggedInClient, dashboardId, teacherUser } = await setup();
 
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 3, y: 3 },
 						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'drawing', [
-							courseFactory.build({ students: [teacherUser], name: 'Perspective Drawing' }),
-							courseFactory.build({ students: [teacherUser], name: 'Shape Manipulation' }),
+							courseEntityFactory.build({ students: [teacherUser], name: 'Perspective Drawing' }),
+							courseEntityFactory.build({ students: [teacherUser], name: 'Shape Manipulation' }),
 						]),
 					},
 				],

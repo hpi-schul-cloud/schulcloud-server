@@ -1,7 +1,11 @@
-import { INestApplication } from '@nestjs/common';
-import supertest, { Response } from 'supertest';
-import type { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import type { AccountEntity } from '@modules/account/repo';
 import { defaultTestPassword } from '@modules/account/testing/account.factory';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import type { User } from '@modules/user/repo';
+import { INestApplication } from '@nestjs/common';
+import type { Server } from 'node:net';
+import supertest, { Response } from 'supertest';
+import { JwtAuthenticationFactory } from './factory/jwt-authentication.factory';
 
 interface AuthenticationResponse {
 	accessToken: string;
@@ -23,7 +27,7 @@ const testReqestConst = {
  * Note res.cookie is not supported atm, feel free to add this
  */
 export class TestApiClient {
-	private readonly app: INestApplication;
+	private readonly app: INestApplication<Server>;
 
 	private readonly baseRoute: string;
 
@@ -32,6 +36,7 @@ export class TestApiClient {
 	private readonly kindOfAuth: string;
 
 	constructor(app: INestApplication, baseRoute: string, authValue?: string, useAsApiKey = false) {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		this.app = app;
 		this.baseRoute = this.checkAndAddPrefix(baseRoute);
 		this.authHeader = useAsApiKey ? `${authValue || ''}` : `${testReqestConst.prefix} ${authValue || ''}`;
@@ -48,12 +53,13 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public delete(subPath?: string): supertest.Test {
+	public delete<T extends object | string>(subPath?: string, data?: T): supertest.Test {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.delete(path)
 			.set(this.kindOfAuth, this.authHeader)
-			.set(headerConst.accept, headerConst.json);
+			.set(headerConst.accept, headerConst.json)
+			.send(data);
 
 		return testRequestInstance;
 	}
@@ -122,6 +128,27 @@ export class TestApiClient {
 			this.baseRoute,
 			jwtFromResponse
 		);
+	}
+
+	public loginByUser(account: AccountEntity, user: User): this {
+		const jwt = JwtAuthenticationFactory.createJwt({
+			accountId: account.id,
+			userId: user.id,
+			schoolId: user.school.id,
+			roles: [user.roles[0].id],
+			support: false,
+			isExternalUser: false,
+		});
+
+		return new (this.constructor as new (app: INestApplication, baseRoute: string, authValue: string) => this)(
+			this.app,
+			this.baseRoute,
+			jwt
+		);
+	}
+
+	public getAuthHeader(): string {
+		return this.authHeader;
 	}
 
 	private isSlash(inputPath: string, pos: number): boolean {

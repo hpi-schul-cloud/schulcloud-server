@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -15,7 +15,7 @@ export class ContextExternalToolValidationService {
 		private readonly commonToolValidationService: CommonToolValidationService
 	) {}
 
-	async validate(contextExternalTool: ContextExternalTool): Promise<void> {
+	public async validate(contextExternalTool: ContextExternalTool): Promise<void> {
 		const loadedSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 			contextExternalTool.schoolToolRef.schoolToolId
 		);

@@ -59,6 +59,9 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ type: 'boolean', nullable: true })
 	isVisible: boolean | undefined;
 
+	@Property({ type: 'boolean', nullable: true })
+	readersCanEdit: boolean | undefined;
+
 	// Card
 	// --------------------------------------------------------------------------
 	@Property({ type: 'integer', nullable: true })
@@ -108,6 +111,11 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	// --------------------------------------------------------------------------
 	@Property({ type: ObjectIdType, fieldName: 'contextExternalTool', nullable: true })
 	contextExternalToolId: EntityId | undefined;
+
+	// H5PElement
+	// --------------------------------------------------------------------------
+	@Property({ type: ObjectIdType, nullable: true })
+	contentId: EntityId | undefined;
 
 	// MediaLine, MediaBoard
 	// --------------------------------------------------------------------------

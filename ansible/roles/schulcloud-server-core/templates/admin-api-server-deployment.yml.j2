@@ -47,6 +47,8 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
         runAsNonRoot: true
+      os:
+        name: linux
       containers:
       - name: api-admin
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
@@ -60,8 +62,6 @@ spec:
             name: admin-api-server-configmap
         - secretRef:
             name: admin-api-server-secret
-        - secretRef:
-            name: api-files-secret
         command: ['npm', 'run', 'nest:start:admin-api-server:prod']
         resources:
           limits:

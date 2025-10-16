@@ -1,10 +1,9 @@
-import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
+import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolEntity } from '@modules/school/repo';
 import { System } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { UserDO } from '@shared/domain/domainobject';
-import { SchoolEntity } from '@shared/domain/entity';
 import { ImportUser } from '../entity';
 import { UserImportSchoolExternalIdMissingLoggableException } from '../loggable';
 import { SchulconnexImportUserMapper } from '../mapper';
@@ -23,12 +22,12 @@ export class SchulconnexFetchImportUsersService {
 			throw new UserImportSchoolExternalIdMissingLoggableException(school.id);
 		}
 
-		const response: SchulconnexResponse[] = await this.schulconnexRestClient.getPersonenInfo({
+		const response = await this.schulconnexRestClient.getPersonenInfo({
 			vollstaendig: ['personen', 'personenkontexte', 'organisationen', 'gruppen'],
 			'organisation.id': externalSchoolId,
 		});
 
-		const mappedImportUsers: ImportUser[] = SchulconnexImportUserMapper.mapDataToUserImportEntities(
+		const mappedImportUsers = SchulconnexImportUserMapper.mapDataToUserImportEntities(
 			response,
 			system,
 			school,
@@ -39,10 +38,10 @@ export class SchulconnexFetchImportUsersService {
 	}
 
 	public async filterAlreadyMigratedUser(importUsers: ImportUser[], system: System): Promise<ImportUser[]> {
-		const filteredUsers: ImportUser[] = (
+		const filteredUsers = (
 			await Promise.all(
 				importUsers.map(async (importUser: ImportUser): Promise<ImportUser | null> => {
-					const foundUser: UserDO | null = await this.userService.findByExternalId(importUser.externalId, system.id);
+					const foundUser = await this.userService.findByExternalId(importUser.externalId, system.id);
 					return foundUser ? null : importUser;
 				})
 			)

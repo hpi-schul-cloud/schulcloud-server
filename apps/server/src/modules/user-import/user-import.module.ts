@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { AccountModule } from '@modules/account';
 import { AuthorizationModule } from '@modules/authorization';
@@ -8,8 +9,6 @@ import { UserModule } from '@modules/user';
 import { UserLoginMigrationModule } from '@modules/user-login-migration';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { LegacySchoolRepo, UserRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
 import { ImportUserController } from './controller/import-user.controller';
 import { ImportUserRepo } from './repo';
 import { SchulconnexFetchImportUsersService, UserImportService } from './service';
@@ -27,17 +26,10 @@ import { UserImportFetchUc, UserImportUc } from './uc';
 		SchulconnexClientModule.registerAsync(),
 		UserLoginMigrationModule,
 		SystemModule,
+		UserModule,
 	],
 	controllers: [ImportUserController],
-	providers: [
-		UserImportUc,
-		UserImportFetchUc,
-		ImportUserRepo,
-		LegacySchoolRepo,
-		UserRepo,
-		UserImportService,
-		SchulconnexFetchImportUsersService,
-	],
+	providers: [UserImportUc, UserImportFetchUc, ImportUserRepo, UserImportService, SchulconnexFetchImportUsersService],
 	exports: [UserImportService],
 })
 /**

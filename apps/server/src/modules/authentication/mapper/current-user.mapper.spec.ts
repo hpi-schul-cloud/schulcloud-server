@@ -1,18 +1,18 @@
-import { ValidationError } from '@shared/common';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userDoFactory, userFactory } from '@modules/user/testing';
+import { ValidationError } from '@shared/common/error';
+import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { ObjectId } from 'bson';
 import { OauthCurrentUser } from '../interface';
 import { CurrentUserMapper } from './current-user.mapper';
 
 describe('CurrentUserMapper', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	describe('userToICurrentUser', () => {
@@ -44,7 +44,7 @@ describe('CurrentUserMapper', () => {
 						accountId,
 						systemId: undefined,
 						roles: [teacherRole.id],
-						schoolId: null,
+						schoolId: user.school.id,
 						isExternalUser: false,
 					});
 				});
@@ -70,7 +70,7 @@ describe('CurrentUserMapper', () => {
 						accountId,
 						systemId: undefined,
 						roles: [],
-						schoolId: null,
+						schoolId: user.school.id,
 						isExternalUser: true,
 					});
 				});
@@ -167,7 +167,7 @@ describe('CurrentUserMapper', () => {
 
 		describe('when userDO is valid and a systemId is provided', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId({
+				const user = userDoFactory.buildWithId({
 					id: 'mockUserId',
 					createdAt: new Date(),
 					updatedAt: new Date(),

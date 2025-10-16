@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
+import { MetaDataEntityType } from '../types';
 import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
 import { MetaTagExtractorService } from './meta-tag-extractor.service';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
@@ -30,7 +30,6 @@ describe(MetaTagExtractorService.name, () => {
 		metaTagInternalUrlService = module.get(MetaTagInternalUrlService);
 		metaTagExternalUrlService = module.get(MetaTagExternalUrlService);
 		service = module.get(MetaTagExtractorService);
-		await setupEntities();
 	});
 
 	afterAll(async () => {
@@ -77,8 +76,43 @@ describe(MetaTagExtractorService.name, () => {
 						url,
 						title: 'super.pdf',
 						description: '',
-						type: 'unknown',
+						type: MetaDataEntityType.UNKNOWN,
 					});
+				});
+			});
+		});
+
+		describe('when it is an external url', () => {
+			describe('when no meta tags were found', () => {
+				it('should return a MetaData object with type unknown', async () => {
+					const url = 'https://docs.dbildungscloud.de/display/DBH/Arc+Weekly+Meetings';
+
+					const result = await service.getMetaData(url);
+
+					expect(result).toEqual({
+						url,
+						title: 'Arc+Weekly+Meetings',
+						description: '',
+						type: MetaDataEntityType.UNKNOWN,
+					});
+				});
+			});
+
+			describe('when meta tags were found', () => {
+				it('should return a MetaData object with type external', async () => {
+					const url = 'https://www.test.de/super.pdf';
+					const metaData = {
+						url,
+						title: 'Super Title',
+						description: 'Super Description',
+						originalImageUrl: 'https://www.test.de/super.jpg',
+						type: MetaDataEntityType.EXTERNAL,
+					};
+					metaTagExternalUrlService.tryExtractMetaTags.mockResolvedValue(metaData);
+
+					const result = await service.getMetaData(url);
+
+					expect(result).toEqual(metaData);
 				});
 			});
 		});

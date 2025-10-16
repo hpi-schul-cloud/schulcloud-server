@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth';
+import { OAuthTokenDto, OauthAdapterService } from '@modules/oauth-adapter';
 import { HttpService } from '@nestjs/axios';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { of } from 'rxjs';
 import { SchulconnexConfigurationMissingLoggable } from './loggable';

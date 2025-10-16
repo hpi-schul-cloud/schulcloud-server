@@ -7,7 +7,7 @@ import { RegistrationPinEntity } from '../entity';
 export class RegistrationPinRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findAllByEmail(email: string): Promise<Counted<RegistrationPinEntity[]>> {
+	public async findAllByEmail(email: string): Promise<Counted<RegistrationPinEntity[]>> {
 		const [registrationPins, count] = await this.em.findAndCount(RegistrationPinEntity, {
 			email,
 		});
@@ -15,7 +15,7 @@ export class RegistrationPinRepo {
 		return [registrationPins, count];
 	}
 
-	async deleteRegistrationPinByEmail(email: string): Promise<number> {
+	public async deleteRegistrationPinByEmail(email: string): Promise<number> {
 		const deletedRegistrationPinNumber = await this.em.nativeDelete(RegistrationPinEntity, { email });
 
 		return deletedRegistrationPinNumber;

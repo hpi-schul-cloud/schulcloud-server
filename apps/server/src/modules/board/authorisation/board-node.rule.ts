@@ -1,3 +1,4 @@
+import { Action, AuthorizationContext, AuthorizationInjectionService, Rule } from '@modules/authorization';
 import {
 	BoardNodeAuthorizable,
 	BoardRoles,
@@ -8,24 +9,15 @@ import {
 	SubmissionItem,
 	UserWithBoardRoles,
 } from '@modules/board';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity/user.entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import {
-	AuthorizationHelper,
-	Action,
-	AuthorizationContext,
-	Rule,
-	AuthorizationInjectionService,
-} from '@modules/authorization';
+import { isVideoConferenceElement } from '../domain';
 
 @Injectable()
 export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
-	constructor(
-		private readonly authorizationHelper: AuthorizationHelper,
-		authorisationInjectionService: AuthorizationInjectionService
-	) {
+	constructor(authorisationInjectionService: AuthorizationInjectionService) {
 		authorisationInjectionService.injectAuthorizationRule(this);
 	}
 
@@ -35,42 +27,58 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, object: BoardNodeAuthorizable, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-		if (!hasPermission) {
+	public hasPermission(user: User, authorizable: BoardNodeAuthorizable, context: AuthorizationContext): boolean {
+		const hasAllPermissions = this.hasAllPermissions(user, authorizable, context.requiredPermissions);
+		if (!hasAllPermissions) {
 			return false;
 		}
 
-		const userWithBoardRoles = object.users.find(({ userId }) => userId === user.id);
+		const userWithBoardRoles = authorizable.users.find(({ userId }) => userId === user.id);
 		if (!userWithBoardRoles) {
 			return false;
 		}
 
 		if (
-			object.rootNode instanceof ColumnBoard &&
-			!object.rootNode.isVisible &&
+			authorizable.rootNode instanceof ColumnBoard &&
+			!authorizable.rootNode.isVisible &&
 			!this.isBoardEditor(userWithBoardRoles)
 		) {
 			return false;
 		}
 
-		if (this.shouldProcessSubmissionItem(object)) {
-			return this.hasPermissionForSubmissionItem(user, userWithBoardRoles, object, context);
+		if (this.shouldProcessSubmissionItem(authorizable)) {
+			return this.hasPermissionForSubmissionItem(user, userWithBoardRoles, authorizable, context);
 		}
 
-		if (this.shouldProcessDrawingElementFile(object, context)) {
+		if (this.shouldProcessDrawingElementFile(authorizable, context)) {
 			return this.hasPermissionForDrawingElementFile(userWithBoardRoles);
 		}
 
-		if (this.shouldProcessDrawingElement(object)) {
-			return this.hasPermissionForDrawingElement(userWithBoardRoles, context);
+		if (this.shouldProcessVideoConferenceElement(authorizable)) {
+			return this.hasPermissionForVideoConferenceElement(userWithBoardRoles, context, authorizable);
 		}
 
 		if (context.action === Action.write) {
-			return this.isBoardEditor(userWithBoardRoles);
+			return this.hasAllPermissions(user, authorizable, [Permission.BOARD_EDIT]);
 		}
 
 		return this.isBoardReader(userWithBoardRoles);
+	}
+
+	private hasAllPermissions(
+		user: User,
+		authorizable: BoardNodeAuthorizable,
+		requiredPermissions: Permission[]
+	): boolean {
+		const schoolPermissions = user.resolvePermissions();
+		const boardPermissions = authorizable.getUserPermissions(user.id);
+
+		const permissions = Array.from(new Set([...schoolPermissions, ...boardPermissions]));
+		return requiredPermissions.every((p) => permissions.includes(p));
+	}
+
+	private isBoardAdmin(userWithBoardRoles: UserWithBoardRoles): boolean {
+		return userWithBoardRoles.roles.includes(BoardRoles.ADMIN);
 	}
 
 	private isBoardEditor(userWithBoardRoles: UserWithBoardRoles): boolean {
@@ -78,7 +86,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	private isBoardReader(userWithBoardRoles: UserWithBoardRoles): boolean {
-		return userWithBoardRoles.roles.includes(BoardRoles.READER) || userWithBoardRoles.roles.includes(BoardRoles.EDITOR);
+		return [BoardRoles.READER, BoardRoles.EDITOR].some((role) => userWithBoardRoles.roles.includes(role));
 	}
 
 	private shouldProcessDrawingElementFile(
@@ -93,24 +101,9 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return isDrawingElement(boardNodeAuthorizable.boardNode) && requiresFileStoragePermission;
 	}
 
-	private shouldProcessDrawingElement(boardNodeAuthorizable: BoardNodeAuthorizable): boolean {
-		return isDrawingElement(boardNodeAuthorizable.boardNode);
-	}
-
 	private hasPermissionForDrawingElementFile(userWithBoardRoles: UserWithBoardRoles): boolean {
 		// check if user has read permissions with no account for the context.action
 		// because everyone should be able to upload files to a drawing element
-		return this.isBoardReader(userWithBoardRoles);
-	}
-
-	private hasPermissionForDrawingElement(
-		userWithBoardRoles: UserWithBoardRoles,
-		context: AuthorizationContext
-	): boolean {
-		if (context.action === Action.write) {
-			return this.isBoardEditor(userWithBoardRoles);
-		}
-
 		return this.isBoardReader(userWithBoardRoles);
 	}
 
@@ -185,5 +178,26 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 
 	private isSubmissionItemCreator(userId: EntityId, submissionItem: SubmissionItem): boolean {
 		return submissionItem.userId === userId;
+	}
+
+	private shouldProcessVideoConferenceElement(boardNodeAuthorizable: BoardNodeAuthorizable): boolean {
+		return isVideoConferenceElement(boardNodeAuthorizable.boardNode);
+	}
+
+	private hasPermissionForVideoConferenceElement(
+		userWithBoardRoles: UserWithBoardRoles,
+		context: AuthorizationContext,
+		authorizable: BoardNodeAuthorizable
+	): boolean {
+		if (context.action === Action.write) {
+			const canRoomEditorManageVideoconference =
+				authorizable.boardContextSettings.canRoomEditorManageVideoconference ?? false;
+			return (
+				(canRoomEditorManageVideoconference && this.isBoardEditor(userWithBoardRoles)) ||
+				this.isBoardAdmin(userWithBoardRoles)
+			);
+		}
+
+		return this.isBoardReader(userWithBoardRoles);
 	}
 }

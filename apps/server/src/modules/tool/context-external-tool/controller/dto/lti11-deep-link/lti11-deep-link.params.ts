@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { StringToObject } from '@shared/controller';
+import { StringToObject } from '@shared/controller/transformer';
 import { Type } from 'class-transformer';
 import { Equals, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Lti11DeepLinkContentItemListParams } from './lti11-deep-link-content-item-list.params';

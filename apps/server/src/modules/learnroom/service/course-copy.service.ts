@@ -1,4 +1,6 @@
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
 import { ToolContextType } from '@modules/tool/common/enum';
 import {
 	ContextExternalTool,
@@ -7,16 +9,17 @@ import {
 } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ToolConfig } from '@modules/tool/tool-config';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '../repo';
 import { BoardCopyService } from './board-copy.service';
 import { CourseRoomsService } from './course-rooms.service';
 
 type CourseCopyParams = {
-	originalCourse: Course;
+	originalCourse: CourseEntity;
 	user: User;
 	copyName?: string;
 };
@@ -25,16 +28,16 @@ type CourseCopyParams = {
 export class CourseCopyService {
 	constructor(
 		private readonly configService: ConfigService<ToolConfig, true>,
-		private readonly courseRepo: CourseRepo,
+		private readonly courseService: CourseService,
 		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly roomsService: CourseRoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
-		private readonly userRepo: UserRepo,
+		private readonly userService: UserService,
 		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
-	async copyCourse({
+	public async copyCourse({
 		userId,
 		courseId,
 		newName,
@@ -43,16 +46,16 @@ export class CourseCopyService {
 		courseId: EntityId;
 		newName?: string | undefined;
 	}): Promise<CopyStatus> {
-		const user: User = await this.userRepo.findById(userId, true);
+		const user: User = await this.userService.getUserEntityWithRoles(userId);
 
 		// fetch original course and board
-		const originalCourse = await this.courseRepo.findById(courseId);
+		const originalCourse = await this.courseService.findById(courseId);
 		let originalBoard = await this.legacyBoardRepo.findByCourseId(courseId);
 		originalBoard = await this.roomsService.updateLegacyBoard(originalBoard, courseId, userId);
 
 		// handle potential name conflict
-		const [existingCourses] = await this.courseRepo.findAllByUserId(userId);
-		const existingNames = existingCourses.map((course: Course) => course.name);
+		const [existingCourses] = await this.courseService.findAllByUserId(userId, user.school.id);
+		const existingNames = existingCourses.map((course: CourseEntity) => course.name);
 		const copyName = this.copyHelperService.deriveCopyName(newName || originalCourse.name, existingNames);
 
 		// copy course and board
@@ -96,9 +99,9 @@ export class CourseCopyService {
 		return courseStatus;
 	}
 
-	private async copyCourseEntity(params: CourseCopyParams): Promise<Course> {
+	private async copyCourseEntity(params: CourseCopyParams): Promise<CourseEntity> {
 		const { originalCourse, user, copyName } = params;
-		const courseCopy = new Course({
+		const courseCopy = new CourseEntity({
 			school: user.school,
 			name: copyName,
 			color: originalCourse.color,
@@ -108,19 +111,21 @@ export class CourseCopyService {
 			copyingSince: new Date(),
 		});
 
-		await this.courseRepo.createCourse(courseCopy);
+		await this.courseService.create(courseCopy);
+
 		return courseCopy;
 	}
 
-	private async finishCourseCopying(courseCopy: Course) {
+	private async finishCourseCopying(courseCopy: CourseEntity): Promise<CourseEntity> {
 		delete courseCopy.copyingSince;
-		await this.courseRepo.save(courseCopy);
+		await this.courseService.save(courseCopy);
+
 		return courseCopy;
 	}
 
 	private deriveCourseStatus(
-		originalCourse: Course,
-		courseCopy: Course,
+		originalCourse: CourseEntity,
+		courseCopy: CourseEntity,
 		boardStatus: CopyStatus,
 		courseToolsCopyStatus: CopyStatus | null
 	): CopyStatus {
@@ -131,10 +136,6 @@ export class CourseCopyService {
 			},
 			{
 				type: CopyElementType.USER_GROUP,
-				status: CopyStatusEnum.NOT_DOING,
-			},
-			{
-				type: CopyElementType.LTITOOL_GROUP,
 				status: CopyStatusEnum.NOT_DOING,
 			},
 			{

@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ErrorUtils } from '@src/core/error/utils';
+import { ErrorUtils } from '@core/error/utils';
 import { firstValueFrom } from 'rxjs';
 import { AxiosResponse, HttpStatusCode } from 'axios';
 import { DeletionRequestInput, DeletionRequestOutput } from './interface';
@@ -26,12 +26,41 @@ export class DeletionClient {
 		}
 	}
 
-	public async executeDeletions(limit?: number): Promise<void> {
+	public async executeDeletions(limit?: number, runFailed?: boolean): Promise<void> {
 		try {
-			const response = await this.postDeletionExecutionRequest(limit);
-			this.checkResponseStatusCode(response, HttpStatusCode.NoContent);
+			let deletionRequestIds = await this.getDeletionRequestIds(limit, runFailed);
+			while (deletionRequestIds.length > 0) {
+				const response = await this.postDeletionExecutionRequest(deletionRequestIds);
+				this.checkResponseStatusCode(response, HttpStatusCode.NoContent);
+				deletionRequestIds = await this.getDeletionRequestIds(limit, runFailed);
+			}
 		} catch (err) {
 			throw this.createError(err, 'executeDeletions');
+		}
+	}
+
+	private async getDeletionRequestIds(limit?: number, runFailed?: boolean): Promise<string[]> {
+		try {
+			const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
+			const endpoint = '/admin/api/v1/deletionExecutions';
+			const getDeletionRequestsEndpoint = new URL(endpoint, baseUrl);
+
+			const params = new URLSearchParams(getDeletionRequestsEndpoint.search);
+			if (limit && this.isLimitGreaterZero(limit)) {
+				params.append('limit', limit.toString());
+			}
+			if (runFailed) {
+				params.append('runFailed', runFailed.toString());
+			}
+
+			const fullUrl = `${getDeletionRequestsEndpoint.toString()}?${params.toString()}`;
+
+			const request = this.httpService.get<string[]>(fullUrl, this.createDefaultHeaders());
+			const response = await firstValueFrom(request);
+
+			return response.data;
+		} catch (err) {
+			throw this.createError(err, 'getDeletionRequestIds');
 		}
 	}
 
@@ -46,13 +75,19 @@ export class DeletionClient {
 		return response;
 	}
 
-	private async postDeletionExecutionRequest(limit?: number): Promise<AxiosResponse<any, any>> {
+	private async postDeletionExecutionRequest(ids: string[]): Promise<AxiosResponse<any, any>> {
 		const defaultHeaders = this.createDefaultHeaders();
-		const headers = this.isLimitGeaterZero(limit) ? { ...defaultHeaders, params: { limit } } : defaultHeaders;
-		const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
-		const postDeletionExecutionsEndpoint = new URL('/admin/api/v1/deletionExecutions', baseUrl).toString();
 
-		const request = this.httpService.post(postDeletionExecutionsEndpoint, null, headers);
+		const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
+		const endpoint = '/admin/api/v1/deletionExecutions';
+
+		const postDeletionExecutionsEndpoint = new URL(endpoint, baseUrl);
+
+		const params = new URLSearchParams(postDeletionExecutionsEndpoint.search);
+
+		const fullUrl = `${postDeletionExecutionsEndpoint.toString()}?${params.toString()}`;
+
+		const request = this.httpService.post(fullUrl, { ids }, defaultHeaders);
 		const response = await firstValueFrom(request);
 
 		return response;
@@ -87,7 +122,7 @@ export class DeletionClient {
 		}
 	}
 
-	private isLimitGeaterZero(limit?: number): boolean {
+	private isLimitGreaterZero(limit?: number): boolean {
 		return typeof limit === 'number' && limit > 0;
 	}
 

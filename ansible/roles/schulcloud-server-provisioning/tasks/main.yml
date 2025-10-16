@@ -1,0 +1,77 @@
+  - name: Schulconnex group provisioning configmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: schulconnex-group-provisioning-configmap.yml.j2
+      apply: yes
+      state: "{{ 'present' if WITH_SCHULCONNEX_PROVISIONING else 'absent'}}"
+    tags:
+      - configmap
+
+  - name: Schulconnex group removal configmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: schulconnex-group-removal-configmap.yml.j2
+      apply: yes
+      state: "{{ 'present' if WITH_SCHULCONNEX_PROVISIONING else 'absent'}}"
+    tags:
+      - configmap
+
+  - name: Schulconnex license provisioning configmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: schulconnex-license-provisioning-configmap.yml.j2
+      apply: yes
+      state: "{{ 'present' if WITH_SCHULCONNEX_PROVISIONING else 'absent'}}"
+    tags:
+      - configmap
+
+  - name: Schulconnex provisioning Secret by 1Password
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: schulconnex-provisioning-onepassword.yml.j2
+      state: "{{ 'present' if WITH_SCHULCONNEX_PROVISIONING else 'absent'}}"
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+    tags:
+      - 1password
+
+  - name: External Secret for schulconnex provisioning
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: schulconnex-provisioning-external-secret.yml.j2
+      state: "{{ 'present' if WITH_SCHULCONNEX_PROVISIONING and WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool else 'absent' }}"
+    when:
+      - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
+    tags:
+      - 1password
+
+  - name: Schulconnex group provisioning deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: schulconnex-group-provisioning-deployment.yml.j2
+      state: "{{ 'present' if WITH_SCHULCONNEX_PROVISIONING else 'absent'}}"
+    tags:
+      - deployment
+
+  - name: Schulconnex group removal deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: schulconnex-group-removal-deployment.yml.j2
+      state: "{{ 'present' if WITH_SCHULCONNEX_PROVISIONING else 'absent'}}"
+    tags:
+      - deployment
+
+  - name: Schulconnex license provisioning deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: schulconnex-license-provisioning-deployment.yml.j2
+      state: "{{ 'present' if WITH_SCHULCONNEX_PROVISIONING else 'absent'}}"
+    tags:
+      - deployment

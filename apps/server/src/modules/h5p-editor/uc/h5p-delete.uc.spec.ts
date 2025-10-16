@@ -2,14 +2,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
 import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
+import { UserService } from '@modules/user';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from '@src/modules/user';
-import { h5pContentFactory } from '@testing/factory/h5p-content.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
+import { h5pContentFactory } from '../testing';
 import { H5PEditorUc } from './h5p.uc';
 
 const createParams = () => {
@@ -70,7 +69,6 @@ describe('save or create H5P content', () => {
 		h5pEditor = module.get(H5PEditor);
 		h5pContentRepo = module.get(H5PContentRepo);
 		authorizationClientAdapter = module.get(AuthorizationClientAdapter);
-		await setupEntities();
 	});
 
 	afterEach(() => {
@@ -96,7 +94,7 @@ describe('save or create H5P content', () => {
 			it('should call authorizationClientAdapter.checkPermissionsByReference', async () => {
 				const { content, mockCurrentUser } = setup();
 
-				await uc.deleteH5pContent(mockCurrentUser, content.id);
+				await uc.deleteH5pContent(mockCurrentUser.userId, content.id);
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
 					content.parentType,
@@ -108,7 +106,7 @@ describe('save or create H5P content', () => {
 			it('should call service with correct params', async () => {
 				const { content, mockCurrentUser } = setup();
 
-				await uc.deleteH5pContent(mockCurrentUser, content.id);
+				await uc.deleteH5pContent(mockCurrentUser.userId, content.id);
 
 				expect(h5pEditor.deleteContent).toBeCalledWith(
 					content.id,
@@ -121,7 +119,7 @@ describe('save or create H5P content', () => {
 			it('should return true', async () => {
 				const { content, mockCurrentUser } = setup();
 
-				const result = await uc.deleteH5pContent(mockCurrentUser, content.id);
+				const result = await uc.deleteH5pContent(mockCurrentUser.userId, content.id);
 
 				expect(result).toBe(true);
 			});
@@ -139,7 +137,7 @@ describe('save or create H5P content', () => {
 			it('should throw NotFoundException', async () => {
 				const { content, mockCurrentUser } = setup();
 
-				const deleteH5pContentpromise = uc.deleteH5pContent(mockCurrentUser, content.id);
+				const deleteH5pContentpromise = uc.deleteH5pContent(mockCurrentUser.userId, content.id);
 
 				await expect(deleteH5pContentpromise).rejects.toThrow(NotFoundException);
 			});
@@ -158,7 +156,7 @@ describe('save or create H5P content', () => {
 			it('should throw forbidden error', async () => {
 				const { content, mockCurrentUser } = setup();
 
-				const deleteH5pContentpromise = uc.deleteH5pContent(mockCurrentUser, content.id);
+				const deleteH5pContentpromise = uc.deleteH5pContent(mockCurrentUser.userId, content.id);
 
 				await expect(deleteH5pContentpromise).rejects.toThrow(ForbiddenException);
 			});
@@ -180,7 +178,7 @@ describe('save or create H5P content', () => {
 			it('should return error of service', async () => {
 				const { content, mockCurrentUser } = setup();
 
-				const deleteH5pContentpromise = uc.deleteH5pContent(mockCurrentUser, content.id);
+				const deleteH5pContentpromise = uc.deleteH5pContent(mockCurrentUser.userId, content.id);
 
 				await expect(deleteH5pContentpromise).rejects.toThrow();
 			});

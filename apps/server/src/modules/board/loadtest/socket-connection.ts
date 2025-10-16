@@ -43,7 +43,7 @@ export class SocketConnection {
 	async connect() {
 		this.ensureRunningTimeoutChecks();
 		return new Promise((resolve, reject) => {
-			let handle: NodeJS.Timeout | undefined;
+			let handle: NodeJS.Timeout | undefined = undefined;
 			if (this.socket.connected) {
 				/* istanbul ignore next */
 				resolve(true);

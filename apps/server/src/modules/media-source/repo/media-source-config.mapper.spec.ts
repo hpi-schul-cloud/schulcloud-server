@@ -1,10 +1,10 @@
-import { MediaSourceBasicAuthConfig, MediaSourceOauthConfig } from '../domain';
-import { MediaSourceBasicAuthConfigEmbeddable, MediaSourceOauthConfigEmbeddable } from '../entity';
+import { MediaSourceOauthConfig, MediaSourceVidisConfig } from '../do';
+import { MediaSourceOauthConfigEmbeddable, MediaSourceVidisConfigEmbeddable } from '../entity';
 import {
-	mediaSourceBasicAuthConfigFactory,
-	mediaSourceOauthConfigFactory,
-	mediaSourceBasicConfigEmbeddableFactory,
 	mediaSourceOAuthConfigEmbeddableFactory,
+	mediaSourceOauthConfigFactory,
+	mediaSourceVidisConfigEmbeddableFactory,
+	mediaSourceVidisConfigFactory,
 } from '../testing';
 import { MediaSourceConfigMapper } from './media-source-config.mapper';
 
@@ -18,6 +18,7 @@ describe('MediaSourceConfigMapper', () => {
 					clientSecret: configDo.clientSecret,
 					authEndpoint: configDo.authEndpoint,
 					method: configDo.method,
+					baseUrl: configDo.baseUrl,
 				});
 
 				return { configDo, expected };
@@ -41,14 +42,16 @@ describe('MediaSourceConfigMapper', () => {
 		});
 	});
 
-	describe('mapBasicAuthConfigToEmbeddable', () => {
+	describe('mapVidisToEmbeddable', () => {
 		describe('when a basic auth config domain object is passed', () => {
 			const setup = () => {
-				const domainObject = mediaSourceBasicAuthConfigFactory.build();
-				const expected = new MediaSourceBasicAuthConfigEmbeddable({
+				const domainObject = mediaSourceVidisConfigFactory.build();
+				const expected = new MediaSourceVidisConfigEmbeddable({
 					username: domainObject.username,
 					password: domainObject.password,
-					authEndpoint: domainObject.authEndpoint,
+					baseUrl: domainObject.baseUrl,
+					region: domainObject.region,
+					schoolNumberPrefix: domainObject.schoolNumberPrefix,
 				});
 
 				return { domainObject, expected };
@@ -57,15 +60,15 @@ describe('MediaSourceConfigMapper', () => {
 			it('should return an instance of config embeddable', () => {
 				const { domainObject } = setup();
 
-				const result = MediaSourceConfigMapper.mapBasicAuthConfigToEmbeddable(domainObject);
+				const result = MediaSourceConfigMapper.mapVidisConfigToEmbeddable(domainObject);
 
-				expect(result).toBeInstanceOf(MediaSourceBasicAuthConfigEmbeddable);
+				expect(result).toBeInstanceOf(MediaSourceVidisConfigEmbeddable);
 			});
 
 			it('should return an embeddable with all properties', () => {
 				const { domainObject, expected } = setup();
 
-				const result = MediaSourceConfigMapper.mapBasicAuthConfigToEmbeddable(domainObject);
+				const result = MediaSourceConfigMapper.mapVidisConfigToEmbeddable(domainObject);
 
 				expect(result).toEqual(expected);
 			});
@@ -81,6 +84,7 @@ describe('MediaSourceConfigMapper', () => {
 					clientSecret: embeddable.clientSecret,
 					authEndpoint: embeddable.authEndpoint,
 					method: embeddable.method,
+					baseUrl: embeddable.baseUrl,
 				});
 
 				return { embeddable, expected };
@@ -104,14 +108,16 @@ describe('MediaSourceConfigMapper', () => {
 		});
 	});
 
-	describe('mapBasicAuthConfigToDo', () => {
+	describe('mapVidisToDo', () => {
 		describe('when a basic auth config embeddable is passed', () => {
 			const setup = () => {
-				const embeddable = mediaSourceBasicConfigEmbeddableFactory.build();
-				const expected = new MediaSourceBasicAuthConfig({
+				const embeddable = mediaSourceVidisConfigEmbeddableFactory.build();
+				const expected = new MediaSourceVidisConfig({
 					username: embeddable.username,
 					password: embeddable.password,
-					authEndpoint: embeddable.authEndpoint,
+					baseUrl: embeddable.baseUrl,
+					region: embeddable.region,
+					schoolNumberPrefix: embeddable.schoolNumberPrefix,
 				});
 
 				return { embeddable, expected };
@@ -120,15 +126,15 @@ describe('MediaSourceConfigMapper', () => {
 			it('should return an instance of config', () => {
 				const { embeddable } = setup();
 
-				const result = MediaSourceConfigMapper.mapBasicAuthConfigToDo(embeddable);
+				const result = MediaSourceConfigMapper.mapVidisConfigToDo(embeddable);
 
-				expect(result).toBeInstanceOf(MediaSourceBasicAuthConfig);
+				expect(result).toBeInstanceOf(MediaSourceVidisConfig);
 			});
 
 			it('should return a domain object with all properties', () => {
 				const { embeddable, expected } = setup();
 
-				const result = MediaSourceConfigMapper.mapBasicAuthConfigToDo(embeddable);
+				const result = MediaSourceConfigMapper.mapVidisConfigToDo(embeddable);
 
 				expect(result).toEqual(expected);
 			});

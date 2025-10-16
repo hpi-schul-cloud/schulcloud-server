@@ -1,4 +1,4 @@
-#jinja2: trim_blocks: "True", lstrip_blocks: "True"
+#jinja2: trim_blocks:True, lstrip_blocks:True
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,7 +9,7 @@ metadata:
 data:
   # general
   NODE_ENV: "production"
-  NODE_OPTIONS: "--max-old-space-size=2048"
+  NODE_OPTIONS: "--max-old-space-size=1536"
   SC_TITLE: "{{ SC_TITLE }}"
   SC_THEME: "{{ SC_THEME }}"
   SC_SHORTNAME: "{{ SC_SHORTNAME }}"

@@ -33,13 +33,19 @@
 			"$oid": "5fa2c5ccb229544f2c69666c"
 		},
 		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed1",
 			"system": {
 				"$oid": "0000d186816abba584714c93"
 			},
 			"lastSyncedAt": {
 				"$date": "2024-07-24T12:03:08.936Z"
 			}
+		},
+		"validPeriod_from": {
+			"$date": "2023-08-01T00:00:00.000Z"
+		},
+		"validPeriod_until": {
+			"$date": "2026-07-31T00:00:00.000Z"
 		}
 	},
 	{
@@ -76,13 +82,19 @@
 			"$oid": "5fa2c5ccb229544f2c69666c"
 		},
 		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed2",
 			"system": {
 				"$oid": "0000d186816abba584714c93"
 			},
 			"lastSyncedAt": {
 				"$date": "2024-07-24T12:03:08.936Z"
 			}
+		},
+		"validPeriod_from": {
+			"$date": "2023-08-01T00:00:00.000Z"
+		},
+		"validPeriod_until": {
+			"$date": "2026-07-31T00:00:00.000Z"
 		}
 	},
 	{
@@ -127,13 +139,19 @@
 			"$oid": "5fa2c5ccb229544f2c69666c"
 		},
 		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed3",
 			"system": {
 				"$oid": "0000d186816abba584714c93"
 			},
 			"lastSyncedAt": {
 				"$date": "2024-07-24T12:03:08.936Z"
 			}
+		},
+		"validPeriod_from": {
+			"$date": "2023-08-01T00:00:00.000Z"
+		},
+		"validPeriod_until": {
+			"$date": "2026-07-31T00:00:00.000Z"
 		}
 	},
 	{
@@ -146,7 +164,7 @@
 		"updatedAt": {
 			"$date": "2023-10-17T12:15:26.461Z"
 		},
-		"name": "Cypress-Test-Group-Course-Sync",
+		"name": "Cypress-Test-Group-Course-Sync1",
 		"type": "other",
 		"users": [
 			{
@@ -164,48 +182,13 @@
 				"role": {
 					"$oid": "0000d186816abba584714c99"
 				}
-			}
-		],
-		"organization": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-			"system": {
-				"$oid": "0000d186816abba584714c93"
-			},
-			"lastSyncedAt": {
-				"$date": "2024-07-24T12:03:08.936Z"
-			}
-		}
-	},
-	{
-		"_id": {
-			"$oid": "66a0e6d782d5ff057ed0da48"
-		},
-		"createdAt": {
-			"$date": "2023-10-17T12:15:26.458Z"
-		},
-		"updatedAt": {
-			"$date": "2023-10-17T12:15:26.461Z"
-		},
-		"name": "Cypress-Test-Group-Course-Sync2",
-		"type": "course",
-		"users": [
-			{
-				"user": {
-					"$oid": "5fa2c71bb229544f2c6966d9"
-				},
-				"role": {
-					"$oid": "0000d186816abba584714c98"
-				}
 			},
 			{
 				"user": {
-					"$oid": "5fa2cccab229544f2c696917"
+					"$oid": "5fa2c77eb229544f2c696725"
 				},
 				"role": {
-					"$oid": "0000d186816abba584714c99"
+					"$oid": "67404edd76a89449722a7fb1"
 				}
 			}
 		],
@@ -213,13 +196,19 @@
 			"$oid": "5fa2c5ccb229544f2c69666c"
 		},
 		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed4",
 			"system": {
 				"$oid": "0000d186816abba584714c93"
 			},
 			"lastSyncedAt": {
 				"$date": "2024-07-24T12:03:08.936Z"
 			}
+		},
+		"validPeriod_from": {
+			"$date": "2023-08-01T00:00:00.000Z"
+		},
+		"validPeriod_until": {
+			"$date": "2026-07-31T00:00:00.000Z"
 		}
 	},
 	{
@@ -248,56 +237,194 @@
 			"$oid": "5fa2c5ccb229544f2c69666c"
 		},
 		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
+			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed6",
 			"system": {
 				"$oid": "0000d186816abba584714c93"
 			},
 			"lastSyncedAt": {
 				"$date": "2024-07-24T12:03:08.936Z"
 			}
+		},
+		"validPeriod_from": {
+			"$date": "2023-08-01T00:00:00.000Z"
+		},
+		"validPeriod_until": {
+			"$date": "2026-07-31T00:00:00.000Z"
 		}
 	},
-    {
-        "_id": {
-            "$oid": "6720db23ee053f7be286494d"
-        },
-        "createdAt": {
-            "$date": "2023-10-17T12:15:26.458Z"
-        },
-        "updatedAt": {
-            "$date": "2023-10-17T12:15:26.461Z"
-        },
-        "name": "Cypress-Test-Group-Partial-Course-Sync",
-        "type": "class",
-        "users": [
-            {
-                "user": {
-                    "$oid": "5fa2c77eb229544f2c696725"
-                },
-                "role": {
-                    "$oid": "0000d186816abba584714c98"
-                }
-            },
-            {
-                "user": {
-                    "$oid": "5fa2cccab229544f2c696917"
-                },
-                "role": {
-                    "$oid": "0000d186816abba584714c99"
-                }
-            }
-        ],
-        "organization": {
-            "$oid": "5fa2c5ccb229544f2c69666c"
-        },
-        "externalSource": {
-            "externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-            "system": {
-                "$oid": "0000d186816abba584714c93"
-            },
-            "lastSyncedAt": {
-                "$date": "2024-07-24T12:03:08.936Z"
-            }
-        }
-    }
+	{
+		"_id": {
+			"$oid": "6720db23ee053f7be286494d"
+		},
+		"createdAt": {
+			"$date": "2023-10-17T12:15:26.458Z"
+		},
+		"updatedAt": {
+			"$date": "2023-10-17T12:15:26.461Z"
+		},
+		"name": "Cypress-Test-Group-Partial-Course-Sync",
+		"type": "class",
+		"users": [
+			{
+				"user": {
+					"$oid": "5fa2c77eb229544f2c696725"
+				},
+				"role": {
+					"$oid": "0000d186816abba584714c98"
+				}
+			},
+			{
+				"user": {
+					"$oid": "5fa2cccab229544f2c696917"
+				},
+				"role": {
+					"$oid": "0000d186816abba584714c99"
+				}
+			}
+		],
+		"organization": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"externalSource": {
+			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed7",
+			"system": {
+				"$oid": "0000d186816abba584714c93"
+			},
+			"lastSyncedAt": {
+				"$date": "2024-07-24T12:03:08.936Z"
+			}
+		},
+		"validPeriod_from": {
+			"$date": "2023-08-01T00:00:00.000Z"
+		},
+		"validPeriod_until": {
+			"$date": "2026-07-31T00:00:00.000Z"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "68af290bcf0a6d6da2508126"
+		},
+		"createdAt": {
+			"$date": "2025-08-27T15:49:31.566Z"
+		},
+		"updatedAt": {
+			"$date": "2025-08-27T15:49:31.566Z"
+		},
+		"name": "Room Members for Room 68af290bcf0a6d6da2508125",
+		"type": "room",
+		"users": [
+			{
+				"user": {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"role": {
+					"$oid": "675abdb4e76b1142cd4c89e3"
+				}
+			}
+		],
+		"organization": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "68b00d84d39b6604a5cd6a3c"
+		},
+		"createdAt": {
+			"$date": "2025-08-28T08:04:20.917Z"
+		},
+		"updatedAt": {
+			"$date": "2025-08-28T08:04:20.917Z"
+		},
+		"name": "Room Members for Room 68b00d84d39b6604a5cd6a3b",
+		"type": "room",
+		"users": [
+			{
+				"user": {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"role": {
+					"$oid": "675abdb4e76b1142cd4c89e3"
+				}
+			},
+			{
+				"user": {
+					"$oid": "0000d224816abba584714c9c"
+				},
+				"role": {
+					"$oid": "6720b8621b61c9dd7ebd193b"
+				}
+			},
+			{
+				"user": {
+					"$oid": "63ce4f5610087350c4a8fbb2"
+				},
+				"role": {
+					"$oid": "6720b8621b61c9dd7ebd193b"
+				}
+			}
+		],
+		"organization": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "68b011aad39b6604a5cd6a3f"
+		},
+		"createdAt": {
+			"$date": "2025-08-28T08:22:02.255Z"
+		},
+		"updatedAt": {
+			"$date": "2025-08-28T08:22:02.255Z"
+		},
+		"name": "Room Members for Room 68b011aad39b6604a5cd6a3e",
+		"type": "room",
+		"users": [
+			{
+				"user": {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"role": {
+					"$oid": "675abdb4e76b1142cd4c89e3"
+				}
+			},
+			{
+				"user": {
+					"$oid": "0000d224816abba584714c9c"
+				},
+				"role": {
+					"$oid": "6720b8621b61c9dd7ebd193b"
+				}
+			},
+			{
+				"user": {
+					"$oid": "63ce4f5610087350c4a8fbb2"
+				},
+				"role": {
+					"$oid": "6720b8621b61c9dd7ebd193b"
+				}
+			},
+			{
+				"user": {
+					"$oid": "6492cfa7ad0aa141f4e36354"
+				},
+				"role": {
+					"$oid": "6720b8621b61c9dd7ebd193b"
+				}
+			},
+			{
+				"user": {
+					"$oid": "6492d064ad0aa141f4e363ca"
+				},
+				"role": {
+					"$oid": "6720b8621b61c9dd7ebd193b"
+				}
+			}
+		],
+		"organization": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		}
+	}
 ]

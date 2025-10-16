@@ -1,8 +1,8 @@
+import { StorageLocation } from '@infra/files-storage-client';
+import { FileRecordParentType } from '@infra/rabbitmq';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { CopyFileDto } from '@modules/files-storage-client/dto';
-import { StorageLocation } from '@modules/files-storage/interface';
 import { EntityId } from '@shared/domain/types';
-import { FileRecordParentType } from '@src/infra/rabbitmq';
 import { CopyContext } from './board-node-copy.service';
 
 export type StorageLocationReference = {
@@ -19,13 +19,16 @@ export type BoardNodeCopyContextProps = {
 };
 
 export class BoardNodeCopyContext implements CopyContext {
-	readonly targetSchoolId: EntityId;
+	public readonly targetSchoolId: EntityId;
+
+	public readonly userId: EntityId;
 
 	constructor(private readonly props: BoardNodeCopyContextProps) {
 		this.targetSchoolId = props.targetSchoolId;
+		this.userId = props.userId;
 	}
 
-	copyFilesOfParent(sourceParentId: EntityId, targetParentId: EntityId): Promise<CopyFileDto[]> {
+	public copyFilesOfParent(sourceParentId: EntityId, targetParentId: EntityId): Promise<CopyFileDto[]> {
 		return this.props.filesStorageClientAdapterService.copyFilesOfParent({
 			source: {
 				parentId: sourceParentId,

@@ -1,12 +1,12 @@
 /* eslint-disable no-new */
 import { ObjectId } from '@mikro-orm/mongodb';
 import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { ClassEntity } from '../class.entity';
 
 describe(ClassEntity.name, () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([ClassEntity]);
 	});
 
 	describe('constructor', () => {

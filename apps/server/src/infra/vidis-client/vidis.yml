@@ -101,6 +101,20 @@ components:
       type: object
       xml:
         name: OfferCategoryDTO
+    SchoolActivationDTO:
+      required:
+        - date
+        - regionName
+      properties:
+        date:
+          type: string
+          example: 01-01-2025
+        regionName:
+          type: string
+          example: NI_00100
+      type: object
+      xml:
+        name: SchoolActivationDTO
     OfferDTO:
       properties:
         educationProviderOrganizationId:
@@ -140,7 +154,7 @@ components:
           type: integer
         schoolActivations:
           items:
-            type: string
+            $ref: "#/components/schemas/SchoolActivationDTO"
           type: array
         x-class-name:
           default: hu.webtown.liferay.vidis.rest.dto.v1_0.OfferDTO

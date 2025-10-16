@@ -1,13 +1,15 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { User } from '@shared/domain/entity';
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
-import { setupEntities } from '../setup-entities';
-import { schoolEntityFactory } from './school-entity.factory';
+import { AccountEntity } from '@modules/account/repo';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { schoolEntityFactory } from '@modules/school/testing';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { User } from '@modules/user/repo';
+import { setupEntities } from '@testing/database';
 import { UserAndAccountParams, UserAndAccountTestFactory } from './user-and-account.test.factory';
 
 describe('user-and-account.test.factory', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	const createParams = () => {

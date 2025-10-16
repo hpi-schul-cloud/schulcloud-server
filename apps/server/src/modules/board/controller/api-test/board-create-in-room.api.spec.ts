@@ -1,18 +1,16 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
 import { GroupEntityTypes } from '@modules/group/entity';
+import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
+import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
-import { RoleName } from '@shared/domain/interface/rolename.enum';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { groupEntityFactory } from '@testing/factory/group-entity.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, BoardLayout } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
@@ -45,17 +43,17 @@ describe(`create board in room (api)`, () => {
 	});
 
 	describe('When request is valid', () => {
-		describe('When user is allowed to edit the room', () => {
+		describe('When user is allowed to edit content in the room', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const account = accountFactory.withUser(user).build();
 
-				const role = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
+				const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 
 				const userGroup = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
-					users: [{ user, role }],
+					users: [{ user, role: roomEditorRole }],
 				});
 
 				const room = roomEntityFactory.buildWithId({ schoolId: user.school.id });
@@ -66,7 +64,7 @@ describe(`create board in room (api)`, () => {
 					schoolId: user.school.id,
 				});
 
-				await em.persistAndFlush([account, user, role, userGroup, room, roomMembership]);
+				await em.persistAndFlush([account, user, roomEditorRole, userGroup, room, roomMembership]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(account);
@@ -171,18 +169,18 @@ describe(`create board in room (api)`, () => {
 				const user = userFactory.buildWithId();
 				const account = accountFactory.withUser(user).build();
 
-				const role = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_VIEW] });
+				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 
 				const userGroup = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
-					users: [{ user, role }],
+					users: [{ user, role: roomViewerRole }],
 				});
 
 				const room = roomEntityFactory.buildWithId();
 
 				const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
-				await em.persistAndFlush([account, user, role, userGroup, room, roomMembership]);
+				await em.persistAndFlush([account, user, roomViewerRole, userGroup, room, roomMembership]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(account);
@@ -239,18 +237,18 @@ describe(`create board in room (api)`, () => {
 			const user = userFactory.buildWithId();
 			const account = accountFactory.withUser(user).build();
 
-			const role = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
+			const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 
 			const userGroup = groupEntityFactory.buildWithId({
 				type: GroupEntityTypes.ROOM,
-				users: [{ user, role }],
+				users: [{ user, role: roomEditorRole }],
 			});
 
 			const room = roomEntityFactory.buildWithId();
 
 			const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
-			await em.persistAndFlush([account, user, role, userGroup, room, roomMembership]);
+			await em.persistAndFlush([account, user, roomEditorRole, userGroup, room, roomMembership]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(account);

@@ -1,27 +1,27 @@
 export class LessonLinkedTaskDto {
-	name: string;
+	public name: string;
 
-	description: string;
+	public description: string;
 
-	descriptionInputFormat: LessonLinkedTaskDescriptionInputFormatType;
+	public descriptionInputFormat: LessonLinkedTaskDescriptionInputFormatType;
 
-	availableDate: string | null;
+	public availableDate: string | null;
 
-	dueDate: string | null;
+	public dueDate: string | null;
 
-	private: boolean;
+	public private: boolean;
 
-	publicSubmissions: boolean | null;
+	public publicSubmissions: boolean | null;
 
-	teamSubmissions: boolean | null;
+	public teamSubmissions: boolean | null;
 
-	creator: string | null;
+	public creator: string | null;
 
-	courseId: string | null;
+	public courseId: string | null;
 
-	submissionIds: string[];
+	public submissionIds: string[];
 
-	finishedIds: string[];
+	public finishedIds: string[];
 
 	constructor(props: LessonLinkedTaskDto) {
 		this.name = props.name;
@@ -47,4 +47,4 @@ export const LessonLinkedTaskDescriptionInputFormat = {
 } as const;
 
 export type LessonLinkedTaskDescriptionInputFormatType =
-	typeof LessonLinkedTaskDescriptionInputFormat[keyof typeof LessonLinkedTaskDescriptionInputFormat];
+	(typeof LessonLinkedTaskDescriptionInputFormat)[keyof typeof LessonLinkedTaskDescriptionInputFormat];

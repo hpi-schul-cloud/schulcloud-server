@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { Constructor, EntityId } from '@shared/domain/types';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { ColumnBoard, MediaBoard } from '../../domain';
 
 export class InvalidBoardTypeLoggableException extends BadRequestException implements Loggable {

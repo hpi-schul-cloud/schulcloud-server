@@ -69,4 +69,30 @@ describe('Class', () => {
 			});
 		});
 	});
+
+	describe('clearParticipants', () => {
+		describe('when participants are cleared', () => {
+			const setup = () => {
+				const class1 = ClassFactory.create();
+				const teacherId = new ObjectId().toHexString();
+				const userId = new ObjectId().toHexString();
+
+				class1.addTeacher(teacherId);
+				class1.addUser(userId);
+
+				return {
+					class1,
+				};
+			};
+
+			it('should clear teacherIds and userIds', () => {
+				const { class1 } = setup();
+
+				class1.clearParticipants();
+
+				expect(class1.teacherIds).toEqual([]);
+				expect(class1.userIds).toEqual([]);
+			});
+		});
+	});
 });

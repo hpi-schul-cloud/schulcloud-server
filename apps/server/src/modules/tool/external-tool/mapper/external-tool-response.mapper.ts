@@ -31,6 +31,7 @@ const locationMapping: Record<CustomParameterLocation, CustomParameterLocationPa
 	[CustomParameterLocation.PATH]: CustomParameterLocationParams.PATH,
 	[CustomParameterLocation.QUERY]: CustomParameterLocationParams.QUERY,
 	[CustomParameterLocation.BODY]: CustomParameterLocationParams.BODY,
+	[CustomParameterLocation.FRAGMENT]: CustomParameterLocationParams.FRAGMENT,
 };
 
 const typeMapping: Record<CustomParameterType, CustomParameterTypeParams> = {
@@ -42,12 +43,13 @@ const typeMapping: Record<CustomParameterType, CustomParameterTypeParams> = {
 	[CustomParameterType.AUTO_SCHOOLID]: CustomParameterTypeParams.AUTO_SCHOOLID,
 	[CustomParameterType.AUTO_SCHOOLNUMBER]: CustomParameterTypeParams.AUTO_SCHOOLNUMBER,
 	[CustomParameterType.AUTO_MEDIUMID]: CustomParameterTypeParams.AUTO_MEDIUMID,
+	[CustomParameterType.AUTO_PUBLISHER]: CustomParameterTypeParams.AUTO_PUBLISHER,
 	[CustomParameterType.AUTO_GROUP_EXTERNALUUID]: CustomParameterTypeParams.AUTO_GROUP_EXTERNALUUID,
 };
 
 @Injectable()
 export class ExternalToolResponseMapper {
-	static mapToExternalToolResponse(externalTool: ExternalTool): ExternalToolResponse {
+	public static mapToExternalToolResponse(externalTool: ExternalTool): ExternalToolResponse {
 		let mappedConfig: BasicToolConfigResponse | Lti11ToolConfigResponse | Oauth2ToolConfigResponse;
 		if (externalTool.config instanceof BasicToolConfig) {
 			mappedConfig = this.mapBasicToolConfigDOToResponse(externalTool.config);
@@ -80,12 +82,18 @@ export class ExternalToolResponseMapper {
 		});
 	}
 
-	private static mapMediumToResponse(medium?: ExternalToolMedium): ExternalToolMediumResponse | undefined {
+	public static mapMediumToResponse(medium?: ExternalToolMedium): ExternalToolMediumResponse | undefined {
 		if (!medium) {
 			return undefined;
 		}
 
-		return new ExternalToolMediumResponse({ ...medium });
+		return new ExternalToolMediumResponse({
+			status: medium.status,
+			mediumId: medium.mediumId,
+			publisher: medium.publisher,
+			mediaSourceId: medium.mediaSourceId,
+			modifiedAt: medium.metadataModifiedAt,
+		});
 	}
 
 	private static mapBasicToolConfigDOToResponse(externalToolConfigDO: BasicToolConfig): BasicToolConfigResponse {
@@ -100,7 +108,7 @@ export class ExternalToolResponseMapper {
 		return new Oauth2ToolConfigResponse({ ...externalToolConfigDO });
 	}
 
-	static mapCustomParameterToResponse(customParameters: CustomParameter[]): CustomParameterResponse[] {
+	public static mapCustomParameterToResponse(customParameters: CustomParameter[]): CustomParameterResponse[] {
 		return customParameters.map((customParameterDO: CustomParameter) => {
 			return {
 				name: customParameterDO.name,

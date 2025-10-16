@@ -30,7 +30,7 @@ export interface GetH5PFileResponse {
 	name: string;
 }
 
-interface H5PContentResponse {
+export interface H5PContentResponse {
 	h5p: IContentMetadata;
 	library: string;
 	params: {
@@ -82,13 +82,4 @@ export class H5PSaveResponse {
 
 	@ApiProperty({ type: H5PContentMetadata })
 	metadata!: H5PContentMetadata;
-}
-
-export interface GetFileResponse {
-	data: Readable;
-	etag?: string;
-	contentType?: string;
-	contentLength?: number;
-	contentRange?: string;
-	name: string;
 }

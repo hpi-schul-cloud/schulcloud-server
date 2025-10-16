@@ -1,6 +1,6 @@
 import { EntityId } from '@shared/domain/types/entity-id';
-import { System } from '../system.do';
-import { SystemQuery } from './system-query';
+import { System } from '../do/system.do';
+import { SystemQuery } from '../query/system-query';
 
 export interface SystemRepo {
 	find(filter: SystemQuery): Promise<System[]>;
@@ -12,6 +12,8 @@ export interface SystemRepo {
 	findByOauth2Issuer(issuer: string): Promise<System | null>;
 
 	findAllForLdapLogin(): Promise<System[]>;
+
+	save(domainObject: System): Promise<System>;
 
 	delete(domainObject: System): Promise<void>;
 }

@@ -10,4 +10,5 @@ git_push.sh
 index.ts
 models/course-common-cartridge-metadata-response.ts
 models/create-course-body-params.ts
+models/create-course-response.ts
 models/index.ts

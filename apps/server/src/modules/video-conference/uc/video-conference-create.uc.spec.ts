@@ -1,27 +1,27 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserService } from '@modules/user';
+import { userDoFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject';
-import {} from '@shared/domain/entity';
-import { VideoConferenceScope } from '@shared/domain/interface';
-import { BoardContextApiHelperService } from '@src/modules/board-context';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import { BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
-import { ErrorStatus } from '../error/error-status.enum';
-import { VideoConferenceOptions } from '../interface';
+import {
+	BBBBaseMeetingConfig,
+	BBBCreateResponse,
+	BBBMeetingInfoResponse,
+	BBBResponse,
+	BBBRole,
+	BBBStatus,
+} from '../bbb';
+import { VideoConferenceDO, VideoConferenceScope } from '../domain';
 import { BBBService, VideoConferenceService } from '../service';
-import { ScopeInfo, ScopeRef } from './dto';
 import { VideoConferenceCreateUc } from './video-conference-create.uc';
+import { VideoConferenceFeatureService } from './video-conference-feature.service';
 
 describe('VideoConferenceCreateUc', () => {
 	let module: TestingModule;
 	let uc: VideoConferenceCreateUc;
 	let bbbService: DeepMocked<BBBService>;
-	let userService: DeepMocked<UserService>;
 	let videoConferenceService: DeepMocked<VideoConferenceService>;
-	let boardContextApiHelperService: DeepMocked<BoardContextApiHelperService>;
+	let videoConferenceFeatureService: DeepMocked<VideoConferenceFeatureService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -32,25 +32,20 @@ describe('VideoConferenceCreateUc', () => {
 					useValue: createMock<BBBService>(),
 				},
 				{
-					provide: UserService,
-					useValue: createMock<UserService>(),
-				},
-				{
 					provide: VideoConferenceService,
 					useValue: createMock<VideoConferenceService>(),
 				},
 				{
-					provide: BoardContextApiHelperService,
-					useValue: createMock<BoardContextApiHelperService>(),
+					provide: VideoConferenceFeatureService,
+					useValue: createMock<VideoConferenceFeatureService>(),
 				},
 			],
 		}).compile();
 
-		uc = module.get<VideoConferenceCreateUc>(VideoConferenceCreateUc);
+		uc = module.get(VideoConferenceCreateUc);
 		bbbService = module.get(BBBService);
-		userService = module.get(UserService);
 		videoConferenceService = module.get(VideoConferenceService);
-		boardContextApiHelperService = module.get(BoardContextApiHelperService);
+		videoConferenceFeatureService = module.get(VideoConferenceFeatureService);
 	});
 
 	afterAll(async () => {
@@ -59,6 +54,7 @@ describe('VideoConferenceCreateUc', () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	const createBbbCreateSuccessResponse = (scopeId: string): BBBResponse<BBBCreateResponse> => {
@@ -85,52 +81,57 @@ describe('VideoConferenceCreateUc', () => {
 		describe('when meeting is not running', () => {
 			describe('when user role is moderator', () => {
 				const setup = () => {
-					const user: UserDO = userDoFactory.buildWithId();
-					const currentUserId: string = user.id as string;
+					const user = userDoFactory.buildWithId();
+					const currentUserId = user.id as string;
 
-					const scope: ScopeRef = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+					const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 
-					const options: VideoConferenceOptions = {
+					const options = {
 						everyAttendeeJoinsMuted: true,
 						everybodyJoinsAsModerator: true,
 						moderatorMustApproveJoinRequests: true,
 					};
 
-					const scopeInfo: ScopeInfo = {
+					const scopeInfo = {
 						scopeId: scope.id,
 						scopeName: VideoConferenceScope.COURSE,
 						title: 'title',
 						logoutUrl: 'logoutUrl',
 					};
 
-					const bbbCreateResponse: BBBResponse<BBBCreateResponse> = createBbbCreateSuccessResponse(scope.id);
+					const vcDo = new VideoConferenceDO({
+						id: new ObjectId().toHexString(),
+						target: scope.id,
+						targetModel: scope.scope,
+						options: options,
+						salt: 'salt',
+					});
+					videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions.mockResolvedValueOnce(vcDo);
 
-					bbbService.getMeetingInfo.mockRejectedValue(new Error('Meeting not found'));
-					userService.findById.mockResolvedValue(user);
-					videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
-					videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
+					bbbService.getMeetingInfo.mockRejectedValueOnce(new Error('Meeting not found'));
+
+					videoConferenceService.getScopeInfo.mockResolvedValueOnce(scopeInfo);
+
+					videoConferenceService.determineBbbRole.mockResolvedValueOnce(BBBRole.MODERATOR);
+
+					const bbbCreateResponse = createBbbCreateSuccessResponse(scope.id);
 
 					return { currentUserId, scope, options, bbbCreateResponse, scopeInfo };
 				};
 
-				it('should call videoConferenceService.throwOnFeaturesDisabled', async () => {
+				it('should call feature check service', async () => {
 					const { currentUserId, scope, options } = setup();
 
 					await uc.createIfNotRunning(currentUserId, scope, options);
 
-					expect(videoConferenceService.throwOnFeaturesDisabled).toHaveBeenCalled();
+					expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toHaveBeenCalled();
 				});
 
-				it('should call videoConferenceService.createOrUpdateVideoConferenceWithOptions', async () => {
+				it('should call bbbService.getMeetingInfo', async () => {
 					const { currentUserId, scope, options } = setup();
 
 					await uc.createIfNotRunning(currentUserId, scope, options);
-
-					expect(videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions).toBeCalledWith(
-						scope.id,
-						scope.scope,
-						options
-					);
+					expect(bbbService.getMeetingInfo).toBeCalledWith(new BBBBaseMeetingConfig({ meetingID: scope.id + 'salt' }));
 				});
 
 				it('should call videoConferenceService.getScopeInfo', async () => {
@@ -149,6 +150,18 @@ describe('VideoConferenceCreateUc', () => {
 					expect(videoConferenceService.determineBbbRole).toBeCalledWith(currentUserId, scopeInfo.scopeId, scope.scope);
 				});
 
+				it('should call videoConferenceService.createOrUpdateVideoConferenceWithOptions', async () => {
+					const { currentUserId, scope, options } = setup();
+
+					await uc.createIfNotRunning(currentUserId, scope, options);
+
+					expect(videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions).toBeCalledWith(
+						scope.id,
+						scope.scope,
+						options
+					);
+				});
+
 				it('should call bbbService.create', async () => {
 					const { currentUserId, scope, options } = setup();
 
@@ -160,28 +173,35 @@ describe('VideoConferenceCreateUc', () => {
 
 			describe('and user role is not moderator', () => {
 				const setup = () => {
-					const user: UserDO = userDoFactory.buildWithId();
-					const currentUserId: string = user.id as string;
+					const user = userDoFactory.buildWithId();
+					const currentUserId = user.id as string;
 
-					const scope: ScopeRef = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+					const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 
-					const options: VideoConferenceOptions = {
+					const options = {
 						everyAttendeeJoinsMuted: true,
 						everybodyJoinsAsModerator: true,
 						moderatorMustApproveJoinRequests: true,
 					};
 
-					const scopeInfo: ScopeInfo = {
+					const scopeInfo = {
 						scopeId: scope.id,
 						scopeName: VideoConferenceScope.COURSE,
 						title: 'title',
 						logoutUrl: 'logoutUrl',
 					};
 
-					bbbService.getMeetingInfo.mockRejectedValue(new Error('Meeting not found'));
-					userService.findById.mockResolvedValue(user);
-					videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
-					videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
+					bbbService.getMeetingInfo.mockRejectedValueOnce(new Error('Meeting not found'));
+					videoConferenceService.getScopeInfo.mockResolvedValueOnce(scopeInfo);
+					videoConferenceService.determineBbbRole.mockResolvedValueOnce(BBBRole.VIEWER);
+					const vcDo = new VideoConferenceDO({
+						id: new ObjectId().toHexString(),
+						target: scope.id,
+						targetModel: scope.scope,
+						options: options,
+						salt: 'salt',
+					});
+					videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions.mockResolvedValueOnce(vcDo);
 
 					return { currentUserId, scope, options };
 				};
@@ -191,30 +211,40 @@ describe('VideoConferenceCreateUc', () => {
 
 					const func = () => uc.createIfNotRunning(currentUserId, scope, options);
 
-					await expect(func()).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
+					await expect(func()).rejects.toThrow(ForbiddenException);
 				});
 			});
 		});
 
 		describe('when meeting is running', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
-				const currentUserId: string = user.id as string;
+				const user = userDoFactory.buildWithId();
+				const currentUserId = user.id as string;
 
-				const scope: ScopeRef = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 
-				const options: VideoConferenceOptions = {
+				const options = {
 					everyAttendeeJoinsMuted: true,
 					everybodyJoinsAsModerator: true,
 					moderatorMustApproveJoinRequests: true,
 				};
 
-				videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
-				bbbService.getMeetingInfo.mockResolvedValue({
+				const vcDo = new VideoConferenceDO({
+					id: new ObjectId().toHexString(),
+					target: scope.id,
+					targetModel: scope.scope,
+					options: options,
+					salt: 'salt',
+				});
+				videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValueOnce(vcDo);
+
+				videoConferenceService.determineBbbRole.mockResolvedValueOnce(BBBRole.MODERATOR);
+				bbbService.getMeetingInfo.mockResolvedValueOnce({
 					response: {
 						running: true,
 					},
 				} as BBBResponse<BBBMeetingInfoResponse>);
+				videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions.mockResolvedValueOnce(vcDo);
 
 				return { user, currentUserId, scope, options };
 			};
@@ -229,56 +259,48 @@ describe('VideoConferenceCreateUc', () => {
 		});
 
 		describe('feature check', () => {
-			describe('when scope is a video conference element', () => {
-				const setup = (scopeName: VideoConferenceScope) => {
-					const user: UserDO = userDoFactory.buildWithId();
+			const setup = (scopeName: VideoConferenceScope) => {
+				const user = userDoFactory.buildWithId();
+				const currentUserId = user.id as string;
 
-					const scope: ScopeRef = {
-						scope: scopeName,
-						id: new ObjectId().toHexString(),
-					};
-
-					const options: VideoConferenceOptions = {
-						everyAttendeeJoinsMuted: true,
-						everybodyJoinsAsModerator: true,
-						moderatorMustApproveJoinRequests: true,
-					};
-
-					const scopeInfo: ScopeInfo = {
-						scopeId: scope.id,
-						scopeName,
-						title: 'title',
-						logoutUrl: 'logoutUrl',
-					};
-
-					bbbService.getMeetingInfo.mockRejectedValue(new Error('Meeting not found'));
-					userService.findById.mockResolvedValue(user);
-					videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
-					videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
-
-					return { user, scope, options };
+				const scope = {
+					scope: scopeName,
+					id: new ObjectId().toHexString(),
 				};
 
-				it("should use the board context's schoolId", async () => {
-					const { user, scope, options } = setup(VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT);
+				const options = {
+					everyAttendeeJoinsMuted: true,
+					everybodyJoinsAsModerator: true,
+					moderatorMustApproveJoinRequests: true,
+				};
 
-					boardContextApiHelperService.getSchoolIdForBoardNode.mockResolvedValue('contextSchoolId');
+				const scopeInfo = {
+					scopeId: scope.id,
+					scopeName,
+					title: 'title',
+					logoutUrl: 'logoutUrl',
+				};
 
-					await uc.createIfNotRunning(user.id!, scope, options);
-
-					expect(boardContextApiHelperService.getSchoolIdForBoardNode).toBeCalledWith(scope.id);
-					expect(videoConferenceService.throwOnFeaturesDisabled).toBeCalledWith('contextSchoolId');
+				bbbService.getMeetingInfo.mockRejectedValueOnce(new Error('Meeting not found'));
+				videoConferenceService.getScopeInfo.mockResolvedValueOnce(scopeInfo);
+				videoConferenceService.determineBbbRole.mockResolvedValueOnce(BBBRole.MODERATOR);
+				const vcDo = new VideoConferenceDO({
+					id: new ObjectId().toHexString(),
+					target: scope.id,
+					targetModel: scope.scope,
+					options: options,
+					salt: 'salt',
 				});
+				videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions.mockResolvedValueOnce(vcDo);
+				return { user, currentUserId, scope, options };
+			};
 
-				describe('when scope is not a video conference element', () => {
-					it("should use the user's schoolId", async () => {
-						const { user, scope, options } = setup(VideoConferenceScope.COURSE);
+			it('should call the feature check service', async () => {
+				const { currentUserId, scope, options } = setup(VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT);
 
-						await uc.createIfNotRunning(user.id!, scope, options);
+				await uc.createIfNotRunning(currentUserId, scope, options);
 
-						expect(videoConferenceService.throwOnFeaturesDisabled).toBeCalledWith(user.schoolId);
-					});
-				});
+				expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toBeCalledWith(currentUserId, scope);
 			});
 		});
 	});

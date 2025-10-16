@@ -1,11 +1,10 @@
 import { AccountSave, AccountService } from '@modules/account';
-import { RoleDto, RoleService } from '@modules/role';
-import { UserService } from '@modules/user';
+import { RoleDto, RoleName, RoleService } from '@modules/role';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { RoleReference, UserDO } from '@shared/domain/domainobject';
-import { RoleName } from '@shared/domain/interface';
+import { RoleReference } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import CryptoJS from 'crypto-js';
+import crypto from 'node:crypto';
 import { ExternalUserDto } from '../../../dto';
 import { SchoolMissingLoggableException, UserRoleUnknownLoggableException } from '../../../loggable';
 
@@ -21,16 +20,16 @@ export class SchulconnexUserProvisioningService {
 		externalUser: ExternalUserDto,
 		systemId: EntityId,
 		schoolId?: string
-	): Promise<UserDO> {
-		const foundUser: UserDO | null = await this.userService.findByExternalId(externalUser.externalId, systemId);
+	): Promise<UserDo> {
+		const foundUser = await this.userService.findByExternalId(externalUser.externalId, systemId);
 
-		const roleRefs: RoleReference[] | undefined = await this.createRoleReferences(externalUser.roles);
+		const roleRefs = await this.createRoleReferences(externalUser.roles);
 		if (!roleRefs?.length) {
 			throw new UserRoleUnknownLoggableException(externalUser);
 		}
 
 		let createNewAccount = false;
-		let user: UserDO;
+		let user: UserDo;
 		if (foundUser) {
 			user = this.updateUser(externalUser, foundUser, roleRefs, schoolId);
 		} else {
@@ -42,12 +41,15 @@ export class SchulconnexUserProvisioningService {
 			user = this.createUser(externalUser, schoolId, roleRefs);
 		}
 
-		const savedUser: UserDO = await this.userService.save(user);
+		const savedUser = await this.userService.save(user);
 
 		if (createNewAccount) {
 			await this.accountService.saveWithValidation({
 				userId: savedUser.id,
-				username: CryptoJS.SHA256(savedUser.id as string).toString(CryptoJS.enc.Base64),
+				username: crypto
+					.createHash('sha256')
+					.update(savedUser.id as string)
+					.digest('base64'),
 				systemId,
 				activated: true,
 			} as AccountSave);
@@ -58,8 +60,8 @@ export class SchulconnexUserProvisioningService {
 
 	private async createRoleReferences(roles?: RoleName[]): Promise<RoleReference[] | undefined> {
 		if (roles?.length) {
-			const foundRoles: RoleDto[] = await this.roleService.findByNames(roles);
-			const roleRefs: RoleReference[] = foundRoles.map(
+			const foundRoles = await this.roleService.findByNames(roles);
+			const roleRefs = foundRoles.map(
 				(role: RoleDto): RoleReference => new RoleReference({ id: role.id, name: role.name })
 			);
 
@@ -71,11 +73,11 @@ export class SchulconnexUserProvisioningService {
 
 	private updateUser(
 		externalUser: ExternalUserDto,
-		foundUser: UserDO,
+		foundUser: UserDo,
 		roleRefs?: RoleReference[],
 		schoolId?: string
-	): UserDO {
-		const user: UserDO = foundUser;
+	): UserDo {
+		const user = foundUser;
 		user.firstName = externalUser.firstName ?? foundUser.firstName;
 		user.preferredName = externalUser.preferredName ?? foundUser.preferredName;
 		user.lastName = externalUser.lastName ?? foundUser.lastName;
@@ -87,8 +89,8 @@ export class SchulconnexUserProvisioningService {
 		return user;
 	}
 
-	private createUser(externalUser: ExternalUserDto, schoolId: string, roleRefs?: RoleReference[]): UserDO {
-		const user: UserDO = new UserDO({
+	private createUser(externalUser: ExternalUserDto, schoolId: string, roleRefs?: RoleReference[]): UserDo {
+		const user = new UserDo({
 			externalId: externalUser.externalId,
 			firstName: externalUser.firstName ?? '',
 			preferredName: externalUser.preferredName,

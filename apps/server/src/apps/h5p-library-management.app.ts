@@ -1,9 +1,9 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
+import { LegacyLogger } from '@core/logger';
 import { H5PLibraryManagementService } from '@modules/h5p-library-management';
 import { H5PLibraryManagementModule } from '@modules/h5p-library-management/h5p-library-management.app.module';
 import { NestFactory } from '@nestjs/core';
-import { LegacyLogger } from '@src/core/logger';
 import { install as sourceMapInstall } from 'source-map-support';
 
 async function bootstrap(): Promise<void> {

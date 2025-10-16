@@ -34,10 +34,10 @@ describe('filePermissionHelper', () => {
 
 		after(async () => {
 			const promises = [
-				...fixtures.files.map((_) => FileModel.findByIdAndRemove(_._id).exec()),
-				...fixtures.users.map((_) => userModel.findByIdAndRemove(_._id).exec()),
-				...fixtures.roles.map((_) => RoleModel.findByIdAndRemove(_._id).exec()),
-				...fixtures.courses.map((_) => courseModel.findByIdAndRemove(_._id).exec()),
+				...fixtures.files.map((_) => FileModel.findByIdAndDelete(_._id).exec()),
+				...fixtures.users.map((_) => userModel.findByIdAndDelete(_._id).exec()),
+				...fixtures.roles.map((_) => RoleModel.findByIdAndDelete(_._id).exec()),
+				...fixtures.courses.map((_) => courseModel.findByIdAndDelete(_._id).exec()),
 			];
 
 			await Promise.all(promises);

@@ -1,11 +1,12 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Action } from '@modules/authorization';
+import { BoardContextApiHelperService } from '@modules/board-context';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { RichTextContentBody } from '../controller/dto';
 import { BoardNodeFactory } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
@@ -17,6 +18,7 @@ import {
 	submissionItemFactory,
 } from '../testing';
 import { ElementUc } from './element.uc';
+import { AuthorizationContextBuilder } from '@modules/authorization';
 
 describe(ElementUc.name, () => {
 	let module: TestingModule;
@@ -30,6 +32,10 @@ describe(ElementUc.name, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				ElementUc,
+				{
+					provide: BoardContextApiHelperService,
+					useValue: createMock<BoardContextApiHelperService>(),
+				},
 				{
 					provide: BoardNodeAuthorizableService,
 					useValue: createMock<BoardNodeAuthorizableService>(),
@@ -62,7 +68,7 @@ describe(ElementUc.name, () => {
 		boardPermissionService = module.get(BoardNodePermissionService);
 		boardNodeService = module.get(BoardNodeService);
 		boardNodeFactory = module.get(BoardNodeFactory);
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {
@@ -99,7 +105,11 @@ describe(ElementUc.name, () => {
 
 				await uc.updateElement(user.id, element.id, content);
 
-				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, element, Action.write);
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					element,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the boardNodeService service to update content', async () => {
@@ -148,7 +158,11 @@ describe(ElementUc.name, () => {
 
 				await uc.deleteElement(user.id, element.id);
 
-				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, element, Action.write);
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					element,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should call the service to delete the element', async () => {
@@ -185,7 +199,11 @@ describe(ElementUc.name, () => {
 
 			await uc.checkElementReadPermission(user.id, drawingElement.id);
 
-			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, drawingElement, Action.read);
+			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
+				user.id,
+				drawingElement,
+				AuthorizationContextBuilder.read([])
+			);
 		});
 	});
 
@@ -248,7 +266,11 @@ describe(ElementUc.name, () => {
 
 				await uc.createSubmissionItem(user.id, submissionContainer.id, true);
 
-				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, submissionContainer, Action.read);
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					submissionContainer,
+					AuthorizationContextBuilder.read([])
+				);
 			});
 
 			it('should call BoardNodeAuthorizableService to get board authorizable', async () => {

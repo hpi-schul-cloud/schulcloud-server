@@ -1,21 +1,22 @@
+import { CourseService } from '@modules/course';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { DashboardEntity, GridPosition, GridPositionWithGroupIndex } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo, IDashboardRepo } from '@shared/repo';
-// import { NotFound } from '@feathersjs/errors'; // wrong import? see NotFoundException
+import { Dashboard, GridPosition, GridPositionWithGroupIndex } from '../domain/do/dashboard';
+import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 
 @Injectable()
 export class DashboardUc {
 	constructor(
-		@Inject('DASHBOARD_REPO') private readonly dashboardRepo: IDashboardRepo,
-		private readonly courseRepo: CourseRepo
+		@Inject(DASHBOARD_REPO) private readonly dashboardRepo: IDashboardRepo,
+		private readonly courseService: CourseService
 	) {}
 
-	async getUsersDashboard(userId: EntityId): Promise<DashboardEntity> {
+	public async getUsersDashboard(userId: EntityId, schoolId: EntityId): Promise<Dashboard> {
 		const dashboard = await this.dashboardRepo.getUsersDashboard(userId);
-		const [courses] = await this.courseRepo.findAllByUserId(
+		const [courses] = await this.courseService.findAllByUserId(
 			userId,
+			schoolId,
 			{ onlyActiveCourses: true },
 			{ order: { name: SortOrder.asc } }
 		);
@@ -25,12 +26,12 @@ export class DashboardUc {
 		return dashboard;
 	}
 
-	async moveElementOnDashboard(
+	public async moveElementOnDashboard(
 		dashboardId: EntityId,
 		from: GridPositionWithGroupIndex,
 		to: GridPositionWithGroupIndex,
 		userId: EntityId
-	): Promise<DashboardEntity> {
+	): Promise<Dashboard> {
 		const dashboard = await this.dashboardRepo.getDashboardById(dashboardId);
 		this.validateUsersMatch(dashboard, userId);
 
@@ -40,12 +41,12 @@ export class DashboardUc {
 		return dashboard;
 	}
 
-	async renameGroupOnDashboard(
+	public async renameGroupOnDashboard(
 		dashboardId: EntityId,
 		position: GridPosition,
 		params: string,
 		userId: EntityId
-	): Promise<DashboardEntity> {
+	): Promise<Dashboard> {
 		const dashboard = await this.dashboardRepo.getDashboardById(dashboardId);
 		this.validateUsersMatch(dashboard, userId);
 
@@ -56,7 +57,7 @@ export class DashboardUc {
 		return dashboard;
 	}
 
-	private validateUsersMatch(dashboard: DashboardEntity, userId: EntityId) {
+	private validateUsersMatch(dashboard: Dashboard, userId: EntityId): void {
 		if (dashboard.getUserId() !== userId) {
 			throw new NotFoundException('no such dashboard found');
 		}

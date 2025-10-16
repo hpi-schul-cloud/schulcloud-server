@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, ContentElementType } from '../../domain';
@@ -35,7 +35,7 @@ describe(`card create (api)`, () => {
 	const setup = async () => {
 		await cleanupCollections(em);
 		const { teacherAccount: account, teacherUser: user } = UserAndAccountTestFactory.buildTeacher();
-		const course = courseFactory.build({ teachers: [user] });
+		const course = courseEntityFactory.build({ school: user.school, teachers: [user] });
 		await em.persistAndFlush([user, account, course]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({

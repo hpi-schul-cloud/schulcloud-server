@@ -1,8 +1,8 @@
+import { SchoolService } from '@modules/school';
+import { SystemService } from '@modules/system';
+import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { SchoolService } from '@src/modules/school';
-import { UserService } from '@src/modules/user';
-import { System, SystemService } from '@src/modules/system';
 import { MeResponse } from './dto';
 import { MeResponseMapper } from './mapper';
 
@@ -25,14 +25,9 @@ export class MeUc {
 			this.userService.getUserEntityWithRoles(userId), // TODO: replace when user domain object is available
 		]);
 
-		let system: System | null = null;
-		if (systemId) {
-			system = await this.systemService.findById(systemId);
-		}
-
 		const permissions = user.resolvePermissions();
 
-		const dto = MeResponseMapper.mapToResponse(school, user, accountId, permissions, system);
+		const dto = MeResponseMapper.mapToResponse(school, user, accountId, permissions, systemId);
 
 		return dto;
 	}

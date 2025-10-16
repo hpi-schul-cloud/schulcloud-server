@@ -1,8 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Action, AuthorizationContext, AuthorizationService } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+} from '@modules/authorization';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { BoardNodeAuthorizable, BoardRoles, UserWithBoardRoles } from '../domain';
 import { columnBoardFactory } from '../testing';
 import { BoardNodeAuthorizableService } from './board-node-authorizable.service';
@@ -33,7 +39,7 @@ describe(BoardNodePermissionService.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterEach(() => {
@@ -54,6 +60,7 @@ describe(BoardNodePermissionService.name, () => {
 				id: anyBoardDo.id,
 				boardNode: anyBoardDo,
 				rootNode: columnBoardFactory.build(),
+				boardContextSettings: {},
 			});
 
 			return { anyBoardDo, boardNodeAuthorizable, user };
@@ -61,14 +68,14 @@ describe(BoardNodePermissionService.name, () => {
 
 		it('should call authorization service to getUserWithPermission', async () => {
 			const { anyBoardDo, user } = setup();
-			await service.checkPermission(user.id, anyBoardDo, Action.write);
+			await service.checkPermission(user.id, anyBoardDo, AuthorizationContextBuilder.write([]));
 
 			expect(authorizationService.getUserWithPermissions).toBeCalledWith(user.id);
 		});
 
-		it('should call boardDNodeuthorizableService to getBoardAuthorizable', async () => {
+		it('should call boardNodeAuthorizableService to getBoardAuthorizable', async () => {
 			const { anyBoardDo, user } = setup();
-			await service.checkPermission(user.id, anyBoardDo, Action.write);
+			await service.checkPermission(user.id, anyBoardDo, AuthorizationContextBuilder.write([]));
 
 			expect(boardNodeAuthorizableService.getBoardAuthorizable).toBeCalledWith(anyBoardDo);
 		});
@@ -79,12 +86,11 @@ describe(BoardNodePermissionService.name, () => {
 
 			boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizable);
 
-			await service.checkPermission(user.id, anyBoardDo, Action.write);
-
 			const permissionContext: AuthorizationContext = {
 				action: Action.write,
 				requiredPermissions: [],
 			};
+			await service.checkPermission(user.id, anyBoardDo, permissionContext);
 
 			expect(authorizationService.checkPermission).toBeCalledWith(user, boardNodeAuthorizable, permissionContext);
 		});
@@ -103,6 +109,7 @@ describe(BoardNodePermissionService.name, () => {
 				id: anyBoardDo.id,
 				boardNode: anyBoardDo,
 				rootNode: anyBoardDo,
+				boardContextSettings: {},
 			});
 			const result = service.isUserBoardEditor(user.id, boardDoAuthorizable.users);
 			expect(result).toBe(true);
@@ -115,6 +122,7 @@ describe(BoardNodePermissionService.name, () => {
 				id: anyBoardDo.id,
 				boardNode: anyBoardDo,
 				rootNode: anyBoardDo,
+				boardContextSettings: {},
 			});
 			const result = service.isUserBoardEditor(user.id, boardDoAuthorizable.users);
 			expect(result).toBe(false);
@@ -127,6 +135,7 @@ describe(BoardNodePermissionService.name, () => {
 				id: anyBoardDo.id,
 				boardNode: anyBoardDo,
 				rootNode: anyBoardDo,
+				boardContextSettings: {},
 			});
 			const result = service.isUserBoardEditor(user.id, boardDoAuthorizable.users);
 			expect(result).toBe(false);

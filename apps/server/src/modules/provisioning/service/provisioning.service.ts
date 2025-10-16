@@ -4,38 +4,35 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
 import { ProvisioningSystemInputMapper } from '../mapper/provisioning-system-input.mapper';
 import {
-	IservProvisioningStrategy,
 	OidcMockProvisioningStrategy,
 	ProvisioningStrategy,
-	SanisProvisioningStrategy,
+	SchulconnexAsyncProvisioningStrategy,
+	TspProvisioningStrategy,
 } from '../strategy';
-import { TspProvisioningStrategy } from '../strategy/tsp/tsp.strategy';
 
 @Injectable()
 export class ProvisioningService {
-	strategies: Map<SystemProvisioningStrategy, ProvisioningStrategy> = new Map<
+	private readonly strategies: Map<SystemProvisioningStrategy, ProvisioningStrategy> = new Map<
 		SystemProvisioningStrategy,
 		ProvisioningStrategy
 	>();
 
 	constructor(
 		private readonly systemService: SystemService,
-		private readonly sanisStrategy: SanisProvisioningStrategy,
-		private readonly iservStrategy: IservProvisioningStrategy,
+		private readonly schulconnexAsyncProvisioningStrategy: SchulconnexAsyncProvisioningStrategy,
 		private readonly oidcMockStrategy: OidcMockProvisioningStrategy,
 		private readonly tspStrategy: TspProvisioningStrategy
 	) {
-		this.registerStrategy(sanisStrategy);
-		this.registerStrategy(iservStrategy);
+		this.registerStrategy(schulconnexAsyncProvisioningStrategy);
 		this.registerStrategy(oidcMockStrategy);
 		this.registerStrategy(tspStrategy);
 	}
 
-	protected registerStrategy(strategy: ProvisioningStrategy) {
+	protected registerStrategy(strategy: ProvisioningStrategy): void {
 		this.strategies.set(strategy.getType(), strategy);
 	}
 
-	async getData(systemId: string, idToken: string, accessToken: string): Promise<OauthDataDto> {
+	public async getData(systemId: string, idToken: string, accessToken: string): Promise<OauthDataDto> {
 		const system: ProvisioningSystemDto = await this.determineInput(systemId);
 		const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 			accessToken,
@@ -57,9 +54,11 @@ export class ProvisioningService {
 		return inputDto;
 	}
 
-	async provisionData(oauthData: OauthDataDto): Promise<ProvisioningDto> {
+	public async provisionData(oauthData: OauthDataDto): Promise<ProvisioningDto> {
 		const strategy: ProvisioningStrategy = this.getProvisioningStrategy(oauthData.system.provisioningStrategy);
+
 		const provisioningDto: Promise<ProvisioningDto> = strategy.apply(oauthData);
+
 		return provisioningDto;
 	}
 

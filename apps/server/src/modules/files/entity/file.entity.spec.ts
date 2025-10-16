@@ -1,7 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FileOwnerModel } from '@modules/files/domain';
-import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { storageProviderFactory } from '@modules/school/testing';
+import { FileOwnerModel } from '../domain';
 import { FileSecurityCheckEntity } from './file-security-check.entity';
 import { FileEntity } from './file.entity';
 import { fileEntityFactory, filePermissionEntityFactory } from './testing';
@@ -34,10 +33,6 @@ describe(FileEntity.name, () => {
 			permissions: file.permissions,
 			versionKey: file.versionKey,
 		});
-
-	beforeAll(async () => {
-		await setupEntities();
-	});
 
 	describe('removePermissionsByRefId', () => {
 		describe('when called on a file that contains some permission with given refId', () => {

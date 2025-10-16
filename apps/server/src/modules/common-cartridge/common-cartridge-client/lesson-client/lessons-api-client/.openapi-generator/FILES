@@ -1,6 +1,5 @@
 .gitignore
 .npmignore
-.openapi-generator-ignore
 api.ts
 api/lesson-api.ts
 base.ts
@@ -12,13 +11,10 @@ models/component-etherpad-props-impl.ts
 models/component-geogebra-props-impl.ts
 models/component-internal-props-impl.ts
 models/component-lernstore-props-impl.ts
-models/component-nexboard-props-impl.ts
 models/component-text-props-impl.ts
 models/index.ts
-models/lesson-content-response-content.ts
+models/lernstore-resources.ts
 models/lesson-content-response.ts
 models/lesson-linked-task-response.ts
-models/lesson-metadata-list-response.ts
-models/lesson-metadata-response.ts
 models/lesson-response.ts
 models/material-response.ts

@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { EtherpadClientAdapter } from '@infra/etherpad-client';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { EtherpadClientAdapter } from '@src/infra/etherpad-client';
-import { ServerTestModule } from '@src/modules/server';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';

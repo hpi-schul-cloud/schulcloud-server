@@ -1,6 +1,6 @@
+import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { IdTokenExtractionFailureLoggableException } from '@src/modules/oauth/loggable';
 import jwt from 'jsonwebtoken';
 import {
 	ExternalUserDto,

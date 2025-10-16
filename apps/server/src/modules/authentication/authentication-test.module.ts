@@ -1,20 +1,21 @@
+import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
-import { CacheWrapperModule } from '@infra/cache';
-import { IdentityManagementModule } from '@infra/identity-management';
 import { EncryptionModule } from '@infra/encryption';
+import { IdentityManagementModule } from '@infra/identity-management';
+import { ValkeyClientModule } from '@infra/valkey-client';
 import { AccountModule } from '@modules/account';
+import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { OauthModule } from '@modules/oauth/oauth.module';
 import { RoleModule } from '@modules/role';
 import { SystemModule } from '@modules/system';
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { HttpModule } from '@nestjs/axios';
-import { LegacySchoolRepo, UserRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { UserModule } from '../user';
+import { SESSION_VALKEY_CLIENT } from './authentication-config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { LogoutService } from './services';
 import { AuthenticationService } from './services/authentication.service';
@@ -61,14 +62,14 @@ const createJwtOptions = () => {
 		OauthModule,
 		RoleModule,
 		IdentityManagementModule,
-		CacheWrapperModule,
 		AuthGuardModule.register([AuthGuardOptions.JWT]),
 		UserModule,
 		HttpModule,
 		EncryptionModule,
+		UserModule,
+		ValkeyClientModule.registerInMemory(SESSION_VALKEY_CLIENT),
 	],
 	providers: [
-		UserRepo,
 		LegacySchoolRepo,
 		LocalStrategy,
 		AuthenticationService,

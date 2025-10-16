@@ -89,7 +89,7 @@ describe(OauthSessionTokenService.name, () => {
 		describe('when an user id is provided', () => {
 			const setup = () => {
 				const sessionToken = oauthSessionTokenFactory.build();
-				const userId: string = sessionToken.userId;
+				const { userId } = sessionToken;
 
 				repo.findLatestByUserId.mockResolvedValue(sessionToken);
 

@@ -1,87 +1,3 @@
-  - name: API TSP Sync Service
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-tsp-sync-svc.yml.j2
-    when: WITH_TSP
-    tags:
-      - service
-
-  - name: remove API TSP Sync Service
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      state: absent
-      api_version: v1
-      kind: Service
-      name: api-tsp-sync-svc
-    when: not WITH_TSP
-    tags:
-      - service
-
-  - name: API TSP Sync Deployment
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-tsp-sync-deployment.yml.j2
-    when: WITH_TSP
-    tags:
-      - deployment
-
-  - name: remove API TSP Sync Deployment
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      state: absent
-      api_version: apps/v1
-      kind: Deployment
-      namespace: "{{ NAMESPACE }}"
-      name: api-tsp-sync-deployment
-    when: not WITH_TSP
-    tags:
-      - deployment
-
-  - name: API TSP Sync Base CronJob
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-tsp-sync-base-cronjob.yml.j2
-    when: WITH_TSP
-    tags:
-      - cronjob
-
-  - name: remove API TSP Sync Base CronJob
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      state: absent
-      api_version: batch/v1
-      kind: CronJob
-      namespace: "{{ NAMESPACE }}"
-      name: api-tsp-sync-base-cronjob
-    when: not WITH_TSP
-    tags:
-      - cronjob
-
-  - name: API TSP Sync School CronJob
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-tsp-sync-school-cronjob.yml.j2
-    when: WITH_TSP
-    tags:
-      - cronjob
-
-  - name: remove API TSP Sync School CronJob
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      state: absent
-      api_version: batch/v1
-      kind: CronJob
-      namespace: "{{ NAMESPACE }}"
-      name: api-tsp-sync-school-cronjob
-    when: not WITH_TSP
-    tags:
-      - cronjob
-
   - name: API TSP Sync CronJob
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -153,5 +69,29 @@
       name: api-tsp-sync-init
       state: absent
     when: not WITH_TSP_SYNC
+    tags:
+      - job
+
+  # --- Very hacky and shall not be copied anywhere, looking forward to BC-6900 and friends for a cleaner solution. ---
+  # This disables the sync CronJob in all namespaces except "main"
+  # to avoid potential database overload in dev environments.
+  # Developers can still trigger it manually via kubectl if needed.
+  - name: Suspend the API TSP Sync CronJob (conditionally)
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      api_version: batch/v1
+      kind: CronJob
+      name: api-tsp-sync-cronjob
+      definition:
+        spec:
+          suspend: true
+      merge_type:
+        - strategic-merge
+        - merge
+    when:
+      - WITH_TSP_SYNC
+      - TSP_SYNC_CRONJOB_RESTRICTED_TO_MAIN | default(false)
+      - NAMESPACE != "main"
     tags:
       - job

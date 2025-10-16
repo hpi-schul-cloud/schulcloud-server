@@ -12,6 +12,10 @@ describe('JwtExtractor', () => {
 		request = createMock<Request>();
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	describe('fromCookie extractor', () => {
 		let extractor: JwtFromRequestFunction;
 
@@ -44,17 +48,34 @@ describe('JwtExtractor', () => {
 	});
 
 	describe('extractJwtFromRequest', () => {
-		describe('when no token is found', () => {
-			it('should throw an UnauthorizedException', () => {
-				expect(() => JwtExtractor.extractJwtFromRequest(request)).toThrow(UnauthorizedException);
+		describe('when jwt is present in the request', () => {
+			const setup = () => {
+				const token = faker.string.alphanumeric(42);
+
+				request.headers.authorization = `Bearer ${token}`;
+
+				return token;
+			};
+
+			it('should return the jwt', () => {
+				const token = setup();
+
+				const result = JwtExtractor.extractJwtFromRequestOrFail(request);
+
+				expect(result).toEqual(token);
 			});
 		});
 
-		it('should return the token if exists in cookie', () => {
-			const token = faker.string.alphanumeric(42);
-			request.headers.authorization = `Bearer ${token}`;
+		describe('when jwt is not present in the request', () => {
+			const setup = () => {
+				request.headers.authorization = undefined;
+			};
 
-			expect(JwtExtractor.extractJwtFromRequest(request)).toEqual(token);
+			it('should throw an UnauthorizedException', () => {
+				setup();
+
+				expect(() => JwtExtractor.extractJwtFromRequestOrFail(request)).toThrow(UnauthorizedException);
+			});
 		});
 	});
 });

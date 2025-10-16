@@ -70,9 +70,11 @@ describe('ToolReferenceService', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
 				const contextExternalToolId = new ObjectId().toHexString();
+				const domain = 'test.com';
 				const externalTool = externalToolFactory
 					.withLti11Config({
 						lti_message_type: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST,
+						baseUrl: 'https://test.com/:test/123',
 					})
 					.buildWithId({
 						thumbnail: fileRecordRefFactory.build(),
@@ -108,6 +110,7 @@ describe('ToolReferenceService', () => {
 					contextExternalTool,
 					logoUrl,
 					userId,
+					domain,
 				};
 			};
 
@@ -133,13 +136,14 @@ describe('ToolReferenceService', () => {
 			});
 
 			it('should return the tool reference', async () => {
-				const { contextExternalToolId, logoUrl, contextExternalTool, externalTool, userId } = setup();
+				const { contextExternalToolId, logoUrl, contextExternalTool, externalTool, userId, domain } = setup();
 
 				const result: ToolReference = await service.getToolReference(contextExternalToolId, userId);
 
 				expect(result).toEqual<ToolReference>({
 					logoUrl,
 					displayName: contextExternalTool.displayName as string,
+					domain,
 					openInNewTab: externalTool.openNewTab,
 					status: toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeSchool: true,

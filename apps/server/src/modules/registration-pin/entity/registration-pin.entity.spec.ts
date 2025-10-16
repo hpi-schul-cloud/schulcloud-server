@@ -1,10 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { RegistrationPinEntity } from '.';
 
 describe(RegistrationPinEntity.name, () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([RegistrationPinEntity]);
 	});
 
 	beforeEach(() => {

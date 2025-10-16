@@ -1,8 +1,8 @@
-import { InstanceModule } from '@modules/instance';
-import { Module } from '@nestjs/common';
-import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
+import { InstanceModule } from '@modules/instance';
+import { SubmissionRepo, TaskRepo } from '@modules/task/repo';
+import { Module } from '@nestjs/common';
 import { AuthorizationReferenceService, ReferenceLoader } from './domain';
 
 /**
@@ -12,16 +12,7 @@ import { AuthorizationReferenceService, ReferenceLoader } from './domain';
  */
 @Module({
 	imports: [AuthorizationModule, LoggerModule, InstanceModule],
-	providers: [
-		ReferenceLoader,
-		UserRepo,
-		CourseRepo,
-		CourseGroupRepo,
-		TaskRepo,
-		LegacySchoolRepo,
-		SubmissionRepo,
-		AuthorizationReferenceService,
-	],
+	providers: [ReferenceLoader, TaskRepo, SubmissionRepo, AuthorizationReferenceService],
 	exports: [AuthorizationReferenceService],
 })
 export class AuthorizationReferenceModule {}

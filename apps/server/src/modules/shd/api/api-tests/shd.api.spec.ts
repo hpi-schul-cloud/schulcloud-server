@@ -1,10 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { LoginDto } from '@modules/authentication';
 import { InstanceEntity } from '@modules/instance';
 import { instanceEntityFactory } from '@modules/instance/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { LoginDto } from '@src/modules/authentication';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { TargetUserIdParams } from '../dtos/target-user-id.params';

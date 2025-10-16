@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
-import { Loggable } from '@src/core/logger/interfaces';
-import { ErrorLogMessage } from '@src/core/logger/types';
+import { Loggable } from '@core/logger/interfaces';
+import { ErrorLogMessage } from '@core/logger/types';
 
 export class InvalidTokenLoggableException extends BadRequestException implements Loggable {
 	getLogMessage(): ErrorLogMessage {

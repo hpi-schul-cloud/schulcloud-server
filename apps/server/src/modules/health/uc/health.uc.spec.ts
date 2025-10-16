@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { HealthUC } from './health.uc';
 import { HealthService } from '../service';
 import { HealthStatuses } from '../domain';

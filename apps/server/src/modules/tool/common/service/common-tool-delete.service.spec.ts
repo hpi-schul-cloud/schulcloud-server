@@ -1,11 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { ContextExternalToolDeletedEvent } from '../../context-external-tool/domain';
+import { ContextExternalToolRepo } from '../../context-external-tool/repo';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
+import { ExternalToolRepo } from '../../external-tool/repo';
 import { externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalToolRef } from '../../school-external-tool/domain';
+import { SchoolExternalToolRepo } from '../../school-external-tool/repo';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { CommonToolDeleteService } from './common-tool-delete.service';
 

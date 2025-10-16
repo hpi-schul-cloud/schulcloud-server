@@ -1,28 +1,23 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { RoleService } from '@modules/role';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { School, SchoolService } from '@modules/school/domain';
-import { schoolFactory } from '@modules/school/testing';
+import { roleDtoFactory, roleFactory } from '@modules/role/testing';
+import { SchoolService } from '@modules/school/domain';
+import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Page, UserDO } from '@shared/domain/domainobject';
-import { Role, User } from '@shared/domain/entity';
+import { Page } from '@shared/domain/domainobject';
 import { Permission, SortOrder } from '@shared/domain/interface';
-import { Logger } from '@src/core/logger';
-import { groupFactory } from '@testing/factory/domainobject';
-import { roleDtoFactory } from '@testing/factory/role-dto.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { setupEntities } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { Group, GroupTypes, GroupVisibilityPermission } from '../domain';
 import { GroupService } from '../service';
-import { ResolvedGroupDto } from './dto';
+import { groupFactory } from '../testing';
 import { GroupUc } from './group.uc';
 
 describe(GroupUc.name, () => {
@@ -75,7 +70,7 @@ describe(GroupUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		logger = module.get(Logger);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {
@@ -89,7 +84,7 @@ describe(GroupUc.name, () => {
 	describe('getGroup', () => {
 		describe('when the user has no permission', () => {
 			const setup = () => {
-				const user: User = userFactory.buildWithId();
+				const user = userFactory.buildWithId();
 				const error = new ForbiddenException();
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
@@ -136,28 +131,28 @@ describe(GroupUc.name, () => {
 			const setup = () => {
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
-				const group: Group = groupFactory.build({
+				const group = groupFactory.build({
 					users: [
 						{ userId: teacherUser.id, roleId: teacherUser.roles[0].id },
 						{ userId: studentUser.id, roleId: studentUser.roles[0].id },
 					],
 				});
-				const teacherRole: RoleDto = roleDtoFactory.build({
+				const teacherRole = roleDtoFactory.build({
 					id: teacherUser.roles[0].id,
 					name: teacherUser.roles[0].name,
 				});
-				const studentRole: RoleDto = roleDtoFactory.build({
+				const studentRole = roleDtoFactory.build({
 					id: studentUser.roles[0].id,
 					name: studentUser.roles[0].name,
 				});
-				const teacherUserDo: UserDO = userDoFactory.build({
+				const teacherUserDo = userDoFactory.build({
 					id: teacherUser.id,
 					firstName: teacherUser.firstName,
 					lastName: teacherUser.lastName,
 					email: teacherUser.email,
 					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
 				});
-				const studentUserDo: UserDO = userDoFactory.build({
+				const studentUserDo = userDoFactory.build({
 					id: studentUser.id,
 					firstName: teacherUser.firstName,
 					lastName: studentUser.lastName,
@@ -187,7 +182,7 @@ describe(GroupUc.name, () => {
 			it('should return the resolved group', async () => {
 				const { teacherId, teacherUser, studentUser, group, expectedExternalId, expectedSystemId } = setup();
 
-				const result: ResolvedGroupDto = await uc.getGroup(teacherId, group.id);
+				const result = await uc.getGroup(teacherId, group.id);
 
 				expect(result).toMatchObject({
 					id: group.id,
@@ -231,28 +226,28 @@ describe(GroupUc.name, () => {
 			const setup = () => {
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
-				const group: Group = groupFactory.build({
+				const group = groupFactory.build({
 					users: [
 						{ userId: teacherUser.id, roleId: teacherUser.roles[0].id },
 						{ userId: studentUser.id, roleId: studentUser.roles[0].id },
 					],
 				});
-				const teacherRole: RoleDto = roleDtoFactory.build({
+				const teacherRole = roleDtoFactory.build({
 					id: teacherUser.roles[0].id,
 					name: teacherUser.roles[0].name,
 				});
-				const studentRole: RoleDto = roleDtoFactory.build({
+				const studentRole = roleDtoFactory.build({
 					id: studentUser.roles[0].id,
 					name: studentUser.roles[0].name,
 				});
-				const teacherUserDo: UserDO = userDoFactory.build({
+				const teacherUserDo = userDoFactory.build({
 					id: teacherUser.id,
 					firstName: teacherUser.firstName,
 					lastName: teacherUser.lastName,
 					email: teacherUser.email,
 					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
 				});
-				const studentUserDo: UserDO = userDoFactory.build({
+				const studentUserDo = userDoFactory.build({
 					id: studentUser.id,
 					firstName: teacherUser.firstName,
 					lastName: studentUser.lastName,
@@ -288,8 +283,8 @@ describe(GroupUc.name, () => {
 	describe('getAllGroups', () => {
 		describe('when the user has no permission', () => {
 			const setup = () => {
-				const school: School = schoolFactory.build();
-				const user: User = userFactory.buildWithId();
+				const school = schoolFactory.build();
+				const user = userFactory.buildWithId();
 				const error = new ForbiddenException();
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
@@ -313,26 +308,26 @@ describe(GroupUc.name, () => {
 
 		describe('when an admin requests groups', () => {
 			const setup = () => {
-				const school: School = schoolFactory.build();
-				const role: Role = roleFactory.buildWithId({
+				const school = schoolFactory.build();
+				const role = roleFactory.buildWithId({
 					permissions: [Permission.GROUP_FULL_ADMIN, Permission.GROUP_VIEW],
 				});
-				const user: User = userFactory.buildWithId({
+				const user = userFactory.buildWithId({
 					roles: [role],
 					school: schoolEntityFactory.buildWithId(undefined, school.id),
 				});
-				const userRole: RoleDto = roleDtoFactory.build({
+				const userRole = roleDtoFactory.build({
 					id: role.id,
 					name: role.name,
 				});
-				const userDto: UserDO = userDoFactory.build({
+				const userDto = userDoFactory.build({
 					id: user.id,
 					firstName: user.firstName,
 					lastName: user.lastName,
 					email: user.email,
 					roles: [{ id: role.id, name: role.name }],
 				});
-				const group: Group = groupFactory.build({ organizationId: school.id });
+				const group = groupFactory.build({ organizationId: school.id });
 
 				const nameQuery = 'name';
 
@@ -386,24 +381,24 @@ describe(GroupUc.name, () => {
 
 		describe('when teacher requests groups and he can see students', () => {
 			const setup = () => {
-				const school: School = schoolFactory.build();
-				const role: Role = roleFactory.buildWithId({ permissions: [Permission.STUDENT_LIST, Permission.GROUP_VIEW] });
-				const user: User = userFactory.buildWithId({
+				const school = schoolFactory.build();
+				const role = roleFactory.buildWithId({ permissions: [Permission.STUDENT_LIST, Permission.GROUP_VIEW] });
+				const user = userFactory.buildWithId({
 					roles: [role],
 					school: schoolEntityFactory.buildWithId(undefined, school.id),
 				});
-				const userRole: RoleDto = roleDtoFactory.build({
+				const userRole = roleDtoFactory.build({
 					id: role.id,
 					name: role.name,
 				});
-				const userDto: UserDO = userDoFactory.build({
+				const userDto = userDoFactory.build({
 					id: user.id,
 					firstName: user.firstName,
 					lastName: user.lastName,
 					email: user.email,
 					roles: [{ id: role.id, name: role.name }],
 				});
-				const group: Group = groupFactory.build({ organizationId: school.id });
+				const group = groupFactory.build({ organizationId: school.id });
 
 				const nameQuery = 'name';
 
@@ -458,24 +453,24 @@ describe(GroupUc.name, () => {
 
 		describe('when teacher requests groups and he cannot see students', () => {
 			const setup = () => {
-				const school: School = schoolFactory.build();
-				const role: Role = roleFactory.buildWithId({ permissions: [Permission.STUDENT_LIST, Permission.GROUP_VIEW] });
-				const user: User = userFactory.buildWithId({
+				const school = schoolFactory.build();
+				const role = roleFactory.buildWithId({ permissions: [Permission.STUDENT_LIST, Permission.GROUP_VIEW] });
+				const user = userFactory.buildWithId({
 					roles: [role],
 					school: schoolEntityFactory.buildWithId(undefined, school.id),
 				});
-				const userRole: RoleDto = roleDtoFactory.build({
+				const userRole = roleDtoFactory.build({
 					id: role.id,
 					name: role.name,
 				});
-				const userDto: UserDO = userDoFactory.build({
+				const userDto = userDoFactory.build({
 					id: user.id,
 					firstName: user.firstName,
 					lastName: user.lastName,
 					email: user.email,
 					roles: [{ id: role.id, name: role.name }],
 				});
-				const group: Group = groupFactory.build({ organizationId: school.id });
+				const group = groupFactory.build({ organizationId: school.id });
 
 				const nameQuery = 'name';
 

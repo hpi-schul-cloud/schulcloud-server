@@ -1,12 +1,11 @@
-import { ObjectId } from 'bson';
+import { createMock } from '@golevelup/ts-jest';
+import { ConsoleWriterService } from '@infra/console';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { ObjectId } from 'bson';
+import { UsersSyncOptionsBuilder } from '../testing';
 import { IdpSyncConsole } from './idp-sync-console';
 import { SystemType } from './interface';
-import { UsersSyncOptionsBuilder } from '../testing';
 import { SynchronizationUc } from './synchronization.uc';
-import { IdpConsoleModule } from '../idp-console.app.module';
 
 // Sorry but in the end this test do test neraly nothing..
 describe(IdpSyncConsole.name, () => {
@@ -16,8 +15,21 @@ describe(IdpSyncConsole.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [IdpConsoleModule, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions })],
+			providers: [
+				IdpSyncConsole,
+				{
+					provide: ConsoleWriterService,
+					useValue: createMock<ConsoleWriterService>(),
+				},
+				{
+					provide: SynchronizationUc,
+					useValue: createMock<SynchronizationUc>(),
+				},
+			],
 		}).compile();
+
+		const app = module.createNestApplication();
+		await app.init();
 
 		console = module.get(IdpSyncConsole);
 		synchronizationUc = module.get(SynchronizationUc);

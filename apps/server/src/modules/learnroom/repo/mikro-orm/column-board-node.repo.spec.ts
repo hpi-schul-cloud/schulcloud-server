@@ -1,9 +1,9 @@
-import { EntityManager } from '@mikro-orm/mongodb';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ColumnBoardNode } from '@shared/domain/entity/column-board-node.entity';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { columnBoardFactory } from '@modules/board/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ColumnBoardNodeRepo } from './column-board-node.repo';
+import { ColumnBoardNode } from './column-board-node.entity';
 
 describe('ColumnBoardNodeRepo', () => {
 	let module: TestingModule;

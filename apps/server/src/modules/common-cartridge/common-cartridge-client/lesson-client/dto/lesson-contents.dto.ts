@@ -25,9 +25,7 @@ export const LessonContentDtoComponentValues = {
 	INTERNAL: 'internal',
 	RESOURCES: 'resources',
 	TEXT: 'text',
-	NE_XBOARD: 'neXboard',
-	LERNSTORE: 'lernstore',
 } as const;
 
 export type LessonContentDtoComponent =
-	typeof LessonContentDtoComponentValues[keyof typeof LessonContentDtoComponentValues];
+	(typeof LessonContentDtoComponentValues)[keyof typeof LessonContentDtoComponentValues];

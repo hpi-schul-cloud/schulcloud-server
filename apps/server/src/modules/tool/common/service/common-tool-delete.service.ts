@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
-import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { EntityId } from '@shared/domain/types';
-import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, ContextExternalToolDeletedEvent } from '../../context-external-tool/domain';
+import { ContextExternalToolRepo } from '../../context-external-tool/repo/mikro-orm';
 import type { ExternalTool } from '../../external-tool/domain';
+import { ExternalToolRepo } from '../../external-tool/repo';
 import type { SchoolExternalTool } from '../../school-external-tool/domain';
+import { SchoolExternalToolRepo } from '../../school-external-tool/repo';
+import { ToolContextType } from '../enum';
 
 @Injectable()
 export class CommonToolDeleteService {

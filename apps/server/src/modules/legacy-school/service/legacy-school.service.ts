@@ -1,11 +1,10 @@
 import { FileStorageType } from '@modules/school';
+import { FederalStateService, SchoolFeature, SchoolYearService } from '@modules/school/domain';
+import { StorageProviderRepo } from '@modules/school/repo';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { EntityId, SchoolFeature } from '@shared/domain/types';
-import { LegacySchoolRepo } from '@shared/repo';
-import { StorageProviderRepo } from '@shared/repo/storageprovider';
-import { FederalStateService } from './federal-state.service';
-import { SchoolYearService } from './school-year.service';
+import { EntityId } from '@shared/domain/types';
+import { LegacySchoolDo } from '../domain';
+import { LegacySchoolRepo } from '../repo';
 import { SchoolValidationService } from './validation';
 
 /**

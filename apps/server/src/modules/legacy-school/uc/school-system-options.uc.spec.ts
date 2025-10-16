@@ -3,16 +3,17 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { System, SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { schoolSystemOptionsFactory } from '@testing/factory/domainobject';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { AnyProvisioningOptions, SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { ProvisioningStrategyMissingLoggableException } from '../loggable';
 import { ProvisioningOptionsUpdateService, SchoolSystemOptionsService } from '../service';
+import { schoolSystemOptionsFactory } from '../testing';
 import { SchoolSystemOptionsUc } from './school-system-options.uc';
 
 describe(SchoolSystemOptionsUc.name, () => {
@@ -25,7 +26,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 	let provisioningOptionsUpdateService: DeepMocked<ProvisioningOptionsUpdateService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -130,7 +131,9 @@ describe(SchoolSystemOptionsUc.name, () => {
 		describe('when saving new options to a system at the school', () => {
 			const setup = () => {
 				const user = userFactory.asAdmin().buildWithId();
-				const system: System = systemFactory.build({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
+				const system: System = systemFactory.build({
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
+				});
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
 					systemId: system.id,
 					provisioningOptions: new SchulConneXProvisioningOptions().set({
@@ -219,7 +222,9 @@ describe(SchoolSystemOptionsUc.name, () => {
 		describe('when saving existing options to a system at the school', () => {
 			const setup = () => {
 				const user = userFactory.asAdmin().buildWithId();
-				const system: System = systemFactory.build({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
+				const system: System = systemFactory.build({
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
+				});
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
 					systemId: system.id,
 					provisioningOptions: new SchulConneXProvisioningOptions().set({
@@ -357,7 +362,9 @@ describe(SchoolSystemOptionsUc.name, () => {
 		describe('when the authorization fails', () => {
 			const setup = () => {
 				const user = userFactory.asStudent().buildWithId();
-				const system: System = systemFactory.build({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
+				const system: System = systemFactory.build({
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
+				});
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
 					systemId: system.id,
 				});

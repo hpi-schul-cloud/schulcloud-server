@@ -1,3 +1,4 @@
+import { ErrorUtils } from '@core/error/utils';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { IFileStats, ITemporaryFile, ITemporaryFileStorage, IUser } from '@lumieducation/h5p-server';
 import {
@@ -8,10 +9,9 @@ import {
 	NotAcceptableException,
 	NotFoundException,
 } from '@nestjs/common';
-import { ErrorUtils } from '@src/core/error/utils';
 import { ReadStream } from 'fs';
 import { Readable } from 'stream';
-import { H5pFileDto } from '../controller/dto/h5p-file.dto';
+import { H5pFileDto } from '../controller/dto';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 
 @Injectable()

@@ -1,23 +1,17 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { StringValidator } from '@shared/common';
+import { StringValidator } from '@shared/common/validator';
 import { EntityId } from '@shared/domain/types';
-import { MongoDbScope, MongoPatterns } from '@shared/repo';
+import { MongoPatterns } from '@shared/repo/mongo.patterns';
+import { MongoDbScope } from '@shared/repo/mongodb-scope';
 import { GroupEntity } from '../entity';
 import { GroupTypes } from './group-types';
 
 export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
 	public byAvailableForSync(value: boolean | undefined): this {
 		if (value) {
+			this.byType([GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]);
+
 			this.pipeline.push(
-				{
-					$match: {
-						$or: [
-							{ type: { $eq: GroupTypes.CLASS } },
-							{ type: { $eq: GroupTypes.COURSE } },
-							{ type: { $eq: GroupTypes.OTHER } },
-						],
-					},
-				},
 				{
 					$lookup: {
 						from: 'courses',
@@ -58,8 +52,36 @@ export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
 			?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '')
 			.trim();
 
-		if (StringValidator.isNotEmptyString(escapedName, true)) {
+		if (StringValidator.isNotEmptyStringWhenTrimed(escapedName)) {
 			this.pipeline.push({ $match: { name: { $regex: escapedName, $options: 'i' } } });
+		}
+
+		return this;
+	}
+
+	public byType(groupTypes: GroupTypes[] | undefined): this {
+		if (groupTypes) {
+			this.pipeline.push({ $match: { type: { $in: groupTypes } } });
+		}
+
+		return this;
+	}
+
+	public byUsersAndOrganizationsSchoolId(schoolId: EntityId | undefined): this {
+		if (schoolId) {
+			this.pipeline.push({
+				$lookup: {
+					from: 'users',
+					localField: 'users.user',
+					foreignField: '_id',
+					as: 'groupUsers',
+				},
+			});
+			this.pipeline.push({
+				$match: {
+					$or: [{ 'groupUsers.schoolId': new ObjectId(schoolId) }, { organization: new ObjectId(schoolId) }],
+				},
+			});
 		}
 
 		return this;

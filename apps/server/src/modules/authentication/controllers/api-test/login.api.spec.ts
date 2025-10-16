@@ -1,22 +1,23 @@
 import { EntityManager } from '@mikro-orm/core';
-import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing';
-import { OauthTokenResponse } from '@modules/oauth/service/dto';
+import { OauthTokenResponse } from '@modules/oauth-adapter';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
+import { systemEntityFactory } from '@modules/system/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, User } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
-import { userFactory } from '@testing/factory/user.factory';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
+import type { Server } from 'node:net';
 import request, { Response } from 'supertest';
 import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
 
@@ -71,7 +72,7 @@ jest.mock('jwks-rsa', () => () => {
 describe('Login Controller (api)', () => {
 	const basePath = '/authentication';
 
-	let app: INestApplication;
+	let app: INestApplication<Server>;
 	let em: EntityManager;
 
 	const defaultPassword = 'DummyPasswd!1';
@@ -143,7 +144,8 @@ describe('Login Controller (api)', () => {
 					username: user.email,
 					password: 'wrongPassword',
 				};
-				await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(401);
+				const result = await request(app.getHttpServer()).post(`${basePath}/local`).send(params);
+				expect(result.status).toEqual(401);
 			});
 		});
 		describe('when user login fails cause account is deactivated', () => {
@@ -167,7 +169,8 @@ describe('Login Controller (api)', () => {
 					username: newUser.email,
 					password: defaultPassword,
 				};
-				await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(401);
+				const result = await request(app.getHttpServer()).post(`${basePath}/local`).send(params);
+				expect(result.status).toEqual(401);
 			});
 		});
 	});
@@ -177,7 +180,7 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const schoolExternalId = 'mockSchoolExternalId';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 					externalId: schoolExternalId,
 				});
@@ -230,7 +233,7 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const schoolExternalId = 'mockSchoolExternalId';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 					externalId: schoolExternalId,
 				});
@@ -271,7 +274,7 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const schoolExternalId = 'mockSchoolExternalId';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 					externalId: schoolExternalId,
 				});
@@ -313,7 +316,7 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const officialSchoolNumber = '01234';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 					externalId: officialSchoolNumber,
 					officialSchoolNumber,

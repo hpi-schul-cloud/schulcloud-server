@@ -1,5 +1,5 @@
+import { ensureTokenIsWhitelisted } from '@imports-from-feathers';
 import { Injectable } from '@nestjs/common';
-import { ensureTokenIsWhitelisted } from '@src/imports-from-feathers';
 
 @Injectable()
 export class JwtValidationAdapter {

@@ -1,9 +1,5 @@
-import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { UserDO } from '@shared/domain/domainobject';
-import { VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { BoardContextApiHelperService } from '@src/modules/board-context';
 import {
 	BBBBaseMeetingConfig,
 	BBBCreateConfigBuilder,
@@ -17,14 +13,15 @@ import { ErrorStatus } from '../error/error-status.enum';
 import { VideoConferenceOptions } from '../interface';
 import { VideoConferenceService } from '../service';
 import { ScopeInfo, ScopeRef } from './dto';
+import { VideoConferenceFeatureService } from './video-conference-feature.service';
+import { VideoConferenceDO } from '../domain';
 
 @Injectable()
 export class VideoConferenceCreateUc {
 	constructor(
 		private readonly bbbService: BBBService,
-		private readonly userService: UserService,
 		private readonly videoConferenceService: VideoConferenceService,
-		private readonly boardContextApiHelperService: BoardContextApiHelperService
+		private readonly videoConferenceFeatureService: VideoConferenceFeatureService
 	) {}
 
 	public async createIfNotRunning(
@@ -32,59 +29,62 @@ export class VideoConferenceCreateUc {
 		scope: ScopeRef,
 		options: VideoConferenceOptions
 	): Promise<void> {
+		await this.videoConferenceFeatureService.checkVideoConferenceFeatureEnabled(currentUserId, scope);
+
+		const videoConference = await this.videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions(
+			scope.id,
+			scope.scope,
+			options
+		);
+
 		let bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
 		// try and catch based on legacy behavior
 		try {
-			bbbMeetingInfoResponse = await this.bbbService.getMeetingInfo(new BBBBaseMeetingConfig({ meetingID: scope.id }));
+			bbbMeetingInfoResponse = await this.bbbService.getMeetingInfo(
+				new BBBBaseMeetingConfig({ meetingID: videoConference.target + videoConference.salt })
+			);
 		} catch (e) {
 			bbbMeetingInfoResponse = undefined;
 		}
 
 		if (bbbMeetingInfoResponse === undefined) {
-			await this.create(currentUserId, scope, options);
+			await this.create(currentUserId, videoConference);
 		}
 	}
 
-	private async create(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
-		/* need to be replace with
-		const [authorizableUser, scopeResource]: [User, TeamEntity | Course] = await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			this.videoConferenceService.loadScopeResources(scopeId, scope),
-		]);
-		*/
-		const user: UserDO = await this.userService.findById(currentUserId);
-
-		const schoolId =
-			scope.scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT
-				? await this.boardContextApiHelperService.getSchoolIdForBoardNode(scope.id)
-				: user.schoolId;
-
-		await this.verifyFeaturesEnabled(schoolId);
-
-		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
+	private async create(currentUserId: EntityId, videoConference: VideoConferenceDO): Promise<void> {
+		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(
+			currentUserId,
+			videoConference.target,
+			videoConference.targetModel
+		);
 
 		const bbbRole: BBBRole = await this.videoConferenceService.determineBbbRole(
 			currentUserId,
 			scopeInfo.scopeId,
-			scope.scope
+			scopeInfo.scopeName
 		);
-		this.throwIfNotModerator(bbbRole, 'You are not allowed to start the videoconference. Ask a moderator.');
+		this.checkModerator(bbbRole, 'You are not allowed to start the videoconference. Ask a moderator.');
 
-		await this.videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions(scope.id, scope.scope, options);
-
-		const configBuilder: BBBCreateConfigBuilder = this.prepareBBBCreateConfigBuilder(scope, options, scopeInfo);
+		const configBuilder: BBBCreateConfigBuilder = this.prepareBBBCreateConfigBuilder(
+			videoConference.target,
+			videoConference.options,
+			scopeInfo,
+			videoConference.salt
+		);
 
 		await this.bbbService.create(configBuilder.build());
 	}
 
 	private prepareBBBCreateConfigBuilder(
-		scope: ScopeRef,
+		scopeId: string,
 		options: VideoConferenceOptions,
-		scopeInfo: ScopeInfo
+		scopeInfo: ScopeInfo,
+		salt: string
 	): BBBCreateConfigBuilder {
 		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
 			name: this.videoConferenceService.sanitizeString(scopeInfo.title),
-			meetingID: scope.id,
+			meetingID: scopeId + salt,
 		}).withLogoutUrl(options.logoutUrl ?? scopeInfo.logoutUrl);
 
 		if (options.moderatorMustApproveJoinRequests) {
@@ -98,11 +98,7 @@ export class VideoConferenceCreateUc {
 		return configBuilder;
 	}
 
-	private async verifyFeaturesEnabled(schoolId: string): Promise<void> {
-		await this.videoConferenceService.throwOnFeaturesDisabled(schoolId);
-	}
-
-	private throwIfNotModerator(role: BBBRole, errorMessage: string): void {
+	private checkModerator(role: BBBRole, errorMessage: string): void {
 		if (role !== BBBRole.MODERATOR) {
 			throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION, errorMessage);
 		}

@@ -1,11 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolEntity } from '@modules/school/repo';
+import { federalStateEntityFactory, schoolYearEntityFactory, storageProviderFactory } from '@modules/school/testing';
+import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
-import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.app.module';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
-import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { AdminApiSchoolCreateResponseDto } from '../dto/response/admin-api-school-create.response.dto';
 
@@ -15,7 +14,6 @@ describe('Admin API - Schools (API)', () => {
 	let app: INestApplication;
 	let testApiClient: TestApiClient;
 	let em: EntityManager;
-	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -25,7 +23,10 @@ describe('Admin API - Schools (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
+
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+		const apiKeys = adminApiServerConfig().ADMIN_API__ALLOWED_API_KEYS as string[]; // check config/test.json
+		testApiClient = new TestApiClient(app, baseRouteName, apiKeys[0], true);
 	});
 
 	afterAll(async () => {
@@ -52,8 +53,8 @@ describe('Admin API - Schools (API)', () => {
 
 		describe('with api token', () => {
 			const setup = async () => {
-				const federalState = federalStateFactory.build({ name: 'niedersachsen' });
-				const year = schoolYearFactory.build();
+				const federalState = federalStateEntityFactory.build({ name: 'niedersachsen' });
+				const year = schoolYearEntityFactory.build();
 				const storageProvider = storageProviderFactory.build();
 				await em.persistAndFlush([federalState, year, storageProvider]);
 				return { federalState, year };

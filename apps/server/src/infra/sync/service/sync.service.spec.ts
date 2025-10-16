@@ -1,11 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
-import { Logger } from '@src/core/logger';
-import { SyncService } from './sync.service';
-import { TspSyncStrategy } from '../tsp/tsp-sync.strategy';
-import { SyncStrategyTarget } from '../sync-strategy.types';
+import { createMock } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 import { InvalidTargetLoggable } from '../errors/invalid-target.loggable';
+import { SyncStrategy } from '../strategy/sync-strategy';
+import { TspSyncStrategy } from '../strategy/tsp/tsp-sync.strategy';
+import { SyncStrategyTarget } from '../sync-strategy.types';
+import { SyncService } from './sync.service';
 
 describe(SyncService.name, () => {
 	let module: TestingModule;
@@ -69,17 +70,20 @@ describe(SyncService.name, () => {
 
 		describe('when provided target is valid and synchronization is activated', () => {
 			const setup = () => {
-				const validSystem = 'tsp';
-				Reflect.set(service, 'strategies', new Map([[SyncStrategyTarget.TSP, tspSyncStrategy]]));
+				const strategyMap = new Map<SyncStrategyTarget, SyncStrategy>([[SyncStrategyTarget.TSP, tspSyncStrategy]]);
 
-				return { validSystem };
+				Reflect.set(service, 'strategies', strategyMap);
+
+				return { strategyMap };
 			};
 
-			it('should call sync method of the provided target', async () => {
-				const { validSystem } = setup();
-				await service.startSync(validSystem);
+			it.each([SyncStrategyTarget.TSP])('call sync method of %s', async (strategyTarget: SyncStrategyTarget) => {
+				const { strategyMap } = setup();
+				await service.startSync(strategyTarget);
 
-				expect(tspSyncStrategy.sync).toHaveBeenCalled();
+				const strategy = strategyMap.get(strategyTarget) as SyncStrategy;
+
+				expect(strategy.sync).toHaveBeenCalled();
 			});
 		});
 	});

@@ -1,16 +1,14 @@
+import { ErrorUtils } from '@core/error/utils';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ErrorUtils } from '@src/core/error/utils';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
-import { VideoConferenceConfig } from '../video-conference-config';
-import { BbbConfig } from './bbb-config';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 import { BBBService } from './bbb.service';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig, BBBRole, GuestPolicy } from './request';
 import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
@@ -111,15 +109,15 @@ describe(BBBService.name, () => {
 	let module: TestingModule;
 	let service: BBBServiceTest;
 	let httpService: DeepMocked<HttpService>;
-	let configService: DeepMocked<ConfigService<BbbConfig & VideoConferenceConfig, true>>;
+	let configService: DeepMocked<VideoConferenceConfig>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BBBServiceTest,
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<BbbConfig, true>>(),
+					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
+					useValue: createMock<VideoConferenceConfig>(),
 				},
 				{
 					provide: HttpService,
@@ -129,7 +127,7 @@ describe(BBBService.name, () => {
 		}).compile();
 		service = module.get(BBBServiceTest);
 		httpService = module.get(HttpService);
-		configService = module.get(ConfigService);
+		configService = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -137,7 +135,7 @@ describe(BBBService.name, () => {
 	});
 
 	beforeEach(() => {
-		configService.get.mockReturnValue('https://mocked');
+		configService.VIDEOCONFERENCE_HOST = 'https://mocked';
 	});
 
 	afterEach(() => {
@@ -158,6 +156,14 @@ describe(BBBService.name, () => {
 
 				return { param, bbbCreateResponse, spy };
 			};
+
+			it('should not send config header if VIDEOCONFERENCE_DEFAULT_PRESENTATION is empty', async () => {
+				configService.VIDEOCONFERENCE_DEFAULT_PRESENTATION = '';
+				const { param } = setup();
+
+				await service.create(param);
+				expect(httpService.post).toHaveBeenCalledWith(expect.any(String), '', undefined);
+			});
 
 			it('should return a response with returncode success', async () => {
 				const { bbbCreateResponse, param, spy } = setup();
@@ -183,7 +189,7 @@ describe(BBBService.name, () => {
 				jest.spyOn(service, 'xml2object').mockReturnValueOnce(bbbCreateResponse.data);
 
 				const error = new InternalServerErrorException(
-					`${bbbCreateResponse.data.response.messageKey}, ${bbbCreateResponse.data.response.message}`
+					`${bbbCreateResponse.data.response.messageKey}: ${bbbCreateResponse.data.response.message}`
 				);
 				const expectedError = new InternalServerErrorException(
 					null,
@@ -238,7 +244,7 @@ describe(BBBService.name, () => {
 				jest.spyOn(service, 'xml2object').mockReturnValueOnce(bbbBaseResponse.data);
 
 				const error = new InternalServerErrorException(
-					`${bbbBaseResponse.data.response.messageKey}, ${bbbBaseResponse.data.response.message}`
+					`${bbbBaseResponse.data.response.messageKey}: ${bbbBaseResponse.data.response.message}`
 				);
 				const expectedError = new InternalServerErrorException(
 					null,
@@ -251,7 +257,7 @@ describe(BBBService.name, () => {
 			it('should throw an error if there is a different return code then success', async () => {
 				const { param, expectedError } = setup();
 
-				await expect(service.end(param)).rejects.toThrowError(expectedError);
+				await expect(service.end(param)).rejects.toThrow(expectedError);
 			});
 		});
 	});
@@ -399,13 +405,13 @@ describe(BBBService.name, () => {
 			const { callName, createConfig, createHashMock } = setup();
 			const urlSearchParams = service.superToParams(createConfig);
 			const queryString = urlSearchParams.toString();
-			const sha = crypto.createHash('sha1');
+			const sha = crypto.createHash('sha512');
 			const expectedChecksum = sha.update(callName + queryString + service.getSalt()).digest('hex');
 
 			const checksum = service.superGenerateChecksum(callName, urlSearchParams);
 
 			expect(checksum).toEqual(expectedChecksum);
-			expect(createHashMock).toBeCalledWith('sha1');
+			expect(createHashMock).toBeCalledWith('sha512');
 		});
 
 		it('getUrl: should return composed url', () => {

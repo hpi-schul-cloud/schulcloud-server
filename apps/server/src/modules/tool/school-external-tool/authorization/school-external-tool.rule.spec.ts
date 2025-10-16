@@ -1,15 +1,16 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { schoolExternalToolEntityFactory, schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
+import { Role } from '@modules/role/repo';
+import { roleFactory } from '@modules/role/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
+import { SchoolExternalTool } from '../domain';
+import { SchoolExternalToolEntity } from '../repo';
+import { schoolExternalToolEntityFactory, schoolExternalToolFactory } from '../testing';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
 
 describe('SchoolExternalToolRule', () => {
@@ -18,7 +19,7 @@ describe('SchoolExternalToolRule', () => {
 	let injectionService: DeepMocked<AuthorizationInjectionService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

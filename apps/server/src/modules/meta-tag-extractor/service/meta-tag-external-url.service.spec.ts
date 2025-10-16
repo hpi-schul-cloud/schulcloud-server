@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import axios, { CancelTokenSource } from 'axios';
 import Stream from 'stream';
 import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
@@ -20,7 +19,6 @@ describe(MetaTagExternalUrlService.name, () => {
 		}).compile();
 
 		service = module.get(MetaTagExternalUrlService);
-		await setupEntities();
 	});
 
 	afterAll(async () => {
@@ -218,6 +216,18 @@ describe(MetaTagExternalUrlService.name, () => {
 
 				const mockedStream = mockReadstream([]);
 				mockedAxios.get.mockResolvedValue({ data: mockedStream });
+
+				const result = await service.tryExtractMetaTags(url);
+
+				expect(result).toBeUndefined();
+			});
+		});
+
+		describe('when server responds with 401', () => {
+			it('should return undefined', async () => {
+				const url = new URL('https://docs.dbildungscloud.de/display/DBH/Arc+Weekly+Meetings');
+
+				mockedAxios.get.mockRejectedValue({ response: { status: 401 } });
 
 				const result = await service.tryExtractMetaTags(url);
 

@@ -1,13 +1,18 @@
 import { DeepPartial } from '@mikro-orm/core';
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { lessonFactory } from '@modules/lesson/testing';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { Submission, Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { courseFactory } from '@testing/factory/course.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { taskFactory } from '@testing/factory/task.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
@@ -24,7 +29,7 @@ describe('TaskRule', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, LessonEntity, Material, Submission]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -106,7 +111,7 @@ describe('TaskRule', () => {
 			const setup = () => {
 				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.TEACHER });
 				const user = userFactory.build({ roles: [role] });
-				const course = courseFactory.build({ teachers: [user] });
+				const course = courseEntityFactory.build({ teachers: [user] });
 				const task = taskFactory.build({ course });
 
 				return { role, user, course, task };
@@ -130,7 +135,7 @@ describe('TaskRule', () => {
 			const setup = () => {
 				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.TEACHER });
 				const user = userFactory.build({ roles: [role] });
-				const course = courseFactory.build({ teachers: [user] });
+				const course = courseEntityFactory.build({ teachers: [user] });
 				const lesson = lessonFactory.build({ course, hidden: true });
 				const task = taskFactory.build({ course, lesson });
 
@@ -200,7 +205,7 @@ describe('TaskRule', () => {
 			const setup = () => {
 				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
 				const student = userFactory.build({ roles: [role] });
-				const course = courseFactory.build({ students: [student] });
+				const course = courseEntityFactory.build({ students: [student] });
 				const task = taskFactory.build({ course });
 
 				return { role, student, task, course };
@@ -217,7 +222,7 @@ describe('TaskRule', () => {
 			const setup = () => {
 				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
 				const student = userFactory.build({ roles: [role] });
-				const course = courseFactory.build({ students: [student] });
+				const course = courseEntityFactory.build({ students: [student] });
 				const lesson = lessonFactory.build({ course, hidden: true });
 				const task = taskFactory.build({ course, lesson });
 
@@ -235,7 +240,7 @@ describe('TaskRule', () => {
 			const setup = () => {
 				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
 				const student = userFactory.build({ roles: [role] });
-				const course = courseFactory.build({ students: [student] });
+				const course = courseEntityFactory.build({ students: [student] });
 				const lesson = lessonFactory.build({ course });
 				const task = taskFactory.build({ course, lesson, private: true });
 

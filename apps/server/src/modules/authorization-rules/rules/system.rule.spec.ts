@@ -4,16 +4,14 @@ import {
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 } from '@modules/authorization';
+import { schoolEntityFactory } from '@modules/school/testing/school-entity.factory';
 import { System } from '@modules/system';
-import { SystemEntity } from '@modules/system/entity';
-import { systemFactory } from '@modules/system/testing';
+import { systemEntityFactory, systemFactory } from '@modules/system/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { SystemRule } from './system.rule';
 
 describe(SystemRule.name, () => {
@@ -24,7 +22,7 @@ describe(SystemRule.name, () => {
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -59,8 +57,8 @@ describe(SystemRule.name, () => {
 	describe('isApplicable', () => {
 		describe('when the entity is applicable', () => {
 			const setup = () => {
-				const user: User = userFactory.buildWithId();
-				const system: System = systemFactory.build();
+				const user = userFactory.buildWithId();
+				const system = systemFactory.build();
 
 				return {
 					user,
@@ -79,7 +77,7 @@ describe(SystemRule.name, () => {
 
 		describe('when the entity is not applicable', () => {
 			const setup = () => {
-				const user: User = userFactory.buildWithId();
+				const user = userFactory.buildWithId();
 
 				return {
 					user,
@@ -99,12 +97,12 @@ describe(SystemRule.name, () => {
 	describe('hasPermission', () => {
 		describe('when the user reads a system at his school and has the required permission', () => {
 			const setup = () => {
-				const system: System = systemFactory.build();
-				const systemEntity: SystemEntity = systemEntityFactory.buildWithId(undefined, system.id);
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const system = systemFactory.build();
+				const systemEntity = systemEntityFactory.buildWithId(undefined, system.id);
+				const school = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 				});
-				const user: User = userFactory.buildWithId({ school });
+				const user = userFactory.buildWithId({ school });
 				const authorizationContext = AuthorizationContextBuilder.read([Permission.SYSTEM_VIEW]);
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
@@ -138,12 +136,12 @@ describe(SystemRule.name, () => {
 
 		describe('when the user reads a system, but does not have the permission', () => {
 			const setup = () => {
-				const system: System = systemFactory.build();
-				const systemEntity: SystemEntity = systemEntityFactory.buildWithId(undefined, system.id);
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const system = systemFactory.build();
+				const systemEntity = systemEntityFactory.buildWithId(undefined, system.id);
+				const school = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 				});
-				const user: User = userFactory.buildWithId({ school });
+				const user = userFactory.buildWithId({ school });
 				const authorizationContext = AuthorizationContextBuilder.read([Permission.SYSTEM_VIEW]);
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false);
@@ -166,11 +164,11 @@ describe(SystemRule.name, () => {
 
 		describe('when the user reads a system that is not at his school', () => {
 			const setup = () => {
-				const system: System = systemFactory.build();
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const system = systemFactory.build();
+				const school = schoolEntityFactory.buildWithId({
 					systems: [],
 				});
-				const user: User = userFactory.buildWithId({ school });
+				const user = userFactory.buildWithId({ school });
 				const authorizationContext = AuthorizationContextBuilder.read([Permission.SYSTEM_VIEW]);
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
@@ -193,12 +191,12 @@ describe(SystemRule.name, () => {
 
 		describe('when the user writes a ldap system at his school and has the required permission and the ldap provider is "general"', () => {
 			const setup = () => {
-				const system: System = systemFactory.build({ ldapConfig: { provider: 'general' } });
-				const systemEntity: SystemEntity = systemEntityFactory.buildWithId(undefined, system.id);
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const system = systemFactory.build({ ldapConfig: { provider: 'general' } });
+				const systemEntity = systemEntityFactory.buildWithId(undefined, system.id);
+				const school = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 				});
-				const user: User = userFactory.buildWithId({ school });
+				const user = userFactory.buildWithId({ school });
 				const authorizationContext = AuthorizationContextBuilder.write([Permission.SYSTEM_CREATE]);
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
@@ -221,12 +219,12 @@ describe(SystemRule.name, () => {
 
 		describe('when the user writes a ldap system at his school and has the required permission and the ldap provider is not "general"', () => {
 			const setup = () => {
-				const system: System = systemFactory.build({ ldapConfig: { provider: 'other provider' } });
-				const systemEntity: SystemEntity = systemEntityFactory.buildWithId(undefined, system.id);
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const system = systemFactory.build({ ldapConfig: { provider: 'other provider' } });
+				const systemEntity = systemEntityFactory.buildWithId(undefined, system.id);
+				const school = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 				});
-				const user: User = userFactory.buildWithId({ school });
+				const user = userFactory.buildWithId({ school });
 				const authorizationContext = AuthorizationContextBuilder.write([Permission.SYSTEM_CREATE]);
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
@@ -249,12 +247,12 @@ describe(SystemRule.name, () => {
 
 		describe('when the user writes a non-ldap system at his school and has the required permission', () => {
 			const setup = () => {
-				const system: System = systemFactory.build({ ldapConfig: undefined });
-				const systemEntity: SystemEntity = systemEntityFactory.buildWithId(undefined, system.id);
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const system = systemFactory.build({ ldapConfig: undefined });
+				const systemEntity = systemEntityFactory.buildWithId(undefined, system.id);
+				const school = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 				});
-				const user: User = userFactory.buildWithId({ school });
+				const user = userFactory.buildWithId({ school });
 				const authorizationContext = AuthorizationContextBuilder.write([Permission.SYSTEM_CREATE]);
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);

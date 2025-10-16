@@ -1,16 +1,17 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { RoleName } from '@modules/role';
+import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, User } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { createCollections } from '@testing/create-collections';
-import { importUserFactory } from '@testing/factory/import-user.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userFactory } from '@testing/factory/user.factory';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ImportUserMatchCreatorScope } from '../domain/interface';
 import { ImportUser, ImportUserRoleName, MatchCreator } from '../entity';
+import { importUserFactory } from '../testing';
 import { ImportUserRepo } from './import-user.repo';
 
 describe('ImportUserRepo', () => {
@@ -28,7 +29,7 @@ describe('ImportUserRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [ImportUser, SchoolEntity, User] })],
 			providers: [ImportUserRepo],
 		}).compile();
 		repo = module.get(ImportUserRepo);

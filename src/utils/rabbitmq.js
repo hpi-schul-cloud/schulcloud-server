@@ -14,7 +14,9 @@ const getConnection = async () => {
 	}
 
 	try {
-		connection = await amqp.connect(Configuration.get('RABBITMQ_URI'));
+		connection = await amqp.connect(
+			`${Configuration.get('RABBITMQ_URI')}?heartbeat=${Configuration.get('RABBITMQ_HEARTBEAT_INTERVAL_IN_SECONDS')}`
+		);
 		connection.on('close', () => {
 			logger.warning('RabbitMQ connection was closed.');
 			connection = undefined;

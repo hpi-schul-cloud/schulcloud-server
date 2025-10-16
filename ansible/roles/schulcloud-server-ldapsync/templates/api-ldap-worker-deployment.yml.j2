@@ -47,6 +47,8 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
         runAsNonRoot: true
+      os:
+        name: linux
       containers:
       - name: api-worker
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
@@ -60,7 +62,8 @@ spec:
         - secretRef:
             name: api-secret
         - secretRef:
-            name: api-files-secret
+            name: session-valkey-password
+        command: ['npm', 'run', 'nest:start:prod']
         readinessProbe:
           httpGet:
             path: /serverversion

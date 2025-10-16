@@ -1,16 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { TldrawClientAdapter } from '@infra/tldraw-client';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool';
+import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CollaborativeTextEditorService } from '@src/modules/collaborative-text-editor';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { ContextExternalToolService } from '@src/modules/tool/context-external-tool';
-import { contextExternalToolFactory } from '@src/modules/tool/context-external-tool/testing';
-import { setupEntities } from '@testing/setup-entities';
 import {
 	collaborativeTextEditorFactory,
 	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
+	fileFolderElementFactory,
+	h5pElementFactory,
 	linkElementFactory,
 } from '../../testing';
 import { BoardNodeDeleteHooksService } from './board-node-delete-hooks.service';
@@ -21,7 +24,8 @@ describe(BoardNodeDeleteHooksService.name, () => {
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let drawingElementAdapterService: DeepMocked<TldrawClientAdapter>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
-	let collaborativeTextEditorService: CollaborativeTextEditorService;
+	let collaborativeTextEditorService: DeepMocked<CollaborativeTextEditorService>;
+	let h5pEditorProducer: DeepMocked<H5pEditorProducer>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -43,6 +47,10 @@ describe(BoardNodeDeleteHooksService.name, () => {
 					provide: CollaborativeTextEditorService,
 					useValue: createMock<CollaborativeTextEditorService>(),
 				},
+				{
+					provide: H5pEditorProducer,
+					useValue: createMock<H5pEditorProducer>(),
+				},
 			],
 		}).compile();
 
@@ -51,8 +59,7 @@ describe(BoardNodeDeleteHooksService.name, () => {
 		drawingElementAdapterService = module.get(TldrawClientAdapter);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		collaborativeTextEditorService = module.get(CollaborativeTextEditorService);
-
-		await setupEntities();
+		h5pEditorProducer = module.get(H5pEditorProducer);
 	});
 
 	afterEach(() => {
@@ -67,6 +74,20 @@ describe(BoardNodeDeleteHooksService.name, () => {
 		describe('when called with file element', () => {
 			const setup = () => {
 				return { boardNode: fileElementFactory.build() };
+			};
+
+			it('should delete files', async () => {
+				const { boardNode } = setup();
+
+				await service.afterDelete(boardNode);
+
+				expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(boardNode.id);
+			});
+		});
+
+		describe('when called with file folder element', () => {
+			const setup = () => {
+				return { boardNode: fileFolderElementFactory.build() };
 			};
 
 			it('should delete files', async () => {
@@ -159,6 +180,24 @@ describe(BoardNodeDeleteHooksService.name, () => {
 				await service.afterDelete(boardNode);
 
 				expect(contextExternalToolService.deleteContextExternalTool).toHaveBeenCalledWith(tool);
+			});
+		});
+
+		describe('when called with h5p element', () => {
+			const setup = () => {
+				return {
+					boardNode: h5pElementFactory.build({
+						contentId: new ObjectId().toHexString(),
+					}),
+				};
+			};
+
+			it('should delete the linked content', async () => {
+				const { boardNode } = setup();
+
+				await service.afterDelete(boardNode);
+
+				expect(h5pEditorProducer.deleteContent).toHaveBeenCalledWith({ contentId: boardNode.contentId });
 			});
 		});
 	});

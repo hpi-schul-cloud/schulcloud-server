@@ -7,14 +7,14 @@ import {
 	AuthorizationInjectionService,
 } from '@modules/authorization';
 import { Group } from '@modules/group';
+import { groupFactory } from '@modules/group/testing';
+import { roleFactory } from '@modules/role/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { groupFactory } from '@testing/factory/domainobject';
-import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { GroupRule } from './group.rule';
 
 describe('GroupRule', () => {
@@ -25,7 +25,7 @@ describe('GroupRule', () => {
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Group]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -60,9 +60,9 @@ describe('GroupRule', () => {
 	describe('isApplicable', () => {
 		describe('when the entity is applicable', () => {
 			const setup = () => {
-				const role: Role = roleFactory.buildWithId();
-				const user: User = userFactory.buildWithId({ roles: [role] });
-				const group: Group = groupFactory.build({
+				const role = roleFactory.buildWithId();
+				const user = userFactory.buildWithId({ roles: [role] });
+				const group = groupFactory.build({
 					users: [
 						{
 							userId: user.id,
@@ -88,8 +88,8 @@ describe('GroupRule', () => {
 
 		describe('when the entity is not applicable', () => {
 			const setup = () => {
-				const role: Role = roleFactory.buildWithId();
-				const userNotInGroup: User = userFactory.buildWithId({ roles: [role] });
+				const role = roleFactory.buildWithId();
+				const userNotInGroup = userFactory.buildWithId({ roles: [role] });
 
 				return {
 					userNotInGroup,
@@ -109,10 +109,10 @@ describe('GroupRule', () => {
 	describe('hasPermission', () => {
 		describe('when the user has all required permissions and is at the same school then the group', () => {
 			const setup = () => {
-				const role: Role = roleFactory.buildWithId();
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
-				const user: User = userFactory.buildWithId({ school, roles: [role] });
-				const group: Group = groupFactory.build({
+				const role = roleFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ school, roles: [role] });
+				const group = groupFactory.build({
 					users: [
 						{
 							userId: user.id,
@@ -154,10 +154,10 @@ describe('GroupRule', () => {
 
 		describe('when the user has not the required permission', () => {
 			const setup = () => {
-				const role: Role = roleFactory.buildWithId({ permissions: [] });
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
-				const user: User = userFactory.buildWithId({ school, roles: [role] });
-				const group: Group = groupFactory.build({
+				const role = roleFactory.buildWithId({ permissions: [] });
+				const school = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ school, roles: [role] });
+				const group = groupFactory.build({
 					users: [
 						{
 							userId: user.id,
@@ -191,10 +191,10 @@ describe('GroupRule', () => {
 
 		describe('when the user is at another school then the group', () => {
 			const setup = () => {
-				const role: Role = roleFactory.buildWithId({ permissions: [] });
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
-				const user: User = userFactory.buildWithId({ school, roles: [role] });
-				const group: Group = groupFactory.build({
+				const role = roleFactory.buildWithId({ permissions: [] });
+				const school = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ school, roles: [role] });
+				const group = groupFactory.build({
 					users: [
 						{
 							userId: user.id,

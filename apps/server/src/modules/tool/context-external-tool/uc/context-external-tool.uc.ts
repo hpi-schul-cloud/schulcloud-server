@@ -6,11 +6,11 @@ import {
 	ForbiddenLoggableException,
 } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
+import { BoardContextApiHelperService } from '@modules/board-context';
+import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { BoardContextApiHelperService } from '@modules/board-context';
 import { Authorization } from 'oauth-1.0a';
 import { ToolConfigType, ToolContextType } from '../../common/enum';
 import { Lti11EncryptionService } from '../../common/service';

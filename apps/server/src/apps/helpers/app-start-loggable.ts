@@ -1,4 +1,4 @@
-import { Loggable, LogMessage, LogMessageData } from '@src/core/logger';
+import { Loggable, LogMessage, LogMessageData } from '@core/logger';
 
 interface AppStartInfo {
 	appName: string;

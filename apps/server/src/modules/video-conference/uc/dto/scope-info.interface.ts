@@ -1,5 +1,5 @@
-import { VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { VideoConferenceScope } from '../../domain';
 
 export interface ScopeInfo {
 	scopeId: EntityId;

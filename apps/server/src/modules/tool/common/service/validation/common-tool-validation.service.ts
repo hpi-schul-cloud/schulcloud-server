@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { ContextExternalTool, ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';

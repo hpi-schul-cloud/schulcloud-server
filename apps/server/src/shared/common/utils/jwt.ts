@@ -1,5 +1,5 @@
 import { UnauthorizedException } from '@nestjs/common';
-import cookie from 'cookie';
+import * as cookie from 'cookie';
 import { Request } from 'express';
 import { ExtractJwt, JwtFromRequestFunction } from 'passport-jwt';
 
@@ -15,8 +15,8 @@ export class JwtExtractor {
 		};
 	}
 
-	public static extractJwtFromRequest(request: Request): string {
-		const jwt = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
+	public static extractJwtFromRequestOrFail(request: Request): string {
+		const jwt = this.extractJwtFromRequest(request);
 
 		if (!jwt) {
 			throw new UnauthorizedException('No JWT token found');
@@ -24,9 +24,9 @@ export class JwtExtractor {
 
 		return jwt;
 	}
-}
 
-export const extractJwtFromHeader = ExtractJwt.fromExtractors([
-	ExtractJwt.fromAuthHeaderAsBearerToken(),
-	JwtExtractor.fromCookie('jwt'),
-]);
+	public static extractJwtFromRequest = ExtractJwt.fromExtractors([
+		ExtractJwt.fromAuthHeaderAsBearerToken(),
+		JwtExtractor.fromCookie('jwt'),
+	]);
+}

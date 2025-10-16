@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { ErrorLogMessage, Loggable } from '@src/core/logger';
+import { ErrorLogMessage, Loggable } from '@core/logger';
 import { CommonCartridgeErrorEnum } from './error.enums';
 
 export class ResourceTypeNotSupportedLoggableException extends InternalServerErrorException implements Loggable {

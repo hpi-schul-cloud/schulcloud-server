@@ -1,9 +1,9 @@
-import { ErrorLogMessage, LogMessage, Loggable, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, LogMessage, Loggable, ValidationErrorLogMessage } from '@core/logger';
 
 export class IdmCallbackLoggableException implements Loggable {
-	constructor(private readonly callbackError: any) {}
+	constructor(private readonly callbackError: Error | unknown) {}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		if (this.callbackError instanceof Error) {
 			return {
 				type: this.callbackError.name,

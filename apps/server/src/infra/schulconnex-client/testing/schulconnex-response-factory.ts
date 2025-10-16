@@ -52,6 +52,10 @@ export const schulconnexResponseFactory = Factory.define<SchulconnexResponse>(()
 								rollen: [SchulconnexGroupRole.STUDENT],
 								ktid: 'ktid',
 							},
+							{
+								rollen: [SchulconnexGroupRole.SUBSTITUTE_TEACHER],
+								ktid: 'ktid1',
+							},
 						],
 					},
 				],

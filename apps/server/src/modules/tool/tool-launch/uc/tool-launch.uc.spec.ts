@@ -3,11 +3,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { LaunchContextUnavailableLoggableException } from '@modules/tool/tool-launch/error';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool, ContextExternalToolLaunchable } from '../../context-external-tool/domain';
@@ -66,7 +66,7 @@ describe('ToolLaunchUc', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {

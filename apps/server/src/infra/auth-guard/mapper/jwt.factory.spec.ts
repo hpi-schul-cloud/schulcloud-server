@@ -1,14 +1,9 @@
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { CreateJwtPayload } from '../interface';
 import { JwtPayloadFactory } from './jwt.factory';
 
 describe('JwtPayloadFactory', () => {
-	beforeAll(async () => {
-		await setupEntities();
-	});
-
 	describe('buildFromCurrentUser', () => {
 		it('should map current user to create jwt payload', () => {
 			const currentUser = currentUserFactory.build();

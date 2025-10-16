@@ -5,8 +5,8 @@ import {
 } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalTool } from '../domain';
+import { ContextExternalToolRepo } from '../repo/mikro-orm';
 
 @Injectable()
 export class ContextExternalToolAuthorizableService implements AuthorizationLoaderService {
@@ -17,7 +17,7 @@ export class ContextExternalToolAuthorizableService implements AuthorizationLoad
 		injectionService.injectReferenceLoader(AuthorizableReferenceType.ContextExternalToolEntity, this);
 	}
 
-	async findById(id: EntityId): Promise<ContextExternalTool> {
+	public async findById(id: EntityId): Promise<ContextExternalTool> {
 		const contextExternalTool: ContextExternalTool = await this.contextExternalToolRepo.findById(id);
 
 		return contextExternalTool;

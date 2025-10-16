@@ -10,9 +10,8 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { RequestTimeout } from '@shared/common';
-import { PaginationParams } from '@shared/controller';
-import { User } from '@shared/domain/entity';
+import { RequestTimeout } from '@shared/common/decorators';
+import { PaginationParams } from '@shared/controller/dto';
 import { IFindOptions } from '@shared/domain/interface';
 import { ImportUser } from '../entity';
 import { ImportUserMapper, UserMatchMapper } from '../mapper';
@@ -37,7 +36,7 @@ export class ImportUserController {
 	constructor(private readonly userImportUc: UserImportUc, private readonly userImportFetchUc: UserImportFetchUc) {}
 
 	@Get()
-	async findAllImportUsers(
+	public async findAllImportUsers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: FilterImportUserParams,
 		@Query() sortingQuery: SortImportUserParams,
@@ -55,7 +54,7 @@ export class ImportUserController {
 	}
 
 	@Patch(':importUserId/match')
-	async setMatch(
+	public async setMatch(
 		@Param() urlParams: ImportUserUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: UpdateMatchParams
@@ -67,7 +66,7 @@ export class ImportUserController {
 	}
 
 	@Delete(':importUserId/match')
-	async removeMatch(
+	public async removeMatch(
 		@Param() urlParams: ImportUserUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ImportUserResponse> {
@@ -78,7 +77,7 @@ export class ImportUserController {
 	}
 
 	@Patch(':importUserId/flag')
-	async updateFlag(
+	public async updateFlag(
 		@Param() urlParams: ImportUserUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: UpdateFlagParams
@@ -90,30 +89,28 @@ export class ImportUserController {
 	}
 
 	@Get('unassigned')
-	async findAllUnmatchedUsers(
+	public async findAllUnmatchedUsers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: FilterUserParams,
 		@Query() pagination: PaginationParams
 	): Promise<UserMatchListResponse> {
-		const options: IFindOptions<User> = { pagination };
-
 		const query = UserMatchMapper.mapToDomain(scope);
-		const [userList, total] = await this.userImportUc.findAllUnmatchedUsers(currentUser.userId, query, options);
-		const { skip, limit } = pagination;
-		const dtoList = userList.map((user) => UserMatchMapper.mapToResponse(user));
-		const response = new UserMatchListResponse(dtoList, total, skip, limit);
+		const [userList, total] = await this.userImportUc.findAllUnmatchedUsers(currentUser.userId, query, { pagination });
 
-		return response as unknown as UserMatchListResponse;
+		const dtoList = userList.map((user) => UserMatchMapper.mapToResponse(user));
+		const response = new UserMatchListResponse(dtoList, total, pagination.skip, pagination.limit);
+
+		return response;
 	}
 
 	@RequestTimeout('IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS')
 	@Post('migrate')
-	async saveAllUsersMatches(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	public async saveAllUsersMatches(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportUc.saveAllUsersMatches(currentUser.userId);
 	}
 
 	@Post('startUserMigration')
-	async startSchoolInUserMigration(
+	public async startSchoolInUserMigration(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query('useCentralLdap') useCentralLdap?: boolean
 	): Promise<void> {
@@ -121,7 +118,7 @@ export class ImportUserController {
 	}
 
 	@Post('startSync')
-	async endSchoolInMaintenance(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	public async endSchoolInMaintenance(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportUc.endSchoolInMaintenance(currentUser.userId);
 	}
 
@@ -136,7 +133,7 @@ export class ImportUserController {
 	@ApiServiceUnavailableResponse()
 	@ApiBadRequestResponse()
 	@ApiForbiddenResponse()
-	async populateImportUsers(
+	public async populateImportUsers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: PopulateImportUserParams
 	): Promise<void> {
@@ -152,7 +149,7 @@ export class ImportUserController {
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	@HttpCode(HttpStatus.NO_CONTENT)
-	async cancelMigration(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	public async cancelMigration(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportUc.cancelMigration(currentUser.userId);
 	}
 
@@ -165,7 +162,7 @@ export class ImportUserController {
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	@HttpCode(HttpStatus.NO_CONTENT)
-	async clearAllAutoMatches(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	public async clearAllAutoMatches(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportUc.clearAllAutoMatches(currentUser.userId);
 	}
 }

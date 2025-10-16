@@ -21,7 +21,6 @@ const requestLog = require('./logger/RequestLogger');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
 const errorHandler = require('./middleware/errorHandler');
-const rabbitMq = require('./utils/rabbitmq');
 
 const { setupFacadeLocator } = require('./utils/facadeLocator');
 const setupSwagger = require('./swagger');
@@ -46,8 +45,7 @@ const setupApp = async (orm) => {
 
 	setupFacadeLocator(app);
 	setupSwagger(app);
-	await initializeRedisClient();
-	rabbitMq.setup(app);
+
 	app
 		.use(compress())
 		.options('*', cors())
@@ -76,7 +74,7 @@ const setupApp = async (orm) => {
 			// pass header into hooks.params
 			// todo: To create a fake requestId on this place is a temporary solution
 			// it MUST be removed after the API gateway is established
-			const uid = ObjectId();
+			const uid = new ObjectId();
 			req.headers.requestId = uid.toString();
 			req.feathers.leadTime = req.leadTime;
 			req.feathers.headers = req.headers;
@@ -95,8 +93,9 @@ const setupApp = async (orm) => {
 	return app;
 };
 
-module.exports = async (orm) => {
+module.exports = async (orm, cacheManager) => {
 	if (feathersApp) return feathersApp;
 	feathersApp = await setupApp(orm);
+	await initializeRedisClient(cacheManager);
 	return feathersApp;
 };

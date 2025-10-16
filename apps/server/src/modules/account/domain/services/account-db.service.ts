@@ -1,20 +1,19 @@
 import { IdentityManagementService } from '@infra/identity-management/identity-management.service';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
-import { EntityNotFoundError } from '@shared/common';
+import { EntityNotFoundError } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
 import { AccountConfig } from '../../account-config';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
-import { Account } from '../account';
-import { AccountSave } from '../account-save';
+import { Account, AccountSave } from '../do';
+import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AbstractAccountService } from './account.service.abstract';
 
 @Injectable()
 export class AccountServiceDb extends AbstractAccountService {
 	constructor(
-		private readonly accountRepo: AccountRepo,
+		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo,
 		private readonly idmService: IdentityManagementService,
 		private readonly configService: ConfigService<AccountConfig, true>
 	) {
@@ -22,21 +21,27 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async findById(id: EntityId): Promise<Account> {
-		const internalId = await this.getInternalId(id);
+		const internalId = await this.convertExternalToInternalId(id);
 
 		return this.accountRepo.findById(internalId);
 	}
 
 	public findMultipleByUserId(userIds: EntityId[]): Promise<Account[]> {
-		return this.accountRepo.findMultipleByUserId(userIds);
+		const accounts = this.accountRepo.findMultipleByUserId(userIds);
+
+		return accounts;
 	}
 
 	public findByUserId(userId: EntityId): Promise<Account | null> {
-		return this.accountRepo.findByUserId(userId);
+		const account = this.accountRepo.findByUserId(userId);
+
+		return account;
 	}
 
 	public findByUserIdOrFail(userId: EntityId): Promise<Account> {
-		return this.accountRepo.findByUserIdOrFail(userId);
+		const account = this.accountRepo.findByUserIdOrFail(userId);
+
+		return account;
 	}
 
 	public findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
@@ -46,7 +51,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	public async save(accountSave: AccountSave): Promise<Account> {
 		let account: Account;
 		if (accountSave.id) {
-			const internalId = await this.getInternalId(accountSave.id);
+			const internalId = await this.convertExternalToInternalId(accountSave.id);
 
 			account = await this.accountRepo.findById(internalId);
 		} else {
@@ -61,7 +66,7 @@ export class AccountServiceDb extends AbstractAccountService {
 			accountSaves.map(async (accountSave) => {
 				let account: Account;
 				if (accountSave.id) {
-					const internalId = await this.getInternalId(accountSave.id);
+					const internalId = await this.convertExternalToInternalId(accountSave.id);
 
 					account = await this.accountRepo.findById(internalId);
 				} else {
@@ -78,7 +83,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async updateUsername(accountId: EntityId, username: string): Promise<Account> {
-		const internalId = await this.getInternalId(accountId);
+		const internalId = await this.convertExternalToInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.username = username;
 		await this.accountRepo.save(account);
@@ -86,45 +91,53 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async updateLastLogin(accountId: EntityId, lastLogin: Date): Promise<Account> {
-		const internalId = await this.getInternalId(accountId);
+		const internalId = await this.convertExternalToInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.lastLogin = lastLogin;
-		await this.accountRepo.save(account);
-		return account;
+
+		const savedAccount = this.accountRepo.save(account);
+
+		return savedAccount;
 	}
 
 	public async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<Account> {
-		const internalId = await this.getInternalId(accountId);
+		const internalId = await this.convertExternalToInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.lasttriedFailedLogin = lastTriedFailedLogin;
-		await this.accountRepo.save(account);
-		return account;
+
+		const savedAccount = this.accountRepo.save(account);
+
+		return savedAccount;
 	}
 
 	public async updatePassword(accountId: EntityId, password: string): Promise<Account> {
-		const internalId = await this.getInternalId(accountId);
+		const internalId = await this.convertExternalToInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.password = await this.encryptPassword(password);
 
-		await this.accountRepo.save(account);
-		return account;
+		const savedAccount = this.accountRepo.save(account);
+
+		return savedAccount;
 	}
 
 	public async delete(id: EntityId): Promise<void> {
-		const internalId = await this.getInternalId(id);
+		const internalId = await this.convertExternalToInternalId(id);
 		return this.accountRepo.deleteById(internalId);
 	}
 
 	public deleteByUserId(userId: EntityId): Promise<EntityId[]> {
-		return this.accountRepo.deleteByUserId(userId);
+		const entityId = this.accountRepo.deleteByUserId(userId);
+		return entityId;
 	}
 
 	public searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
-		return this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
+		const accounts = this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
+		return accounts;
 	}
 
 	public searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
-		return this.accountRepo.searchByUsernameExactMatch(userName);
+		const accounts = this.accountRepo.searchByUsernameExactMatch(userName);
+		return accounts;
 	}
 
 	public validatePassword(account: Account, comparePassword: string): Promise<boolean> {
@@ -135,12 +148,6 @@ export class AccountServiceDb extends AbstractAccountService {
 		const passwordCompare = bcrypt.compare(comparePassword, account.password);
 
 		return passwordCompare;
-	}
-
-	private async getInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
-		const internalId = await this.convertExternalToInternalId(id);
-
-		return internalId;
 	}
 
 	private async convertExternalToInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
@@ -159,7 +166,8 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public findMany(offset = 0, limit = 100): Promise<Account[]> {
-		return this.accountRepo.findMany(offset, limit);
+		const accounts = this.accountRepo.findMany(offset, limit);
+		return accounts;
 	}
 
 	private createAccount(accountSave: AccountSave): Account {

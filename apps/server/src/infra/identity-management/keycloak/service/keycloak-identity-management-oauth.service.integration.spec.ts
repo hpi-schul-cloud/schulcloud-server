@@ -1,8 +1,9 @@
+import { LoggerModule } from '@core/logger';
+import { KeycloakModule } from '@infra/identity-management/keycloak/keycloak.module';
+import { AccountEntity } from '@modules/account/repo';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { KeycloakModule } from '@infra/identity-management/keycloak/keycloak.module';
-import { LoggerModule } from '@src/core/logger';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
 import { KeycloakAdministrationModule } from '../../keycloak-administration/keycloak-administration.module';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
@@ -26,7 +27,7 @@ describe('KeycloakIdentityManagementOauthService Integration', () => {
 				KeycloakConfigurationModule,
 				KeycloakAdministrationModule,
 				LoggerModule,
-				MongoMemoryDatabaseModule.forRoot({ allowGlobalContext: true }),
+				MongoMemoryDatabaseModule.forRoot({ allowGlobalContext: true, entities: [AccountEntity] }),
 				ConfigModule.forRoot({ isGlobal: true }),
 			],
 		}).compile();

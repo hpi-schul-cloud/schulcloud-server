@@ -1,12 +1,22 @@
+import { ConfigurationModule } from '@infra/configuration';
+import { CourseModule } from '@modules/course';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
+import { BoardModule } from '../board/board.module';
+import { LegacySchoolModule } from '../legacy-school';
 import { RoomModule } from '../room';
 import { BoardContextApiHelperService } from './board-context-api-helper.service';
-import { BoardModule } from '../board/board.module';
-import { LearnroomModule } from '../learnroom';
-import { LegacySchoolModule } from '../legacy-school';
+import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from './board-context.config';
 
 @Module({
-	imports: [BoardModule, LearnroomModule, RoomModule, LegacySchoolModule],
+	imports: [
+		BoardModule,
+		CourseModule,
+		RoomModule,
+		LegacySchoolModule,
+		UserModule,
+		ConfigurationModule.register(BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig),
+	],
 	providers: [BoardContextApiHelperService],
 	exports: [BoardContextApiHelperService],
 })

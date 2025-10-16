@@ -1,4 +1,4 @@
-import { LtiDeepLinkToken } from '../domain';
+import { LtiDeepLinkToken } from '../domain/lti-deep-link-token';
 
 export interface LtiDeepLinkTokenRepo {
 	save(domainObject: LtiDeepLinkToken): Promise<LtiDeepLinkToken>;

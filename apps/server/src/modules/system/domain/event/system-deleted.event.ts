@@ -1,5 +1,5 @@
 import { EntityId } from '@shared/domain/types';
-import { System } from '../system.do';
+import { System } from '../do/system.do';
 
 export class SystemDeletedEvent {
 	schoolId: EntityId;

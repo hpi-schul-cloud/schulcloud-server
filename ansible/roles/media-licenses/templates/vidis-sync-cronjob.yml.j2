@@ -29,6 +29,8 @@ spec:
             git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
             git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
         spec:
+          os:
+            name: linux
           containers:
           - name: vidis-sync-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
@@ -40,7 +42,7 @@ spec:
             - configMapRef:
                 name: vidis-sync-cronjob-configmap
             command: ['/bin/sh','-c']
-            args: ['npm run nest:start:sync:vidis']
+            args: ['npm run nest:start:sync-console:media:activations:vidis:prod']
             resources:
               limits:
                 cpu: {{ MEDIA_ACTIVATION_CPU_LIMITS|default("2000m", true) }}

@@ -1,6 +1,6 @@
 import { IError } from '@infra/rabbitmq';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
-import { ErrorUtils } from '@src/core/error/utils';
+import { ErrorUtils } from '@core/error/utils';
 
 export class ErrorMapper {
 	static mapRpcErrorResponseToDomainError(

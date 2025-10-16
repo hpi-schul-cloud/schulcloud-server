@@ -63,7 +63,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return this.props.position;
 	}
 
-	addChild(child: AnyBoardNode, position?: number): void {
+	public addChild(child: AnyBoardNode, position?: number): void {
 		if (!this.canHaveChild(child)) {
 			throw new ForbiddenException(`Cannot add child of type '${child.constructor.name}'`);
 		}
@@ -71,7 +71,10 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		const { children } = this.props;
 
 		position = position ?? children.length;
-		if (position < 0 || position > children.length) {
+		if (position > children.length) {
+			position = children.length;
+		}
+		if (position < 0) {
 			throw new BadRequestException(`Invalid child position '${position}'`);
 		}
 		if (this.hasChild(child)) {
@@ -83,14 +86,14 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		this.props.children.forEach((c, pos) => c.updatePosition(pos));
 	}
 
-	hasChild(child: AnyBoardNode): boolean {
+	public hasChild(child: AnyBoardNode): boolean {
 		const exists = this.children.includes(child);
 		return exists;
 	}
 
 	abstract canHaveChild(childNode: AnyBoardNode): boolean;
 
-	removeChild(child: AnyBoardNode): void {
+	public removeChild(child: AnyBoardNode): void {
 		this.props.children = this.children.filter((ch) => ch.id !== child.id);
 		this.props.children.forEach((c, pos) => c.updatePosition(pos));
 		child.resetPath();

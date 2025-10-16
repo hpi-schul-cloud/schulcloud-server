@@ -1,8 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { SchoolFeature } from '@shared/domain/types';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { School, SchoolProps } from '../domain';
-import { federalStateFactory } from './federal-state.factory';
+import { School, SchoolFeature, SchoolProps } from '../domain';
+import { federalStateDoFactory } from './federal-state.do.factory';
 
 export const schoolFactory = BaseFactory.define<School, SchoolProps>(School, ({ sequence }) => {
 	return {
@@ -10,7 +9,7 @@ export const schoolFactory = BaseFactory.define<School, SchoolProps>(School, ({ 
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		name: `school #${sequence}`,
-		federalState: federalStateFactory.build(),
+		federalState: federalStateDoFactory.build(),
 		features: new Set<SchoolFeature>(),
 		systemIds: [],
 	};

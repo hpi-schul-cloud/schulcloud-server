@@ -1,5 +1,5 @@
 import { FederalState } from '../../domain';
-import { FederalStateResponse } from '../dto/response';
+import { FederalStateResponse } from '../dto';
 import { CountyResponseMapper } from './county.response.mapper';
 
 export class FederalStateResponseMapper {

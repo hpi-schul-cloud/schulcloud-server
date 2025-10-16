@@ -1,8 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
-import { MetaData } from '../types';
+import { MetaData, MetaDataEntityType } from '../types';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } from './url-handler';
 
@@ -47,7 +46,6 @@ describe(MetaTagInternalUrlService.name, () => {
 		courseUrlHandler = module.get(CourseUrlHandler);
 		boardUrlHandler = module.get(BoardUrlHandler);
 		service = module.get(MetaTagInternalUrlService);
-		await setupEntities();
 	});
 
 	afterAll(async () => {
@@ -101,7 +99,7 @@ describe(MetaTagInternalUrlService.name, () => {
 				title: 'My Title',
 				url: INTERNAL_URL.toString(),
 				description: '',
-				type: 'course',
+				type: MetaDataEntityType.COURSE,
 			};
 
 			return { mockedMetaTags };
@@ -126,7 +124,7 @@ describe(MetaTagInternalUrlService.name, () => {
 
 				const result = await service.tryInternalLinkMetaTags(UNKNOWN_INTERNAL_URL);
 
-				expect(result).toEqual(expect.objectContaining({ type: 'unknown' }));
+				expect(result).toEqual(expect.objectContaining({ type: MetaDataEntityType.UNKNOWN }));
 			});
 		});
 

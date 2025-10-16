@@ -1,3 +1,5 @@
+import { basename } from 'node:path';
+import { MetaData, MetaDataEntityType } from '../../types';
 import { AbstractUrlHandler } from './abstract-url-handler';
 
 class DummyHandler extends AbstractUrlHandler {
@@ -48,12 +50,46 @@ describe(AbstractUrlHandler.name, () => {
 	});
 
 	describe('getDefaultMetaData', () => {
-		it('should return meta data of type unknown', () => {
-			const { url, handler } = setup();
+		describe('when required fields are undefined', () => {
+			it('should return meta data with defaults', () => {
+				const { url, handler } = setup();
 
-			const result = handler.getDefaultMetaData(url);
+				const result = handler.getDefaultMetaData(url, {
+					type: undefined,
+					url: undefined,
+					title: undefined,
+					description: undefined,
+				});
 
-			expect(result).toEqual(expect.objectContaining({ type: 'unknown', url: url.toString() }));
+				expect(result).toEqual<MetaData>({
+					type: MetaDataEntityType.UNKNOWN,
+					url: url.toString(),
+					title: basename(url.pathname),
+					description: '',
+				});
+			});
+		});
+
+		describe('when partial overwrites the defaults', () => {
+			it('should return meta data with overwrites', () => {
+				const { url, handler } = setup();
+
+				const result = handler.getDefaultMetaData(url, {
+					type: MetaDataEntityType.BOARD,
+					url: 'url',
+					title: 'title',
+					description: 'description',
+					originalImageUrl: 'originalImageUrl',
+				});
+
+				expect(result).toEqual<MetaData>({
+					type: MetaDataEntityType.BOARD,
+					url: 'url',
+					title: 'title',
+					description: 'description',
+					originalImageUrl: 'originalImageUrl',
+				});
+			});
 		});
 	});
 });

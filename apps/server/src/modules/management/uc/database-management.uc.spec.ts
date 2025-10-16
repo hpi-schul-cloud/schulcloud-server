@@ -1,28 +1,41 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { DatabaseManagementService } from '@infra/database';
 import { DefaultEncryptionService, LdapEncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { SystemEntity } from '@modules/system/entity';
+import { Role } from '@modules/role/repo';
+import { SchoolEntity, StorageProviderEntity } from '@modules/school/repo';
+import { SystemEntity } from '@modules/system/repo';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { StorageProviderEntity } from '@shared/domain/entity';
-import { LegacyLogger } from '@src/core/logger';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { BsonConverter } from '../converter/bson.converter';
-import { generateSeedData } from '../seed-data/generateSeedData';
+import { generateSeedData } from '../seed-data/generate-seed-data';
+import {
+	ExternalToolsSeedDataService,
+	InstancesSeedDataService,
+	MediaSourcesSeedDataService,
+	SystemsSeedDataService,
+} from '../service';
+import { DatabaseManagementService } from '../service/database-management.service';
 import { DatabaseManagementUc } from './database-management.uc';
 
 describe('DatabaseManagementService', () => {
 	let module: TestingModule;
 	let uc: DatabaseManagementUc;
+
 	let fileSystemAdapter: DeepMocked<FileSystemAdapter>;
 	let dbService: DeepMocked<DatabaseManagementService>;
 	let configService: DeepMocked<ConfigService>;
 	let logger: DeepMocked<LegacyLogger>;
 	let defaultEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
 	let ldapEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
+	let mediaSourcesSeedDataService: DeepMocked<MediaSourcesSeedDataService>;
+	let systemsSeedDataService: DeepMocked<SystemsSeedDataService>;
+	let externalToolsSeedDataService: DeepMocked<ExternalToolsSeedDataService>;
+	let instancesSeedDataService: DeepMocked<InstancesSeedDataService>;
+
 	let bsonConverter: BsonConverter;
 	const configGetSpy = jest.spyOn(Configuration, 'get');
 	const configHasSpy = jest.spyOn(Configuration, 'has');
@@ -33,22 +46,22 @@ describe('DatabaseManagementService', () => {
 		_id: {
 			$oid: '0000d186816abba584714c93',
 		},
-		alias: 'SANIS',
-		type: 'oauthSanis',
+		alias: 'moin.schule',
+		type: 'oauth',
 		__v: 0,
 		oauthConfig: {
 			// eslint-disable-next-line no-template-curly-in-string
-			clientId: '${SANIS_CLIENT_ID}',
+			clientId: '${SCHULCONNEX_CLIENT_ID}',
 			// eslint-disable-next-line no-template-curly-in-string
-			clientSecret: '${SANIS_CLIENT_SECRET}',
+			clientSecret: '${SCHULCONNEX_CLIENT_SECRET}',
 		},
 	};
 	const oauthSystemWithSecrets = {
 		_id: {
 			$oid: '0000d186816abba584714c93',
 		},
-		alias: 'SANIS',
-		type: 'oauthSanis',
+		alias: 'moin.schule',
+		type: 'oauth',
 		__v: 0,
 		oauthConfig: {
 			clientId: 'ClientId',
@@ -124,14 +137,10 @@ describe('DatabaseManagementService', () => {
 		{
 			id: '62d6ca7e769952e3f6e67925',
 			_id: new ObjectId('62d6ca7e769952e3f6e67925'),
-			// eslint-disable-next-line no-template-curly-in-string
 			region: 'DoNotIgnore ${Ignore}',
-			// eslint-disable-next-line no-template-curly-in-string
 			endpointUrl: 'https://storage-SC_DOMAIN',
-			// eslint-disable-next-line no-template-curly-in-string
-			accessKeyId: 'AWS_ACCESS_KEY',
-			// eslint-disable-next-line no-template-curly-in-string
-			secretAccessKey: 'AWS_SECRET_ACCESS_KEY_AES',
+			accessKeyId: 'someAccessKey',
+			secretAccessKey: 'someSecretAccessKey',
 			createdAt: new Date('2021-07-16T09:03:18.536Z'),
 			updatedAt: new Date('2021-07-16T09:03:18.536Z'),
 		},
@@ -142,14 +151,10 @@ describe('DatabaseManagementService', () => {
 		'"id": {' +
 		'	"$oid": "62d6ca7e769952e3f6e67925"' +
 		'},' +
-		// eslint-disable-next-line no-template-curly-in-string
 		'"region": "${DoNotIgnore} \\${Ignore}",' +
-		// eslint-disable-next-line no-template-curly-in-string
 		'"endpointUrl": "https://storage-${SC_DOMAIN}",' +
-		// eslint-disable-next-line no-template-curly-in-string
-		'"accessKeyId": "${AWS_ACCESS_KEY}",' +
-		// eslint-disable-next-line no-template-curly-in-string
-		'"secretAccessKey": "${AWS_SECRET_ACCESS_KEY_AES}",' +
+		'"accessKeyId": "bar",' +
+		'"secretAccessKey": "foo",' +
 		'"createdAt": {' +
 		'	"$date": "2021-07-16T09:03:18.536Z"' +
 		'},' +
@@ -178,6 +183,10 @@ describe('DatabaseManagementService', () => {
 				{ provide: LegacyLogger, useValue: createMock<LegacyLogger>() },
 				{ provide: EntityManager, useValue: createMock<EntityManager>() },
 				{ provide: LdapEncryptionService, useValue: createMock<SymmetricKeyEncryptionService>() },
+				{ provide: MediaSourcesSeedDataService, useValue: createMock<MediaSourcesSeedDataService>() },
+				{ provide: SystemsSeedDataService, useValue: createMock<SystemsSeedDataService>() },
+				{ provide: ExternalToolsSeedDataService, useValue: createMock<ExternalToolsSeedDataService>() },
+				{ provide: InstancesSeedDataService, useValue: createMock<InstancesSeedDataService>() },
 				{
 					provide: FileSystemAdapter,
 					useValue: createMock<FileSystemAdapter>({
@@ -252,7 +261,11 @@ describe('DatabaseManagementService', () => {
 		logger = module.get(LegacyLogger);
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		ldapEncryptionService = module.get(LdapEncryptionService);
-		await setupEntities();
+		mediaSourcesSeedDataService = module.get(MediaSourcesSeedDataService);
+		systemsSeedDataService = module.get(SystemsSeedDataService);
+		externalToolsSeedDataService = module.get(ExternalToolsSeedDataService);
+		instancesSeedDataService = module.get(InstancesSeedDataService);
+		await setupEntities([SchoolEntity, Role]);
 	});
 
 	afterAll(async () => {
@@ -422,6 +435,10 @@ describe('DatabaseManagementService', () => {
 	describe('When import some collections from filesystem', () => {
 		beforeAll(() => {
 			configService.get.mockReturnValue(undefined);
+			mediaSourcesSeedDataService.import.mockResolvedValue(1);
+			systemsSeedDataService.import.mockResolvedValue(1);
+			externalToolsSeedDataService.import.mockResolvedValue(1);
+			instancesSeedDataService.import.mockResolvedValue(1);
 		});
 		afterAll(() => {
 			configService.get.mockReset();
@@ -429,7 +446,15 @@ describe('DatabaseManagementService', () => {
 
 		it('should seed all collections from filesystem and return collectionnames with document counts', async () => {
 			const collections = await uc.seedDatabaseCollectionsFromFileSystem();
-			expect(collections).toEqual(['collectionName1:3', 'collectionName2:1', 'systems:3', 'storageproviders:1']);
+			expect(collections).toEqual([
+				'collectionName1:3',
+				'collectionName2:1',
+				'systems:4',
+				'storageproviders:1',
+				'media-sources:1',
+				'external-tools:1',
+				'instances:1',
+			]);
 		});
 		it('should seed all collections from filesystem for empty filter and return collectionnames with document counts', async () => {
 			const collections = await uc.seedDatabaseCollectionsFromFileSystem([]);
@@ -490,11 +515,13 @@ describe('DatabaseManagementService', () => {
 					configGetSpy.mockImplementation((data) => (data === 'AES_KEY' ? null : data));
 					configHasSpy.mockImplementation((data) => data !== 'AES_KEY');
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
+
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
+
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
-						clientId: 'SANIS_CLIENT_ID',
-						clientSecret: 'SANIS_CLIENT_SECRET',
+						clientId: 'SCHULCONNEX_CLIENT_ID',
+						clientSecret: 'SCHULCONNEX_CLIENT_SECRET',
 					});
 					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
 						clientId: 'OIDC_CLIENT_ID',
@@ -509,8 +536,8 @@ describe('DatabaseManagementService', () => {
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
-						clientId: 'SANIS_CLIENT_ID_env',
-						clientSecret: 'SANIS_CLIENT_SECRET_env',
+						clientId: 'SCHULCONNEX_CLIENT_ID_env',
+						clientSecret: 'SCHULCONNEX_CLIENT_SECRET_env',
 					});
 					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
 						clientId: 'OIDC_CLIENT_ID_env',
@@ -539,8 +566,8 @@ describe('DatabaseManagementService', () => {
 					configService.get.mockReturnValue(undefined);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SANIS_CLIENT_ID'));
-					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SANIS_CLIENT_SECRET'));
+					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SCHULCONNEX_CLIENT_ID'));
+					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SCHULCONNEX_CLIENT_SECRET'));
 					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('OIDC_CLIENT_ID'));
 					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('OIDC_CLIENT_SECRET'));
 				});
@@ -586,8 +613,8 @@ describe('DatabaseManagementService', () => {
 					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
-						clientId: 'SANIS_CLIENT_ID',
-						clientSecret: 'SANIS_CLIENT_SECRET_encrypted',
+						clientId: 'SCHULCONNEX_CLIENT_ID',
+						clientSecret: 'SCHULCONNEX_CLIENT_SECRET_encrypted',
 					});
 					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
 						clientId: 'OIDC_CLIENT_ID',
@@ -621,7 +648,7 @@ describe('DatabaseManagementService', () => {
 
 	describe('DatabaseManagementService', () => {
 		it('should call syncIndexes()', async () => {
-			dbService.syncIndexes = jest.fn();
+			jest.spyOn(dbService, 'syncIndexes').mockImplementation();
 			await uc.syncIndexes();
 			expect(dbService.syncIndexes).toHaveBeenCalled();
 		});
@@ -660,29 +687,34 @@ describe('DatabaseManagementService', () => {
 
 	describe('migration', () => {
 		it('should call migrationUp', async () => {
-			dbService.migrationUp = jest.fn();
+			jest.spyOn(dbService, 'migrationUp').mockImplementation();
 			await uc.migrationUp();
 			expect(dbService.migrationUp).toHaveBeenCalled();
 		});
 		it('should call migrationUp with params', async () => {
-			dbService.migrationUp = jest.fn();
+			jest.spyOn(dbService, 'migrationUp').mockImplementation();
 			await uc.migrationUp('foo', 'bar', 'baz');
 			expect(dbService.migrationUp).toHaveBeenCalledWith('foo', 'bar', 'baz');
 		});
 		it('should call migrationDown', async () => {
-			dbService.migrationDown = jest.fn();
+			jest.spyOn(dbService, 'migrationDown').mockImplementation();
 			await uc.migrationDown();
 			expect(dbService.migrationDown).toHaveBeenCalled();
 		});
 		it('should call migrationDown with params', async () => {
-			dbService.migrationDown = jest.fn();
+			jest.spyOn(dbService, 'migrationDown').mockImplementation();
 			await uc.migrationDown('foo', 'bar', 'baz');
 			expect(dbService.migrationDown).toHaveBeenCalledWith('foo', 'bar', 'baz');
 		});
 		it('should call migrationPending', async () => {
-			dbService.migrationDown = jest.fn();
+			jest.spyOn(dbService, 'migrationDown').mockImplementation();
 			await uc.migrationPending();
 			expect(dbService.migrationPending).toHaveBeenCalled();
+		});
+		it('should call migrationCreate', async () => {
+			jest.spyOn(dbService, 'migrationDown').mockImplementation();
+			await uc.migrationCreate();
+			expect(dbService.migrationCreate).toHaveBeenCalled();
 		});
 	});
 });

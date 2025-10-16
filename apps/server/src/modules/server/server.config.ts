@@ -1,25 +1,27 @@
+import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { JwtAuthGuardConfig } from '@infra/auth-guard';
-import { EncryptionConfig } from '@infra/encryption/encryption.config';
+import type { JwtAuthGuardConfig } from '@infra/auth-guard';
+import type { EncryptionConfig } from '@infra/encryption/encryption.config';
+import type { FilesStorageClientConfig } from '@infra/files-storage-client';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
-import { TspSyncConfig } from '@infra/sync';
+import type { TspSyncConfig } from '@infra/sync';
 import type { TspClientConfig } from '@infra/tsp-client';
-import { VidisClientConfig } from '@infra/vidis-client';
-import { VidisSyncConfig } from '@infra/sync/media-licenses';
+import { ValkeyMode } from '@infra/valkey-client';
 import type { AccountConfig } from '@modules/account';
-import { AlertConfig } from '@modules/alert';
+import type { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
-import type { FilesStorageClientConfig } from '@modules/files-storage-client';
+import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
-import { OauthConfig } from '@modules/oauth';
-import { ProvisioningConfig } from '@modules/provisioning';
-import { RocketChatUserConfig } from '@modules/rocketchat-user';
-import { RoomConfig } from '@modules/room';
+import type { ManagementSeedDataConfig } from '@modules/management';
+import type { OauthConfig } from '@modules/oauth';
+import type { ProvisioningConfig } from '@modules/provisioning';
+import type { RocketChatUserConfig } from '@modules/rocketchat-user';
+import type { RoomConfig } from '@modules/room';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import type { ShdConfig } from '@modules/shd';
@@ -27,12 +29,9 @@ import type { ToolConfig } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
 import type { UserImportConfig } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import type { VideoConferenceConfig } from '@modules/video-conference';
-import type { BbbConfig } from '@modules/video-conference/bbb';
 import type { LanguageType } from '@shared/domain/interface';
-import { SchulcloudTheme } from '@shared/domain/types';
-import type { CoreModuleConfig } from '@src/core';
-import { Algorithm } from 'jsonwebtoken';
+import type { SchulcloudTheme } from '@shared/domain/types';
+import type { Algorithm } from 'jsonwebtoken';
 import type { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
@@ -47,7 +46,7 @@ export enum NodeEnvType {
 export interface ServerConfig
 	extends CoreModuleConfig,
 		UserConfig,
-		FilesStorageClientConfig,
+		FilesMetadataClientConfig,
 		AccountConfig,
 		IdentityManagementConfig,
 		SchoolConfig,
@@ -68,20 +67,19 @@ export interface ServerConfig
 		ProvisioningConfig,
 		RoomConfig,
 		UserImportConfig,
-		VideoConferenceConfig,
-		BbbConfig,
 		TspClientConfig,
 		TspSyncConfig,
 		AlertConfig,
 		ShdConfig,
 		OauthConfig,
 		EncryptionConfig,
-		VidisClientConfig,
-		VidisSyncConfig {
+		FilesStorageClientConfig,
+		ManagementSeedDataConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
+	SC_CONTACT_EMAIL: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
 	ALERT_STATUS_URL: string | null;
 	CALENDAR_SERVICE_ENABLED: boolean;
@@ -100,7 +98,9 @@ export interface ServerConfig
 	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_SHARE: boolean;
 	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
-	FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_H5P_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_COLLABORA_ENABLED: boolean;
 	FEATURE_BOARD_LAYOUT_ENABLED: boolean;
 	FEATURE_CONSENT_NECESSARY: boolean;
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: boolean;
@@ -113,10 +113,7 @@ export interface ServerConfig
 	SC_THEME: SchulcloudTheme;
 	SC_TITLE: string;
 	TRAINING_URL: string;
-	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
-	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: boolean;
-	FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED: boolean;
 	FEATURE_TLDRAW_ENABLED: boolean;
 	I18N__AVAILABLE_LANGUAGES: LanguageType[];
 	I18N__DEFAULT_LANGUAGE: LanguageType;
@@ -124,19 +121,28 @@ export interface ServerConfig
 	I18N__DEFAULT_TIMEZONE: Timezone;
 	BOARD_COLLABORATION_URI: string;
 	FEATURE_AI_TUTOR_ENABLED: boolean;
-	FEATURE_ROOMS_ENABLED: boolean;
+	FEATURE_ADMINISTRATE_ROOMS_ENABLED: boolean;
+	FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE: boolean;
+	FEATURE_ROOM_COPY_ENABLED: boolean;
+	FEATURE_ROOM_SHARE: boolean;
+	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: boolean;
+	FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED: boolean;
+	FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED: boolean;
 	FEATURE_TSP_SYNC_ENABLED: boolean;
+	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
+	LICENSE_SUMMARY_URL: string | undefined;
+	ROOM_MEMBER_INFO_URL: string | null;
 }
 
 const config: ServerConfig = {
 	ACCESSIBILITY_REPORT_EMAIL: Configuration.get('ACCESSIBILITY_REPORT_EMAIL') as string,
+	SC_CONTACT_EMAIL: Configuration.get('SC_CONTACT_EMAIL') as string,
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN') as boolean,
 	ALERT_STATUS_URL:
 		Configuration.get('ALERT_STATUS_URL') === null
 			? (Configuration.get('ALERT_STATUS_URL') as null)
 			: (Configuration.get('ALERT_STATUS_URL') as string),
 	CALENDAR_SERVICE_ENABLED: Configuration.get('CALENDAR_SERVICE_ENABLED') as boolean,
-	DISABLED_BRUTE_FORCE_CHECK: Configuration.get('DISABLED_BRUTE_FORCE_CHECK') as boolean,
 	FEATURE_ES_COLLECTIONS_ENABLED: Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') as boolean,
 	FEATURE_EXTENSIONS_ENABLED: Configuration.get('FEATURE_EXTENSIONS_ENABLED') as boolean,
 	FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED: Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') as boolean,
@@ -156,9 +162,9 @@ const config: ServerConfig = {
 	) as boolean,
 	FEATURE_COLUMN_BOARD_SHARE: Configuration.get('FEATURE_COLUMN_BOARD_SHARE') as boolean,
 	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_SOCKET_ENABLED') as boolean,
-	FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED: Configuration.get(
-		'FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED'
-	) as boolean,
+	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED') as boolean,
+	FEATURE_COLUMN_BOARD_H5P_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_H5P_ENABLED') as boolean,
+	FEATURE_COLUMN_BOARD_COLLABORA_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_COLLABORA_ENABLED') as boolean,
 	FEATURE_COURSE_SHARE: Configuration.get('FEATURE_COURSE_SHARE') as boolean,
 	FEATURE_LESSON_SHARE: Configuration.get('FEATURE_LESSON_SHARE') as boolean,
 	FEATURE_TASK_SHARE: Configuration.get('FEATURE_TASK_SHARE') as boolean,
@@ -166,9 +172,7 @@ const config: ServerConfig = {
 	FEATURE_LOGIN_LINK_ENABLED: Configuration.get('FEATURE_LOGIN_LINK_ENABLED') as boolean,
 	FEATURE_COPY_SERVICE_ENABLED: Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean,
 	FEATURE_CONSENT_NECESSARY: Configuration.get('FEATURE_CONSENT_NECESSARY') as boolean,
-	FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED: Configuration.get(
-		'FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED'
-	) as boolean,
+	FEATURE_USER_LOGIN_MIGRATION_ENABLED: Configuration.get('FEATURE_USER_LOGIN_MIGRATION_ENABLED') as boolean,
 	TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT'
 	) as boolean,
@@ -193,6 +197,7 @@ const config: ServerConfig = {
 	SC_THEME: Configuration.get('SC_THEME') as SchulcloudTheme,
 	SC_TITLE: Configuration.get('SC_TITLE') as string,
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
+	SC_SHORTNAME: Configuration.get('SC_SHORTNAME') as string,
 	TRAINING_URL: Configuration.get('TRAINING_URL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
@@ -221,14 +226,9 @@ const config: ServerConfig = {
 		.split(',')
 		.map((domain) => domain.trim()),
 	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,
-	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: Configuration.get(
-		'FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED'
-	) as boolean,
 	MIGRATION_END_GRACE_PERIOD_MS: Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number,
 	FEATURE_SHOW_OUTDATED_USERS: Configuration.get('FEATURE_SHOW_OUTDATED_USERS') as boolean,
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: Configuration.get('FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION') as boolean,
-	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: Configuration.get('FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED') as boolean,
-	FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED: Configuration.get('FEATURE_SHOW_NEW_ROOMS_VIEW_ENABLED') as boolean,
 	FEATURE_SHOW_MIGRATION_WIZARD: Configuration.get('FEATURE_SHOW_MIGRATION_WIZARD') as boolean,
 	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED: Configuration.get(
 		'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED'
@@ -239,7 +239,6 @@ const config: ServerConfig = {
 	MIGRATION_WIZARD_DOCUMENTATION_LINK: Configuration.has('MIGRATION_WIZARD_DOCUMENTATION_LINK')
 		? (Configuration.get('MIGRATION_WIZARD_DOCUMENTATION_LINK') as string)
 		: undefined,
-	FEATURE_NEXBOARD_COPY_ENABLED: Configuration.get('FEATURE_NEXBOARD_COPY_ENABLED') as boolean,
 	FEATURE_ETHERPAD_ENABLED: Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean,
 	ETHERPAD__PAD_URI: Configuration.get('ETHERPAD__PAD_URI') as string,
 	ETHERPAD__COOKIE_EXPIRES_SECONDS: Configuration.get('ETHERPAD__COOKIE_EXPIRES_SECONDS') as number,
@@ -284,8 +283,6 @@ const config: ServerConfig = {
 	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
 	PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL') as string,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
-	FEATURE_CTL_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED') as boolean,
-	FEATURE_LTI_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_LTI_TOOLS_TAB_ENABLED') as boolean,
 	CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: Configuration.get(
 		'CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES'
 	) as number,
@@ -295,26 +292,32 @@ const config: ServerConfig = {
 	CTL_TOOLS_RELOAD_TIME_MS: Configuration.get('CTL_TOOLS_RELOAD_TIME_MS') as number,
 	HOST: Configuration.get('HOST') as string,
 	FILES_STORAGE__SERVICE_BASE_URL: Configuration.get('FILES_STORAGE__SERVICE_BASE_URL') as string,
-	FEATURE_VIDEOCONFERENCE_ENABLED: Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED') as boolean,
-	VIDEOCONFERENCE_HOST: Configuration.get('VIDEOCONFERENCE_HOST') as string,
-	VIDEOCONFERENCE_SALT: Configuration.get('VIDEOCONFERENCE_SALT') as string,
-	VIDEOCONFERENCE_DEFAULT_PRESENTATION: Configuration.get('VIDEOCONFERENCE_DEFAULT_PRESENTATION') as string,
 	FEATURE_USER_MIGRATION_ENABLED: Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean,
 	FEATURE_USER_MIGRATION_SYSTEM_ID: Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string,
 	FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: Configuration.get(
 		'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
 	) as boolean,
-	FEATURE_SANIS_GROUP_PROVISIONING_ENABLED: Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') as boolean,
+	FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED: Configuration.get(
+		'FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED'
+	) as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
-	FEATURE_ROOMS_ENABLED: Configuration.get('FEATURE_ROOMS_ENABLED') as boolean,
+	FEATURE_ADMINISTRATE_ROOMS_ENABLED: Configuration.get('FEATURE_ADMINISTRATE_ROOMS_ENABLED') as boolean,
+	FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE: Configuration.get('FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE') as boolean,
+	FEATURE_ROOM_COPY_ENABLED: Configuration.get('FEATURE_ROOM_COPY_ENABLED') as boolean,
+	FEATURE_ROOM_SHARE: Configuration.get('FEATURE_ROOM_SHARE') as boolean,
+	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: Configuration.get('FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED') as boolean,
+	FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED: Configuration.get(
+		'FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED'
+	) as boolean,
+	FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED: Configuration.get(
+		'FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED'
+	) as boolean,
 	TSP_API_CLIENT_BASE_URL: Configuration.get('TSP_API_CLIENT_BASE_URL') as string,
 	TSP_API_CLIENT_TOKEN_LIFETIME_MS: Configuration.get('TSP_API_CLIENT_TOKEN_LIFETIME_MS') as number,
 	TSP_SYNC_SCHOOL_LIMIT: Configuration.get('TSP_SYNC_SCHOOL_LIMIT') as number,
 	TSP_SYNC_SCHOOL_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_SCHOOL_DAYS_TO_FETCH') as number,
 	TSP_SYNC_DATA_LIMIT: Configuration.get('TSP_SYNC_DATA_LIMIT') as number,
 	TSP_SYNC_DATA_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_DATA_DAYS_TO_FETCH') as number,
-	TSP_SYNC_MIGRATION_LIMIT: Configuration.get('TSP_SYNC_MIGRATION_LIMIT') as number,
-	FEATURE_TSP_MIGRATION_ENABLED: Configuration.get('FEATURE_TSP_MIGRATION_ENABLED') as boolean,
 	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
 	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
@@ -325,13 +328,73 @@ const config: ServerConfig = {
 	FEATURE_OAUTH_LOGIN: Configuration.get('FEATURE_OAUTH_LOGIN') as boolean,
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: Configuration.get('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED') as boolean,
 	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
-	VIDIS_API_CLIENT_BASE_URL: Configuration.has('VIDIS_API_CLIENT_BASE_URL')
-		? (Configuration.get('VIDIS_API_CLIENT_BASE_URL') as string)
+	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: Configuration.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED') as boolean,
+	MEDIA_SOURCE_VIDIS_USERNAME: Configuration.has('MEDIA_SOURCE_VIDIS_USERNAME')
+		? (Configuration.get('MEDIA_SOURCE_VIDIS_USERNAME') as string)
 		: undefined,
-	VIDIS_SYNC_REGION: Configuration.has('VIDIS_SYNC_REGION')
-		? (Configuration.get('VIDIS_SYNC_REGION') as string)
+	MEDIA_SOURCE_VIDIS_PASSWORD: Configuration.has('MEDIA_SOURCE_VIDIS_PASSWORD')
+		? (Configuration.get('MEDIA_SOURCE_VIDIS_PASSWORD') as string)
+		: undefined,
+	MEDIA_SOURCE_BILO_CLIENT_ID: Configuration.has('MEDIA_SOURCE_BILO_CLIENT_ID')
+		? (Configuration.get('MEDIA_SOURCE_BILO_CLIENT_ID') as string)
+		: undefined,
+	MEDIA_SOURCE_BILO_CLIENT_SECRET: Configuration.has('MEDIA_SOURCE_BILO_CLIENT_SECRET')
+		? (Configuration.get('MEDIA_SOURCE_BILO_CLIENT_SECRET') as string)
+		: undefined,
+	SCHULCONNEX_CLIENT_ID: Configuration.has('SCHULCONNEX_CLIENT_ID')
+		? (Configuration.get('SCHULCONNEX_CLIENT_ID') as string)
+		: undefined,
+	SCHULCONNEX_CLIENT_SECRET: Configuration.has('SCHULCONNEX_CLIENT_SECRET')
+		? (Configuration.get('SCHULCONNEX_CLIENT_SECRET') as string)
+		: undefined,
+	LICENSE_SUMMARY_URL: Configuration.has('LICENSE_SUMMARY_URL')
+		? (Configuration.get('LICENSE_SUMMARY_URL') as string)
+		: undefined,
+	ROOM_MEMBER_INFO_URL:
+		Configuration.get('ROOM_MEMBER_INFO_URL') === null
+			? (Configuration.get('ROOM_MEMBER_INFO_URL') as null)
+			: (Configuration.get('ROOM_MEMBER_INFO_URL') as string),
+	SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS: Configuration.get(
+		'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
+	) as number,
+	SESSION_VALKEY__MODE: Configuration.get('SESSION_VALKEY__MODE') as ValkeyMode,
+	SESSION_VALKEY__URI: Configuration.has('SESSION_VALKEY__URI')
+		? (Configuration.get('SESSION_VALKEY__URI') as string)
+		: undefined,
+	SESSION_VALKEY__SENTINEL_NAME: Configuration.has('SESSION_VALKEY__SENTINEL_NAME')
+		? (Configuration.get('SESSION_VALKEY__SENTINEL_NAME') as string)
+		: undefined,
+	SESSION_VALKEY__SENTINEL_PASSWORD: Configuration.has('SESSION_VALKEY__SENTINEL_PASSWORD')
+		? (Configuration.get('SESSION_VALKEY__SENTINEL_PASSWORD') as string)
+		: undefined,
+	SESSION_VALKEY__SENTINEL_SERVICE_NAME: Configuration.has('SESSION_VALKEY__SENTINEL_SERVICE_NAME')
+		? (Configuration.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME') as string)
+		: undefined,
+	NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME: Configuration.has('NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME')
+		? (Configuration.get('NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME') as string)
+		: undefined,
+	NEXTCLOUD_BASE_URL: Configuration.has('NEXTCLOUD_BASE_URL')
+		? (Configuration.get('NEXTCLOUD_BASE_URL') as string)
+		: undefined,
+	NEXTCLOUD_CLIENT_ID: Configuration.has('NEXTCLOUD_CLIENT_ID')
+		? (Configuration.get('NEXTCLOUD_CLIENT_ID') as string)
+		: undefined,
+	NEXTCLOUD_CLIENT_SECRET: Configuration.has('NEXTCLOUD_CLIENT_SECRET')
+		? (Configuration.get('NEXTCLOUD_CLIENT_SECRET') as string)
+		: undefined,
+	NEXTCLOUD_SCOPES: Configuration.has('NEXTCLOUD_SCOPES')
+		? (Configuration.get('NEXTCLOUD_SCOPES') as string)
+		: undefined,
+	CTL_SEED_SECRET_ONLINE_DIA_MATHE: Configuration.has('CTL_SEED_SECRET_ONLINE_DIA_MATHE')
+		? (Configuration.get('CTL_SEED_SECRET_ONLINE_DIA_MATHE') as string)
+		: undefined,
+	CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH: Configuration.has('CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH')
+		? (Configuration.get('CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH') as string)
+		: undefined,
+	CTL_SEED_SECRET_MERLIN: Configuration.has('CTL_SEED_SECRET_MERLIN')
+		? (Configuration.get('CTL_SEED_SECRET_MERLIN') as string)
 		: undefined,
 };
 
-export const serverConfig = () => config;
+export const serverConfig = (): ServerConfig => config;
 export const SERVER_CONFIG_TOKEN = 'SERVER_CONFIG_TOKEN';

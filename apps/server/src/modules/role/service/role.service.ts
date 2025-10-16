@@ -1,49 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import { Role } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { RoleRepo } from '@shared/repo';
+import { RoleName } from '../domain';
 import { RoleMapper } from '../mapper/role.mapper';
+import { RoleRepo } from '../repo';
 import { RoleDto } from './dto';
 
 @Injectable()
 export class RoleService {
 	constructor(private readonly roleRepo: RoleRepo) {}
 
-	async getProtectedRoles(): Promise<RoleDto[]> {
-		const roleDtos: RoleDto[] = await this.findByNames([RoleName.ADMINISTRATOR, RoleName.TEACHER]);
+	/** @deprecated  We have no application wide protected role expertise. */
+	public async getProtectedRoles(): Promise<RoleDto[]> {
+		const roleDtos = await this.findByNames([RoleName.ADMINISTRATOR, RoleName.TEACHER]);
 
 		return roleDtos;
 	}
 
-	async findById(id: EntityId): Promise<RoleDto> {
-		const entity: Role = await this.roleRepo.findById(id);
+	public async findById(id: EntityId): Promise<RoleDto> {
+		const entity = await this.roleRepo.findById(id);
 
-		const roleDto: RoleDto = RoleMapper.mapFromEntityToDto(entity);
+		const roleDto = RoleMapper.mapFromEntityToDto(entity);
 
 		return roleDto;
 	}
 
-	async findByIds(ids: EntityId[]): Promise<RoleDto[]> {
-		const roles: Role[] = await this.roleRepo.findByIds(ids);
+	public async findByIds(ids: EntityId[]): Promise<RoleDto[]> {
+		const roles = await this.roleRepo.findByIds(ids);
 
-		const roleDtos: RoleDto[] = RoleMapper.mapFromEntitiesToDtos(roles);
-
-		return roleDtos;
-	}
-
-	async findByNames(names: RoleName[]): Promise<RoleDto[]> {
-		const entities: Role[] = await this.roleRepo.findByNames(names);
-
-		const roleDtos: RoleDto[] = RoleMapper.mapFromEntitiesToDtos(entities);
+		const roleDtos = RoleMapper.mapFromEntitiesToDtos(roles);
 
 		return roleDtos;
 	}
 
-	async findByName(names: RoleName): Promise<RoleDto> {
-		const entity: Role = await this.roleRepo.findByName(names);
+	public async findByNames(names: RoleName[]): Promise<RoleDto[]> {
+		const entities = await this.roleRepo.findByNames(names);
 
-		const roleDto: RoleDto = RoleMapper.mapFromEntityToDto(entity);
+		const roleDtos = RoleMapper.mapFromEntitiesToDtos(entities);
+
+		return roleDtos;
+	}
+
+	public async findByName(names: RoleName): Promise<RoleDto> {
+		const entity = await this.roleRepo.findByName(names);
+
+		const roleDto = RoleMapper.mapFromEntityToDto(entity);
 
 		return roleDto;
 	}

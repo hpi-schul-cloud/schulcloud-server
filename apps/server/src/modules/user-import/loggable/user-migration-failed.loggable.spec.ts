@@ -1,12 +1,14 @@
+import { User } from '@modules/user/repo';
 import { NotFoundException } from '@nestjs/common';
-import { importUserFactory } from '@testing/factory/import-user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
+import { ImportUser } from '../entity';
+import { importUserFactory } from '../testing';
 import { UserMigrationFailedLoggable } from './user-migration-failed.loggable';
 
 describe(UserMigrationFailedLoggable.name, () => {
 	describe('getLogMessage', () => {
 		const setup = async () => {
-			await setupEntities();
+			await setupEntities([User, ImportUser]);
 			const importUser = importUserFactory.build();
 			const error = new NotFoundException('user not found');
 			const loggable = new UserMigrationFailedLoggable(importUser, error);

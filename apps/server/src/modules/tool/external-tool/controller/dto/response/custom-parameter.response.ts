@@ -6,38 +6,53 @@ import {
 } from '../../../../common/enum';
 
 export class CustomParameterResponse {
-	@ApiProperty()
-	name: string;
+	@ApiProperty({ description: 'Technical name of the parameter that is send to the tool provider.' })
+	public name: string;
 
-	@ApiProperty()
-	displayName: string;
+	@ApiProperty({ description: 'Display name that is shown in the user interface.' })
+	public displayName: string;
 
-	@ApiPropertyOptional()
-	description?: string;
+	@ApiPropertyOptional({ description: 'Additional description of the parameter in the user interface.' })
+	public description?: string;
 
-	@ApiPropertyOptional()
-	defaultValue?: string;
+	@ApiPropertyOptional({ description: 'Pre-fill value for the parameter. Required for global parameters.' })
+	public defaultValue?: string;
 
-	@ApiPropertyOptional()
-	regex?: string;
+	@ApiPropertyOptional({ description: 'Regular expression to limit user input for this field.' })
+	public regex?: string;
 
-	@ApiPropertyOptional()
-	regexComment?: string;
+	@ApiPropertyOptional({ description: 'A description for the regex.' })
+	public regexComment?: string;
 
-	@ApiProperty({ enum: CustomParameterScopeTypeParams })
-	scope: CustomParameterScopeTypeParams;
+	@ApiProperty({
+		enum: CustomParameterScopeTypeParams,
+		enumName: 'CustomParameterScopeTypeParams',
+		description: 'Scope where the parameter has to be configured.',
+		example: CustomParameterScopeTypeParams.SCHOOL,
+	})
+	public scope: CustomParameterScopeTypeParams;
 
-	@ApiProperty({ enum: CustomParameterLocationParams })
-	location: CustomParameterLocationParams;
+	@ApiProperty({
+		enum: CustomParameterLocationParams,
+		enumName: 'CustomParameterLocationParams',
+		description: 'Location where the parameter is transmitted in the HTTP request to the tool provider.',
+		example: CustomParameterLocationParams.QUERY,
+	})
+	public location: CustomParameterLocationParams;
 
-	@ApiProperty({ enum: CustomParameterTypeParams })
-	type: CustomParameterTypeParams;
+	@ApiProperty({
+		enum: CustomParameterTypeParams,
+		enumName: 'CustomParameterTypeParams',
+		description: 'Input field type. Auto parameters have to be global and cannot have a defaultValue.',
+		example: CustomParameterTypeParams.BOOLEAN,
+	})
+	public type: CustomParameterTypeParams;
 
-	@ApiProperty()
-	isOptional: boolean;
+	@ApiProperty({ description: 'If true, the parameter does not have to be filled out during configuration.' })
+	public isOptional: boolean;
 
-	@ApiProperty()
-	isProtected: boolean;
+	@ApiProperty({ description: 'If true, the parameter value is not copied to other contexts.' })
+	public isProtected: boolean;
 
 	constructor(props: CustomParameterResponse) {
 		this.name = props.name;

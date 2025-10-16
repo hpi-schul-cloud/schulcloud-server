@@ -1,121 +1,83 @@
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { LegacyLogger } from '@core/logger';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { AccountService } from '@modules/account';
+import { UserService } from '@modules/user';
+import { DeletionConfig } from '../../deletion.config';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DeletionLog, DeletionRequest } from '../../domain/do';
-import { DataDeletedEvent, UserDeletedEvent } from '../../domain/event';
 import { DomainDeletionReport } from '../../domain/interface';
-import { DeletionLogService, DeletionRequestService } from '../../domain/service';
+import { DeletionLogService, DeletionRequestService, DeletionExecutionService } from '../../domain/service';
 import { DeletionRequestLogResponseBuilder } from '../builder';
-import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
+import { DeletionRequestBodyParams, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionTargetRefBuilder } from '../controller/dto/builder';
-import { DeletionConfig } from '../../deletion.config';
+import { DomainName } from '../../domain/types';
 
 @Injectable()
-@EventsHandler(DataDeletedEvent)
-export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
-	config: string[];
-
+export class DeletionRequestUc {
 	constructor(
+		private readonly configService: ConfigService<DeletionConfig, true>,
 		private readonly deletionRequestService: DeletionRequestService,
 		private readonly deletionLogService: DeletionLogService,
+		private readonly deletionExecutionService: DeletionExecutionService,
 		private readonly logger: LegacyLogger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM,
-		private readonly configService: ConfigService<DeletionConfig, true>
+		private readonly accountService: AccountService,
+		private readonly userService: UserService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
-		this.config = [
-			'account',
-			'board',
-			'class',
-			'courseGroup',
-			'course',
-			'dashboard',
-			'file',
-			'fileRecords',
-			'lessons',
-			'pseudonyms',
-			'rocketChatUser',
-			'task',
-			'teams',
-			'user',
-			'submissions',
-			'news',
-		];
 	}
 
-	@UseRequestContext()
-	async handle({ deletionRequestId, domainDeletionReport }: DataDeletedEvent) {
-		await this.deletionLogService.createDeletionLog(deletionRequestId, domainDeletionReport);
-
-		const deletionLogs: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
-
-		if (this.checkLogsPerDomain(deletionLogs)) {
-			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequestId);
-		}
-	}
-
-	private checkLogsPerDomain(deletionLogs: DeletionLog[]): boolean {
-		return this.config.every((domain) => deletionLogs.some((log) => log.domain === domain));
-	}
-
-	async createDeletionRequest(deletionRequest: DeletionRequestBodyProps): Promise<DeletionRequestResponse> {
+	public async createDeletionRequest(deletionRequest: DeletionRequestBodyParams): Promise<DeletionRequestResponse> {
 		this.logger.debug({ action: 'createDeletionRequest', deletionRequest });
+		const minutes =
+			deletionRequest.deleteAfterMinutes ?? this.configService.get<number>('ADMIN_API__DELETION_DELETE_AFTER_MINUTES');
+		const deleteAfter = new Date();
+		deleteAfter.setMinutes(deleteAfter.getMinutes() + minutes);
+
+		// TODO automatic check if targetRefId exists for any domains
+		if (deletionRequest.targetRef.domain === DomainName.USER) {
+			await this.userService.findById(deletionRequest.targetRef.id);
+		}
+
 		const result = await this.deletionRequestService.createDeletionRequest(
 			deletionRequest.targetRef.id,
 			deletionRequest.targetRef.domain,
-			deletionRequest.deleteInMinutes
+			deleteAfter
 		);
+
+		if (deletionRequest.targetRef.domain === DomainName.USER) {
+			await this.accountService.deactivateAccount(deletionRequest.targetRef.id, new Date());
+		}
 
 		return result;
 	}
 
-	async executeDeletionRequests(limit?: number): Promise<void> {
-		this.logger.debug({ action: 'executeDeletionRequests', limit });
-		const maxAmountOfDeletionRequestsDoConcurrently = this.configService.get<number>(
-			'ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS'
-		);
-		const callsDelayMilliseconds = this.configService.get<number>('ADMIN_API__DELETION_DELAY_MILLISECONDS');
-		let tasks: DeletionRequest[] = [];
+	public async executeDeletionRequests(deletionRequestIds: EntityId[]): Promise<void> {
+		this.logger.debug({ action: 'executeDeletionRequests', deletionRequestIds });
 
-		do {
-			const numberOfDeletionRequestsWithStatusPending =
-				// eslint-disable-next-line no-await-in-loop
-				await this.deletionRequestService.countPendingDeletionRequests();
-			const numberOfDeletionRequestsToProccess =
-				maxAmountOfDeletionRequestsDoConcurrently - numberOfDeletionRequestsWithStatusPending;
-			this.logger.debug({
-				action: 'numberItemsWithStatusPending, amountWillingToTake',
-				numberOfDeletionRequestsWithStatusPending,
-				numberOfDeletionRequestsToProccess,
-			});
-			// eslint-disable-next-line no-await-in-loop
-			if (numberOfDeletionRequestsToProccess > 0) {
-				// eslint-disable-next-line no-await-in-loop
-				tasks = await this.deletionRequestService.findAllItemsToExecute(numberOfDeletionRequestsToProccess);
-				// eslint-disable-next-line no-await-in-loop
-				await Promise.all(
-					tasks.map(async (req) => {
-						await this.executeDeletionRequest(req);
-					})
-				);
+		const deletionRequests = await this.deletionRequestService.findByIds(deletionRequestIds);
+		for (const req of deletionRequests) {
+			if (req !== null) {
+				await this.deletionExecutionService.executeDeletionRequest(req);
 			}
-			// short sleep mode to give time for deletion process to do their work
-			if (callsDelayMilliseconds && callsDelayMilliseconds > 0) {
-				// eslint-disable-next-line no-await-in-loop
-				await new Promise((resolve) => {
-					setTimeout(resolve, callsDelayMilliseconds);
-				});
-			}
-		} while (tasks.length > 0);
-		this.logger.debug({ action: 'deletion process completed' });
+		}
+
+		this.logger.debug({ action: 'deletion requests executed' });
 	}
 
-	async findById(deletionRequestId: EntityId): Promise<DeletionRequestLogResponse> {
+	public async findAllItemsToExecute(limit?: number, getFailed?: boolean): Promise<EntityId[]> {
+		this.logger.debug({ action: 'findAllItemsToExecute', limit });
+
+		const configLimit = this.configService.get<number>('ADMIN_API__DELETION_EXECUTION_BATCH_NUMBER');
+		const max = limit ?? configLimit;
+		const deletionRequests = await this.deletionRequestService.findAllItemsToExecute(max, getFailed);
+		const deletionRequestIds = deletionRequests.map((deletionRequest) => deletionRequest.id);
+
+		return deletionRequestIds;
+	}
+
+	public async findById(deletionRequestId: EntityId): Promise<DeletionRequestLogResponse> {
 		this.logger.debug({ action: 'findById', deletionRequestId });
 
 		const deletionRequest: DeletionRequest = await this.deletionRequestService.findById(deletionRequestId);
@@ -134,20 +96,15 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		return response;
 	}
 
-	async deleteDeletionRequestById(deletionRequestId: EntityId): Promise<void> {
+	public async deleteDeletionRequestById(deletionRequestId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteDeletionRequestById', deletionRequestId });
 
-		await this.deletionRequestService.deleteById(deletionRequestId);
-	}
+		const deletionRequest = await this.deletionRequestService.findById(deletionRequestId);
 
-	private async executeDeletionRequest(deletionRequest: DeletionRequest): Promise<void> {
-		this.logger.debug({ action: 'executeDeletionRequest', deletionRequest });
-		try {
-			await this.deletionRequestService.markDeletionRequestAsPending(deletionRequest.id);
-			await this.eventBus.publish(new UserDeletedEvent(deletionRequest.id, deletionRequest.targetRefId));
-		} catch (error) {
-			this.logger.error(`execution of deletionRequest ${deletionRequest.id} has failed`, error);
-			await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
+		await this.deletionRequestService.deleteById(deletionRequestId);
+
+		if (deletionRequest.targetRefDomain === DomainName.USER) {
+			await this.accountService.reactivateAccount(deletionRequest.targetRefId);
 		}
 	}
 }

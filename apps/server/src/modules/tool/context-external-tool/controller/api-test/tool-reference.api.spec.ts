@@ -1,23 +1,19 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { DateToString } from '@testing/date-to-string';
-import { courseFactory } from '@testing/factory/course.factory';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { Response } from 'supertest';
 import { CustomParameterLocation, CustomParameterScope, LtiMessageType, ToolContextType } from '../../../common/enum';
-import { ExternalToolEntity } from '../../../external-tool/entity';
 import { customParameterFactory, externalToolEntityFactory } from '../../../external-tool/testing';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../repo';
 import {
 	contextExternalToolConfigurationStatusResponseFactory,
 	contextExternalToolEntityFactory,
@@ -63,12 +59,12 @@ describe('ToolReferenceController (API)', () => {
 
 		describe('when user has no access to a tool', () => {
 			const setup = async () => {
-				const schoolWithoutTool: SchoolEntity = schoolEntityFactory.buildWithId();
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const schoolWithoutTool = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
-				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const course = courseEntityFactory.buildWithId({ school, teachers: [adminUser] });
+				const externalToolEntity = externalToolEntityFactory.buildWithId();
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 				});
@@ -111,13 +107,14 @@ describe('ToolReferenceController (API)', () => {
 
 		describe('when user has access for a tool', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
-				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const thumbnailFileRecord = fileRecordFactory.build();
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+				const course = courseEntityFactory.buildWithId({ school, teachers: [adminUser] });
+				const fileRecordId = new ObjectId();
+				const fileName = 'test.png';
+				const externalToolEntity = externalToolEntityFactory.buildWithId({
 					logoBase64: 'logoBase64',
 					parameters: [
 						customParameterFactory.build({
@@ -133,10 +130,11 @@ describe('ToolReferenceController (API)', () => {
 					],
 					thumbnail: {
 						uploadUrl: 'https://uploadurl.com',
-						fileRecord: thumbnailFileRecord,
+						fileRecord: fileRecordId,
+						fileName,
 					},
 				});
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 				});
@@ -155,7 +153,6 @@ describe('ToolReferenceController (API)', () => {
 					externalToolEntity,
 					schoolExternalToolEntity,
 					contextExternalToolEntity,
-					thumbnailFileRecord,
 				]);
 				em.clear();
 
@@ -166,11 +163,18 @@ describe('ToolReferenceController (API)', () => {
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, params, contextExternalToolEntity, externalToolEntity, thumbnailFileRecord };
+				return {
+					loggedInClient,
+					params,
+					contextExternalToolEntity,
+					externalToolEntity,
+					fileRecordId,
+					fileName,
+				};
 			};
 
 			it('should return an ToolReferenceListResponse with data', async () => {
-				const { loggedInClient, params, contextExternalToolEntity, externalToolEntity, thumbnailFileRecord } =
+				const { loggedInClient, params, contextExternalToolEntity, externalToolEntity, fileRecordId, fileName } =
 					await setup();
 
 				const response: Response = await loggedInClient.get(`${params.contextType}/${params.contextId}`);
@@ -182,15 +186,14 @@ describe('ToolReferenceController (API)', () => {
 							contextToolId: contextExternalToolEntity.id,
 							description: externalToolEntity.description,
 							displayName: contextExternalToolEntity.displayName as string,
+							domain: new URL(externalToolEntity.config.baseUrl).hostname,
 							status: contextExternalToolConfigurationStatusResponseFactory.build({
 								isOutdatedOnScopeSchool: false,
 								isOutdatedOnScopeContext: false,
 							}),
 							logoUrl: `http://localhost:3030/api/v3/tools/external-tools/${externalToolEntity.id}/logo`,
 							openInNewTab: externalToolEntity.openNewTab,
-							thumbnailUrl: `/api/v3/file/preview/${thumbnailFileRecord.id}/${encodeURIComponent(
-								thumbnailFileRecord.name
-							)}`,
+							thumbnailUrl: `/api/v3/file/preview/${fileRecordId.toHexString()}/${encodeURIComponent(fileName)}`,
 							isLtiDeepLinkingTool: false,
 						},
 					],
@@ -210,12 +213,12 @@ describe('ToolReferenceController (API)', () => {
 
 		describe('when user has no access to a tool', () => {
 			const setup = async () => {
-				const schoolWithoutTool: SchoolEntity = schoolEntityFactory.buildWithId();
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const schoolWithoutTool = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
-				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const course = courseEntityFactory.buildWithId({ school, teachers: [adminUser] });
+				const externalToolEntity = externalToolEntityFactory.buildWithId();
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 				});
@@ -255,13 +258,14 @@ describe('ToolReferenceController (API)', () => {
 
 		describe('when user has access for a tool', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
-				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const thumbnailFileRecord = fileRecordFactory.build();
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory
+				const course = courseEntityFactory.buildWithId({ school, teachers: [adminUser] });
+				const fileRecordId = new ObjectId();
+				const fileName = 'test.png';
+				const externalToolEntity = externalToolEntityFactory
 					.withLti11Config({
 						lti_message_type: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST,
 					})
@@ -281,10 +285,11 @@ describe('ToolReferenceController (API)', () => {
 						],
 						thumbnail: {
 							uploadUrl: 'https://uploadurl.com',
-							fileRecord: thumbnailFileRecord,
+							fileRecord: fileRecordId,
+							fileName,
 						},
 					});
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 				});
@@ -305,7 +310,6 @@ describe('ToolReferenceController (API)', () => {
 					externalToolEntity,
 					schoolExternalToolEntity,
 					contextExternalToolEntity,
-					thumbnailFileRecord,
 				]);
 				em.clear();
 
@@ -316,8 +320,9 @@ describe('ToolReferenceController (API)', () => {
 					contextExternalToolId: contextExternalToolEntity.id,
 					contextExternalToolEntity,
 					externalToolEntity,
-					thumbnailFileRecord,
 					ltiDeepLinkEmbeddable,
+					fileRecordId,
+					fileName,
 				};
 			};
 
@@ -327,8 +332,9 @@ describe('ToolReferenceController (API)', () => {
 					contextExternalToolId,
 					contextExternalToolEntity,
 					externalToolEntity,
-					thumbnailFileRecord,
 					ltiDeepLinkEmbeddable,
+					fileRecordId,
+					fileName,
 				} = await setup();
 
 				const response: Response = await loggedInClient.get(`context-external-tools/${contextExternalToolId}`);
@@ -338,15 +344,14 @@ describe('ToolReferenceController (API)', () => {
 					contextToolId: contextExternalToolEntity.id,
 					description: externalToolEntity.description,
 					displayName: contextExternalToolEntity.displayName as string,
+					domain: new URL(externalToolEntity.config.baseUrl).hostname,
 					status: contextExternalToolConfigurationStatusResponseFactory.build({
 						isOutdatedOnScopeSchool: false,
 						isOutdatedOnScopeContext: false,
 					}),
 					logoUrl: `http://localhost:3030/api/v3/tools/external-tools/${externalToolEntity.id}/logo`,
 					openInNewTab: externalToolEntity.openNewTab,
-					thumbnailUrl: `/api/v3/file/preview/${thumbnailFileRecord.id}/${encodeURIComponent(
-						thumbnailFileRecord.name
-					)}`,
+					thumbnailUrl: `/api/v3/file/preview/${fileRecordId.toHexString()}/${encodeURIComponent(fileName)}`,
 					isLtiDeepLinkingTool: true,
 					ltiDeepLink: {
 						mediaType: ltiDeepLinkEmbeddable.mediaType,

@@ -1,14 +1,14 @@
+import { LoggerModule } from '@core/logger';
 import { ConsoleWriterModule } from '@infra/console';
 import { BoardModule } from '@modules/board';
-import { LearnroomModule } from '@modules/learnroom';
+import { CourseModule } from '@modules/course';
 import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
-import { LoggerModule } from '@src/core/logger';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import metaTagExtractorConfig from './meta-tag-extractor.config';
 import { MetaTagExtractorService } from './service';
 import { MetaTagExternalUrlService } from './service/meta-tag-external-url.service';
@@ -20,7 +20,7 @@ import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } f
 		BoardModule,
 		ConsoleWriterModule,
 		HttpModule,
-		LearnroomModule,
+		CourseModule,
 		LessonModule,
 		LoggerModule,
 		TaskModule,

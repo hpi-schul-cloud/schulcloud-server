@@ -1,10 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
+import { RocketChatUserEntity } from './rocket-chat-user.entity';
 
 describe(RocketChatUserEntity.name, () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([RocketChatUserEntity]);
 	});
 
 	beforeEach(() => {

@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { TldrawClientAdapter } from '@infra/tldraw-client';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
@@ -54,7 +54,7 @@ describe(`content element delete (api)`, () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -103,7 +103,7 @@ describe(`content element delete (api)`, () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.build({ teachers: [] });
+			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -136,7 +136,7 @@ describe(`content element delete (api)`, () => {
 			const drawingSetup = async () => {
 				await cleanupCollections(em);
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 				const columnBoardNode = columnBoardEntityFactory.build({
@@ -178,7 +178,7 @@ describe(`content element delete (api)`, () => {
 			const drawingSetup = async () => {
 				await cleanupCollections(em);
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
 				const columnBoardNode = columnBoardEntityFactory.build({
@@ -210,7 +210,7 @@ describe(`content element delete (api)`, () => {
 			const drawingSetup = async () => {
 				await cleanupCollections(em);
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const course = courseFactory.build({ teachers: [], students: [studentUser] });
+				const course = courseEntityFactory.build({ school: studentUser.school, teachers: [], students: [studentUser] });
 				await em.persistAndFlush([studentAccount, studentUser, course]);
 
 				const columnBoardNode = columnBoardEntityFactory.build({

@@ -1,10 +1,9 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { MongoDatabaseModuleOptions } from '@infra/database/mongo-memory-database/types'; // Fix me!!
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { DynamicModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { ALL_ENTITIES } from '@shared/domain/entity';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
+import { MongoMemoryDatabaseModule } from '@testing/database';
+import { ENTITIES, TEST_ENTITIES } from './management.entity.imports';
 import { ManagementModule } from './management.module';
 
 @Module({
@@ -17,20 +16,16 @@ import { ManagementModule } from './management.module';
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: ALL_ENTITIES,
+			entities: ENTITIES,
 		}),
 	],
 })
 export class ManagementServerModule {}
 
 @Module({
-	imports: [ManagementModule, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions })],
+	imports: [
+		ManagementModule,
+		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
+	],
 })
-export class ManagementServerTestModule {
-	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
-		return {
-			module: ManagementModule,
-			imports: [MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],
-		};
-	}
-}
+export class ManagementServerTestModule {}

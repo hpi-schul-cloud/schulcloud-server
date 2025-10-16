@@ -1,25 +1,26 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { SchoolFeature } from '@modules/school/domain';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { System, SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationDO } from '@modules/user-login-migration';
+import { userLoginMigrationDOFactory } from '@modules/user-login-migration/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { SchoolEntity, User } from '@shared/domain/entity';
-import { SchoolFeature } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
-import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
-import { importUserFactory } from '@testing/factory/import-user.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ImportUser, MatchCreator } from '../entity';
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
 import { ImportUserRepo } from '../repo';
+import { importUserFactory } from '../testing';
 import { UserImportConfig } from '../user-import-config';
 import { UserImportService } from './user-import.service';
 
@@ -37,10 +38,8 @@ describe(UserImportService.name, () => {
 	let config: UserImportConfig;
 
 	beforeAll(async () => {
-		await setupEntities();
-
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
 			providers: [
 				UserImportService,
 				{
@@ -146,7 +145,7 @@ describe(UserImportService.name, () => {
 			const setup = () => {
 				config.FEATURE_USER_MIGRATION_ENABLED = true;
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ features: undefined });
+				const school = legacySchoolDoFactory.buildWithId({ features: undefined });
 
 				return {
 					school,
@@ -164,7 +163,7 @@ describe(UserImportService.name, () => {
 			const setup = () => {
 				config.FEATURE_USER_MIGRATION_ENABLED = false;
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school = legacySchoolDoFactory.buildWithId({
 					features: [SchoolFeature.LDAP_UNIVENTION_MIGRATION],
 				});
 
@@ -184,7 +183,7 @@ describe(UserImportService.name, () => {
 			const setup = () => {
 				config.FEATURE_USER_MIGRATION_ENABLED = false;
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school = legacySchoolDoFactory.buildWithId({
 					features: [],
 				});
 
@@ -214,7 +213,7 @@ describe(UserImportService.name, () => {
 		describe('matchUsers', () => {
 			describe('when all users have unique names', () => {
 				const setup = () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId();
 					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({ schoolId: school.id });
 					const user1: User = userFactory.buildWithId({ firstName: 'First1', lastName: 'Last1' });
 					const user2: User = userFactory.buildWithId({ firstName: 'First2', lastName: 'Last2' });
@@ -255,7 +254,7 @@ describe(UserImportService.name, () => {
 
 			describe('when preferred names are used and all users have unique names', () => {
 				const setup = () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId();
 					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({ schoolId: school.id });
 					const user1: User = userFactory.buildWithId({ firstName: 'First1', lastName: 'Last1' });
 					const user2: User = userFactory.buildWithId({ firstName: 'First2', lastName: 'Last2' });
@@ -296,7 +295,7 @@ describe(UserImportService.name, () => {
 
 			describe('when the imported users have the same names', () => {
 				const setup = () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId();
 					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({ schoolId: school.id });
 					const user1: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
 					const importUser1: ImportUser = importUserFactory.buildWithId({
@@ -332,7 +331,7 @@ describe(UserImportService.name, () => {
 
 			describe('when existing users in svs have the same names', () => {
 				const setup = () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId();
 					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({ schoolId: school.id });
 					const user1: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
 					const user2: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
@@ -364,7 +363,7 @@ describe(UserImportService.name, () => {
 
 			describe('when import users have the same name ', () => {
 				const setup = () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId();
 					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({ schoolId: school.id });
 					const user1: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
 					const importUser1: ImportUser = importUserFactory.buildWithId({
@@ -400,7 +399,7 @@ describe(UserImportService.name, () => {
 
 			describe('when a user is already migarted', () => {
 				const setup = () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId();
 					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({ schoolId: school.id });
 					const user1: User = userFactory.buildWithId({
 						firstName: 'First',
@@ -435,7 +434,7 @@ describe(UserImportService.name, () => {
 		describe('deleteImportUsersBySchool', () => {
 			describe('when deleting all import users of school', () => {
 				const setup = () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId();
 
 					return {
 						school,
@@ -457,7 +456,7 @@ describe(UserImportService.name, () => {
 		describe('when resetting the migration for a school', () => {
 			const setup = () => {
 				const currentUser: User = userFactory.build();
-				const school: LegacySchoolDo = legacySchoolDoFactory.build();
+				const school = legacySchoolDoFactory.build();
 
 				return {
 					currentUser,

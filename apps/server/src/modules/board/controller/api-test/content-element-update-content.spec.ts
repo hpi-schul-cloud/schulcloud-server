@@ -1,11 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { sanitizeRichText } from '@shared/controller/transformer/sanitize-html.transformer';
 import { InputFormat } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, ContentElementType } from '../../domain';
@@ -47,7 +47,7 @@ describe(`content element update content (api)`, () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-			const course = courseFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -240,7 +240,7 @@ describe(`content element update content (api)`, () => {
 			const { teacherUser: invalidTeacherUser, teacherAccount: invalidTeacherAccount } =
 				UserAndAccountTestFactory.buildTeacher();
 
-			const course = courseFactory.build({ teachers: [] });
+			const course = courseEntityFactory.build({ teachers: [] });
 			await em.persistAndFlush([invalidTeacherUser, invalidTeacherAccount, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({

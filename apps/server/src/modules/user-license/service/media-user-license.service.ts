@@ -2,15 +2,11 @@ import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { MediaUserLicense } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { MediaSourceRepo } from '@src/modules/media-source/repo';
 import { MediaUserLicenseRepo } from '../repo';
 
 @Injectable()
 export class MediaUserLicenseService {
-	constructor(
-		private readonly mediaUserLicenseRepo: MediaUserLicenseRepo,
-		private readonly mediaSourceRepo: MediaSourceRepo
-	) {}
+	constructor(private readonly mediaUserLicenseRepo: MediaUserLicenseRepo) {}
 
 	public async getMediaUserLicensesForUser(userId: EntityId): Promise<MediaUserLicense[]> {
 		const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseRepo.findMediaUserLicensesForUser(userId);
@@ -18,16 +14,14 @@ export class MediaUserLicenseService {
 		return mediaUserLicenses;
 	}
 
-	public async saveUserLicense(license: MediaUserLicense): Promise<void> {
-		if (license.mediaSource) {
-			await this.mediaSourceRepo.save(license.mediaSource);
-		}
+	public async saveAll(licenses: MediaUserLicense[]): Promise<MediaUserLicense[]> {
+		const savedLicenses: MediaUserLicense[] = await this.mediaUserLicenseRepo.saveAll(licenses);
 
-		await this.mediaUserLicenseRepo.save(license);
+		return savedLicenses;
 	}
 
-	public async deleteUserLicense(license: MediaUserLicense): Promise<void> {
-		await this.mediaUserLicenseRepo.delete(license);
+	public async delete(licenses: MediaUserLicense[] | MediaUserLicense): Promise<void> {
+		await this.mediaUserLicenseRepo.delete(licenses);
 	}
 
 	public hasLicenseForExternalTool(

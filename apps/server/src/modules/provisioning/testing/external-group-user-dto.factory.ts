@@ -1,4 +1,4 @@
-import { RoleName } from '@shared/domain/interface';
+import { RoleName } from '@modules/role';
 import { UUID } from 'bson';
 import { Factory } from 'fishery';
 import { ExternalGroupUserDto } from '../dto';

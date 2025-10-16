@@ -1,8 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { RoleReference, UserDO } from '@shared/domain/domainobject';
-import { groupFactory } from '@testing/factory/domainobject';
-import { roleFactory } from '@testing/factory/role.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
+import { roleFactory } from '@modules/role/testing';
+import { userDoFactory } from '@modules/user/testing';
+import { groupFactory } from '../testing';
 import { Group } from './group';
 import { GroupUser } from './group-user';
 
@@ -10,7 +9,8 @@ describe(Group.name, () => {
 	describe('removeUser', () => {
 		describe('when the user is in the group', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const userId = new ObjectId().toHexString();
+				const user = userDoFactory.buildWithId(undefined, userId);
 				const groupUser1 = new GroupUser({
 					userId: user.id as string,
 					roleId: new ObjectId().toHexString(),
@@ -24,6 +24,7 @@ describe(Group.name, () => {
 				});
 
 				return {
+					userId,
 					user,
 					groupUser1,
 					groupUser2,
@@ -32,17 +33,17 @@ describe(Group.name, () => {
 			};
 
 			it('should remove the user', () => {
-				const { user, group, groupUser1 } = setup();
+				const { group, groupUser1, userId } = setup();
 
-				group.removeUser(user);
+				group.removeUser(userId);
 
 				expect(group.users).not.toContain(groupUser1);
 			});
 
 			it('should keep all other users', () => {
-				const { user, group, groupUser2 } = setup();
+				const { group, groupUser2, userId } = setup();
 
-				group.removeUser(user);
+				group.removeUser(userId);
 
 				expect(group.users).toContain(groupUser2);
 			});
@@ -50,16 +51,18 @@ describe(Group.name, () => {
 
 		describe('when the user is not in the group', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const userId = new ObjectId().toHexString();
+				const user = userDoFactory.buildWithId(undefined, userId);
 				const groupUser2 = new GroupUser({
 					userId: new ObjectId().toHexString(),
 					roleId: new ObjectId().toHexString(),
 				});
-				const group: Group = groupFactory.build({
+				const group = groupFactory.build({
 					users: [groupUser2],
 				});
 
 				return {
+					userId,
 					user,
 					groupUser2,
 					group,
@@ -67,9 +70,9 @@ describe(Group.name, () => {
 			};
 
 			it('should do nothing', () => {
-				const { user, group, groupUser2 } = setup();
+				const { group, groupUser2, userId } = setup();
 
-				group.removeUser(user);
+				group.removeUser(userId);
 
 				expect(group.users).toEqual([groupUser2]);
 			});
@@ -77,21 +80,82 @@ describe(Group.name, () => {
 
 		describe('when the group is empty', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
-				const group: Group = groupFactory.build({ users: [] });
+				const userId = new ObjectId().toHexString();
+				const user = userDoFactory.buildWithId(undefined, userId);
+				const group = groupFactory.build({ users: [] });
 
 				return {
+					userId,
 					user,
 					group,
 				};
 			};
 
 			it('should stay empty', () => {
-				const { user, group } = setup();
+				const { userId, group } = setup();
 
-				group.removeUser(user);
+				group.removeUser(userId);
 
 				expect(group.users).toEqual([]);
+			});
+		});
+	});
+
+	describe('isCurrentlyInValidPeriod', () => {
+		const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+		const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+		describe('when group has no valid period', () => {
+			it('should be true', () => {
+				const group = groupFactory.build({ validPeriod: undefined });
+
+				const isInValidPeriod = group.isCurrentlyInValidPeriod();
+
+				expect(isInValidPeriod).toEqual(true);
+			});
+		});
+
+		describe('when group has open ended period', () => {
+			it('should be true after start', () => {
+				const group = groupFactory.build({ validPeriod: { from: yesterday, until: undefined } });
+
+				const isInValidPeriod = group.isCurrentlyInValidPeriod();
+
+				expect(isInValidPeriod).toEqual(true);
+			});
+
+			it('should be false before start', () => {
+				const group = groupFactory.build({ validPeriod: { from: tomorrow, until: undefined } });
+
+				const isInValidPeriod = group.isCurrentlyInValidPeriod();
+
+				expect(isInValidPeriod).toEqual(false);
+			});
+		});
+
+		describe('when group has beginning and end date', () => {
+			it('should be false before period', () => {
+				const group = groupFactory.build({ validPeriod: { from: tomorrow, until: tomorrow } });
+
+				const isInValidPeriod = group.isCurrentlyInValidPeriod();
+
+				expect(isInValidPeriod).toEqual(false);
+			});
+
+			it('should be false after period', () => {
+				const group = groupFactory.build({ validPeriod: { from: yesterday, until: yesterday } });
+
+				const isInValidPeriod = group.isCurrentlyInValidPeriod();
+
+				expect(isInValidPeriod).toEqual(false);
+			});
+
+			it('should be true during period', () => {
+				const group = groupFactory.build({ validPeriod: { from: yesterday, until: tomorrow } });
+
+				const isInValidPeriod = group.isCurrentlyInValidPeriod();
+
+				expect(isInValidPeriod).toEqual(true);
 			});
 		});
 	});
@@ -99,7 +163,7 @@ describe(Group.name, () => {
 	describe('isEmpty', () => {
 		describe('when no users in group exist', () => {
 			const setup = () => {
-				const group: Group = groupFactory.build({ users: [] });
+				const group = groupFactory.build({ users: [] });
 
 				return {
 					group,
@@ -118,9 +182,9 @@ describe(Group.name, () => {
 		describe('when users in group exist', () => {
 			const setup = () => {
 				const externalUserId = 'externalUserId';
-				const role: RoleReference = roleFactory.buildWithId();
-				const user: UserDO = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
-				const group: Group = groupFactory.build({ users: [{ userId: user.id as string, roleId: role.id }] });
+				const role = roleFactory.buildWithId();
+				const user = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
+				const group = groupFactory.build({ users: [{ userId: user.id as string, roleId: role.id }] });
 
 				return {
 					group,
@@ -140,7 +204,7 @@ describe(Group.name, () => {
 	describe('addUser', () => {
 		describe('when the user already exists in the group', () => {
 			const setup = () => {
-				const existingUser: GroupUser = new GroupUser({
+				const existingUser = new GroupUser({
 					userId: new ObjectId().toHexString(),
 					roleId: new ObjectId().toHexString(),
 				});
@@ -165,7 +229,7 @@ describe(Group.name, () => {
 
 		describe('when the user does not exist in the group', () => {
 			const setup = () => {
-				const newUser: GroupUser = new GroupUser({
+				const newUser = new GroupUser({
 					userId: new ObjectId().toHexString(),
 					roleId: new ObjectId().toHexString(),
 				});

@@ -1,6 +1,6 @@
 import { Action, AuthorizationContext, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
 
@@ -17,8 +17,14 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 	}
 
 	public hasPermission(user: User, object: RoomMembershipAuthorizable, context: AuthorizationContext): boolean {
-		if (!this.hasAccessToSchool(user, object.schoolId)) {
-			return false;
+		// Copy and Share Room are allowed when user has permission but belongs to external school
+		if (
+			!context.requiredPermissions.includes(Permission.ROOM_SHARE_ROOM) &&
+			!context.requiredPermissions.includes(Permission.ROOM_COPY_ROOM)
+		) {
+			if (!this.hasAccessToSchool(user, object.schoolId)) {
+				return false;
+			}
 		}
 
 		if (!this.hasRequiredRoomPermissions(user, object, context.requiredPermissions)) {
@@ -32,9 +38,9 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 			.flatMap((role) => role.permissions ?? []);
 
 		if (action === Action.read) {
-			return permissionsThisUserHas.includes(Permission.ROOM_VIEW);
+			return permissionsThisUserHas.includes(Permission.ROOM_LIST_CONTENT);
 		}
-		return permissionsThisUserHas.includes(Permission.ROOM_EDIT);
+		return permissionsThisUserHas.includes(Permission.ROOM_EDIT_CONTENT);
 	}
 
 	private hasAccessToSchool(user: User, schoolId: string): boolean {
@@ -42,7 +48,10 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 		const secondarySchools = user.secondarySchools ?? [];
 		const secondarySchoolIds = secondarySchools.map(({ school }) => school.id);
 
-		return [primarySchoolId, ...secondarySchoolIds].includes(schoolId);
+		const allSchools = [primarySchoolId, ...secondarySchoolIds];
+		const includesSchool = allSchools.includes(schoolId);
+
+		return includesSchool;
 	}
 
 	private hasRequiredRoomPermissions(

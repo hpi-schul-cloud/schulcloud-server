@@ -1,5 +1,5 @@
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
+import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { MediaBoardColors } from '../../../domain';
 import { DeletedElementResponse, TimestampsResponse } from '../../dto';
 import { AnyMediaElementResponse } from './any-media-element.response';

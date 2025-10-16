@@ -73,9 +73,11 @@ const generateJWTFromUser = (appPromise) => async (user) => {
 	return jwt;
 };
 
-module.exports = (app) => ({
-	generateJWT: generateJWT(app),
-	generateRequestParams: generateRequestParams(app),
-	generateRequestParamsFromUser: generateRequestParamsFromUser(app),
-	generateJWTFromUser: generateJWTFromUser(app),
-});
+module.exports = (app) => {
+	return {
+		generateJWT: generateJWT(app),
+		generateRequestParams: generateRequestParams(app),
+		generateRequestParamsFromUser: generateRequestParamsFromUser(app),
+		generateJWTFromUser: generateJWTFromUser(app),
+	};
+};

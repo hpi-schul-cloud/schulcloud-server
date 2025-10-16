@@ -47,6 +47,8 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
         runAsNonRoot: true
+      os:
+        name: linux
       containers:
       - name: api-h5p
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
@@ -62,8 +64,6 @@ spec:
             name: api-secret
         - secretRef:
             name: api-h5p-editor-secret
-        - secretRef:
-            name: api-files-secret
         command: ['npm', 'run', 'nest:start:h5p:prod']
         readinessProbe:
           httpGet:

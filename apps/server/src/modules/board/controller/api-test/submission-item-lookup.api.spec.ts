@@ -1,11 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
+import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, ContentElementType } from '../../domain';
 import {
@@ -18,6 +18,7 @@ import {
 	submissionItemEntityFactory,
 } from '../../testing';
 import { SubmissionsResponse } from '../dto';
+import { schoolEntityFactory } from '@modules/school/testing';
 
 const baseRouteName = '/board-submissions';
 describe('submission item lookup (api)', () => {
@@ -44,10 +45,19 @@ describe('submission item lookup (api)', () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const { studentAccount: studentAccount1, studentUser: studentUser1 } = UserAndAccountTestFactory.buildStudent();
-			const { studentAccount: studentAccount2, studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent();
-			const course = courseFactory.build({ teachers: [teacherUser], students: [studentUser1, studentUser2] });
+			const school = schoolEntityFactory.buildWithId();
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+			const { studentAccount: studentAccount1, studentUser: studentUser1 } = UserAndAccountTestFactory.buildStudent({
+				school,
+			});
+			const { studentAccount: studentAccount2, studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent({
+				school,
+			});
+			const course = courseEntityFactory.build({
+				school,
+				teachers: [teacherUser],
+				students: [studentUser1, studentUser2],
+			});
 			await em.persistAndFlush([
 				studentAccount1,
 				studentUser1,
@@ -158,10 +168,14 @@ describe('submission item lookup (api)', () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 
-			// const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const { studentAccount: studentAccount1, studentUser: studentUser1 } = UserAndAccountTestFactory.buildStudent();
-			const { studentAccount: studentAccount2, studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent();
-			const course = courseFactory.build({ teachers: [], students: [studentUser1, studentUser2] });
+			const school = schoolEntityFactory.buildWithId();
+			const { studentAccount: studentAccount1, studentUser: studentUser1 } = UserAndAccountTestFactory.buildStudent({
+				school,
+			});
+			const { studentAccount: studentAccount2, studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent({
+				school,
+			});
+			const course = courseEntityFactory.build({ school, teachers: [], students: [studentUser1, studentUser2] });
 			await em.persistAndFlush([studentAccount1, studentUser1, studentAccount2, studentUser2, course]);
 
 			const columnBoardNode = columnBoardEntityFactory.build({
@@ -214,7 +228,7 @@ describe('submission item lookup (api)', () => {
 			await cleanupCollections(em);
 
 			const user = userFactory.build();
-			const course = courseFactory.build({ teachers: [user] });
+			const course = courseEntityFactory.build({ teachers: [user] });
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
@@ -255,9 +269,10 @@ describe('submission item lookup (api)', () => {
 			const setup = async () => {
 				await cleanupCollections(em);
 
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const course = courseFactory.build({ teachers: [teacherUser], students: [studentUser] });
+				const school = schoolEntityFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+				const course = courseEntityFactory.build({ school, teachers: [teacherUser], students: [studentUser] });
 				await em.persistAndFlush([studentAccount, studentUser, teacherAccount, teacherUser, course]);
 
 				const columnBoardNode = columnBoardEntityFactory.build({
@@ -310,9 +325,10 @@ describe('submission item lookup (api)', () => {
 			const setup = async () => {
 				await cleanupCollections(em);
 
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const course = courseFactory.build({ teachers: [teacherUser], students: [studentUser] });
+				const school = schoolEntityFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+				const course = courseEntityFactory.build({ school, teachers: [teacherUser], students: [studentUser] });
 				await em.persistAndFlush([studentAccount, studentUser, teacherAccount, teacherUser, course]);
 
 				const columnBoardNode = columnBoardEntityFactory.build({

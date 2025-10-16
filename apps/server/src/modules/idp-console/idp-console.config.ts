@@ -1,3 +1,4 @@
+import { LoggerConfig } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ConsoleWriterConfig } from '@infra/console';
 import { RabbitMqConfig } from '@infra/rabbitmq';
@@ -6,7 +7,6 @@ import { AccountConfig } from '@modules/account';
 import { SynchronizationConfig } from '@modules/synchronization';
 import { UserConfig } from '@modules/user';
 import { LanguageType } from '@shared/domain/interface';
-import { LoggerConfig } from '@src/core/logger';
 
 export interface IdpConsoleConfig
 	extends ConsoleWriterConfig,
@@ -42,6 +42,8 @@ const config: IdpConsoleConfig = {
 	SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS'
 	) as number,
+	RABBITMQ_URI: Configuration.get('RABBITMQ_URI') as string,
+	CALENDAR_SERVICE_ENABLED: Configuration.get('CALENDAR_SERVICE_ENABLED') as boolean,
 };
 
 export const idpConsoleConfigConfig = () => config;

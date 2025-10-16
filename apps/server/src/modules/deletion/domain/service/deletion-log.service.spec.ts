@@ -1,12 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import { DeletionLogRepo } from '../../repo';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '../builder';
 import { deletionLogFactory } from '../testing';
 import { DomainName, OperationType } from '../types';
-import { DeletionLogService } from './deletion-log.service';
+import { DeletionLogEntry, DeletionLogService } from './deletion-log.service';
 
 describe(DeletionLogService.name, () => {
 	let module: TestingModule;
@@ -26,8 +25,6 @@ describe(DeletionLogService.name, () => {
 
 		service = module.get(DeletionLogService);
 		deletionLogRepo = module.get(DeletionLogRepo);
-
-		await setupEntities();
 	});
 
 	beforeEach(() => {
@@ -44,33 +41,67 @@ describe(DeletionLogService.name, () => {
 		});
 	});
 
-	describe('createDeletionRequest', () => {
-		describe('when creating a deletionRequest', () => {
+	describe('createDeletionLog', () => {
+		describe('when creating deletion log', () => {
 			const setup = () => {
-				const deletionRequestId = '653e4833cc39e5907a1e18d2';
-				const domain = DomainName.USER;
-				const operations = [
-					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
-				];
+				const deletionLogEntry1: DeletionLogEntry = {
+					deletionRequestId: '653e4833cc39e5907a1e18d2',
+					domainDeletionReport: DomainDeletionReportBuilder.build(DomainName.USER, [
+						DomainOperationReportBuilder.build(OperationType.DELETE, 1, ['653e4833cc39e5907a1e18d3']),
+					]),
+				};
 
-				const domainDeletionReport = DomainDeletionReportBuilder.build(domain, operations);
+				const deletionLogEntry2: DeletionLogEntry = {
+					deletionRequestId: '653e4833cc39e5907a1e18e2',
+					domainDeletionReport: DomainDeletionReportBuilder.build(DomainName.CLASS, [
+						DomainOperationReportBuilder.build(OperationType.UPDATE, 1, ['653e4833cc39e5907a1e18e3']),
+					]),
+				};
 
-				return { deletionRequestId, domainDeletionReport, operations };
+				return { deletionLogEntry1, deletionLogEntry2 };
 			};
 
-			it('should call deletionRequestRepo.create', async () => {
-				const { deletionRequestId, domainDeletionReport, operations } = setup();
+			describe('when called with one deletion log entry', () => {
+				it('should call deletionLogRepo.create with one entry', async () => {
+					const { deletionLogEntry1 } = setup();
 
-				await service.createDeletionLog(deletionRequestId, domainDeletionReport);
+					await service.createDeletionLog(deletionLogEntry1);
 
-				expect(deletionLogRepo.create).toHaveBeenCalledWith(
-					expect.objectContaining({
-						id: expect.any(String),
-						performedAt: expect.any(Date),
-						deletionRequestId,
-						operations,
-					})
-				);
+					expect(deletionLogRepo.create).toHaveBeenCalledWith([
+						expect.objectContaining({
+							id: expect.any(String),
+							deletionRequestId: deletionLogEntry1.deletionRequestId,
+							domain: deletionLogEntry1.domainDeletionReport.domain,
+							operations: deletionLogEntry1.domainDeletionReport.operations,
+							performedAt: expect.any(Date),
+						}),
+					]);
+				});
+			});
+
+			describe('when called with many deletion log entries', () => {
+				it('should call deletionLogRepo.create with one entry', async () => {
+					const { deletionLogEntry1, deletionLogEntry2 } = setup();
+
+					await service.createDeletionLog([deletionLogEntry1, deletionLogEntry2]);
+
+					expect(deletionLogRepo.create).toHaveBeenCalledWith([
+						expect.objectContaining({
+							id: expect.any(String),
+							deletionRequestId: deletionLogEntry1.deletionRequestId,
+							domain: deletionLogEntry1.domainDeletionReport.domain,
+							operations: deletionLogEntry1.domainDeletionReport.operations,
+							performedAt: expect.any(Date),
+						}),
+						expect.objectContaining({
+							id: expect.any(String),
+							deletionRequestId: deletionLogEntry2.deletionRequestId,
+							domain: deletionLogEntry2.domainDeletionReport.domain,
+							operations: deletionLogEntry2.domainDeletionReport.operations,
+							performedAt: expect.any(Date),
+						}),
+					]);
+				});
 			});
 		});
 	});

@@ -1,12 +1,14 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
+import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
 import { LessonCopyParentParams, LessonCopyService, LessonService } from '@modules/lesson';
+import { LessonEntity } from '@modules/lesson/repo';
+import { User } from '@modules/user/repo';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Course, LessonEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo';
 
 @Injectable()
 export class LessonCopyUC {
@@ -14,11 +16,15 @@ export class LessonCopyUC {
 		private readonly authorisation: AuthorizationService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly lessonService: LessonService,
-		private readonly courseRepo: CourseRepo,
+		private readonly courseService: CourseService,
 		private readonly copyHelperService: CopyHelperService
 	) {}
 
-	async copyLesson(userId: EntityId, lessonId: EntityId, parentParams: LessonCopyParentParams): Promise<CopyStatus> {
+	public async copyLesson(
+		userId: EntityId,
+		lessonId: EntityId,
+		parentParams: LessonCopyParentParams
+	): Promise<CopyStatus> {
 		this.checkFeatureEnabled();
 
 		const [user, originalLesson]: [User, LessonEntity] = await Promise.all([
@@ -30,7 +36,7 @@ export class LessonCopyUC {
 
 		// should be a seperate private method
 		const destinationCourse = parentParams.courseId
-			? await this.courseRepo.findById(parentParams.courseId)
+			? await this.courseService.findById(parentParams.courseId)
 			: originalLesson.course;
 		// ---
 
@@ -60,7 +66,7 @@ export class LessonCopyUC {
 		}
 	}
 
-	private checkDestinationCourseAuthorization(user: User, destinationCourse: Course): void {
+	private checkDestinationCourseAuthorization(user: User, destinationCourse: CourseEntity): void {
 		const contextCanWrite = AuthorizationContextBuilder.write([]);
 		this.authorisation.checkPermission(user, destinationCourse, contextCanWrite);
 	}

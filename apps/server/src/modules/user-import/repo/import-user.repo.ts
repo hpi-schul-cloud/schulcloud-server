@@ -2,13 +2,14 @@ import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
 import { ObjectId } from '@mikro-orm/mongodb';
-import { SchoolEntity, User } from '@shared/domain/entity';
+import { SchoolEntity } from '@modules/school/repo';
+import { User } from '@modules/user/repo';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
+import { ImportUserFilter } from '../domain/interface';
 import { ImportUser } from '../entity';
 import { ImportUserScope } from './import-user.scope';
-import { ImportUserFilter } from '../domain/interface';
 
 @Injectable()
 export class ImportUserRepo extends BaseRepo<ImportUser> {

@@ -6,8 +6,8 @@ metadata:
   labels:
     app: moin-schule-users-sync-cronjob
 data:
-  NODE_OPTIONS: "--max-old-space-size=3072"
-  NEST_LOG_LEVEL: "error"
+  NODE_OPTIONS: "--max-old-space-size=1536"
+  NEST_LOG_LEVEL: "info"
   EXIT_ON_ERROR: "true"
   SC_DOMAIN: "{{ DOMAIN }}"
   FEATURE_PROMETHEUS_METRICS_ENABLED: "true"

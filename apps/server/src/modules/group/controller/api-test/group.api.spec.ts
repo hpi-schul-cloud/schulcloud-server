@@ -1,22 +1,20 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ClassEntity } from '@modules/class/entity';
 import { classEntityFactory } from '@modules/class/entity/testing';
+import { courseEntityFactory } from '@modules/course/testing';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
+import { systemEntityFactory } from '@modules/system/testing';
+import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course as CourseEntity, Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
-import { RoleName, SortOrder } from '@shared/domain/interface';
-import { courseFactory } from '@testing/factory/course.factory';
-import { groupEntityFactory } from '@testing/factory/group-entity.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
+import { SortOrder } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { GroupEntity, GroupEntityTypes } from '../../entity';
-import { ClassRootType } from '../../uc/dto/class-root-type';
+import { GroupEntityTypes } from '../../entity';
+import { groupEntityFactory } from '../../testing';
+import { ClassRootType } from '../../uc/dto';
 import { ClassInfoSearchListResponse } from '../dto';
 import { ClassSortQueryType } from '../dto/interface';
 
@@ -47,21 +45,22 @@ describe('Group (API)', () => {
 	describe('[GET] /groups/class', () => {
 		describe('when an admin requests a list of classes', () => {
 			const setup = async () => {
-				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({ currentYear: schoolYear });
+				const schoolYear = schoolYearEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId({ currentYear: schoolYear });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				const teacherRole: Role = roleFactory.buildWithId({ name: RoleName.TEACHER });
-				const teacherUser: User = userFactory.buildWithId({ school, roles: [teacherRole] });
+				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
+				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
+				const teacherUser = userFactory.buildWithId({ school, roles: [teacherRole] });
 				const system = systemEntityFactory.buildWithId();
-				const classEntity: ClassEntity = classEntityFactory.buildWithId({
+				const classEntity = classEntityFactory.buildWithId({
 					name: 'Group A',
 					schoolId: school._id,
 					teacherIds: [teacherUser._id],
 					source: undefined,
 					year: schoolYear.id,
 				});
-				const group: GroupEntity = groupEntityFactory.buildWithId({
+				const group = groupEntityFactory.buildWithId({
 					name: 'Group B',
 					type: GroupEntityTypes.CLASS,
 					externalSource: {
@@ -76,13 +75,14 @@ describe('Group (API)', () => {
 						},
 					],
 				});
-				const course: CourseEntity = courseFactory.buildWithId({ syncedWithGroup: group });
+				const course = courseEntityFactory.buildWithId({ syncedWithGroup: group });
 
 				await em.persistAndFlush([
 					school,
 					adminAccount,
 					adminUser,
 					teacherRole,
+					studentRole,
 					teacherUser,
 					system,
 					classEntity,
@@ -149,10 +149,10 @@ describe('Group (API)', () => {
 		describe('when authorized user requests a group', () => {
 			describe('when group exists', () => {
 				const setup = async () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId();
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
-					const group: GroupEntity = groupEntityFactory.buildWithId({
+					const group = groupEntityFactory.buildWithId({
 						users: [
 							{
 								user: teacherUser,
@@ -239,7 +239,7 @@ describe('Group (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const group: GroupEntity = groupEntityFactory.buildWithId();
+				const group = groupEntityFactory.buildWithId();
 
 				await em.persistAndFlush([studentAccount, studentUser, group]);
 				em.clear();
@@ -268,11 +268,11 @@ describe('Group (API)', () => {
 	describe('[GET] /groups', () => {
 		describe('when admin requests groups', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
-				const otherSchool: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
+				const otherSchool = schoolEntityFactory.buildWithId();
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				const groupInSchool: GroupEntity = groupEntityFactory.buildWithId({
+				const groupInSchool = groupEntityFactory.buildWithId({
 					organization: school,
 					users: [
 						{
@@ -282,7 +282,7 @@ describe('Group (API)', () => {
 					],
 					type: GroupEntityTypes.COURSE,
 				});
-				const availableGroupInSchool: GroupEntity = groupEntityFactory.buildWithId({
+				const availableGroupInSchool = groupEntityFactory.buildWithId({
 					organization: school,
 					users: [
 						{
@@ -292,7 +292,7 @@ describe('Group (API)', () => {
 					],
 					type: GroupEntityTypes.COURSE,
 				});
-				const groupInOtherSchool: GroupEntity = groupEntityFactory.buildWithId({
+				const groupInOtherSchool = groupEntityFactory.buildWithId({
 					organization: otherSchool,
 					users: [
 						{
@@ -303,7 +303,7 @@ describe('Group (API)', () => {
 					type: GroupEntityTypes.COURSE,
 				});
 
-				const syncedCourse: CourseEntity = courseFactory.build({
+				const syncedCourse = courseEntityFactory.build({
 					school,
 					syncedWithGroup: groupInSchool,
 				});
@@ -466,21 +466,21 @@ describe('Group (API)', () => {
 
 		describe('when teacher requests groups', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
-				const teachersGroup: GroupEntity = groupEntityFactory.buildWithId({
+				const teachersGroup = groupEntityFactory.buildWithId({
 					organization: school,
 					users: [{ user: teacherUser, role: teacherUser.roles[0] }],
 					type: GroupEntityTypes.COURSE,
 				});
-				const availableTeachersGroup: GroupEntity = groupEntityFactory.buildWithId({
+				const availableTeachersGroup = groupEntityFactory.buildWithId({
 					organization: school,
 					users: [{ user: teacherUser, role: teacherUser.roles[0] }],
 					type: GroupEntityTypes.COURSE,
 				});
 
-				const syncedCourse: CourseEntity = courseFactory.build({
+				const syncedCourse = courseEntityFactory.build({
 					school,
 					syncedWithGroup: teachersGroup,
 				});

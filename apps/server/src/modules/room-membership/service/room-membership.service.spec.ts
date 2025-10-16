@@ -1,19 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { Group, GroupService, GroupTypes } from '@modules/group';
-import { RoleDto, RoleService } from '@modules/role';
-import { RoomService } from '@modules/room/domain';
+import { Group, GroupService, GroupTypes, GroupUser } from '@modules/group';
+import { groupFactory } from '@modules/group/testing';
+import { RoleDto, RoleName, RoleService } from '@modules/role';
+import { roleDtoFactory, roleFactory } from '@modules/role/testing';
+import { RoomService } from '@modules/room';
 import { roomFactory } from '@modules/room/testing';
 import { schoolFactory } from '@modules/school/testing';
-import { UserService } from '@modules/user';
+import { UserDo, UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException } from '@nestjs/common/exceptions';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
-import { groupFactory } from '@testing/factory/domainobject';
-import { roleDtoFactory } from '@testing/factory/role-dto.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import { userFactory } from '@testing/factory/user.factory';
+import { MongoMemoryDatabaseModule } from '@testing/database';
+import { ObjectId } from 'bson';
 import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
 import { RoomMembershipRepo } from '../repo/room-membership.repo';
 import { roomMembershipFactory } from '../testing';
@@ -30,7 +29,7 @@ describe('RoomMembershipService', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
 			providers: [
 				RoomMembershipService,
 				{
@@ -122,14 +121,23 @@ describe('RoomMembershipService', () => {
 				};
 			};
 
-			it('should add user as admin to existing roomMembership', async () => {
-				// TODO: in the future, once room roles can be changed, this should become ROOMVIEWER
+			it('should add user to room as viewer', async () => {
 				const { user, room, group } = setup();
 
 				await service.addMembersToRoom(room.id, [user.id]);
 
 				expect(groupService.addUsersToGroup).toHaveBeenCalledWith(group.id, [
-					{ userId: user.id, roleName: RoleName.ROOMADMIN },
+					{ userId: user.id, roleName: RoleName.ROOMVIEWER },
+				]);
+			});
+
+			it('should add user to room with specified role', async () => {
+				const { user, room, group } = setup();
+
+				await service.addMembersToRoom(room.id, [user.id], RoleName.ROOMEDITOR);
+
+				expect(groupService.addUsersToGroup).toHaveBeenCalledWith(group.id, [
+					{ userId: user.id, roleName: RoleName.ROOMEDITOR },
 				]);
 			});
 
@@ -182,6 +190,7 @@ describe('RoomMembershipService', () => {
 				});
 
 				groupService.findById.mockResolvedValue(group);
+				groupService.findGroups.mockResolvedValue({ total: 1, data: [group] });
 				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 
 				return { group, room, roomMembership };
@@ -309,11 +318,102 @@ describe('RoomMembershipService', () => {
 					return { user, room };
 				};
 
-				it('should throw a badrequest exception', async () => {
+				it('should not throw an error, as e.g. KNL could be using this', async () => {
 					const { user, room } = setup();
 
-					await expect(service.removeMembersFromRoom(room.id, [user.id])).rejects.toThrowError(BadRequestException);
+					await expect(service.removeMembersFromRoom(room.id, [user.id])).resolves.toBe(undefined);
 				});
+			});
+		});
+	});
+
+	describe('changeRoleOfRoomMembers', () => {
+		describe('when roomMembership does not exist', () => {
+			it('should throw an exception', async () => {
+				roomMembershipRepo.findByRoomId.mockResolvedValue(null);
+
+				await expect(
+					service.changeRoleOfRoomMembers(new ObjectId().toHexString(), [], RoleName.ROOMEDITOR)
+				).rejects.toThrowError(BadRequestException);
+			});
+		});
+
+		describe('when roomMembership exists', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const otherUser = userFactory.buildWithId();
+				const userNotInRoom = userFactory.buildWithId();
+				const school = schoolFactory.build();
+				const viewerRole = roleFactory.buildWithId({ name: RoleName.ROOMVIEWER });
+				const editorRole = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR });
+				const group = groupFactory.build({
+					type: GroupTypes.ROOM,
+					organizationId: school.id,
+					users: [
+						{ userId: user.id, roleId: viewerRole.id },
+						{ userId: otherUser.id, roleId: viewerRole.id },
+					],
+				});
+				const room = roomFactory.build({ schoolId: school.id });
+				const roomMembership = roomMembershipFactory.build({
+					roomId: room.id,
+					userGroupId: group.id,
+					schoolId: school.id,
+				});
+
+				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
+				groupService.findById.mockResolvedValue(group);
+				roleService.findByName.mockResolvedValue(editorRole);
+
+				return {
+					user,
+					otherUser,
+					userNotInRoom,
+					room,
+					roomMembership,
+					group,
+					viewerRole,
+					editorRole,
+				};
+			};
+
+			it('should change role of user to editor', async () => {
+				const { user, room, group, editorRole } = setup();
+
+				await service.changeRoleOfRoomMembers(room.id, [user.id], RoleName.ROOMEDITOR);
+
+				expect(groupService.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: group.id,
+						users: expect.arrayContaining([{ userId: user.id, roleId: editorRole.id }]) as GroupUser[],
+					})
+				);
+			});
+
+			it('should not change role of other user', async () => {
+				const { user, otherUser, room, group, viewerRole } = setup();
+
+				await service.changeRoleOfRoomMembers(room.id, [user.id], RoleName.ROOMEDITOR);
+
+				expect(groupService.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: group.id,
+						users: expect.arrayContaining([{ userId: otherUser.id, roleId: viewerRole.id }]) as GroupUser[],
+					})
+				);
+			});
+
+			it('should ignore changing a user that is not in the room', async () => {
+				const { userNotInRoom, room, group } = setup();
+
+				await service.changeRoleOfRoomMembers(room.id, [userNotInRoom.id], RoleName.ROOMEDITOR);
+
+				expect(groupService.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: group.id,
+						users: expect.not.arrayContaining([expect.objectContaining({ userId: userNotInRoom.id })]) as GroupUser[],
+					})
+				);
 			});
 		});
 	});
@@ -347,6 +447,36 @@ describe('RoomMembershipService', () => {
 				await service.deleteRoomMembership(roomMembership.roomId);
 				expect(groupService.delete).toHaveBeenCalledWith(group);
 				expect(roomMembershipRepo.delete).toHaveBeenCalledWith(roomMembership);
+			});
+		});
+	});
+
+	describe('getRoomMembers', () => {
+		const setup = () => {
+			const roomId = 'room123';
+			const userId = 'user456';
+			const groupId = 'group789';
+			const roleId = 'role101';
+
+			const user = userDoFactory.buildWithId({ id: userId });
+			const roomMembership = roomMembershipFactory.build({ roomId, userGroupId: groupId });
+			const group = groupFactory.build({ id: groupId, users: [{ userId, roleId }] });
+
+			roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
+			groupService.findById.mockResolvedValue(group);
+			roleService.findByIds.mockResolvedValue([]);
+			userService.findByIds.mockResolvedValue([user]);
+
+			return { roomId, userId, groupId, roleId, roomMembership, group };
+		};
+
+		describe('when roleId does not point to existing role', () => {
+			it('should remove member from result', async () => {
+				const { roomId } = setup();
+
+				const result = await service.getRoomMembers(roomId);
+
+				expect(result).toHaveLength(0);
 			});
 		});
 	});
@@ -391,6 +521,109 @@ describe('RoomMembershipService', () => {
 			expect(result).toBeInstanceOf(RoomMembershipAuthorizable);
 			expect(result.roomId).toBe(roomId);
 			expect(result.members).toHaveLength(0);
+		});
+	});
+
+	describe('getRoomMembershipStatsByUsersSchoolId', () => {
+		const convertToGroupUsers = (users: UserDo[], role: RoleDto) =>
+			users.map((user) => {
+				return {
+					userId: user.id ?? new ObjectId().toHexString(),
+					roleId: role.id ?? new ObjectId().toHexString(),
+				};
+			});
+
+		const setup = () => {
+			const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
+
+			const schoolId1 = 'school123';
+			const usersSchool2 = userDoFactory.buildListWithId(3, {
+				roles: [role],
+				schoolId: schoolId1,
+			});
+			const schoolId2 = 'school456';
+			const usersSchool1 = userDoFactory.buildListWithId(2, {
+				roles: [role],
+				schoolId: schoolId2,
+			});
+
+			const groupSchool1 = groupFactory.build({
+				users: convertToGroupUsers(usersSchool2, role),
+			});
+			const groupSchool2 = groupFactory.build({
+				users: convertToGroupUsers(usersSchool1, role),
+			});
+			const mixedGroup = groupFactory.build({
+				users: convertToGroupUsers([...usersSchool2, ...usersSchool1], role),
+			});
+
+			groupService.findByUsersAndRoomsSchoolId.mockImplementation((schoolId: string) => {
+				if (schoolId === schoolId1) {
+					return Promise.resolve({ data: [groupSchool1, mixedGroup], total: 2 });
+				} else if (schoolId === schoolId2) {
+					return Promise.resolve({ data: [groupSchool2, mixedGroup], total: 2 });
+				} else {
+					return Promise.resolve({ data: [], total: 0 });
+				}
+			});
+
+			roomMembershipRepo.findByGroupIds.mockImplementation((groupIds: string[]) => {
+				const allGroups = [groupSchool1, groupSchool2, mixedGroup];
+				const requestedGroups = allGroups.filter((group) => groupIds.includes(group.id));
+				return Promise.resolve(
+					requestedGroups.map((group) =>
+						roomMembershipFactory.build({ userGroupId: group.id, schoolId: group.organizationId })
+					)
+				);
+			});
+
+			userService.findByIds.mockImplementation((userIds: string[]) => {
+				const users = userIds
+					.map(
+						(userId) =>
+							usersSchool2.find((user) => user.id === userId) ?? usersSchool1.find((user) => user.id === userId)
+					)
+					.filter((user): user is UserDo => user !== undefined);
+				return Promise.resolve(users);
+			});
+
+			roleService.findByName.mockResolvedValue(role);
+
+			return { schoolId1, schoolId2, usersSchool1, usersSchool2, groupSchool1, groupSchool2, mixedGroup };
+		};
+
+		it('should return room membership stats for school1', async () => {
+			const { schoolId1 } = setup();
+
+			const result = await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(schoolId1);
+
+			expect(result.total).toBe(2);
+			expect(result.data.length).toEqual(2);
+			const [internalGroup, externalGroup] = result.data;
+			expect(internalGroup?.totalMembers).toEqual(3);
+			expect(externalGroup?.totalMembers).toEqual(5);
+		});
+
+		it('should return room membership stats for school2', async () => {
+			const { schoolId2 } = setup();
+
+			const result = await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(schoolId2);
+
+			expect(result.total).toBe(2);
+			expect(result.data.length).toEqual(2);
+			const [internalGroup, externalGroup] = result.data;
+			expect(internalGroup?.totalMembers).toEqual(2);
+			expect(externalGroup?.totalMembers).toEqual(5);
+		});
+
+		it('should return empty result for unknown school', async () => {
+			setup();
+			const unknownSchoolId = 'unknownSchoolId';
+
+			const result = await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(unknownSchoolId);
+
+			expect(result.total).toBe(0);
+			expect(result.data.length).toEqual(0);
 		});
 	});
 

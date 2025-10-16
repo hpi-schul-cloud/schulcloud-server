@@ -25,7 +25,7 @@
 		"__v": 0,
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e7a"
+			"$oid": "5ebd6dc14a431f75ec9a3e7b"
 		},
 		"purpose": "demo",
 		"permissions": {
@@ -53,7 +53,7 @@
 		},
 		"__v": 0,
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e7a"
+			"$oid": "5ebd6dc14a431f75ec9a3e7b"
 		},
 		"purpose": "demo",
 		"permissions": {
@@ -89,7 +89,7 @@
 		},
 		"__v": 0,
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e7a"
+			"$oid": "5ebd6dc14a431f75ec9a3e7b"
 		},
 		"purpose": "demo",
 		"features": [
@@ -131,7 +131,7 @@
 		"__v": 0,
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e7a"
+			"$oid": "5ebd6dc14a431f75ec9a3e7b"
 		},
 		"purpose": "expert",
         "features" : [
@@ -167,7 +167,7 @@
 		},
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e7a"
+			"$oid": "5ebd6dc14a431f75ec9a3e7b"
 		},
 		"createdAt": {
 			"$date": "2020-11-04T15:16:28.827Z"
@@ -216,7 +216,7 @@
 		},
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e7a"
+			"$oid": "5ebd6dc14a431f75ec9a3e7b"
 		},
 		"createdAt": {
 			"$date": "2020-11-04T21:11:14.312Z"
@@ -258,7 +258,7 @@
 		"fileStorageType": "awsS3",
 		"timezone": "America/Belem",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e7a"
+			"$oid": "5ebd6dc14a431f75ec9a3e7b"
 		},
 		"createdAt": {
 			"$date": "2020-11-04T21:38:05.110Z"
@@ -303,7 +303,7 @@
 		},
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e7a"
+			"$oid": "5ebd6dc14a431f75ec9a3e7b"
 		},
 		"createdAt": {
 			"$date": "2020-12-08T16:58:36.527Z"
@@ -370,7 +370,7 @@
 		},
 		"__v": 0,
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e7a"
+			"$oid": "5ebd6dc14a431f75ec9a3e7b"
 		},
 		"purpose": "demo",
 		"features": [
@@ -412,7 +412,7 @@
 		},
 		"__v": 0,
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e7a"
+			"$oid": "5ebd6dc14a431f75ec9a3e7b"
 		},
 		"purpose": "demo",
 		"features": [
@@ -454,7 +454,7 @@
 		},
 		"__v": 0,
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e7a"
+			"$oid": "5ebd6dc14a431f75ec9a3e7b"
 		},
 		"purpose": "demo",
 		"features": [
@@ -468,5 +468,44 @@
 			}
 		},
 		"officialSchoolNumber": "01337"
+	},
+	{
+		"_id": {
+			"$oid": "67a3a9115d5d9cb7f26eb59d"
+		},
+		"updatedAt": {
+			"$date": "2020-07-27T08:21:14.719Z"
+		},
+		"name": "Goethe-Gymnasium",
+		"federalState": {
+			"$oid": "0000b186816abba584714c53"
+		},
+		"county": {
+			"antaresKey": "CB",
+			"_id": {
+				"$oid": "5fa55eb53f472a2d986c8813"
+			},
+			"countyId": 12052,
+			"name": "Cottbus"
+		},
+		"createdAt": {
+			"$date": "2017-08-24T12:04:11.721Z"
+		},
+		"systems": [],
+		"__v": 0,
+		"fileStorageType": "awsS3",
+		"currentYear": {
+			"$oid": "5ebd6dc14a431f75ec9a3e7b"
+		},
+		"purpose": "demo",
+		"permissions": {
+			"teacher": {
+				"STUDENT_LIST": true
+			}
+		},
+        "features": [
+			"rocketChat",
+			"videoconference"
+		]
 	}
 ]

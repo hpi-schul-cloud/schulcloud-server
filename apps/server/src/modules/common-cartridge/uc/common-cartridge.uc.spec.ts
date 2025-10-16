@@ -1,10 +1,13 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
-import { CommonCartridgeUc } from './common-cartridge.uc';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import { Readable } from 'stream';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeImportService } from '../service';
+import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
+import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
+import { CommonCartridgeUc } from './common-cartridge.uc';
 
 describe('CommonCartridgeUc', () => {
 	let module: TestingModule;
@@ -47,7 +50,10 @@ describe('CommonCartridgeUc', () => {
 			const topics = [faker.lorem.sentence(), faker.lorem.sentence()];
 			const tasks = [faker.lorem.sentence(), faker.lorem.sentence()];
 			const columnBoards = [faker.lorem.sentence(), faker.lorem.sentence()];
-			const expected = Buffer.alloc(0);
+			const expected: CommonCartridgeExportResponse = {
+				name: faker.string.alpha(),
+				data: Readable.from(''),
+			};
 
 			commonCartridgeExportServiceMock.exportCourse.mockResolvedValue(expected);
 
@@ -71,16 +77,17 @@ describe('CommonCartridgeUc', () => {
 	describe('importCourse', () => {
 		const setup = () => {
 			const file = Buffer.from(faker.lorem.paragraphs());
+			const currentUser = currentUserFactory.build();
 
-			return { file };
+			return { file, currentUser };
 		};
 
-		it('should class the import service', async () => {
-			const { file } = setup();
+		it('should call the import service', async () => {
+			const { file, currentUser } = setup();
 
-			await sut.importCourse(file);
+			await sut.importCourse(file, currentUser);
 
-			expect(commonCartridgeImportServiceMock.importFile).toHaveBeenCalledWith(file);
+			expect(commonCartridgeImportServiceMock.importFile).toHaveBeenCalledWith(file, currentUser);
 		});
 	});
 });

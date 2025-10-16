@@ -2,16 +2,14 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
 import { H5PEditor, H5PPlayer, IEditorModel } from '@lumieducation/h5p-server';
+import { UserService } from '@modules/user';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo';
-import { UserService } from '@src/modules/user';
-import { h5pContentFactory } from '@testing/factory/h5p-content.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
+import { h5pContentFactory } from '../testing';
 import { H5PEditorUc } from './h5p.uc';
 
 const createParams = () => {
@@ -62,10 +60,6 @@ describe('get H5P editor', () => {
 					useValue: createMock<H5PPlayer>(),
 				},
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
-				},
-				{
 					provide: LibraryStorage,
 					useValue: createMock<LibraryStorage>(),
 				},
@@ -88,7 +82,6 @@ describe('get H5P editor', () => {
 		h5pEditor = module.get(H5PEditor);
 		h5pContentRepo = module.get(H5PContentRepo);
 		authorizationClientAdapter = module.get(AuthorizationClientAdapter);
-		await setupEntities();
 	});
 
 	afterEach(() => {
@@ -112,7 +105,7 @@ describe('get H5P editor', () => {
 			it('should call service with correct params', async () => {
 				const { mockCurrentUser, language } = setup();
 
-				await uc.getEmptyH5pEditor(mockCurrentUser, language);
+				await uc.getEmptyH5pEditor(mockCurrentUser.userId, language);
 
 				expect(h5pEditor.render).toHaveBeenCalledWith(
 					undefined,
@@ -126,7 +119,7 @@ describe('get H5P editor', () => {
 			it('should return results of service', async () => {
 				const { mockCurrentUser, language, editorResponseMock } = setup();
 
-				const result = await uc.getEmptyH5pEditor(mockCurrentUser, language);
+				const result = await uc.getEmptyH5pEditor(mockCurrentUser.userId, language);
 
 				expect(result).toEqual(editorResponseMock);
 			});
@@ -146,7 +139,7 @@ describe('get H5P editor', () => {
 			it('should return error of service', async () => {
 				const { error, mockCurrentUser, language } = setup();
 
-				const getEmptyEditorPromise = uc.getEmptyH5pEditor(mockCurrentUser, language);
+				const getEmptyEditorPromise = uc.getEmptyH5pEditor(mockCurrentUser.userId, language);
 
 				await expect(getEmptyEditorPromise).rejects.toThrow(error);
 			});
@@ -169,7 +162,7 @@ describe('get H5P editor', () => {
 			it('should call authorizationService.checkPermissionByReferences', async () => {
 				const { content, language, mockCurrentUser } = setup();
 
-				await uc.getH5pEditor(mockCurrentUser, content.id, language);
+				await uc.getH5pEditor(mockCurrentUser.userId, content.id, language);
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
 					content.parentType,
@@ -181,7 +174,7 @@ describe('get H5P editor', () => {
 			it('should call service with correct params', async () => {
 				const { content, language, mockCurrentUser } = setup();
 
-				await uc.getH5pEditor(mockCurrentUser, content.id, language);
+				await uc.getH5pEditor(mockCurrentUser.userId, content.id, language);
 
 				expect(h5pEditor.render).toHaveBeenCalledWith(
 					content.id,
@@ -201,7 +194,7 @@ describe('get H5P editor', () => {
 			it('should return results of service', async () => {
 				const { content, language, mockCurrentUser, contentResponseMock, editorResponseMock } = setup();
 
-				const result = await uc.getH5pEditor(mockCurrentUser, content.id, language);
+				const result = await uc.getH5pEditor(mockCurrentUser.userId, content.id, language);
 
 				expect(result).toEqual({
 					content: contentResponseMock,
@@ -222,7 +215,7 @@ describe('get H5P editor', () => {
 			it('should throw NotFoundException', async () => {
 				const { content, mockCurrentUser, language } = setup();
 
-				const getEditorPromise = uc.getH5pEditor(mockCurrentUser, content.id, language);
+				const getEditorPromise = uc.getH5pEditor(mockCurrentUser.userId, content.id, language);
 
 				await expect(getEditorPromise).rejects.toThrow(new NotFoundException());
 
@@ -244,7 +237,7 @@ describe('get H5P editor', () => {
 			it('should throw forbidden error', async () => {
 				const { content, mockCurrentUser, language } = setup();
 
-				const getEditorPromise = uc.getH5pEditor(mockCurrentUser, content.id, language);
+				const getEditorPromise = uc.getH5pEditor(mockCurrentUser.userId, content.id, language);
 
 				await expect(getEditorPromise).rejects.toThrow(new ForbiddenException());
 
@@ -270,7 +263,7 @@ describe('get H5P editor', () => {
 			it('should return error of service', async () => {
 				const { content, mockCurrentUser, language, error } = setup();
 
-				const getEditorPromise = uc.getH5pEditor(mockCurrentUser, content.id, language);
+				const getEditorPromise = uc.getH5pEditor(mockCurrentUser.userId, content.id, language);
 
 				await expect(getEditorPromise).rejects.toThrow(error);
 			});

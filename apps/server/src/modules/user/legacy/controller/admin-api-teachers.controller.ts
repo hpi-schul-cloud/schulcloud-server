@@ -1,7 +1,7 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
+import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common/error';
 import { RequestedRoleEnum } from '../enum';
 import { UsersAdminApiUc } from '../uc';
 import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from './dto';

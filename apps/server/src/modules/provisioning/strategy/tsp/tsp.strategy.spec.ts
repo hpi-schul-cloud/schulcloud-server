@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { IdTokenExtractionFailureLoggableException } from '@modules/oauth';
+import { RoleName } from '@modules/role';
 import { schoolFactory } from '@modules/school/testing';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { IdTokenExtractionFailureLoggableException } from '@src/modules/oauth/loggable';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import jwt from 'jsonwebtoken';
 import {
 	ExternalClassDto,
@@ -38,12 +38,12 @@ describe('TspProvisioningStrategy', () => {
 		provisioningServiceMock = module.get(TspProvisioningService);
 	});
 
-	afterAll(async () => {
-		await module.close();
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
-	beforeEach(() => {
-		jest.resetAllMocks();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('getType', () => {
@@ -230,12 +230,12 @@ describe('TspProvisioningStrategy', () => {
 					firstName: faker.person.firstName(),
 					lastName: faker.person.lastName(),
 				});
-				const externalSchool = new ExternalSchoolDto({ externalId: faker.string.uuid(), name: faker.string.alpha() });
+				const externalSchool = new ExternalSchoolDto({ externalId: faker.string.uuid(), name: faker.word.noun() });
 				const externalClasses = [];
 				const data = new OauthDataDto({ system, externalUser, externalSchool, externalClasses });
 
-				provisioningServiceMock.findSchoolOrFail.mockResolvedValue(school);
-				provisioningServiceMock.provisionUser.mockResolvedValue(user);
+				provisioningServiceMock.findSchoolOrFail.mockResolvedValueOnce(school);
+				provisioningServiceMock.provisionUser.mockResolvedValueOnce(user);
 
 				return { school, user, system, externalUser, externalSchool, externalClasses, data };
 			};

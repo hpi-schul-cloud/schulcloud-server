@@ -1,15 +1,15 @@
+import { LoggerModule } from '@core/logger';
 import { EncryptionModule } from '@infra/encryption';
 import { AuthorizationModule } from '@modules/authorization';
 import { BoardModule } from '@modules/board';
 import { BoardContextApiHelperModule } from '@modules/board-context';
+import { CourseModule } from '@modules/course';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { SchoolModule } from '@modules/school';
+import { SchoolLicenseModule } from '@modules/school-license';
 import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
-import { LtiToolRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
-import { LearnroomModule } from '../learnroom';
 import { CommonToolModule } from './common';
 import { ToolPermissionHelper } from './common/uc/tool-permission-helper';
 import { ToolContextController, ToolDeepLinkController } from './context-external-tool/controller';
@@ -23,6 +23,8 @@ import { ToolSchoolController } from './school-external-tool/controller';
 import { SchoolExternalToolUc } from './school-external-tool/uc';
 import { ToolLaunchController } from './tool-launch/controller/tool-launch.controller';
 import { ToolLaunchUc } from './tool-launch/uc';
+import { ExternalToolUtilizationUc, SchoolExternalToolUtilizationUc } from './tool-utilization';
+import { ExternalToolUtilizationModule } from './tool-utilization/tool-utilization.module';
 import { ToolModule } from './tool.module';
 
 @Module({
@@ -33,12 +35,14 @@ import { ToolModule } from './tool.module';
 		AuthorizationModule,
 		LoggerModule,
 		LegacySchoolModule,
-		LearnroomModule,
+		CourseModule,
 		BoardModule,
 		BoardContextApiHelperModule,
 		SchoolModule,
 		UserLicenseModule,
+		SchoolLicenseModule,
 		EncryptionModule,
+		ExternalToolUtilizationModule,
 	],
 	controllers: [
 		ToolLaunchController,
@@ -50,13 +54,14 @@ import { ToolModule } from './tool.module';
 		ToolDeepLinkController,
 	],
 	providers: [
-		LtiToolRepo,
 		ExternalToolUc,
+		ExternalToolUtilizationUc,
 		ExternalToolConfigurationUc,
 		ExternalToolConfigurationService,
 		ExternalToolRequestMapper,
 		ExternalToolResponseMapper,
 		SchoolExternalToolUc,
+		SchoolExternalToolUtilizationUc,
 		ContextExternalToolUc,
 		ToolLaunchUc,
 		ToolReferenceUc,

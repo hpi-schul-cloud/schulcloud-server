@@ -2,9 +2,9 @@ import { EntityData, EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { LtiDeepLinkToken } from '../../domain';
-import { LtiDeepLinkTokenEntity } from '../../entity';
 import { LtiDeepLinkTokenRepo } from '../lti-deep-link-token.repo.interface';
 import { LtiDeepLinkTokenEntityMapper } from './mapper';
+import { LtiDeepLinkTokenEntity } from './lti-deep-link-token.entity';
 
 @Injectable()
 export class LtiDeepLinkTokenMikroOrmRepo
@@ -19,7 +19,7 @@ export class LtiDeepLinkTokenMikroOrmRepo
 		return LtiDeepLinkTokenEntityMapper.mapDOToEntityProperties(entityDO, this.em);
 	}
 
-	async findByState(state: string): Promise<LtiDeepLinkToken | null> {
+	public async findByState(state: string): Promise<LtiDeepLinkToken | null> {
 		const sessionTokenEntity: LtiDeepLinkTokenEntity | null = await this.em.findOne(this.entityName, { state });
 
 		if (!sessionTokenEntity) {

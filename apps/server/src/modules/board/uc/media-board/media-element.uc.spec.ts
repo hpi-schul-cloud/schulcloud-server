@@ -1,15 +1,16 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { Action, AuthorizationService } from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { MediaBoard, MediaBoardNodeFactory, MediaExternalToolElement, MediaLine } from '../../domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
@@ -30,7 +31,7 @@ describe(MediaElementUc.name, () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -116,7 +117,11 @@ describe(MediaElementUc.name, () => {
 
 				await uc.moveElement(user.id, mediaElement.id, mediaLine.id, 1);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaLine,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should move the element', async () => {
@@ -198,7 +203,11 @@ describe(MediaElementUc.name, () => {
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaLine,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should find the board', async () => {
@@ -335,7 +344,11 @@ describe(MediaElementUc.name, () => {
 
 				await uc.deleteElement(user.id, mediaElement.id);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaElement, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
+					user.id,
+					mediaElement,
+					AuthorizationContextBuilder.write([])
+				);
 			});
 
 			it('should delete the element', async () => {

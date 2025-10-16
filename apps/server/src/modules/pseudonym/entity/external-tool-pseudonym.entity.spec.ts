@@ -1,11 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { externalToolPseudonymEntityFactory } from '@testing/factory/external-tool-pseudonym.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
+import { externalToolPseudonymEntityFactory } from '../testing';
 import { ExternalToolPseudonymEntity } from './external-tool-pseudonym.entity';
 
 describe('ExternalToolPseudonymEntity', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([ExternalToolPseudonymEntity]);
 	});
 
 	describe('constructor', () => {

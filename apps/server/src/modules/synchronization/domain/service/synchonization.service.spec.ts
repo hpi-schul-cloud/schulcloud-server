@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { ObjectId } from 'bson';
-import { Synchronization } from '..';
-import { SynchronizationRepo } from '../../repo';
+import { SynchronizationEntity, SynchronizationRepo } from '../../repo';
+import { Synchronization } from '../do';
 import { synchronizationFactory } from '../testing';
 import { SynchronizationService } from './synchronization.service';
 
@@ -26,7 +26,7 @@ describe(SynchronizationService.name, () => {
 		service = module.get(SynchronizationService);
 		repo = module.get(SynchronizationRepo);
 
-		await setupEntities();
+		await setupEntities([SynchronizationEntity]);
 	});
 
 	beforeEach(() => {

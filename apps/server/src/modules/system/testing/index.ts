@@ -1,6 +1,7 @@
+export * from './system-entity.factory';
 export {
 	systemFactory,
-	systemOauthConfigFactory,
 	systemLdapConfigFactory,
+	systemOauthConfigFactory,
 	systemOidcConfigFactory,
 } from './system.factory';

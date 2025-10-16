@@ -14,7 +14,7 @@ import {
 	Query,
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { CardUc, ColumnUc } from '../uc';
 import {
 	AnyContentElementResponse,
@@ -26,6 +26,7 @@ import {
 	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
+	H5pElementResponse,
 	LinkElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
@@ -126,7 +127,8 @@ export class CardController {
 		SubmissionContainerElementResponse,
 		DrawingElementResponse,
 		DeletedElementResponse,
-		VideoConferenceElementResponse
+		VideoConferenceElementResponse,
+		H5pElementResponse
 	)
 	@ApiResponse({
 		status: 201,
@@ -140,6 +142,7 @@ export class CardController {
 				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(DeletedElementResponse) },
 				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
+				{ $ref: getSchemaPath(H5pElementResponse) },
 			],
 		},
 	})

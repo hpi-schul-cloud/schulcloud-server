@@ -1,12 +1,12 @@
+import { CoreModule } from '@core/core.module';
+import { Logger } from '@core/logger';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
 import { s3ConfigContent, s3ConfigLibraries } from '@modules/h5p-editor';
 import { H5PEditorModule } from '@modules/h5p-editor/h5p-editor.app.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
-import { CoreModule } from '@src/core';
-import { Logger } from '@src/core/logger';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { H5PLibraryManagementService, h5PLibraryManagementConfig } from './service';
 
 const imports = [

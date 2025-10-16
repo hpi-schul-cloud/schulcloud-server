@@ -1,10 +1,10 @@
+import { ProviderOauthClient } from '@modules/oauth-provider/domain';
 import { Injectable } from '@nestjs/common';
-import { ProviderOauthClient } from '@src/modules/oauth-provider/domain';
 import { Oauth2ToolConfig } from '../domain';
 
 @Injectable()
 export class ExternalToolServiceMapper {
-	mapDoToProviderOauthClient(name: string, oauth2Config: Oauth2ToolConfig): Partial<ProviderOauthClient> {
+	public mapDoToProviderOauthClient(name: string, oauth2Config: Oauth2ToolConfig): Partial<ProviderOauthClient> {
 		return {
 			client_name: name,
 			client_id: oauth2Config.clientId,
@@ -14,6 +14,8 @@ export class ExternalToolServiceMapper {
 			redirect_uris: oauth2Config.redirectUris,
 			frontchannel_logout_uri: oauth2Config.frontchannelLogoutUri,
 			subject_type: 'pairwise',
+			grant_types: ['authorization_code', 'refresh_token'],
+			response_types: ['code', 'token', 'id_token'],
 		};
 	}
 }

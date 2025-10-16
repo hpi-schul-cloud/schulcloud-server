@@ -1,6 +1,7 @@
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory } from '@testing/factory/course.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types/copy.types';
 import { CopyHelperService } from './copy-helper.service';
 
@@ -35,7 +36,7 @@ describe('copy helper service', () => {
 	let copyHelperService: CopyHelperService;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	afterAll(async () => {
@@ -264,8 +265,8 @@ describe('copy helper service', () => {
 
 	describe('buildCopyEntityDict', () => {
 		it('should map original to copy', () => {
-			const originalEntity = courseFactory.buildWithId();
-			const copyEntity = courseFactory.buildWithId();
+			const originalEntity = courseEntityFactory.buildWithId();
+			const copyEntity = courseEntityFactory.buildWithId();
 			const status = {
 				type: CopyElementType.COURSE,
 				status: CopyStatusEnum.SUCCESS,
@@ -277,8 +278,8 @@ describe('copy helper service', () => {
 		});
 
 		it('should map entities deeper in structure', () => {
-			const originalEntity = courseFactory.buildWithId();
-			const copyEntity = courseFactory.buildWithId();
+			const originalEntity = courseEntityFactory.buildWithId();
+			const copyEntity = courseEntityFactory.buildWithId();
 			const status: CopyStatus = {
 				type: CopyElementType.COURSE,
 				status: CopyStatusEnum.SUCCESS,
@@ -296,10 +297,10 @@ describe('copy helper service', () => {
 		});
 
 		it('should work with sub maps', () => {
-			const originalEntity = courseFactory.buildWithId();
-			const copyEntity = courseFactory.buildWithId();
-			const originalChildEntity = courseFactory.buildWithId();
-			const copyChildEntity = courseFactory.buildWithId();
+			const originalEntity = courseEntityFactory.buildWithId();
+			const copyEntity = courseEntityFactory.buildWithId();
+			const originalChildEntity = courseEntityFactory.buildWithId();
+			const copyChildEntity = courseEntityFactory.buildWithId();
 			const status = {
 				type: CopyElementType.COURSE,
 				status: CopyStatusEnum.SUCCESS,

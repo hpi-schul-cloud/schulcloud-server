@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationResponse } from '@shared/controller';
+import { PaginationResponse } from '@shared/controller/dto';
 import { ClassInfoResponse } from './class-info.response';
 
 export class ClassInfoSearchListResponse extends PaginationResponse<ClassInfoResponse[]> {

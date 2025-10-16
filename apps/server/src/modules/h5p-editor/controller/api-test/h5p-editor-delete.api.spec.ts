@@ -6,12 +6,11 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { h5pContentFactory } from '@testing/factory/h5p-content.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
+import { h5pContentFactory } from '../../testing';
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
@@ -59,19 +58,16 @@ describe('H5PEditor Controller (api)', () => {
 
 		describe('when user is logged in', () => {
 			describe('when id in params is not a mongo id', () => {
-				const setup = async () => {
-					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const setup = () => {
+					const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-					await em.persistAndFlush([studentAccount, studentUser]);
-					em.clear();
-
-					const loggedInClient = await testApiClient.login(studentAccount);
+					const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
 					return { loggedInClient };
 				};
 
 				it('should return 400', async () => {
-					const { loggedInClient } = await setup();
+					const { loggedInClient } = setup();
 
 					const response = await loggedInClient.post(`delete/123`);
 
@@ -85,19 +81,16 @@ describe('H5PEditor Controller (api)', () => {
 			});
 
 			describe('when requested content is not found', () => {
-				const setup = async () => {
-					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const setup = () => {
+					const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-					await em.persistAndFlush([studentAccount, studentUser]);
-					em.clear();
-
-					const loggedInClient = await testApiClient.login(studentAccount);
+					const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
 					return { loggedInClient };
 				};
 
 				it('should return 404', async () => {
-					const { loggedInClient } = await setup();
+					const { loggedInClient } = setup();
 					const someId = new ObjectId().toHexString();
 
 					const response = await loggedInClient.post(`delete/${someId}`);
@@ -109,13 +102,14 @@ describe('H5PEditor Controller (api)', () => {
 			describe('when content is found', () => {
 				const setup = async () => {
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-					const lesson = lessonFactory.build();
-					const h5pContent = h5pContentFactory.build({ parentId: lesson.id });
 
-					await em.persistAndFlush([lesson, h5pContent, teacherAccount, teacherUser]);
+					const loggedInClient = testApiClient.loginByUser(teacherAccount, teacherUser);
+
+					const parentId = new ObjectId().toHexString();
+					const h5pContent = h5pContentFactory.build({ parentId });
+
+					await em.persistAndFlush([h5pContent]);
 					em.clear();
-
-					const loggedInClient = await testApiClient.login(teacherAccount);
 
 					return { contentId: h5pContent.id, loggedInClient };
 				};

@@ -1,59 +1,213 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ColumnBoard, ColumnBoardService } from '@modules/board';
-import { CourseService } from '@modules/learnroom';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardExternalReferenceType, BoardNodeService, ColumnBoard } from '@modules/board';
+import { cardFactory, columnBoardFactory } from '@modules/board/testing';
+import { CourseDoService } from '@modules/course';
+import { courseFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-
-import { setupEntities } from '@testing/setup-entities';
+import { MetaData, MetaDataEntityType } from '../../types';
 import { BoardUrlHandler } from './board-url-handler';
 
 describe(BoardUrlHandler.name, () => {
 	let module: TestingModule;
-	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let boardUrlHandler: BoardUrlHandler;
+
+	let boardNodeService: DeepMocked<BoardNodeService>;
+	let courseService: DeepMocked<CourseDoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BoardUrlHandler,
 				{
-					provide: ColumnBoardService,
-					useValue: createMock<ColumnBoardService>(),
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
 				},
 				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
+					provide: CourseDoService,
+					useValue: createMock<CourseDoService>(),
 				},
 			],
 		}).compile();
 
-		columnBoardService = module.get(ColumnBoardService);
 		boardUrlHandler = module.get(BoardUrlHandler);
-		await setupEntities();
+		boardNodeService = module.get(BoardNodeService);
+		courseService = module.get(CourseDoService);
 	});
 
 	describe('getMetaData', () => {
-		describe('when url fits', () => {
+		describe('when the url fits a board', () => {
+			const setup = () => {
+				const course = courseFactory.build();
+				const board = columnBoardFactory.build({
+					title: 'My Board',
+					context: { type: BoardExternalReferenceType.Course, id: course.id },
+				});
+				const url = new URL(`https://localhost/boards/${board.id}`);
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+				courseService.findById.mockResolvedValueOnce(course);
+
+				return {
+					board,
+					course,
+					url,
+				};
+			};
+
 			it('should call courseService with the correct id', async () => {
-				const id = '671a5bdf0995ace8cbc6f899';
-				const url = new URL(`https://localhost/boards/${id}`);
+				const { board, url } = setup();
 
 				await boardUrlHandler.getMetaData(url);
 
-				expect(columnBoardService.findById).toHaveBeenCalledWith(id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, board.id);
 			});
 
 			it('should take the title from the board name', async () => {
-				const id = '671a5bdf0995ace8cbc6f899';
-				const url = new URL(`https://localhost/boards/${id}`);
-				const boardName = 'My Board';
-				columnBoardService.findById.mockResolvedValue({
-					title: boardName,
-					context: { type: 'course', id: 'a-board-id' },
-				} as ColumnBoard);
+				const { board, course, url } = setup();
 
 				const result = await boardUrlHandler.getMetaData(url);
 
-				expect(result).toEqual(expect.objectContaining({ title: boardName, type: 'board' }));
+				expect(result).toEqual<MetaData>({
+					url: url.toString(),
+					description: '',
+					title: board.title,
+					type: MetaDataEntityType.BOARD,
+					parentType: MetaDataEntityType.COURSE,
+					parentTitle: course.name,
+				});
+			});
+		});
+
+		describe('when the url has a hash to a card with a title', () => {
+			const setup = () => {
+				const board = columnBoardFactory.build({
+					title: 'My Board',
+					context: { type: BoardExternalReferenceType.User, id: new ObjectId().toHexString() },
+				});
+				const cardTitle = 'My Card';
+				const card = cardFactory.build({
+					title: cardTitle,
+				});
+				const url = new URL(`https://localhost/boards/${board.id}#card-${card.id}`);
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+
+				return {
+					board,
+					card,
+					cardTitle,
+					url,
+				};
+			};
+
+			it('should use the title from the board card', async () => {
+				const { cardTitle, url } = setup();
+
+				const result = await boardUrlHandler.getMetaData(url);
+
+				expect(result).toEqual<MetaData>({
+					url: url.toString(),
+					description: '',
+					title: cardTitle,
+					type: MetaDataEntityType.BOARD_CARD,
+				});
+			});
+		});
+
+		describe('when the url has a hash to a card without a title', () => {
+			const setup = () => {
+				const board = columnBoardFactory.build({
+					title: 'My Board',
+					context: { type: BoardExternalReferenceType.User, id: new ObjectId().toHexString() },
+				});
+				const card = cardFactory.build({
+					title: undefined,
+				});
+				const url = new URL(`https://localhost/boards/${board.id}#card-${card.id}`);
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+
+				return {
+					board,
+					card,
+					url,
+				};
+			};
+
+			it('should use "-" as the title', async () => {
+				const { url } = setup();
+
+				const result = await boardUrlHandler.getMetaData(url);
+
+				expect(result).toEqual<MetaData>({
+					url: url.toString(),
+					description: '',
+					title: '-',
+					type: MetaDataEntityType.BOARD_CARD,
+				});
+			});
+		});
+
+		describe('when the url has an invalid hash', () => {
+			const setup = () => {
+				const board = columnBoardFactory.build({
+					title: 'My Board',
+					context: { type: BoardExternalReferenceType.User, id: new ObjectId().toHexString() },
+				});
+				const url = new URL(`https://localhost/boards/${board.id}#invalid-hash`);
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+
+				return {
+					board,
+					url,
+				};
+			};
+
+			it('should take the title from the board', async () => {
+				const { board, url } = setup();
+
+				const result = await boardUrlHandler.getMetaData(url);
+
+				expect(result).toEqual<MetaData>({
+					url: url.toString(),
+					description: '',
+					title: board.title,
+					type: MetaDataEntityType.BOARD,
+				});
+			});
+		});
+
+		describe('when the url has a hash with an invalid link type ', () => {
+			const setup = () => {
+				const board = columnBoardFactory.build({
+					title: 'My Board',
+					context: { type: BoardExternalReferenceType.User, id: new ObjectId().toHexString() },
+				});
+				const url = new URL(`https://localhost/boards/${board.id}#invalid-${new ObjectId().toHexString()}`);
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+
+				return {
+					board,
+					url,
+				};
+			};
+
+			it('should take the title from the board', async () => {
+				const { board, url } = setup();
+
+				const result = await boardUrlHandler.getMetaData(url);
+
+				expect(result).toEqual<MetaData>({
+					url: url.toString(),
+					description: '',
+					title: board.title,
+					type: MetaDataEntityType.BOARD,
+				});
 			});
 		});
 
@@ -69,7 +223,7 @@ describe(BoardUrlHandler.name, () => {
 
 		describe('when mongoId in url is invalid', () => {
 			it('should return undefined', async () => {
-				const url = new URL(`https://localhost/invalid/ef2345abe4e3b`);
+				const url = new URL(`https://localhost/boards/ef2345abe4e3b`);
 
 				const result = await boardUrlHandler.getMetaData(url);
 

@@ -1,11 +1,11 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
-import { extractJwtFromHeader } from '@shared/common';
+import { JwtExtractor } from '@shared/common/utils';
 import { RawAxiosRequestConfig } from 'axios';
-import { CourseRoomsApi } from './room-api-client';
+import { Request } from 'express';
 import { RoomBoardDto } from './dto';
 import { RoomBoardDtoMapper } from './mapper/room-board-dto.mapper';
+import { CourseRoomsApi } from './room-api-client';
 
 @Injectable()
 export class CourseRoomsClientAdapter {
@@ -26,12 +26,6 @@ export class CourseRoomsClientAdapter {
 	}
 
 	private getJwt(): string {
-		const jwt = extractJwtFromHeader(this.request) || this.request.headers.authorization;
-
-		if (!jwt) {
-			throw new UnauthorizedException('Authentication is required.');
-		}
-
-		return jwt;
+		return JwtExtractor.extractJwtFromRequestOrFail(this.request);
 	}
 }

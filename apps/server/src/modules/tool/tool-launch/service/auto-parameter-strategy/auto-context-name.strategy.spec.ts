@@ -2,11 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardCommonToolService, BoardExternalReferenceType, BoardNodeService, ColumnBoard } from '@modules/board';
 import { columnBoardFactory, externalToolElementFactory } from '@modules/board/testing';
-import { CourseService } from '@modules/learnroom';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course } from '@shared/domain/entity';
-import { courseFactory } from '@testing/factory/course.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { ToolContextType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../../context-external-tool/testing';
@@ -24,7 +24,7 @@ describe(AutoContextNameStrategy.name, () => {
 	let boardNodeService: DeepMocked<BoardNodeService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -70,7 +70,7 @@ describe(AutoContextNameStrategy.name, () => {
 					},
 				});
 
-				const course: Course = courseFactory.buildWithId(
+				const course: CourseEntity = courseEntityFactory.buildWithId(
 					{
 						name: 'testName',
 					},
@@ -106,7 +106,7 @@ describe(AutoContextNameStrategy.name, () => {
 					},
 				});
 
-				const course: Course = courseFactory.buildWithId({
+				const course: CourseEntity = courseEntityFactory.buildWithId({
 					name: 'testName',
 				});
 

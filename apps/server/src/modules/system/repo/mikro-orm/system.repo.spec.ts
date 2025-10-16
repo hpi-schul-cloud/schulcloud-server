@@ -1,15 +1,18 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SystemTypeEnum } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
-import { System, SYSTEM_REPO, SystemProps, SystemRepo, SystemType } from '../../domain';
-import { SystemEntity } from '../../entity';
-import { systemLdapConfigFactory, systemOauthConfigFactory, systemOidcConfigFactory } from '../../testing';
+import { MongoMemoryDatabaseModule } from '@testing/database';
+import { System, SYSTEM_REPO, SystemProps, SystemRepo, SystemType, SystemTypeEnum } from '../../domain';
+import {
+	systemEntityFactory,
+	systemFactory,
+	systemLdapConfigFactory,
+	systemOauthConfigFactory,
+	systemOidcConfigFactory,
+} from '../../testing';
 import { SystemEntityMapper } from './mapper';
+import { SystemEntity } from './system.entity';
 import { SystemMikroOrmRepo } from './system.repo';
 
 describe(SystemMikroOrmRepo.name, () => {
@@ -19,7 +22,7 @@ describe(SystemMikroOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [SystemEntity] })],
 			providers: [{ provide: SYSTEM_REPO, useClass: SystemMikroOrmRepo }],
 		}).compile();
 
@@ -341,29 +344,70 @@ describe(SystemMikroOrmRepo.name, () => {
 	});
 
 	describe('save', () => {
-		describe('when the valid system is passed', () => {
+		describe('when a new object is provided', () => {
 			const setup = () => {
-				const system = new System({
-					id: new ObjectId().toHexString(),
-					type: SystemTypeEnum.OAUTH,
-					url: 'https://mock.de',
-					alias: 'alias',
-					displayName: 'displayName',
-					provisioningStrategy: SystemProvisioningStrategy.OIDC,
-					provisioningUrl: 'https://provisioningurl.de',
-				});
+				const systemId = new ObjectId().toHexString();
+
+				const system = systemFactory.withOauthConfig().withLdapConfig().withOidcConfig().build({ id: systemId });
 
 				return {
 					system,
+					systemId,
 				};
 			};
 
-			it('should throw error because mapDOToEntityProperties is not implement', async () => {
+			it('should create a new entity', async () => {
+				const { system, systemId } = setup();
+
+				await repo.save(system);
+
+				await expect(em.findOneOrFail(SystemEntity, systemId)).resolves.toBeDefined();
+			});
+
+			it('should return the object', async () => {
 				const { system } = setup();
 
-				// @ts-expect-error Testcase
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-				await expect(repo.save(system)).rejects.toThrowError(NotImplementedException);
+				const result = await repo.save(system);
+
+				expect(result).toEqual(system);
+			});
+		});
+
+		describe('when an entity with the id exists', () => {
+			const setup = async () => {
+				const systemId = new ObjectId().toHexString();
+				const systemEntity = systemEntityFactory.buildWithId({ alias: 'Initial Name' }, systemId);
+
+				await em.persistAndFlush(systemEntity);
+				em.clear();
+
+				const newName = 'New Name';
+				const system = systemFactory.build({ id: systemId, alias: newName });
+
+				return {
+					systemEntity,
+					system,
+					systemId,
+					newName,
+				};
+			};
+
+			it('should update the entity', async () => {
+				const { system, systemId, newName } = await setup();
+
+				await repo.save(system);
+
+				await expect(em.findOneOrFail(SystemEntity, systemId)).resolves.toEqual(
+					expect.objectContaining({ alias: newName })
+				);
+			});
+
+			it('should return the object', async () => {
+				const { system } = await setup();
+
+				const result = await repo.save(system);
+
+				expect(result).toEqual(system);
 			});
 		});
 	});

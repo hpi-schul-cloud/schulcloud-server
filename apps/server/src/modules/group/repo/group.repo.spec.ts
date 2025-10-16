@@ -1,22 +1,25 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { type SystemEntity } from '@modules/system/entity';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { systemEntityFactory } from '@modules/system/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSource, Page } from '@shared/domain/domainobject';
-import { SchoolEntity, User } from '@shared/domain/entity';
-import { RoleName, SortOrder } from '@shared/domain/interface';
+import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
-import { groupFactory } from '@testing/factory/domainobject';
-import { groupEntityFactory } from '@testing/factory/group-entity.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
-import { userFactory } from '@testing/factory/user.factory';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';
+import { groupEntityFactory, groupFactory } from '../testing';
 import { GroupRepo } from './group.repo';
+import { Role } from '@modules/role/repo';
 
 describe(GroupRepo.name, () => {
 	let module: TestingModule;
@@ -25,7 +28,11 @@ describe(GroupRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [GroupEntity, SchoolEntity, User, SystemEntity, CourseEntity, CourseGroupEntity],
+				}),
+			],
 			providers: [GroupRepo],
 		}).compile();
 
@@ -76,6 +83,10 @@ describe(GroupRepo.name, () => {
 						new GroupUser({
 							userId: group.users[1].user.id,
 							roleId: group.users[1].role.id,
+						}),
+						new GroupUser({
+							userId: group.users[2].user.id,
+							roleId: group.users[2].role.id,
 						}),
 					],
 					organizationId: group.organization?.id,
@@ -369,6 +380,109 @@ describe(GroupRepo.name, () => {
 		});
 	});
 
+	describe('findByUsersAndRoomsSchoolId', () => {
+		const setup = async () => {
+			const school = schoolEntityFactory.buildWithId();
+			const differentSchool = schoolEntityFactory.buildWithId();
+			const user = userFactory.buildWithId({ school });
+			const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
+
+			await em.persistAndFlush([user, school, differentSchool]);
+			em.clear();
+
+			return {
+				differentSchool,
+				role,
+				school,
+				user,
+			};
+		};
+
+		const addGroup = async (
+			school: SchoolEntity,
+			role: Role,
+			internalUsers = 0,
+			externalUsers = 0
+		): Promise<GroupEntity> => {
+			const internalUsersArray: User[] = userFactory.buildListWithId(internalUsers, { school });
+			const externalUsersArray: User[] = userFactory.buildListWithId(externalUsers);
+
+			const users: GroupUserEmbeddable[] = [...internalUsersArray, ...externalUsersArray].map((user) => {
+				return {
+					user,
+					role,
+				};
+			});
+			const group = groupEntityFactory.withTypeRoom().buildWithId({ organization: school, users });
+			await em.persistAndFlush([...internalUsersArray, ...externalUsersArray, role, group]);
+			em.clear();
+
+			return group;
+		};
+
+		describe('when users from the same school are in one group', () => {
+			it('should return the group', async () => {
+				const { role, school } = await setup();
+				const group = await addGroup(school, role, 4, 0);
+
+				const result: Page<Group> = await repo.findByUsersAndRoomsSchoolId(school.id, [GroupTypes.ROOM]);
+
+				expect(result.data).toHaveLength(1);
+				expect(result.data[0].id).toEqual(group.id);
+				expect(result.total).toEqual(1);
+			});
+		});
+
+		describe('when users from the same school are in multiple groups', () => {
+			it('should return these groups', async () => {
+				const { role, school } = await setup();
+				const group1 = await addGroup(school, role, 4, 0);
+				const group2 = await addGroup(school, role, 6, 0);
+
+				const result: Page<Group> = await repo.findByUsersAndRoomsSchoolId(school.id, [GroupTypes.ROOM]);
+
+				expect(result.data).toHaveLength(2);
+				expect(result.data.map((g) => g.id)).toEqual([group1.id, group2.id].sort());
+				expect(result.total).toEqual(2);
+			});
+		});
+
+		describe('when no users from the same school are in groups from the same school', () => {
+			it('should still return the groups from the same school', async () => {
+				const { role, school } = await setup();
+				const group1 = await addGroup(school, role, 0, 4);
+				const group2 = await addGroup(school, role, 0, 0);
+
+				const result: Page<Group> = await repo.findByUsersAndRoomsSchoolId(school.id, [GroupTypes.ROOM]);
+
+				expect(result.data).toHaveLength(2);
+				expect(result.data.map((g) => g.id)).toEqual([group1.id, group2.id].sort());
+				expect(result.total).toEqual(2);
+			});
+		});
+
+		describe('when no groups from the same school exist', () => {
+			it('should return an empty list', async () => {
+				const { school } = await setup();
+
+				const result: Page<Group> = await repo.findByUsersAndRoomsSchoolId(school.id, [GroupTypes.ROOM]);
+
+				expect(result.data).toHaveLength(0);
+			});
+		});
+
+		describe('when no users from the same school are in groups from the different school', () => {
+			it('should return an empty list', async () => {
+				const { differentSchool, role, school } = await setup();
+				await addGroup(differentSchool, role, 0, 4);
+
+				const result: Page<Group> = await repo.findByUsersAndRoomsSchoolId(school.id, [GroupTypes.ROOM]);
+
+				expect(result.data).toHaveLength(0);
+			});
+		});
+	});
+
 	describe('findGroupsForScope', () => {
 		describe('when using pagination and sorting', () => {
 			const setup = async () => {
@@ -514,7 +628,7 @@ describe(GroupRepo.name, () => {
 					],
 					organization: school,
 				});
-				const courseSynchronizedWithCourseGroup = courseFactory.buildWithId({
+				const courseSynchronizedWithCourseGroup = courseEntityFactory.buildWithId({
 					syncedWithGroup: synchronizedCourseGroup,
 				});
 
@@ -528,7 +642,7 @@ describe(GroupRepo.name, () => {
 					],
 					organization: school,
 				});
-				const courseSynchronizedWithClassGroup = courseFactory.buildWithId({
+				const courseSynchronizedWithClassGroup = courseEntityFactory.buildWithId({
 					syncedWithGroup: synchronizedClassGroup,
 				});
 
@@ -706,6 +820,10 @@ describe(GroupRepo.name, () => {
 							userId: groupEntity.users[1].user.id,
 							roleId: groupEntity.users[1].role.id,
 						}),
+						new GroupUser({
+							userId: groupEntity.users[2].user.id,
+							roleId: groupEntity.users[2].role.id,
+						}),
 					],
 					organizationId: groupEntity.organization?.id,
 					validPeriod: groupEntity.validPeriod,
@@ -722,6 +840,63 @@ describe(GroupRepo.name, () => {
 
 				expect(result).toBeNull();
 			});
+		});
+	});
+
+	describe('removeUserReference', () => {
+		const setup = async () => {
+			const user = userFactory.buildWithId();
+			const otherUser = userFactory.buildWithId();
+			const role = roleFactory.buildWithId({ name: RoleName.ROOMOWNER });
+			const group = groupEntityFactory.buildWithId({
+				users: [
+					new GroupUserEmbeddable({
+						user,
+						role,
+					}),
+					new GroupUserEmbeddable({
+						user: otherUser,
+						role,
+					}),
+				],
+			});
+
+			await em.persistAndFlush([user, otherUser, role, group]);
+			em.clear();
+
+			return {
+				userId: user.id,
+				otherUserId: otherUser.id,
+				group,
+			};
+		};
+
+		it('should actually remove the user reference from the group', async () => {
+			const { userId, otherUserId, group } = await setup();
+
+			await repo.removeUserReference(userId);
+
+			const updatedGroup = await em.findOne(GroupEntity, group.id);
+			expect(updatedGroup?.users).toHaveLength(1);
+			expect(updatedGroup?.users[0].user.id).toEqual(otherUserId);
+		});
+
+		it('should return count of 1 group updated', async () => {
+			const { userId } = await setup();
+
+			const numberOfUpdatedGroups = await repo.removeUserReference(userId);
+
+			expect(numberOfUpdatedGroups).toEqual(1);
+		});
+
+		it('should not affect other users having the same group', async () => {
+			const { userId, otherUserId, group } = await setup();
+
+			await repo.removeUserReference(userId);
+
+			const updatedGroup = await em.findOne(GroupEntity, group.id);
+			expect(updatedGroup?.users).toHaveLength(1);
+			expect(updatedGroup?.users[0].user.id).toEqual(otherUserId);
 		});
 	});
 });

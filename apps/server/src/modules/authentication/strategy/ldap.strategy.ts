@@ -1,14 +1,15 @@
+import { ErrorLoggable } from '@core/error/loggable/error.loggable';
+import { Logger } from '@core/logger';
 import { ICurrentUser } from '@infra/auth-guard';
 import { Account } from '@modules/account';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
+import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { System, SystemService } from '@modules/system';
+import { UserService } from '@modules/user';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { LegacySchoolRepo, UserRepo } from '@shared/repo';
-import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
-import { Logger } from '@src/core/logger';
+import { TypeGuard } from '@shared/common/guards';
 import { Strategy } from 'passport-custom';
-import { TypeGuard } from '@shared/common';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { StrategyType } from '../interface';
 import { CurrentUserMapper } from '../mapper';
@@ -22,13 +23,13 @@ export class LdapStrategy extends PassportStrategy(Strategy, StrategyType.LDAP) 
 		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly ldapService: LdapService,
 		private readonly authenticationService: AuthenticationService,
-		private readonly userRepo: UserRepo,
+		private readonly userService: UserService,
 		private readonly logger: Logger
 	) {
 		super();
 	}
 
-	async validate(request: { body: LdapAuthorizationBodyParams }): Promise<ICurrentUser> {
+	public async validate(request: { body: LdapAuthorizationBodyParams }): Promise<ICurrentUser> {
 		const { username, password, systemId, schoolId } = this.extractParamsFromRequest(request);
 
 		const [system, school] = await Promise.all([
@@ -46,7 +47,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, StrategyType.LDAP) 
 		this.authenticationService.checkBrutForce(account);
 
 		// The goal of seperation from account and user is that the user is not needed for the authorization, the following code lines invert this goal.
-		const user = await this.userRepo.findById(userId);
+		const user = await this.userService.getUserEntityWithRoles(userId);
 		const ldapDn = TypeGuard.checkNotNullOrUndefined(user.ldapDn, new UnauthorizedException());
 
 		await this.checkCredentials(account, system, ldapDn, password);

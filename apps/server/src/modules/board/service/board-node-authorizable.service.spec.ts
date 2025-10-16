@@ -1,7 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
+import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { BoardNodeAuthorizable, BoardRoles, UserWithBoardRoles } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { columnBoardFactory, columnFactory } from '../testing';
@@ -46,7 +47,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 		boardNodeService = module.get(BoardNodeService);
 		boardContextService = module.get(BoardContextService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterEach(() => {
@@ -75,6 +76,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 					boardNode: column,
 					rootNode: columnBoard,
 					users: [],
+					boardContextSettings: {},
 				});
 
 				return { columnBoard, column, authorizable };
@@ -115,8 +117,10 @@ describe(BoardNodeAuthorizableService.name, () => {
 				},
 			];
 			boardContextService.getUsersWithBoardRoles.mockResolvedValue(usersWithRoles);
+			const boardSettings = { canRoomEditorManageVideoconference: true };
+			boardContextService.getBoardSettings.mockResolvedValueOnce(boardSettings);
 
-			return { columnBoard, column, usersWithRoles };
+			return { boardSettings, columnBoard, column, usersWithRoles };
 		};
 
 		it('should call the service to get the parent node', async () => {
@@ -136,7 +140,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 		});
 
 		it('should return an authorizable of the root context', async () => {
-			const { column, columnBoard, usersWithRoles } = setup();
+			const { boardSettings, column, columnBoard, usersWithRoles } = setup();
 
 			const result = await service.getBoardAuthorizable(column);
 			const expected = new BoardNodeAuthorizable({
@@ -145,6 +149,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 				boardNode: column,
 				rootNode: columnBoard,
 				parentNode: columnBoard,
+				boardContextSettings: boardSettings,
 			});
 
 			expect(result).toEqual(expected);

@@ -1,14 +1,13 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
+import { AccountService } from '@modules/account';
 import { Synchronization, SynchronizationService, SynchronizationStatusModel } from '@modules/synchronization';
 import { synchronizationFactory } from '@modules/synchronization/domain/testing';
 import { UserService } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
-import { AccountService } from '@src/modules/account';
-import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { IdpConsoleConfig } from '../idp-console.config';
 import {
@@ -63,8 +62,6 @@ describe(SynchronizationUc.name, () => {
 		accountService = module.get(AccountService);
 		schulconnexRestClient = module.get(SchulconnexRestClient);
 		configService = module.get(ConfigService);
-
-		await setupEntities();
 	});
 
 	beforeEach(() => {
@@ -110,7 +107,7 @@ describe(SynchronizationUc.name, () => {
 
 				await uc.updateSystemUsersLastSyncedAt(systemId);
 
-				expect(spyUpdateLastSyncedAt).toHaveBeenCalledWith([usersToCheck[0]], systemId);
+				expect(spyUpdateLastSyncedAt).toHaveBeenCalledWith(0, [usersToCheck[0]], systemId);
 				expect(spyUpdateLastSyncedAt).toHaveBeenCalledTimes(1);
 			});
 
@@ -131,21 +128,11 @@ describe(SynchronizationUc.name, () => {
 				const userSyncCount = 0;
 				const status = SynchronizationStatusModel.FAILED;
 
-				const errorMessage = {
-					type: 'SYNCHRONIZATION_ERROR',
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					data: expect.objectContaining({
-						systemId,
-						errorMessage: 'No users to check from system',
-					}),
-				};
-
 				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
 				schulconnexRestClient.getPersonenInfo.mockResolvedValueOnce([]);
 				const spyUpdateSynchronization = jest.spyOn(uc, 'updateSynchronization');
 
 				return {
-					errorMessage,
 					spyUpdateSynchronization,
 					status,
 					synchronizationId,
@@ -155,15 +142,15 @@ describe(SynchronizationUc.name, () => {
 			};
 
 			it('should call the uc.updateSynchronization to log details about synchronization of systemId', async () => {
-				const { errorMessage, spyUpdateSynchronization, status, synchronizationId, systemId, userSyncCount } = setup();
+				const { spyUpdateSynchronization, status, synchronizationId, systemId, userSyncCount } = setup();
 
-				await uc.updateSystemUsersLastSyncedAt(systemId);
+				await expect(() => uc.updateSystemUsersLastSyncedAt(systemId)).rejects.toThrow();
 
 				expect(spyUpdateSynchronization).toHaveBeenCalledWith(
 					synchronizationId,
 					status,
 					userSyncCount,
-					expect.objectContaining(errorMessage)
+					expect.stringContaining('No users to check from system')
 				);
 			});
 		});
@@ -177,14 +164,6 @@ describe(SynchronizationUc.name, () => {
 				const status = SynchronizationStatusModel.FAILED;
 
 				const error = new Error('testError');
-				const errorMessage = {
-					type: 'SYNCHRONIZATION_ERROR',
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					data: expect.objectContaining({
-						systemId,
-						errorMessage: 'Failed to update lastSyncedAt field for users provisioned by system',
-					}),
-				};
 
 				configService.get.mockReturnValueOnce(1); // SYNCHRONIZATION_CHUNK=1
 				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
@@ -193,7 +172,6 @@ describe(SynchronizationUc.name, () => {
 				const spyUpdateSynchronization = jest.spyOn(uc, 'updateSynchronization');
 
 				return {
-					errorMessage,
 					spyUpdateSynchronization,
 					status,
 					synchronizationId,
@@ -204,15 +182,15 @@ describe(SynchronizationUc.name, () => {
 			};
 
 			it('should call the uc.updateSynchronization to log details about synchronization of systemId', async () => {
-				const { errorMessage, spyUpdateSynchronization, status, synchronizationId, systemId, userSyncCount } = setup();
+				const { spyUpdateSynchronization, status, synchronizationId, systemId, userSyncCount } = setup();
 
-				await uc.updateSystemUsersLastSyncedAt(systemId);
+				await expect(() => uc.updateSystemUsersLastSyncedAt(systemId)).rejects.toThrow();
 
 				expect(spyUpdateSynchronization).toHaveBeenCalledWith(
 					synchronizationId,
 					status,
 					userSyncCount,
-					expect.objectContaining(errorMessage)
+					expect.stringContaining('Failed to update lastSyncedAt field for users provisioned by system')
 				);
 			});
 		});
@@ -224,22 +202,11 @@ describe(SynchronizationUc.name, () => {
 				const userSyncCount = 0;
 				const status = SynchronizationStatusModel.FAILED;
 
-				const errorMessage = {
-					type: 'SYNCHRONIZATION_ERROR',
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					data: expect.objectContaining({
-						systemId,
-						errorMessage:
-							'Unknown error occurred during synchronization process of users provisioned by an external system',
-					}),
-				};
-
 				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
 				schulconnexRestClient.getPersonenInfo.mockRejectedValueOnce(new Error('fail'));
 				const spyUpdateSynchronization = jest.spyOn(uc, 'updateSynchronization');
 
 				return {
-					errorMessage,
 					spyUpdateSynchronization,
 					status,
 					synchronizationId,
@@ -249,15 +216,17 @@ describe(SynchronizationUc.name, () => {
 			};
 
 			it('should call the uc.updateSynchronization to log detainls about synchronization of systemId', async () => {
-				const { errorMessage, spyUpdateSynchronization, status, synchronizationId, systemId, userSyncCount } = setup();
+				const { spyUpdateSynchronization, status, synchronizationId, systemId, userSyncCount } = setup();
 
-				await uc.updateSystemUsersLastSyncedAt(systemId);
+				await expect(() => uc.updateSystemUsersLastSyncedAt(systemId)).rejects.toThrow();
 
 				expect(spyUpdateSynchronization).toHaveBeenCalledWith(
 					synchronizationId,
 					status,
 					userSyncCount,
-					expect.objectContaining(errorMessage)
+					expect.stringContaining(
+						'Unknown error occurred during synchronization process of users provisioned by an external system'
+					)
 				);
 			});
 		});
@@ -289,6 +258,18 @@ describe(SynchronizationUc.name, () => {
 				const array = ['a', 'b', 'c'];
 
 				expect(uc.chunkArray(array, 1).length).toBe(3);
+			});
+
+			it('should split array to 2 chunks', () => {
+				const array = ['a', 'b', 'c'];
+
+				expect(uc.chunkArray(array, 2).length).toBe(2);
+			});
+
+			it('should split array to 1 chunk', () => {
+				const array = ['a', 'b', 'c'];
+
+				expect(uc.chunkArray(array, 4).length).toBe(1);
 			});
 
 			it('should return users to synchronization', async () => {
@@ -386,7 +367,7 @@ describe(SynchronizationUc.name, () => {
 			it('should call the userService.findMultipleByExternalIds to get array of users to sync', async () => {
 				const { systemId, usersToCheck } = setup();
 
-				await uc.updateLastSyncedAt(usersToCheck, systemId);
+				await uc.updateLastSyncedAt(0, usersToCheck, systemId);
 
 				expect(userService.findMultipleByExternalIds).toHaveBeenCalledWith(usersToCheck);
 			});
@@ -394,7 +375,7 @@ describe(SynchronizationUc.name, () => {
 			it('should call the accountService.findByUserIdsAndSystemId confirm users', async () => {
 				const { systemId, usersToCheck, usersFound } = setup();
 
-				await uc.updateLastSyncedAt(usersToCheck, systemId);
+				await uc.updateLastSyncedAt(0, usersToCheck, systemId);
 
 				expect(accountService.findByUserIdsAndSystemId).toHaveBeenCalledWith(usersFound, systemId);
 			});
@@ -402,7 +383,7 @@ describe(SynchronizationUc.name, () => {
 			it('should call the userService.updateLastSyncedAt to update users', async () => {
 				const { systemId, usersToCheck, usersToSync } = setup();
 
-				await uc.updateLastSyncedAt(usersToCheck, systemId);
+				await uc.updateLastSyncedAt(0, usersToCheck, systemId);
 
 				expect(userService.updateLastSyncedAt).toHaveBeenCalledWith(usersToSync);
 			});
@@ -410,7 +391,7 @@ describe(SynchronizationUc.name, () => {
 			it('should return number of user with updateLastCyncedAt', async () => {
 				const { systemId, usersToCheck, userSyncCount } = setup();
 
-				const result = await uc.updateLastSyncedAt(usersToCheck, systemId);
+				const result = await uc.updateLastSyncedAt(0, usersToCheck, systemId);
 
 				expect(result).toEqual(userSyncCount);
 			});
@@ -440,7 +421,7 @@ describe(SynchronizationUc.name, () => {
 			it('should throw an error', async () => {
 				const { expectedError, usersToCheck, systemId } = setup();
 
-				await expect(uc.updateLastSyncedAt(usersToCheck, systemId)).rejects.toThrowError(expectedError);
+				await expect(uc.updateLastSyncedAt(0, usersToCheck, systemId)).rejects.toThrowError(expectedError);
 			});
 		});
 	});

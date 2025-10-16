@@ -1,7 +1,7 @@
+import { systemEntityFactory } from '@modules/system/testing';
+import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
-import { userFactory } from '@testing/factory/user.factory';
 import { OauthSessionTokenEntity, OauthSessionTokenEntityProps } from '../entity';
 
 export const oauthSessionTokenEntityFactory = BaseFactory.define<OauthSessionTokenEntity, OauthSessionTokenEntityProps>(

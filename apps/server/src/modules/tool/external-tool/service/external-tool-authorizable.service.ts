@@ -5,8 +5,8 @@ import {
 } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ExternalToolRepo } from '@shared/repo';
 import { ExternalTool } from '../domain';
+import { ExternalToolRepo } from '../repo';
 
 @Injectable()
 export class ExternalToolAuthorizableService implements AuthorizationLoaderService {

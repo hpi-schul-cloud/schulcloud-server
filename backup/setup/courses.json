@@ -33,6 +33,12 @@
 		},
 		"classIds": [],
 		"color": "#54616e",
+		"startDate": {
+			"$date": "2024-08-01T10:00:00Z"
+		},
+		"untilDate": {
+			"$date": "2054-07-31T22:00:00Z"
+		},
 		"__v": 0
 	},
 	{
@@ -97,11 +103,6 @@
 			}
 		],
 		"color": "#795548",
-		"ltiToolIds": [
-			{
-				"$oid": "59a55f39a2049554a93fed16"
-			}
-		],
 		"substitutionIds": [],
 		"teacherIds": [
 			{
@@ -185,11 +186,6 @@
 			}
 		],
 		"color": "#0091EA",
-		"ltiToolIds": [
-			{
-				"$oid": "59a55f4ba2049554a93fed18"
-			}
-		],
 		"substitutionIds": [],
 		"teacherIds": [
 			{
@@ -285,14 +281,6 @@
 			}
 		],
 		"color": "#D50000",
-		"ltiToolIds": [
-			{
-				"$oid": "59a403bfa2049554a93feca9"
-			},
-			{
-				"$oid": "59b6c0225c9ec20c6f08365b"
-			}
-		],
 		"substitutionIds": [],
 		"teacherIds": [
 			{
@@ -366,11 +354,6 @@
 			}
 		],
 		"color": "#304FFE",
-		"ltiToolIds": [
-			{
-				"$oid": "59a55f6ca2049554a93fed1b"
-			}
-		],
 		"substitutionIds": [],
 		"teacherIds": [
 			{
@@ -466,11 +449,6 @@
 			}
 		],
 		"color": "#009688",
-		"ltiToolIds": [
-			{
-				"$oid": "59a55f54a2049554a93fed19"
-			}
-		],
 		"substitutionIds": [],
 		"teacherIds": [
 			{
@@ -510,7 +488,6 @@
 			}
 		],
 		"substitutionIds": [],
-		"ltiToolIds": [],
 		"color": "#54616e",
 		"isCopyFrom": null,
 		"features": [],
@@ -550,7 +527,6 @@
 			}
 		],
 		"substitutionIds": [],
-		"ltiToolIds": [],
 		"color": "#304FFE",
 		"isCopyFrom": null,
 		"features": [],
@@ -586,7 +562,6 @@
 			}
 		],
 		"substitutionIds": [],
-		"ltiToolIds": [],
 		"color": "#009688",
 		"isCopyFrom": null,
 		"features": [],
@@ -626,7 +601,6 @@
 			}
 		],
 		"substitutionIds": [],
-		"ltiToolIds": [],
 		"color": "#0091EA",
 		"isCopyFrom": null,
 		"features": [],
@@ -669,7 +643,6 @@
 			}
 		],
 		"substitutionIds": [],
-		"ltiToolIds": [],
 		"color": "#827717",
 		"isCopyFrom": null,
 		"features": [],
@@ -705,7 +678,6 @@
 			}
 		],
 		"substitutionIds": [],
-		"ltiToolIds": [],
 		"color": "#EF6C00",
 		"isCopyFrom": null,
 		"features": [],
@@ -728,5 +700,69 @@
 		"times": [],
 		"__v": 0,
 		"description": ""
+	},
+	{
+		"_id": {
+			"$oid": "681c7b138945ce807e90249f"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:19.846Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:59:33.179Z"
+		},
+		"name": "🤖💻 Chancen und Risiken von KI im Schulkontext",
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"color": "#304FFE",
+		"userIds": [],
+		"teacherIds": [
+			{
+				"$oid": "0000d231816abba584714c9e"
+			}
+		],
+		"substitutionIds": [],
+		"classIds": [],
+		"groupIds": [],
+		"description": "",
+		"features": [],
+		"times": []
+	},
+	{
+		"_id": {
+			"$oid": "681e018089002b0ee99aa0af"
+		},
+		"name": "CC_Test_Kurs",
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"userIds": [],
+		"classIds": [],
+		"groupIds": [],
+		"teacherIds": [
+			{
+				"$oid": "0000d231816abba584714c9e"
+			}
+		],
+		"substitutionIds": [],
+		"color": "#D50000",
+		"startDate": {
+			"$date": "2024-07-31T22:00:00Z"
+		},
+		"untilDate": {
+			"$date": "2031-07-30T22:00:00Z"
+		},
+		"isCopyFrom": null,
+		"features": [],
+		"excludeFromSync": [],
+		"createdAt": {
+			"$date": "2025-05-09T13:22:08.590Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:22:08.590Z"
+		},
+		"times": [],
+		"__v": 0
 	}
 ]

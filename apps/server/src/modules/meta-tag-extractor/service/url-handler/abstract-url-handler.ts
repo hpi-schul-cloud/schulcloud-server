@@ -1,35 +1,38 @@
 import { basename } from 'node:path';
-import { MetaData } from '../../types';
+import { MetaData, MetaDataEntityType } from '../../types';
 
 export abstract class AbstractUrlHandler {
 	protected abstract patterns: RegExp[];
 
 	protected extractId(url: URL): string | undefined {
-		const results: RegExpMatchArray = this.patterns
-			.map((pattern: RegExp) => pattern.exec(url.toString()))
-			.filter((result) => result !== null)
-			.find((result) => (result?.length ?? 0) >= 2) as RegExpMatchArray;
+		const results: RegExpExecArray | undefined = this.patterns
+			.map((pattern: RegExp) => pattern.exec(url.pathname))
+			.filter((result: RegExpExecArray | null): result is RegExpExecArray => result !== null)
+			.find((result: RegExpExecArray) => result.length >= 2);
 
 		if (results && results[1]) {
 			return results[1];
 		}
+
 		return undefined;
 	}
 
-	doesUrlMatch(url: URL): boolean {
-		const doesMatch = this.patterns.some((pattern) => pattern.test(url.toString()));
+	public doesUrlMatch(url: URL): boolean {
+		const doesMatch = this.patterns.some((pattern) => pattern.test(url.pathname));
+
 		return doesMatch;
 	}
 
-	getDefaultMetaData(url: URL, partial: Partial<MetaData> = {}): MetaData {
-		const urlObject = new URL(url);
-		const title = basename(urlObject.pathname);
+	public getDefaultMetaData(url: URL, partial: Partial<MetaData> = {}): MetaData {
+		const urlObject: URL = new URL(url);
+		const title: string = basename(urlObject.pathname);
+
 		return {
-			title,
-			description: '',
-			url: url.toString(),
-			type: 'unknown',
 			...partial,
+			title: partial.title ?? title,
+			description: partial.description ?? '',
+			url: partial.url ?? url.toString(),
+			type: partial.type ?? MetaDataEntityType.UNKNOWN,
 		};
 	}
 }

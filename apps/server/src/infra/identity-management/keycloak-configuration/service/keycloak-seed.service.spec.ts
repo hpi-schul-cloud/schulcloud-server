@@ -4,7 +4,7 @@ import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRep
 import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/resources/authenticationManagement';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { v1 } from 'uuid';
 import {
 	IKeycloakSettings,

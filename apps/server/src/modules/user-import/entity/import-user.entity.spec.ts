@@ -1,12 +1,13 @@
-import { importUserFactory } from '@testing/factory/import-user.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
+import { setupEntities } from '@testing/database';
+import { importUserFactory } from '../testing';
 import { MatchCreator } from './import-user.entity';
 
 describe('ImportUser entity', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	describe('When ldapDN is given', () => {

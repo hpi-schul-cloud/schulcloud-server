@@ -1,9 +1,9 @@
 /* istanbul ignore file */
+import { LegacyLogger, Logger } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { AdminApiServerModule } from '@modules/server/admin-api.server.app.module';
 import { NestFactory } from '@nestjs/core';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import { LegacyLogger, Logger } from '@src/core/logger';
-import { AdminApiServerModule } from '@src/modules/server/admin-api.server.app.module';
+import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 import {
@@ -21,13 +21,17 @@ async function bootstrap(): Promise<void> {
 	const nestAdminServerExpressAdapter = new ExpressAdapter(nestAdminServerExpress);
 	nestAdminServerExpressAdapter.disable('x-powered-by');
 
-	const nestAdminServerApp = await NestFactory.create(AdminApiServerModule, nestAdminServerExpressAdapter);
+	const nestAdminServerApp = await NestFactory.create<NestExpressApplication>(
+		AdminApiServerModule,
+		nestAdminServerExpressAdapter
+	);
 	const logger = await nestAdminServerApp.resolve(Logger);
 	const legacyLogger = await nestAdminServerApp.resolve(LegacyLogger);
 	nestAdminServerApp.use(createRequestLoggerMiddleware());
 
 	nestAdminServerApp.useLogger(legacyLogger);
 	nestAdminServerApp.enableCors();
+	nestAdminServerApp.useBodyParser('json', { limit: '4mb' });
 
 	addPrometheusMetricsMiddlewaresIfEnabled(logger, nestAdminServerExpress);
 

@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { ForbiddenOperationError } from '@shared/common';
+import { ForbiddenOperationError } from '@shared/common/error';
 
 describe('ForbiddenOperationError', () => {
 	it('should be possible to create', () => {

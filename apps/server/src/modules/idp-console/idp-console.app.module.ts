@@ -1,20 +1,21 @@
+import { LoggerModule } from '@core/logger';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { ConsoleWriterModule } from '@infra/console';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountModule } from '@modules/account';
-import { SynchronizationEntity, SynchronizationModule } from '@modules/synchronization';
+import { SynchronizationModule } from '@modules/synchronization';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { ALL_ENTITIES } from '@shared/domain/entity';
-import { LoggerModule } from '@src/core/logger';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { ConsoleModule } from 'nestjs-console';
 import { IdpSyncConsole, SynchronizationUc } from './api';
 import { idpConsoleConfigConfig } from './idp-console.config';
+import { ENTITIES } from './idp.entity.imports';
+import { ErrorModule } from '@core/error';
 
 @Module({
 	imports: [
@@ -28,7 +29,7 @@ import { idpConsoleConfigConfig } from './idp-console.config';
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
 			allowGlobalContext: true,
-			entities: [...ALL_ENTITIES, SynchronizationEntity],
+			entities: ENTITIES,
 			// debug: true, // use it for locally debugging of queries
 		}),
 		UserModule,
@@ -37,6 +38,7 @@ import { idpConsoleConfigConfig } from './idp-console.config';
 		RabbitMQWrapperModule,
 		ConsoleWriterModule,
 		ConsoleModule,
+		ErrorModule,
 	],
 	providers: [SynchronizationUc, IdpSyncConsole],
 })

@@ -1,15 +1,13 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
+import { groupEntityFactory } from '@modules/group/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing/room-membership-entity.factory';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface/permission.enum';
-import { RoleName } from '@shared/domain/interface/rolename.enum';
-import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing/room-membership-entity.factory';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { groupEntityFactory } from '@testing/factory/group-entity.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
@@ -18,7 +16,6 @@ describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -29,13 +26,10 @@ describe('Room Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'rooms');
-
-		config = serverConfig();
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOMS_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -43,56 +37,33 @@ describe('Room Controller (API)', () => {
 	});
 
 	describe('PATCH /rooms/:roomId/members/remove', () => {
-		const setupRoomRoles = () => {
-			const ownerRole = roleFactory.buildWithId({
-				name: RoleName.ROOMOWNER,
-				permissions: [
-					Permission.ROOM_VIEW,
-					Permission.ROOM_EDIT,
-					Permission.ROOM_DELETE,
-					Permission.ROOM_MEMBERS_ADD,
-					Permission.ROOM_MEMBERS_REMOVE,
-				],
-			});
-			const adminRole = roleFactory.buildWithId({
-				name: RoleName.ROOMADMIN,
-				permissions: [
-					Permission.ROOM_VIEW,
-					Permission.ROOM_EDIT,
-					Permission.ROOM_MEMBERS_ADD,
-					Permission.ROOM_MEMBERS_REMOVE,
-				],
-			});
-			const viewerRole = roleFactory.buildWithId({
-				name: RoleName.ROOMVIEWER,
-				permissions: [Permission.ROOM_VIEW],
-			});
-			return { ownerRole, adminRole, viewerRole };
-		};
-
 		const setupRoomWithMembers = async () => {
 			const school = schoolEntityFactory.buildWithId();
+			const externalSchool = schoolEntityFactory.buildWithId();
 			const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-			const { teacherUser: inRoomAdmin2 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
-			const { teacherUser: inRoomAdmin3 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
-			const { teacherUser: inRoomViewer } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
-			const { teacherUser: outTeacher } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
+			const { teacherUser: inRoomOwner } = UserAndAccountTestFactory.buildTeacher({ school });
+			const { teacherUser: inRoomAdmin2 } = UserAndAccountTestFactory.buildTeacher({ school });
+			const { teacherUser: inRoomAdmin3 } = UserAndAccountTestFactory.buildTeacher({ school });
+			const { teacherUser: inRoomViewer } = UserAndAccountTestFactory.buildTeacher({ school });
+			const { teacherUser: outTeacher } = UserAndAccountTestFactory.buildTeacher({ school });
+			const { teacherUser: externalTeacher } = UserAndAccountTestFactory.buildTeacher({ school: externalSchool });
 
-			const users = { teacherUser, inRoomAdmin2, inRoomAdmin3, inRoomViewer, outTeacher };
+			const users = { teacherUser, inRoomAdmin2, inRoomAdmin3, inRoomOwner, inRoomViewer, outTeacher, externalTeacher };
 
-			const { ownerRole, adminRole, viewerRole } = setupRoomRoles();
+			const { roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 
 			const roomUsers = [teacherUser, inRoomAdmin2, inRoomAdmin3].map((user) => {
-				return { role: adminRole, user };
+				return { role: roomAdminRole, user };
 			});
-			roomUsers.push({ role: viewerRole, user: inRoomViewer });
+			roomUsers.push({ role: roomViewerRole, user: inRoomViewer });
+			roomUsers.push({ role: roomOwnerRole, user: inRoomOwner });
 
 			const userGroupEntity = groupEntityFactory.buildWithId({
 				users: roomUsers,
 				type: GroupEntityTypes.ROOM,
-				organization: teacherUser.school,
+				organization: school,
 				externalSource: undefined,
 			});
 
@@ -104,11 +75,15 @@ describe('Room Controller (API)', () => {
 
 			await em.persistAndFlush([
 				...Object.values(users),
+				school,
+				externalSchool,
 				room,
 				roomMemberships,
 				teacherAccount,
 				userGroupEntity,
-				ownerRole,
+				roomAdminRole,
+				roomOwnerRole,
+				roomViewerRole,
 			]);
 			em.clear();
 
@@ -134,27 +109,16 @@ describe('Room Controller (API)', () => {
 			};
 
 			it('should return forbidden error', async () => {
-				const { room } = await setupRoomWithMembers();
-				const { loggedInClient, teacherUser } = await setupLoggedInUser();
+				const { room, inRoomViewer } = await setupRoomWithMembers();
+				const { loggedInClient } = await setupLoggedInUser();
 
-				const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [teacherUser.id] });
-
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
-			});
-		});
-
-		describe('when the feature is disabled', () => {
-			it('should return a 403 error', async () => {
-				const { loggedInClient, room, teacherUser } = await setupRoomWithMembers();
-				config.FEATURE_ROOMS_ENABLED = false;
-
-				const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [teacherUser.id] });
+				const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [inRoomViewer.id] });
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 
-		describe('when the user has the required permissions', () => {
+		describe('when the user has the required room permissions', () => {
 			describe('when removing a user from the room', () => {
 				it('should return OK', async () => {
 					const { loggedInClient, room, inRoomAdmin2 } = await setupRoomWithMembers();
@@ -186,6 +150,104 @@ describe('Room Controller (API)', () => {
 
 					expect(response.status).toBe(HttpStatus.OK);
 				});
+			});
+
+			describe('when trying to remove a user of another school', () => {
+				it('should return OK', async () => {
+					const { loggedInClient, room, externalTeacher } = await setupRoomWithMembers();
+
+					const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [externalTeacher.id] });
+
+					expect(response.status).toBe(HttpStatus.OK);
+				});
+			});
+
+			describe('when trying to remove themself', () => {
+				it('should return FORBIDDEN', async () => {
+					const { loggedInClient, room, teacherUser } = await setupRoomWithMembers();
+
+					const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [teacherUser.id] });
+
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
+			});
+
+			describe('when trying to remove the room owner', () => {
+				it('should return FORBIDDEN', async () => {
+					const { loggedInClient, room, inRoomOwner } = await setupRoomWithMembers();
+
+					const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [inRoomOwner.id] });
+
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
+			});
+		});
+
+		describe('when the user is school admin', () => {
+			const setupForAdmin = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const externalSchool = schoolEntityFactory.buildWithId();
+				const room = roomEntityFactory.buildWithId({ schoolId: school.id });
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+				const { teacherUser: inRoomViewer } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { teacherUser: externalTeacher } = UserAndAccountTestFactory.buildTeacher({ school: externalSchool });
+
+				const users = { adminUser, inRoomViewer, externalTeacher };
+
+				const { roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+
+				const roomUsers = [externalTeacher].map((user) => {
+					return { role: roomAdminRole, user };
+				});
+				roomUsers.push({ role: roomViewerRole, user: inRoomViewer });
+
+				const userGroupEntity = groupEntityFactory.buildWithId({
+					users: roomUsers,
+					type: GroupEntityTypes.ROOM,
+					organization: school,
+					externalSource: undefined,
+				});
+
+				const roomMemberships = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntity.id,
+					roomId: room.id,
+					schoolId: school.id,
+				});
+
+				await em.persistAndFlush([
+					...Object.values(users),
+					room,
+					externalTeacher,
+					roomMemberships,
+					adminAccount,
+					userGroupEntity,
+					roomAdminRole,
+					roomOwnerRole,
+					roomViewerRole,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return { loggedInClient, room, ...users };
+			};
+
+			it('should be allowed to remove a member of the same school', async () => {
+				const { loggedInClient, room, inRoomViewer } = await setupForAdmin();
+
+				const userIds = [inRoomViewer.id];
+				const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds });
+
+				expect(response.status).toBe(HttpStatus.OK);
+			});
+
+			it('should not be allowed to remove a user of another school', async () => {
+				const { loggedInClient, room, externalTeacher } = await setupForAdmin();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [externalTeacher.id] });
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 	});

@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { MediaSourceRepo } from './repo';
 import { MediaSourceService } from './service';
+import { MediaSourceRepo } from './repo';
 
 @Module({
+	imports: [],
 	providers: [MediaSourceService, MediaSourceRepo],
 	exports: [MediaSourceService, MediaSourceRepo],
 })

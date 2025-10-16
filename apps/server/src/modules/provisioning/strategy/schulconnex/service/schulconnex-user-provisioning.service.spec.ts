@@ -1,21 +1,17 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountSave, AccountService } from '@modules/account';
-import { RoleService } from '@modules/role';
+import { RoleName, RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject';
-import { RoleName } from '@shared/domain/interface';
-import { Logger } from '@src/core/logger';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import CryptoJS from 'crypto-js';
+import crypto from 'node:crypto';
 import { ExternalUserDto } from '../../../dto';
 import { SchoolMissingLoggableException, UserRoleUnknownLoggableException } from '../../../loggable';
 import { externalUserDtoFactory } from '../../../testing';
 import { SchulconnexUserProvisioningService } from './schulconnex-user-provisioning.service';
-
-jest.mock('crypto-js');
 
 describe(SchulconnexUserProvisioningService.name, () => {
 	let module: TestingModule;
@@ -67,7 +63,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 			const systemId = 'systemId';
 			const schoolId = 'schoolId';
 			const birthday = new Date('2023-11-17');
-			const existingUser: UserDO = userDoFactory.withRoles([{ id: 'existingRoleId', name: RoleName.USER }]).buildWithId(
+			const existingUser = userDoFactory.withRoles([{ id: 'existingRoleId', name: RoleName.USER }]).buildWithId(
 				{
 					firstName: 'existingFirstName',
 					preferredName: 'existingPreferredName',
@@ -79,7 +75,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				},
 				'userId'
 			);
-			const savedUser: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId(
+			const savedUser = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId(
 				{
 					firstName: 'firstName',
 					preferredName: 'preferredName',
@@ -91,7 +87,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				},
 				'userId'
 			);
-			const externalUser: ExternalUserDto = externalUserDtoFactory.build({
+			const externalUser = externalUserDtoFactory.build({
 				externalId: 'externalUserId',
 				firstName: 'firstName',
 				preferredName: 'preferredName',
@@ -100,26 +96,17 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				roles: [RoleName.USER],
 				birthday,
 			});
-			const minimalViableExternalUser: ExternalUserDto = new ExternalUserDto({
+			const minimalViableExternalUser = new ExternalUserDto({
 				externalId: 'externalUserId',
 				roles: [RoleName.USER],
 			});
-			const userRole: RoleDto = new RoleDto({
+			const userRole = new RoleDto({
 				id: new ObjectId().toHexString(),
 				name: RoleName.USER,
 			});
-			const hash = 'hash';
 
 			roleService.findByNames.mockResolvedValue([userRole]);
 			userService.save.mockResolvedValue(savedUser);
-			jest.spyOn(CryptoJS, 'SHA256').mockReturnValue({
-				toString: jest.fn().mockReturnValue(hash),
-				words: [],
-				sigBytes: 0,
-				concat: jest.fn(),
-				clamp: jest.fn(),
-				clone: jest.fn(),
-			});
 
 			return {
 				existingUser,
@@ -129,7 +116,6 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				userRole,
 				schoolId,
 				systemId,
-				hash,
 			};
 		};
 
@@ -164,7 +150,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 
 					userService.findByExternalId.mockResolvedValue(null);
 
-					const result: UserDO = await service.provisionExternalUser(minimalViableExternalUser, systemId, schoolId);
+					const result = await service.provisionExternalUser(minimalViableExternalUser, systemId, schoolId);
 
 					expect(result).toEqual(savedUser);
 				});
@@ -175,16 +161,16 @@ describe(SchulconnexUserProvisioningService.name, () => {
 
 				userService.findByExternalId.mockResolvedValue(null);
 
-				const result: UserDO = await service.provisionExternalUser(externalUser, systemId, schoolId);
+				const result = await service.provisionExternalUser(externalUser, systemId, schoolId);
 
 				expect(result).toEqual(savedUser);
 			});
 
 			it('should create a new account', async () => {
-				const { externalUser, schoolId, systemId, hash } = setupUser();
-				const account: AccountSave = {
+				const { externalUser, schoolId, systemId } = setupUser();
+				const account = {
 					userId: 'userId',
-					username: hash,
+					username: crypto.createHash('sha256').update('userId').digest('base64'),
 					systemId,
 					activated: true,
 				} as AccountSave;
@@ -202,7 +188,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 
 					userService.findByExternalId.mockResolvedValue(null);
 
-					const promise: Promise<UserDO> = service.provisionExternalUser(externalUser, 'systemId', undefined);
+					const promise = service.provisionExternalUser(externalUser, 'systemId', undefined);
 
 					await expect(promise).rejects.toThrow(SchoolMissingLoggableException);
 				});
@@ -225,7 +211,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 
 				userService.findByExternalId.mockResolvedValue(existingUser);
 
-				const result: UserDO = await service.provisionExternalUser(externalUser, systemId, schoolId);
+				const result = await service.provisionExternalUser(externalUser, systemId, schoolId);
 
 				expect(result).toEqual(savedUser);
 			});
