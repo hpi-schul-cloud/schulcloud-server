@@ -1,4 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { CopyApiResponse } from '@modules/copy-helper';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
@@ -6,10 +7,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
+import { CardResponse } from '../dto';
 
 const baseRouteName = '/cards';
 
@@ -71,11 +72,10 @@ describe(`card move (api)`, () => {
 			const { loggedInClient, cardNode1 } = await setup();
 
 			const response = await loggedInClient.post(`${cardNode1.id}/copy`);
-			const copyResponse = response.body as CopyApiResponse;
+			const copiedCard = response.body as CardResponse;
 
-			expect(copyResponse.id).toBeDefined();
-			expect(copyResponse.type).toEqual(CopyElementType.CARD);
-			expect(copyResponse.status).toEqual(CopyStatusEnum.SUCCESS);
+			expect(copiedCard.id).toBeDefined();
+			expect(copiedCard.title).toEqual(cardNode1.title);
 		});
 
 		it('should actually copy the card in the same column', async () => {

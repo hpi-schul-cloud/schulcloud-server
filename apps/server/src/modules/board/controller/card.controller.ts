@@ -14,12 +14,14 @@ import {
 	Query,
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
 import { CardUc, ColumnUc } from '../uc';
 import {
 	AnyContentElementResponse,
 	CardIdsParams,
 	CardListResponse,
+	CardResponse,
 	CardUrlParams,
 	CreateContentElementBodyParams,
 	DeletedElementResponse,
@@ -36,8 +38,6 @@ import {
 } from './dto';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
-import { RequestTimeout } from '@shared/common/decorators';
-import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 
 @ApiTags('Board Card')
 @JwtAuthentication()
@@ -121,19 +121,16 @@ export class CardController {
 	}
 
 	@ApiOperation({ summary: 'Copy a single card.' })
-	@ApiResponse({ status: 201, type: CopyApiResponse })
+	@ApiResponse({ status: 201, type: CardResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':cardId/copy')
 	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
-	async copyCard(
-		@Param() urlParams: CardUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<CopyApiResponse> {
-		const copyStatus = await this.columnUc.copyCard(currentUser.userId, urlParams.cardId, currentUser.schoolId);
-		const dto = CopyMapper.mapToResponse(copyStatus);
-		return dto;
+	async copyCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<CardResponse> {
+		const copiedCard = await this.columnUc.copyCard(currentUser.userId, urlParams.cardId, currentUser.schoolId);
+		const cardDto = CardResponseMapper.mapToResponse(copiedCard);
+		return cardDto;
 	}
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })

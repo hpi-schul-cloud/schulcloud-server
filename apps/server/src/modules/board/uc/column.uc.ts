@@ -1,11 +1,10 @@
+import { LegacyLogger } from '@core/logger';
+import { StorageLocation } from '@infra/files-storage-client';
 import { AuthorizationContextBuilder } from '@modules/authorization';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@core/logger';
 import { BoardNodeFactory, Card, Column, ContentElementType, isCard, isColumn } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
-import { StorageLocation } from '@infra/files-storage-client';
-import { CopyStatus } from '@modules/copy-helper';
 
 @Injectable()
 export class ColumnUc {
@@ -78,7 +77,7 @@ export class ColumnUc {
 		return card;
 	}
 
-	public async copyCard(userId: EntityId, cardId: EntityId, schoolId: EntityId): Promise<CopyStatus> {
+	public async copyCard(userId: EntityId, cardId: EntityId, schoolId: EntityId): Promise<Card> {
 		this.logger.debug({ action: 'copyCard', userId, cardId, schoolId });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
@@ -107,6 +106,8 @@ export class ColumnUc {
 
 		await this.boardNodeService.move(copyStatus.copyEntity, column, card.position + 1);
 
-		return copyStatus;
+		const copiedCard = await this.boardNodeService.findByClassAndId(Card, copyStatus.copyEntity.id);
+
+		return copiedCard;
 	}
 }
