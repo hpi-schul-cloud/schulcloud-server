@@ -1,5 +1,12 @@
+import { IFullLibraryName } from '@lumieducation/h5p-server/build/src/types';
 import { FileSystemHelper } from '../helper/file-system.helper';
 import { S3ClientHelper } from '../helper/s3-client.helper';
+import { H5PLibrary } from '../interface/h5p-library';
+
+type VersionUpdate = {
+	newVersion: IFullLibraryName;
+	oldVersion: IFullLibraryName;
+};
 
 export class H5pLibraryUploaderService {
 	tempFolderPath: string;
@@ -60,34 +67,41 @@ export class H5pLibraryUploaderService {
 		return folderExistsInS3;
 	}
 
-	private async checkIfUpdateIsNeeded(localFolderPath: string, s3FolderPath: string): Promise<any> {
+	private async checkIfUpdateIsNeeded(
+		localFolderPath: string,
+		s3FolderPath: string
+	): Promise<VersionUpdate | undefined> {
 		const localLibraryJson = this.getLibraryJsonFromLocalFolder(localFolderPath);
 		const s3LibraryJson = await this.getLibraryJsonFromS3(s3FolderPath);
 		const result = this.compareVersions(localLibraryJson, s3LibraryJson);
+
 		return result;
 	}
 
-	private getLibraryJsonFromLocalFolder(localFolderPath: string): any {
+	private getLibraryJsonFromLocalFolder(localFolderPath: string): H5PLibrary {
 		const localLibraryJsonPath = FileSystemHelper.buildPath(localFolderPath, 'library.json');
 		if (!FileSystemHelper.pathExists(localLibraryJsonPath)) {
 			throw new Error(`library.json does not exist in ${localFolderPath}`);
 		}
-		const localLibraryJson = FileSystemHelper.readJsonFile(localLibraryJsonPath);
+		const localLibraryJson = FileSystemHelper.readJsonFile(localLibraryJsonPath) as H5PLibrary;
+
 		return localLibraryJson;
 	}
 
-	private async getLibraryJsonFromS3(s3FolderPath: string): Promise<any | undefined> {
+	private async getLibraryJsonFromS3(s3FolderPath: string): Promise<H5PLibrary | undefined> {
 		const s3LibraryJsonKey = `${s3FolderPath}/library.json`;
-		let s3LibraryJson;
+		let s3LibraryJson: H5PLibrary | undefined;
 		try {
 			const s3LibraryContent = await this.s3ClientHelper.getFileContent(s3LibraryJsonKey);
-			s3LibraryJson = JSON.parse(s3LibraryContent.toString());
+			s3LibraryJson = JSON.parse(s3LibraryContent.toString()) as H5PLibrary;
 		} catch (error: unknown) {
 			if (this.isObjectWithAStringCode(error) && error.Code === 'NoSuchKey') {
 				console.error(`No library.json found in S3 at ${s3LibraryJsonKey}.`);
+
 				return undefined;
 			}
 		}
+
 		return s3LibraryJson;
 	}
 
@@ -95,19 +109,22 @@ export class H5pLibraryUploaderService {
 		return typeof obj === 'object' && obj !== null && 'Code' in obj && typeof (obj as any).Code === 'string';
 	}
 
-	private compareVersions(localLibraryJson: any, s3LibraryJson: any): any {
+	private compareVersions(
+		localLibraryJson: H5PLibrary,
+		s3LibraryJson: H5PLibrary | undefined
+	): VersionUpdate | undefined {
 		if (!s3LibraryJson) {
 			return undefined;
 		}
 
-		const localVersion = {
+		const localVersion: IFullLibraryName = {
 			machineName: localLibraryJson.machineName,
 			majorVersion: localLibraryJson.majorVersion,
 			minorVersion: localLibraryJson.minorVersion,
 			patchVersion: localLibraryJson.patchVersion,
 		};
 
-		const s3Version = {
+		const s3Version: IFullLibraryName = {
 			machineName: s3LibraryJson.machineName,
 			majorVersion: s3LibraryJson.majorVersion,
 			minorVersion: s3LibraryJson.minorVersion,
@@ -130,7 +147,11 @@ export class H5pLibraryUploaderService {
 		return result;
 	}
 
-	private async updateLibrary(isUpdateNeeded: any, localFolderPath: string, s3FolderPath: string): Promise<void> {
+	private async updateLibrary(
+		isUpdateNeeded: VersionUpdate,
+		localFolderPath: string,
+		s3FolderPath: string
+	): Promise<void> {
 		try {
 			const { newVersion, oldVersion } = isUpdateNeeded;
 			console.log(
@@ -148,7 +169,7 @@ export class H5pLibraryUploaderService {
 		}
 	}
 
-	private formatLibraryVersion(version: any): string {
+	private formatLibraryVersion(version: IFullLibraryName): string {
 		if (!version) return '';
 
 		return `${version.machineName}-${version.majorVersion}.${version.minorVersion}.${version.patchVersion}`;

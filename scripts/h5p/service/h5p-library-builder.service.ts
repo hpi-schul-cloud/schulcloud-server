@@ -1,6 +1,7 @@
 import { ILibraryName, LibraryName } from '@lumieducation/h5p-server';
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import { FileSystemHelper } from '../helper/file-system.helper';
+import { H5PLibrary } from '../interface/h5p-library';
 import { GitHubClientOptions, H5pGitHubClient } from './h5p-github.client.js';
 
 type LibraryRepoMap = Record<string, string>;
@@ -432,7 +433,7 @@ export class H5pLibraryBuilderService {
 		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
 		let changed = false;
 		try {
-			const json = FileSystemHelper.readJsonFile(libraryJsonPath) as Record<string, any>;
+			const json = FileSystemHelper.readJsonFile(libraryJsonPath) as H5PLibrary;
 
 			// List of keys in library.json that may contain file paths
 			const filePathKeys = [
