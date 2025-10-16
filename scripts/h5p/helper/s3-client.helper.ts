@@ -143,12 +143,15 @@ export class S3ClientHelper {
 		const response = await this.s3Client.send(command);
 
 		if (response.$metadata.httpStatusCode === 200 && response.Deleted) {
-			const deletedFiles = response.Deleted.filter((obj): obj is { Key: string } => typeof obj.Key === 'string').map(
-				(obj) => obj.Key
-			);
+			const stringKeyObjects = response.Deleted.filter((obj) => this.isObjectWithAStringKey(obj));
+			const deletedFiles = stringKeyObjects.map((obj) => obj.Key);
 			result.push(...deletedFiles);
 		}
 
 		return result;
+	}
+
+	private isObjectWithAStringKey(obj: unknown): obj is { Key: string } {
+		return typeof obj === 'object' && obj !== null && 'Key' in obj && typeof (obj as any).Key === 'string';
 	}
 }
