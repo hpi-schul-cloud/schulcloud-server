@@ -82,13 +82,17 @@ export class H5pLibraryUploaderService {
 		try {
 			const s3LibraryContent = await this.s3ClientHelper.getFileContent(s3LibraryJsonKey);
 			s3LibraryJson = JSON.parse(s3LibraryContent.toString());
-		} catch (error: any) {
-			if (error.Code === 'NoSuchKey') {
+		} catch (error: unknown) {
+			if (this.isObjectWithAStringCode(error) && error.Code === 'NoSuchKey') {
 				console.error(`No library.json found in S3 at ${s3LibraryJsonKey}.`);
 				return undefined;
 			}
 		}
 		return s3LibraryJson;
+	}
+
+	private isObjectWithAStringCode(obj: unknown): obj is { Code: string } {
+		return typeof obj === 'object' && obj !== null && 'Code' in obj && typeof (obj as any).Code === 'string';
 	}
 
 	private compareVersions(localLibraryJson: any, s3LibraryJson: any): any {

@@ -91,8 +91,8 @@ export class H5pGitHubClient {
 		try {
 			const headers = this.getHeaders();
 			result = await axios.get(url, { headers });
-		} catch (error: any) {
-			if (error && error.response && error.response.status === 404) {
+		} catch (error: unknown) {
+			if (this.isObjectWithResponseStatus(error) && error.response.status === 404) {
 				console.error(`library.json does not exist in repository ${repo.name}.`);
 			} else {
 				console.error(`Unknown error fetching library.json from repository ${repo.name}:`, error);
@@ -100,6 +100,17 @@ export class H5pGitHubClient {
 			result = undefined;
 		}
 		return result;
+	}
+
+	private isObjectWithResponseStatus(obj: unknown): obj is { response: { status: number } } {
+		return (
+			typeof obj === 'object' &&
+			obj !== null &&
+			'response' in obj &&
+			typeof (obj as any).response === 'object' &&
+			'status' in (obj as any).response &&
+			typeof (obj as any).response.status === 'number'
+		);
 	}
 
 	private checkContentOfLibraryJson(data: any): boolean {
