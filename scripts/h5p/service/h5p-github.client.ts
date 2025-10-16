@@ -1,5 +1,9 @@
 import axios, { AxiosResponse } from 'axios';
 import { createWriteStream } from 'fs';
+import { Readable } from 'stream';
+import { GitHubContentTreeResponse } from '../interface/github-content-tree.response';
+import { GitHubRepository, GitHubRepositoryResponse } from '../interface/github-repository.response';
+import { GitHubTagResponse } from '../interface/github-tag.response';
 
 export interface GitHubClientOptions {
 	maxRetries: number;
@@ -20,8 +24,8 @@ export class H5pGitHubClient {
 		this.token = personalAccessToken;
 	}
 
-	public async fetchRepositoriesFromOrganization(organization: string): Promise<any[]> {
-		let repos: any[] = [];
+	public async fetchRepositoriesFromOrganization(organization: string): Promise<GitHubRepositoryResponse> {
+		let repos: GitHubRepositoryResponse = [];
 		let page = 1;
 		const perPage = 100; // Maximum allowed by GitHub API
 
@@ -32,8 +36,8 @@ export class H5pGitHubClient {
 				break;
 			}
 
-			response.data.forEach((repo: any) => repos.push(repo));
-			if (response.data.length < perPage) {
+			response.forEach((repo) => repos.push(repo));
+			if (response.length < perPage) {
 				break;
 			}
 
@@ -47,20 +51,24 @@ export class H5pGitHubClient {
 		organization: string,
 		page: number = 1,
 		perPage: number = 100
-	): Promise<{ data: any[] } | undefined> {
-		let result: { data: any[] } | undefined;
+	): Promise<GitHubRepositoryResponse | undefined> {
+		let result: GitHubRepositoryResponse | undefined;
 		const url = `https://api.github.com/orgs/${organization}/repos?type=public&per_page=${perPage}&page=${page}`;
 		try {
 			const headers = this.getHeaders();
-			const response = await axios.get(url, { headers });
-			result = { data: response.data };
+			const response: AxiosResponse<GitHubRepositoryResponse> = await axios.get(url, { headers });
+			result = response.data;
 		} catch (error) {
 			console.error(`Error fetching repositories for organization ${organization} on page ${page}:`, error);
 		}
+
 		return result;
 	}
 
-	public async buildLibraryRepoMapFromRepos(organization: string, repos: any[]): Promise<Record<string, string>> {
+	public async buildLibraryRepoMapFromRepos(
+		organization: string,
+		repos: GitHubRepositoryResponse
+	): Promise<Record<string, string>> {
 		const libraryRepoMap: Record<string, string> = {};
 
 		for (const repo of repos) {
@@ -70,7 +78,7 @@ export class H5pGitHubClient {
 			}
 
 			const data = response.data;
-			if (!this.checkContentOfLibraryJson(data)) {
+			if (!this.checkContentOfLibraryJson(data) || data.content === undefined) {
 				continue;
 			}
 
@@ -85,8 +93,11 @@ export class H5pGitHubClient {
 		return libraryRepoMap;
 	}
 
-	private async getLibraryJsonFromRepo(organization: string, repo: any): Promise<AxiosResponse<any> | undefined> {
-		let result: AxiosResponse<any> | undefined;
+	private async getLibraryJsonFromRepo(
+		organization: string,
+		repo: GitHubRepository
+	): Promise<AxiosResponse<GitHubContentTreeResponse> | undefined> {
+		let result: AxiosResponse<GitHubContentTreeResponse> | undefined;
 		const url = `https://api.github.com/repos/${organization}/${repo.name}/contents/library.json`;
 		try {
 			const headers = this.getHeaders();
@@ -99,6 +110,7 @@ export class H5pGitHubClient {
 			}
 			result = undefined;
 		}
+
 		return result;
 	}
 
@@ -113,11 +125,13 @@ export class H5pGitHubClient {
 		);
 	}
 
-	private checkContentOfLibraryJson(data: any): boolean {
+	private checkContentOfLibraryJson(data: GitHubContentTreeResponse): boolean {
 		if (!data || !data.content || typeof data.content !== 'string') {
 			console.error('library.json content is missing or not a string.');
+
 			return false;
 		}
+
 		return true;
 	}
 
@@ -131,7 +145,7 @@ export class H5pGitHubClient {
 		do {
 			const url = this.buildTagsUrl(owner, repo, page, perPage);
 
-			let response: AxiosResponse<any>;
+			let response: AxiosResponse<GitHubTagResponse>;
 			try {
 				response = await this.fetch(url, options);
 			} catch (error) {
@@ -152,8 +166,8 @@ export class H5pGitHubClient {
 		return `https://api.github.com/repos/${owner}/${repo}/tags?per_page=${perPage}&page=${page}`;
 	}
 
-	private extractTagNames(response: AxiosResponse<any>): string[] {
-		return Array.isArray(response.data) ? response.data.map((tag: any) => tag.name) : [];
+	private extractTagNames(response: AxiosResponse<GitHubTagResponse>): string[] {
+		return Array.isArray(response.data) ? response.data.map((tag) => tag.name) : [];
 	}
 
 	public async downloadTag(library: string, tag: string, filePath: string): Promise<void> {
@@ -178,9 +192,9 @@ export class H5pGitHubClient {
 		}
 	}
 
-	private async fetch(url: string, options: GitHubClientOptions): Promise<AxiosResponse<any>> {
+	private async fetch(url: string, options: GitHubClientOptions): Promise<AxiosResponse<GitHubTagResponse>> {
 		let attempt = 0;
-		let response: AxiosResponse<any> | undefined = undefined;
+		let response: AxiosResponse<GitHubTagResponse> | undefined;
 		const headers = this.getHeaders();
 
 		while (attempt < options.maxRetries) {
@@ -208,8 +222,8 @@ export class H5pGitHubClient {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
-	private async fetchContent(url: string): Promise<AxiosResponse<any>> {
-		const response = await axios({
+	private async fetchContent(url: string): Promise<AxiosResponse<Readable>> {
+		const response: AxiosResponse<Readable> = await axios({
 			url,
 			method: 'GET',
 			responseType: 'stream',

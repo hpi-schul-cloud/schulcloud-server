@@ -4,6 +4,7 @@ import {
 	ListObjectsV2Command,
 	ListObjectsV2CommandOutput,
 	PutObjectCommand,
+	PutObjectCommandOutput,
 	S3Client,
 } from '@aws-sdk/client-s3';
 import { ConfiguredRetryStrategy, RETRY_MODES } from '@aws-sdk/util-retry';
@@ -94,7 +95,7 @@ export class S3ClientHelper {
 		return data;
 	}
 
-	public async uploadFile(key: string, body: Buffer | string): Promise<any> {
+	public async uploadFile(key: string, body: Buffer | string): Promise<PutObjectCommandOutput> {
 		const command = new PutObjectCommand({
 			Bucket: this.bucket,
 			Key: key,
