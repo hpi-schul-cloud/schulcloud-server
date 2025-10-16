@@ -93,7 +93,7 @@ export class BoardCopyService {
 		const copyStatus = await this.boardNodeCopyService.copy(originalCard, copyContext);
 		/* istanbul ignore next */
 		if (!isCard(copyStatus.copyEntity)) {
-			throw new InternalServerErrorException('expected copy of columnboard to be a columnboard');
+			throw new InternalServerErrorException('copied entity is not a card');
 		}
 
 		await this.boardNodeService.save(copyStatus.copyEntity);
