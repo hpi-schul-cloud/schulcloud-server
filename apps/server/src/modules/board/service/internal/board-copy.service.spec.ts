@@ -8,11 +8,12 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client/
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardExternalReferenceType } from '../../domain/types';
-import { columnBoardFactory, cardFactory } from '../../testing';
+import { cardFactory, columnBoardFactory } from '../../testing';
 import { BoardNodeService } from '../board-node.service';
 import { BoardCopyService, CopyCardParams, CopyColumnBoardParams } from './board-copy.service';
 import { ColumnBoardTitleService } from './column-board-title.service';
 // Warning: do not move the BoardNodeCopyService import up. Otherwise it will lead to dependency cycle.
+import { InternalServerErrorException } from '@nestjs/common';
 import { BoardNodeCopyService } from './board-node-copy.service';
 
 describe(BoardCopyService.name, () => {
@@ -280,7 +281,39 @@ describe(BoardCopyService.name, () => {
 		});
 
 		describe('when the copy response is not a Card', () => {
-			// Implement tests for error scenarios
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const targetSchoolId = new ObjectId().toHexString();
+
+				const card = cardFactory.build();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+
+				const cardCopy = cardFactory.build();
+
+				const copyParams: CopyCardParams = {
+					originalCardId: card.id,
+					sourceStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
+					targetStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
+					userId,
+					copyTitle: 'Card Copy',
+					targetSchoolId,
+				};
+
+				return { card, userId, copyParams, cardCopy };
+			};
+			it('should throw an error if the copied entity is not a card', async () => {
+				const { card, copyParams } = setup();
+
+				const cardCopy = { ...card, id: new ObjectId().toHexString(), type: 'not-a-card' };
+				const status: CopyStatus = {
+					copyEntity: cardCopy,
+					type: CopyElementType.CARD,
+					status: CopyStatusEnum.SUCCESS,
+				};
+				boardNodeCopyService.copy.mockResolvedValueOnce(status);
+
+				await expect(service.copyCard(copyParams)).rejects.toBeInstanceOf(InternalServerErrorException);
+			});
 		});
 	});
 });
