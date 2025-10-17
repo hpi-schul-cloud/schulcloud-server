@@ -73,6 +73,10 @@ export class MetricsService {
 		counter.inc();
 	}
 
+	public getCounter(actionName: string): Counter<string> | undefined {
+		return this.actionCounters.get(actionName);
+	}
+
 	public incrementActionGauge(actionName: string): void {
 		let counter = this.actionGauges.get(actionName);
 
