@@ -6,9 +6,9 @@ import { GitHubClientOptions, H5pGitHubClient } from './h5p-github.client.js';
 
 type LibraryRepoMap = Record<string, string>;
 
-type InstallResults = { installedLibraries: string[]; failedLibraries: string[] };
+type InstallResults = { installedLibraries: Set<string>; failedLibraries: Set<string> };
 
-export class H5pLibraryBuilderService {
+export class H5pLibraryPackagerService {
 	libraryRepoMap: LibraryRepoMap;
 	tempFolderPath: string;
 	gitHubClient: H5pGitHubClient;
@@ -29,23 +29,23 @@ export class H5pLibraryBuilderService {
 	}
 
 	public async buildH5pLibrariesFromGitHubAsBulk(libraries: string[]): Promise<void> {
-		const result: InstallResults = { installedLibraries: [], failedLibraries: [] };
+		const result: InstallResults = { installedLibraries: new Set<string>(), failedLibraries: new Set<string>() };
 		const availableVersions: string[] = [];
 		for (const library of libraries) {
 			this.logLibraryBanner(library);
 			const libraryResult = await this.buildLibrary(library, availableVersions);
 
 			console.log(`### Finished building of ${library}.`);
-			console.log(`### Successfully built libraries: ${libraryResult.installedLibraries.join(', ')}`);
-			console.log(`### Failed to build libraries: ${libraryResult.failedLibraries.join(', ')}`);
+			console.log(`### Successfully built libraries: ${Array.from(libraryResult.installedLibraries).join(', ')}`);
+			console.log(`### Failed to build libraries: ${Array.from(libraryResult.failedLibraries).join(', ')}`);
 
-			result.installedLibraries.push(...libraryResult.installedLibraries);
-			result.failedLibraries.push(...libraryResult.failedLibraries);
+			libraryResult.installedLibraries.forEach((lib) => result.installedLibraries.add(lib));
+			libraryResult.failedLibraries.forEach((lib) => result.failedLibraries.add(lib));
 		}
 
 		console.log('>>> Installation Summary:');
-		console.log(`>>> Successfully installed libraries: ${result.installedLibraries.join(', ')}`);
-		console.log(`>>> Failed to install libraries: ${result.failedLibraries.join(', ')}`);
+		console.log(`>>> Successfully installed libraries: ${Array.from(result.installedLibraries).join(', ')}`);
+		console.log(`>>> Failed to install libraries: ${Array.from(result.failedLibraries).join(', ')}`);
 	}
 
 	private logLibraryBanner(libraryName: string): void {
@@ -57,7 +57,7 @@ export class H5pLibraryBuilderService {
 	}
 
 	private async buildLibrary(library: string, availableVersions: string[]): Promise<InstallResults> {
-		const result: InstallResults = { installedLibraries: [], failedLibraries: [] };
+		const result: InstallResults = { installedLibraries: new Set<string>(), failedLibraries: new Set<string>() };
 		const repoName = this.mapMachineNameToGitHubRepo(library);
 		if (!repoName) {
 			console.log(`No GitHub repository found for ${library}.`);
@@ -70,8 +70,9 @@ export class H5pLibraryBuilderService {
 		console.log(`Found ${filteredTags.length} versions of ${library} in ${repoName}: ${filteredTags.join(', ')}`);
 		for (const tag of filteredTags) {
 			const tagResult = await this.buildLibraryVersionAndDependencies(library, tag, repoName, availableVersions);
-			result.installedLibraries.push(...tagResult.installedLibraries);
-			result.failedLibraries.push(...tagResult.failedLibraries);
+
+			tagResult.installedLibraries.forEach((lib) => result.installedLibraries.add(lib));
+			tagResult.failedLibraries.forEach((lib) => result.failedLibraries.add(lib));
 		}
 
 		return result;
@@ -110,8 +111,8 @@ export class H5pLibraryBuilderService {
 	): Promise<InstallResults> {
 		this.logStartBuildingOfLibraryFromGitHub(library, tag);
 		const result: InstallResults = {
-			installedLibraries: [],
-			failedLibraries: [],
+			installedLibraries: new Set<string>(),
+			failedLibraries: new Set<string>(),
 		};
 
 		if (this.isCurrentVersionAvailable(library, tag, availableVersions)) return result;
@@ -119,10 +120,10 @@ export class H5pLibraryBuilderService {
 
 		const validLibrary = await this.buildLibraryTagFromGitHub(library, tag, repoName);
 		if (validLibrary) {
-			result.installedLibraries.push(`${library}-${tag}`);
+			result.installedLibraries.add(`${library}-${tag}`);
 			this.logBuildingOfLibraryFromGitHubSuccessful(library, tag);
 		} else {
-			result.failedLibraries.push(`${library}-${tag}`);
+			result.failedLibraries.add(`${library}-${tag}`);
 			this.logBuildingOfLibraryFromGitHubFailed(library, tag);
 
 			return result;
@@ -142,8 +143,8 @@ export class H5pLibraryBuilderService {
 
 		for (const dependency of dependencies) {
 			const depResults = await this.buildLibraryDependency(dependency, library, tag, availableVersions);
-			result.installedLibraries.push(...depResults.installedLibraries);
-			result.failedLibraries.push(...depResults.failedLibraries);
+			depResults.installedLibraries.forEach((lib) => result.installedLibraries.add(lib));
+			depResults.failedLibraries.forEach((lib) => result.failedLibraries.add(lib));
 		}
 		this.logFinishedBuildingOfLibraryFromGitHub(library, tag);
 
@@ -610,7 +611,7 @@ export class H5pLibraryBuilderService {
 		tag: string,
 		availableVersions: string[]
 	): Promise<InstallResults> {
-		const result: InstallResults = { installedLibraries: [], failedLibraries: [] };
+		const result: InstallResults = { installedLibraries: new Set<string>(), failedLibraries: new Set<string>() };
 
 		const depName = dependency.machineName;
 		const depMajor = dependency.majorVersion;
@@ -621,7 +622,7 @@ export class H5pLibraryBuilderService {
 
 		if (!depRepoName) {
 			this.logGithubRepositoryNotFound(dependency.machineName);
-			result.failedLibraries.push(dependency.machineName);
+			result.failedLibraries.add(dependency.machineName);
 
 			return result;
 		}
@@ -631,7 +632,7 @@ export class H5pLibraryBuilderService {
 		const depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
 		if (!depTag) {
 			this.logTagNotFound(dependency);
-			result.failedLibraries.push(dependency.machineName);
+			result.failedLibraries.add(dependency.machineName);
 
 			return result;
 		}
@@ -642,13 +643,13 @@ export class H5pLibraryBuilderService {
 			depRepoName,
 			availableVersions
 		);
-		if (dependencyResult.failedLibraries.length === 0) {
+		if (dependencyResult.failedLibraries.size === 0) {
 			this.logBuildingLibraryDependencySuccess(depName, depTag);
 		} else {
 			this.logBuildingLibraryDependencyFailed(depName, depTag);
 		}
-		result.installedLibraries.push(...dependencyResult.installedLibraries);
-		result.failedLibraries.push(...dependencyResult.failedLibraries);
+		dependencyResult.installedLibraries.forEach((lib) => result.installedLibraries.add(lib));
+		dependencyResult.failedLibraries.forEach((lib) => result.failedLibraries.add(lib));
 
 		return result;
 	}

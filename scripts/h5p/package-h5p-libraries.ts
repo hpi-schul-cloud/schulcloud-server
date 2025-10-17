@@ -1,6 +1,6 @@
 import arg from 'arg';
 import { FileSystemHelper } from './helper/file-system.helper';
-import { H5pLibraryBuilderService } from './service/h5p-library-builder.service';
+import { H5pLibraryPackagerService } from './service/h5p-library-packager.service';
 
 const args = arg(
 	{
@@ -49,8 +49,8 @@ const main = async (): Promise<void> => {
 	const libraryRepoMap = FileSystemHelper.readLibraryRepoMap(mapFile);
 	const libraryWishList = FileSystemHelper.readLibraryWishList(librariesFile);
 
-	const h5pLibraryBuilderService = new H5pLibraryBuilderService(libraryRepoMap, tempFolderPath);
-	await h5pLibraryBuilderService.buildH5pLibrariesFromGitHubAsBulk(libraryWishList);
+	const h5pLibraryPackagerService = new H5pLibraryPackagerService(libraryRepoMap, tempFolderPath);
+	await h5pLibraryPackagerService.buildH5pLibrariesFromGitHubAsBulk(libraryWishList);
 };
 
 main();
