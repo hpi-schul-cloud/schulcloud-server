@@ -32,7 +32,7 @@ export type BoardCopyParams = {
 };
 
 @Injectable()
-export class BoardCopyService {
+export class LegacyBoardCopyService {
 	constructor(
 		private readonly logger: LegacyLogger,
 		private readonly boardRepo: LegacyBoardRepo,
