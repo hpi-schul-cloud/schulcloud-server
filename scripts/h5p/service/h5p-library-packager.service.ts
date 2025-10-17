@@ -36,16 +36,22 @@ export class H5pLibraryPackagerService {
 			const libraryResult = await this.buildLibrary(library, availableVersions);
 
 			console.log(`### Finished building of ${library}.`);
-			console.log(`### Successfully built libraries: ${Array.from(libraryResult.installedLibraries).join(', ')}`);
-			console.log(`### Failed to build libraries: ${Array.from(libraryResult.failedLibraries).join(', ')}`);
+			console.log(`### Successfully built libraries: ${this.formatLibraryList(libraryResult.installedLibraries)}`);
+			console.log(`### Failed to build libraries: ${this.formatLibraryList(libraryResult.failedLibraries)}`);
 
 			libraryResult.installedLibraries.forEach((lib) => result.installedLibraries.add(lib));
 			libraryResult.failedLibraries.forEach((lib) => result.failedLibraries.add(lib));
 		}
 
 		console.log('>>> Installation Summary:');
-		console.log(`>>> Successfully installed libraries: ${Array.from(result.installedLibraries).join(', ')}`);
-		console.log(`>>> Failed to install libraries: ${Array.from(result.failedLibraries).join(', ')}`);
+		console.log(`>>> Successfully installed libraries: ${this.formatLibraryList(result.installedLibraries)}`);
+		console.log(`>>> Failed to install libraries: ${this.formatLibraryList(result.failedLibraries)}`);
+	}
+
+	private formatLibraryList(libraries: Set<string>): string {
+		return Array.from(libraries)
+			.sort((a, b) => a.localeCompare(b))
+			.join(', ');
 	}
 
 	private logLibraryBanner(libraryName: string): void {
