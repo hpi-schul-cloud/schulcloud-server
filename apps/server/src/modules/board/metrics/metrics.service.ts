@@ -1,20 +1,11 @@
-import { RoleName } from '@modules/role';
-import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { Counter, Gauge, Summary, register } from 'prom-client';
 
-type ClientId = string;
-type Role = 'owner' | 'editor' | 'viewer';
-
 @Injectable()
 export class MetricsService {
-	private knownClientRoles: Map<ClientId, Role> = new Map();
+	private totalUserCounter: Gauge<string>;
 
-	private numberOfBoardroomsOnServerCounter: Gauge<string>;
-
-	public numberOfEditorsOnServerCounter: Gauge<string>;
-
-	private numberOfViewersOnServerCounter: Gauge<string>;
+	private totalBoardCounter: Gauge<string>;
 
 	private executionTimesSummary: Map<string, Summary<string>> = new Map();
 
@@ -22,66 +13,19 @@ export class MetricsService {
 
 	private actionGauges: Map<string, Gauge<string>> = new Map();
 
-	constructor(private readonly userService: UserService) {
-		this.numberOfBoardroomsOnServerCounter = new Gauge({
-			name: 'sc_boards_rooms',
-			help: 'Number of active boards per pod',
+	constructor() {
+		this.totalUserCounter = new Gauge({
+			name: 'sc_boards_total_users',
+			help: 'Total number of users connected to boards per pod',
 		});
 
-		this.numberOfEditorsOnServerCounter = new Gauge({
-			name: 'sc_boards_editors',
-			help: 'Number of active editors per pod',
+		this.totalBoardCounter = new Gauge({
+			name: 'sc_boards_total_boards',
+			help: 'Total number of boards per pod',
 		});
 
-		this.numberOfViewersOnServerCounter = new Gauge({
-			name: 'sc_boards_viewers',
-			help: 'Number of active viewers per pod',
-		});
-
-		register.registerMetric(this.numberOfEditorsOnServerCounter);
-		register.registerMetric(this.numberOfViewersOnServerCounter);
-		register.registerMetric(this.numberOfBoardroomsOnServerCounter);
-	}
-
-	private mapRole(user: UserDo): 'editor' | 'viewer' | undefined {
-		const EDITOR_ROLES = [RoleName.TEACHER, RoleName.COURSESUBSTITUTIONTEACHER, RoleName.COURSETEACHER];
-		if (user.roles.find((r) => EDITOR_ROLES.includes(r.name))) {
-			return 'editor';
-		}
-		return 'viewer';
-	}
-
-	public async trackRoleOfClient(clientId: ClientId, userId: string | undefined): Promise<string | undefined> {
-		let role = this.knownClientRoles.get(clientId);
-		if (role === undefined && userId) {
-			const userDo = await this.userService.findById(userId);
-			if (userDo) {
-				role = this.mapRole(userDo);
-				if (role) {
-					this.knownClientRoles.set(clientId, role);
-					this.updateRoleCounts();
-				}
-			}
-		}
-		return role;
-	}
-
-	public untrackClient(clientId: ClientId): void {
-		this.knownClientRoles.delete(clientId);
-		this.updateRoleCounts();
-	}
-
-	private updateRoleCounts(): void {
-		this.numberOfEditorsOnServerCounter.set(this.countByRole('editor'));
-		this.numberOfViewersOnServerCounter.set(this.countByRole('viewer'));
-	}
-
-	private countByRole(role: Role) {
-		return Array.from(this.knownClientRoles.values()).filter((r) => r === role).length;
-	}
-
-	public setNumberOfBoardRooms(value: number): void {
-		this.numberOfBoardroomsOnServerCounter.set(value);
+		register.registerMetric(this.totalUserCounter);
+		register.registerMetric(this.totalBoardCounter);
 	}
 
 	public setExecutionTime(actionName: string, value: number): void {
@@ -100,6 +44,14 @@ export class MetricsService {
 			register.registerMetric(summary);
 		}
 		summary.observe(value);
+	}
+
+	public setTotalUserCount(value: number): void {
+		this.totalUserCounter.set(value);
+	}
+
+	public setTotalBoardCount(value: number): void {
+		this.totalBoardCounter.set(value);
 	}
 
 	public incrementActionCount(actionName: string): void {
