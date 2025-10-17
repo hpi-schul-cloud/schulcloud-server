@@ -261,7 +261,7 @@ describe(BoardCopyService.name, () => {
 
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				boardNodeService.findByClassAndId.mockImplementation(async (cls, id) => {
+				boardNodeService.findByClassAndId.mockImplementation((cls, id) => {
 					if (cls === Card) {
 						return card;
 					}
