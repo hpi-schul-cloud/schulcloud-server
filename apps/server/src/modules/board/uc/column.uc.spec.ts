@@ -268,15 +268,6 @@ describe(ColumnUc.name, () => {
 				await expect(uc.copyCard(user.id, card.id, 'school-id')).rejects.toThrowError('Card has no parent column');
 			});
 
-			it('should throw UnprocessableEntityException when parent of card is not a column', async () => {
-				const { user } = setup();
-				const notAColumn = cardFactory.build(); // using a card as a non-column example
-				const card = cardFactory.build({ path: notAColumn.id }); // using a card as a non-column example
-				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
-				boardNodeService.findByClassAndId.mockResolvedValueOnce(notAColumn);
-				await expect(uc.copyCard(user.id, card.id, 'school-id')).rejects.toThrowError('Parent of card is not a column');
-			});
-
 			it('should throw InternalServerError if copyEntity is not a Card', async () => {
 				const { user, column } = setup();
 				const card = cardFactory.build({ path: column.id });

@@ -15,6 +15,7 @@ import { ColumnBoardTitleService } from './column-board-title.service';
 // Warning: do not move the BoardNodeCopyService import up. Otherwise it will lead to dependency cycle.
 import { InternalServerErrorException } from '@nestjs/common';
 import { BoardNodeCopyService } from './board-node-copy.service';
+import { Card, Column } from '../../domain';
 
 describe(BoardCopyService.name, () => {
 	let module: TestingModule;
@@ -217,8 +218,12 @@ describe(BoardCopyService.name, () => {
 				const userId = new ObjectId().toHexString();
 				const targetSchoolId = new ObjectId().toHexString();
 
-				const card = cardFactory.build();
+				const parentColumn = columnBoardFactory.build(); // Using column board as a placeholder for column
+				const card = cardFactory.build({ path: parentColumn.id });
+
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(parentColumn);
 
 				const cardCopy = cardFactory.build();
 				const status: CopyStatus = {
@@ -237,7 +242,7 @@ describe(BoardCopyService.name, () => {
 					targetSchoolId,
 				};
 
-				return { card, userId, copyParams, cardCopy };
+				return { card, userId, copyParams, cardCopy, parentColumn };
 			};
 
 			it('should find the original card', async () => {
@@ -246,6 +251,51 @@ describe(BoardCopyService.name, () => {
 				await service.copyCard(copyParams);
 
 				expect(boardNodeService.findByClassAndId).toHaveBeenCalled();
+			});
+
+			it('should throw UnprocessableEntityException when parent of card has no parent', async () => {
+				const userId = new ObjectId().toHexString();
+				const targetSchoolId = new ObjectId().toHexString();
+				const notAColumn = cardFactory.build(); // using a card as a non-column example
+				const card = cardFactory.build({ path: notAColumn.id }); // using a card as a non-column example
+
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				boardNodeService.findByClassAndId.mockImplementation(async (cls, id) => {
+					if (cls === Card) {
+						return card;
+					}
+					if (cls === Column && id === notAColumn.id) {
+						return notAColumn;
+					}
+				});
+				const cardCopy = cardFactory.build();
+				const status: CopyStatus = {
+					copyEntity: cardCopy,
+					type: CopyElementType.CARD,
+					status: CopyStatusEnum.SUCCESS,
+				};
+				boardNodeCopyService.copy.mockResolvedValueOnce(status);
+
+				const copyParams: CopyCardParams = {
+					originalCardId: card.id,
+					sourceStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
+					targetStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
+					userId,
+					copyTitle: 'Card Copy',
+					targetSchoolId,
+				};
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(notAColumn);
+
+				await expect(service.copyCard(copyParams)).rejects.toThrowError('Card has no parent column');
+			});
+
+			it('should find the parent column of the original card', async () => {
+				const { copyParams, card } = setup();
+
+				await service.copyCard(copyParams);
+
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, card.parentId as string);
 			});
 
 			it('should call service to copy the card', async () => {
@@ -257,11 +307,11 @@ describe(BoardCopyService.name, () => {
 			});
 
 			it('should save the copied card', async () => {
-				const { copyParams, cardCopy } = setup();
+				const { copyParams, card, cardCopy, parentColumn } = setup();
 
 				await service.copyCard(copyParams);
 
-				expect(boardNodeService.save).toHaveBeenCalledWith(cardCopy);
+				expect(boardNodeService.addToParent).toHaveBeenCalledWith(parentColumn, cardCopy, card.position + 1);
 			});
 
 			it('should return the copy status', async () => {
@@ -285,7 +335,7 @@ describe(BoardCopyService.name, () => {
 				const userId = new ObjectId().toHexString();
 				const targetSchoolId = new ObjectId().toHexString();
 
-				const card = cardFactory.build();
+				const card = cardFactory.build({ path: new ObjectId().toHexString() });
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
 
 				const cardCopy = cardFactory.build();

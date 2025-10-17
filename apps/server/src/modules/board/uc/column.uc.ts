@@ -3,7 +3,7 @@ import { StorageLocation } from '@infra/files-storage-client';
 import { AuthorizationContextBuilder } from '@modules/authorization';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { BoardNodeFactory, Card, Column, ContentElementType, isCard, isColumn } from '../domain';
+import { BoardNodeFactory, Card, Column, ContentElementType, isCard } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
 
 @Injectable()

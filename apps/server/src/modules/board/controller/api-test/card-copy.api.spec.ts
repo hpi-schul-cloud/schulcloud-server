@@ -67,7 +67,7 @@ describe(`card move (api)`, () => {
 			expect(response.status).toEqual(201);
 		});
 
-		it('should return copy api response with new card id', async () => {
+		it('should return copied card response', async () => {
 			const { loggedInClient, cardNode1 } = await setup();
 
 			const response = await loggedInClient.post(`${cardNode1.id}/copy`);
