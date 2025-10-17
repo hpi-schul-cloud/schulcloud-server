@@ -1,12 +1,10 @@
-const arg = require('arg');
-const H5pLibraryUploaderService = require('./service/h5p-library-uploader.service.js');
+import arg from 'arg';
+import { H5pLibraryUploaderService } from './service/h5p-library-uploader.service';
 
 const args = arg(
 	{
 		'--help': Boolean,
 		'-h': '--help',
-	},
-	{
 		'--tmp': String,
 		'-t': '--tmp',
 	},
@@ -24,15 +22,18 @@ OPTIONS:
 	process.exit(0);
 }
 
-const params = {
+interface Params {
+	tmp?: string;
+}
+
+const params: Params = {
 	tmp: args._[2] || args['--tmp'],
 };
 
-const main = async () => {
+const main = async (): Promise<void> => {
 	const tempFolderPath = params.tmp;
-
 	const h5pLibraryUploaderService = new H5pLibraryUploaderService(tempFolderPath);
-	h5pLibraryUploaderService.uploadLibraries();
+	await h5pLibraryUploaderService.uploadLibraries();
 };
 
 main();
