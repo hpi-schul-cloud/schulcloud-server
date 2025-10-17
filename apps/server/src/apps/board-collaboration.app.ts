@@ -7,7 +7,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { LegacyLogger, Logger } from '@core/logger';
-// import { MongoIoAdapter } from '@infra/socketio';
+import { MongoIoAdapter } from '@infra/socketio';
 import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
@@ -18,6 +18,7 @@ import {
 	enableOpenApiDocs,
 } from './helpers';
 import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
+import { Configuration } from '@hpi-schul-cloud/commons';
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
@@ -29,9 +30,17 @@ async function bootstrap(): Promise<void> {
 	nestApp.useLogger(legacyLogger);
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
-	// const ioAdapter = new MongoIoAdapter(nestApp);
-	// await ioAdapter.connectToMongoDb();
-	// nestApp.useWebSocketAdapter(ioAdapter);
+	const socketUiAdapter = Configuration.has('FEATURE_COLUMN_BOARD_SOCKET_ADAPTER')
+		? (Configuration.get('FEATURE_COLUMN_BOARD_SOCKET_ADAPTER') as string)
+		: 'mongodb://mongo-svc:27017/scapp?directConnection=true';
+	if (socketUiAdapter === 'mongodb') {
+		const ioAdapter = new MongoIoAdapter(nestApp);
+		await ioAdapter.connectToMongoDb();
+		nestApp.useWebSocketAdapter(ioAdapter);
+		legacyLogger.log('Using MongoDB as Socket.IO adapter');
+	} else {
+		legacyLogger.log('No or unknown Socket.IO adapter configured. Server-pods and client-events will not be synced.');
+	}
 
 	const options: SwaggerDocumentOptions = {
 		operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
