@@ -85,10 +85,8 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	}
 
 	public handleDisconnect(): void {
-		setTimeout(() => {
-			this.updateTotalUserCount();
-			this.updateTotalBoardCount();
-		}, 100);
+		this.updateTotalUserCount();
+		this.updateTotalBoardCount();
 	}
 
 	private updateTotalUserCount(): void {
