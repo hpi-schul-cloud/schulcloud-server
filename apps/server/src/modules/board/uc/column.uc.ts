@@ -85,11 +85,6 @@ export class ColumnUc {
 			throw new UnprocessableEntityException('Card has no parent column');
 		}
 
-		const column = await this.boardNodeService.findByClassAndId(Column, card.parentId);
-		if (!isColumn(column)) {
-			throw new UnprocessableEntityException('Parent of card is not a column');
-		}
-
 		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
 
 		const copyStatus = await this.columnBoardService.copyCard({
@@ -104,10 +99,6 @@ export class ColumnUc {
 			throw new InternalServerErrorException('Copied entity is not a card');
 		}
 
-		await this.boardNodeService.move(copyStatus.copyEntity, column, card.position + 1);
-
-		const copiedCard = await this.boardNodeService.findByClassAndId(Card, copyStatus.copyEntity.id);
-
-		return copiedCard;
+		return copyStatus.copyEntity;
 	}
 }
