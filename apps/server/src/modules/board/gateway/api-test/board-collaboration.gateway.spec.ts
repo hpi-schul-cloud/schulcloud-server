@@ -35,7 +35,6 @@ describe(BoardCollaborationGateway.name, () => {
 		app = testingModule.createNestApplication();
 
 		em = app.get(EntityManager);
-		// const mongoUrl = em.config.getClientUrl();
 
 		const mongoIoAdapter = new MongoIoAdapter(app);
 		await mongoIoAdapter.connectToMongoDb();
