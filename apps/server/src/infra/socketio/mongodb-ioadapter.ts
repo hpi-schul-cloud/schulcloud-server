@@ -10,9 +10,7 @@ export class MongoIoAdapter extends IoAdapter {
 	private adapterConstructor: ReturnType<typeof createAdapter> | undefined = undefined;
 
 	public async connectToMongoDb(): Promise<void> {
-		const connectionString = Configuration.has('DB_URL')
-			? (Configuration.get('DB_URL') as string)
-			: 'mongodb://mongo-svc:27017/scapp?directConnection=true';
+		const connectionString = Configuration.has('DB_URL') ? (Configuration.get('DB_URL') as string) : '';
 		const mongoClient = new MongoClient(connectionString);
 		await mongoClient.connect();
 

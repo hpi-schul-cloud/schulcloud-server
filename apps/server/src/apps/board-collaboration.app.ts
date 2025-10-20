@@ -39,7 +39,7 @@ async function bootstrap(): Promise<void> {
 		nestApp.useWebSocketAdapter(ioAdapter);
 		legacyLogger.log('Using MongoDB as Socket.IO adapter');
 	} else {
-		legacyLogger.log('No or unknown Socket.IO adapter configured. Server-pods and client-events will not be synced.');
+		legacyLogger.error('No or unknown Socket.IO adapter configured. Server-pods and client-events will not be synced.');
 	}
 
 	const options: SwaggerDocumentOptions = {
