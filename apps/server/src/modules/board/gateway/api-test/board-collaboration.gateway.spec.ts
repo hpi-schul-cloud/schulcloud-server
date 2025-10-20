@@ -146,8 +146,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const { cardNodes } = await setup();
 				const cardId = cardNodes[0].id;
 
-				ioClient.emit('copy-card-request', { cardId });
-				const success = (await waitForEvent(ioClient, 'copy-card-success')) as {
+				ioClient.emit('duplicate-card-request', { cardId });
+				const success = (await waitForEvent(ioClient, 'duplicate-card-success')) as {
 					cardId: string;
 					copiedCard: CardProps;
 				};
@@ -161,8 +161,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const { cardNodes } = await setup();
 				const cardId = cardNodes[0].id;
 
-				unauthorizedIoClient.emit('copy-card-request', { cardId });
-				const failure = await waitForEvent(unauthorizedIoClient, 'copy-card-failure');
+				unauthorizedIoClient.emit('duplicate-card-request', { cardId });
+				const failure = await waitForEvent(unauthorizedIoClient, 'duplicate-card-failure');
 
 				expect(failure).toEqual({ cardId });
 			});

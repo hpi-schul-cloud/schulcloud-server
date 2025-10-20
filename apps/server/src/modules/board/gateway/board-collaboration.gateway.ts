@@ -246,11 +246,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
-	@SubscribeMessage('copy-card-request')
+	@SubscribeMessage('duplicate-card-request')
 	@TrackExecutionTime()
 	@UseRequestContext()
 	public async copyCard(socket: Socket, data: CopyCardMessageParams): Promise<void> {
-		const emitter = this.buildBoardSocketEmitter({ socket, action: 'copy-card' });
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'duplicate-card' });
 		const { userId, schoolId } = this.getCurrentUser(socket);
 		try {
 			const card = await this.columnUc.copyCard(userId, data.cardId, schoolId);
