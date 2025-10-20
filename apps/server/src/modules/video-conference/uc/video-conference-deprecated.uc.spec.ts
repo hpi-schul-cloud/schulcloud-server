@@ -305,7 +305,6 @@ describe('VideoConferenceUc', () => {
 					target: course.id,
 					targetModel: VideoConferenceScope.COURSE,
 					options: defaultOptions,
-					salt: 'fixed-salt-for-testing',
 				});
 				savedVcDO = { ...vcDO };
 				savedVcDO.id = 'videoConferenceId';
@@ -347,7 +346,6 @@ describe('VideoConferenceUc', () => {
 						target: course.id,
 						targetModel: VideoConferenceScope.COURSE,
 						options: defaultOptions,
-						salt: expect.any(String),
 					})
 				);
 				expect(bbbService.create).toHaveBeenCalledWith(builder.build());
@@ -445,13 +443,11 @@ describe('VideoConferenceUc', () => {
 				target: course.id,
 				targetModel: VideoConferenceScope.COURSE,
 				options: defaultOptions,
-				salt: 'fixed-salt-for-testing',
 			});
 			eventVcDO = new VideoConferenceDO({
 				target: eventId,
 				targetModel: VideoConferenceScope.EVENT,
 				options: defaultOptions,
-				salt: 'fixed-salt-for-testing',
 			});
 
 			userService.findById.mockResolvedValue(user);
@@ -660,7 +656,6 @@ describe('VideoConferenceUc', () => {
 				target: course.id,
 				targetModel: VideoConferenceScope.COURSE,
 				options: defaultOptions,
-				salt: 'fixed-salt-for-testing',
 			});
 
 			videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(vcDO);

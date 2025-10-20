@@ -1,4 +1,3 @@
-import { randomBytes } from 'node:crypto';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ICurrentUser } from '@infra/auth-guard';
 import { CalendarService } from '@infra/calendar';
@@ -111,7 +110,6 @@ export class VideoConferenceDeprecatedUc {
 				target: refId,
 				targetModel: conferenceScope,
 				options,
-				salt: randomBytes(16).toString('hex'),
 			});
 		}
 		await this.videoConferenceRepo.save(vcDo);
