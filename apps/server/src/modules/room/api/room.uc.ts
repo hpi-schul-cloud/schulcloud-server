@@ -168,7 +168,8 @@ export class RoomUc {
 	}
 
 	private async hasRoomPermission(room: Room, user: User) {
-		return await this.roomPermissionService.hasRoomPermissions(user.id, room.id, Action.read);
+		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(user.id, room.id, Action.read);
+		return hasRoomPermission;
 	}
 
 	public async getRoomBoards(userId: EntityId, roomId: EntityId): Promise<ColumnBoard[]> {
