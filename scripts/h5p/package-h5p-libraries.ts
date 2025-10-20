@@ -1,21 +1,15 @@
-const arg = require('arg');
-const fileSystemHelper = require('./helper/file-system.helper.js');
-const H5pLibraryBuilderService = require('./service/h5p-library-builder.service.js');
+import arg from 'arg';
+import { FileSystemHelper } from './helper/file-system.helper';
+import { H5pLibraryPackagerService } from './service/h5p-library-packager.service';
 
 const args = arg(
 	{
 		'--help': Boolean,
 		'-h': '--help',
-	},
-	{
 		'--input': String,
 		'-i': '--input',
-	},
-	{
 		'--map': String,
 		'-m': '--map',
-	},
-	{
 		'--tmp': String,
 		'-t': '--tmp',
 	},
@@ -35,22 +29,28 @@ OPTIONS:
 	process.exit(0);
 }
 
-const params = {
+interface Params {
+	input?: string;
+	map?: string;
+	tmp?: string;
+}
+
+const params: Params = {
 	input: args._[0] || args['--input'],
 	map: args._[1] || args['--map'],
 	tmp: args._[2] || args['--tmp'],
 };
 
-const main = async () => {
+const main = async (): Promise<void> => {
 	const mapFile = params.map || 'scripts/h5p/config/h5p-library-repo-map.yaml';
 	const librariesFile = params.input || 'config/h5p-libraries.yaml';
 	const tempFolderPath = params.tmp;
 
-	const libraryRepoMap = fileSystemHelper.readLibraryRepoMap(mapFile);
-	const libraryWishList = fileSystemHelper.readLibraryWishList(librariesFile);
+	const libraryRepoMap = FileSystemHelper.readLibraryRepoMap(mapFile);
+	const libraryWishList = FileSystemHelper.readLibraryWishList(librariesFile);
 
-	const h5pLibraryBuilderService = new H5pLibraryBuilderService(libraryRepoMap, tempFolderPath);
-	await h5pLibraryBuilderService.buildH5pLibrariesFromGitHubAsBulk(libraryWishList);
+	const h5pLibraryPackagerService = new H5pLibraryPackagerService(libraryRepoMap, tempFolderPath);
+	await h5pLibraryPackagerService.buildH5pLibrariesFromGitHubAsBulk(libraryWishList);
 };
 
 main();
