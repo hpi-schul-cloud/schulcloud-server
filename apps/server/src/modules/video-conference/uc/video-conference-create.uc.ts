@@ -31,25 +31,29 @@ export class VideoConferenceCreateUc {
 	): Promise<void> {
 		await this.videoConferenceFeatureService.checkVideoConferenceFeatureEnabled(currentUserId, scope);
 
-		const videoConference = await this.videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions(
-			scope.id,
-			scope.scope,
-			options
-		);
+		const vcDo = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(scope.id, scope.scope);
 
-		let bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
-		// try and catch based on legacy behavior
-		try {
-			bbbMeetingInfoResponse = await this.bbbService.getMeetingInfo(
-				new BBBBaseMeetingConfig({ meetingID: videoConference.target + videoConference.salt })
+		const isRunning = await this.isRunning(vcDo.target + vcDo.salt);
+		if (!isRunning) {
+			const videoConference = await this.videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions(
+				scope.id,
+				scope.scope,
+				options
 			);
+
+			await this.create(currentUserId, videoConference);
+		}
+	}
+
+	private async isRunning(id: string): Promise<boolean> {
+		let bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
+		try {
+			bbbMeetingInfoResponse = await this.bbbService.getMeetingInfo(new BBBBaseMeetingConfig({ meetingID: id }));
 		} catch (e) {
 			bbbMeetingInfoResponse = undefined;
 		}
 
-		if (bbbMeetingInfoResponse === undefined) {
-			await this.create(currentUserId, videoConference);
-		}
+		return bbbMeetingInfoResponse !== undefined;
 	}
 
 	private async create(currentUserId: EntityId, videoConference: VideoConferenceDO): Promise<void> {
