@@ -32,7 +32,7 @@ async function bootstrap(): Promise<void> {
 
 	const socketUiAdapter = Configuration.has('FEATURE_COLUMN_BOARD_SOCKET_ADAPTER')
 		? (Configuration.get('FEATURE_COLUMN_BOARD_SOCKET_ADAPTER') as string)
-		: 'mongodb://mongo-svc:27017/scapp?directConnection=true';
+		: 'mongodb';
 	if (socketUiAdapter === 'mongodb') {
 		const ioAdapter = new MongoIoAdapter(nestApp);
 		await ioAdapter.connectToMongoDb();
