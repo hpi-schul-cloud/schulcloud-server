@@ -9,8 +9,6 @@ export type VideoConferenceProps = {
 	targetModel: VideoConferenceTargetModels;
 
 	options: VideoConferenceOptions;
-
-	salt: string;
 };
 
 // Preset options for opening a video conference
@@ -27,14 +25,10 @@ export class VideoConferenceEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => VideoConferenceOptions, { object: true })
 	options: VideoConferenceOptions;
 
-	@Property()
-	salt: string;
-
 	constructor(props: VideoConferenceProps) {
 		super();
 		this.target = props.target;
 		this.targetModel = props.targetModel;
 		this.options = props.options;
-		this.salt = props.salt;
 	}
 }
