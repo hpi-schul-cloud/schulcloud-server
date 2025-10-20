@@ -9,15 +9,11 @@ export class VideoConferenceDO extends BaseDO {
 
 	public options: VideoConferenceOptionsDO;
 
-	public salt: string;
-
 	constructor(domainObject: VideoConferenceDO) {
 		super(domainObject.id);
 
 		this.target = domainObject.target;
 		this.targetModel = domainObject.targetModel;
 		this.options = domainObject.options;
-
-		this.salt = domainObject.salt;
 	}
 }
