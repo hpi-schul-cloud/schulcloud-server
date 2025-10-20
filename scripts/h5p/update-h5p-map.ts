@@ -1,15 +1,13 @@
-const arg = require('arg');
-const fileSystemHelper = require('./helper/file-system.helper.js');
-const H5PGitHubClient = require('./service/h5p-github.client.js');
+import arg from 'arg';
+import { FileSystemHelper } from './helper/file-system.helper';
+import { H5pGitHubClient } from './service/h5p-github.client';
 
 const args = arg(
 	{
 		'--help': Boolean,
 		'-h': '--help',
-
 		'--organization': String,
 		'-o': '--organization',
-
 		'--target': String,
 		'-t': '--target',
 	},
@@ -28,30 +26,32 @@ OPTIONS:
 	process.exit(0);
 }
 
-const params = {
+interface Params {
+	organization?: string;
+	target?: string;
+}
+
+const params: Params = {
 	organization: args._[0] || args['--organization'],
 	target: args._[1] || args['--target'],
 };
 
-const getLibraryRepoMapFromGitHubOrganization = async (organization) => {
-	const gitHubClient = new H5PGitHubClient();
-
+const getLibraryRepoMapFromGitHubOrganization = async (organization: string): Promise<Record<string, string>> => {
+	const gitHubClient = new H5pGitHubClient();
 	const repos = await gitHubClient.fetchRepositoriesFromOrganization(organization);
 	console.log(`Found ${repos.length} repositories in the ${organization} organization.`);
-
 	const libraryRepoMap = await gitHubClient.buildLibraryRepoMapFromRepos(organization, repos);
 	console.log(`Built libraryRepoMap with ${Object.keys(libraryRepoMap).length} entries.`);
-
 	return libraryRepoMap;
 };
 
-const main = async () => {
+const main = async (): Promise<void> => {
 	const organization = params.organization || 'h5p';
 	const target = params.target || 'scripts/h5p/config/h5p-library-repo-map.yaml';
 
 	const libraryRepoMap = await getLibraryRepoMapFromGitHubOrganization(organization);
 
-	fileSystemHelper.writeLibraryRepoMap(target, libraryRepoMap);
+	FileSystemHelper.writeLibraryRepoMap(target, libraryRepoMap);
 	console.log(`Wrote library repo map to ${target}`);
 };
 
