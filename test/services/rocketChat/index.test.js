@@ -76,7 +76,7 @@ describe('rocket.chat user service', () => {
 		const rcModels = require('../../../src/services/rocketChat/model');
 		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '5f2987e020834114b8efd6f8' });
 		const rcUser = await rocketChatUserService.get(user._id);
-		await rcModels.userModel.remove(rcUser._id); // break something
+		await rcModels.userModel.deleteOne(rcUser._id); // break something
 		const newUser = await rocketChatUserService.get(user._id);
 		expect(newUser.rcId).to.exist;
 		expect(newUser.username).to.exist;

@@ -1,22 +1,31 @@
-const axios = require('axios');
-const fs = require('fs');
+import axios, { AxiosResponse } from 'axios';
+import { createWriteStream } from 'fs';
+import { Readable } from 'stream';
+import { GitHubContentTreeResponse } from '../interface/github-content-tree.response';
+import { GitHubRepository, GitHubRepositoryResponse } from '../interface/github-repository.response';
+import { GitHubTagResponse } from '../interface/github-tag.response';
 
-class H5pGitHubClient {
+export interface GitHubClientOptions {
+	maxRetries: number;
+}
+
+export class H5pGitHubClient {
+	private token!: string;
+
 	constructor() {
 		this.initialize();
 	}
 
-	initialize() {
+	public initialize(): void {
 		const personalAccessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
 		if (!personalAccessToken) {
 			throw new Error('GITHUB_PERSONAL_ACCESS_TOKEN environment variable is not set');
 		}
-
 		this.token = personalAccessToken;
 	}
 
-	async fetchRepositoriesFromOrganization(organization) {
-		const repos = [];
+	public async fetchRepositoriesFromOrganization(organization: string): Promise<GitHubRepositoryResponse> {
+		let repos: GitHubRepositoryResponse = [];
 		let page = 1;
 		const perPage = 100; // Maximum allowed by GitHub API
 
@@ -27,8 +36,8 @@ class H5pGitHubClient {
 				break;
 			}
 
-			response.data.forEach((repo) => repos.push(repo));
-			if (response.data.length < perPage) {
+			response.forEach((repo) => repos.push(repo));
+			if (response.length < perPage) {
 				break;
 			}
 
@@ -38,13 +47,17 @@ class H5pGitHubClient {
 		return repos;
 	}
 
-	async fetchRepositoriesOfOrganizationPagewise(organization, page = 1, perPage = 100) {
-		let result;
+	private async fetchRepositoriesOfOrganizationPagewise(
+		organization: string,
+		page: number = 1,
+		perPage: number = 100
+	): Promise<GitHubRepositoryResponse | undefined> {
+		let result: GitHubRepositoryResponse | undefined;
 		const url = `https://api.github.com/orgs/${organization}/repos?type=public&per_page=${perPage}&page=${page}`;
 		try {
 			const headers = this.getHeaders();
-			const response = await axios.get(url, { headers });
-			result = { data: response.data };
+			const response: AxiosResponse<GitHubRepositoryResponse> = await axios.get(url, { headers });
+			result = response.data;
 		} catch (error) {
 			console.error(`Error fetching repositories for organization ${organization} on page ${page}:`, error);
 		}
@@ -52,8 +65,11 @@ class H5pGitHubClient {
 		return result;
 	}
 
-	async buildLibraryRepoMapFromRepos(organization, repos) {
-		const libraryRepoMap = {};
+	public async buildLibraryRepoMapFromRepos(
+		organization: string,
+		repos: GitHubRepositoryResponse
+	): Promise<Record<string, string>> {
+		const libraryRepoMap: Record<string, string> = {};
 
 		for (const repo of repos) {
 			const response = await this.getLibraryJsonFromRepo(organization, repo);
@@ -62,7 +78,7 @@ class H5pGitHubClient {
 			}
 
 			const data = response.data;
-			if (!this.checkContentOfLibraryJson(data)) {
+			if (!this.checkContentOfLibraryJson(data) || data.content === undefined) {
 				continue;
 			}
 
@@ -77,14 +93,17 @@ class H5pGitHubClient {
 		return libraryRepoMap;
 	}
 
-	async getLibraryJsonFromRepo(organization, repo) {
-		let result;
+	private async getLibraryJsonFromRepo(
+		organization: string,
+		repo: GitHubRepository
+	): Promise<AxiosResponse<GitHubContentTreeResponse> | undefined> {
+		let result: AxiosResponse<GitHubContentTreeResponse> | undefined;
 		const url = `https://api.github.com/repos/${organization}/${repo.name}/contents/library.json`;
 		try {
 			const headers = this.getHeaders();
 			result = await axios.get(url, { headers });
-		} catch (error) {
-			if (error && error.response && error.response.status === 404) {
+		} catch (error: unknown) {
+			if (this.isObjectWithResponseStatus(error) && error.response.status === 404) {
 				console.error(`library.json does not exist in repository ${repo.name}.`);
 			} else {
 				console.error(`Unknown error fetching library.json from repository ${repo.name}:`, error);
@@ -95,7 +114,18 @@ class H5pGitHubClient {
 		return result;
 	}
 
-	checkContentOfLibraryJson(data) {
+	private isObjectWithResponseStatus(obj: unknown): obj is { response: { status: number } } {
+		return (
+			typeof obj === 'object' &&
+			obj !== null &&
+			'response' in obj &&
+			typeof (obj as any).response === 'object' &&
+			'status' in (obj as any).response &&
+			typeof (obj as any).response.status === 'number'
+		);
+	}
+
+	private checkContentOfLibraryJson(data: GitHubContentTreeResponse): boolean {
 		if (!data || !data.content || typeof data.content !== 'string') {
 			console.error('library.json content is missing or not a string.');
 
@@ -105,17 +135,17 @@ class H5pGitHubClient {
 		return true;
 	}
 
-	async fetchAllTags(repoName, options = { maxRetries: 3 }) {
+	public async fetchAllTags(repoName: string, options: GitHubClientOptions = { maxRetries: 3 }): Promise<string[]> {
 		const [owner, repo] = repoName.split('/');
 		const perPage = 100;
 		let page = 1;
-		let allTags = [];
-		let hasMore;
+		let allTags: string[] = [];
+		let hasMore: boolean;
 
 		do {
 			const url = this.buildTagsUrl(owner, repo, page, perPage);
 
-			let response;
+			let response: AxiosResponse<GitHubTagResponse>;
 			try {
 				response = await this.fetch(url, options);
 			} catch (error) {
@@ -132,15 +162,15 @@ class H5pGitHubClient {
 		return allTags;
 	}
 
-	buildTagsUrl(owner, repo, page, perPage) {
+	private buildTagsUrl(owner: string, repo: string, page: number, perPage: number): string {
 		return `https://api.github.com/repos/${owner}/${repo}/tags?per_page=${perPage}&page=${page}`;
 	}
 
-	extractTagNames(response) {
+	private extractTagNames(response: AxiosResponse<GitHubTagResponse>): string[] {
 		return Array.isArray(response.data) ? response.data.map((tag) => tag.name) : [];
 	}
 
-	async downloadTag(library, tag, filePath) {
+	public async downloadTag(library: string, tag: string, filePath: string): Promise<void> {
 		const [owner, repo] = library.split('/');
 		const url = `https://github.com/${owner}/${repo}/archive/refs/tags/${tag}.zip`;
 
@@ -148,10 +178,10 @@ class H5pGitHubClient {
 			const response = await this.fetchContent(url);
 
 			// TODO: Move this to FileSystemHelper?
-			const writer = fs.createWriteStream(filePath);
+			const writer = createWriteStream(filePath);
 			response.data.pipe(writer);
 
-			await new Promise((resolve, reject) => {
+			await new Promise<void>((resolve, reject) => {
 				writer.on('finish', () => resolve());
 				writer.on('error', (err) => reject(err));
 			});
@@ -162,9 +192,9 @@ class H5pGitHubClient {
 		}
 	}
 
-	async fetch(url, options) {
+	private async fetch(url: string, options: GitHubClientOptions): Promise<AxiosResponse<GitHubTagResponse>> {
 		let attempt = 0;
-		let response;
+		let response: AxiosResponse<GitHubTagResponse> | undefined;
 		const headers = this.getHeaders();
 
 		while (attempt < options.maxRetries) {
@@ -181,19 +211,19 @@ class H5pGitHubClient {
 			}
 		}
 
-		if (response.status < 200 || response.status >= 300) {
-			throw new Error(`GitHub API request failed with status ${response.status}`);
+		if (!response || response.status < 200 || response.status >= 300) {
+			throw new Error(`GitHub API request failed${response ? ` with status ${response.status}` : ''}`);
 		}
 
 		return response;
 	}
 
-	delay(ms) {
+	private delay(ms: number): Promise<void> {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
-	async fetchContent(url) {
-		const response = await axios({
+	private async fetchContent(url: string): Promise<AxiosResponse<Readable>> {
+		const response: AxiosResponse<Readable> = await axios({
 			url,
 			method: 'GET',
 			responseType: 'stream',
@@ -206,11 +236,8 @@ class H5pGitHubClient {
 		return response;
 	}
 
-	getHeaders() {
-		const headers = this.token ? { Authorization: `token ${this.token}` } : {};
-
+	private getHeaders(): Record<string, string> {
+		const headers: Record<string, string> = this.token ? { Authorization: `token ${this.token}` } : {};
 		return headers;
 	}
 }
-
-module.exports = H5pGitHubClient;

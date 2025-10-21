@@ -94,7 +94,7 @@ describe('help documents service', () => {
 			expect(element.title).to.equal(element.title);
 			expect(element.content).to.equal(element.content);
 		});
-		await helpDocumentsModel.remove({ _id: helpDocument._id });
+		await helpDocumentsModel.deleteOne({ _id: helpDocument._id });
 	});
 
 	it('FIND returns valid schoolgroup document links', async () => {
@@ -127,6 +127,6 @@ describe('help documents service', () => {
 			expect(element.title).to.equal(element.title);
 			expect(element.content).to.equal(element.content);
 		});
-		await helpDocumentsModel.remove({ _id: helpDocument._id });
+		await helpDocumentsModel.deleteOne({ _id: helpDocument._id });
 	});
 });
