@@ -18,7 +18,6 @@ import {
 	enableOpenApiDocs,
 } from './helpers';
 import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
-import { Configuration } from '@hpi-schul-cloud/commons';
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
@@ -30,17 +29,10 @@ async function bootstrap(): Promise<void> {
 	nestApp.useLogger(legacyLogger);
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
-	const socketUiAdapter = Configuration.has('FEATURE_COLUMN_BOARD_SOCKET_ADAPTER')
-		? (Configuration.get('FEATURE_COLUMN_BOARD_SOCKET_ADAPTER') as string)
-		: 'mongodb';
-	if (socketUiAdapter === 'mongodb') {
-		const ioAdapter = new MongoIoAdapter(nestApp);
-		await ioAdapter.connectToMongoDb();
-		nestApp.useWebSocketAdapter(ioAdapter);
-		legacyLogger.log('Using MongoDB as Socket.IO adapter');
-	} else {
-		legacyLogger.error('No or unknown Socket.IO adapter configured. Server-pods and client-events will not be synced.');
-	}
+	const ioAdapter = new MongoIoAdapter(nestApp);
+	await ioAdapter.connectToMongoDb();
+	nestApp.useWebSocketAdapter(ioAdapter);
+	legacyLogger.log('Using MongoDB as Socket.IO adapter');
 
 	const options: SwaggerDocumentOptions = {
 		operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,

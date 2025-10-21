@@ -1199,11 +1199,6 @@
 			"default": false,
 			"description": "Toggle for the column board web socket feature."
 		},
-		"FEATURE_COLUMN_BOARD_SOCKET_ADAPTER": {
-			"type": "string",
-			"default": "mongodb",
-			"description": "Socket.io-Adapter for syncing multiple server-pods for the column board web socket feature. Supported adapters: mongodb"
-		},
 		"FEATURE_BOARD_LAYOUT_ENABLED": {
 			"type": "boolean",
 			"default": true,
