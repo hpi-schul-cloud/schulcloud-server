@@ -14,12 +14,21 @@
     tags:
       - prometheus
 
+  - name: FwuLearningContentsDeployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-fwu-deployment.yml.j2
+    when: WITH_FWU is defined and WITH_FWU|bool
+    tags:
+      - deployment
+
   - name: FwuLearningContentsService
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-fwu-svc.yml.j2
-    when: FEATURE_FWU_CONTENT_ENABLED is defined and FEATURE_FWU_CONTENT_ENABLED|bool
+    when: WITH_FWU is defined and WITH_FWU|bool
     tags:
       - service
 
@@ -156,27 +165,6 @@
       namespace: "{{ NAMESPACE }}"
       template: ingress.yml.j2
       apply: yes
-    tags:
-      - ingress
-
-  - name: FwuLearningContentsDeployment
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-fwu-deployment.yml.j2
-    when: FEATURE_FWU_CONTENT_ENABLED is defined and FEATURE_FWU_CONTENT_ENABLED|bool
-    tags:
-      - deployment
-
-  - name: Fwu Learning Contents Ingress Remove
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      state: absent
-      api_version: networking.k8s.io/v1
-      kind: Ingress
-      name: "{{ NAMESPACE }}-api-fwu-ingress"
-    when: FEATURE_FWU_CONTENT_ENABLED is defined and FEATURE_FWU_CONTENT_ENABLED|bool
     tags:
       - ingress
 
