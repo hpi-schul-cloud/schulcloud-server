@@ -258,7 +258,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 			const cardResponse = CardResponseMapper.mapToResponse(card);
 			const responsePayload = {
 				...data,
-				copiedCard: cardResponse,
+				duplicatedCard: cardResponse,
 			};
 			emitter.emitToClientAndRoom(responsePayload, card.id);
 		} catch (err) {

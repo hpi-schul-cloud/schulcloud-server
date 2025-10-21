@@ -152,7 +152,7 @@ describe(BoardCollaborationGateway.name, () => {
 					copiedCard: CardProps;
 				};
 
-				expect(Object.keys(success)).toEqual(expect.arrayContaining(['cardId', 'copiedCard']));
+				expect(Object.keys(success)).toEqual(expect.arrayContaining(['cardId', 'duplicatedCard']));
 			});
 		});
 
