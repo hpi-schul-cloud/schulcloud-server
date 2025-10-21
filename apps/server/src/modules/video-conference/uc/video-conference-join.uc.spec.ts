@@ -214,7 +214,7 @@ describe('VideoConferenceJoinUc', () => {
 
 						expect(bbbService.join).toHaveBeenCalledWith({
 							fullName: `${user.firstName} ${user.lastName}`,
-							meetingID: scope.id + 'fixed-salt-for-testing',
+							meetingID: scope.id,
 							role: BBBRole.VIEWER,
 							userID: currentUserId,
 							guest: true,
@@ -260,7 +260,7 @@ describe('VideoConferenceJoinUc', () => {
 
 						expect(bbbService.join).toHaveBeenCalledWith({
 							fullName: `${user.firstName} ${user.lastName}`,
-							meetingID: scope.id + 'fixed-salt-for-testing',
+							meetingID: scope.id,
 							role: BBBRole.VIEWER,
 							userID: currentUserId,
 							guest: true,
@@ -330,7 +330,7 @@ describe('VideoConferenceJoinUc', () => {
 
 				expect(bbbService.join).toHaveBeenCalledWith({
 					fullName: `${user.firstName} ${user.lastName}`,
-					meetingID: scope.id + 'fixed-salt-for-testing',
+					meetingID: scope.id,
 					role: BBBRole.MODERATOR,
 					userID: currentUserId,
 				});
