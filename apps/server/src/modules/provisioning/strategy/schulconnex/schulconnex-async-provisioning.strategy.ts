@@ -236,6 +236,7 @@ export class SchulconnexAsyncProvisioningStrategy extends ProvisioningStrategy {
 		});
 
 		await Promise.all(removalPromises);
+
 		await Promise.all(provisioningPromises);
 	}
 }
