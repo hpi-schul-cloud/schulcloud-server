@@ -1,8 +1,9 @@
-import { WsJwtAuthentication } from '@infra/auth-guard';
+import { ICurrentUser, WsJwtAuthentication } from '@infra/auth-guard';
 import { Socket, WsValidationPipe } from '@infra/socketio';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { UsePipes } from '@nestjs/common';
 import {
+	OnGatewayConnection,
 	OnGatewayDisconnect,
 	SubscribeMessage,
 	WebSocketGateway,
@@ -49,7 +50,7 @@ import { UpdateReadersCanEditMessageParams } from './dto/update-users-can-edit.m
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @WsJwtAuthentication()
-export class BoardCollaborationGateway implements OnGatewayDisconnect {
+export class BoardCollaborationGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	private server!: Server;
 
@@ -73,23 +74,39 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		}
 	}
 
-	private getCurrentUser(socket: Socket) {
+	private getCurrentUser(socket: Socket): ICurrentUser {
 		const { user } = socket.handshake;
 		if (!user) throw new WsException('Not Authenticated.');
 		return user;
 	}
 
-	private async updateRoomsAndUsersMetrics(socket: Socket): Promise<void> {
-		const roomCount = Array.from(this.server.of('/').adapter.rooms.keys()).filter((key) =>
-			key.startsWith('board_')
-		).length;
-		this.metricsService.setNumberOfBoardRooms(roomCount);
-		const { user } = socket.handshake;
-		await this.metricsService.trackRoleOfClient(socket.id, user?.userId);
+	public handleConnection(): void {
+		this.updateTotalUserCount();
+		this.updateTotalBoardCount();
 	}
 
-	public handleDisconnect(socket: Socket): void {
-		this.metricsService.untrackClient(socket.id);
+	public handleDisconnect(): void {
+		this.updateTotalUserCount();
+		this.updateTotalBoardCount();
+	}
+
+	private updateTotalUserCount(): void {
+		const clientCount = this.server.engine.clientsCount;
+		this.metricsService.setTotalUserCount(clientCount);
+	}
+
+	private updateTotalBoardCount(): void {
+		const allRooms = this.server.sockets.adapter.rooms;
+		let boardCount = 0;
+
+		for (const [roomName, clients] of allRooms.entries()) {
+			const isSocketId = clients.has(roomName);
+			if (!isSocketId) {
+				boardCount++;
+			}
+		}
+
+		this.metricsService.setTotalBoardCount(boardCount);
 	}
 
 	@SubscribeMessage('delete-board-request')
@@ -103,7 +120,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-board-title-request')
@@ -118,7 +134,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-card-title-request')
@@ -133,7 +148,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-card-height-request')
@@ -148,7 +162,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('delete-card-request')
@@ -163,7 +176,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('create-card-request')
@@ -185,7 +197,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('create-column-request')
@@ -228,7 +239,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('move-card-request')
@@ -243,7 +253,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('move-column-request')
@@ -263,7 +272,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-column-title-request')
@@ -278,7 +286,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-readers-can-edit-request')
@@ -293,7 +300,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-board-visibility-request')
@@ -308,7 +314,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-board-layout-request')
@@ -323,7 +328,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('delete-column-request')
@@ -338,7 +342,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('fetch-card-request')
@@ -355,7 +358,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('create-element-request')
@@ -382,7 +384,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 
 		return response;
 	}
@@ -399,7 +400,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('delete-element-request')
@@ -415,7 +415,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('move-element-request')
@@ -431,7 +430,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	private buildBoardSocketEmitter({ socket, action }: { socket: Socket; action: string }) {

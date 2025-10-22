@@ -111,7 +111,8 @@ describe('Room Invitation Link Controller (API)', () => {
 						title: 'Room Inivitation renamed',
 						activeUntil: new Date(Date.now() + 1000000),
 						requiresConfirmation: true,
-						isOnlyForTeachers: true,
+						isUsableByExternalPersons: false,
+						isUsableByStudents: false,
 						restrictedToCreatorSchool: true,
 					};
 
@@ -128,7 +129,8 @@ describe('Room Invitation Link Controller (API)', () => {
 						title: 'Room Inivitation renamed',
 						activeUntil: new Date(Date.now() + 1000000),
 						requiresConfirmation: true,
-						isOnlyForTeachers: true,
+						isUsableByExternalPersons: false,
+						isUsableByStudents: false,
 						restrictedToCreatorSchool: true,
 					};
 
@@ -168,7 +170,8 @@ describe('Room Invitation Link Controller (API)', () => {
 				const roomInvitationLink = roomInvitationLinkEntityFactory.build({
 					roomId: room.id,
 					requiresConfirmation: false,
-					isOnlyForTeachers: false,
+					isUsableByExternalPersons: false,
+					isUsableByStudents: true,
 					restrictedToCreatorSchool: false,
 					activeUntil: inOneWeek,
 					creatorUserId: teacherUser.id,
@@ -196,7 +199,8 @@ describe('Room Invitation Link Controller (API)', () => {
 					title: 'Room Inivitation renamed',
 					activeUntil: inOneWeek,
 					requiresConfirmation: true,
-					isOnlyForTeachers: true,
+					isUsableByExternalPersons: false,
+					isUsableByStudents: false,
 					restrictedToCreatorSchool: true,
 				};
 
