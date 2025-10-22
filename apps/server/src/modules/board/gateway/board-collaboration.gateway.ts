@@ -273,7 +273,6 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
-		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('move-column-request')
