@@ -19,6 +19,7 @@ import { Group, GroupAggregateScope, GroupTypes, GroupUser, GroupVisibilityPermi
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { ClassInfoDto, ClassRootType, InternalClassDto } from './dto';
+import { UserDo, UserService } from '@modules/user';
 
 @Injectable()
 export class ClassGroupUc {
@@ -31,7 +32,8 @@ export class ClassGroupUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolYearService: SchoolYearService,
 		private readonly courseService: CourseDoService,
-		private readonly configService: ConfigService<ProvisioningConfig, true>
+		private readonly configService: ConfigService<ProvisioningConfig, true>,
+		private readonly userService: UserService
 	) {}
 
 	public async findAllClasses(
@@ -72,7 +74,7 @@ export class ClassGroupUc {
 		const classInfoDtoPromises: Promise<ClassInfoDto>[] = classDtoPage.data.map(
 			async (dto: InternalClassDto<Group | Class>): Promise<ClassInfoDto> => {
 				let synchronizedCourses: Course[] | undefined;
-				const teacherNames: string[] = [];
+				const teacherNames: string[] = dto.teacherNames || [];
 
 				if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') && dto.isGroup()) {
 					synchronizedCourses = await this.courseService.findBySyncedGroup(dto.original);
@@ -176,27 +178,40 @@ export class ClassGroupUc {
 		const systems: System[] = await this.systemService.getSystems(Array.from(systemIdSet));
 
 		const studentRole: RoleDto = await this.roleService.findByName(RoleName.STUDENT);
+		const teacherRole: RoleDto = await this.roleService.findByName(RoleName.TEACHER);
+		const groupSubstitutionTeacherRole: RoleDto = await this.roleService.findByName(RoleName.GROUPSUBSTITUTIONTEACHER);
 
-		const groupDtos: InternalClassDto<Group>[] = groups.data.map((group: Group): InternalClassDto<Group> => {
-			const studentCount: number = group.users.reduce(
-				(acc: number, element: GroupUser): number => (element.roleId === studentRole.id ? acc + 1 : acc),
-				0
-			);
-			const externalSourceName: string | undefined = group.externalSource
-				? systems.find((system: System): boolean => system.id === group.externalSource?.systemId)?.displayName
-				: undefined;
+		const groupDtoPromises: Promise<InternalClassDto<Group>>[] = groups.data.map(
+			async (group: Group): Promise<InternalClassDto<Group>> => {
+				const studentCount: number = group.users.reduce(
+					(acc: number, element: GroupUser): number => (element.roleId === studentRole.id ? acc + 1 : acc),
+					0
+				);
+				const externalSourceName: string | undefined = group.externalSource
+					? systems.find((system: System): boolean => system.id === group.externalSource?.systemId)?.displayName
+					: undefined;
+				const teachers: GroupUser[] = group.users.filter(
+					(element: GroupUser): boolean =>
+						element.roleId === teacherRole.id || element.roleId === groupSubstitutionTeacherRole.id
+				);
+				const teacherIds: EntityId[] = teachers.map((teacher) => teacher.userId);
+				const teacherNames: string[] = await this.getLastNamesOfTeachers(teacherIds);
 
-			const mapped: InternalClassDto<Group> = new InternalClassDto({
-				id: group.id,
-				type: ClassRootType.GROUP,
-				name: group.name,
-				externalSourceName,
-				studentCount,
-				original: group,
-			});
+				const mapped: InternalClassDto<Group> = new InternalClassDto({
+					id: group.id,
+					type: ClassRootType.GROUP,
+					name: group.name,
+					externalSourceName,
+					studentCount,
+					teacherNames,
+					original: group,
+				});
 
-			return mapped;
-		});
+				return mapped;
+			}
+		);
+
+		const groupDtos: InternalClassDto<Group>[] = await Promise.all(groupDtoPromises);
 
 		return groupDtos;
 	}
@@ -217,8 +232,8 @@ export class ClassGroupUc {
 
 		const classes: Class[] = await this.classService.find(classScope);
 
-		const classDtos: InternalClassDto<Class>[] = classes
-			.map((clazz: Class): InternalClassDto<Class> | null => {
+		const classDtoResults: (InternalClassDto<Class> | null)[] = await Promise.all(
+			classes.map(async (clazz: Class): Promise<InternalClassDto<Class> | null> => {
 				const name: string = clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name;
 				const isUpgradable: boolean = clazz.gradeLevel !== 13 && !clazz.successor;
 				const schoolYear: SchoolYear | undefined = clazz.year
@@ -229,6 +244,8 @@ export class ClassGroupUc {
 					return null;
 				}
 
+				const teacherNames: string[] = await this.getLastNamesOfTeachers(clazz.teacherIds);
+
 				const mapped: InternalClassDto<Class> = new InternalClassDto({
 					id: clazz.id,
 					type: ClassRootType.CLASS,
@@ -237,12 +254,16 @@ export class ClassGroupUc {
 					schoolYear: schoolYear?.name,
 					isUpgradable,
 					studentCount: clazz.userIds.length,
+					teacherNames,
 					original: clazz,
 				});
 
 				return mapped;
 			})
-			.filter((clazz: InternalClassDto<Class> | null): clazz is InternalClassDto<Class> => !!clazz);
+		);
+		const classDtos: InternalClassDto<Class>[] = classDtoResults.filter(
+			(clazz): clazz is InternalClassDto<Class> => !!clazz
+		);
 
 		return classDtos;
 	}
@@ -278,5 +299,11 @@ export class ClassGroupUc {
 		const page: T[] = array.slice(positiveSkip, limit && limit >= 0 ? positiveSkip + limit : undefined);
 
 		return page;
+	}
+
+	private async getLastNamesOfTeachers(userIds: EntityId[]): Promise<string[]> {
+		const users = await Promise.all(userIds.map((userId) => this.userService.findByIdOrNull(userId)));
+		const lastNames = users.filter((user): user is UserDo => !!user).map((user) => user?.lastName);
+		return lastNames;
 	}
 }
