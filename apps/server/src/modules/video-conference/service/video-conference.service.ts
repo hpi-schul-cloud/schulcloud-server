@@ -14,6 +14,7 @@ import { BadRequestException, ForbiddenException, Inject, Injectable } from '@ne
 import { RoleReference } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { randomBytes } from 'node:crypto';
 import { BBBRole } from '../bbb';
 import { VideoConferenceDO, VideoConferenceOptionsDO, VideoConferenceScope } from '../domain';
 import { ErrorStatus } from '../error';
@@ -290,6 +291,7 @@ export class VideoConferenceService {
 		// try and catch based on legacy behavior
 		try {
 			vcDo = await this.findVideoConferenceByScopeIdAndScope(scopeId, scope);
+			vcDo.salt = randomBytes(16).toString('hex');
 
 			vcDo.options = new VideoConferenceOptionsDO(options);
 		} catch (error) {
@@ -297,6 +299,7 @@ export class VideoConferenceService {
 				target: scopeId,
 				targetModel: scope,
 				options: new VideoConferenceOptionsDO(options),
+				salt: randomBytes(16).toString('hex'),
 			});
 		}
 

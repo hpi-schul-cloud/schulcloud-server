@@ -95,6 +95,7 @@ describe('Video Conference Repo', () => {
 				_id: id,
 				updatedAt: new Date('2022-07-20'),
 				createdAt: new Date('2022-07-20'),
+				salt: 'fixed-salt-for-testing',
 				options: new VideoConferenceOptions({
 					everybodyJoinsAsModerator: true,
 					everyAttendeJoinsMuted: true,
@@ -125,6 +126,7 @@ describe('Video Conference Repo', () => {
 				id: 'testId',
 				target: new ObjectId().toHexString(),
 				targetModel: VideoConferenceScope.COURSE,
+				salt: 'fixed-salt-for-testing',
 				options: new VideoConferenceOptionsDO({
 					everybodyJoinsAsModerator: true,
 					everyAttendeeJoinsMuted: true,

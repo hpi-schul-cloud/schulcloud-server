@@ -320,7 +320,12 @@ describe('VideoConferenceController (API)', () => {
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course]);
+					const videoConference = videoConferenceFactory.buildWithId({
+						targetModel: VideoConferenceTargetModels.COURSES,
+						target: course.id,
+					});
+
+					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
