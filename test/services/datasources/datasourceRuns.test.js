@@ -70,7 +70,7 @@ describe('datasourceRuns service', () => {
 	afterEach(async () => {
 		if (!datasourceRunIds) {
 			await datasourceRunModel
-				.remove({ _id: { $in: datasourceRunIds } })
+				.deleteOne({ _id: { $in: datasourceRunIds } })
 				.lean()
 				.exec();
 			datasourceRunIds = undefined;

@@ -79,7 +79,7 @@ describe('news service', () => {
 				const result = await News.countDocuments({ schoolId });
 				expect(result).to.equal(2);
 
-				await News.remove({
+				await News.deleteOne({
 					_id: { $in: [courseNews._id, schoolNews._id] },
 				});
 			});
