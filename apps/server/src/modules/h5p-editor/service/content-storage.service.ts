@@ -7,7 +7,6 @@ import {
 	IFileStats,
 	ILibraryName,
 	IUser as ILumiUser,
-	LibraryName,
 } from '@lumieducation/h5p-server';
 import {
 	HttpException,
@@ -237,24 +236,6 @@ export class ContentStorage implements IContentStorage {
 		}
 
 		return true;
-	}
-
-	private hasDependencyOn(
-		metadata: {
-			dynamicDependencies?: ILibraryName[];
-			editorDependencies?: ILibraryName[];
-			preloadedDependencies: ILibraryName[];
-		},
-		library: ILibraryName
-	): boolean {
-		if (
-			metadata.preloadedDependencies.some((dep) => LibraryName.equal(dep, library)) ||
-			metadata.editorDependencies?.some((dep) => LibraryName.equal(dep, library)) ||
-			metadata.dynamicDependencies?.some((dep) => LibraryName.equal(dep, library))
-		) {
-			return true;
-		}
-		return false;
 	}
 
 	private checkFilename(filename: string): void {
