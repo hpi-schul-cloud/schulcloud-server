@@ -2,6 +2,7 @@ import { ILibraryName } from '@lumieducation/h5p-server';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
+import { H5PCountUsageResult } from '../types';
 import { H5PContent } from './entity';
 
 @Injectable()
@@ -26,7 +27,7 @@ export class H5PContentRepo extends BaseRepo<H5PContent> {
 		return content;
 	}
 
-	public async countUsage(library: ILibraryName): Promise<{ asMainLibrary: number; asDependency: number }> {
+	public async countUsage(library: ILibraryName): Promise<H5PCountUsageResult> {
 		const { machineName } = library;
 
 		const pipeline = [
@@ -50,30 +51,32 @@ export class H5PContentRepo extends BaseRepo<H5PContent> {
 			},
 			{
 				$project: {
-					asMainLibrary: { $arrayElemAt: ['$asMainLibrary.count', 0] },
-					asDependency: { $arrayElemAt: ['$asDependency.count', 0] },
+					asMainLibrary: { $ifNull: [{ $arrayElemAt: ['$asMainLibrary.count', 0] }, 0] },
+					asDependency: { $ifNull: [{ $arrayElemAt: ['$asDependency.count', 0] }, 0] },
 				},
 			},
 		];
 
 		const documents = await this._em.getConnection().getCollection('h5p-editor-content').aggregate(pipeline).toArray();
 
-		if (documents.length === 0) {
-			return { asMainLibrary: 0, asDependency: 0 };
-		}
+		return this.castToH5PCountUsageResult(documents[0]);
+	}
 
-		if (documents.length > 1) {
-			throw new Error('Unexpected aggregation result structure.');
+	private castToH5PCountUsageResult(aggregateResult: unknown): H5PCountUsageResult {
+		if (this.isH5PCountUsageResult(aggregateResult)) {
+			return aggregateResult;
 		}
+		throw new Error('Invalid dependency count result structure');
+	}
 
-		if (!documents[0].asMainLibrary) {
-			documents[0].asMainLibrary = 0;
-		}
-
-		if (!documents[0].asDependency) {
-			documents[0].asDependency = 0;
-		}
-
-		return documents[0] as { asMainLibrary: number; asDependency: number };
+	private isH5PCountUsageResult(aggregateResult: unknown): aggregateResult is H5PCountUsageResult {
+		return (
+			typeof aggregateResult === 'object' &&
+			aggregateResult !== null &&
+			'asMainLibrary' in aggregateResult &&
+			'asDependency' in aggregateResult &&
+			typeof aggregateResult.asMainLibrary === 'number' &&
+			typeof aggregateResult.asDependency === 'number'
+		);
 	}
 }

@@ -22,7 +22,7 @@ import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto/h5p-file.dto';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { H5PContent, H5PContentRepo } from '../repo';
-import { LumiUserWithContentData } from '../types';
+import { H5PCountUsageResult, LumiUserWithContentData } from '../types';
 
 @Injectable()
 export class ContentStorage implements IContentStorage {
@@ -182,7 +182,7 @@ export class ContentStorage implements IContentStorage {
 	 * @returns asDependency: how often the library is used as subcontent in
 	 * content; asMainLibrary: how often the library is used as a main library
 	 */
-	public async getUsage(library: ILibraryName): Promise<{ asDependency: number; asMainLibrary: number }> {
+	public async getUsage(library: ILibraryName): Promise<H5PCountUsageResult> {
 		const { asMainLibrary, asDependency } = await this.repo.countUsage(library);
 
 		return { asMainLibrary, asDependency };
