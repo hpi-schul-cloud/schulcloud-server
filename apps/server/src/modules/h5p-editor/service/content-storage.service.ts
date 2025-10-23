@@ -257,29 +257,6 @@ export class ContentStorage implements IContentStorage {
 		return false;
 	}
 
-	private async resolveDependecies(
-		contentIds: string[],
-		library: ILibraryName
-	): Promise<{ asMainLibrary: number; asDependency: number }> {
-		let asDependency = 0;
-		let asMainLibrary = 0;
-
-		const contentMetadataList = await Promise.all(contentIds.map((id) => this.getMetadata(id)));
-
-		for (const contentMetadata of contentMetadataList) {
-			const isMainLibrary = contentMetadata.mainLibrary === library.machineName;
-			if (this.hasDependencyOn(contentMetadata, library)) {
-				if (isMainLibrary) {
-					asMainLibrary += 1;
-				} else {
-					asDependency += 1;
-				}
-			}
-		}
-
-		return { asMainLibrary, asDependency };
-	}
-
 	private checkFilename(filename: string): void {
 		filename = filename.split('.').slice(0, -1).join('.');
 		if (/^[a-zA-Z0-9/._-]*$/.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
