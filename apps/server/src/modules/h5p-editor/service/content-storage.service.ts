@@ -1,7 +1,7 @@
+import { ErrorUtils } from '@core/error/utils';
 import { CopyFiles, S3ClientAdapter } from '@infra/s3-client';
 import {
 	ContentId,
-	ContentPermission,
 	IContentMetadata,
 	IContentStorage,
 	IFileStats,
@@ -16,9 +16,9 @@ import {
 	InternalServerErrorException,
 	NotAcceptableException,
 	NotFoundException,
+	NotImplementedException,
 	UnprocessableEntityException,
 } from '@nestjs/common';
-import { ErrorUtils } from '@core/error/utils';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto/h5p-file.dto';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
@@ -120,7 +120,7 @@ export class ContentStorage implements IContentStorage {
 		await this.storageClient.delete([filePath]);
 	}
 
-	public async fileExists(contentId: string, filename: string): Promise<boolean> {
+	public fileExists(contentId: string, filename: string): Promise<boolean> {
 		this.checkFilename(filename);
 
 		const filePath = this.getFilePath(contentId, filename);
@@ -177,29 +177,20 @@ export class ContentStorage implements IContentStorage {
 		return h5pContent.content;
 	}
 
+	/**
+	 * Calculates how often a library is in use.
+	 * @param library the library for which to calculate usage.
+	 * @returns asDependency: how often the library is used as subcontent in
+	 * content; asMainLibrary: how often the library is used as a main library
+	 */
 	public async getUsage(library: ILibraryName): Promise<{ asDependency: number; asMainLibrary: number }> {
-		const contentIds = await this.listContent();
-		const result = await this.resolveDependecies(contentIds, library);
-		return result;
+		const { asMainLibrary, asDependency } = await this.repo.countUsage(library);
+
+		return { asMainLibrary, asDependency };
 	}
 
-	public getUserPermissions(): Promise<ContentPermission[]> {
-		const permissions = [
-			ContentPermission.Delete,
-			ContentPermission.Download,
-			ContentPermission.Edit,
-			ContentPermission.Embed,
-			ContentPermission.View,
-		];
-
-		return Promise.resolve(permissions);
-	}
-
-	public async listContent(): Promise<string[]> {
-		const contentList = await this.repo.getAllContents();
-
-		const contentIDs = contentList.map((c) => c.id);
-		return contentIDs;
+	public listContent(): Promise<string[]> {
+		throw new NotImplementedException('Method not implemented.');
 	}
 
 	public async listFiles(contentId: string): Promise<string[]> {

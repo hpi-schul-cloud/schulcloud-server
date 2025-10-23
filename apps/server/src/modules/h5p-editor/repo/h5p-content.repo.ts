@@ -1,3 +1,4 @@
+import { ILibraryName } from '@lumieducation/h5p-server';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
@@ -25,9 +26,54 @@ export class H5PContentRepo extends BaseRepo<H5PContent> {
 		return content;
 	}
 
-	public async getAllContents(): Promise<H5PContent[]> {
-		const contents = await this._em.find(this.entityName, {});
+	public async countUsage(library: ILibraryName): Promise<{ asMainLibrary: number; asDependency: number }> {
+		const { machineName } = library;
 
-		return contents;
+		const pipeline = [
+			{
+				$facet: {
+					asMainLibrary: [{ $match: { 'metadata.mainLibrary': machineName } }, { $count: 'count' }],
+					asDependency: [
+						{
+							$match: {
+								$or: [
+									{ 'metadata.preloadedDependencies.machineName': machineName },
+									{ 'metadata.editorDependencies.machineName': machineName },
+									{ 'metadata.dynamicDependencies.machineName': machineName },
+								],
+								'metadata.mainLibrary': { $ne: machineName },
+							},
+						},
+						{ $count: 'count' },
+					],
+				},
+			},
+			{
+				$project: {
+					asMainLibrary: { $arrayElemAt: ['$asMainLibrary.count', 0] },
+					asDependency: { $arrayElemAt: ['$asDependency.count', 0] },
+				},
+			},
+		];
+
+		const documents = await this._em.getConnection().getCollection('h5p-editor-content').aggregate(pipeline).toArray();
+
+		if (documents.length === 0) {
+			return { asMainLibrary: 0, asDependency: 0 };
+		}
+
+		if (documents.length > 1) {
+			throw new Error('Unexpected aggregation result structure.');
+		}
+
+		if (!documents[0].asMainLibrary) {
+			documents[0].asMainLibrary = 0;
+		}
+
+		if (!documents[0].asDependency) {
+			documents[0].asDependency = 0;
+		}
+
+		return documents[0] as { asMainLibrary: number; asDependency: number };
 	}
 }
