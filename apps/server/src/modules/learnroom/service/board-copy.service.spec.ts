@@ -26,11 +26,11 @@ import {
 	lessonBoardElementFactory,
 	taskBoardElementFactory,
 } from '../testing';
-import { BoardCopyService } from './board-copy.service';
+import { LegacyBoardCopyService } from './legacy-board-copy.service';
 
 describe('board copy service', () => {
 	let module: TestingModule;
-	let copyService: BoardCopyService;
+	let copyService: LegacyBoardCopyService;
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
@@ -56,7 +56,7 @@ describe('board copy service', () => {
 
 		module = await Test.createTestingModule({
 			providers: [
-				BoardCopyService,
+				LegacyBoardCopyService,
 				{
 					provide: TaskCopyService,
 					useValue: createMock<TaskCopyService>(),
@@ -88,7 +88,7 @@ describe('board copy service', () => {
 			],
 		}).compile();
 
-		copyService = module.get(BoardCopyService);
+		copyService = module.get(LegacyBoardCopyService);
 		taskCopyService = module.get(TaskCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);

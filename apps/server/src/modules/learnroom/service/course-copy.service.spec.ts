@@ -23,7 +23,7 @@ import {
 } from '../../tool/context-external-tool/testing';
 import { LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import { boardFactory } from '../testing';
-import { BoardCopyService } from './board-copy.service';
+import { LegacyBoardCopyService } from './legacy-board-copy.service';
 import { CourseCopyService } from './course-copy.service';
 import { CourseRoomsService } from './course-rooms.service';
 
@@ -33,7 +33,7 @@ describe('course copy service', () => {
 	let courseService: DeepMocked<CourseService>;
 	let boardRepo: DeepMocked<LegacyBoardRepo>;
 	let roomsService: DeepMocked<CourseRoomsService>;
-	let boardCopyService: DeepMocked<BoardCopyService>;
+	let boardCopyService: DeepMocked<LegacyBoardCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let userService: DeepMocked<UserService>;
@@ -66,8 +66,8 @@ describe('course copy service', () => {
 					useValue: createMock<CourseRoomsService>(),
 				},
 				{
-					provide: BoardCopyService,
-					useValue: createMock<BoardCopyService>(),
+					provide: LegacyBoardCopyService,
+					useValue: createMock<LegacyBoardCopyService>(),
 				},
 				{
 					provide: LessonCopyService,
@@ -96,7 +96,7 @@ describe('course copy service', () => {
 		courseService = module.get(CourseService);
 		boardRepo = module.get(LegacyBoardRepo);
 		roomsService = module.get(CourseRoomsService);
-		boardCopyService = module.get(BoardCopyService);
+		boardCopyService = module.get(LegacyBoardCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
 		userService = module.get(UserService);

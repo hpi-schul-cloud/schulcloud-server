@@ -22,7 +22,7 @@ import {
 } from './repo';
 import { DASHBOARD_REPO } from './repo/mikro-orm/dashboard.repo';
 import { DeleteUserDashboardDataStep } from './saga';
-import { BoardCopyService, CourseCopyService, CourseRoomsService } from './service';
+import { LegacyBoardCopyService, CourseCopyService, CourseRoomsService } from './service';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future
@@ -49,7 +49,7 @@ import { BoardCopyService, CourseCopyService, CourseRoomsService } from './servi
 			provide: DASHBOARD_REPO,
 			useClass: DashboardRepo,
 		},
-		BoardCopyService,
+		LegacyBoardCopyService,
 		CourseCopyService,
 		DashboardElementRepo,
 		DashboardModelMapper,

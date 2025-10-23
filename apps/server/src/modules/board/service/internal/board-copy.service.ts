@@ -1,8 +1,21 @@
 import { CopyStatus } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client/service';
-import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import {
+	Injectable,
+	InternalServerErrorException,
+	NotImplementedException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from '../../domain';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	Card,
+	Column,
+	ColumnBoard,
+	isCard,
+	isColumnBoard,
+} from '../../domain';
 import { BoardNodeService } from '../board-node.service';
 import { BoardNodeCopyContext, StorageLocationReference } from './board-node-copy-context';
 import { BoardNodeCopyService } from './board-node-copy.service';
@@ -18,8 +31,17 @@ export type CopyColumnBoardParams = {
 	targetSchoolId: EntityId;
 };
 
+export type CopyCardParams = {
+	originalCardId: EntityId;
+	sourceStorageLocationReference: StorageLocationReference;
+	targetStorageLocationReference: StorageLocationReference;
+	userId: EntityId;
+	copyTitle?: string;
+	targetSchoolId: EntityId;
+};
+
 @Injectable()
-export class ColumnBoardCopyService {
+export class BoardCopyService {
 	constructor(
 		private readonly boardNodeService: BoardNodeService,
 		private readonly columnBoardTitleService: ColumnBoardTitleService,
@@ -59,6 +81,34 @@ export class ColumnBoardCopyService {
 		copyStatus.copyEntity.isVisible = false;
 		await this.boardNodeService.addRoot(copyStatus.copyEntity);
 		copyStatus.originalEntity = originalBoard;
+
+		return copyStatus;
+	}
+
+	public async copyCard(params: CopyCardParams): Promise<CopyStatus> {
+		const originalCard = await this.boardNodeService.findByClassAndId(Card, params.originalCardId);
+
+		if (!originalCard.parentId) {
+			throw new UnprocessableEntityException('Card has no parent column');
+		}
+		const parentColumn = await this.boardNodeService.findByClassAndId(Column, originalCard.parentId);
+
+		const copyContext = new BoardNodeCopyContext({
+			sourceStorageLocationReference: params.sourceStorageLocationReference,
+			targetStorageLocationReference: params.targetStorageLocationReference,
+			userId: params.userId,
+			filesStorageClientAdapterService: this.filesStorageClientAdapterService,
+			targetSchoolId: params.targetSchoolId,
+		});
+
+		const copyStatus = await this.boardNodeCopyService.copy(originalCard, copyContext);
+
+		if (!isCard(copyStatus.copyEntity)) {
+			throw new InternalServerErrorException('copied entity is not a card');
+		}
+		copyStatus.originalEntity = originalCard;
+
+		await this.boardNodeService.addToParent(parentColumn, copyStatus.copyEntity, originalCard.position + 1);
 
 		return copyStatus;
 	}
