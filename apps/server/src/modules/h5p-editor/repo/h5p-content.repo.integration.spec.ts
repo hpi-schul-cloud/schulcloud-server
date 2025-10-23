@@ -2,11 +2,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { h5pContentFactory } from '../testing';
-import { H5PContent } from './entity';
+import { h5pContentFactory, h5pEntityLibraryTestFactory } from '../testing';
+import { H5PContent, InstalledLibrary } from './entity';
 import { H5PContentRepo } from './h5p-content.repo';
-
-const contentSortFunction = ({ id: aId }: H5PContent, { id: bId }: H5PContent) => aId.localeCompare(bId);
 
 describe('ContentRepo', () => {
 	let module: TestingModule;
@@ -15,7 +13,7 @@ describe('ContentRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [H5PContent] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [H5PContent, InstalledLibrary] })],
 			providers: [H5PContentRepo],
 		}).compile();
 
@@ -91,15 +89,33 @@ describe('ContentRepo', () => {
 		});
 	});
 
-	describe('getAllContents', () => {
-		it('should return all metadata', async () => {
-			const h5pContent = h5pContentFactory.buildList(10);
-			await em.persistAndFlush(h5pContent);
+	describe('countUsage', () => {
+		it('should return zero counts for non-used library', async () => {
+			const library = h5pEntityLibraryTestFactory.build();
 
-			const results = await repo.getAllContents();
+			const result = await repo.countUsage(library);
 
-			expect(results).toHaveLength(10);
-			expect(results.sort(contentSortFunction)).toStrictEqual(h5pContent.sort(contentSortFunction));
+			expect(result).toEqual({ asMainLibrary: 0, asDependency: 0 });
+		});
+
+		it('should return correct counts for used main library', async () => {
+			const library = h5pEntityLibraryTestFactory.build();
+			const h5pContents = h5pContentFactory.withMainLibrary(library).buildList(2);
+			await em.persistAndFlush([...h5pContents, library]);
+
+			const result = await repo.countUsage(library);
+
+			expect(result).toEqual({ asMainLibrary: 2, asDependency: 0 });
+		});
+
+		it('should return correct counts preloaded dependencies', async () => {
+			const libaries = h5pEntityLibraryTestFactory.buildList(2);
+			const h5pContents = h5pContentFactory.addPreloadedDependencies(libaries).buildList(2);
+			await em.persistAndFlush([...h5pContents, ...libaries]);
+
+			const result = await repo.countUsage(libaries[0]);
+
+			expect(result).toEqual({ asMainLibrary: 0, asDependency: 2 });
 		});
 	});
 });

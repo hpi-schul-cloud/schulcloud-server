@@ -27,22 +27,25 @@ export class H5PContentRepo extends BaseRepo<H5PContent> {
 		return content;
 	}
 
+	/**
+	 * Currently not in use, but represents what h5p IContentStorage.getUsage() want.
+	 */
 	public async countUsage(library: ILibraryName): Promise<H5PCountUsageResult> {
 		const { machineName } = library;
 
 		const pipeline = [
 			{
 				$facet: {
-					asMainLibrary: [{ $match: { 'metadata.mainLibrary': machineName } }, { $count: 'count' }],
+					asMainLibrary: [{ $match: { metadata_mainLibrary: machineName } }, { $count: 'count' }],
 					asDependency: [
 						{
 							$match: {
 								$or: [
-									{ 'metadata.preloadedDependencies.machineName': machineName },
-									{ 'metadata.editorDependencies.machineName': machineName },
-									{ 'metadata.dynamicDependencies.machineName': machineName },
+									{ 'metadata_preloadedDependencies.machineName': machineName },
+									{ 'metadata_editorDependencies.machineName': machineName },
+									{ 'metadata_dynamicDependencies.machineName': machineName },
 								],
-								'metadata.mainLibrary': { $ne: machineName },
+								metadata_mainLibrary: { $ne: machineName },
 							},
 						},
 						{ $count: 'count' },
