@@ -50,7 +50,7 @@ export class CardController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Get()
-	async getCards(
+	public async getCards(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() cardIdParams: CardIdsParams
 	): Promise<CardListResponse> {
@@ -71,7 +71,7 @@ export class CardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Put(':cardId/position')
-	async moveCard(
+	public async moveCard(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: MoveCardBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -86,7 +86,7 @@ export class CardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Patch(':cardId/height')
-	async updateCardHeight(
+	public async updateCardHeight(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: SetHeightBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -101,7 +101,7 @@ export class CardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Patch(':cardId/title')
-	async updateCardTitle(
+	public async updateCardTitle(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: RenameBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -116,7 +116,7 @@ export class CardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Delete(':cardId')
-	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	public async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.cardUc.deleteCard(currentUser.userId, urlParams.cardId);
 	}
 
@@ -127,7 +127,10 @@ export class CardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':cardId/copy')
 	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
-	async copyCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<CardResponse> {
+	public async copyCard(
+		@Param() urlParams: CardUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<CardResponse> {
 		const copiedCard = await this.columnUc.copyCard(currentUser.userId, urlParams.cardId, currentUser.schoolId);
 		const cardDto = CardResponseMapper.mapToResponse(copiedCard);
 		return cardDto;
@@ -165,7 +168,7 @@ export class CardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':cardId/elements')
-	async createElement(
+	public async createElement(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: CreateContentElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
