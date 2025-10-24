@@ -111,6 +111,8 @@ describe('Room Controller (API)', () => {
 				school,
 				externalTeacherUser,
 				unknownRoleUser,
+				userGroupEntity,
+				roomEditorRole,
 			};
 		};
 
@@ -226,11 +228,12 @@ describe('Room Controller (API)', () => {
 
 		describe('when the user is a school admin', () => {
 			const setupAdminLogin = async (options: { addUnknownRoleUser?: boolean; overwriteOwnerRole?: boolean } = {}) => {
-				const { room, school, targetUser, externalTeacherUser } = await setupRoomWithMembers(options);
+				const { room, school, targetUser, externalTeacherUser, userGroupEntity, roomEditorRole } =
+					await setupRoomWithMembers(options);
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 				await em.persistAndFlush([adminAccount, adminUser]);
 				const loggedInClient = await testApiClient.login(adminAccount);
-				return { loggedInClient, room, targetUser, externalTeacherUser };
+				return { loggedInClient, room, targetUser, externalTeacherUser, adminUser, userGroupEntity, roomEditorRole };
 			};
 
 			describe('when no room owner exists', () => {
@@ -288,6 +291,27 @@ describe('Room Controller (API)', () => {
 					expect(body.data).toEqual(
 						expect.arrayContaining([
 							expect.objectContaining({ userId: targetUser.id, roomRoleName: RoleName.ROOMOWNER }),
+						])
+					);
+				});
+			});
+
+			describe('when target user is the admin himself', () => {
+				it('should change the target user to owner', async () => {
+					const { loggedInClient, room, adminUser, userGroupEntity, roomEditorRole } = await setupAdminLogin();
+					userGroupEntity.users.push({ role: roomEditorRole, user: adminUser });
+					await em.persistAndFlush(userGroupEntity);
+					em.clear();
+
+					await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
+						userId: adminUser.id,
+					});
+
+					const updatedRoomMembership = await loggedInClient.get(`/${room.id}/members-redacted`);
+					const body = updatedRoomMembership.body as RoomMemberListResponse;
+					expect(body.data).toEqual(
+						expect.arrayContaining([
+							expect.objectContaining({ userId: adminUser.id, roomRoleName: RoleName.ROOMOWNER }),
 						])
 					);
 				});
