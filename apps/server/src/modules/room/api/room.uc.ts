@@ -322,12 +322,18 @@ export class RoomUc {
 		}
 
 		const roomMemberAuthorizable = new RoomMemberAuthorizable(roomMembershipAuthorizable, roomMember);
-		this.authorizationService.checkPermission(user, roomMemberAuthorizable, {
+		this.checkRoomBelongsToUsersSchool(user, room);
+		this.checkUserIsNotStudent(ownershipContext);
+		const canChangeOwner = this.authorizationService.hasPermission(user, roomMemberAuthorizable, {
 			action: Action.write,
 			requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
 		});
-		this.checkRoomBelongsToUsersSchool(user, room);
-		this.checkUserIsStudent(ownershipContext);
+		const canAdministrateSchoolRooms = this.authorizationService.hasOneOfPermissions(user, [
+			Permission.SCHOOL_ADMINISTRATE_ROOMS,
+		]);
+		if (!canChangeOwner && !canAdministrateSchoolRooms) {
+			throw new ForbiddenException('You do not have permission to change the room owner');
+		}
 
 		if (roomOwner) {
 			await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [roomOwner.userId], RoleName.ROOMADMIN);
@@ -383,7 +389,7 @@ export class RoomUc {
 		return context;
 	}
 
-	private checkUserIsStudent(context: OwnershipContext): void {
+	private checkUserIsNotStudent(context: OwnershipContext): void {
 		if (context.targetUser.roles.find((role) => role.name === RoleName.STUDENT)) {
 			throw new CantPassOwnershipToStudentLoggableException({
 				roomId: context.roomAuthorizable.roomId,
