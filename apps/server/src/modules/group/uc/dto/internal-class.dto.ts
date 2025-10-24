@@ -10,6 +10,7 @@ export interface InternalClassDtoProps<T> {
 	schoolYear?: string;
 	isUpgradable?: boolean;
 	studentCount: number;
+	teacherNames: string[];
 	original: T;
 }
 
@@ -28,6 +29,8 @@ export class InternalClassDto<T> {
 
 	public studentCount: number;
 
+	public teacherNames: string[];
+
 	public original: T;
 
 	constructor(props: InternalClassDtoProps<T>) {
@@ -38,6 +41,7 @@ export class InternalClassDto<T> {
 		this.schoolYear = props.schoolYear;
 		this.isUpgradable = props.isUpgradable;
 		this.studentCount = props.studentCount;
+		this.teacherNames = props.teacherNames;
 		this.original = props.original;
 	}
 
