@@ -628,7 +628,6 @@ describe('ClassGroupUc', () => {
 
 					const result = await uc.findAllClasses(adminUser.id, adminUser.school.id);
 
-					console.log(result.data);
 					expect(result).toEqual<Page<ClassInfoDto>>({
 						data: [
 							{
