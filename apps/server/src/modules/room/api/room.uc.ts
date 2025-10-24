@@ -249,8 +249,8 @@ export class RoomUc {
 
 		const membersResponse = await this.getRoomMembersResponse(roomMembershipAuthorizable);
 
-		const anonymizedMembersResponse = this.handleAnonymization(membersResponse, currentUser.school.id);
-		return anonymizedMembersResponse;
+		const redactedMembersResponse = this.handleAnonymization(membersResponse, currentUser.school.id);
+		return redactedMembersResponse;
 	}
 
 	private async getRoomMembersResponse(
@@ -428,7 +428,7 @@ export class RoomUc {
 		membersResponse: RoomMemberResponse[],
 		currentUserSchoolId: EntityId
 	): RoomMemberResponse[] {
-		const anonymizedMembersResponse = membersResponse.map((member) => {
+		const redactedMembersResponse = membersResponse.map((member) => {
 			const isRoomOwner = member.roomRoleName === RoleName.ROOMOWNER;
 			const isFromSameSchool = member.schoolId === currentUserSchoolId;
 			const shouldBeAnonymized = !isRoomOwner && !isFromSameSchool;
@@ -438,7 +438,7 @@ export class RoomUc {
 				lastName: shouldBeAnonymized ? '---' : member.lastName,
 			};
 		});
-		return anonymizedMembersResponse;
+		return redactedMembersResponse;
 	}
 
 	private preventChangingOwnersRole(
