@@ -230,7 +230,7 @@ describe('Room Controller (API)', () => {
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, room, ...users };
+				return { loggedInClient, room, ...users, userGroupEntity, roomViewerRole };
 			};
 
 			it('should be allowed to remove a member of the same school', async () => {
@@ -248,6 +248,19 @@ describe('Room Controller (API)', () => {
 				const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [externalTeacher.id] });
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
+
+			describe('when admin is member in the room', () => {
+				it('should be allowed to remove themself', async () => {
+					const { loggedInClient, room, adminUser, userGroupEntity, roomViewerRole } = await setupForAdmin();
+					userGroupEntity.users.push({ role: roomViewerRole, user: adminUser });
+					await em.persistAndFlush(userGroupEntity);
+					em.clear();
+
+					const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [adminUser.id] });
+
+					expect(response.status).toBe(HttpStatus.OK);
+				});
 			});
 		});
 	});

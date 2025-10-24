@@ -11,7 +11,6 @@ import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { RoomMemberAuthorizable } from '../do/room-member-authorizable.do';
 import { RoomMembershipRule } from './room-membership.rule';
-import { RoomMember } from '../do/room-member.do';
 
 @Injectable()
 export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
@@ -32,27 +31,30 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 	public hasPermission(user: User, object: RoomMemberAuthorizable, context: AuthorizationContext): boolean {
 		const { requiredPermissions } = context;
 		const hasPermissions = requiredPermissions.every((permission) =>
-			this.hasRequiredPermission(user, object, permission)
+			this.hasDynamicPermission(user, object, permission)
 		);
 
 		return hasPermissions;
 	}
 
-	private hasRequiredPermission(user: User, object: RoomMemberAuthorizable, permission: Permission): boolean {
-		const hasPermission = this.hasDynamicPermission(user, object, permission);
-		const isImmutableUser = this.isImmutableMember(user, object.member);
-
-		return hasPermission && !isImmutableUser;
-	}
-
 	private hasDynamicPermission(user: User, object: RoomMemberAuthorizable, permission: Permission): boolean {
+		const isAlreadyRoomOwner = object.member.roomRoleName == RoleName.ROOMOWNER;
+		if (isAlreadyRoomOwner) {
+			return false;
+		}
+
+		const isAdminOfUserSchool = this.isAdminOfUserSchool(user, object);
+		if (isAdminOfUserSchool) {
+			return true;
+		}
+
 		const hasPermission = this.roomMembershipRule.hasPermission(user, object.roomMembershipAuthorizable, {
 			action: Action.write,
 			requiredPermissions: [permission],
 		});
-		const isAdminOfUserSchool = this.isAdminOfUserSchool(user, object);
+		const isCurrentUser = object.member.userId == user.id;
 
-		return hasPermission || isAdminOfUserSchool;
+		return hasPermission && !isCurrentUser;
 	}
 
 	private isAdminOfUserSchool(user: User, object: RoomMemberAuthorizable): boolean {
@@ -62,13 +64,5 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 		const isSameSchool = object.member.schoolId === user.school.id;
 
 		return canAdministrateSchoolRooms && isSameSchool;
-	}
-
-	// check is needed for removeMember - but needs to be reevaluated for other actions
-	private isImmutableMember(user: User, member: RoomMember): boolean {
-		const isRoomOwner = member.roomRoleName == RoleName.ROOMOWNER;
-		const isCurrentUser = member.userId == user.id;
-
-		return isRoomOwner || isCurrentUser;
 	}
 }
