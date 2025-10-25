@@ -1,3 +1,4 @@
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { RoomBoardDeletedEvent } from '@modules/board/domain/events/room-board-deleted.event';
@@ -6,8 +7,9 @@ import { RoomContentService } from '../../domain/service/room-content.service';
 @Injectable()
 @EventsHandler(RoomBoardDeletedEvent)
 export class RoomBoardDeletedHandler implements IEventHandler<RoomBoardDeletedEvent> {
-	constructor(private readonly roomContentService: RoomContentService) {}
+	constructor(private readonly roomContentService: RoomContentService, private readonly orm: MikroORM) {}
 
+	@UseRequestContext()
 	public async handle(event: RoomBoardDeletedEvent): Promise<void> {
 		const contentExists = await this.roomContentService.contentExists(event.roomId);
 		if (contentExists) {
