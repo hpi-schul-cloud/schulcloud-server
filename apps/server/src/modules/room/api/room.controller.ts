@@ -43,6 +43,7 @@ import { RoomCopyUc } from './room-copy.uc';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
 import { RoomUc } from './room.uc';
 import { RoomStatsListResponse } from './dto/response/room-stats-list.repsonse';
+import { MoveItemBodyParams } from './dto/request/move-item.body.params';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -151,6 +152,21 @@ export class RoomController {
 		const response = RoomMapper.mapToRoomBoardListResponse(boards);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: 'Move a single board item.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(':roomId/boards')
+	public async moveBoard(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams,
+		@Body() bodyParams: MoveItemBodyParams
+	): Promise<void> {
+		await this.roomUc.moveBoard(currentUser.userId, urlParams.roomId, bodyParams.id, bodyParams.toPosition);
 	}
 
 	@Get(':roomId/room-invitation-links')

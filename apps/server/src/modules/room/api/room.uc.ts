@@ -8,7 +8,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Room, RoomService } from '../domain';
+import { Room, RoomContentService, RoomService } from '../domain';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomMemberResponse } from './dto/response/room-member.response';
@@ -35,7 +35,8 @@ export class RoomUc {
 		private readonly userService: UserService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly roomPermissionService: RoomPermissionService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: SchoolService,
+		private readonly roomContentService: RoomContentService
 	) {}
 
 	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomWithLockedStatus>> {
@@ -102,9 +103,8 @@ export class RoomUc {
 
 	public async createRoom(userId: EntityId, props: CreateRoomBodyParams): Promise<Room> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const room = await this.roomService.createRoom({ ...props, schoolId: user.school.id });
-
 		this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_CREATE_ROOM]);
+		const room = await this.roomService.createRoom({ ...props, schoolId: user.school.id });
 
 		try {
 			await this.roomMembershipService.createNewRoomMembership(room.id, userId);
@@ -127,7 +127,7 @@ export class RoomUc {
 		return { room, permissions };
 	}
 
-	private async checkHasAccessToRoom(room: Room, user: User) {
+	private async checkHasAccessToRoom(room: Room, user: User): Promise<void> {
 		const hasAdminPermission = this.authorizationService.hasAllPermissions(user, [
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
 		]);
@@ -154,20 +154,20 @@ export class RoomUc {
 		throw new ForbiddenException('You do not have permission to access this room');
 	}
 
-	private async isRoomFromAdminSchool(room: Room, user: User, hasAdminPermission: boolean) {
+	private async isRoomFromAdminSchool(room: Room, user: User, hasAdminPermission: boolean): Promise<boolean> {
 		const roomSchool = await this.schoolService.getSchoolById(room.schoolId);
 		const userSchool = await this.schoolService.getSchoolById(user.school.id);
 		const isRoomFromAdminSchool = hasAdminPermission && roomSchool.id === userSchool.id;
 		return isRoomFromAdminSchool;
 	}
 
-	private async hasUsersFromAdminSchool(room: Room, user: User, hasAdminPermission: boolean) {
+	private async hasUsersFromAdminSchool(room: Room, user: User, hasAdminPermission: boolean): Promise<boolean> {
 		const members = hasAdminPermission ? await this.roomMembershipService.getRoomMembers(room.id) : [];
 		const hasUsersFromAdminSchool = hasAdminPermission && members.some((member) => member.schoolId === user.school.id);
 		return hasUsersFromAdminSchool;
 	}
 
-	private async hasRoomPermission(room: Room, user: User) {
+	private async hasRoomPermission(room: Room, user: User): Promise<boolean> {
 		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(user.id, room.id, Action.read);
 		return hasRoomPermission;
 	}
@@ -185,7 +185,38 @@ export class RoomUc {
 			0
 		);
 
+		const contentExists = await this.roomContentService.contentExists(roomId);
+		if (!contentExists) {
+			const boardIds = boards.map((board) => board.id);
+			await this.roomContentService.createContent(roomId, boardIds);
+		} else {
+			const boardIds = await this.roomContentService.getBoardIdList(roomId);
+			boards.sort((a, b) => boardIds.indexOf(a.id) - boardIds.indexOf(b.id));
+		}
+
 		return boards;
+	}
+
+	public async moveBoard(userId: EntityId, roomId: EntityId, boardId: EntityId, toPosition: number): Promise<void> {
+		await this.roomService.getSingleRoom(roomId);
+		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
+		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write);
+
+		// Do we really need this check here? Shouldn't the content be created when it was fetched by the frontend?
+		const contentExists = await this.roomContentService.contentExists(roomId);
+		if (!contentExists) {
+			const boards = await this.columnBoardService.findByExternalReference(
+				{
+					type: BoardExternalReferenceType.Room,
+					id: roomId,
+				},
+				0
+			);
+			const boardIds = boards.map((board) => board.id);
+			await this.roomContentService.createContent(roomId, boardIds);
+		}
+
+		await this.roomContentService.moveBoard(roomId, boardId, toPosition);
 	}
 
 	public async updateRoom(
@@ -223,6 +254,7 @@ export class RoomUc {
 		});
 		await this.roomService.deleteRoom(room);
 		await this.roomMembershipService.deleteRoomMembership(roomId);
+		await this.roomContentService.deleteContent(roomId);
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
