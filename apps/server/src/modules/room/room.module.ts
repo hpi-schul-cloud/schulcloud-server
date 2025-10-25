@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { RoomContentService, RoomService } from './domain/service';
-import { RoomContentRepo, RoomInvitationLinkDomainMapper, RoomInvitationLinkRepo, RoomRepo } from './repo';
-import { RoomInvitationLinkService } from './domain/service/room-invitation-link.service';
 import { CqrsModule } from '@nestjs/cqrs';
+import { RoomContentCleanupHandler } from './domain/service/room-content-cleanup.handler';
+import { RoomContentService } from './domain/service/room-content.service';
+import { RoomInvitationLinkService } from './domain/service/room-invitation-link.service';
+import { RoomService } from './domain/service/room.service';
+import { RoomContentRepo, RoomInvitationLinkDomainMapper, RoomInvitationLinkRepo, RoomRepo } from './repo';
 
 @Module({
 	imports: [CqrsModule],
@@ -14,6 +16,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 		RoomInvitationLinkDomainMapper,
 		RoomContentService,
 		RoomContentRepo,
+		RoomContentCleanupHandler,
 	],
 	exports: [RoomService, RoomInvitationLinkService, RoomContentService],
 })
