@@ -5,6 +5,8 @@ import {
 	AnyBoardNode,
 	BoardExternalReference,
 	BoardExternalReferenceType,
+	BoardLayout,
+	BoardNodeFactory,
 	ColumnBoard,
 	ColumnBoardProps,
 	isColumnBoard,
@@ -18,6 +20,7 @@ export class ColumnBoardService {
 	constructor(
 		private readonly boardNodeRepo: BoardNodeRepo,
 		private readonly boardNodeService: BoardNodeService,
+		private readonly boardNodeFactory: BoardNodeFactory,
 		private readonly columnBoardCopyService: ColumnBoardCopyService,
 		private readonly columnBoardLinkService: ColumnBoardLinkService,
 		private readonly copyHelperService: CopyHelperService
@@ -65,12 +68,25 @@ export class ColumnBoardService {
 
 		return copyStatus;
 	}
-	public async createColumnBoard(props: ColumnBoardProps): Promise<ColumnBoard> {
-		const columnBoard = new ColumnBoard(props);
 
-		await this.boardNodeRepo.save(columnBoard);
+	public async createColumnBoard({
+		context,
+		title,
+		layout,
+	}: {
+		context: BoardExternalReference;
+		title: string;
+		layout: BoardLayout;
+	}): Promise<ColumnBoard> {
+		const board = this.boardNodeFactory.buildColumnBoard({
+			context,
+			title,
+			layout,
+		});
 
-		return columnBoard;
+		await this.boardNodeService.addRoot(board);
+
+		return board;
 	}
 
 	public async swapLinkedIdsInBoards(copyStatus: CopyStatus, idMap?: Map<EntityId, EntityId>): Promise<CopyStatus> {

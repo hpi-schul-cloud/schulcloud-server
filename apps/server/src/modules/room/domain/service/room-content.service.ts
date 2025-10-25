@@ -27,7 +27,7 @@ export class RoomContentService {
 		return boardIds;
 	}
 
-	public async addBoardToRoom(roomId: EntityId, boardId: EntityId): Promise<void> {
+	public async addBoard(roomId: EntityId, boardId: EntityId): Promise<void> {
 		await this.roomContentRepo.addItemToRoomContent(roomId, { type: RoomContentType.BOARD, id: boardId });
 	}
 
@@ -45,7 +45,7 @@ export class RoomContentService {
 		await this.roomContentRepo.updateRoomContent(roomId, items);
 	}
 
-	public async removeBoardFromRoom(roomId: EntityId, boardId: EntityId): Promise<void> {
+	public async removeBoard(roomId: EntityId, boardId: EntityId): Promise<void> {
 		const items = await this.roomContentRepo.findContentItemsByRoomId(roomId);
 		const filteredItems = items.filter((item) => !(item.type === RoomContentType.BOARD && item.id === boardId));
 
