@@ -224,9 +224,7 @@ describe('ClassGroupUc', () => {
 				classService.find.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
 				groupService.findByScope.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.getSystems.mockResolvedValueOnce([system]);
-				roleService.findByName.mockResolvedValueOnce(studentRole);
-				roleService.findByName.mockResolvedValueOnce(teacherRole);
-				roleService.findByName.mockResolvedValueOnce(groupSubstitutionTeacherRole);
+				roleService.findByNames.mockResolvedValueOnce([studentRole, teacherRole, groupSubstitutionTeacherRole]);
 				configService.get.mockReturnValue(true); // FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED
 				courseService.findBySyncedGroup.mockImplementation((g: Group) => {
 					const courses: Course[] = [];
@@ -577,9 +575,7 @@ describe('ClassGroupUc', () => {
 				classService.find.mockResolvedValueOnce([...clazzes, clazz]);
 				groupService.findByScope.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.getSystems.mockResolvedValueOnce([system]);
-				roleService.findByName.mockResolvedValueOnce(studentRole);
-				roleService.findByName.mockResolvedValueOnce(teacherRole);
-				roleService.findByName.mockResolvedValueOnce(groupSubstitutionTeacherRole);
+				roleService.findByNames.mockResolvedValueOnce([studentRole, teacherRole, groupSubstitutionTeacherRole]);
 				configService.get.mockReturnValue(true); // FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED
 				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
 				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
@@ -834,9 +830,7 @@ describe('ClassGroupUc', () => {
 				classService.find.mockResolvedValueOnce([...clazzes, clazz]);
 				groupService.findByScope.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.getSystems.mockResolvedValueOnce([system]);
-				roleService.findByName.mockResolvedValueOnce(studentRole);
-				roleService.findByName.mockResolvedValueOnce(teacherRole);
-				roleService.findByName.mockResolvedValueOnce(groupSubstitutionTeacherRole);
+				roleService.findByNames.mockResolvedValueOnce([studentRole, teacherRole, groupSubstitutionTeacherRole]);
 				configService.get.mockReturnValue(true); // FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED
 				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
 				courseService.findBySyncedGroup.mockResolvedValueOnce([]);

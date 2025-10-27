@@ -177,9 +177,14 @@ export class ClassGroupUc {
 		});
 		const systems: System[] = await this.systemService.getSystems(Array.from(systemIdSet));
 
-		const studentRole: RoleDto = await this.roleService.findByName(RoleName.STUDENT);
-		const teacherRole: RoleDto = await this.roleService.findByName(RoleName.TEACHER);
-		const groupSubstitutionTeacherRole: RoleDto = await this.roleService.findByName(RoleName.GROUPSUBSTITUTIONTEACHER);
+		const roles: RoleDto[] = await this.roleService.findByNames([
+			RoleName.STUDENT,
+			RoleName.TEACHER,
+			RoleName.GROUPSUBSTITUTIONTEACHER,
+		]);
+		const studentRole = roles.find((role) => role.name === RoleName.STUDENT)!;
+		const teacherRole = roles.find((role) => role.name === RoleName.TEACHER)!;
+		const groupSubstitutionTeacherRole = roles.find((role) => role.name === RoleName.GROUPSUBSTITUTIONTEACHER)!;
 
 		const groupDtoPromises: Promise<InternalClassDto<Group>>[] = groups.data.map(
 			async (group: Group): Promise<InternalClassDto<Group>> => {
@@ -224,6 +229,7 @@ export class ClassGroupUc {
 		currentYear: SchoolYear | undefined,
 		schoolYearQueryType: SchoolYearQueryType | undefined
 	): Promise<InternalClassDto<Class>[]> {
+		const maxGradeLevel = 13;
 		const classScope = new ClassScope().bySchoolId(school.id);
 
 		if (groupVisibilityPermission === GroupVisibilityPermission.OWN_GROUPS) {
@@ -235,7 +241,7 @@ export class ClassGroupUc {
 		const classDtoResults: (InternalClassDto<Class> | null)[] = await Promise.all(
 			classes.map(async (clazz: Class): Promise<InternalClassDto<Class> | null> => {
 				const name: string = clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name;
-				const isUpgradable: boolean = clazz.gradeLevel !== 13 && !clazz.successor;
+				const isUpgradable: boolean = clazz.gradeLevel !== maxGradeLevel && !clazz.successor;
 				const schoolYear: SchoolYear | undefined = clazz.year
 					? schoolYears.find((year: SchoolYear): boolean => year.id === clazz.year)
 					: undefined;
