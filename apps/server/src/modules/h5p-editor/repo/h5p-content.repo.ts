@@ -27,9 +27,6 @@ export class H5PContentRepo extends BaseRepo<H5PContent> {
 		return content;
 	}
 
-	/**
-	 * Currently not in use, but represents what h5p IContentStorage.getUsage() want.
-	 */
 	public async countUsage(library: ILibraryName): Promise<H5PCountUsageResult> {
 		const { machineName } = library;
 

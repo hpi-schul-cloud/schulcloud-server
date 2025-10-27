@@ -181,16 +181,11 @@ export class ContentStorage implements IContentStorage {
 	 * @param library the library for which to calculate usage.
 	 * @returns asDependency: how often the library is used as subcontent in
 	 * content; asMainLibrary: how often the library is used as a main library
-	 *
-	 * Currently return always that nothing is in use, to match aceptence criteria for deleting Libraries.
-	 * But with bad side effects for other h5p admin operations.
 	 */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public getUsage(library: ILibraryName): Promise<H5PCountUsageResult> {
-		// const { asMainLibrary, asDependency } = await this.repo.countUsage(library);
+	public async getUsage(library: ILibraryName): Promise<H5PCountUsageResult> {
+		const { asMainLibrary, asDependency } = await this.repo.countUsage(library);
 
-		// return { asMainLibrary, asDependency }
-		return Promise.resolve({ asMainLibrary: 0, asDependency: 0 });
+		return { asMainLibrary, asDependency };
 	}
 
 	public listContent(): Promise<string[]> {
