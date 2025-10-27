@@ -1,3 +1,4 @@
+/* eslint-disable filename-rules/match */
 import {
 	AuthorizationBodyParamsReferenceType,
 	AuthorizationClientAdapter,
@@ -29,6 +30,7 @@ import {
 	NotFoundException,
 } from '@nestjs/common';
 import { LanguageType } from '@shared/domain/interface';
+import { PassThrough, Readable } from 'stream';
 import { EntityId } from '@shared/domain/types';
 import { Request } from 'express';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, H5PContentResponse } from '../controller/dto';
@@ -379,5 +381,38 @@ export class H5PEditorUc {
 			userLanguage = languageUser.language;
 		}
 		return userLanguage;
+	}
+
+	public async streamH5pPackage(contentId: string, userId: EntityId): Promise<Readable> {
+		const stream = new PassThrough();
+		const user = this.changeUserType(userId);
+		await this.h5pEditor.exportContent(contentId, stream, user).catch((err: unknown) => {
+			if (err instanceof Error || err === undefined) {
+				stream.destroy(err);
+			} else {
+				stream.destroy(new Error(String(err)));
+			}
+		});
+		return stream;
+	}
+
+	public async importH5pPackagePoC(
+		userId: EntityId,
+		file: Express.Multer.File
+	): Promise<
+		| AjaxSuccessResponse
+		| {
+				height?: number;
+				mime: string;
+				path: string;
+				width?: number;
+		  }
+		| ILibraryOverviewForClient[]
+		| undefined
+	> {
+		const query = { action: 'library-upload' } as AjaxPostQueryParams;
+		const body = {} as AjaxPostBodyParams;
+		const response = await this.postAjax(userId, query, body, undefined, file);
+		return response;
 	}
 }
