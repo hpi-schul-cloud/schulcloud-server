@@ -837,13 +837,9 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN calling getFilePath with invalid parameters', () => {
-			it('should throw error', async () => {
-				// Test private getFilePath using fileExists
-				const missingContentID = service.fileExists('', 'filename');
-				await expect(missingContentID).rejects.toThrow(HttpException);
-
-				const missingFilename = service.fileExists('id', '');
-				await expect(missingFilename).rejects.toThrow(HttpException);
+			it('should throw error', () => {
+				expect(() => service.fileExists('', 'filename')).toThrow(HttpException);
+				expect(() => service.fileExists('id', '')).toThrow(HttpException);
 			});
 		});
 
