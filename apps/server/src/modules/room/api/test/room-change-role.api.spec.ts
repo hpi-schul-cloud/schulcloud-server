@@ -200,7 +200,7 @@ describe('Room Controller (API)', () => {
 				return { loggedInClient, room, targetUser, externalTeacherUser };
 			};
 
-			it('should not allow to pick role roomowner (=> different endpoint)', async () => {
+			it('should not allow to change to role roomowner', async () => {
 				const { loggedInClient, room, targetUser } = await setupAdminLogin();
 
 				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
@@ -208,18 +208,8 @@ describe('Room Controller (API)', () => {
 					roleName: RoleName.ROOMOWNER,
 				});
 
-				expect(response.body as ApiValidationError).toEqual(expect.objectContaining({ type: 'API_VALIDATION_ERROR' }));
-			});
-
-			it('should not allow passing ownership to external teachers', async () => {
-				const { loggedInClient, room, externalTeacherUser } = await setupAdminLogin();
-
-				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
-					userIds: [externalTeacherUser.id],
-					roleName: RoleName.ROOMOWNER,
-				});
-
 				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				expect(response.body as ApiValidationError).toEqual(expect.objectContaining({ type: 'API_VALIDATION_ERROR' }));
 			});
 		});
 	});
