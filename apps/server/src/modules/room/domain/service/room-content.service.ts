@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { RoomContentRepo } from '../../repo';
 import { RoomContentItem, RoomContentType } from '../type';
@@ -33,10 +33,15 @@ export class RoomContentService {
 
 	public async moveBoard(roomId: EntityId, boardId: EntityId, toPosition: number): Promise<void> {
 		const items = await this.roomContentRepo.findContentItemsByRoomId(roomId);
+
+		if (toPosition < 0 || toPosition >= items.length) {
+			throw new BadRequestException(`Invalid content position ${toPosition} for room '${roomId}'`);
+		}
+
 		const boardIndex = items.findIndex((item) => item.type === RoomContentType.BOARD && item.id === boardId);
 
 		if (boardIndex === -1) {
-			throw new Error(`Board with ID ${boardId} not found in room ${roomId}`);
+			throw new BadRequestException(`Board with ID ${boardId} not found in room '${roomId}'`);
 		}
 
 		const [boardItem] = items.splice(boardIndex, 1);

@@ -5,3 +5,8 @@ export type RoomContentItem = {
 	type: RoomContentType;
 	id: EntityId;
 };
+
+export interface RoomContentProps {
+	roomId: EntityId;
+	items: RoomContentItem[];
+}
