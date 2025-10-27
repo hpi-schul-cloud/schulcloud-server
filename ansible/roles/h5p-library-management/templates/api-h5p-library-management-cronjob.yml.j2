@@ -13,7 +13,7 @@ metadata:
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
   name: api-h5p-library-management-cronjob
 spec:
-  schedule: "{{ SERVER_H5P_LIBRARY_MANAGEMENT_CRONJOB|default("0 * * * *", true) }}"
+  schedule: "{{ SERVER_H5P_LIBRARY_MANAGEMENT_CRONJOB|default("0 2 * * *", true) }}"
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
@@ -61,7 +61,7 @@ spec:
             resources:
               limits:
                 cpu: {{ API_H5P_LIBRARY_MANAGEMENT_CPU_LIMITS|default("2000m", true) }}
-                memory: {{ API_H5P_LIBRARY_MANAGEMENT_MEMORY_LIMITS|default("2Gi", true) }}
+                memory: {{ API_H5P_LIBRARY_MANAGEMENT_MEMORY_LIMITS|default("4Gi", true) }}
               requests:
                 cpu: {{ API_H5P_LIBRARY_MANAGEMENT_CPU_REQUESTS|default("100m", true) }}
                 memory: {{ API_H5P_LIBRARY_MANAGEMENT_MEMORY_REQUESTS|default("150Mi", true) }}

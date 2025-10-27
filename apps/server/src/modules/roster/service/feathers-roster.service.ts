@@ -98,7 +98,7 @@ export class FeathersRosterService {
 		const externalTool = await this.validateAndGetExternalTool(oauth2ClientId);
 		const schoolExternalTool = await this.validateSchoolExternalTool(user.schoolId, externalTool.id);
 
-		const coursesUserGroups = await this.getCoursesUserGroups(pseudonymContext, schoolExternalTool);
+		const coursesUserGroups = await this.getCoursesUserGroups(pseudonymContext, schoolExternalTool, user.schoolId);
 		const roomsUserGroups = await this.getRoomsUserGroups(pseudonymContext, schoolExternalTool);
 
 		const userGroups: UserGroups = {
@@ -140,9 +140,10 @@ export class FeathersRosterService {
 
 	private async getCoursesUserGroups(
 		pseudonymContext: Pseudonym,
-		schoolExternalTool: SchoolExternalTool
+		schoolExternalTool: SchoolExternalTool,
+		userSchoolId: EntityId
 	): Promise<UserGroup[]> {
-		let courses = await this.courseService.findAllByUserId(pseudonymContext.userId);
+		let [courses] = await this.courseService.findAllByUserId(pseudonymContext.userId, userSchoolId);
 		courses = await this.filterByToolAvailability(courses, schoolExternalTool);
 
 		const coursesUserGroups = courses.map((course) => {

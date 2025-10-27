@@ -647,6 +647,13 @@
 	},
 	{
 		"_id": {
+			"$oid": "68ece70b963025351f0a98c4"
+		},
+		"name": "guestExternalPerson",
+		"permissions": []
+	},
+	{
+		"_id": {
 			"$oid": "675abdb4e76b1142cd4c89e3"
 		},
 		"name": "roomowner",

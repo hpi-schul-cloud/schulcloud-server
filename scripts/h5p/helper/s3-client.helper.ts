@@ -1,16 +1,23 @@
-const {
+import {
 	DeleteObjectsCommand,
 	GetObjectCommand,
 	ListObjectsV2Command,
-	S3Client,
+	ListObjectsV2CommandOutput,
 	PutObjectCommand,
-} = require('@aws-sdk/client-s3');
-const { ConfiguredRetryStrategy, RETRY_MODES } = require('@aws-sdk/util-retry');
+	PutObjectCommandOutput,
+	S3Client,
+} from '@aws-sdk/client-s3';
+import { ConfiguredRetryStrategy, RETRY_MODES } from '@aws-sdk/util-retry';
+import { Readable } from 'stream';
 
-const MAXIMUM_ATTEMPTS = 3;
-const BACKOFF_DELAY_TIME_MS = 5000;
+export class S3ClientHelper {
+	private readonly MAXIMUM_ATTEMPTS = 3;
+	private readonly BACKOFF_DELAY_TIME_MS = 5000;
+	private readonly S3_MAX_DEFAULT_VALUE_FOR_KEYS = 1000;
 
-class S3ClientHelper {
+	private bucket: string | undefined;
+	private s3Client: S3Client;
+
 	constructor() {
 		const endpoint = process.env.H5P_EDITOR__S3_ENDPOINT;
 		if (!endpoint) {
@@ -33,7 +40,10 @@ class S3ClientHelper {
 			throw new Error('H5P_EDITOR__S3_BUCKET_LIBRARIES environment variable is not set');
 		}
 
-		const retryStrategy = new ConfiguredRetryStrategy(MAXIMUM_ATTEMPTS, (attempt) => attempt * BACKOFF_DELAY_TIME_MS);
+		const retryStrategy = new ConfiguredRetryStrategy(
+			this.MAXIMUM_ATTEMPTS,
+			(attempt) => attempt * this.BACKOFF_DELAY_TIME_MS
+		);
 
 		this.s3Client = new S3Client({
 			region,
@@ -49,33 +59,43 @@ class S3ClientHelper {
 		});
 	}
 
-	async getFileContent(key) {
+	public async getFileContent(key: string, bytesRange?: string): Promise<Buffer> {
 		const command = new GetObjectCommand({
 			Bucket: this.bucket,
 			Key: key,
+			Range: bytesRange,
 		});
+
 		const response = await this.s3Client.send(command);
-		const chunks = [];
-		for await (const chunk of response.Body) {
-			chunks.push(chunk);
+		const stream = response.Body as Readable;
+
+		const chunks: Buffer[] = [];
+		for await (const chunk of stream) {
+			chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
 		}
 		const result = Buffer.concat(chunks);
 
 		return result;
 	}
 
-	async listObjects(prefix = undefined) {
-		const command = new ListObjectsV2Command({
+	public async listObjects(
+		prefix: string,
+		nextMarker?: string,
+		maxKeys = this.S3_MAX_DEFAULT_VALUE_FOR_KEYS
+	): Promise<ListObjectsV2CommandOutput> {
+		const req = new ListObjectsV2Command({
 			Bucket: this.bucket,
 			Prefix: prefix,
+			ContinuationToken: nextMarker,
+			MaxKeys: maxKeys,
 		});
-		const response = await this.s3Client.send(command);
-		const result = response.Contents || [];
 
-		return result;
+		const data = await this.s3Client.send(req);
+
+		return data;
 	}
 
-	async uploadFile(key, body) {
+	public async uploadFile(key: string, body: Buffer | string): Promise<PutObjectCommandOutput> {
 		const command = new PutObjectCommand({
 			Bucket: this.bucket,
 			Key: key,
@@ -86,24 +106,29 @@ class S3ClientHelper {
 		return result;
 	}
 
-	async deleteFolder(path, nextMarker = undefined) {
+	public async deleteFolder(path: string, nextMarker?: string): Promise<string[]> {
 		const data = await this.listObjects(path, nextMarker);
-		if (data.length === 0) {
+		if (!data.Contents || data.Contents.length === 0) {
 			return [];
 		}
 
-		const paths = data.map((obj) => obj.Key);
+		const paths = data.Contents.filter((obj): obj is { Key: string } => typeof obj.Key === 'string').map(
+			(obj) => obj.Key
+		);
+
 		const result = await this.delete(paths);
+
 		if (data.IsTruncated && data.NextContinuationToken) {
-			const deletedFiles = await this.deleteDirectory(path, data.NextContinuationToken);
+			const deletedFiles = await this.deleteFolder(path, data.NextContinuationToken);
 			result.push(...deletedFiles);
 		}
 
 		return result;
 	}
 
-	async delete(paths) {
-		const result = [];
+	private async delete(paths: string[]): Promise<string[]> {
+		const result: string[] = [];
+
 		if (paths.length === 0) {
 			return [];
 		}
@@ -115,14 +140,19 @@ class S3ClientHelper {
 			Bucket: this.bucket,
 			Delete: { Objects: pathObjects },
 		});
+
 		const response = await this.s3Client.send(command);
+
 		if (response.$metadata.httpStatusCode === 200 && response.Deleted) {
-			const deletedFiles = response.Deleted.map((obj) => obj.Key);
+			const stringKeyObjects = response.Deleted.filter((obj) => this.isObjectWithAStringKey(obj));
+			const deletedFiles = stringKeyObjects.map((obj) => obj.Key);
 			result.push(...deletedFiles);
 		}
 
 		return result;
 	}
-}
 
-module.exports = S3ClientHelper;
+	private isObjectWithAStringKey(obj: unknown): obj is { Key: string } {
+		return typeof obj === 'object' && obj !== null && 'Key' in obj && typeof (obj as any).Key === 'string';
+	}
+}

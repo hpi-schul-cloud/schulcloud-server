@@ -1,34 +1,32 @@
-import { HttpService } from '@nestjs/axios';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ErrorUtils } from '@core/error/utils';
+import xml2json from '@hendt/xml2json/lib';
+import { HttpService } from '@nestjs/axios';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import crypto from 'crypto';
 import { firstValueFrom, Observable } from 'rxjs';
 import { URL, URLSearchParams } from 'url';
-import xml2json from '@hendt/xml2json/lib';
-import { VideoConferenceConfig } from '../video-conference-config';
-import { BbbConfig } from './bbb-config';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig } from './request';
 import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
 
 @Injectable()
 export class BBBService {
 	constructor(
-		private readonly configService: ConfigService<BbbConfig & VideoConferenceConfig, true>,
+		@Inject(VIDEO_CONFERENCE_CONFIG_TOKEN) private readonly config: VideoConferenceConfig,
 		private readonly httpService: HttpService
 	) {}
 
 	protected get baseUrl(): string {
-		return this.configService.get('VIDEOCONFERENCE_HOST');
+		return this.config.VIDEOCONFERENCE_HOST;
 	}
 
 	protected get salt(): string {
-		return this.configService.get('VIDEOCONFERENCE_SALT');
+		return this.config.VIDEOCONFERENCE_SALT;
 	}
 
 	protected get presentationUrl(): string {
-		return this.configService.get('VIDEOCONFERENCE_DEFAULT_PRESENTATION');
+		return this.config.VIDEOCONFERENCE_DEFAULT_PRESENTATION;
 	}
 
 	/** Note no guard, or type check. Should be private. */

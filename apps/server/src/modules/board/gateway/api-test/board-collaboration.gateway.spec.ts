@@ -35,10 +35,9 @@ describe(BoardCollaborationGateway.name, () => {
 		app = testingModule.createNestApplication();
 
 		em = app.get(EntityManager);
-		const mongoUrl = em.config.getClientUrl();
 
 		const mongoIoAdapter = new MongoIoAdapter(app);
-		await mongoIoAdapter.connectToMongoDb(mongoUrl);
+		await mongoIoAdapter.connectToMongoDb();
 		app.useWebSocketAdapter(mongoIoAdapter);
 		await app.init();
 
@@ -76,7 +75,7 @@ describe(BoardCollaborationGateway.name, () => {
 			isExternalUser: false,
 		});
 
-		const course = courseEntityFactory.build({ teachers: [teacherUser] });
+		const course = courseEntityFactory.build({ school: school, teachers: [teacherUser] });
 		await em.persistAndFlush([teacherUser, teacherAccount, studentUser, studentAccount, course]);
 
 		ioClient = await getSocketApiClient(app, teacherAuthJwt);

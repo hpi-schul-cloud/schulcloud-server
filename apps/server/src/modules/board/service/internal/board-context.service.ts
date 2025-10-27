@@ -75,30 +75,39 @@ export class BoardContextService {
 	private async getFromCourse(courseId: EntityId): Promise<UserWithBoardRoles[]> {
 		const course = await this.courseService.findById(courseId);
 		const usersWithRoles: UserWithBoardRoles[] = [
-			...course.getTeachersList().map((user) => {
-				return {
-					userId: user.id,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
-				};
-			}),
-			...course.getSubstitutionTeachersList().map((user) => {
-				return {
-					userId: user.id,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
-				};
-			}),
-			...course.getStudentsList().map((user) => {
-				return {
-					userId: user.id,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					roles: [BoardRoles.READER],
-				};
-			}),
+			...course
+				.getTeachersList()
+				.filter((user) => user.schoolId === course.school.id)
+				.map((user) => {
+					return {
+						userId: user.id,
+						firstName: user.firstName,
+						lastName: user.lastName,
+						roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
+					};
+				}),
+			...course
+				.getSubstitutionTeachersList()
+				.filter((user) => user.schoolId === course.school.id)
+				.map((user) => {
+					return {
+						userId: user.id,
+						firstName: user.firstName,
+						lastName: user.lastName,
+						roles: [BoardRoles.EDITOR, BoardRoles.ADMIN],
+					};
+				}),
+			...course
+				.getStudentsList()
+				.filter((user) => user.schoolId === course.school.id)
+				.map((user) => {
+					return {
+						userId: user.id,
+						firstName: user.firstName,
+						lastName: user.lastName,
+						roles: [BoardRoles.READER],
+					};
+				}),
 		];
 
 		return usersWithRoles;

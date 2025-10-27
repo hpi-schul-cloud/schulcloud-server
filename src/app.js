@@ -74,7 +74,7 @@ const setupApp = async (orm) => {
 			// pass header into hooks.params
 			// todo: To create a fake requestId on this place is a temporary solution
 			// it MUST be removed after the API gateway is established
-			const uid = ObjectId();
+			const uid = new ObjectId();
 			req.headers.requestId = uid.toString();
 			req.feathers.leadTime = req.leadTime;
 			req.feathers.headers = req.headers;

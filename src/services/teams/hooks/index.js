@@ -771,6 +771,31 @@ const deleteTeamInCollaborativeStorage = (hook) => {
 	service.deleteTeam(hook.id);
 };
 
+function cleanUserIdsFromTeam(team) {
+	team.userIds = team.userIds.filter((user) => {
+		const keep = user && user.userId && user.role && user.schoolId;
+		if (!keep) {
+			logger.info('Removed invalid user from team', { teamId: team._id, user });
+		}
+		return keep;
+	});
+}
+
+/**
+ * @afterHook
+ */
+const cleanUserIdsHook = (context) => {
+	if (context.result && Array.isArray(context.result.userIds)) {
+		cleanUserIdsFromTeam(context.result);
+	}
+	// For find (array of teams)
+	if (context.result && context.result.data && Array.isArray(context.result.data)) {
+		context.result.data.forEach((team) => {
+			cleanUserIdsFromTeam(team);
+		});
+	}
+}
+
 /**
  * @afterHook
  */
@@ -839,8 +864,8 @@ exports.before = {
 // todo: update moongose
 exports.after = {
 	all: [],
-	find: [filterToRelated(keys.resFind, 'result.data')], // filterFindResult
-	get: [addCurrentUser], // see before (?)
+	find: [filterToRelated(keys.resFind, 'result.data'), cleanUserIdsHook], // filterFindResult
+	get: [cleanUserIdsHook, addCurrentUser], // see before (?)
 	create: [filterToRelated(keys.resId, 'result'), createTeamInCollaborativeStorage],
 	update: [updateTeamInCollaborativeStorage], // test schoolId remove
 	patch: [isUserIsEmpty, addCurrentUser, pushUserChangedEvent, updateTeamInCollaborativeStorage], // test schoolId remove

@@ -1,7 +1,7 @@
 const { parse } = require('papaparse');
 const { mix } = require('mixwith');
 const { Forbidden } = require('@feathersjs/errors');
-const { Configuration } = require('@hpi-schul-cloud/commons');
+const moment = require('moment');
 
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
@@ -458,20 +458,9 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return dateValidationRegex.test(dateString);
 	}
 
-	/**
-	 * Converts a string formatted date into a Date object.
-	 * Valid date string formats: dd.mm.yyyy, dd/mm/yyyy, dd-mm-yyyy
-	 * @static
-	 * @see CSVSyncer.isValidBirthday for validation
-	 * @param {String} dateString String in the format dd(.|/|-)mm(.|/|-)yyyy
-	 * @returns {Date} the corresponding Date object
-	 */
 	static convertToDate(dateString) {
-		const dd = parseInt(dateString.substring(0, 2), 10);
-		const mm = parseInt(dateString.substring(3, 5), 10);
-		const yyyy = parseInt(dateString.substring(6, 10), 10);
+		const date = moment.utc(dateString, ['DD.MM.YYYY', 'DD/MM/YYYY', 'DD-MM-YYYY']);
 
-		const date = new Date(yyyy, mm - 1, dd);
 		return date;
 	}
 }

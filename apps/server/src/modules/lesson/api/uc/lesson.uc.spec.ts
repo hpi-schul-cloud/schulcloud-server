@@ -107,7 +107,7 @@ describe('LessonUC', () => {
 			it('should get course from courseService', async () => {
 				const { user, course } = setup();
 				await lessonUC.getLessons(user.id, course.id);
-				expect(courseService.findOneForUser).toHaveBeenCalledWith(course.id, user.id);
+				expect(courseService.findOneForUser).toHaveBeenCalledWith(course.id, user.id, user.school.id);
 			});
 			it('should check user course permission', async () => {
 				const { user, course } = setup();
