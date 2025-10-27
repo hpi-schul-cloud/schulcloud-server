@@ -436,6 +436,11 @@ describe('VideoConferenceController (API)', () => {
 					users: [{ role: roomEditorRole, user: teacherUser }],
 				});
 				const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+				const videoConference = videoConferenceFactory.build({
+					target: room.id,
+					targetModel: VideoConferenceTargetModels.ROOMS,
+				});
+
 				await em.persistAndFlush([
 					room,
 					roomMembership,
@@ -445,6 +450,7 @@ describe('VideoConferenceController (API)', () => {
 					userGroup,
 					roomViewerRole,
 					roomViewerRole,
+					videoConference,
 				]);
 				em.clear();
 
