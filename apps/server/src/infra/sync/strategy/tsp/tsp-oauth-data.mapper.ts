@@ -44,7 +44,7 @@ const CLASS_NAME_FORMATS = [
 
 export type TspUserInfo = {
 	externalId: string;
-	role: RoleName.TEACHER | RoleName.STUDENT;
+	role: RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT;
 };
 
 @Injectable()
@@ -286,7 +286,7 @@ export class TspOauthDataMapper {
 		usersOfClasses: Map<string, TspUserInfo[]>,
 		classId: string,
 		externalId: string,
-		role: RoleName.TEACHER | RoleName.STUDENT
+		role: RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT
 	): void {
 		let userInfos = usersOfClasses.get(classId);
 		if (userInfos === undefined) {
