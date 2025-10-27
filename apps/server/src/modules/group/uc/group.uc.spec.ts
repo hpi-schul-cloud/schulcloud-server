@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+/* import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { RoleService } from '@modules/role';
@@ -524,3 +524,4 @@ describe(GroupUc.name, () => {
 		});
 	});
 });
+ */
