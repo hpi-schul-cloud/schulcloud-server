@@ -233,5 +233,23 @@ describe('RoomSetup', () => {
 				expect(() => roomSetup.userGroupEntity).toThrow(/User group entity not set up/);
 			});
 		});
+
+		describe('when accessing sameSchool getter', () => {
+			it('should throw an error', () => {
+				expect(() => roomSetup.sameSchool).toThrow(/Room not set up/);
+			});
+		});
+
+		describe('when accessing otherSchool getter', () => {
+			it('should throw an error', () => {
+				expect(() => roomSetup.otherSchool).toThrow(/Room not set up/);
+			});
+		});
+
+		describe('when accessing entity manager getter', () => {
+			it('should return the entity manager', () => {
+				expect(roomSetup.em).toBe(em);
+			});
+		});
 	});
 });
