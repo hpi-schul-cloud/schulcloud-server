@@ -8,7 +8,6 @@ import {
 	BoardLayout,
 	BoardNodeFactory,
 	ColumnBoard,
-	ColumnBoardProps,
 	isColumnBoard,
 } from '../domain';
 import { BoardNodeRepo } from '../repo';
