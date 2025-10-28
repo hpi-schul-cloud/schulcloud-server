@@ -17,22 +17,23 @@ import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../../testing/room-entity.factory';
 import { RoomRolesTestFactory } from '../../../testing/room-roles.test.factory';
 
+export type SchoolRoleString = 'administrator' | 'teacher' | 'student';
 export type UserSetupCompact = [
 	string,
 	'sameSchool' | 'otherSchool',
-	'administrator' | 'teacher' | 'student',
+	SchoolRoleString | Array<SchoolRoleString>,
 	'roomowner' | 'roomadmin' | 'roomeditor' | 'roomviewer' | 'none'
 ];
 
 export type UserSetup = {
 	name: string;
 	school: 'sameSchool' | 'otherSchool';
-	schoolRoleName: 'administrator' | 'teacher' | 'student';
+	schoolRoleNames: SchoolRoleString | Array<SchoolRoleString>;
 	roomRoleName: 'roomowner' | 'roomadmin' | 'roomeditor' | 'roomviewer' | 'none';
 };
 
 export type UserSetupWithRoles = UserSetup & {
-	schoolRole: Role;
+	schoolRoles: Role[];
 	roomRole?: Role;
 };
 
@@ -48,11 +49,11 @@ export class RoomSetup {
 	constructor(private readonly _em: EntityManager, private readonly testApiClient: TestApiClient) {}
 
 	public setup = async (userSetupsCompact: UserSetupCompact[]): Promise<void> => {
-		const userSetups: UserSetup[] = userSetupsCompact.map(([name, school, schoolRoleName, roomRoleName]) => {
+		const userSetups: UserSetup[] = userSetupsCompact.map(([name, school, schoolRoleNames, roomRoleName]) => {
 			return {
 				name,
 				school,
-				schoolRoleName,
+				schoolRoleNames,
 				roomRoleName,
 			};
 		});
@@ -129,6 +130,14 @@ export class RoomSetup {
 		}
 		return user;
 	}
+
+	private getRoleByName = (name: string): Role => {
+		const role = this.roles[name];
+		if (!role) {
+			throw new Error(`Role with name ${name} not found`);
+		}
+		return role;
+	};
 
 	private setupComplexRoom = async (userSetups: UserSetup[]): Promise<void> => {
 		await this.setupRoles();
@@ -219,12 +228,9 @@ export class RoomSetup {
 			userFactory.buildWithId({
 				school,
 				firstName: setup.name,
-				roles: [setup.schoolRole],
+				roles: setup.schoolRoles,
 			})
 		);
-		users.forEach((u) => {
-			console.log({ name: u.firstName, roles: u.roles });
-		});
 		await this.em.persistAndFlush(users);
 		this.em.clear();
 		return users;
@@ -241,10 +247,13 @@ export class RoomSetup {
 		return user;
 	};
 
-	private appendRoles = (setups: UserSetup[]): UserSetupWithRoles[] =>
-		setups.map((setup) => {
-			const schoolRole = this.roles[setup.schoolRoleName];
-			const roomRole = setup.roomRoleName !== 'none' ? this.roles[setup.roomRoleName] : undefined;
-			return { ...setup, schoolRole, roomRole };
+	private appendRoles = (setups: UserSetup[]): UserSetupWithRoles[] => {
+		const setupsWithRoles = setups.map((setup) => {
+			const names = Array.isArray(setup.schoolRoleNames) ? setup.schoolRoleNames : [setup.schoolRoleNames];
+			const schoolRoles = names.map((name) => this.getRoleByName(name)).filter((role) => role !== undefined);
+			const roomRole = setup.roomRoleName !== 'none' ? this.getRoleByName(setup.roomRoleName) : undefined;
+			return { ...setup, schoolRoles, roomRole };
 		});
+		return setupsWithRoles;
+	};
 }

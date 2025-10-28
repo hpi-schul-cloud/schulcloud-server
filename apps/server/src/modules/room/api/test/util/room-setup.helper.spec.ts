@@ -236,13 +236,13 @@ describe('RoomSetup', () => {
 
 		describe('when accessing sameSchool getter', () => {
 			it('should throw an error', () => {
-				expect(() => roomSetup.sameSchool).toThrow(/Room not set up/);
+				expect(() => roomSetup.sameSchool).toThrow(/Same school not set up/);
 			});
 		});
 
 		describe('when accessing otherSchool getter', () => {
 			it('should throw an error', () => {
-				expect(() => roomSetup.otherSchool).toThrow(/Room not set up/);
+				expect(() => roomSetup.otherSchool).toThrow(/Other school not set up/);
 			});
 		});
 
