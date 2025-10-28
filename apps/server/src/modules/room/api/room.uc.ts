@@ -307,7 +307,6 @@ export class RoomUc {
 	public async passOwnership(currentUserId: EntityId, roomId: EntityId, targetUserId: EntityId): Promise<void> {
 		const ownershipContext = await this.getPassOwnershipContext(roomId, currentUserId, targetUserId);
 		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
-		const room = await this.roomService.getSingleRoom(roomId);
 
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const roomMembers = await this.roomMembershipService.getRoomMembers(roomId);
@@ -326,7 +325,6 @@ export class RoomUc {
 			action: Action.write,
 			requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
 		});
-		this.checkRoomBelongsToUsersSchool(user, room);
 		this.checkUserIsNotStudent(ownershipContext);
 
 		if (roomOwner) {
@@ -390,13 +388,6 @@ export class RoomUc {
 				currentUserId: context.currentUser.id,
 				targetUserId: context.targetUser.id || 'undefined',
 			});
-		}
-	}
-
-	private checkRoomBelongsToUsersSchool(user: User, room: Room): void {
-		const isRoomOfAdminSchool = room.schoolId === user.school.id;
-		if (!isRoomOfAdminSchool) {
-			throw new ForbiddenException('You do not have permission to passOwnership in this room');
 		}
 	}
 
