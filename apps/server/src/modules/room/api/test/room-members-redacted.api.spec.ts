@@ -240,5 +240,7 @@ describe('Room Controller (API)', () => {
 				);
 			});
 		});
+
+		describe('when the user is school admin and roomadmin', () => {});
 	});
 });

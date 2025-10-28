@@ -1,22 +1,21 @@
+import { EntityManager } from '@mikro-orm/core';
+import { AccountEntity } from '@modules/account/repo';
+import { GroupEntity } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
+import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
+import { RoomMembershipEntity } from '@modules/room-membership';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing/room-membership-entity.factory';
 import { RoomEntity } from '@modules/room/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { roomEntityFactory } from '../../testing/room-entity.factory';
-import { RoomRolesTestFactory } from '../../testing/room-roles.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
-import { RoleName } from '@modules/role';
-import { EntityManager } from '@mikro-orm/core';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { AccountEntity } from '@modules/account/repo';
-import { RoomMember } from '@modules/room-membership/do/room-member.do';
-import { RoomMembershipEntity } from '@modules/room-membership';
-import { GroupEntity } from '@modules/group/entity';
+import { TestApiClient } from '@testing/test-api-client';
+import { roomEntityFactory } from '../../../testing/room-entity.factory';
+import { RoomRolesTestFactory } from '../../../testing/room-roles.test.factory';
 
 export type UserSetupCompact = [
 	string,

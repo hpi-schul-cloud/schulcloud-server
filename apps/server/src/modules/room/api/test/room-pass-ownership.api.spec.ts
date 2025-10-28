@@ -7,7 +7,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomMemberListResponse } from '../dto/response/room-member-list.response';
-import { RoomSetup } from './room-setup.helper';
+import { RoomSetup } from './util/room-setup.helper';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
