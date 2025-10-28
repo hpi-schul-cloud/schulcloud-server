@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain/types';
 import { BBBBaseMeetingConfig, BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBService } from '../bbb';
 import { VideoConferenceDO, VideoConferenceOptionsDO } from '../domain';
 import { ErrorStatus } from '../error';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { defaultVideoConferenceOptions } from '../interface';
 import { PermissionMapping } from '../mapper/video-conference.mapper';
 import { VideoConferenceService } from '../service';
 import { ScopeInfo, ScopeRef, VideoConferenceInfo, VideoConferenceState } from './dto';
@@ -28,27 +28,28 @@ export class VideoConferenceInfoUc {
 			scope.scope
 		);
 
-		const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
-			meetingID: scope.id,
-		});
+		let options: VideoConferenceOptionsDO = await this.getVideoConferenceOptions(scope);
 
-		const options: VideoConferenceOptionsDO = await this.getVideoConferenceOptions(scope);
-
-		let response: VideoConferenceInfo;
+		let state: VideoConferenceState = VideoConferenceState.NOT_STARTED;
+		let bbbResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
 		try {
-			const bbbResponse: BBBResponse<BBBMeetingInfoResponse> = await this.bbbService.getMeetingInfo(config);
-			response = new VideoConferenceInfo({
-				state: VideoConferenceState.RUNNING,
-				permission: PermissionMapping[bbbRole],
-				bbbResponse,
-				options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
+			const videoConference = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
+				scope.id,
+				scope.scope
+			);
+
+			if (bbbRole === BBBRole.MODERATOR) {
+				options = videoConference.options;
+			}
+
+			const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
+				meetingID: scope.id + videoConference.salt,
 			});
-		} catch {
-			response = new VideoConferenceInfo({
-				state: VideoConferenceState.NOT_STARTED,
-				permission: PermissionMapping[bbbRole],
-				options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
-			});
+
+			bbbResponse = await this.bbbService.getMeetingInfo(config);
+			state = VideoConferenceState.RUNNING;
+		} catch (e) {
+			// TODO should be refactored to not use exceptions for flow control
 		}
 
 		const isGuest: boolean = await this.videoConferenceService.hasExpertRole(
@@ -57,9 +58,20 @@ export class VideoConferenceInfoUc {
 			scopeInfo.scopeId
 		);
 
-		if (!this.videoConferenceService.canGuestJoin(isGuest, response.state, options.moderatorMustApproveJoinRequests)) {
+		if (!this.videoConferenceService.canGuestJoin(isGuest, state, options.moderatorMustApproveJoinRequests)) {
 			throw new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE);
 		}
+
+		if (isGuest && state === VideoConferenceState.RUNNING) {
+			options = {} as VideoConferenceOptionsDO;
+		}
+
+		const response = new VideoConferenceInfo({
+			state,
+			permission: PermissionMapping[bbbRole],
+			bbbResponse,
+			options,
+		});
 
 		return response;
 	}
@@ -73,6 +85,7 @@ export class VideoConferenceInfoUc {
 			);
 			options = { ...vcDO.options };
 		} catch {
+			// TODO why should return anything if videoconference not found?
 			options = defaultVideoConferenceOptions;
 		}
 		return options;
