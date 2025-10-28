@@ -38,7 +38,7 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 	}
 
 	private hasDynamicPermission(user: User, object: RoomMemberAuthorizable, permission: Permission): boolean {
-		const isAlreadyRoomOwner = object.member.roomRoleName == RoleName.ROOMOWNER;
+		const isAlreadyRoomOwner = object.member.roomRoleName === RoleName.ROOMOWNER;
 		if (isAlreadyRoomOwner) {
 			return false;
 		}
