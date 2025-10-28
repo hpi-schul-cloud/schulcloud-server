@@ -183,6 +183,17 @@ describe('RoomSetup', () => {
 			expect(() => roomSetup.getUserByName('Bob')).toThrow(/not found/);
 		});
 
+		it('getRoleByName returns correct role', async () => {
+			await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
+			const role = roomSetup.getRoleByName('roomowner');
+			expect(role.name).toBe('roomowner');
+		});
+
+		it('getRoleByName throws for missing role', async () => {
+			await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
+			expect(() => roomSetup.getRoleByName('roomadmins')).toThrow(/not found/);
+		});
+
 		it('createAccountForUser persists account and returns it', async () => {
 			await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
 			const account = await roomSetup.createAccountForUser('Alice');

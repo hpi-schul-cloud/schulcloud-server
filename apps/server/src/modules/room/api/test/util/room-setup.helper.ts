@@ -16,6 +16,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../../testing/room-entity.factory';
 import { RoomRolesTestFactory } from '../../../testing/room-roles.test.factory';
+import { Permission } from '@shared/domain/interface';
 
 export type SchoolRoleString = 'administrator' | 'teacher' | 'student';
 export type UserSetupCompact = [
@@ -131,7 +132,7 @@ export class RoomSetup {
 		return user;
 	}
 
-	private getRoleByName = (name: string): Role => {
+	public getRoleByName = (name: string): Role => {
 		const role = this.roles[name];
 		if (!role) {
 			throw new Error(`Role with name ${name} not found`);
@@ -148,8 +149,8 @@ export class RoomSetup {
 		const sameSchoolUserSetups = userSetupsWithRoles.filter((setup) => setup.school === 'sameSchool');
 		const otherSchoolUserSetups = userSetupsWithRoles.filter((setup) => setup.school === 'otherSchool');
 
-		const sameSchoolUsers = await this.setupSingleRoleUsers(this._sameSchool, sameSchoolUserSetups);
-		const otherSchoolUsers = await this.setupSingleRoleUsers(this._otherSchool, otherSchoolUserSetups);
+		const sameSchoolUsers = await this.setupUsers(this._sameSchool, sameSchoolUserSetups);
+		const otherSchoolUsers = await this.setupUsers(this._otherSchool, otherSchoolUserSetups);
 		const users = [...sameSchoolUsers, ...otherSchoolUsers];
 		this._users = users;
 
@@ -158,7 +159,10 @@ export class RoomSetup {
 	};
 
 	private setupRoles = async (): Promise<void> => {
-		const administrator = roleFactory.buildWithId({ name: RoleName.ADMINISTRATOR });
+		const administrator = roleFactory.buildWithId({
+			name: RoleName.ADMINISTRATOR,
+			permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS],
+		});
 		const teacher = roleFactory.buildWithId({ name: RoleName.TEACHER });
 		const student = roleFactory.buildWithId({ name: RoleName.STUDENT });
 		const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
@@ -223,28 +227,18 @@ export class RoomSetup {
 		this._userGroupEntity = userGroupEntity;
 	};
 
-	private setupSingleRoleUsers = async (school: SchoolEntity, userSetups: UserSetupWithRoles[]): Promise<User[]> => {
-		const users = userSetups.map((setup) =>
-			userFactory.buildWithId({
+	private setupUsers = async (school: SchoolEntity, userSetups: UserSetupWithRoles[]): Promise<User[]> => {
+		const users = userSetups.map((setup) => {
+			const data = {
 				school,
 				firstName: setup.name,
 				roles: setup.schoolRoles,
-			})
-		);
+			};
+			return userFactory.buildWithId(data);
+		});
 		await this.em.persistAndFlush(users);
 		this.em.clear();
 		return users;
-	};
-
-	private setupUser = async (school: SchoolEntity, firstName: string, roles: Role[]): Promise<User> => {
-		const user = userFactory.buildWithId({
-			school,
-			firstName,
-			roles,
-		});
-		await this.em.persistAndFlush(user);
-		this.em.clear();
-		return user;
 	};
 
 	private appendRoles = (setups: UserSetup[]): UserSetupWithRoles[] => {
