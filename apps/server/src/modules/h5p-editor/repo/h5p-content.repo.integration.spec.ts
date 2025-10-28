@@ -117,5 +117,17 @@ describe('ContentRepo', () => {
 
 			expect(result).toEqual({ asMainLibrary: 0, asDependency: 2 });
 		});
+
+		it('should throw if unexpected structure returned', () => {
+			const invalidResult = { invalidField: 123 };
+
+			const repoWithPrivates = repo as unknown as {
+				castToH5PCountUsageResult: (obj: unknown) => unknown;
+			};
+
+			expect(() => repoWithPrivates.castToH5PCountUsageResult(invalidResult)).toThrow(
+				'Invalid dependency count result structure'
+			);
+		});
 	});
 });

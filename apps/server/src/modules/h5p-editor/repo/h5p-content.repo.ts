@@ -66,17 +66,19 @@ export class H5PContentRepo extends BaseRepo<H5PContent> {
 		if (this.isH5PCountUsageResult(aggregateResult)) {
 			return aggregateResult;
 		}
+
 		throw new Error('Invalid dependency count result structure');
 	}
 
 	private isH5PCountUsageResult(aggregateResult: unknown): aggregateResult is H5PCountUsageResult {
-		return (
+		const isH5PCountUsageResult =
 			typeof aggregateResult === 'object' &&
 			aggregateResult !== null &&
 			'asMainLibrary' in aggregateResult &&
 			'asDependency' in aggregateResult &&
 			typeof aggregateResult.asMainLibrary === 'number' &&
-			typeof aggregateResult.asDependency === 'number'
-		);
+			typeof aggregateResult.asDependency === 'number';
+
+		return isH5PCountUsageResult;
 	}
 }
