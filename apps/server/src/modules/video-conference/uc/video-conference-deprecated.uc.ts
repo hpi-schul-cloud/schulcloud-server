@@ -105,6 +105,9 @@ export class VideoConferenceDeprecatedUc {
 			// Patch options, if preset exists
 			vcDo = await this.videoConferenceRepo.findByScopeAndScopeId(refId, conferenceScope);
 			vcDo.options = options;
+			if (!vcDo.salt) {
+				vcDo.salt = randomBytes(16).toString('hex');
+			}
 		} catch (error) {
 			// Create new preset
 			vcDo = new VideoConferenceDO({
@@ -204,6 +207,7 @@ export class VideoConferenceDeprecatedUc {
 			meetingID: refId,
 		});
 
+		// this one fails if salt is not set
 		const options: VideoConferenceOptionsDO = await this.videoConferenceRepo
 			.findByScopeAndScopeId(refId, conferenceScope)
 			.then((vcDO: VideoConferenceDO) => vcDO.options)
