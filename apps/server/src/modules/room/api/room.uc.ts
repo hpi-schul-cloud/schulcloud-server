@@ -8,7 +8,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Room, RoomContentService, RoomService } from '../domain';
+import { Room, RoomService } from '../domain';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomMemberResponse } from './dto/response/room-member.response';
@@ -16,7 +16,7 @@ import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-r
 import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pass-ownership-to-student.error.loggable';
 import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
 import { UserToAddToRoomNotFoundLoggableException } from './loggables/user-not-found.error.loggable';
-import { RoomPermissionService } from './service';
+import { RoomPermissionService, RoomBoardService } from './service';
 import { School, SchoolService } from '@modules/school';
 import { RoomStats } from './type/room-stats.type';
 import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
@@ -36,7 +36,7 @@ export class RoomUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly roomPermissionService: RoomPermissionService,
 		private readonly schoolService: SchoolService,
-		private readonly roomContentService: RoomContentService
+		private readonly roomBoardService: RoomBoardService
 	) {}
 
 	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomWithLockedStatus>> {
@@ -177,22 +177,7 @@ export class RoomUc {
 		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
 		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.read);
 
-		const boards = await this.columnBoardService.findByExternalReference(
-			{
-				type: BoardExternalReferenceType.Room,
-				id: roomId,
-			},
-			0
-		);
-
-		const contentExists = await this.roomContentService.contentExists(roomId);
-		if (!contentExists) {
-			const boardIds = boards.map((board) => board.id);
-			await this.roomContentService.createContent(roomId, boardIds);
-		} else {
-			const boardIds = await this.roomContentService.getBoardIdList(roomId);
-			boards.sort((a, b) => boardIds.indexOf(a.id) - boardIds.indexOf(b.id));
-		}
+		const boards = await this.roomBoardService.getOrderedBoards(roomId);
 
 		return boards;
 	}
@@ -202,21 +187,7 @@ export class RoomUc {
 		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
 		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write);
 
-		// Do we really need this check here? Shouldn't the content be created when it was fetched by the frontend?
-		const contentExists = await this.roomContentService.contentExists(roomId);
-		if (!contentExists) {
-			const boards = await this.columnBoardService.findByExternalReference(
-				{
-					type: BoardExternalReferenceType.Room,
-					id: roomId,
-				},
-				0
-			);
-			const boardIds = boards.map((board) => board.id);
-			await this.roomContentService.createContent(roomId, boardIds);
-		}
-
-		await this.roomContentService.moveBoard(roomId, boardId, toPosition);
+		await this.roomBoardService.moveBoardInRoom(roomId, boardId, toPosition);
 	}
 
 	public async updateRoom(
@@ -254,7 +225,7 @@ export class RoomUc {
 		});
 		await this.roomService.deleteRoom(room);
 		await this.roomMembershipService.deleteRoomMembership(roomId);
-		await this.roomContentService.deleteContent(roomId);
+		await this.roomBoardService.deleteRoomContent(roomId);
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {

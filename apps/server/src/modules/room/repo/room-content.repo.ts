@@ -26,8 +26,11 @@ export class RoomContentRepo {
 	public async addItemToRoomContent(roomId: string, item: RoomContentItem): Promise<void> {
 		const roomContent = await this.em.findOneOrFail(RoomContentEntity, { roomId });
 
-		roomContent.items.push(item);
-		await this.em.flush();
+		const exists = roomContent.items.some((existingItem) => existingItem.id === item.id);
+		if (!exists) {
+			roomContent.items.push(item);
+			await this.em.flush();
+		}
 	}
 
 	public async updateRoomContent(roomId: string, items: RoomContentItem[]): Promise<void> {

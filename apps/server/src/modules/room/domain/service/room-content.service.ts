@@ -7,6 +7,13 @@ import { RoomContentItem, RoomContentType } from '../type';
 export class RoomContentService {
 	constructor(private readonly roomContentRepo: RoomContentRepo) {}
 
+	public async createContentIfNotExists(roomId: EntityId, boardIds: EntityId[]): Promise<void> {
+		const exists = await this.contentExists(roomId);
+		if (!exists) {
+			await this.createContent(roomId, boardIds);
+		}
+	}
+
 	public async contentExists(roomId: EntityId): Promise<boolean> {
 		const exists = (await this.roomContentRepo.countByRoomId(roomId)) > 0;
 
@@ -20,7 +27,7 @@ export class RoomContentService {
 		await this.roomContentRepo.createContent(roomId, items);
 	}
 
-	public async getBoardIdList(roomId: EntityId): Promise<EntityId[]> {
+	public async getBoardOrder(roomId: EntityId): Promise<EntityId[]> {
 		const items = await this.roomContentRepo.findContentItemsByRoomId(roomId);
 		const boardIds = items.filter((item) => item.type === RoomContentType.BOARD).map((item) => item.id);
 
