@@ -14,6 +14,9 @@ export class LibraryRepo extends BaseRepo<InstalledLibrary> {
 		await this.save(entity);
 	}
 
+	/**
+	 * This is a operation that need high memory consumption.
+	 */
 	public async getAll(): Promise<InstalledLibrary[]> {
 		const libraries = await this._em.find(this.entityName, {});
 
