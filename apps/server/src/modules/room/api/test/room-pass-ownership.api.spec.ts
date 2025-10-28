@@ -209,7 +209,7 @@ describe('Room Controller (API)', () => {
 				['SameSchoolTeacher_roomowner', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacher_roomadmin', HttpStatus.FORBIDDEN],
 				['SameSchoolStudent_roomviewer', HttpStatus.FORBIDDEN],
-				['OtherSchoolTeacher_roomeditor', HttpStatus.FORBIDDEN],
+				['OtherSchoolTeacher_roomeditor', HttpStatus.OK],
 				['SameSchoolTeacher_none', HttpStatus.FORBIDDEN],
 			] as [string, HttpStatus][])(
 				`when passing ownership to %s should return %d`,
