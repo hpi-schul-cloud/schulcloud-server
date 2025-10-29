@@ -1,3 +1,4 @@
+{% set memory_limit = API_H5P_LIBRARY_MANAGEMENT_MEMORY_LIMITS|default('4Gi', true) %}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -44,6 +45,9 @@ spec:
           containers:
           - name: api-h5p-library-management-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            env:
+            - name: NODE_OPTIONS
+              value: "--max-old-space-size={{ ((memory_limit | regex_replace('Gi', '')|int * 1024 * 0.8)|int) }}"
             envFrom:
             - configMapRef:
                 name: api-configmap
@@ -61,7 +65,7 @@ spec:
             resources:
               limits:
                 cpu: {{ API_H5P_LIBRARY_MANAGEMENT_CPU_LIMITS|default("2000m", true) }}
-                memory: {{ API_H5P_LIBRARY_MANAGEMENT_MEMORY_LIMITS|default("4Gi", true) }}
+                memory: {{ memory_limit }}
               requests:
                 cpu: {{ API_H5P_LIBRARY_MANAGEMENT_CPU_REQUESTS|default("100m", true) }}
                 memory: {{ API_H5P_LIBRARY_MANAGEMENT_MEMORY_REQUESTS|default("150Mi", true) }}
