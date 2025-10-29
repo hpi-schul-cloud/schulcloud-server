@@ -248,14 +248,12 @@ describe('Room Controller (API)', () => {
 				await roomSetup.setup([
 					['SameSchoolTeacher_roomowner', 'sameSchool', 'teacher', 'roomowner'],
 					['SameSchoolTeacherAdmin_roomadmin', 'sameSchool', ['teacher', 'administrator'], 'roomadmin'],
-					['SameSchoolStudent_roomviewer', 'sameSchool', 'student', 'roomviewer'],
-					['SameSchoolTeacher_none', 'sameSchool', 'teacher', 'none'],
 					['OtherSchoolTeacher_roomeditor', 'otherSchool', 'teacher', 'roomeditor'],
 				]);
 				return roomSetup;
 			};
 
-			it('should anonymize non-room-owner external names', async () => {
+			it('should anonymize names of users from other schools', async () => {
 				const roomSetup = await setup();
 				const { room } = roomSetup;
 
@@ -264,14 +262,33 @@ describe('Room Controller (API)', () => {
 
 				expect(response.status).toBe(HttpStatus.OK);
 				const body = response.body as RoomMemberListResponse;
-				expect(body.data.length).toEqual(4);
-				const userId = roomSetup.getUserByName('OtherSchoolTeacher_roomeditor').id;
-				const externalTeacherMember = body.data.find((member) => member.userId === userId);
+				const externalUserId = roomSetup.getUserByName('OtherSchoolTeacher_roomeditor').id;
+				const externalTeacherMember = body.data.find((member) => member.userId === externalUserId);
 				expect(externalTeacherMember).toEqual(
 					expect.objectContaining({
 						firstName: '---',
 						lastName: '---',
 						roomRoleName: 'roomeditor',
+						schoolRoleNames: [RoleName.TEACHER],
+					})
+				);
+			});
+
+			it('should not anonymize names of users from the same school', async () => {
+				const roomSetup = await setup();
+				const { room } = roomSetup;
+
+				const loggedInClient = await roomSetup.loginUser('SameSchoolTeacherAdmin_roomadmin');
+				const response = await loggedInClient.get(`/${room.id}/members-redacted`);
+
+				expect(response.status).toBe(HttpStatus.OK);
+				const body = response.body as RoomMemberListResponse;
+				const internalTeacherId = roomSetup.getUserByName('SameSchoolTeacher_roomowner').id;
+				const internalTeacherMember = body.data.find((member) => member.userId === internalTeacherId);
+				expect(internalTeacherMember).toEqual(
+					expect.objectContaining({
+						firstName: 'SameSchoolTeacher_roomowner',
+						roomRoleName: 'roomowner',
 						schoolRoleNames: [RoleName.TEACHER],
 					})
 				);
