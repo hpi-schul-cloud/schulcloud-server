@@ -286,7 +286,7 @@ describe('Room Controller (API)', () => {
 			it.each([
 				['SameSchoolTeacher_roomowner', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacherAdmin_roomadmin', HttpStatus.OK],
-				['SameSchoolStudent_roomviewer', HttpStatus.FORBIDDEN],
+				['SameSchoolStudent_roomviewer', HttpStatus.BAD_REQUEST],
 				['OtherSchoolTeacher_roomeditor', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacher_none', HttpStatus.FORBIDDEN],
 			] as [string, HttpStatus][])(
