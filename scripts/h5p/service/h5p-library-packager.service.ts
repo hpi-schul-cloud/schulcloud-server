@@ -162,21 +162,14 @@ export class H5pLibraryPackagerService {
 
 			// Compare versions: return true if tag is LESS than currentH5pHubTag
 			if (major < currentH5pHubTag.majorVersion) return true;
-			if (major > currentH5pHubTag.majorVersion) {
-				console.log(`>>> Excluding ${tag} (major version ${major} > ${currentH5pHubTag.majorVersion})`);
-				return false;
-			}
+			if (major > currentH5pHubTag.majorVersion) return false;
 
 			if (minor < currentH5pHubTag.minorVersion) return true;
-			if (minor > currentH5pHubTag.minorVersion) {
-				console.log(`>>> Excluding ${tag} (minor version ${minor} > ${currentH5pHubTag.minorVersion})`);
-				return false;
-			}
+			if (minor > currentH5pHubTag.minorVersion) return false;
 
 			if (patch < currentH5pHubTag.patchVersion) return true;
 
 			// If versions are equal or tag is greater, exclude it
-			console.log(`>>> Excluding ${tag} (patch version ${patch} >= ${currentH5pHubTag.patchVersion})`);
 			return false;
 		});
 	}
