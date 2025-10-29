@@ -158,38 +158,58 @@ describe('RoomSetup', () => {
 			expect(roomSetup.roomMembership.userGroupId).toBe(roomSetup.userGroupEntity.id);
 		});
 
-		it('getUserByName returns correct user', async () => {
-			await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
-			const user = roomSetup.getUserByName('Alice');
-			expect(user.firstName).toBe('Alice');
+		describe('getUserByName', () => {
+			it('should return correct user', async () => {
+				await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
+				const user = roomSetup.getUserByName('Alice');
+				expect(user.firstName).toBe('Alice');
+			});
+
+			it('should throw for missing user', async () => {
+				await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
+				expect(() => roomSetup.getUserByName('Bob')).toThrow(/not found/);
+			});
 		});
 
-		it('getUserByName throws for missing user', async () => {
-			await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
-			expect(() => roomSetup.getUserByName('Bob')).toThrow(/not found/);
+		describe('getRoleByName', () => {
+			it('should return correct role', async () => {
+				await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
+				const role = roomSetup.getRoleByName('roomowner');
+				expect(role.name).toBe('roomowner');
+			});
+
+			it('should throw for not existing role', async () => {
+				await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
+				expect(() => roomSetup.getRoleByName('speaker')).toThrow(/not found/);
+			});
 		});
 
-		it('getRoleByName returns correct role', async () => {
-			await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
-			const role = roomSetup.getRoleByName('roomowner');
-			expect(role.name).toBe('roomowner');
+		describe('getSchoolByName', () => {
+			it('should return sameSchool', async () => {
+				await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
+				const school = roomSetup.getSchoolByName('sameSchool');
+				expect(school).toBe(roomSetup.sameSchool);
+			});
+
+			it('should return otherSchool', async () => {
+				await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
+				const school = roomSetup.getSchoolByName('otherSchool');
+				expect(school).toBe(roomSetup.otherSchool);
+			});
 		});
 
-		it('getRoleByName throws for missing role', async () => {
-			await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
-			expect(() => roomSetup.getRoleByName('speaker')).toThrow(/not found/);
-		});
+		describe('createAccountForUser', () => {
+			it('should persist account and return it', async () => {
+				await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
+				const account = await roomSetup.createAccountForUser('Alice');
+				expect(account).toBeDefined();
+				expect((em as unknown as EntityManager).persistAndFlush).toHaveBeenCalled();
+			});
 
-		it('createAccountForUser persists account and returns it', async () => {
-			await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
-			const account = await roomSetup.createAccountForUser('Alice');
-			expect(account).toBeDefined();
-			expect((em as unknown as EntityManager).persistAndFlush).toHaveBeenCalled();
-		});
-
-		it('createAccountForUser throws when user is unknown', async () => {
-			await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
-			await expect(roomSetup.createAccountForUser('Bob')).rejects.toThrow(/not found/);
+			it('should throw when user is unknown', async () => {
+				await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
+				await expect(roomSetup.createAccountForUser('Bob')).rejects.toThrow(/not found/);
+			});
 		});
 
 		it('loginUser creates account and invokes api client login', async () => {

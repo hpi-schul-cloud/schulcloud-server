@@ -136,6 +136,14 @@ export class RoomSetup {
 		return this._em;
 	}
 
+	public getSchoolByName(name: 'sameSchool' | 'otherSchool'): SchoolEntity {
+		if (name === 'sameSchool') {
+			return this.sameSchool;
+		} else {
+			return this.otherSchool;
+		}
+	}
+
 	public getUserByName(name: string): User {
 		const user = this._users.find((u) => u.firstName === name);
 		if (!user) {
@@ -220,10 +228,20 @@ export class RoomSetup {
 
 	private setupUsers = async (school: SchoolEntity, userSetups: UserSetupWithRoles[]): Promise<User[]> => {
 		const users = userSetups.map((setup) => {
+			const secondarySchools: { school: SchoolEntity; role: Role }[] = [];
+			if (setup.school === 'otherSchool' && setup.roomRoleName !== 'none') {
+				secondarySchools.push({
+					school: this.getSchoolByName('sameSchool'),
+					role: this.getRoleByName(
+						Array.isArray(setup.schoolRoleNames) ? setup.schoolRoleNames[0] : setup.schoolRoleNames
+					),
+				});
+			}
 			const data = {
 				school,
 				firstName: setup.name,
 				roles: setup.schoolRoles,
+				secondarySchools,
 			};
 			return userFactory.buildWithId(data);
 		});
