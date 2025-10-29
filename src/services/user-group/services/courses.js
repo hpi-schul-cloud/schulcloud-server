@@ -32,6 +32,8 @@ const {
 	restrictChangesToArchivedCourse,
 	removeSubstitutionDuplicates,
 	restrictChangesToSyncedCourse,
+	restrictLockedCourse,
+	filterOutLockedCourses,
 } = require('../hooks/courses');
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
@@ -89,13 +91,18 @@ const courseHooks = {
 		all: [authenticate('jwt')],
 		find: [
 			hasPermission('COURSE_VIEW'),
+			filterOutLockedCourses,
 			restrictToCurrentSchoolIfNotLocal,
 			restrictToUsersOwnCoursesIfNotLocal,
 			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
 			mapPaginationQuery,
 			addCollation,
 		],
-		get: [courseInviteHook, iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist))],
+		get: [
+			restrictLockedCourse,
+			courseInviteHook,
+			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
+		],
 		create: [
 			injectUserId,
 			hasPermission('COURSE_CREATE'),
@@ -105,6 +112,7 @@ const courseHooks = {
 			iff(isProvider('external'), preventPopulate),
 		],
 		update: [
+			restrictLockedCourse,
 			checkScopePermissions(['COURSE_EDIT']),
 			restrictToCurrentSchoolIfNotLocal,
 			restrictToUsersOwnCoursesIfNotLocal,
@@ -112,6 +120,7 @@ const courseHooks = {
 			iff(isProvider('external'), preventPopulate),
 		],
 		patch: [
+			restrictLockedCourse,
 			patchPermissionHook,
 			restrictToCurrentSchoolIfNotLocal,
 			restrictChangesToArchivedCourse,
