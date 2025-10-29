@@ -1,8 +1,10 @@
 import { ILibraryName, LibraryName } from '@lumieducation/h5p-server';
+import { IFullLibraryName } from '@lumieducation/h5p-server/build/src/types';
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import { FileSystemHelper } from '../helper/file-system.helper';
 import { H5PLibrary } from '../interface/h5p-library';
-import { GitHubClientOptions, H5pGitHubClient } from './h5p-github.client.js';
+import { GitHubClientOptions, H5pGitHubClient } from './h5p-github.client';
+import { H5pHubClient } from './h5p-hub.client';
 
 type LibraryRepoMap = Record<string, string>;
 
@@ -12,6 +14,7 @@ export class H5pLibraryPackagerService {
 	libraryRepoMap: LibraryRepoMap;
 	tempFolderPath: string;
 	gitHubClient: H5pGitHubClient;
+	h5pHubClient: H5pHubClient;
 
 	constructor(libraryRepoMap: LibraryRepoMap, tempFolderPath?: string) {
 		if (!tempFolderPath) {
@@ -26,6 +29,7 @@ export class H5pLibraryPackagerService {
 
 		this.libraryRepoMap = libraryRepoMap;
 		this.gitHubClient = new H5pGitHubClient();
+		this.h5pHubClient = new H5pHubClient();
 	}
 
 	public async buildH5pLibrariesFromGitHubAsBulk(libraries: string[]): Promise<void> {
@@ -72,7 +76,14 @@ export class H5pLibraryPackagerService {
 		}
 		const options: GitHubClientOptions = { maxRetries: 3 };
 		const tags = await this.gitHubClient.fetchAllTags(repoName, options);
-		const filteredTags = this.getHighestPatchTags(tags);
+		let filteredTags = this.getHighestPatchTags(tags);
+
+		const currentH5pHubTag = await this.getCurrentTagFromH5pHub(library);
+		if (currentH5pHubTag) {
+			filteredTags = this.filterTagsByH5pHubVersion(filteredTags, currentH5pHubTag);
+			console.log(`Filtered tags to exclude versions >= ${this.formatLibraryVersion(currentH5pHubTag)}`);
+		}
+
 		console.log(`Found ${filteredTags.length} versions of ${library} in ${repoName}: ${filteredTags.join(', ')}`);
 		for (const tag of filteredTags) {
 			const tagResult = await this.buildLibraryVersionAndDependencies(library, tag, repoName, availableVersions);
@@ -89,6 +100,85 @@ export class H5pLibraryPackagerService {
 	private mapMachineNameToGitHubRepo(library: string): string | undefined {
 		const repo = this.libraryRepoMap[library];
 		return repo;
+	}
+
+	private async getCurrentTagFromH5pHub(library: string): Promise<IFullLibraryName | undefined> {
+		const tempDir = FileSystemHelper.getTempDir();
+		const h5pHubFolder = FileSystemHelper.buildPath(tempDir, 'h5p-hub');
+		if (!FileSystemHelper.pathExists(h5pHubFolder)) {
+			console.log(`Creating H5P Hub folder at ${h5pHubFolder}.`);
+			FileSystemHelper.createFolder(h5pHubFolder);
+		}
+
+		const filePath = FileSystemHelper.buildPath(h5pHubFolder, `${library}.h5p`);
+		if (FileSystemHelper.pathExists(filePath)) {
+			console.log(`Removing existing H5P Hub file at ${filePath}.`);
+			FileSystemHelper.removeFile(filePath);
+		}
+
+		console.log(`Downloading current version of ${library} from H5P Hub to ${filePath}.`);
+		await this.h5pHubClient.downloadContentType(library, filePath);
+
+		console.log(`Unzipping H5P Hub file ${filePath} to ${h5pHubFolder}.`);
+		const outputDir = FileSystemHelper.buildPath(h5pHubFolder, library);
+		FileSystemHelper.unzipFile(filePath, outputDir);
+
+		const folders = FileSystemHelper.getAllFolders(outputDir);
+		const folder = folders.find((folder) => folder.startsWith(library));
+		if (!folder) {
+			console.warn(`No folder found for library ${library} in unzipped H5P Hub content.`);
+			return;
+		}
+
+		const libraryFolder = FileSystemHelper.buildPath(outputDir, folder);
+		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(libraryFolder);
+		const json = FileSystemHelper.readJsonFile(libraryJsonPath) as {
+			majorVersion: number;
+			minorVersion: number;
+			patchVersion: number;
+			[key: string]: any;
+		};
+		const tag: IFullLibraryName = {
+			machineName: library,
+			majorVersion: json.majorVersion,
+			minorVersion: json.minorVersion,
+			patchVersion: json.patchVersion,
+		};
+
+		console.log('Found current version of library from H5P Hub:', this.formatLibraryVersion(tag));
+
+		return tag;
+	}
+
+	private formatLibraryVersion(version: IFullLibraryName): string {
+		if (!version) return '';
+
+		return `${version.machineName}-${version.majorVersion}.${version.minorVersion}.${version.patchVersion}`;
+	}
+
+	private filterTagsByH5pHubVersion(tags: string[], currentH5pHubTag: IFullLibraryName): string[] {
+		return tags.filter((tag) => {
+			const [major, minor, patch] = tag.split('.').map(Number);
+
+			// Compare versions: return true if tag is LESS than currentH5pHubTag
+			if (major < currentH5pHubTag.majorVersion) return true;
+			if (major > currentH5pHubTag.majorVersion) {
+				console.log(`>>> Excluding ${tag} (major version ${major} > ${currentH5pHubTag.majorVersion})`);
+				return false;
+			}
+
+			if (minor < currentH5pHubTag.minorVersion) return true;
+			if (minor > currentH5pHubTag.minorVersion) {
+				console.log(`>>> Excluding ${tag} (minor version ${minor} > ${currentH5pHubTag.minorVersion})`);
+				return false;
+			}
+
+			if (patch < currentH5pHubTag.patchVersion) return true;
+
+			// If versions are equal or tag is greater, exclude it
+			console.log(`>>> Excluding ${tag} (patch version ${patch} >= ${currentH5pHubTag.patchVersion})`);
+			return false;
+		});
 	}
 
 	private getHighestPatchTags(tags: string[]): string[] {
