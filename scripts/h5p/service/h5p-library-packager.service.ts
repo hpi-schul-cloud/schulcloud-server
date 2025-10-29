@@ -81,7 +81,6 @@ export class H5pLibraryPackagerService {
 		const currentH5pHubTag = await this.getCurrentTagFromH5pHub(library);
 		if (currentH5pHubTag) {
 			filteredTags = this.filterTagsByH5pHubVersion(filteredTags, currentH5pHubTag);
-			console.log(`Filtered tags to exclude versions >= ${this.formatLibraryVersion(currentH5pHubTag)}`);
 		}
 
 		console.log(`Found ${filteredTags.length} versions of ${library} in ${repoName}: ${filteredTags.join(', ')}`);
@@ -157,21 +156,33 @@ export class H5pLibraryPackagerService {
 	}
 
 	private filterTagsByH5pHubVersion(tags: string[], currentH5pHubTag: IFullLibraryName): string[] {
-		return tags.filter((tag) => {
+		const removedTags: string[] = [];
+		const filteredTags = tags.filter((tag) => {
 			const [major, minor, patch] = tag.split('.').map(Number);
 
-			// Compare versions: return true if tag is LESS than currentH5pHubTag
+			// Compare major version first
 			if (major < currentH5pHubTag.majorVersion) return true;
-			if (major > currentH5pHubTag.majorVersion) return false;
+			if (major > currentH5pHubTag.majorVersion) {
+				removedTags.push(tag);
+				return false;
+			}
 
+			// Major versions are equal, compare minor version
 			if (minor < currentH5pHubTag.minorVersion) return true;
-			if (minor > currentH5pHubTag.minorVersion) return false;
+			if (minor > currentH5pHubTag.minorVersion) {
+				removedTags.push(tag);
+				return false;
+			}
 
 			if (patch < currentH5pHubTag.patchVersion) return true;
 
 			// If versions are equal or tag is greater, exclude it
+			removedTags.push(tag);
 			return false;
 		});
+		console.log(`Excluded tags based on H5P Hub version: ${removedTags.join(', ')}`);
+
+		return filteredTags;
 	}
 
 	private getHighestPatchTags(tags: string[]): string[] {
