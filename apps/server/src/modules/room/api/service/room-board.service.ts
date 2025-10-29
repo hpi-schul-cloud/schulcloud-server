@@ -48,6 +48,7 @@ export class RoomBoardService {
 		targetRoomId: EntityId,
 		boardMappings: Map<EntityId, EntityId>
 	): Promise<void> {
+		await this.ensureRoomHasContent(sourceRoomId);
 		const sourceBoardIds = await this.roomContentService.getBoardOrder(sourceRoomId);
 		const targetBoardIds = (await this.getAvailableBoardsInRoom(targetRoomId)).map((board) => board.id);
 
