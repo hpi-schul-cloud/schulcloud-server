@@ -58,7 +58,22 @@ export class RoomSetup {
 				roomRoleName,
 			};
 		});
-		await this.setupComplexRoom(userSetups);
+
+		await this.setupRoles();
+		this._sameSchool = schoolEntityFactory.buildWithId();
+		this._otherSchool = schoolEntityFactory.buildWithId();
+
+		const userSetupsWithRoles = this.appendRoles(userSetups);
+		const sameSchoolUserSetups = userSetupsWithRoles.filter((setup) => setup.school === 'sameSchool');
+		const otherSchoolUserSetups = userSetupsWithRoles.filter((setup) => setup.school === 'otherSchool');
+
+		const sameSchoolUsers = await this.setupUsers(this._sameSchool, sameSchoolUserSetups);
+		const otherSchoolUsers = await this.setupUsers(this._otherSchool, otherSchoolUserSetups);
+		const users = [...sameSchoolUsers, ...otherSchoolUsers];
+		this._users = users;
+
+		await this.setupRoom(this._sameSchool, users, userSetupsWithRoles);
+		this.em.clear();
 	};
 
 	public createAccountForUser = async (loggedinUserName: string): Promise<AccountEntity> => {
@@ -135,24 +150,6 @@ export class RoomSetup {
 			throw new Error(`Role with name ${name} not found`);
 		}
 		return role;
-	};
-
-	private setupComplexRoom = async (userSetups: UserSetup[]): Promise<void> => {
-		await this.setupRoles();
-		this._sameSchool = schoolEntityFactory.buildWithId();
-		this._otherSchool = schoolEntityFactory.buildWithId();
-
-		const userSetupsWithRoles = this.appendRoles(userSetups);
-		const sameSchoolUserSetups = userSetupsWithRoles.filter((setup) => setup.school === 'sameSchool');
-		const otherSchoolUserSetups = userSetupsWithRoles.filter((setup) => setup.school === 'otherSchool');
-
-		const sameSchoolUsers = await this.setupUsers(this._sameSchool, sameSchoolUserSetups);
-		const otherSchoolUsers = await this.setupUsers(this._otherSchool, otherSchoolUserSetups);
-		const users = [...sameSchoolUsers, ...otherSchoolUsers];
-		this._users = users;
-
-		await this.setupRoom(this._sameSchool, users, userSetupsWithRoles);
-		this.em.clear();
 	};
 
 	private setupRoles = async (): Promise<void> => {
