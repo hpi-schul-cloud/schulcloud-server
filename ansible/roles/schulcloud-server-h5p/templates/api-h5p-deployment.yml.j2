@@ -1,3 +1,4 @@
+{% set memory_limit = API_H5P_EDITOR_MEMORY_LIMITS|default("8Gi", true) %}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -57,6 +58,9 @@ spec:
         - containerPort: 4448
           name: api-h5p
           protocol: TCP
+        env:
+        - name: NODE_OPTIONS
+          value: "--max-old-space-size={{ ((memory_limit | regex_replace('Gi', '')|int * 1024 * 0.8)|int) }}"
         envFrom:
         - configMapRef:
             name: api-configmap
@@ -90,7 +94,7 @@ spec:
         resources:
           limits:
             cpu: {{ API_H5P_EDITOR_CPU_LIMITS|default("2000m", true) }}
-            memory: {{ API_H5P_EDITOR_MEMORY_LIMITS|default("8Gi", true) }}
+            memory: {{ memory_limit }}
           requests:
             cpu: {{ API_H5P_EDITOR_CPU_REQUESTS|default("100m", true) }}
             memory: {{ API_H5P_EDITOR_MEMORY_REQUESTS|default("2Gi", true) }}
