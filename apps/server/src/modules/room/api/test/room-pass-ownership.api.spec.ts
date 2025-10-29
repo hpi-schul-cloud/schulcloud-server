@@ -306,5 +306,42 @@ describe('Room Controller (API)', () => {
 				}
 			);
 		});
+
+		describe('when the user is room owner from another school', () => {
+			const setup = async () => {
+				const roomSetup = new RoomSetup(em, testApiClient);
+				await roomSetup.setup([
+					['OtherSchoolTeacher_roomowner', 'otherSchool', 'teacher', 'roomowner'],
+					['SameSchoolTeacherAdmin_roomadmin', 'sameSchool', ['teacher', 'administrator'], 'roomadmin'],
+					['SameSchoolStudent_roomviewer', 'sameSchool', 'student', 'roomviewer'],
+					['SameSchoolTeacher_none', 'sameSchool', 'teacher', 'none'],
+					['OtherSchoolTeacher_roomeditor', 'otherSchool', 'teacher', 'roomeditor'],
+				]);
+				return roomSetup;
+			};
+
+			it.each([
+				['OtherSchoolTeacher_roomowner', HttpStatus.FORBIDDEN],
+				['SameSchoolTeacherAdmin_roomadmin', HttpStatus.OK],
+				['SameSchoolStudent_roomviewer', HttpStatus.BAD_REQUEST],
+				['OtherSchoolTeacher_roomeditor', HttpStatus.OK],
+				['SameSchoolTeacher_none', HttpStatus.FORBIDDEN],
+			] as [string, HttpStatus][])(
+				`when passing ownership to %s should return %d`,
+				async (targetUserName, expectedStatus) => {
+					const roomSetup = await setup();
+					const { room } = roomSetup;
+
+					const loggedInClient = await roomSetup.loginUser('OtherSchoolTeacher_roomowner');
+
+					const targetUser = roomSetup.getUserByName(targetUserName);
+					const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
+						userId: targetUser?.id,
+					});
+
+					expect(response.status).toBe(expectedStatus);
+				}
+			);
+		});
 	});
 });
