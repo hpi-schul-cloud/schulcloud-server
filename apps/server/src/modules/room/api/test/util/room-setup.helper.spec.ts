@@ -191,7 +191,7 @@ describe('RoomSetup', () => {
 
 		it('getRoleByName throws for missing role', async () => {
 			await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
-			expect(() => roomSetup.getRoleByName('roomadmins')).toThrow(/not found/);
+			expect(() => roomSetup.getRoleByName('speaker')).toThrow(/not found/);
 		});
 
 		it('createAccountForUser persists account and returns it', async () => {

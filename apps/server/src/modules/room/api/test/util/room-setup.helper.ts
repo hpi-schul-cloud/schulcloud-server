@@ -118,9 +118,6 @@ export class RoomSetup {
 	}
 
 	get em(): EntityManager {
-		if (!this._em) {
-			throw new Error('EntityManager not set up yet');
-		}
 		return this._em;
 	}
 
@@ -198,10 +195,7 @@ export class RoomSetup {
 
 		const users: { role: Role; user: User }[] = userEntities.reduce((acc: { role: Role; user: User }[], userEntity) => {
 			const userSetup = userSetups.find((setup) => setup.name === userEntity.firstName);
-			if (!userSetup) {
-				throw new Error(`No user setup found for user ${userEntity.firstName}`);
-			}
-			if (userSetup.roomRole && userEntity) {
+			if (userSetup?.roomRole && userEntity) {
 				acc.push({ role: userSetup.roomRole, user: userEntity });
 			}
 			return acc;
