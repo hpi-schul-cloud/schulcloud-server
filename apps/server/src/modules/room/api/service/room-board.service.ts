@@ -43,7 +43,32 @@ export class RoomBoardService {
 		await this.roomContentService.deleteContent(roomId);
 	}
 
-	public async ensureRoomHasContent(roomId: EntityId): Promise<void> {
+	public async copyRoomContent(
+		sourceRoomId: EntityId,
+		targetRoomId: EntityId,
+		boardMappings: Map<EntityId, EntityId>
+	): Promise<void> {
+		const sourceBoardIds = await this.roomContentService.getBoardOrder(sourceRoomId);
+		const targetBoardIds = (await this.getAvailableBoardsInRoom(targetRoomId)).map((board) => board.id);
+
+		// 1. Ordered mapped target IDs
+		const mappedTargetIds = sourceBoardIds
+			.map((sourceId) => boardMappings.get(sourceId))
+			.filter((targetId): targetId is EntityId => !!targetId && targetBoardIds.includes(targetId));
+
+		// 2. Append unmapped target IDs
+		const appendedUnmappedIds = targetBoardIds.filter((targetId) => !mappedTargetIds.includes(targetId));
+
+		const orderedTargetBoardIds = [...mappedTargetIds, ...appendedUnmappedIds];
+
+		const contentExists = await this.roomContentService.contentExists(targetRoomId);
+		if (contentExists) {
+			await this.roomContentService.deleteContent(targetRoomId);
+		}
+		await this.roomContentService.createContent(targetRoomId, orderedTargetBoardIds);
+	}
+
+	private async ensureRoomHasContent(roomId: EntityId): Promise<void> {
 		const contentExists = await this.roomContentService.contentExists(roomId);
 		if (!contentExists) {
 			const boards = await this.getAvailableBoardsInRoom(roomId);
