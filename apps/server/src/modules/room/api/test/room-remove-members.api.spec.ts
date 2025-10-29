@@ -11,6 +11,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
+import { RoomSetup } from './util/room-setup.helper';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -251,15 +252,69 @@ describe('Room Controller (API)', () => {
 			});
 
 			describe('when admin is member in the room', () => {
-				it('should be allowed to remove themself', async () => {
-					const { loggedInClient, room, adminUser, userGroupEntity, roomViewerRole } = await setupForAdmin();
-					userGroupEntity.users.push({ role: roomViewerRole, user: adminUser });
-					await em.persistAndFlush(userGroupEntity);
-					em.clear();
+				describe('when admin is a room viewer', () => {
+					it('should be allowed to remove themself', async () => {
+						const { loggedInClient, room, adminUser, userGroupEntity, roomViewerRole } = await setupForAdmin();
+						userGroupEntity.users.push({ role: roomViewerRole, user: adminUser });
+						await em.persistAndFlush(userGroupEntity);
+						em.clear();
 
-					const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [adminUser.id] });
+						const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [adminUser.id] });
 
-					expect(response.status).toBe(HttpStatus.OK);
+						expect(response.status).toBe(HttpStatus.OK);
+					});
+				});
+			});
+
+			describe('when user is school admin', () => {
+				describe('when user is also room viewer', () => {
+					const setup = async () => {
+						const roomSetup = new RoomSetup(em, testApiClient);
+						await roomSetup.setup([
+							['SameSchoolTeacher_roomowner', 'sameSchool', 'teacher', 'roomowner'],
+							['SameSchoolTeacherAdmin_roomviewer', 'sameSchool', ['teacher', 'administrator'], 'roomviewer'],
+							['SameSchoolStudent_roomviewer', 'sameSchool', 'student', 'roomviewer'],
+							['SameSchoolTeacher_none', 'sameSchool', 'teacher', 'none'],
+							['OtherSchoolTeacher_roomeditor', 'otherSchool', 'teacher', 'roomeditor'],
+						]);
+						return roomSetup;
+					};
+
+					it('should be allowed to remove himself', async () => {
+						const roomSetup = await setup();
+						const { room } = roomSetup;
+
+						const loggedInClient = await roomSetup.loginUser('SameSchoolTeacherAdmin_roomviewer');
+						const adminUser = roomSetup.getUserByName('SameSchoolTeacherAdmin_roomviewer');
+						const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [adminUser.id] });
+
+						expect(response.status).toBe(HttpStatus.OK);
+					});
+				});
+
+				describe('when user is also the room owner', () => {
+					const setup = async () => {
+						const roomSetup = new RoomSetup(em, testApiClient);
+						await roomSetup.setup([
+							['SameSchoolTeacher_roomadmin', 'sameSchool', 'teacher', 'roomadmin'],
+							['SameSchoolTeacherAdmin_roomowner', 'sameSchool', ['teacher', 'administrator'], 'roomowner'],
+							['SameSchoolStudent_roomviewer', 'sameSchool', 'student', 'roomviewer'],
+							['SameSchoolTeacher_none', 'sameSchool', 'teacher', 'none'],
+							['OtherSchoolTeacher_roomeditor', 'otherSchool', 'teacher', 'roomeditor'],
+						]);
+						return roomSetup;
+					};
+
+					it('should not be allowed to remove himself', async () => {
+						const roomSetup = await setup();
+						const { room } = roomSetup;
+
+						const loggedInClient = await roomSetup.loginUser('SameSchoolTeacherAdmin_roomowner');
+						const adminUser = roomSetup.getUserByName('SameSchoolTeacherAdmin_roomowner');
+						const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [adminUser.id] });
+
+						expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					});
 				});
 			});
 		});
