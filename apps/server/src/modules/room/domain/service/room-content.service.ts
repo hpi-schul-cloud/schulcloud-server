@@ -7,13 +7,6 @@ import { RoomContentItem, RoomContentType } from '../type';
 export class RoomContentService {
 	constructor(private readonly roomContentRepo: RoomContentRepo) {}
 
-	public async createContentIfNotExists(roomId: EntityId, boardIds: EntityId[]): Promise<void> {
-		const exists = await this.contentExists(roomId);
-		if (!exists) {
-			await this.createContent(roomId, boardIds);
-		}
-	}
-
 	public async contentExists(roomId: EntityId): Promise<boolean> {
 		const exists = (await this.roomContentRepo.countByRoomId(roomId)) > 0;
 
