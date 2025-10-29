@@ -200,7 +200,7 @@ describe('Room Controller (API)', () => {
 				return { loggedInClient, room, targetUser, externalTeacherUser };
 			};
 
-			it('should not allow to change to role roomowner', async () => {
+			it('should not allow to change anyone to role roomowner - with this endpoint', async () => {
 				const { loggedInClient, room, targetUser } = await setupAdminLogin();
 
 				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
