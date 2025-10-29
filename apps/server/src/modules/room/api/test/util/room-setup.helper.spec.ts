@@ -17,20 +17,6 @@ jest.mock('@modules/role/testing', () => {
 	};
 });
 
-jest.mock('../../../testing/room-roles.test.factory', () => {
-	return {
-		RoomRolesTestFactory: {
-			createRoomRoles: () => {
-				return {
-					roomOwnerRole: { id: new ObjectId().toHexString(), name: 'roomowner' },
-					roomAdminRole: { id: new ObjectId().toHexString(), name: 'roomadmin' },
-					roomEditorRole: { id: new ObjectId().toHexString(), name: 'roomeditor' },
-					roomViewerRole: { id: new ObjectId().toHexString(), name: 'roomviewer' },
-				};
-			},
-		},
-	};
-});
 let schoolIdCounter = 0;
 jest.mock('@modules/school/testing', () => {
 	return {
