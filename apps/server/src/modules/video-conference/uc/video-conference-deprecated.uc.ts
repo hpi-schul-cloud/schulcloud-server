@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ICurrentUser } from '@infra/auth-guard';
 import { CalendarService } from '@infra/calendar';
@@ -104,12 +105,16 @@ export class VideoConferenceDeprecatedUc {
 			// Patch options, if preset exists
 			vcDo = await this.videoConferenceRepo.findByScopeAndScopeId(refId, conferenceScope);
 			vcDo.options = options;
+			if (!vcDo.salt) {
+				vcDo.salt = randomBytes(16).toString('hex');
+			}
 		} catch (error) {
 			// Create new preset
 			vcDo = new VideoConferenceDO({
 				target: refId,
 				targetModel: conferenceScope,
 				options,
+				salt: randomBytes(16).toString('hex'),
 			});
 		}
 		await this.videoConferenceRepo.save(vcDo);
@@ -202,6 +207,7 @@ export class VideoConferenceDeprecatedUc {
 			meetingID: refId,
 		});
 
+		// this one fails if salt is not set
 		const options: VideoConferenceOptionsDO = await this.videoConferenceRepo
 			.findByScopeAndScopeId(refId, conferenceScope)
 			.then((vcDO: VideoConferenceDO) => vcDO.options)

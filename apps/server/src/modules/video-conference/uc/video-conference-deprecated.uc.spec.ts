@@ -305,6 +305,7 @@ describe('VideoConferenceUc', () => {
 					target: course.id,
 					targetModel: VideoConferenceScope.COURSE,
 					options: defaultOptions,
+					salt: 'fixed-salt-for-testing',
 				});
 				savedVcDO = { ...vcDO };
 				savedVcDO.id = 'videoConferenceId';
@@ -346,6 +347,7 @@ describe('VideoConferenceUc', () => {
 						target: course.id,
 						targetModel: VideoConferenceScope.COURSE,
 						options: defaultOptions,
+						salt: expect.any(String),
 					})
 				);
 				expect(bbbService.create).toHaveBeenCalledWith(builder.build());
@@ -376,6 +378,25 @@ describe('VideoConferenceUc', () => {
 				expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
 				expect(result.permission).toEqual(Permission.START_MEETING);
 				expect(result.bbbResponse).toEqual(bbbResponse);
+			});
+
+			it('should add salt to existing preset if missing', async () => {
+				// Arrange
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				savedVcDO.salt = undefined;
+				videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(savedVcDO);
+				bbbService.create.mockResolvedValue(bbbResponse);
+
+				// Act
+				await useCase.create(defaultCurrentUser, VideoConferenceScope.COURSE, course.id, defaultOptions);
+
+				// Assert
+				expect(videoConferenceRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						salt: expect.any(String),
+					})
+				);
 			});
 
 			it('should successfully execute with options set', async () => {
@@ -443,11 +464,13 @@ describe('VideoConferenceUc', () => {
 				target: course.id,
 				targetModel: VideoConferenceScope.COURSE,
 				options: defaultOptions,
+				salt: 'fixed-salt-for-testing',
 			});
 			eventVcDO = new VideoConferenceDO({
 				target: eventId,
 				targetModel: VideoConferenceScope.EVENT,
 				options: defaultOptions,
+				salt: 'fixed-salt-for-testing',
 			});
 
 			userService.findById.mockResolvedValue(user);
@@ -656,6 +679,7 @@ describe('VideoConferenceUc', () => {
 				target: course.id,
 				targetModel: VideoConferenceScope.COURSE,
 				options: defaultOptions,
+				salt: 'fixed-salt-for-testing',
 			});
 
 			videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(vcDO);
