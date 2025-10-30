@@ -89,7 +89,7 @@ export class CommonCartridgeExportService {
 		this.logger.debug(new CommonCartridgeExportMessageLoggable('Added tasks of course', { courseId }));
 
 		// add column boards and cards to organization
-		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
+		await this.addColumnBoards(builder, version, roomBoard.elements, exportedColumnBoards);
 		this.logger.debug(new CommonCartridgeExportMessageLoggable('Added boards of course', { courseId }));
 
 		builder.build();
@@ -221,6 +221,7 @@ export class CommonCartridgeExportService {
 
 	private async addColumnBoards(
 		builder: CommonCartridgeFileBuilder,
+		version: CommonCartridgeVersion,
 		elements: BoardElementDto[],
 		exportedColumnBoards: string[]
 	): Promise<void> {
@@ -240,7 +241,7 @@ export class CommonCartridgeExportService {
 				});
 
 				await Promise.all(
-					boardSkeleton.columns.map((column) => this.addColumnToOrganization(column, columnBoardOrganization))
+					boardSkeleton.columns.map((column) => this.addColumnToOrganization(column, version, columnBoardOrganization))
 				);
 			})
 		);
@@ -248,6 +249,7 @@ export class CommonCartridgeExportService {
 
 	private async addColumnToOrganization(
 		column: ColumnResponse,
+		version: CommonCartridgeVersion,
 		columnBoardOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
 		const columnOrganization = columnBoardOrganization.createChild({
@@ -260,7 +262,7 @@ export class CommonCartridgeExportService {
 			const listOfCards: CardListResponseDto = await this.cardClientAdapter.getAllBoardCardsByIds(cardsIds);
 			const sortedCards = this.sortCardsAfterRetrieval(cardsIds, listOfCards.data);
 
-			await Promise.all(sortedCards.map((card) => this.addCardToOrganization(card, columnOrganization)));
+			await Promise.all(sortedCards.map((card) => this.addCardToOrganization(card, version, columnOrganization)));
 		}
 	}
 
@@ -274,6 +276,7 @@ export class CommonCartridgeExportService {
 
 	private async addCardToOrganization(
 		card: CardResponseDto,
+		version: CommonCartridgeVersion,
 		columnOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
 		const cardOrganization = columnOrganization.createChild({
@@ -281,7 +284,9 @@ export class CommonCartridgeExportService {
 			identifier: createIdentifier(card.id),
 		});
 
-		await Promise.all(card.elements.map((element) => this.addCardElementToOrganization(element, cardOrganization)));
+		await Promise.all(
+			card.elements.map((element) => this.addCardElementToOrganization(element, version, cardOrganization))
+		);
 	}
 
 	private async openStreamsToFiles(element: CardResponseElementsInnerDto): Promise<FileMetadataAndStream[]> {
@@ -307,6 +312,7 @@ export class CommonCartridgeExportService {
 
 	private async addCardElementToOrganization(
 		element: CardResponseElementsInnerDto,
+		version: CommonCartridgeVersion,
 		cardOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
 		switch (element.type) {
@@ -329,6 +335,9 @@ export class CommonCartridgeExportService {
 
 				break;
 			case ContentElementType.FILE_FOLDER:
+				if (version !== CommonCartridgeVersion.V_1_3_0) {
+					break;
+				}
 				const metadataAndStreamsForFolder = await this.openStreamsToFiles(element);
 				const fileFolderResource = this.mapper.mapFileFolderToResource(
 					element as FileFolderElementResponseDto,
