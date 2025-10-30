@@ -128,6 +128,23 @@ describe(`board delete in room (api)`, () => {
 
 			await expect(em.findOneOrFail(BoardNodeEntity, columnNode.id)).rejects.toThrow();
 		});
+
+		it('should remove the board from the room content', async () => {
+			const { accountWithEditRole, columnBoardNode } = await setup();
+
+			const loggedInClient = await testApiClient.login(accountWithEditRole);
+
+			await loggedInClient.delete(columnBoardNode.id);
+
+			// wait for event bus
+			await new Promise((resolve) => setTimeout(resolve, 10));
+
+			const roomContent = await em.findOneOrFail('RoomContentEntity', {
+				roomId: columnBoardNode.context?.id,
+			});
+
+			expect(roomContent['items']).toHaveLength(0);
+		});
 	});
 
 	describe('with invalid user who has only view rights to the room', () => {

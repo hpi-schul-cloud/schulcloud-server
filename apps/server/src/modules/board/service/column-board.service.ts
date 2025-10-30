@@ -65,6 +65,7 @@ export class ColumnBoardService {
 
 		return copyStatus;
 	}
+
 	public async createColumnBoard(props: ColumnBoardProps): Promise<ColumnBoard> {
 		const columnBoard = new ColumnBoard(props);
 
