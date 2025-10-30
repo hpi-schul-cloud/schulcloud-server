@@ -120,6 +120,10 @@ export class H5pLibraryPackagerService {
 
 		console.log(`Unzipping H5P Hub file ${filePath} to ${h5pHubFolder}.`);
 		const outputDir = FileSystemHelper.buildPath(h5pHubFolder, library);
+		if (FileSystemHelper.pathExists(outputDir)) {
+			console.log(`Removing existing H5P Hub folder at ${outputDir}.`);
+			FileSystemHelper.removeFolder(outputDir);
+		}
 		FileSystemHelper.unzipFile(filePath, outputDir);
 
 		const folders = FileSystemHelper.getAllFolders(outputDir);
