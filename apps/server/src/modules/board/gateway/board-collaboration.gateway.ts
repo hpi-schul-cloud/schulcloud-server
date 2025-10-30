@@ -24,6 +24,7 @@ import { MetricsService } from '../metrics/metrics.service';
 import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
 import {
+	CopyCardMessageParams,
 	CreateCardMessageParams,
 	CreateColumnMessageParams,
 	CreateContentElementMessageParams,
@@ -250,6 +251,26 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const card = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
 			emitter.emitToClientAndRoom(data, card);
+		} catch (err) {
+			emitter.emitFailure(data);
+		}
+	}
+
+	@SubscribeMessage('duplicate-card-request')
+	@TrackExecutionTime()
+	@UseRequestContext()
+	public async copyCard(socket: Socket, data: CopyCardMessageParams): Promise<void> {
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'duplicate-card' });
+		const { userId, schoolId } = this.getCurrentUser(socket);
+		try {
+			const card = await this.columnUc.copyCard(userId, data.cardId, schoolId);
+
+			const cardResponse = CardResponseMapper.mapToResponse(card);
+			const responsePayload = {
+				...data,
+				duplicatedCard: cardResponse,
+			};
+			emitter.emitToClientAndRoom(responsePayload, card.id);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
