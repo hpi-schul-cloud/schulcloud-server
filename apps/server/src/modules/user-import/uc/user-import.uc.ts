@@ -14,7 +14,6 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { isError } from 'lodash';
-import { UserAlreadyAssignedToImportUserError } from '../domain/error';
 import { ImportUserFilter, ImportUserMatchCreatorScope, ImportUserNameMatchFilter } from '../domain/interface';
 import { ImportUser, MatchCreator } from '../entity';
 import {
