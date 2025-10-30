@@ -5,25 +5,6 @@ import { ElementTypeNotSupportedLoggableException, VersionNotSupportedLoggableEx
 import { CommonCartridgeWebLinkResourceV130 } from './common-cartridge-web-link-resource';
 
 describe('CommonCartridgeWebLinkResourceV130', () => {
-	describe('getFilePath', () => {
-		describe('when using Common Cartridge version 1.3.0', () => {
-			const setup = () => {
-				const props = createCommonCartridgeWeblinkResourcePropsV130();
-				const sut = new CommonCartridgeWebLinkResourceV130(props);
-
-				return { sut, props };
-			};
-
-			it('should return the constructed file path', () => {
-				const { sut, props } = setup();
-
-				const result = sut.getFilePath();
-
-				expect(result).toBe(`${props.folder}/${props.identifier}.xml`);
-			});
-		});
-	});
-
 	describe('getFileContent', () => {
 		describe('when using Common Cartridge version 1.3.0', () => {
 			const setup = () => {
@@ -35,7 +16,7 @@ describe('CommonCartridgeWebLinkResourceV130', () => {
 
 				const sut = new CommonCartridgeWebLinkResourceV130(props);
 
-				return { sut };
+				return { sut, props };
 			};
 
 			it('should contain correct XML', async () => {
@@ -47,7 +28,15 @@ describe('CommonCartridgeWebLinkResourceV130', () => {
 				);
 				const result = sut.getFileContent();
 
-				expect(result).toEqual(expected);
+				expect(result.content).toEqual(expected);
+			});
+
+			it('should return the constructed file path', () => {
+				const { sut, props } = setup();
+
+				const result = sut.getFileContent();
+
+				expect(result.path).toBe(`${props.folder}/${props.identifier}.xml`);
 			});
 		});
 	});
@@ -126,7 +115,7 @@ describe('CommonCartridgeWebLinkResourceV130', () => {
 					},
 					file: {
 						$: {
-							href: sut.getFilePath(),
+							href: `${props.folder}/${props.identifier}.xml`,
 						},
 					},
 				});

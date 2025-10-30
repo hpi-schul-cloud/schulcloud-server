@@ -1,12 +1,22 @@
-import sanitizeHtml from 'sanitize-html';
-import { FileDto } from '@modules/files-storage-client';
 import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
+import { FileDto } from '@modules/files-storage-client';
+import sanitizeHtml from 'sanitize-html';
+import { Stream } from 'stream';
+import { FileFolderElementResponseDto } from '../common-cartridge-client/card-client/dto';
+import { FileElementResponseDto } from '../common-cartridge-client/card-client/dto/file-element-response.dto';
+import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';
+import { RichTextElementResponseDto } from '../common-cartridge-client/card-client/dto/rich-text-element-response.dto';
 import {
 	LessonContentDto,
 	LessonContentDtoComponentValues,
 	LessonDto,
 	LessonLinkedTaskDto,
 } from '../common-cartridge-client/lesson-client/dto';
+import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
+import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
+import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
+import { ComponentTextPropsDto } from '../common-cartridge-client/lesson-client/dto/component-text-props.dto';
+import { BoardTaskDto } from '../common-cartridge-client/room-client/dto/board-task.dto';
 import { CommonCartridgeOrganizationProps } from '../export/builders/common-cartridge-file-builder';
 import {
 	CommonCartridgeElementType,
@@ -15,17 +25,10 @@ import {
 	CommonCartridgeVersion,
 } from '../export/common-cartridge.enums';
 import { CommonCartridgeElementProps } from '../export/elements/common-cartridge-element-factory';
-import { createIdentifier } from '../export/utils';
 import { CommonCartridgeResourceProps } from '../export/resources/common-cartridge-resource-factory';
-import { BoardTaskDto } from '../common-cartridge-client/room-client/dto/board-task.dto';
-import { RichTextElementResponseDto } from '../common-cartridge-client/card-client/dto/rich-text-element-response.dto';
-import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';
-import { ComponentTextPropsDto } from '../common-cartridge-client/lesson-client/dto/component-text-props.dto';
-import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
-import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
-import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
-import { FileElementResponseDto } from '../common-cartridge-client/card-client/dto/file-element-response.dto';
-import { Stream } from 'stream';
+import { FileElement } from '../export/resources/v1.3.0/common-cartridge-file-folder-resource';
+import { createIdentifier } from '../export/utils';
+import { FileMetadataAndStream } from './common-cartridge-export.service';
 
 export class CommonCartridgeExportMapper {
 	private static readonly GEOGEBRA_BASE_URL: string = 'https://geogebra.org';
@@ -186,6 +189,23 @@ export class CommonCartridgeExportMapper {
 			title: element?.content.caption?.trim() ? element.content.caption : fileRecord.name,
 			fileName: fileRecord.name,
 			file,
+		};
+	}
+
+	public mapFileFolderToResource(
+		fileFolderElement: FileFolderElementResponseDto,
+		fileFolderData: FileMetadataAndStream[]
+	): CommonCartridgeResourceProps {
+		return {
+			type: CommonCartridgeResourceType.FILE_FOLDER,
+			title: fileFolderElement.content.title,
+			identifier: createIdentifier(fileFolderElement.id),
+			files: fileFolderData.map((data): FileElement => {
+				return {
+					file: data.file,
+					fileName: data.name,
+				};
+			}),
 		};
 	}
 

@@ -1,4 +1,4 @@
-import { CommonCartridgeResourceType } from '../../common-cartridge.enums';
+import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { ResourceTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeResource } from '../../interfaces';
 import {
@@ -22,7 +22,8 @@ type CommonCartridgeResourcePropsV110 =
 	| CommonCartridgeManifestResourcePropsV110
 	| CommonCartridgeWebContentResourcePropsV110
 	| CommonCartridgeWebLinkResourcePropsV110
-	| CommonCartridgeFileResourcePropsV110;
+	| CommonCartridgeFileResourcePropsV110
+	| { version: CommonCartridgeVersion; type: CommonCartridgeResourceType.FILE_FOLDER };
 
 export class CommonCartridgeResourceFactoryV110 {
 	public static createResource(props: CommonCartridgeResourcePropsV110): CommonCartridgeResource {

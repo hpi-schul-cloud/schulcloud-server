@@ -1,3 +1,4 @@
+import { Readable, Stream } from 'stream';
 import { createCommonCartridgeFileResourcePropsV110 } from '../../../testing/common-cartridge-resource-props.factory';
 import {
 	CommonCartridgeElementType,
@@ -6,18 +7,23 @@ import {
 } from '../../common-cartridge.enums';
 import { ElementTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeFileResourceV110 } from './common-cartridge-file-resource';
+import { streamToString } from '@modules/common-cartridge/testing/common-cartridge-testing.utils';
 
 describe(CommonCartridgeFileResourceV110.name, () => {
-	const setup = () => {
+	const setup = async () => {
 		const props = createCommonCartridgeFileResourcePropsV110();
+
+		const expected = await streamToString(props.file);
+		props.file = Readable.from(expected);
+
 		const sut = new CommonCartridgeFileResourceV110(props);
 
-		return { sut, props };
+		return { sut, props, expected };
 	};
 
 	describe('getSupportedVersion', () => {
-		it('should return the supported version', () => {
-			const { sut } = setup();
+		it('should return the supported version', async () => {
+			const { sut } = await setup();
 
 			const result = sut.getSupportedVersion();
 
@@ -25,38 +31,29 @@ describe(CommonCartridgeFileResourceV110.name, () => {
 		});
 	});
 
-	describe('getFilePath', () => {
-		it('should return the file path', () => {
-			const { sut, props } = setup();
-
-			const result = sut.getFilePath();
-
-			expect(result).toBe(`${props.folder}/${props.fileName}`);
-		});
-	});
-
 	describe('getFileContent', () => {
-		it('should throw Error', () => {
-			const { sut } = setup();
+		it('should return the file stream', async () => {
+			const { sut, expected } = await setup();
 
-			expect(() => sut.getFileContent()).toThrow(new Error('getFileContent is not supported'));
+			const result = sut.getFileContent();
+			const content = await streamToString(result.content as Stream);
+
+			expect(content).toBe(expected);
 		});
-	});
 
-	describe('getFileContent', () => {
-		it('should return the file stream', () => {
-			const { sut, props } = setup();
+		it('should return the file path', async () => {
+			const { sut, props } = await setup();
 
-			const result = sut.getFileStream();
+			const result = sut.getFileContent();
 
-			expect(result).toBe(props.file);
+			expect(result.path).toBe(`${props.folder}/${props.fileName}`);
 		});
 	});
 
 	describe('getManifestXmlObject', () => {
 		describe('when the element type is RESOURCE', () => {
-			it('should return the manifest resource xml object', () => {
-				const { sut, props } = setup();
+			it('should return the manifest resource xml object', async () => {
+				const { sut, props } = await setup();
 
 				const manifestXmlObject = sut.getManifestXmlObject(CommonCartridgeElementType.RESOURCE);
 
@@ -67,7 +64,7 @@ describe(CommonCartridgeFileResourceV110.name, () => {
 					},
 					file: {
 						$: {
-							href: sut.getFilePath(),
+							href: sut.getFileContent().path,
 						},
 					},
 				});
@@ -75,8 +72,8 @@ describe(CommonCartridgeFileResourceV110.name, () => {
 		});
 
 		describe('when the element type is ORGANIZATION', () => {
-			it('should return the manifest organization xml object', () => {
-				const { sut, props } = setup();
+			it('should return the manifest organization xml object', async () => {
+				const { sut, props } = await setup();
 
 				const manifestXmlObject = sut.getManifestXmlObject(CommonCartridgeElementType.ORGANIZATION);
 
@@ -91,8 +88,8 @@ describe(CommonCartridgeFileResourceV110.name, () => {
 		});
 
 		describe('when the element type is not supported', () => {
-			it('should throw an error', () => {
-				const { sut } = setup();
+			it('should throw an error', async () => {
+				const { sut } = await setup();
 
 				expect(() => sut.getManifestXmlObject(CommonCartridgeElementType.MANIFEST)).toThrow(
 					ElementTypeNotSupportedLoggableException

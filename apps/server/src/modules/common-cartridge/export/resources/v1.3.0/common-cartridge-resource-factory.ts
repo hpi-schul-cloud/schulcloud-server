@@ -2,6 +2,10 @@ import { CommonCartridgeResourceType } from '../../common-cartridge.enums';
 import { ResourceTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeResource } from '../../interfaces';
 import {
+	CommonCartridgeFileFolderResourcePropsV130,
+	CommonCartridgeFileFolderResourceV130,
+} from './common-cartridge-file-folder-resource';
+import {
 	CommonCartridgeFileResourcePropsV130,
 	CommonCartridgeFileResourceV130,
 } from './common-cartridge-file-resource';
@@ -22,7 +26,8 @@ type CommonCartridgeResourcePropsV130 =
 	| CommonCartridgeManifestResourcePropsV130
 	| CommonCartridgeWebContentResourcePropsV130
 	| CommonCartridgeWebLinkResourcePropsV130
-	| CommonCartridgeFileResourcePropsV130;
+	| CommonCartridgeFileResourcePropsV130
+	| CommonCartridgeFileFolderResourcePropsV130;
 
 export class CommonCartridgeResourceFactoryV130 {
 	public static createResource(props: CommonCartridgeResourcePropsV130): CommonCartridgeResource {
@@ -37,6 +42,8 @@ export class CommonCartridgeResourceFactoryV130 {
 				return new CommonCartridgeWebLinkResourceV130(props);
 			case CommonCartridgeResourceType.FILE:
 				return new CommonCartridgeFileResourceV130(props);
+			case CommonCartridgeResourceType.FILE_FOLDER:
+				return new CommonCartridgeFileFolderResourceV130(props);
 			default:
 				throw new ResourceTypeNotSupportedLoggableException(type);
 		}

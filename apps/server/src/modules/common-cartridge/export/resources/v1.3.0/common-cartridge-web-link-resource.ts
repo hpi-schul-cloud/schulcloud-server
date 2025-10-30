@@ -5,6 +5,7 @@ import {
 } from '../../common-cartridge.enums';
 import { ElementTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { ResourceFileContent } from '../../interfaces/common-cartridge-resource.interface';
 import { buildXmlString, createIdentifier } from '../../utils';
 
 export type CommonCartridgeWebLinkResourcePropsV130 = {
@@ -38,11 +39,18 @@ export class CommonCartridgeWebLinkResourceV130 extends CommonCartridgeResource 
 		}
 	}
 
-	public getFilePath(): string {
+	public getFileContent(): ResourceFileContent {
+		return {
+			path: this.getFilePath(),
+			content: this.getFileContentString(),
+		};
+	}
+
+	private getFilePath(): string {
 		return `${this.props.folder}/${this.props.identifier}.xml`;
 	}
 
-	public getFileContent(): string {
+	private getFileContentString(): string {
 		return buildXmlString({
 			webLink: {
 				$: {
