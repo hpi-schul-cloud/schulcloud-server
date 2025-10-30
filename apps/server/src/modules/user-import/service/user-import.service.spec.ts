@@ -18,7 +18,11 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ImportUser, MatchCreator } from '../entity';
-import { SchoolIdDoesNotMatchWithUserSchoolId, UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
+import {
+	SchoolIdDoesNotMatchWithUserSchoolId,
+	UserMigrationCanceledLoggable,
+	UserMigrationIsNotEnabled,
+} from '../loggable';
 import { ImportUserRepo } from '../repo';
 import { importUserFactory } from '../testing';
 import { UserImportConfig } from '../user-import-config';
