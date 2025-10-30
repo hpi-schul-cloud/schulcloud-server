@@ -15,7 +15,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '../repo';
-import { BoardCopyService } from './board-copy.service';
+import { LegacyBoardCopyService } from './legacy-board-copy.service';
 import { CourseRoomsService } from './course-rooms.service';
 
 type CourseCopyParams = {
@@ -31,7 +31,7 @@ export class CourseCopyService {
 		private readonly courseService: CourseService,
 		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly roomsService: CourseRoomsService,
-		private readonly boardCopyService: BoardCopyService,
+		private readonly boardCopyService: LegacyBoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
 		private readonly userService: UserService,
 		private readonly contextExternalToolService: ContextExternalToolService
