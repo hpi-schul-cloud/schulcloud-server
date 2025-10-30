@@ -2,7 +2,7 @@ export * from './board-context.service';
 export * from './board-node-copy-context';
 export * from './board-node-copy.service';
 export * from './board-node-delete-hooks.service';
-export * from './column-board-copy.service';
+export * from './board-copy.service';
 export * from './column-board-link.service';
 export * from './column-board-reference.service';
 export * from './column-board-title.service';

@@ -1,15 +1,17 @@
-import { AuthorizationContextBuilder } from '@modules/authorization';
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@core/logger';
-import { BoardNodeFactory, Card, Column, ContentElementType } from '../domain';
-import { BoardNodePermissionService, BoardNodeService } from '../service';
+import { StorageLocation } from '@infra/files-storage-client';
+import { AuthorizationContextBuilder } from '@modules/authorization';
+import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+import { BoardNodeFactory, Card, Column, ContentElementType, isCard } from '../domain';
+import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
 
 @Injectable()
 export class ColumnUc {
 	constructor(
 		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly boardNodeService: BoardNodeService,
+		private readonly columnBoardService: ColumnBoardService,
 		private readonly boardNodeFactory: BoardNodeFactory,
 
 		private readonly logger: LegacyLogger
@@ -73,5 +75,30 @@ export class ColumnUc {
 
 		await this.boardNodeService.move(card, targetColumn, targetPosition);
 		return card;
+	}
+
+	public async copyCard(userId: EntityId, cardId: EntityId, schoolId: EntityId): Promise<Card> {
+		this.logger.debug({ action: 'copyCard', userId, cardId, schoolId });
+
+		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
+		if (!card.parentId) {
+			throw new UnprocessableEntityException('Card has no parent column');
+		}
+
+		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
+
+		const copyStatus = await this.columnBoardService.copyCard({
+			originalCardId: card.id,
+			userId,
+			targetStorageLocationReference: { id: schoolId, type: StorageLocation.SCHOOL },
+			sourceStorageLocationReference: { id: schoolId, type: StorageLocation.SCHOOL },
+			targetSchoolId: schoolId,
+		});
+
+		if (!isCard(copyStatus.copyEntity)) {
+			throw new InternalServerErrorException('Copied entity is not a card');
+		}
+
+		return copyStatus.copyEntity;
 	}
 }
