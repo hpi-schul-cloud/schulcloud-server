@@ -7,12 +7,18 @@ import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { UserLoginMigrationDO } from '@modules/user-login-migration';
 import { User } from '@modules/user/repo';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ImportUser, MatchCreator } from '../entity';
-import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
+import {
+	SchoolIdDoesNotMatchWithUserSchoolId,
+	UserMigrationCanceledLoggable,
+	UserMigrationIsNotEnabled,
+} from '../loggable';
 import { ImportUserRepo } from '../repo/import-user.repo';
 import { UserImportConfig } from '../user-import-config';
+import { UserAlreadyAssignedToImportUserError } from '../domain/error';
+import { EntityId } from '@shared/domain/types';
 
 @Injectable()
 export class UserImportService {
@@ -37,7 +43,7 @@ export class UserImportService {
 		return system;
 	}
 
-	public checkFeatureEnabled(school: LegacySchoolDo): void {
+	public checkFeatureEnabledAndIsLdapPilotSchool(school: LegacySchoolDo): void {
 		const enabled = this.configService.get<boolean>('FEATURE_USER_MIGRATION_ENABLED');
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
 
@@ -105,5 +111,20 @@ export class UserImportService {
 		await this.schoolService.save(school, true);
 
 		this.logger.notice(new UserMigrationCanceledLoggable(school));
+	}
+
+	public validateSameSchool(schoolId: EntityId, importUser: ImportUser, userMatch: User): void {
+		if (schoolId !== userMatch.school.id || schoolId !== importUser.school.id) {
+			this.logger.warning(
+				new SchoolIdDoesNotMatchWithUserSchoolId(userMatch.school.id, importUser.school.id, schoolId)
+			);
+			throw new ForbiddenException('not same school');
+		}
+	}
+
+	public checkUserIsAlreadyAssigned(hasMatch: ImportUser | null): void {
+		if (hasMatch !== null) {
+			throw new UserAlreadyAssignedToImportUserError();
+		}
 	}
 }

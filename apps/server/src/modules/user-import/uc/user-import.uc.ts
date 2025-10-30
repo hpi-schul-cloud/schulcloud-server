@@ -14,7 +14,6 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { isError } from 'lodash';
-import { UserAlreadyAssignedToImportUserError } from '../domain/error';
 import { ImportUserFilter, ImportUserMatchCreatorScope, ImportUserNameMatchFilter } from '../domain/interface';
 import { ImportUser, MatchCreator } from '../entity';
 import {
@@ -73,7 +72,7 @@ export class UserImportUc {
 	): Promise<Counted<ImportUser[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_VIEW);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
-		this.userImportService.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabledAndIsLdapPilotSchool(school);
 
 		// TODO Change ImportUserRepo to DO to fix this workaround
 		const countedImportUsers = await this.importUserRepo.findImportUsers(currentUser.school, query, options);
@@ -92,24 +91,16 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
 		const school = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.userImportService.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabledAndIsLdapPilotSchool(school);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
 		const userMatch = await this.userService.getUserEntityWithRoles(userMatchId);
 
-		// check same school
-		if (!school.id || school.id !== userMatch.school.id || school.id !== importUser.school.id) {
-			this.logger.warning(
-				new SchoolIdDoesNotMatchWithUserSchoolId(userMatch.school.id, importUser.school.id, school.id)
-			);
-			throw new ForbiddenException('not same school');
-		}
+		this.userImportService.validateSameSchool(school.id!, importUser, userMatch);
 
 		// check user is not already assigned
 		const hasMatch = await this.importUserRepo.hasMatch(userMatch);
-		if (hasMatch !== null) {
-			throw new UserAlreadyAssignedToImportUserError();
-		}
+		this.userImportService.checkUserIsAlreadyAssigned(hasMatch);
 
 		importUser.setMatch(userMatch, MatchCreator.MANUAL);
 		await this.importUserRepo.save(importUser);
@@ -121,11 +112,11 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
 		const school = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.userImportService.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabledAndIsLdapPilotSchool(school);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
 
-		this.checkImportUserSameSchool(school, importUser);
+		this.validateImportUserSchoolMatch(school, importUser);
 
 		importUser.revokeMatch();
 		await this.importUserRepo.save(importUser);
@@ -137,11 +128,11 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
 		const school = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.userImportService.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabledAndIsLdapPilotSchool(school);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
 
-		this.checkImportUserSameSchool(school, importUser);
+		this.validateImportUserSchoolMatch(school, importUser);
 
 		importUser.flagged = flagged === true;
 		await this.importUserRepo.save(importUser);
@@ -166,7 +157,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_VIEW);
 		const school = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.userImportService.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabledAndIsLdapPilotSchool(school);
 
 		const unmatchedCountedUsers = await this.userService.findForImportUser(currentUser.school, query.name, options);
 
@@ -177,7 +168,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_MIGRATE);
 		const school = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.userImportService.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabledAndIsLdapPilotSchool(school);
 
 		const filters = {
 			matches: [ImportUserMatchCreatorScope.MANUAL, ImportUserMatchCreatorScope.AUTO],
@@ -252,7 +243,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_MIGRATE);
 		const school = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.userImportService.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabledAndIsLdapPilotSchool(school);
 		if (useCentralLdap || FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION) {
 			this.checkSchoolNumber(school);
 		}
@@ -308,7 +299,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_MIGRATE);
 		const school = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.userImportService.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabledAndIsLdapPilotSchool(school);
 
 		if (school.inUserMigration !== false || !school.inMaintenanceSince || !school.externalId) {
 			this.logger.warning(new MigrationMayNotBeCompleted(school.inUserMigration));
@@ -333,7 +324,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_MIGRATE);
 		const school = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.userImportService.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabledAndIsLdapPilotSchool(school);
 
 		await this.userImportService.resetMigrationForUsersSchool(currentUser, school);
 	}
@@ -342,7 +333,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_UPDATE);
 
 		const school = await this.schoolService.getSchoolById(currentUser.school.id);
-		this.userImportService.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabledAndIsLdapPilotSchool(school);
 
 		const filters = { matches: [ImportUserMatchCreatorScope.AUTO] };
 		const [autoMatchedUsers] = await this.importUserRepo.findImportUsers(currentUser.school, filters);
@@ -450,7 +441,7 @@ export class UserImportUc {
 		}
 	}
 
-	private checkImportUserSameSchool(school: LegacySchoolDo, importUser: ImportUser): void {
+	private validateImportUserSchoolMatch(school: LegacySchoolDo, importUser: ImportUser): void {
 		if (school.id !== importUser.school.id) {
 			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
 			throw new ForbiddenException('not same school');

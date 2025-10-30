@@ -5,7 +5,7 @@ import { SystemEntity } from '@modules/system/repo';
 import { User } from '@modules/user/repo';
 import { BaseEntityReference, BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 
-export type ImportUserRoleName = RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT;
+export type ImportUserRoleName = RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT | RoleName.EXPERT;
 
 export interface ImportUserProperties {
 	// references
@@ -136,6 +136,11 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	}
 
 	public static isImportUserRole(role: unknown): role is ImportUserRoleName {
-		return role === RoleName.ADMINISTRATOR || role === RoleName.STUDENT || role === RoleName.TEACHER;
+		return (
+			role === RoleName.ADMINISTRATOR ||
+			role === RoleName.STUDENT ||
+			role === RoleName.TEACHER ||
+			role === RoleName.EXPERT
+		);
 	}
 }

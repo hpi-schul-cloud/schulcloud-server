@@ -12,7 +12,7 @@ import { SchulconnexFetchImportUsersService, UserImportService } from '../servic
 import { UserImportConfig } from '../user-import-config';
 
 @Injectable()
-export class UserImportFetchUc {
+export class PopulateUserImportFetchUc {
 	constructor(
 		private readonly configService: ConfigService<UserImportConfig, true>,
 		private readonly schulconnexFetchImportUsersService: SchulconnexFetchImportUsersService,
@@ -23,9 +23,7 @@ export class UserImportFetchUc {
 	) {}
 
 	public async populateImportUsers(currentUserId: EntityId, matchByPreferredName = false): Promise<void> {
-		if (!this.configService.get('FEATURE_USER_MIGRATION_ENABLED')) {
-			throw new UserMigrationIsNotEnabledLoggableException(currentUserId);
-		}
+		this.checkFeatureEnabled(currentUserId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUserId);
 		this.authorizationService.checkAllPermissions(user, [Permission.IMPORT_USER_MIGRATE]);
@@ -55,5 +53,11 @@ export class UserImportFetchUc {
 		await this.userImportService.deleteImportUsersBySchool(user.school);
 
 		await this.userImportService.saveImportUsers(matchedImportUsers);
+	}
+
+	private checkFeatureEnabled(currentUserId: EntityId): void {
+		if (!this.configService.get('FEATURE_USER_MIGRATION_ENABLED')) {
+			throw new UserMigrationIsNotEnabledLoggableException(currentUserId);
+		}
 	}
 }

@@ -12,7 +12,7 @@ import { Module } from '@nestjs/common';
 import { ImportUserController } from './controller/import-user.controller';
 import { ImportUserRepo } from './repo';
 import { SchulconnexFetchImportUsersService, UserImportService } from './service';
-import { UserImportFetchUc, UserImportUc } from './uc';
+import { PopulateUserImportFetchUc, UserImportUc } from './uc';
 
 @Module({
 	imports: [
@@ -29,7 +29,13 @@ import { UserImportFetchUc, UserImportUc } from './uc';
 		UserModule,
 	],
 	controllers: [ImportUserController],
-	providers: [UserImportUc, UserImportFetchUc, ImportUserRepo, UserImportService, SchulconnexFetchImportUsersService],
+	providers: [
+		UserImportUc,
+		PopulateUserImportFetchUc,
+		ImportUserRepo,
+		UserImportService,
+		SchulconnexFetchImportUsersService,
+	],
 	exports: [UserImportService],
 })
 /**

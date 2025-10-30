@@ -15,7 +15,7 @@ import { PaginationParams } from '@shared/controller/dto';
 import { IFindOptions } from '@shared/domain/interface';
 import { ImportUser } from '../entity';
 import { ImportUserMapper, UserMatchMapper } from '../mapper';
-import { UserImportFetchUc, UserImportUc } from '../uc';
+import { PopulateUserImportFetchUc, UserImportUc } from '../uc';
 import {
 	FilterImportUserParams,
 	FilterUserParams,
@@ -33,7 +33,10 @@ import { PopulateImportUserParams } from './dto/populate-import-user.params';
 @JwtAuthentication()
 @Controller('user/import')
 export class ImportUserController {
-	constructor(private readonly userImportUc: UserImportUc, private readonly userImportFetchUc: UserImportFetchUc) {}
+	constructor(
+		private readonly userImportUc: UserImportUc,
+		private readonly populateUserImportFetchUc: PopulateUserImportFetchUc
+	) {}
 
 	@Get()
 	public async findAllImportUsers(
@@ -137,7 +140,7 @@ export class ImportUserController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: PopulateImportUserParams
 	): Promise<void> {
-		await this.userImportFetchUc.populateImportUsers(currentUser.userId, query.matchByPreferredName);
+		await this.populateUserImportFetchUc.populateImportUsers(currentUser.userId, query.matchByPreferredName);
 	}
 
 	@Post('cancel')

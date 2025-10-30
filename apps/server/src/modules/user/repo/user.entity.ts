@@ -265,6 +265,8 @@ export class User extends BaseEntityWithTimestamps {
 			setOfPermissions = this.resolveSchoolPermissionsForStudent(setOfPermissions, schoolPermissions);
 		}
 
+		/* Do we need to resolve school permissions for external persons? */
+
 		return setOfPermissions;
 	}
 
