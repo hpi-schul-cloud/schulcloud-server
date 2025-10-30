@@ -20,8 +20,12 @@ export class H5pHubClient {
 			});
 
 			console.log(`Downloaded content type ${library} to ${filePath}`);
-		} catch (error) {
-			console.error(`Unknown error while downloading content type ${library}:`, error);
+		} catch (error: unknown) {
+			if (this.isObjectWithResponseStatus(error) && error.response.status === 404) {
+				throw new Error(`No content type available at H5P Hub for ${library}.`);
+			} else {
+				throw new Error(`Unknown error fetching library.json from repository ${library}: ${error}`);
+			}
 		}
 	}
 
@@ -37,5 +41,16 @@ export class H5pHubClient {
 		}
 
 		return response;
+	}
+
+	private isObjectWithResponseStatus(obj: unknown): obj is { response: { status: number } } {
+		return (
+			typeof obj === 'object' &&
+			obj !== null &&
+			'response' in obj &&
+			typeof (obj as any).response === 'object' &&
+			'status' in (obj as any).response &&
+			typeof (obj as any).response.status === 'number'
+		);
 	}
 }

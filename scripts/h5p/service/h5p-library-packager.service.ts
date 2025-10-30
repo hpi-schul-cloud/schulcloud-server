@@ -116,7 +116,14 @@ export class H5pLibraryPackagerService {
 		}
 
 		console.log(`Downloading current version of ${library} from H5P Hub to ${filePath}.`);
-		await this.h5pHubClient.downloadContentType(library, filePath);
+		try {
+			await this.h5pHubClient.downloadContentType(library, filePath);
+		} catch (error: unknown) {
+			console.error(
+				`Failed to download content type ${library}: ${error instanceof Error ? error.message : String(error)}`
+			);
+			return undefined;
+		}
 
 		console.log(`Unzipping H5P Hub file ${filePath} to ${h5pHubFolder}.`);
 		const outputDir = FileSystemHelper.buildPath(h5pHubFolder, library);
@@ -733,12 +740,29 @@ export class H5pLibraryPackagerService {
 
 		const options: GitHubClientOptions = { maxRetries: 3 };
 		const tags = await this.gitHubClient.fetchAllTags(depRepoName, options);
-		const depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
+		let depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
 		if (!depTag) {
 			this.logTagNotFound(dependency);
 			result.failedLibraries.add(dependency.machineName);
 
 			return result;
+		}
+
+		const currentH5pHubTag = await this.getCurrentTagFromH5pHub(depName);
+		if (currentH5pHubTag) {
+			const depPatch = Number(depTag.split('.')[2]);
+			if (
+				depMajor === currentH5pHubTag.majorVersion &&
+				depMinor === currentH5pHubTag.minorVersion &&
+				depPatch > currentH5pHubTag.patchVersion
+			) {
+				console.log(
+					`Excluding higher patch version ${depTag} than current H5P Hub version ${currentH5pHubTag.majorVersion}.${
+						currentH5pHubTag.minorVersion
+					}.${currentH5pHubTag.patchVersion} for dependency ${LibraryName.toUberName(dependency)}.`
+				);
+				depTag = `${depMajor}.${depMinor}.${currentH5pHubTag.patchVersion}`;
+			}
 		}
 
 		const dependencyResult = await this.buildLibraryVersionAndDependencies(
