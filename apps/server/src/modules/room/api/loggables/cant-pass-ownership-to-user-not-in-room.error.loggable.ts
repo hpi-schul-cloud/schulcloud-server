@@ -1,8 +1,8 @@
-import { BadRequestException } from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import { ErrorLogMessage } from '@shared/common/error';
 import { Loggable } from '@shared/common/loggable';
 
-export class CantPassOwnershipToUserNotInRoomLoggableException extends BadRequestException implements Loggable {
+export class CantPassOwnershipToUserNotInRoomLoggableException extends ForbiddenException implements Loggable {
 	constructor(private readonly props: { currentUserId: string; roomId: string; targetUserId: string }) {
 		super();
 	}

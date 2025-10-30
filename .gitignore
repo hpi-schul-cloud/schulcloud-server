@@ -64,7 +64,7 @@ backup/*
 
 # local dev secrets
 config/secrets.json
-.env
+*.env
 travis_rsa
 
 # version info

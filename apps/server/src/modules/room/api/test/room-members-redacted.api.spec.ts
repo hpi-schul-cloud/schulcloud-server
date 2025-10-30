@@ -15,6 +15,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomMemberListResponse } from '../dto/response/room-member-list.response';
+import { RoomSetup } from './util/room-setup.helper';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -40,7 +41,7 @@ describe('Room Controller (API)', () => {
 		await app.close();
 	});
 
-	describe('GET /rooms/:roomId/members', () => {
+	describe('GET /rooms/:roomId/members-redacted', () => {
 		const setupRoomWithExternalMembers = async (loginAs: RoleName.ADMINISTRATOR | RoleName.TEACHER) => {
 			const school = schoolEntityFactory.buildWithId();
 			const externalSchool = schoolEntityFactory.buildWithId();
@@ -122,7 +123,7 @@ describe('Room Controller (API)', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
 				const { room } = await setupRoomWithExternalMembers(RoleName.TEACHER);
-				const response = await testApiClient.get(`/${room.id}/members`);
+				const response = await testApiClient.get(`/${room.id}/members-redacted`);
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
 		});
@@ -132,14 +133,30 @@ describe('Room Controller (API)', () => {
 				const { room } = await setupRoomWithExternalMembers(RoleName.TEACHER);
 				const { loggedInClient } = await setupInsufficientPermissionsUser();
 
-				const response = await loggedInClient.get(`/${room.id}/members`);
+				const response = await loggedInClient.get(`/${room.id}/members-redacted`);
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 
-		describe('when the user can fully access room members', () => {
-			it('should return real names for all members', async () => {
+		describe('when the user is room owner (but not admin)', () => {
+			it('should return forbidden', async () => {
+				const { loggedInClient, room } = await setupRoomWithExternalMembers(RoleName.TEACHER);
+
+				const response = await loggedInClient.get(`/${room.id}/members-redacted`);
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				expect(response.body).toEqual({
+					code: HttpStatus.FORBIDDEN,
+					message: 'Forbidden',
+					title: 'Forbidden',
+					type: 'FORBIDDEN',
+				});
+			});
+		});
+
+		describe('when the user can only administrate school rooms', () => {
+			it('should anonymize non-room-owner external names', async () => {
 				const {
 					loggedInClient,
 					room,
@@ -151,9 +168,9 @@ describe('Room Controller (API)', () => {
 					roomEditorRole,
 					roomOwnerRole,
 					roomViewerRole,
-				} = await setupRoomWithExternalMembers(RoleName.TEACHER);
+				} = await setupRoomWithExternalMembers(RoleName.ADMINISTRATOR);
 
-				const response = await loggedInClient.get(`/${room.id}/members`);
+				const response = await loggedInClient.get(`/${room.id}/members-redacted`);
 
 				expect(response.status).toBe(HttpStatus.OK);
 				const body = response.body as RoomMemberListResponse;
@@ -192,11 +209,12 @@ describe('Room Controller (API)', () => {
 				const externalStudentMember = body.data.find((member) => member.userId === externalStudent.id);
 				expect(externalStudentMember).toEqual(
 					expect.objectContaining({
-						firstName: externalStudent.firstName,
-						lastName: externalStudent.lastName,
+						firstName: '---',
+						lastName: '---',
 						userId: externalStudent.id,
 						roomRoleName: roomViewerRole.name,
 						schoolRoleNames: [RoleName.STUDENT],
+						schoolId: externalStudent.school.id,
 					})
 				);
 				const externalTeacherMemberOne = body.data.find((member) => member.userId === externalTeachers[0].id);
@@ -207,34 +225,73 @@ describe('Room Controller (API)', () => {
 						userId: externalTeachers[0].id,
 						roomRoleName: roomOwnerRole.name,
 						schoolRoleNames: [RoleName.TEACHER],
+						schoolId: externalTeachers[0].school.id,
 					})
 				);
 				const externalTeacherMemberTwo = body.data.find((member) => member.userId === externalTeachers[1].id);
 				expect(externalTeacherMemberTwo).toEqual(
 					expect.objectContaining({
-						firstName: externalTeachers[1].firstName,
-						lastName: externalTeachers[1].lastName,
+						firstName: '---',
+						lastName: '---',
 						userId: externalTeachers[1].id,
 						roomRoleName: roomEditorRole.name,
 						schoolRoleNames: [RoleName.TEACHER],
+						schoolId: externalTeachers[1].school.id,
 					})
 				);
 			});
 		});
 
-		describe('when the user can only administrate school rooms', () => {
-			it('should return forbidden', async () => {
-				const { loggedInClient, room } = await setupRoomWithExternalMembers(RoleName.ADMINISTRATOR);
+		describe('when the user is school admin and roomadmin', () => {
+			const setup = async () => {
+				const roomSetup = new RoomSetup(em, testApiClient);
+				await roomSetup.setup([
+					['SameSchoolTeacher_roomowner', 'sameSchool', 'teacher', 'roomowner'],
+					['SameSchoolTeacherAdmin_roomadmin', 'sameSchool', ['teacher', 'administrator'], 'roomadmin'],
+					['OtherSchoolTeacher_roomeditor', 'otherSchool', 'teacher', 'roomeditor'],
+				]);
+				return roomSetup;
+			};
 
-				const response = await loggedInClient.get(`/${room.id}/members`);
+			it('should anonymize names of users from other schools', async () => {
+				const roomSetup = await setup();
+				const { room } = roomSetup;
 
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
-				expect(response.body).toEqual({
-					code: HttpStatus.FORBIDDEN,
-					message: 'Forbidden',
-					title: 'Forbidden',
-					type: 'FORBIDDEN',
-				});
+				const loggedInClient = await roomSetup.loginUser('SameSchoolTeacherAdmin_roomadmin');
+				const response = await loggedInClient.get(`/${room.id}/members-redacted`);
+
+				expect(response.status).toBe(HttpStatus.OK);
+				const body = response.body as RoomMemberListResponse;
+				const externalUserId = roomSetup.getUserByName('OtherSchoolTeacher_roomeditor').id;
+				const externalTeacherMember = body.data.find((member) => member.userId === externalUserId);
+				expect(externalTeacherMember).toEqual(
+					expect.objectContaining({
+						firstName: '---',
+						lastName: '---',
+						roomRoleName: 'roomeditor',
+						schoolRoleNames: [RoleName.TEACHER],
+					})
+				);
+			});
+
+			it('should not anonymize names of users from the same school', async () => {
+				const roomSetup = await setup();
+				const { room } = roomSetup;
+
+				const loggedInClient = await roomSetup.loginUser('SameSchoolTeacherAdmin_roomadmin');
+				const response = await loggedInClient.get(`/${room.id}/members-redacted`);
+
+				expect(response.status).toBe(HttpStatus.OK);
+				const body = response.body as RoomMemberListResponse;
+				const internalTeacherId = roomSetup.getUserByName('SameSchoolTeacher_roomowner').id;
+				const internalTeacherMember = body.data.find((member) => member.userId === internalTeacherId);
+				expect(internalTeacherMember).toEqual(
+					expect.objectContaining({
+						firstName: 'SameSchoolTeacher_roomowner',
+						roomRoleName: 'roomowner',
+						schoolRoleNames: [RoleName.TEACHER],
+					})
+				);
 			});
 		});
 	});
