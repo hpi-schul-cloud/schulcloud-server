@@ -11,6 +11,7 @@ import {
 	CardListResponseDto,
 	CardResponseDto,
 	FileElementResponseDto,
+	FileFolderElementResponseDto,
 	LinkElementResponseDto,
 	RichTextElementResponseDto,
 } from '../common-cartridge-client/card-client/dto';
@@ -34,7 +35,7 @@ import { CommonCartridgeExportMessageLoggable } from '../loggable/common-cartrid
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportResponse } from './common-cartridge-export.response';
 
-type FileMetadataAndStream = { name: string; file: Stream; fileDto: FileDto };
+export type FileMetadataAndStream = { name: string; file: Stream; fileDto: FileDto };
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -286,7 +287,7 @@ export class CommonCartridgeExportService {
 	private async openStreamsToFiles(element: CardResponseElementsInnerDto): Promise<FileMetadataAndStream[]> {
 		const fileMetadataBufferArray: FileMetadataAndStream[] = [];
 
-		if (element.type === ContentElementType.FILE) {
+		if (element.type === ContentElementType.FILE || element.type === ContentElementType.FILE_FOLDER) {
 			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
 
 			for (const fileMetadata of filesMetadata) {
@@ -318,17 +319,22 @@ export class CommonCartridgeExportService {
 				cardOrganization.addResource(linkResource);
 				break;
 			case ContentElementType.FILE:
-				const metadataAndStreams = await this.openStreamsToFiles(element);
+				const metadataAndStreamsForFile = await this.openStreamsToFiles(element);
 
-				for (const fileMetadata of metadataAndStreams) {
+				for (const fileMetadata of metadataAndStreamsForFile) {
 					const { file, fileDto } = fileMetadata;
-
-					if (file) {
-						const fileResource = this.mapper.mapFileToResource(fileDto, file, element as FileElementResponseDto);
-
-						cardOrganization.addResource(fileResource);
-					}
+					const fileResource = this.mapper.mapFileToResource(fileDto, file, element as FileElementResponseDto);
+					cardOrganization.addResource(fileResource);
 				}
+
+				break;
+			case ContentElementType.FILE_FOLDER:
+				const metadataAndStreamsForFolder = await this.openStreamsToFiles(element);
+				const fileFolderResource = this.mapper.mapFileFolderToResource(
+					element as FileFolderElementResponseDto,
+					metadataAndStreamsForFolder
+				);
+				cardOrganization.addResource(fileFolderResource);
 
 				break;
 		}
