@@ -3,4 +3,5 @@ export enum SchulconnexRole {
 	LERN = 'Lern',
 	LEIT = 'Leit',
 	ORGADMIN = 'OrgAdmin',
+	EXTERN = 'Extern',
 }
