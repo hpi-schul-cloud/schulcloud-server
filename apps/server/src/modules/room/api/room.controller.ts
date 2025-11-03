@@ -326,6 +326,27 @@ export class RoomController {
 		return Promise.resolve(response);
 	}
 
+	@Get(':roomId/members-redacted')
+	@ApiOperation({ summary: 'Get a list of room members for admins where names are partially redacted.' })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Returns a list of the members of the room.',
+		type: RoomMemberListResponse,
+	})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async getMembersRedacted(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams
+	): Promise<RoomMemberListResponse> {
+		const members = await this.roomUc.getRoomMembersRedacted(currentUser.userId, urlParams.roomId);
+		const response = new RoomMemberListResponse(members);
+
+		return Promise.resolve(response);
+	}
+
 	@Post(':roomId/copy')
 	@ApiOperation({
 		summary: 'Creates a copy of the given room. Restricted to Room Owner and Admin',
