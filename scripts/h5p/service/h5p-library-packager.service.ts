@@ -765,6 +765,12 @@ export class H5pLibraryPackagerService {
 			}
 		}
 
+		// special handling for "FontAwesome" as version 4.5.6 seems to be broken
+		// so we force 4.5.4 which is known to work
+		if (depName === 'FontAwesome' && depMajor === 4 && depMinor === 5) {
+			depTag = '4.5.4';
+		}
+
 		const dependencyResult = await this.buildLibraryVersionAndDependencies(
 			depName,
 			depTag,
