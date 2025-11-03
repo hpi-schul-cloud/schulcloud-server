@@ -64,7 +64,7 @@ backup/*
 
 # local dev secrets
 config/secrets.json
-.env
+*.env
 travis_rsa
 
 # version info
@@ -91,3 +91,7 @@ build
 
 # Docker
 docker-compose.yml
+
+# compiled H5P scripts
+scripts/h5p/*.js
+scripts/h5p/**/*.js

@@ -382,6 +382,11 @@
 					"type": "string",
 					"default": "config/h5p-libraries.yaml",
 					"description": "Path to yaml file with list of h5p content type libraries which should be installed"
+				},
+				"EXIT_ON_ERROR": {
+					"type": "boolean",
+					"default": true,
+					"description": "By default, the application is terminated after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to false."
 				}
 			}
 		},

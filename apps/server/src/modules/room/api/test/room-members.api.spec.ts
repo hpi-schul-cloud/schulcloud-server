@@ -223,89 +223,18 @@ describe('Room Controller (API)', () => {
 		});
 
 		describe('when the user can only administrate school rooms', () => {
-			it('should anonymize non-room-owner external names', async () => {
-				const {
-					loggedInClient,
-					room,
-					students,
-					teachers,
-					externalStudent,
-					externalTeachers,
-					teacherUser,
-					roomEditorRole,
-					roomOwnerRole,
-					roomViewerRole,
-				} = await setupRoomWithExternalMembers(RoleName.ADMINISTRATOR);
+			it('should return forbidden', async () => {
+				const { loggedInClient, room } = await setupRoomWithExternalMembers(RoleName.ADMINISTRATOR);
 
 				const response = await loggedInClient.get(`/${room.id}/members`);
 
-				expect(response.status).toBe(HttpStatus.OK);
-				const body = response.body as RoomMemberListResponse;
-				expect(body.data.length).toEqual(8);
-				expect(body.data).toContainEqual(
-					expect.objectContaining({
-						firstName: teacherUser.firstName,
-						lastName: teacherUser.lastName,
-						userId: teacherUser.id,
-						roomRoleName: roomEditorRole.name,
-						schoolRoleNames: [RoleName.TEACHER],
-					})
-				);
-				students.forEach((student) => {
-					expect(body.data).toContainEqual(
-						expect.objectContaining({
-							firstName: student.firstName,
-							lastName: student.lastName,
-							userId: student.id,
-							roomRoleName: roomViewerRole.name,
-							schoolRoleNames: [RoleName.STUDENT],
-						})
-					);
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				expect(response.body).toEqual({
+					code: HttpStatus.FORBIDDEN,
+					message: 'Forbidden',
+					title: 'Forbidden',
+					type: 'FORBIDDEN',
 				});
-				teachers.forEach((teacher) => {
-					expect(body.data).toContainEqual(
-						expect.objectContaining({
-							firstName: teacher.firstName,
-							lastName: teacher.lastName,
-							userId: teacher.id,
-							roomRoleName: roomEditorRole.name,
-							schoolRoleNames: [RoleName.TEACHER],
-						})
-					);
-				});
-				const externalStudentMember = body.data.find((member) => member.userId === externalStudent.id);
-				expect(externalStudentMember).toEqual(
-					expect.objectContaining({
-						firstName: '---',
-						lastName: '---',
-						userId: externalStudent.id,
-						roomRoleName: roomViewerRole.name,
-						schoolRoleNames: [RoleName.STUDENT],
-						schoolId: externalStudent.school.id,
-					})
-				);
-				const externalTeacherMemberOne = body.data.find((member) => member.userId === externalTeachers[0].id);
-				expect(externalTeacherMemberOne).toEqual(
-					expect.objectContaining({
-						firstName: externalTeachers[0].firstName,
-						lastName: externalTeachers[0].lastName,
-						userId: externalTeachers[0].id,
-						roomRoleName: roomOwnerRole.name,
-						schoolRoleNames: [RoleName.TEACHER],
-						schoolId: externalTeachers[0].school.id,
-					})
-				);
-				const externalTeacherMemberTwo = body.data.find((member) => member.userId === externalTeachers[1].id);
-				expect(externalTeacherMemberTwo).toEqual(
-					expect.objectContaining({
-						firstName: '---',
-						lastName: '---',
-						userId: externalTeachers[1].id,
-						roomRoleName: roomEditorRole.name,
-						schoolRoleNames: [RoleName.TEACHER],
-						schoolId: externalTeachers[1].school.id,
-					})
-				);
 			});
 		});
 	});

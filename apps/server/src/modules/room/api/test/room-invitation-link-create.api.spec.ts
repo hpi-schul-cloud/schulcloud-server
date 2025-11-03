@@ -103,7 +103,8 @@ describe('Room Invitation Link Controller (API)', () => {
 					roomId: roomEntity.id,
 					title: 'Room invitation link for teachers',
 					activeUntil: inOneWeek,
-					isOnlyForTeachers: true,
+					isUsableByExternalPersons: false,
+					isUsableByStudents: false,
 					restrictedToCreatorSchool: false,
 					requiresConfirmation: false,
 				};
@@ -147,7 +148,8 @@ describe('Room Invitation Link Controller (API)', () => {
 					roomId: roomEntity.id,
 					title: 'Room invitation link for teachers of my school',
 					activeUntil: inOneWeek,
-					isOnlyForTeachers: true,
+					isUsableByExternalPersons: false,
+					isUsableByStudents: false,
 					restrictedToCreatorSchool: true,
 					requiresConfirmation: false,
 				};

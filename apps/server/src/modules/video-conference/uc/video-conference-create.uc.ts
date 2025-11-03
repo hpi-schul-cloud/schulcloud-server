@@ -14,7 +14,7 @@ import { VideoConferenceOptions } from '../interface';
 import { VideoConferenceService } from '../service';
 import { ScopeInfo, ScopeRef } from './dto';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
-import { VideoConferenceDO } from '../domain';
+import { VideoConferenceDO, VideoConferenceScope } from '../domain';
 
 @Injectable()
 export class VideoConferenceCreateUc {
@@ -31,28 +31,45 @@ export class VideoConferenceCreateUc {
 	): Promise<void> {
 		await this.videoConferenceFeatureService.checkVideoConferenceFeatureEnabled(currentUserId, scope);
 
+		const vcDo = await this.checkVideoConferenceByScopeIdAndScope(scope.id, scope.scope);
+		if (vcDo) {
+			const isRunning = await this.isRunning(vcDo.target + vcDo.salt);
+			if (isRunning) {
+				return;
+			}
+		}
+
 		const videoConference = await this.videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions(
 			scope.id,
 			scope.scope,
 			options
 		);
+		await this.createMeeting(currentUserId, videoConference);
+	}
 
-		let bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
-		// try and catch based on legacy behavior
+	private async checkVideoConferenceByScopeIdAndScope(
+		scopeId: EntityId,
+		scope: VideoConferenceScope
+	): Promise<VideoConferenceDO | undefined> {
 		try {
-			bbbMeetingInfoResponse = await this.bbbService.getMeetingInfo(
-				new BBBBaseMeetingConfig({ meetingID: videoConference.target + videoConference.salt })
-			);
+			const videoConference = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(scopeId, scope);
+			return videoConference;
+		} catch (error) {
+			return undefined;
+		}
+	}
+	private async isRunning(id: string): Promise<boolean> {
+		let bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
+		try {
+			bbbMeetingInfoResponse = await this.bbbService.getMeetingInfo(new BBBBaseMeetingConfig({ meetingID: id }));
 		} catch (e) {
 			bbbMeetingInfoResponse = undefined;
 		}
 
-		if (bbbMeetingInfoResponse === undefined) {
-			await this.create(currentUserId, videoConference);
-		}
+		return bbbMeetingInfoResponse !== undefined;
 	}
 
-	private async create(currentUserId: EntityId, videoConference: VideoConferenceDO): Promise<void> {
+	private async createMeeting(currentUserId: EntityId, videoConference: VideoConferenceDO): Promise<void> {
 		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(
 			currentUserId,
 			videoConference.target,

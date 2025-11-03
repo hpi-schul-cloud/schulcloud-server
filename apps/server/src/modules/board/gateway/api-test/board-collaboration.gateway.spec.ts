@@ -35,10 +35,9 @@ describe(BoardCollaborationGateway.name, () => {
 		app = testingModule.createNestApplication();
 
 		em = app.get(EntityManager);
-		const mongoUrl = em.config.getClientUrl();
 
 		const mongoIoAdapter = new MongoIoAdapter(app);
-		await mongoIoAdapter.connectToMongoDb(mongoUrl);
+		await mongoIoAdapter.connectToMongoDb();
 		app.useWebSocketAdapter(mongoIoAdapter);
 		await app.init();
 
@@ -136,6 +135,35 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(unauthorizedIoClient, 'create-card-failure');
 
 				expect(failure).toEqual({ columnId: columnNode.id });
+			});
+		});
+	});
+
+	describe('copy card', () => {
+		describe('when card exists', () => {
+			it('should answer with copied card', async () => {
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
+
+				ioClient.emit('duplicate-card-request', { cardId });
+				const success = (await waitForEvent(ioClient, 'duplicate-card-success')) as {
+					cardId: string;
+					copiedCard: CardProps;
+				};
+
+				expect(Object.keys(success)).toEqual(expect.arrayContaining(['cardId', 'duplicatedCard']));
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
+
+				unauthorizedIoClient.emit('duplicate-card-request', { cardId });
+				const failure = await waitForEvent(unauthorizedIoClient, 'duplicate-card-failure');
+
+				expect(failure).toEqual({ cardId });
 			});
 		});
 	});
