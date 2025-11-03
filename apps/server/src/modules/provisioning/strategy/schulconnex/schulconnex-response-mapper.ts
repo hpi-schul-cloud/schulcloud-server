@@ -27,26 +27,6 @@ import {
 import { GroupRoleUnknownLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
 
-const RoleMapping: Partial<Record<SchulconnexRole | string, RoleName>> = {
-	[SchulconnexRole.LEHR]: RoleName.TEACHER,
-	[SchulconnexRole.LERN]: RoleName.STUDENT,
-	[SchulconnexRole.LEIT]: RoleName.ADMINISTRATOR,
-	[SchulconnexRole.ORGADMIN]: RoleName.ADMINISTRATOR,
-	[SchulconnexRole.EXTERN]: RoleName.EXPERT,
-};
-
-const GroupRoleMapping: Partial<Record<SchulconnexGroupRole | string, RoleName>> = {
-	[SchulconnexGroupRole.TEACHER]: RoleName.TEACHER,
-	[SchulconnexGroupRole.SUBSTITUTE_TEACHER]: RoleName.GROUPSUBSTITUTIONTEACHER,
-	[SchulconnexGroupRole.STUDENT]: RoleName.STUDENT,
-};
-
-const GroupTypeMapping: Partial<Record<SchulconnexGroupType | string, GroupTypes>> = {
-	[SchulconnexGroupType.CLASS]: GroupTypes.CLASS,
-	[SchulconnexGroupType.COURSE]: GroupTypes.COURSE,
-	[SchulconnexGroupType.OTHER]: GroupTypes.OTHER,
-};
-
 type TimePeriode = {
 	from: Date;
 	until: Date;
@@ -60,6 +40,28 @@ export class SchulconnexResponseMapper {
 		private readonly configService: ConfigService<ProvisioningConfig, true>,
 		private readonly logger: Logger
 	) {}
+
+	private RoleMapping: Partial<Record<SchulconnexRole | string, RoleName>> = {
+		[SchulconnexRole.LEHR]: RoleName.TEACHER,
+		[SchulconnexRole.LERN]: RoleName.STUDENT,
+		[SchulconnexRole.LEIT]: RoleName.ADMINISTRATOR,
+		[SchulconnexRole.ORGADMIN]: RoleName.ADMINISTRATOR,
+		[SchulconnexRole.EXTERN]: this.configService.get('FEATURE_SCHULCONNEX_EXTERNAL_PERSONS')
+			? RoleName.EXPERT
+			: undefined,
+	};
+
+	private GroupRoleMapping: Partial<Record<SchulconnexGroupRole | string, RoleName>> = {
+		[SchulconnexGroupRole.TEACHER]: RoleName.TEACHER,
+		[SchulconnexGroupRole.SUBSTITUTE_TEACHER]: RoleName.GROUPSUBSTITUTIONTEACHER,
+		[SchulconnexGroupRole.STUDENT]: RoleName.STUDENT,
+	};
+
+	private GroupTypeMapping: Partial<Record<SchulconnexGroupType | string, GroupTypes>> = {
+		[SchulconnexGroupType.CLASS]: GroupTypes.CLASS,
+		[SchulconnexGroupType.COURSE]: GroupTypes.COURSE,
+		[SchulconnexGroupType.OTHER]: GroupTypes.OTHER,
+	};
 
 	public mapToExternalSchoolDto(source: SchulconnexResponse): ExternalSchoolDto {
 		const officialSchoolNumber: string = source.personenkontexte[0].organisation.kennung.replace(
@@ -87,7 +89,7 @@ export class SchulconnexResponseMapper {
 			email = emailContact?.kennung;
 		}
 
-		const role: RoleName | undefined = SchulconnexResponseMapper.mapSchulconnexRoleToRoleName(source);
+		const role: RoleName | undefined = this.mapSchulconnexRoleToRoleName(source);
 
 		const mapped = new ExternalUserDto({
 			firstName: source.person.name.vorname,
@@ -102,8 +104,8 @@ export class SchulconnexResponseMapper {
 		return mapped;
 	}
 
-	public static mapSchulconnexRoleToRoleName(source: SchulconnexResponse): RoleName | undefined {
-		return RoleMapping[source.personenkontexte[0].rolle];
+	public mapSchulconnexRoleToRoleName(source: SchulconnexResponse): RoleName | undefined {
+		return this.RoleMapping[source.personenkontexte[0].rolle];
 	}
 
 	public static mapToGroupNameList(groups: SchulconnexGruppenResponse[]): string[] {
@@ -142,7 +144,7 @@ export class SchulconnexResponseMapper {
 		group: SchulconnexGruppenResponse,
 		shouldProvisionOtherUsers: boolean
 	): ExternalGroupDto | null {
-		const groupType: GroupTypes | undefined = GroupTypeMapping[group.gruppe.typ];
+		const groupType: GroupTypes | undefined = this.GroupTypeMapping[group.gruppe.typ];
 
 		if (!groupType) {
 			return null;
@@ -186,7 +188,7 @@ export class SchulconnexResponseMapper {
 			return null;
 		}
 
-		const userRole: RoleName | undefined = GroupRoleMapping[relation.rollen[0]];
+		const userRole: RoleName | undefined = this.GroupRoleMapping[relation.rollen[0]];
 
 		if (!userRole) {
 			this.logger.warning(new GroupRoleUnknownLoggable(relation));
