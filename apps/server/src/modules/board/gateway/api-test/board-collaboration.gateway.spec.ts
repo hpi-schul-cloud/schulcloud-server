@@ -139,6 +139,35 @@ describe(BoardCollaborationGateway.name, () => {
 		});
 	});
 
+	describe('copy card', () => {
+		describe('when card exists', () => {
+			it('should answer with copied card', async () => {
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
+
+				ioClient.emit('duplicate-card-request', { cardId });
+				const success = (await waitForEvent(ioClient, 'duplicate-card-success')) as {
+					cardId: string;
+					copiedCard: CardProps;
+				};
+
+				expect(Object.keys(success)).toEqual(expect.arrayContaining(['cardId', 'duplicatedCard']));
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
+
+				unauthorizedIoClient.emit('duplicate-card-request', { cardId });
+				const failure = await waitForEvent(unauthorizedIoClient, 'duplicate-card-failure');
+
+				expect(failure).toEqual({ cardId });
+			});
+		});
+	});
+
 	describe('fetch board', () => {
 		describe('when board exists', () => {
 			it('should answer with success', async () => {
