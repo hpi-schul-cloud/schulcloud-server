@@ -17,6 +17,7 @@ import { BoardLayout } from '../common-cartridge-client/room-client/enums/board-
 import { richTextElementFactroy } from './rich-text-element.factory';
 import { linkElementFactory } from './link-element.factory';
 import { fileElementResponseDtoFactory } from './file-element.factory';
+import { fileFolderElementResponseDtoFactory } from './file-folder-element.factory';
 
 export const courseMetadataFactory = Factory.define<CourseCommonCartridgeMetadataDto>(({ sequence }) => {
 	return {
@@ -65,7 +66,12 @@ export const cardResponseFactory = Factory.define<CardResponseDto>(({ sequence, 
 	return {
 		id: params.id ?? sequence.toString(),
 		height: faker.number.int(),
-		elements: [richTextElementFactroy.build(), linkElementFactory.build(), fileElementResponseDtoFactory.build()],
+		elements: [
+			richTextElementFactroy.build(),
+			linkElementFactory.build(),
+			fileElementResponseDtoFactory.build(),
+			fileFolderElementResponseDtoFactory.build(),
+		],
 		visibilitySettings: {
 			publishedAt: faker.date.recent().toISOString(),
 		},
