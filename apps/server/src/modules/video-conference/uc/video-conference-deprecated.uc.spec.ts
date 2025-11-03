@@ -380,6 +380,25 @@ describe('VideoConferenceUc', () => {
 				expect(result.bbbResponse).toEqual(bbbResponse);
 			});
 
+			it('should add salt to existing preset if missing', async () => {
+				// Arrange
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				savedVcDO.salt = undefined;
+				videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(savedVcDO);
+				bbbService.create.mockResolvedValue(bbbResponse);
+
+				// Act
+				await useCase.create(defaultCurrentUser, VideoConferenceScope.COURSE, course.id, defaultOptions);
+
+				// Assert
+				expect(videoConferenceRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						salt: expect.any(String),
+					})
+				);
+			});
+
 			it('should successfully execute with options set', async () => {
 				// Arrange
 				videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(savedVcDO);

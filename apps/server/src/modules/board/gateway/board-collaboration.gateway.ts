@@ -12,6 +12,7 @@ import {
 } from '@nestjs/websockets';
 import { EntityId } from '@shared/domain/types';
 import { Server } from 'socket.io';
+import { AnyContentElementResponse } from '../controller/dto';
 import {
 	BoardResponseMapper,
 	CardResponseMapper,
@@ -23,6 +24,7 @@ import { MetricsService } from '../metrics/metrics.service';
 import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
 import {
+	CopyCardMessageParams,
 	CreateCardMessageParams,
 	CreateColumnMessageParams,
 	CreateContentElementMessageParams,
@@ -254,6 +256,26 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		}
 	}
 
+	@SubscribeMessage('duplicate-card-request')
+	@TrackExecutionTime()
+	@UseRequestContext()
+	public async copyCard(socket: Socket, data: CopyCardMessageParams): Promise<void> {
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'duplicate-card' });
+		const { userId, schoolId } = this.getCurrentUser(socket);
+		try {
+			const card = await this.columnUc.copyCard(userId, data.cardId, schoolId);
+
+			const cardResponse = CardResponseMapper.mapToResponse(card);
+			const responsePayload = {
+				...data,
+				duplicatedCard: cardResponse,
+			};
+			emitter.emitToClientAndRoom(responsePayload, card.id);
+		} catch (err) {
+			emitter.emitFailure(data);
+		}
+	}
+
 	@SubscribeMessage('move-column-request')
 	@TrackExecutionTime()
 	@UseRequestContext()
@@ -362,9 +384,14 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	@SubscribeMessage('create-element-request')
 	@TrackExecutionTime()
 	@UseRequestContext()
-	public async createElement(socket: Socket, data: CreateContentElementMessageParams): Promise<void> {
+	public async createElement(
+		socket: Socket,
+		data: CreateContentElementMessageParams
+	): Promise<AnyContentElementResponse | undefined> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'create-element' });
 		const { userId } = this.getCurrentUser(socket);
+		let response: AnyContentElementResponse | undefined;
+
 		try {
 			const element = await this.cardUc.createElement(userId, data.cardId, data.type, data.toPosition);
 
@@ -373,9 +400,13 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 				newElement: ContentElementResponseFactory.mapToResponse(element),
 			};
 			emitter.emitToClientAndRoom(responsePayload, element);
+
+			response = responsePayload.newElement;
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
+
+		return response;
 	}
 
 	@SubscribeMessage('update-element-request')

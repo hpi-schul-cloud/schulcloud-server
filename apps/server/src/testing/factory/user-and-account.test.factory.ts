@@ -34,7 +34,7 @@ export class UserAndAccountTestFactory {
 		return userParams;
 	}
 
-	private static buildAccount(user: User, params: UserAndAccountParams = {}): AccountEntity {
+	public static buildAccount(user: User, params: UserAndAccountParams = {}): AccountEntity {
 		const accountParams = _.pick(params, 'username', 'systemId');
 		const account = accountFactory.withUser(user).buildWithId(accountParams);
 		return account;

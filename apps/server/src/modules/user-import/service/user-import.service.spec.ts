@@ -13,16 +13,21 @@ import { UserLoginMigrationDO } from '@modules/user-login-migration';
 import { userLoginMigrationDOFactory } from '@modules/user-login-migration/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { InternalServerErrorException } from '@nestjs/common';
+import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ImportUser, MatchCreator } from '../entity';
-import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
+import {
+	SchoolIdDoesNotMatchWithUserSchoolId,
+	UserMigrationCanceledLoggable,
+	UserMigrationIsNotEnabled,
+} from '../loggable';
 import { ImportUserRepo } from '../repo';
 import { importUserFactory } from '../testing';
 import { UserImportConfig } from '../user-import-config';
 import { UserImportService } from './user-import.service';
+import { UserAlreadyAssignedToImportUserError } from '../domain/error';
 
 describe(UserImportService.name, () => {
 	let module: TestingModule;
@@ -140,7 +145,7 @@ describe(UserImportService.name, () => {
 		});
 	});
 
-	describe('checkFeatureEnabled', () => {
+	describe('checkFeatureEnabledAndIsLdapPilotSchool', () => {
 		describe('when the global feature is enabled', () => {
 			const setup = () => {
 				config.FEATURE_USER_MIGRATION_ENABLED = true;
@@ -155,7 +160,7 @@ describe(UserImportService.name, () => {
 			it('should do nothing', () => {
 				const { school } = setup();
 
-				service.checkFeatureEnabled(school);
+				service.checkFeatureEnabledAndIsLdapPilotSchool(school);
 			});
 		});
 
@@ -175,7 +180,7 @@ describe(UserImportService.name, () => {
 			it('should do nothing', () => {
 				const { school } = setup();
 
-				service.checkFeatureEnabled(school);
+				service.checkFeatureEnabledAndIsLdapPilotSchool(school);
 			});
 		});
 
@@ -195,7 +200,7 @@ describe(UserImportService.name, () => {
 			it('should do nothing', () => {
 				const { school } = setup();
 
-				expect(() => service.checkFeatureEnabled(school)).toThrow(
+				expect(() => service.checkFeatureEnabledAndIsLdapPilotSchool(school)).toThrow(
 					new InternalServerErrorException('User Migration not enabled')
 				);
 			});
@@ -203,7 +208,7 @@ describe(UserImportService.name, () => {
 			it('should log a warning', () => {
 				const { school } = setup();
 
-				expect(() => service.checkFeatureEnabled(school)).toThrow(
+				expect(() => service.checkFeatureEnabledAndIsLdapPilotSchool(school)).toThrow(
 					new InternalServerErrorException('User Migration not enabled')
 				);
 				expect(logger.warning).toHaveBeenCalledWith(new UserMigrationIsNotEnabled());
@@ -494,6 +499,51 @@ describe(UserImportService.name, () => {
 
 				expect(logger.notice).toHaveBeenCalledWith(new UserMigrationCanceledLoggable(expect.any(LegacySchoolDo)));
 			});
+		});
+	});
+
+	describe('validateSameSchool', () => {
+		const setup = () => {
+			const school = schoolEntityFactory.buildWithId();
+			const importUser = importUserFactory.buildWithId({ school });
+			const userMatch = userFactory.buildWithId({ school });
+
+			return { school, importUser, userMatch };
+		};
+
+		it('should do nothing when all school ids match', () => {
+			const { school, importUser, userMatch } = setup();
+
+			expect(() => service.validateSameSchool(school.id, importUser, userMatch)).not.toThrow();
+		});
+
+		it('should throw ForbiddenException when user school id does not match', () => {
+			const { school, importUser, userMatch } = setup();
+			userMatch.school = schoolEntityFactory.buildWithId(); // different school id
+
+			expect(() => service.validateSameSchool(school.id, importUser, userMatch)).toThrow(ForbiddenException);
+			expect(logger.warning).toHaveBeenCalledWith(expect.any(SchoolIdDoesNotMatchWithUserSchoolId));
+		});
+
+		it('should throw ForbiddenException when importUser school id does not match', () => {
+			const { school, userMatch } = setup();
+			const differentSchool = schoolEntityFactory.buildWithId();
+			const importUser = importUserFactory.buildWithId({ school: differentSchool });
+
+			expect(() => service.validateSameSchool(school.id, importUser, userMatch)).toThrow(ForbiddenException);
+			expect(logger.warning).toHaveBeenCalledWith(expect.any(SchoolIdDoesNotMatchWithUserSchoolId));
+		});
+	});
+
+	describe('checkUserIsAlreadyAssigned', () => {
+		it('should throw UserAlreadyAssignedToImportUserError when hasMatch is not null', () => {
+			const hasMatch = importUserFactory.build();
+
+			expect(() => service.checkUserIsAlreadyAssigned(hasMatch)).toThrow(UserAlreadyAssignedToImportUserError);
+		});
+
+		it('should not throw when hasMatch is null', () => {
+			expect(() => service.checkUserIsAlreadyAssigned(null)).not.toThrow();
 		});
 	});
 });

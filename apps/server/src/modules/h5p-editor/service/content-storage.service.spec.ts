@@ -4,7 +4,12 @@ import { CopyFiles, S3ClientAdapter } from '@infra/s3-client';
 import { s3ObjectKeysRecursiveFactory } from '@infra/s3-client/testing';
 import { IContentMetadata, ILibraryName, IUser, LibraryName } from '@lumieducation/h5p-server';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+	HttpException,
+	InternalServerErrorException,
+	NotFoundException,
+	NotImplementedException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IEntity } from '@shared/domain/interface';
 import { Readable } from 'stream';
@@ -74,7 +79,7 @@ const helpers = {
 		};
 	},
 
-	repoSaveMock: async <Entity extends IEntity>(entities: Entity | Entity[]) => {
+	repoSaveMock: <Entity extends IEntity>(entities: Entity | Entity[]) => {
 		if (!Array.isArray(entities)) {
 			entities = [entities];
 		}
@@ -513,12 +518,10 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN filename is invalid', () => {
-			it('should throw error', async () => {
+			it('should throw error', () => {
 				const { contentID, invalidFilename } = setup();
 
-				const existsPromise = service.fileExists(contentID, invalidFilename);
-
-				await expect(existsPromise).rejects.toThrow();
+				expect(() => service.fileExists(contentID, invalidFilename)).toThrow();
 			});
 		});
 	});
@@ -740,36 +743,11 @@ describe('ContentStorage', () => {
 	});
 
 	describe('listContent', () => {
-		const setup = () => {
-			const getContentsResponse = [1, 2, 3, 4].map((id) => helpers.buildContent().withID(id));
-			const contentIds = getContentsResponse.map((content) => content.id);
-
-			const error = new Error('could not list entities');
-
-			const user = helpers.createUser();
-
-			return { getContentsResponse, contentIds, user, error };
-		};
-
 		describe('WHEN querying for contents', () => {
-			it('should return list of IDs', async () => {
-				const { contentIds, getContentsResponse } = setup();
-				contentRepo.getAllContents.mockResolvedValueOnce(getContentsResponse);
+			it('should throw not implemented exception', () => {
+				const error = new NotImplementedException('Method not implemented.');
 
-				const ids = await service.listContent();
-
-				expect(ids).toEqual(contentIds);
-			});
-		});
-
-		describe('WHEN H5PContentRepo.getAllContents throws error', () => {
-			it('should throw the error', async () => {
-				const { error } = setup();
-				contentRepo.getAllContents.mockRejectedValueOnce(error);
-
-				const listPromise = service.listContent();
-
-				await expect(listPromise).rejects.toBe(error);
+				expect(() => service.listContent()).toThrow(error);
 			});
 		});
 	});
@@ -831,57 +809,20 @@ describe('ContentStorage', () => {
 
 	describe('getUsage', () => {
 		const setup = () => {
-			const library = 'TEST.Library-1.0';
-			const libraryName = LibraryName.fromUberName(library);
-
-			const contentMain = helpers.buildContent(0).withID(0);
-			const content1 = helpers.buildContent(1).withID(1);
-			const content2 = helpers.buildContent(2).withID(2);
-			const content3 = helpers.buildContent(3).withID(3);
-			const content4 = helpers.buildContent(4).withID(4);
-
-			contentMain.metadata.mainLibrary = libraryName.machineName;
-			contentMain.metadata.preloadedDependencies = [libraryName];
-			content1.metadata.preloadedDependencies = [libraryName];
-			content2.metadata.editorDependencies = [libraryName];
-			content3.metadata.dynamicDependencies = [libraryName];
-
-			const contents = [contentMain, content1, content2, content3, content4];
-
-			const findByIdMock = async (id: string) => {
-				const content = contents.find((c) => c.id === id);
-
-				if (content) {
-					return Promise.resolve(content);
-				}
-
-				throw new Error('Not found');
-			};
-
+			const libraryName = LibraryName.fromUberName('TEST.Library-1.0');
 			const expectedUsage = { asDependency: 3, asMainLibrary: 1 };
 
-			return { libraryName, findByIdMock, contents, expectedUsage };
+			contentRepo.countUsage.mockResolvedValueOnce(expectedUsage);
+
+			return { libraryName, expectedUsage };
 		};
 
-		it('should return the number of times the library is used', async () => {
-			const { libraryName, contents, findByIdMock, expectedUsage } = setup();
-			contentRepo.findById.mockImplementation(findByIdMock); // Will be called multiple times
-			contentRepo.getAllContents.mockResolvedValueOnce(contents);
+		it('should return the counted database result', async () => {
+			const { libraryName, expectedUsage } = setup();
 
 			const test = await service.getUsage(libraryName);
 
 			expect(test).toEqual(expectedUsage);
-		});
-	});
-
-	describe('getUserPermissions (currently unused)', () => {
-		it('should return array of permissions', async () => {
-			// const user = helpers.createUser();
-
-			// This method is currently unused and will be changed later
-			const permissions = await service.getUserPermissions();
-
-			expect(permissions.length).toBeGreaterThan(0);
 		});
 	});
 
@@ -896,13 +837,9 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN calling getFilePath with invalid parameters', () => {
-			it('should throw error', async () => {
-				// Test private getFilePath using fileExists
-				const missingContentID = service.fileExists('', 'filename');
-				await expect(missingContentID).rejects.toThrow(HttpException);
-
-				const missingFilename = service.fileExists('id', '');
-				await expect(missingFilename).rejects.toThrow(HttpException);
+			it('should throw error', () => {
+				expect(() => service.fileExists('', 'filename')).toThrow(HttpException);
+				expect(() => service.fileExists('id', '')).toThrow(HttpException);
 			});
 		});
 
