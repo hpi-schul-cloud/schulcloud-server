@@ -4,10 +4,8 @@ import {
 	SchulconnexGroupRole,
 	SchulconnexGroupType,
 	SchulconnexGruppenResponse,
-	SchulconnexOrganisationResponse,
 	SchulconnexPersonenkontextResponse,
 	SchulconnexResponse,
-	SchulconnexRole,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
 import {
@@ -51,7 +49,6 @@ describe(SchulconnexResponseMapper.name, () => {
 
 	beforeEach(() => {
 		config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = false;
-		config.FEATURE_SCHULCONNEX_EXTERNAL_PERSONS = true;
 		config.PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT = undefined;
 	});
 
@@ -109,25 +106,6 @@ describe(SchulconnexResponseMapper.name, () => {
 					email: 'hans.peter@muster-schule.de',
 					roles: [RoleName.ADMINISTRATOR],
 					birthday: new Date('2023-11-17'),
-				});
-			});
-
-			describe('when a schulconnex response with external role is provided and the feature flag is disabled', () => {
-				it('should not map the EXTERN role', () => {
-					config.FEATURE_SCHULCONNEX_EXTERNAL_PERSONS = false;
-					const schulconnexResponseExternalPerson: SchulconnexResponse = schulconnexResponseFactory.build({
-						personenkontexte: [
-							{
-								rolle: SchulconnexRole.EXTERN,
-								id: 'some-id',
-								organisation: new SchulconnexOrganisationResponse(),
-							},
-						],
-					});
-
-					const result: ExternalUserDto = mapper.mapToExternalUserDto(schulconnexResponseExternalPerson);
-
-					expect(result.roles).toEqual([]);
 				});
 			});
 		});
