@@ -1,4 +1,4 @@
-import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, Index, Property } from '@mikro-orm/core';
 import { RoomContentProps, RoomContentType } from '../../domain/type';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
@@ -15,6 +15,7 @@ class RoomContentItem {
 
 @Entity({ tableName: 'roomcontents' })
 export class RoomContentEntity extends BaseEntityWithTimestamps implements RoomContentProps {
+	@Index()
 	@Property({ type: ObjectIdType, fieldName: 'room', nullable: false })
 	roomId!: EntityId;
 
