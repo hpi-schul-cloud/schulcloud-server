@@ -698,6 +698,11 @@
 			"default": false,
 			"description": "Groups of type class also gets provisioned, when provisioning a user via oauth login."
 		},
+		"FEATURE_SCHULCONNEX_EXTERNAL_PERSONS": {
+			"type": "boolean",
+			"default": false,
+			"description": "External persons also get provisioned via oauth login."
+		},
 		"SC_TITLE": {
 			"type": "string",
 			"default": "dBildungscloud",
