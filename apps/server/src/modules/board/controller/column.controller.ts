@@ -31,7 +31,7 @@ export class ColumnController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Put(':columnId/position')
-	async moveColumn(
+	public async moveColumn(
 		@Param() urlParams: ColumnUrlParams,
 		@Body() bodyParams: MoveColumnBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -46,7 +46,7 @@ export class ColumnController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Patch(':columnId/title')
-	async updateColumnTitle(
+	public async updateColumnTitle(
 		@Param() urlParams: ColumnUrlParams,
 		@Body() bodyParams: RenameBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -61,7 +61,10 @@ export class ColumnController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Delete(':columnId')
-	async deleteColumn(@Param() urlParams: ColumnUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	public async deleteColumn(
+		@Param() urlParams: ColumnUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
 		await this.columnUc.deleteColumn(currentUser.userId, urlParams.columnId);
 	}
 
@@ -72,7 +75,7 @@ export class ColumnController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiBody({ required: false, type: CreateCardBodyParams })
 	@Post(':columnId/cards')
-	async createCard(
+	public async createCard(
 		@Param() urlParams: ColumnUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() createCardBodyParams?: CreateCardBodyParams
