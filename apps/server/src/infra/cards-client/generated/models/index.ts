@@ -25,6 +25,8 @@ export * from './file-content-body';
 export * from './file-element-content';
 export * from './file-element-content-body';
 export * from './file-element-response';
+export * from './file-folder-content-body';
+export * from './file-folder-element-content-body';
 export * from './file-folder-element-response';
 export * from './lesson-content-response-content';
 export * from './link-content-body';
