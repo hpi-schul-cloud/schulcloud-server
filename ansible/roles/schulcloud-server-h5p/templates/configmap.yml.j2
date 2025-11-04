@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-h5p-configmap
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-h5p
+data:
+  EXIT_ON_ERROR: "true"
+  NEST_LOG_LEVEL: "{{ NEST_LOG_LEVEL }}"
