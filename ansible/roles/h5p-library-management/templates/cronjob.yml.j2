@@ -49,7 +49,7 @@ spec:
               value: "--max-old-space-size={{ ((API_H5P_LIBRARY_MANAGEMENT_MEMORY_LIMITS | regex_replace('Gi', '')|int * 1024 * 0.8)|int) }}"
             envFrom:
             - configMapRef:
-                name: api-configmap
+                name: api-h5p-library-management-configmap
             - secretRef:
                 name: api-h5p-library-management-secret
             volumeMounts:
