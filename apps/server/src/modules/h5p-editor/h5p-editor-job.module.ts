@@ -10,9 +10,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { H5PEditorController } from './controller';
 import { H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig } from './h5p-cache.config';
-import { authorizationClientConfig, config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
+import { authorizationClientConfig, coreConfig, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { ENTITIES } from './h5p-editor.entity.exports';
 import { H5PAjaxEndpointProvider, H5PCacheProvider, H5PEditorProvider, H5PPlayerProvider } from './provider';
 import { H5PContentRepo, LibraryRepo } from './repo';
@@ -23,6 +22,9 @@ import { H5PEditorUc } from './uc';
  * H5P Editor module for cronjob usage - excludes RabbitMQ dependencies and consumer
  * This module provides the same functionality as H5PEditorModule but without RabbitMQ
  * message queue integration, making it suitable for cronjob and standalone script usage.
+ *
+ * It also uses coreConfig instead of the full config to exclude JWT authentication requirements.
+ * Controllers are excluded since cronjobs don't serve HTTP endpoints.
  */
 
 const imports = [
@@ -40,12 +42,12 @@ const imports = [
 		entities: ENTITIES,
 		ensureIndexes: true,
 	}),
-	ConfigModule.forRoot(createConfigModuleOptions(config)),
+	ConfigModule.forRoot(createConfigModuleOptions(coreConfig)),
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
 	ConfigurationModule.register(H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig),
 ];
 
-const controllers = [H5PEditorController];
+const controllers = [];
 
 const providers = [
 	Logger,
@@ -69,4 +71,4 @@ const providers = [
 	providers,
 	exports: [ContentStorage, LibraryStorage],
 })
-export class H5PEditorJobModule {}
+export class H5pEditorJobModule {}

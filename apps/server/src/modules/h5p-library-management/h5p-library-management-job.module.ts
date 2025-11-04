@@ -2,7 +2,7 @@ import { CoreModule } from '@core/core.module';
 import { Logger } from '@core/logger';
 import { S3ClientModule } from '@infra/s3-client';
 import { s3ConfigContent, s3ConfigLibraries } from '@modules/h5p-editor';
-import { H5PEditorJobModule } from '@modules/h5p-editor/h5-p-editor-job.module';
+import { H5pEditorJobModule } from '@modules/h5p-editor/h5p-editor-job.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
@@ -11,7 +11,7 @@ import { H5PLibraryManagementService, h5PLibraryManagementConfig } from './servi
 const imports = [
 	ConfigModule.forRoot(createConfigModuleOptions(h5PLibraryManagementConfig)),
 	CoreModule,
-	H5PEditorJobModule,
+	H5pEditorJobModule,
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
 ];
 
@@ -25,4 +25,4 @@ const providers = [Logger, H5PLibraryManagementService];
 	providers,
 	exports: [],
 })
-export class H5PLibraryManagementJobModule {}
+export class H5pLibraryManagementJobModule {}
