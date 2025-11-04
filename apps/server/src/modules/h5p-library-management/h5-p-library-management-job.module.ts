@@ -1,28 +1,17 @@
 import { CoreModule } from '@core/core.module';
 import { Logger } from '@core/logger';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
 import { s3ConfigContent, s3ConfigLibraries } from '@modules/h5p-editor';
-import { H5PEditorModule } from '@modules/h5p-editor/h5p-editor.app.module';
+import { H5PEditorJobModule } from '@modules/h5p-editor/h5-p-editor-job.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { H5PLibraryManagementService, h5PLibraryManagementConfig } from './service';
 
-/**
- * H5P Library Management Module for web services that need RabbitMQ integration.
- *
- * Note: For cronjob/standalone usage where RabbitMQ is not needed, use
- * H5PLibraryManagementCronjobModule instead, which excludes RabbitMQ dependencies.
- *
- * @see H5PLibraryManagementCronjobModule
- */
-
 const imports = [
 	ConfigModule.forRoot(createConfigModuleOptions(h5PLibraryManagementConfig)),
 	CoreModule,
-	H5PEditorModule,
-	RabbitMQWrapperModule,
+	H5PEditorJobModule,
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
 ];
 
@@ -36,4 +25,4 @@ const providers = [Logger, H5PLibraryManagementService];
 	providers,
 	exports: [],
 })
-export class H5PLibraryManagementModule {}
+export class H5PLibraryManagementJobModule {}
