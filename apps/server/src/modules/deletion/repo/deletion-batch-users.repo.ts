@@ -87,7 +87,7 @@ export class DeletionBatchUsersRepo {
 			{
 				$group: {
 					_id: '$roleDetails.name',
-					userIds: { $push: '$_id' },
+					userIds: { $push: { $toString: '$_id' } },
 				},
 			},
 			{
