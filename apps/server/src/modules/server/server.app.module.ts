@@ -4,6 +4,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
+import { KafkaModule } from '@infra/kafka';
 import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
@@ -130,6 +131,7 @@ const controllers = [ServerController, ServerConfigController];
  */
 @Module({
 	imports: [
+		KafkaModule,
 		RabbitMQWrapperModule,
 		...serverModules,
 		MikroOrmModule.forRoot({

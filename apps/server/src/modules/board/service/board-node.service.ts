@@ -1,6 +1,6 @@
+import { KafkaProducerService } from '@infra/kafka';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { Kafka } from 'kafkajs';
 import { AnyElementContentBody } from '../controller/dto';
 import {
 	AnyBoardNode,
@@ -26,7 +26,8 @@ export class BoardNodeService {
 	constructor(
 		private readonly boardNodeRepo: BoardNodeRepo,
 		private readonly contentElementUpdateService: ContentElementUpdateService,
-		private readonly boardNodeDeleteHooksService: BoardNodeDeleteHooksService
+		private readonly boardNodeDeleteHooksService: BoardNodeDeleteHooksService,
+		private readonly kafkaProducerService: KafkaProducerService
 	) {}
 
 	public async addRoot(boardNode: ColumnBoard | MediaBoard): Promise<void> {
@@ -180,20 +181,12 @@ export class BoardNodeService {
 	}
 
 	public async delete(boardNode: AnyBoardNode): Promise<void> {
-		const kafka = new Kafka({
-			clientId: 'my-app',
-			brokers: ['localhost:9092'],
+		// Publish board node deletion event to Kafka
+		await this.kafkaProducerService.emitMessage('test-topic', {
+			id: boardNode.id,
+			type: boardNode.constructor.name,
+			timestamp: new Date().toISOString(),
 		});
-
-		const producer = kafka.producer();
-
-		await producer.connect();
-		await producer.send({
-			topic: 'test-topic',
-			messages: [{ value: 'Hello KafkaJS user!' }],
-		});
-
-		await producer.disconnect();
 
 		const parent = await this.findParent(boardNode);
 		if (parent) {
