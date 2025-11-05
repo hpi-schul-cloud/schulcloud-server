@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 import {
+	CommonCartridgeFileFolderResourceProps,
 	CommonCartridgeFileResourceProps,
 	CommonCartridgeWebContentResourceProps,
 	CommonCartridgeWebLinkResourceProps,
@@ -61,6 +62,12 @@ describe('CommonCartridgeImportMapper', () => {
 				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeXmlResourceType.FILE);
 
 				expect(result).toEqual('file');
+			});
+
+			it('should return file folder', () => {
+				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeXmlResourceType.FILE_FOLDER);
+
+				expect(result).toEqual('fileFolder');
 			});
 		});
 	});
@@ -197,6 +204,33 @@ describe('CommonCartridgeImportMapper', () => {
 					content: {
 						caption: 'Resource description',
 						alternativeText: '',
+					},
+				});
+			});
+		});
+
+		describe('when resource is a file folder', () => {
+			const setup = () => {
+				const resource: CommonCartridgeFileFolderResourceProps = {
+					type: CommonCartridgeXmlResourceType.FILE_FOLDER,
+					title: 'Title of folder',
+					files: [new File([''], 'resource.jpg')],
+				};
+				const cardElementProps = commonCartridgeOrganizationPropsFactory.build({
+					resourcePaths: ['path/to/resource'],
+				});
+
+				return { resource, cardElementProps };
+			};
+
+			it('should return file folder body', () => {
+				const { resource, cardElementProps } = setup();
+
+				const result = sut.mapResourceToContentBody(resource, cardElementProps, InputFormat.RICH_TEXT_CK4);
+				expect(result).toEqual({
+					type: 'fileFolder',
+					content: {
+						title: 'Title of folder',
 					},
 				});
 			});

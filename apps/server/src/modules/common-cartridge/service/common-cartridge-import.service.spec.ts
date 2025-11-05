@@ -132,13 +132,22 @@ describe(CommonCartridgeImportService.name, () => {
 
 		boardsClientAdapterMock.createBoard.mockResolvedValueOnce({ id: boardId });
 
-		commonCartridgeFileParser.getResource.mockReturnValue({
-			type: CommonCartridgeXmlResourceType.FILE,
-			href: faker.internet.url(),
-			fileName: faker.system.fileName(),
-			file: new File([''], 'file.pdf', { type: faker.system.mimeType() }),
-			description: faker.lorem.sentence(),
-		});
+		commonCartridgeFileParser.getResource
+			.mockReturnValueOnce({
+				type: CommonCartridgeXmlResourceType.FILE_FOLDER,
+				title: faker.lorem.word(),
+				files: [
+					new File([''], 'file1.pdf', { type: faker.system.mimeType() }),
+					new File([''], 'file2.pdf', { type: faker.system.mimeType() }),
+				],
+			})
+			.mockReturnValue({
+				type: CommonCartridgeXmlResourceType.FILE,
+				href: faker.internet.url(),
+				fileName: faker.system.fileName(),
+				file: new File([''], 'file.pdf', { type: faker.system.mimeType() }),
+				description: faker.lorem.sentence(),
+			});
 
 		commonCartridgeFileParser.getTitle.mockReturnValue(undefined);
 

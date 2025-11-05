@@ -42,6 +42,10 @@ class CommonCartridgeOrganizationPropsFactory extends Factory<
 	public withFile(name: string): this {
 		return this.withResource(name, CommonCartridgeXmlResourceType.FILE);
 	}
+
+	public withFileFolder(name: string): this {
+		return this.withResource(name, CommonCartridgeXmlResourceType.FILE_FOLDER);
+	}
 }
 
 export const commonCartridgeOrganizationPropsFactory = CommonCartridgeOrganizationPropsFactory.define(
