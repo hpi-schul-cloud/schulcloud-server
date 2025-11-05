@@ -44,3 +44,12 @@
       - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
     tags:
       - 1password
+
+  - name: H5P Consumer Deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: consumer-deployment.yml.j2
+    when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool
+    tags:
+      - deployment
