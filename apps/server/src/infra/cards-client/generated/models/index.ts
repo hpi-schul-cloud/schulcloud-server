@@ -29,6 +29,8 @@ export * from './file-folder-content-body';
 export * from './file-folder-element-content';
 export * from './file-folder-element-content-body';
 export * from './file-folder-element-response';
+export * from './h5p-element-content';
+export * from './h5p-element-response';
 export * from './lesson-content-response-content';
 export * from './link-content-body';
 export * from './link-element-content';

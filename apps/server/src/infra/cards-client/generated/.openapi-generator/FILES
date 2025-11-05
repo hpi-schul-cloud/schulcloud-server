@@ -40,6 +40,8 @@ models/file-folder-content-body.ts
 models/file-folder-element-content-body.ts
 models/file-folder-element-content.ts
 models/file-folder-element-response.ts
+models/h5p-element-content.ts
+models/h5p-element-response.ts
 models/index.ts
 models/lesson-content-response-content.ts
 models/link-content-body.ts
