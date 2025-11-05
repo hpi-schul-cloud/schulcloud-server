@@ -30,6 +30,8 @@ export class CommonCartridgeImportMapper {
 				return 'richText';
 			case CommonCartridgeXmlResourceType.FILE:
 				return 'file';
+			case CommonCartridgeXmlResourceType.FILE_FOLDER:
+				return 'fileFolder';
 			default:
 				return undefined;
 		}

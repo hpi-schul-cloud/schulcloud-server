@@ -227,6 +227,8 @@ export class CommonCartridgeImportService {
 				break;
 		}
 
+		console.log(files);
+
 		const uploadPromises = files.map((file) =>
 			this.fileClient.upload(schoolId, 'school', cardElement.id, 'boardnodes', file)
 		);
