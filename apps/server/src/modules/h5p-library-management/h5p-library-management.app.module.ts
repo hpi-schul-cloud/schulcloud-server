@@ -9,15 +9,6 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { H5PLibraryManagementService, h5PLibraryManagementConfig } from './service';
 
-/**
- * H5P Library Management Module for web services that need RabbitMQ integration.
- *
- * Note: For cronjob/standalone usage where RabbitMQ is not needed, use
- * H5PLibraryManagementCronjobModule instead, which excludes RabbitMQ dependencies.
- *
- * @see H5PLibraryManagementCronjobModule
- */
-
 const imports = [
 	ConfigModule.forRoot(createConfigModuleOptions(h5PLibraryManagementConfig)),
 	CoreModule,

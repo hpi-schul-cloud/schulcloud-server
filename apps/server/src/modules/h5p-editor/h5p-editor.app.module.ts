@@ -55,7 +55,6 @@ const providers = [
 	ContentStorage,
 	LibraryStorage,
 	TemporaryFileStorage,
-	// Note: H5pEditorConsumer moved to separate H5P Editor Consumer deployment
 	H5pEditorContentService,
 ];
 

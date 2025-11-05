@@ -61,7 +61,6 @@ const providers = [
 	ContentStorage,
 	LibraryStorage,
 	TemporaryFileStorage,
-	// Note: H5pEditorConsumer is excluded for cronjob usage
 	H5pEditorContentService,
 ];
 

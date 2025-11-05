@@ -21,12 +21,6 @@ import { H5PContentRepo, LibraryRepo } from './repo';
 import { ContentStorage, H5pEditorContentService, LibraryStorage, TemporaryFileStorage } from './service';
 import { H5PEditorUc } from './uc';
 
-/**
- * H5P Editor AMQP Module for consumer applications.
- * This module contains only the RabbitMQ consumer functionality without HTTP endpoints.
- * It's designed to run as a separate deployment/service that only handles AMQP messages.
- */
-
 const imports = [
 	ConfigModule.forRoot(createConfigModuleOptions(coreConfig)),
 	CoreModule,
