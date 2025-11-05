@@ -30,6 +30,9 @@ import type { ExternalToolElementResponse } from './external-tool-element-respon
 import type { FileElementResponse } from './file-element-response';
 // May contain unused imports in some cases
 // @ts-ignore
+import type { FileFolderElementResponse } from './file-folder-element-response';
+// May contain unused imports in some cases
+// @ts-ignore
 import type { H5pElementContent } from './h5p-element-content';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -54,6 +57,6 @@ import type { VideoConferenceElementResponse } from './video-conference-element-
  * @type CardControllerCreateElement201Response
  * @export
  */
-export type CardControllerCreateElement201Response = DeletedElementResponse | DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | H5pElementResponse | LinkElementResponse | RichTextElementResponse | SubmissionContainerElementResponse | VideoConferenceElementResponse;
+export type CardControllerCreateElement201Response = DeletedElementResponse | DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | FileFolderElementResponse | H5pElementResponse | LinkElementResponse | RichTextElementResponse | SubmissionContainerElementResponse | VideoConferenceElementResponse;
 
 

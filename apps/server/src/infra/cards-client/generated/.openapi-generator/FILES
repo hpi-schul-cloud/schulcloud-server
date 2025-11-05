@@ -38,6 +38,7 @@ models/file-element-content.ts
 models/file-element-response.ts
 models/file-folder-content-body.ts
 models/file-folder-element-content-body.ts
+models/file-folder-element-content.ts
 models/file-folder-element-response.ts
 models/index.ts
 models/lesson-content-response-content.ts

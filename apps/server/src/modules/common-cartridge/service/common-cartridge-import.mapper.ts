@@ -3,6 +3,7 @@ import {
 	FileElementContentBody,
 	LinkElementContentBody,
 	RichTextElementContentBody,
+	FileFolderElementContentBody,
 } from '@infra/cards-client';
 import { InputFormat } from '@shared/domain/types';
 import {
@@ -12,6 +13,7 @@ import {
 } from '..';
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 import {
+	CommonCartridgeFileFolderResourceProps,
 	CommonCartridgeFileResourceProps,
 	CommonCartridgeWebLinkResourceProps,
 } from '../import/common-cartridge-import.types';
@@ -37,7 +39,12 @@ export class CommonCartridgeImportMapper {
 		resource: CommonCartridgeImportResourceProps,
 		cardElementProps: CommonCartridgeImportOrganizationProps,
 		inputFormat: InputFormat
-	): LinkElementContentBody | RichTextElementContentBody | FileElementContentBody | undefined {
+	):
+		| LinkElementContentBody
+		| RichTextElementContentBody
+		| FileElementContentBody
+		| FileFolderElementContentBody
+		| undefined {
 		if (
 			resource.type === CommonCartridgeXmlResourceType.WEB_LINK_CC11 ||
 			resource.type === CommonCartridgeXmlResourceType.WEB_LINK_CC13
@@ -49,7 +56,8 @@ export class CommonCartridgeImportMapper {
 
 		if (
 			resource.type === CommonCartridgeXmlResourceType.WEB_CONTENT &&
-			cardElementProps.resourcePath.endsWith('.html')
+			cardElementProps.resourcePaths.length === 1 &&
+			cardElementProps.resourcePaths[0].endsWith('.html')
 		) {
 			const richTextBody = this.createTextFromHtmlResource(resource, inputFormat);
 
@@ -60,6 +68,12 @@ export class CommonCartridgeImportMapper {
 			const fileContentBody: FileElementContentBody = this.createFileFromResource(resource);
 
 			return fileContentBody;
+		}
+
+		if (resource.type === CommonCartridgeXmlResourceType.FILE_FOLDER) {
+			const fileFolderContentBody = this.createFileFolderFromResource(resource);
+
+			return fileFolderContentBody;
 		}
 
 		return undefined;
@@ -105,5 +119,16 @@ export class CommonCartridgeImportMapper {
 		};
 
 		return fileBody;
+	}
+
+	private createFileFolderFromResource(resource: CommonCartridgeFileFolderResourceProps): FileFolderElementContentBody {
+		const fileFolderBody: FileFolderElementContentBody = {
+			type: 'fileFolder',
+			content: {
+				title: resource.title,
+			},
+		};
+
+		return fileFolderBody;
 	}
 }
