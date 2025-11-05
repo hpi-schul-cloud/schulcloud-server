@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { Kafka } from 'kafkajs';
 import { AnyElementContentBody } from '../controller/dto';
 import {
 	AnyBoardNode,
@@ -179,6 +180,21 @@ export class BoardNodeService {
 	}
 
 	public async delete(boardNode: AnyBoardNode): Promise<void> {
+		const kafka = new Kafka({
+			clientId: 'my-app',
+			brokers: ['localhost:9092'],
+		});
+
+		const producer = kafka.producer();
+
+		await producer.connect();
+		await producer.send({
+			topic: 'test-topic',
+			messages: [{ value: 'Hello KafkaJS user!' }],
+		});
+
+		await producer.disconnect();
+
 		const parent = await this.findParent(boardNode);
 		if (parent) {
 			parent.removeChild(boardNode);
