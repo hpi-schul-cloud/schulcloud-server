@@ -26,7 +26,7 @@ class CommonCartridgeOrganizationPropsFactory extends Factory<
 	public withResource(resourcePath?: string, resourceType?: string): this {
 		return this.params({
 			isResource: true,
-			resourcePath: resourcePath ?? faker.system.filePath(),
+			resourcePaths: [resourcePath ?? faker.system.filePath()],
 			resourceType: resourceType ?? faker.lorem.word(),
 		});
 	}
@@ -62,7 +62,7 @@ export const commonCartridgeOrganizationPropsFactory = CommonCartridgeOrganizati
 			path,
 			isInlined: params.isInlined ?? false,
 			isResource: params.isResource ?? false,
-			resourcePath: params.resourcePath ?? '',
+			resourcePaths: params.resourcePaths ?? [],
 			resourceType: params.resourceType ?? '',
 		};
 	}

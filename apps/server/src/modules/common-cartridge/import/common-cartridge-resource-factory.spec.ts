@@ -46,7 +46,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			pathDepth: faker.number.int({ min: 1, max: 5 }),
 			isResource: true,
 			isInlined: false,
-			resourcePath: faker.system.filePath(),
+			resourcePaths: [faker.system.filePath()],
 			resourceType: faker.lorem.word(),
 		};
 
@@ -155,7 +155,7 @@ describe('CommonCartridgeResourceFactory', () => {
 				const organizationProps = setupOrganizationProps();
 
 				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
-				organizationProps.resourcePath = 'webcontent.html';
+				organizationProps.resourcePaths = ['webcontent.html'];
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue(webContentHtml);
 
@@ -179,7 +179,7 @@ describe('CommonCartridgeResourceFactory', () => {
 				const organizationProps = setupOrganizationProps();
 
 				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
-				organizationProps.resourcePath = 'webcontent.html';
+				organizationProps.resourcePaths = ['webcontent.html'];
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue('');
 
@@ -201,7 +201,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();
 				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
-				organizationProps.resourcePath = faker.system.filePath();
+				organizationProps.resourcePaths = [faker.system.filePath()];
 
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue('');
@@ -222,7 +222,7 @@ describe('CommonCartridgeResourceFactory', () => {
 					expect.objectContaining({
 						description: organizationProps.title,
 						fileName: expect.any(String),
-						href: organizationProps.resourcePath,
+						href: organizationProps.resourcePaths[0],
 						file: expect.any(File),
 					})
 				);
@@ -233,7 +233,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();
 				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
-				organizationProps.resourcePath = faker.system.filePath();
+				organizationProps.resourcePaths = [faker.system.filePath()];
 
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue('');
