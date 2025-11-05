@@ -75,7 +75,7 @@ describe('CommonCartridgeImportMapper', () => {
 				};
 
 				const cardElementProps = commonCartridgeOrganizationPropsFactory.build({
-					resourcePath: 'path/to/resource',
+					resourcePaths: ['path/to/resource'],
 					path: 'path/to/resource',
 					pathDepth: 1,
 					identifier: 'resource-id',
@@ -114,7 +114,7 @@ describe('CommonCartridgeImportMapper', () => {
 				};
 
 				const cardElementProps = commonCartridgeOrganizationPropsFactory.build({
-					resourcePath: 'path/to/resource.html',
+					resourcePaths: ['path/to/resource.html'],
 					path: 'path/to/resource',
 					pathDepth: 1,
 					identifier: 'resource-id',
@@ -150,7 +150,7 @@ describe('CommonCartridgeImportMapper', () => {
 				};
 
 				const cardElementProps = commonCartridgeOrganizationPropsFactory.build({
-					resourcePath: 'path/to/resource.jpg',
+					resourcePaths: ['path/to/resource.jpg'],
 					path: 'path/to/resource',
 					pathDepth: 1,
 					identifier: 'resource-id',
@@ -182,7 +182,7 @@ describe('CommonCartridgeImportMapper', () => {
 					description: 'Resource description',
 				};
 				const cardElementProps = commonCartridgeOrganizationPropsFactory.build({
-					resourcePath: 'path/to/resource',
+					resourcePaths: ['path/to/resource'],
 				});
 
 				return { resource, cardElementProps };
