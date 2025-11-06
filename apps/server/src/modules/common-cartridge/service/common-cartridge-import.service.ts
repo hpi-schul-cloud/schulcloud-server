@@ -62,13 +62,17 @@ export class CommonCartridgeImportService {
 				parentId,
 				parentType: 'course',
 			});
-			console.log(`Setting ${board.identifier} to ${response.id}`);
+
 			createdBoardIds.set(board.identifier, response.id);
 		}
 
-		await Promise.allSettled(
-			boards.map((board) => this.createColumns(createdBoardIds.get(board.identifier) ?? '', board, parser, currentUser))
-		);
+		for await (const board of boards) {
+			const responseId = createdBoardIds.get(board.identifier);
+
+			if (!responseId) continue;
+
+			await this.createColumns(responseId, board, parser, currentUser);
+		}
 	}
 
 	private async createColumns(
@@ -77,7 +81,6 @@ export class CommonCartridgeImportService {
 		parser: CommonCartridgeFileParser,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		console.log(`Working on ${board.identifier} for ${boardId}`);
 		const columnsWithResource = parser
 			.getOrganizations()
 			.filter(
