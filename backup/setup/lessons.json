@@ -423,22 +423,6 @@
       "user": {
         "$oid": "0000d231816abba584714c9e"
       },
-      "component": "Etherpad",
-      "title": "Etherpad Inhalt",
-      "content": {
-        "title": "5168af22289d62a5e03af0d5",
-        "description": "Etherpad Bescheibung",
-        "url": "https://ew-1173.dbc.dbildungscloud.dev/etherpad/p/g.G5budZoT1w6Uqu72$5168af22289d62a5e03af0d5"
-      },
-      "hidden": false,
-      "_id": {
-        "$oid": "682b378e8938b92a7253fffc"
-      }
-    },
-    {
-      "user": {
-        "$oid": "0000d231816abba584714c9e"
-      },
       "component": "resources",
       "title": "Lern-Material Inhalt",
       "content": {
@@ -757,22 +741,6 @@
       "user": {
         "$oid": "0000d231816abba584714c9e"
       },
-      "component": "Etherpad",
-      "title": "Etherpad Inhalt",
-      "content": {
-        "title": "da51c21a8c6738a652e57cc0",
-        "description": "Etherpad Beschreibung Nach Geo",
-        "url": "https://ew-1173.dbc.dbildungscloud.dev/etherpad/p/g.G5budZoT1w6Uqu72$da51c21a8c6738a652e57cc0"
-      },
-      "hidden": false,
-      "_id": {
-        "$oid": "682b37158938b92a7253ff2b"
-      }
-    },
-    {
-      "user": {
-        "$oid": "0000d231816abba584714c9e"
-      },
       "component": "resources",
       "title": "Lern-Material Inhalt",
       "content": {
@@ -803,7 +771,7 @@
         "$oid": "0000d231816abba584714c9e"
       },
       "component": "geoGebra",
-      "title": "Geo Nach Etherpad und Lern-Material",
+      "title": "Geo Nach Lern-Material",
       "content": {
         "materialId": "ddmw3cwq"
       },
@@ -819,7 +787,7 @@
       "component": "text",
       "title": "Text Inhalt 2",
       "content": {
-        "text": "<p>Topic hat den Inhalt:</p><ul><li>text</li><li>Geo</li><li>Etherpad</li><li>Lern-Material 2 Mal </li><li>Geo nochmal</li><li>Text Inhalt und als Letztes</li><li>Geo</li></ul>"
+        "text": "<p>Topic hat den Inhalt:</p><ul><li>text</li><li>Geo</li><li>Lern-Material 2 Mal </li><li>Geo nochmal</li><li>Text Inhalt und als Letztes</li><li>Geo</li></ul>"
       },
       "hidden": false,
       "_id": {
