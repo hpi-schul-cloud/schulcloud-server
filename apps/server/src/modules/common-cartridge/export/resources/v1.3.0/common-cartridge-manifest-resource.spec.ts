@@ -19,25 +19,6 @@ describe('CommonCartridgeManifestResourceV130', () => {
 		jest.clearAllMocks();
 	});
 
-	describe('getFilePath', () => {
-		describe('when using Common Cartridge version 1.3.0', () => {
-			const setup = () => {
-				const props = createCommonCartridgeManifestResourcePropsV130();
-				const sut = new CommonCartridgeManifestResourceV130(props);
-
-				return { sut };
-			};
-
-			it('should return constructed file path', () => {
-				const { sut } = setup();
-
-				const result = sut.getFilePath();
-
-				expect(result).toBe('imsmanifest.xml');
-			});
-		});
-	});
-
 	describe('getFileContent', () => {
 		describe('when using Common Cartridge version 1.3.0', () => {
 			const setup = () => {
@@ -105,7 +86,15 @@ describe('CommonCartridgeManifestResourceV130', () => {
 				);
 				const result = sut.getFileContent();
 
-				expect(result).toEqual(expected);
+				expect(result.content).toEqual(expected);
+			});
+
+			it('should return constructed file path', () => {
+				const { sut } = setup();
+
+				const result = sut.getFileContent();
+
+				expect(result.path).toBe('imsmanifest.xml');
 			});
 		});
 	});

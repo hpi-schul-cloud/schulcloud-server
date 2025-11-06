@@ -11,6 +11,7 @@ import { CommonCartridgeFileResourcePropsV110 } from '../export/resources/v1.1.0
 import { CommonCartridgeManifestResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-manifest-resource';
 import { CommonCartridgeWebContentResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-web-content-resource';
 import { CommonCartridgeWebLinkResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-web-link-resource';
+import { CommonCartridgeFileFolderResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-file-folder-resource';
 import { CommonCartridgeFileResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-file-resource';
 import { CommonCartridgeManifestResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-manifest-resource';
 import { CommonCartridgeWebContentResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-web-content-resource';
@@ -86,6 +87,22 @@ export function createCommonCartridgeFileResourcePropsV130(): CommonCartridgeFil
 		folder: faker.system.directoryPath(),
 		fileName: faker.system.fileName(),
 		file: Readable.from(faker.lorem.sentence()),
+		title: faker.lorem.word(),
+	};
+}
+
+export function createCommonCartridgeFileFolderResourcePropsV130(): CommonCartridgeFileFolderResourcePropsV130 {
+	return {
+		type: CommonCartridgeResourceType.FILE_FOLDER,
+		version: CommonCartridgeVersion.V_1_3_0,
+		identifier: faker.string.uuid(),
+		folder: faker.system.directoryPath(),
+		files: [
+			{
+				file: Readable.from(faker.lorem.sentence()),
+				fileName: faker.system.fileName(),
+			},
+		],
 		title: faker.lorem.word(),
 	};
 }
