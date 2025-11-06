@@ -62,6 +62,7 @@ export class CommonCartridgeImportService {
 				parentId,
 				parentType: 'course',
 			});
+			console.log(`Setting ${board.identifier} to ${response.id}`);
 			createdBoardIds.set(board.identifier, response.id);
 		}
 
@@ -76,6 +77,7 @@ export class CommonCartridgeImportService {
 		parser: CommonCartridgeFileParser,
 		currentUser: ICurrentUser
 	): Promise<void> {
+		console.log(`Working on ${board.identifier} for ${boardId}`);
 		const columnsWithResource = parser
 			.getOrganizations()
 			.filter(
