@@ -184,12 +184,12 @@ export class CardResponseMapper {
 				case ContentElementType.FILE_FOLDER: {
 					const content: FileFolderElementContent = element.content as FileFolderElementContent;
 					elements.push(
-						new FileFolderElementResponseDto(
-							element.id,
-							ContentElementType.FILE_FOLDER,
-							new FileFolderElementContentDto(content.title),
-							this.mapToTimestampDto(element.timestamps)
-						)
+						new FileFolderElementResponseDto({
+							id: element.id,
+							type: ContentElementType.FILE_FOLDER,
+							content: new FileFolderElementContentDto(content.title),
+							timestamps: this.mapToTimestampDto(element.timestamps),
+						})
 					);
 					break;
 				}

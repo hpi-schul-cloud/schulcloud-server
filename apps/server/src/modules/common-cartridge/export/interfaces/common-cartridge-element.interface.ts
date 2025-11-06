@@ -10,5 +10,5 @@ export abstract class CommonCartridgeElement extends CommonCartridgeBase {
 	 * This method is used to build the imsmanifest.xml file.
 	 * @returns The XML object representation for the imsmanifest.xml file.
 	 */
-	abstract getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject;
+	public abstract getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject;
 }

@@ -11,6 +11,7 @@ import {
 	CardListResponseDto,
 	CardResponseDto,
 	FileElementResponseDto,
+	FileFolderElementResponseDto,
 	LinkElementResponseDto,
 	RichTextElementResponseDto,
 } from '../common-cartridge-client/card-client/dto';
@@ -34,7 +35,7 @@ import { CommonCartridgeExportMessageLoggable } from '../loggable/common-cartrid
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportResponse } from './common-cartridge-export.response';
 
-type FileMetadataAndStream = { name: string; file: Stream; fileDto: FileDto };
+export type FileMetadataAndStream = { name: string; file: Stream; fileDto: FileDto };
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -88,7 +89,7 @@ export class CommonCartridgeExportService {
 		this.logger.debug(new CommonCartridgeExportMessageLoggable('Added tasks of course', { courseId }));
 
 		// add column boards and cards to organization
-		await this.addColumnBoards(builder, roomBoard.elements, exportedColumnBoards);
+		await this.addColumnBoards(builder, version, roomBoard.elements, exportedColumnBoards);
 		this.logger.debug(new CommonCartridgeExportMessageLoggable('Added boards of course', { courseId }));
 
 		builder.build();
@@ -220,6 +221,7 @@ export class CommonCartridgeExportService {
 
 	private async addColumnBoards(
 		builder: CommonCartridgeFileBuilder,
+		version: CommonCartridgeVersion,
 		elements: BoardElementDto[],
 		exportedColumnBoards: string[]
 	): Promise<void> {
@@ -239,7 +241,7 @@ export class CommonCartridgeExportService {
 				});
 
 				await Promise.all(
-					boardSkeleton.columns.map((column) => this.addColumnToOrganization(column, columnBoardOrganization))
+					boardSkeleton.columns.map((column) => this.addColumnToOrganization(column, version, columnBoardOrganization))
 				);
 			})
 		);
@@ -247,6 +249,7 @@ export class CommonCartridgeExportService {
 
 	private async addColumnToOrganization(
 		column: ColumnResponse,
+		version: CommonCartridgeVersion,
 		columnBoardOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
 		const columnOrganization = columnBoardOrganization.createChild({
@@ -259,7 +262,7 @@ export class CommonCartridgeExportService {
 			const listOfCards: CardListResponseDto = await this.cardClientAdapter.getAllBoardCardsByIds(cardsIds);
 			const sortedCards = this.sortCardsAfterRetrieval(cardsIds, listOfCards.data);
 
-			await Promise.all(sortedCards.map((card) => this.addCardToOrganization(card, columnOrganization)));
+			await Promise.all(sortedCards.map((card) => this.addCardToOrganization(card, version, columnOrganization)));
 		}
 	}
 
@@ -273,6 +276,7 @@ export class CommonCartridgeExportService {
 
 	private async addCardToOrganization(
 		card: CardResponseDto,
+		version: CommonCartridgeVersion,
 		columnOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
 		const cardOrganization = columnOrganization.createChild({
@@ -280,13 +284,15 @@ export class CommonCartridgeExportService {
 			identifier: createIdentifier(card.id),
 		});
 
-		await Promise.all(card.elements.map((element) => this.addCardElementToOrganization(element, cardOrganization)));
+		await Promise.all(
+			card.elements.map((element) => this.addCardElementToOrganization(element, version, cardOrganization))
+		);
 	}
 
 	private async openStreamsToFiles(element: CardResponseElementsInnerDto): Promise<FileMetadataAndStream[]> {
 		const fileMetadataBufferArray: FileMetadataAndStream[] = [];
 
-		if (element.type === ContentElementType.FILE) {
+		if (element.type === ContentElementType.FILE || element.type === ContentElementType.FILE_FOLDER) {
 			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
 
 			for (const fileMetadata of filesMetadata) {
@@ -306,6 +312,7 @@ export class CommonCartridgeExportService {
 
 	private async addCardElementToOrganization(
 		element: CardResponseElementsInnerDto,
+		version: CommonCartridgeVersion,
 		cardOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
 		switch (element.type) {
@@ -318,17 +325,25 @@ export class CommonCartridgeExportService {
 				cardOrganization.addResource(linkResource);
 				break;
 			case ContentElementType.FILE:
-				const metadataAndStreams = await this.openStreamsToFiles(element);
+				const metadataAndStreamsForFile = await this.openStreamsToFiles(element);
 
-				for (const fileMetadata of metadataAndStreams) {
+				for (const fileMetadata of metadataAndStreamsForFile) {
 					const { file, fileDto } = fileMetadata;
-
-					if (file) {
-						const fileResource = this.mapper.mapFileToResource(fileDto, file, element as FileElementResponseDto);
-
-						cardOrganization.addResource(fileResource);
-					}
+					const fileResource = this.mapper.mapFileToResource(fileDto, file, element as FileElementResponseDto);
+					cardOrganization.addResource(fileResource);
 				}
+
+				break;
+			case ContentElementType.FILE_FOLDER:
+				if (version !== CommonCartridgeVersion.V_1_3_0) {
+					break;
+				}
+				const metadataAndStreamsForFolder = await this.openStreamsToFiles(element);
+				const fileFolderResource = this.mapper.mapFileFolderToResource(
+					element as FileFolderElementResponseDto,
+					metadataAndStreamsForFolder
+				);
+				cardOrganization.addResource(fileFolderResource);
 
 				break;
 		}
