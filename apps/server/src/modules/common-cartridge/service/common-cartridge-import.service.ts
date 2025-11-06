@@ -65,7 +65,7 @@ export class CommonCartridgeImportService {
 			createdBoardIds.set(board.identifier, response.id);
 		}
 
-		await Promise.all(
+		await Promise.allSettled(
 			boards.map((board) => this.createColumns(createdBoardIds.get(board.identifier) ?? '', board, parser, currentUser))
 		);
 	}
