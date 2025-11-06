@@ -1,3 +1,4 @@
+import { DomainErrorHandler } from '@core/error';
 import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { TldrawClientAdapter } from '@infra/tldraw-client';
 import { Utils } from '@mikro-orm/core';
@@ -33,7 +34,8 @@ export class BoardNodeDeleteHooksService {
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly drawingElementAdapterService: TldrawClientAdapter,
 		private readonly collaborativeTextEditorService: CollaborativeTextEditorService,
-		private readonly h5pEditorProducer: H5pEditorProducer
+		private readonly h5pEditorProducer: H5pEditorProducer,
+		private readonly errorHandler: DomainErrorHandler
 	) {}
 
 	public async afterDelete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
@@ -68,7 +70,9 @@ export class BoardNodeDeleteHooksService {
 	}
 
 	public afterDeleteFileElement(fileElement: FileElement | FileFolderElement): void {
-		void this.filesStorageClientAdapterService.deleteFilesOfParent(fileElement.id);
+		this.filesStorageClientAdapterService.deleteFilesOfParent(fileElement.id).catch((err: Error) => {
+			this.errorHandler.exec(err);
+		});
 	}
 
 	public async afterDeleteLinkElement(linkElement: LinkElement): Promise<void> {
