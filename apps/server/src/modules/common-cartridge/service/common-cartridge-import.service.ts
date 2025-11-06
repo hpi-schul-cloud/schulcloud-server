@@ -54,6 +54,7 @@ export class CommonCartridgeImportService {
 
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
+		const createdBoardIds = new Map<string, string>();
 		for await (const board of boards) {
 			const response = await this.boardsClient.createBoard({
 				title: board.title,
@@ -61,9 +62,12 @@ export class CommonCartridgeImportService {
 				parentId,
 				parentType: 'course',
 			});
-
-			await this.createColumns(response.id, board, parser, currentUser);
+			createdBoardIds.set(board.identifier, response.id);
 		}
+
+		await Promise.all(
+			boards.map((board) => this.createColumns(createdBoardIds.get(board.identifier) ?? '', board, parser, currentUser))
+		);
 	}
 
 	private async createColumns(
