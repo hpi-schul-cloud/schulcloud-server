@@ -1171,24 +1171,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "681c7b148945ce807e9024e0"
-		},
-		"createdAt": {
-			"$date": "2025-05-08T09:36:20.546Z"
-		},
-		"updatedAt": {
-			"$date": "2025-05-08T09:36:20.548Z"
-		},
-		"path": ",681c7b148945ce807e9024ce,681c7b148945ce807e9024de,681c7b148945ce807e9024df,",
-		"level": 3,
-		"position": 0,
-		"type": "link-element",
-		"title": "KI weitere Sammlung - Ergänzende Themen",
-		"url": "https://ew-858.dbc.dbildungscloud.dev/etherpad/p/g.RLUKlu0YCH6fKuxx$30d4ab422abc8c71298b5a0a",
-		"description": ""
-	},
-	{
-		"_id": {
 			"$oid": "681c7b148945ce807e9024e1"
 		},
 		"createdAt": {
