@@ -15,7 +15,7 @@ import { KafkaProducerService } from './kafka-producer.service';
 						brokers: ['localhost:9092'],
 					},
 					consumer: {
-						groupId: 'svs-server-group',
+						groupId: 'svs-server-consumer',
 					},
 				},
 			},
