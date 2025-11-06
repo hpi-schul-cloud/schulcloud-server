@@ -1,22 +1,22 @@
 import { streamToString } from '@modules/common-cartridge/testing/common-cartridge-testing.utils';
 import { Readable, Stream } from 'stream';
-import { createCommonCartridgeFileResourcePropsV130 } from '../../../testing/common-cartridge-resource-props.factory';
+import { createCommonCartridgeFileFolderResourcePropsV130 } from '../../../testing/common-cartridge-resource-props.factory';
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
 import { ElementTypeNotSupportedLoggableException } from '../../errors';
-import { CommonCartridgeFileResourceV130 } from './common-cartridge-file-resource';
+import { CommonCartridgeFileFolderResourceV130 } from './common-cartridge-file-folder-resource';
 
-describe(CommonCartridgeFileResourceV130.name, () => {
+describe(CommonCartridgeFileFolderResourceV130.name, () => {
 	const setup = async () => {
-		const props = createCommonCartridgeFileResourcePropsV130();
+		const props = createCommonCartridgeFileFolderResourcePropsV130();
 
-		const expected = await streamToString(props.file);
-		props.file = Readable.from(expected);
+		const expected = await streamToString(props.files[0].file);
+		props.files = [{ file: Readable.from(expected), fileName: props.files[0].fileName }];
 
-		const sut = new CommonCartridgeFileResourceV130(props);
+		const sut = new CommonCartridgeFileFolderResourceV130(props);
 
 		return { sut, props, expected };
 	};
@@ -37,15 +37,18 @@ describe(CommonCartridgeFileResourceV130.name, () => {
 
 			const result = sut.getFileContent();
 
-			expect(result.path).toBe(`${props.folder}/${props.fileName}`);
+			expect(result).toHaveLength(1);
+			expect(result[0].path).toBe(`${props.folder}/${props.files[0].fileName}`);
 		});
 
 		it('should return the file stream', async () => {
 			const { sut, expected } = await setup();
 
 			const result = sut.getFileContent();
-			const content = await streamToString(result.content as Stream);
 
+			expect(result).toHaveLength(1);
+
+			const content = await streamToString(result[0].content as Stream);
 			expect(content).toBe(expected);
 		});
 	});
@@ -62,11 +65,13 @@ describe(CommonCartridgeFileResourceV130.name, () => {
 						identifier: props.identifier,
 						type: CommonCartridgeResourceType.WEB_CONTENT,
 					},
-					file: {
-						$: {
-							href: sut.getFileContent().path,
+					file: [
+						{
+							$: {
+								href: sut.getFileContent()[0].path,
+							},
 						},
-					},
+					],
 				});
 			});
 		});

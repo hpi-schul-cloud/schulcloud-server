@@ -26,7 +26,7 @@ export class CommonCartridgeOrganizationNode {
 		this.parent = parent;
 	}
 
-	public get folder(): string {
+	get folder(): string {
 		return this.parent ? `${this.parent.folder}/${this.props.identifier}` : this.props.identifier;
 	}
 

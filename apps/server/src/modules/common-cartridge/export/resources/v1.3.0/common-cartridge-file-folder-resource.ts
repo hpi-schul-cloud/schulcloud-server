@@ -9,18 +9,22 @@ import { CommonCartridgeResource, XmlObject } from '../../interfaces';
 import { ResourceFileContent } from '../../interfaces/common-cartridge-resource.interface';
 import { createIdentifier } from '../../utils';
 
-export type CommonCartridgeFileResourcePropsV130 = {
-	type: CommonCartridgeResourceType.FILE;
+export type FileElement = {
+	fileName: string;
+	file: Stream;
+};
+
+export type CommonCartridgeFileFolderResourcePropsV130 = {
+	type: CommonCartridgeResourceType.FILE_FOLDER;
 	version: CommonCartridgeVersion;
 	identifier: string;
 	folder: string;
-	fileName: string;
-	file: Stream;
 	title: string;
+	files: FileElement[];
 };
 
-export class CommonCartridgeFileResourceV130 extends CommonCartridgeResource {
-	constructor(private readonly props: CommonCartridgeFileResourcePropsV130) {
+export class CommonCartridgeFileFolderResourceV130 extends CommonCartridgeResource {
+	constructor(private readonly props: CommonCartridgeFileFolderResourcePropsV130) {
 		super(props);
 	}
 
@@ -28,11 +32,13 @@ export class CommonCartridgeFileResourceV130 extends CommonCartridgeResource {
 		return CommonCartridgeVersion.V_1_3_0;
 	}
 
-	public getFileContent(): ResourceFileContent {
-		return {
-			path: this.getFilePath(),
-			content: this.props.file.pipe(new PassThrough()),
-		};
+	public getFileContent(): ResourceFileContent[] {
+		return this.props.files.map((fileElement): ResourceFileContent => {
+			return {
+				path: this.getFilePath(fileElement.fileName),
+				content: fileElement.file.pipe(new PassThrough()),
+			};
+		});
 	}
 
 	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
@@ -46,8 +52,8 @@ export class CommonCartridgeFileResourceV130 extends CommonCartridgeResource {
 		}
 	}
 
-	private getFilePath(): string {
-		return `${this.props.folder}/${this.props.fileName}`;
+	private getFilePath(fileName: string): string {
+		return `${this.props.folder}/${fileName}`;
 	}
 
 	private getManifestOrganizationXmlObject(): XmlObject {
@@ -66,11 +72,13 @@ export class CommonCartridgeFileResourceV130 extends CommonCartridgeResource {
 				identifier: this.props.identifier,
 				type: CommonCartridgeResourceType.WEB_CONTENT,
 			},
-			file: {
-				$: {
-					href: this.getFilePath(),
-				},
-			},
+			file: this.props.files.map((fileElement) => {
+				return {
+					$: {
+						href: this.getFilePath(fileElement.fileName),
+					},
+				};
+			}),
 		};
 	}
 }
