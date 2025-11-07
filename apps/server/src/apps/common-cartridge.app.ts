@@ -4,7 +4,10 @@ import { LegacyLogger, Logger } from '@core/logger';
 import { CommonCartridgeApiModule } from '@modules/common-cartridge/common-cartridge-api.app.module';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import axios from 'axios';
 import express from 'express';
+import { Agent as HttpAgent } from 'http';
+import { Agent as HttpsAgent } from 'https';
 import { install as sourceMapInstall } from 'source-map-support';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
@@ -16,6 +19,9 @@ import { createRequestLoggerMiddleware } from './helpers/request-logger-middlewa
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
+
+	axios.defaults.httpAgent = new HttpAgent({ keepAlive: true });
+	axios.defaults.httpsAgent = new HttpsAgent({ keepAlive: true });
 
 	const nestExpress = express();
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
