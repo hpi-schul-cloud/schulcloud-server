@@ -58,24 +58,23 @@ describe('RegistrationRepo', () => {
 
 	describe('findByHash', () => {
 		const setup = async () => {
-			const hash = 'someUniqueHashValue';
-			const registrationEntity = registrationEntityFactory.buildWithId({ registrationHash: hash });
+			const registrationEntity = registrationEntityFactory.buildWithId();
 			await em.persistAndFlush(registrationEntity);
 			em.clear();
 
-			return { registrationEntity, hash };
+			return { registrationEntity };
 		};
 
 		it('should be able to find a registration by registrationHash', async () => {
-			const { registrationEntity, hash } = await setup();
-			const result = await repo.findByHash(hash);
+			const { registrationEntity } = await setup();
+
+			const result = await repo.findByHash(registrationEntity.registrationHash);
 			const expectedProps = {
 				...registrationEntity,
 				roomIds: registrationEntity.roomIds.map((id) => new ObjectId(id)),
 			};
 
 			expect(result.getProps()).toEqual(expectedProps);
-			expect(result.registrationHash).toEqual(hash);
 		});
 	});
 
