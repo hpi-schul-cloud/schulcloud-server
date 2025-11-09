@@ -27,5 +27,6 @@ import { RoomPermissionService } from './api/service';
 	],
 	controllers: [RoomController, RoomInvitationLinkController],
 	providers: [RoomUc, RoomInvitationLinkUc, RoomCopyUc, CopyRoomStep, RoomPermissionService],
+	exports: [RoomPermissionService],
 })
 export class RoomApiModule {}
