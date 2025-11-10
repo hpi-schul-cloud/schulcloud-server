@@ -6,10 +6,10 @@ import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-impor
 import {
 	CommonCartridgeFileFolderResourceProps,
 	CommonCartridgeFileResourceProps,
+	CommonCartridgeUnknownResourceProps,
 	CommonCartridgeWebContentResourceProps,
 	CommonCartridgeWebLinkResourceProps,
 } from '../import/common-cartridge-import.types';
-import { commonCartridgeOrganizationPropsFactory } from '../testing/common-cartridge-organization-props.factory';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 
 describe('CommonCartridgeImportMapper', () => {
@@ -81,24 +81,13 @@ describe('CommonCartridgeImportMapper', () => {
 					title: '',
 				};
 
-				const cardElementProps = commonCartridgeOrganizationPropsFactory.build({
-					resourcePaths: ['path/to/resource'],
-					path: 'path/to/resource',
-					pathDepth: 1,
-					identifier: 'resource-id',
-					title: 'Resource Title',
-					isResource: true,
-					isInlined: false,
-					resourceType: 'webLink',
-				});
-
-				return { resource, cardElementProps };
+				return { resource };
 			};
 
 			it('should return link body', () => {
-				const { resource, cardElementProps } = setup();
+				const { resource } = setup();
 
-				const result = sut.mapResourceToContentBody(resource, cardElementProps, InputFormat.RICH_TEXT_CK4);
+				const result = sut.mapResourceToContentBody(resource, InputFormat.RICH_TEXT_CK4);
 
 				expect(result).toEqual({
 					type: 'link',
@@ -120,24 +109,13 @@ describe('CommonCartridgeImportMapper', () => {
 					html: '<p>Test</p>',
 				};
 
-				const cardElementProps = commonCartridgeOrganizationPropsFactory.build({
-					resourcePaths: ['path/to/resource.html'],
-					path: 'path/to/resource',
-					pathDepth: 1,
-					identifier: 'resource-id',
-					title: 'Resource Title',
-					isResource: true,
-					isInlined: false,
-					resourceType: 'webContent',
-				});
-
-				return { resource, cardElementProps };
+				return { resource };
 			};
 
 			it('should return rich text body', () => {
-				const { resource, cardElementProps } = setup();
+				const { resource } = setup();
 
-				const result = sut.mapResourceToContentBody(resource, cardElementProps, InputFormat.RICH_TEXT_CK4);
+				const result = sut.mapResourceToContentBody(resource, InputFormat.RICH_TEXT_CK4);
 
 				expect(result).toEqual({
 					type: 'richText',
@@ -146,36 +124,6 @@ describe('CommonCartridgeImportMapper', () => {
 						text: '<p>Test</p>',
 					},
 				});
-			});
-		});
-
-		describe('when resource is webContent with non-html path', () => {
-			const setup = () => {
-				const resource: CommonCartridgeWebContentResourceProps = {
-					type: CommonCartridgeXmlResourceType.WEB_CONTENT,
-					html: '<p>Test</p>',
-				};
-
-				const cardElementProps = commonCartridgeOrganizationPropsFactory.build({
-					resourcePaths: ['path/to/resource.jpg'],
-					path: 'path/to/resource',
-					pathDepth: 1,
-					identifier: 'resource-id',
-					title: 'Resource Title',
-					isResource: true,
-					isInlined: false,
-					resourceType: 'webContent',
-				});
-
-				return { resource, cardElementProps };
-			};
-
-			it('should return undefined for unknown resource type', () => {
-				const { resource, cardElementProps } = setup();
-
-				const result = sut.mapResourceToContentBody(resource, cardElementProps, InputFormat.RICH_TEXT_CK4);
-
-				expect(result).toEqual(undefined);
 			});
 		});
 
@@ -188,17 +136,14 @@ describe('CommonCartridgeImportMapper', () => {
 					file: new File([''], 'resource.jpg'),
 					description: 'Resource description',
 				};
-				const cardElementProps = commonCartridgeOrganizationPropsFactory.build({
-					resourcePaths: ['path/to/resource'],
-				});
 
-				return { resource, cardElementProps };
+				return { resource };
 			};
 
 			it('should return file body', () => {
-				const { resource, cardElementProps } = setup();
+				const { resource } = setup();
 
-				const result = sut.mapResourceToContentBody(resource, cardElementProps, InputFormat.RICH_TEXT_CK4);
+				const result = sut.mapResourceToContentBody(resource, InputFormat.RICH_TEXT_CK4);
 				expect(result).toEqual({
 					type: 'file',
 					content: {
@@ -216,23 +161,37 @@ describe('CommonCartridgeImportMapper', () => {
 					title: 'Title of folder',
 					files: [new File([''], 'resource.jpg')],
 				};
-				const cardElementProps = commonCartridgeOrganizationPropsFactory.build({
-					resourcePaths: ['path/to/resource'],
-				});
 
-				return { resource, cardElementProps };
+				return { resource };
 			};
 
 			it('should return file folder body', () => {
-				const { resource, cardElementProps } = setup();
+				const { resource } = setup();
 
-				const result = sut.mapResourceToContentBody(resource, cardElementProps, InputFormat.RICH_TEXT_CK4);
+				const result = sut.mapResourceToContentBody(resource, InputFormat.RICH_TEXT_CK4);
 				expect(result).toEqual({
 					type: 'fileFolder',
 					content: {
 						title: 'Title of folder',
 					},
 				});
+			});
+		});
+
+		describe('when resource type is unknown', () => {
+			const setup = () => {
+				const resource: CommonCartridgeUnknownResourceProps = {
+					type: CommonCartridgeXmlResourceType.UNKNOWN,
+				};
+
+				return { resource };
+			};
+
+			it('should return file folder body', () => {
+				const { resource } = setup();
+
+				const result = sut.mapResourceToContentBody(resource, InputFormat.RICH_TEXT_CK4);
+				expect(result).toBeUndefined();
 			});
 		});
 	});

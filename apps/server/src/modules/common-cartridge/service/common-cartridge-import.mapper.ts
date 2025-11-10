@@ -6,11 +6,7 @@ import {
 	FileFolderElementContentBody,
 } from '@infra/cards-client';
 import { InputFormat } from '@shared/domain/types';
-import {
-	CommonCartridgeImportOrganizationProps,
-	CommonCartridgeImportResourceProps,
-	CommonCartridgeImportWebContentResourceProps,
-} from '..';
+import { CommonCartridgeImportResourceProps, CommonCartridgeImportWebContentResourceProps } from '..';
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 import {
 	CommonCartridgeFileFolderResourceProps,
@@ -39,7 +35,6 @@ export class CommonCartridgeImportMapper {
 
 	public mapResourceToContentBody(
 		resource: CommonCartridgeImportResourceProps,
-		cardElementProps: CommonCartridgeImportOrganizationProps,
 		inputFormat: InputFormat
 	):
 		| LinkElementContentBody
@@ -56,11 +51,7 @@ export class CommonCartridgeImportMapper {
 			return linkContentBody;
 		}
 
-		if (
-			resource.type === CommonCartridgeXmlResourceType.WEB_CONTENT &&
-			cardElementProps.resourcePaths.length === 1 &&
-			cardElementProps.resourcePaths[0].endsWith('.html')
-		) {
+		if (resource.type === CommonCartridgeXmlResourceType.WEB_CONTENT) {
 			const richTextBody = this.createTextFromHtmlResource(resource, inputFormat);
 
 			return richTextBody;

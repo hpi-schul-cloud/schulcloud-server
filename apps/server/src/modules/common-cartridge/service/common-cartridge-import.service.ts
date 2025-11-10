@@ -191,7 +191,6 @@ export class CommonCartridgeImportService {
 
 		const resourceBody = this.commonCartridgeImportMapper.mapResourceToContentBody(
 			resource,
-			cardElementProps,
 			parser.options.inputFormat
 		);
 
