@@ -228,9 +228,17 @@ export class RoomUc {
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
+
+		const canListRoomMembers = this.authorizationService.hasOneOfPermissions(currentUser, [
+			Permission.SCHOOL_LIST_ROOM_MEMBERS,
+		]);
+		if (!canListRoomMembers) {
+			throw new ForbiddenException();
+		}
+
 		this.authorizationService.checkPermission(currentUser, roomMembershipAuthorizable, {
 			action: Action.read,
-			requiredPermissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS],
+			requiredPermissions: [],
 		});
 
 		const membersResponse = await this.getRoomMembersResponse(roomMembershipAuthorizable);
