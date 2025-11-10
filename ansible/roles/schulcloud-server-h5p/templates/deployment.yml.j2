@@ -1,4 +1,3 @@
-{% set memory_limit = API_H5P_EDITOR_MEMORY_LIMITS|default("8Gi", true) %}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -60,14 +59,12 @@ spec:
           protocol: TCP
         env:
         - name: NODE_OPTIONS
-          value: "--max-old-space-size={{ ((memory_limit | regex_replace('Gi', '')|int * 1024 * 0.8)|int) }}"
+          value: "--max-old-space-size={{ ((API_H5P_EDITOR_MEMORY_LIMIT | regex_replace('Gi', '')|int * 1024 * 0.8)|int) }}"
         envFrom:
         - configMapRef:
-            name: api-configmap
+            name: api-h5p-configmap
         - secretRef:
-            name: api-secret
-        - secretRef:
-            name: api-h5p-editor-secret
+            name: api-h5p-secret
         command: ['npm', 'run', 'nest:start:h5p:prod']
         readinessProbe:
           httpGet:
@@ -76,7 +73,6 @@ spec:
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 5
-        # liveless if unsatisfactory reply
         livenessProbe:
           httpGet:
             path: api/v3/docs
@@ -94,10 +90,10 @@ spec:
         resources:
           limits:
             cpu: {{ API_H5P_EDITOR_CPU_LIMITS|default("2000m", true) }}
-            memory: {{ memory_limit }}
+            memory: {{ API_H5P_EDITOR_MEMORY_LIMIT }}
           requests:
             cpu: {{ API_H5P_EDITOR_CPU_REQUESTS|default("100m", true) }}
-            memory: {{ API_H5P_EDITOR_MEMORY_REQUESTS|default("2Gi", true) }}
+            memory: {{ API_H5P_EDITOR_MEMORY_REQUEST }}
 {% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
       affinity:
         podAffinity:
