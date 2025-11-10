@@ -13,10 +13,6 @@ const config = {
 		old: [],
 		new: ['SCHOOL_LIST_ROOM_MEMBERS'],
 	},
-	expert: {
-		old: [],
-		new: ['SCHOOL_LIST_ROOM_MEMBERS'],
-	},
 };
 
 export class Migration20251110093306 extends Migration {

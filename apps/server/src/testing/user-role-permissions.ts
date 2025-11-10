@@ -166,6 +166,6 @@ export const superheroPermissions = [
 	Permission.MEDIA_SOURCE_ADMIN,
 ];
 
-export const externalPersonPermissions = [...userPermissions, Permission.SCHOOL_LIST_ROOM_MEMBERS];
+export const externalPersonPermissions = [...userPermissions];
 
 export const defaultSystemUserPermissions = [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS];

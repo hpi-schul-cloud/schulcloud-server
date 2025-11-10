@@ -417,7 +417,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		updatedAt: '2022-05-20T13:33:18.077Z',
 		name: RoleName.EXPERT,
 		roles: [RoleName.USER],
-		permissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS],
+		permissions: [],
 	},
 };
 export const roleOrder = [
