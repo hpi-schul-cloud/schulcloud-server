@@ -253,7 +253,11 @@ export class User extends BaseEntityWithTimestamps {
 		let setOfPermissions = new Set(permissions);
 
 		// This exclusion is necessary because of possible double roles (e.g., admin and teacher). Then the higher role should keep its permissions.
-		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR || role.name === RoleName.SUPERHERO)) {
+		if (roles.some((role) => role.name === RoleName.SUPERHERO)) {
+			return setOfPermissions;
+		}
+		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR)) {
+			setOfPermissions.add(Permission.SCHOOL_LIST_ROOM_MEMBERS);
 			return setOfPermissions;
 		}
 
@@ -286,6 +290,7 @@ export class User extends BaseEntityWithTimestamps {
 		} else {
 			setOfPermissions.delete(Permission.STUDENT_LIST);
 		}
+		setOfPermissions.add(Permission.SCHOOL_LIST_ROOM_MEMBERS);
 
 		return setOfPermissions;
 	}
@@ -299,6 +304,7 @@ export class User extends BaseEntityWithTimestamps {
 		} else if (schoolPermissions?.student?.LERNSTORE_VIEW === false) {
 			setOfPermissions.delete(Permission.LERNSTORE_VIEW);
 		}
+		setOfPermissions.add(Permission.SCHOOL_LIST_ROOM_MEMBERS);
 
 		return setOfPermissions;
 	}
