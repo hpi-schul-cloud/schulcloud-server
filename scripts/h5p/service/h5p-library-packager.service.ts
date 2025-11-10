@@ -1,8 +1,10 @@
 import { ILibraryName, LibraryName } from '@lumieducation/h5p-server';
+import { IFullLibraryName } from '@lumieducation/h5p-server/build/src/types';
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import { FileSystemHelper } from '../helper/file-system.helper';
 import { H5PLibrary } from '../interface/h5p-library';
-import { GitHubClientOptions, H5pGitHubClient } from './h5p-github.client.js';
+import { GitHubClientOptions, H5pGitHubClient } from './h5p-github.client';
+import { H5pHubClient } from './h5p-hub.client';
 
 type LibraryRepoMap = Record<string, string>;
 
@@ -12,6 +14,7 @@ export class H5pLibraryPackagerService {
 	libraryRepoMap: LibraryRepoMap;
 	tempFolderPath: string;
 	gitHubClient: H5pGitHubClient;
+	h5pHubClient: H5pHubClient;
 
 	constructor(libraryRepoMap: LibraryRepoMap, tempFolderPath?: string) {
 		if (!tempFolderPath) {
@@ -26,6 +29,7 @@ export class H5pLibraryPackagerService {
 
 		this.libraryRepoMap = libraryRepoMap;
 		this.gitHubClient = new H5pGitHubClient();
+		this.h5pHubClient = new H5pHubClient();
 	}
 
 	public async buildH5pLibrariesFromGitHubAsBulk(libraries: string[]): Promise<void> {
@@ -72,7 +76,13 @@ export class H5pLibraryPackagerService {
 		}
 		const options: GitHubClientOptions = { maxRetries: 3 };
 		const tags = await this.gitHubClient.fetchAllTags(repoName, options);
-		const filteredTags = this.getHighestPatchTags(tags);
+		let filteredTags = this.getHighestPatchTags(tags);
+
+		const currentH5pHubTag = await this.getCurrentTagFromH5pHub(library);
+		if (currentH5pHubTag) {
+			filteredTags = this.filterTagsByH5pHubVersion(filteredTags, currentH5pHubTag);
+		}
+
 		console.log(`Found ${filteredTags.length} versions of ${library} in ${repoName}: ${filteredTags.join(', ')}`);
 		for (const tag of filteredTags) {
 			const tagResult = await this.buildLibraryVersionAndDependencies(library, tag, repoName, availableVersions);
@@ -89,6 +99,101 @@ export class H5pLibraryPackagerService {
 	private mapMachineNameToGitHubRepo(library: string): string | undefined {
 		const repo = this.libraryRepoMap[library];
 		return repo;
+	}
+
+	private async getCurrentTagFromH5pHub(library: string): Promise<IFullLibraryName | undefined> {
+		const tempDir = FileSystemHelper.getTempDir();
+		const h5pHubFolder = FileSystemHelper.buildPath(tempDir, 'h5p-hub');
+		if (!FileSystemHelper.pathExists(h5pHubFolder)) {
+			console.log(`Creating H5P Hub folder at ${h5pHubFolder}.`);
+			FileSystemHelper.createFolder(h5pHubFolder);
+		}
+
+		const filePath = FileSystemHelper.buildPath(h5pHubFolder, `${library}.h5p`);
+		if (FileSystemHelper.pathExists(filePath)) {
+			console.log(`Removing existing H5P Hub file at ${filePath}.`);
+			FileSystemHelper.removeFile(filePath);
+		}
+
+		console.log(`Downloading current version of ${library} from H5P Hub to ${filePath}.`);
+		try {
+			await this.h5pHubClient.downloadContentType(library, filePath);
+		} catch (error: unknown) {
+			console.error(
+				`Failed to download content type ${library}: ${error instanceof Error ? error.message : String(error)}`
+			);
+			return undefined;
+		}
+
+		console.log(`Unzipping H5P Hub file ${filePath} to ${h5pHubFolder}.`);
+		const outputDir = FileSystemHelper.buildPath(h5pHubFolder, library);
+		if (FileSystemHelper.pathExists(outputDir)) {
+			console.log(`Removing existing H5P Hub folder at ${outputDir}.`);
+			FileSystemHelper.removeFolder(outputDir);
+		}
+		FileSystemHelper.unzipFile(filePath, outputDir);
+
+		const folders = FileSystemHelper.getAllFolders(outputDir);
+		const folder = folders.find((folder) => folder.startsWith(library));
+		if (!folder) {
+			console.warn(`No folder found for library ${library} in unzipped H5P Hub content.`);
+			return;
+		}
+
+		const libraryFolder = FileSystemHelper.buildPath(outputDir, folder);
+		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(libraryFolder);
+		const json = FileSystemHelper.readJsonFile(libraryJsonPath) as {
+			majorVersion: number;
+			minorVersion: number;
+			patchVersion: number;
+			[key: string]: any;
+		};
+		const tag: IFullLibraryName = {
+			machineName: library,
+			majorVersion: json.majorVersion,
+			minorVersion: json.minorVersion,
+			patchVersion: json.patchVersion,
+		};
+
+		console.log('Found current version of library from H5P Hub:', this.formatLibraryVersion(tag));
+
+		return tag;
+	}
+
+	private formatLibraryVersion(version: IFullLibraryName): string {
+		if (!version) return '';
+
+		return `${version.machineName}-${version.majorVersion}.${version.minorVersion}.${version.patchVersion}`;
+	}
+
+	private filterTagsByH5pHubVersion(tags: string[], currentH5pHubTag: IFullLibraryName): string[] {
+		const removedTags: string[] = [];
+		const filteredTags = tags.filter((tag) => {
+			const [major, minor, patch] = tag.split('.').map(Number);
+
+			// Compare major version first
+			if (major < currentH5pHubTag.majorVersion) return true;
+			if (major > currentH5pHubTag.majorVersion) {
+				removedTags.push(tag);
+				return false;
+			}
+
+			// Major versions are equal, compare minor version
+			if (minor < currentH5pHubTag.minorVersion) return true;
+			if (minor > currentH5pHubTag.minorVersion) {
+				removedTags.push(tag);
+				return false;
+			}
+
+			if (patch < currentH5pHubTag.patchVersion) return true;
+
+			// If versions are equal or tag is greater, exclude it
+			removedTags.push(tag);
+			return false;
+		});
+		console.log(`Excluded tags based on H5P Hub version: ${removedTags.join(', ')}`);
+
+		return filteredTags;
 	}
 
 	private getHighestPatchTags(tags: string[]): string[] {
@@ -635,12 +740,35 @@ export class H5pLibraryPackagerService {
 
 		const options: GitHubClientOptions = { maxRetries: 3 };
 		const tags = await this.gitHubClient.fetchAllTags(depRepoName, options);
-		const depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
+		let depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
 		if (!depTag) {
 			this.logTagNotFound(dependency);
 			result.failedLibraries.add(dependency.machineName);
 
 			return result;
+		}
+
+		const currentH5pHubTag = await this.getCurrentTagFromH5pHub(depName);
+		if (currentH5pHubTag) {
+			const depPatch = Number(depTag.split('.')[2]);
+			if (
+				depMajor === currentH5pHubTag.majorVersion &&
+				depMinor === currentH5pHubTag.minorVersion &&
+				depPatch > currentH5pHubTag.patchVersion
+			) {
+				console.log(
+					`Excluding higher patch version ${depTag} than current H5P Hub version ${currentH5pHubTag.majorVersion}.${
+						currentH5pHubTag.minorVersion
+					}.${currentH5pHubTag.patchVersion} for dependency ${LibraryName.toUberName(dependency)}.`
+				);
+				depTag = `${depMajor}.${depMinor}.${currentH5pHubTag.patchVersion}`;
+			}
+		}
+
+		// special handling for "FontAwesome" as version 4.5.6 seems to be broken
+		// so we force 4.5.4 which is known to work
+		if (depName === 'FontAwesome' && depMajor === 4 && depMinor === 5) {
+			depTag = '4.5.4';
 		}
 
 		const dependencyResult = await this.buildLibraryVersionAndDependencies(
