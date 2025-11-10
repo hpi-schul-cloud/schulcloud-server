@@ -230,7 +230,7 @@ export class RoomUc {
 		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkPermission(currentUser, roomMembershipAuthorizable, {
 			action: Action.read,
-			requiredPermissions: [],
+			requiredPermissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS],
 		});
 
 		const membersResponse = await this.getRoomMembersResponse(roomMembershipAuthorizable);
