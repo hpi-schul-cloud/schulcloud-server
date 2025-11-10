@@ -129,6 +129,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.SYSTEM_VIEW,
 			Permission.SCHOOL_TOOL_ADMIN,
 			Permission.USER_CHANGE_OWN_NAME,
+			Permission.SCHOOL_LIST_ROOM_MEMBERS,
 		],
 	},
 	superhero: {
@@ -223,6 +224,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.HOMEWORK_CREATE,
 			Permission.HOMEWORK_EDIT,
 			Permission.CONTEXT_TOOL_ADMIN,
+			Permission.SCHOOL_LIST_ROOM_MEMBERS,
 		],
 	},
 	student: {
@@ -237,6 +239,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.TEAM_CREATE,
 			Permission.TEAM_EDIT,
 			Permission.TOOL_CREATE_ETHERPAD,
+			Permission.SCHOOL_LIST_ROOM_MEMBERS,
 		],
 	},
 	helpdesk: {
@@ -414,7 +417,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		updatedAt: '2022-05-20T13:33:18.077Z',
 		name: RoleName.EXPERT,
 		roles: [RoleName.USER],
-		permissions: [],
+		permissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS],
 	},
 };
 export const roleOrder = [
