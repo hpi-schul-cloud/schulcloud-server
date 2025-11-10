@@ -270,7 +270,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 				...data,
 				duplicatedCard: cardResponse,
 			};
-			emitter.emitToClientAndRoom(responsePayload, card.id);
+			emitter.emitToClientAndRoom(responsePayload, card);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
