@@ -101,8 +101,6 @@ describe('Room Controller (API)', () => {
 					roomMembership,
 				]);
 
-				// manually re-create room content
-				await em.nativeDelete('RoomContentType', { roomId: room.id });
 				const roomContent = roomContentEntityFactory.build({
 					roomId: room.id,
 					items: boards.map((board) => {
