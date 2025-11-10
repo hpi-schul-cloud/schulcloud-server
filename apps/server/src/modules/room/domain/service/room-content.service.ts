@@ -8,7 +8,8 @@ export class RoomContentService {
 	constructor(private readonly roomContentRepo: RoomContentRepo) {}
 
 	public async contentExists(roomId: EntityId): Promise<boolean> {
-		const exists = (await this.roomContentRepo.countByRoomId(roomId)) > 0;
+		const numberOfContents = await this.roomContentRepo.countByRoomId(roomId);
+		const exists = numberOfContents > 0;
 
 		return exists;
 	}
