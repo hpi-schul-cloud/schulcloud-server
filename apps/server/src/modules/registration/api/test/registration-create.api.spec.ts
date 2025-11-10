@@ -9,6 +9,7 @@ import { RegistrationEntity } from '../../repo';
 import { LanguageType, Permission } from '@shared/domain/interface';
 import { CreateRegistrationBodyParams } from '../dto/request/create-registration.body.params';
 import { roomEntityFactory } from '@modules/room/testing';
+import { Consent } from '@modules/registration/domain/type';
 
 describe('Registration Controller (API)', () => {
 	let app: INestApplication;
@@ -55,20 +56,32 @@ describe('Registration Controller (API)', () => {
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
-				return { loggedInClient, room };
+				const params: CreateRegistrationBodyParams = {
+					email: 'test@example.com',
+					firstName: 'John',
+					lastName: 'Doe',
+					consent: [Consent.TERMS_OF_USE],
+					language: LanguageType.DE,
+					roomIds: [room.id],
+				};
+
+				return { loggedInClient, room, params };
 			};
 
 			describe('when the required parameters are given', () => {
+				describe('when the feature is disabled', () => {
+					it('should return a 403 error', async () => {
+						config.FEATURE_REGISTRATION_ENABLED = false;
+						const { loggedInClient, params } = await setup();
+
+						const response = await loggedInClient.post(undefined, params);
+
+						expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					});
+				});
+
 				it('should create the registration', async () => {
-					const { loggedInClient, room } = await setup();
-					const params: CreateRegistrationBodyParams = {
-						email: 'test@example.com',
-						firstName: 'John',
-						lastName: 'Doe',
-						consent: ['terms'],
-						language: LanguageType.DE,
-						roomIds: [room.id],
-					};
+					const { loggedInClient, params } = await setup();
 
 					const response = await loggedInClient.post(undefined, params);
 					const registrationId = (response.body as { id: string }).id;
@@ -89,20 +102,21 @@ describe('Registration Controller (API)', () => {
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
-				return { loggedInClient, studentUser };
+				const params: CreateRegistrationBodyParams = {
+					email: 'test@example.com',
+					firstName: 'John',
+					lastName: 'Doe',
+					consent: [Consent.TERMS_OF_USE],
+					language: LanguageType.DE,
+					roomIds: [],
+				};
+
+				return { loggedInClient, studentUser, params };
 			};
 
 			describe('when the required parameters are given', () => {
 				it('should not create the registration', async () => {
-					const { loggedInClient } = await setup();
-					const params: CreateRegistrationBodyParams = {
-						email: 'test@example.com',
-						firstName: 'John',
-						lastName: 'Doe',
-						consent: ['terms'],
-						language: LanguageType.DE,
-						roomIds: [],
-					};
+					const { loggedInClient, params } = await setup();
 
 					const response = await loggedInClient.post(undefined, params);
 					expect(response.status).toBe(HttpStatus.UNAUTHORIZED);

@@ -1,10 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RegistrationRepo } from '../../repo';
-import { RegistrationCreateProps } from '../do';
+import { RegistrationCreateProps, RegistrationUpdateProps } from '../do';
 import { RegistrationService } from './registration.service';
 import { LanguageType } from '@shared/domain/interface';
 import { registrationFactory } from '@modules/registration/testing';
+import { Consent } from '../type';
 
 describe('RegistrationService', () => {
 	let module: TestingModule;
@@ -56,9 +57,67 @@ describe('RegistrationService', () => {
 		});
 	});
 
+	describe('updateRegistration', () => {
+		const setup = () => {
+			const props: RegistrationCreateProps = {
+				email: 'test@example.com',
+				firstName: 'John',
+				lastName: 'Doe',
+				consent: [],
+				language: LanguageType.DE,
+				roomIds: [],
+			};
+			const registration = registrationFactory.build(props);
+			registrationRepo.findById.mockResolvedValue(registration);
+
+			const updatedProps: RegistrationUpdateProps = {
+				consent: [Consent.TERMS_OF_USE],
+				language: LanguageType.EN,
+				password: 'new password',
+				pin: 'random-pin',
+				roomIds: ['room-id'],
+			};
+
+			return { registration, props, updatedProps };
+		};
+
+		it('should call repo to save registration', async () => {
+			const { registration, updatedProps } = setup();
+
+			const updatedRegistration = await service.updateRegistration(registration, updatedProps);
+
+			expect(registrationRepo.save).toHaveBeenCalledWith(updatedRegistration);
+		});
+	});
+
+	describe('getSingleRegistrationByRegistrationId', () => {
+		const setup = () => {
+			const registration = registrationFactory.build();
+			registrationRepo.findById.mockResolvedValue(registration);
+
+			return { registration };
+		};
+
+		it('should call repo to get registration by its id', async () => {
+			const registrationId = 'someRandomRegistrationIdForNow';
+
+			await service.getSingleRegistrationByRegistrationId(registrationId);
+
+			expect(registrationRepo.findById).toHaveBeenCalledWith(registrationId);
+		});
+
+		it('should return registration', async () => {
+			const { registration } = setup();
+
+			const result = await service.getSingleRegistrationByRegistrationId('someRandomRegistrationIdForNow');
+
+			expect(result).toBe(registration);
+		});
+	});
+
 	describe('getSingleRegistrationByHash', () => {
 		const setup = () => {
-			const registration = registrationFactory.buildList(2)[0];
+			const registration = registrationFactory.build();
 			registrationRepo.findByHash.mockResolvedValue(registration);
 
 			return { registration };
@@ -78,6 +137,31 @@ describe('RegistrationService', () => {
 			const result = await service.getSingleRegistrationByHash('someRandomHashForNow');
 
 			expect(result).toBe(registration);
+		});
+	});
+
+	describe('getRegistrationsByRoomId', () => {
+		const setup = () => {
+			const registrations = registrationFactory.buildList(2);
+			registrationRepo.findByRoomId.mockResolvedValue(registrations);
+
+			return { registrations };
+		};
+
+		it('should call repo to get registrations by room id', async () => {
+			const roomId = 'someRandomRoomId';
+
+			await service.getRegistrationsByRoomId(roomId);
+
+			expect(registrationRepo.findByRoomId).toHaveBeenCalledWith(roomId);
+		});
+
+		it('should return registration', async () => {
+			const { registrations } = setup();
+
+			const result = await service.getRegistrationsByRoomId('someRandomRoomId');
+
+			expect(result).toBe(registrations);
 		});
 	});
 });

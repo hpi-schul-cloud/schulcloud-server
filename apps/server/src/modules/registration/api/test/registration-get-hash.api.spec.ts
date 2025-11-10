@@ -34,7 +34,7 @@ describe('Room Controller (API)', () => {
 		await app.close();
 	});
 
-	describe('GET /registrations/:registrationHash', () => {
+	describe('GET /registrations/by-hash/:registrationHash', () => {
 		const setup = async () => {
 			const registration = registrationEntityFactory.build();
 

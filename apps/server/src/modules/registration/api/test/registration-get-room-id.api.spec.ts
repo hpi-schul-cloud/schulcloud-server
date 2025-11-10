@@ -41,7 +41,7 @@ describe('Room Controller (API)', () => {
 		await app.close();
 	});
 
-	describe('GET /registrations/:roomId', () => {
+	describe('GET /registrations/by-room/:roomId', () => {
 		const setup = async () => {
 			const school = schoolEntityFactory.buildWithId();
 			const roomOne = roomEntityFactory.buildWithId({ schoolId: school.id });

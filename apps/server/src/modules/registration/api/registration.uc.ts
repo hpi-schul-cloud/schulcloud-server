@@ -7,6 +7,7 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { RegistrationFeatureService } from './service';
 import { RoomService } from '@modules/room';
 import { RoomPermissionService } from '@modules/room/api/service';
+import { UpdateRegistrationBodyParams } from './dto/request/update-registration.body.params';
 
 @Injectable()
 export class RegistrationUc {
@@ -26,6 +27,16 @@ export class RegistrationUc {
 
 		const registration = await this.registrationService.createRegistration({ ...props });
 		return registration;
+	}
+
+	public async updateRegistration(registrationId: EntityId, updatedProps: UpdateRegistrationBodyParams) {
+		this.registrationFeatureService.checkFeatureRegistrationEnabled();
+
+		// check if current user is correct for this registration ?
+		const registration = await this.registrationService.getSingleRegistrationByRegistrationId(registrationId);
+
+		const updatedRegistration = await this.registrationService.updateRegistration(registration, updatedProps);
+		return updatedRegistration;
 	}
 
 	public async getSingleRegistrationByHash(registrationHash: string): Promise<Registration> {

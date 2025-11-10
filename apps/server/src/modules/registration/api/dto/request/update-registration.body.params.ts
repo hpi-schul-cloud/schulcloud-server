@@ -1,33 +1,9 @@
-import { Consent, RegistrationCreateProps } from '@modules/registration/domain';
+import { Consent, RegistrationCreateProps, RegistrationUpdateProps } from '@modules/registration/domain';
 import { ApiProperty } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
 import { IsArray, IsEmail, IsEnum, IsMongoId, IsString } from 'class-validator';
 
-export class CreateRegistrationBodyParams implements RegistrationCreateProps {
-	@IsEmail()
-	@ApiProperty({
-		description: 'The mail adress of the new user. Will also be used as username.',
-		required: true,
-		nullable: false,
-	})
-	email!: string;
-
-	@IsString()
-	@ApiProperty({
-		description: 'The firstname of the new user.',
-		required: true,
-		nullable: false,
-	})
-	firstName!: string;
-
-	@IsString()
-	@ApiProperty({
-		description: 'The lastname of the new user.',
-		required: true,
-		nullable: false,
-	})
-	lastName!: string;
-
+export class UpdateRegistrationBodyParams implements RegistrationUpdateProps {
 	@IsArray()
 	@IsEnum(Consent, { each: true })
 	@ApiProperty({
@@ -48,6 +24,20 @@ export class CreateRegistrationBodyParams implements RegistrationCreateProps {
 		enumName: 'LanguageType',
 	})
 	language!: LanguageType;
+
+	@IsString()
+	@ApiProperty({
+		description: 'The chosen password for the registration process.',
+		required: true,
+	})
+	password!: string;
+
+	@IsString()
+	@ApiProperty({
+		description: 'The given pin for the registration process.',
+		required: true,
+	})
+	pin!: string;
 
 	@IsArray()
 	@IsMongoId({ each: true })

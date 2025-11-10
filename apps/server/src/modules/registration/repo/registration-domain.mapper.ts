@@ -2,36 +2,36 @@ import { Registration } from '../domain/do/registration.do';
 import { RegistrationEntity } from './entity';
 
 export class RegistrationDomainMapper {
-    static mapEntityToDo(registrationEntity: RegistrationEntity): Registration {
-        // check identity map reference
-        if (registrationEntity.domainObject) {
-            return registrationEntity.domainObject;
-        }
+	static mapEntityToDo(registrationEntity: RegistrationEntity): Registration {
+		// check identity map reference
+		if (registrationEntity.domainObject) {
+			return registrationEntity.domainObject;
+		}
 
-        const registration = new Registration(registrationEntity);
+		const registration = new Registration(registrationEntity);
 
-        // attach to identity map
-        registrationEntity.domainObject = registration;
+		// attach to identity map
+		registrationEntity.domainObject = registration;
 
-        return registration;
-    }
+		return registration;
+	}
 
-    static mapDoToEntity(registration: Registration): RegistrationEntity {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const { props } = registration;
+	static mapDoToEntity(registration: Registration): RegistrationEntity {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		const { props } = registration;
 
-        if (!(props instanceof RegistrationEntity)) {
-            const entity = new RegistrationEntity();
-            Object.assign(entity, props);
+		if (!(props instanceof RegistrationEntity)) {
+			const entity = new RegistrationEntity();
+			Object.assign(entity, props);
 
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            registration.props = entity;
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			registration.props = entity;
 
-            return entity;
-        }
+			return entity;
+		}
 
-        return props;
-    }
+		return props;
+	}
 }

@@ -9,24 +9,6 @@ describe(RegistrationScope.name, () => {
 		scope.allowEmptyQuery(true);
 	});
 
-	describe('byRegistrationHash', () => {
-		describe('when hash is undefined', () => {
-			it('should not add query', () => {
-				scope.byRegistrationHash(undefined);
-
-				expect(scope.query).toEqual({});
-			});
-		});
-
-		describe('when hash is defined', () => {
-			it('should add query', () => {
-				scope.byRegistrationHash('someHashValue');
-
-				expect(scope.query).toEqual({ registrationHash: 'someHashValue' });
-			});
-		});
-	});
-
 	describe('byRoomId', () => {
 		describe('when roomId is undefined', () => {
 			it('should not add query', () => {

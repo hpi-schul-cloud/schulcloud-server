@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsEnum } from 'class-validator';
 import { LanguageType } from '@shared/domain/interface';
+import { Consent } from '@modules/registration/domain/type';
 
 export class RegistrationItemResponse {
 	@ApiProperty()
@@ -18,9 +19,10 @@ export class RegistrationItemResponse {
 	@ApiProperty()
 	password: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: Consent, isArray: true, enumName: 'Consent' })
 	@IsArray()
-	consent: string[];
+	@IsEnum(Consent, { each: true })
+	consent: Consent[];
 
 	@ApiProperty()
 	pin: string;

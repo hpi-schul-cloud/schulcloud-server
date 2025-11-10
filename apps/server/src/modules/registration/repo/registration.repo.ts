@@ -21,6 +21,15 @@ export class RegistrationRepo {
 		await this.flush();
 	}
 
+	public async findById(registrationId: string): Promise<Registration> {
+		const entity = await this.em.findOneOrFail(RegistrationEntity, {
+			id: registrationId,
+		});
+		const domainObject = RegistrationDomainMapper.mapEntityToDo(entity);
+
+		return domainObject;
+	}
+
 	public async findByHash(hash: string): Promise<Registration> {
 		const entity = await this.em.findOneOrFail(RegistrationEntity, { registrationHash: hash });
 		const domainObject = RegistrationDomainMapper.mapEntityToDo(entity);
@@ -33,7 +42,6 @@ export class RegistrationRepo {
 		scope.byRoomId(roomId);
 
 		const entities = await this.em.find(RegistrationEntity, scope.query);
-
 		const domainObjects = entities.map((entity) => RegistrationDomainMapper.mapEntityToDo(entity));
 
 		return domainObjects;

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
+import { Registration, RegistrationCreateProps, RegistrationProps, RegistrationUpdateProps } from '../do';
 import { RegistrationRepo } from '@modules/registration/repo';
 
 @Injectable()
@@ -25,6 +25,25 @@ export class RegistrationService {
 		const registration = new Registration(registrationProps);
 
 		await this.registrationRepo.save(registration);
+
+		return registration;
+	}
+
+	public async updateRegistration(registration: Registration, props: RegistrationUpdateProps): Promise<Registration> {
+		registration.password = props.password;
+		registration.consent = props.consent;
+		// separate the update of the pin into separate method as its done by resending the pin?
+		registration.pin = props.pin;
+		registration.language = props.language;
+		registration.roomIds = props.roomIds;
+
+		await this.registrationRepo.save(registration);
+
+		return registration;
+	}
+
+	public async getSingleRegistrationByRegistrationId(registrationId: string): Promise<Registration> {
+		const registration = await this.registrationRepo.findById(registrationId);
 
 		return registration;
 	}

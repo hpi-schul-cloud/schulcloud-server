@@ -56,6 +56,28 @@ describe('RegistrationRepo', () => {
 		});
 	});
 
+	describe('findById', () => {
+		const setup = async () => {
+			const registrationEntity = registrationEntityFactory.buildWithId();
+			await em.persistAndFlush(registrationEntity);
+			em.clear();
+
+			return { registrationEntity };
+		};
+
+		it('should be able to find a registration by its ID', async () => {
+			const { registrationEntity } = await setup();
+
+			const result = await repo.findById(registrationEntity.id);
+			const expectedProps = {
+				...registrationEntity,
+				roomIds: registrationEntity.roomIds.map((id) => new ObjectId(id)),
+			};
+
+			expect(result.getProps()).toEqual(expectedProps);
+		});
+	});
+
 	describe('findByHash', () => {
 		const setup = async () => {
 			const registrationEntity = registrationEntityFactory.buildWithId();
