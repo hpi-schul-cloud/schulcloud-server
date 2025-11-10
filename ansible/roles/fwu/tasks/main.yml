@@ -32,4 +32,25 @@
       template: onepassword.yml.j2
       state: "{{ 'present' if WITH_FWU is defined and WITH_FWU|bool else 'absent' }}"
     tags:
-      - service
+      - 1password
+
+  - name: External Secret
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: external-secret.yml.j2
+      state: "{{ 'present' if 
+               WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool and
+               WITH_FWU is defined and WITH_FWU|bool
+               else 'absent'}}"
+    tags:
+      - 1password
+
+  - name: FWU Ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: ingress.yml.j2
+      state: "{{ 'present' if WITH_FWU is defined and WITH_FWU|bool else 'absent' }}"
+    tags:
+      - ingress
