@@ -4,6 +4,7 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ObjectIdType } from '@shared/repo/types/object-id.type';
 
+// Separate entity for room content to keep it independent from rooms and allow user-specific content storage.
 @Embeddable()
 class RoomContentItem {
 	@Property({ nullable: false })
