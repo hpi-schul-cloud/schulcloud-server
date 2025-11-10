@@ -41,7 +41,9 @@ describe('Room Controller (API)', () => {
 	});
 
 	describe('GET /rooms/:roomId/members', () => {
-		const setupRoomWithExternalMembers = async (loginAs: RoleName.ADMINISTRATOR | RoleName.TEACHER) => {
+		const setupRoomWithExternalMembers = async (
+			loginAs: RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.EXPERT
+		) => {
 			const school = schoolEntityFactory.buildWithId();
 			const externalSchool = schoolEntityFactory.buildWithId();
 			const room = roomEntityFactory.buildWithId();
@@ -51,6 +53,7 @@ describe('Room Controller (API)', () => {
 			});
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+			const { expertAccount, expertUser } = UserAndAccountTestFactory.buildExpert({ school });
 			const { roomEditorRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 			const teacherRole = teacherUser.roles[0];
 			const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
@@ -68,6 +71,7 @@ describe('Room Controller (API)', () => {
 					{ role: roomViewerRole, user: students[0] },
 					{ role: roomViewerRole, user: students[1] },
 					{ role: roomViewerRole, user: externalStudent },
+					{ role: roomViewerRole, user: expertUser },
 				],
 				type: GroupEntityTypes.ROOM,
 				organization: teacherUser.school,
@@ -81,6 +85,8 @@ describe('Room Controller (API)', () => {
 			await em.persistAndFlush([
 				adminAccount,
 				adminUser,
+				expertAccount,
+				expertUser,
 				room,
 				roomMemberships,
 				teacherAccount,
@@ -93,7 +99,12 @@ describe('Room Controller (API)', () => {
 			]);
 			em.clear();
 
-			const loginAccount = loginAs === RoleName.ADMINISTRATOR ? adminAccount : teacherAccount;
+			const loginAccount =
+				loginAs === RoleName.ADMINISTRATOR
+					? adminAccount
+					: loginAs === RoleName.EXPERT
+					? expertAccount
+					: teacherAccount;
 
 			const loggedInClient = await testApiClient.login(loginAccount);
 
@@ -103,6 +114,7 @@ describe('Room Controller (API)', () => {
 				students,
 				teachers,
 				adminUser,
+				expertUser,
 				teacherUser,
 				externalStudent,
 				externalTeachers,
@@ -147,6 +159,7 @@ describe('Room Controller (API)', () => {
 					teachers,
 					externalStudent,
 					externalTeachers,
+					expertUser,
 					teacherUser,
 					roomEditorRole,
 					roomOwnerRole,
@@ -157,7 +170,7 @@ describe('Room Controller (API)', () => {
 
 				expect(response.status).toBe(HttpStatus.OK);
 				const body = response.body as RoomMemberListResponse;
-				expect(body.data.length).toEqual(8);
+				expect(body.data.length).toEqual(9);
 				expect(body.data).toContainEqual(
 					expect.objectContaining({
 						firstName: teacherUser.firstName,
@@ -219,6 +232,32 @@ describe('Room Controller (API)', () => {
 						schoolRoleNames: [RoleName.TEACHER],
 					})
 				);
+				const expertMember = body.data.find((member) => member.userId === expertUser.id);
+				expect(expertMember).toEqual(
+					expect.objectContaining({
+						firstName: expertUser.firstName,
+						lastName: expertUser.lastName,
+						userId: expertUser.id,
+						roomRoleName: roomViewerRole.name,
+						schoolRoleNames: [RoleName.EXPERT],
+					})
+				);
+			});
+		});
+
+		describe('when the user is external and has no right to access room members', () => {
+			it('should return forbidden', async () => {
+				const { loggedInClient, room } = await setupRoomWithExternalMembers(RoleName.EXPERT);
+
+				const response = await loggedInClient.get(`/${room.id}/members`);
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				expect(response.body).toEqual({
+					code: HttpStatus.FORBIDDEN,
+					message: 'Forbidden',
+					title: 'Forbidden',
+					type: 'FORBIDDEN',
+				});
 			});
 		});
 
