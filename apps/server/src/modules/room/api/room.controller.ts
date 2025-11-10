@@ -25,6 +25,7 @@ import { Room } from '../domain';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
 import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
+import { MoveItemBodyParams } from './dto/request/move-item.body.params';
 import { PassOwnershipBodyParams } from './dto/request/pass-ownership.body.params';
 import { RemoveRoomMembersBodyParams } from './dto/request/remove-room-members.body.params';
 import { RoomPaginationParams } from './dto/request/room-pagination.params';
@@ -37,12 +38,12 @@ import { RoomItemResponse } from './dto/response/room-item.response';
 import { RoomListResponse } from './dto/response/room-list.response';
 import { RoomMemberListResponse } from './dto/response/room-member-list.response';
 import { RoomRoleResponse } from './dto/response/room-role.response';
+import { RoomStatsListResponse } from './dto/response/room-stats-list.repsonse';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomCopyUc } from './room-copy.uc';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
 import { RoomUc } from './room.uc';
-import { RoomStatsListResponse } from './dto/response/room-stats-list.repsonse';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -72,6 +73,20 @@ export class RoomController {
 		const response = RoomMapper.mapToRoomListResponse(rooms, pagination);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: 'Move a single room item.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch('')
+	public async moveRoom(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() bodyParams: MoveItemBodyParams
+	): Promise<void> {
+		await this.roomUc.moveRoom(currentUser.userId, bodyParams.id, bodyParams.toPosition);
 	}
 
 	@Get('stats')

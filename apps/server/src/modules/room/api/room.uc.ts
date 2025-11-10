@@ -2,13 +2,16 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { RoleName, RoomRole } from '@modules/role';
 import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { RoomMemberAuthorizable } from '@modules/room-membership/do/room-member-authorizable.do';
+import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
+import { School, SchoolService } from '@modules/school';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo'; // TODO: Auth service should use a different type
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Room, RoomService } from '../domain';
+import { Room, RoomArrangementService, RoomService } from '../domain';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomMemberResponse } from './dto/response/room-member.response';
@@ -17,10 +20,7 @@ import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pa
 import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
 import { UserToAddToRoomNotFoundLoggableException } from './loggables/user-not-found.error.loggable';
 import { RoomPermissionService } from './service';
-import { School, SchoolService } from '@modules/school';
 import { RoomStats } from './type/room-stats.type';
-import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
-import { RoomMemberAuthorizable } from '@modules/room-membership/do/room-member-authorizable.do';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
@@ -35,19 +35,15 @@ export class RoomUc {
 		private readonly userService: UserService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly roomPermissionService: RoomPermissionService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: SchoolService,
+		private readonly roomArrangementService: RoomArrangementService
 	) {}
 
 	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomWithLockedStatus>> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
 
-		const readableRoomIds = roomAuthorizables
-			.filter((item) =>
-				this.authorizationService.hasPermission(user, item, { action: Action.read, requiredPermissions: [] })
-			)
-			.map((item) => item.roomId);
-
+		const readableRoomIds = await this.roomPermissionService.getReadableRoomIdsForUser(user);
 		const roomsPage = await this.roomService.getRoomsByIds(readableRoomIds, findOptions);
 
 		const roomsWithLockedStatus = roomsPage.data.map((room) => {
@@ -63,6 +59,13 @@ export class RoomUc {
 		});
 
 		return { data: roomsWithLockedStatus, total: roomsPage.total };
+	}
+
+	public async moveRoom(userId: EntityId, roomId: EntityId, toPosition: number): Promise<void> {
+		await this.roomService.getSingleRoom(roomId);
+		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.read);
+
+		await this.roomArrangementService.moveRoom(userId, roomId, toPosition);
 	}
 
 	public async getRoomStats(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomStats>> {
