@@ -14,24 +14,6 @@
     tags:
       - prometheus
 
-  - name: FwuLearningContentsDeployment
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-fwu-deployment.yml.j2
-    when: WITH_FWU is defined and WITH_FWU|bool
-    tags:
-      - deployment
-
-  - name: FwuLearningContentsService
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-fwu-svc.yml.j2
-    when: WITH_FWU is defined and WITH_FWU|bool
-    tags:
-      - service
-
   - name: Configmap
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
