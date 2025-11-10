@@ -51,7 +51,7 @@ H5P.ImageMultipleHotspotQuestion: h5p/h5p-image-multiple-hotspot-question
 H5P.ImageSlide: h5p/h5p-image-slide
 H5P.ImageSlider: h5p/h5p-image-slider
 H5P.ImpressPresentation: h5p/h5p-impressive-presentation
-H5P.InteractiveBook: h5p/h5p-interactive-book-fork
+H5P.InteractiveBook: h5p/h5p-interactive-book
 H5P.InteractiveVideo: h5p/h5p-interactive-video
 H5P.IVHotspot: h5p/h5p-iv-hotspot
 H5P.JoubelUI: h5p/h5p-joubel-ui

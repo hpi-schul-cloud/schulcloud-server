@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const moment = require('moment');
 
 const appPromise = require('../../../../../src/app');
 const roleModel = require('../../../../../src/services/role/model');
@@ -1339,14 +1340,14 @@ describe('CSVSyncer Integration', () => {
 			{
 				email: 'amail@bdaydomain.de',
 				birthday: '17.08.1988',
-				parsed: new Date('08/17/1988'),
+				parsed: moment.utc('08/17/1988').toDate(),
 				firstName: 'Peter',
 				lastName: 'Griffin',
 			},
 			{
 				email: 'bmail@bdaydomain.de',
 				birthday: '01/04/1990',
-				parsed: new Date('04/01/1990'),
+				parsed: moment.utc('04/01/1990').toDate(),
 				firstName: 'Adam',
 				lastName: 'West',
 			},

@@ -8,6 +8,11 @@ export interface H5PContentParentParams {
 	parentId: EntityId;
 }
 
+export interface H5PCountUsageResult {
+	asDependency: number;
+	asMainLibrary: number;
+}
+
 export class LumiUserWithContentData implements IUser {
 	public contentParentType: H5PContentParentType;
 

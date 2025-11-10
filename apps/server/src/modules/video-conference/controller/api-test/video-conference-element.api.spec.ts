@@ -576,6 +576,11 @@ describe('VideoConferenceController (API)', () => {
 				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 				const cardNode = cardEntityFactory.withParent(columnNode).build();
 				const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
+
+				const videoConference = videoConferenceFactory.buildWithId({
+					targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
+					target: elementNode.id,
+				});
 				await em.persistAndFlush([
 					columnBoardNode,
 					columnNode,
@@ -589,6 +594,7 @@ describe('VideoConferenceController (API)', () => {
 					userGroup,
 					roomEditorRole,
 					roomViewerRole,
+					videoConference,
 				]);
 				em.clear();
 

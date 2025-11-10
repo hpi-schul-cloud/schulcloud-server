@@ -1,20 +1,20 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { ServerOptions, Server } from 'socket.io';
 import { createAdapter } from '@socket.io/mongo-adapter';
 import { MongoClient } from 'mongodb';
 
+const COLLECTION_NAME = 'socketio-adapter-events';
+
 export class MongoIoAdapter extends IoAdapter {
 	private adapterConstructor: ReturnType<typeof createAdapter> | undefined = undefined;
 
-	async connectToMongoDb(connectionString?: string): Promise<void> {
-		const COLLECTION = 'socket.io-adapter-events';
-
-		const mongoClient = new MongoClient(connectionString || 'mongodb://mongo-svc:27017/scapp?directConnection=true');
-
+	public async connectToMongoDb(): Promise<void> {
+		const connectionString = Configuration.has('DB_URL') ? (Configuration.get('DB_URL') as string) : '';
+		const mongoClient = new MongoClient(connectionString);
 		await mongoClient.connect();
 
-		const mongoCollection = mongoClient.db().collection(COLLECTION);
-
+		const mongoCollection = mongoClient.db().collection(COLLECTION_NAME);
 		await mongoCollection.createIndex({ createdAt: 1 }, { expireAfterSeconds: 3600, background: true });
 
 		this.adapterConstructor = createAdapter(mongoCollection, {
@@ -22,7 +22,7 @@ export class MongoIoAdapter extends IoAdapter {
 		});
 	}
 
-	createIOServer(port: number, options?: ServerOptions): Server {
+	public createIOServer(port: number, options?: ServerOptions): Server {
 		// istanbul ignore next
 		if (!this.adapterConstructor) {
 			throw new Error('MongoIOAdapter is not connected to MongoDB yet.');
