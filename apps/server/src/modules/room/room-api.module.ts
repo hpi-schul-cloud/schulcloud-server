@@ -11,7 +11,13 @@ import { RoomController, RoomInvitationLinkController, RoomInvitationLinkUc, Roo
 import { RoomCopyUc } from './api/room-copy.uc';
 import { RoomModule } from './room.module';
 import { CopyRoomStep } from './api/saga';
-import { RoomPermissionService } from './api/service';
+import {
+	RoomPermissionService,
+	RoomBoardCreatedHandler,
+	RoomBoardDeletedHandler,
+	RoomBoardService,
+} from './api/service';
+import { CopyRoomContentStep } from './api/saga/copy-room-content.step';
 
 @Module({
 	imports: [
@@ -26,7 +32,17 @@ import { RoomPermissionService } from './api/service';
 		SagaModule,
 	],
 	controllers: [RoomController, RoomInvitationLinkController],
-	providers: [RoomUc, RoomInvitationLinkUc, RoomCopyUc, CopyRoomStep, RoomPermissionService],
+	providers: [
+		RoomUc,
+		RoomInvitationLinkUc,
+		RoomCopyUc,
+		CopyRoomStep,
+		CopyRoomContentStep,
+		RoomPermissionService,
+		RoomBoardCreatedHandler,
+		RoomBoardDeletedHandler,
+		RoomBoardService,
+	],
 	exports: [RoomPermissionService],
 })
 export class RoomApiModule {}

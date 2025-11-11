@@ -140,6 +140,17 @@ describe('Room Controller (API)', () => {
 					await expect(em.findOneOrFail(BoardNodeEntity, { id: columnBoard.id })).rejects.toThrow(NotFoundException);
 				});
 
+				it('should delete the room content', async () => {
+					const { teacherOwnerAccount, room } = await setup();
+					const loggedInClient = await testApiClient.login(teacherOwnerAccount);
+
+					await expect(em.findOneOrFail('RoomContentEntity', { roomId: room.id })).resolves.not.toThrow();
+
+					const response = await loggedInClient.delete(room.id);
+					expect(response.status).toBe(HttpStatus.NO_CONTENT);
+					await expect(em.findOneOrFail('RoomContentEntity', { roomId: room.id })).rejects.toThrow(NotFoundException);
+				});
+
 				describe('when user is not the roomowner', () => {
 					it('should fail', async () => {
 						const { teacherEditorAccount, room } = await setup();
