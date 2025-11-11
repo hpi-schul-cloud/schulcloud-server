@@ -2,7 +2,7 @@ import { Registration } from '../domain/do/registration.do';
 import { RegistrationEntity } from './entity';
 
 export class RegistrationDomainMapper {
-	static mapEntityToDo(registrationEntity: RegistrationEntity): Registration {
+	public static mapEntityToDo(registrationEntity: RegistrationEntity): Registration {
 		// check identity map reference
 		if (registrationEntity.domainObject) {
 			return registrationEntity.domainObject;
@@ -16,7 +16,7 @@ export class RegistrationDomainMapper {
 		return registration;
 	}
 
-	static mapDoToEntity(registration: Registration): RegistrationEntity {
+	public static mapDoToEntity(registration: Registration): RegistrationEntity {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		const { props } = registration;

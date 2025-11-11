@@ -4,7 +4,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
-import { registrationEntityFactory } from '@modules/registration/testing';
+import { registrationEntityFactory } from '../../testing/registration-entity.factory';
 import { roomEntityFactory } from '@modules/room/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
@@ -12,6 +12,7 @@ import { groupEntityFactory } from '@modules/group/testing';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { RegistrationListResponse } from '../dto/response/registration-list.response';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -140,10 +141,11 @@ describe('Room Controller (API)', () => {
 					const loggedInClient = await testApiClient.login(teacherAccount);
 
 					const response = await loggedInClient.get(`/by-room/${roomOne.id}`);
+					const responseBody = response.body as RegistrationListResponse;
 
 					expect(response.status).toBe(HttpStatus.OK);
-					expect(response.body.data).toHaveLength(2);
-					const registrationIds = response.body.data.map((reg: { id: string }) => reg.id);
+					expect(responseBody.data).toHaveLength(2);
+					const registrationIds = responseBody.data.map((reg: { id: string }) => reg.id);
 					expect(registrationIds).toContain(registrationOne.id);
 					expect(registrationIds).toContain(registrationTwo.id);
 					expect(registrationIds).not.toContain(registrationThree.id);

@@ -29,7 +29,10 @@ export class RegistrationUc {
 		return registration;
 	}
 
-	public async updateRegistration(registrationId: EntityId, updatedProps: UpdateRegistrationBodyParams) {
+	public async updateRegistration(
+		registrationId: EntityId,
+		updatedProps: UpdateRegistrationBodyParams
+	): Promise<Registration> {
 		this.registrationFeatureService.checkFeatureRegistrationEnabled();
 
 		// check if current user is correct for this registration ?

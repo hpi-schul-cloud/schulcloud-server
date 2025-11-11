@@ -48,6 +48,6 @@ export class RegistrationRepo {
 	}
 
 	private async flush(): Promise<void> {
-		return this.em.flush();
+		await this.em.flush();
 	}
 }

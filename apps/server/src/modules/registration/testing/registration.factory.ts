@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { Registration, RegistrationProps } from '../domain/do/registration.do';
 import { LanguageType } from '@shared/domain/interface';
-import { Consent } from '@modules/registration/domain/type';
+import { Consent } from '../domain/type';
 
 export const registrationFactory = BaseFactory.define<Registration, RegistrationProps>(Registration, ({ sequence }) => {
 	const props: RegistrationProps = {

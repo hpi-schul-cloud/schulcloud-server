@@ -4,7 +4,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
-import { registrationEntityFactory } from '@modules/registration/testing';
+import { registrationEntityFactory } from '../../testing/registration-entity.factory';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;

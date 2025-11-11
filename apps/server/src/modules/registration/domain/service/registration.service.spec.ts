@@ -4,7 +4,7 @@ import { RegistrationRepo } from '../../repo';
 import { RegistrationCreateProps, RegistrationUpdateProps } from '../do';
 import { RegistrationService } from './registration.service';
 import { LanguageType } from '@shared/domain/interface';
-import { registrationFactory } from '@modules/registration/testing';
+import { registrationFactory } from '../../testing/registration.factory';
 import { Consent } from '../type';
 
 describe('RegistrationService', () => {

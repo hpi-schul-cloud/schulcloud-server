@@ -1,4 +1,4 @@
-import { Registration } from '@modules/registration/domain/do';
+import { Registration } from '../../domain/do/registration.do';
 import { RegistrationItemResponse } from '../dto/response/registration-item.response';
 import { RegistrationListResponse } from '../dto/response/registration-list.response';
 

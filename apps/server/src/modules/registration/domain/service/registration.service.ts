@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Registration, RegistrationCreateProps, RegistrationProps, RegistrationUpdateProps } from '../do';
-import { RegistrationRepo } from '@modules/registration/repo';
+import { RegistrationRepo } from '../../repo';
 import bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -58,12 +58,13 @@ export class RegistrationService {
 	}
 
 	public async getRegistrationsByRoomId(roomId: string): Promise<Registration[]> {
-		const registrations = this.registrationRepo.findByRoomId(roomId);
+		const registrations = await this.registrationRepo.findByRoomId(roomId);
 
 		return registrations;
 	}
 
-	private encryptPassword(password: string): Promise<string> {
-		return bcrypt.hash(password, 10);
+	private async encryptPassword(password: string): Promise<string> {
+		const encryptedPassword = await bcrypt.hash(password, 10);
+		return encryptedPassword;
 	}
 }

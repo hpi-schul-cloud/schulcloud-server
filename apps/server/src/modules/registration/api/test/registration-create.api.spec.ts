@@ -9,7 +9,7 @@ import { RegistrationEntity } from '../../repo';
 import { LanguageType, Permission } from '@shared/domain/interface';
 import { CreateRegistrationBodyParams } from '../dto/request/create-registration.body.params';
 import { roomEntityFactory } from '@modules/room/testing';
-import { Consent } from '@modules/registration/domain/type';
+import { Consent } from '../../domain/type';
 
 describe('Registration Controller (API)', () => {
 	let app: INestApplication;

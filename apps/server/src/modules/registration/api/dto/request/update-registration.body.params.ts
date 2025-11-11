@@ -1,5 +1,5 @@
-import { passwordPattern } from '@modules/registration';
-import { Consent, RegistrationUpdateProps } from '@modules/registration/domain';
+import { passwordPattern } from '../../../domain/do';
+import { Consent, RegistrationUpdateProps } from '../../../domain';
 import { ApiProperty } from '@nestjs/swagger';
 import { PrivacyProtect } from '@shared/controller/validator';
 import { LanguageType } from '@shared/domain/interface';
@@ -17,7 +17,7 @@ export class UpdateRegistrationBodyParams implements RegistrationUpdateProps {
 		enum: Consent,
 		enumName: 'Consent',
 	})
-	consent!: Consent[];
+	public consent!: Consent[];
 
 	@IsEnum(LanguageType)
 	@ApiProperty({
@@ -25,7 +25,7 @@ export class UpdateRegistrationBodyParams implements RegistrationUpdateProps {
 		enum: LanguageType,
 		enumName: 'LanguageType',
 	})
-	language!: LanguageType;
+	public language!: LanguageType;
 
 	@IsString()
 	@PrivacyProtect()
@@ -34,14 +34,14 @@ export class UpdateRegistrationBodyParams implements RegistrationUpdateProps {
 		description: 'The chosen password for the registration process.',
 		required: true,
 	})
-	password!: string;
+	public password!: string;
 
 	@IsString()
 	@ApiProperty({
 		description: 'The given pin for the registration process.',
 		required: true,
 	})
-	pin!: string;
+	public pin!: string;
 
 	@IsArray()
 	@IsMongoId({ each: true })
@@ -49,5 +49,5 @@ export class UpdateRegistrationBodyParams implements RegistrationUpdateProps {
 		description: 'The IDs of rooms the user is invited to.',
 		required: true,
 	})
-	roomIds!: string[];
+	public roomIds!: string[];
 }

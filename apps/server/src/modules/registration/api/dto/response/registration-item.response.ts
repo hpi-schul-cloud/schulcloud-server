@@ -1,48 +1,48 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsEnum } from 'class-validator';
 import { LanguageType } from '@shared/domain/interface';
-import { Consent } from '@modules/registration/domain/type';
+import { Consent } from '../../../domain/type';
 
 export class RegistrationItemResponse {
 	@ApiProperty()
-	id: string;
+	public id: string;
 
 	@ApiProperty()
-	email: string;
+	public email: string;
 
 	@ApiProperty()
-	firstName: string;
+	public firstName: string;
 
 	@ApiProperty()
-	lastName: string;
+	public lastName: string;
 
 	@ApiProperty()
-	password: string;
+	public password: string;
 
 	@ApiProperty({ enum: Consent, isArray: true, enumName: 'Consent' })
 	@IsArray()
 	@IsEnum(Consent, { each: true })
-	consent: Consent[];
+	public consent: Consent[];
 
 	@ApiProperty()
-	pin: string;
+	public pin: string;
 
 	@ApiProperty({ enum: LanguageType, enumName: 'LanguageType' })
 	@IsEnum(LanguageType)
-	language: LanguageType;
+	public language: LanguageType;
 
 	@ApiProperty()
 	@IsArray()
-	roomIds: string[];
+	public roomIds: string[];
 
 	@ApiProperty()
-	registrationHash: string;
+	public registrationHash: string;
 
 	@ApiProperty({ type: Date })
-	createdAt: Date;
+	public createdAt: Date;
 
 	@ApiProperty({ type: Date })
-	updatedAt: Date;
+	public updatedAt: Date;
 
 	constructor(registration: RegistrationItemResponse) {
 		this.id = registration.id;

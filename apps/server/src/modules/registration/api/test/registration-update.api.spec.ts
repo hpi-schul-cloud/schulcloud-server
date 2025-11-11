@@ -6,9 +6,11 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
 import { LanguageType } from '@shared/domain/interface';
 import { roomEntityFactory } from '@modules/room/testing';
-import { registrationEntityFactory } from '@modules/registration/testing';
+import { registrationEntityFactory } from '../../testing/registration-entity.factory';
 import { UpdateRegistrationBodyParams } from '../dto/request/update-registration.body.params';
-import { Consent } from '@modules/registration/domain/type';
+import { Consent } from '../../domain/type';
+import { RegistrationItemResponse } from '../dto/response/registration-item.response';
+import bcrypt from 'bcryptjs';
 
 describe('Registration Controller (API)', () => {
 	let app: INestApplication;
@@ -51,7 +53,7 @@ describe('Registration Controller (API)', () => {
 
 			const updateParams: UpdateRegistrationBodyParams = {
 				consent: [Consent.TERMS_OF_USE, Consent.PRIVACY],
-				password: 'newPassword123',
+				password: 'mockPassword123&',
 				pin: '5678new',
 				language: LanguageType.EN,
 				roomIds: [],
@@ -77,7 +79,10 @@ describe('Registration Controller (API)', () => {
 
 				const response = await testApiClient.patch(registration.id, updateParams);
 				expect(response.status).toBe(HttpStatus.OK);
-				expect(response.body).toEqual({
+
+				const responseBody = response.body as RegistrationItemResponse;
+
+				expect(responseBody).toEqual({
 					id: registration.id,
 					registrationHash: registration.registrationHash,
 					email: registration.email,
@@ -86,8 +91,10 @@ describe('Registration Controller (API)', () => {
 					createdAt: registration.createdAt.toISOString(),
 					updatedAt: expect.any(String),
 					...updateParams,
+					password: expect.any(String),
 				});
-				expect(response.body.updatedAt).not.toBe(registration.updatedAt.toISOString());
+				await expect(bcrypt.compare(updateParams.password, responseBody.password)).resolves.toBe(true);
+				expect(responseBody.updatedAt).not.toBe(registration.updatedAt.toISOString());
 			});
 		});
 	});

@@ -3,7 +3,7 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { Registration, RegistrationProps } from '../../domain/do/registration.do';
 import { LanguageType } from '@shared/domain/interface';
-import { Consent } from '@modules/registration/domain/type';
+import { Consent } from '../../domain/type';
 
 @Entity({ tableName: 'registrations' })
 export class RegistrationEntity extends BaseEntityWithTimestamps implements RegistrationProps {

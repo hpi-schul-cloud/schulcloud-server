@@ -1,4 +1,4 @@
-import { Consent, RegistrationCreateProps } from '@modules/registration/domain';
+import { Consent, RegistrationCreateProps } from '../../../domain';
 import { ApiProperty } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
 import { IsArray, IsEmail, IsEnum, IsMongoId, IsString } from 'class-validator';
@@ -10,7 +10,7 @@ export class CreateRegistrationBodyParams implements RegistrationCreateProps {
 		required: true,
 		nullable: false,
 	})
-	email!: string;
+	public email!: string;
 
 	@IsString()
 	@ApiProperty({
@@ -18,7 +18,7 @@ export class CreateRegistrationBodyParams implements RegistrationCreateProps {
 		required: true,
 		nullable: false,
 	})
-	firstName!: string;
+	public firstName!: string;
 
 	@IsString()
 	@ApiProperty({
@@ -26,7 +26,7 @@ export class CreateRegistrationBodyParams implements RegistrationCreateProps {
 		required: true,
 		nullable: false,
 	})
-	lastName!: string;
+	public lastName!: string;
 
 	@IsArray()
 	@IsEnum(Consent, { each: true })
@@ -39,7 +39,7 @@ export class CreateRegistrationBodyParams implements RegistrationCreateProps {
 		enum: Consent,
 		enumName: 'Consent',
 	})
-	consent!: Consent[];
+	public consent!: Consent[];
 
 	@IsEnum(LanguageType)
 	@ApiProperty({
@@ -47,7 +47,7 @@ export class CreateRegistrationBodyParams implements RegistrationCreateProps {
 		enum: LanguageType,
 		enumName: 'LanguageType',
 	})
-	language!: LanguageType;
+	public language!: LanguageType;
 
 	@IsArray()
 	@IsMongoId({ each: true })
@@ -55,5 +55,5 @@ export class CreateRegistrationBodyParams implements RegistrationCreateProps {
 		description: 'The IDs of rooms the user is invited to.',
 		required: true,
 	})
-	roomIds!: string[];
+	public roomIds!: string[];
 }
