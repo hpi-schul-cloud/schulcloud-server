@@ -21,6 +21,7 @@
 		"npm": ">=9"
 	},
 	"scripts": {
+		"test:kafka:consumer": "nest start test-kafka",
 		"lint": "eslint . --ignore-path .gitignore",
 		"test": "npm run nest:test && npm run feathers:test",
 		"feathers:test": "cross-env NODE_ENV=test npm run setup:db:seed && npm run nest:build && npm run coverage",
@@ -223,6 +224,7 @@
 		"jsdom": "^26.1.0",
 		"jsonwebtoken": "^9.0.2",
 		"jwks-rsa": "^3.2.0",
+		"kafkajs": "^2.2.4",
 		"keyv": "^5.5.3",
 		"ldapjs": "git://github.com/hpi-schul-cloud/node-ldapjs.git",
 		"lodash": "^4.17.21",
