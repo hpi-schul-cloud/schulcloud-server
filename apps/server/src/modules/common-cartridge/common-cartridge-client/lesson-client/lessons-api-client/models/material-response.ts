@@ -62,11 +62,5 @@ export interface MaterialResponse {
      * @memberof MaterialResponse
      */
     'license': Array<string>;
-    /**
-     * For material from Merlin, the Merlin reference
-     * @type {string}
-     * @memberof MaterialResponse
-     */
-    'merlinReference': string;
 }
 
