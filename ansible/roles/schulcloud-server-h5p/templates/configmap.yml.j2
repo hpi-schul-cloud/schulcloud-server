@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-h5p-configmap
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-h5p
+data:
+  EXIT_ON_ERROR: "true"
+  NEST_LOG_LEVEL: "{{ NEST_LOG_LEVEL }}"
+  JWT_PUBLIC_KEY: "{{ JWT_PUBLIC_KEY }}"
+  SC_DOMAIN: "{{ DOMAIN }}"
+  H5P_EDITOR__S3_ENDPOINT: "{{ H5P_EDITOR__S3_ENDPOINT }}"
+  H5P_EDITOR__S3_BUCKET_LIBRARIES: "{{ H5P_EDITOR__S3_BUCKET_LIBRARIES }}"
+  H5P_EDITOR__S3_BUCKET_CONTENT: "{{ H5P_EDITOR__S3_BUCKET_CONTENT }}"
+  H5P_EDITOR__S3_REGION: "{{ H5P_EDITOR__S3_REGION }}"
+  API_HOST: "{{ API_HOST }}"
+
