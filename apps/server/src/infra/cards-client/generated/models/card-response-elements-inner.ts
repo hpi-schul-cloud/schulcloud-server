@@ -33,10 +33,13 @@ import type { ExternalToolElementResponse } from './external-tool-element-respon
 import type { FileElementResponse } from './file-element-response';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { FileFolderElementContent } from './file-folder-element-content';
+import type { FileFolderElementResponse } from './file-folder-element-response';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { FileFolderElementResponse } from './file-folder-element-response';
+import type { H5pElementContent } from './h5p-element-content';
+// May contain unused imports in some cases
+// @ts-ignore
+import type { H5pElementResponse } from './h5p-element-response';
 // May contain unused imports in some cases
 // @ts-ignore
 import type { LinkElementResponse } from './link-element-response';
@@ -57,6 +60,6 @@ import type { VideoConferenceElementResponse } from './video-conference-element-
  * @type CardResponseElementsInner
  * @export
  */
-export type CardResponseElementsInner = CollaborativeTextEditorElementResponse | DeletedElementResponse | DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | FileFolderElementResponse | LinkElementResponse | RichTextElementResponse | SubmissionContainerElementResponse | VideoConferenceElementResponse;
+export type CardResponseElementsInner = CollaborativeTextEditorElementResponse | DeletedElementResponse | DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | FileFolderElementResponse | H5pElementResponse | LinkElementResponse | RichTextElementResponse | SubmissionContainerElementResponse | VideoConferenceElementResponse;
 
 

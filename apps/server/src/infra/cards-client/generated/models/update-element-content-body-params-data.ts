@@ -27,10 +27,13 @@ import type { ExternalToolElementContentBody } from './external-tool-element-con
 import type { FileElementContentBody } from './file-element-content-body';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { FileFolderContentBody } from './file-folder-content-body';
+import type { FileFolderElementContentBody } from './file-folder-element-content-body';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { FileFolderElementContentBody } from './file-folder-element-content-body';
+import type { H5pContentBody } from './h5p-content-body';
+// May contain unused imports in some cases
+// @ts-ignore
+import type { H5pElementContentBody } from './h5p-element-content-body';
 // May contain unused imports in some cases
 // @ts-ignore
 import type { LinkElementContentBody } from './link-element-content-body';
@@ -48,6 +51,6 @@ import type { VideoConferenceElementContentBody } from './video-conference-eleme
  * @type UpdateElementContentBodyParamsData
  * @export
  */
-export type UpdateElementContentBodyParamsData = DrawingElementContentBody | ExternalToolElementContentBody | FileElementContentBody | FileFolderElementContentBody | LinkElementContentBody | RichTextElementContentBody | SubmissionContainerElementContentBody | VideoConferenceElementContentBody;
+export type UpdateElementContentBodyParamsData = DrawingElementContentBody | ExternalToolElementContentBody | FileElementContentBody | FileFolderElementContentBody | H5pElementContentBody | LinkElementContentBody | RichTextElementContentBody | SubmissionContainerElementContentBody | VideoConferenceElementContentBody;
 
 
