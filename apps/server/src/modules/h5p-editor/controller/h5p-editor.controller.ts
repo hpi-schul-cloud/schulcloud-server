@@ -19,17 +19,18 @@ import {
 	Query,
 	Req,
 	Res,
-	StreamableFile,
 	UploadedFiles,
 	UseFilters,
-	UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { H5PEditorUc } from '../uc';
 
+import { StreamableFile, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 import {
 	AjaxGetQueryParams,
 	AjaxPostBodyParams,
@@ -48,6 +49,11 @@ import {
 } from './dto';
 import { AjaxPostBodyParamsTransformPipe } from './dto/ajax/post.body.params.transform-pipe';
 import { H5pAjaxErrorResponseFilter } from './filter';
+
+//in-memory rate limit for import endpoint
+const _h5pImportRate = new Map<string, { count: number; reset: number }>();
+const _IMPORT_LIMIT = 5; // 5 requests per minute
+const _IMPORT_WINDOW_MS = 60_000;
 
 @ApiTags('h5p-editor')
 @JwtAuthentication()
@@ -276,5 +282,70 @@ export class H5PEditorController {
 		} else {
 			res.status(HttpStatus.OK);
 		}
+	}
+
+	@Get('/download/:contentId')
+	public async downloadH5p(
+		@Param('contentId') contentId: string,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Res({ passthrough: true }) res: Response
+	): Promise<StreamableFile> {
+		const rs = await this.h5pEditorUc.streamH5pPackage(contentId, currentUser.userId);
+		const filename = `h5p-${contentId}.h5p`;
+		res.set({
+			'Content-Type': 'application/zip',
+			'Content-Disposition': `attachment; filename="${filename}"`,
+			'Cache-Control': 'no-store',
+		});
+		return new StreamableFile(rs);
+	}
+
+	@Post('/import')
+	@UseInterceptors(
+		FileInterceptor('h5p', {
+			limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
+			fileFilter: (_req, file, cb) => {
+				if (file.originalname && file.originalname.toLowerCase().endsWith('.h5p')) return cb(null, true);
+				return cb(new BadRequestException('Please upload a .h5p file in field "h5p"'), false);
+			},
+		})
+	)
+	public async importH5pPoC(
+		@UploadedFile() file: Express.Multer.File,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Res({ passthrough: true }) res: Response
+	): Promise<
+		| AjaxSuccessResponse
+		| {
+				height?: number;
+				mime: string;
+				path: string;
+				width?: number;
+		  }
+		| ILibraryOverviewForClient[]
+		| undefined
+		| { message: string }
+	> {
+		// simple per-user rate limit
+		const now = Date.now();
+		const id = String(currentUser.userId);
+		const entry = _h5pImportRate.get(id) || { count: 0, reset: now + _IMPORT_WINDOW_MS };
+		if (now > entry.reset) {
+			entry.count = 0;
+			entry.reset = now + _IMPORT_WINDOW_MS;
+		}
+		entry.count += 1;
+		_h5pImportRate.set(id, entry);
+		if (entry.count > _IMPORT_LIMIT) {
+			res.status(HttpStatus.TOO_MANY_REQUESTS);
+			return { message: 'Too many import requests. Please try again later.' };
+		}
+		if (!file) {
+			res.status(HttpStatus.BAD_REQUEST);
+			return { message: 'Please upload a .h5p file in field "h5p".' };
+		}
+		const result = await this.h5pEditorUc.importH5pPackagePoC(currentUser.userId, file);
+		res.status(HttpStatus.OK);
+		return result;
 	}
 }
