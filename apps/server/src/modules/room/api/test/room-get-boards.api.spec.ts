@@ -124,6 +124,25 @@ describe('Room Controller (API)', () => {
 						updatedAt: board.updatedAt.toISOString(),
 					});
 				});
+
+				describe('when room content does not exist in db', () => {
+					it('should create one', async () => {
+						const { loggedInClient, room, board } = await setup();
+
+						await em.nativeDelete('RoomContentEntity', { roomId: room.id });
+
+						await loggedInClient.get(`${room.id}/boards`);
+
+						const roomContent = await em.findOneOrFail('RoomContentEntity', { roomId: room.id });
+						expect(roomContent['items']).toHaveLength(1);
+						expect(roomContent['items']).toEqual([
+							{
+								id: board.id,
+								type: 'board',
+							},
+						]);
+					});
+				});
 			});
 
 			describe('when the room does not exist', () => {

@@ -35,6 +35,17 @@ export class RoomCopySaga extends Saga<'roomCopy'> {
 			targetRoomId: copyRoomResult.id,
 		});
 
+		const boardMappings = new Map<EntityId, EntityId>();
+		for (const board of copyRoomBoardsResult) {
+			boardMappings.set(board.originalId, board.copyId);
+		}
+
+		await this.stepRegistry.executeStep(ModuleName.ROOM, 'copyRoomContent', {
+			sourceRoomId: roomId,
+			targetRoomId: copyRoomResult.id,
+			boardMappings,
+		});
+
 		const result = { roomCopied: copyRoomResult, boardsCopied: copyRoomBoardsResult };
 
 		return result;
