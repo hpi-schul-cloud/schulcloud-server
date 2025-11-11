@@ -27,6 +27,15 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
+		"test-kafka": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/test-kafka.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
 		"management": {
 			"type": "application",
 			"root": "apps/server",

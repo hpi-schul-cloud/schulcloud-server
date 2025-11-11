@@ -21,6 +21,7 @@
 		"npm": ">=9"
 	},
 	"scripts": {
+		"test:kafka:consumer": "nest start test-kafka",
 		"lint": "eslint . --ignore-path .gitignore",
 		"test": "npm run nest:test && npm run feathers:test",
 		"feathers:test": "cross-env NODE_ENV=test npm run setup:db:seed && npm run nest:build && npm run coverage",

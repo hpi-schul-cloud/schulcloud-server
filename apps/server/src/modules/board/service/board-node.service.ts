@@ -181,6 +181,7 @@ export class BoardNodeService {
 	}
 
 	public async delete(boardNode: AnyBoardNode): Promise<void> {
+		console.log('Deleting board node:', boardNode.id);
 		// Publish board node deletion event to Kafka
 		this.kafkaProducerService.emitMessage('test-topic', {
 			id: boardNode.id,
