@@ -62,15 +62,10 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	public async getRooms(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Query() pagination: RoomPaginationParams
-	): Promise<RoomListResponse> {
-		const findOptions: IFindOptions<Room> = { pagination };
+	public async getRooms(@CurrentUser() currentUser: ICurrentUser): Promise<RoomListResponse> {
+		const rooms = await this.roomUc.getRooms(currentUser.userId);
 
-		const rooms = await this.roomUc.getRooms(currentUser.userId, findOptions);
-
-		const response = RoomMapper.mapToRoomListResponse(rooms, pagination);
+		const response = RoomMapper.mapToRoomListResponse(rooms);
 
 		return response;
 	}

@@ -122,9 +122,6 @@ describe('Room Controller (API)', () => {
 
 				const expectedResponse = {
 					data: [...data, ...dataLocked],
-					limit: 1000,
-					skip: 0,
-					total: rooms.length + roomsLocked.length,
 				};
 
 				return { loggedInClient, expectedResponse };
@@ -137,22 +134,6 @@ describe('Room Controller (API)', () => {
 
 				expect(response.status).toBe(HttpStatus.OK);
 				expect(response.body as RoomListResponse).toEqual(expectedResponse);
-			});
-
-			it('should return a list of rooms with pagination', async () => {
-				const { loggedInClient, expectedResponse } = await setup();
-
-				const skip = 1;
-				const limit = 2;
-
-				const response = await loggedInClient.get().query({ skip, limit });
-				expect(response.status).toBe(HttpStatus.OK);
-				expect(response.body as RoomListResponse).toEqual({
-					data: expectedResponse.data.slice(skip, skip + limit),
-					limit,
-					skip,
-					total: expectedResponse.data.length,
-				});
 			});
 
 			it('should return an alphabetically sorted list of rooms', async () => {
@@ -209,12 +190,7 @@ describe('Room Controller (API)', () => {
 						isLocked: false,
 					};
 				});
-				const expectedResponse = {
-					data,
-					limit: 1000,
-					skip: 0,
-					total: rooms.length,
-				};
+				const expectedResponse = { data };
 
 				return { loggedInClient, expectedResponse };
 			};
@@ -225,20 +201,7 @@ describe('Room Controller (API)', () => {
 				const response = await loggedInClient.get();
 
 				expect(response.status).toBe(HttpStatus.OK);
-				expect((response.body as RoomListResponse).total).toEqual(0);
-			});
-
-			it('should return a list of rooms with pagination', async () => {
-				const { loggedInClient } = await setup();
-
-				const response = await loggedInClient.get().query({ skip: 1, limit: 1 });
-				expect(response.status).toBe(HttpStatus.OK);
-				expect(response.body as RoomListResponse).toEqual({
-					data: [],
-					limit: 1,
-					skip: 1,
-					total: 0,
-				});
+				expect(response.body as RoomListResponse).toEqual({ data: [] });
 			});
 		});
 	});

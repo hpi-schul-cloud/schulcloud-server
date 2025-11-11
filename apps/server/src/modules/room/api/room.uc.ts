@@ -39,14 +39,14 @@ export class RoomUc {
 		private readonly roomArrangementService: RoomArrangementService
 	) {}
 
-	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomWithLockedStatus>> {
+	public async getRooms(userId: EntityId): Promise<RoomWithLockedStatus[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
 
 		const readableRoomIds = await this.roomPermissionService.getReadableRoomIdsForUser(user);
-		const roomsPage = await this.roomService.getRoomsByIds(readableRoomIds, findOptions);
+		const rooms = await this.roomService.getRoomsByIds(readableRoomIds);
 
-		const roomsWithLockedStatus = roomsPage.data.map((room) => {
+		const roomsWithLockedStatus = rooms.map((room) => {
 			const hasOwner = roomAuthorizables.some(
 				(item) =>
 					item.roomId === room.id &&
@@ -58,7 +58,7 @@ export class RoomUc {
 			};
 		});
 
-		return { data: roomsWithLockedStatus, total: roomsPage.total };
+		return roomsWithLockedStatus;
 	}
 
 	public async moveRoom(userId: EntityId, roomId: EntityId, toPosition: number): Promise<void> {
@@ -78,9 +78,9 @@ export class RoomUc {
 			findOptions.pagination
 		);
 		const roomIds = roomMembershipStats.data.flatMap((membership) => membership.roomId).filter((id) => id);
-		const rooms = await this.roomService.getRoomsByIds(roomIds, { pagination: { skip: 0, limit: 100000 } });
+		const rooms = await this.roomService.getRoomsByIds(roomIds);
 
-		const schoolIds = rooms.data.map((room) => room.schoolId);
+		const schoolIds = rooms.map((room) => room.schoolId);
 		const schools = await this.schoolService.getSchoolsByIds(schoolIds);
 
 		const roomStats = this.mapRoomStats(roomMembershipStats, rooms, schools);
@@ -88,9 +88,9 @@ export class RoomUc {
 		return { data: roomStats, total: roomMembershipStats.total };
 	}
 
-	private mapRoomStats(membershipStats: Page<RoomMembershipStats>, rooms: Page<Room>, schools: School[]): RoomStats[] {
+	private mapRoomStats(membershipStats: Page<RoomMembershipStats>, rooms: Room[], schools: School[]): RoomStats[] {
 		return membershipStats.data.map((membership) => {
-			const room = rooms.data.find((r) => r.id === membership.roomId);
+			const room = rooms.find((r) => r.id === membership.roomId);
 			const school = schools.find((s) => s.id === room?.schoolId);
 			return {
 				...membership,
@@ -130,7 +130,7 @@ export class RoomUc {
 		return { room, permissions };
 	}
 
-	private async checkHasAccessToRoom(room: Room, user: User) {
+	private async checkHasAccessToRoom(room: Room, user: User): Promise<void> {
 		const hasAdminPermission = this.authorizationService.hasAllPermissions(user, [
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
 		]);
@@ -157,20 +157,20 @@ export class RoomUc {
 		throw new ForbiddenException('You do not have permission to access this room');
 	}
 
-	private async isRoomFromAdminSchool(room: Room, user: User, hasAdminPermission: boolean) {
+	private async isRoomFromAdminSchool(room: Room, user: User, hasAdminPermission: boolean): Promise<boolean> {
 		const roomSchool = await this.schoolService.getSchoolById(room.schoolId);
 		const userSchool = await this.schoolService.getSchoolById(user.school.id);
 		const isRoomFromAdminSchool = hasAdminPermission && roomSchool.id === userSchool.id;
 		return isRoomFromAdminSchool;
 	}
 
-	private async hasUsersFromAdminSchool(room: Room, user: User, hasAdminPermission: boolean) {
+	private async hasUsersFromAdminSchool(room: Room, user: User, hasAdminPermission: boolean): Promise<boolean> {
 		const members = hasAdminPermission ? await this.roomMembershipService.getRoomMembers(room.id) : [];
 		const hasUsersFromAdminSchool = hasAdminPermission && members.some((member) => member.schoolId === user.school.id);
 		return hasUsersFromAdminSchool;
 	}
 
-	private async hasRoomPermission(room: Room, user: User) {
+	private async hasRoomPermission(room: Room, user: User): Promise<boolean> {
 		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(user.id, room.id, Action.read);
 		return hasRoomPermission;
 	}
