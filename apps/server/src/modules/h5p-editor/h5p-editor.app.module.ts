@@ -4,7 +4,6 @@ import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { AuthorizationClientModule } from '@infra/authorization-client';
 import { ConfigurationModule } from '@infra/configuration';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { UserModule } from '@modules/user';
@@ -12,7 +11,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { H5pEditorConsumer, H5PEditorController } from './controller';
+import { H5PEditorController } from './controller';
 import { H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig } from './h5p-cache.config';
 import { authorizationClientConfig, config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { ENTITIES } from './h5p-editor.entity.exports';
@@ -25,7 +24,6 @@ const imports = [
 	AuthorizationClientModule.register(authorizationClientConfig),
 	CoreModule,
 	UserModule,
-	RabbitMQWrapperModule,
 	MikroOrmModule.forRoot({
 		...defaultMikroOrmOptions,
 		type: 'mongo',
@@ -57,7 +55,6 @@ const providers = [
 	ContentStorage,
 	LibraryStorage,
 	TemporaryFileStorage,
-	H5pEditorConsumer,
 	H5pEditorContentService,
 ];
 

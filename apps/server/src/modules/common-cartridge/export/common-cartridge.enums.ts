@@ -12,6 +12,7 @@ export enum CommonCartridgeResourceType {
 	WEB_CONTENT = 'webcontent',
 	WEB_LINK = 'weblink',
 	FILE = 'file',
+	FILE_FOLDER = 'fileFolder',
 }
 
 export enum CommonCartridgeIntendedUseType {

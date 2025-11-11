@@ -1,3 +1,4 @@
+import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { H5pEditorClientModule } from '@infra/h5p-editor-client';
@@ -38,6 +39,7 @@ import {
 
 @Module({
 	imports: [
+		CoreModule,
 		CourseModule,
 		CopyHelperModule,
 		FilesStorageClientModule,
