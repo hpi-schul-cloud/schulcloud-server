@@ -6,5 +6,7 @@ metadata:
   labels:
     app: api-h5p-library-management-cronjob
 data:
+  EXIT_ON_ERROR: "true"
+  NEST_LOG_LEVEL: "{{ NEST_LOG_LEVEL }}"
   h5p-libraries.yaml: |
     h5p_libraries: {{ H5P_LIBRARIES }}
