@@ -55,7 +55,7 @@ data:
     OIDCMOCK_CLIENT_SECRET=$(encrypt_secret $OIDCMOCK__CLIENT_SECRET $AES_KEY)
     # Test LDAP server (deployed in the sc-common namespace) configuration (stored in the 'systems' collection).
     SEARCH_USER_PASSWORD=$(encrypt_secret $SC_COMMON_LDAP_PASSWORD $AES_KEY)
-    mongosh $DATABASE__URL --quiet --eval 'db.systems.insertMany([
+    mongosh $DB_URL --quiet --eval 'db.systems.insertMany([
     {
       "type" : "ldap",
       "alias" : "schoolOne0",
@@ -156,7 +156,7 @@ data:
 
     # AWS S3 storage configuration (stored in the 'storageproviders' collection).
     ENCRYPTED_AWS_SECRET_ACCESS_KEY=$(encrypt_secret $AWS_SECRET_ACCESS_KEY $S3_KEY)
-    mongosh $DATABASE__URL --quiet --eval 'db.storageproviders.insertOne( {
+    mongosh $DB_URL --quiet --eval 'db.storageproviders.insertOne( {
                                        "isShared" : true,
                                        "region" : "eu-central-1",
                                        "type" : "S3",
@@ -171,7 +171,7 @@ data:
 
     # Update secret for LTI test tool
     ENCRYPTED_LTI_TEST_TOOL_SECRET=$(encrypt_secret $LTI_TEST_TOOL_SECRET $AES_KEY)
-    mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools")
+    mongosh $DB_URL --quiet --eval 'db.getCollection("external-tools")
       .updateOne({ _id: ObjectId("647de247cf6a427b9d39e5b9") }, { $set: { config_secret: "'$ENCRYPTED_LTI_TEST_TOOL_SECRET'" } });'
 
     # Re-assign the k8s namespace name to a shorter variable to make the code a little bit more readable.
@@ -189,7 +189,7 @@ data:
         UNIVENTION_LDAP_SEARCH_USER_PASSWORD=$(encrypt_secret $UNIVENTION_LDAP_SEARCH_USER_PASSWORD $AES_KEY)
 
         # Add (or replace) document with the test BRB Univention LDAP system configuration.
-        mongosh $DATABASE__URL --quiet --eval 'db.systems.replaceOne(
+        mongosh $DB_URL --quiet --eval 'db.systems.replaceOne(
             {
                 "_id": ObjectId("'$UNIVENTION_LDAP_SYSTEM_ID'"),
             },
@@ -269,7 +269,7 @@ data:
 
             # Add Bettermarks' tools configuration as an external tool
             # (stored in the 'external-tools' collection) that uses OAuth.
-            mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").replaceOne(
+            mongosh $DB_URL --quiet --eval 'db.getCollection("external-tools").replaceOne(
                 {
                   "name": "bettermarks",
                   "config_type": "oauth2"
@@ -307,7 +307,7 @@ data:
       echo "Adding TSP system to systems collection"
 
       TSP_SYSTEM_OAUTH_CLIENT_SECRET=$(encrypt_secret $TSP_SYSTEM_OAUTH_CLIENT_SECRET $AES_KEY)
-      mongosh $DATABASE__URL --quiet --eval 'db.systems.insertOne(
+      mongosh $DB_URL --quiet --eval 'db.systems.insertOne(
           {
             "_id": ObjectId("66d707f5c5202ba10c5e6256"),
             "alias": "TSP",
