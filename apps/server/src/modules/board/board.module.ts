@@ -35,6 +35,8 @@ import {
 	ColumnBoardTitleService,
 	ContentElementUpdateService,
 } from './service/internal';
+import { BoardNodeEventSubscriber } from './repo/board-node-event-subscriber';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
 	imports: [
@@ -55,6 +57,7 @@ import {
 		RoomModule,
 		RoomMembershipModule,
 		H5pEditorClientModule,
+		CqrsModule,
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
@@ -76,6 +79,7 @@ import {
 		ContextExternalToolDeletedEventHandlerService,
 		// TODO replace by import of MediaBoardModule (fix dependency cycle)
 		MediaBoardService,
+		BoardNodeEventSubscriber,
 	],
 	exports: [
 		BoardNodeAuthorizableService,

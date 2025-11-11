@@ -8,7 +8,7 @@ export enum CommonCartridgeOrganizationVisitorNodeType {
 
 export type CommonCartridgeOrganizationVisitorNodeProps = { identifier: string; title: string; depth: number } & (
 	| { type: CommonCartridgeOrganizationVisitorNodeType.ORGANIZATION }
-	| { type: CommonCartridgeOrganizationVisitorNodeType.RESOURCE; identifierRef: string; path: string }
+	| { type: CommonCartridgeOrganizationVisitorNodeType.RESOURCE; identifierRef: string; paths: string[] }
 );
 
 export class CommonCartridgeOrganizationVisitorNode {
@@ -24,7 +24,7 @@ export class CommonCartridgeOrganizationVisitorNode {
 		const title = this.getItemTitle(identifier);
 
 		if (identifierRef) {
-			const path = this.getFilePath(identifierRef);
+			const paths = this.getFilePaths(identifierRef);
 
 			this.props = {
 				type: CommonCartridgeOrganizationVisitorNodeType.RESOURCE,
@@ -32,7 +32,7 @@ export class CommonCartridgeOrganizationVisitorNode {
 				identifierRef,
 				title,
 				depth,
-				path,
+				paths,
 			};
 		} else {
 			this.props = {
@@ -114,12 +114,12 @@ export class CommonCartridgeOrganizationVisitorNode {
 		return false;
 	}
 
-	get resourcePath(): string {
+	get resourcePaths(): string[] {
 		if (this.props.type === CommonCartridgeOrganizationVisitorNodeType.RESOURCE) {
-			return this.props.path;
+			return this.props.paths;
 		}
 
-		return '';
+		return [];
 	}
 
 	get resourceType(): string {
@@ -138,11 +138,14 @@ export class CommonCartridgeOrganizationVisitorNode {
 		return title;
 	}
 
-	private getFilePath(identifierRef: string): string {
-		const path =
-			this.document(`manifest > resources > resource[identifier="${identifierRef}"] > file`).attr('href') ?? '';
+	private getFilePaths(identifierRef: string): string[] {
+		const fileElements = this.document(`manifest > resources > resource[identifier="${identifierRef}"] > file`);
+		const paths = fileElements
+			.toArray()
+			.map((fileElement) => fileElement.attribs['href'] || null)
+			.filter((href) => href !== null);
 
-		return path;
+		return paths;
 	}
 
 	private getResourceType(identifierRef: string): string {
