@@ -1,7 +1,9 @@
-import { Consent, RegistrationCreateProps, RegistrationUpdateProps } from '@modules/registration/domain';
+import { passwordPattern } from '@modules/registration';
+import { Consent, RegistrationUpdateProps } from '@modules/registration/domain';
 import { ApiProperty } from '@nestjs/swagger';
+import { PrivacyProtect } from '@shared/controller/validator';
 import { LanguageType } from '@shared/domain/interface';
-import { IsArray, IsEmail, IsEnum, IsMongoId, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsMongoId, IsString, Matches } from 'class-validator';
 
 export class UpdateRegistrationBodyParams implements RegistrationUpdateProps {
 	@IsArray()
@@ -26,6 +28,8 @@ export class UpdateRegistrationBodyParams implements RegistrationUpdateProps {
 	language!: LanguageType;
 
 	@IsString()
+	@PrivacyProtect()
+	@Matches(passwordPattern)
 	@ApiProperty({
 		description: 'The chosen password for the registration process.',
 		required: true,

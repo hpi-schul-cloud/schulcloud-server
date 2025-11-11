@@ -2,6 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Registration, RegistrationCreateProps, RegistrationProps, RegistrationUpdateProps } from '../do';
 import { RegistrationRepo } from '@modules/registration/repo';
+import bcrypt from 'bcryptjs';
 
 @Injectable()
 export class RegistrationService {
@@ -30,7 +31,9 @@ export class RegistrationService {
 	}
 
 	public async updateRegistration(registration: Registration, props: RegistrationUpdateProps): Promise<Registration> {
-		registration.password = props.password;
+		const encryptedUpdatedPassword = await this.encryptPassword(props.password);
+
+		registration.password = encryptedUpdatedPassword;
 		registration.consent = props.consent;
 		// separate the update of the pin into separate method as its done by resending the pin?
 		registration.pin = props.pin;
@@ -58,5 +61,9 @@ export class RegistrationService {
 		const registrations = this.registrationRepo.findByRoomId(roomId);
 
 		return registrations;
+	}
+
+	private encryptPassword(password: string): Promise<string> {
+		return bcrypt.hash(password, 10);
 	}
 }
