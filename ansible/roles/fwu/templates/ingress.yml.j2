@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: api-migration-systems-ingress
+  name: api-fwu-ingress
   namespace: {{ NAMESPACE }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "{{ TLS_ENABLED|default("false") }}"
