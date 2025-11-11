@@ -5,6 +5,7 @@ import { CoursesClientAdapter } from '@infra/courses-client';
 import { Injectable } from '@nestjs/common';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import {
+	CommonCartridgeFileFolderResourceProps,
 	CommonCartridgeFileResourceProps,
 	CommonCartridgeOrganizationProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
@@ -199,7 +200,6 @@ export class CommonCartridgeImportService {
 
 		const resourceBody = this.commonCartridgeImportMapper.mapResourceToContentBody(
 			resource,
-			cardElementProps,
 			parser.options.inputFormat
 		);
 
@@ -209,8 +209,8 @@ export class CommonCartridgeImportService {
 			type: contentElementType,
 		});
 
-		if (resource.type === 'file') {
-			await this.uploadFile(currentUser, resource, contentElement);
+		if (resource.type === 'file' || resource.type === 'fileFolder') {
+			await this.uploadFiles(currentUser, resource, contentElement);
 		}
 
 		await this.cardClient.updateCardElement(contentElement.id, {
@@ -218,13 +218,26 @@ export class CommonCartridgeImportService {
 		});
 	}
 
-	private async uploadFile(
+	private async uploadFiles(
 		currentUser: ICurrentUser,
-		resource: CommonCartridgeFileResourceProps,
+		resource: CommonCartridgeFileResourceProps | CommonCartridgeFileFolderResourceProps,
 		cardElement: CardControllerCreateElement201Response
 	): Promise<void> {
 		const { schoolId } = currentUser;
 
-		await this.fileClient.upload(schoolId, 'school', cardElement.id, 'boardnodes', resource.file);
+		const files: File[] = [];
+		switch (resource.type) {
+			case 'file':
+				files.push(resource.file);
+				break;
+			case 'fileFolder':
+				files.push(...resource.files);
+				break;
+		}
+
+		const uploadPromises = files.map((file) =>
+			this.fileClient.upload(schoolId, 'school', cardElement.id, 'boardnodes', file)
+		);
+		await Promise.all(uploadPromises);
 	}
 }
