@@ -163,6 +163,21 @@ export class RoomController {
 		return response;
 	}
 
+	@ApiOperation({ summary: 'Move a single board item.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(':roomId/boards')
+	public async moveBoard(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams,
+		@Body() bodyParams: MoveItemBodyParams
+	): Promise<void> {
+		await this.roomUc.moveBoard(currentUser.userId, urlParams.roomId, bodyParams.id, bodyParams.toPosition);
+	}
+
 	@Get(':roomId/room-invitation-links')
 	@ApiOperation({ summary: 'Get the list of room invitation links of a room.' })
 	@ApiResponse({

@@ -19,7 +19,7 @@ import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-r
 import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pass-ownership-to-student.error.loggable';
 import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
 import { UserToAddToRoomNotFoundLoggableException } from './loggables/user-not-found.error.loggable';
-import { RoomPermissionService } from './service';
+import { RoomBoardService, RoomPermissionService } from './service';
 import { RoomStats } from './type/room-stats.type';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
@@ -36,7 +36,8 @@ export class RoomUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly roomPermissionService: RoomPermissionService,
 		private readonly schoolService: SchoolService,
-		private readonly roomArrangementService: RoomArrangementService
+		private readonly roomArrangementService: RoomArrangementService,
+		private readonly roomBoardService: RoomBoardService
 	) {}
 
 	public async getRooms(userId: EntityId): Promise<RoomWithLockedStatus[]> {
@@ -105,9 +106,8 @@ export class RoomUc {
 
 	public async createRoom(userId: EntityId, props: CreateRoomBodyParams): Promise<Room> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const room = await this.roomService.createRoom({ ...props, schoolId: user.school.id });
-
 		this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_CREATE_ROOM]);
+		const room = await this.roomService.createRoom({ ...props, schoolId: user.school.id });
 
 		try {
 			await this.roomMembershipService.createNewRoomMembership(room.id, userId);
@@ -180,15 +180,17 @@ export class RoomUc {
 		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
 		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.read);
 
-		const boards = await this.columnBoardService.findByExternalReference(
-			{
-				type: BoardExternalReferenceType.Room,
-				id: roomId,
-			},
-			0
-		);
+		const boards = await this.roomBoardService.getOrderedBoards(roomId);
 
 		return boards;
+	}
+
+	public async moveBoard(userId: EntityId, roomId: EntityId, boardId: EntityId, toPosition: number): Promise<void> {
+		await this.roomService.getSingleRoom(roomId);
+		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
+		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write);
+
+		await this.roomBoardService.moveBoardInRoom(roomId, boardId, toPosition);
 	}
 
 	public async updateRoom(
@@ -226,6 +228,7 @@ export class RoomUc {
 		});
 		await this.roomService.deleteRoom(room);
 		await this.roomMembershipService.deleteRoomMembership(roomId);
+		await this.roomBoardService.deleteRoomContent(roomId);
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {

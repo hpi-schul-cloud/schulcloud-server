@@ -1,8 +1,14 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { RoomArrangementService, RoomService } from './domain/service';
+import { RoomArrangementService, RoomContentService, RoomService } from './domain/service';
 import { RoomInvitationLinkService } from './domain/service/room-invitation-link.service';
-import { RoomArrangementRepo, RoomInvitationLinkDomainMapper, RoomInvitationLinkRepo, RoomRepo } from './repo';
+import {
+	RoomArrangementRepo,
+	RoomContentRepo,
+	RoomInvitationLinkDomainMapper,
+	RoomInvitationLinkRepo,
+	RoomRepo,
+} from './repo';
 
 @Module({
 	imports: [CqrsModule],
@@ -12,9 +18,11 @@ import { RoomArrangementRepo, RoomInvitationLinkDomainMapper, RoomInvitationLink
 		RoomInvitationLinkService,
 		RoomInvitationLinkRepo,
 		RoomInvitationLinkDomainMapper,
+		RoomContentService,
+		RoomContentRepo,
 		RoomArrangementService,
 		RoomArrangementRepo,
 	],
-	exports: [RoomService, RoomInvitationLinkService, RoomArrangementService],
+	exports: [RoomService, RoomInvitationLinkService, RoomContentService, RoomArrangementService],
 })
 export class RoomModule {}
