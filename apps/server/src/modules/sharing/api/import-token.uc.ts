@@ -6,6 +6,7 @@ import {
 	BoardExternalReferenceType,
 	ColumnBoardService,
 	BoardNodeService,
+	Column,
 } from '@modules/board';
 import { StorageLocationReference } from '@modules/board/service/internal';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
@@ -23,6 +24,7 @@ import { ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenPermissionService } from './service';
 import { Card } from '../../board/domain';
+import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
 
 @Injectable()
 export class ImportTokenUC {
@@ -149,7 +151,7 @@ export class ImportTokenUC {
 
 	private async copyColumnBoard(
 		user: User,
-		originalColumnBoardId: string,
+		originalColumnBoardId: EntityId,
 		destinationId: EntityId,
 		copyTitle?: string
 	): Promise<CopyStatus> {
@@ -213,21 +215,22 @@ export class ImportTokenUC {
 
 	private async copyCard(
 		user: User,
-		originalCardId: string,
+		originalCardId: EntityId,
 		destinationId: EntityId,
 		copyTitle?: string
 	): Promise<CopyStatus> {
 		const originalCard = await this.boardNodeService.findByClassAndId(Card, originalCardId);
+		const originalBoard = await this.columnBoardService.findById(originalCard.rootId, 0);
 
-		if (!originalCard.parentId) throw new Error('Original card has no parentId');
-		const originalBoard = await this.columnBoardService.findById(originalCard.parentId, 0);
+		const destinationColumn = await this.boardNodeService.findByClassAndId(Column, destinationId);
+		const destinationBoard = await this.columnBoardService.findById(destinationColumn.rootId, 0);
 
 		const targetExternalReference: BoardExternalReference = {
-			id: destinationId,
-			type: originalBoard.context.type,
+			id: destinationBoard.context.id,
+			type: destinationBoard.context.type,
 		};
 
-		// await this.checkBoardContextWritePermission(user, targetExternalReference);
+		await this.checkBoardContextWritePermission(user, targetExternalReference);
 
 		const sourceStorageLocationReference = await this.getStorageLocationReference(originalBoard.context);
 		const targetStorageLocationReference = await this.getStorageLocationReference(targetExternalReference);
@@ -238,9 +241,11 @@ export class ImportTokenUC {
 			targetStorageLocationReference,
 			userId: user.id,
 			copyTitle,
-			targetSchoolId: user.school.id,
+			targetSchoolId: targetStorageLocationReference.id,
+			destinationColumnId: destinationId,
 		});
 
+		// TODO
 		// await this.columnBoardService.swapLinkedIdsInBoards(copyStatus);
 
 		return copyStatus;
