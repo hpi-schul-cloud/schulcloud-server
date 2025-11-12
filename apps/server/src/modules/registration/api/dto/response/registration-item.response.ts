@@ -16,6 +16,7 @@ export class RegistrationItemResponse {
 	@ApiProperty()
 	public lastName: string;
 
+	// do we want to expose the password in the response?
 	@ApiProperty()
 	public password: string;
 
@@ -24,6 +25,7 @@ export class RegistrationItemResponse {
 	@IsEnum(Consent, { each: true })
 	public consent: Consent[];
 
+	// do we want to expose the pin in the response?
 	@ApiProperty()
 	public pin: string;
 
