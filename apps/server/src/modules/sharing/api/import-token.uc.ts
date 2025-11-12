@@ -1,7 +1,12 @@
 import { LegacyLogger } from '@core/logger';
 import { StorageLocation } from '@infra/files-storage-client';
 import { AuthorizationService } from '@modules/authorization';
-import { BoardExternalReference, BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	ColumnBoardService,
+	BoardNodeService,
+} from '@modules/board';
 import { StorageLocationReference } from '@modules/board/service/internal';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
@@ -17,6 +22,7 @@ import { EntityId } from '@shared/domain/types';
 import { ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenPermissionService } from './service';
+import { Card } from '../../board/domain';
 
 @Injectable()
 export class ImportTokenUC {
@@ -29,6 +35,7 @@ export class ImportTokenUC {
 		private readonly courseService: CourseService,
 		private readonly roomService: RoomService,
 		private readonly columnBoardService: ColumnBoardService,
+		private readonly boardNodeService: BoardNodeService,
 		private readonly sagaService: SagaService,
 		private readonly logger: LegacyLogger,
 		private readonly shareTokenPermissionService: ShareTokenPermissionService
@@ -80,6 +87,12 @@ export class ImportTokenUC {
 				break;
 			case ShareTokenParentType.Room:
 				result = await this.copyRoom(user, shareToken.payload.parentId, newName);
+				break;
+			case ShareTokenParentType.Card:
+				if (destinationId === undefined) {
+					throw new BadRequestException('Cannot import card without destination reference');
+				}
+				result = await this.copyCard(user, shareToken.payload.parentId, destinationId, newName);
 				break;
 		}
 
@@ -194,6 +207,41 @@ export class ImportTokenUC {
 				};
 			}),
 		};
+
+		return copyStatus;
+	}
+
+	private async copyCard(
+		user: User,
+		originalCardId: string,
+		destinationId: EntityId,
+		copyTitle?: string
+	): Promise<CopyStatus> {
+		const originalCard = await this.boardNodeService.findByClassAndId(Card, originalCardId);
+
+		if (!originalCard.parentId) throw new Error('Original card has no parentId');
+		const originalBoard = await this.columnBoardService.findById(originalCard.parentId, 0);
+
+		const targetExternalReference: BoardExternalReference = {
+			id: destinationId,
+			type: originalBoard.context.type,
+		};
+
+		// await this.checkBoardContextWritePermission(user, targetExternalReference);
+
+		const sourceStorageLocationReference = await this.getStorageLocationReference(originalBoard.context);
+		const targetStorageLocationReference = await this.getStorageLocationReference(targetExternalReference);
+
+		const copyStatus = await this.columnBoardService.copyCard({
+			originalCardId,
+			sourceStorageLocationReference,
+			targetStorageLocationReference,
+			userId: user.id,
+			copyTitle,
+			targetSchoolId: user.school.id,
+		});
+
+		// await this.columnBoardService.swapLinkedIdsInBoards(copyStatus);
 
 		return copyStatus;
 	}

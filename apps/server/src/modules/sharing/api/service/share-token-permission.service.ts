@@ -48,6 +48,12 @@ export class ShareTokenPermissionService {
 					throw new FeatureDisabledLoggableException('FEATURE_ROOM_SHARE');
 				}
 				break;
+			case ShareTokenParentType.Card:
+				if (!(Configuration.get('FEATURE_ROOM_SHARE') as boolean)) {
+					throw new FeatureDisabledLoggableException('FEATURE_ROOM_SHARE');
+				}
+				break;
+			// TODO - share card feature flag check?
 			default:
 				throw new NotImplementedException('Import Feature not implemented');
 		}

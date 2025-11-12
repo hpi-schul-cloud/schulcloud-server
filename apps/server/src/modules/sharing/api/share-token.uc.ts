@@ -106,6 +106,11 @@ export class ShareTokenUC {
 					Permission.ROOM_SHARE_ROOM,
 				]);
 				break;
+			case ShareTokenParentType.Card:
+				await this.shareTokenPermissionService.checkRoomWritePermission(user, payload.parentId, [
+					Permission.ROOM_SHARE_ROOM,
+				]);
+				break;
 			default:
 				throw new NotImplementedException('Share Feature not implemented');
 		}
@@ -155,6 +160,12 @@ export class ShareTokenUC {
 			}
 			case ShareTokenParentType.Room: {
 				requiredPermissions = [Permission.SCHOOL_CREATE_ROOM];
+				break;
+			}
+			case ShareTokenParentType.Card: {
+				const columnBoard = await this.columnBoardService.findById(payload.parentId, 0);
+				requiredPermissions =
+					columnBoard.context.type === BoardExternalReferenceType.Course ? [Permission.COURSE_EDIT] : [];
 				break;
 			}
 		}

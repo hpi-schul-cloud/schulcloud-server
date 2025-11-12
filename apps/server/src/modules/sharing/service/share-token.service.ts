@@ -1,4 +1,4 @@
-import { ColumnBoardService } from '@modules/board';
+import { BoardNodeService, ColumnBoardService } from '@modules/board';
 import { CourseService } from '@modules/course';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
@@ -13,6 +13,7 @@ import {
 } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from '../repo/share-token.repo';
 import { TokenGenerator } from './token-generator.service';
+import { Card } from '../../board/domain';
 
 @Injectable()
 export class ShareTokenService {
@@ -23,7 +24,8 @@ export class ShareTokenService {
 		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService,
 		private readonly columnBoardService: ColumnBoardService,
-		private readonly roomService: RoomService
+		private readonly roomService: RoomService,
+		private readonly boardNodeService: BoardNodeService
 	) {}
 
 	public async createToken(
@@ -72,6 +74,10 @@ export class ShareTokenService {
 				break;
 			case ShareTokenParentType.Room:
 				parentName = (await this.roomService.getSingleRoom(shareToken.payload.parentId)).name;
+				break;
+			case ShareTokenParentType.Card:
+				// TODO - Why can this be undefined, but the others are not?
+				parentName = (await this.boardNodeService.findByClassAndId(Card, shareToken.payload.parentId)).title ?? '';
 				break;
 			default:
 				throw new UnprocessableEntityException('Invalid parent type');
