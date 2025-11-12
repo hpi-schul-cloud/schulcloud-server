@@ -90,6 +90,46 @@ describe('RegistrationService', () => {
 		});
 	});
 
+	describe('saveRegistration', () => {
+		const setup = () => {
+			const registration = registrationFactory.build();
+			return { registration };
+		};
+
+		it('should call repo to save registration', async () => {
+			const { registration } = setup();
+
+			await service.saveRegistration(registration);
+
+			expect(registrationRepo.save).toHaveBeenCalledWith(registration);
+		});
+	});
+
+	describe('getSingleRegistrationByEmail', () => {
+		const setup = () => {
+			const registration = registrationFactory.build();
+			registrationRepo.findByEmail.mockResolvedValue(registration);
+
+			return { registration };
+		};
+
+		it('should call repo to get registration by its email', async () => {
+			const email = 'test@example.com';
+
+			await service.getSingleRegistrationByEmail(email);
+
+			expect(registrationRepo.findByEmail).toHaveBeenCalledWith(email);
+		});
+
+		it('should return registration', async () => {
+			const { registration } = setup();
+
+			const result = await service.getSingleRegistrationByEmail('email');
+
+			expect(result).toBe(registration);
+		});
+	});
+
 	describe('getSingleRegistrationByRegistrationId', () => {
 		const setup = () => {
 			const registration = registrationFactory.build();

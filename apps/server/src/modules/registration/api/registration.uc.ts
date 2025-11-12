@@ -25,6 +25,11 @@ export class RegistrationUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkOneOfPermissions(user, [Permission.USER_CREATE]);
 
+		const existingRegistration = await this.checkExistingRegistrationByEmail(props.email, props.roomIds);
+		if (existingRegistration) {
+			return existingRegistration;
+		}
+
 		const registration = await this.registrationService.createRegistration({ ...props });
 		return registration;
 	}
@@ -59,5 +64,17 @@ export class RegistrationUc {
 		const registrations = await this.registrationService.getRegistrationsByRoomId(roomId);
 
 		return registrations;
+	}
+
+	private async checkExistingRegistrationByEmail(email: string, roomIds: EntityId[]): Promise<Registration | null> {
+		const existingRegistration = await this.registrationService.getSingleRegistrationByEmail(email);
+		if (existingRegistration) {
+			roomIds.forEach((roomId) => {
+				existingRegistration.addRoomId(roomId);
+			});
+			await this.registrationService.saveRegistration(existingRegistration);
+			return existingRegistration;
+		}
+		return null;
 	}
 }

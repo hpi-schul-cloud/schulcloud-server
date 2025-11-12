@@ -78,6 +78,28 @@ describe('RegistrationRepo', () => {
 		});
 	});
 
+	describe('findByEmail', () => {
+		const setup = async () => {
+			const mockedEmail = 'test@example.com';
+			const registrationEntity = registrationEntityFactory.buildWithId({ email: mockedEmail });
+			await em.persistAndFlush(registrationEntity);
+			em.clear();
+
+			return { registrationEntity, mockedEmail };
+		};
+
+		it('should be able to find a registration by its email', async () => {
+			const { registrationEntity, mockedEmail } = await setup();
+			const result = await repo.findByEmail(mockedEmail);
+			const expectedProps = {
+				...registrationEntity,
+				roomIds: registrationEntity.roomIds.map((id) => new ObjectId(id)),
+			};
+
+			expect(result.getProps()).toEqual(expectedProps);
+		});
+	});
+
 	describe('findByHash', () => {
 		const setup = async () => {
 			const registrationEntity = registrationEntityFactory.buildWithId();

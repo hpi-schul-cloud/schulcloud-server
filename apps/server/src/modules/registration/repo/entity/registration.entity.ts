@@ -1,4 +1,4 @@
-import { Entity, Index, Property } from '@mikro-orm/core';
+import { Entity, Index, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { Registration, RegistrationProps } from '../../domain/do/registration.do';
@@ -7,6 +7,7 @@ import { Consent } from '../../domain/type';
 
 @Entity({ tableName: 'registrations' })
 export class RegistrationEntity extends BaseEntityWithTimestamps implements RegistrationProps {
+	@Unique()
 	@Property({ nullable: false })
 	email!: string;
 
@@ -22,6 +23,7 @@ export class RegistrationEntity extends BaseEntityWithTimestamps implements Regi
 	@Property({ nullable: false })
 	consent!: Consent[];
 
+	// question if pin is actually needed or if its verification enough to just send the registration to the specific email
 	@Property({ nullable: false })
 	pin!: string;
 

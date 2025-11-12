@@ -10,6 +10,7 @@ import { LanguageType, Permission } from '@shared/domain/interface';
 import { CreateRegistrationBodyParams } from '../dto/request/create-registration.body.params';
 import { roomEntityFactory } from '@modules/room/testing';
 import { Consent } from '../../domain/type';
+import { registrationEntityFactory } from '@modules/registration/testing';
 
 describe('Registration Controller (API)', () => {
 	let app: INestApplication;
@@ -89,6 +90,34 @@ describe('Registration Controller (API)', () => {
 					await expect(em.findOneOrFail(RegistrationEntity, registrationId)).resolves.toMatchObject({
 						id: registrationId,
 						email: 'test@example.com',
+					});
+				});
+
+				describe('when a registration with the given email already exists', () => {
+					const setupWithExistingRegistration = async () => {
+						const { loggedInClient, room, params } = await setup();
+
+						const existingRegistration = registrationEntityFactory.build({
+							email: params.email,
+							roomIds: [],
+						});
+
+						await em.persistAndFlush(existingRegistration);
+						em.clear();
+
+						return { loggedInClient, room, params, existingRegistration };
+					};
+					it('should add the room to the existing registration and return it', async () => {
+						const { loggedInClient, existingRegistration, room, params } = await setupWithExistingRegistration();
+
+						const updatedParams = { ...params, roomIds: [room.id] };
+						const response = await loggedInClient.post(undefined, updatedParams);
+						expect(response.status).toBe(HttpStatus.CREATED);
+						expect(response.body).toMatchObject({
+							id: existingRegistration.id,
+							email: existingRegistration.email,
+							roomIds: [room.id],
+						});
 					});
 				});
 			});

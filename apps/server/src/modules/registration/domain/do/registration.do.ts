@@ -10,6 +10,7 @@ export interface RegistrationProps extends AuthorizableObject {
 	lastName: string;
 	password: string;
 	consent: Consent[];
+	// question if pin is actually needed or if its verification enough to just send the registration to the specific email
 	pin: string;
 	language: LanguageType;
 	roomIds: EntityId[];
@@ -101,5 +102,13 @@ export class Registration extends DomainObject<RegistrationProps> {
 
 	get updatedAt(): Date {
 		return this.props.updatedAt;
+	}
+
+	public addRoomId(roomId: EntityId): void {
+		if (this.roomIds.includes(roomId)) {
+			return;
+		}
+
+		this.props.roomIds.push(roomId);
 	}
 }

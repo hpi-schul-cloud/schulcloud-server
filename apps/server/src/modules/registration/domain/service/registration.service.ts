@@ -19,7 +19,8 @@ export class RegistrationService {
 			pin: '',
 			language: props.language,
 			roomIds: props.roomIds,
-			registrationHash: 'someRandomHashForNow', // we will create a proper hash here later
+			// we will create a proper hash here later
+			registrationHash: 'someRandomHashForNow',
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
@@ -45,8 +46,18 @@ export class RegistrationService {
 		return registration;
 	}
 
+	public async saveRegistration(registration: Registration): Promise<void> {
+		await this.registrationRepo.save(registration);
+	}
+
 	public async getSingleRegistrationByRegistrationId(registrationId: string): Promise<Registration> {
 		const registration = await this.registrationRepo.findById(registrationId);
+
+		return registration;
+	}
+
+	public async getSingleRegistrationByEmail(email: string): Promise<Registration> {
+		const registration = await this.registrationRepo.findByEmail(email);
 
 		return registration;
 	}

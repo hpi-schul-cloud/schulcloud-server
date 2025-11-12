@@ -100,4 +100,36 @@ describe('Registration', () => {
 	it('should get updatedAt', () => {
 		expect(registration.updatedAt).toBeInstanceOf(Date);
 	});
+
+	describe('addRoomId', () => {
+		describe('When room is added to the registration', () => {
+			const setup = () => {
+				const registration = registrationFactory.build({ roomIds: [] });
+				const roomId = new ObjectId().toHexString();
+
+				return {
+					registration,
+					roomId,
+				};
+			};
+
+			it('should add the room to the roomIds', () => {
+				const { registration, roomId } = setup();
+
+				registration.addRoomId(roomId);
+
+				expect(registration.roomIds).toContain(roomId);
+			});
+
+			it('should add roomId only once', () => {
+				const { registration, roomId } = setup();
+
+				registration.addRoomId(roomId);
+				registration.addRoomId(roomId);
+
+				expect(registration.roomIds).toHaveLength(1);
+				expect(registration.roomIds).toContain(roomId);
+			});
+		});
+	});
 });
