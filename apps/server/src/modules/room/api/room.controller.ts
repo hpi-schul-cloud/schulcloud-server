@@ -44,6 +44,8 @@ import { RoomMapper } from './mapper/room.mapper';
 import { RoomCopyUc } from './room-copy.uc';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
 import { RoomUc } from './room.uc';
+import { RoomContentUc } from './room-content.uc';
+import { RoomArrangementUc } from './room-arrangement.uc';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -51,6 +53,8 @@ import { RoomUc } from './room.uc';
 export class RoomController {
 	constructor(
 		private readonly roomUc: RoomUc,
+		private readonly roomArrangementUc: RoomArrangementUc,
+		private readonly roomContentUc: RoomContentUc,
 		private readonly roomCopyUc: RoomCopyUc,
 		private readonly roomInvitationLinkUc: RoomInvitationLinkUc
 	) {}
@@ -63,7 +67,7 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async getRooms(@CurrentUser() currentUser: ICurrentUser): Promise<RoomListResponse> {
-		const rooms = await this.roomUc.getRooms(currentUser.userId);
+		const rooms = await this.roomArrangementUc.getRoomsByUserArrangement(currentUser.userId);
 
 		const response = RoomMapper.mapToRoomListResponse(rooms);
 
@@ -81,7 +85,7 @@ export class RoomController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() bodyParams: MoveItemBodyParams
 	): Promise<void> {
-		await this.roomUc.moveRoom(currentUser.userId, bodyParams.id, bodyParams.toPosition);
+		await this.roomArrangementUc.moveRoomInUserArrangement(currentUser.userId, bodyParams.id, bodyParams.toPosition);
 	}
 
 	@Get('stats')
@@ -156,7 +160,7 @@ export class RoomController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<RoomBoardListResponse> {
-		const boards = await this.roomUc.getRoomBoards(currentUser.userId, urlParams.roomId);
+		const boards = await this.roomContentUc.getRoomBoards(currentUser.userId, urlParams.roomId);
 
 		const response = RoomMapper.mapToRoomBoardListResponse(boards);
 
@@ -175,7 +179,7 @@ export class RoomController {
 		@Param() urlParams: RoomUrlParams,
 		@Body() bodyParams: MoveItemBodyParams
 	): Promise<void> {
-		await this.roomUc.moveBoard(currentUser.userId, urlParams.roomId, bodyParams.id, bodyParams.toPosition);
+		await this.roomContentUc.moveBoard(currentUser.userId, urlParams.roomId, bodyParams.id, bodyParams.toPosition);
 	}
 
 	@Get(':roomId/room-invitation-links')

@@ -10,8 +10,8 @@ import { RoomItemResponse } from '../dto/response/room-item.response';
 import { RoomListResponse } from '../dto/response/room-list.response';
 import { RoomStatsItemResponse } from '../dto/response/room-stats-item.response';
 import { RoomStatsListResponse } from '../dto/response/room-stats-list.repsonse';
-import { RoomWithLockedStatus } from '../room.uc';
 import { RoomStats } from '../type/room-stats.type';
+import { RoomWithLockedStatus } from '../type/room-with-locked-status';
 
 export class RoomMapper {
 	public static mapToRoomItemResponse({ room, isLocked }: RoomWithLockedStatus): RoomItemResponse {
