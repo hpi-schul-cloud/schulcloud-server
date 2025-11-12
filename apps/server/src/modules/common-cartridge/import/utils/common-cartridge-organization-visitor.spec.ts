@@ -53,11 +53,11 @@ describe(CommonCartridgeOrganizationVisitor.name, () => {
 					expect(org.isInlined).toStrictEqual(expect.any(Boolean));
 					expect(org.isResource).toStrictEqual(expect.any(Boolean));
 					if (org.isResource) {
-						expect(org.resourcePath).toStrictEqual(expect.any(String));
+						expect(org.resourcePaths).toStrictEqual([expect.any(String)]);
 						expect(org.resourceType).toStrictEqual(expect.any(String));
 						expect(org.identifierRef).toStrictEqual(expect.any(String));
 					} else {
-						expect(org.resourcePath).toStrictEqual('');
+						expect(org.resourcePaths).toStrictEqual([]);
 						expect(org.resourceType).toStrictEqual('');
 						expect(org.identifierRef).toBeUndefined();
 					}

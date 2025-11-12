@@ -28,6 +28,7 @@ import {
 	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
+	FileFolderElementResponse,
 	H5pElementResponse,
 	LinkElementResponse,
 	MoveCardBodyParams,
@@ -140,6 +141,7 @@ export class CardController {
 	@ApiExtraModels(
 		ExternalToolElementResponse,
 		FileElementResponse,
+		FileFolderElementResponse,
 		LinkElementResponse,
 		RichTextElementResponse,
 		SubmissionContainerElementResponse,
@@ -154,6 +156,7 @@ export class CardController {
 			oneOf: [
 				{ $ref: getSchemaPath(ExternalToolElementResponse) },
 				{ $ref: getSchemaPath(FileElementResponse) },
+				{ $ref: getSchemaPath(FileFolderElementResponse) },
 				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
