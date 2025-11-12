@@ -163,7 +163,6 @@ export class RoomSetup {
 	private setupRoles = async (): Promise<void> => {
 		const administrator = roleFactory.buildWithId({
 			name: RoleName.ADMINISTRATOR,
-			// permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS, Permission.SCHOOL_LIST_ROOM_MEMBERS],
 			permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS],
 		});
 		const teacher = roleFactory.buildWithId({ name: RoleName.TEACHER });
