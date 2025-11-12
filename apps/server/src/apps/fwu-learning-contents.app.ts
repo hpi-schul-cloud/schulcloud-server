@@ -16,7 +16,7 @@ import { createRequestLoggerMiddleware } from './helpers/request-logger-middlewa
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
-	// create the NestJS application on a seperate express instance
+	// create the NestJS application on a separate express instance
 	const nestExpress = express();
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
