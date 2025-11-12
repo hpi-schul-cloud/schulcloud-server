@@ -57,11 +57,14 @@ spec:
         - containerPort: 4446
           name: api-fwu
           protocol: TCP
+        env:
+        - name: NODE_OPTIONS
+          value: "--max-old-space-size={{ ((API_FWU_LEARNING_CONTENTS_MEMORY_LIMIT | regex_replace('Gi', '')|int * 1024 * 0.8)|int) }}"
         envFrom:
         - configMapRef:
-            name: api-configmap
+            name: api-fwu-configmap
         - secretRef:
-            name: api-secret
+            name: api-fwu-secret
         command: ['npm', 'run', 'nest:start:fwu-learning-contents:prod']
         readinessProbe:
           httpGet:
@@ -70,7 +73,6 @@ spec:
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 5
-        # liveless if unsatisfactory reply
         livenessProbe:
           httpGet:
             path: api/v3/docs
@@ -87,11 +89,11 @@ spec:
           periodSeconds: 5
         resources:
           limits:
-            cpu: {{ API_FWU_LEARNING_CONTENTS_CPU_LIMITS|default("2000m", true) }}
-            memory: {{ API_FWU_LEARNING_CONTENTS_MEMORY_LIMITS|default("500Mi", true) }}
+            cpu: {{ API_FWU_LEARNING_CONTENTS_CPU_LIMIT|default("2000m", true) }}
+            memory: {{ API_FWU_LEARNING_CONTENTS_MEMORY_LIMIT }}
           requests:
-            cpu: {{ API_FWU_LEARNING_CONTENTS_CPU_REQUESTS|default("100m", true) }}
-            memory: {{ API_FWU_LEARNING_CONTENTS_MEMORY_REQUESTS|default("50Mi", true) }}
+            cpu: {{ API_FWU_LEARNING_CONTENTS_CPU_REQUEST|default("100m", true) }}
+            memory: {{ API_FWU_LEARNING_CONTENTS_MEMORY_REQUEST }}
 {% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
       affinity:
         podAffinity:
