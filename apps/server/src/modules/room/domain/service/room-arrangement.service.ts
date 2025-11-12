@@ -8,35 +8,26 @@ import { RoomService } from './room.service';
 export class RoomArrangementService {
 	constructor(private readonly roomService: RoomService, private readonly roomArrangementRepo: RoomArrangementRepo) {}
 
-	public async arrangementExists(userId: EntityId): Promise<boolean> {
-		const numberOfArrangements = await this.roomArrangementRepo.countByUserId(userId);
-		const exists = numberOfArrangements > 0;
+	public async sortRoomIdsByUserArrangement(userId: EntityId, roomIds: EntityId[]): Promise<EntityId[]> {
+		const arrangementExists = await this.roomArrangementRepo.hasArrangementForUserId(userId);
 
-		return exists;
+		let userIdsByArrangement: EntityId[];
+
+		if (arrangementExists) {
+			userIdsByArrangement = await this.sortAndUpdateArrangement(userId, roomIds);
+		} else {
+			await this.createArranagement(userId, roomIds);
+			userIdsByArrangement = roomIds;
+		}
+		return userIdsByArrangement;
 	}
 
-	public async createArrangement(userId: EntityId, roomIds: EntityId[]): Promise<void> {
-		const items: RoomArrangementItem[] = roomIds.map((roomId) => {
-			return { id: roomId };
-		});
-		await this.roomArrangementRepo.createArrangement(userId, items);
-	}
-
-	public async getRoomOrder(userId: EntityId): Promise<EntityId[]> {
-		const items = await this.roomArrangementRepo.findArrangementItemsByUserId(userId);
-		const roomIds = items.map((item) => item.id);
-
-		return roomIds;
-	}
-
-	public async addRoom(userId: EntityId, roomId: EntityId): Promise<void> {
-		await this.roomArrangementRepo.addItemToArrangement(userId, { id: roomId });
+	public async addRoomToUserArrangements(userIds: EntityId[], roomId: EntityId): Promise<void> {
+		await this.roomArrangementRepo.addItemToUserArrangements(userIds, { id: roomId });
 	}
 
 	public async moveRoom(userId: EntityId, roomId: EntityId, toPosition: number): Promise<void> {
-		// TOTO use real repo method when lazy init is fixed
-		// const items = await this.roomArrangementRepo.findArrangementItemsByUserId(userId);
-		const items: RoomArrangementItem[] = [];
+		const items = await this.roomArrangementRepo.findArrangementItemsByUserId(userId);
 
 		if (toPosition < 0 || toPosition >= items.length) {
 			throw new BadRequestException(`Invalid position ${toPosition} for room arrangement of user '${userId}'`);
@@ -54,14 +45,39 @@ export class RoomArrangementService {
 		await this.roomArrangementRepo.updateArrangement(userId, items);
 	}
 
-	public async removeRoom(userId: EntityId, roomId: EntityId): Promise<void> {
-		const items = await this.roomArrangementRepo.findArrangementItemsByUserId(userId);
-		const filteredItems = items.filter((item) => !(item.id === roomId));
-
-		await this.roomArrangementRepo.updateArrangement(userId, filteredItems);
+	public async removeRoomFromAllArrangements(roomId: EntityId): Promise<void> {
+		await this.roomArrangementRepo.removeRoomFromAllArrangements(roomId);
 	}
 
 	public async deleteArrangement(userId: EntityId): Promise<void> {
 		await this.roomArrangementRepo.deleteArrangementByUserId(userId);
+	}
+
+	private async createArranagement(userId: EntityId, roomIds: EntityId[]): Promise<void> {
+		const items: RoomArrangementItem[] = roomIds.map((roomId) => {
+			return { id: roomId };
+		});
+
+		await this.roomArrangementRepo.createArrangement(userId, items);
+	}
+
+	private async sortAndUpdateArrangement(userId: EntityId, availableRoomIds: EntityId[]): Promise<EntityId[]> {
+		const roomIds = (await this.roomArrangementRepo.findArrangementItemsByUserId(userId)).map((item) => item.id);
+		const roomIdSet = new Set(roomIds);
+
+		const knownRoomIds = availableRoomIds
+			.filter((roomId) => roomIdSet.has(roomId))
+			.sort((a, b) => roomIds.indexOf(a) - roomIds.indexOf(b));
+		const unknownRoomIds = availableRoomIds.filter((roomId) => !roomIdSet.has(roomId));
+
+		const sortedRoomIds = [...knownRoomIds, ...unknownRoomIds];
+
+		const items: RoomArrangementItem[] = sortedRoomIds.map((roomId) => {
+			return { id: roomId };
+		});
+
+		await this.roomArrangementRepo.updateArrangement(userId, items);
+
+		return sortedRoomIds;
 	}
 }

@@ -23,6 +23,9 @@ export class RoomArrangementUc {
 
 		const readableRoomIds = await this.roomPermissionService.getReadableRoomIdsForUser(user);
 		const rooms = await this.roomService.getRoomsByIds(readableRoomIds);
+		const existingRoomIds = rooms.map((room) => room.id);
+		const orderedRoomIds = await this.roomArrangementService.sortRoomIdsByUserArrangement(userId, existingRoomIds);
+		rooms.sort((a, b) => orderedRoomIds.indexOf(a.id) - orderedRoomIds.indexOf(b.id));
 
 		const roomsWithLockedStatus = rooms.map((room) => {
 			const hasOwner = roomAuthorizables.some(
