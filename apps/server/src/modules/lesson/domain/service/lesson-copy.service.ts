@@ -267,11 +267,10 @@ export class LessonCopyService {
 
 		if (element.content) {
 			const resources = ((element.content as ComponentLernstoreProperties).resources ?? []).map(
-				({ client, description, merlinReference, title, url }) => {
+				({ client, description, title, url }) => {
 					const result = {
 						client,
 						description,
-						merlinReference,
 						title,
 						url,
 					};

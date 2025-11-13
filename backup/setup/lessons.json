@@ -431,8 +431,7 @@
             "url": "https://www.youtube.com/watch?v=eK_TLiITZnY",
             "title": "Warum ist der Himmel blau?",
             "description": "",
-            "client": "Schul-Cloud",
-            "merlinReference": ""
+            "client": "Schul-Cloud"
           }
         ]
       },
@@ -749,15 +748,13 @@
             "url": "https://klexikon.zum.de/wiki/Blauwal",
             "title": "Blauwal",
             "description": "",
-            "client": "Schul-Cloud",
-            "merlinReference": ""
+            "client": "Schul-Cloud"
           },
           {
             "url": "https://klexikon.zum.de/wiki/Pottwal",
             "title": "Pottwal",
             "description": "",
-            "client": "Schul-Cloud",
-            "merlinReference": ""
+            "client": "Schul-Cloud"
           }
         ]
       },
