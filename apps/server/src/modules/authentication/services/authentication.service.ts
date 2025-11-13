@@ -32,7 +32,7 @@ export class AuthenticationService {
 			account = await this.accountService.findByUsernameAndSystemId(username, systemId);
 		} else {
 			const [accounts] = await this.accountService.searchByUsernameExactMatch(username);
-			account = accounts.find((foundAccount) => foundAccount.systemId == null);
+			account = accounts.find((foundAccount) => foundAccount.systemId === null);
 		}
 
 		if (!account) {
