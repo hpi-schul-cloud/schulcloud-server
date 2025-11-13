@@ -22,6 +22,7 @@ import {
 	provisioningSystemDtoFactory,
 } from '../testing';
 import { TspProvisioningService } from './tsp-provisioning.service';
+import { Logger } from '@core/logger';
 
 describe('TspProvisioningService', () => {
 	let module: TestingModule;
@@ -55,6 +56,10 @@ describe('TspProvisioningService', () => {
 				{
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -149,7 +154,7 @@ describe('TspProvisioningService', () => {
 
 	describe('provisionClassBatch', () => {
 		describe('when class does not exist', () => {
-			const setup = () => {
+			const setup = (withName = true) => {
 				const school = schoolFactory.build();
 
 				const externalTeacher = externalUserDtoFactory.build();
@@ -158,6 +163,7 @@ describe('TspProvisioningService', () => {
 				const classId = faker.string.uuid();
 				const externalClass = externalClassDtoFactory.build({
 					externalId: classId,
+					name: withName ? faker.string.uuid() : '',
 				});
 
 				const usersOfClasses = new Map([
@@ -192,10 +198,16 @@ describe('TspProvisioningService', () => {
 				expect(result.classUpdateCount).toBe(0);
 				expect(classServiceMock.save).toHaveBeenCalledTimes(1);
 			});
+
+			it('should not create class without name', async () => {
+				const { school, externalClasses, usersOfClasses } = setup(false);
+				await sut.provisionClassBatch(school, externalClasses, usersOfClasses, false);
+				expect(classServiceMock.save).toHaveBeenCalledTimes(0);
+			});
 		});
 
 		describe('when class already exist', () => {
-			const setup = () => {
+			const setup = (withName = true) => {
 				const school = schoolFactory.build();
 
 				const externalTeacher = externalUserDtoFactory.build();
@@ -204,6 +216,7 @@ describe('TspProvisioningService', () => {
 				const classId = faker.string.uuid();
 				const externalClass = externalClassDtoFactory.build({
 					externalId: classId,
+					name: withName ? faker.string.uuid() : '',
 				});
 
 				const usersOfClasses = new Map([
@@ -243,6 +256,12 @@ describe('TspProvisioningService', () => {
 				expect(result.classCreationCount).toBe(0);
 				expect(result.classUpdateCount).toBe(1);
 				expect(classServiceMock.save).toHaveBeenCalledTimes(1);
+			});
+
+			it('should not create class without name', async () => {
+				const { school, externalClasses, usersOfClasses } = setup(false);
+				await sut.provisionClassBatch(school, externalClasses, usersOfClasses, false);
+				expect(classServiceMock.save).toHaveBeenCalledTimes(0);
 			});
 		});
 
