@@ -611,52 +611,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/edu-sharing'
-    merlin:
-      description: Retrieves a Merlin link from the service
-      type: string
-      example: 'http://live.download.nibis.de/refid=2255/cKt8LNyhTzW2WCXQXcPGOPJggWyePsAVMc0CuM5z0gfBVyYWqX0KGI5zWmI-JNBZhQ_NGfU5jeR4rTTuiOAjZVWHImzZO-vRQYuDCkpyeQ../8f5925918fa7f9c96f3da6aaad9d897d'
-    401:
-      properties:
-        name:
-          type: string
-          example: 'GeneralError'
-        message:
-          type: string
-          example: 'Edu-Sharing Request failed'
-        code:
-          type: number
-          example: 401
-        traceId:
-          type: string
-          example: '0faa0000000c181b0e40aff'
-    404:
-      properties:
-        name:
-          type: string
-          example: 'PageNotFound'
-        message:
-          type: string
-          example: 'Page not found.'
-        code:
-          type: number
-          example: 404
-        traceId:
-          type: string
-          example: '0faa0000000c181b0e40aff'
-    500:
-      properties:
-        name:
-          type: string
-          example: 'GeneralError'
-        message:
-          type: string
-          example: 'Edu-Sharing Request failed'
-        code:
-          type: number
-          example: 500
-        traceId:
-          type: string
-          example: '0faa0000000c181b0e40aff'
 
 paths:
   /edu-sharing:
@@ -750,37 +704,6 @@ paths:
       tags:
         - edu-sharing
       security: []
-  /edu-sharing/merlinToken/{merlinReference}:
-    get:
-      parameters:
-        - in: path
-          name: merlinReference
-          schema:
-            type: string
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/merlin'
-        '404':
-          description: not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/404'
-        '500':
-          description: general error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/500'
-
-      description: Retrieves a url to a merlin resource from the server
-      tags:
-        - edu-sharing
 openapi: 3.0.2
 tags:
   - name: edu-sharing
