@@ -60,6 +60,8 @@ describe('CommonCartridgeResourceFactory', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+		jest.resetAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	it('should be defined', () => {
@@ -201,7 +203,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();
 				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
-				organizationProps.resourcePaths = [faker.system.filePath()];
+				organizationProps.resourcePaths = ['file.pdf'];
 
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue('');
@@ -233,7 +235,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();
 				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
-				organizationProps.resourcePaths = [faker.system.filePath()];
+				organizationProps.resourcePaths = ['file.pdf'];
 
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue('');
