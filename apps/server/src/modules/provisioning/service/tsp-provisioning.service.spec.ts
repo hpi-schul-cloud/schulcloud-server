@@ -258,7 +258,7 @@ describe('TspProvisioningService', () => {
 				expect(classServiceMock.save).toHaveBeenCalledTimes(1);
 			});
 
-			it('should not create class without name', async () => {
+			it('should not update class without name', async () => {
 				const { school, externalClasses, usersOfClasses } = setup(false);
 				await sut.provisionClassBatch(school, externalClasses, usersOfClasses, false);
 				expect(classServiceMock.save).toHaveBeenCalledTimes(0);
