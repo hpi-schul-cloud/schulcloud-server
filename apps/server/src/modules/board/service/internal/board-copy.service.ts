@@ -111,6 +111,11 @@ export class BoardCopyService {
 		if (!isCard(copyStatus.copyEntity)) {
 			throw new InternalServerErrorException('copied entity is not a card');
 		}
+
+		if (params.copyTitle) {
+			copyStatus.copyEntity.title = params.copyTitle;
+		}
+
 		copyStatus.originalEntity = originalCard;
 
 		await this.boardNodeService.addToParent(

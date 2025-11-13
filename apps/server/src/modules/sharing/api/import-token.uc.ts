@@ -7,6 +7,7 @@ import {
 	ColumnBoardService,
 	BoardNodeService,
 	Column,
+	isCard,
 } from '@modules/board';
 import { StorageLocationReference } from '@modules/board/service/internal';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
@@ -244,9 +245,6 @@ export class ImportTokenUC {
 			targetSchoolId: targetStorageLocationReference.id,
 			destinationColumnId: destinationId,
 		});
-
-		// TODO
-		// await this.columnBoardService.swapLinkedIdsInBoards(copyStatus);
 
 		return copyStatus;
 	}
