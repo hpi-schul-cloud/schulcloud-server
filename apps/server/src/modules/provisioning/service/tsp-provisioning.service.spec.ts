@@ -457,6 +457,28 @@ describe('TspProvisioningService', () => {
 		});
 	});
 
+	describe('when class has no name', () => {
+		const setup = () => {
+			const school = schoolFactory.build();
+			const classes = [externalClassDtoFactory.build({ name: '' })];
+			const user = userDoFactory.buildWithId({
+				roles: [roleFactory.build({ name: RoleName.TEACHER }), roleFactory.build({ name: RoleName.STUDENT })],
+			});
+
+			classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValueOnce(null);
+
+			return { school, classes, user };
+		};
+
+		it('should not create class', async () => {
+			const { school, classes, user } = setup();
+
+			await sut.provisionClasses(school, classes, user);
+
+			expect(classServiceMock.save).toHaveBeenCalledTimes(0);
+		});
+	});
+
 	describe('provisionUser', () => {
 		describe('when external school is missing', () => {
 			const setup = () => {
