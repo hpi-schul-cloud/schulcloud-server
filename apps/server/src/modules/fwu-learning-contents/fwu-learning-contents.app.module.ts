@@ -1,7 +1,6 @@
 import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
@@ -16,7 +15,6 @@ import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
 		CoreModule,
 		LoggerModule,
 		HttpModule,
-		RabbitMQWrapperModule,
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 		S3ClientModule.register([s3Config]),
 		AuthGuardModule.register([AuthGuardOptions.JWT]),
