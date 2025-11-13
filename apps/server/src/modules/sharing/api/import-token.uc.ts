@@ -7,7 +7,6 @@ import {
 	ColumnBoardService,
 	BoardNodeService,
 	Column,
-	isCard,
 } from '@modules/board';
 import { StorageLocationReference } from '@modules/board/service/internal';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
@@ -25,7 +24,6 @@ import { ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenPermissionService } from './service';
 import { Card } from '../../board/domain';
-import { UnprocessableEntityException } from '@nestjs/common/exceptions/unprocessable-entity.exception';
 
 @Injectable()
 export class ImportTokenUC {
@@ -222,6 +220,7 @@ export class ImportTokenUC {
 	): Promise<CopyStatus> {
 		const originalCard = await this.boardNodeService.findByClassAndId(Card, originalCardId);
 		const originalBoard = await this.columnBoardService.findById(originalCard.rootId, 0);
+		// TODO check read permission?
 
 		const destinationColumn = await this.boardNodeService.findByClassAndId(Column, destinationId);
 		const destinationBoard = await this.columnBoardService.findById(destinationColumn.rootId, 0);

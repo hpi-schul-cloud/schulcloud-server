@@ -4,6 +4,7 @@ import {
 	BoardExternalReferenceType,
 	BoardNodeAuthorizableService,
 	BoardNodeService,
+	Card,
 	ColumnBoardService,
 } from '@modules/board';
 import { LessonService } from '@modules/lesson';
@@ -143,7 +144,7 @@ export class ShareTokenUC {
 	}
 
 	private async checkCardSharePermission(user: User, cardId: EntityId): Promise<void> {
-		const card = await this.boardNodeService.findById(cardId, 0);
+		const card = await this.boardNodeService.findByClassAndId(Card, cardId, 0);
 		const board = await this.columnBoardService.findById(card.rootId, 0);
 
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
@@ -181,7 +182,7 @@ export class ShareTokenUC {
 				break;
 			}
 			case ShareTokenParentType.Card: {
-				const card = await this.boardNodeService.findById(payload.parentId, 0);
+				const card = await this.boardNodeService.findByClassAndId(Card, payload.parentId, 0);
 				const columnBoard = await this.columnBoardService.findById(card.rootId, 0);
 				requiredPermissions =
 					columnBoard.context.type === BoardExternalReferenceType.Course ? [Permission.COURSE_EDIT] : [];

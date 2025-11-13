@@ -76,8 +76,10 @@ export class ShareTokenService {
 				parentName = (await this.roomService.getSingleRoom(shareToken.payload.parentId)).name;
 				break;
 			case ShareTokenParentType.Card:
-				// TODO - Why can this be undefined, but the others are not?
-				parentName = (await this.boardNodeService.findByClassAndId(Card, shareToken.payload.parentId)).title ?? '';
+				const { title } = await this.boardNodeService.findByClassAndId(Card, shareToken.payload.parentId);
+				if (title) {
+					parentName = title;
+				}
 				break;
 			default:
 				throw new UnprocessableEntityException('Invalid parent type');
