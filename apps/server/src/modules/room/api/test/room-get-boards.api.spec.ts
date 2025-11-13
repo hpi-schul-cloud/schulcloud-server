@@ -72,8 +72,17 @@ describe('Room Controller (API)', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
 				const room = roomEntityFactory.build({ schoolId: school.id });
-				const board = columnBoardEntityFactory.build({
+				const boards = columnBoardEntityFactory.buildList(3, {
 					context: { type: BoardExternalReferenceType.Room, id: room.id },
+				});
+				em.create('RoomContentEntity', {
+					roomId: room.id,
+					items: boards.reverse().map((board) => {
+						return {
+							id: board.id,
+							type: 'board',
+						};
+					}),
 				});
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -94,7 +103,7 @@ describe('Room Controller (API)', () => {
 				});
 				await em.persistAndFlush([
 					room,
-					board,
+					...boards,
 					studentAccount,
 					studentUser,
 					teacherUser,
@@ -106,41 +115,53 @@ describe('Room Controller (API)', () => {
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
-				return { loggedInClient, room, board };
+				return { loggedInClient, room, board1: boards[0], board2: boards[1], board3: boards[2] };
 			};
 
 			describe('when the room exists', () => {
 				it('should return the room boards', async () => {
-					const { loggedInClient, room, board } = await setup();
+					const { loggedInClient, room, board1, board2, board3 } = await setup();
 
 					const response = await loggedInClient.get(`${room.id}/boards`);
 					expect(response.status).toBe(HttpStatus.OK);
-					expect((response.body as { data: Record<string, unknown> }).data[0]).toEqual({
-						id: board.id,
-						title: board.title,
-						layout: board.layout,
-						isVisible: board.isVisible,
-						createdAt: board.createdAt.toISOString(),
-						updatedAt: board.updatedAt.toISOString(),
-					});
+					expect((response.body as { data: Record<string, unknown> }).data).toEqual([
+						{
+							id: board1.id,
+							title: board1.title,
+							layout: board1.layout,
+							isVisible: board1.isVisible,
+							createdAt: board1.createdAt.toISOString(),
+							updatedAt: board1.updatedAt.toISOString(),
+						},
+						{
+							id: board2.id,
+							title: board2.title,
+							layout: board2.layout,
+							isVisible: board2.isVisible,
+							createdAt: board2.createdAt.toISOString(),
+							updatedAt: board2.updatedAt.toISOString(),
+						},
+						{
+							id: board3.id,
+							title: board3.title,
+							layout: board3.layout,
+							isVisible: board3.isVisible,
+							createdAt: board3.createdAt.toISOString(),
+							updatedAt: board3.updatedAt.toISOString(),
+						},
+					]);
 				});
 
 				describe('when room content does not exist in db', () => {
 					it('should create one', async () => {
-						const { loggedInClient, room, board } = await setup();
+						const { loggedInClient, room } = await setup();
 
 						await em.nativeDelete('RoomContentEntity', { roomId: room.id });
 
 						await loggedInClient.get(`${room.id}/boards`);
 
 						const roomContent = await em.findOneOrFail('RoomContentEntity', { roomId: room.id });
-						expect(roomContent['items']).toHaveLength(1);
-						expect(roomContent['items']).toEqual([
-							{
-								id: board.id,
-								type: 'board',
-							},
-						]);
+						expect(roomContent['items']).toHaveLength(3);
 					});
 				});
 			});
