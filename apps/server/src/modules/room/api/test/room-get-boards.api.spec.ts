@@ -115,41 +115,28 @@ describe('Room Controller (API)', () => {
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
-				return { loggedInClient, room, board1: boards[0], board2: boards[1], board3: boards[2] };
+				return { loggedInClient, room, boards };
 			};
 
 			describe('when the room exists', () => {
 				it('should return the room boards', async () => {
-					const { loggedInClient, room, board1, board2, board3 } = await setup();
+					const { loggedInClient, room, boards } = await setup();
 
 					const response = await loggedInClient.get(`${room.id}/boards`);
+
 					expect(response.status).toBe(HttpStatus.OK);
-					expect((response.body as { data: Record<string, unknown> }).data).toEqual([
-						{
-							id: board1.id,
-							title: board1.title,
-							layout: board1.layout,
-							isVisible: board1.isVisible,
-							createdAt: board1.createdAt.toISOString(),
-							updatedAt: board1.updatedAt.toISOString(),
-						},
-						{
-							id: board2.id,
-							title: board2.title,
-							layout: board2.layout,
-							isVisible: board2.isVisible,
-							createdAt: board2.createdAt.toISOString(),
-							updatedAt: board2.updatedAt.toISOString(),
-						},
-						{
-							id: board3.id,
-							title: board3.title,
-							layout: board3.layout,
-							isVisible: board3.isVisible,
-							createdAt: board3.createdAt.toISOString(),
-							updatedAt: board3.updatedAt.toISOString(),
-						},
-					]);
+					expect((response.body as { data: Record<string, unknown> }).data).toEqual(
+						boards.map((board) => {
+							return {
+								id: board.id,
+								title: board.title,
+								layout: board.layout,
+								isVisible: board.isVisible,
+								createdAt: board.createdAt.toISOString(),
+								updatedAt: board.updatedAt.toISOString(),
+							};
+						})
+					);
 				});
 
 				describe('when room content does not exist in db', () => {
