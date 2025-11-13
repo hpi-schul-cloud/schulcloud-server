@@ -29,6 +29,5 @@ export class RoomDeletedHandler implements IEventHandler<RoomDeletedEvent> {
 
 		await this.roomMembershipService.deleteRoomMembership(roomId);
 		await this.roomBoardService.deleteRoomContent(roomId);
-		await this.roomArrangementService.removeRoomFromAllArrangements(roomId);
 	}
 }

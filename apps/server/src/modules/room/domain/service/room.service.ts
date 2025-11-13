@@ -7,7 +7,6 @@ import { RoomRepo } from '../../repo';
 import { Room, RoomCreateProps, RoomProps, RoomUpdateProps } from '../do';
 import { RoomDeletedEvent } from '../events/room-deleted.event';
 import { RoomFeatures } from '../type';
-import { RoomCreatedEvent } from '../events/room-created.event';
 
 @Injectable()
 export class RoomService {
@@ -36,8 +35,6 @@ export class RoomService {
 		const room = new Room(roomProps);
 
 		await this.roomRepo.save(room);
-
-		await this.eventBus.publish(new RoomCreatedEvent(room.id));
 
 		return room;
 	}

@@ -22,10 +22,6 @@ export class RoomArrangementService {
 		return userIdsByArrangement;
 	}
 
-	public async addRoomToUserArrangements(userIds: EntityId[], roomId: EntityId): Promise<void> {
-		await this.roomArrangementRepo.addItemToUserArrangements(userIds, { id: roomId });
-	}
-
 	public async moveRoom(userId: EntityId, roomId: EntityId, toPosition: number): Promise<void> {
 		const items = await this.roomArrangementRepo.findArrangementItemsByUserId(userId);
 
@@ -43,10 +39,6 @@ export class RoomArrangementService {
 		items.splice(toPosition, 0, roomItem);
 
 		await this.roomArrangementRepo.updateArrangement(userId, items);
-	}
-
-	public async removeRoomFromAllArrangements(roomId: EntityId): Promise<void> {
-		await this.roomArrangementRepo.removeRoomFromAllArrangements(roomId);
 	}
 
 	public async deleteArrangement(userId: EntityId): Promise<void> {
