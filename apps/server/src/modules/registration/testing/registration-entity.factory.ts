@@ -14,7 +14,6 @@ export const registrationEntityFactory = EntityFactory.define<RegistrationEntity
 			lastName: `LastName${sequence}`,
 			password: '',
 			consent: [],
-			pin: '',
 			language: LanguageType.DE,
 			roomIds: [new ObjectId().toHexString()],
 			registrationHash: `hash${sequence}`,

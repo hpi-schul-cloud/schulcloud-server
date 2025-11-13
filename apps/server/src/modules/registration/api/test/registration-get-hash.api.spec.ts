@@ -48,7 +48,6 @@ describe('Room Controller (API)', () => {
 				firstName: registration.firstName,
 				lastName: registration.lastName,
 				consent: registration.consent,
-				pin: registration.pin,
 				password: registration.password,
 				language: registration.language,
 				roomIds: registration.roomIds,

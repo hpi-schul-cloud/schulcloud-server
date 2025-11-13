@@ -74,7 +74,6 @@ describe('RegistrationService', () => {
 				consent: [Consent.TERMS_OF_USE],
 				language: LanguageType.EN,
 				password: 'new password',
-				pin: 'random-pin',
 				roomIds: ['room-id'],
 			};
 

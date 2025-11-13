@@ -54,7 +54,6 @@ describe('Registration Controller (API)', () => {
 			const updateParams: UpdateRegistrationBodyParams = {
 				consent: [Consent.TERMS_OF_USE, Consent.PRIVACY],
 				password: 'mockPassword123&',
-				pin: '5678new',
 				language: LanguageType.EN,
 				roomIds: [],
 			};

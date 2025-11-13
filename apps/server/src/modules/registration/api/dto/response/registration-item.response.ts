@@ -25,10 +25,6 @@ export class RegistrationItemResponse {
 	@IsEnum(Consent, { each: true })
 	public consent: Consent[];
 
-	// do we want to expose the pin in the response?
-	@ApiProperty()
-	public pin: string;
-
 	@ApiProperty({ enum: LanguageType, enumName: 'LanguageType' })
 	@IsEnum(LanguageType)
 	public language: LanguageType;
@@ -53,7 +49,6 @@ export class RegistrationItemResponse {
 		this.lastName = registration.lastName;
 		this.password = registration.password;
 		this.consent = registration.consent;
-		this.pin = registration.pin;
 		this.language = registration.language;
 		this.roomIds = registration.roomIds;
 		this.registrationHash = registration.registrationHash;

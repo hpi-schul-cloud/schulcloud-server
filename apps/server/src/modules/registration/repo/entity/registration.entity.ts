@@ -23,10 +23,6 @@ export class RegistrationEntity extends BaseEntityWithTimestamps implements Regi
 	@Property({ nullable: false })
 	consent!: Consent[];
 
-	// question if pin is actually needed or if its verification enough to just send the registration to the specific email
-	@Property({ nullable: false })
-	pin!: string;
-
 	@Property({ nullable: false })
 	language!: LanguageType;
 

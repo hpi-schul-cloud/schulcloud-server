@@ -36,13 +36,6 @@ export class UpdateRegistrationBodyParams implements RegistrationUpdateProps {
 	})
 	public password!: string;
 
-	@IsString()
-	@ApiProperty({
-		description: 'The given pin for the registration process.',
-		required: true,
-	})
-	public pin!: string;
-
 	@IsArray()
 	@IsMongoId({ each: true })
 	@ApiProperty({

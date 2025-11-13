@@ -11,7 +11,6 @@ export class RegistrationMapper {
 			lastName: registration.lastName,
 			password: registration.password,
 			consent: registration.consent,
-			pin: registration.pin,
 			language: registration.language,
 			roomIds: registration.roomIds?.map((id) => id.toString()) ?? [],
 			registrationHash: registration.registrationHash,

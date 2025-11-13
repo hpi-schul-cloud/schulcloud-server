@@ -16,7 +16,6 @@ describe('Registration', () => {
 		lastName: 'Doe',
 		password: 'password',
 		consent: [Consent.TERMS_OF_USE],
-		pin: '1234',
 		language: LanguageType.DE,
 		roomIds: [roomId],
 		registrationHash: 'someHashValue',
@@ -68,12 +67,6 @@ describe('Registration', () => {
 		expect(registration.consent).toEqual([Consent.TERMS_OF_USE]);
 		registration.consent = [Consent.TERMS_OF_USE, Consent.PRIVACY];
 		expect(registration.consent).toEqual([Consent.TERMS_OF_USE, Consent.PRIVACY]);
-	});
-
-	it('should get and set pin', () => {
-		expect(registration.pin).toEqual('1234');
-		registration.pin = '5678';
-		expect(registration.pin).toEqual('5678');
 	});
 
 	it('should get and set language', () => {

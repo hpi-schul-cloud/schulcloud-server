@@ -16,7 +16,6 @@ export class RegistrationService {
 			lastName: props.lastName,
 			password: '',
 			consent: props.consent,
-			pin: '',
 			language: props.language,
 			roomIds: props.roomIds,
 			// we will create a proper hash here later
@@ -36,8 +35,6 @@ export class RegistrationService {
 
 		registration.password = encryptedUpdatedPassword;
 		registration.consent = props.consent;
-		// separate the update of the pin into separate method as its done by resending the pin?
-		registration.pin = props.pin;
 		registration.language = props.language;
 		registration.roomIds = props.roomIds;
 

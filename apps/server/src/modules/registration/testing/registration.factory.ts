@@ -12,7 +12,6 @@ export const registrationFactory = BaseFactory.define<Registration, Registration
 		lastName: `LastName${sequence}`,
 		password: `password${sequence}`,
 		consent: [Consent.TERMS_OF_USE],
-		pin: `1234${sequence}`,
 		language: LanguageType.DE,
 		roomIds: [new ObjectId().toHexString()],
 		registrationHash: `hash${sequence}`,

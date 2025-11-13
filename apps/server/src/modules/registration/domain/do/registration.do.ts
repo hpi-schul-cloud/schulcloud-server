@@ -10,8 +10,6 @@ export interface RegistrationProps extends AuthorizableObject {
 	lastName: string;
 	password: string;
 	consent: Consent[];
-	// question if pin is actually needed or if its verification enough to just send the registration to the specific email
-	pin: string;
 	language: LanguageType;
 	roomIds: EntityId[];
 	registrationHash: string;
@@ -23,7 +21,7 @@ export type RegistrationCreateProps = Pick<
 	RegistrationProps,
 	'email' | 'firstName' | 'lastName' | 'consent' | 'language' | 'roomIds'
 >;
-export type RegistrationUpdateProps = Pick<RegistrationProps, 'password' | 'consent' | 'pin' | 'language' | 'roomIds'>;
+export type RegistrationUpdateProps = Pick<RegistrationProps, 'password' | 'consent' | 'language' | 'roomIds'>;
 
 export class Registration extends DomainObject<RegistrationProps> {
 	constructor(props: RegistrationProps) {
@@ -66,14 +64,6 @@ export class Registration extends DomainObject<RegistrationProps> {
 
 	set consent(value: Consent[]) {
 		this.props.consent = value;
-	}
-
-	get pin(): string {
-		return this.props.pin;
-	}
-
-	set pin(value: string) {
-		this.props.pin = value;
 	}
 
 	get language(): LanguageType {
