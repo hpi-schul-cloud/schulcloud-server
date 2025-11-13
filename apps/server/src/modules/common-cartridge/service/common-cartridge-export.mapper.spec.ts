@@ -174,14 +174,12 @@ describe('CommonCartridgeExportMapper', () => {
 							title: faker.lorem.sentence(),
 							client: faker.company.name(),
 							description: faker.lorem.sentence(),
-							merlinReference: faker.string.uuid(),
 						},
 						{
 							url: faker.internet.url(),
 							title: faker.lorem.sentence(),
 							client: faker.company.name(),
 							description: faker.lorem.sentence(),
-							merlinReference: faker.string.uuid(),
 						},
 					],
 				};
