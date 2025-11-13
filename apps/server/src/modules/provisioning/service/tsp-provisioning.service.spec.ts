@@ -163,7 +163,7 @@ describe('TspProvisioningService', () => {
 				const classId = faker.string.uuid();
 				const externalClass = externalClassDtoFactory.build({
 					externalId: classId,
-					name: withName ? faker.string.uuid() : '',
+					name: withName ? faker.person.fullName() : '',
 				});
 
 				const usersOfClasses = new Map([
@@ -216,7 +216,7 @@ describe('TspProvisioningService', () => {
 				const classId = faker.string.uuid();
 				const externalClass = externalClassDtoFactory.build({
 					externalId: classId,
-					name: withName ? faker.string.uuid() : '',
+					name: withName ? faker.person.fullName() : '',
 				});
 
 				const usersOfClasses = new Map([
