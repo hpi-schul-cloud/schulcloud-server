@@ -88,7 +88,7 @@ describe('RegistrationRepo', () => {
 			return { registrationEntity, mockedEmail };
 		};
 
-		it('should be able to find a registration by its email', async () => {
+		it('should be able to find an existing registration by its email', async () => {
 			const { registrationEntity, mockedEmail } = await setup();
 			const result = await repo.findByEmail(mockedEmail);
 			const expectedProps = {
@@ -96,7 +96,12 @@ describe('RegistrationRepo', () => {
 				roomIds: registrationEntity.roomIds.map((id) => new ObjectId(id)),
 			};
 
-			expect(result.getProps()).toEqual(expectedProps);
+			expect(result?.getProps()).toEqual(expectedProps);
+		});
+
+		it('should return null when trying to find a non-existing registration', async () => {
+			const result = await repo.findByEmail('nonexistent@example.com');
+			expect(result).toBeNull();
 		});
 	});
 

@@ -30,10 +30,14 @@ export class RegistrationRepo {
 		return domainObject;
 	}
 
-	public async findByEmail(email: string): Promise<Registration> {
-		const entity = await this.em.findOneOrFail(RegistrationEntity, {
+	public async findByEmail(email: string): Promise<Registration | null> {
+		const entity = await this.em.findOne(RegistrationEntity, {
 			email,
 		});
+		if (!entity) {
+			return null;
+		}
+
 		const domainObject = RegistrationDomainMapper.mapEntityToDo(entity);
 
 		return domainObject;

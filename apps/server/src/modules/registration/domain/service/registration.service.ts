@@ -56,10 +56,10 @@ export class RegistrationService {
 		return registration;
 	}
 
-	public async getSingleRegistrationByEmail(email: string): Promise<Registration> {
-		const registration = await this.registrationRepo.findByEmail(email);
+	public async getSingleRegistrationByEmail(email: string): Promise<Registration | null> {
+		const registrationResult = await this.registrationRepo.findByEmail(email);
 
-		return registration;
+		return registrationResult;
 	}
 
 	public async getSingleRegistrationByHash(registrationHash: string): Promise<Registration> {
