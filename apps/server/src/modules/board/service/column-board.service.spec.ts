@@ -5,7 +5,13 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, ColumnBoardProps } from '../domain';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	BoardNodeFactory,
+	ColumnBoard,
+	ColumnBoardProps,
+} from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { columnBoardFactory } from '../testing';
 import { BoardNodeService } from './board-node.service';
@@ -15,8 +21,8 @@ import { BoardCopyService, ColumnBoardLinkService } from './internal';
 describe('ColumnBoardService', () => {
 	let module: TestingModule;
 	let service: ColumnBoardService;
-	let repo: jest.Mocked<BoardNodeRepo>;
-	let boardNodeService: jest.Mocked<BoardNodeService>;
+	let repo: DeepMocked<BoardNodeRepo>;
+	let boardNodeService: DeepMocked<BoardNodeService>;
 	let boardCopyService: DeepMocked<BoardCopyService>;
 	let columnBoardLinkService: DeepMocked<ColumnBoardLinkService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
@@ -33,6 +39,7 @@ describe('ColumnBoardService', () => {
 					provide: BoardNodeService,
 					useValue: createMock<BoardNodeService>(),
 				},
+				BoardNodeFactory,
 				{
 					provide: BoardCopyService,
 					useValue: createMock<BoardCopyService>(),
