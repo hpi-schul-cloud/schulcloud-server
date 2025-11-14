@@ -16,6 +16,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomEntity } from '../../repo';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
+import { waitForEventBus } from './util/wait-for-event-bus';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -126,6 +127,8 @@ describe('Room Controller (API)', () => {
 
 					const response = await loggedInClient.delete(room.id);
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
+
+					await waitForEventBus();
 					await expect(em.findOneOrFail(RoomMembershipEntity, { roomId: room.id })).rejects.toThrow(NotFoundException);
 				});
 
@@ -137,6 +140,8 @@ describe('Room Controller (API)', () => {
 
 					const response = await loggedInClient.delete(room.id);
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
+
+					await waitForEventBus();
 					await expect(em.findOneOrFail(BoardNodeEntity, { id: columnBoard.id })).rejects.toThrow(NotFoundException);
 				});
 
@@ -148,6 +153,8 @@ describe('Room Controller (API)', () => {
 
 					const response = await loggedInClient.delete(room.id);
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
+
+					await waitForEventBus();
 					await expect(em.findOneOrFail('RoomContentEntity', { roomId: room.id })).rejects.toThrow(NotFoundException);
 				});
 

@@ -25,6 +25,7 @@ import { Room } from '../domain';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
 import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
+import { MoveItemBodyParams } from './dto/request/move-item.body.params';
 import { PassOwnershipBodyParams } from './dto/request/pass-ownership.body.params';
 import { RemoveRoomMembersBodyParams } from './dto/request/remove-room-members.body.params';
 import { RoomPaginationParams } from './dto/request/room-pagination.params';
@@ -37,13 +38,14 @@ import { RoomItemResponse } from './dto/response/room-item.response';
 import { RoomListResponse } from './dto/response/room-list.response';
 import { RoomMemberListResponse } from './dto/response/room-member-list.response';
 import { RoomRoleResponse } from './dto/response/room-role.response';
+import { RoomStatsListResponse } from './dto/response/room-stats-list.repsonse';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomCopyUc } from './room-copy.uc';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
 import { RoomUc } from './room.uc';
-import { RoomStatsListResponse } from './dto/response/room-stats-list.repsonse';
-import { MoveItemBodyParams } from './dto/request/move-item.body.params';
+import { RoomContentUc } from './room-content.uc';
+import { RoomArrangementUc } from './room-arrangement.uc';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -51,6 +53,8 @@ import { MoveItemBodyParams } from './dto/request/move-item.body.params';
 export class RoomController {
 	constructor(
 		private readonly roomUc: RoomUc,
+		private readonly roomArrangementUc: RoomArrangementUc,
+		private readonly roomContentUc: RoomContentUc,
 		private readonly roomCopyUc: RoomCopyUc,
 		private readonly roomInvitationLinkUc: RoomInvitationLinkUc
 	) {}
@@ -62,17 +66,26 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	public async getRooms(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Query() pagination: RoomPaginationParams
-	): Promise<RoomListResponse> {
-		const findOptions: IFindOptions<Room> = { pagination };
+	public async getRooms(@CurrentUser() currentUser: ICurrentUser): Promise<RoomListResponse> {
+		const rooms = await this.roomArrangementUc.getRoomsByUserArrangement(currentUser.userId);
 
-		const rooms = await this.roomUc.getRooms(currentUser.userId, findOptions);
-
-		const response = RoomMapper.mapToRoomListResponse(rooms, pagination);
+		const response = RoomMapper.mapToRoomListResponse(rooms);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: 'Move a single room item.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch('')
+	public async moveRoom(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() bodyParams: MoveItemBodyParams
+	): Promise<void> {
+		await this.roomArrangementUc.moveRoomInUserArrangement(currentUser.userId, bodyParams.id, bodyParams.toPosition);
 	}
 
 	@Get('stats')
@@ -147,7 +160,7 @@ export class RoomController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<RoomBoardListResponse> {
-		const boards = await this.roomUc.getRoomBoards(currentUser.userId, urlParams.roomId);
+		const boards = await this.roomContentUc.getRoomBoards(currentUser.userId, urlParams.roomId);
 
 		const response = RoomMapper.mapToRoomBoardListResponse(boards);
 
@@ -166,7 +179,7 @@ export class RoomController {
 		@Param() urlParams: RoomUrlParams,
 		@Body() bodyParams: MoveItemBodyParams
 	): Promise<void> {
-		await this.roomUc.moveBoard(currentUser.userId, urlParams.roomId, bodyParams.id, bodyParams.toPosition);
+		await this.roomContentUc.moveBoard(currentUser.userId, urlParams.roomId, bodyParams.id, bodyParams.toPosition);
 	}
 
 	@Get(':roomId/room-invitation-links')

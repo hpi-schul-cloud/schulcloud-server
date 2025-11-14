@@ -1,16 +1,16 @@
-import { EntityId } from '@shared/domain/types';
 import { Action, AuthorizationService } from '@modules/authorization';
-import { Permission } from '@shared/domain/interface';
+import { RoleName } from '@modules/role';
+import { Room } from '@modules/room';
 import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { RoomConfig } from '../../room.config';
-import { RoleName } from '@modules/role';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { RoomService } from '../../domain/service/room.service';
+import { RoomConfig } from '../../room.config';
 import { LockedRoomLoggableException } from '../loggables/locked-room-loggable-exception';
-import { Room } from '@modules/room';
-import { User } from '@modules/user/repo';
 
 @Injectable()
 export class RoomPermissionService {
@@ -83,5 +83,17 @@ export class RoomPermissionService {
 		]);
 		const isAllowed = canDeleteRoom || (isOwnSchool && canAdministrateSchoolRooms);
 		return isAllowed;
+	}
+
+	public async getReadableRoomIdsForUser(user: User): Promise<EntityId[]> {
+		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(user.id);
+
+		const readableRoomIds = roomAuthorizables
+			.filter((item) =>
+				this.authorizationService.hasPermission(user, item, { action: Action.read, requiredPermissions: [] })
+			)
+			.map((item) => item.roomId);
+
+		return readableRoomIds;
 	}
 }

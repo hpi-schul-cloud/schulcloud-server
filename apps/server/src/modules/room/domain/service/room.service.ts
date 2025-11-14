@@ -1,12 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { ValidationError } from '@shared/common/error';
-import { Page } from '@shared/domain/domainobject';
-import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { RoomRepo } from '../../repo';
 import { Room, RoomCreateProps, RoomProps, RoomUpdateProps } from '../do';
-import { EventBus } from '@nestjs/cqrs';
 import { RoomDeletedEvent } from '../events/room-deleted.event';
 import { RoomFeatures } from '../type';
 
@@ -14,19 +12,7 @@ import { RoomFeatures } from '../type';
 export class RoomService {
 	constructor(private readonly roomRepo: RoomRepo, private readonly eventBus: EventBus) {}
 
-	public async getRooms(findOptions: IFindOptions<Room>): Promise<Page<Room>> {
-		const rooms: Page<Room> = await this.roomRepo.findRooms(findOptions);
-
-		return rooms;
-	}
-
-	public async getRoomsByIds(roomIds: EntityId[], findOptions: IFindOptions<Room>): Promise<Page<Room>> {
-		const rooms: Page<Room> = await this.roomRepo.findRoomsByIds(roomIds, findOptions);
-
-		return rooms;
-	}
-
-	public async getAllByIds(roomIds: EntityId[]): Promise<Room[]> {
+	public async getRoomsByIds(roomIds: EntityId[]): Promise<Room[]> {
 		const rooms = await this.roomRepo.findByIds(roomIds);
 
 		return rooms;

@@ -1,8 +1,6 @@
-import { QueryOrder, Utils } from '@mikro-orm/core';
+import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Page } from '@shared/domain/domainobject';
-import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Room } from '../domain/do/room.do';
 import { RoomEntity } from './entity/room.entity';
@@ -13,43 +11,15 @@ import { RoomScope } from './room.scope';
 export class RoomRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	public async findRooms(findOptions: IFindOptions<Room>): Promise<Page<Room>> {
+	public async findAll(): Promise<Room[]> {
 		const scope = new RoomScope();
 		scope.allowEmptyQuery(true);
 
-		const options = {
-			offset: findOptions?.pagination?.skip,
-			limit: findOptions?.pagination?.limit,
-			orderBy: { name: QueryOrder.ASC },
-		};
+		const entities = await this.em.find(RoomEntity, scope.query);
 
-		const [entities, total] = await this.em.findAndCount(RoomEntity, scope.query, options);
+		const domainObjects = entities.map((entity) => RoomDomainMapper.mapEntityToDo(entity));
 
-		const domainObjects: Room[] = entities.map((entity) => RoomDomainMapper.mapEntityToDo(entity));
-
-		const page = new Page<Room>(domainObjects, total);
-
-		return page;
-	}
-
-	public async findRoomsByIds(roomIds: EntityId[], findOptions: IFindOptions<Room>): Promise<Page<Room>> {
-		const scope = new RoomScope();
-		scope.allowEmptyQuery(true);
-		scope.byIds(roomIds);
-
-		const options = {
-			offset: findOptions?.pagination?.skip,
-			limit: findOptions?.pagination?.limit,
-			orderBy: { name: QueryOrder.ASC },
-		};
-
-		const [entities, total] = await this.em.findAndCount(RoomEntity, scope.query, options);
-
-		const domainObjects: Room[] = entities.map((entity) => RoomDomainMapper.mapEntityToDo(entity));
-
-		const page = new Page<Room>(domainObjects, total);
-
-		return page;
+		return domainObjects;
 	}
 
 	public async findByIds(ids: EntityId[]): Promise<Room[]> {
@@ -92,7 +62,7 @@ export class RoomRepo {
 		await this.em.flush();
 	}
 
-	private async flush(): Promise<void> {
+	private flush(): Promise<void> {
 		return this.em.flush();
 	}
 }

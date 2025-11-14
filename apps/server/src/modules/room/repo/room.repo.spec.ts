@@ -1,7 +1,6 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page } from '@shared/domain/domainobject';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { Room } from '../domain/do/room.do';
@@ -33,30 +32,30 @@ describe('RoomRepo', () => {
 		await cleanupCollections(em);
 	});
 
-	describe('findRooms', () => {
+	describe('findAll', () => {
 		const setup = async () => {
 			const roomEntities = roomEntityFactory.buildWithId();
 			await em.persistAndFlush([roomEntities]);
 			em.clear();
 
 			const room = RoomDomainMapper.mapEntityToDo(roomEntities);
-			const page = new Page<Room>([room], 1);
+			const list = [room];
 
-			return { roomEntities, room, page };
+			return { roomEntities, room, list };
 		};
 
 		it('should return rooms domain object', async () => {
 			const { room } = await setup();
-			const result = await repo.findRooms({});
+			const result = await repo.findAll();
 
-			expect(result.data[0]).toEqual(room);
+			expect(result[0]).toEqual(room);
 		});
 
 		it('should return paginated Roms', async () => {
-			const { page } = await setup();
-			const result = await repo.findRooms({ pagination: { skip: 0, limit: 10 } });
+			const { list } = await setup();
+			const result = await repo.findAll();
 
-			expect(result).toEqual(page);
+			expect(result).toEqual(list);
 		});
 	});
 
@@ -131,7 +130,7 @@ describe('RoomRepo', () => {
 		});
 	});
 
-	describe('findRoomsByIds', () => {
+	describe('findByIds', () => {
 		const setup = async () => {
 			const roomEntities = roomEntityFactory.buildListWithId(5);
 			await em.persistAndFlush(roomEntities);
@@ -146,28 +145,18 @@ describe('RoomRepo', () => {
 		it('should return rooms with matching ids', async () => {
 			const { roomIds } = await setup();
 
-			const result = await repo.findRoomsByIds(roomIds.slice(0, 3), {});
+			const result = await repo.findByIds(roomIds.slice(0, 3));
 
-			expect(result.data.length).toBe(3);
-			expect(result.data.map((room) => room.id)).toEqual(expect.arrayContaining(roomIds.slice(0, 3)));
-		});
-
-		it('should return paginated results', async () => {
-			const { roomIds } = await setup();
-
-			const result = await repo.findRoomsByIds(roomIds, { pagination: { skip: 2, limit: 2 } });
-
-			expect(result.data.length).toBe(2);
-			expect(result.total).toBe(5);
+			expect(result.length).toBe(3);
+			expect(result.map((room) => room.id)).toEqual(expect.arrayContaining(roomIds.slice(0, 3)));
 		});
 
 		it('should return empty array if no matching ids', async () => {
 			await setup();
 
-			const result = await repo.findRoomsByIds(['nonexistent-id'], {});
+			const result = await repo.findByIds(['nonexistent-id']);
 
-			expect(result.data).toEqual([]);
-			expect(result.total).toBe(0);
+			expect(result).toEqual([]);
 		});
 	});
 

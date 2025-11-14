@@ -3,6 +3,8 @@ import { CourseEntity } from '@modules/course/repo';
 import { Pseudonym } from '@modules/pseudonym/repo';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { RoleName } from '@modules/role';
+import { Room, RoomService } from '@modules/room';
+import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
@@ -19,8 +21,6 @@ import { EntityId } from '@shared/domain/types';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '../../board';
 import { ExternalToolElement } from '../../board/domain';
 import { RosterConfig } from '../roster.config';
-import { Room, RoomService } from '@modules/room';
-import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
 
 interface UserMetadata {
 	data: {
@@ -187,7 +187,7 @@ export class FeathersRosterService {
 		if (!roomAuthorizables) return [];
 		const roomIds = roomAuthorizables.map((item) => item.roomId);
 
-		const rooms = await this.roomService.getAllByIds(roomIds);
+		const rooms = await this.roomService.getRoomsByIds(roomIds);
 
 		const filteredRooms = rooms.filter((room) => {
 			const hasOwner = roomAuthorizables.some(

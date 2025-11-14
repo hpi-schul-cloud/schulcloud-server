@@ -1,18 +1,17 @@
 import { ColumnBoard } from '@modules/board';
+import { PaginationParams } from '@shared/controller/dto';
 import { Page } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { Room } from '../../domain/do/room.do';
-import { RoomPaginationParams } from '../dto/request/room-pagination.params';
 import { RoomBoardItemResponse } from '../dto/response/room-board-item.response';
 import { RoomBoardListResponse } from '../dto/response/room-board-list.response';
 import { RoomDetailsResponse } from '../dto/response/room-details.response';
 import { RoomItemResponse } from '../dto/response/room-item.response';
 import { RoomListResponse } from '../dto/response/room-list.response';
-import { PaginationParams } from '@shared/controller/dto';
-import { RoomStatsListResponse } from '../dto/response/room-stats-list.repsonse';
 import { RoomStatsItemResponse } from '../dto/response/room-stats-item.response';
+import { RoomStatsListResponse } from '../dto/response/room-stats-list.repsonse';
 import { RoomStats } from '../type/room-stats.type';
-import { RoomWithLockedStatus } from '../room.uc';
+import { RoomWithLockedStatus } from '../type/room-with-locked-status';
 
 export class RoomMapper {
 	public static mapToRoomItemResponse({ room, isLocked }: RoomWithLockedStatus): RoomItemResponse {
@@ -31,14 +30,11 @@ export class RoomMapper {
 		return response;
 	}
 
-	public static mapToRoomListResponse(
-		rooms: Page<RoomWithLockedStatus>,
-		pagination: RoomPaginationParams
-	): RoomListResponse {
-		const roomResponseData: RoomItemResponse[] = rooms.data.map(
+	public static mapToRoomListResponse(rooms: RoomWithLockedStatus[]): RoomListResponse {
+		const roomResponseData: RoomItemResponse[] = rooms.map(
 			(room): RoomItemResponse => this.mapToRoomItemResponse(room)
 		);
-		const response = new RoomListResponse(roomResponseData, rooms.total, pagination.skip, pagination.limit);
+		const response = new RoomListResponse(roomResponseData);
 
 		return response;
 	}

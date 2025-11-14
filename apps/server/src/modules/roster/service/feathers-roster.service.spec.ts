@@ -10,6 +10,9 @@ import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { PseudonymService } from '@modules/pseudonym';
 import { pseudonymFactory } from '@modules/pseudonym/testing';
 import { RoleDto, RoleName } from '@modules/role';
+import { Room, RoomService } from '@modules/room';
+import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
+import { roomFactory } from '@modules/room/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
@@ -30,9 +33,6 @@ import { setupEntities } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { RosterConfig } from '../roster.config';
 import { FeathersRosterService } from './feathers-roster.service';
-import { Room, RoomService } from '@modules/room';
-import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
-import { roomFactory } from '@modules/room/testing';
 
 import { Permission } from '@shared/domain/interface';
 
@@ -471,7 +471,7 @@ describe('FeathersRosterService', () => {
 				]);
 
 				roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValueOnce(roomMembershipAuthorizable);
-				roomService.getAllByIds.mockResolvedValueOnce([room]);
+				roomService.getRoomsByIds.mockResolvedValueOnce([room]);
 				userService.findById.mockResolvedValueOnce(user);
 
 				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]); // TODO?
@@ -503,7 +503,7 @@ describe('FeathersRosterService', () => {
 
 				await service.getUserGroups(pseudonym.pseudonym, clientId);
 
-				expect(roomService.getAllByIds).toHaveBeenCalledWith([room.id]);
+				expect(roomService.getRoomsByIds).toHaveBeenCalledWith([room.id]);
 			});
 
 			it('should return a group for each room where the tool of the users pseudonym is used', async () => {
