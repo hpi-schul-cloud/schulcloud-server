@@ -1,8 +1,11 @@
+import { ICurrentUser } from '@infra/auth-guard';
 import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { CardClientAdapter, CardControllerCreateElement201Response } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
+import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { Injectable } from '@nestjs/common';
+import pLimit from 'p-limit';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import {
 	CommonCartridgeFileFolderResourceProps,
@@ -11,8 +14,6 @@ import {
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
-import { FilesStorageClientAdapter } from '@infra/files-storage-client';
-import { ICurrentUser } from '@infra/auth-guard';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;
@@ -56,14 +57,17 @@ export class CommonCartridgeImportService {
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
 		const createdBoardIds = new Map<string, string>();
-		for await (const board of boards) {
-			const response = await this.boardsClient.createBoard({
-				title: board.title,
-				layout: 'columns',
-				parentId,
-				parentType: 'course',
-			});
+		const limit = pLimit(5);
 
+		for await (const board of boards) {
+			const response = await limit(() =>
+				this.boardsClient.createBoard({
+					title: board.title,
+					layout: 'columns',
+					parentId,
+					parentType: 'course',
+				})
+			);
 			createdBoardIds.set(board.identifier, response.id);
 		}
 
