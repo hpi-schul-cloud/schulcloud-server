@@ -415,4 +415,37 @@ export class H5PEditorUc {
 		const response = await this.postAjax(userId, query, body, undefined, file);
 		return response;
 	}
+
+	public async saveUploadedFileTemp(userId: EntityId, file: Express.Multer.File): Promise<string> {
+		const user = this.changeUserType(userId);
+
+		// Use postAjax with 'library-upload' action to save the file temporarily
+		const query: AjaxPostQueryParams = { action: 'library-upload' };
+		const body: AjaxPostBodyParams = {
+			contentId: '',
+			field: '',
+		};
+		const result = await this.h5pAjaxEndpoint.postAjax(
+			query.action,
+			body,
+			await this.getUserLanguage(userId),
+			user,
+			undefined,
+			undefined,
+			undefined,
+			{
+				data: file.buffer,
+				mimetype: file.mimetype,
+				name: file.originalname,
+				size: file.size,
+			}
+		);
+
+		// Extract the temp file path from the result if available
+		if (result && typeof result === 'object' && 'path' in result && typeof result.path === 'string') {
+			return result.path;
+		}
+
+		throw new Error('Failed to save uploaded file temporarily.');
+	}
 }

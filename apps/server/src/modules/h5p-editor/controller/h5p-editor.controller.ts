@@ -14,6 +14,7 @@ import {
 	Get,
 	HttpStatus,
 	InternalServerErrorException,
+	NotFoundException,
 	Param,
 	Post,
 	Query,
@@ -247,8 +248,10 @@ export class H5PEditorController {
 	public async saveH5pContent(
 		@Body() body: PostH5PContentCreateParams,
 		@Param() params: SaveH5PEditorParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
+		@UploadedFile() file: Express.Multer.File
 	): Promise<H5PSaveResponse> {
+		await this.h5pEditorUc.saveUploadedFileTemp(currentUser.userId, file);
 		const response = await this.h5pEditorUc.saveH5pContentGetMetadata(
 			params.contentId,
 			currentUser.userId,
@@ -300,7 +303,11 @@ export class H5PEditorController {
 		return new StreamableFile(rs);
 	}
 
-	@Post('/import')
+	@ApiOperation({ summary: 'Import H5P file inside card on board' })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Post('/import/:contentId')
 	@UseInterceptors(
 		FileInterceptor('h5p', {
 			limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
@@ -314,6 +321,7 @@ export class H5PEditorController {
 		@UploadedFile() file: Express.Multer.File,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Res({ passthrough: true }) res: Response
+		// @Param('contentId') contentId: string
 	): Promise<
 		| AjaxSuccessResponse
 		| {
