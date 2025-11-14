@@ -3,19 +3,20 @@ import { BoardExternalReferenceType } from '@modules/board';
 import { columnBoardEntityFactory } from '@modules/board/testing';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
+import { UserSchoolEmbeddable } from '@modules/user/repo';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { roomEntityFactory } from '../../testing';
-import { UserSchoolEmbeddable } from '@modules/user/repo';
-import { RoleName } from '@modules/role';
-import { roleFactory } from '@modules/role/testing';
+import { RoomContentType } from '../../domain';
+import { roomContentEntityFactory, roomEntityFactory } from '../../testing';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -75,15 +76,16 @@ describe('Room Controller (API)', () => {
 				const boards = columnBoardEntityFactory.buildList(3, {
 					context: { type: BoardExternalReferenceType.Room, id: room.id },
 				});
-				em.create('RoomContentEntity', {
+				const roomContent = roomContentEntityFactory.build({
 					roomId: room.id,
-					items: boards.reverse().map((board) => {
+					items: [boards[2], boards[0], boards[1]].map((board) => {
 						return {
 							id: board.id,
-							type: 'board',
+							type: RoomContentType.BOARD,
 						};
 					}),
 				});
+				await em.persistAndFlush(roomContent);
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
@@ -126,7 +128,7 @@ describe('Room Controller (API)', () => {
 
 					expect(response.status).toBe(HttpStatus.OK);
 					expect((response.body as { data: Record<string, unknown> }).data).toEqual(
-						boards.map((board) => {
+						[boards[2], boards[0], boards[1]].map((board) => {
 							return {
 								id: board.id,
 								title: board.title,

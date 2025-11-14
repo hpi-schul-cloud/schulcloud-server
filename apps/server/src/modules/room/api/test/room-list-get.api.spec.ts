@@ -2,6 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing/room-membership-entity.factory';
+import { roomArrangementEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
@@ -124,7 +125,7 @@ describe('Room Controller (API)', () => {
 					data: [...data, ...dataLocked],
 				};
 
-				return { loggedInClient, expectedResponse };
+				return { loggedInClient, studentUser, school, rooms, roomsLocked, userGroupEntity, expectedResponse };
 			};
 
 			it('should return a list of rooms', async () => {
@@ -137,10 +138,83 @@ describe('Room Controller (API)', () => {
 			});
 
 			it('should return an alphabetically sorted list of rooms', async () => {
-				const { loggedInClient } = await setup();
+				const { loggedInClient, rooms, roomsLocked } = await setup();
+
 				const response = await loggedInClient.get();
-				const rooms = response.body as RoomListResponse;
-				expect(rooms.data).toEqual(rooms.data.sort((a, b) => a.name.localeCompare(b.name)));
+
+				const result = response.body as RoomListResponse;
+				const resultNames = result.data.map((r) => r.name);
+				const expectedNames = [...rooms, ...roomsLocked].map((r) => r.name).sort((a, b) => a.localeCompare(b));
+
+				expect(resultNames).toEqual(expectedNames);
+			});
+
+			describe('when there is a rooms arrangement for the user', () => {
+				const setupWithArrangement = async () => {
+					const fixtures = await setup();
+					const { studentUser, rooms, roomsLocked } = fixtures;
+
+					const roomArrangement = roomArrangementEntityFactory.build({
+						userId: studentUser.id,
+						items: [...roomsLocked, ...rooms].map((room) => {
+							return { id: room.id };
+						}),
+					});
+					await em.persistAndFlush([roomArrangement]);
+					em.clear();
+
+					return { ...fixtures, roomArrangement };
+				};
+
+				it('should return the rooms in the arranged order', async () => {
+					const { loggedInClient, roomArrangement } = await setupWithArrangement();
+
+					const response = await loggedInClient.get();
+
+					const result = response.body as RoomListResponse;
+					const resultIds = result.data.map((room) => room.id);
+					const expectedIds = roomArrangement.items.map((item) => item.id);
+
+					expect(resultIds).toEqual(expectedIds);
+				});
+
+				describe('when a room was added that is not in the arrangement', () => {
+					it('should return the new room at the end of the list', async () => {
+						const { loggedInClient, userGroupEntity, school } = await setupWithArrangement();
+
+						const otherRoom = roomEntityFactory.buildWithId({ schoolId: school.id });
+						const roomMembership = roomMembershipEntityFactory.build({
+							userGroupId: userGroupEntity.id,
+							roomId: otherRoom.id,
+							schoolId: school.id,
+						});
+						await em.persistAndFlush([otherRoom, roomMembership]);
+						em.clear();
+
+						const response = await loggedInClient.get();
+
+						const result = response.body as RoomListResponse;
+						expect(result.data[result.data.length - 1].id).toBe(otherRoom.id);
+					});
+				});
+
+				describe('when a room from the arrangement was deleted', () => {
+					it('should return the remaining rooms in the arranged order', async () => {
+						const { loggedInClient, rooms, roomArrangement } = await setupWithArrangement();
+
+						// Delete one of the rooms in the arrangement
+						await em.nativeDelete('RoomEntity', { id: rooms[0].id });
+						await em.nativeDelete('RoomMembershipEntity', { id: rooms[0].id });
+
+						const response = await loggedInClient.get();
+
+						const result = response.body as RoomListResponse;
+						const resultIds = result.data.map((room) => room.id);
+						const expectedIds = roomArrangement.items.filter((item) => item.id !== rooms[0].id).map((item) => item.id);
+
+						expect(resultIds.length).toEqual(expectedIds.length);
+					});
+				});
 			});
 		});
 
