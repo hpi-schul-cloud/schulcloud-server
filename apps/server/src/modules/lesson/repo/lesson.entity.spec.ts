@@ -177,7 +177,6 @@ describe('Lesson Entity', () => {
 							description: 'test description',
 							title: 'test title',
 							url: 'test url',
-							merlinReference: 'test merlin reference',
 						}),
 					],
 				},

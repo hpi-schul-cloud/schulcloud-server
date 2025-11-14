@@ -11,8 +11,6 @@ export class LessonMaterialsDto {
 
 	license: string[];
 
-	merlinReference: string;
-
 	constructor(props: LessonMaterialsDto) {
 		this.materialsId = props.materialsId;
 		this.title = props.title;
@@ -20,6 +18,5 @@ export class LessonMaterialsDto {
 		this.url = props.url;
 		this.client = props.client;
 		this.license = props.license;
-		this.merlinReference = props.merlinReference;
 	}
 }

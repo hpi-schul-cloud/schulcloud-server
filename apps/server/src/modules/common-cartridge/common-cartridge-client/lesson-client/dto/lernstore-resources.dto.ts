@@ -3,8 +3,6 @@ export class LernstoreResourcesDto {
 
 	public description: string;
 
-	public merlinReference?: string;
-
 	public title: string;
 
 	public url?: string;
@@ -12,7 +10,6 @@ export class LernstoreResourcesDto {
 	constructor(props: LernstoreResourcesDto) {
 		this.client = props.client;
 		this.description = props.description;
-		this.merlinReference = props.merlinReference;
 		this.title = props.title;
 		this.url = props.url;
 	}

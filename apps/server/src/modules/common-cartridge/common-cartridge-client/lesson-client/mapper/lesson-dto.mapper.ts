@@ -51,7 +51,6 @@ export class LessonDtoMapper {
 			url: materialResponse.url,
 			client: materialResponse.client,
 			license: materialResponse.license,
-			merlinReference: materialResponse.merlinReference,
 		});
 
 		return lessonMaterialsDto;
