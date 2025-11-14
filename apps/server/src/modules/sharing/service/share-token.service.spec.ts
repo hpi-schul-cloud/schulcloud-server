@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ColumnBoardService } from '@modules/board';
-import { columnBoardFactory } from '@modules/board/testing';
+import { BoardNodeService, ColumnBoardService } from '@modules/board';
+import { cardFactory, columnBoardFactory } from '@modules/board/testing';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
@@ -34,6 +34,7 @@ describe('ShareTokenService', () => {
 	let lessonService: DeepMocked<LessonService>;
 	let taskService: DeepMocked<TaskService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
+	let boardNodeService: DeepMocked<BoardNodeService>;
 	let roomService: DeepMocked<RoomService>;
 
 	beforeAll(async () => {
@@ -65,6 +66,10 @@ describe('ShareTokenService', () => {
 					useValue: createMock<ColumnBoardService>(),
 				},
 				{
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
+				},
+				{
 					provide: RoomService,
 					useValue: createMock<RoomService>(),
 				},
@@ -78,6 +83,7 @@ describe('ShareTokenService', () => {
 		lessonService = await module.get(LessonService);
 		taskService = await module.get(TaskService);
 		columnBoardService = await module.get(ColumnBoardService);
+		boardNodeService = await module.get(BoardNodeService);
 		roomService = await module.get(RoomService);
 		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
 	});
@@ -240,6 +246,25 @@ describe('ShareTokenService', () => {
 
 				const result = await service.lookupTokenWithParentName(shareToken.token);
 				expect(result).toEqual({ shareToken, parentName: room.name });
+			});
+		});
+
+		describe('when parent is card', () => {
+			const setup = () => {
+				const card = cardFactory.build();
+				boardNodeService.findByClassAndId.mockResolvedValue(card);
+
+				const payload = { parentId: card.id, parentType: ShareTokenParentType.Card };
+				const shareToken = shareTokenDOFactory.build({ payload });
+				repo.findOneByToken.mockResolvedValue(shareToken);
+
+				return { card, shareToken };
+			};
+			it('should return shareToken and parent name', async () => {
+				const { card, shareToken } = setup();
+
+				const result = await service.lookupTokenWithParentName(shareToken.token);
+				expect(result).toEqual({ shareToken, parentName: card.title });
 			});
 		});
 

@@ -211,9 +211,7 @@ describe(BoardCopyService.name, () => {
 	});
 
 	describe('copyCard', () => {
-		// Similar tests for copyCard can be implemented here
 		describe('when the copy response is a Card', () => {
-			// Implement tests for successful card copy
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 				const targetSchoolId = new ObjectId().toHexString();
@@ -298,12 +296,50 @@ describe(BoardCopyService.name, () => {
 				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, card.parentId as string);
 			});
 
+			it('should find the destination column when destinationColumnId is provided', async () => {
+				const { copyParams } = setup();
+
+				await service.copyCard({
+					...copyParams,
+					destinationColumnId: 'DUMMY_COLUMN_ID',
+				});
+
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, 'DUMMY_COLUMN_ID');
+			});
+
 			it('should call service to copy the card', async () => {
 				const { copyParams } = setup();
 
 				await service.copyCard(copyParams);
 
 				expect(boardNodeCopyService.copy).toHaveBeenCalled();
+			});
+
+			it('should set the title of the copied card when given', async () => {
+				const { copyParams } = setup();
+				const copyTitle = 'Another Card Title';
+
+				await service.copyCard({
+					...copyParams,
+					copyTitle,
+				});
+
+				expect(boardNodeService.addToParent).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({ title: copyTitle }),
+					expect.any(Number)
+				);
+			});
+
+			it('should not set position of the copied card when destinationColumnId is provided', async () => {
+				const { copyParams, parentColumn, cardCopy } = setup();
+
+				await service.copyCard({
+					...copyParams,
+					destinationColumnId: parentColumn.id,
+				});
+
+				expect(boardNodeService.addToParent).toHaveBeenCalledWith(parentColumn, cardCopy, undefined);
 			});
 
 			it('should save the copied card', async () => {
