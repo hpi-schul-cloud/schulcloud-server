@@ -33,7 +33,6 @@ export class RoomContentUc {
 		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write);
 
 		const board = await this.columnBoardService.findById(boardId);
-
 		await this.checkBoardAuthorization(userId, board);
 
 		await this.roomBoardService.moveBoardInRoom(roomId, boardId, toPosition);
