@@ -25,7 +25,7 @@ export class RegistrationUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkOneOfPermissions(user, [Permission.USER_CREATE]);
 
-		const existingRegistration = await this.checkExistingRegistrationByEmail(props.email, props.roomIds);
+		const existingRegistration = await this.getExistingRegistrationByEmail(props.email, props.roomIds);
 		if (existingRegistration) {
 			return existingRegistration;
 		}
@@ -66,7 +66,7 @@ export class RegistrationUc {
 		return registrations;
 	}
 
-	private async checkExistingRegistrationByEmail(email: string, roomIds: EntityId[]): Promise<Registration | null> {
+	private async getExistingRegistrationByEmail(email: string, roomIds: EntityId[]): Promise<Registration | null> {
 		const existingRegistration = await this.registrationService.getSingleRegistrationByEmail(email);
 		if (existingRegistration) {
 			roomIds.forEach((roomId) => {

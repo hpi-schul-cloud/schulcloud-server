@@ -35,7 +35,7 @@ describe('Room Controller (API)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_REGISTRATION_ENABLED = true;
+		config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -124,7 +124,7 @@ describe('Room Controller (API)', () => {
 
 		describe('when the feature is disabled', () => {
 			it('should return a 403 error', async () => {
-				config.FEATURE_REGISTRATION_ENABLED = false;
+				config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = false;
 				const { roomOne, teacherAccount } = await setup();
 				const loggedInClient = await testApiClient.login(teacherAccount);
 

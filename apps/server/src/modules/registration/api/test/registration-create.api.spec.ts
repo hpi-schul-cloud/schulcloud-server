@@ -33,7 +33,7 @@ describe('Registration Controller (API)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_REGISTRATION_ENABLED = true;
+		config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -72,7 +72,7 @@ describe('Registration Controller (API)', () => {
 			describe('when the required parameters are given', () => {
 				describe('when the feature is disabled', () => {
 					it('should return a 403 error', async () => {
-						config.FEATURE_REGISTRATION_ENABLED = false;
+						config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = false;
 						const { loggedInClient, params } = await setup();
 
 						const response = await loggedInClient.post(undefined, params);

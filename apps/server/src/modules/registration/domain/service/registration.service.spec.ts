@@ -36,7 +36,7 @@ describe('RegistrationService', () => {
 	});
 
 	describe('createRegistration', () => {
-		const setup = () => {
+		it('should call repo to save registration', async () => {
 			const props: RegistrationCreateProps = {
 				email: 'test@example.com',
 				firstName: 'John',
@@ -45,11 +45,6 @@ describe('RegistrationService', () => {
 				language: LanguageType.DE,
 				roomIds: [],
 			};
-			return { props };
-		};
-
-		it('should call repo to save registration', async () => {
-			const { props } = setup();
 
 			await service.createRegistration(props);
 
@@ -58,7 +53,7 @@ describe('RegistrationService', () => {
 	});
 
 	describe('updateRegistration', () => {
-		const setup = () => {
+		it('should call repo to save registration', async () => {
 			const props: RegistrationCreateProps = {
 				email: 'test@example.com',
 				firstName: 'John',
@@ -77,12 +72,6 @@ describe('RegistrationService', () => {
 				roomIds: ['room-id'],
 			};
 
-			return { registration, props, updatedProps };
-		};
-
-		it('should call repo to save registration', async () => {
-			const { registration, updatedProps } = setup();
-
 			const updatedRegistration = await service.updateRegistration(registration, updatedProps);
 
 			expect(registrationRepo.save).toHaveBeenCalledWith(updatedRegistration);
@@ -90,13 +79,8 @@ describe('RegistrationService', () => {
 	});
 
 	describe('saveRegistration', () => {
-		const setup = () => {
-			const registration = registrationFactory.build();
-			return { registration };
-		};
-
 		it('should call repo to save registration', async () => {
-			const { registration } = setup();
+			const registration = registrationFactory.build();
 
 			await service.saveRegistration(registration);
 
@@ -105,13 +89,6 @@ describe('RegistrationService', () => {
 	});
 
 	describe('getSingleRegistrationByEmail', () => {
-		const setup = () => {
-			const registration = registrationFactory.build();
-			registrationRepo.findByEmail.mockResolvedValue(registration);
-
-			return { registration };
-		};
-
 		it('should call repo to get registration by its email', async () => {
 			const email = 'test@example.com';
 
@@ -121,24 +98,18 @@ describe('RegistrationService', () => {
 		});
 
 		it('should return registration', async () => {
-			const { registration } = setup();
+			const registration = registrationFactory.build();
+			registrationRepo.findByEmail.mockResolvedValue(registration);
 
-			const result = await service.getSingleRegistrationByEmail('email');
+			const result = await service.getSingleRegistrationByEmail('test@example.com');
 
 			expect(result).toBe(registration);
 		});
 	});
 
 	describe('getSingleRegistrationByRegistrationId', () => {
-		const setup = () => {
-			const registration = registrationFactory.build();
-			registrationRepo.findById.mockResolvedValue(registration);
-
-			return { registration };
-		};
-
 		it('should call repo to get registration by its id', async () => {
-			const registrationId = 'someRandomRegistrationIdForNow';
+			const registrationId = 'someRandomRegistrationId';
 
 			await service.getSingleRegistrationByRegistrationId(registrationId);
 
@@ -146,24 +117,18 @@ describe('RegistrationService', () => {
 		});
 
 		it('should return registration', async () => {
-			const { registration } = setup();
+			const registration = registrationFactory.build();
+			registrationRepo.findById.mockResolvedValue(registration);
 
-			const result = await service.getSingleRegistrationByRegistrationId('someRandomRegistrationIdForNow');
+			const result = await service.getSingleRegistrationByRegistrationId('someRandomRegistrationId');
 
 			expect(result).toBe(registration);
 		});
 	});
 
 	describe('getSingleRegistrationByHash', () => {
-		const setup = () => {
-			const registration = registrationFactory.build();
-			registrationRepo.findByHash.mockResolvedValue(registration);
-
-			return { registration };
-		};
-
 		it('should call repo to get registration by hash', async () => {
-			const hash = 'someRandomHashForNow';
+			const hash = 'someRandomHash';
 
 			await service.getSingleRegistrationByHash(hash);
 
@@ -171,22 +136,16 @@ describe('RegistrationService', () => {
 		});
 
 		it('should return registration', async () => {
-			const { registration } = setup();
+			const registration = registrationFactory.build();
+			registrationRepo.findByHash.mockResolvedValue(registration);
 
-			const result = await service.getSingleRegistrationByHash('someRandomHashForNow');
+			const result = await service.getSingleRegistrationByHash('someRandomHash');
 
 			expect(result).toBe(registration);
 		});
 	});
 
 	describe('getRegistrationsByRoomId', () => {
-		const setup = () => {
-			const registrations = registrationFactory.buildList(2);
-			registrationRepo.findByRoomId.mockResolvedValue(registrations);
-
-			return { registrations };
-		};
-
 		it('should call repo to get registrations by room id', async () => {
 			const roomId = 'someRandomRoomId';
 
@@ -196,7 +155,8 @@ describe('RegistrationService', () => {
 		});
 
 		it('should return registration', async () => {
-			const { registrations } = setup();
+			const registrations = registrationFactory.buildList(2);
+			registrationRepo.findByRoomId.mockResolvedValue(registrations);
 
 			const result = await service.getRegistrationsByRoomId('someRandomRoomId');
 

@@ -1596,7 +1596,7 @@
 			"default": true,
 			"description": "Enables the toggle that allows board readers to edit the board"
 		},
-		"FEATURE_REGISTRATION_ENABLED": {
+		"FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the registation feature for external persons"

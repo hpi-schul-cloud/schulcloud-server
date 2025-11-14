@@ -1,3 +1,3 @@
 export interface RegistrationConfig {
-	FEATURE_REGISTRATION_ENABLED: boolean;
+	FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED: boolean;
 }

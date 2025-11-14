@@ -8,6 +8,7 @@ import { Consent } from '../../domain/type';
 @Entity({ tableName: 'registrations' })
 export class RegistrationEntity extends BaseEntityWithTimestamps implements RegistrationProps {
 	@Unique()
+	@Index()
 	@Property({ nullable: false })
 	email!: string;
 
@@ -30,6 +31,7 @@ export class RegistrationEntity extends BaseEntityWithTimestamps implements Regi
 	@Property({ type: 'ObjectId', fieldName: 'roomIds', nullable: false })
 	roomIds!: EntityId[];
 
+	@Index()
 	@Property({ nullable: false })
 	registrationHash!: string;
 

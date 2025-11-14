@@ -10,14 +10,9 @@ export class RegistrationService {
 
 	public async createRegistration(props: RegistrationCreateProps): Promise<Registration> {
 		const registrationProps: RegistrationProps = {
+			...props,
 			id: new ObjectId().toHexString(),
-			email: props.email,
-			firstName: props.firstName,
-			lastName: props.lastName,
 			password: '',
-			consent: props.consent,
-			language: props.language,
-			roomIds: props.roomIds,
 			// we will create a proper hash here later
 			registrationHash: 'someRandomHashForNow',
 			createdAt: new Date(),

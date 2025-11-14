@@ -8,8 +8,8 @@ export class RegistrationFeatureService {
 	constructor(private readonly configService: ConfigService<RegistrationConfig, true>) {}
 
 	public checkFeatureRegistrationEnabled(): void {
-		if (!this.configService.get('FEATURE_REGISTRATION_ENABLED', { infer: true })) {
-			throw new FeatureDisabledLoggableException('FEATURE_REGISTRATION_ENABLED');
+		if (!this.configService.get('FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED', { infer: true })) {
+			throw new FeatureDisabledLoggableException('FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED');
 		}
 	}
 }
