@@ -4,9 +4,7 @@ const path = require('path');
 
 const hooks = require('./hooks');
 const playerHooks = require('./hooks/player.hooks');
-const merlinHooks = require('./hooks/merlin.hooks');
 const eduSharingConnectorV7 = require('./services/EduSharingConnectorV7');
-const MerlinTokenGenerator = require('./services/MerlinTokenGenerator');
 
 class EduSharing {
 	find(params) {
@@ -26,12 +24,6 @@ class EduSharingPlayer {
 	}
 }
 
-class MerlinTokenService {
-	find(data) {
-		return MerlinTokenGenerator.FIND(data);
-	}
-}
-
 module.exports = (app) => {
 	const eduSharingRoute = '/edu-sharing';
 	app.use(eduSharingRoute, new EduSharing());
@@ -44,13 +36,6 @@ module.exports = (app) => {
 	});
 	const eduSharingPlayerService = app.service(eduSharingPlayerRoute);
 	eduSharingPlayerService.hooks(playerHooks);
-
-	const merlinRoute = '/edu-sharing-merlinToken';
-	app.use(merlinRoute, new MerlinTokenService(), (req, res) => {
-		res.send(res.data);
-	});
-	const merlinService = app.service(merlinRoute);
-	merlinService.hooks(merlinHooks);
 
 	app.use('/edu-sharing/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 };

@@ -29,7 +29,6 @@ describe('LessonDtoMapper', () => {
 			url: faker.internet.url(),
 			client: faker.lorem.sentence(),
 			license: [faker.lorem.sentence()],
-			merlinReference: faker.lorem.sentence(),
 		};
 
 		describe('when mapping LessonResponse to lesson DTO with etherpad contnet', () => {
