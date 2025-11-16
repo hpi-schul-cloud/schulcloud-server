@@ -6,10 +6,9 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { RegistrationEntity } from '../../repo';
-import { LanguageType, Permission } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { CreateRegistrationBodyParams } from '../dto/request/create-registration.body.params';
 import { roomEntityFactory } from '@modules/room/testing';
-import { Consent } from '../../domain/type';
 import { registrationEntityFactory } from '@modules/registration/testing';
 
 describe('Registration Controller (API)', () => {
@@ -61,8 +60,6 @@ describe('Registration Controller (API)', () => {
 					email: 'test@example.com',
 					firstName: 'John',
 					lastName: 'Doe',
-					consent: [Consent.TERMS_OF_USE],
-					language: LanguageType.DE,
 					roomIds: [room.id],
 				};
 
@@ -116,7 +113,6 @@ describe('Registration Controller (API)', () => {
 						expect(response.body).toMatchObject({
 							id: existingRegistration.id,
 							email: existingRegistration.email,
-							roomIds: [room.id],
 						});
 					});
 				});
@@ -135,8 +131,6 @@ describe('Registration Controller (API)', () => {
 					email: 'test@example.com',
 					firstName: 'John',
 					lastName: 'Doe',
-					consent: [Consent.TERMS_OF_USE],
-					language: LanguageType.DE,
 					roomIds: [],
 				};
 

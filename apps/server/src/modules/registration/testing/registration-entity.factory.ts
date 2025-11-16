@@ -2,7 +2,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityFactory } from '@testing/factory/entity.factory';
 import { RegistrationEntity } from '../repo/entity';
 import { RegistrationProps } from '../domain/do';
-import { LanguageType } from '@shared/domain/interface';
 
 export const registrationEntityFactory = EntityFactory.define<RegistrationEntity, RegistrationProps>(
 	RegistrationEntity,
@@ -12,9 +11,6 @@ export const registrationEntityFactory = EntityFactory.define<RegistrationEntity
 			email: `user${sequence}@example.com`,
 			firstName: `FirstName${sequence}`,
 			lastName: `LastName${sequence}`,
-			password: '',
-			consent: [],
-			language: LanguageType.DE,
 			roomIds: [new ObjectId().toHexString()],
 			registrationHash: `hash${sequence}`,
 			createdAt: new Date(),

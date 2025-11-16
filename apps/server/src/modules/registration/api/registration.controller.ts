@@ -8,7 +8,6 @@ import {
 	HttpStatus,
 	NotFoundException,
 	Param,
-	Patch,
 	Post,
 	UnauthorizedException,
 } from '@nestjs/common';
@@ -21,8 +20,6 @@ import { CreateRegistrationBodyParams } from './dto/request/create-registration.
 import { RegistrationByHashUrlParams } from './dto/request/registration-by-hash.url.params';
 import { RegistrationByRoomIdUrlParams } from './dto/request/registration-by-room-id.url.params';
 import { RegistrationListResponse } from './dto/response/registration-list.response';
-import { RegistrationIdUrlParams } from './dto/request/registration-id.url.params';
-import { UpdateRegistrationBodyParams } from './dto/request/update-registration.body.params';
 
 @ApiTags('Registration')
 @Controller('registrations')
@@ -49,22 +46,6 @@ export class RegistrationController {
 
 		const response = RegistrationMapper.mapToRegistrationItemResponse(registration);
 
-		return response;
-	}
-
-	@Patch(':registrationId')
-	@ApiOperation({ summary: 'Update an existing registration' })
-	@ApiResponse({ status: HttpStatus.OK, description: 'Update successful', type: RegistrationItemResponse })
-	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
-	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
-	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	public async updateRegistration(
-		@Param() urlParams: RegistrationIdUrlParams,
-		@Body() bodyParams: UpdateRegistrationBodyParams
-	): Promise<RegistrationItemResponse> {
-		const registration = await this.registrationUc.updateRegistration(urlParams.registrationId, bodyParams);
-
-		const response = RegistrationMapper.mapToRegistrationItemResponse(registration);
 		return response;
 	}
 

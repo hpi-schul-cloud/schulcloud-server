@@ -3,8 +3,6 @@ import { registrationEntityFactory } from '../testing';
 import { RegistrationEntity } from './entity';
 import { RegistrationDomainMapper } from './registration-domain.mapper';
 import { Registration, RegistrationProps } from '../domain/do';
-import { LanguageType } from '@shared/domain/interface';
-import { Consent } from '../domain/type';
 
 describe('RegistrationDomainMapper', () => {
 	describe('mapEntityToDo', () => {
@@ -16,9 +14,6 @@ describe('RegistrationDomainMapper', () => {
 				email: 'test@example.com',
 				firstName: 'Test',
 				lastName: 'User',
-				password: '',
-				consent: [Consent.TERMS_OF_USE],
-				language: LanguageType.DE,
 				roomIds: [roomId],
 				registrationHash: 'someHash',
 			} as RegistrationEntity;
@@ -31,9 +26,6 @@ describe('RegistrationDomainMapper', () => {
 				email: 'test@example.com',
 				firstName: 'Test',
 				lastName: 'User',
-				password: '',
-				consent: [Consent.TERMS_OF_USE],
-				language: LanguageType.DE,
 				roomIds: [roomId],
 				registrationHash: 'someHash',
 			});
@@ -47,9 +39,6 @@ describe('RegistrationDomainMapper', () => {
 				email: 'test@example.com',
 				firstName: 'Existing',
 				lastName: 'User',
-				password: '',
-				consent: [Consent.TERMS_OF_USE],
-				language: LanguageType.DE,
 				roomIds: [roomId],
 				registrationHash: 'someHash',
 				createdAt: new Date('2023-01-01'),
@@ -61,9 +50,6 @@ describe('RegistrationDomainMapper', () => {
 				email: 'test2@example.com',
 				firstName: 'Test2',
 				lastName: 'User2',
-				password: '',
-				consent: [Consent.PRIVACY],
-				language: LanguageType.DE,
 				roomIds: [roomId],
 				registrationHash: 'someHash',
 				domainObject: existingRegistration,
@@ -78,9 +64,6 @@ describe('RegistrationDomainMapper', () => {
 				email: 'test@example.com',
 				firstName: 'Existing',
 				lastName: 'User',
-				password: '',
-				consent: [Consent.TERMS_OF_USE],
-				language: LanguageType.DE,
 				roomIds: [existingRegistration.roomIds[0]],
 				registrationHash: 'someHash',
 				createdAt: new Date('2023-01-01'),
@@ -96,9 +79,6 @@ describe('RegistrationDomainMapper', () => {
 				email: 'test@example.com',
 				firstName: 'Test',
 				lastName: 'User',
-				password: '',
-				consent: [Consent.TERMS_OF_USE],
-				language: LanguageType.DE,
 				roomIds: [new ObjectId().toHexString()],
 				registrationHash: 'someHash',
 			} as RegistrationEntity;
@@ -130,9 +110,6 @@ describe('RegistrationDomainMapper', () => {
 					email: 'test@example.com',
 					firstName: 'Test',
 					lastName: 'User #1',
-					password: '',
-					consent: [Consent.TERMS_OF_USE],
-					language: LanguageType.DE,
 					roomIds: [new ObjectId().toHexString()],
 					registrationHash: 'someHash',
 					createdAt: new Date('2024-10-1'),

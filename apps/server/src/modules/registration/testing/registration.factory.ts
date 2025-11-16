@@ -1,8 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { Registration, RegistrationProps } from '../domain/do/registration.do';
-import { LanguageType } from '@shared/domain/interface';
-import { Consent } from '../domain/type';
 
 export const registrationFactory = BaseFactory.define<Registration, RegistrationProps>(Registration, ({ sequence }) => {
 	const props: RegistrationProps = {
@@ -10,9 +8,6 @@ export const registrationFactory = BaseFactory.define<Registration, Registration
 		email: `user${sequence}@example.com`,
 		firstName: `FirstName${sequence}`,
 		lastName: `LastName${sequence}`,
-		password: `password${sequence}`,
-		consent: [Consent.TERMS_OF_USE],
-		language: LanguageType.DE,
 		roomIds: [new ObjectId().toHexString()],
 		registrationHash: `hash${sequence}`,
 		createdAt: new Date(),

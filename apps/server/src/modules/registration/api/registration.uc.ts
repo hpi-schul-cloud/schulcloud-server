@@ -7,7 +7,6 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { RegistrationFeatureService } from './service';
 import { RoomService } from '@modules/room';
 import { RoomPermissionService } from '@modules/room/api/service';
-import { UpdateRegistrationBodyParams } from './dto/request/update-registration.body.params';
 
 @Injectable()
 export class RegistrationUc {
@@ -25,26 +24,13 @@ export class RegistrationUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkOneOfPermissions(user, [Permission.USER_CREATE]);
 
-		const existingRegistration = await this.getExistingRegistrationByEmail(props.email, props.roomIds);
+		const existingRegistration = await this.fetchAndUpdateRegistrationByEmail(props.email, props.roomIds);
 		if (existingRegistration) {
 			return existingRegistration;
 		}
 
 		const registration = await this.registrationService.createRegistration({ ...props });
 		return registration;
-	}
-
-	public async updateRegistration(
-		registrationId: EntityId,
-		updatedProps: UpdateRegistrationBodyParams
-	): Promise<Registration> {
-		this.registrationFeatureService.checkFeatureRegistrationEnabled();
-
-		// check if current user is correct for this registration ?
-		const registration = await this.registrationService.getSingleRegistrationByRegistrationId(registrationId);
-
-		const updatedRegistration = await this.registrationService.updateRegistration(registration, updatedProps);
-		return updatedRegistration;
 	}
 
 	public async getSingleRegistrationByHash(registrationHash: string): Promise<Registration> {
@@ -66,7 +52,7 @@ export class RegistrationUc {
 		return registrations;
 	}
 
-	private async getExistingRegistrationByEmail(email: string, roomIds: EntityId[]): Promise<Registration | null> {
+	private async fetchAndUpdateRegistrationByEmail(email: string, roomIds: EntityId[]): Promise<Registration | null> {
 		const existingRegistration = await this.registrationService.getSingleRegistrationByEmail(email);
 		if (existingRegistration) {
 			roomIds.forEach((roomId) => {

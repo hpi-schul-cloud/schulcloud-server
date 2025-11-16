@@ -43,14 +43,9 @@ describe('Room Controller (API)', () => {
 
 			const expectedResponse = {
 				id: registration.id,
-				registrationHash: registration.registrationHash,
 				email: registration.email,
 				firstName: registration.firstName,
 				lastName: registration.lastName,
-				consent: registration.consent,
-				password: registration.password,
-				language: registration.language,
-				roomIds: registration.roomIds,
 				createdAt: registration.createdAt.toISOString(),
 				updatedAt: registration.updatedAt.toISOString(),
 			};
@@ -80,6 +75,7 @@ describe('Room Controller (API)', () => {
 		});
 
 		describe('when the registration does not exist', () => {
+			// do we want to respond with 404 or 200 and empty body?
 			it('should return ???', async () => {
 				const response = await testApiClient.get('/by-hash/someNonExistingHash');
 

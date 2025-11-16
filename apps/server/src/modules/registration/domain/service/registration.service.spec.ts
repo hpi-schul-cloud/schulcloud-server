@@ -1,11 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RegistrationRepo } from '../../repo';
-import { RegistrationCreateProps, RegistrationUpdateProps } from '../do';
+import { RegistrationCreateProps } from '../do';
 import { RegistrationService } from './registration.service';
-import { LanguageType } from '@shared/domain/interface';
 import { registrationFactory } from '../../testing/registration.factory';
-import { Consent } from '../type';
 
 describe('RegistrationService', () => {
 	let module: TestingModule;
@@ -41,40 +39,12 @@ describe('RegistrationService', () => {
 				email: 'test@example.com',
 				firstName: 'John',
 				lastName: 'Doe',
-				consent: [],
-				language: LanguageType.DE,
 				roomIds: [],
 			};
 
 			await service.createRegistration(props);
 
 			expect(registrationRepo.save).toHaveBeenCalledWith(expect.objectContaining(props));
-		});
-	});
-
-	describe('updateRegistration', () => {
-		it('should call repo to save registration', async () => {
-			const props: RegistrationCreateProps = {
-				email: 'test@example.com',
-				firstName: 'John',
-				lastName: 'Doe',
-				consent: [],
-				language: LanguageType.DE,
-				roomIds: [],
-			};
-			const registration = registrationFactory.build(props);
-			registrationRepo.findById.mockResolvedValue(registration);
-
-			const updatedProps: RegistrationUpdateProps = {
-				consent: [Consent.TERMS_OF_USE],
-				language: LanguageType.EN,
-				password: 'new password',
-				roomIds: ['room-id'],
-			};
-
-			const updatedRegistration = await service.updateRegistration(registration, updatedProps);
-
-			expect(registrationRepo.save).toHaveBeenCalledWith(updatedRegistration);
 		});
 	});
 
@@ -102,25 +72,6 @@ describe('RegistrationService', () => {
 			registrationRepo.findByEmail.mockResolvedValue(registration);
 
 			const result = await service.getSingleRegistrationByEmail('test@example.com');
-
-			expect(result).toBe(registration);
-		});
-	});
-
-	describe('getSingleRegistrationByRegistrationId', () => {
-		it('should call repo to get registration by its id', async () => {
-			const registrationId = 'someRandomRegistrationId';
-
-			await service.getSingleRegistrationByRegistrationId(registrationId);
-
-			expect(registrationRepo.findById).toHaveBeenCalledWith(registrationId);
-		});
-
-		it('should return registration', async () => {
-			const registration = registrationFactory.build();
-			registrationRepo.findById.mockResolvedValue(registration);
-
-			const result = await service.getSingleRegistrationByRegistrationId('someRandomRegistrationId');
 
 			expect(result).toBe(registration);
 		});

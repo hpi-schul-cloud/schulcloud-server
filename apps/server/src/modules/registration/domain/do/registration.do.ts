@@ -1,27 +1,18 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { LanguageType } from '@shared/domain/interface';
-import { Consent } from '../type';
 
 export interface RegistrationProps extends AuthorizableObject {
 	id: EntityId;
 	email: string;
 	firstName: string;
 	lastName: string;
-	password: string;
-	consent: Consent[];
-	language: LanguageType;
 	roomIds: EntityId[];
 	registrationHash: string;
 	createdAt: Date;
 	updatedAt: Date;
 }
 
-export type RegistrationCreateProps = Pick<
-	RegistrationProps,
-	'email' | 'firstName' | 'lastName' | 'consent' | 'language' | 'roomIds'
->;
-export type RegistrationUpdateProps = Pick<RegistrationProps, 'password' | 'consent' | 'language' | 'roomIds'>;
+export type RegistrationCreateProps = Pick<RegistrationProps, 'email' | 'firstName' | 'lastName' | 'roomIds'>;
 
 export class Registration extends DomainObject<RegistrationProps> {
 	constructor(props: RegistrationProps) {
@@ -48,30 +39,6 @@ export class Registration extends DomainObject<RegistrationProps> {
 
 	get lastName(): string {
 		return this.props.lastName;
-	}
-
-	get password(): string {
-		return this.props.password;
-	}
-
-	set password(value: string) {
-		this.props.password = value;
-	}
-
-	get consent(): Consent[] {
-		return this.props.consent;
-	}
-
-	set consent(value: Consent[]) {
-		this.props.consent = value;
-	}
-
-	get language(): LanguageType {
-		return this.props.language;
-	}
-
-	set language(value: LanguageType) {
-		this.props.language = value;
 	}
 
 	get roomIds(): EntityId[] {

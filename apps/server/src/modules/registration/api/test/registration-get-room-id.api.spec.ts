@@ -175,5 +175,17 @@ describe('Room Controller (API)', () => {
 				expect(response.status).toBe(HttpStatus.NOT_FOUND);
 			});
 		});
+
+		describe('when requesting with an invalid roomId', () => {
+			it('should return a 400 error', async () => {
+				const { teacherAccount } = await setup();
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				const randomInvalidRoomId = 'someInvalidRoomId';
+				const response = await loggedInClient.get(`/by-room/${randomInvalidRoomId}`);
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			});
+		});
 	});
 });

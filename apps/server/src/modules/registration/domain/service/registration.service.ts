@@ -1,8 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Registration, RegistrationCreateProps, RegistrationProps, RegistrationUpdateProps } from '../do';
+import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
 import { RegistrationRepo } from '../../repo';
-import bcrypt from 'bcryptjs';
 
 @Injectable()
 export class RegistrationService {
@@ -12,7 +11,6 @@ export class RegistrationService {
 		const registrationProps: RegistrationProps = {
 			...props,
 			id: new ObjectId().toHexString(),
-			password: '',
 			// we will create a proper hash here later
 			registrationHash: 'someRandomHashForNow',
 			createdAt: new Date(),
@@ -25,27 +23,8 @@ export class RegistrationService {
 		return registration;
 	}
 
-	public async updateRegistration(registration: Registration, props: RegistrationUpdateProps): Promise<Registration> {
-		const encryptedUpdatedPassword = await this.encryptPassword(props.password);
-
-		registration.password = encryptedUpdatedPassword;
-		registration.consent = props.consent;
-		registration.language = props.language;
-		registration.roomIds = props.roomIds;
-
-		await this.registrationRepo.save(registration);
-
-		return registration;
-	}
-
 	public async saveRegistration(registration: Registration): Promise<void> {
 		await this.registrationRepo.save(registration);
-	}
-
-	public async getSingleRegistrationByRegistrationId(registrationId: string): Promise<Registration> {
-		const registration = await this.registrationRepo.findById(registrationId);
-
-		return registration;
 	}
 
 	public async getSingleRegistrationByEmail(email: string): Promise<Registration | null> {
@@ -64,10 +43,5 @@ export class RegistrationService {
 		const registrations = await this.registrationRepo.findByRoomId(roomId);
 
 		return registrations;
-	}
-
-	private async encryptPassword(password: string): Promise<string> {
-		const encryptedPassword = await bcrypt.hash(password, 10);
-		return encryptedPassword;
 	}
 }

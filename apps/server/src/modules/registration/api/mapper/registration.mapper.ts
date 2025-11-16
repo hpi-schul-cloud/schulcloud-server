@@ -9,11 +9,6 @@ export class RegistrationMapper {
 			email: registration.email,
 			firstName: registration.firstName,
 			lastName: registration.lastName,
-			password: registration.password,
-			consent: registration.consent,
-			language: registration.language,
-			roomIds: registration.roomIds?.map((id) => id.toString()) ?? [],
-			registrationHash: registration.registrationHash,
 			createdAt: registration.createdAt,
 			updatedAt: registration.updatedAt,
 		});

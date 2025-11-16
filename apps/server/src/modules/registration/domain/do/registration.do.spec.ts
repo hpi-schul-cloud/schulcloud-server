@@ -1,9 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { Registration, RegistrationProps } from './registration.do';
-import { LanguageType } from '@shared/domain/interface';
 import { registrationFactory } from '../../testing';
-import { Consent } from '../type';
 
 describe('Registration', () => {
 	let registration: Registration;
@@ -14,9 +12,6 @@ describe('Registration', () => {
 		email: 'test@example.com',
 		firstName: 'John',
 		lastName: 'Doe',
-		password: 'password',
-		consent: [Consent.TERMS_OF_USE],
-		language: LanguageType.DE,
 		roomIds: [roomId],
 		registrationHash: 'someHashValue',
 		createdAt: new Date(),
@@ -55,24 +50,6 @@ describe('Registration', () => {
 	it('should get lastName', () => {
 		const expectedLastName = 'Doe';
 		expect(registration.lastName).toEqual(expectedLastName);
-	});
-
-	it('should get and set password', () => {
-		expect(registration.password).toEqual('password');
-		registration.password = 'newpassword';
-		expect(registration.password).toEqual('newpassword');
-	});
-
-	it('should get and set consent', () => {
-		expect(registration.consent).toEqual([Consent.TERMS_OF_USE]);
-		registration.consent = [Consent.TERMS_OF_USE, Consent.PRIVACY];
-		expect(registration.consent).toEqual([Consent.TERMS_OF_USE, Consent.PRIVACY]);
-	});
-
-	it('should get and set language', () => {
-		expect(registration.language).toEqual(LanguageType.DE);
-		registration.language = LanguageType.EN;
-		expect(registration.language).toEqual(LanguageType.EN);
 	});
 
 	it('should get and set roomIds', () => {
