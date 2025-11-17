@@ -1,11 +1,10 @@
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
+import { RoomMembershipService } from '@modules/room-membership';
+import { RoomDeletedEvent } from '@modules/room/domain/events/room-deleted.event';
 import { Injectable } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { RoomBoardService } from './room-board.service';
-import { RoomDeletedEvent } from '@modules/room/domain/events/room-deleted.event';
-import { RoomMembershipService } from '@modules/room-membership';
-import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
-import { RoomArrangementService } from '@modules/room/domain';
 
 @Injectable()
 @EventsHandler(RoomDeletedEvent)
@@ -14,7 +13,6 @@ export class RoomDeletedHandler implements IEventHandler<RoomDeletedEvent> {
 		private readonly roomBoardService: RoomBoardService,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly columnBoardService: ColumnBoardService,
-		private readonly roomArrangementService: RoomArrangementService,
 		private readonly orm: MikroORM
 	) {}
 
