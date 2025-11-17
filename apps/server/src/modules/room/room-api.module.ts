@@ -43,6 +43,5 @@ import { CopyRoomContentStep } from './api/saga/copy-room-content.step';
 		RoomBoardDeletedHandler,
 		RoomBoardService,
 	],
-	exports: [RoomPermissionService],
 })
 export class RoomApiModule {}
