@@ -46,7 +46,7 @@ export class RoomArrangementService {
 	// }
 
 	private async createArranagement(userId: EntityId, roomIds: EntityId[]): Promise<void> {
-		const items: RoomArrangementItem[] = roomIds.map((roomId) => {
+		const items = roomIds.map((roomId): RoomArrangementItem => {
 			return { id: roomId };
 		});
 
