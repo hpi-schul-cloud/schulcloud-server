@@ -11,6 +11,8 @@ import { RoleReference } from '@shared/domain/domainobject';
 import { ObjectId } from 'bson';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
 import { BadDataLoggableException } from '../loggable';
+import { Logger } from '@core/logger';
+import { TspClassWithoutNameLoggable } from '../loggable/tsp-class-without-name.loggable-exception';
 
 @Injectable()
 export class TspProvisioningService {
@@ -23,7 +25,8 @@ export class TspProvisioningService {
 		private readonly classService: ClassService,
 		private readonly roleService: RoleService,
 		private readonly userService: UserService,
-		private readonly accountService: AccountService
+		private readonly accountService: AccountService,
+		private readonly logger: Logger
 	) {}
 
 	public async provisionUserBatch(oauthDataDtos: OauthDataDto[], schools: Map<string, School>): Promise<number> {
@@ -94,11 +97,21 @@ export class TspProvisioningService {
 			]);
 
 			if (currentClass) {
-				classesToSave.push(this.updateClass(currentClass, externalClass, school, teacherIds, studentIds, fullSync));
-				classUpdateCount += 1;
+				const classToSave = this.updateClass(currentClass, externalClass, school, teacherIds, studentIds, fullSync);
+				if (this.isClassWithName(classToSave)) {
+					classesToSave.push(classToSave);
+					classUpdateCount += 1;
+				} else {
+					this.logger.info(new TspClassWithoutNameLoggable(classToSave, externalClass));
+				}
 			} else {
-				classesToSave.push(this.createClass(externalClass, school, teacherIds, studentIds));
-				classCreationCount += 1;
+				const classToSave = this.createClass(externalClass, school, teacherIds, studentIds);
+				if (this.isClassWithName(classToSave)) {
+					classesToSave.push(classToSave);
+					classCreationCount += 1;
+				} else {
+					this.logger.info(new TspClassWithoutNameLoggable(classToSave, externalClass));
+				}
 			}
 		}
 		if (classesToSave.length > 0) {
@@ -137,10 +150,18 @@ export class TspProvisioningService {
 			} else {
 				classToSave = this.createClass(clazz, school, teacherIds, studentIds);
 			}
-			await this.classService.save(classToSave);
+			if (this.isClassWithName(classToSave)) {
+				await this.classService.save(classToSave);
+			} else {
+				this.logger.info(new TspClassWithoutNameLoggable(classToSave, clazz));
+			}
 		});
 
 		await Promise.all(promises);
+	}
+
+	private isClassWithName(clazz: Class): boolean {
+		return !!clazz.name && clazz.name !== '';
 	}
 
 	private updateClass(
