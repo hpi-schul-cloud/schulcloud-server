@@ -2,11 +2,10 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { RoomArrangementRepo } from '../../repo';
 import { RoomArrangementItem } from '../type';
-import { RoomService } from './room.service';
 
 @Injectable()
 export class RoomArrangementService {
-	constructor(private readonly roomService: RoomService, private readonly roomArrangementRepo: RoomArrangementRepo) {}
+	constructor(private readonly roomArrangementRepo: RoomArrangementRepo) {}
 
 	public async sortRoomIdsByUserArrangement(userId: EntityId, roomIds: EntityId[]): Promise<EntityId[]> {
 		const arrangementExists = await this.roomArrangementRepo.hasArrangementForUserId(userId);
@@ -23,7 +22,7 @@ export class RoomArrangementService {
 	}
 
 	public async moveRoom(userId: EntityId, roomId: EntityId, toPosition: number): Promise<void> {
-		const items = await this.roomArrangementRepo.findArrangementItemsByUserId(userId);
+		const items = await this.roomArrangementRepo.findItemsByUserId(userId);
 
 		if (toPosition < 0 || toPosition >= items.length) {
 			throw new BadRequestException(`Invalid position ${toPosition} for room arrangement of user '${userId}'`);
@@ -55,7 +54,7 @@ export class RoomArrangementService {
 	}
 
 	private async sortAndUpdateArrangement(userId: EntityId, availableRoomIds: EntityId[]): Promise<EntityId[]> {
-		const roomIds = (await this.roomArrangementRepo.findArrangementItemsByUserId(userId)).map((item) => item.id);
+		const roomIds = (await this.roomArrangementRepo.findItemsByUserId(userId)).map((item) => item.id);
 		const roomIdSet = new Set(roomIds);
 
 		const knownRoomIds = availableRoomIds

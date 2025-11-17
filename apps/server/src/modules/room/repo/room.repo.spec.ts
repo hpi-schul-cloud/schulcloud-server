@@ -32,33 +32,6 @@ describe('RoomRepo', () => {
 		await cleanupCollections(em);
 	});
 
-	describe('findAll', () => {
-		const setup = async () => {
-			const roomEntities = roomEntityFactory.buildWithId();
-			await em.persistAndFlush([roomEntities]);
-			em.clear();
-
-			const room = RoomDomainMapper.mapEntityToDo(roomEntities);
-			const list = [room];
-
-			return { roomEntities, room, list };
-		};
-
-		it('should return rooms domain object', async () => {
-			const { room } = await setup();
-			const result = await repo.findAll();
-
-			expect(result[0]).toEqual(room);
-		});
-
-		it('should return paginated Roms', async () => {
-			const { list } = await setup();
-			const result = await repo.findAll();
-
-			expect(result).toEqual(list);
-		});
-	});
-
 	describe('findById', () => {
 		const setup = async () => {
 			const roomEntity = roomEntityFactory.buildWithId();

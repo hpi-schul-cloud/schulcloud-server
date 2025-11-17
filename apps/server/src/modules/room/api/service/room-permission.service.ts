@@ -84,16 +84,4 @@ export class RoomPermissionService {
 		const isAllowed = canDeleteRoom || (isOwnSchool && canAdministrateSchoolRooms);
 		return isAllowed;
 	}
-
-	public async getReadableRoomIdsForUser(user: User): Promise<EntityId[]> {
-		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(user.id);
-
-		const readableRoomIds = roomAuthorizables
-			.filter((item) =>
-				this.authorizationService.hasPermission(user, item, { action: Action.read, requiredPermissions: [] })
-			)
-			.map((item) => item.roomId);
-
-		return readableRoomIds;
-	}
 }

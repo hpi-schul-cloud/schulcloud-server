@@ -21,7 +21,11 @@ export class RoomArrangementUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
 
-		const readableRoomIds = await this.roomPermissionService.getReadableRoomIdsForUser(user);
+		const readableRoomIds = roomAuthorizables
+			.filter((item) =>
+				this.authorizationService.hasPermission(user, item, { action: Action.read, requiredPermissions: [] })
+			)
+			.map((item) => item.roomId);
 		const rooms = await this.roomService.getRoomsByIds(readableRoomIds);
 		const existingRoomIds = rooms.map((room) => room.id);
 		const orderedRoomIds = await this.roomArrangementService.sortRoomIdsByUserArrangement(userId, existingRoomIds);

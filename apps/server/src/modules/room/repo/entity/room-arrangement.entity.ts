@@ -2,10 +2,10 @@ import { Embeddable, Embedded, Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ObjectIdType } from '@shared/repo/types/object-id.type';
-import { RoomArrangementItem as IRoomArrangementItem, RoomArrangementProps } from '../../domain/type';
+import { RoomArrangementItem, RoomArrangementProps } from '../../domain/type';
 
 @Embeddable()
-class RoomArrangementItem implements IRoomArrangementItem {
+class RoomArrangementItemEmbeddable implements RoomArrangementItem {
 	@Property({ nullable: false })
 	id!: EntityId;
 }
@@ -16,6 +16,6 @@ export class RoomArrangementEntity extends BaseEntityWithTimestamps implements R
 	@Property({ type: ObjectIdType, fieldName: 'user', nullable: false })
 	userId!: EntityId;
 
-	@Embedded(() => RoomArrangementItem, { array: true, nullable: false })
-	items: RoomArrangementItem[] = [];
+	@Embedded(() => RoomArrangementItemEmbeddable, { array: true, nullable: false })
+	items: RoomArrangementItemEmbeddable[] = [];
 }

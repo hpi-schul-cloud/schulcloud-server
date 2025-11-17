@@ -11,17 +11,6 @@ import { RoomScope } from './room.scope';
 export class RoomRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	public async findAll(): Promise<Room[]> {
-		const scope = new RoomScope();
-		scope.allowEmptyQuery(true);
-
-		const entities = await this.em.find(RoomEntity, scope.query);
-
-		const domainObjects = entities.map((entity) => RoomDomainMapper.mapEntityToDo(entity));
-
-		return domainObjects;
-	}
-
 	public async findByIds(ids: EntityId[]): Promise<Room[]> {
 		const scope = new RoomScope();
 		scope.byIds(ids);

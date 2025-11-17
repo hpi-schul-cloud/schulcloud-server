@@ -8,7 +8,7 @@ import { EntityId } from '@shared/domain/types';
 export class RoomArrangementRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	public async findArrangementItemsByUserId(userId: EntityId): Promise<RoomArrangementItem[]> {
+	public async findItemsByUserId(userId: EntityId): Promise<RoomArrangementItem[]> {
 		const roomArrangement = await this.em.findOneOrFail(RoomArrangementEntity, { userId });
 
 		return roomArrangement.items;
