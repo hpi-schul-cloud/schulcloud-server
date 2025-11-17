@@ -15,6 +15,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomMemberListResponse } from '../dto/response/room-member-list.response';
+import { AccountEntity } from '@modules/account/repo';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -99,14 +100,19 @@ describe('Room Controller (API)', () => {
 			]);
 			em.clear();
 
-			const loginAccount =
-				loginAs === RoleName.ADMINISTRATOR
-					? adminAccount
-					: loginAs === RoleName.EXPERT
-					? expertAccount
-					: teacherAccount;
+			const getAccountByRole = (
+				roleName: RoleName.ADMINISTRATOR | RoleName.EXPERT | RoleName.TEACHER
+			): AccountEntity => {
+				const acounts = {
+					[RoleName.ADMINISTRATOR]: adminAccount,
+					[RoleName.EXPERT]: expertAccount,
+					[RoleName.TEACHER]: teacherAccount,
+				};
 
-			const loggedInClient = await testApiClient.login(loginAccount);
+				return acounts[roleName];
+			};
+
+			const loggedInClient = await testApiClient.login(getAccountByRole(loginAs));
 
 			return {
 				loggedInClient,

@@ -14,7 +14,6 @@ import { User } from './user.entity';
 
 const DEFAULT_TEACHER_PERMISSIONS = [Permission.SCHOOL_LIST_ROOM_MEMBERS];
 const DEFAULT_STUDENT_PERMISSIONS = [Permission.SCHOOL_LIST_ROOM_MEMBERS];
-const DEFAULT_ADMIN_PERMISSIONS = [Permission.SCHOOL_LIST_ROOM_MEMBERS];
 
 describe('User Entity', () => {
 	let orm: MikroORM;
@@ -134,9 +133,7 @@ describe('User Entity', () => {
 
 					const result = user.resolvePermissions();
 
-					expect(result.sort()).toEqual(
-						[permissionA, Permission.STUDENT_LIST, Permission.LERNSTORE_VIEW, ...DEFAULT_ADMIN_PERMISSIONS].sort()
-					);
+					expect(result.sort()).toEqual([permissionA, Permission.STUDENT_LIST, Permission.LERNSTORE_VIEW].sort());
 				});
 			});
 		});

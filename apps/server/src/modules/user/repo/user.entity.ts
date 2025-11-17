@@ -252,12 +252,7 @@ export class User extends BaseEntityWithTimestamps {
 		const schoolPermissions = this.school.permissions;
 		let setOfPermissions = new Set(permissions);
 
-		// This exclusion is necessary because of possible double roles (e.g., admin and teacher). Then the higher role should keep its permissions.
-		if (roles.some((role) => role.name === RoleName.SUPERHERO)) {
-			return setOfPermissions;
-		}
-		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR)) {
-			setOfPermissions.add(Permission.SCHOOL_LIST_ROOM_MEMBERS);
+		if (roles.some((role) => role.name === RoleName.SUPERHERO || role.name === RoleName.ADMINISTRATOR)) {
 			return setOfPermissions;
 		}
 

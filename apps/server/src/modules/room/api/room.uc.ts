@@ -232,13 +232,7 @@ export class RoomUc {
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
 
-		const canListRoomMembers = this.authorizationService.hasOneOfPermissions(currentUser, [
-			Permission.SCHOOL_LIST_ROOM_MEMBERS,
-		]);
-		if (!canListRoomMembers) {
-			throw new ForbiddenException();
-		}
-
+		this.authorizationService.checkAllPermissions(currentUser, [Permission.SCHOOL_LIST_ROOM_MEMBERS]);
 		this.authorizationService.checkPermission(currentUser, roomMembershipAuthorizable, {
 			action: Action.read,
 			requiredPermissions: [],
