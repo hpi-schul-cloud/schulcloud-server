@@ -41,9 +41,10 @@ export class RoomArrangementService {
 		await this.roomArrangementRepo.updateArrangement(userId, items);
 	}
 
-	public async deleteArrangement(userId: EntityId): Promise<void> {
-		await this.roomArrangementRepo.deleteArrangementByUserId(userId);
-	}
+	// TODO has to be used when the user is deleted
+	// public async deleteArrangement(userId: EntityId): Promise<void> {
+	// 	await this.roomArrangementRepo.deleteArrangementByUserId(userId);
+	// }
 
 	private async createArranagement(userId: EntityId, roomIds: EntityId[]): Promise<void> {
 		const items: RoomArrangementItem[] = roomIds.map((roomId) => {
