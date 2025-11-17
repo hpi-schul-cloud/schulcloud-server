@@ -13,6 +13,7 @@ export class RegistrationService {
 			id: new ObjectId().toHexString(),
 			// we will create a proper hash here later
 			registrationHash: 'someRandomHashForNow',
+			roomIds: [props.roomId],
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};

@@ -1,6 +1,6 @@
 import { RegistrationCreateProps } from '../../../domain';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsEmail, IsMongoId, IsString } from 'class-validator';
+import { IsEmail, IsMongoId, IsString } from 'class-validator';
 
 export class CreateRegistrationBodyParams implements RegistrationCreateProps {
 	@IsEmail()
@@ -27,11 +27,11 @@ export class CreateRegistrationBodyParams implements RegistrationCreateProps {
 	})
 	public lastName!: string;
 
-	@IsArray()
-	@IsMongoId({ each: true })
+	@IsMongoId()
 	@ApiProperty({
-		description: 'The IDs of rooms the user is invited to.',
+		description: 'The id of the room the user is invited to.',
 		required: true,
+		nullable: false,
 	})
-	public roomIds!: string[];
+	public roomId!: string;
 }

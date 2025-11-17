@@ -12,7 +12,12 @@ export interface RegistrationProps extends AuthorizableObject {
 	updatedAt: Date;
 }
 
-export type RegistrationCreateProps = Pick<RegistrationProps, 'email' | 'firstName' | 'lastName' | 'roomIds'>;
+export type RegistrationCreateProps = {
+	email: string;
+	firstName: string;
+	lastName: string;
+	roomId: EntityId;
+};
 
 export class Registration extends DomainObject<RegistrationProps> {
 	constructor(props: RegistrationProps) {

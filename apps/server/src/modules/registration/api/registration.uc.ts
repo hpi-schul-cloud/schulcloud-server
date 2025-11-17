@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CreateRegistrationBodyParams } from './dto/request/create-registration.body.params';
 import { Registration, RegistrationService } from '../domain';
-import { Action, AuthorizationService } from '@modules/authorization';
+import { AuthorizationService, AuthorizationContextBuilder } from '@modules/authorization';
 import { RegistrationFeatureService } from './service';
-import { RoomService } from '@modules/room';
-import { RoomPermissionService } from '@modules/room/api/service';
+import { RoomMembershipService } from '@modules/room-membership';
 
 @Injectable()
 export class RegistrationUc {
@@ -14,17 +12,17 @@ export class RegistrationUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly registrationService: RegistrationService,
 		private readonly registrationFeatureService: RegistrationFeatureService,
-		private readonly roomService: RoomService,
-		private readonly roomPermissionService: RoomPermissionService
+		private readonly roomMembershipService: RoomMembershipService
 	) {}
 
 	public async createRegistration(userId: EntityId, props: CreateRegistrationBodyParams): Promise<Registration> {
 		this.registrationFeatureService.checkFeatureRegistrationEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkOneOfPermissions(user, [Permission.USER_CREATE]);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(props.roomId);
+		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, AuthorizationContextBuilder.write([]));
 
-		const existingRegistration = await this.fetchAndUpdateRegistrationByEmail(props.email, props.roomIds);
+		const existingRegistration = await this.fetchAndUpdateRegistrationByEmail(props.email, props.roomId);
 		if (existingRegistration) {
 			return existingRegistration;
 		}
@@ -44,20 +42,19 @@ export class RegistrationUc {
 	public async getRegistrationsByRoomId(userId: EntityId, roomId: EntityId): Promise<Registration[]> {
 		this.registrationFeatureService.checkFeatureRegistrationEnabled();
 
-		await this.roomService.getSingleRoom(roomId);
-		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, AuthorizationContextBuilder.write([]));
 
 		const registrations = await this.registrationService.getRegistrationsByRoomId(roomId);
 
 		return registrations;
 	}
 
-	private async fetchAndUpdateRegistrationByEmail(email: string, roomIds: EntityId[]): Promise<Registration | null> {
+	private async fetchAndUpdateRegistrationByEmail(email: string, roomId: EntityId): Promise<Registration | null> {
 		const existingRegistration = await this.registrationService.getSingleRegistrationByEmail(email);
 		if (existingRegistration) {
-			roomIds.forEach((roomId) => {
-				existingRegistration.addRoomId(roomId);
-			});
+			existingRegistration.addRoomId(roomId);
 			await this.registrationService.saveRegistration(existingRegistration);
 			return existingRegistration;
 		}

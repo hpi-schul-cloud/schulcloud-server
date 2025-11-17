@@ -4,6 +4,7 @@ import { RegistrationRepo } from '../../repo';
 import { RegistrationCreateProps } from '../do';
 import { RegistrationService } from './registration.service';
 import { registrationFactory } from '../../testing/registration.factory';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 describe('RegistrationService', () => {
 	let module: TestingModule;
@@ -39,12 +40,19 @@ describe('RegistrationService', () => {
 				email: 'test@example.com',
 				firstName: 'John',
 				lastName: 'Doe',
-				roomIds: [],
+				roomId: new ObjectId().toHexString(),
 			};
 
 			await service.createRegistration(props);
 
-			expect(registrationRepo.save).toHaveBeenCalledWith(expect.objectContaining(props));
+			expect(registrationRepo.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					email: props.email,
+					firstName: props.firstName,
+					lastName: props.lastName,
+					roomIds: [props.roomId],
+				})
+			);
 		});
 	});
 

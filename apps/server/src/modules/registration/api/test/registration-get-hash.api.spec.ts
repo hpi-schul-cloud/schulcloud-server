@@ -75,8 +75,7 @@ describe('Room Controller (API)', () => {
 		});
 
 		describe('when the registration does not exist', () => {
-			// do we want to respond with 404 or 200 and empty body?
-			it('should return ???', async () => {
+			it('should return a 404 error', async () => {
 				const response = await testApiClient.get('/by-hash/someNonExistingHash');
 
 				expect(response.status).toBe(HttpStatus.NOT_FOUND);
