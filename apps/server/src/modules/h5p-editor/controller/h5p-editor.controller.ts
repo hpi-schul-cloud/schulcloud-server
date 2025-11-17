@@ -24,7 +24,7 @@ import {
 	UseFilters,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { Request } from 'express';
 import { H5PEditorUc } from '../uc';
@@ -307,6 +307,7 @@ export class H5PEditorController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiConsumes('multipart/form-data')
 	@Post('/import/:contentId')
 	@UseInterceptors(
 		FileInterceptor('h5p', {
@@ -317,11 +318,17 @@ export class H5PEditorController {
 			},
 		})
 	)
+	@ApiBody(
+		fileUpload({
+			name: 'h5p',
+			description: 'The H5P file to import',
+			required: true,
+		})
+	)
 	public async importH5pPoC(
 		@UploadedFile() file: Express.Multer.File,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Res({ passthrough: true }) res: Response
-		// @Param('contentId') contentId: string
 	): Promise<
 		| AjaxSuccessResponse
 		| {
@@ -356,4 +363,25 @@ export class H5PEditorController {
 		res.status(HttpStatus.OK);
 		return result;
 	}
+}
+function fileUpload(options: {
+	name: string;
+	description: string;
+	required: boolean;
+}): import('@nestjs/swagger').ApiBodyOptions {
+	return {
+		description: options.description,
+		required: options.required,
+		schema: {
+			type: 'object',
+			properties: {
+				[options.name]: {
+					type: 'string',
+					format: 'binary',
+					description: options.description,
+				},
+			},
+			required: options.required ? [options.name] : [],
+		},
+	};
 }
