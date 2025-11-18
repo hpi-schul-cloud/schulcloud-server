@@ -32,6 +32,7 @@ import { NewsModule } from '@modules/news';
 import { OauthProviderApiModule } from '@modules/oauth-provider/oauth-provider-api.module';
 import { OAuthApiModule } from '@modules/oauth/oauth-api.module';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
+import { RegistrationModule } from '@modules/registration';
 import { RocketChatModule } from '@modules/rocketchat';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { RosterModule } from '@modules/roster/roster.module';
@@ -115,6 +116,7 @@ const serverModules = [
 	AlertModule,
 	UserLicenseModule,
 	SchoolLicenseApiModule,
+	RegistrationModule,
 	RoomApiModule,
 	RosterModule,
 	ShdApiModule,
