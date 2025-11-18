@@ -1,22 +1,24 @@
+import { FilterQuery } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { BoardExternalReference, BoardExternalReferenceType } from '@modules/board';
+import { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
+import { columnBoardEntityFactory } from '@modules/board/testing/entity/column-board-entity.factory';
+import { CopyStatus } from '@modules/copy-helper';
+import { GroupEntityTypes } from '@modules/group/entity/group.entity';
+import { groupEntityFactory } from '@modules/group/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { RoomContentType } from '@modules/room/domain';
+import { roomContentEntityFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { GroupEntityTypes } from '@modules/group/entity/group.entity';
-import { groupEntityFactory } from '@modules/group/testing';
-import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
-import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
-import { schoolEntityFactory } from '@modules/school/testing';
+import { RoomContentEntity, RoomEntity } from '../../repo';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
-import { CopyStatus } from '@modules/copy-helper';
-import { columnBoardEntityFactory } from '@modules/board/testing/entity/column-board-entity.factory';
-import { BoardExternalReference, BoardExternalReferenceType } from '@modules/board';
-import { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
-import { FilterQuery } from '@mikro-orm/core';
-import { RoomEntity } from '../../repo';
 
 describe('POST /rooms/:roomId/copy', () => {
 	let app: INestApplication;
@@ -160,6 +162,18 @@ describe('POST /rooms/:roomId/copy', () => {
 				schoolId: teacherUser.school.id,
 			});
 
+			const boards = columnBoardEntityFactory.buildList(2, {
+				context: { id: room.id, type: BoardExternalReferenceType.Room },
+			});
+
+			const roomContent = roomContentEntityFactory.build({
+				roomId: room.id,
+				items: [
+					{ id: boards[1].id, type: RoomContentType.BOARD },
+					{ id: boards[0].id, type: RoomContentType.BOARD },
+				],
+			});
+
 			await em.persistAndFlush([
 				school,
 				room,
@@ -169,11 +183,13 @@ describe('POST /rooms/:roomId/copy', () => {
 				teacherUser,
 				userGroup,
 				roomMembership,
+				...boards,
+				roomContent,
 			]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
-			return { loggedInClient, room };
+			return { loggedInClient, room, boards, roomContent };
 		};
 
 		it('should return a 201 response', async () => {
@@ -207,24 +223,31 @@ describe('POST /rooms/:roomId/copy', () => {
 		});
 
 		it('should copy the room boards', async () => {
-			const { loggedInClient, room } = await setup();
-
-			const columnBoardNode = columnBoardEntityFactory.build({
-				context: { id: room.id, type: BoardExternalReferenceType.Room },
-			});
-			await em.persistAndFlush([columnBoardNode]);
+			const { loggedInClient, room, boards } = await setup();
 
 			const response = await loggedInClient.post(`${room.id}/copy`);
 
 			const copiedRoomId = (response.body as CopyStatus).id;
 
-			const copiedBoard = await em.findOneOrFail(BoardNodeEntity, {
+			const copiedBoards = await em.find(BoardNodeEntity, {
 				context: {
 					_contextId: new ObjectId(copiedRoomId),
 					_contextType: BoardExternalReferenceType.Room,
 				} as FilterQuery<BoardExternalReference>,
 			});
-			expect(copiedBoard).toBeDefined();
+			expect(copiedBoards.length).toBe(boards.length);
+		});
+
+		it('should copy the room content', async () => {
+			const { loggedInClient, room, roomContent } = await setup();
+
+			const response = await loggedInClient.post(`${room.id}/copy`);
+
+			const copiedRoomId = (response.body as CopyStatus).id;
+
+			const copiedContent = await em.findOneOrFail(RoomContentEntity, { roomId: copiedRoomId });
+
+			expect(copiedContent.items.length).toBe(roomContent.items.length);
 		});
 	});
 
