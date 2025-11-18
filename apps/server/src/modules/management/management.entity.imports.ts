@@ -23,6 +23,7 @@ import { MediaSourceEntity } from '@modules/media-source/entity';
 import { CourseNews, News, SchoolNews, TeamNews } from '@modules/news/repo';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
+import { RegistrationEntity } from '@modules/registration';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { Role } from '@modules/role/repo';
@@ -78,6 +79,7 @@ export const ENTITIES = [
 	MediaSourceEntity,
 	News,
 	ExternalToolPseudonymEntity,
+	RegistrationEntity,
 	RocketChatUserEntity,
 	Role,
 	RoomEntity,
