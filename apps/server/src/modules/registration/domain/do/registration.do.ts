@@ -42,16 +42,20 @@ export class Registration extends DomainObject<RegistrationProps> {
 		return this.props.firstName;
 	}
 
+	set firstName(value: string) {
+		this.props.firstName = value;
+	}
+
 	get lastName(): string {
 		return this.props.lastName;
 	}
 
-	get roomIds(): EntityId[] {
-		return this.props.roomIds;
+	set lastName(value: string) {
+		this.props.lastName = value;
 	}
 
-	set roomIds(value: EntityId[]) {
-		this.props.roomIds = value;
+	get roomIds(): EntityId[] {
+		return this.props.roomIds;
 	}
 
 	get registrationHash(): string {

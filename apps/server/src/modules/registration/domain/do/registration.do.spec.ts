@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
-import { Registration, RegistrationProps } from './registration.do';
 import { registrationFactory } from '../../testing';
+import { Registration, RegistrationProps } from './registration.do';
 
 describe('Registration', () => {
 	let registration: Registration;
@@ -42,21 +42,24 @@ describe('Registration', () => {
 		expect(registration.email).toEqual(expectedEmail);
 	});
 
-	it('should get firstName', () => {
+	it('should get and set firstName', () => {
 		const expectedFirstName = 'John';
 		expect(registration.firstName).toEqual(expectedFirstName);
+		const newFirstName = 'Jane';
+		registration.firstName = newFirstName;
+		expect(registration.firstName).toEqual(newFirstName);
 	});
 
-	it('should get lastName', () => {
+	it('should get and set lastName', () => {
 		const expectedLastName = 'Doe';
 		expect(registration.lastName).toEqual(expectedLastName);
+		const newLastName = 'Smith';
+		registration.lastName = newLastName;
+		expect(registration.lastName).toEqual(newLastName);
 	});
 
-	it('should get and set roomIds', () => {
+	it('should get roomIds', () => {
 		expect(registration.roomIds).toEqual([roomId]);
-		const newRoomId = new ObjectId().toHexString();
-		registration.roomIds = [newRoomId];
-		expect(registration.roomIds).toEqual([newRoomId]);
 	});
 
 	it('should get registrationHash', () => {
