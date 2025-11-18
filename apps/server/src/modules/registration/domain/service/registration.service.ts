@@ -1,7 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
+import crypto from 'node:crypto';
 import { RegistrationRepo } from '../../repo';
+import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
 
 @Injectable()
 export class RegistrationService {
@@ -11,8 +12,7 @@ export class RegistrationService {
 		const registrationProps: RegistrationProps = {
 			...props,
 			id: new ObjectId().toHexString(),
-			// we will create a proper hash here later
-			registrationHash: 'someRandomHashForNow',
+			registrationHash: this.createRegistrationHash(),
 			roomIds: [props.roomId],
 			createdAt: new Date(),
 			updatedAt: new Date(),
@@ -44,5 +44,11 @@ export class RegistrationService {
 		const registrations = await this.registrationRepo.findByRoomId(roomId);
 
 		return registrations;
+	}
+
+	private createRegistrationHash(): string {
+		const registrationHash = crypto.randomBytes(32).toString('base64url');
+
+		return registrationHash;
 	}
 }
