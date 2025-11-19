@@ -258,10 +258,10 @@ export class RoomUc {
 		}
 
 		const [existingAccounts, totalNumberOfFoundAccounts] = await this.accountService.searchByUsernameExactMatch(email);
-		if (totalNumberOfFoundAccounts > 1 || existingAccounts[0].username !== email) {
+		if (totalNumberOfFoundAccounts > 1) {
 			throw new InternalServerErrorException('Invalid data found');
 		}
-		if (existingAccounts.length === 1 && existingAccounts[0].username === email && existingAccounts[0].userId) {
+		if (existingAccounts.length === 1 && existingAccounts[0].userId) {
 			const foundUserId = existingAccounts[0].userId;
 			const user = await this.userService.findById(foundUserId);
 			this.checkUserIsExternalPerson(user);
