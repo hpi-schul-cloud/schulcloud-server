@@ -1,3 +1,4 @@
+import { AccountService } from '@modules/account';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { RoleName, RoomRole } from '@modules/role';
 import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
@@ -6,7 +7,13 @@ import { RoomMembershipStats } from '@modules/room-membership/type/room-membersh
 import { School, SchoolService } from '@modules/school';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo'; // TODO: Auth service should use a different type
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+	BadRequestException,
+	ForbiddenException,
+	Injectable,
+	InternalServerErrorException,
+	NotFoundException,
+} from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -32,7 +39,8 @@ export class RoomUc {
 		private readonly userService: UserService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly roomPermissionService: RoomPermissionService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: SchoolService,
+		private readonly accountService: AccountService
 	) {}
 
 	public async getRoomStats(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomStats>> {
@@ -236,6 +244,34 @@ export class RoomUc {
 		return roleName;
 	}
 
+	public async addExternalPersonByEmailToRoom(
+		currentUserId: EntityId,
+		roomId: EntityId,
+		email: string
+	): Promise<RoomRole> {
+		// no further email validation check as its done by decorator in controller, additional whitelisting needed?
+		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(currentUserId, roomId, Action.write, [
+			Permission.ROOM_ADD_MEMBERS,
+		]);
+		if (!hasRoomPermission) {
+			throw new ForbiddenException('You do not have permission to access this room');
+		}
+
+		const [existingAccounts, totalNumberOfFoundAccounts] = await this.accountService.searchByUsernameExactMatch(email);
+		if (totalNumberOfFoundAccounts > 1 || existingAccounts[0].username !== email) {
+			throw new InternalServerErrorException('Invalid data found');
+		}
+		if (existingAccounts.length === 1 && existingAccounts[0].username === email && existingAccounts[0].userId) {
+			const foundUserId = existingAccounts[0].userId;
+			const user = await this.userService.findById(foundUserId);
+			this.checkUserIsExternalPerson(user);
+			await this.checkUsersAccessible(currentUserId, [foundUserId]);
+			const roleName = await this.roomMembershipService.addMembersToRoom(roomId, [foundUserId]);
+			return roleName;
+		}
+		throw new NotFoundException('No user found with the provided email');
+	}
+
 	public async changeRolesOfMembers(
 		currentUserId: EntityId,
 		roomId: EntityId,
@@ -339,6 +375,12 @@ export class RoomUc {
 		}
 	}
 
+	private checkUserIsExternalPerson(user: UserDo): void {
+		if (!user.roles.find((role) => role.name === RoleName.EXPERT)) {
+			throw new BadRequestException('User is not an external person');
+		}
+	}
+
 	private buildRoomMembersResponse(
 		users: UserDo[],
 		roomMembershipAuthorizable: RoomMembershipAuthorizable
@@ -427,5 +469,6 @@ export class RoomUc {
 				action: Action.read,
 				requiredPermissions: [],
 			});
+
 	private userToId = (user: UserDo): string => user.id || '';
 }
