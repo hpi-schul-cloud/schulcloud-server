@@ -92,6 +92,7 @@ describe('Room Controller (API)', () => {
 				});
 				await em.persistAndFlush([
 					room,
+					...boards,
 					studentAccount,
 					studentUser,
 					teacherAccount,
@@ -131,7 +132,7 @@ describe('Room Controller (API)', () => {
 				});
 
 				describe('when the board does not exist in the room', () => {
-					it('should return a 400 error', async () => {
+					it('should return a 404 error', async () => {
 						const { loggedInClient, room } = await setup();
 						const someBoard = columnBoardEntityFactory.buildWithId();
 
@@ -140,7 +141,7 @@ describe('Room Controller (API)', () => {
 
 						const response = await loggedInClient.patch(`${room.id}/boards`, { id: someBoard.id, toPosition: 0 });
 
-						expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+						expect(response.status).toBe(HttpStatus.NOT_FOUND);
 					});
 				});
 

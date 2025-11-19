@@ -18,6 +18,9 @@ import {
 	RoomBoardService,
 } from './api/service';
 import { CopyRoomContentStep } from './api/saga/copy-room-content.step';
+import { RoomDeletedHandler } from './api/service/room-deleted.handler';
+import { RoomArrangementUc } from './api/room-arrangement.uc';
+import { RoomContentUc } from './api/room-content.uc';
 
 @Module({
 	imports: [
@@ -36,9 +39,12 @@ import { CopyRoomContentStep } from './api/saga/copy-room-content.step';
 		RoomUc,
 		RoomInvitationLinkUc,
 		RoomCopyUc,
+		RoomArrangementUc,
+		RoomContentUc,
 		CopyRoomStep,
 		CopyRoomContentStep,
 		RoomPermissionService,
+		RoomDeletedHandler,
 		RoomBoardCreatedHandler,
 		RoomBoardDeletedHandler,
 		RoomBoardService,
