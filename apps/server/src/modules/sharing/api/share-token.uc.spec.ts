@@ -268,7 +268,7 @@ describe('ShareTokenUC', () => {
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
 					boardNodeAuthorizable,
-					AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
+					AuthorizationContextBuilder.write([Permission.COURSE_EDIT, Permission.BOARD_SHARE_BOARD])
 				);
 			});
 		});
@@ -339,7 +339,7 @@ describe('ShareTokenUC', () => {
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
 					boardNodeAuthorizable,
-					AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
+					AuthorizationContextBuilder.write([Permission.COURSE_EDIT, Permission.BOARD_SHARE_BOARD])
 				);
 			});
 		});
