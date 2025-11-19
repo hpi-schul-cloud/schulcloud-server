@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const _ = require('lodash');
 const mongoose = require('mongoose');
-const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = require('../errors');
+const { Forbidden, GeneralError, NotFound, BadRequest } = require('../errors');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
@@ -227,7 +227,7 @@ const resolveToId = (service, key, value) => {
 	query[key] = value;
 	return service.find({ query }).then((results) => {
 		const result = results.data[0];
-		if (!result) throw new Error(`No records found where ${key} is ${value}.`);
+		if (!result) throw new TypeError(`No records found where ${key} is ${value}.`);
 		return result._id;
 	});
 };
