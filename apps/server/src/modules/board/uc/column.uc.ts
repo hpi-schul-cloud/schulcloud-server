@@ -63,7 +63,7 @@ export class ColumnUc {
 		userId: EntityId,
 		cardId: EntityId,
 		targetColumnId: EntityId,
-		targetPosition: number
+		targetPosition?: number
 	): Promise<Card> {
 		this.logger.debug({ action: 'moveCard', userId, cardId, targetColumnId, toPosition: targetPosition });
 
