@@ -23,17 +23,12 @@ import {
 	ShareTokenResponse,
 	ShareTokenUrlParams,
 } from './dto';
-import { ShareTokenPermissionService } from './service';
 
 @ApiTags('ShareToken')
 @JwtAuthentication()
 @Controller('sharetoken')
 export class ShareTokenController {
-	constructor(
-		private readonly shareTokenUC: ShareTokenUC,
-		private readonly importTokenUc: ImportTokenUC,
-		private readonly shareTokenPermissionService: ShareTokenPermissionService
-	) {}
+	constructor(private readonly shareTokenUC: ShareTokenUC, private readonly importTokenUc: ImportTokenUC) {}
 
 	@ApiOperation({ summary: 'Create a share token.' })
 	@ApiResponse({ status: 201, type: ShareTokenResponse })
