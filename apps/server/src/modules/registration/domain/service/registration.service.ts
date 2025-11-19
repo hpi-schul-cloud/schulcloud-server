@@ -64,4 +64,11 @@ export class RegistrationService {
 			throw new BadRequestException('Registration using disposable email domains is not allowed.');
 		}
 	}
+
+	private generateRegistrationLink(hash: string): string {
+		const BASE_REGISTRATION_URL = `${window.location.origin}/registration-external-members/`;
+		const registrationLink = `${BASE_REGISTRATION_URL}?registrationHash=${hash}`;
+
+		return registrationLink;
+	}
 }
