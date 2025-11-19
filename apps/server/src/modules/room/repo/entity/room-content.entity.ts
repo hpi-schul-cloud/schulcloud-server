@@ -1,12 +1,12 @@
 import { Embeddable, Embedded, Entity, Index, Property } from '@mikro-orm/core';
-import { RoomContentProps, RoomContentType } from '../../domain/type';
+import { RoomContentProps, RoomContentType, RoomContentItem as IRoomContentItem } from '../../domain/type';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ObjectIdType } from '@shared/repo/types/object-id.type';
 
 // Separate entity for room content to keep it independent from rooms and allow user-specific content storage.
 @Embeddable()
-class RoomContentItem {
+class RoomContentItem implements IRoomContentItem {
 	@Property({ nullable: false })
 	id!: EntityId;
 
