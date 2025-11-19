@@ -227,7 +227,7 @@ const resolveToId = (service, key, value) => {
 	query[key] = value;
 	return service.find({ query }).then((results) => {
 		const result = results.data[0];
-		if (!result) throw new TypeError(`No records found where ${key} is ${value}.`);
+		if (!result) throw new Error(`No records found where ${key} is ${value}.`);
 		return result._id;
 	});
 };
