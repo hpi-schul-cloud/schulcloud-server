@@ -1,14 +1,20 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { isDisposableEmail as _isDisposableEmail } from 'disposable-email-domains-js';
 import crypto from 'node:crypto';
 import { RegistrationRepo } from '../../repo';
 import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
 
+// only placeholder until we decided to use it at all as no typing is provided by the package but is better maintained then the alternative
+// we should actually replace disposable-email-domains with the new one as the first is not maintained anymore
+const isDisposableEmail = _isDisposableEmail as (email: string) => boolean;
 @Injectable()
 export class RegistrationService {
 	constructor(private readonly registrationRepo: RegistrationRepo) {}
 
 	public async createRegistration(props: RegistrationCreateProps): Promise<Registration> {
+		this.blockForbiddenDomains(props.email);
+
 		const registrationProps: RegistrationProps = {
 			...props,
 			id: new ObjectId().toHexString(),
@@ -50,5 +56,12 @@ export class RegistrationService {
 		const registrationHash = crypto.randomBytes(32).toString('base64url');
 
 		return registrationHash;
+	}
+
+	private blockForbiddenDomains(email: string): void {
+		const isBlockedDomain = isDisposableEmail(email);
+		if (isBlockedDomain) {
+			throw new BadRequestException('Registration using disposable email domains is not allowed.');
+		}
 	}
 }
