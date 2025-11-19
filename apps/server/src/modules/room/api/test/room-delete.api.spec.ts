@@ -127,8 +127,6 @@ describe('Room Controller (API)', () => {
 
 					const response = await loggedInClient.delete(room.id);
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
-
-					await waitForEventBus();
 					await expect(em.findOneOrFail(RoomMembershipEntity, { roomId: room.id })).rejects.toThrow(NotFoundException);
 				});
 
@@ -153,8 +151,6 @@ describe('Room Controller (API)', () => {
 
 					const response = await loggedInClient.delete(room.id);
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
-
-					await waitForEventBus();
 					await expect(em.findOneOrFail('RoomContentEntity', { roomId: room.id })).rejects.toThrow(NotFoundException);
 				});
 
