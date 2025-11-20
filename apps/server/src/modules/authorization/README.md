@@ -32,7 +32,7 @@ Roles inherit permissions from the roles they have in their "roles" field.
 Like the "user" role, some of these roles are abstract and only used for inheritance.
 Some others are scope based with a prefix name like team*, or course*.
 
-The "real" user roles by name are expert, student, teacher and administrator. All of these are in the school scope and the superhero is in the scope of an instance.
+The "real" user roles by name are external person, student, teacher and administrator. All of these are in the school scope and the superhero is in the scope of an instance.
 
 > In future we want to remove the inherit logic.
 > We want to add scope types to each role.
@@ -102,7 +102,7 @@ It implements a check for which domain object, entity, or additional conditions 
 ## User (Role) Permissions vs Scope Based Permissions
 
 The permissions of the user come from his role.
-This permissions have no explicit scope. But _implicitly_ the roles expert, student, teacher and administrator are in the school scope. The superhero is _implicitly_ in the scope of the instance.
+This permissions have no explicit scope. But _implicitly_ the roles external person, student, teacher and administrator are in the school scope. The superhero is _implicitly_ in the scope of the instance. On some instances external persons are "collected" in the "ExpertenSchule" - which is a unique school with a specialized type (SchoolPurpose.EXPERT) to provide instance wide - accounts for experts that may be invited to multiple schools.
 
 It exists also scope based permissions. A user can have different (scope)roles in different (domain)scopes. For example in teams where the student can have team member role in one team, or team adminstrator in another.
 
@@ -136,7 +136,11 @@ When calling other internal micro service for already authorized operations plea
 
 ```javascript
 // Multiple permissions can be added. For a successful authorization, the user need all of them.
-await this.authorizationService.hasPermission(userId, course, AuthorizationContextBuilder.read([Permissions.COURSE_VIEW]));
+await this.authorizationService.hasPermission(
+	userId,
+	course,
+	AuthorizationContextBuilder.read([Permissions.COURSE_VIEW])
+);
 // next orchestration steps
 ```
 
@@ -145,10 +149,10 @@ await this.authorizationService.hasPermission(userId, course, AuthorizationConte
 ```javascript
 /** const **/
 export const FileStorageAuthorizationContext = {
-   create: AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE]),
-   read: AuthorizationContextBuilder.read([Permission.FILESTORAGE_VIEW]),
-   update: AuthorizationContextBuilder.write([Permission.FILESTORAGE_EDIT]),
-   delete: AuthorizationContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
+	create: AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE]),
+	read: AuthorizationContextBuilder.read([Permission.FILESTORAGE_VIEW]),
+	update: AuthorizationContextBuilder.write([Permission.FILESTORAGE_EDIT]),
+	delete: AuthorizationContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
 };
 
 /** UC **/
@@ -181,7 +185,7 @@ async createSchoolBySuperhero(userId: EntityId, params: { name: string }) {
 async createUserByAdmin(userId: EntityId, params: { email: string, firstName: string, lastName: string, schoolId: EntityId }) {
 
    const user = this.authorizationService.getUserWithPermissions(userId);
-    
+
    const context = AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER])
    await this.authorizationService.checkPermission(user, school, context);
 
@@ -268,54 +272,58 @@ So a rule must validate our scope actions. For example we have a _news_ for the 
 ```ts
 @Injectable()
 export class NewsRule extends BasePermission<News> {
-   constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly schoolRule: SchoolRule, private readonly courseRule: CourseRule) {
-         super();
-   }
+	constructor(
+		private readonly authorizationHelper: AuthorizationHelper,
+		private readonly schoolRule: SchoolRule,
+		private readonly courseRule: CourseRule
+	) {
+		super();
+	}
 
-   // Is used to select the matching rule in the rule manager. Therefore we keep the condition to which case the rule
-   // applies in the rule itself. In future we expect more complex conditions that could apply here.
-   public isApplicable(user: User, entity: News): boolean {
-      const isMatched = entity instanceof News;
+	// Is used to select the matching rule in the rule manager. Therefore we keep the condition to which case the rule
+	// applies in the rule itself. In future we expect more complex conditions that could apply here.
+	public isApplicable(user: User, entity: News): boolean {
+		const isMatched = entity instanceof News;
 
-      return isMatched;
-   }
+		return isMatched;
+	}
 
-   public hasPermission(user: User, entity: News, context: AuthorizationContext): boolean {
-      const { action, requiredPermissions } = context;
+	public hasPermission(user: User, entity: News, context: AuthorizationContext): boolean {
+		const { action, requiredPermissions } = context;
 
-      // check required permissions passed by UC
-      const hasPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
-      // check access to entity by property
-      const isCreator = this.authorizationHelper.hasAccessToEntity(user, entity, ['creator']);
-      let hasNewsPermission = false;
+		// check required permissions passed by UC
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
+		// check access to entity by property
+		const isCreator = this.authorizationHelper.hasAccessToEntity(user, entity, ['creator']);
+		let hasNewsPermission = false;
 
-      if (action === Actions.read) {
-         hasNewsPermission = this.parentPermission(user, entity, action);
-      } else if (action === Actions.write) {
-         hasNewsPermission = isCreator;
-      }
+		if (action === Actions.read) {
+			hasNewsPermission = this.parentPermission(user, entity, action);
+		} else if (action === Actions.write) {
+			hasNewsPermission = isCreator;
+		}
 
-      const result = hasPermission && hasNewsPermission;
+		const result = hasPermission && hasNewsPermission;
 
-      return result;
-   }
+		return result;
+	}
 
-   private parentPermission(user: User, entity: News, action: Actions): boolean {
-      let hasParentPermission = false;
-      // check by parentRule, because the schoolRule can contain extra logic
-      // e.g. school is offline
-      // or courseRule has complex permissions-resolves
-      if (entity.targetModel === NewsTargetModel.School) {
-         hasParentPermission = this.schoolRule.hasPermission(user, entity.target, { action, requiredPermissions: [] });
-      } else if (entity.targetModel === NewsTargetModel.Course) {
-         hasParentPermission = this.courseRule.hasPermission(user, entity.target, { action, requiredPermissions: [] });
-      }
+	private parentPermission(user: User, entity: News, action: Actions): boolean {
+		let hasParentPermission = false;
+		// check by parentRule, because the schoolRule can contain extra logic
+		// e.g. school is offline
+		// or courseRule has complex permissions-resolves
+		if (entity.targetModel === NewsTargetModel.School) {
+			hasParentPermission = this.schoolRule.hasPermission(user, entity.target, { action, requiredPermissions: [] });
+		} else if (entity.targetModel === NewsTargetModel.Course) {
+			hasParentPermission = this.courseRule.hasPermission(user, entity.target, { action, requiredPermissions: [] });
+		}
 
-      return hasParentPermission;
-   }
+		return hasParentPermission;
+	}
 }
-
 ```
+
 ## Structure of the Authorization Components
 
 ### feathers-\* (legacy/deprecated)
