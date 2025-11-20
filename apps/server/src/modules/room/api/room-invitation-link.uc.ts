@@ -153,7 +153,7 @@ export class RoomInvitationLinkUc {
 	private checkRoleValidity(user: User, roomInvitationLink: RoomInvitationLink): void {
 		const isTeacher = user.getRoles().some((role) => role.name === RoleName.TEACHER);
 		const isStudent = user.getRoles().some((role) => role.name === RoleName.STUDENT);
-		const isExternalPerson = user.getRoles().some((role) => role.name === RoleName.EXPERT);
+		const isExternalPerson = user.getRoles().some((role) => role.name === RoleName.EXTERNALPERSON);
 
 		if (isTeacher) {
 			return;
@@ -179,7 +179,7 @@ export class RoomInvitationLinkUc {
 	}
 
 	private async checkCreatorSchoolRestriction(user: User, roomInvitationLink: RoomInvitationLink): Promise<void> {
-		const isExternalPerson = user.getRoles().some((role) => role.name === RoleName.EXPERT);
+		const isExternalPerson = user.getRoles().some((role) => role.name === RoleName.EXTERNALPERSON);
 		const skipSchoolRestrictionCheck = isExternalPerson && roomInvitationLink.isUsableByExternalPersons;
 		if (skipSchoolRestrictionCheck) return;
 

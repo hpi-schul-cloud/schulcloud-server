@@ -105,7 +105,7 @@ class UserFactory extends BaseFactory<User, UserProperties> {
 
 	public asExternalPerson(additionalPermissions: Permission[] = []): this {
 		const permissions = _.union(userPermissions, externalPersonPermissions, additionalPermissions);
-		const role = roleFactory.buildWithId({ permissions, name: RoleName.EXPERT });
+		const role = roleFactory.buildWithId({ permissions, name: RoleName.EXTERNALPERSON });
 
 		const params: DeepPartial<UserProperties> = { roles: [role] };
 

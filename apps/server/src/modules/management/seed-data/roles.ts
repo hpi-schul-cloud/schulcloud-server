@@ -412,7 +412,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		id: '5bd0066a90a9ee0cb4947a9c',
 		createdAt: '2017-01-01T00:06:37.148Z',
 		updatedAt: '2022-05-20T13:33:18.077Z',
-		name: RoleName.EXPERT,
+		name: RoleName.EXTERNALPERSON,
 		roles: [RoleName.USER],
 		permissions: [],
 	},

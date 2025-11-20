@@ -155,7 +155,7 @@ export class VideoConferenceDeprecatedUc {
 			role: bbbRole,
 		});
 
-		const isGuest = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
+		const isGuest = await this.isExternalPersonOrTeamExpert(currentUser, conferenceScope, scopeInfo.scopeId);
 		const vcDO = await this.videoConferenceRepo.findByScopeAndScopeId(refId, conferenceScope);
 		configBuilder.withUserId(currentUser.userId);
 
@@ -233,7 +233,7 @@ export class VideoConferenceDeprecatedUc {
 					})
 			);
 
-		const isGuest = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
+		const isGuest = await this.isExternalPersonOrTeamExpert(currentUser, conferenceScope, scopeInfo.scopeId);
 
 		if (!this.canGuestJoin(isGuest, response.state, options.moderatorMustApproveJoinRequests)) {
 			throw new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE);
@@ -298,7 +298,7 @@ export class VideoConferenceDeprecatedUc {
 		});
 	}
 
-	protected async isExpert(
+	protected async isExternalPersonOrTeamExpert(
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		scopeId: string
@@ -307,7 +307,7 @@ export class VideoConferenceDeprecatedUc {
 			case VideoConferenceScope.COURSE: {
 				const roles: RoleName[] = currentUser.roles.map((role) => role as RoleName);
 
-				return roles.includes(RoleName.EXPERT);
+				return roles.includes(RoleName.EXTERNALPERSON);
 			}
 			case VideoConferenceScope.EVENT: {
 				const team: TeamEntity = await this.teamRepo.findById(scopeId);

@@ -615,7 +615,7 @@ describe('UserService', () => {
 			});
 
 			it('should add external person as guestexternalperson to school', async () => {
-				const { user, targetSchool } = setupUserWithRole(RoleName.EXPERT);
+				const { user, targetSchool } = setupUserWithRole(RoleName.EXTERNALPERSON);
 				const { guestExternalPerson } = setupGuestRoles();
 
 				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);

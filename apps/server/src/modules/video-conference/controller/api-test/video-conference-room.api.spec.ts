@@ -789,18 +789,18 @@ describe('VideoConferenceController (API)', () => {
 							endDate: new Date('2024-10-20'),
 						});
 						const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
-						const expertRole = roleFactory.buildWithId({
-							name: RoleName.EXPERT,
+						const externalPersonRole = roleFactory.buildWithId({
+							name: RoleName.EXTERNALPERSON,
 							permissions: [Permission.JOIN_MEETING],
 						});
 
-						const expertUser = userFactory.buildWithId({ school, roles: [expertRole] });
-						const expertAccount = accountFactory.buildWithId({ userId: expertUser.id });
+						const externalPersonUser = userFactory.buildWithId({ school, roles: [externalPersonRole] });
+						const externalPersonAccount = accountFactory.buildWithId({ userId: externalPersonUser.id });
 
 						const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 						const userGroup = groupEntityFactory.buildWithId({
 							organization: school,
-							users: [{ role: expertRole, user: expertUser }],
+							users: [{ role: externalPersonRole, user: externalPersonUser }],
 						});
 						const roomMembership = roomMembershipEntityFactory.build({
 							roomId: room.id,
@@ -813,8 +813,8 @@ describe('VideoConferenceController (API)', () => {
 						});
 
 						await em.persistAndFlush([
-							expertAccount,
-							expertUser,
+							externalPersonAccount,
+							externalPersonUser,
 							room,
 							roomMembership,
 							school,
@@ -831,7 +831,7 @@ describe('VideoConferenceController (API)', () => {
 						const scope: VideoConferenceScope = VideoConferenceScope.ROOM;
 						const scopeId: string = room.id;
 
-						const loggedInClient: TestApiClient = await testApiClient.login(expertAccount);
+						const loggedInClient: TestApiClient = await testApiClient.login(externalPersonAccount);
 
 						mockBbbMeetingInfoSuccess(scopeId);
 

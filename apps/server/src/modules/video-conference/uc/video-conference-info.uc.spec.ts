@@ -96,7 +96,7 @@ describe('VideoConferenceInfoUc', () => {
 				videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
 				videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
 				bbbService.getMeetingInfo.mockRejectedValue(new Error('not found'));
-				videoConferenceService.hasExpertRole.mockResolvedValue(true);
+				videoConferenceService.isExternalPersonOrTeamExpert.mockResolvedValue(true);
 				videoConferenceService.canGuestJoin.mockReturnValue(true);
 
 				return { user, currentUserId, scope, scopeInfo, videoConferenceDO };
@@ -149,7 +149,7 @@ describe('VideoConferenceInfoUc', () => {
 					videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 					videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
 					bbbService.getMeetingInfo.mockResolvedValue(bbbMeetingInfoResponse);
-					videoConferenceService.hasExpertRole.mockResolvedValue(false);
+					videoConferenceService.isExternalPersonOrTeamExpert.mockResolvedValue(false);
 					videoConferenceService.canGuestJoin.mockReturnValue(true);
 					videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
 
@@ -206,7 +206,7 @@ describe('VideoConferenceInfoUc', () => {
 			});
 
 			describe('when bbbRole is viewer', () => {
-				describe('when user has expert role', () => {
+				describe('when user has external person role or is team expert', () => {
 					describe('when guest can join', () => {
 						const setup = () => {
 							const user = userDoFactory.buildWithId();
@@ -233,7 +233,7 @@ describe('VideoConferenceInfoUc', () => {
 							videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 							videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
 							bbbService.getMeetingInfo.mockResolvedValue(bbbMeetingInfoResponse);
-							videoConferenceService.hasExpertRole.mockResolvedValue(true);
+							videoConferenceService.isExternalPersonOrTeamExpert.mockResolvedValue(true);
 							videoConferenceService.canGuestJoin.mockReturnValue(true);
 							videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
 
@@ -280,7 +280,7 @@ describe('VideoConferenceInfoUc', () => {
 							videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 							videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
 							bbbService.getMeetingInfo.mockResolvedValue(bbbMeetingInfoResponse);
-							videoConferenceService.hasExpertRole.mockResolvedValue(true);
+							videoConferenceService.isExternalPersonOrTeamExpert.mockResolvedValue(true);
 							videoConferenceService.canGuestJoin.mockReturnValue(false);
 							videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
 
@@ -321,7 +321,7 @@ describe('VideoConferenceInfoUc', () => {
 						videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 						videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
 						bbbService.getMeetingInfo.mockResolvedValue(bbbMeetingInfoResponse);
-						videoConferenceService.hasExpertRole.mockResolvedValue(true);
+						videoConferenceService.isExternalPersonOrTeamExpert.mockResolvedValue(true);
 						videoConferenceService.canGuestJoin.mockReturnValue(true);
 						videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
 
@@ -369,7 +369,7 @@ describe('VideoConferenceInfoUc', () => {
 				videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 				videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
 				bbbService.getMeetingInfo.mockResolvedValue(bbbMeetingInfoResponse);
-				videoConferenceService.hasExpertRole.mockResolvedValue(true);
+				videoConferenceService.isExternalPersonOrTeamExpert.mockResolvedValue(true);
 				videoConferenceService.canGuestJoin.mockReturnValue(true);
 				videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
 
