@@ -3,11 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 
 /*
  * Migration removing materials and lesson contents referencing merlin.
- * The class is used dynamically by Mikro-ORM even if eslint/ts cannot detect direct usage.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Migration20251120100012 extends Migration {
-	// Document type helpers
 	private readonly materialsCollection = this.getCollection('materials');
 	private readonly lessonsCollection = this.getCollection('lessons');
 
@@ -25,9 +22,9 @@ export class Migration20251120100012 extends Migration {
 		const materialsRaw = (await this.materialsCollection
 			.find({ merlinReference: { $exists: true, $ne: '' } })
 			.project({ _id: 1 })
-			.toArray()) as Array<{ _id: unknown }>;
+			.toArray()) as Array<{ _id: ObjectId }>;
 
-		const materialIds: ObjectId[] = materialsRaw.map((doc) => doc._id as ObjectId);
+		const materialIds: ObjectId[] = materialsRaw.map((doc) => doc._id);
 		if (materialIds.length === 0) {
 			console.info('No materials with merlinReference found. No references removed from lessons.');
 			return;
@@ -67,16 +64,19 @@ export class Migration20251120100012 extends Migration {
 
 		let modifiedLessons = 0;
 		while (await cursor.hasNext()) {
-			const raw = await cursor.next();
-			if (!raw) break;
-			const lesson = raw as LessonDoc;
+			const rawDocument = await cursor.next();
+			if (!rawDocument) break;
+			const lesson = rawDocument as LessonDoc;
+
 			const originalContents: LessonContent[] = Array.isArray(lesson.contents) ? lesson.contents : [];
+
 			const filteredContents = originalContents.filter((c) => {
 				const resources = c.content?.resources;
 				if (!Array.isArray(resources) || resources.length === 0) return true;
 				// Keep content only if ALL resources have empty / missing merlinReference
 				return !resources.some((r) => this.isNonEmptyMerlin(r.merlinReference));
 			});
+
 			if (filteredContents.length !== originalContents.length) {
 				await this.lessonsCollection.updateOne({ _id: lesson._id }, { $set: { contents: filteredContents } });
 				modifiedLessons += 1;
