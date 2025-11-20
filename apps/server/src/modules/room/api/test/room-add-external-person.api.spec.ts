@@ -59,12 +59,29 @@ describe('Room Controller (API)', () => {
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
 			const externalPersonGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTEXTERNALPERSON });
 			const { roomEditorRole, roomAdminRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+			const roomWithExistingExternalPerson = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
+
+			const externalPersonMemberGroupEntity = groupEntityFactory.buildWithId({
+				users: [
+					{ role: roomAdminRole, user: teacherUser },
+					{ role: roomViewerRole, user: externalPersonUser },
+				],
+				type: GroupEntityTypes.ROOM,
+				organization: teacherUser.school,
+				externalSource: undefined,
+			});
 
 			const userGroupEntity = groupEntityFactory.buildWithId({
 				users: [{ role: roomAdminRole, user: teacherUser }],
 				type: GroupEntityTypes.ROOM,
 				organization: teacherUser.school,
 				externalSource: undefined,
+			});
+
+			const externalPersonMemberGroupMembership = roomMembershipEntityFactory.build({
+				userGroupId: externalPersonMemberGroupEntity.id,
+				roomId: roomWithExistingExternalPerson.id,
+				schoolId: school.id,
 			});
 
 			const roomMembership = roomMembershipEntityFactory.build({
@@ -75,7 +92,9 @@ describe('Room Controller (API)', () => {
 
 			await em.persistAndFlush([
 				room,
+				roomWithExistingExternalPerson,
 				roomMembership,
+				externalPersonMemberGroupMembership,
 				roomAdminRole,
 				roomEditorRole,
 				roomViewerRole,
@@ -89,12 +108,13 @@ describe('Room Controller (API)', () => {
 				otherTeacherUser,
 				otherTeacherAccount,
 				userGroupEntity,
+				externalPersonMemberGroupEntity,
 			]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, room, otherTeacherUser, externalPersonUser, school };
+			return { loggedInClient, room, roomWithExistingExternalPerson, otherTeacherUser, externalPersonUser, school };
 		};
 
 		describe('when the user is not authenticated', () => {
@@ -201,21 +221,14 @@ describe('Room Controller (API)', () => {
 
 			describe('when adding an existing external person who is already member of the room', () => {
 				it('should return OK with room role response', async () => {
-					const { loggedInClient, room, externalPersonUser } = await setupRoomWithMembers();
+					const { loggedInClient, roomWithExistingExternalPerson, externalPersonUser } = await setupRoomWithMembers();
 
-					// First addition
-					await loggedInClient.patch(`/${room.id}/members/add-by-email`, {
+					const response = await loggedInClient.patch(`/${roomWithExistingExternalPerson.id}/members/add-by-email`, {
 						email: externalPersonUser.email,
 					});
 
-					// Second addition
-					/* const response =  */ await loggedInClient.patch(`/${room.id}/members/add-by-email`, {
-						email: externalPersonUser.email,
-					});
-
-					// test currently fails because of test setup after first DB cleanup
-					// expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-					// expect((response.body as { message: string }).message).toContain('User is already a member of the room');
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+					expect((response.body as { message: string }).message).toContain('User is already a member of the room');
 				});
 			});
 
