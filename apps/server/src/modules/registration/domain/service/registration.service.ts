@@ -74,7 +74,8 @@ export class RegistrationService {
 	}
 
 	// can also be used for resending mail functionality later
-	public generateRegistrationMail(firstName: string, lastName: string, hash: string): Mail {
+	// also think about updating registration object with resentAt timestamp
+	public generateRegistrationMail(email: string, firstName: string, lastName: string, hash: string): Mail {
 		const registrationLink = this.generateRegistrationLink(hash);
 		const mailContent = this.generateRegistrationMailContent(firstName, lastName, registrationLink);
 		const senderAddress = Configuration.get('SMTP_SENDER') as string;
@@ -84,7 +85,7 @@ export class RegistrationService {
 				htmlContent: mailContent.html,
 				plainTextContent: mailContent.text,
 			},
-			recipients: [],
+			recipients: [email],
 			from: senderAddress,
 		};
 		return completeMail;

@@ -31,6 +31,7 @@ export class RegistrationUc {
 
 		const registration = await this.registrationService.createRegistration({ ...props });
 		const registrationMail = this.registrationService.generateRegistrationMail(
+			registration.email,
 			registration.firstName,
 			registration.lastName,
 			registration.registrationHash
