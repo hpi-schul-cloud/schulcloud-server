@@ -92,8 +92,9 @@ export class RegistrationService {
 	}
 
 	private generateRegistrationLink(hash: string): string {
-		const BASE_REGISTRATION_URL = `${window.location.origin}/registration-external-members/`;
-		const registrationLink = `${BASE_REGISTRATION_URL}?registrationHash=${hash}`;
+		const hostUrl = Configuration.get('HOST') as string;
+		const baseRegistrationUrl = `${hostUrl}/registration-external-members/`;
+		const registrationLink = `${baseRegistrationUrl}?registrationHash=${hash}`;
 
 		return registrationLink;
 	}
