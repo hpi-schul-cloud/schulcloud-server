@@ -1,3 +1,5 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Mail } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { isDisposableEmail as _isDisposableEmail } from 'disposable-email-domains-js';
@@ -8,6 +10,12 @@ import { Registration, RegistrationCreateProps, RegistrationProps } from '../do'
 // only placeholder until we decided to use it at all as no typing is provided by the package but is better maintained then the alternative
 // we should actually replace disposable-email-domains with the new one as the first is not maintained anymore
 const isDisposableEmail = _isDisposableEmail as (email: string) => boolean;
+
+type MailContent = {
+	text: string;
+	html: string;
+};
+
 @Injectable()
 export class RegistrationService {
 	constructor(private readonly registrationRepo: RegistrationRepo) {}
@@ -65,10 +73,35 @@ export class RegistrationService {
 		}
 	}
 
+	// can also be used for resending mail functionality later
+	public generateRegistrationMail(firstName: string, lastName: string, hash: string): Mail {
+		const registrationLink = this.generateRegistrationLink(hash);
+		const mailContent = this.generateRegistrationMailContent(firstName, lastName, registrationLink);
+		const senderAddress = Configuration.get('SMTP_SENDER') as string;
+		const completeMail: Mail = {
+			mail: {
+				subject: 'Einladung Externe Person',
+				htmlContent: mailContent.html,
+				plainTextContent: mailContent.text,
+			},
+			recipients: [],
+			from: senderAddress,
+		};
+		return completeMail;
+	}
+
 	private generateRegistrationLink(hash: string): string {
 		const BASE_REGISTRATION_URL = `${window.location.origin}/registration-external-members/`;
 		const registrationLink = `${BASE_REGISTRATION_URL}?registrationHash=${hash}`;
 
 		return registrationLink;
+	}
+
+	private generateRegistrationMailContent(firstName: string, lastName: string, registrationLink: string): MailContent {
+		const mailContent = {
+			text: `Einladung für ${firstName} ${lastName} bitte nutze folgenden Link zur Registrierung: ${registrationLink}`,
+			html: `<p>Einladung für ${firstName} ${lastName}</p><p>Bitte nutze folgenden Link zur Registrierung: <a href="${registrationLink}">${registrationLink}</a></p>`,
+		};
+		return mailContent;
 	}
 }

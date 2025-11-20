@@ -1,3 +1,4 @@
+import { MailService } from '@infra/mail';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { RoomMembershipService } from '@modules/room-membership';
 import { Injectable } from '@nestjs/common';
@@ -10,6 +11,7 @@ import { RegistrationFeatureService } from './service';
 export class RegistrationUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
+		private readonly mailService: MailService,
 		private readonly registrationService: RegistrationService,
 		private readonly registrationFeatureService: RegistrationFeatureService,
 		private readonly roomMembershipService: RoomMembershipService
@@ -28,6 +30,13 @@ export class RegistrationUc {
 		}
 
 		const registration = await this.registrationService.createRegistration({ ...props });
+		const registrationMail = this.registrationService.generateRegistrationMail(
+			registration.firstName,
+			registration.lastName,
+			registration.registrationHash
+		);
+		// only send in production mode e.g. for testing?
+		await this.mailService.send(registrationMail);
 		return registration;
 	}
 
