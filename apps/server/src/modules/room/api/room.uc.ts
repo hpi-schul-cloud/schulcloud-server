@@ -250,6 +250,7 @@ export class RoomUc {
 		email: string
 	): Promise<RoomRole> {
 		// no further email validation check as its done by decorator in controller, additional whitelisting needed?
+		// actually no whitelisting needed at this point imo as we only search for existing users
 		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(currentUserId, roomId, Action.write, [
 			Permission.ROOM_ADD_MEMBERS,
 		]);
@@ -265,7 +266,10 @@ export class RoomUc {
 			const foundUserId = existingAccounts[0].userId;
 			const user = await this.userService.findById(foundUserId);
 			this.checkUserIsExternalPerson(user);
+			// questioning this accesible check as external persons are normally not in the same school
+			// for now I adjusted the api test to make the user discoverable
 			await this.checkUsersAccessible(currentUserId, [foundUserId]);
+			await this.checkUserIsAlreadyMemberOfRoom(roomId, foundUserId);
 			const roleName = await this.roomMembershipService.addMembersToRoom(roomId, [foundUserId]);
 			return roleName;
 		}
@@ -378,6 +382,14 @@ export class RoomUc {
 	private checkUserIsExternalPerson(user: UserDo): void {
 		if (!user.roles.find((role) => role.name === RoleName.EXPERT)) {
 			throw new BadRequestException('User is not an external person');
+		}
+	}
+
+	private async checkUserIsAlreadyMemberOfRoom(roomId: EntityId, userId: EntityId): Promise<void> {
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const isAlreadyMember = roomMembershipAuthorizable.members.some((member) => member.userId === userId);
+		if (isAlreadyMember) {
+			throw new BadRequestException('User is already a member of the room');
 		}
 	}
 
