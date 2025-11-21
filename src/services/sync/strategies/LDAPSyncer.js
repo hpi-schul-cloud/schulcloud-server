@@ -14,8 +14,8 @@ const LDAP_SYNC_CHANNEL_NAME = Configuration.get('SYNC_QUEUE_NAME');
  * @implements {Syncer}
  */
 class LDAPSyncer extends Syncer {
-	constructor(app, stats = {}, logger, system, syncQueue, options = {}) {
-		super(app, stats, logger);
+	constructor(app, stats = {}, logger, system, syncQueue, options = {}, syncId) {
+		super(app, stats, logger, syncId);
 		this.system = system;
 		this.options = options;
 		this.stats = Object.assign(stats, {
@@ -55,24 +55,24 @@ class LDAPSyncer extends Syncer {
 
 	async processLdapUsers(school) {
 		try {
-			syncLogger.info(`Getting users for school ${school.name}`, { syncId: this.syncId });
+			syncLogger.info(`Getting users for school ${school.name}`, { syncId: this.syncId, schoolId: school.id });
 			const ldapUsers = await this.ldapService.getUsers(this.system.ldapConfig, school);
 			this.stats.users += ldapUsers.length;
 			await this.sendLdapUsers(ldapUsers, school.ldapSchoolIdentifier);
 		} catch (err) {
-			syncLogger.error('Error while syncing process Ldap Users', { error: err, syncId: this.syncId });
+			syncLogger.error('Error while syncing process Ldap Users', { error: err, syncId: this.syncId, schoolId: school.id });
 			this.stats.errors.push(err.stack ? err.stack : err);
 		}
 	}
 
 	async processLdapClasses(school) {
 		try {
-			syncLogger.info(`Getting classes for school ${school.name}`, { syncId: this.syncId });
+			syncLogger.info(`Getting classes for school ${school.name}`, { syncId: this.syncId, schoolId: school.id });
 			const ldapClasses = await this.ldapService.getClasses(this.system.ldapConfig, school);
 			this.stats.classes += ldapClasses.length;
 			await this.sendLdapClasses(ldapClasses, school);
 		} catch (err) {
-			syncLogger.error('Error while syncing process Ldap Classes', { error: err, syncId: this.syncId });
+			syncLogger.error('Error while syncing process Ldap Classes', { error: err, syncId: this.syncId, schoolId: school.id });
 			this.stats.errors.push(err);
 		}
 	}
@@ -113,7 +113,7 @@ class LDAPSyncer extends Syncer {
 	}
 
 	sendLdapClasses(classes, school) {
-		syncLogger.info(`Creating and updating ${classes.length} classes for school ${school.ldapSchoolIdentifier}`, {
+		syncLogger.info(`Creating and updating ${classes.length} classes for school with id ${school.id}`, {
 			syncId: this.syncId,
 		});
 		classes.forEach((ldapClass) => this.sendLdapClass(ldapClass, school));
