@@ -12,6 +12,12 @@ export class Migration20251120100012 extends Migration {
 		return typeof ref === 'string' && ref.trim() !== '';
 	}
 
+	private isMerlinUrl(url: unknown): boolean {
+		if (typeof url !== 'string') return false;
+		const merlinPatterns = [/http:\/\/merlin.nibis.de\/auth.php/, /live.download.nibis.de/];
+		return merlinPatterns.some((pattern) => pattern.test(url));
+	}
+
 	public async up(): Promise<void> {
 		await this.removeMaterialsWithMerlin();
 		await this.removeLessonMerlinReferences();
@@ -47,6 +53,7 @@ export class Migration20251120100012 extends Migration {
 	private async removeLessonMerlinReferences(): Promise<void> {
 		interface LessonContentResource {
 			merlinReference?: string;
+			url?: string;
 		}
 		interface LessonContent {
 			_id?: ObjectId;
@@ -59,7 +66,13 @@ export class Migration20251120100012 extends Migration {
 		}
 
 		const cursor = this.lessonsCollection
-			.find({ 'contents.content.resources.merlinReference': { $exists: true, $ne: '' } })
+			.find({
+				$or: [
+					{ 'contents.content.resources.merlinReference': { $exists: true, $ne: '' } },
+					{ 'contents.content.resources.url': /http:\/\/merlin.nibis.de\/auth.php/ },
+					{ 'contents.content.resources.url': /live.download.nibis.de/ },
+				],
+			})
 			.project({ _id: 1, contents: 1 });
 
 		let modifiedLessons = 0;
@@ -68,19 +81,28 @@ export class Migration20251120100012 extends Migration {
 			if (!rawDocument) break;
 			const lesson = rawDocument as LessonDoc;
 
-			const originalContents: LessonContent[] = Array.isArray(lesson.contents) ? lesson.contents : [];
+			const { contents } = lesson;
+			if (!Array.isArray(contents) || contents.length === 0) continue;
 
-			const filteredContents = originalContents.filter((c) => {
-				const resources = c.content?.resources;
-				if (!Array.isArray(resources) || resources.length === 0) return true;
-				// Keep content only if ALL resources have empty / missing merlinReference
-				return !resources.some((r) => this.isNonEmptyMerlin(r.merlinReference));
-			});
+			for (const item of contents) {
+				if (item.component !== 'resources' || !item.content || typeof item.content !== 'object') continue;
+				const { resources } = item.content;
+				if (!Array.isArray(resources) || resources.length === 0) continue;
 
-			if (filteredContents.length !== originalContents.length) {
-				await this.lessonsCollection.updateOne({ _id: lesson._id }, { $set: { contents: filteredContents } });
-				modifiedLessons += 1;
+				for (let i = resources.length - 1; i >= 0; i--) {
+					if (this.isNonEmptyMerlin(resources[i].merlinReference) || this.isMerlinUrl(resources[i].url)) {
+						resources.splice(i, 1);
+					} else {
+						// Remove merlinReference if present but empty
+						if ('merlinReference' in resources[i]) {
+							delete resources[i].merlinReference;
+						}
+					}
+				}
 			}
+
+			await this.lessonsCollection.updateOne({ _id: lesson._id }, { $set: { contents } });
+			modifiedLessons += 1;
 		}
 		console.info('Removed merlinReference contents from lessons. Lessons modified:', modifiedLessons);
 	}
