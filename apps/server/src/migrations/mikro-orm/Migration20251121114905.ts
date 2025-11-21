@@ -17,8 +17,11 @@ export class Migration20251121114905 extends Migration {
 			}
 		);
 
+		const fileRecordsModifiedCount = Number(fileRecords.modifiedCount) || 0;
+		const fileRecordsMatchedCount = Number(fileRecords.matchedCount) || 0;
+
 		console.info(
-			`Updated securityCheck.reason from null to "Clean" for ${fileRecords.modifiedCount} of ${fileRecords.matchedCount} verified file records`
+			`Updated securityCheck.reason from null to "Clean" for ${fileRecordsModifiedCount} of ${fileRecordsMatchedCount} verified file records`
 		);
 
 		const files = await this.getCollection('files').updateMany(
@@ -34,8 +37,11 @@ export class Migration20251121114905 extends Migration {
 			}
 		);
 
+		const filesModifiedCount = Number(files.modifiedCount) || 0;
+		const filesMatchedCount = Number(files.matchedCount) || 0;
+
 		console.info(
-			`Updated securityCheck.reason from null to "Clean" for ${files.modifiedCount} of ${files.matchedCount} verified files`
+			`Updated securityCheck.reason from null to "Clean" for ${filesModifiedCount} of ${filesMatchedCount} verified files`
 		);
 	}
 
