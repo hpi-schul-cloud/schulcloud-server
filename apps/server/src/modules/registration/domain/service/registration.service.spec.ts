@@ -1,10 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RegistrationRepo } from '../../repo';
+import { registrationFactory } from '../../testing/registration.factory';
 import { RegistrationCreateProps } from '../do';
 import { RegistrationService } from './registration.service';
-import { registrationFactory } from '../../testing/registration.factory';
-import { ObjectId } from '@mikro-orm/mongodb';
 
 describe('RegistrationService', () => {
 	let module: TestingModule;
@@ -53,6 +55,19 @@ describe('RegistrationService', () => {
 					roomIds: [props.roomId],
 				})
 			);
+		});
+
+		it('should throw for blocked email domain', async () => {
+			const props: RegistrationCreateProps = {
+				email: 'test@10mail.org',
+				firstName: 'John',
+				lastName: 'Doe',
+				roomId: new ObjectId().toHexString(),
+			};
+
+			await expect(service.createRegistration(props)).rejects.toThrow(BadRequestException);
+
+			expect(registrationRepo.save).not.toHaveBeenCalled();
 		});
 	});
 
@@ -120,6 +135,39 @@ describe('RegistrationService', () => {
 			const result = await service.getRegistrationsByRoomId('someRandomRoomId');
 
 			expect(result).toBe(registrations);
+		});
+	});
+
+	describe('generateRegistrationMail', () => {
+		beforeEach(() => {
+			jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
+				if (config === 'SMTP_SENDER') {
+					return 'example@sender.com';
+				}
+				if (config === 'HOST') {
+					return 'https://example.com';
+				}
+				return null;
+			});
+		});
+
+		it('should generate registration mail with correct structure', () => {
+			const email = 'test@example.com';
+			const firstName = 'John';
+			const lastName = 'Doe';
+			const hash = 'someHash';
+
+			const result = service.generateRegistrationMail(email, firstName, lastName, hash);
+
+			expect(Configuration.get).toHaveBeenCalledWith('SMTP_SENDER');
+			expect(Configuration.get).toHaveBeenCalledWith('HOST');
+
+			expect(result).toEqual(
+				expect.objectContaining({
+					recipients: [email],
+					from: 'example@sender.com',
+				})
+			);
 		});
 	});
 });

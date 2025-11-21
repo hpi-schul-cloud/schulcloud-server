@@ -1,15 +1,17 @@
+import { MailService } from '@infra/mail';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { RoomMembershipService } from '@modules/room-membership';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { CreateRegistrationBodyParams } from './dto/request/create-registration.body.params';
 import { Registration, RegistrationService } from '../domain';
-import { AuthorizationService, AuthorizationContextBuilder } from '@modules/authorization';
+import { CreateRegistrationBodyParams } from './dto/request/create-registration.body.params';
 import { RegistrationFeatureService } from './service';
-import { RoomMembershipService } from '@modules/room-membership';
 
 @Injectable()
 export class RegistrationUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
+		private readonly mailService: MailService,
 		private readonly registrationService: RegistrationService,
 		private readonly registrationFeatureService: RegistrationFeatureService,
 		private readonly roomMembershipService: RoomMembershipService
@@ -22,12 +24,20 @@ export class RegistrationUc {
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(props.roomId);
 		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, AuthorizationContextBuilder.write([]));
 
-		const existingRegistration = await this.fetchAndUpdateRegistrationByEmail(props.email, props.roomId);
+		const existingRegistration = await this.fetchAndUpdateRegistrationByEmail(props);
 		if (existingRegistration) {
 			return existingRegistration;
 		}
 
 		const registration = await this.registrationService.createRegistration({ ...props });
+		const registrationMail = this.registrationService.generateRegistrationMail(
+			registration.email,
+			registration.firstName,
+			registration.lastName,
+			registration.registrationHash
+		);
+		// only send in production mode e.g. for testing?
+		await this.mailService.send(registrationMail);
 		return registration;
 	}
 
@@ -51,10 +61,12 @@ export class RegistrationUc {
 		return registrations;
 	}
 
-	private async fetchAndUpdateRegistrationByEmail(email: string, roomId: EntityId): Promise<Registration | null> {
-		const existingRegistration = await this.registrationService.getSingleRegistrationByEmail(email);
+	private async fetchAndUpdateRegistrationByEmail(props: CreateRegistrationBodyParams): Promise<Registration | null> {
+		const existingRegistration = await this.registrationService.getSingleRegistrationByEmail(props.email);
 		if (existingRegistration) {
-			existingRegistration.addRoomId(roomId);
+			existingRegistration.firstName = props.firstName;
+			existingRegistration.lastName = props.lastName;
+			existingRegistration.addRoomId(props.roomId);
 			await this.registrationService.saveRegistration(existingRegistration);
 			return existingRegistration;
 		}

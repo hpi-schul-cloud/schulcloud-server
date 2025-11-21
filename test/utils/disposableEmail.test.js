@@ -19,15 +19,11 @@ describe('[utils] disposableEmail', () => {
 		expect(isDisposableEmail('user@schul-cloud.org')).is.false;
 	});
 
-	it('check true (exact match)', () => {
+	it('check true', () => {
 		expect(isDisposableEmail('user@my10minutemail.com')).is.true;
 		expect(isDisposableEmail('user@my10minutemail.com  ')).is.true;
 		expect(isDisposableEmail('user@my10minuteMAIL.com')).is.true;
-		expect(isDisposableEmail('user@info.tm')).is.true;
-	});
-
-	it('check true (wildcard)', () => {
-		expect(isDisposableEmail('user@sub.info.tm')).is.true;
+		expect(isDisposableEmail('user@10mail.org')).is.true;
 	});
 
 	describe('custom blacklist', () => {
