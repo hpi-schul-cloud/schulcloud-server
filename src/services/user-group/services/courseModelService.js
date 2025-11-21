@@ -3,6 +3,7 @@ const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const auth = require('@feathersjs/authentication');
 
 const { courseModel } = require('../model');
+const { restrictLockedCourse, filterOutLockedCourses } = require('../hooks/courses');
 
 const courseModelService = service({
 	Model: courseModel,
@@ -16,11 +17,11 @@ const courseModelService = service({
 const courseModelServiceHooks = {
 	before: {
 		all: [auth.hooks.authenticate('jwt')],
-		find: [iff(isProvider('external'), disallow())],
-		get: [iff(isProvider('external'), disallow())],
+		find: [filterOutLockedCourses, iff(isProvider('external'), disallow())],
+		get: [restrictLockedCourse, iff(isProvider('external'), disallow())],
 		create: [iff(isProvider('external'), disallow())],
-		update: [iff(isProvider('external'), disallow())],
-		patch: [iff(isProvider('external'), disallow())],
+		update: [restrictLockedCourse, iff(isProvider('external'), disallow())],
+		patch: [restrictLockedCourse, iff(isProvider('external'), disallow())],
 		remove: [iff(isProvider('external'), disallow())],
 	},
 	after: {
