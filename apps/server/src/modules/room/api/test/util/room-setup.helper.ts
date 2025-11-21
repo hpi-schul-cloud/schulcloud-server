@@ -10,7 +10,7 @@ import { roomMembershipEntityFactory } from '@modules/room-membership/testing/ro
 import { RoomEntity } from '@modules/room/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { User } from '@modules/user/repo';
+import { User, UserProperties } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
@@ -237,7 +237,7 @@ export class RoomSetup {
 					),
 				});
 			}
-			const data = {
+			const data: Partial<UserProperties> = {
 				school,
 				firstName: setup.name,
 				roles: setup.schoolRoles,
