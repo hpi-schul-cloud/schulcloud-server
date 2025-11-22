@@ -64,17 +64,20 @@ export class ColumnUc {
 		cardId: EntityId,
 		targetColumnId: EntityId,
 		targetPosition?: number
-	): Promise<Card> {
+	): Promise<{ fromBoardId: EntityId; toBoardId: EntityId }> {
 		this.logger.debug({ action: 'moveCard', userId, cardId, targetColumnId, toPosition: targetPosition });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		const targetColumn = await this.boardNodeService.findByClassAndId(Column, targetColumnId);
+		const fromBoardId = card.rootId;
+		const toBoardId = targetColumn.rootId;
 
 		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
 		await this.boardNodePermissionService.checkPermission(userId, targetColumn, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.move(card, targetColumn, targetPosition);
-		return card;
+
+		return { fromBoardId, toBoardId };
 	}
 
 	public async copyCard(userId: EntityId, cardId: EntityId, schoolId: EntityId): Promise<Card> {
