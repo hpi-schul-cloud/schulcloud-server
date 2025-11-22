@@ -7,6 +7,7 @@ export enum ShareTokenParentType {
 	'Lesson' = 'lessons',
 	'ColumnBoard' = 'columnBoard',
 	'Room' = 'room',
+	'Card' = 'card',
 }
 
 export enum ShareTokenContextType {
@@ -26,13 +27,13 @@ export type ShareTokenContext = {
 };
 
 export class ShareTokenDO extends BaseDO {
-	token: ShareTokenString;
+	public token: ShareTokenString;
 
-	payload: ShareTokenPayload;
+	public payload: ShareTokenPayload;
 
-	context?: ShareTokenContext;
+	public context?: ShareTokenContext;
 
-	expiresAt?: Date;
+	public expiresAt?: Date;
 
 	constructor(domainObject: ShareTokenDO) {
 		super(domainObject.id);

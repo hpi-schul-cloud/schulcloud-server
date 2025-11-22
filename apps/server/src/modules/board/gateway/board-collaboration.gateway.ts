@@ -35,6 +35,7 @@ import {
 	FetchBoardMessageParams,
 	FetchCardsMessageParams,
 	MoveCardMessageParams,
+	MoveCardToBoardMessageParams,
 	MoveColumnMessageParams,
 	MoveContentElementMessageParams,
 	UpdateBoardLayoutMessageParams,
@@ -249,8 +250,25 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-card' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const card = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
-			emitter.emitToClientAndRoom(data, card);
+			const { toBoardId } = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
+			emitter.emitToClientAndRoom(data, toBoardId);
+		} catch (err) {
+			emitter.emitFailure(data);
+		}
+	}
+
+	@SubscribeMessage('move-card-to-board-request')
+	@TrackExecutionTime()
+	@UseRequestContext()
+	public async moveCardToBoard(socket: Socket, data: MoveCardToBoardMessageParams): Promise<void> {
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-card-to-board' });
+		const { userId } = this.getCurrentUser(socket);
+		try {
+			const { fromBoardId, toBoardId } = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId);
+			emitter.emitToClientAndRoom(data, fromBoardId);
+			if (fromBoardId !== toBoardId) {
+				emitter.emitToClientAndRoom(data, toBoardId);
+			}
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
