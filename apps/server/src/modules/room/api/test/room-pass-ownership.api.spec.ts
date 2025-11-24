@@ -97,11 +97,10 @@ describe('Room Controller (API)', () => {
 			});
 
 			describe('when the member is an external person', () => {
-				it.only('should change the current roomowner to room admin', async () => {
+				it('should change the current roomowner to room admin', async () => {
 					const roomSetup = await setup();
 					const loggedInClient = await roomSetup.loginUser('SameSchoolTeacher_roomowner');
 					const targetUser = roomSetup.getUserByName('SameSchoolExternalPerson_roomviewer');
-					const owner = roomSetup.getUserByName('SameSchoolTeacher_roomowner');
 
 					const response = await loggedInClient.patch(`/${roomSetup.room.id}/members/pass-ownership`, {
 						userId: targetUser.id,
