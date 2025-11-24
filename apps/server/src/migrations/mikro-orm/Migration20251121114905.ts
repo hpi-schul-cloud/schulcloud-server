@@ -45,6 +45,7 @@ export class Migration20251121114905 extends Migration {
 		);
 	}
 
+	// eslint-disable-next-line require-await, @typescript-eslint/require-await
 	public async down(): Promise<void> {
 		console.log('Migration down: no possibility to revert.');
 	}
