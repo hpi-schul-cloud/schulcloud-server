@@ -414,7 +414,6 @@ export class RoomUc {
 		for (const user of users) {
 			const isExternalPerson = user.roles.getItems().some((role) => role.name === RoleName.EXTERNALPERSON);
 			const isValidRoleForExternalPerson = [RoleName.ROOMVIEWER, RoleName.ROOMEDITOR].includes(roleName);
-			console.log(roleName, isValidRoleForExternalPerson);
 			if (isExternalPerson && !isValidRoleForExternalPerson) {
 				throw new CantAssignRoomRoleToExternalPersonLoggableException({
 					memberUserId: user.id || 'unknown',
