@@ -5,6 +5,7 @@ import { Injectable, InternalServerErrorException, UnprocessableEntityException 
 import { EntityId } from '@shared/domain/types';
 import { BoardNodeFactory, Card, Column, ContentElementType, isCard } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
+import { Permission } from '@shared/domain/interface';
 
 @Injectable()
 export class ColumnUc {
@@ -73,7 +74,11 @@ export class ColumnUc {
 		const toBoardId = targetColumn.rootId;
 
 		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
-		await this.boardNodePermissionService.checkPermission(userId, targetColumn, AuthorizationContextBuilder.write([]));
+		const authorizationContext =
+			card.rootId === targetColumn.rootId
+				? AuthorizationContextBuilder.write([])
+				: AuthorizationContextBuilder.write([Permission.BOARD_MANAGE]);
+		await this.boardNodePermissionService.checkPermission(userId, targetColumn, authorizationContext);
 
 		await this.boardNodeService.move(card, targetColumn, targetPosition);
 
