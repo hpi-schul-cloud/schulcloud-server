@@ -18,7 +18,7 @@ import { roomEntityFactory } from '../../../testing/room-entity.factory';
 import { RoomRolesTestFactory } from '../../../testing/room-roles.test.factory';
 import { Permission } from '@shared/domain/interface';
 
-export type SchoolRoleString = 'administrator' | 'teacher' | 'student';
+export type SchoolRoleString = 'administrator' | 'teacher' | 'student' | 'externalPerson';
 export type UserSetupCompact = [
 	string,
 	'sameSchool' | 'otherSchool',
@@ -167,12 +167,14 @@ export class RoomSetup {
 		});
 		const teacher = roleFactory.buildWithId({ name: RoleName.TEACHER });
 		const student = roleFactory.buildWithId({ name: RoleName.STUDENT });
+		const externalPerson = roleFactory.buildWithId({ name: RoleName.EXTERNALPERSON });
 		const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 
 		await this.em.persistAndFlush([
 			administrator,
 			teacher,
 			student,
+			externalPerson,
 			roomEditorRole,
 			roomAdminRole,
 			roomOwnerRole,
@@ -184,6 +186,7 @@ export class RoomSetup {
 			administrator,
 			teacher,
 			student,
+			externalPerson,
 			roomeditor: roomEditorRole,
 			roomadmin: roomAdminRole,
 			roomowner: roomOwnerRole,
