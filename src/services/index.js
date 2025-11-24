@@ -34,7 +34,6 @@ const ldapConfig = require('./ldap-config');
 const sync = require('./sync');
 const datasources = require('./datasources');
 const rocketChat = require('./rocketChat');
-const webuntis = require('./webuntis');
 const me = require('./me');
 const help = require('./help');
 const database = require('../utils/database');
@@ -88,7 +87,6 @@ module.exports = function initializeServices() {
 	app.configure(roster);
 	app.configure(datasources);
 	app.configure(edusharing);
-	app.configure(webuntis);
 	app.configure(etherpad);
 	app.configure(storageProvider);
 	app.configure(activation);
