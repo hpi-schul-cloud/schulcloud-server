@@ -46,6 +46,6 @@ export class Migration20251121114905 extends Migration {
 	}
 
 	public async down(): Promise<void> {
-		// no possibility to revert
+		console.log('Migration down: no possibility to revert.');
 	}
 }
