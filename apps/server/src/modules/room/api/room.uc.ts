@@ -402,13 +402,7 @@ export class RoomUc {
 	private async checkRoomRolesForExternalPersons(userIdsToChange: EntityId[], roleName: RoomRole): Promise<void> {
 		const userPromises = userIdsToChange.map((userId) => this.authorizationService.getUserWithPermissions(userId));
 		let users: User[] = [];
-		try {
-			users = await Promise.all(userPromises);
-		} catch (error) {
-			throw new BadRequestException(
-				new Error(`Error fetching users to check for external persons userIds: ${userIdsToChange.join(', ')}`)
-			);
-		}
+		users = await Promise.all(userPromises);
 
 		for (const user of users) {
 			const isExternalPerson = user.roles.getItems().some((role) => role.name === RoleName.EXTERNALPERSON);
