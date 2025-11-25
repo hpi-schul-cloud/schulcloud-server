@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { RoleName } from '@modules/role';
@@ -229,11 +229,12 @@ describe('Room Controller (API)', () => {
 			});
 
 			describe('when some of the users do not exist', () => {
-				it('should return a 404 error', async () => {
+				it('should return a 400 error', async () => {
 					const { loggedInClient, room, targetUser } = await setupRoomWithMembers();
 
+					const nonExistingUserId = new ObjectId().toHexString();
 					const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
-						userIds: [targetUser.id, 'non-existing-user-id'],
+						userIds: [targetUser.id, nonExistingUserId],
 						roleName: RoleName.ROOMEDITOR,
 					});
 

@@ -6,7 +6,7 @@ import { RoomMembershipStats } from '@modules/room-membership/type/room-membersh
 import { School, SchoolService } from '@modules/school';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo'; // TODO: Auth service should use a different type
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -20,7 +20,6 @@ import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/c
 import { UserToAddToRoomNotFoundLoggableException } from './loggables/user-not-found.error.loggable';
 import { RoomPermissionService } from './service';
 import { RoomStats } from './type/room-stats.type';
-import { ErrorLoggable } from '@core/error/loggable';
 import { CantAssignRoomRoleToExternalPersonLoggableException } from './loggables/cant-assign-roomrole-to-external-person.error.loggable';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
@@ -406,7 +405,7 @@ export class RoomUc {
 		try {
 			users = await Promise.all(userPromises);
 		} catch (error) {
-			throw new ErrorLoggable(
+			throw new BadRequestException(
 				new Error(`Error fetching users to check for external persons userIds: ${userIdsToChange.join(', ')}`)
 			);
 		}
