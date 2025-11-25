@@ -78,12 +78,12 @@ class Add {
 
 	/**
 	 * @private
-	 * @return {Promise::bsonId||stringId} Expert role id.
+	 * @return {Promise::bsonId||stringId} External Person role id.
 	 */
-	_getExpertRoleId() {
+	_getExternalPersonRoleId() {
 		return this.app
 			.service('roles')
-			.find({ query: { name: 'expert' } })
+			.find({ query: { name: 'externalPerson' } })
 			.then((roles) => extractOne(roles, '_id').then((id) => bsonIdToString(id)))
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Abfragen der Rolle.', err);
@@ -171,7 +171,7 @@ class Add {
 				// eslint-disable-next-line no-underscore-dangle
 				this._getExpertSchoolId(),
 				// eslint-disable-next-line no-underscore-dangle
-				this._getExpertRoleId(),
+				this._getExternalPersonRoleId(),
 			]);
 			let isUserCreated = false;
 			let isResend = false;
@@ -331,14 +331,14 @@ class Add {
 			userRoleName === 'teamadministrator' && !['administrator', 'teacher'].includes(user.roles[0].name);
 
 		const invalidExpertInvitation =
-			userRoleName === 'teamexpert' && !['expert'].includes(user.roles[0].name) && !(isUserCreated === true);
+			userRoleName === 'teamexpert' && !['externalPerson'].includes(user.roles[0].name) && !(isUserCreated === true);
 
 		// invite per email should only work for expected users
 		if (invalidTeacherInvitation) {
 			throw new BadRequest('Can not resolve the user information.');
 		}
 		if (invalidExpertInvitation) {
-			throw new BadRequest('Can not resolve the expert user information.');
+			throw new BadRequest('Can not resolve the external person user information.');
 		}
 
 		// if not already in invite list
