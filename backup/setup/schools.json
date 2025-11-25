@@ -133,7 +133,7 @@
 		"currentYear": {
 			"$oid": "5ebd6dc14a431f75ec9a3e7b"
 		},
-		"purpose": "expert",
+		"purpose": "external_person_school",
         "features" : [
 			"rocketChat",
 			"videoconference",
