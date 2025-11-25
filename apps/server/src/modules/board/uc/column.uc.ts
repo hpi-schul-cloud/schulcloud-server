@@ -73,12 +73,12 @@ export class ColumnUc {
 		const fromBoardId = card.rootId;
 		const toBoardId = targetColumn.rootId;
 
-		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
 		const authorizationContext =
 			card.rootId === targetColumn.rootId
 				? AuthorizationContextBuilder.write([])
-				: AuthorizationContextBuilder.write([Permission.BOARD_MANAGE]);
-		await this.boardNodePermissionService.checkPermission(userId, targetColumn, authorizationContext);
+				: AuthorizationContextBuilder.write([Permission.BOARD_RELOCATE_CONTENT]);
+		await this.boardNodePermissionService.checkPermission(userId, card, authorizationContext);
+		await this.boardNodePermissionService.checkPermission(userId, targetColumn, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.move(card, targetColumn, targetPosition);
 
