@@ -207,7 +207,7 @@ describe(VideoConferenceService.name, () => {
 			});
 		});
 
-		describe('when user has EXPERT role for a room', () => {
+		describe('when user has EXTERNALPERSON role for a room', () => {
 			const setup = () => {
 				const user = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON }])
@@ -243,7 +243,7 @@ describe(VideoConferenceService.name, () => {
 			});
 		});
 
-		describe('when user has EXPERT role for a video conference element', () => {
+		describe('when user has EXTERNALPERSON role for a video conference element', () => {
 			const setup = () => {
 				const user = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON }])

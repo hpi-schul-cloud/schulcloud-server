@@ -434,6 +434,7 @@ export const roleOrder = [
 	'courseSubstitutionTeacher',
 	'courseAdministrator',
 	'expert',
+	'externalPerson',
 ];
 
 export function generateRole(localRoleSeedData?: { [key: string | RoleName]: SeedRoleProperties }) {

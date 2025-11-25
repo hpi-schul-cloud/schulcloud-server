@@ -330,14 +330,14 @@ class Add {
 		const invalidTeacherInvitation =
 			userRoleName === 'teamadministrator' && !['administrator', 'teacher'].includes(user.roles[0].name);
 
-		const invalidExpertInvitation =
+		const invalidExternalPersonInvitation =
 			userRoleName === 'teamexpert' && !['externalPerson'].includes(user.roles[0].name) && !(isUserCreated === true);
 
 		// invite per email should only work for expected users
 		if (invalidTeacherInvitation) {
 			throw new BadRequest('Can not resolve the user information.');
 		}
-		if (invalidExpertInvitation) {
+		if (invalidExternalPersonInvitation) {
 			throw new BadRequest('Can not resolve the external person user information.');
 		}
 
