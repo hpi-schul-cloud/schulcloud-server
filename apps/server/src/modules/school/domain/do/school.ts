@@ -139,7 +139,7 @@ export class School extends DomainObject<SchoolProps> {
 
 	public isEligibleForExternalInvite(ownSchoolId: EntityId): boolean {
 		const hasEligiblePurpose =
-			this.props.purpose !== SchoolPurpose.EXPERT && this.props.purpose !== SchoolPurpose.TOMBSTONE;
+			this.props.purpose !== SchoolPurpose.EXTERNAL_PERSON_SCHOOL && this.props.purpose !== SchoolPurpose.TOMBSTONE;
 
 		const isNotOwnSchool = this.props.id !== ownSchoolId;
 

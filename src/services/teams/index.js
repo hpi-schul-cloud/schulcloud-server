@@ -64,12 +64,12 @@ class Add {
 
 	/**
 	 * @private
-	 * @return {Promise::bsonId||stringId} Expert school id.
+	 * @return {Promise::bsonId||stringId} External person school id.
 	 */
-	_getExpertSchoolId() {
+	_getExternalPersonSchoolId() {
 		return this.app
 			.service('schools')
-			.find({ query: { purpose: 'expert' } })
+			.find({ query: { purpose: 'external_person_school' } })
 			.then((schools) => extractOne(schools, '_id').then((id) => bsonIdToString(id)))
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Abfragen der Schule.', err);
@@ -169,7 +169,7 @@ class Add {
 				// eslint-disable-next-line no-underscore-dangle
 				this._getUsersByEmail(email, school),
 				// eslint-disable-next-line no-underscore-dangle
-				this._getExpertSchoolId(),
+				this._getExternalPersonSchoolId(),
 				// eslint-disable-next-line no-underscore-dangle
 				this._getExternalPersonRoleId(),
 			]);

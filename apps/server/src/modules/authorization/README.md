@@ -102,7 +102,7 @@ It implements a check for which domain object, entity, or additional conditions 
 ## User (Role) Permissions vs Scope Based Permissions
 
 The permissions of the user come from his role.
-This permissions have no explicit scope. But _implicitly_ the roles external person, student, teacher and administrator are in the school scope. The superhero is _implicitly_ in the scope of the instance. On some instances external persons are "collected" in the "ExpertenSchule" - which is a unique school with a specialized type (SchoolPurpose.EXPERT) to provide instance wide - accounts for experts that may be invited to multiple schools.
+This permissions have no explicit scope. But _implicitly_ the roles external person, student, teacher and administrator are in the school scope. The superhero is _implicitly_ in the scope of the instance. On some instances external persons are "collected" in the "ExpertenSchule" - which is a unique school with a specialized type (SchoolPurpose.EXTERNAL_PERSON_SCHOOL) to provide instance wide - accounts for experts that may be invited to multiple schools.
 
 It exists also scope based permissions. A user can have different (scope)roles in different (domain)scopes. For example in teams where the student can have team member role in one team, or team adminstrator in another.
 
