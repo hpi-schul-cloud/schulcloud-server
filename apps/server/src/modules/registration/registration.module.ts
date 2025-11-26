@@ -1,18 +1,11 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { MailModule } from '@infra/mail';
 import { Module } from '@nestjs/common';
-import { RegistrationUc } from './api';
 import { RegistrationService } from './domain';
 import { RegistrationRepo } from './repo';
+import { ServerMailModule } from '@modules/serverDynamicModuleWrappers/server-mail.module';
 
 @Module({
-	imports: [
-		MailModule.forRoot({
-			exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
-			routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
-		}),
-	],
-	providers: [RegistrationRepo, RegistrationService, RegistrationUc],
+	imports: [ServerMailModule],
+	providers: [RegistrationRepo, RegistrationService],
 	exports: [RegistrationService],
 })
 export class RegistrationModule {}
