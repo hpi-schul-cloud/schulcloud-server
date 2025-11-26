@@ -303,7 +303,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		permissions: [
 			Permission.DEFAULT_FILE_PERMISSIONS,
 			Permission.INVITE_ADMINISTRATORS,
-			Permission.INVITE_EXPERTS,
+			Permission.INVITE_EXTERNAL_PERSONS,
 			Permission.NEWS_EDIT,
 			Permission.REMOVE_MEMBERS,
 			Permission.RENAME_TEAM,
