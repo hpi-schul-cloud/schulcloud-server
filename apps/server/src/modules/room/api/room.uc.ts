@@ -1,7 +1,9 @@
 import { Action, AuthorizationService } from '@modules/authorization';
-import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { RoleName, RoomRole } from '@modules/role';
 import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { RoomMemberAuthorizable } from '@modules/room-membership/do/room-member-authorizable.do';
+import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
+import { School, SchoolService } from '@modules/school';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo'; // TODO: Auth service should use a different type
 import { ForbiddenException, Injectable } from '@nestjs/common';
@@ -16,55 +18,22 @@ import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-r
 import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pass-ownership-to-student.error.loggable';
 import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
 import { UserToAddToRoomNotFoundLoggableException } from './loggables/user-not-found.error.loggable';
-import { RoomPermissionService, RoomBoardService } from './service';
-import { School, SchoolService } from '@modules/school';
+import { RoomPermissionService } from './service';
 import { RoomStats } from './type/room-stats.type';
-import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
-import { RoomMemberAuthorizable } from '@modules/room-membership/do/room-member-authorizable.do';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
-export type RoomWithLockedStatus = { room: Room; isLocked: boolean };
 
 @Injectable()
 export class RoomUc {
 	constructor(
 		private readonly roomService: RoomService,
 		private readonly roomMembershipService: RoomMembershipService,
-		private readonly columnBoardService: ColumnBoardService,
 		private readonly userService: UserService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly roomPermissionService: RoomPermissionService,
-		private readonly schoolService: SchoolService,
-		private readonly roomBoardService: RoomBoardService
+		private readonly schoolService: SchoolService
 	) {}
-
-	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomWithLockedStatus>> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
-
-		const readableRoomIds = roomAuthorizables
-			.filter((item) =>
-				this.authorizationService.hasPermission(user, item, { action: Action.read, requiredPermissions: [] })
-			)
-			.map((item) => item.roomId);
-
-		const roomsPage = await this.roomService.getRoomsByIds(readableRoomIds, findOptions);
-
-		const roomsWithLockedStatus = roomsPage.data.map((room) => {
-			const hasOwner = roomAuthorizables.some(
-				(item) =>
-					item.roomId === room.id &&
-					item.members.some((member) => member.roles.some((role) => role.name === RoleName.ROOMOWNER))
-			);
-			return {
-				room,
-				isLocked: !hasOwner,
-			};
-		});
-
-		return { data: roomsWithLockedStatus, total: roomsPage.total };
-	}
 
 	public async getRoomStats(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomStats>> {
 		this.roomPermissionService.checkFeatureAdministrateRoomsEnabled();
@@ -76,9 +45,9 @@ export class RoomUc {
 			findOptions.pagination
 		);
 		const roomIds = roomMembershipStats.data.flatMap((membership) => membership.roomId).filter((id) => id);
-		const rooms = await this.roomService.getRoomsByIds(roomIds, { pagination: { skip: 0, limit: 100000 } });
+		const rooms = await this.roomService.getRoomsByIds(roomIds);
 
-		const schoolIds = rooms.data.map((room) => room.schoolId);
+		const schoolIds = rooms.map((room) => room.schoolId);
 		const schools = await this.schoolService.getSchoolsByIds(schoolIds);
 
 		const roomStats = this.mapRoomStats(roomMembershipStats, rooms, schools);
@@ -86,9 +55,9 @@ export class RoomUc {
 		return { data: roomStats, total: roomMembershipStats.total };
 	}
 
-	private mapRoomStats(membershipStats: Page<RoomMembershipStats>, rooms: Page<Room>, schools: School[]): RoomStats[] {
+	private mapRoomStats(membershipStats: Page<RoomMembershipStats>, rooms: Room[], schools: School[]): RoomStats[] {
 		return membershipStats.data.map((membership) => {
-			const room = rooms.data.find((r) => r.id === membership.roomId);
+			const room = rooms.find((r) => r.id === membership.roomId);
 			const school = schools.find((s) => s.id === room?.schoolId);
 			return {
 				...membership,
@@ -172,24 +141,6 @@ export class RoomUc {
 		return hasRoomPermission;
 	}
 
-	public async getRoomBoards(userId: EntityId, roomId: EntityId): Promise<ColumnBoard[]> {
-		await this.roomService.getSingleRoom(roomId);
-		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
-		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.read);
-
-		const boards = await this.roomBoardService.getOrderedBoards(roomId);
-
-		return boards;
-	}
-
-	public async moveBoard(userId: EntityId, roomId: EntityId, boardId: EntityId, toPosition: number): Promise<void> {
-		await this.roomService.getSingleRoom(roomId);
-		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
-		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write);
-
-		await this.roomBoardService.moveBoardInRoom(roomId, boardId, toPosition);
-	}
-
 	public async updateRoom(
 		userId: EntityId,
 		roomId: EntityId,
@@ -219,13 +170,7 @@ export class RoomUc {
 			throw new ForbiddenException('You do not have permission to delete this room');
 		}
 
-		await this.columnBoardService.deleteByExternalReference({
-			type: BoardExternalReferenceType.Room,
-			id: roomId,
-		});
 		await this.roomService.deleteRoom(room);
-		await this.roomMembershipService.deleteRoomMembership(roomId);
-		await this.roomBoardService.deleteRoomContent(roomId);
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
