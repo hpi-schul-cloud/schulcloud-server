@@ -77,8 +77,8 @@ export class ColumnUc {
 			fromBoard.context.id === toBoard.context.id
 				? AuthorizationContextBuilder.write([])
 				: AuthorizationContextBuilder.write([Permission.BOARD_RELOCATE_CONTENT]);
-		await this.boardNodePermissionService.checkPermission(userId, card, authorizationContext);
-		await this.boardNodePermissionService.checkPermission(userId, targetColumn, AuthorizationContextBuilder.write([]));
+		await this.boardNodePermissionService.checkPermission(userId, fromBoard, authorizationContext);
+		await this.boardNodePermissionService.checkPermission(userId, toBoard, AuthorizationContextBuilder.write([]));
 
 		await this.boardNodeService.move(card, targetColumn, targetPosition);
 
