@@ -60,6 +60,7 @@ import { SchoolLicenseApiModule } from '../school-license/school-license-api.mod
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
+import { RegistrationApiModule } from '@modules/registration/registration-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -117,6 +118,7 @@ const serverModules = [
 	UserLicenseModule,
 	SchoolLicenseApiModule,
 	RegistrationModule,
+	RegistrationApiModule,
 	RoomApiModule,
 	RosterModule,
 	ShdApiModule,
