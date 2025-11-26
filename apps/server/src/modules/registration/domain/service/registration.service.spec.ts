@@ -45,7 +45,7 @@ describe('RegistrationService', () => {
 				roomId: new ObjectId().toHexString(),
 			};
 
-			await service.createOrUpdateRegistration(props);
+			await service.createRegistraton(props);
 
 			expect(registrationRepo.save).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -65,7 +65,7 @@ describe('RegistrationService', () => {
 				roomId: new ObjectId().toHexString(),
 			};
 
-			await expect(service.createOrUpdateRegistration(props)).rejects.toThrow(BadRequestException);
+			await expect(service.createRegistraton(props)).rejects.toThrow(BadRequestException);
 
 			expect(registrationRepo.save).not.toHaveBeenCalled();
 		});

@@ -1,4 +1,3 @@
-import { MailService } from '@infra/mail';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { RoomMembershipService } from '@modules/room-membership';
 import { Injectable } from '@nestjs/common';
@@ -11,7 +10,6 @@ import { RegistrationFeatureService } from './service';
 export class RegistrationUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
-		private readonly mailService: MailService,
 		private readonly registrationService: RegistrationService,
 		private readonly registrationFeatureService: RegistrationFeatureService,
 		private readonly roomMembershipService: RoomMembershipService
@@ -27,20 +25,9 @@ export class RegistrationUc {
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(props.roomId);
 		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, AuthorizationContextBuilder.write([]));
 
-		const existingRegistration = await this.registrationService.fetchAndUpdateRegistrationByEmail(props);
-		if (existingRegistration) {
-			// TODO klären mit Anna
-			return existingRegistration;
-		}
-
 		const registration = await this.registrationService.createOrUpdateRegistration({ ...props });
-		const registrationMail = this.registrationService.generateRegistrationMail(
-			registration.email,
-			registration.firstName,
-			registration.lastName,
-			registration.registrationSecret
-		);
-		await this.mailService.send(registrationMail);
+		await this.registrationService.sendRegistrationMail(registration);
+
 		return registration;
 	}
 
