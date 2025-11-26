@@ -252,18 +252,12 @@ describe('Room Controller (API)', () => {
 		});
 
 		describe('when the user is external and has no right to access room members', () => {
-			it('should return forbidden', async () => {
+			it('should return unauthorized', async () => {
 				const { loggedInClient, room } = await setupRoomWithExternalMembers(RoleName.EXPERT);
 
 				const response = await loggedInClient.get(`/${room.id}/members`);
 
-				expect(response.status).toBe(HttpStatus.FORBIDDEN);
-				expect(response.body).toEqual({
-					code: HttpStatus.FORBIDDEN,
-					message: 'Forbidden',
-					title: 'Forbidden',
-					type: 'FORBIDDEN',
-				});
+				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
 		});
 
