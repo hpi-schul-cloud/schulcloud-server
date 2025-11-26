@@ -57,7 +57,7 @@ export class CommonCartridgeImportService {
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
 		const createdBoardIds = new Map<string, string>();
-		const limit = pLimit(5);
+		const limit = pLimit(3);
 
 		for await (const board of boards) {
 			const response = await limit(() =>
@@ -104,14 +104,16 @@ export class CommonCartridgeImportService {
 					!organization.isResource
 			);
 
+		const limit = pLimit(3);
+
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
 		for await (const column of columnsWithResource) {
-			await this.createColumnWithResource(parser, boardId, column, currentUser);
+			await limit(() => this.createColumnWithResource(parser, boardId, column, currentUser));
 		}
 
 		for await (const column of columnsWithoutResource) {
-			await this.createColumn(parser, boardId, column, currentUser);
+			await limit(() => this.createColumn(parser, boardId, column, currentUser));
 		}
 	}
 
@@ -121,7 +123,8 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
+		const limit = pLimit(3);
+		const columnResponse = await limit(() => this.boardsClient.createBoardColumn(boardId));
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
 		await this.createCardElementWithResource(parser, columnResponse, columnProps, currentUser);
@@ -133,7 +136,8 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
+		const limit = pLimit(3);
+		const columnResponse = await limit(() => this.boardsClient.createBoardColumn(boardId));
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
 		const cards = parser
