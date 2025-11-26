@@ -13,7 +13,7 @@ describe('Registration', () => {
 		firstName: 'John',
 		lastName: 'Doe',
 		roomIds: [roomId],
-		registrationHash: 'someHashValue',
+		registrationSecret: 'someValue',
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
@@ -58,12 +58,25 @@ describe('Registration', () => {
 		expect(registration.lastName).toEqual(newLastName);
 	});
 
+	it('should update name', () => {
+		const expectedFirstName = 'John';
+		const expectedLastName = 'Doe';
+		expect(registration.firstName).toEqual(expectedFirstName);
+		expect(registration.lastName).toEqual(expectedLastName);
+
+		const newFirstName = 'Jane';
+		const newLastName = 'Smith';
+		registration.updateName({ firstName: newFirstName, lastName: newLastName });
+		expect(registration.firstName).toEqual(newFirstName);
+		expect(registration.lastName).toEqual(newLastName);
+	});
+
 	it('should get roomIds', () => {
 		expect(registration.roomIds).toEqual([roomId]);
 	});
 
 	it('should get registrationHash', () => {
-		expect(registration.registrationHash).toBe('someHashValue');
+		expect(registration.registrationSecret).toBe('someValue');
 	});
 
 	it('should get createdAt', () => {

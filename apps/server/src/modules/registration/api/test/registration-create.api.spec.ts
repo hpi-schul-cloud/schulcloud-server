@@ -14,7 +14,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { RegistrationEntity } from '../../repo';
-import { CreateRegistrationBodyParams } from '../dto/request/create-registration.body.params';
+import { CreateOrUpdateRegistrationBodyParams } from '../dto/request/create-registration.body.params';
 
 describe('Registration Controller (API)', () => {
 	let app: INestApplication;
@@ -87,7 +87,7 @@ describe('Registration Controller (API)', () => {
 			]);
 			em.clear();
 
-			const params: CreateRegistrationBodyParams = {
+			const params: CreateOrUpdateRegistrationBodyParams = {
 				email: 'test@example.com',
 				firstName: 'John',
 				lastName: 'Doe',

@@ -3,13 +3,10 @@ import { Mail } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { isDisposableEmail as _isDisposableEmail } from 'disposable-email-domains-js';
-import crypto from 'node:crypto';
 import { RegistrationRepo } from '../../repo';
 import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
-
-// only placeholder until we decided to use it at all as no typing is provided by the package but is better maintained then the alternative
-// we should actually replace disposable-email-domains with the new one as the first is not maintained anymore
-const isDisposableEmail = _isDisposableEmail as (email: string) => boolean;
+import { UUID } from 'bson';
+import { CreateOrUpdateRegistrationBodyParams } from '@modules/registration/api/dto/request/create-registration.body.params';
 
 type MailContent = {
 	text: string;
@@ -20,13 +17,27 @@ type MailContent = {
 export class RegistrationService {
 	constructor(private readonly registrationRepo: RegistrationRepo) {}
 
-	public async createRegistration(props: RegistrationCreateProps): Promise<Registration> {
+	public async fetchAndUpdateRegistrationByEmail(
+		props: CreateOrUpdateRegistrationBodyParams
+	): Promise<Registration | null> {
+		const existingRegistration = await this.getSingleRegistrationByEmail(props.email);
+		if (existingRegistration) {
+			existingRegistration.firstName = props.firstName;
+			existingRegistration.lastName = props.lastName;
+			existingRegistration.addRoomId(props.roomId);
+			await this.saveRegistration(existingRegistration);
+			return existingRegistration;
+		}
+		return null;
+	}
+
+	public async createOrUpdateRegistration(props: RegistrationCreateProps): Promise<Registration> {
 		this.blockForbiddenDomains(props.email);
 
 		const registrationProps: RegistrationProps = {
 			...props,
 			id: new ObjectId().toHexString(),
-			registrationHash: this.createRegistrationHash(),
+			registrationSecret: this.createRegistrationUUID(),
 			roomIds: [props.roomId],
 			createdAt: new Date(),
 			updatedAt: new Date(),
@@ -60,14 +71,14 @@ export class RegistrationService {
 		return registrations;
 	}
 
-	private createRegistrationHash(): string {
-		const registrationHash = crypto.randomBytes(32).toString('base64url');
+	private createRegistrationUUID(): string {
+		const registrationUUID = new UUID().toString();
 
-		return registrationHash;
+		return registrationUUID;
 	}
 
 	private blockForbiddenDomains(email: string): void {
-		const isBlockedDomain = isDisposableEmail(email);
+		const isBlockedDomain = _isDisposableEmail(email);
 		if (isBlockedDomain) {
 			throw new BadRequestException('Registration using disposable email domains is not allowed.');
 		}

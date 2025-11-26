@@ -44,7 +44,7 @@ export class RegistrationRepo {
 	}
 
 	public async findByHash(hash: string): Promise<Registration> {
-		const entity = await this.em.findOneOrFail(RegistrationEntity, { registrationHash: hash });
+		const entity = await this.em.findOneOrFail(RegistrationEntity, { registrationSecret: hash });
 		const domainObject = RegistrationDomainMapper.mapEntityToDo(entity);
 
 		return domainObject;

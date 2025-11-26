@@ -249,8 +249,6 @@ export class RoomUc {
 		roomId: EntityId,
 		email: string
 	): Promise<RoomRole> {
-		// no further email validation check as its done by decorator in controller, additional whitelisting needed?
-		// actually no whitelisting needed at this point imo as we only search for existing users
 		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(currentUserId, roomId, Action.write, [
 			Permission.ROOM_ADD_MEMBERS,
 		]);
@@ -266,9 +264,6 @@ export class RoomUc {
 			const foundUserId = existingAccounts[0].userId;
 			const user = await this.userService.findById(foundUserId);
 			this.checkUserIsExternalPerson(user);
-			// questioning this accesible check as external persons are normally not in the same school
-			// for now I adjusted the api test to make the user discoverable
-			await this.checkUsersAccessible(currentUserId, [foundUserId]);
 			await this.checkUserIsAlreadyMemberOfRoom(roomId, foundUserId);
 			const roleName = await this.roomMembershipService.addMembersToRoom(roomId, [foundUserId]);
 			return roleName;

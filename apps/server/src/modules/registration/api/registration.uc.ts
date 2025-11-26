@@ -4,7 +4,7 @@ import { RoomMembershipService } from '@modules/room-membership';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Registration, RegistrationService } from '../domain';
-import { CreateRegistrationBodyParams } from './dto/request/create-registration.body.params';
+import { CreateOrUpdateRegistrationBodyParams } from './dto/request/create-registration.body.params';
 import { RegistrationFeatureService } from './service';
 
 @Injectable()
@@ -17,26 +17,29 @@ export class RegistrationUc {
 		private readonly roomMembershipService: RoomMembershipService
 	) {}
 
-	public async createRegistration(userId: EntityId, props: CreateRegistrationBodyParams): Promise<Registration> {
+	public async createOrUpdateRegistration(
+		userId: EntityId,
+		props: CreateOrUpdateRegistrationBodyParams
+	): Promise<Registration> {
 		this.registrationFeatureService.checkFeatureRegistrationEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(props.roomId);
 		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, AuthorizationContextBuilder.write([]));
 
-		const existingRegistration = await this.fetchAndUpdateRegistrationByEmail(props);
+		const existingRegistration = await this.registrationService.fetchAndUpdateRegistrationByEmail(props);
 		if (existingRegistration) {
+			// TODO klären mit Anna
 			return existingRegistration;
 		}
 
-		const registration = await this.registrationService.createRegistration({ ...props });
+		const registration = await this.registrationService.createOrUpdateRegistration({ ...props });
 		const registrationMail = this.registrationService.generateRegistrationMail(
 			registration.email,
 			registration.firstName,
 			registration.lastName,
-			registration.registrationHash
+			registration.registrationSecret
 		);
-		// only send in production mode e.g. for testing?
 		await this.mailService.send(registrationMail);
 		return registration;
 	}
@@ -59,17 +62,5 @@ export class RegistrationUc {
 		const registrations = await this.registrationService.getRegistrationsByRoomId(roomId);
 
 		return registrations;
-	}
-
-	private async fetchAndUpdateRegistrationByEmail(props: CreateRegistrationBodyParams): Promise<Registration | null> {
-		const existingRegistration = await this.registrationService.getSingleRegistrationByEmail(props.email);
-		if (existingRegistration) {
-			existingRegistration.firstName = props.firstName;
-			existingRegistration.lastName = props.lastName;
-			existingRegistration.addRoomId(props.roomId);
-			await this.registrationService.saveRegistration(existingRegistration);
-			return existingRegistration;
-		}
-		return null;
 	}
 }
