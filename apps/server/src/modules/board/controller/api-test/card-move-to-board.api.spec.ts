@@ -134,7 +134,7 @@ describe(`card move to board (api)`, () => {
 			});
 
 			describe('and user is editor', () => {
-				it('should return status 403', async () => {
+				it('should return status 204', async () => {
 					const { loginTeacher, createRoomMembership, teacherUser, rooms, cardNode, toColumnNode } = await setup();
 
 					await createRoomMembership(teacherUser, rooms[0].id, 'editor');
@@ -146,7 +146,7 @@ describe(`card move to board (api)`, () => {
 					};
 					const response = await loggedInClient.put(`${cardNode.id}/position`, params);
 
-					expect(response.status).toEqual(403);
+					expect(response.status).toEqual(204);
 				});
 			});
 

@@ -70,11 +70,11 @@ export class ColumnUc {
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		const targetColumn = await this.boardNodeService.findByClassAndId(Column, targetColumnId);
-		const fromBoardId = card.rootId;
-		const toBoardId = targetColumn.rootId;
+		const fromBoard = await this.columnBoardService.findById(card.rootId, 0);
+		const toBoard = await this.columnBoardService.findById(targetColumn.rootId, 0);
 
 		const authorizationContext =
-			card.rootId === targetColumn.rootId
+			fromBoard.context.id === toBoard.context.id
 				? AuthorizationContextBuilder.write([])
 				: AuthorizationContextBuilder.write([Permission.BOARD_RELOCATE_CONTENT]);
 		await this.boardNodePermissionService.checkPermission(userId, card, authorizationContext);
@@ -82,7 +82,7 @@ export class ColumnUc {
 
 		await this.boardNodeService.move(card, targetColumn, targetPosition);
 
-		return { fromBoardId, toBoardId };
+		return { fromBoardId: fromBoard.id, toBoardId: toBoard.id };
 	}
 
 	public async copyCard(userId: EntityId, cardId: EntityId, schoolId: EntityId): Promise<Card> {
