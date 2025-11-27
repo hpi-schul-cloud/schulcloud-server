@@ -396,24 +396,31 @@ export class H5PEditorUc {
 		return stream;
 	}
 
-	public async importH5pPackagePoC(
+	public async importH5pFile(
+		contentId: string,
 		userId: EntityId,
-		file: Express.Multer.File
-	): Promise<
-		| AjaxSuccessResponse
-		| {
-				height?: number;
-				mime: string;
-				path: string;
-				width?: number;
-		  }
-		| ILibraryOverviewForClient[]
-		| undefined
-	> {
-		const query = { action: 'library-upload' } as AjaxPostQueryParams;
-		const body = {} as AjaxPostBodyParams;
-		const response = await this.postAjax(userId, query, body, undefined, file);
-		return response;
+		schoolId: EntityId,
+		params: unknown,
+		metadata: IContentMetadata,
+		mainLibraryUbername: string,
+		parentType: H5PContentParentType,
+		parentId: EntityId
+	): Promise<{ id: string; metadata: IContentMetadata }> {
+		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.write([]));
+
+		const user: LumiUserWithContentData = this.createAugmentedLumiUser(userId, schoolId, parentType, parentId);
+
+		const newContentId = await this.h5pEditor.saveOrUpdateContentReturnMetaData(
+			contentId,
+			params,
+			metadata,
+			mainLibraryUbername,
+			user
+		);
+		// const query = { action: 'library-upload' } as AjaxPostQueryParams;
+		// const body = {} as AjaxPostBodyParams;
+		// const response = await this.postAjax(userId, query, body, undefined);
+		return newContentId;
 	}
 
 	public async saveUploadedFileTemp(userId: EntityId, file: Express.Multer.File): Promise<string> {

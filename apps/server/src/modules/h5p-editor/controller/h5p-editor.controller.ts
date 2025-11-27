@@ -14,7 +14,6 @@ import {
 	Get,
 	HttpStatus,
 	InternalServerErrorException,
-	NotFoundException,
 	Param,
 	Post,
 	Query,
@@ -24,7 +23,7 @@ import {
 	UseFilters,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { Request } from 'express';
 import { H5PEditorUc } from '../uc';
@@ -303,12 +302,9 @@ export class H5PEditorController {
 		return new StreamableFile(rs);
 	}
 
-	@ApiOperation({ summary: 'Import H5P file inside card on board' })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 403, type: ForbiddenException })
-	@ApiResponse({ status: 404, type: NotFoundException })
+	@Post('ajax/import')
+	@UseFilters(H5pAjaxErrorResponseFilter)
 	@ApiConsumes('multipart/form-data')
-	@Post('/import/:contentId')
 	@UseInterceptors(
 		FileInterceptor('h5p', {
 			limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
@@ -318,32 +314,16 @@ export class H5PEditorController {
 			},
 		})
 	)
-	@ApiBody(
-		fileUpload({
-			name: 'h5p',
-			description: 'The H5P file to import',
-			required: true,
-		})
-	)
 	public async importH5pPoC(
-		@UploadedFile() file: Express.Multer.File,
+		@Body() body: PostH5PContentCreateParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Res({ passthrough: true }) res: Response
-	): Promise<
-		| AjaxSuccessResponse
-		| {
-				height?: number;
-				mime: string;
-				path: string;
-				width?: number;
-		  }
-		| ILibraryOverviewForClient[]
-		| undefined
-		| { message: string }
-	> {
+		@Res({ passthrough: true }) res: Response,
+		@UploadedFile() file: Express.Multer.File
+	): Promise<H5PSaveResponse | { message: string }> {
 		// simple per-user rate limit
 		const now = Date.now();
 		const id = String(currentUser.userId);
+		await this.h5pEditorUc.saveUploadedFileTemp(currentUser.userId, file);
 		const entry = _h5pImportRate.get(id) || { count: 0, reset: now + _IMPORT_WINDOW_MS };
 		if (now > entry.reset) {
 			entry.count = 0;
@@ -359,29 +339,18 @@ export class H5PEditorController {
 			res.status(HttpStatus.BAD_REQUEST);
 			return { message: 'Please upload a .h5p file in field "h5p".' };
 		}
-		const result = await this.h5pEditorUc.importH5pPackagePoC(currentUser.userId, file);
+		const response = await this.h5pEditorUc.createH5pContentGetMetadata(
+			currentUser.userId,
+			currentUser.schoolId,
+			body.params.params,
+			body.params.metadata,
+			body.library,
+			body.parentType,
+			body.parentId
+		);
 		res.status(HttpStatus.OK);
-		return result;
+
+		const saveResponse = new H5PSaveResponse(response.id, response.metadata);
+		return saveResponse;
 	}
-}
-function fileUpload(options: {
-	name: string;
-	description: string;
-	required: boolean;
-}): import('@nestjs/swagger').ApiBodyOptions {
-	return {
-		description: options.description,
-		required: options.required,
-		schema: {
-			type: 'object',
-			properties: {
-				[options.name]: {
-					type: 'string',
-					format: 'binary',
-					description: options.description,
-				},
-			},
-			required: options.required ? [options.name] : [],
-		},
-	};
 }
