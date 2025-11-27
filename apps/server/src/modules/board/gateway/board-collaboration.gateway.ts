@@ -265,9 +265,11 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		const { userId } = this.getCurrentUser(socket);
 		try {
 			const { fromBoardId, toBoardId } = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId);
-			emitter.emitToClientAndRoom(data, fromBoardId);
-			if (fromBoardId !== toBoardId) {
-				emitter.emitToClientAndRoom(data, toBoardId);
+			emitter.emitToClient(data);
+			if (fromBoardId === toBoardId) {
+				emitter.emitToRoom(data, fromBoardId);
+			} else {
+				emitter.emitToRoom(data, toBoardId);
 			}
 		} catch (err) {
 			emitter.emitFailure(data);
@@ -488,6 +490,13 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 				const room = getRoomName(boardNodeOrRootId);
 				socket.to(room).emit(`${action}-success`, { ...data, isOwnAction: false });
 				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
+			},
+			emitToClient(data: object): void {
+				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
+			},
+			emitToRoom(data: object, boardNodeOrRootId: AnyBoardNode | EntityId): void {
+				const room = getRoomName(boardNodeOrRootId);
+				socket.to(room).emit(`${action}-success`, { ...data, isOwnAction: false });
 			},
 			emitFailure(data: object): void {
 				socket.emit(`${action}-failure`, data);
