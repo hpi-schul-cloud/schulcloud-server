@@ -57,7 +57,7 @@ export class CommonCartridgeImportService {
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
 		const createdBoardIds = new Map<string, string>();
-		const limit = pLimit(3);
+		const limit = pLimit(1);
 
 		for await (const board of boards) {
 			const response = await limit(() =>
@@ -104,7 +104,7 @@ export class CommonCartridgeImportService {
 					!organization.isResource
 			);
 
-		const limit = pLimit(3);
+		const limit = pLimit(1);
 
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
@@ -123,7 +123,7 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const limit = pLimit(3);
+		const limit = pLimit(1);
 		const columnResponse = await limit(() => this.boardsClient.createBoardColumn(boardId));
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
@@ -136,7 +136,7 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const limit = pLimit(3);
+		const limit = pLimit(1);
 		const columnResponse = await limit(() => this.boardsClient.createBoardColumn(boardId));
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
