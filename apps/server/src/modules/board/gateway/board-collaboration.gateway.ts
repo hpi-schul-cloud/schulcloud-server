@@ -48,6 +48,7 @@ import {
 } from './dto';
 import BoardCollaborationConfiguration from './dto/board-collaboration-config';
 import { UpdateReadersCanEditMessageParams } from './dto/update-users-can-edit.message.param';
+import { MoveCardResponseMapper } from '../controller/mapper/move-card-response.mapper';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
@@ -204,7 +205,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	@SubscribeMessage('create-column-request')
 	@TrackExecutionTime()
 	@UseRequestContext()
-	public async createColumn(socket: Socket, data: CreateColumnMessageParams) {
+	public async createColumn(socket: Socket, data: CreateColumnMessageParams): Promise<object> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'create-column' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
@@ -250,8 +251,8 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-card' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { toBoardId } = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
-			emitter.emitToClientAndRoom(data, toBoardId);
+			const { toBoard } = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
+			emitter.emitToClientAndRoom(data, toBoard.id);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -264,12 +265,14 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-card-to-board' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { fromBoardId, toBoardId } = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId);
-			emitter.emitToClient(data);
-			if (fromBoardId === toBoardId) {
-				emitter.emitToRoom(data, fromBoardId);
+			const resultData = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId);
+			const result = MoveCardResponseMapper.mapToReponse(resultData);
+
+			emitter.emitToClient(result);
+			if (result.fromBoard.id === result.toBoard.id) {
+				emitter.emitToRoom(result, result.fromBoard.id);
 			} else {
-				emitter.emitToRoom(data, toBoardId);
+				emitter.emitToRoom(result, result.toBoard.id);
 			}
 		} catch (err) {
 			emitter.emitFailure(data);
