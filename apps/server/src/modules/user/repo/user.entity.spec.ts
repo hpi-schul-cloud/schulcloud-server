@@ -12,9 +12,6 @@ import { LanguageType, Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { User } from './user.entity';
 
-const DEFAULT_TEACHER_PERMISSIONS = [Permission.SCHOOL_LIST_ROOM_MEMBERS];
-const DEFAULT_STUDENT_PERMISSIONS = [Permission.SCHOOL_LIST_ROOM_MEMBERS];
-
 describe('User Entity', () => {
 	let orm: MikroORM;
 	const permissionA = 'a' as Permission;
@@ -162,9 +159,7 @@ describe('User Entity', () => {
 
 						const result = user.resolvePermissions();
 
-						expect(result.sort()).toEqual(
-							[permissionA, Permission.STUDENT_LIST, ...DEFAULT_TEACHER_PERMISSIONS].sort()
-						);
+						expect(result.sort()).toEqual([permissionA, Permission.STUDENT_LIST].sort());
 					});
 				});
 
@@ -192,7 +187,7 @@ describe('User Entity', () => {
 
 						const result = user.resolvePermissions();
 
-						expect(result.sort()).toEqual([permissionA, ...DEFAULT_STUDENT_PERMISSIONS].sort());
+						expect(result.sort()).toEqual([permissionA].sort());
 					});
 				});
 
@@ -215,7 +210,7 @@ describe('User Entity', () => {
 
 						const result = user.resolvePermissions();
 
-						expect(result.sort()).toEqual([permissionA, ...DEFAULT_STUDENT_PERMISSIONS].sort());
+						expect(result.sort()).toEqual([permissionA].sort());
 					});
 				});
 			});
@@ -241,9 +236,7 @@ describe('User Entity', () => {
 
 						const result = user.resolvePermissions();
 
-						expect(result.sort()).toEqual(
-							[permissionA, Permission.STUDENT_LIST, ...DEFAULT_TEACHER_PERMISSIONS].sort()
-						);
+						expect(result.sort()).toEqual([permissionA, Permission.STUDENT_LIST].sort());
 					});
 				});
 
@@ -267,7 +260,7 @@ describe('User Entity', () => {
 
 						const result = user.resolvePermissions();
 
-						expect(result.sort()).toEqual([permissionA, ...DEFAULT_TEACHER_PERMISSIONS].sort());
+						expect(result.sort()).toEqual([permissionA].sort());
 					});
 				});
 			});
@@ -289,7 +282,7 @@ describe('User Entity', () => {
 
 						const result = user.resolvePermissions();
 
-						expect(result.sort()).toEqual([Permission.LERNSTORE_VIEW, ...DEFAULT_STUDENT_PERMISSIONS].sort());
+						expect(result.sort()).toEqual([Permission.LERNSTORE_VIEW].sort());
 					});
 				});
 
@@ -307,7 +300,7 @@ describe('User Entity', () => {
 
 						const result = user.resolvePermissions();
 
-						expect(result.sort()).toEqual([permissionA, ...DEFAULT_STUDENT_PERMISSIONS].sort());
+						expect(result.sort()).toEqual([permissionA].sort());
 					});
 				});
 			});
@@ -331,9 +324,7 @@ describe('User Entity', () => {
 
 					const result = user.resolvePermissions();
 
-					expect(result.sort()).toEqual(
-						[permissionA, Permission.LERNSTORE_VIEW, ...DEFAULT_STUDENT_PERMISSIONS].sort()
-					);
+					expect(result.sort()).toEqual([permissionA, Permission.LERNSTORE_VIEW].sort());
 				});
 			});
 
@@ -359,7 +350,7 @@ describe('User Entity', () => {
 
 					const result = user.resolvePermissions();
 
-					expect(result.sort()).toEqual([permissionA, ...DEFAULT_STUDENT_PERMISSIONS].sort());
+					expect(result.sort()).toEqual([permissionA].sort());
 				});
 			});
 		});

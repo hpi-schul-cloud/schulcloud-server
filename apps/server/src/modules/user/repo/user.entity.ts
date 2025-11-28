@@ -285,7 +285,6 @@ export class User extends BaseEntityWithTimestamps {
 		} else {
 			setOfPermissions.delete(Permission.STUDENT_LIST);
 		}
-		setOfPermissions.add(Permission.SCHOOL_LIST_ROOM_MEMBERS);
 
 		return setOfPermissions;
 	}
@@ -299,7 +298,6 @@ export class User extends BaseEntityWithTimestamps {
 		} else if (schoolPermissions?.student?.LERNSTORE_VIEW === false) {
 			setOfPermissions.delete(Permission.LERNSTORE_VIEW);
 		}
-		setOfPermissions.add(Permission.SCHOOL_LIST_ROOM_MEMBERS);
 
 		return setOfPermissions;
 	}
