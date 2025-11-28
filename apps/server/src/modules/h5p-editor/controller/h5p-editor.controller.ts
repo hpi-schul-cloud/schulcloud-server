@@ -23,7 +23,7 @@ import {
 	UseFilters,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiBodyOptions, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { Request } from 'express';
 import { H5PEditorUc } from '../uc';
@@ -314,6 +314,13 @@ export class H5PEditorController {
 			},
 		})
 	)
+	@ApiBody(
+		fileUpload({
+			name: 'h5p',
+			description: 'The H5P file to import',
+			required: true,
+		})
+	)
 	public async importH5pPoC(
 		@Body() body: PostH5PContentCreateParams,
 		@CurrentUser() currentUser: ICurrentUser,
@@ -353,4 +360,21 @@ export class H5PEditorController {
 		const saveResponse = new H5PSaveResponse(response.id, response.metadata);
 		return saveResponse;
 	}
+}
+function fileUpload(options: { name: string; description: string; required: boolean }): ApiBodyOptions {
+	return {
+		description: options.description,
+		required: options.required,
+		schema: {
+			type: 'object',
+			properties: {
+				[options.name]: {
+					type: 'string',
+					format: 'binary',
+					description: options.description,
+				},
+			},
+			required: options.required ? [options.name] : [],
+		},
+	};
 }
