@@ -49,6 +49,7 @@ import {
 } from './dto';
 import { AjaxPostBodyParamsTransformPipe } from './dto/ajax/post.body.params.transform-pipe';
 import { H5pAjaxErrorResponseFilter } from './filter';
+import { CommonCartridgeFileValidatorPipe } from '@modules/common-cartridge/controller/utils';
 
 //in-memory rate limit for import endpoint
 const _h5pImportRate = new Map<string, { count: number; reset: number }>();
@@ -305,15 +306,8 @@ export class H5PEditorController {
 	@Post('ajax/import')
 	@UseFilters(H5pAjaxErrorResponseFilter)
 	@ApiConsumes('multipart/form-data')
-	@UseInterceptors(
-		FileInterceptor('h5p', {
-			limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
-			fileFilter: (_req, file, cb) => {
-				if (file.originalname && file.originalname.toLowerCase().endsWith('.h5p')) return cb(null, true);
-				return cb(new BadRequestException('Please upload a .h5p file in field "h5p"'), false);
-			},
-		})
-	)
+	@UseInterceptors(FileInterceptor('h5p'))
+	@ApiBody({ type: PostH5PContentCreateParams, required: true })
 	@ApiBody(
 		fileUpload({
 			name: 'h5p',
@@ -325,7 +319,7 @@ export class H5PEditorController {
 		@Body() body: PostH5PContentCreateParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Res({ passthrough: true }) res: Response,
-		@UploadedFile() file: Express.Multer.File
+		@UploadedFile(CommonCartridgeFileValidatorPipe) file: Express.Multer.File
 	): Promise<H5PSaveResponse | { message: string }> {
 		// simple per-user rate limit
 		const now = Date.now();
