@@ -267,12 +267,15 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const resultData = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId);
 			const result = MoveCardResponseMapper.mapToReponse(resultData);
-
-			emitter.emitToClient(result);
+			const payload = {
+				...result,
+				forceNextTick: data.forceNextTick,
+			};
+			emitter.emitToClient(payload);
 			if (result.fromBoard.id === result.toBoard.id) {
-				emitter.emitToRoom(result, result.fromBoard.id);
+				emitter.emitToRoom(payload, result.fromBoard.id);
 			} else {
-				emitter.emitToRoom(result, result.toBoard.id);
+				emitter.emitToRoom(payload, result.toBoard.id);
 			}
 		} catch (err) {
 			emitter.emitFailure(data);
