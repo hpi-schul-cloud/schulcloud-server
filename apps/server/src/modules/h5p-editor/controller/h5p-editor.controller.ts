@@ -307,14 +307,15 @@ export class H5PEditorController {
 	@UseFilters(H5pAjaxErrorResponseFilter)
 	@ApiConsumes('multipart/form-data')
 	@UseInterceptors(FileInterceptor('h5p'))
-	@ApiBody({ type: PostH5PContentCreateParams, required: true })
-	@ApiBody(
-		fileUpload({
+	@ApiBody({
+		type: PostH5PContentCreateParams,
+		...fileUpload({
 			name: 'h5p',
 			description: 'The H5P file to import',
 			required: true,
-		})
-	)
+		}),
+		required: true,
+	})
 	public async importH5pPoC(
 		@Body() body: PostH5PContentCreateParams,
 		@CurrentUser() currentUser: ICurrentUser,
