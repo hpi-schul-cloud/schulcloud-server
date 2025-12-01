@@ -80,9 +80,7 @@ describe('RegistrationService', () => {
 				};
 
 				await service.createOrUpdateRegistration(props);
-				// gucken ob update oeder create aufgerufen wird
 
-				// warum ist das leer?
 				expect(registrationRepo.save).toHaveBeenCalledWith(
 					expect.objectContaining({
 						email: props.email,
