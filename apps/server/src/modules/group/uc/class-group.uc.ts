@@ -308,7 +308,7 @@ export class ClassGroupUc {
 	}
 
 	private async getLastNamesOfTeachers(userIds: EntityId[]): Promise<string[]> {
-		const users = await Promise.all(userIds.map((userId) => this.userService.findByIdOrNull(userId)));
+		const users = await this.userService.findByIds(userIds);
 		const lastNames = users.filter((user): user is UserDo => !!user).map((user) => user.lastName);
 		return lastNames;
 	}
