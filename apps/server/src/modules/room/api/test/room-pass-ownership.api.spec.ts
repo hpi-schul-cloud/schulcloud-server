@@ -73,6 +73,7 @@ describe('Room Controller (API)', () => {
 
 				const updatedRoomMembership = await loggedInClient.get(`/${roomSetup.room.id}/members`);
 				const body = updatedRoomMembership.body as RoomMemberListResponse;
+
 				expect(body.data).toEqual(
 					expect.arrayContaining([expect.objectContaining({ userId: targetUser.id, roomRoleName: RoleName.ROOMOWNER })])
 				);
