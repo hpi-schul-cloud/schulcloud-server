@@ -72,8 +72,8 @@ export class ColumnUc {
 		if (!card.parentId) {
 			throw new UnprocessableEntityException('Card has no parent column');
 		}
-		const fromColumn = await this.boardNodeService.findByClassAndId(Column, card.parentId, 0);
-		const toColumn = await this.boardNodeService.findByClassAndId(Column, toColumnId, 0);
+		const fromColumn = await this.boardNodeService.findByClassAndId(Column, card.parentId, 1);
+		const toColumn = await this.boardNodeService.findByClassAndId(Column, toColumnId, 1);
 		const fromBoard = await this.columnBoardService.findById(card.rootId, 0);
 		const toBoard = await this.columnBoardService.findById(toColumn.rootId, 0);
 
