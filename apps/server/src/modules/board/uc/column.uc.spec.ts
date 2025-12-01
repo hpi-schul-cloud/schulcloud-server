@@ -249,6 +249,18 @@ describe(ColumnUc.name, () => {
 
 				expect(boardNodeService.move).toHaveBeenCalledWith(card, column, 5);
 			});
+
+			describe('when moving a card without a parent column', () => {
+				it('should throw UnprocessableEntityException', async () => {
+					const { user, column, card } = setup();
+					column.removeChild(card);
+					boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+
+					await expect(uc.moveCard(user.id, card.id, 'to-column-id', 2)).rejects.toThrowError(
+						'Card has no parent column'
+					);
+				});
+			});
 		});
 	});
 
