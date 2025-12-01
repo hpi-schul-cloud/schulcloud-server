@@ -4,7 +4,7 @@ import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RegistrationRepo } from '../../repo';
 import { registrationFactory } from '../../testing/registration.factory';
-import { RegistrationCreateProps } from '../do';
+import { Registration, RegistrationCreateProps } from '../do';
 import { RegistrationService } from './registration.service';
 import { MailService } from '@infra/mail';
 
@@ -41,10 +41,37 @@ describe('RegistrationService', () => {
 	});
 
 	describe('createOrUpdateRegistration', () => {
-		// describe('when registration already exists', () => {});
+		const setup = (options?: { existingRegistration?: Registration }) => {
+			registrationRepo.findByEmail.mockResolvedValue(options?.existingRegistration ?? null);
+		};
+
+		describe('when registration does exist', () => {
+			it('should call repo to update registration', async () => {
+				const existingRegistration = registrationFactory.build();
+				setup({ existingRegistration });
+				const props: RegistrationCreateProps = {
+					email: existingRegistration.email,
+					firstName: 'Jane',
+					lastName: 'Smith',
+					roomId: new ObjectId().toHexString(),
+				};
+
+				const expectedParameterToSave = registrationFactory.build({
+					...existingRegistration.getProps(),
+					firstName: props.firstName,
+					lastName: props.lastName,
+					roomIds: [...existingRegistration.roomIds, props.roomId],
+				});
+
+				await service.createOrUpdateRegistration(props);
+
+				expect(registrationRepo.save).toHaveBeenCalledWith(expectedParameterToSave);
+			});
+		});
 
 		describe('when registration does not exist', () => {
 			it('should call repo to save registration', async () => {
+				setup();
 				const props: RegistrationCreateProps = {
 					email: 'test@example.com',
 					firstName: 'John',
@@ -66,17 +93,19 @@ describe('RegistrationService', () => {
 				);
 			});
 
-			it('should throw for blocked email domain', async () => {
-				const props: RegistrationCreateProps = {
-					email: 'test@10mail.org',
-					firstName: 'John',
-					lastName: 'Doe',
-					roomId: new ObjectId().toHexString(),
-				};
+			describe('when email domain is forbidden', () => {
+				it('should throw an error', async () => {
+					const props: RegistrationCreateProps = {
+						email: 'test@10mail.org',
+						firstName: 'John',
+						lastName: 'Doe',
+						roomId: new ObjectId().toHexString(),
+					};
 
-				await expect(service.createOrUpdateRegistration(props)).rejects.toThrow(BadRequestException);
+					await expect(service.createOrUpdateRegistration(props)).rejects.toThrow(BadRequestException);
 
-				expect(registrationRepo.save).not.toHaveBeenCalled();
+					expect(registrationRepo.save).not.toHaveBeenCalled();
+				});
 			});
 		});
 	});
