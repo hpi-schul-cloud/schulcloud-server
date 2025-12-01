@@ -273,7 +273,11 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('move-card-to-board-request', moveCardToBoardProps);
 				const success = await waitForEvent(ioClient, 'move-card-to-board-success');
 
-				expect(success).toEqual(expect.objectContaining({ toColumnId: columnNode2.id }));
+				expect(success).toEqual(
+					expect.objectContaining({
+						toColumn: { id: columnNode2.id, title: columnNode2.title },
+					})
+				);
 			});
 		});
 
@@ -304,7 +308,9 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('move-card-to-board-request', moveCardToBoardProps);
 				const success = await waitForEvent(ioClient, 'move-card-to-board-success');
 
-				expect(success).toEqual(expect.objectContaining({ toColumnId: secondColumnNode.id }));
+				expect(success).toEqual(
+					expect.objectContaining({ toColumn: { id: secondColumnNode.id, title: secondColumnNode.title } })
+				);
 			});
 		});
 

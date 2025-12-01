@@ -46,7 +46,7 @@ describe(`card move to board (api)`, () => {
 
 	describe('when boards belong to room', () => {
 		const setup = async () => {
-			const { roomEditorRole, roomAdminRole } = RoomRolesTestFactory.createRoomRoles();
+			const { roomViewerRole, roomEditorRole, roomAdminRole } = RoomRolesTestFactory.createRoomRoles();
 
 			const school = schoolEntityFactory.buildWithId();
 
@@ -82,10 +82,19 @@ describe(`card move to board (api)`, () => {
 			]);
 			em.clear();
 
-			const createRoomMembership = async (user: User, roomId: EntityId, role: 'editor' | 'admin') => {
+			const createRoomMembership = async (user: User, roomId: EntityId, role: 'viewer' | 'editor' | 'admin') => {
+				let userRole: typeof roomViewerRole | typeof roomEditorRole | typeof roomAdminRole;
+				if (role === 'viewer') {
+					userRole = roomViewerRole;
+				} else if (role === 'editor') {
+					userRole = roomEditorRole;
+				} else {
+					userRole = roomAdminRole;
+				}
+
 				const userGroup = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
-					users: [{ role: role === 'editor' ? roomEditorRole : roomAdminRole, user }],
+					users: [{ role: userRole, user }],
 				});
 
 				const roomMembership = roomMembershipEntityFactory.build({
@@ -117,7 +126,7 @@ describe(`card move to board (api)`, () => {
 
 		describe('when moving within the same room', () => {
 			describe('and user is admin', () => {
-				it('should return status 204', async () => {
+				it('should return status 200', async () => {
 					const { loginTeacher, createRoomMembership, teacherUser, rooms, cardNode, toColumnNode } = await setup();
 
 					await createRoomMembership(teacherUser, rooms[0].id, 'admin');
@@ -129,12 +138,12 @@ describe(`card move to board (api)`, () => {
 					};
 					const response = await loggedInClient.put(`${cardNode.id}/position`, params);
 
-					expect(response.status).toEqual(204);
+					expect(response.status).toEqual(200);
 				});
 			});
 
 			describe('and user is editor', () => {
-				it('should return status 204', async () => {
+				it('should return status 200', async () => {
 					const { loginTeacher, createRoomMembership, teacherUser, rooms, cardNode, toColumnNode } = await setup();
 
 					await createRoomMembership(teacherUser, rooms[0].id, 'editor');
@@ -146,7 +155,24 @@ describe(`card move to board (api)`, () => {
 					};
 					const response = await loggedInClient.put(`${cardNode.id}/position`, params);
 
-					expect(response.status).toEqual(204);
+					expect(response.status).toEqual(200);
+				});
+			});
+
+			describe('and user is viewer', () => {
+				it('should return status 403', async () => {
+					const { loginTeacher, createRoomMembership, teacherUser, rooms, cardNode, toColumnNode } = await setup();
+
+					await createRoomMembership(teacherUser, rooms[0].id, 'viewer');
+
+					const loggedInClient = await loginTeacher();
+
+					const params: MoveCardBodyParams = {
+						toColumnId: toColumnNode.id,
+					};
+					const response = await loggedInClient.put(`${cardNode.id}/position`, params);
+
+					expect(response.status).toEqual(403);
 				});
 			});
 
@@ -168,7 +194,7 @@ describe(`card move to board (api)`, () => {
 
 		describe('when moving to another room', () => {
 			describe('and user is admin in source room and editor in target room', () => {
-				it('should return status 204', async () => {
+				it('should return status 200', async () => {
 					const { loginTeacher, createRoomMembership, teacherUser, rooms, cardNode, toColumnNodeInOtherRoom } =
 						await setup();
 
@@ -182,7 +208,7 @@ describe(`card move to board (api)`, () => {
 					};
 					const response = await loggedInClient.put(`${cardNode.id}/position`, params);
 
-					expect(response.status).toEqual(204);
+					expect(response.status).toEqual(200);
 				});
 			});
 
@@ -253,7 +279,7 @@ describe(`card move to board (api)`, () => {
 
 		describe('when moving to another board', () => {
 			describe('with valid teacher user', () => {
-				it('should return status 204', async () => {
+				it('should return status 200', async () => {
 					const { loginTeacher, cardNode, toColumnNode } = await setup();
 
 					const loggedInClient = await loginTeacher();
@@ -265,7 +291,7 @@ describe(`card move to board (api)`, () => {
 
 					const response = await loggedInClient.put(`${cardNode.id}/position`, params);
 
-					expect(response.status).toEqual(204);
+					expect(response.status).toEqual(200);
 				});
 			});
 

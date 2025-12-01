@@ -69,7 +69,9 @@ describe(ColumnUc.name, () => {
 		const board = columnBoardFactory.build();
 		const boardId = board.id;
 		const column = columnFactory.build();
+		board.addChild(column);
 		const card = cardFactory.build();
+		column.addChild(card);
 
 		const createCardBodyParams = {
 			requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
@@ -212,14 +214,6 @@ describe(ColumnUc.name, () => {
 				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Card, card.id);
 			});
 
-			it('should call the service to find the target column', async () => {
-				const { user, column, card } = setup();
-
-				await uc.moveCard(user.id, card.id, column.id, 5);
-
-				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, column.id);
-			});
-
 			it('should call the service to check the permissions for card', async () => {
 				const { user, column, card } = setup();
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
@@ -261,16 +255,15 @@ describe(ColumnUc.name, () => {
 	describe('copyCard', () => {
 		describe('when something goes wrong', () => {
 			it('should throw UnprocessableEntityException when card has no parent', async () => {
-				const { user, card } = setup();
-				// card.parentId = null;
+				const { user, card, column } = setup();
+				column.removeChild(card);
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
 
 				await expect(uc.copyCard(user.id, card.id, 'school-id')).rejects.toThrowError('Card has no parent column');
 			});
 
 			it('should throw InternalServerError if copyEntity is not a Card', async () => {
-				const { user, column } = setup();
-				const card = cardFactory.build({ path: column.id });
+				const { user, column, card } = setup();
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
 
