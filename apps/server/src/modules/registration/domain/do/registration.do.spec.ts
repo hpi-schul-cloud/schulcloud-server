@@ -2,27 +2,28 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { registrationFactory } from '../../testing';
 import { Registration, RegistrationProps } from './registration.do';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 describe('Registration', () => {
-	let registration: Registration;
-	const registrationId: EntityId = 'registrationId';
-	const roomId = new ObjectId().toHexString();
-	const registrationProps: RegistrationProps = {
-		id: registrationId,
-		email: 'test@example.com',
-		firstName: 'John',
-		lastName: 'Doe',
-		roomIds: [roomId],
-		registrationSecret: 'someValue',
-		createdAt: new Date(),
-		updatedAt: new Date(),
+	const setup = (roomIds?: string[]) => {
+		const registrationId: EntityId = 'registrationId';
+		const roomId = new ObjectId().toHexString();
+		const registrationProps: RegistrationProps = {
+			id: registrationId,
+			email: 'test@example.com',
+			firstName: 'John',
+			lastName: 'Doe',
+			roomIds: roomIds ?? [roomId],
+			registrationSecret: 'someValue',
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+		const registration = new Registration(registrationProps);
+		return { registration, registrationProps, roomId };
 	};
 
-	beforeEach(() => {
-		registration = new Registration(registrationProps);
-	});
-
 	it('should props without domainObject', () => {
+		const { registration, registrationProps } = setup();
 		const mockDomainObject = registrationFactory.build();
 		// this tests the hotfix for the mikro-orm issue
 		// eslint-disable-next-line @typescript-eslint/dot-notation
@@ -38,57 +39,69 @@ describe('Registration', () => {
 	});
 
 	it('should get email', () => {
-		const expectedEmail = 'test@example.com';
-		expect(registration.email).toEqual(expectedEmail);
+		const { registration } = setup();
+
+		expect(registration.email).toEqual('test@example.com');
 	});
 
 	it('should get and set firstName', () => {
-		const expectedFirstName = 'John';
-		expect(registration.firstName).toEqual(expectedFirstName);
+		const { registration } = setup();
+		expect(registration.firstName).toEqual('John');
+
 		const newFirstName = 'Jane';
 		registration.firstName = newFirstName;
 		expect(registration.firstName).toEqual(newFirstName);
 	});
 
 	it('should get and set lastName', () => {
+		const { registration } = setup();
 		const expectedLastName = 'Doe';
+
 		expect(registration.lastName).toEqual(expectedLastName);
+
 		const newLastName = 'Smith';
+
 		registration.lastName = newLastName;
 		expect(registration.lastName).toEqual(newLastName);
 	});
 
 	it('should update name', () => {
-		const expectedFirstName = 'John';
-		const expectedLastName = 'Doe';
-		expect(registration.firstName).toEqual(expectedFirstName);
-		expect(registration.lastName).toEqual(expectedLastName);
+		const { registration } = setup();
+
+		expect(registration.firstName).toEqual('John');
+		expect(registration.lastName).toEqual('Doe');
 
 		const newFirstName = 'Jane';
 		const newLastName = 'Smith';
 		registration.updateName({ firstName: newFirstName, lastName: newLastName });
+
 		expect(registration.firstName).toEqual(newFirstName);
 		expect(registration.lastName).toEqual(newLastName);
 	});
 
 	it('should get roomIds', () => {
+		const { registration, roomId } = setup();
 		expect(registration.roomIds).toEqual([roomId]);
 	});
 
 	it('should get registrationHash', () => {
+		const { registration } = setup();
 		expect(registration.registrationSecret).toBe('someValue');
 	});
 
 	it('should get createdAt', () => {
+		const { registration } = setup();
 		expect(registration.createdAt).toBeInstanceOf(Date);
 	});
 
 	it('should get updatedAt', () => {
+		const { registration } = setup();
 		expect(registration.updatedAt).toBeInstanceOf(Date);
 	});
 
 	describe('addRoomId', () => {
 		describe('When room is added to the registration', () => {
+			/*
 			const setup = () => {
 				const registration = registrationFactory.build({ roomIds: [] });
 				const roomId = new ObjectId().toHexString();
@@ -98,9 +111,11 @@ describe('Registration', () => {
 					roomId,
 				};
 			};
+			*/
 
 			it('should add the room to the roomIds', () => {
-				const { registration, roomId } = setup();
+				const testRoomId = new ObjectId().toHexString();
+				const { registration, roomId } = setup([testRoomId]);
 
 				registration.addRoomId(roomId);
 
@@ -108,14 +123,43 @@ describe('Registration', () => {
 			});
 
 			it('should add roomId only once', () => {
-				const { registration, roomId } = setup();
+				const roomId = new ObjectId().toHexString();
+				const { registration } = setup([roomId]);
 
-				registration.addRoomId(roomId);
 				registration.addRoomId(roomId);
 
 				expect(registration.roomIds).toHaveLength(1);
 				expect(registration.roomIds).toContain(roomId);
 			});
+		});
+	});
+	describe('generateRegistrationMail', () => {
+		beforeEach(() => {
+			jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
+				if (config === 'SMTP_SENDER') {
+					return 'example@sender.com';
+				}
+				if (config === 'HOST') {
+					return 'https://example.com';
+				}
+				return null;
+			});
+		});
+
+		it('should generate registration mail with correct structure', () => {
+			const { registration } = setup();
+
+			const result = registration.generateRegistrationMail();
+
+			expect(Configuration.get).toHaveBeenCalledWith('SMTP_SENDER');
+			expect(Configuration.get).toHaveBeenCalledWith('HOST');
+
+			expect(result).toEqual(
+				expect.objectContaining({
+					recipients: [registration.email],
+					from: 'example@sender.com',
+				})
+			);
 		});
 	});
 });

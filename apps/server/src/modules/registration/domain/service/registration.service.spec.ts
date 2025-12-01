@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -7,6 +6,7 @@ import { RegistrationRepo } from '../../repo';
 import { registrationFactory } from '../../testing/registration.factory';
 import { RegistrationCreateProps } from '../do';
 import { RegistrationService } from './registration.service';
+import { MailService } from '@infra/mail';
 
 describe('RegistrationService', () => {
 	let module: TestingModule;
@@ -20,6 +20,10 @@ describe('RegistrationService', () => {
 				{
 					provide: RegistrationRepo,
 					useValue: createMock<RegistrationRepo>(),
+				},
+				{
+					provide: MailService,
+					useValue: createMock<MailService>(),
 				},
 			],
 		}).compile();
@@ -36,38 +40,44 @@ describe('RegistrationService', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('createRegistration', () => {
-		it('should call repo to save registration', async () => {
-			const props: RegistrationCreateProps = {
-				email: 'test@example.com',
-				firstName: 'John',
-				lastName: 'Doe',
-				roomId: new ObjectId().toHexString(),
-			};
+	describe('createOrUpdateRegistration', () => {
+		// describe('when registration already exists', () => {});
 
-			await service.createRegistraton(props);
+		describe('when registration does not exist', () => {
+			it('should call repo to save registration', async () => {
+				const props: RegistrationCreateProps = {
+					email: 'test@example.com',
+					firstName: 'John',
+					lastName: 'Doe',
+					roomId: new ObjectId().toHexString(),
+				};
 
-			expect(registrationRepo.save).toHaveBeenCalledWith(
-				expect.objectContaining({
-					email: props.email,
-					firstName: props.firstName,
-					lastName: props.lastName,
-					roomIds: [props.roomId],
-				})
-			);
-		});
+				await service.createOrUpdateRegistration(props);
+				// gucken ob update oeder create aufgerufen wird
 
-		it('should throw for blocked email domain', async () => {
-			const props: RegistrationCreateProps = {
-				email: 'test@10mail.org',
-				firstName: 'John',
-				lastName: 'Doe',
-				roomId: new ObjectId().toHexString(),
-			};
+				// warum ist das leer?
+				expect(registrationRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						email: props.email,
+						firstName: props.firstName,
+						lastName: props.lastName,
+						roomIds: [props.roomId],
+					})
+				);
+			});
 
-			await expect(service.createRegistraton(props)).rejects.toThrow(BadRequestException);
+			it('should throw for blocked email domain', async () => {
+				const props: RegistrationCreateProps = {
+					email: 'test@10mail.org',
+					firstName: 'John',
+					lastName: 'Doe',
+					roomId: new ObjectId().toHexString(),
+				};
 
-			expect(registrationRepo.save).not.toHaveBeenCalled();
+				await expect(service.createOrUpdateRegistration(props)).rejects.toThrow(BadRequestException);
+
+				expect(registrationRepo.save).not.toHaveBeenCalled();
+			});
 		});
 	});
 
@@ -135,39 +145,6 @@ describe('RegistrationService', () => {
 			const result = await service.getRegistrationsByRoomId('someRandomRoomId');
 
 			expect(result).toBe(registrations);
-		});
-	});
-
-	describe('generateRegistrationMail', () => {
-		beforeEach(() => {
-			jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
-				if (config === 'SMTP_SENDER') {
-					return 'example@sender.com';
-				}
-				if (config === 'HOST') {
-					return 'https://example.com';
-				}
-				return null;
-			});
-		});
-
-		it('should generate registration mail with correct structure', () => {
-			const email = 'test@example.com';
-			const firstName = 'John';
-			const lastName = 'Doe';
-			const hash = 'someHash';
-
-			const result = service.generateRegistrationMail(email, firstName, lastName, hash);
-
-			expect(Configuration.get).toHaveBeenCalledWith('SMTP_SENDER');
-			expect(Configuration.get).toHaveBeenCalledWith('HOST');
-
-			expect(result).toEqual(
-				expect.objectContaining({
-					recipients: [email],
-					from: 'example@sender.com',
-				})
-			);
 		});
 	});
 });

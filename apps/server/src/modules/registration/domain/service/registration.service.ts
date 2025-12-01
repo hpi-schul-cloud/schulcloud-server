@@ -8,7 +8,9 @@ import { Registration, RegistrationCreateProps, RegistrationProps } from '../do'
 
 @Injectable()
 export class RegistrationService {
+	// muss hier der mailservice wirklich drin sein?
 	constructor(private readonly registrationRepo: RegistrationRepo, private readonly mailService: MailService) {}
+	// constructor(private readonly registrationRepo: RegistrationRepo) {}
 
 	public async createOrUpdateRegistration(props: RegistrationCreateProps): Promise<Registration> {
 		const existingRegistration = await this.getSingleRegistrationByEmail(props.email);
@@ -44,6 +46,7 @@ export class RegistrationService {
 
 	public async sendRegistrationMail(registration: Registration): Promise<void> {
 		const registrationMail = registration.generateRegistrationMail();
+		// hmm?
 		await this.mailService.send(registrationMail);
 	}
 
