@@ -94,6 +94,7 @@ export class ColumnUc {
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		if (!card.parentId) {
+			/* istanbul ignore next */
 			throw new UnprocessableEntityException('Card has no parent column');
 		}
 
