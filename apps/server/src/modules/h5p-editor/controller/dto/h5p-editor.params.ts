@@ -104,7 +104,10 @@ export class ImportCreateH5PContentParams {
 	@IsNotEmpty()
 	public library!: string;
 
-	@ApiProperty()
-	@IsNotEmpty()
+	@ApiProperty({
+		type: String,
+		format: 'binary',
+		description: 'The H5P file to import.',
+	})
 	public H5Pfile!: Express.Multer.File;
 }

@@ -23,7 +23,7 @@ import {
 	UseFilters,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiProduces, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { Request } from 'express';
 import { H5PEditorUc } from '../uc';
@@ -306,6 +306,7 @@ export class H5PEditorController {
 	@Post('ajax/import')
 	@UseFilters(H5pAjaxErrorResponseFilter)
 	@ApiConsumes('multipart/form-data')
+	@ApiProduces('application/json')
 	@UseInterceptors(FileInterceptor('h5p'))
 	@ApiBody({
 		type: ImportCreateH5PContentParams,
