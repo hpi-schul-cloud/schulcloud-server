@@ -106,5 +106,5 @@ export class ImportCreateH5PContentParams {
 
 	@ApiProperty()
 	@IsNotEmpty()
-	public h5pFileBuffer!: Buffer;
+	public h5pFile!: File;
 }
