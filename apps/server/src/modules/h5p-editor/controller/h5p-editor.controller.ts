@@ -50,7 +50,6 @@ import {
 } from './dto';
 import { AjaxPostBodyParamsTransformPipe } from './dto/ajax/post.body.params.transform-pipe';
 import { H5pAjaxErrorResponseFilter } from './filter';
-import { CommonCartridgeFileValidatorPipe } from '../../common-cartridge/controller/utils/common-cartridge-file-validator.pipe';
 
 //in-memory rate limit for import endpoint
 const _h5pImportRate = new Map<string, { count: number; reset: number }>();
@@ -316,7 +315,7 @@ export class H5PEditorController {
 		@Body() body: ImportCreateH5PContentParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Res({ passthrough: true }) res: Response,
-		@UploadedFile(CommonCartridgeFileValidatorPipe) file: Express.Multer.File
+		@UploadedFile() file: Express.Multer.File
 	): Promise<H5PSaveResponse | { message: string }> {
 		// simple per-user rate limit
 		const now = Date.now();

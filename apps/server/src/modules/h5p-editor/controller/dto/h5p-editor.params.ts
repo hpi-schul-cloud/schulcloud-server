@@ -106,5 +106,5 @@ export class ImportCreateH5PContentParams {
 
 	@ApiProperty()
 	@IsNotEmpty()
-	public h5pFile!: File;
+	public H5Pfile!: Express.Multer.File;
 }
