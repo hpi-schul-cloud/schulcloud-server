@@ -81,3 +81,30 @@ export class PostH5PContentCreateParams {
 	@IsNotEmpty()
 	public library!: string;
 }
+
+export class ImportCreateH5PContentParams {
+	@ApiProperty({ enum: H5PContentParentType, enumName: 'H5PContentParentType' })
+	@IsEnum(H5PContentParentType)
+	public parentType!: H5PContentParentType;
+
+	@ApiProperty()
+	@IsMongoId()
+	public parentId!: EntityId;
+
+	@ApiProperty()
+	@IsNotEmpty()
+	@IsObject()
+	public params!: {
+		params: unknown;
+		metadata: IContentMetadata;
+	};
+
+	@ApiProperty()
+	@IsString()
+	@IsNotEmpty()
+	public library!: string;
+
+	@ApiProperty()
+	@IsNotEmpty()
+	public h5pFileBuffer!: Buffer;
+}

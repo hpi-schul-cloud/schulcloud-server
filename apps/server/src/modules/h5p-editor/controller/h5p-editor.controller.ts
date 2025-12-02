@@ -23,7 +23,7 @@ import {
 	UseFilters,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiBodyOptions, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { Request } from 'express';
 import { H5PEditorUc } from '../uc';
@@ -43,13 +43,14 @@ import {
 	H5PEditorModelContentResponse,
 	H5PEditorModelResponse,
 	H5PSaveResponse,
+	ImportCreateH5PContentParams,
 	LibraryFileUrlParams,
 	PostH5PContentCreateParams,
 	SaveH5PEditorParams,
 } from './dto';
 import { AjaxPostBodyParamsTransformPipe } from './dto/ajax/post.body.params.transform-pipe';
 import { H5pAjaxErrorResponseFilter } from './filter';
-import { CommonCartridgeFileValidatorPipe } from '@modules/common-cartridge/controller/utils';
+import { CommonCartridgeFileValidatorPipe } from '../../common-cartridge/controller/utils/common-cartridge-file-validator.pipe';
 
 //in-memory rate limit for import endpoint
 const _h5pImportRate = new Map<string, { count: number; reset: number }>();
@@ -308,16 +309,11 @@ export class H5PEditorController {
 	@ApiConsumes('multipart/form-data')
 	@UseInterceptors(FileInterceptor('h5p'))
 	@ApiBody({
-		type: PostH5PContentCreateParams,
-		...fileUpload({
-			name: 'h5p',
-			description: 'The H5P file to import',
-			required: true,
-		}),
+		type: ImportCreateH5PContentParams,
 		required: true,
 	})
 	public async importH5pPoC(
-		@Body() body: PostH5PContentCreateParams,
+		@Body() body: ImportCreateH5PContentParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Res({ passthrough: true }) res: Response,
 		@UploadedFile(CommonCartridgeFileValidatorPipe) file: Express.Multer.File
@@ -355,21 +351,4 @@ export class H5PEditorController {
 		const saveResponse = new H5PSaveResponse(response.id, response.metadata);
 		return saveResponse;
 	}
-}
-function fileUpload(options: { name: string; description: string; required: boolean }): ApiBodyOptions {
-	return {
-		description: options.description,
-		required: options.required,
-		schema: {
-			type: 'object',
-			properties: {
-				[options.name]: {
-					type: 'string',
-					format: 'binary',
-					description: options.description,
-				},
-			},
-			required: options.required ? [options.name] : [],
-		},
-	};
 }
