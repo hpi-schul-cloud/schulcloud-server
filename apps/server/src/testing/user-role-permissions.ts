@@ -1,6 +1,6 @@
 /*
 	This permission set is based on the current state of dBildungscloud.
-	Last Update: 2023-03-21
+	Last Update: 2025-11-10
 */
 import { Permission } from '@shared/domain/interface';
 
@@ -65,6 +65,7 @@ export const studentPermissions = [
 	Permission.TEAM_CREATE,
 	Permission.JOIN_MEETING,
 	Permission.TOOL_CREATE_ETHERPAD,
+	Permission.SCHOOL_LIST_ROOM_MEMBERS,
 ];
 
 const sharedAdminPermissions = [
@@ -108,6 +109,7 @@ export const teacherPermissions = [
 	Permission.SCHOOL_CREATE_ROOM,
 	Permission.TEACHER_LIST,
 	Permission.SCHOOL_LIST_DISCOVERABLE_TEACHERS,
+	Permission.SCHOOL_LIST_ROOM_MEMBERS,
 ];
 
 export const adminPermissions = [
@@ -151,6 +153,7 @@ export const adminPermissions = [
 	Permission.GROUP_FULL_ADMIN,
 	Permission.USER_LOGIN_MIGRATION_ADMIN,
 	Permission.MEDIA_SCHOOL_LICENSE_ADMIN,
+	Permission.SCHOOL_LIST_ROOM_MEMBERS,
 ];
 
 export const superheroPermissions = [

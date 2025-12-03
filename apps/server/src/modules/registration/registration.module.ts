@@ -1,15 +1,11 @@
 import { Module } from '@nestjs/common';
-import { RegistrationController, RegistrationUc } from './api';
-import { AuthorizationModule } from '@modules/authorization';
 import { RegistrationService } from './domain';
 import { RegistrationRepo } from './repo';
-import { RegistrationFeatureService } from './api/service';
-import { RoomMembershipModule } from '@modules/room-membership';
+import { ServerMailModule } from '@modules/serverDynamicModuleWrappers/server-mail.module';
 
 @Module({
-	controllers: [RegistrationController],
-	imports: [AuthorizationModule, RoomMembershipModule],
-	providers: [RegistrationRepo, RegistrationService, RegistrationUc, RegistrationFeatureService],
-	exports: [],
+	imports: [ServerMailModule],
+	providers: [RegistrationRepo, RegistrationService],
+	exports: [RegistrationService],
 })
 export class RegistrationModule {}
