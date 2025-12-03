@@ -2,7 +2,7 @@ import { RegistrationCreateProps } from '../../../domain';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsMongoId, IsString } from 'class-validator';
 
-export class CreateRegistrationBodyParams implements RegistrationCreateProps {
+export class CreateOrUpdateRegistrationBodyParams implements RegistrationCreateProps {
 	@IsEmail()
 	@ApiProperty({
 		description: 'The mail adress of the new user. Will also be used as username.',

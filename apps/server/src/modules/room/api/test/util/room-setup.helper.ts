@@ -10,7 +10,7 @@ import { roomMembershipEntityFactory } from '@modules/room-membership/testing/ro
 import { RoomEntity } from '@modules/room/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { User } from '@modules/user/repo';
+import { User, UserProperties } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
@@ -163,10 +163,16 @@ export class RoomSetup {
 	private setupRoles = async (): Promise<void> => {
 		const administrator = roleFactory.buildWithId({
 			name: RoleName.ADMINISTRATOR,
-			permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS],
+			permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS, Permission.SCHOOL_LIST_ROOM_MEMBERS],
 		});
-		const teacher = roleFactory.buildWithId({ name: RoleName.TEACHER });
-		const student = roleFactory.buildWithId({ name: RoleName.STUDENT });
+		const teacher = roleFactory.buildWithId({
+			name: RoleName.TEACHER,
+			permissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS],
+		});
+		const student = roleFactory.buildWithId({
+			name: RoleName.STUDENT,
+			permissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS],
+		});
 		const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 
 		await this.em.persistAndFlush([
@@ -237,7 +243,7 @@ export class RoomSetup {
 					),
 				});
 			}
-			const data = {
+			const data: Partial<UserProperties> = {
 				school,
 				firstName: setup.name,
 				roles: setup.schoolRoles,

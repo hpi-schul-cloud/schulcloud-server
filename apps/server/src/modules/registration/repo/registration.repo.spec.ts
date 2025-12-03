@@ -114,10 +114,10 @@ describe('RegistrationRepo', () => {
 			return { registrationEntity };
 		};
 
-		it('should be able to find a registration by registrationHash', async () => {
+		it('should be able to find a registration by registrationSecret', async () => {
 			const { registrationEntity } = await setup();
 
-			const result = await repo.findByHash(registrationEntity.registrationHash);
+			const result = await repo.findBySecret(registrationEntity.registrationSecret);
 			const expectedProps = {
 				...registrationEntity,
 				roomIds: registrationEntity.roomIds.map((id) => new ObjectId(id)),

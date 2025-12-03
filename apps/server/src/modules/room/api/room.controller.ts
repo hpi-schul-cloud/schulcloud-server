@@ -22,6 +22,7 @@ import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
 import { IFindOptions } from '@shared/domain/interface';
 import { Room } from '../domain';
+import { AddByEmailBodyParams } from './dto/request/add-by-email.body.params';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
 import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
@@ -41,11 +42,11 @@ import { RoomRoleResponse } from './dto/response/room-role.response';
 import { RoomStatsListResponse } from './dto/response/room-stats-list.repsonse';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 import { RoomMapper } from './mapper/room.mapper';
+import { RoomArrangementUc } from './room-arrangement.uc';
+import { RoomContentUc } from './room-content.uc';
 import { RoomCopyUc } from './room-copy.uc';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
 import { RoomUc } from './room.uc';
-import { RoomContentUc } from './room-content.uc';
-import { RoomArrangementUc } from './room-arrangement.uc';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -250,6 +251,27 @@ export class RoomController {
 		@Body() bodyParams: AddRoomMembersBodyParams
 	): Promise<RoomRoleResponse> {
 		const roomRole = await this.roomUc.addMembersToRoom(currentUser.userId, urlParams.roomId, bodyParams.userIds);
+		const response = new RoomRoleResponse(roomRole);
+		return response;
+	}
+
+	@Patch(':roomId/members/add-by-email')
+	@ApiOperation({ summary: 'Add external person to room or trigger registration' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Patching successful', type: RoomRoleResponse })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async addByEmail(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams,
+		@Body() bodyParams: AddByEmailBodyParams
+	): Promise<RoomRoleResponse | void> {
+		const roomRole = await this.roomUc.addExternalPersonByEmailToRoom(
+			currentUser.userId,
+			urlParams.roomId,
+			bodyParams.email
+		);
 		const response = new RoomRoleResponse(roomRole);
 		return response;
 	}
