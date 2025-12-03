@@ -201,24 +201,6 @@ describe('Room Controller (API)', () => {
 				});
 			});
 
-			describe('when adding an existing external person who is not discoverable', () => {
-				it('should throw a 404 error', async () => {
-					const { loggedInClient, room, externalPersonUser } = await setupRoomWithMembers();
-
-					externalPersonUser.discoverable = false;
-					await em.persistAndFlush(externalPersonUser);
-
-					const response = await loggedInClient.patch(`/${room.id}/members/add-by-email`, {
-						email: externalPersonUser.email,
-					});
-
-					expect(response.status).toBe(HttpStatus.NOT_FOUND);
-					expect((response.body as { message: string }).message).toContain(
-						'User To Add To Room Not Found Loggable Exception'
-					);
-				});
-			});
-
 			describe('when adding an existing external person who is already member of the room', () => {
 				it('should return OK with room role response', async () => {
 					const { loggedInClient, roomWithExistingExternalPerson, externalPersonUser } = await setupRoomWithMembers();

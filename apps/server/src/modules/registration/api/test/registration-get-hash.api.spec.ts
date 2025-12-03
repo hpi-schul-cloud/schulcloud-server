@@ -58,7 +58,7 @@ describe('Room Controller (API)', () => {
 				config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = false;
 				const { registration } = await setup();
 
-				const response = await testApiClient.get(`/by-hash/${registration.registrationSecret}`);
+				const response = await testApiClient.get(`/by-secret/${registration.registrationSecret}`);
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -67,7 +67,7 @@ describe('Room Controller (API)', () => {
 		describe('when the registration exists', () => {
 			it('should return a registration', async () => {
 				const { registration, expectedResponse } = await setup();
-				const response = await testApiClient.get(`/by-hash/${registration.registrationSecret}`);
+				const response = await testApiClient.get(`/by-secret/${registration.registrationSecret}`);
 				console.log(response.body);
 				expect(response.status).toBe(HttpStatus.OK);
 				expect(response.body).toEqual(expectedResponse);
@@ -76,7 +76,7 @@ describe('Room Controller (API)', () => {
 
 		describe('when the registration does not exist', () => {
 			it('should return a 404 error', async () => {
-				const response = await testApiClient.get('/by-hash/someNonExistingHash');
+				const response = await testApiClient.get('/by-secret/someNonExistingSecret');
 
 				expect(response.status).toBe(HttpStatus.NOT_FOUND);
 			});
