@@ -49,7 +49,6 @@ describe('Group (API)', () => {
 				const school = schoolEntityFactory.buildWithId({ currentYear: schoolYear });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				const groupSubstitutionTeacherRole = roleFactory.buildWithId({ name: RoleName.GROUPSUBSTITUTIONTEACHER });
 				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
 				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
 				const teacherUser = userFactory.buildWithId({ school, roles: [teacherRole] });
@@ -82,7 +81,6 @@ describe('Group (API)', () => {
 					school,
 					adminAccount,
 					adminUser,
-					groupSubstitutionTeacherRole,
 					teacherRole,
 					studentRole,
 					teacherUser,
@@ -109,7 +107,7 @@ describe('Group (API)', () => {
 			};
 
 			it('should return the classes of his school', async () => {
-				const { adminClient, group, classEntity, system, schoolYear, course, adminUser, teacherUser } = await setup();
+				const { adminClient, group, classEntity, system, schoolYear, course } = await setup();
 
 				const response = await adminClient.get(`/class`).query({
 					skip: 0,
@@ -126,7 +124,7 @@ describe('Group (API)', () => {
 							type: ClassRootType.GROUP,
 							name: group.name,
 							externalSourceName: system.displayName,
-							teacherNames: [adminUser.lastName],
+							teacherNames: [],
 							studentCount: 0,
 							synchronizedCourses: [{ id: course.id, name: course.name }],
 						},
@@ -134,7 +132,7 @@ describe('Group (API)', () => {
 							id: classEntity.id,
 							type: ClassRootType.CLASS,
 							name: classEntity.gradeLevel ? `${classEntity.gradeLevel}${classEntity.name}` : classEntity.name,
-							teacherNames: [teacherUser.lastName],
+							teacherNames: [],
 							schoolYear: schoolYear.name,
 							isUpgradable: false,
 							studentCount: 0,
