@@ -383,7 +383,7 @@ export class RoomUc {
 	}
 
 	private checkUserIsExternalPerson(user: UserDo): void {
-		if (!user.roles.find((role) => role.name === RoleName.EXPERT)) {
+		if (!user.roles.find((role) => role.name === RoleName.EXTERNALPERSON)) {
 			throw new BadRequestException('User is not an external person');
 		}
 	}
