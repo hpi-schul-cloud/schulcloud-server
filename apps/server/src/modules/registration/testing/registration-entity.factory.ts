@@ -12,7 +12,7 @@ export const registrationEntityFactory = EntityFactory.define<RegistrationEntity
 			firstName: `FirstName${sequence}`,
 			lastName: `LastName${sequence}`,
 			roomIds: [new ObjectId().toHexString()],
-			registrationHash: `hash${sequence}`,
+			registrationSecret: `hash${sequence}`,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
