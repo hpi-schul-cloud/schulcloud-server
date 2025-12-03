@@ -47,11 +47,7 @@ describe('Room Controller (API)', () => {
 				UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
 			const { account: externalPersonAccount, user: externalPersonUser } =
 				UserAndAccountTestFactory.buildByRole('externalPerson');
-			// needed to make the users findable by email in the room.uc.ts
-			// as the test factory creates users with different emails  (user vs account)
-			// + discoverable property (see UC for details)
 			externalPersonAccount.username = externalPersonUser.email;
-			externalPersonUser.discoverable = true;
 			otherTeacherAccount.username = otherTeacherUser.email;
 			otherTeacherUser.discoverable = true;
 			const room = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
