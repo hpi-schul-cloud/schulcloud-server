@@ -101,18 +101,6 @@ describe('Registration', () => {
 
 	describe('addRoomId', () => {
 		describe('When room is added to the registration', () => {
-			/*
-			const setup = () => {
-				const registration = registrationFactory.build({ roomIds: [] });
-				const roomId = new ObjectId().toHexString();
-
-				return {
-					registration,
-					roomId,
-				};
-			};
-			*/
-
 			it('should add the room to the roomIds', () => {
 				const testRoomId = new ObjectId().toHexString();
 				const { registration, roomId } = setup([testRoomId]);
