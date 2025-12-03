@@ -264,7 +264,7 @@ export class RoomUc {
 			const foundUserId = existingAccounts[0].userId;
 			const user = await this.userService.findById(foundUserId);
 			this.checkUserIsExternalPerson(user);
-			await this.checkUserIsAlreadyMemberOfRoom(roomId, foundUserId);
+			await this.checkUserNotAlreadyMemberOfRoom(roomId, foundUserId);
 			const roleName = await this.roomMembershipService.addMembersToRoom(roomId, [foundUserId]);
 			return roleName;
 		}
@@ -380,7 +380,7 @@ export class RoomUc {
 		}
 	}
 
-	private async checkUserIsAlreadyMemberOfRoom(roomId: EntityId, userId: EntityId): Promise<void> {
+	private async checkUserNotAlreadyMemberOfRoom(roomId: EntityId, userId: EntityId): Promise<void> {
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const isAlreadyMember = roomMembershipAuthorizable.members.some((member) => member.userId === userId);
 		if (isAlreadyMember) {
