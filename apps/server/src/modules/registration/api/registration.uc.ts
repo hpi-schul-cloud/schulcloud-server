@@ -31,10 +31,10 @@ export class RegistrationUc {
 		return registration;
 	}
 
-	public async getSingleRegistrationByHash(registrationHash: string): Promise<Registration> {
+	public async getSingleRegistrationBySecret(registrationSecret: string): Promise<Registration> {
 		this.registrationFeatureService.checkFeatureRegistrationEnabled();
 
-		const registration = await this.registrationService.getSingleRegistrationByHash(registrationHash);
+		const registration = await this.registrationService.getSingleRegistrationBySecret(registrationSecret);
 
 		return registration;
 	}

@@ -17,7 +17,7 @@ import { RegistrationMapper } from './mapper/registration.mapper';
 import { RegistrationItemResponse } from './dto/response/registration-item.response';
 import { RegistrationUc } from './registration.uc';
 import { CreateOrUpdateRegistrationBodyParams } from './dto/request/create-registration.body.params';
-import { RegistrationByHashUrlParams } from './dto/request/registration-by-hash.url.params';
+import { RegistrationBySecretUrlParams } from './dto/request/registration-by-secret.url.params';
 import { RegistrationByRoomIdUrlParams } from './dto/request/registration-by-room-id.url.params';
 import { RegistrationListResponse } from './dto/response/registration-list.response';
 
@@ -52,8 +52,8 @@ export class RegistrationController {
 		return response;
 	}
 
-	@Get('/by-hash/:registrationHash')
-	@ApiOperation({ summary: 'Get a registration by its hash' })
+	@Get('/by-secret/:registrationSecret')
+	@ApiOperation({ summary: 'Get a registration by its secret' })
 	@ApiResponse({
 		status: HttpStatus.OK,
 		description: 'Returns the details of a registration',
@@ -66,8 +66,8 @@ export class RegistrationController {
 	})
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	public async getByHash(@Param() urlParams: RegistrationByHashUrlParams): Promise<RegistrationItemResponse> {
-		const registration = await this.registrationUc.getSingleRegistrationByHash(urlParams.registrationHash);
+	public async getBySecret(@Param() urlParams: RegistrationBySecretUrlParams): Promise<RegistrationItemResponse> {
+		const registration = await this.registrationUc.getSingleRegistrationBySecret(urlParams.registrationSecret);
 
 		const response = RegistrationMapper.mapToRegistrationItemResponse(registration);
 

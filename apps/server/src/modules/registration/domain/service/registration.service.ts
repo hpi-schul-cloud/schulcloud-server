@@ -32,8 +32,8 @@ export class RegistrationService {
 		return registrationResult;
 	}
 
-	public async getSingleRegistrationByHash(registrationHash: string): Promise<Registration> {
-		const registration = await this.registrationRepo.findByHash(registrationHash);
+	public async getSingleRegistrationBySecret(registrationSecret: string): Promise<Registration> {
+		const registration = await this.registrationRepo.findBySecret(registrationSecret);
 
 		return registration;
 	}
@@ -46,7 +46,6 @@ export class RegistrationService {
 
 	public async sendRegistrationMail(registration: Registration): Promise<void> {
 		const registrationMail = registration.generateRegistrationMail();
-		// hmm?
 		await this.mailService.send(registrationMail);
 	}
 

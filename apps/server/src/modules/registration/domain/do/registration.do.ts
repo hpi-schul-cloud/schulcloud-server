@@ -106,10 +106,10 @@ export class Registration extends DomainObject<RegistrationProps> {
 		return completeMail;
 	}
 
-	private generateRegistrationLink(hash: string): string {
+	private generateRegistrationLink(secret: string): string {
 		const hostUrl = Configuration.get('HOST') as string;
 		const baseRegistrationUrl = `${hostUrl}/registration-external-members/`;
-		const registrationLink = `${baseRegistrationUrl}?registrationHash=${hash}`;
+		const registrationLink = `${baseRegistrationUrl}?registrationSecret=${secret}`;
 
 		return registrationLink;
 	}

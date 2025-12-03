@@ -141,16 +141,16 @@ describe('RegistrationService', () => {
 		it('should call repo to get registration by hash', async () => {
 			const hash = 'someRandomHash';
 
-			await service.getSingleRegistrationByHash(hash);
+			await service.getSingleRegistrationBySecret(hash);
 
-			expect(registrationRepo.findByHash).toHaveBeenCalledWith(hash);
+			expect(registrationRepo.findBySecret).toHaveBeenCalledWith(hash);
 		});
 
 		it('should return registration', async () => {
 			const registration = registrationFactory.build();
-			registrationRepo.findByHash.mockResolvedValue(registration);
+			registrationRepo.findBySecret.mockResolvedValue(registration);
 
-			const result = await service.getSingleRegistrationByHash('someRandomHash');
+			const result = await service.getSingleRegistrationBySecret('someRandomHash');
 
 			expect(result).toBe(registration);
 		});

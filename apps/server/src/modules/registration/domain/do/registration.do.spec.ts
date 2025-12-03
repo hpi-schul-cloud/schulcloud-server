@@ -84,7 +84,7 @@ describe('Registration', () => {
 		expect(registration.roomIds).toEqual([roomId]);
 	});
 
-	it('should get registrationHash', () => {
+	it('should get registrationSescret', () => {
 		const { registration } = setup();
 		expect(registration.registrationSecret).toBe('someValue');
 	});
