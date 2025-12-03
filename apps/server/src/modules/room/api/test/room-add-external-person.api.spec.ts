@@ -211,15 +211,17 @@ describe('Room Controller (API)', () => {
 			});
 
 			describe('when adding a user with invalid double account (email exists multiple times)', () => {
-				it('should throw a 500 error', async () => {
-					const { loggedInClient, room, externalPersonUser } = await setupRoomWithMembers();
-
-					// Create a second account with the same email
+				const createDuplicateAccount = async (email: string) => {
 					const { account: duplicateAccount } = UserAndAccountTestFactory.buildByRole('externalPerson', {
-						email: externalPersonUser.email,
-						username: externalPersonUser.email,
+						email,
+						username: email,
 					});
 					await em.persistAndFlush(duplicateAccount);
+				};
+
+				it('should throw a 500 error', async () => {
+					const { loggedInClient, room, externalPersonUser } = await setupRoomWithMembers();
+					await createDuplicateAccount(externalPersonUser.email);
 
 					const response = await loggedInClient.patch(`/${room.id}/members/add-by-email`, {
 						email: externalPersonUser.email,
