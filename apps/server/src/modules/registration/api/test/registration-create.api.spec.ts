@@ -1,4 +1,12 @@
+import { MailService } from '@infra/mail';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { GroupEntityTypes } from '@modules/group/entity';
+import { groupEntityFactory } from '@modules/group/testing';
+import { registrationEntityFactory } from '@modules/registration/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { roomEntityFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -6,14 +14,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { RegistrationEntity } from '../../repo';
-import { CreateRegistrationBodyParams } from '../dto/request/create-registration.body.params';
-import { groupEntityFactory } from '@modules/group/testing';
-import { GroupEntityTypes } from '@modules/group/entity';
-import { roomEntityFactory } from '@modules/room/testing';
-import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
-import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
-import { schoolEntityFactory } from '@modules/school/testing';
-import { registrationEntityFactory } from '@modules/registration/testing';
+import { CreateOrUpdateRegistrationBodyParams } from '../dto/request/create-registration.body.params';
 
 describe('Registration Controller (API)', () => {
 	let app: INestApplication;
@@ -21,10 +22,19 @@ describe('Registration Controller (API)', () => {
 	let testApiClient: TestApiClient;
 	let config: ServerConfig;
 
+	let mailServiceSendMock: jest.Mock;
+
 	beforeAll(async () => {
+		mailServiceSendMock = jest.fn();
+
 		const moduleFixture = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(MailService)
+			.useValue({
+				send: mailServiceSendMock,
+			})
+			.compile();
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
@@ -35,6 +45,7 @@ describe('Registration Controller (API)', () => {
 	});
 
 	beforeEach(async () => {
+		mailServiceSendMock.mockClear();
 		await cleanupCollections(em);
 		config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = true;
 	});
@@ -76,7 +87,7 @@ describe('Registration Controller (API)', () => {
 			]);
 			em.clear();
 
-			const params: CreateRegistrationBodyParams = {
+			const params: CreateOrUpdateRegistrationBodyParams = {
 				email: 'test@example.com',
 				firstName: 'John',
 				lastName: 'Doe',
@@ -125,6 +136,15 @@ describe('Registration Controller (API)', () => {
 				});
 			});
 
+			it('should send a mail', async () => {
+				const { loggedInClient, params } = await setupForTeacher();
+
+				const response = await loggedInClient.post(undefined, params);
+				expect(response.status).toBe(HttpStatus.CREATED);
+
+				expect(mailServiceSendMock).toHaveBeenCalledTimes(1);
+			});
+
 			describe('when a registration with the given email already exists', () => {
 				it('should add the room to the existing registration and return it', async () => {
 					const { loggedInClient, params } = await setupForTeacher();
@@ -141,6 +161,28 @@ describe('Registration Controller (API)', () => {
 					expect(response.body).toMatchObject({
 						id: existingRegistration.id,
 						email: existingRegistration.email,
+					});
+				});
+
+				it('should replace the existing first and last name with the new ones', async () => {
+					const { loggedInClient, params } = await setupForTeacher();
+					const existingRegistration = registrationEntityFactory.build({
+						email: params.email,
+						firstName: 'OldFirstName',
+						lastName: 'OldLastName',
+						roomIds: [],
+					});
+
+					await em.persistAndFlush(existingRegistration);
+					em.clear();
+
+					const response = await loggedInClient.post(undefined, params);
+					expect(response.status).toBe(HttpStatus.CREATED);
+					expect(response.body).toMatchObject({
+						id: existingRegistration.id,
+						email: existingRegistration.email,
+						firstName: params.firstName,
+						lastName: params.lastName,
 					});
 				});
 			});

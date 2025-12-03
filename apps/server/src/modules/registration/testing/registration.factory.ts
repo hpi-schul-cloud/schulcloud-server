@@ -9,7 +9,7 @@ export const registrationFactory = BaseFactory.define<Registration, Registration
 		firstName: `FirstName${sequence}`,
 		lastName: `LastName${sequence}`,
 		roomIds: [new ObjectId().toHexString()],
-		registrationHash: `hash${sequence}`,
+		registrationSecret: `hash${sequence}`,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
