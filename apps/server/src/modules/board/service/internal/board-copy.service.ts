@@ -38,6 +38,7 @@ export type CopyCardParams = {
 	userId: EntityId;
 	copyTitle?: string;
 	targetSchoolId: EntityId;
+	destinationColumnId?: EntityId;
 };
 
 @Injectable()
@@ -88,17 +89,21 @@ export class BoardCopyService {
 	public async copyCard(params: CopyCardParams): Promise<CopyStatus> {
 		const originalCard = await this.boardNodeService.findByClassAndId(Card, params.originalCardId);
 
+		const { targetSchoolId } = params;
+
 		if (!originalCard.parentId) {
 			throw new UnprocessableEntityException('Card has no parent column');
 		}
-		const parentColumn = await this.boardNodeService.findByClassAndId(Column, originalCard.parentId);
+		const parentColumn = params.destinationColumnId
+			? await this.boardNodeService.findByClassAndId(Column, params.destinationColumnId)
+			: await this.boardNodeService.findByClassAndId(Column, originalCard.parentId);
 
 		const copyContext = new BoardNodeCopyContext({
 			sourceStorageLocationReference: params.sourceStorageLocationReference,
 			targetStorageLocationReference: params.targetStorageLocationReference,
 			userId: params.userId,
 			filesStorageClientAdapterService: this.filesStorageClientAdapterService,
-			targetSchoolId: params.targetSchoolId,
+			targetSchoolId,
 		});
 
 		const copyStatus = await this.boardNodeCopyService.copy(originalCard, copyContext);
@@ -106,9 +111,18 @@ export class BoardCopyService {
 		if (!isCard(copyStatus.copyEntity)) {
 			throw new InternalServerErrorException('copied entity is not a card');
 		}
+
+		if (params.copyTitle) {
+			copyStatus.copyEntity.title = params.copyTitle;
+		}
+
 		copyStatus.originalEntity = originalCard;
 
-		await this.boardNodeService.addToParent(parentColumn, copyStatus.copyEntity, originalCard.position + 1);
+		await this.boardNodeService.addToParent(
+			parentColumn,
+			copyStatus.copyEntity,
+			params.destinationColumnId ? undefined : originalCard.position + 1
+		);
 
 		return copyStatus;
 	}
