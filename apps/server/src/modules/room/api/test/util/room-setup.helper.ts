@@ -10,15 +10,15 @@ import { roomMembershipEntityFactory } from '@modules/room-membership/testing/ro
 import { RoomEntity } from '@modules/room/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { User } from '@modules/user/repo';
+import { User, UserProperties } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { Permission } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../../testing/room-entity.factory';
 import { RoomRolesTestFactory } from '../../../testing/room-roles.test.factory';
-import { Permission } from '@shared/domain/interface';
 
-export type SchoolRoleString = 'administrator' | 'teacher' | 'student';
+export type SchoolRoleString = 'administrator' | 'teacher' | 'student' | 'externalPerson';
 export type UserSetupCompact = [
 	string,
 	'sameSchool' | 'otherSchool',
@@ -163,16 +163,26 @@ export class RoomSetup {
 	private setupRoles = async (): Promise<void> => {
 		const administrator = roleFactory.buildWithId({
 			name: RoleName.ADMINISTRATOR,
-			permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS],
+			permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS, Permission.SCHOOL_LIST_ROOM_MEMBERS],
 		});
-		const teacher = roleFactory.buildWithId({ name: RoleName.TEACHER });
-		const student = roleFactory.buildWithId({ name: RoleName.STUDENT });
+		const teacher = roleFactory.buildWithId({
+			name: RoleName.TEACHER,
+			permissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS],
+		});
+		const student = roleFactory.buildWithId({
+			name: RoleName.STUDENT,
+			permissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS],
+		});
+		const externalPerson = roleFactory.buildWithId({
+			name: RoleName.EXTERNALPERSON,
+		});
 		const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 
 		await this.em.persistAndFlush([
 			administrator,
 			teacher,
 			student,
+			externalPerson,
 			roomEditorRole,
 			roomAdminRole,
 			roomOwnerRole,
@@ -184,6 +194,7 @@ export class RoomSetup {
 			administrator,
 			teacher,
 			student,
+			externalPerson,
 			roomeditor: roomEditorRole,
 			roomadmin: roomAdminRole,
 			roomowner: roomOwnerRole,
@@ -237,7 +248,7 @@ export class RoomSetup {
 					),
 				});
 			}
-			const data = {
+			const data: Partial<UserProperties> = {
 				school,
 				firstName: setup.name,
 				roles: setup.schoolRoles,

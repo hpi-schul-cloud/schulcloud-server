@@ -121,7 +121,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		systems: [],
 		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: SchoolPurpose.EXPERT,
+		purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
 		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.VIDEOCONFERENCE, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 	},
 	{

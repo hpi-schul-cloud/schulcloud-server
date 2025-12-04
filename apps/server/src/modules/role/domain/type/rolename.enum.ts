@@ -8,7 +8,7 @@ export enum RoleName {
 	DEMO = 'demo',
 	DEMOSTUDENT = 'demoStudent',
 	DEMOTEACHER = 'demoTeacher',
-	EXPERT = 'expert',
+	EXTERNALPERSON = 'externalPerson',
 	GUESTTEACHER = 'guestTeacher',
 	GUESTSTUDENT = 'guestStudent',
 	GUESTEXTERNALPERSON = 'guestExternalPerson',
@@ -33,7 +33,7 @@ export type IUserRoleName =
 	| RoleName.TEACHER
 	| RoleName.STUDENT
 	| RoleName.SUPERHERO
-	| RoleName.EXPERT
+	| RoleName.EXTERNALPERSON
 	| RoleName.DEMOSTUDENT
 	| RoleName.DEMOTEACHER;
 

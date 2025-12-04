@@ -417,7 +417,7 @@
 		"permissions": [
 			"DEFAULT_FILE_PERMISSIONS",
 			"INVITE_ADMINISTRATORS",
-			"INVITE_EXPERTS",
+			"INVITE_EXTERNAL_PERSONS",
 			"NEWS_EDIT",
 			"REMOVE_MEMBERS",
 			"RENAME_TEAM",
@@ -580,9 +580,9 @@
 		"_id": {
 			"$oid": "5bd0066a90a9ee0cb4947a9c"
 		},
-		"name": "expert",
+		"name": "externalPerson",
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
+			"$date": "2025-11-20T12:42:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -670,7 +670,8 @@
 			"ROOM_CHANGE_ROLES",
 			"ROOM_LIST_CONTENT",
 			"ROOM_LIST_DRAFTS",
-			"ROOM_MANAGE_VIDEOCONFERENCES"
+			"ROOM_MANAGE_VIDEOCONFERENCES",
+			"ROOM_COPY"
 		]
 	},
 	{
@@ -690,7 +691,8 @@
 			"ROOM_LEAVE_ROOM",
 			"ROOM_LIST_CONTENT",
 			"ROOM_LIST_DRAFTS",
-			"ROOM_MANAGE_VIDEOCONFERENCES"
+			"ROOM_MANAGE_VIDEOCONFERENCES",
+			"ROOM_COPY"
 		]
 	},
 	{
