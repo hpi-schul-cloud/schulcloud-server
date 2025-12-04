@@ -133,7 +133,7 @@ export class UserService {
 			[RoleName.STUDENT]: guestStudent,
 			[RoleName.TEACHER]: guestTeacher,
 			[RoleName.ADMINISTRATOR]: guestTeacher,
-			[RoleName.EXPERT]: guestExternalPerson,
+			[RoleName.EXTERNALPERSON]: guestExternalPerson,
 		};
 
 		users
