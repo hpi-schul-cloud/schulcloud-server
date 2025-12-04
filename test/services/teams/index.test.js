@@ -128,7 +128,7 @@ describe('Test team extern add services', () => {
 	let teacher;
 	let params;
 	let owner;
-	let expert;
+	let externalPerson;
 	let student;
 	let addService;
 
@@ -139,10 +139,10 @@ describe('Test team extern add services', () => {
 		server = await app.listen();
 		nestServices = await setupNestServices(app);
 
-		[owner, teacher, expert, student] = await Promise.all([
+		[owner, teacher, externalPerson, student] = await Promise.all([
 			createTestUser({ roles: ['teacher'] }),
 			createTestUser({ roles: ['teacher'] }),
-			createTestUser({ roles: ['expert'] }),
+			createTestUser({ roles: ['externalPerson'] }),
 			createTestUser({ roles: ['student'] }),
 		]);
 
@@ -179,7 +179,7 @@ describe('Test team extern add services', () => {
 
 	it('add new teamexpert', async () => {
 		const { _id: teamId } = await teamsHelper.create(owner);
-		const { email } = expert;
+		const { email } = externalPerson;
 		const data = {
 			role: 'teamexpert',
 			email,

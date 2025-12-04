@@ -387,7 +387,7 @@ describe('SchoolMikroOrmRepo', () => {
 					previousExternalId: 'new previousExternalId',
 					inMaintenanceSince: new Date(),
 					inUserMigration: true,
-					purpose: SchoolPurpose.EXPERT,
+					purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
 					logo: {
 						dataUrl: 'new logo_dataUrl',
 						name: 'new logo_name',

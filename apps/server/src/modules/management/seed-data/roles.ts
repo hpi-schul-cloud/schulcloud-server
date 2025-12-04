@@ -306,7 +306,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		permissions: [
 			Permission.DEFAULT_FILE_PERMISSIONS,
 			Permission.INVITE_ADMINISTRATORS,
-			Permission.INVITE_EXPERTS,
+			Permission.INVITE_EXTERNAL_PERSONS,
 			Permission.NEWS_EDIT,
 			Permission.REMOVE_MEMBERS,
 			Permission.RENAME_TEAM,
@@ -411,11 +411,11 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		roles: [RoleName.COURSETEACHER],
 		permissions: [],
 	},
-	expert: {
+	externalPerson: {
 		id: '5bd0066a90a9ee0cb4947a9c',
 		createdAt: '2017-01-01T00:06:37.148Z',
 		updatedAt: '2022-05-20T13:33:18.077Z',
-		name: RoleName.EXPERT,
+		name: RoleName.EXTERNALPERSON,
 		roles: [RoleName.USER],
 		permissions: [],
 	},
@@ -436,7 +436,7 @@ export const roleOrder = [
 	'courseTeacher',
 	'courseSubstitutionTeacher',
 	'courseAdministrator',
-	'expert',
+	'externalPerson',
 ];
 
 export function generateRole(localRoleSeedData?: { [key: string | RoleName]: SeedRoleProperties }) {
