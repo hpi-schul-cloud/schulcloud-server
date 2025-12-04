@@ -1107,6 +1107,11 @@
 			"default": "ticketsystem@dbildungscloud.de",
 			"description": "Email address used for contacting"
 		},
+		"SC_CONTACT_EMAIL_SUBJECT": {
+			"type": "string",
+			"default": "Bildungscloud Anfrage",
+			"description": "Email subject used for contacting"
+		},
 		"ACCESSIBILITY_REPORT_EMAIL": {
 			"type": "string",
 			"default": "dbildungscloud@dataport.de",
