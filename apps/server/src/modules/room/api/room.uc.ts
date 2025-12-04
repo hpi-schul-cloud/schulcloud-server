@@ -41,7 +41,7 @@ export class RoomUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly roomPermissionService: RoomPermissionService,
 		private readonly schoolService: SchoolService,
-		private readonly roomBoardService: RoomBoardService
+		private readonly roomBoardService: RoomBoardService,
 		private readonly accountService: AccountService
 	) {}
 
