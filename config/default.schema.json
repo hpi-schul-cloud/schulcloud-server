@@ -279,7 +279,8 @@
 					"default": 600000,
 					"description": "Timeout for incoming requests to the common cartridge service in milliseconds."
 				}
-			}
+			},
+			"default": {}
 		},
 		"FWU_CONTENT": {
 			"type": "object",
