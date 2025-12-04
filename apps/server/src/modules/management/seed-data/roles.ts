@@ -411,7 +411,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		roles: [RoleName.COURSETEACHER],
 		permissions: [],
 	},
-	expert: {
+	externalPerson: {
 		id: '5bd0066a90a9ee0cb4947a9c',
 		createdAt: '2017-01-01T00:06:37.148Z',
 		updatedAt: '2022-05-20T13:33:18.077Z',
@@ -436,7 +436,6 @@ export const roleOrder = [
 	'courseTeacher',
 	'courseSubstitutionTeacher',
 	'courseAdministrator',
-	'expert',
 	'externalPerson',
 ];
 
