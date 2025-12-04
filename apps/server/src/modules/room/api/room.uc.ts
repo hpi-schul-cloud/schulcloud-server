@@ -27,6 +27,7 @@ import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/c
 import { UserToAddToRoomNotFoundLoggableException } from './loggables/user-not-found.error.loggable';
 import { RoomPermissionService } from './service';
 import { RoomStats } from './type/room-stats.type';
+import { CantAssignRoomRoleToExternalPersonLoggableException } from './loggables/cant-assign-roomrole-to-external-person.error.loggable';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
@@ -52,10 +53,12 @@ export class RoomUc {
 			user.school.id,
 			findOptions.pagination
 		);
-		const roomIds = roomMembershipStats.data.flatMap((membership) => membership.roomId).filter((id) => id);
-		const rooms = await this.roomService.getRoomsByIds(roomIds);
+		const roomIds: EntityId[] = roomMembershipStats.data
+			.flatMap((membership) => membership.roomId)
+			.filter((id): id is EntityId => !!id);
+		const rooms: Room[] = await this.roomService.getRoomsByIds(roomIds);
 
-		const schoolIds = rooms.map((room) => room.schoolId);
+		const schoolIds: EntityId[] = rooms.map((room) => room.schoolId);
 		const schools = await this.schoolService.getSchoolsByIds(schoolIds);
 
 		const roomStats = this.mapRoomStats(roomMembershipStats, rooms, schools);
@@ -278,7 +281,7 @@ export class RoomUc {
 		currentUserId: EntityId,
 		roomId: EntityId,
 		userIds: Array<EntityId>,
-		roleName: RoleName
+		roleName: RoomRole
 	): Promise<void> {
 		const roomAuthorizable = await this.roomPermissionService.checkRoomAuthorizationByIds(
 			currentUserId,
@@ -286,6 +289,8 @@ export class RoomUc {
 			Action.write,
 			[Permission.ROOM_CHANGE_ROLES]
 		);
+
+		await this.checkRoomRolesForExternalPersons(userIds, roleName);
 		this.preventChangingOwnersRole(roomAuthorizable, userIds, currentUserId);
 		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, userIds, roleName);
 	}
@@ -312,6 +317,7 @@ export class RoomUc {
 			requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
 		});
 		this.checkUserIsNotStudent(ownershipContext);
+		await this.checkRoomRolesForExternalPersons([targetUserId], RoleName.ROOMOWNER);
 
 		if (roomOwner) {
 			await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [roomOwner.userId], RoleName.ROOMADMIN);
@@ -378,7 +384,7 @@ export class RoomUc {
 	}
 
 	private checkUserIsExternalPerson(user: UserDo): void {
-		if (!user.roles.find((role) => role.name === RoleName.EXPERT)) {
+		if (!user.roles.find((role) => role.name === RoleName.EXTERNALPERSON)) {
 			throw new BadRequestException('User is not an external person');
 		}
 	}
@@ -442,6 +448,23 @@ export class RoomUc {
 		);
 		if (owner && userIdsToChange.includes(owner.userId)) {
 			throw new CantChangeOwnersRoleLoggableException({ roomId: roomAuthorizable.roomId, currentUserId });
+		}
+	}
+
+	private async checkRoomRolesForExternalPersons(userIdsToChange: EntityId[], roleName: RoomRole): Promise<void> {
+		const userPromises = userIdsToChange.map((userId) => this.authorizationService.getUserWithPermissions(userId));
+		let users: User[] = [];
+		users = await Promise.all(userPromises);
+
+		for (const user of users) {
+			const isExternalPerson = user.roles.getItems().some((role) => role.name === RoleName.EXTERNALPERSON);
+			const isValidRoleForExternalPerson = [RoleName.ROOMVIEWER, RoleName.ROOMEDITOR].includes(roleName);
+			if (isExternalPerson && !isValidRoleForExternalPerson) {
+				throw new CantAssignRoomRoleToExternalPersonLoggableException({
+					memberUserId: user.id || 'unknown',
+					roomRole: roleName,
+				});
+			}
 		}
 	}
 
