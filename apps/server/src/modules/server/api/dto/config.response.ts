@@ -14,6 +14,9 @@ export class ConfigResponse {
 	SC_CONTACT_EMAIL: string;
 
 	@ApiProperty()
+	SC_CONTACT_EMAIL_SUBJECT: string;
+
+	@ApiProperty()
 	MIGRATION_END_GRACE_PERIOD_MS: number;
 
 	@ApiProperty()
@@ -256,6 +259,7 @@ export class ConfigResponse {
 	constructor(config: ServerConfig & VideoConferencePublicApiConfig & BoardContextPublicApiConfig) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
+		this.SC_CONTACT_EMAIL_SUBJECT = config.SC_CONTACT_EMAIL_SUBJECT;
 		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN;
 		this.ALERT_STATUS_URL = config.ALERT_STATUS_URL;
 		this.CALENDAR_SERVICE_ENABLED = config.CALENDAR_SERVICE_ENABLED;
