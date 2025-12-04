@@ -1,7 +1,7 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Mail } from '@infra/mail';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 export interface RegistrationProps extends AuthorizableObject {
 	id: EntityId;
@@ -91,8 +91,8 @@ export class Registration extends DomainObject<RegistrationProps> {
 	}
 
 	public generateRegistrationMail(): Mail {
-		const registrationLink = this.generateRegistrationLink(this.registrationSecret);
-		const mailContent = this.generateRegistrationMailContent(this.firstName, this.lastName, registrationLink);
+		const registrationLink = this.generateRegistrationLink();
+		const mailContent = this.generateRegistrationMailContent(registrationLink);
 		const senderAddress = Configuration.get('SMTP_SENDER') as string;
 		const completeMail: Mail = {
 			mail: {
@@ -106,18 +106,18 @@ export class Registration extends DomainObject<RegistrationProps> {
 		return completeMail;
 	}
 
-	private generateRegistrationLink(secret: string): string {
+	private generateRegistrationLink(): string {
 		const hostUrl = Configuration.get('HOST') as string;
 		const baseRegistrationUrl = `${hostUrl}/registration-external-members/`;
-		const registrationLink = `${baseRegistrationUrl}?registrationSecret=${secret}`;
+		const registrationLink = `${baseRegistrationUrl}?registrationSecret=${this.registrationSecret}`;
 
 		return registrationLink;
 	}
 
-	private generateRegistrationMailContent(firstName: string, lastName: string, registrationLink: string): MailContent {
+	private generateRegistrationMailContent(registrationLink: string): MailContent {
 		const mailContent = {
-			text: `Einladung für ${firstName} ${lastName} bitte nutze folgenden Link zur Registrierung: ${registrationLink}`,
-			html: `<p>Einladung für ${firstName} ${lastName}</p><p>Bitte nutze folgenden Link zur Registrierung: <a href="${registrationLink}">${registrationLink}</a></p>`,
+			text: `Einladung für ${this.firstName} ${this.lastName} bitte nutze folgenden Link zur Registrierung: ${registrationLink}`,
+			html: `<p>Einladung für ${this.firstName} ${this.lastName}</p><p>Bitte nutze folgenden Link zur Registrierung: <a href="${registrationLink}">${registrationLink}</a></p>`,
 		};
 		return mailContent;
 	}
