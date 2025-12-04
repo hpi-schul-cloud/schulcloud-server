@@ -67,6 +67,18 @@ export class UserAndAccountTestFactory {
 		return { teacherAccount: account, teacherUser: user };
 	}
 
+	public static buildExpert(
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): { expertAccount: AccountEntity; expertUser: User } {
+		const user = userFactory
+			.asExternalPerson(additionalPermissions)
+			.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+		const account = UserAndAccountTestFactory.buildAccount(user, params);
+
+		return { expertAccount: account, expertUser: user };
+	}
+
 	public static buildAdmin(
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
