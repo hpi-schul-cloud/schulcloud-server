@@ -64,12 +64,12 @@ class Add {
 
 	/**
 	 * @private
-	 * @return {Promise::bsonId||stringId} Expert school id.
+	 * @return {Promise::bsonId||stringId} External person school id.
 	 */
-	_getExpertSchoolId() {
+	_getExternalPersonSchoolId() {
 		return this.app
 			.service('schools')
-			.find({ query: { purpose: 'expert' } })
+			.find({ query: { purpose: 'external_person_school' } })
 			.then((schools) => extractOne(schools, '_id').then((id) => bsonIdToString(id)))
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Abfragen der Schule.', err);
@@ -78,12 +78,12 @@ class Add {
 
 	/**
 	 * @private
-	 * @return {Promise::bsonId||stringId} Expert role id.
+	 * @return {Promise::bsonId||stringId} External Person role id.
 	 */
-	_getExpertRoleId() {
+	_getExternalPersonRoleId() {
 		return this.app
 			.service('roles')
-			.find({ query: { name: 'expert' } })
+			.find({ query: { name: 'externalPerson' } })
 			.then((roles) => extractOne(roles, '_id').then((id) => bsonIdToString(id)))
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Abfragen der Rolle.', err);
@@ -169,9 +169,9 @@ class Add {
 				// eslint-disable-next-line no-underscore-dangle
 				this._getUsersByEmail(email, school),
 				// eslint-disable-next-line no-underscore-dangle
-				this._getExpertSchoolId(),
+				this._getExternalPersonSchoolId(),
 				// eslint-disable-next-line no-underscore-dangle
-				this._getExpertRoleId(),
+				this._getExternalPersonRoleId(),
 			]);
 			let isUserCreated = false;
 			let isResend = false;
@@ -330,15 +330,15 @@ class Add {
 		const invalidTeacherInvitation =
 			userRoleName === 'teamadministrator' && !['administrator', 'teacher'].includes(user.roles[0].name);
 
-		const invalidExpertInvitation =
-			userRoleName === 'teamexpert' && !['expert'].includes(user.roles[0].name) && !(isUserCreated === true);
+		const invalidExternalPersonInvitation =
+			userRoleName === 'teamexpert' && !['externalPerson'].includes(user.roles[0].name) && !(isUserCreated === true);
 
 		// invite per email should only work for expected users
 		if (invalidTeacherInvitation) {
 			throw new BadRequest('Can not resolve the user information.');
 		}
-		if (invalidExpertInvitation) {
-			throw new BadRequest('Can not resolve the expert user information.');
+		if (invalidExternalPersonInvitation) {
+			throw new BadRequest('Can not resolve the external person user information.');
 		}
 
 		// if not already in invite list
