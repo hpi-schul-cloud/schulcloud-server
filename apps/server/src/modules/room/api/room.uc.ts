@@ -268,6 +268,7 @@ export class RoomUc {
 			this.checkUserIsExternalPerson(user);
 			await this.checkUserNotAlreadyMemberOfRoom(roomId, foundUserId);
 			const roleName = await this.roomMembershipService.addMembersToRoom(roomId, [foundUserId]);
+			await this.roomService.sendAddedToRoomMail(email, roomId);
 			return roleName;
 		}
 		throw new NotFoundException('No user found with the provided email');

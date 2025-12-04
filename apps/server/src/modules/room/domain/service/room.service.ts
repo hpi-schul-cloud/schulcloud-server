@@ -1,3 +1,5 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Mail, MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
@@ -8,9 +10,18 @@ import { Room, RoomCreateProps, RoomProps, RoomUpdateProps } from '../do';
 import { RoomDeletedEvent } from '../events/room-deleted.event';
 import { RoomFeatures } from '../type';
 
+type MailContent = {
+	text: string;
+	html: string;
+};
+
 @Injectable()
 export class RoomService {
-	constructor(private readonly roomRepo: RoomRepo, private readonly eventBus: EventBus) {}
+	constructor(
+		private readonly roomRepo: RoomRepo,
+		private readonly eventBus: EventBus,
+		private readonly mailService: MailService
+	) {}
 
 	public async getRoomsByIds(roomIds: EntityId[]): Promise<Room[]> {
 		const rooms = await this.roomRepo.findByIds(roomIds);
@@ -79,11 +90,49 @@ export class RoomService {
 		return room.features.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE);
 	}
 
+	public async sendAddedToRoomMail(email: string, roomId: string): Promise<void> {
+		const addedToRoomMail = this.generateAddedToRoomMail(email, roomId);
+		await this.mailService.send(addedToRoomMail);
+	}
+
 	private validateTimeSpan(props: RoomCreateProps | RoomUpdateProps, roomId: string): void {
 		if (props.startDate != null && props.endDate != null && props.startDate > props.endDate) {
 			throw new ValidationError(
 				`Invalid room timespan. Start date '${props.startDate.toISOString()}' has to be before end date: '${props.endDate.toISOString()}'. Room id='${roomId}'`
 			);
 		}
+	}
+
+	private generateAddedToRoomMail(email: string, roomId: string): Mail {
+		const roomLink = this.generateRoomLink(roomId);
+		const mailContent = this.generateAddedToRoomMailContent(roomLink);
+		const senderAddress = Configuration.get('SMTP_SENDER') as string;
+		const completeMail: Mail = {
+			mail: {
+				subject: 'Raumbeitritt-Benachrichtigung',
+				htmlContent: mailContent.html,
+				plainTextContent: mailContent.text,
+			},
+			recipients: [email],
+			from: senderAddress,
+		};
+		return completeMail;
+	}
+
+	private generateRoomLink(roomId: string): string {
+		const hostUrl = Configuration.get('HOST') as string;
+		const baseRoomUrl = `${hostUrl}/rooms/`;
+		const roomLink = baseRoomUrl + roomId;
+
+		return roomLink;
+	}
+
+	private generateAddedToRoomMailContent(roomLink: string): MailContent {
+		// add room name here?
+		const mailContent = {
+			text: `Zum Raum hinzugefügt, bitte nutze folgenden Link um darauf zuzugreifen: ${roomLink}`,
+			html: `<p>Zum Raum hinzugefügt</p><p>Bitte nutze folgenden Link um darauf zuzugreifen: <a href="${roomLink}">${roomLink}</a></p>`,
+		};
+		return mailContent;
 	}
 }

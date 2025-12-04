@@ -1,3 +1,4 @@
+import { ServerMailModule } from '@modules/serverDynamicModuleWrappers/server-mail.module';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { RoomArrangementService, RoomContentService, RoomService } from './domain/service';
@@ -11,7 +12,7 @@ import {
 } from './repo';
 
 @Module({
-	imports: [CqrsModule],
+	imports: [CqrsModule, ServerMailModule],
 	providers: [
 		RoomRepo,
 		RoomService,
