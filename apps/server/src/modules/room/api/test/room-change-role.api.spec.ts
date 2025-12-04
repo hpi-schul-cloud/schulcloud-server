@@ -229,7 +229,7 @@ describe('Room Controller (API)', () => {
 			});
 
 			describe('when some of the users do not exist', () => {
-				it('should return a 400 error', async () => {
+				it('should return a 404 error', async () => {
 					const { loggedInClient, room, targetUser } = await setupRoomWithMembers();
 
 					const nonExistingUserId = new ObjectId().toHexString();
@@ -238,7 +238,7 @@ describe('Room Controller (API)', () => {
 						roleName: RoleName.ROOMEDITOR,
 					});
 
-					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+					expect(response.status).toBe(HttpStatus.NOT_FOUND);
 				});
 			});
 		});
