@@ -22,6 +22,7 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		scope.byFederalState(query.federalStateId);
 		scope.byExternalId(query.externalId);
 		scope.bySystemId(query.systemId);
+		scope.byPurpose(query.purpose);
 
 		const findOptions = this.mapToMikroOrmOptions(options, ['federalState', 'currentYear']);
 

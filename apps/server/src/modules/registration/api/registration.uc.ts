@@ -1,6 +1,7 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { RoomMembershipService } from '@modules/room-membership';
 import { Injectable } from '@nestjs/common';
+import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Registration, RegistrationService } from '../domain';
 import { CreateOrUpdateRegistrationBodyParams } from './dto/request/create-registration.body.params';
@@ -49,5 +50,17 @@ export class RegistrationUc {
 		const registrations = await this.registrationService.getRegistrationsByRoomId(roomId);
 
 		return registrations;
+	}
+
+	public async completeRegistration(
+		registrationSecret: string,
+		language: LanguageType,
+		password: string
+	): Promise<void> {
+		this.registrationFeatureService.checkFeatureRegistrationEnabled();
+
+		const registration = await this.registrationService.getSingleRegistrationBySecret(registrationSecret);
+
+		await this.registrationService.completeRegistration(registration, language, password);
 	}
 }

@@ -13,13 +13,14 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
-import { RegistrationMapper } from './mapper/registration.mapper';
-import { RegistrationItemResponse } from './dto/response/registration-item.response';
-import { RegistrationUc } from './registration.uc';
+import { CompleteRegistrationBodyParams } from './dto/request/complete-registration.body.params';
 import { CreateOrUpdateRegistrationBodyParams } from './dto/request/create-registration.body.params';
-import { RegistrationBySecretUrlParams } from './dto/request/registration-by-secret.url.params';
 import { RegistrationByRoomIdUrlParams } from './dto/request/registration-by-room-id.url.params';
+import { RegistrationBySecretUrlParams } from './dto/request/registration-by-secret.url.params';
+import { RegistrationItemResponse } from './dto/response/registration-item.response';
 import { RegistrationListResponse } from './dto/response/registration-list.response';
+import { RegistrationMapper } from './mapper/registration.mapper';
+import { RegistrationUc } from './registration.uc';
 
 @ApiTags('Registration')
 @Controller('registrations')
@@ -72,6 +73,27 @@ export class RegistrationController {
 		const response = RegistrationMapper.mapToRegistrationItemResponse(registration);
 
 		return response;
+	}
+
+	@Post('/by-secret/:registrationSecret/complete')
+	@ApiOperation({ summary: 'Complete a registration by its secret' })
+	@ApiResponse({ status: HttpStatus.OK })
+	@ApiResponse({
+		status: HttpStatus.NOT_FOUND,
+		description: 'Invalid registration hash',
+		type: NotFoundException,
+	})
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async completeRegistration(
+		@Param() urlParams: RegistrationBySecretUrlParams,
+		@Body() bodyParams: CompleteRegistrationBodyParams
+	): Promise<void> {
+		await this.registrationUc.completeRegistration(
+			urlParams.registrationSecret,
+			bodyParams.language,
+			bodyParams.password
+		);
 	}
 
 	@Get('/by-room/:roomId')
