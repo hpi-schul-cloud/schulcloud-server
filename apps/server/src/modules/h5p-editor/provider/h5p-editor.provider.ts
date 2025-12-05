@@ -1,6 +1,7 @@
 import { cacheImplementations, H5PEditor } from '@lumieducation/h5p-server';
 import CachedLibraryStorage from '@lumieducation/h5p-server/build/src/implementation/cache/CachedLibraryStorage';
 import { IH5PEditorOptions, ITranslationFunction } from '@lumieducation/h5p-server/build/src/types';
+import SvgSanitizer from '@lumieducation/h5p-svg-sanitizer';
 import { Cache } from 'cache-manager';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage, Translator } from '../service';
 import { h5pConfig, h5pUrlGenerator } from '../service/config/h5p-service-config';
@@ -26,6 +27,7 @@ export const H5PEditorProvider = {
 			enableHubLocalization: true,
 			enableLibraryNameLocalization: true,
 			permissionSystem,
+			fileSanitizers: [new SvgSanitizer()],
 		};
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const translationFunction: ITranslationFunction = await Translator.translate();

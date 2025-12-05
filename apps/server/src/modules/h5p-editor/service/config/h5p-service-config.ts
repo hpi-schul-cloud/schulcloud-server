@@ -9,6 +9,8 @@ h5pConfig.baseUrl = '/api/v3/h5p-editor';
 h5pConfig.ajaxUrl = '/ajax';
 h5pConfig.contentFilesUrl = '/content';
 h5pConfig.contentUserDataUrl = '/contentUserData';
+h5pConfig.contentWhitelist =
+	'svg png jpg jpeg gif bmp tif tiff otf webm mp4 ogg mp3 m4a wav txt pdf rtf doc docx xls xlsx ppt pptx odt ods odp csv md textile vtt webvtt ';
 
 h5pConfig.librariesUrl = '/libraries';
 h5pConfig.paramsUrl = '/params';
