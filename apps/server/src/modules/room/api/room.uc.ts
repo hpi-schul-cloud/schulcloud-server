@@ -25,7 +25,7 @@ import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-r
 import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pass-ownership-to-student.error.loggable';
 import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
 import { UserToAddToRoomNotFoundLoggableException } from './loggables/user-not-found.error.loggable';
-import { RoomPermissionService } from './service';
+import { RoomBoardService, RoomPermissionService } from './service';
 import { RoomStats } from './type/room-stats.type';
 import { CantAssignRoomRoleToExternalPersonLoggableException } from './loggables/cant-assign-roomrole-to-external-person.error.loggable';
 
@@ -41,6 +41,7 @@ export class RoomUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly roomPermissionService: RoomPermissionService,
 		private readonly schoolService: SchoolService,
+		private readonly roomBoardService: RoomBoardService,
 		private readonly accountService: AccountService
 	) {}
 
@@ -182,6 +183,8 @@ export class RoomUc {
 		}
 
 		await this.roomService.deleteRoom(room);
+		await this.roomMembershipService.deleteRoomMembership(roomId);
+		await this.roomBoardService.deleteRoomContent(roomId);
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {

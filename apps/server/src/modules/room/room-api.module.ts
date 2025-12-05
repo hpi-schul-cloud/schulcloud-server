@@ -20,7 +20,6 @@ import {
 	RoomBoardService,
 	RoomPermissionService,
 } from './api/service';
-import { RoomDeletedHandler } from './api/service/room-deleted.handler';
 import { RoomModule } from './room.module';
 
 @Module({
@@ -46,7 +45,6 @@ import { RoomModule } from './room.module';
 		CopyRoomStep,
 		CopyRoomContentStep,
 		RoomPermissionService,
-		RoomDeletedHandler,
 		RoomBoardCreatedHandler,
 		RoomBoardDeletedHandler,
 		RoomBoardService,
