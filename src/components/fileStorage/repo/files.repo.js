@@ -37,7 +37,13 @@ const getPersonalFilesByUserId = async (userId) => {
 const removeFileById = async (id) => {
 	const file = await getFileById(id);
 	if (file.isDirectory) {
-		await FileModel.delete({ parent: id }).lean().exec();
+		// Recursive deletion: First find all child files and directories
+		const children = await FileModel.find({ parent: id }).lean().exec();
+
+		// Recursively delete each child
+		for (const child of children) {
+			await removeFileById(child._id);
+		}
 	}
 	await FileModel.deleteById(id).lean().exec();
 };

@@ -117,6 +117,52 @@ describe('files.repo.integration.test', () => {
 				const directoryAfterDeletion = await FileModel.findOneWithDeleted({ _id: directory._id });
 				expect(directoryAfterDeletion.deleted).to.be.true;
 			});
+
+			it('should recursively remove deeply nested directory structures', async () => {
+				const fileOwnerId = new ObjectId();
+				// Create nested structure: rootDir -> subDir1 -> subDir2 -> files
+				const rootDir = await fileTestUtils.create({ owner: fileOwnerId, isDirectory: true });
+				const subDir1 = await fileTestUtils.create({
+					owner: fileOwnerId,
+					isDirectory: true,
+					parent: rootDir._id,
+				});
+				const subDir2 = await fileTestUtils.create({
+					owner: fileOwnerId,
+					isDirectory: true,
+					parent: subDir1._id,
+				});
+				const deepFile1 = await fileTestUtils.create({
+					owner: fileOwnerId,
+					parent: subDir2._id,
+				});
+				const deepFile2 = await fileTestUtils.create({
+					owner: fileOwnerId,
+					parent: subDir1._id,
+				});
+				const rootFile = await fileTestUtils.create({
+					owner: fileOwnerId,
+					parent: rootDir._id,
+				});
+
+				// Verify all files exist before deletion
+				const allItems = [rootDir, subDir1, subDir2, deepFile1, deepFile2, rootFile];
+				for (const item of allItems) {
+					// eslint-disable-next-line no-await-in-loop
+					const itemBeforeDeletion = await FileModel.findOneWithDeleted({ _id: item._id });
+					expect(itemBeforeDeletion.deleted).to.be.false;
+				}
+
+				// Delete the root directory
+				await removeFileById(rootDir._id);
+
+				// Verify all nested items are deleted
+				for (const item of allItems) {
+					// eslint-disable-next-line no-await-in-loop
+					const itemAfterDeletion = await FileModel.findOneWithDeleted({ _id: item._id });
+					expect(itemAfterDeletion.deleted).to.be.true;
+				}
+			});
 		});
 	});
 
