@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Mail, MailService } from '@infra/mail';
+import { Mail, MailService, PlainTextMailContent } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
@@ -9,11 +9,6 @@ import { RoomRepo } from '../../repo';
 import { Room, RoomCreateProps, RoomProps, RoomUpdateProps } from '../do';
 import { RoomDeletedEvent } from '../events/room-deleted.event';
 import { RoomFeatures } from '../type';
-
-type MailContent = {
-	text: string;
-	html: string;
-};
 
 @Injectable()
 export class RoomService {
@@ -90,9 +85,9 @@ export class RoomService {
 		return room.features.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE);
 	}
 
-	public async sendAddedToRoomMail(email: string, roomId: string): Promise<void> {
-		const addedToRoomMail = this.generateAddedToRoomMail(email, roomId);
-		await this.mailService.send(addedToRoomMail);
+	public async sendRoomWelcomeMail(email: string, roomId: string): Promise<void> {
+		const roomWelcomeMail = await this.generateRoomWelcomeMail(email, roomId);
+		await this.mailService.send(roomWelcomeMail);
 	}
 
 	private validateTimeSpan(props: RoomCreateProps | RoomUpdateProps, roomId: string): void {
@@ -103,16 +98,13 @@ export class RoomService {
 		}
 	}
 
-	private generateAddedToRoomMail(email: string, roomId: string): Mail {
+	private async generateRoomWelcomeMail(email: string, roomId: string): Promise<Mail> {
 		const roomLink = this.generateRoomLink(roomId);
-		const mailContent = this.generateAddedToRoomMailContent(roomLink);
+		const roomName = await this.getRoomName(roomId);
+		const mailContent = this.generateRoomWelcomeMailContent(roomName, roomLink);
 		const senderAddress = Configuration.get('SMTP_SENDER') as string;
 		const completeMail: Mail = {
-			mail: {
-				subject: 'Raumbeitritt-Benachrichtigung',
-				htmlContent: mailContent.html,
-				plainTextContent: mailContent.text,
-			},
+			mail: mailContent,
 			recipients: [email],
 			from: senderAddress,
 		};
@@ -127,12 +119,18 @@ export class RoomService {
 		return roomLink;
 	}
 
-	private generateAddedToRoomMailContent(roomLink: string): MailContent {
-		// add room name here?
+	private generateRoomWelcomeMailContent(roomName: string, roomLink: string): PlainTextMailContent {
 		const mailContent = {
-			text: `Zum Raum hinzugefügt, bitte nutze folgenden Link um darauf zuzugreifen: ${roomLink}`,
-			html: `<p>Zum Raum hinzugefügt</p><p>Bitte nutze folgenden Link um darauf zuzugreifen: <a href="${roomLink}">${roomLink}</a></p>`,
+			subject: 'Raumbeitritt-Benachrichtigung',
+			plainTextContent: `Benachrichtigung über Beitritt zum Raum ${roomName}, bitte nutze folgenden Link um darauf zuzugreifen: ${roomLink}`,
+			htmlContent: `<p>Benachrichtigung über Beitritt zum Raum ${roomName}</p><p>Bitte nutze folgenden Link um darauf zuzugreifen: <a href="${roomLink}">${roomLink}</a></p>`,
 		};
 		return mailContent;
+	}
+
+	private async getRoomName(roomId: string): Promise<string> {
+		const room = await this.roomRepo.findById(roomId);
+		const roomName = room.getRoomName();
+		return roomName;
 	}
 }
