@@ -12,12 +12,12 @@ class RegistrationSchoolService {
 	/**
 	 * singleton expertSchoolId
 	 */
-	async getExpertSchoolId() {
+	async getExternalPersonSchoolId() {
 		if (!this.expertSchoolId) {
 			try {
 				this.expertSchoolId = await this.app
 					.service('schools')
-					.find({ query: { purpose: 'expert' } })
+					.find({ query: { purpose: 'external_person_school' } })
 					.then((schools) => schools.data[0]._id);
 			} catch (err) {
 				throw new GeneralError('Experte: Fehler beim Abfragen der Expertenschule.', err);
@@ -28,7 +28,7 @@ class RegistrationSchoolService {
 
 	/**
 	 * returns the school for given Id. For a schoolId it returns the school itself,
-	 * for a classId the school the class belongs to, for a teamId the expert school.
+	 * for a classId the school the class belongs to, for a teamId the externalPersonSchool.
 	 * @param {ObjectId} id school, class, or team id.
 	 * @param {Object} params reserved for future use.
 	 */
@@ -52,7 +52,7 @@ class RegistrationSchoolService {
 		if (schoolResponse) response = schoolResponse;
 		if (classResponse) response = this.app.service('schools').get(classResponse.schoolId);
 		if (teamResponse) {
-			const expertSchoolId = await this.getExpertSchoolId();
+			const expertSchoolId = await this.getExternalPersonSchoolId();
 			response = this.app.service('schools').get(expertSchoolId);
 		}
 		if (!response) {

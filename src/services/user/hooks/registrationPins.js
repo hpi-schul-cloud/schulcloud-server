@@ -40,7 +40,7 @@ PIN: ${pin}
 Mit Freundlichen Grüßen
 Ihr ${SC_TITLE}-Team`;
 	}
-	if (role === 'student' || role === 'employee' || role === 'expert') {
+	if (role === 'student' || role === 'employee' || role === 'externalPerson') {
 		return `Vielen Dank, dass du die ${SC_TITLE} nutzen möchtest.
 Bitte gib den folgenden Bestätigungscode im Registrierungsprozess ein,
 um deine Registrierung bei der ${SC_TITLE} abzuschließen:

@@ -794,7 +794,7 @@ const cleanUserIdsHook = (context) => {
 			cleanUserIdsFromTeam(team);
 		});
 	}
-}
+};
 
 /**
  * @afterHook
@@ -882,7 +882,7 @@ exports.beforeExtern = {
 		dataExist,
 		teamRolesToHook,
 		globalHooks.hasPermission('TEAM_INVITE_EXTERNAL'),
-		hasTeamPermission(['INVITE_EXPERTS', 'INVITE_ADMINISTRATORS']),
+		hasTeamPermission(['INVITE_EXTERNAL_PERSONS', 'INVITE_ADMINISTRATORS']),
 		filterToRelated(['userId', 'email', 'role'], 'data'),
 		globalHooks.blockDisposableEmail('email'),
 		isTeacherDirectlyImport,
