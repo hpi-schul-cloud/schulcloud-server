@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Mail } from '@infra/mail';
+import { Mail, PlainTextMailContent } from '@infra/mail';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 
@@ -19,11 +19,6 @@ export type RegistrationCreateProps = {
 	firstName: string;
 	lastName: string;
 	roomId: EntityId;
-};
-
-type MailContent = {
-	text: string;
-	html: string;
 };
 
 export class Registration extends DomainObject<RegistrationProps> {
@@ -95,11 +90,7 @@ export class Registration extends DomainObject<RegistrationProps> {
 		const mailContent = this.generateRegistrationMailContent(registrationLink);
 		const senderAddress = Configuration.get('SMTP_SENDER') as string;
 		const completeMail: Mail = {
-			mail: {
-				subject: 'Einladung Externe Person',
-				htmlContent: mailContent.html,
-				plainTextContent: mailContent.text,
-			},
+			mail: mailContent,
 			recipients: [this.email],
 			from: senderAddress,
 		};
@@ -114,10 +105,11 @@ export class Registration extends DomainObject<RegistrationProps> {
 		return registrationLink;
 	}
 
-	private generateRegistrationMailContent(registrationLink: string): MailContent {
+	private generateRegistrationMailContent(registrationLink: string): PlainTextMailContent {
 		const mailContent = {
-			text: `Einladung für ${this.firstName} ${this.lastName} bitte nutze folgenden Link zur Registrierung: ${registrationLink}`,
-			html: `<p>Einladung für ${this.firstName} ${this.lastName}</p><p>Bitte nutze folgenden Link zur Registrierung: <a href="${registrationLink}">${registrationLink}</a></p>`,
+			subject: 'Einladung Externe Person',
+			plainTextContent: `Einladung für ${this.firstName} ${this.lastName} bitte nutze folgenden Link zur Registrierung: ${registrationLink}`,
+			htmlContent: `<p>Einladung für ${this.firstName} ${this.lastName}</p><p>Bitte nutze folgenden Link zur Registrierung: <a href="${registrationLink}">${registrationLink}</a></p>`,
 		};
 		return mailContent;
 	}
