@@ -61,7 +61,7 @@ describe(`card move (api)`, () => {
 	};
 
 	describe('with valid user', () => {
-		it('should return status 204', async () => {
+		it('should return status 200', async () => {
 			const { loggedInClient, cardNode1, targetColumn } = await setup();
 
 			const params: MoveCardBodyParams = {
@@ -71,7 +71,7 @@ describe(`card move (api)`, () => {
 
 			const response = await loggedInClient.put(`${cardNode1.id}/position`, params);
 
-			expect(response.status).toEqual(204);
+			expect(response.status).toEqual(200);
 		});
 
 		it('should actually move the card', async () => {

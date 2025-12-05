@@ -40,6 +40,10 @@ export class RoomBoardService {
 	}
 
 	public async deleteRoomContent(roomId: EntityId): Promise<void> {
+		await this.columnBoardService.deleteByExternalReference({
+			type: BoardExternalReferenceType.Room,
+			id: roomId,
+		});
 		await this.roomContentService.deleteContent(roomId);
 	}
 
