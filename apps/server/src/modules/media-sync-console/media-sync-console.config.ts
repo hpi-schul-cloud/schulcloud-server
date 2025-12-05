@@ -16,6 +16,7 @@ export interface MediaSyncConsoleConfig
 
 const config: MediaSyncConsoleConfig = {
 	AES_KEY: Configuration.get('AES_KEY') as string,
+	LDAP_PASSWORD_ENCRYPTION_KEY: Configuration.get('LDAP_PASSWORD_ENCRYPTION_KEY') as string,
 	CTL_TOOLS_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
 	CTL_TOOLS_RELOAD_TIME_MS: Configuration.get('CTL_TOOLS_RELOAD_TIME_MS') as number,
 	CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: Configuration.get(
