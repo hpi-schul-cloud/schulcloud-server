@@ -1,12 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountService } from '@modules/account';
+import { RoleService } from '@modules/role';
+import { SchoolService } from '@modules/school/domain/service/school.service';
+import { UserService } from '@modules/user';
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { LanguageType } from '@shared/domain/interface';
 import { RegistrationRepo } from '../../repo';
 import { registrationFactory } from '../../testing/registration.factory';
 import { Registration, RegistrationCreateProps } from '../do';
 import { RegistrationService } from './registration.service';
-import { MailService } from '@infra/mail';
 
 describe('RegistrationService', () => {
 	let module: TestingModule;
@@ -22,8 +27,25 @@ describe('RegistrationService', () => {
 					useValue: createMock<RegistrationRepo>(),
 				},
 				{
+					provide: RoleService,
+					useValue: createMock<RoleService>(),
+				},
+				{
 					provide: MailService,
 					useValue: createMock<MailService>(),
+				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
+
+				{
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 			],
 		}).compile();
@@ -172,6 +194,20 @@ describe('RegistrationService', () => {
 			const result = await service.getRegistrationsByRoomId('someRandomRoomId');
 
 			expect(result).toBe(registrations);
+		});
+	});
+
+	describe('completeRegistration', () => {
+		it('should create user and account from registration', async () => {
+			const registration = registrationFactory.build();
+			const language = LanguageType.EN;
+			const password = 'SecurePassword123!';
+			registrationRepo.findBySecret.mockResolvedValue(registration);
+			const createUserSpy = jest.spyOn(service as any, 'createUser').mockResolvedValue(null);
+
+			await service.completeRegistration(registration, language, password);
+
+			expect(createUserSpy).toHaveBeenCalledWith(registration, language);
 		});
 	});
 });
