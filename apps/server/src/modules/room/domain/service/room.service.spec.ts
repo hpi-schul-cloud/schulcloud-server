@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -28,6 +29,10 @@ describe('RoomService', () => {
 				{
 					provide: EventBus,
 					useValue: createMock<EventBus>(),
+				},
+				{
+					provide: MailService,
+					useValue: createMock<MailService>(),
 				},
 			],
 		}).compile();
