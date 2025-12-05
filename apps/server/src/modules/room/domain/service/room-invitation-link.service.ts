@@ -41,7 +41,7 @@ export class RoomInvitationLinkService implements IEventHandler<RoomDeletedEvent
 	}
 
 	public async handle(event: RoomDeletedEvent): Promise<void> {
-		const roomInvitationLinks = await this.roomInvitationLinkRepo.findByRoomId(event.roomId);
+		const roomInvitationLinks = await this.roomInvitationLinkRepo.findByRoomId(event.id);
 		await this.roomInvitationLinkRepo.delete(roomInvitationLinks.map((link) => link.id));
 	}
 }

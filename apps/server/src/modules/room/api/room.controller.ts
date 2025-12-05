@@ -33,9 +33,9 @@ import { RoomPaginationParams } from './dto/request/room-pagination.params';
 import { RoomUrlParams } from './dto/request/room.url.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomBoardListResponse } from './dto/response/room-board-list.response';
+import { RoomCreatedResponse } from './dto/response/room-created.response';
 import { RoomDetailsResponse } from './dto/response/room-details.response';
 import { RoomInvitationLinkListResponse } from './dto/response/room-invitation-link-list.response';
-import { RoomItemResponse } from './dto/response/room-item.response';
 import { RoomListResponse } from './dto/response/room-list.response';
 import { RoomMemberListResponse } from './dto/response/room-member-list.response';
 import { RoomRoleResponse } from './dto/response/room-role.response';
@@ -114,7 +114,7 @@ export class RoomController {
 
 	@Post()
 	@ApiOperation({ summary: 'Create a new room' })
-	@ApiResponse({ status: HttpStatus.OK, description: 'Returns the details of a room', type: RoomItemResponse })
+	@ApiResponse({ status: HttpStatus.CREATED, type: RoomCreatedResponse })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
@@ -122,10 +122,10 @@ export class RoomController {
 	public async createRoom(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() createRoomParams: CreateRoomBodyParams
-	): Promise<RoomItemResponse> {
+	): Promise<RoomCreatedResponse> {
 		const room = await this.roomUc.createRoom(currentUser.userId, createRoomParams);
 
-		const response = RoomMapper.mapToRoomItemResponse({ room, isLocked: false });
+		const response = RoomMapper.mapToRoomCreatedResponse(room);
 
 		return response;
 	}
