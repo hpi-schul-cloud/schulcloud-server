@@ -92,17 +92,11 @@ export class ImportCreateH5PContentParams {
 	public parentId!: EntityId;
 
 	@ApiProperty()
-	@IsNotEmpty()
 	@IsObject()
 	public params!: {
 		params: unknown;
 		metadata: IContentMetadata;
 	};
-
-	@ApiProperty()
-	@IsString()
-	@IsNotEmpty()
-	public library!: string;
 
 	@ApiProperty({
 		type: String,

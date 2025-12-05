@@ -337,12 +337,11 @@ export class H5PEditorController {
 			res.status(HttpStatus.BAD_REQUEST);
 			return { message: 'Please upload a .h5p file in field "h5p".' };
 		}
-		const response = await this.h5pEditorUc.createH5pContentGetMetadata(
+		const response = await this.h5pEditorUc.importH5pFile(
 			currentUser.userId,
 			currentUser.schoolId,
 			body.params.params,
 			body.params.metadata,
-			body.library,
 			body.parentType,
 			body.parentId
 		);

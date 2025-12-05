@@ -397,12 +397,10 @@ export class H5PEditorUc {
 	}
 
 	public async importH5pFile(
-		contentId: string,
 		userId: EntityId,
 		schoolId: EntityId,
 		params: unknown,
 		metadata: IContentMetadata,
-		mainLibraryUbername: string,
 		parentType: H5PContentParentType,
 		parentId: EntityId
 	): Promise<{ id: string; metadata: IContentMetadata }> {
@@ -411,15 +409,15 @@ export class H5PEditorUc {
 		const user: LumiUserWithContentData = this.createAugmentedLumiUser(userId, schoolId, parentType, parentId);
 
 		const newContentId = await this.h5pEditor.saveOrUpdateContentReturnMetaData(
-			contentId,
+			this.fakeUndefinedAsString(),
 			params,
 			metadata,
-			mainLibraryUbername,
+			metadata.mainLibrary, // Pass mainLibraryUbername as the fourth argument
 			user
 		);
-		// const query = { action: 'library-upload' } as AjaxPostQueryParams;
-		// const body = {} as AjaxPostBodyParams;
-		// const response = await this.postAjax(userId, query, body, undefined);
+		const query = { action: 'library-upload' } as AjaxPostQueryParams;
+		const body = {} as AjaxPostBodyParams;
+		await this.postAjax(userId, query, body, undefined);
 		return newContentId;
 	}
 
