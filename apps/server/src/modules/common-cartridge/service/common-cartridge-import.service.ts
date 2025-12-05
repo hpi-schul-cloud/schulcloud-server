@@ -167,10 +167,9 @@ export class CommonCartridgeImportService {
 		const cardElements = organizations.filter(
 			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
 		);
-
-		for await (const cardElement of cardElements) {
-			await this.createCardElement(parser, card.id, cardElement, currentUser);
-		}
+		await Promise.all(
+			cardElements.map((cardElement) => this.createCardElement(parser, card.id, cardElement, currentUser))
+		);
 	}
 
 	private async createCardElement(
