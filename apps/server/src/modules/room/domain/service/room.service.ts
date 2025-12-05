@@ -1,3 +1,5 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Mail, MailService, PlainTextMailContent } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
@@ -10,7 +12,11 @@ import { RoomFeatures } from '../type';
 
 @Injectable()
 export class RoomService {
-	constructor(private readonly roomRepo: RoomRepo, private readonly eventBus: EventBus) {}
+	constructor(
+		private readonly roomRepo: RoomRepo,
+		private readonly eventBus: EventBus,
+		private readonly mailService: MailService
+	) {}
 
 	public async getRoomsByIds(roomIds: EntityId[]): Promise<Room[]> {
 		const rooms = await this.roomRepo.findByIds(roomIds);
@@ -79,11 +85,52 @@ export class RoomService {
 		return room.features.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE);
 	}
 
+	public async sendRoomWelcomeMail(email: string, roomId: string): Promise<void> {
+		const roomWelcomeMail = await this.generateRoomWelcomeMail(email, roomId);
+		await this.mailService.send(roomWelcomeMail);
+	}
+
 	private validateTimeSpan(props: RoomCreateProps | RoomUpdateProps, roomId: string): void {
 		if (props.startDate != null && props.endDate != null && props.startDate > props.endDate) {
 			throw new ValidationError(
 				`Invalid room timespan. Start date '${props.startDate.toISOString()}' has to be before end date: '${props.endDate.toISOString()}'. Room id='${roomId}'`
 			);
 		}
+	}
+
+	private async generateRoomWelcomeMail(email: string, roomId: string): Promise<Mail> {
+		const roomLink = this.generateRoomLink(roomId);
+		const roomName = await this.getRoomName(roomId);
+		const mailContent = this.generateRoomWelcomeMailContent(roomName, roomLink);
+		const senderAddress = Configuration.get('SMTP_SENDER') as string;
+		const completeMail: Mail = {
+			mail: mailContent,
+			recipients: [email],
+			from: senderAddress,
+		};
+		return completeMail;
+	}
+
+	private generateRoomLink(roomId: string): string {
+		const hostUrl = Configuration.get('HOST') as string;
+		const baseRoomUrl = `${hostUrl}/rooms/`;
+		const roomLink = baseRoomUrl + roomId;
+
+		return roomLink;
+	}
+
+	private generateRoomWelcomeMailContent(roomName: string, roomLink: string): PlainTextMailContent {
+		const mailContent = {
+			subject: 'Raumbeitritt-Benachrichtigung',
+			plainTextContent: `Benachrichtigung über Beitritt zum Raum ${roomName}, bitte nutze folgenden Link um darauf zuzugreifen: ${roomLink}`,
+			htmlContent: `<p>Benachrichtigung über Beitritt zum Raum ${roomName}</p><p>Bitte nutze folgenden Link um darauf zuzugreifen: <a href="${roomLink}">${roomLink}</a></p>`,
+		};
+		return mailContent;
+	}
+
+	private async getRoomName(roomId: string): Promise<string> {
+		const room = await this.roomRepo.findById(roomId);
+		const roomName = room.getRoomName();
+		return roomName;
 	}
 }
