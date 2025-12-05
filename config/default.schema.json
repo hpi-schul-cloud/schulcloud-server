@@ -263,17 +263,24 @@
 					"format": "uri",
 					"default": "http://localhost:4444",
 					"description": "The URI of the file service"
-				},
-				"INCOMING_REQUEST_TIMEOUT": {
-					"type": "integer",
-					"minimum": 0,
-					"default": 600000,
-					"description": "Timeout for incoming requests to the file storage service in milliseconds."
 				}
 			},
 			"default": {
 				"SERVICE_BASE_URL": "http://localhost:4444"
 			}
+		},
+		"COMMON_CARTRIDGE": {
+			"type": "object",
+			"description": "Common cartridge properties, required always to be defined",
+			"properties": {
+				"INCOMING_REQUEST_TIMEOUT_MS": {
+					"type": "integer",
+					"minimum": 0,
+					"default": 600000,
+					"description": "Timeout for incoming requests to the common cartridge service in milliseconds."
+				}
+			},
+			"default": {}
 		},
 		"FWU_CONTENT": {
 			"type": "object",
