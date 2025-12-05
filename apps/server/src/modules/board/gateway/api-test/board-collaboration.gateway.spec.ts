@@ -259,6 +259,79 @@ describe(BoardCollaborationGateway.name, () => {
 		});
 	});
 
+	describe('move card to board', () => {
+		describe('when moving card to another column', () => {
+			it('should answer with success', async () => {
+				const { columnNode, columnNode2, cardNodes } = await setup();
+
+				const moveCardToBoardProps = {
+					cardId: cardNodes[0].id,
+					fromColumnId: columnNode.id,
+					toColumnId: columnNode2.id,
+				};
+
+				ioClient.emit('move-card-to-board-request', moveCardToBoardProps);
+				const success = await waitForEvent(ioClient, 'move-card-to-board-success');
+
+				expect(success).toEqual(
+					expect.objectContaining({
+						toColumn: { id: columnNode2.id, title: columnNode2.title },
+					})
+				);
+			});
+		});
+
+		describe('when moving card to another board', () => {
+			const setupWithSecondBoard = async () => {
+				const params = await setup();
+				const { columnBoardNode } = params;
+
+				const secondColumnBoardNode = columnBoardEntityFactory.buildWithId({
+					context: columnBoardNode.context,
+				});
+				const secondColumnNode = columnEntityFactory.withParent(secondColumnBoardNode).build();
+				await em.persistAndFlush([secondColumnBoardNode, secondColumnNode]);
+				em.clear();
+
+				return { secondColumnNode, ...params };
+			};
+
+			it('should answer with success', async () => {
+				const { columnNode, secondColumnNode, cardNodes } = await setupWithSecondBoard();
+
+				const moveCardToBoardProps = {
+					cardId: cardNodes[0].id,
+					fromColumnId: columnNode.id,
+					toColumnId: secondColumnNode.id,
+				};
+
+				ioClient.emit('move-card-to-board-request', moveCardToBoardProps);
+				const success = await waitForEvent(ioClient, 'move-card-to-board-success');
+
+				expect(success).toEqual(
+					expect.objectContaining({ toColumn: { id: secondColumnNode.id, title: secondColumnNode.title } })
+				);
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { columnNode, cardNodes } = await setup();
+
+				const moveCardToBoardProps = {
+					cardId: cardNodes[0].id,
+					fromColumnId: columnNode.id,
+					toColumnId: columnNode.id,
+				};
+
+				unauthorizedIoClient.emit('move-card-to-board-request', moveCardToBoardProps);
+				const failure = await waitForEvent(unauthorizedIoClient, 'move-card-to-board-failure');
+
+				expect(failure).toEqual(moveCardToBoardProps);
+			});
+		});
+	});
+
 	describe('update column title', () => {
 		describe('when column exists', () => {
 			it('should answer with success', async () => {
