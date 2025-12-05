@@ -86,8 +86,7 @@ export class Registration extends DomainObject<RegistrationProps> {
 	}
 
 	public generateRegistrationMail(): Mail {
-		const registrationLink = this.generateRegistrationLink();
-		const mailContent = this.generateRegistrationMailContent(registrationLink);
+		const mailContent = this.generateRegistrationMailContent();
 		const senderAddress = Configuration.get('SMTP_SENDER') as string;
 		const completeMail: Mail = {
 			mail: mailContent,
@@ -105,7 +104,8 @@ export class Registration extends DomainObject<RegistrationProps> {
 		return registrationLink;
 	}
 
-	private generateRegistrationMailContent(registrationLink: string): PlainTextMailContent {
+	private generateRegistrationMailContent(): PlainTextMailContent {
+		const registrationLink = this.generateRegistrationLink();
 		const mailContent = {
 			subject: 'Einladung Externe Person',
 			plainTextContent: `Einladung für ${this.firstName} ${this.lastName} bitte nutze folgenden Link zur Registrierung: ${registrationLink}`,
