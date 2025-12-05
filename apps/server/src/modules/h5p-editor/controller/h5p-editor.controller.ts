@@ -340,7 +340,6 @@ export class H5PEditorController {
 		const response = await this.h5pEditorUc.importH5pFile(
 			currentUser.userId,
 			currentUser.schoolId,
-			body.params.params,
 			body.params.metadata,
 			body.parentType,
 			body.parentId

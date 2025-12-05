@@ -399,7 +399,6 @@ export class H5PEditorUc {
 	public async importH5pFile(
 		userId: EntityId,
 		schoolId: EntityId,
-		params: unknown,
 		metadata: IContentMetadata,
 		parentType: H5PContentParentType,
 		parentId: EntityId
@@ -410,9 +409,9 @@ export class H5PEditorUc {
 
 		const newContentId = await this.h5pEditor.saveOrUpdateContentReturnMetaData(
 			this.fakeUndefinedAsString(),
-			params,
+			undefined,
 			metadata,
-			metadata.mainLibrary, // Pass mainLibraryUbername as the fourth argument
+			metadata.mainLibrary,
 			user
 		);
 		const query = { action: 'library-upload' } as AjaxPostQueryParams;
