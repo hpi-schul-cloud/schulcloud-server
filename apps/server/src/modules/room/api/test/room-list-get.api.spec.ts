@@ -104,6 +104,7 @@ describe('Room Controller (API)', () => {
 						createdAt: room.createdAt.toISOString(),
 						updatedAt: room.updatedAt.toISOString(),
 						isLocked: false,
+						permissions: [...roomViewerRole.permissions, ...roomOwnerRole.permissions],
 					};
 				});
 
@@ -118,6 +119,7 @@ describe('Room Controller (API)', () => {
 						createdAt: room.createdAt.toISOString(),
 						updatedAt: room.updatedAt.toISOString(),
 						isLocked: true,
+						permissions: roomViewerRole.permissions,
 					};
 				});
 

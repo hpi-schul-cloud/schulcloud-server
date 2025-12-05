@@ -59,7 +59,8 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		}
 
 		if (context.action === Action.write) {
-			return this.hasAllPermissions(user, authorizable, [Permission.BOARD_EDIT]);
+			const writePermissions = Array.from(new Set([Permission.BOARD_EDIT, ...context.requiredPermissions]));
+			return this.hasAllPermissions(user, authorizable, writePermissions);
 		}
 
 		return this.isBoardReader(userWithBoardRoles);
