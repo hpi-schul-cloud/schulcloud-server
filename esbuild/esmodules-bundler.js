@@ -13,12 +13,6 @@ const options = [
 	{
 		noExportedMember: 'node_modules/@feathersjs/express/lib/declarations.d.ts',
 	},
-	{
-		noExportedMember: 'node_modules/@types/express-fileupload/index.d.ts',
-	},
-	{
-		noExportedMember: 'node_modules/@types/multer/index.d.ts',
-	},
 ];
 
 const globalOptions = {
