@@ -217,13 +217,31 @@ describe('RegistrationService', () => {
 	});
 
 	describe('completeRegistration', () => {
-		it('should create user and account from registration', async () => {
-			const registration = registrationFactory.build();
-			const language = LanguageType.EN;
-			const password = 'SecurePassword123!';
+		const setup = (registrationProps: Partial<RegistrationProps>) => {
+			const registration = registrationFactory.build(registrationProps);
 			registrationRepo.findBySecret.mockResolvedValue(registration);
 
-			await service.completeRegistration(registration, language, password);
+			const externalPersonRole = { id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON };
+			roleService.findByName.mockResolvedValue(externalPersonRole);
+
+			const externalPersonsSchool = schoolFactory.build({
+				name: 'External Persons School',
+				purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
+			});
+			schoolService.getSchools.mockResolvedValue([externalPersonsSchool]);
+
+			const savedUser = userDoFactory.buildWithId();
+			userService.save.mockResolvedValue(savedUser);
+
+			return { registration, savedUser };
+		};
+
+		it('should create user and account from registration', async () => {
+			const registration = registrationFactory.build();
+			registrationRepo.findBySecret.mockResolvedValue(registration);
+
+			await service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!');
+
 			expect(userService.save).toHaveBeenCalledWith(
 				expect.objectContaining({
 					email: registration.email,
@@ -235,14 +253,13 @@ describe('RegistrationService', () => {
 
 		describe('when external person role is missing', () => {
 			it('should throw an error', async () => {
-				const error = new BadRequestException('ExternalPerson role not found');
-				roleService.findByName.mockRejectedValue(error);
 				const registration = registrationFactory.build();
-				const language = LanguageType.EN;
-				const password = 'SecurePassword123!';
 				registrationRepo.findBySecret.mockResolvedValue(registration);
 
-				await expect(service.completeRegistration(registration, language, password)).rejects.toThrow(
+				const error = new BadRequestException('ExternalPerson role not found');
+				roleService.findByName.mockRejectedValue(error);
+
+				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
 					BadRequestException
 				);
 			});
@@ -251,46 +268,57 @@ describe('RegistrationService', () => {
 		describe('when external-persons-school is missing', () => {
 			it('should throw an error', async () => {
 				const registration = registrationFactory.build();
-				const language = LanguageType.EN;
-				const password = 'SecurePassword123!';
 				registrationRepo.findBySecret.mockResolvedValue(registration);
 				const externalPersonRole = { id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON };
 				roleService.findByName.mockResolvedValue(externalPersonRole);
 				schoolService.getSchools.mockResolvedValue([]);
 
-				await expect(service.completeRegistration(registration, language, password)).rejects.toThrow(
+				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
 					InternalServerErrorException
 				);
 			});
 		});
 
-		describe('when adding the user to rooms', () => {
-			const setup = (registrationProps: Partial<RegistrationProps>) => {
-				const registration = registrationFactory.build(registrationProps);
-				registrationRepo.findBySecret.mockResolvedValue(registration);
-
-				const externalPersonRole = { id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON };
-				roleService.findByName.mockResolvedValue(externalPersonRole);
-
-				const externalPersonsSchool = schoolFactory.build({
-					name: 'External Persons School',
-					purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
-				});
-				schoolService.getSchools.mockResolvedValue([externalPersonsSchool]);
-
-				const savedUser = userDoFactory.buildWithId();
+		describe('when user has no id after saving', () => {
+			it('should throw an error', async () => {
+				const { registration, savedUser } = setup({});
+				delete savedUser.id;
 				userService.save.mockResolvedValue(savedUser);
 
-				return { registration, savedUser };
-			};
+				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
+					InternalServerErrorException
+				);
+			});
+		});
 
+		describe('when firstname  is missing', () => {
+			it('should throw an error', async () => {
+				const registration = registrationFactory.build({ firstName: undefined });
+				registrationRepo.findBySecret.mockResolvedValue(registration);
+
+				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
+					BadRequestException
+				);
+			});
+		});
+
+		describe('when lastname is missing', () => {
+			it('should throw an error', async () => {
+				const registration = registrationFactory.build({ lastName: undefined });
+				registrationRepo.findBySecret.mockResolvedValue(registration);
+
+				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
+					BadRequestException
+				);
+			});
+		});
+
+		describe('when adding the user to rooms', () => {
 			describe('whon no roomId is defined', () => {
 				it('should not attempt to add user to any room', async () => {
 					const { registration } = setup({ roomIds: [] });
 
-					const language = LanguageType.EN;
-					const password = 'SecurePassword123!';
-					await service.completeRegistration(registration, language, password);
+					await service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!');
 
 					expect(roomMembershipService.addMembersToRoom).not.toHaveBeenCalled();
 				});
@@ -300,9 +328,7 @@ describe('RegistrationService', () => {
 				it('should add user to the room', async () => {
 					const { registration, savedUser } = setup({ roomIds: [new ObjectId().toHexString()] });
 
-					const language = LanguageType.EN;
-					const password = 'SecurePassword123!';
-					await service.completeRegistration(registration, language, password);
+					await service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!');
 
 					expect(roomMembershipService.addMembersToRoom).toHaveBeenCalledWith(registration.roomIds[0], [savedUser.id]);
 				});
@@ -314,9 +340,7 @@ describe('RegistrationService', () => {
 					const roomId2 = new ObjectId().toHexString();
 					const { registration, savedUser } = setup({ roomIds: [roomId1, roomId2] });
 
-					const language = LanguageType.EN;
-					const password = 'SecurePassword123!';
-					await service.completeRegistration(registration, language, password);
+					await service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!');
 
 					expect(roomMembershipService.addMembersToRoom).toHaveBeenCalledWith(roomId1, [savedUser.id]);
 					expect(roomMembershipService.addMembersToRoom).toHaveBeenCalledWith(roomId2, [savedUser.id]);
