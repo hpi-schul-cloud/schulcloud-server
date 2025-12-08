@@ -11,10 +11,25 @@ import { RoomListResponse } from '../dto/response/room-list.response';
 import { RoomStatsItemResponse } from '../dto/response/room-stats-item.response';
 import { RoomStatsListResponse } from '../dto/response/room-stats-list.repsonse';
 import { RoomStats } from '../type/room-stats.type';
-import { RoomWithLockedStatus } from '../type/room-with-locked-status';
+import { RoomWithPermissionsAndLockedStatus } from '../type/room-with-locked-status';
+import { RoomCreatedResponse } from '../dto/response/room-created.response';
 
 export class RoomMapper {
-	public static mapToRoomItemResponse({ room, isLocked }: RoomWithLockedStatus): RoomItemResponse {
+	public static mapToRoomCreatedResponse(room: Room): RoomCreatedResponse {
+		const response = new RoomCreatedResponse({
+			id: room.id,
+			createdAt: room.createdAt,
+			updatedAt: room.updatedAt,
+		});
+
+		return response;
+	}
+
+	public static mapToRoomItemResponse({
+		room,
+		permissions,
+		isLocked,
+	}: RoomWithPermissionsAndLockedStatus): RoomItemResponse {
 		const response = new RoomItemResponse({
 			id: room.id,
 			name: room.name,
@@ -24,13 +39,14 @@ export class RoomMapper {
 			endDate: room.endDate,
 			createdAt: room.createdAt,
 			updatedAt: room.updatedAt,
-			isLocked: isLocked,
+			permissions,
+			isLocked,
 		});
 
 		return response;
 	}
 
-	public static mapToRoomListResponse(rooms: RoomWithLockedStatus[]): RoomListResponse {
+	public static mapToRoomListResponse(rooms: RoomWithPermissionsAndLockedStatus[]): RoomListResponse {
 		const roomResponseData: RoomItemResponse[] = rooms.map(
 			(room): RoomItemResponse => this.mapToRoomItemResponse(room)
 		);
