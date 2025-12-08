@@ -150,7 +150,8 @@
 		},
 		"@mikro-orm/migrations-mongodb": {
 			"mongodb": "^4.17.0"
-		}
+		},
+		"validator": "^13.15.22"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "3.617.0",
