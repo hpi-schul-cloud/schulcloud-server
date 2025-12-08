@@ -37,7 +37,7 @@ describe('CommonCartridgeResourceFactory', () => {
 
 		return webContentHtml;
 	};
-	const setupOrganizationProps = () => {
+	const setupOrganizationProps = (numberOfResourcePaths = 1) => {
 		const organizationProps: CommonCartridgeOrganizationProps = {
 			identifier: faker.string.uuid(),
 			identifierRef: faker.string.uuid(),
@@ -46,7 +46,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			pathDepth: faker.number.int({ min: 1, max: 5 }),
 			isResource: true,
 			isInlined: false,
-			resourcePath: faker.system.filePath(),
+			resourcePaths: Array.from({ length: numberOfResourcePaths }, () => faker.system.filePath()),
 			resourceType: faker.lorem.word(),
 		};
 
@@ -60,6 +60,8 @@ describe('CommonCartridgeResourceFactory', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+		jest.resetAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	it('should be defined', () => {
@@ -155,7 +157,7 @@ describe('CommonCartridgeResourceFactory', () => {
 				const organizationProps = setupOrganizationProps();
 
 				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
-				organizationProps.resourcePath = 'webcontent.html';
+				organizationProps.resourcePaths = ['webcontent.html'];
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue(webContentHtml);
 
@@ -179,7 +181,7 @@ describe('CommonCartridgeResourceFactory', () => {
 				const organizationProps = setupOrganizationProps();
 
 				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
-				organizationProps.resourcePath = 'webcontent.html';
+				organizationProps.resourcePaths = ['webcontent.html'];
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue('');
 
@@ -201,7 +203,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();
 				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
-				organizationProps.resourcePath = faker.system.filePath();
+				organizationProps.resourcePaths = ['file.pdf'];
 
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue('');
@@ -222,7 +224,7 @@ describe('CommonCartridgeResourceFactory', () => {
 					expect.objectContaining({
 						description: organizationProps.title,
 						fileName: expect.any(String),
-						href: organizationProps.resourcePath,
+						href: organizationProps.resourcePaths[0],
 						file: expect.any(File),
 					})
 				);
@@ -233,7 +235,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();
 				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
-				organizationProps.resourcePath = faker.system.filePath();
+				organizationProps.resourcePaths = ['file.pdf'];
 
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue('');
@@ -250,6 +252,64 @@ describe('CommonCartridgeResourceFactory', () => {
 				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
 
 				expect(result).toBeUndefined();
+			});
+		});
+
+		describe('when resource is a file folder', () => {
+			const setup = () => {
+				const organizationProps = setupOrganizationProps(3);
+				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
+
+				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
+				admZipMock.readAsText.mockReturnValue('');
+				admZipMock.getEntry.mockReturnValue({
+					getData: () => Buffer.from(faker.string.hexadecimal()),
+				} as AdmZip.IZipEntry);
+
+				return { organizationProps };
+			};
+
+			it('should create a file folder content resource', () => {
+				const { organizationProps } = setup();
+
+				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
+
+				expect(result?.type).toEqual(CommonCartridgeXmlResourceType.FILE_FOLDER);
+				expect(result).toEqual(
+					expect.objectContaining({
+						title: organizationProps.title,
+						files: [expect.any(File), expect.any(File), expect.any(File)],
+					})
+				);
+			});
+		});
+
+		describe('when resource is a file folder but entries are missing', () => {
+			const setup = () => {
+				const organizationProps = setupOrganizationProps(3);
+				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_CONTENT;
+
+				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
+				admZipMock.readAsText.mockReturnValue('');
+				admZipMock.getEntry.mockReturnValue({
+					getData: () => Buffer.from(''),
+				} as AdmZip.IZipEntry);
+
+				return { organizationProps };
+			};
+
+			it('should filter files from folder', () => {
+				const { organizationProps } = setup();
+
+				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
+
+				expect(result?.type).toEqual(CommonCartridgeXmlResourceType.FILE_FOLDER);
+				expect(result).toEqual(
+					expect.objectContaining({
+						title: organizationProps.title,
+						files: [],
+					})
+				);
 			});
 		});
 	});

@@ -3,8 +3,9 @@ import { StorageLocation } from '@infra/files-storage-client';
 import { AuthorizationContextBuilder } from '@modules/authorization';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { BoardNodeFactory, Card, Column, ContentElementType, isCard } from '../domain';
+import { BoardNodeFactory, Card, Column, ColumnBoard, ContentElementType, isCard } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
+import { Permission } from '@shared/domain/interface';
 
 @Injectable()
 export class ColumnUc {
@@ -62,19 +63,30 @@ export class ColumnUc {
 	public async moveCard(
 		userId: EntityId,
 		cardId: EntityId,
-		targetColumnId: EntityId,
-		targetPosition: number
-	): Promise<Card> {
-		this.logger.debug({ action: 'moveCard', userId, cardId, targetColumnId, toPosition: targetPosition });
+		toColumnId: EntityId,
+		toPosition?: number
+	): Promise<{ card: Card; fromBoard: ColumnBoard; toBoard: ColumnBoard; fromColumn: Column; toColumn: Column }> {
+		this.logger.debug({ action: 'moveCard', userId, cardId, toColumnId, toPosition });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
-		const targetColumn = await this.boardNodeService.findByClassAndId(Column, targetColumnId);
+		if (!card.parentId) {
+			throw new UnprocessableEntityException('Card has no parent column');
+		}
+		const fromColumn = await this.boardNodeService.findByClassAndId(Column, card.parentId, 1);
+		const toColumn = await this.boardNodeService.findByClassAndId(Column, toColumnId, 1);
+		const fromBoard = await this.columnBoardService.findById(card.rootId, 0);
+		const toBoard = await this.columnBoardService.findById(toColumn.rootId, 0);
 
-		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
-		await this.boardNodePermissionService.checkPermission(userId, targetColumn, AuthorizationContextBuilder.write([]));
+		const authorizationContext =
+			fromBoard.context.id === toBoard.context.id
+				? AuthorizationContextBuilder.write([])
+				: AuthorizationContextBuilder.write([Permission.BOARD_RELOCATE_CONTENT]);
+		await this.boardNodePermissionService.checkPermission(userId, fromBoard, authorizationContext);
+		await this.boardNodePermissionService.checkPermission(userId, toBoard, AuthorizationContextBuilder.write([]));
 
-		await this.boardNodeService.move(card, targetColumn, targetPosition);
-		return card;
+		await this.boardNodeService.move(card, toColumn, toPosition);
+
+		return { card, fromBoard, toBoard, fromColumn, toColumn };
 	}
 
 	public async copyCard(userId: EntityId, cardId: EntityId, schoolId: EntityId): Promise<Card> {

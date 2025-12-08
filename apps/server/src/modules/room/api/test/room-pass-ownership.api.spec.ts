@@ -46,6 +46,7 @@ describe('Room Controller (API)', () => {
 				['SameSchoolTeacher_roomadmin', 'sameSchool', 'teacher', 'roomadmin'],
 				['SameSchoolStudent_roomviewer', 'sameSchool', 'student', 'roomviewer'],
 				['SameSchoolTeacher_none', 'sameSchool', 'teacher', 'none'],
+				['SameSchoolExternalPerson_roomviewer', 'sameSchool', 'externalPerson', 'roomviewer'],
 				['OtherSchoolTeacher_roomeditor', 'otherSchool', 'teacher', 'roomeditor'],
 			]);
 			return roomSetup;
@@ -73,6 +74,7 @@ describe('Room Controller (API)', () => {
 
 				const updatedRoomMembership = await loggedInClient.get(`/${roomSetup.room.id}/members`);
 				const body = updatedRoomMembership.body as RoomMemberListResponse;
+
 				expect(body.data).toEqual(
 					expect.arrayContaining([expect.objectContaining({ userId: targetUser.id, roomRoleName: RoleName.ROOMOWNER })])
 				);
@@ -93,6 +95,20 @@ describe('Room Controller (API)', () => {
 				expect(body.data).toEqual(
 					expect.arrayContaining([expect.objectContaining({ userId: owner.id, roomRoleName: RoleName.ROOMADMIN })])
 				);
+			});
+
+			describe('when the member is an external person', () => {
+				it('should change the current roomowner to room admin', async () => {
+					const roomSetup = await setup();
+					const loggedInClient = await roomSetup.loginUser('SameSchoolTeacher_roomowner');
+					const targetUser = roomSetup.getUserByName('SameSchoolExternalPerson_roomviewer');
+
+					const response = await loggedInClient.patch(`/${roomSetup.room.id}/members/pass-ownership`, {
+						userId: targetUser.id,
+					});
+
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
 			});
 		});
 

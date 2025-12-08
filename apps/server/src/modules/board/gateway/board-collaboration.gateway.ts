@@ -35,6 +35,7 @@ import {
 	FetchBoardMessageParams,
 	FetchCardsMessageParams,
 	MoveCardMessageParams,
+	MoveCardToBoardMessageParams,
 	MoveColumnMessageParams,
 	MoveContentElementMessageParams,
 	UpdateBoardLayoutMessageParams,
@@ -47,6 +48,7 @@ import {
 } from './dto';
 import BoardCollaborationConfiguration from './dto/board-collaboration-config';
 import { UpdateReadersCanEditMessageParams } from './dto/update-users-can-edit.message.param';
+import { MoveCardResponseMapper } from '../controller/mapper/move-card-response.mapper';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
@@ -203,7 +205,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	@SubscribeMessage('create-column-request')
 	@TrackExecutionTime()
 	@UseRequestContext()
-	public async createColumn(socket: Socket, data: CreateColumnMessageParams) {
+	public async createColumn(socket: Socket, data: CreateColumnMessageParams): Promise<object> {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'create-column' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
@@ -249,8 +251,32 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-card' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const card = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
-			emitter.emitToClientAndRoom(data, card);
+			const { toBoard } = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
+			emitter.emitToClientAndRoom(data, toBoard.id);
+		} catch (err) {
+			emitter.emitFailure(data);
+		}
+	}
+
+	@SubscribeMessage('move-card-to-board-request')
+	@TrackExecutionTime()
+	@UseRequestContext()
+	public async moveCardToBoard(socket: Socket, data: MoveCardToBoardMessageParams): Promise<void> {
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'move-card-to-board' });
+		const { userId } = this.getCurrentUser(socket);
+		try {
+			const resultData = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId);
+			const result = MoveCardResponseMapper.mapToReponse(resultData);
+			const payload = {
+				...result,
+				forceNextTick: data.forceNextTick,
+			};
+			emitter.emitToClient(payload);
+			if (result.fromBoard.id === result.toBoard.id) {
+				emitter.emitToRoom(payload, result.fromBoard.id);
+			} else {
+				emitter.emitToRoom(payload, result.toBoard.id);
+			}
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -270,7 +296,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 				...data,
 				duplicatedCard: cardResponse,
 			};
-			emitter.emitToClientAndRoom(responsePayload, card.id);
+			emitter.emitToClientAndRoom(responsePayload, card);
 		} catch (err) {
 			emitter.emitFailure(data);
 		}
@@ -470,6 +496,13 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 				const room = getRoomName(boardNodeOrRootId);
 				socket.to(room).emit(`${action}-success`, { ...data, isOwnAction: false });
 				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
+			},
+			emitToClient(data: object): void {
+				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
+			},
+			emitToRoom(data: object, boardNodeOrRootId: AnyBoardNode | EntityId): void {
+				const room = getRoomName(boardNodeOrRootId);
+				socket.to(room).emit(`${action}-success`, { ...data, isOwnAction: false });
 			},
 			emitFailure(data: object): void {
 				socket.emit(`${action}-failure`, data);

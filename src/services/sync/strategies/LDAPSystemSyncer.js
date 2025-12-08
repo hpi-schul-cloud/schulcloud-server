@@ -44,7 +44,7 @@ class LDAPSystemSyncer extends Syncer {
 		const systems = await this.getSystems();
 		const nextSystemSync = async (system) => {
 			try {
-				const stats = await new LDAPSyncer(this.app, {}, this.logger, system, this.syncQueue, this.options).sync();
+				const stats = await new LDAPSyncer(this.app, {}, this.logger, system, this.syncQueue, this.options, this.syncId).sync();
 				if (stats.success !== true) {
 					this.stats.errors.push(`LDAP sync failed for system "${system.alias}" (${system._id}).`);
 				}
@@ -64,7 +64,19 @@ class LDAPSystemSyncer extends Syncer {
 					.catch((error) => this.logger.error('Could not unbind from LDAP server', { error }));
 			}
 		};
-		const poolSize = Configuration.get('LDAP_SYSTEM_SYNCER_POOL_SIZE');
+		let poolSize = Configuration.get('LDAP_SYSTEM_SYNCER_POOL_SIZE');
+
+		// Check for duplicate LDAP URLs - if found, force synchronous processing
+		const ldapUrls = systems.map(system => system.ldapConfig.url);
+		const uniqueUrls = new Set(ldapUrls);
+		if (ldapUrls.length !== uniqueUrls.size) {
+			poolSize = 1;
+			this.logger.warning(
+				'Multiple systems configured with the same LDAP URL detected. ' +
+				'Forcing synchronous processing (pool size = 1) to prevent connection conflicts.'
+			);
+		}
+
 		if (systems.length > 0) {
 			this.logger.info(`Running LDAP system sync with pool size ${poolSize}`);
 			await asyncPool(poolSize, systems, nextSystemSync);

@@ -1,6 +1,5 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const disposableDomains = require('disposable-email-domains');
-const disposableDomainWildcards = require('disposable-email-domains/wildcard.json');
+const { isDisposableEmailDomain: _isDisposableEmailDomain } = require('disposable-email-domains-js');
 
 const constants = require('./constants');
 
@@ -23,23 +22,15 @@ function extractDomainFromEmail(email) {
 }
 
 function isDisposableEmailDomain(domain) {
-	// check for exact domain blacklist matches
-	if (disposableDomains.includes(domain)) {
+	// check for domain blacklist matches
+	if (_isDisposableEmailDomain(domain)) {
 		return true;
-	}
-
-	// check wildcards to include subdomains
-	const domainLength = domain.length;
-	for (const wildcard of disposableDomainWildcards) {
-		const index = domain.indexOf(wildcard);
-		if (index !== -1 && index === domainLength - wildcard.length) {
-			return true;
-		}
 	}
 
 	// check custom wildcards
 	if (Configuration.has('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS')) {
 		const customWildcards = Configuration.get('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS');
+		const domainLength = domain.length;
 		for (const wildcard of customWildcards.split(',')) {
 			const index = domain.indexOf(wildcard);
 			if (index !== -1 && wildcard.length > 0 && index === domainLength - wildcard.length) {

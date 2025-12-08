@@ -4,7 +4,6 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
-import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
@@ -32,6 +31,7 @@ import { NewsModule } from '@modules/news';
 import { OauthProviderApiModule } from '@modules/oauth-provider/oauth-provider-api.module';
 import { OAuthApiModule } from '@modules/oauth/oauth-api.module';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
+import { RegistrationModule } from '@modules/registration';
 import { RocketChatModule } from '@modules/rocketchat';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { RosterModule } from '@modules/roster/roster.module';
@@ -59,6 +59,8 @@ import { SchoolLicenseApiModule } from '../school-license/school-license-api.mod
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
+import { RegistrationApiModule } from '@modules/registration/registration-api.module';
+import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -83,10 +85,7 @@ const serverModules = [
 	LearnroomApiModule,
 	FilesStorageClientModule,
 	SystemApiModule,
-	MailModule.forRoot({
-		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
-		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
-	}),
+	ServerMailModule,
 	RocketChatModule.forRoot({
 		uri: Configuration.get('ROCKET_CHAT_URI') as string,
 		adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
@@ -115,6 +114,8 @@ const serverModules = [
 	AlertModule,
 	UserLicenseModule,
 	SchoolLicenseApiModule,
+	RegistrationModule,
+	RegistrationApiModule,
 	RoomApiModule,
 	RosterModule,
 	ShdApiModule,

@@ -96,7 +96,6 @@ describe(LessonClientAdapter.name, () => {
 								url: faker.internet.url(),
 								client: faker.lorem.sentence(),
 								license: [faker.lorem.sentence()],
-								merlinReference: faker.lorem.sentence(),
 							},
 						],
 					},

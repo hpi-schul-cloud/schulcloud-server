@@ -1,0 +1,56 @@
+  - name: FWU Deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: deployment.yml.j2
+      state: "{{ 'present' if WITH_FWU is defined and WITH_FWU|bool else 'absent' }}"
+    tags:
+      - deployment
+
+  - name: FWU Service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: svc.yml.j2
+      state: "{{ 'present' if WITH_FWU is defined and WITH_FWU|bool else 'absent' }}"
+    tags:
+      - service
+
+  - name: FWU ConfigMap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: configmap.yml.j2
+      state: "{{ 'present' if WITH_FWU is defined and WITH_FWU|bool else 'absent' }}"
+    tags:
+      - configmap
+
+  - name: FWU OnePasswordItem
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: onepassword.yml.j2
+      state: "{{ 'present' if WITH_FWU is defined and WITH_FWU|bool else 'absent' }}"
+    tags:
+      - 1password
+
+  - name: External Secret
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: external-secret.yml.j2
+      state: "{{ 'present' if 
+               WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool and
+               WITH_FWU is defined and WITH_FWU|bool
+               else 'absent'}}"
+    tags:
+      - 1password
+
+  - name: FWU Ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: ingress.yml.j2
+      state: "{{ 'present' if WITH_FWU is defined and WITH_FWU|bool else 'absent' }}"
+    tags:
+      - ingress

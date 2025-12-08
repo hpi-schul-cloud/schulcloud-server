@@ -17,6 +17,7 @@ import { BoardLayout } from '../common-cartridge-client/room-client/enums/board-
 import { richTextElementFactroy } from './rich-text-element.factory';
 import { linkElementFactory } from './link-element.factory';
 import { fileElementResponseDtoFactory } from './file-element.factory';
+import { fileFolderElementResponseDtoFactory } from './file-folder-element.factory';
 
 export const courseMetadataFactory = Factory.define<CourseCommonCartridgeMetadataDto>(({ sequence }) => {
 	return {
@@ -65,7 +66,12 @@ export const cardResponseFactory = Factory.define<CardResponseDto>(({ sequence, 
 	return {
 		id: params.id ?? sequence.toString(),
 		height: faker.number.int(),
-		elements: [richTextElementFactroy.build(), linkElementFactory.build(), fileElementResponseDtoFactory.build()],
+		elements: [
+			richTextElementFactroy.build(),
+			linkElementFactory.build(),
+			fileElementResponseDtoFactory.build(),
+			fileFolderElementResponseDtoFactory.build(),
+		],
 		visibilitySettings: {
 			publishedAt: faker.date.recent().toISOString(),
 		},
@@ -135,21 +141,18 @@ export const lernstoreContentFactory = Factory.define<LessonContentDto>(({ seque
 					url: faker.internet.url(),
 					client: faker.company.name(),
 					description: faker.lorem.sentence(),
-					merlinReference: faker.string.uuid(),
 					title: faker.lorem.sentence(),
 				},
 				{
 					url: faker.internet.url(),
 					client: faker.company.name(),
 					description: faker.lorem.sentence(),
-					merlinReference: faker.string.uuid(),
 					title: faker.lorem.sentence(),
 				},
 				{
 					url: faker.internet.url(),
 					client: faker.company.name(),
 					description: faker.lorem.sentence(),
-					merlinReference: faker.string.uuid(),
 					title: faker.lorem.sentence(),
 				},
 			],

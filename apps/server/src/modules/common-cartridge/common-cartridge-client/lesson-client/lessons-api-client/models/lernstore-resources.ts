@@ -33,12 +33,6 @@ export interface LernstoreResources {
      */
     'description': string;
     /**
-     * merlinReference
-     * @type {string}
-     * @memberof LernstoreResources
-     */
-    'merlinReference'?: string;
-    /**
      * title
      * @type {string}
      * @memberof LernstoreResources

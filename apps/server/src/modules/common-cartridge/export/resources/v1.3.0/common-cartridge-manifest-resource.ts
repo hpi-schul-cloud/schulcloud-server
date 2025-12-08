@@ -9,6 +9,7 @@ import {
 } from '../../elements/v1.3.0';
 import { ElementTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { ResourceFileContent } from '../../interfaces/common-cartridge-resource.interface';
 import { buildXmlString } from '../../utils';
 
 export type CommonCartridgeManifestResourcePropsV130 = {
@@ -25,12 +26,11 @@ export class CommonCartridgeManifestResourceV130 extends CommonCartridgeResource
 		super(props);
 	}
 
-	public getFilePath(): string {
-		return 'imsmanifest.xml';
-	}
-
-	public getFileContent(): string {
-		return buildXmlString(this.getManifestXmlObject(CommonCartridgeElementType.MANIFEST));
+	public getFileContent(): ResourceFileContent {
+		return {
+			path: 'imsmanifest.xml',
+			content: buildXmlString(this.getManifestXmlObject(CommonCartridgeElementType.MANIFEST)),
+		};
 	}
 
 	public getSupportedVersion(): CommonCartridgeVersion {
