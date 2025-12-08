@@ -5,7 +5,7 @@ import { RoleName, RoleService } from '@modules/role';
 import { SchoolService } from '@modules/school';
 import { SchoolPurpose } from '@modules/school/domain';
 import { Consent, UserConsent, UserDo, UserService } from '@modules/user';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { RoleReference } from '@shared/domain/domainobject';
 import { LanguageType } from '@shared/domain/interface';
 import { UUID } from 'bson';
@@ -120,19 +120,18 @@ export class RegistrationService {
 
 	private async createUser(registration: Registration, language: LanguageType): Promise<UserDo | undefined> {
 		if (!registration.firstName || !registration.lastName) {
-			return undefined;
+			throw new BadRequestException('Firstname and Lastname need to be set to create user.');
 		}
-		const externalPersonRole = await this.roleService.findByName(RoleName.EXTERNALPERSON);
-		if (externalPersonRole === null) {
-			throw new Error('ExternalPerson role not found');
-		}
+		const externalPersonRole = await this.roleService.findByName(RoleName.EXTERNALPERSON).catch(() => {
+			throw new BadRequestException('ExternalPerson role not found');
+		});
 		const roleRefs = [new RoleReference({ id: externalPersonRole.id, name: externalPersonRole.name })];
 
 		const externalPersonsSchools = await this.schoolService.getSchools({
 			purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
 		});
-		if (externalPersonsSchools === undefined || externalPersonsSchools.length > 1) {
-			throw new Error('Number of externalPersonSchools in system is not valid - should be 1');
+		if (externalPersonsSchools.length === 0 || externalPersonsSchools.length > 1) {
+			throw new InternalServerErrorException('Number of externalPersonSchools in system is not valid - should be 1');
 		}
 		const schoolId = externalPersonsSchools[0].id;
 

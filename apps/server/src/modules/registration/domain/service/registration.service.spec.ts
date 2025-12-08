@@ -2,10 +2,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
-import { RoleService } from '@modules/role';
-import { SchoolService } from '@modules/school/domain/service/school.service';
+import { RoleName, RoleService } from '@modules/role';
+import { SchoolService } from '@modules/school';
 import { UserService } from '@modules/user';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
 import { RegistrationRepo } from '../../repo';
@@ -17,11 +17,22 @@ describe('RegistrationService', () => {
 	let module: TestingModule;
 	let service: RegistrationService;
 	let registrationRepo: DeepMocked<RegistrationRepo>;
+	let roleService: DeepMocked<RoleService>;
+	let schoolService: DeepMocked<SchoolService>;
+	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				RegistrationService,
+				{
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: MailService,
+					useValue: createMock<MailService>(),
+				},
 				{
 					provide: RegistrationRepo,
 					useValue: createMock<RegistrationRepo>(),
@@ -31,27 +42,21 @@ describe('RegistrationService', () => {
 					useValue: createMock<RoleService>(),
 				},
 				{
-					provide: MailService,
-					useValue: createMock<MailService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
-				},
-
-				{
-					provide: AccountService,
-					useValue: createMock<AccountService>(),
-				},
-				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
 				},
 			],
 		}).compile();
 
 		service = module.get<RegistrationService>(RegistrationService);
 		registrationRepo = module.get(RegistrationRepo);
+		roleService = module.get(RoleService);
+		userService = module.get(UserService);
+		schoolService = module.get(SchoolService);
 	});
 
 	afterAll(async () => {
@@ -59,6 +64,10 @@ describe('RegistrationService', () => {
 	});
 
 	beforeEach(() => {
+		jest.resetAllMocks();
+	});
+
+	afterEach(() => {
 		jest.resetAllMocks();
 	});
 
@@ -203,11 +212,46 @@ describe('RegistrationService', () => {
 			const language = LanguageType.EN;
 			const password = 'SecurePassword123!';
 			registrationRepo.findBySecret.mockResolvedValue(registration);
-			const createUserSpy = jest.spyOn(service as any, 'createUser').mockResolvedValue(null);
 
 			await service.completeRegistration(registration, language, password);
+			expect(userService.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					email: registration.email,
+					firstName: registration.firstName,
+					lastName: registration.lastName,
+				})
+			);
+		});
 
-			expect(createUserSpy).toHaveBeenCalledWith(registration, language);
+		describe('when external person role is missing', () => {
+			it('should throw an error', async () => {
+				const error = new BadRequestException('ExternalPerson role not found');
+				roleService.findByName.mockRejectedValue(error);
+				const registration = registrationFactory.build();
+				const language = LanguageType.EN;
+				const password = 'SecurePassword123!';
+				registrationRepo.findBySecret.mockResolvedValue(registration);
+
+				await expect(service.completeRegistration(registration, language, password)).rejects.toThrow(
+					BadRequestException
+				);
+			});
+		});
+
+		describe('when external-persons-school is missing', () => {
+			it('should throw an error', async () => {
+				const registration = registrationFactory.build();
+				const language = LanguageType.EN;
+				const password = 'SecurePassword123!';
+				registrationRepo.findBySecret.mockResolvedValue(registration);
+				const externalPersonRole = { id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON };
+				roleService.findByName.mockResolvedValue(externalPersonRole);
+				schoolService.getSchools.mockResolvedValue([]);
+
+				await expect(service.completeRegistration(registration, language, password)).rejects.toThrow(
+					InternalServerErrorException
+				);
+			});
 		});
 	});
 });
