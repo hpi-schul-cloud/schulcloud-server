@@ -80,6 +80,7 @@ export interface ServerConfig
 	HOST: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
 	SC_CONTACT_EMAIL: string;
+	SC_CONTACT_EMAIL_SUBJECT: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
 	ALERT_STATUS_URL: string | null;
 	CALENDAR_SERVICE_ENABLED: boolean;
@@ -138,6 +139,7 @@ export interface ServerConfig
 const config: ServerConfig = {
 	ACCESSIBILITY_REPORT_EMAIL: Configuration.get('ACCESSIBILITY_REPORT_EMAIL') as string,
 	SC_CONTACT_EMAIL: Configuration.get('SC_CONTACT_EMAIL') as string,
+	SC_CONTACT_EMAIL_SUBJECT: Configuration.get('SC_CONTACT_EMAIL_SUBJECT') as string,
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN') as boolean,
 	ALERT_STATUS_URL:
 		Configuration.get('ALERT_STATUS_URL') === null
