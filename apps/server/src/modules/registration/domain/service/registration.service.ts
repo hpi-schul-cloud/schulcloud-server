@@ -2,6 +2,7 @@ import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountSave, AccountService } from '@modules/account';
 import { RoleName, RoleService } from '@modules/role';
+import { RoomMembershipService } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
 import { SchoolPurpose } from '@modules/school/domain';
 import { Consent, UserConsent, UserDo, UserService } from '@modules/user';
@@ -21,7 +22,8 @@ export class RegistrationService {
 		private readonly userService: UserService,
 		private readonly accountService: AccountService,
 		private readonly schoolService: SchoolService,
-		private readonly mailService: MailService
+		private readonly mailService: MailService,
+		private readonly roomMembershipService: RoomMembershipService
 	) {}
 
 	public async createOrUpdateRegistration(props: RegistrationCreateProps): Promise<Registration> {
@@ -46,6 +48,10 @@ export class RegistrationService {
 			if (account) {
 				await this.accountService.save(account);
 			}
+			if (user.id === undefined) {
+				throw new InternalServerErrorException('User ID is undefined after saving user.');
+			}
+			await this.addUserToRooms(registration.roomIds, user.id);
 		}
 	}
 
@@ -179,5 +185,10 @@ export class RegistrationService {
 		});
 
 		return consent;
+	}
+
+	private async addUserToRooms(roomIds: string[], userId: string): Promise<void> {
+		const promises = roomIds.map((roomId) => this.roomMembershipService.addMembersToRoom(roomId, [userId]));
+		await Promise.all(promises);
 	}
 }

@@ -3,14 +3,18 @@ import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
 import { RoleName, RoleService } from '@modules/role';
+import { RoomMembershipService } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
+import { SchoolPurpose } from '@modules/school/domain';
+import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
+import { userDoFactory } from '@modules/user/testing';
 import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
 import { RegistrationRepo } from '../../repo';
 import { registrationFactory } from '../../testing/registration.factory';
-import { Registration, RegistrationCreateProps } from '../do';
+import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
 import { RegistrationService } from './registration.service';
 
 describe('RegistrationService', () => {
@@ -18,6 +22,7 @@ describe('RegistrationService', () => {
 	let service: RegistrationService;
 	let registrationRepo: DeepMocked<RegistrationRepo>;
 	let roleService: DeepMocked<RoleService>;
+	let roomMembershipService: DeepMocked<RoomMembershipService>;
 	let schoolService: DeepMocked<SchoolService>;
 	let userService: DeepMocked<UserService>;
 
@@ -42,6 +47,10 @@ describe('RegistrationService', () => {
 					useValue: createMock<RoleService>(),
 				},
 				{
+					provide: RoomMembershipService,
+					useValue: createMock<RoomMembershipService>(),
+				},
+				{
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
 				},
@@ -55,6 +64,7 @@ describe('RegistrationService', () => {
 		service = module.get<RegistrationService>(RegistrationService);
 		registrationRepo = module.get(RegistrationRepo);
 		roleService = module.get(RoleService);
+		roomMembershipService = module.get(RoomMembershipService);
 		userService = module.get(UserService);
 		schoolService = module.get(SchoolService);
 	});
@@ -251,6 +261,66 @@ describe('RegistrationService', () => {
 				await expect(service.completeRegistration(registration, language, password)).rejects.toThrow(
 					InternalServerErrorException
 				);
+			});
+		});
+
+		describe('when adding the user to rooms', () => {
+			const setup = (registrationProps: Partial<RegistrationProps>) => {
+				const registration = registrationFactory.build(registrationProps);
+				registrationRepo.findBySecret.mockResolvedValue(registration);
+
+				const externalPersonRole = { id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON };
+				roleService.findByName.mockResolvedValue(externalPersonRole);
+
+				const externalPersonsSchool = schoolFactory.build({
+					name: 'External Persons School',
+					purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
+				});
+				schoolService.getSchools.mockResolvedValue([externalPersonsSchool]);
+
+				const savedUser = userDoFactory.buildWithId();
+				userService.save.mockResolvedValue(savedUser);
+
+				return { registration, savedUser };
+			};
+
+			describe('whon no roomId is defined', () => {
+				it('should not attempt to add user to any room', async () => {
+					const { registration } = setup({ roomIds: [] });
+
+					const language = LanguageType.EN;
+					const password = 'SecurePassword123!';
+					await service.completeRegistration(registration, language, password);
+
+					expect(roomMembershipService.addMembersToRoom).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('when one roomId is defined', () => {
+				it('should add user to the room', async () => {
+					const { registration, savedUser } = setup({ roomIds: [new ObjectId().toHexString()] });
+
+					const language = LanguageType.EN;
+					const password = 'SecurePassword123!';
+					await service.completeRegistration(registration, language, password);
+
+					expect(roomMembershipService.addMembersToRoom).toHaveBeenCalledWith(registration.roomIds[0], [savedUser.id]);
+				});
+			});
+
+			describe('when multiple roomIds are defined', () => {
+				it('should add user to all rooms', async () => {
+					const roomId1 = new ObjectId().toHexString();
+					const roomId2 = new ObjectId().toHexString();
+					const { registration, savedUser } = setup({ roomIds: [roomId1, roomId2] });
+
+					const language = LanguageType.EN;
+					const password = 'SecurePassword123!';
+					await service.completeRegistration(registration, language, password);
+
+					expect(roomMembershipService.addMembersToRoom).toHaveBeenCalledWith(roomId1, [savedUser.id]);
+					expect(roomMembershipService.addMembersToRoom).toHaveBeenCalledWith(roomId2, [savedUser.id]);
+				});
 			});
 		});
 	});
