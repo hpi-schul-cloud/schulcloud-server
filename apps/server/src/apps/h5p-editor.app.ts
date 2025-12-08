@@ -3,7 +3,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
-import fileUpload from 'express-fileupload';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
@@ -19,13 +18,6 @@ async function bootstrap(): Promise<void> {
 
 	// create the NestJS application on a seperate express instance
 	const nestExpress = express();
-
-	nestExpress.use(
-		fileUpload({
-			useTempFiles: false,
-			tempFileDir: undefined,
-		})
-	);
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 
@@ -43,13 +35,6 @@ async function bootstrap(): Promise<void> {
 
 	// mount instances
 	const rootExpress = express();
-
-	rootExpress.use(
-		fileUpload({
-			useTempFiles: false,
-			tempFileDir: undefined,
-		})
-	);
 
 	const port = 4448;
 	const basePath = '/api/v3';
