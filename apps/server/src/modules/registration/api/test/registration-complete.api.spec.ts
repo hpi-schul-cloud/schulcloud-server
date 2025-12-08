@@ -1,8 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { roleFactory } from '@modules/management/seed-data/factory/role.factory';
-import { schoolEntityFactory } from '@modules/management/seed-data/factory/school.entity.factory';
+import { groupEntityFactory } from '@modules/group/testing/group-entity.factory';
 import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { roomEntityFactory } from '@modules/room/testing/room-entity.factory';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { SchoolPurpose } from '@modules/school/domain';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -40,15 +44,27 @@ describe('Room Controller (API)', () => {
 
 	describe('POST /registrations/by-secret/:registrationSecret/complete', () => {
 		const setup = async () => {
-			const registration = registrationEntityFactory.build();
-			const externalPersonRole = roleFactory.build({
-				name: RoleName.EXTERNALPERSON,
-			});
 			const externalPersonsSchool = schoolEntityFactory.build({
 				name: 'External Persons School',
 				purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
 			});
-			await em.persistAndFlush([registration, externalPersonRole, externalPersonsSchool]);
+			const room = roomEntityFactory.buildWithId();
+			const group = groupEntityFactory.buildWithId({ users: [] });
+			const roomMembership = roomMembershipEntityFactory.build({
+				roomId: room.id,
+				userGroupId: group.id,
+			});
+			const externalPersonRole = roleFactory.build({
+				name: RoleName.EXTERNALPERSON,
+			});
+			const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+			const guestStudent = roleFactory.build({ name: RoleName.GUESTSTUDENT });
+			const guestTeacher = roleFactory.build({ name: RoleName.GUESTTEACHER });
+			const guestExternalPerson = roleFactory.build({ name: RoleName.GUESTEXTERNALPERSON });
+			await em.persistAndFlush([roomViewerRole, guestStudent, guestTeacher, guestExternalPerson, externalPersonRole]);
+
+			const registration = registrationEntityFactory.build({ roomIds: [roomMembership.roomId] });
+			await em.persistAndFlush([registration, externalPersonsSchool, roomMembership, group, room]);
 			em.clear();
 
 			return { registration, externalPersonRole };
@@ -69,14 +85,14 @@ describe('Room Controller (API)', () => {
 		});
 
 		describe('when the registration exists', () => {
-			it('should return a registration', async () => {
+			it('should return 200', async () => {
 				const { registration } = await setup();
 				const response = await testApiClient.post(`/by-secret/${registration.registrationSecret}/complete`, {
 					language: 'en',
 					password: 'password123',
 				});
 
-				expect(response.status).toBe(HttpStatus.CREATED);
+				expect(response.status).toBe(HttpStatus.OK);
 			});
 		});
 

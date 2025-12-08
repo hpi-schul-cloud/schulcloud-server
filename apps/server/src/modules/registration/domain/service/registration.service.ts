@@ -52,6 +52,7 @@ export class RegistrationService {
 				throw new InternalServerErrorException('User ID is undefined after saving user.');
 			}
 			await this.addUserToRooms(registration.roomIds, user.id);
+			await this.registrationRepo.deleteByIds([registration.id]);
 		}
 	}
 

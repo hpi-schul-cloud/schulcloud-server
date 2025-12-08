@@ -5,6 +5,7 @@ import {
 	Controller,
 	ForbiddenException,
 	Get,
+	HttpCode,
 	HttpStatus,
 	NotFoundException,
 	Param,
@@ -76,6 +77,7 @@ export class RegistrationController {
 	}
 
 	@Post('/by-secret/:registrationSecret/complete')
+	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: 'Complete a registration by its secret' })
 	@ApiResponse({ status: HttpStatus.OK })
 	@ApiResponse({
