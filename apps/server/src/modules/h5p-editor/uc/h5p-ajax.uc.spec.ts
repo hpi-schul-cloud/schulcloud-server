@@ -197,6 +197,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 				mimetype: 'image/jpg',
 				name: 'OriginalFile.jpg',
 				size: 0,
+				tempFilePath: 'unknown.type',
 			};
 
 			expect(result).toBe(mockedResponse);
