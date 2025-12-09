@@ -30,13 +30,14 @@ const createParameter = () => {
 describe(S3ClientAdapter.name, () => {
 	let service: S3ClientAdapter;
 	let client: DeepMocked<S3Client>;
+	let errorHandler: DeepMocked<DomainErrorHandler>;
 
 	beforeAll(() => {
 		const { config } = createParameter();
 
 		const logger = createMock<Logger>();
 		const configuration = createMock<S3Config>(config);
-		const errorHandler = createMock<DomainErrorHandler>();
+		errorHandler = createMock<DomainErrorHandler>();
 		client = createMock<S3Client>({
 			config: {
 				endpoint: () => {
@@ -164,13 +165,52 @@ describe(S3ClientAdapter.name, () => {
 			it('should throw NotFoundException', async () => {
 				const { pathToFile } = setup('NoSuchKey');
 
-				await expect(service.get(pathToFile)).rejects.toThrowError(NotFoundException);
+				await expect(service.get(pathToFile)).rejects.toThrow(NotFoundException);
 			});
 
 			it('should throw error', async () => {
 				const { pathToFile } = setup('Unknown Error');
 
-				await expect(service.get(pathToFile)).rejects.toThrowError(InternalServerErrorException);
+				await expect(service.get(pathToFile)).rejects.toThrow(InternalServerErrorException);
+			});
+		});
+
+		describe('WHEN response body is invalid', () => {
+			const setup = (body: unknown) => {
+				const { pathToFile } = createParameter();
+				const resultObj = {
+					Body: body,
+					ContentType: 'data.ContentType',
+					ContentLength: 'data.ContentLength',
+					ContentRange: 'data.ContentRange',
+					ETag: 'data.ETag',
+				};
+
+				// @ts-expect-error Testcase
+				client.send.mockResolvedValueOnce(resultObj);
+
+				return { pathToFile };
+			};
+
+			it('should throw InternalServerErrorException when Body is undefined', async () => {
+				const { pathToFile } = setup(undefined);
+
+				await expect(service.get(pathToFile)).rejects.toThrow(InternalServerErrorException);
+				await expect(service.get(pathToFile)).rejects.toThrow('S3ClientAdapter:get');
+			});
+
+			it('should throw InternalServerErrorException when Body is not a Readable stream', async () => {
+				const { pathToFile } = setup({ invalid: 'object' });
+
+				await expect(service.get(pathToFile)).rejects.toThrow(InternalServerErrorException);
+				await expect(service.get(pathToFile)).rejects.toThrow('S3ClientAdapter:get');
+			});
+
+			it('should throw InternalServerErrorException when Body is null', async () => {
+				const { pathToFile } = setup(null);
+
+				await expect(service.get(pathToFile)).rejects.toThrow(InternalServerErrorException);
+				await expect(service.get(pathToFile)).rejects.toThrow('S3ClientAdapter:get');
 			});
 		});
 	});
@@ -227,8 +267,8 @@ describe(S3ClientAdapter.name, () => {
 
 				await service.create(pathToFile, file);
 
-				expect(service.createBucket).toBeCalled();
-				expect(createSpy).toBeCalledTimes(2);
+				expect(service.createBucket).toHaveBeenCalled();
+				expect(createSpy).toHaveBeenCalledTimes(2);
 
 				restoreMocks();
 			});
@@ -239,7 +279,10 @@ describe(S3ClientAdapter.name, () => {
 				const { file } = createFile();
 				const { pathToFile } = createParameter();
 				const error = new Error('Connection Error');
-				const expectedError = new InternalServerErrorException('S3ClientAdapter:create', { cause: error });
+				const expectedError = new InternalServerErrorException('S3ClientAdapter:create', {
+					cause: error,
+					description: undefined,
+				});
 
 				const uploadDoneMock = jest.spyOn(Upload.prototype, 'done').mockRejectedValueOnce(error);
 
@@ -308,7 +351,7 @@ describe(S3ClientAdapter.name, () => {
 				// @ts-expect-error should run into error
 				client.send.mockRejectedValue(new S3ServiceException({ name: 'Test error' }));
 
-				await expect(service.moveToTrash([pathToFile])).rejects.toThrowError(InternalServerErrorException);
+				await expect(service.moveToTrash([pathToFile])).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 	});
@@ -343,14 +386,34 @@ describe(S3ClientAdapter.name, () => {
 					);
 				});
 
-				it('should call service.moveToTrash()', async () => {
-					const { pathToFile, directory } = setup();
+				it('should call send() of client with copy objects', async () => {
+					const { directory, bucket } = setup();
 
-					const spyMoveToTrash = jest.spyOn(service, 'moveToTrash');
 					await service.moveDirectoryToTrash(directory);
 
-					expect(spyMoveToTrash).toHaveBeenCalledWith([pathToFile]);
-					expect(spyMoveToTrash).toHaveBeenCalledTimes(1);
+					expect(client.send).toHaveBeenNthCalledWith(
+						2,
+						expect.objectContaining({
+							input: {
+								Bucket: bucket,
+								CopySource: `${bucket}/test/text.txt`,
+								Key: 'trash/test/text.txt',
+							},
+						})
+					);
+				});
+
+				it('should call send() of client with delete objects', async () => {
+					const { directory, bucket } = setup();
+
+					await service.moveDirectoryToTrash(directory);
+
+					expect(client.send).toHaveBeenNthCalledWith(
+						3,
+						expect.objectContaining({
+							input: { Bucket: bucket, Delete: { Objects: [{ Key: 'test/text.txt' }] } },
+						})
+					);
 				});
 			});
 
@@ -359,7 +422,6 @@ describe(S3ClientAdapter.name, () => {
 					const { bucket, directory } = createParameter();
 					const filePath = `${directory}/test.txt`;
 					const nextFilePath = `${directory}/next-test.txt`;
-					const spyMoveToTrash = jest.spyOn(service, 'moveToTrash');
 
 					const expectedResponse = createListObjectsV2CommandOutput.build({
 						Contents: [{ Key: filePath }],
@@ -370,7 +432,12 @@ describe(S3ClientAdapter.name, () => {
 
 					// @ts-expect-error ignore parameter type of mock function
 					client.send.mockResolvedValueOnce(expectedResponse);
-					spyMoveToTrash.mockResolvedValueOnce();
+					// Mock for copy operation
+					// @ts-expect-error ignore parameter type of mock function
+					client.send.mockResolvedValueOnce({});
+					// Mock for delete operation
+					// @ts-expect-error ignore parameter type of mock function
+					client.send.mockResolvedValueOnce({});
 
 					const expectedNextResponse = createListObjectsV2CommandOutput.build({
 						Contents: [{ Key: nextFilePath }],
@@ -379,43 +446,69 @@ describe(S3ClientAdapter.name, () => {
 					});
 					// @ts-expect-error ignore parameter type of mock function
 					client.send.mockResolvedValueOnce(expectedNextResponse);
-					spyMoveToTrash.mockResolvedValueOnce();
+					// Mock for copy operation
+					// @ts-expect-error ignore parameter type of mock function
+					client.send.mockResolvedValueOnce({});
+					// Mock for delete operation
+					// @ts-expect-error ignore parameter type of mock function
+					client.send.mockResolvedValueOnce({});
 
-					return { bucket, filePath, nextFilePath, directory, spyMoveToTrash };
+					return { bucket, filePath, nextFilePath, directory };
 				};
 
 				it('should call send() of client with directory path', async () => {
-					const { bucket, directory, nextFilePath } = setup();
+					const { bucket, directory, nextFilePath, filePath } = setup();
 
 					await service.moveDirectoryToTrash(directory);
 
+					// First list operation
 					expect(client.send).toHaveBeenNthCalledWith(
 						1,
 						expect.objectContaining({
 							input: { Bucket: bucket, Prefix: directory, MaxKeys: 1000 },
 						})
 					);
+					// First copy operation
 					expect(client.send).toHaveBeenNthCalledWith(
 						2,
+						expect.objectContaining({
+							input: { Bucket: bucket, CopySource: `${bucket}/${filePath}`, Key: `trash/${filePath}` },
+						})
+					);
+					// First delete operation
+					expect(client.send).toHaveBeenNthCalledWith(
+						3,
+						expect.objectContaining({
+							input: { Bucket: bucket, Delete: { Objects: [{ Key: filePath }] } },
+						})
+					);
+					// Second list operation (with continuation token)
+					expect(client.send).toHaveBeenNthCalledWith(
+						4,
 						expect.objectContaining({
 							input: { Bucket: bucket, Prefix: directory, ContinuationToken: nextFilePath, MaxKeys: 1000 },
 						})
 					);
-				});
-
-				it('should call service.moveToTrash()', async () => {
-					const { filePath, nextFilePath, directory, spyMoveToTrash } = setup();
-
-					await service.moveDirectoryToTrash(directory);
-
-					expect(spyMoveToTrash).toHaveBeenCalledWith([filePath]);
-					expect(spyMoveToTrash).toHaveBeenCalledWith([nextFilePath]);
+					// Second copy operation
+					expect(client.send).toHaveBeenNthCalledWith(
+						5,
+						expect.objectContaining({
+							input: { Bucket: bucket, CopySource: `${bucket}/${nextFilePath}`, Key: `trash/${nextFilePath}` },
+						})
+					);
+					// Second delete operation
+					expect(client.send).toHaveBeenNthCalledWith(
+						6,
+						expect.objectContaining({
+							input: { Bucket: bucket, Delete: { Objects: [{ Key: nextFilePath }] } },
+						})
+					);
 				});
 			});
 
 			describe('When contents contain invalid keys', () => {
 				const setup = () => {
-					const { pathToFile } = createParameter();
+					const { pathToFile, bucket } = createParameter();
 					const expectedResponse = createListObjectsV2CommandOutput.build({
 						Contents: [{ Key: undefined }],
 						IsTruncated: false,
@@ -424,16 +517,16 @@ describe(S3ClientAdapter.name, () => {
 					// @ts-expect-error ignore parameter type of mock function
 					client.send.mockResolvedValueOnce(expectedResponse);
 
-					return { pathToFile };
+					return { pathToFile, bucket };
 				};
 
-				it('should not call moveToTrash()', async () => {
+				it('should call client send with correct params', async () => {
 					const { pathToFile } = setup();
 
-					const spyMoveToTrash = jest.spyOn(service, 'moveToTrash');
 					await service.moveDirectoryToTrash(pathToFile);
 
-					expect(spyMoveToTrash).toHaveBeenCalledWith([]);
+					// Only called once for listing objects
+					expect(client.send).toHaveBeenCalledTimes(1);
 				});
 			});
 
@@ -455,7 +548,7 @@ describe(S3ClientAdapter.name, () => {
 				it('should return InternalServerErrorException', async () => {
 					const { pathToFile, expectedError } = setup();
 
-					await expect(service.moveDirectoryToTrash(pathToFile)).rejects.toThrowError(expectedError);
+					await expect(service.moveDirectoryToTrash(pathToFile)).rejects.toThrow(expectedError);
 				});
 			});
 		});
@@ -497,7 +590,7 @@ describe(S3ClientAdapter.name, () => {
 				// @ts-expect-error should run into error
 				client.send.mockRejectedValue(new S3ServiceException({ name: 'Test error' }));
 
-				await expect(service.delete([pathToFile])).rejects.toThrowError(InternalServerErrorException);
+				await expect(service.delete([pathToFile])).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 	});
@@ -518,13 +611,13 @@ describe(S3ClientAdapter.name, () => {
 					return { directory };
 				};
 
-				it('should not call deleteDirectory()', async () => {
+				it('should only call client.send once', async () => {
 					const { directory } = setup();
 
-					const spyMoveToTrash = jest.spyOn(service, 'delete');
 					await service.deleteDirectory(directory);
 
-					expect(spyMoveToTrash).toHaveBeenCalledWith([]);
+					// Only called once for listing objects
+					expect(client.send).toHaveBeenCalledTimes(1);
 				});
 			});
 
@@ -571,7 +664,6 @@ describe(S3ClientAdapter.name, () => {
 					const { bucket, directory } = createParameter();
 					const filePath = `${directory}/test.txt`;
 					const nextFilePath = `${directory}/next-test.txt`;
-					const spyDelete = jest.spyOn(service, 'delete');
 
 					const expectedResponse = createListObjectsV2CommandOutput.build({
 						Contents: [{ Key: filePath }],
@@ -582,7 +674,10 @@ describe(S3ClientAdapter.name, () => {
 
 					// @ts-expect-error ignore parameter type of mock function
 					client.send.mockResolvedValueOnce(expectedResponse);
-					spyDelete.mockResolvedValueOnce();
+
+					// Mock for delete operation
+					// @ts-expect-error ignore parameter type of mock function
+					client.send.mockResolvedValueOnce({});
 
 					const expectedNextResponse = createListObjectsV2CommandOutput.build({
 						Contents: [{ Key: nextFilePath }],
@@ -592,37 +687,47 @@ describe(S3ClientAdapter.name, () => {
 
 					// @ts-expect-error ignore parameter type of mock function
 					client.send.mockResolvedValueOnce(expectedNextResponse);
-					spyDelete.mockResolvedValueOnce();
 
-					return { bucket, filePath, nextFilePath, directory, spyDelete };
+					// Mock for delete operation
+					// @ts-expect-error ignore parameter type of mock function
+					client.send.mockResolvedValueOnce({});
+
+					return { bucket, filePath, nextFilePath, directory };
 				};
 
 				it('should call send() of client with directory path', async () => {
-					const { bucket, directory, nextFilePath } = setup();
+					const { bucket, directory, nextFilePath, filePath } = setup();
 
 					await service.deleteDirectory(directory);
 
+					// First list operation
 					expect(client.send).toHaveBeenNthCalledWith(
 						1,
 						expect.objectContaining({
 							input: { Bucket: bucket, Prefix: directory, MaxKeys: 1000 },
 						})
 					);
+					// First delete operation
 					expect(client.send).toHaveBeenNthCalledWith(
 						2,
+						expect.objectContaining({
+							input: { Bucket: bucket, Delete: { Objects: [{ Key: filePath }] } },
+						})
+					);
+					// Second list operation (with continuation token)
+					expect(client.send).toHaveBeenNthCalledWith(
+						3,
 						expect.objectContaining({
 							input: { Bucket: bucket, Prefix: directory, ContinuationToken: nextFilePath, MaxKeys: 1000 },
 						})
 					);
-				});
-
-				it('should call service.delete()', async () => {
-					const { filePath, nextFilePath, directory, spyDelete } = setup();
-
-					await service.deleteDirectory(directory);
-
-					expect(spyDelete).toHaveBeenCalledWith([filePath]);
-					expect(spyDelete).toHaveBeenCalledWith([nextFilePath]);
+					// Second delete operation
+					expect(client.send).toHaveBeenNthCalledWith(
+						4,
+						expect.objectContaining({
+							input: { Bucket: bucket, Delete: { Objects: [{ Key: nextFilePath }] } },
+						})
+					);
 				});
 			});
 
@@ -669,7 +774,8 @@ describe(S3ClientAdapter.name, () => {
 				const { pathToFile } = createParameter();
 				const filePath = 'directory/test.txt';
 				const error = new Error('testError');
-				// @ts-expect-error Testcase
+
+				// @ts-expect-error ignore parameter type of mock function
 				client.send.mockRejectedValueOnce(error);
 
 				const expectedError = new InternalServerErrorException(
@@ -683,7 +789,7 @@ describe(S3ClientAdapter.name, () => {
 			it('should return InternalServerErrorException', async () => {
 				const { pathToFile, expectedError } = setup();
 
-				await expect(service.deleteDirectory(pathToFile)).rejects.toThrowError(expectedError);
+				await expect(service.deleteDirectory(pathToFile)).rejects.toThrow(expectedError);
 			});
 		});
 
@@ -691,7 +797,7 @@ describe(S3ClientAdapter.name, () => {
 			const setup = () => {
 				const { pathToFile } = createParameter();
 				const filePath = 'directory/test.txt';
-				const error = new Error('S3ClientAdapter:delete');
+				const error = new Error('Delete failed');
 
 				const expectedResponse = createListObjectsV2CommandOutput.build({
 					Contents: [{ Key: filePath }],
@@ -701,8 +807,8 @@ describe(S3ClientAdapter.name, () => {
 				// @ts-expect-error ignore parameter type of mock function
 				client.send.mockResolvedValueOnce(expectedResponse);
 
-				// @ts-expect-error Testcase
-				client.send.mockRejectedValueOnce();
+				// @ts-expect-error ignore parameter type of mock function
+				client.send.mockRejectedValueOnce(error);
 
 				const expectedError = new InternalServerErrorException(
 					'S3ClientAdapter:deleteDirectory',
@@ -715,7 +821,7 @@ describe(S3ClientAdapter.name, () => {
 			it('should return InternalServerErrorException', async () => {
 				const { pathToFile, expectedError } = setup();
 
-				await expect(service.deleteDirectory(pathToFile)).rejects.toThrowError(expectedError);
+				await expect(service.deleteDirectory(pathToFile)).rejects.toThrow(expectedError);
 			});
 		});
 	});
@@ -756,8 +862,12 @@ describe(S3ClientAdapter.name, () => {
 		});
 
 		it('should throw an InternalServerErrorException by error', async () => {
+			const { pathToFile } = setup();
+
 			// @ts-expect-error should run into error
-			await expect(service.restore(undefined)).rejects.toThrowError(InternalServerErrorException);
+			client.send.mockRejectedValue(new Error('Test error'));
+
+			await expect(service.restore([pathToFile])).rejects.toThrow(InternalServerErrorException);
 		});
 	});
 
@@ -774,25 +884,50 @@ describe(S3ClientAdapter.name, () => {
 			return { pathsToCopy, bucket };
 		};
 
-		it('should call send() of client with copy objects', async () => {
-			const { pathsToCopy, bucket } = setup();
+		describe('when client send resolves successfully', () => {
+			it('should call send() of client with copy objects', async () => {
+				const { pathsToCopy, bucket } = setup();
 
-			await service.copy(pathsToCopy);
+				await service.copy(pathsToCopy);
 
-			expect(client.send).toHaveBeenCalledWith(
-				expect.objectContaining({
-					input: {
-						Bucket: bucket,
-						CopySource: `${bucket}/trash/test/text.txt`,
-						Key: 'test/text.txt',
-					},
-				})
-			);
+				expect(client.send).toHaveBeenCalledWith(
+					expect.objectContaining({
+						input: {
+							Bucket: bucket,
+							CopySource: `${bucket}/trash/test/text.txt`,
+							Key: 'test/text.txt',
+						},
+					})
+				);
+			});
 		});
 
-		it('should throw an InternalServerErrorException by error', async () => {
-			// @ts-expect-error should run into error
-			await expect(service.copy(undefined)).rejects.toThrowError(InternalServerErrorException);
+		describe('when client send rejects with error', () => {
+			it('should return empty array', async () => {
+				const { pathsToCopy } = setup();
+
+				// @ts-expect-error should run into error
+				client.send.mockRejectedValueOnce(new Error('Test error'));
+
+				const result = await service.copy(pathsToCopy);
+
+				expect(result).toEqual([]);
+			});
+
+			it('should call errorHandler.exec when promises are rejected', async () => {
+				const { pathsToCopy } = setup();
+
+				// @ts-expect-error should run into error
+				client.send.mockRejectedValueOnce(new Error('Test error'));
+
+				await service.copy(pathsToCopy);
+
+				expect(errorHandler.exec).toHaveBeenCalledWith(
+					expect.objectContaining({
+						message: 'S3ClientAdapter:copy:settledPromises',
+					})
+				);
+			});
 		});
 	});
 
@@ -1008,6 +1143,429 @@ describe(S3ClientAdapter.name, () => {
 				const listPromise = service.list({ path });
 
 				await expect(listPromise).rejects.toThrow();
+			});
+		});
+	});
+
+	describe('handleUploadAbortion', () => {
+		const setup = () => {
+			const { pathToFile } = createParameter();
+			const mockUpload = createMock<Upload>();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+			const serviceAsAny = service as any;
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+			const mockLogger = serviceAsAny.logger;
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			return { pathToFile, mockUpload, mockLogger, serviceAsAny };
+		};
+
+		describe('WHEN upload abortion is handled', () => {
+			it('should log warning and call upload.abort() for uploadAlreadyAborted action', () => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { pathToFile, mockUpload, mockLogger, serviceAsAny } = setup();
+				const action = 'uploadAlreadyAborted';
+
+				const loggerWarningSpy = jest.spyOn(mockLogger, 'warning');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				serviceAsAny.handleUploadAbortion(pathToFile, mockUpload, action);
+
+				expect(loggerWarningSpy).toHaveBeenCalledWith(
+					expect.objectContaining({
+						message: 'Upload aborted',
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						payload: expect.objectContaining({
+							action,
+							objectPath: pathToFile,
+							bucket: 'test-bucket',
+						}),
+					})
+				);
+				expect(mockUpload.abort).toHaveBeenCalledTimes(1);
+			});
+
+			it('should log warning and call upload.abort() for uploadAborted action', () => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { pathToFile, mockUpload, mockLogger, serviceAsAny } = setup();
+				const action = 'uploadAborted';
+
+				const loggerWarningSpy = jest.spyOn(mockLogger, 'warning');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				serviceAsAny.handleUploadAbortion(pathToFile, mockUpload, action);
+
+				expect(loggerWarningSpy).toHaveBeenCalledWith(
+					expect.objectContaining({
+						message: 'Upload aborted',
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						payload: expect.objectContaining({
+							action,
+							objectPath: pathToFile,
+							bucket: 'test-bucket',
+						}),
+					})
+				);
+				expect(mockUpload.abort).toHaveBeenCalledTimes(1);
+			});
+
+			it('should log warning and call upload.abort() for uploadStreamError action', () => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { pathToFile, mockUpload, mockLogger, serviceAsAny } = setup();
+				const action = 'uploadStreamError';
+
+				const loggerWarningSpy = jest.spyOn(mockLogger, 'warning');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				serviceAsAny.handleUploadAbortion(pathToFile, mockUpload, action);
+
+				expect(loggerWarningSpy).toHaveBeenCalledWith(
+					expect.objectContaining({
+						message: 'Upload aborted',
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						payload: expect.objectContaining({
+							action,
+							objectPath: pathToFile,
+							bucket: 'test-bucket',
+						}),
+					})
+				);
+				expect(mockUpload.abort).toHaveBeenCalledTimes(1);
+			});
+
+			it('should handle custom action strings', () => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { pathToFile, mockUpload, mockLogger, serviceAsAny } = setup();
+				const customAction = 'customAbortReason';
+
+				const loggerWarningSpy = jest.spyOn(mockLogger, 'warning');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				serviceAsAny.handleUploadAbortion(pathToFile, mockUpload, customAction);
+
+				expect(loggerWarningSpy).toHaveBeenCalledWith(
+					expect.objectContaining({
+						message: 'Upload aborted',
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						payload: expect.objectContaining({
+							action: customAction,
+							objectPath: pathToFile,
+							bucket: 'test-bucket',
+						}),
+					})
+				);
+				expect(mockUpload.abort).toHaveBeenCalledTimes(1);
+			});
+
+			it('should handle different path formats', () => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { mockUpload, mockLogger, serviceAsAny } = setup();
+				const differentPath = 'folder/subfolder/file.pdf';
+				const action = 'uploadAborted';
+
+				const loggerWarningSpy = jest.spyOn(mockLogger, 'warning');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				serviceAsAny.handleUploadAbortion(differentPath, mockUpload, action);
+
+				expect(loggerWarningSpy).toHaveBeenCalledWith(
+					expect.objectContaining({
+						message: 'Upload aborted',
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						payload: expect.objectContaining({
+							action,
+							objectPath: differentPath,
+							bucket: 'test-bucket',
+						}),
+					})
+				);
+				expect(mockUpload.abort).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('WHEN upload.abort() throws an error', () => {
+			it('should throw the error from upload.abort() but still log the warning first', () => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { pathToFile, mockUpload, mockLogger, serviceAsAny } = setup();
+				const action = 'uploadAborted';
+
+				const loggerWarningSpy = jest.spyOn(mockLogger, 'warning');
+				mockUpload.abort.mockImplementation(() => {
+					throw new Error('Abort failed');
+				});
+
+				// Should throw an error when abort fails
+				expect(() => {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+					serviceAsAny.handleUploadAbortion(pathToFile, mockUpload, action);
+				}).toThrow('Abort failed');
+
+				expect(loggerWarningSpy).toHaveBeenCalledWith(
+					expect.objectContaining({
+						message: 'Upload aborted',
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						payload: expect.objectContaining({
+							action,
+							objectPath: pathToFile,
+							bucket: 'test-bucket',
+						}),
+					})
+				);
+				expect(mockUpload.abort).toHaveBeenCalledTimes(1);
+			});
+		});
+	});
+
+	describe('setupUploadErrorHandling', () => {
+		const setup = () => {
+			const { pathToFile } = createParameter();
+			const mockUpload = createMock<Upload>();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+			const serviceAsAny = service as any;
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+			const mockLogger = serviceAsAny.logger;
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			return { pathToFile, mockUpload, serviceAsAny, mockLogger };
+		};
+
+		describe('WHEN file has abortSignal', () => {
+			describe('AND abortSignal is already aborted', () => {
+				it('should call handleUploadAbortion immediately with uploadAlreadyAborted action', () => {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					const { pathToFile, mockUpload, serviceAsAny } = setup();
+					const mockAbortController = new AbortController();
+					mockAbortController.abort();
+
+					const file: File = {
+						data: Readable.from(Buffer.from('test data')),
+						mimeType: 'text/plain',
+						abortSignal: mockAbortController.signal,
+					};
+
+					const handleUploadAbortionSpy = jest.spyOn(serviceAsAny, 'handleUploadAbortion');
+
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+					serviceAsAny.setupUploadErrorHandling(mockUpload, pathToFile, file);
+
+					expect(handleUploadAbortionSpy).toHaveBeenCalledWith(pathToFile, mockUpload, 'uploadAlreadyAborted');
+					expect(handleUploadAbortionSpy).toHaveBeenCalledTimes(1);
+				});
+
+				it('should return early and not add abort event listener', () => {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					const { pathToFile, mockUpload, serviceAsAny } = setup();
+					const mockAbortController = new AbortController();
+					mockAbortController.abort();
+
+					const file: File = {
+						data: Readable.from(Buffer.from('test data')),
+						mimeType: 'text/plain',
+						abortSignal: mockAbortController.signal,
+					};
+
+					const addEventListenerSpy = jest.spyOn(mockAbortController.signal, 'addEventListener');
+					const handleUploadAbortionSpy = jest.spyOn(serviceAsAny, 'handleUploadAbortion');
+
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+					serviceAsAny.setupUploadErrorHandling(mockUpload, pathToFile, file);
+
+					// Should call handleUploadAbortion immediately
+					expect(handleUploadAbortionSpy).toHaveBeenCalledWith(pathToFile, mockUpload, 'uploadAlreadyAborted');
+					// Should not add event listener since it returns early
+					expect(addEventListenerSpy).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('AND abortSignal is not yet aborted', () => {
+				it('should add abort event listener that calls handleUploadAbortion', () => {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					const { pathToFile, mockUpload, serviceAsAny } = setup();
+					const mockAbortController = new AbortController();
+
+					const file: File = {
+						data: Readable.from(Buffer.from('test data')),
+						mimeType: 'text/plain',
+						abortSignal: mockAbortController.signal,
+					};
+
+					const handleUploadAbortionSpy = jest.spyOn(serviceAsAny, 'handleUploadAbortion');
+
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+					serviceAsAny.setupUploadErrorHandling(mockUpload, pathToFile, file);
+
+					// Should not call immediately since signal is not aborted
+					expect(handleUploadAbortionSpy).not.toHaveBeenCalled();
+
+					// Trigger the abort signal
+					mockAbortController.abort();
+
+					// Now it should have been called
+					expect(handleUploadAbortionSpy).toHaveBeenCalledWith(pathToFile, mockUpload, 'uploadAborted');
+					expect(handleUploadAbortionSpy).toHaveBeenCalledTimes(1);
+				});
+			});
+		});
+
+		describe('WHEN file has no abortSignal', () => {
+			it('should not call handleUploadAbortion for signal-related events', () => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { pathToFile, mockUpload, serviceAsAny } = setup();
+				const file: File = {
+					data: Readable.from(Buffer.from('test data')),
+					mimeType: 'text/plain',
+					// No abortSignal property
+				};
+
+				const handleUploadAbortionSpy = jest.spyOn(serviceAsAny, 'handleUploadAbortion');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				serviceAsAny.setupUploadErrorHandling(mockUpload, pathToFile, file);
+
+				expect(handleUploadAbortionSpy).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('WHEN file data is a stream', () => {
+			it('should add error event listener to stream', () => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { pathToFile, mockUpload, serviceAsAny } = setup();
+				const mockStream = new PassThrough();
+				const file: File = {
+					data: mockStream,
+					mimeType: 'text/plain',
+				};
+
+				const handleUploadAbortionSpy = jest.spyOn(serviceAsAny, 'handleUploadAbortion');
+				const streamOnSpy = jest.spyOn(mockStream, 'on');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				serviceAsAny.setupUploadErrorHandling(mockUpload, pathToFile, file);
+
+				expect(streamOnSpy).toHaveBeenCalledWith('error', expect.any(Function));
+
+				// Trigger the error event
+				mockStream.emit('error', new Error('Stream error'));
+
+				expect(handleUploadAbortionSpy).toHaveBeenCalledWith(pathToFile, mockUpload, 'uploadStreamError');
+				expect(handleUploadAbortionSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('should work with Readable stream', () => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { pathToFile, mockUpload, serviceAsAny } = setup();
+				const mockStream = Readable.from(['test data']);
+				const file: File = {
+					data: mockStream,
+					mimeType: 'text/plain',
+				};
+
+				const handleUploadAbortionSpy = jest.spyOn(serviceAsAny, 'handleUploadAbortion');
+				const streamOnSpy = jest.spyOn(mockStream, 'on');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				serviceAsAny.setupUploadErrorHandling(mockUpload, pathToFile, file);
+
+				expect(streamOnSpy).toHaveBeenCalledWith('error', expect.any(Function));
+
+				// Trigger the error event
+				mockStream.emit('error', new Error('Stream error'));
+
+				expect(handleUploadAbortionSpy).toHaveBeenCalledWith(pathToFile, mockUpload, 'uploadStreamError');
+			});
+		});
+
+		describe('WHEN file data is not a stream', () => {
+			it('should not add error event listener for Buffer data', () => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { pathToFile, mockUpload, serviceAsAny } = setup();
+				const file: File = {
+					data: Readable.from(Buffer.from('test data')),
+					mimeType: 'text/plain',
+				};
+
+				const handleUploadAbortionSpy = jest.spyOn(serviceAsAny, 'handleUploadAbortion');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				serviceAsAny.setupUploadErrorHandling(mockUpload, pathToFile, file);
+
+				// Should not call handleUploadAbortion since Buffer doesn't have error events
+				expect(handleUploadAbortionSpy).not.toHaveBeenCalled();
+			});
+
+			it('should not add error event listener for string data', () => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { pathToFile, mockUpload, serviceAsAny } = setup();
+				const file: File = {
+					data: Readable.from(['test data string']),
+					mimeType: 'text/plain',
+				};
+
+				const handleUploadAbortionSpy = jest.spyOn(serviceAsAny, 'handleUploadAbortion');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				serviceAsAny.setupUploadErrorHandling(mockUpload, pathToFile, file);
+
+				expect(handleUploadAbortionSpy).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('WHEN file has both abortSignal and stream data', () => {
+			it('should handle both abort signal and stream error events', () => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { pathToFile, mockUpload, serviceAsAny } = setup();
+				const mockAbortController = new AbortController();
+				const mockStream = new PassThrough();
+				const file: File = {
+					data: mockStream,
+					mimeType: 'text/plain',
+					abortSignal: mockAbortController.signal,
+				};
+
+				const handleUploadAbortionSpy = jest.spyOn(serviceAsAny, 'handleUploadAbortion');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				serviceAsAny.setupUploadErrorHandling(mockUpload, pathToFile, file);
+
+				// Trigger abort signal
+				mockAbortController.abort();
+
+				expect(handleUploadAbortionSpy).toHaveBeenCalledWith(pathToFile, mockUpload, 'uploadAborted');
+
+				// Reset spy
+				handleUploadAbortionSpy.mockClear();
+
+				// Trigger stream error
+				mockStream.emit('error', new Error('Stream error'));
+
+				expect(handleUploadAbortionSpy).toHaveBeenCalledWith(pathToFile, mockUpload, 'uploadStreamError');
+				expect(handleUploadAbortionSpy).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('WHEN object has "on" method but is not a stream', () => {
+			it('should still add error listener for objects with "on" method', () => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { pathToFile, mockUpload, serviceAsAny } = setup();
+				interface MockEventEmitter {
+					on: jest.Mock;
+					emit: jest.Mock;
+				}
+
+				const mockEventEmitter: MockEventEmitter = {
+					on: jest.fn(),
+					emit: jest.fn(),
+				};
+
+				const file: File = {
+					data: mockEventEmitter as unknown as Readable,
+					mimeType: 'text/plain',
+				};
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				serviceAsAny.setupUploadErrorHandling(mockUpload, pathToFile, file);
+
+				expect(mockEventEmitter.on).toHaveBeenCalledWith('error', expect.any(Function));
 			});
 		});
 	});
