@@ -31,6 +31,10 @@ import {
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Request } from 'express';
+import { mkdtempSync, unlinkSync } from 'fs';
+import { writeFile } from 'fs/promises';
+import { tmpdir } from 'os';
+import { join } from 'path';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, H5PContentResponse } from '../controller/dto';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
 import { H5PContentRepo } from '../repo';
@@ -132,28 +136,56 @@ export class H5PEditorUc {
 		const user = this.changeUserType(userId);
 		const language = await this.getUserLanguage(userId);
 
-		const result = await this.h5pAjaxEndpoint.postAjax(
-			query.action,
-			body,
-			language,
-			user,
-			contentFile && {
-				data: contentFile.buffer,
-				mimetype: contentFile.mimetype,
-				name: contentFile.originalname,
-				size: contentFile.size,
-			},
-			query.id,
-			undefined,
-			h5pFile && {
-				data: h5pFile.buffer,
-				mimetype: h5pFile.mimetype,
-				name: h5pFile.originalname,
-				size: h5pFile.size,
-			}
-		);
+		let contentData = contentFile?.buffer;
+		let contentTempFilePath = 'unknown.type';
 
-		return result;
+		if (contentFile && contentFile.originalname.endsWith('.svg')) {
+			const tempDir = mkdtempSync(join(tmpdir(), 'h5p-svg-'));
+			const tempFilePath = join(tempDir, contentFile.originalname);
+			await writeFile(tempFilePath, contentFile.buffer, 'utf8');
+			console.log(`SVG file written to temporary location: ${tempFilePath}`);
+			contentData = undefined;
+			contentTempFilePath = tempFilePath;
+		}
+
+		const h5pBuffer = h5pFile?.buffer;
+		const h5pTempFilePath = 'unknown.type';
+
+		try {
+			const result = await this.h5pAjaxEndpoint.postAjax(
+				query.action,
+				body,
+				language,
+				user,
+				contentFile && {
+					data: contentData,
+					mimetype: contentFile.mimetype,
+					name: contentFile.originalname,
+					size: contentFile.size,
+					tempFilePath: contentTempFilePath,
+				},
+				query.id,
+				undefined,
+				h5pFile && {
+					data: h5pBuffer,
+					mimetype: h5pFile.mimetype,
+					name: h5pFile.originalname,
+					size: h5pFile.size,
+					tempFilePath: h5pTempFilePath,
+				}
+			);
+
+			return result;
+		} finally {
+			if (contentTempFilePath !== 'unknown.type') {
+				try {
+					unlinkSync(contentTempFilePath);
+					console.log(`Temporary SVG file deleted: ${contentTempFilePath}`);
+				} catch (err) {
+					console.error(`Error deleting temporary SVG file: ${contentTempFilePath}`, err);
+				}
+			}
+		}
 	}
 
 	public async getContentParameters(contentId: string, userId: EntityId): Promise<H5PContentResponse> {
