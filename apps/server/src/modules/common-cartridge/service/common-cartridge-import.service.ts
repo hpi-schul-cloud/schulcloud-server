@@ -130,14 +130,14 @@ export class CommonCartridgeImportService {
 			);
 		const cardsWithResource = cards.filter((card) => card.isResource);
 
-		for await (const card of cardsWithResource) {
-			await this.createCardElementWithResource(parser, columnResponse, card, currentUser);
-		}
-
 		const cardsWithoutResource = cards.filter((card) => !card.isResource);
 
 		for await (const card of cardsWithoutResource) {
 			await this.createCard(parser, columnResponse, card, currentUser);
+		}
+
+		for await (const card of cardsWithResource) {
+			await this.createCardElementWithResource(parser, columnResponse, card, currentUser);
 		}
 	}
 
@@ -167,9 +167,10 @@ export class CommonCartridgeImportService {
 		const cardElements = organizations.filter(
 			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
 		);
-		await Promise.all(
-			cardElements.map((cardElement) => this.createCardElement(parser, card.id, cardElement, currentUser))
-		);
+
+		for await (const cardElement of cardElements) {
+			await this.createCardElement(parser, card.id, cardElement, currentUser);
+		}
 	}
 
 	private async createCardElement(
