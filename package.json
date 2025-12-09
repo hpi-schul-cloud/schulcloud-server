@@ -150,7 +150,8 @@
 		},
 		"@mikro-orm/migrations-mongodb": {
 			"mongodb": "^4.17.0"
-		}
+		},
+		"validator": "^13.15.23"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "3.617.0",
@@ -199,12 +200,12 @@
 		"aws-sdk": "^2.1692.0",
 		"axios": "^1.12.2",
 		"bcryptjs": "*",
-		"body-parser": "^1.20.3",
+		"body-parser": "^2.2.1",
 		"bson": "^4.7.2",
 		"cache-manager": "^7.2.4",
 		"cheerio": "^1.0.0",
 		"class-transformer": "^0.5.1",
-		"class-validator": "^0.14.1",
+		"class-validator": "^0.14.3",
 		"commander": "^13.1.0",
 		"compression": "^1.8.1",
 		"cookie": "^1.0.2",
@@ -222,7 +223,7 @@
 		"i18next-fs-backend": "^2.6.0",
 		"iovalkey": "^0.3.1",
 		"jsdom": "^26.1.0",
-		"jsonwebtoken": "^9.0.2",
+		"jsonwebtoken": "^9.0.3",
 		"jwks-rsa": "^3.2.0",
 		"keyv": "^5.5.3",
 		"ldapjs": "git://github.com/hpi-schul-cloud/node-ldapjs.git",
