@@ -30,8 +30,15 @@ export class RoomArrangementRepo {
 		await this.em.flush();
 	}
 
-	// TODO has to be used when the user is deleted
-	// public async deleteArrangementByUserId(userId: EntityId): Promise<void> {
-	// 	await this.em.nativeDelete(RoomArrangementEntity, { userId });
-	// }
+	public async deleteArrangement(userId: EntityId): Promise<EntityId | undefined> {
+		const roomArrangement = await this.em.findOne(RoomArrangementEntity, { userId });
+
+		if (!roomArrangement) {
+			return;
+		}
+
+		await this.em.removeAndFlush(roomArrangement);
+
+		return roomArrangement.id;
+	}
 }
