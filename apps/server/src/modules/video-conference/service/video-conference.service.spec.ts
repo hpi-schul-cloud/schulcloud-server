@@ -127,44 +127,67 @@ describe(VideoConferenceService.name, () => {
 		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 	});
 
-	describe('canGuestJoin', () => {
-		const setup = (isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean) => {
+	describe('canGuestJoinInScope', () => {
+		const setup = (
+			isGuest: boolean,
+			state: VideoConferenceState,
+			waitingRoomEnabled: boolean,
+			conferenceScope: VideoConferenceScope = VideoConferenceScope.ROOM
+		) => {
 			configService.HOST = 'https://api.example.com';
 			return {
 				isGuest,
 				state,
 				waitingRoomEnabled,
+				conferenceScope,
 			};
 		};
 
 		it('should return false if isGuest is true and state is NOT_STARTED', () => {
-			const { isGuest, state, waitingRoomEnabled } = setup(true, VideoConferenceState.NOT_STARTED, true);
+			const { isGuest, state, waitingRoomEnabled, conferenceScope } = setup(
+				true,
+				VideoConferenceState.NOT_STARTED,
+				true
+			);
 
-			const result = service.canGuestJoin(isGuest, state, waitingRoomEnabled);
+			const result = service.canGuestJoinInScope(conferenceScope, isGuest, state, waitingRoomEnabled);
 
 			expect(result).toBe(false);
 		});
 
 		it('should return false if isGuest is true and waitingRoomEnabled is false', () => {
-			const { isGuest, state, waitingRoomEnabled } = setup(true, VideoConferenceState.RUNNING, false);
+			const { isGuest, state, waitingRoomEnabled, conferenceScope } = setup(true, VideoConferenceState.RUNNING, false);
 
-			const result = service.canGuestJoin(isGuest, state, waitingRoomEnabled);
+			const result = service.canGuestJoinInScope(conferenceScope, isGuest, state, waitingRoomEnabled);
 
 			expect(result).toBe(false);
 		});
 
 		it('should return true if isGuest is false and state is STARTED', () => {
-			const { isGuest, state, waitingRoomEnabled } = setup(false, VideoConferenceState.RUNNING, true);
+			const { isGuest, state, waitingRoomEnabled, conferenceScope } = setup(false, VideoConferenceState.RUNNING, true);
 
-			const result = service.canGuestJoin(isGuest, state, waitingRoomEnabled);
+			const result = service.canGuestJoinInScope(conferenceScope, isGuest, state, waitingRoomEnabled);
 
 			expect(result).toBe(true);
 		});
 
 		it('should return true if isGuest is true and waitingRoomEnabled is true', () => {
-			const { isGuest, state, waitingRoomEnabled } = setup(true, VideoConferenceState.RUNNING, true);
+			const { isGuest, state, waitingRoomEnabled, conferenceScope } = setup(true, VideoConferenceState.RUNNING, true);
 
-			const result = service.canGuestJoin(isGuest, state, waitingRoomEnabled);
+			const result = service.canGuestJoinInScope(conferenceScope, isGuest, state, waitingRoomEnabled);
+
+			expect(result).toBe(true);
+		});
+
+		it('should return true for guests when scope is VIDEO_CONFERENCE_ELEMENT', () => {
+			const { isGuest, state, waitingRoomEnabled, conferenceScope } = setup(
+				true,
+				VideoConferenceState.NOT_STARTED,
+				false,
+				VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT
+			);
+
+			const result = service.canGuestJoinInScope(conferenceScope, isGuest, state, waitingRoomEnabled);
 
 			expect(result).toBe(true);
 		});

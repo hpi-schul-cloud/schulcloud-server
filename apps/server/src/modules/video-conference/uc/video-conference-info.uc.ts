@@ -58,7 +58,14 @@ export class VideoConferenceInfoUc {
 			scopeInfo.scopeId
 		);
 
-		if (!this.videoConferenceService.canGuestJoin(isGuest, state, options.moderatorMustApproveJoinRequests)) {
+		if (
+			!this.videoConferenceService.canGuestJoinInScope(
+				scope.scope,
+				isGuest,
+				state,
+				options.moderatorMustApproveJoinRequests
+			)
+		) {
 			throw new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE);
 		}
 
