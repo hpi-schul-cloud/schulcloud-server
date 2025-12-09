@@ -20,7 +20,7 @@ export class RegistrationEntity extends BaseEntityWithTimestamps implements Regi
 
 	@Index()
 	@Property({ nullable: false })
-	registrationHash!: string;
+	registrationSecret!: string;
 
 	@Property({ persist: false })
 	domainObject: Registration | undefined;

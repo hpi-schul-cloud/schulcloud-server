@@ -83,6 +83,11 @@ describe('ShareTokenPermissionService', () => {
 			);
 		});
 
+		it('should throw FeatureDisabledLoggableException if feature is disabled for Card', () => {
+			setup();
+			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Card)).toThrow(FeatureDisabledLoggableException);
+		});
+
 		it('should throw FeatureDisabledLoggableException if feature is disabled for Room', () => {
 			setup();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Room)).toThrow(FeatureDisabledLoggableException);
@@ -95,6 +100,7 @@ describe('ShareTokenPermissionService', () => {
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Lesson)).not.toThrow();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Task)).not.toThrow();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.ColumnBoard)).not.toThrow();
+			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Card)).not.toThrow();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Room)).not.toThrow();
 		});
 

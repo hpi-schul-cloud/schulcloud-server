@@ -1,10 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RegistrationRepo } from '../../repo';
-import { RegistrationCreateProps } from '../do';
-import { RegistrationService } from './registration.service';
 import { registrationFactory } from '../../testing/registration.factory';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { Registration, RegistrationCreateProps } from '../do';
+import { RegistrationService } from './registration.service';
+import { MailService } from '@infra/mail';
 
 describe('RegistrationService', () => {
 	let module: TestingModule;
@@ -18,6 +20,10 @@ describe('RegistrationService', () => {
 				{
 					provide: RegistrationRepo,
 					useValue: createMock<RegistrationRepo>(),
+				},
+				{
+					provide: MailService,
+					useValue: createMock<MailService>(),
 				},
 			],
 		}).compile();
@@ -34,25 +40,71 @@ describe('RegistrationService', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('createRegistration', () => {
-		it('should call repo to save registration', async () => {
-			const props: RegistrationCreateProps = {
-				email: 'test@example.com',
-				firstName: 'John',
-				lastName: 'Doe',
-				roomId: new ObjectId().toHexString(),
-			};
+	describe('createOrUpdateRegistration', () => {
+		const setup = (options?: { existingRegistration?: Registration }) => {
+			registrationRepo.findByEmail.mockResolvedValue(options?.existingRegistration ?? null);
+		};
 
-			await service.createRegistration(props);
+		describe('when registration does exist', () => {
+			it('should call repo to update registration', async () => {
+				const existingRegistration = registrationFactory.build();
+				setup({ existingRegistration });
+				const props: RegistrationCreateProps = {
+					email: existingRegistration.email,
+					firstName: 'Jane',
+					lastName: 'Smith',
+					roomId: new ObjectId().toHexString(),
+				};
 
-			expect(registrationRepo.save).toHaveBeenCalledWith(
-				expect.objectContaining({
-					email: props.email,
+				const expectedParameterToSave = registrationFactory.build({
+					...existingRegistration.getProps(),
 					firstName: props.firstName,
 					lastName: props.lastName,
-					roomIds: [props.roomId],
-				})
-			);
+					roomIds: [...existingRegistration.roomIds, props.roomId],
+				});
+
+				await service.createOrUpdateRegistration(props);
+
+				expect(registrationRepo.save).toHaveBeenCalledWith(expectedParameterToSave);
+			});
+		});
+
+		describe('when registration does not exist', () => {
+			it('should call repo to save registration', async () => {
+				setup();
+				const props: RegistrationCreateProps = {
+					email: 'test@example.com',
+					firstName: 'John',
+					lastName: 'Doe',
+					roomId: new ObjectId().toHexString(),
+				};
+
+				await service.createOrUpdateRegistration(props);
+
+				expect(registrationRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						email: props.email,
+						firstName: props.firstName,
+						lastName: props.lastName,
+						roomIds: [props.roomId],
+					})
+				);
+			});
+
+			describe('when email domain is forbidden', () => {
+				it('should throw an error', async () => {
+					const props: RegistrationCreateProps = {
+						email: 'test@10mail.org',
+						firstName: 'John',
+						lastName: 'Doe',
+						roomId: new ObjectId().toHexString(),
+					};
+
+					await expect(service.createOrUpdateRegistration(props)).rejects.toThrow(BadRequestException);
+
+					expect(registrationRepo.save).not.toHaveBeenCalled();
+				});
+			});
 		});
 	});
 
@@ -89,16 +141,16 @@ describe('RegistrationService', () => {
 		it('should call repo to get registration by hash', async () => {
 			const hash = 'someRandomHash';
 
-			await service.getSingleRegistrationByHash(hash);
+			await service.getSingleRegistrationBySecret(hash);
 
-			expect(registrationRepo.findByHash).toHaveBeenCalledWith(hash);
+			expect(registrationRepo.findBySecret).toHaveBeenCalledWith(hash);
 		});
 
 		it('should return registration', async () => {
 			const registration = registrationFactory.build();
-			registrationRepo.findByHash.mockResolvedValue(registration);
+			registrationRepo.findBySecret.mockResolvedValue(registration);
 
-			const result = await service.getSingleRegistrationByHash('someRandomHash');
+			const result = await service.getSingleRegistrationBySecret('someRandomHash');
 
 			expect(result).toBe(registration);
 		});

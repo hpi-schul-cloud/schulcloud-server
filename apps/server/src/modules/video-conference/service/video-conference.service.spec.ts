@@ -170,11 +170,11 @@ describe(VideoConferenceService.name, () => {
 		});
 	});
 
-	describe('isExpert', () => {
-		describe('when user has EXPERT role for a course conference', () => {
+	describe('isExternalPersonOrTeamExpert', () => {
+		describe('when user has EXTERNALPERSON role for a course conference', () => {
 			const setup = () => {
 				const user = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
@@ -193,7 +193,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.hasExpertRole(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -201,16 +201,16 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.hasExpertRole(userId, conferenceScope, scopeId);
+				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
 		});
 
-		describe('when user has EXPERT role for a room', () => {
+		describe('when user has EXTERNALPERSON role for a room', () => {
 			const setup = () => {
 				const user = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
@@ -229,7 +229,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.hasExpertRole(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -237,16 +237,16 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.hasExpertRole(userId, conferenceScope, scopeId);
+				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
 		});
 
-		describe('when user has EXPERT role for a video conference element', () => {
+		describe('when user has EXTERNALPERSON role for a video conference element', () => {
 			const setup = () => {
 				const user = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
@@ -265,7 +265,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.hasExpertRole(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -273,7 +273,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.hasExpertRole(userId, conferenceScope, scopeId);
+				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -298,7 +298,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call the user service to find the user by id', async () => {
 				const { userId, scopeId } = setup();
 
-				await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
+				await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -306,18 +306,18 @@ describe(VideoConferenceService.name, () => {
 			it('should return false', async () => {
 				const { userId, scopeId } = setup();
 
-				const result = await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
+				const result = await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(result).toBe(false);
 			});
 		});
 
-		describe('when user has the EXPERT role and an additional role for a course conference', () => {
+		describe('when user has the EXTERNALEXPERT role and an additional role for a course conference', () => {
 			const setup = () => {
 				const user = userDoFactory
 					.withRoles([
 						{ id: new ObjectId().toHexString(), name: RoleName.STUDENT },
-						{ id: new ObjectId().toHexString(), name: RoleName.EXPERT },
+						{ id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON },
 					])
 					.buildWithId();
 				const userId = user.id as EntityId;
@@ -334,7 +334,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return false', async () => {
 				const { userId, scopeId } = setup();
 
-				const result = await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
+				const result = await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(result).toBe(false);
 				expect(userService.findById).toHaveBeenCalledWith(userId);
@@ -360,16 +360,17 @@ describe(VideoConferenceService.name, () => {
 			it('should throw a BadRequestException', async () => {
 				const { userId, scopeId } = setup();
 
-				const func = () => service.hasExpertRole(userId, 'invalid-scope' as VideoConferenceScope, scopeId);
+				const func = () =>
+					service.isExternalPersonOrTeamExpert(userId, 'invalid-scope' as VideoConferenceScope, scopeId);
 
 				await expect(func()).rejects.toThrow(new BadRequestException('Unknown scope name.'));
 			});
 		});
 
-		describe('when user has EXPERT role for a event conference', () => {
+		describe('when user has EXTERNALPERSON role for a event conference', () => {
 			const setup = () => {
 				const user = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
@@ -394,7 +395,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.hasExpertRole(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -402,7 +403,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call teamRepo.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.hasExpertRole(userId, conferenceScope, scopeId);
+				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(teamRepo.findById).toHaveBeenCalledWith(scopeId);
 			});
@@ -426,7 +427,8 @@ describe(VideoConferenceService.name, () => {
 			it('should throw a ForbiddenException', async () => {
 				const { scopeId } = setup();
 
-				const func = async () => service.hasExpertRole('nonexistentUserId', VideoConferenceScope.EVENT, scopeId);
+				const func = async () =>
+					service.isExternalPersonOrTeamExpert('nonexistentUserId', VideoConferenceScope.EVENT, scopeId);
 
 				await expect(func()).rejects.toThrow(new ForbiddenException(ErrorStatus.UNKNOWN_USER));
 			});
@@ -1243,7 +1245,7 @@ describe(VideoConferenceService.name, () => {
 			const roomUser = userFactory.buildWithId();
 			const scopeId = new ObjectId().toHexString();
 			const team = teamFactory
-				.withRoleAndUserId(roleFactory.build({ name: RoleName.EXPERT }), new ObjectId().toHexString())
+				.withRoleAndUserId(roleFactory.build({ name: RoleName.EXTERNALPERSON }), new ObjectId().toHexString())
 				.build();
 			const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 			const group = groupFactory.build({

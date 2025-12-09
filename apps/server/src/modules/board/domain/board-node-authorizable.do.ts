@@ -71,6 +71,7 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 				Permission.BOARD_MANAGE_READERS_CAN_EDIT,
 				Permission.BOARD_MANAGE,
 				Permission.BOARD_SHARE_BOARD,
+				Permission.BOARD_RELOCATE_CONTENT,
 			];
 		}
 

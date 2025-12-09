@@ -24,7 +24,6 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { RequestLoggingInterceptor } from '@shared/common/interceptor';
 import { Request, Response } from 'express';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeImportBodyParams, CourseExportBodyParams, CourseQueryParams, ExportCourseParams } from './dto';
@@ -37,7 +36,6 @@ export class CommonCartridgeController {
 	constructor(private readonly commonCartridgeUC: CommonCartridgeUc) {}
 
 	@Post('export/:courseId')
-	@UseInterceptors(RequestLoggingInterceptor)
 	public async exportCourse(
 		@Param() exportCourseParams: ExportCourseParams,
 		@Query() queryParams: CourseQueryParams,

@@ -129,6 +129,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.SYSTEM_VIEW,
 			Permission.SCHOOL_TOOL_ADMIN,
 			Permission.USER_CHANGE_OWN_NAME,
+			Permission.SCHOOL_LIST_ROOM_MEMBERS,
 		],
 	},
 	superhero: {
@@ -223,6 +224,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.HOMEWORK_CREATE,
 			Permission.HOMEWORK_EDIT,
 			Permission.CONTEXT_TOOL_ADMIN,
+			Permission.SCHOOL_LIST_ROOM_MEMBERS,
 		],
 	},
 	student: {
@@ -237,6 +239,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.TEAM_CREATE,
 			Permission.TEAM_EDIT,
 			Permission.TOOL_CREATE_ETHERPAD,
+			Permission.SCHOOL_LIST_ROOM_MEMBERS,
 		],
 	},
 	helpdesk: {
@@ -303,7 +306,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		permissions: [
 			Permission.DEFAULT_FILE_PERMISSIONS,
 			Permission.INVITE_ADMINISTRATORS,
-			Permission.INVITE_EXPERTS,
+			Permission.INVITE_EXTERNAL_PERSONS,
 			Permission.NEWS_EDIT,
 			Permission.REMOVE_MEMBERS,
 			Permission.RENAME_TEAM,
@@ -408,11 +411,11 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		roles: [RoleName.COURSETEACHER],
 		permissions: [],
 	},
-	expert: {
+	externalPerson: {
 		id: '5bd0066a90a9ee0cb4947a9c',
 		createdAt: '2017-01-01T00:06:37.148Z',
 		updatedAt: '2022-05-20T13:33:18.077Z',
-		name: RoleName.EXPERT,
+		name: RoleName.EXTERNALPERSON,
 		roles: [RoleName.USER],
 		permissions: [],
 	},
@@ -433,7 +436,7 @@ export const roleOrder = [
 	'courseTeacher',
 	'courseSubstitutionTeacher',
 	'courseAdministrator',
-	'expert',
+	'externalPerson',
 ];
 
 export function generateRole(localRoleSeedData?: { [key: string | RoleName]: SeedRoleProperties }) {
