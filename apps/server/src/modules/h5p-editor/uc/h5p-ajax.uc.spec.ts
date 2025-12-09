@@ -7,9 +7,26 @@ import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import * as fs from 'fs';
+import * as fsPromises from 'fs/promises';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
+
+jest.mock('fs', (): unknown => {
+	return {
+		...jest.requireActual('fs'),
+		mkdtempSync: jest.fn(),
+		unlinkSync: jest.fn(),
+	};
+});
+
+jest.mock('fs/promises', (): unknown => {
+	return {
+		...jest.requireActual('fs/promises'),
+		writeFile: jest.fn(),
+	};
+});
 
 describe(`${H5PEditorUc.name} Ajax`, () => {
 	let module: TestingModule;
@@ -210,6 +227,56 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 				undefined,
 				undefined,
 				bufferTest
+			);
+		});
+
+		it('should handle SVG files with temporary file creation and deletion', async () => {
+			const { user, language, mockedLumiUser, mockedResponse } = setup();
+			const svgBuffer = Buffer.from('<svg><circle cx="50" cy="50" r="40"/></svg>');
+
+			const mockTempDir = '/tmp/h5p-svg-abc123';
+			const mockTempFilePath = '/tmp/h5p-svg-abc123/test-icon.svg';
+
+			const mkdtempSyncSpy = jest.spyOn(fs, 'mkdtempSync').mockReturnValue(mockTempDir);
+			const writeFileSpy = jest.spyOn(fsPromises, 'writeFile').mockResolvedValueOnce(undefined);
+			const unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync');
+
+			const result = await uc.postAjax(
+				user.userId,
+				{ action: 'files' },
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
+				{
+					fieldname: 'file',
+					buffer: svgBuffer,
+					originalname: 'test-icon.svg',
+					size: svgBuffer.length,
+					mimetype: 'image/svg+xml',
+				} as Express.Multer.File
+			);
+
+			const svgFileTest = {
+				data: undefined, // SVG files have data set to undefined due to temp file handling
+				mimetype: 'image/svg+xml',
+				name: 'test-icon.svg',
+				size: svgBuffer.length,
+				tempFilePath: mockTempFilePath,
+			};
+
+			// Verify fs function calls
+			expect(mkdtempSyncSpy).toHaveBeenCalledWith(expect.stringMatching(/.*h5p-svg-/));
+			expect(writeFileSpy).toHaveBeenCalledWith(mockTempFilePath, svgBuffer, 'utf8');
+			expect(unlinkSyncSpy).toHaveBeenCalledWith(mockTempFilePath);
+
+			expect(result).toBe(mockedResponse);
+			expect(ajaxEndpoint.postAjax).toHaveBeenCalledWith(
+				'files',
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
+				language.valueOf(),
+				mockedLumiUser,
+				svgFileTest,
+				undefined,
+				undefined,
+				undefined
 			);
 		});
 	});
