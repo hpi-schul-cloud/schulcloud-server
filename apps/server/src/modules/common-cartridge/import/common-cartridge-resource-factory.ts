@@ -2,6 +2,7 @@ import { sanitizeRichText } from '@shared/controller/transformer';
 import { InputFormat } from '@shared/domain/types';
 import AdmZip from 'adm-zip';
 import { load } from 'cheerio';
+import { File as BufferFile } from 'node:buffer';
 import { CommonCartridgeXmlResourceType } from './common-cartridge-import.enums';
 import {
 	CommonCartridgeFileFolderResourceProps,
@@ -125,7 +126,8 @@ export class CommonCartridgeResourceFactory {
 			return undefined;
 		}
 
-		const file = new File([buffer], fileName, {});
+		const bufferFile = new BufferFile([buffer], fileName, {});
+		const file = bufferFile as unknown as File;
 
 		return { file, fileName };
 	}
