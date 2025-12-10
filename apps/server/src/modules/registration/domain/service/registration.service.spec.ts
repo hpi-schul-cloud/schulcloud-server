@@ -287,7 +287,7 @@ describe('RegistrationService', () => {
 			});
 		});
 
-		describe('when firstname  is missing', () => {
+		describe('when firstname is missing', () => {
 			it('should throw an error', async () => {
 				const registration = registrationFactory.build({ firstName: undefined });
 				registrationRepo.findBySecret.mockResolvedValue(registration);
