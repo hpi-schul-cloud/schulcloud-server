@@ -39,14 +39,13 @@ export class DeleteUserRoomDataStep extends SagaStep<'deleteUserData'> {
 		return result;
 	}
 
-	public async removeUserReferences(userId: EntityId): Promise<StepOperationReport> {
+	private async removeUserReferences(userId: EntityId): Promise<StepOperationReport> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable('Deleting user data from Room', this.moduleName, userId, StepStatus.PENDING)
 		);
 
-		const arragementId = await this.roomArrangementRepo.deleteArrangement(userId);
-		const deletedCount = arragementId ? 1 : 0;
-		const deletedIds = arragementId ? [arragementId] : [];
+		const deletedIds = await this.roomArrangementRepo.deleteArrangements(userId);
+		const deletedCount = deletedIds.length;
 
 		const result = StepOperationReportBuilder.build(StepOperationType.DELETE, deletedCount, deletedIds);
 

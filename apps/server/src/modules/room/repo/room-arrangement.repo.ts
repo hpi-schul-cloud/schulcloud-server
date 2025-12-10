@@ -30,15 +30,13 @@ export class RoomArrangementRepo {
 		await this.em.flush();
 	}
 
-	public async deleteArrangement(userId: EntityId): Promise<EntityId | undefined> {
-		const roomArrangement = await this.em.findOne(RoomArrangementEntity, { userId });
+	public async deleteArrangements(userId: EntityId): Promise<EntityId[]> {
+		const roomArrangements = await this.em.find(RoomArrangementEntity, { userId });
 
-		if (!roomArrangement) {
-			return;
-		}
+		this.em.remove(roomArrangements);
+		await this.em.flush();
 
-		await this.em.removeAndFlush(roomArrangement);
-
-		return roomArrangement.id;
+		const deletedIds: EntityId[] = roomArrangements.map((arrangement) => arrangement.id);
+		return deletedIds;
 	}
 }

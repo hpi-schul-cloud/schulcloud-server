@@ -136,5 +136,48 @@ describe(DeleteUserRoomDataStep.name, () => {
 				expect(result).toEqual(expectedResultWithDeletedRoomArrangement);
 			});
 		});
+
+		describe('when user has more than one room arrangements', () => {
+			const setup = async () => {
+				const user = userFactory.buildWithId();
+				const roomArrangements = roomArrangementEntityFactory.buildList(2, {
+					userId: user.id,
+				});
+
+				await em.persistAndFlush([user, ...roomArrangements]);
+				em.clear();
+
+				return {
+					user,
+					roomArrangement1: roomArrangements[0],
+					roomArrangement2: roomArrangements[1],
+				};
+			};
+
+			it('should delete all arrangements', async () => {
+				const { user, roomArrangement1, roomArrangement2 } = await setup();
+
+				await step.execute({ userId: user.id });
+
+				await expect(em.findOneOrFail(RoomArrangementEntity, { id: roomArrangement1.id })).rejects.toThrow(
+					NotFoundError
+				);
+				await expect(em.findOneOrFail(RoomArrangementEntity, { id: roomArrangement2.id })).rejects.toThrow(
+					NotFoundError
+				);
+			});
+
+			it('should return report with all deleted arrangements', async () => {
+				const { user, roomArrangement1, roomArrangement2 } = await setup();
+
+				const result = await step.execute({ userId: user.id });
+
+				const expectedResultWithDeletedRoomArrangement = StepReportBuilder.build(ModuleName.ROOM, [
+					StepOperationReportBuilder.build(StepOperationType.DELETE, 2, [roomArrangement1.id, roomArrangement2.id]),
+				]);
+
+				expect(result).toEqual(expectedResultWithDeletedRoomArrangement);
+			});
+		});
 	});
 });
