@@ -1,5 +1,5 @@
-import { UsersSearchQueryParams } from '../../controller/dto';
 import { UserSearchQuery } from '../../interfaces';
+import { UsersSearchQueryParams } from '../../controller/dto';
 
 export class SearchQueryHelper {
 	public static setSearchParametersIfExist(query: UserSearchQuery, params?: UsersSearchQueryParams): void {
