@@ -1,7 +1,7 @@
 import { ObjectId } from 'bson';
 import { UserSortQuery } from './user-sort.query';
 
-type DateRangeQuery = Date | Record<string, Date>;
+type DateRangeQuery = Record<string, Date>;
 
 export interface UserSearchQuery {
 	_id?: any;

@@ -3,6 +3,7 @@ import { PaginationParams } from '@shared/controller/dto';
 import { SortOrderNumberType } from '@shared/domain/interface';
 import { Type } from 'class-transformer';
 import { IsDate, IsInt, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+
 export class RangeDate {
 	@IsOptional()
 	@ApiPropertyOptional()
@@ -54,12 +55,14 @@ export class UsersSearchQueryParams extends PaginationParams {
 	@Type(() => RangeDate)
 	createdAt?: RangeDate;
 
-	@IsOptional()
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ type: RangeDate })
+	@ValidateNested()
+	@Type(() => RangeDate)
 	lastLoginSystemChange?: Record<RangeType, Date>;
 
-	@IsOptional()
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ type: RangeDate })
+	@ValidateNested()
+	@Type(() => RangeDate)
 	outdatedSince?: Record<RangeType, Date>;
 
 	@IsOptional()
