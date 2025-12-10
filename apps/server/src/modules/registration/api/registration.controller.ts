@@ -63,7 +63,7 @@ export class RegistrationController {
 	})
 	@ApiResponse({
 		status: HttpStatus.NOT_FOUND,
-		description: 'Invalid registration hash',
+		description: 'Invalid registration secret',
 		type: NotFoundException,
 	})
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
@@ -82,7 +82,7 @@ export class RegistrationController {
 	@ApiResponse({ status: HttpStatus.OK })
 	@ApiResponse({
 		status: HttpStatus.NOT_FOUND,
-		description: 'Invalid registration hash',
+		description: 'Invalid registration secret',
 		type: NotFoundException,
 	})
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
