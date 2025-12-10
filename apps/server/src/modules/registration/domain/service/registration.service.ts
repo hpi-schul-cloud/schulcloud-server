@@ -55,9 +55,6 @@ export class RegistrationService {
 
 	public async cancelRegistrationForRoom(registrationId: string, roomId: string): Promise<Registration | null> {
 		const registration = await this.getSingleRegistrationById(registrationId);
-		if (!registration) {
-			return null;
-		}
 
 		registration.removeRoomId(roomId);
 
@@ -74,7 +71,7 @@ export class RegistrationService {
 		await this.registrationRepo.save(registration);
 	}
 
-	public async getSingleRegistrationById(registrationId: string): Promise<Registration | null> {
+	public async getSingleRegistrationById(registrationId: string): Promise<Registration> {
 		const registrationResult = await this.registrationRepo.findById(registrationId);
 
 		return registrationResult;
