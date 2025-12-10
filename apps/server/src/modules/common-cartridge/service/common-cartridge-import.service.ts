@@ -128,13 +128,16 @@ export class CommonCartridgeImportService {
 			.filter(
 				(organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(columnProps.path)
 			);
+
+		for await (const card of cards) {
+			card.isResource
+				? await this.createCardElementWithResource(parser, columnResponse, card, currentUser)
+				: await this.createCard(parser, columnResponse, card, currentUser);
+		}
 		// const cardsWithResource = cards.filter((card) => card.isResource);
 
 		// const cardsWithoutResource = cards.filter((card) => !card.isResource);
 
-		for await (const card of cards) {
-			await this.createCard(parser, columnResponse, card, currentUser);
-		}
 		// for await (const card of cardsWithoutResource) {
 		// 	await this.createCard(parser, columnResponse, card, currentUser);
 		// }
@@ -162,22 +165,17 @@ export class CommonCartridgeImportService {
 		currentUser: ICurrentUser
 	): Promise<void> {
 		const card = await this.columnClient.createCard(column.id, {});
+		await this.cardClient.updateCardTitle(card.id, {
+			title: cardProps.title,
+		});
 
-		if (cardProps.isResource) {
-			await this.createCardElement(parser, card.id, cardProps, currentUser);
-		} else {
-			await this.cardClient.updateCardTitle(card.id, {
-				title: cardProps.title,
-			});
+		const organizations = parser.getOrganizations();
+		const cardElements = organizations.filter(
+			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
+		);
 
-			const organizations = parser.getOrganizations();
-			const cardElements = organizations.filter(
-				(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
-			);
-
-			for await (const cardElement of cardElements) {
-				await this.createCardElement(parser, card.id, cardElement, currentUser);
-			}
+		for await (const cardElement of cardElements) {
+			await this.createCardElement(parser, card.id, cardElement, currentUser);
 		}
 	}
 
