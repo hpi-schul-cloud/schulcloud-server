@@ -1,8 +1,31 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/dto';
 import { SortOrderNumberType } from '@shared/domain/interface';
-import { IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsDate, IsInt, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+export class RangeDate {
+	@IsOptional()
+	@ApiPropertyOptional()
+	@IsDate()
+	$gt?: Date;
 
+	@IsOptional()
+	@ApiPropertyOptional()
+	@IsDate()
+	$gte?: Date;
+
+	@IsOptional()
+	@ApiPropertyOptional()
+	@IsDate()
+	$lt?: Date;
+
+	@IsOptional()
+	@ApiPropertyOptional()
+	@IsDate()
+	$lte?: Date;
+}
+
+export type RangeType = '$gt' | '$gte' | '$lt' | '$lte';
 export class UsersSearchQueryParams extends PaginationParams {
 	@IsInt()
 	@Min(0)
@@ -26,9 +49,10 @@ export class UsersSearchQueryParams extends PaginationParams {
 	@ApiPropertyOptional()
 	classes?: string[];
 
-	@IsOptional()
-	@ApiPropertyOptional()
-	createdAt?: Record<RangeType, Date>;
+	@ApiPropertyOptional({ type: RangeDate })
+	@ValidateNested()
+	@Type(() => RangeDate)
+	createdAt?: RangeDate;
 
 	@IsOptional()
 	@ApiPropertyOptional()
@@ -47,5 +71,3 @@ export class UsersSearchQueryParams extends PaginationParams {
 	@ApiPropertyOptional()
 	users?: string[];
 }
-
-export type RangeType = '$gt' | '$gte' | '$lt' | '$lte';
