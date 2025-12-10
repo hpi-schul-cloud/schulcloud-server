@@ -79,13 +79,21 @@ export class RegistrationController {
 	@Post('/by-secret/:registrationSecret/complete')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: 'Complete a registration by its secret' })
-	@ApiResponse({ status: HttpStatus.OK })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Registration completed successfully. User and Useraccount were created.',
+	})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({
+		status: HttpStatus.FORBIDDEN,
+		description: 'The "registration for external person"-feature is disabled.',
+		type: ForbiddenException,
+	})
 	@ApiResponse({
 		status: HttpStatus.NOT_FOUND,
-		description: 'Invalid registration secret',
+		description: 'The registration secret does not belong to an existing registration.',
 		type: NotFoundException,
 	})
-	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async completeRegistration(
 		@Param() urlParams: RegistrationBySecretUrlParams,
