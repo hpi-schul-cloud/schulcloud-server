@@ -1,12 +1,12 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { RoomEntity } from '@modules/room';
+import { roomEntityFactory } from '@modules/room/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { registrationEntityFactory, registrationFactory } from '../testing';
 import { RegistrationEntity } from './entity';
 import { RegistrationRepo } from './registration.repo';
-import { roomEntityFactory } from '@modules/room/testing';
-import { RoomEntity } from '@modules/room';
 
 describe('RegistrationRepo', () => {
 	let module: TestingModule;
@@ -155,6 +155,57 @@ describe('RegistrationRepo', () => {
 				expect.arrayContaining([registrationEntityOne.id, registrationEntityTwo.id])
 			);
 			expect(result.map((r) => r.id)).not.toContain(registrationEntityThree.id);
+		});
+	});
+
+	describe('deleteByIds', () => {
+		const setup = async () => {
+			const registrationEntities = registrationEntityFactory.buildList(3);
+			await em.persistAndFlush(registrationEntities);
+			em.clear();
+
+			const registrationIds = registrationEntities.map((r) => r.id.toString());
+
+			return { registrationEntities, registrationIds };
+		};
+
+		it('should be able to delete a single registration by its ID', async () => {
+			const { registrationIds } = await setup();
+			const idToDelete = registrationIds[0];
+			await repo.deleteByIds([idToDelete]);
+
+			const deletedEntity = await em.findOne(RegistrationEntity, { id: idToDelete });
+			expect(deletedEntity).toBeNull();
+
+			const remainingEntities = await em.find(RegistrationEntity, {});
+			expect(remainingEntities.length).toBe(2);
+		});
+
+		it('should be able to delete multiple registrations by their IDs', async () => {
+			const { registrationIds } = await setup();
+			const idsToDelete = registrationIds.slice(0, 2);
+			await repo.deleteByIds(idsToDelete);
+
+			const deletedEntities = await em.find(RegistrationEntity, { id: { $in: idsToDelete } });
+			expect(deletedEntities.length).toBe(0);
+
+			const remainingEntities = await em.find(RegistrationEntity, {});
+			expect(remainingEntities.length).toBe(1);
+		});
+
+		it('should ignore non-existing IDs when deleting', async () => {
+			const { registrationIds } = await setup();
+			const [firstId, secondId, thirdId] = registrationIds;
+			const nonExistingId = 'nonexistent-id';
+			await repo.deleteByIds([firstId, nonExistingId]);
+
+			const deletedEntity = await em.findOne(RegistrationEntity, { id: firstId });
+			expect(deletedEntity).toBeNull();
+
+			const remainingEntities = await em.find(RegistrationEntity, {});
+			const remainingIds = remainingEntities.map((r) => r.id);
+			expect(remainingIds).toEqual([secondId, thirdId]);
+			expect(remainingEntities.length).toBe(2);
 		});
 	});
 });
