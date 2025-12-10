@@ -1,6 +1,6 @@
 import { LegacyLogger } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { DefaultEncryptionService, EncryptionService, LdapEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
 import { UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { EntityManager } from '@mikro-orm/mongodb';
@@ -45,7 +45,6 @@ export class DatabaseManagementUc {
 		private readonly logger: LegacyLogger,
 		private em: EntityManager,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService,
-		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: EncryptionService,
 		private readonly mediaSourcesSeedDataService: MediaSourcesSeedDataService,
 		private readonly systemsSeedDataService: SystemsSeedDataService,
 		private readonly externalToolsSeedDataService: ExternalToolsSeedDataService,
@@ -411,9 +410,6 @@ export class DatabaseManagementUc {
 			}
 			if (system.oidcConfig?.clientSecret) {
 				system.oidcConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oidcConfig.clientSecret);
-			}
-			if (system.ldapConfig?.searchUserPassword) {
-				system.ldapConfig.searchUserPassword = this.ldapEncryptionService.encrypt(system.ldapConfig.searchUserPassword);
 			}
 		});
 		return systems;

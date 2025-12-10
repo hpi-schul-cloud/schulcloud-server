@@ -1,7 +1,7 @@
+import { LegacyLogger, LoggerModule } from '@core/logger';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LegacyLogger, LoggerModule } from '@core/logger';
-import { DefaultEncryptionService, LdapEncryptionService } from './encryption.interface';
+import { DefaultEncryptionService } from './encryption.interface';
 import { SymmetricKeyEncryptionService } from './encryption.service';
 
 function encryptionProviderFactory(configService: ConfigService, logger: LegacyLogger, aesKey: string) {
@@ -18,13 +18,7 @@ function encryptionProviderFactory(configService: ConfigService, logger: LegacyL
 				encryptionProviderFactory(configService, logger, 'AES_KEY'),
 			inject: [ConfigService, LegacyLogger],
 		},
-		{
-			provide: LdapEncryptionService,
-			useFactory: (configService: ConfigService, logger: LegacyLogger) =>
-				encryptionProviderFactory(configService, logger, 'LDAP_PASSWORD_ENCRYPTION_KEY'),
-			inject: [ConfigService, LegacyLogger],
-		},
 	],
-	exports: [DefaultEncryptionService, LdapEncryptionService],
+	exports: [DefaultEncryptionService],
 })
 export class EncryptionModule {}
