@@ -26,7 +26,6 @@ export class RangeDate {
 	$lte?: Date;
 }
 
-export type RangeType = '$gt' | '$gte' | '$lt' | '$lte';
 export class UsersSearchQueryParams extends PaginationParams {
 	@IsInt()
 	@Min(0)
