@@ -42,18 +42,15 @@ export class RegistrationService {
 		password: string
 	): Promise<void> {
 		const userDo = await this.createUser(registration, language);
-		if (userDo) {
-			const user = await this.userService.save(userDo);
-			const account = this.createAccount(user, password);
-			if (account) {
-				await this.accountService.save(account);
-			}
-			if (user.id === undefined) {
-				throw new InternalServerErrorException('User ID is undefined after saving user.');
-			}
-			await this.addUserToRooms(registration.roomIds, user.id);
-			await this.registrationRepo.deleteByIds([registration.id]);
+		const user = await this.userService.save(userDo);
+		const account = this.createAccount(user, password);
+		await this.accountService.save(account);
+
+		if (user.id === undefined) {
+			throw new InternalServerErrorException('User ID is undefined after saving user.');
 		}
+		await this.addUserToRooms(registration.roomIds, user.id);
+		await this.registrationRepo.deleteByIds([registration.id]);
 	}
 
 	public async saveRegistration(registration: Registration): Promise<void> {
@@ -125,7 +122,7 @@ export class RegistrationService {
 		return registration;
 	}
 
-	private async createUser(registration: Registration, language: LanguageType): Promise<UserDo | undefined> {
+	private async createUser(registration: Registration, language: LanguageType): Promise<UserDo> {
 		if (!registration.firstName || !registration.lastName) {
 			throw new BadRequestException('Firstname and Lastname need to be set to create user.');
 		}
