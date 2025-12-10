@@ -25,6 +25,7 @@ export interface CopyFiles {
 export interface File {
 	data: Readable;
 	mimeType: string;
+	abortSignal?: AbortSignal;
 }
 
 export interface ListFiles {
