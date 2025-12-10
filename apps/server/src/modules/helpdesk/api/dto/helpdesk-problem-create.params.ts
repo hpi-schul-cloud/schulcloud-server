@@ -1,104 +1,58 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
-import { HelpdeskProblemType, SupportType } from '../../domain/type';
+import { IsBoolean, IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
+import { SupportType } from '../../domain/type';
 
-export class HelpdeskProblemCreateParams {
+export class HelpdeskCreateParams {
+	@ApiProperty({ enum: SupportType })
+	@IsEnum(SupportType)
+	public supportType!: SupportType;
+
 	@ApiProperty()
 	@IsString()
-	subject!: string;
+	public subject!: string;
 
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	notes?: string;
-
-	@ApiProperty({ enum: HelpdeskProblemType, required: false })
-	@IsOptional()
-	@IsEnum(HelpdeskProblemType)
-	type?: HelpdeskProblemType;
-
-	@ApiProperty({ enum: SupportType, required: false })
-	@IsOptional()
-	@IsEnum(SupportType)
-	supportType?: SupportType;
-
-	@ApiProperty({ required: false })
+	@ApiProperty()
 	@IsOptional()
 	@IsEmail()
-	replyEmail?: string;
+	public replyEmail!: string;
+
+	@ApiProperty({ required: false })
+	@IsOptional()
+	public files?: Express.Multer.File[];
+
+	@ApiProperty({ required: false })
+	@IsOptional()
+	@IsBoolean()
+	public consent?: boolean;
+}
+export class HelpdeskProblemCreateParams extends HelpdeskCreateParams {
+	@ApiProperty()
+	@IsString({ each: true })
+	public problemArea!: string[];
+
+	@ApiProperty()
+	@IsString()
+	public description!: string;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsString()
-	problemDescription?: string;
+	public device?: string;
+}
+
+export class HelpdeskWishCreateParams extends HelpdeskCreateParams {
+	@ApiProperty({ required: false })
+	@IsOptional()
+	@IsString()
+	public desire?: string;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsString()
-	title?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsArray()
-	files?: unknown[];
+	public benefit?: string;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsString()
-	device?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	deviceUserAgent?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	browserName?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	browserVersion?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	os?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	problemArea?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	role?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	desire?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	benefit?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	acceptanceCriteria?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	cloud?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	schoolName?: string;
+	public acceptanceCriteria?: string;
 }

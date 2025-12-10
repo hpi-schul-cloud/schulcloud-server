@@ -1,11 +1,11 @@
 import { AuthorizationModule } from '@modules/authorization';
-import { UserModule } from '@modules/user';
+import { SchoolModule } from '@modules/school';
 import { Module } from '@nestjs/common';
 import { HelpdeskController, HelpdeskUc } from './api';
 import { HelpdeskModule } from './helpdesk.module';
 
 @Module({
-	imports: [HelpdeskModule, AuthorizationModule, UserModule],
+	imports: [HelpdeskModule, AuthorizationModule, SchoolModule],
 	controllers: [HelpdeskController],
 	providers: [HelpdeskUc],
 })

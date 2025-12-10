@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-interface MailAttachment {
+export interface MailAttachment {
 	base64Content: string;
 
 	mimeType: string;
@@ -7,17 +7,17 @@ interface MailAttachment {
 	name: string;
 }
 
-interface InlineAttachment extends MailAttachment {
+export interface InlineAttachment extends MailAttachment {
 	contentDisposition: 'INLINE';
 
 	contentId: string;
 }
 
-interface AppendedAttachment extends MailAttachment {
+export interface AppendedAttachment extends MailAttachment {
 	contentDisposition: 'ATTACHMENT';
 }
 
-interface MailContent {
+export interface MailContent {
 	subject: string;
 
 	attachments?: (InlineAttachment | AppendedAttachment)[];

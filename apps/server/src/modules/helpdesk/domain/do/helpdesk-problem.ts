@@ -1,13 +1,12 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { HelpdeskProblemState, HelpdeskProblemType, SupportType } from '../type';
+import { SupportType } from '../type';
 
 export interface HelpdeskProblemProps extends AuthorizableObject {
-	id?: EntityId;
+	id: EntityId;
 	subject: string;
 	currentState?: string;
 	targetState?: string;
-	state: HelpdeskProblemState;
 	notes?: string;
 	order?: number;
 	userId?: EntityId;
@@ -15,8 +14,6 @@ export interface HelpdeskProblemProps extends AuthorizableObject {
 	forwardedAt?: Date;
 	createdAt?: Date;
 	updatedAt?: Date;
-	// Additional fields for API communication
-	type?: HelpdeskProblemType;
 	supportType?: SupportType;
 	replyEmail?: string;
 	problemDescription?: string;
@@ -42,7 +39,7 @@ export class HelpdeskProblem extends DomainObject<HelpdeskProblemProps> {
 		super(props);
 	}
 
-	get id(): EntityId | undefined {
+	get id(): EntityId {
 		return this.props.id;
 	}
 
@@ -52,14 +49,6 @@ export class HelpdeskProblem extends DomainObject<HelpdeskProblemProps> {
 
 	set subject(value: string) {
 		this.props.subject = value;
-	}
-
-	get state(): HelpdeskProblemState {
-		return this.props.state;
-	}
-
-	set state(value: HelpdeskProblemState) {
-		this.props.state = value;
 	}
 
 	get notes(): string | undefined {
@@ -98,15 +87,9 @@ export class HelpdeskProblem extends DomainObject<HelpdeskProblemProps> {
 		this.props.forwardedAt = new Date();
 	}
 
-	public updateState(state: HelpdeskProblemState): void {
-		this.props.state = state;
-		this.props.updatedAt = new Date();
-	}
-
 	public getAuthorizableObject(): AuthorizableObject {
 		return {
 			id: this.props.id,
-			schoolId: this.props.schoolId,
 		};
 	}
 }

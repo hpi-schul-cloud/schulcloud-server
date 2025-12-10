@@ -1,21 +1,16 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Inject, Injectable } from '@nestjs/common';
+import { AppendedAttachment, Mail, MailService } from '@infra/mail';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { HelpdeskProblem } from '../do';
-import { HELPDESK_PROBLEM_REPO, HelpdeskProblemRepo } from '../interface';
-import { HelpdeskProblemState, HelpdeskProblemType, SupportType } from '../type';
+import { SupportType } from '../type';
 
 export interface CreateHelpdeskProblemProps {
+	supportType: SupportType;
 	subject: string;
-	schoolId: EntityId;
-	userId?: EntityId;
+	description: string;
+	replyEmail: string;
 	notes?: string;
-	type?: HelpdeskProblemType;
-	supportType?: SupportType;
-	replyEmail?: string;
-	problemDescription?: string;
-	title?: string;
-	files?: unknown[];
+	files?: Express.Multer.File[];
 	device?: string;
 	deviceUserAgent?: string;
 	browserName?: string;
@@ -29,71 +24,53 @@ export interface CreateHelpdeskProblemProps {
 	cloud?: string;
 	schoolName?: string;
 	systemInformation?: string;
+	userId: EntityId;
+	schoolId: EntityId;
 }
 
 @Injectable()
 export class HelpdeskProblemService {
-	constructor(@Inject(HELPDESK_PROBLEM_REPO) private readonly helpdeskProblemRepo: HelpdeskProblemRepo) {}
+	constructor(private readonly emailService: MailService) {}
 
-	async findById(id: EntityId): Promise<HelpdeskProblem> {
-		return this.helpdeskProblemRepo.findById(id);
+	public async createProblem(props: CreateHelpdeskProblemProps): Promise<void> {
+		const attachments = props.files ? this.getAttachments(props.files) : undefined;
+
+		const email: Mail = {
+			recipients: this.getEmailAddresses(props.supportType),
+			mail: {
+				subject: `[Helpdesk][${props.supportType}] ${props.subject}`,
+				plainTextContent: this.createFeedbackText('User', props),
+				attachments,
+			},
+			replyTo: [props.replyEmail],
+		};
+
+		await this.emailService.send(email);
 	}
 
-	async findBySchoolId(schoolId: EntityId, options?: { limit?: number; skip?: number }): Promise<HelpdeskProblem[]> {
-		return this.helpdeskProblemRepo.findBySchoolId(schoolId, options);
-	}
-
-	async create(props: CreateHelpdeskProblemProps): Promise<HelpdeskProblem> {
-		const problem = new HelpdeskProblem({
-			subject: props.subject,
-			schoolId: props.schoolId,
-			userId: props.userId,
-			state: HelpdeskProblemState.OPEN,
-			notes: props.notes,
-			order: 0,
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			...props,
+	private getAttachments(files: Express.Multer.File[]): AppendedAttachment[] {
+		const attachments = files.map(({ buffer, originalname, mimetype }) => {
+			return {
+				mimeType: mimetype,
+				name: originalname,
+				base64Content: buffer.toString('base64'),
+				contentDisposition: 'ATTACHMENT' as const,
+			};
 		});
 
-		// Don't save to database if type is contactHPI (as in original hooks)
-		if (props.type === HelpdeskProblemType.CONTACT_HPI) {
-			return problem;
-		}
-
-		return this.helpdeskProblemRepo.save(problem);
+		return attachments;
 	}
 
-	async update(id: EntityId, updates: Partial<HelpdeskProblem>): Promise<HelpdeskProblem> {
-		const problem = await this.helpdeskProblemRepo.findById(id);
-
-		if (updates.subject !== undefined) {
-			problem.subject = updates.subject;
-		}
-		if (updates.state !== undefined) {
-			problem.updateState(updates.state);
-		}
-		if (updates.notes !== undefined) {
-			problem.notes = updates.notes;
-		}
-
-		return this.helpdeskProblemRepo.save(problem);
+	public async createWish(props: CreateHelpdeskProblemProps): Promise<void> {
+		//await this.sendEmails(props);
+		throw new Error('Method not implemented.');
 	}
 
-	async delete(id: EntityId): Promise<void> {
-		return this.helpdeskProblemRepo.delete(id);
-	}
-
-	public createInfoText(username: string, data: CreateHelpdeskProblemProps): string {
-		return `
-Ein neues Problem wurde gemeldet.
-User: ${username}
-Betreff: ${data.subject}
-Schaue für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der ${data.cloud}.
-
-Mit freundlichen Grüßen
-Deine ${data.cloud}
-		`;
+	private async sendEmails(email: Mail): Promise<void> {
+		// Send to support email addresses
+		//const feedbackText = this.helpdeskProblemService.createFeedbackText(username, data);
+		//const emails = this.helpdeskProblemService.getEmailAddresses(data.supportType);
+		await this.emailService.send(email);
 	}
 
 	public createFeedbackText(username: string, data: CreateHelpdeskProblemProps): string {
@@ -127,7 +104,7 @@ Akzeptanzkriterien: ${data.acceptanceCriteria}
 ${text}
 User meldet folgendes:
 Problem Kurzbeschreibung: ${data.subject}
-Problembeschreibung: ${data.problemDescription}
+Problembeschreibung: ${data.description}
 `;
 			if (data.notes) {
 				text = `

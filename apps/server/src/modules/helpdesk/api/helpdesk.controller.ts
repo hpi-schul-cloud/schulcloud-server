@@ -1,20 +1,9 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
-import {
-	ApiBadRequestResponse,
-	ApiForbiddenResponse,
-	ApiNotFoundResponse,
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-} from '@nestjs/swagger';
+import { Body, Controller, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { ApiBadRequestResponse, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
-import {
-	HelpdeskProblemCreateParams,
-	HelpdeskProblemQueryParams,
-	HelpdeskProblemResponse,
-	HelpdeskProblemUpdateParams,
-} from './dto';
+import { HelpdeskProblemCreateParams, HelpdeskWishCreateParams } from './dto';
 import { HelpdeskUc } from './helpdesk.uc';
 
 @ApiTags('Helpdesk')
@@ -22,74 +11,33 @@ import { HelpdeskUc } from './helpdesk.uc';
 export class HelpdeskController {
 	constructor(private readonly helpdeskUc: HelpdeskUc) {}
 
-	@Get()
-	@JwtAuthentication()
-	@ApiOperation({ summary: 'Get helpdesk problems' })
-	@ApiOkResponse({ description: 'List of helpdesk problems', type: [HelpdeskProblemResponse] })
-	@ApiForbiddenResponse({ description: 'Forbidden' })
-	@ApiBadRequestResponse({ description: 'Request data has invalid format.', type: ApiValidationError })
-	async findProblems(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Query() query: HelpdeskProblemQueryParams
-	): Promise<HelpdeskProblemResponse[]> {
-		const problems = await this.helpdeskUc.findHelpdeskProblems(currentUser.userId, currentUser.schoolId, {
-			limit: query.$limit || 25,
-			skip: query.$skip || 0,
-		});
-		return problems;
-	}
-
-	@Get(':id')
-	@JwtAuthentication()
-	@ApiOperation({ summary: 'Get a specific helpdesk problem' })
-	@ApiOkResponse({ description: 'Helpdesk problem details', type: HelpdeskProblemResponse })
-	@ApiNotFoundResponse({ description: 'Helpdesk problem not found' })
-	@ApiForbiddenResponse({ description: 'Forbidden' })
-	@ApiBadRequestResponse({ description: 'Request data has invalid format.', type: ApiValidationError })
-	async getProblem(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param('id') id: string
-	): Promise<HelpdeskProblemResponse> {
-		return this.helpdeskUc.getHelpdeskProblem(currentUser.userId, id);
-	}
-
-	@Post()
+	@Post('/problem')
 	@JwtAuthentication()
 	@ApiOperation({ summary: 'Create a new helpdesk problem' })
-	@ApiOkResponse({ description: 'Helpdesk problem created successfully', type: HelpdeskProblemResponse })
+	@ApiOkResponse({ description: 'Helpdesk problem created successfully' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.', type: ApiValidationError })
-	async createProblem(
+	@UseInterceptors(FileFieldsInterceptor([{ name: 'file' }]))
+	public async createProblem(
+		@Body() body: HelpdeskProblemCreateParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() body: HelpdeskProblemCreateParams
-	): Promise<HelpdeskProblemResponse | void> {
-		return this.helpdeskUc.createHelpdeskProblem(currentUser.userId, currentUser.schoolId, currentUser.username, body);
+		@UploadedFiles() file?: { file?: Express.Multer.File[] }
+	): Promise<void> {
+		body.files = file?.file;
+
+		await this.helpdeskUc.createHelpdeskProblem(currentUser.userId, body);
 	}
 
-	@Patch(':id')
+	@Post('/wish')
 	@JwtAuthentication()
-	@ApiOperation({ summary: 'Update a helpdesk problem' })
-	@ApiOkResponse({ description: 'Helpdesk problem updated successfully', type: HelpdeskProblemResponse })
-	@ApiNotFoundResponse({ description: 'Helpdesk problem not found' })
+	@ApiOperation({ summary: 'Create a new helpdesk problem' })
+	@ApiOkResponse({ description: 'Helpdesk problem created successfully' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.', type: ApiValidationError })
-	async updateProblem(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param('id') id: string,
-		@Body() body: HelpdeskProblemUpdateParams
-	): Promise<HelpdeskProblemResponse> {
-		return this.helpdeskUc.updateHelpdeskProblem(currentUser.userId, id, body);
-	}
-
-	@Delete(':id')
-	@JwtAuthentication()
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({ summary: 'Delete a helpdesk problem' })
-	@ApiOkResponse({ description: 'Helpdesk problem deleted successfully' })
-	@ApiNotFoundResponse({ description: 'Helpdesk problem not found' })
-	@ApiForbiddenResponse({ description: 'Forbidden' })
-	@ApiBadRequestResponse({ description: 'Request data has invalid format.', type: ApiValidationError })
-	async deleteProblem(@CurrentUser() currentUser: ICurrentUser, @Param('id') id: string): Promise<void> {
-		return this.helpdeskUc.deleteHelpdeskProblem(currentUser.userId, id);
+	public async createWish(
+		@Body() body: HelpdeskWishCreateParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.helpdeskUc.createHelpdeskWish(currentUser.userId, body);
 	}
 }
