@@ -58,12 +58,12 @@ export class UsersSearchQueryParams extends PaginationParams {
 	@ApiPropertyOptional({ type: RangeDate })
 	@ValidateNested()
 	@Type(() => RangeDate)
-	lastLoginSystemChange?: Record<RangeType, Date>;
+	lastLoginSystemChange?: RangeDate;
 
 	@ApiPropertyOptional({ type: RangeDate })
 	@ValidateNested()
 	@Type(() => RangeDate)
-	outdatedSince?: Record<RangeType, Date>;
+	outdatedSince?: RangeDate;
 
 	@IsOptional()
 	@IsString()
