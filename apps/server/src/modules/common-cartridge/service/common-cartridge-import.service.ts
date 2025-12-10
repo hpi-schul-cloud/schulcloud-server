@@ -128,15 +128,20 @@ export class CommonCartridgeImportService {
 			.filter(
 				(organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(columnProps.path)
 			);
-		const cardsWithResource = cards.filter((card) => card.isResource);
+		// const cardsWithResource = cards.filter((card) => card.isResource);
 
-		const cardsWithoutResource = cards.filter((card) => !card.isResource);
+		// const cardsWithoutResource = cards.filter((card) => !card.isResource);
 
-		await Promise.all(cardsWithoutResource.map((card) => this.createCard(parser, columnResponse, card, currentUser)));
+		for await (const card of cards) {
+			await this.createCard(parser, columnResponse, card, currentUser);
+		}
+		// for await (const card of cardsWithoutResource) {
+		// 	await this.createCard(parser, columnResponse, card, currentUser);
+		// }
 
-		await Promise.all(
-			cardsWithResource.map((card) => this.createCardElementWithResource(parser, columnResponse, card, currentUser))
-		);
+		// for await (const card of cardsWithResource) {
+		// 	await this.createCardElementWithResource(parser, columnResponse, card, currentUser);
+		// }
 	}
 
 	private async createCardElementWithResource(
@@ -157,17 +162,22 @@ export class CommonCartridgeImportService {
 		currentUser: ICurrentUser
 	): Promise<void> {
 		const card = await this.columnClient.createCard(column.id, {});
-		await this.cardClient.updateCardTitle(card.id, {
-			title: cardProps.title,
-		});
 
-		const organizations = parser.getOrganizations();
-		const cardElements = organizations.filter(
-			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
-		);
+		if (cardProps.isResource) {
+			await this.createCardElement(parser, card.id, cardProps, currentUser);
+		} else {
+			await this.cardClient.updateCardTitle(card.id, {
+				title: cardProps.title,
+			});
 
-		for await (const cardElement of cardElements) {
-			await this.createCardElement(parser, card.id, cardElement, currentUser);
+			const organizations = parser.getOrganizations();
+			const cardElements = organizations.filter(
+				(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
+			);
+
+			for await (const cardElement of cardElements) {
+				await this.createCardElement(parser, card.id, cardElement, currentUser);
+			}
 		}
 	}
 
