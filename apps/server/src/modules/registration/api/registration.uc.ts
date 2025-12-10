@@ -63,4 +63,20 @@ export class RegistrationUc {
 
 		await this.registrationService.completeRegistration(registration, language, password);
 	}
+
+	public async cancelRegistrationForRoom(
+		userId: EntityId,
+		registrationId: EntityId,
+		roomId: EntityId
+	): Promise<Registration | null> {
+		this.registrationFeatureService.checkFeatureRegistrationEnabled();
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, AuthorizationContextBuilder.write([]));
+
+		const updatedRegistration = await this.registrationService.cancelRegistrationForRoom(registrationId, roomId);
+
+		return updatedRegistration;
+	}
 }
