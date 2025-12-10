@@ -31,7 +31,7 @@ import {
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Request } from 'express';
-import { mkdtempSync, unlinkSync } from 'fs';
+import { mkdtempSync, rmSync, unlinkSync } from 'fs';
 import { writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
@@ -138,6 +138,7 @@ export class H5PEditorUc {
 
 		let contentData = contentFile?.buffer;
 		let contentTempFilePath = 'unknown.type';
+		let contentTempDir = '';
 
 		if (contentFile && contentFile.originalname.endsWith('.svg')) {
 			const tempDir = mkdtempSync(join(tmpdir(), 'h5p-svg-'));
@@ -146,6 +147,7 @@ export class H5PEditorUc {
 			console.log(`SVG file written to temporary location: ${tempFilePath}`);
 			contentData = undefined;
 			contentTempFilePath = tempFilePath;
+			contentTempDir = tempDir;
 		}
 
 		const h5pBuffer = h5pFile?.buffer;
@@ -180,9 +182,10 @@ export class H5PEditorUc {
 			if (contentTempFilePath !== 'unknown.type') {
 				try {
 					unlinkSync(contentTempFilePath);
-					console.log(`Temporary SVG file deleted: ${contentTempFilePath}`);
+					rmSync(contentTempDir, { recursive: true });
+					console.log(`Temporary SVG file and directory deleted: ${contentTempFilePath}`);
 				} catch (err) {
-					console.error(`Error deleting temporary SVG file: ${contentTempFilePath}`, err);
+					console.error(`Error deleting temporary SVG file or directory: ${contentTempFilePath}`, err);
 				}
 			}
 		}

@@ -17,6 +17,7 @@ jest.mock('fs', (): unknown => {
 	return {
 		...jest.requireActual('fs'),
 		mkdtempSync: jest.fn(),
+		rmSync: jest.fn(),
 		unlinkSync: jest.fn(),
 	};
 });
@@ -240,6 +241,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			const mkdtempSyncSpy = jest.spyOn(fs, 'mkdtempSync').mockReturnValue(mockTempDir);
 			const writeFileSpy = jest.spyOn(fsPromises, 'writeFile').mockResolvedValueOnce(undefined);
 			const unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync');
+			const rmSyncSpy = jest.spyOn(fs, 'rmSync');
 
 			const result = await uc.postAjax(
 				user.userId,
@@ -266,6 +268,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			expect(mkdtempSyncSpy).toHaveBeenCalledWith(expect.stringMatching(/.*h5p-svg-/));
 			expect(writeFileSpy).toHaveBeenCalledWith(mockTempFilePath, svgBuffer, 'utf8');
 			expect(unlinkSyncSpy).toHaveBeenCalledWith(mockTempFilePath);
+			expect(rmSyncSpy).toHaveBeenCalledWith(mockTempDir, { recursive: true });
 
 			expect(result).toBe(mockedResponse);
 			expect(ajaxEndpoint.postAjax).toHaveBeenCalledWith(
@@ -291,6 +294,61 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			const writeFileSpy = jest.spyOn(fsPromises, 'writeFile').mockResolvedValueOnce(undefined);
 			const unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementationOnce(() => {
 				throw new Error('File deletion error');
+			});
+			const rmSyncSpy = jest.spyOn(fs, 'rmSync');
+
+			const result = await uc.postAjax(
+				user.userId,
+				{ action: 'files' },
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
+				{
+					fieldname: 'file',
+					buffer: svgBuffer,
+					originalname: 'test-icon.svg',
+					size: svgBuffer.length,
+					mimetype: 'image/svg+xml',
+				} as Express.Multer.File
+			);
+
+			const svgFileTest = {
+				data: undefined, // SVG files have data set to undefined due to temp file handling
+				mimetype: 'image/svg+xml',
+				name: 'test-icon.svg',
+				size: svgBuffer.length,
+				tempFilePath: mockTempFilePath,
+			};
+
+			// Verify fs function calls
+			expect(mkdtempSyncSpy).toHaveBeenCalledWith(expect.stringMatching(/.*h5p-svg-/));
+			expect(writeFileSpy).toHaveBeenCalledWith(mockTempFilePath, svgBuffer, 'utf8');
+			expect(unlinkSyncSpy).toHaveBeenCalledWith(mockTempFilePath);
+			expect(rmSyncSpy).not.toHaveBeenCalled();
+
+			expect(result).toBe(mockedResponse);
+			expect(ajaxEndpoint.postAjax).toHaveBeenCalledWith(
+				'files',
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
+				language.valueOf(),
+				mockedLumiUser,
+				svgFileTest,
+				undefined,
+				undefined,
+				undefined
+			);
+		});
+
+		it('should handle SVG files and attempt cleanup even when folder deletion fails', async () => {
+			const { user, language, mockedLumiUser, mockedResponse } = setup();
+			const svgBuffer = Buffer.from('<svg><circle cx="50" cy="50" r="40"/></svg>');
+
+			const mockTempDir = '/tmp/h5p-svg-abc123';
+			const mockTempFilePath = '/tmp/h5p-svg-abc123/test-icon.svg';
+
+			const mkdtempSyncSpy = jest.spyOn(fs, 'mkdtempSync').mockReturnValue(mockTempDir);
+			const writeFileSpy = jest.spyOn(fsPromises, 'writeFile').mockResolvedValueOnce(undefined);
+			const unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync');
+			const rmSyncSpy = jest.spyOn(fs, 'rmSync').mockImplementationOnce(() => {
+				throw new Error('Folder deletion error');
 			});
 
 			const result = await uc.postAjax(
@@ -318,6 +376,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			expect(mkdtempSyncSpy).toHaveBeenCalledWith(expect.stringMatching(/.*h5p-svg-/));
 			expect(writeFileSpy).toHaveBeenCalledWith(mockTempFilePath, svgBuffer, 'utf8');
 			expect(unlinkSyncSpy).toHaveBeenCalledWith(mockTempFilePath);
+			expect(rmSyncSpy).toHaveBeenCalledWith(mockTempDir, { recursive: true });
 
 			expect(result).toBe(mockedResponse);
 			expect(ajaxEndpoint.postAjax).toHaveBeenCalledWith(
