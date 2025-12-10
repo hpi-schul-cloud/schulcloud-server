@@ -148,7 +148,7 @@ export class RegistrationService {
 			firstName: registration.firstName,
 			lastName: registration.lastName,
 			email: registration.email,
-			birthday: new Date('2000-01-01'),
+			birthday: new Date('2000-01-01'), // necessary to avoid parental consent dialog for children (when logging in)
 			secondarySchools: [],
 			consent: this.createUserConsent(),
 			forcePasswordChange: false,
