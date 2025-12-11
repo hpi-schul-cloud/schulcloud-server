@@ -1,5 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { groupEntityFactory } from '@modules/group/testing/group-entity.factory';
+import { RegistrationEntity } from '@modules/registration/repo';
 import { registrationEntityFactory } from '@modules/registration/testing';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
@@ -47,10 +48,15 @@ describe('Room Controller (API)', () => {
 		const setup = async () => {
 			const school = schoolEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+			const { teacherAccount: otherTeacherAccount, teacherUser: otherTeacherUser } =
+				UserAndAccountTestFactory.buildTeacher({ school });
 			const room = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
 			const { roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 			const group = groupEntityFactory.buildWithId({
-				users: [{ user: teacherUser, role: roomOwnerRole }],
+				users: [
+					{ user: teacherUser, role: roomOwnerRole },
+					{ user: otherTeacherUser, role: roomViewerRole },
+				],
 				organization: teacherUser.school,
 			});
 			const roomMembership = roomMembershipEntityFactory.build({
@@ -75,6 +81,8 @@ describe('Room Controller (API)', () => {
 				school,
 				teacherAccount,
 				teacherUser,
+				otherTeacherAccount,
+				otherTeacherUser,
 				room,
 				roomOwnerRole,
 				roomViewerRole,
@@ -91,7 +99,15 @@ describe('Room Controller (API)', () => {
 			await em.persistAndFlush([registration]);
 			em.clear();
 
-			return { registration, externalPersonRole, teacherAccount, room };
+			return {
+				registration,
+				externalPersonRole,
+				teacherAccount,
+				teacherUser,
+				otherTeacherAccount,
+				room,
+				roomOwnerRole,
+			};
 		};
 
 		describe('when the feature is disabled', () => {
@@ -106,20 +122,6 @@ describe('Room Controller (API)', () => {
 				});
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
-			});
-		});
-
-		describe('when the registration exists', () => {
-			it('should return 200', async () => {
-				const { registration, teacherAccount } = await setup();
-				const loggedInClient = await testApiClient.login(teacherAccount);
-
-				const response = await loggedInClient.patch(`/${registration.id}/cancel/${registration.roomIds[0]}`, {
-					language: 'en',
-					password: 'password123',
-				});
-
-				expect(response.status).toBe(HttpStatus.OK);
 			});
 		});
 
@@ -138,6 +140,51 @@ describe('Room Controller (API)', () => {
 				);
 
 				expect(response.status).toBe(HttpStatus.NOT_FOUND);
+			});
+		});
+
+		describe('when the registration exists', () => {
+			describe('when the user does not have the required permissions', () => {
+				it('should return a 403 error', async () => {
+					const { registration, otherTeacherAccount } = await setup();
+
+					const loggedInClient = await testApiClient.login(otherTeacherAccount);
+
+					const response = await loggedInClient.patch(`/${registration.id}/cancel/${registration.roomIds[0]}`, {
+						language: 'en',
+						password: 'password123',
+					});
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
+			});
+
+			describe('when the user has the required permissions', () => {
+				describe('when the registration is for one room', () => {
+					it('should return 200', async () => {
+						const { registration, teacherAccount } = await setup();
+						const loggedInClient = await testApiClient.login(teacherAccount);
+
+						const response = await loggedInClient.patch(`/${registration.id}/cancel/${registration.roomIds[0]}`, {
+							language: 'en',
+							password: 'password123',
+						});
+
+						expect(response.status).toBe(HttpStatus.OK);
+					});
+
+					it('should delete the registration', async () => {
+						const { registration, teacherAccount, room } = await setup();
+						const loggedInClient = await testApiClient.login(teacherAccount);
+
+						await loggedInClient.patch(`/${registration.id}/cancel/${room.id}`, {
+							language: 'en',
+							password: 'password123',
+						});
+
+						const canceledRegistration = await em.findOne(RegistrationEntity, { id: registration.id });
+						expect(canceledRegistration).toBeNull();
+					});
+				});
 			});
 		});
 	});
