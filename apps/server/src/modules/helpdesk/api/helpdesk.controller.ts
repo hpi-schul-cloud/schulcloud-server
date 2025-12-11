@@ -32,8 +32,8 @@ export class HelpdeskController {
 
 	@Post('/wish')
 	@JwtAuthentication()
-	@ApiOperation({ summary: 'Create a new helpdesk problem' })
-	@ApiOkResponse({ description: 'Helpdesk problem created successfully' })
+	@ApiOperation({ summary: 'Create a new helpdesk wish' })
+	@ApiOkResponse({ description: 'Helpdesk wish created successfully' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.', type: ApiValidationError })
 	public async createWish(
