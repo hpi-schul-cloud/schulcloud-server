@@ -276,6 +276,26 @@ const restrictChangesToArchivedCourse = async (context) => {
 	return context;
 };
 
+const restrictLockedCourse = async (context) => {
+	// TODO except Admin and Superhero?
+	const course = await context.app.service('courses').get(context.id);
+	if (!course.teacherIds || course.teacherIds.length === 0) {
+		return Promise.reject(new Forbidden('This course is locked as it has no assigned teachers.'));
+	}
+	return context;
+};
+
+const filterOutLockedCourses = (context) => {
+	// TODO excfilterOutLockedCoursesept admin and superhero?
+	if (context.method === 'find') {
+		context.params.query.$and = context.params.query.$and || [];
+		context.params.query.$and.push({
+			teacherIds: { $size: { $gt: 0 } },
+		});
+	}
+	return context;
+};
+
 module.exports = {
 	splitClassIdsInGroupsAndClasses,
 	addWholeClassToCourse,
@@ -287,4 +307,6 @@ module.exports = {
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
 	restrictChangesToSyncedCourse,
+	restrictLockedCourse,
+	filterOutLockedCourses,
 };
