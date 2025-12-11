@@ -45,11 +45,19 @@ export class VideoConferenceService {
 		return this.config.HOST;
 	}
 
-	public canGuestJoin(isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean): boolean {
-		if ((isGuest && state === VideoConferenceState.NOT_STARTED) || (isGuest && !waitingRoomEnabled)) {
-			return false;
-		}
-		return true;
+	// Element scope overrides guest restrictions;
+	// otherwise guests are blocked if conference not started or waiting room disabled.
+	public canGuestJoinInScope(
+		conferenceScope: VideoConferenceScope,
+		isGuest: boolean,
+		state: VideoConferenceState,
+		waitingRoomEnabled: boolean
+	): boolean {
+		const isVideoConferenceElementScope = conferenceScope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+		const accessIsBlocked =
+			isGuest && !isVideoConferenceElementScope && (state === VideoConferenceState.NOT_STARTED || !waitingRoomEnabled);
+
+		return !accessIsBlocked;
 	}
 
 	public async isExternalPersonOrTeamExpert(
