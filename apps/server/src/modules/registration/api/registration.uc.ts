@@ -1,7 +1,7 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { RoomMembershipService } from '@modules/room-membership';
 import { Injectable } from '@nestjs/common';
-import { LanguageType } from '@shared/domain/interface';
+import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Registration, RegistrationService } from '../domain';
 import { CreateOrUpdateRegistrationBodyParams } from './dto/request/create-registration.body.params';
@@ -24,7 +24,11 @@ export class RegistrationUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(props.roomId);
-		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, AuthorizationContextBuilder.write([]));
+		this.authorizationService.checkPermission(
+			user,
+			roomMembershipAuthorizable,
+			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
+		);
 
 		const registration = await this.registrationService.createOrUpdateRegistration({ ...props });
 		await this.registrationService.sendRegistrationMail(registration);
@@ -45,7 +49,11 @@ export class RegistrationUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, AuthorizationContextBuilder.write([]));
+		this.authorizationService.checkPermission(
+			user,
+			roomMembershipAuthorizable,
+			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
+		);
 
 		const registrations = await this.registrationService.getRegistrationsByRoomId(roomId);
 
@@ -73,7 +81,11 @@ export class RegistrationUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, AuthorizationContextBuilder.write([]));
+		this.authorizationService.checkPermission(
+			user,
+			roomMembershipAuthorizable,
+			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
+		);
 
 		const updatedRegistration = await this.registrationService.cancelRegistrationForRoom(registrationId, roomId);
 
