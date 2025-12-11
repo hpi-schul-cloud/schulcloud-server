@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { IResult } from 'ua-parser-js';
-import { HelpdeskDevice, HelpdeskSystem } from '../domain';
+import { HelpdeskDevice, HelpdeskSystem, SupportType } from '../domain';
 import { HelpdeskProblemService } from '../domain/service';
 import { HelpdeskProblemCreateParams, HelpdeskWishCreateParams } from './dto';
 
@@ -47,9 +47,9 @@ export class HelpdeskUc {
 			os: userAgent?.os.name || '',
 		});
 
-		if (params.supportType === 'problem' && params instanceof HelpdeskProblemCreateParams) {
+		if (params.supportType === SupportType.PROBLEM && params instanceof HelpdeskProblemCreateParams) {
 			await this.helpdeskProblemService.createProblem(params, systemProps, userDeviceProps, files);
-		} else if (params.supportType === 'wish' && params instanceof HelpdeskWishCreateParams) {
+		} else if (params.supportType === SupportType.WISH && params instanceof HelpdeskWishCreateParams) {
 			await this.helpdeskProblemService.createWish(params, systemProps, userDeviceProps, files);
 		} else {
 			throw new Error('Invalid support type');
