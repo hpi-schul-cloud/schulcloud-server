@@ -1,8 +1,9 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Body, Controller, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Headers, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiBadRequestResponse, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
+import { IResult, UAParser } from 'ua-parser-js';
 import { HelpdeskProblemCreateParams, HelpdeskWishCreateParams } from './dto';
 import { HelpdeskUc } from './helpdesk.uc';
 
@@ -21,11 +22,12 @@ export class HelpdeskController {
 	public async createProblem(
 		@Body() body: HelpdeskProblemCreateParams,
 		@CurrentUser() currentUser: ICurrentUser,
+		@Headers('user-agent') userAgentHeader: string,
 		@UploadedFiles() file?: { file?: Express.Multer.File[] }
 	): Promise<void> {
-		body.files = file?.file;
+		const userAgent: IResult = this.parseUserAgent(userAgentHeader);
 
-		await this.helpdeskUc.createHelpdeskProblem(currentUser.userId, body);
+		await this.helpdeskUc.createHelpdeskMessage(currentUser.userId, body, file?.file, userAgent);
 	}
 
 	@Post('/wish')
@@ -36,8 +38,18 @@ export class HelpdeskController {
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.', type: ApiValidationError })
 	public async createWish(
 		@Body() body: HelpdeskWishCreateParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
+		@Headers('user-agent') userAgentHeader: string,
+		@UploadedFiles() file?: { file?: Express.Multer.File[] }
 	): Promise<void> {
-		await this.helpdeskUc.createHelpdeskWish(currentUser.userId, body);
+		const userAgent: IResult = this.parseUserAgent(userAgentHeader);
+
+		await this.helpdeskUc.createHelpdeskMessage(currentUser.userId, body, file?.file, userAgent);
+	}
+
+	private parseUserAgent(userAgentHeader: string): IResult {
+		const ua = new UAParser(userAgentHeader);
+
+		return ua.getResult();
 	}
 }

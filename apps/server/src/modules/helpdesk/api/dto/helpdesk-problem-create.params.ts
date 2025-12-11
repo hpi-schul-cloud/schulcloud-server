@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
-import { SupportType } from '../../domain/type';
+import { HelpdeskProblemProps, HelpdeskProps, HelpdeskWishProps, SupportType } from '../../domain';
 
-export class HelpdeskCreateParams {
+export class HelpdeskCreateParams implements HelpdeskProps {
 	@ApiProperty({ enum: SupportType })
 	@IsEnum(SupportType)
 	public supportType!: SupportType;
@@ -16,40 +16,42 @@ export class HelpdeskCreateParams {
 	@IsEmail()
 	public replyEmail!: string;
 
+	@ApiProperty()
+	@IsString({ each: true })
+	public problemArea!: string[];
+
 	@ApiProperty({ required: false })
 	@IsOptional()
-	public files?: Express.Multer.File[];
+	@IsString()
+	public device?: string;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsBoolean()
 	public consent?: boolean;
 }
-export class HelpdeskProblemCreateParams extends HelpdeskCreateParams {
-	@ApiProperty()
-	@IsString({ each: true })
-	public problemArea!: string[];
 
+export class HelpdeskProblemCreateParams extends HelpdeskCreateParams implements HelpdeskProblemProps {
 	@ApiProperty()
 	@IsString()
-	public description!: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	public device?: string;
+	public problemDescription!: string;
 }
 
-export class HelpdeskWishCreateParams extends HelpdeskCreateParams {
+export class HelpdeskWishCreateParams extends HelpdeskCreateParams implements HelpdeskWishProps {
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsString()
-	public desire?: string;
+	public role!: string;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsString()
-	public benefit?: string;
+	public desire!: string;
+
+	@ApiProperty({ required: false })
+	@IsOptional()
+	@IsString()
+	public benefit!: string;
 
 	@ApiProperty({ required: false })
 	@IsOptional()

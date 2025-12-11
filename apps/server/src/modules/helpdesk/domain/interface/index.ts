@@ -1,1 +1,1 @@
-export * from './helpdesk-problem.interface';
+export * from './helpdesk.interface';
