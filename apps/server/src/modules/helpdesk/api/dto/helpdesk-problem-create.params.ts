@@ -12,7 +12,6 @@ export class HelpdeskCreateParams implements HelpdeskProps {
 	public subject!: string;
 
 	@ApiProperty()
-	@IsOptional()
 	@IsEmail()
 	public replyEmail!: string;
 
@@ -38,18 +37,15 @@ export class HelpdeskProblemCreateParams extends HelpdeskCreateParams implements
 }
 
 export class HelpdeskWishCreateParams extends HelpdeskCreateParams implements HelpdeskWishProps {
-	@ApiProperty({ required: false })
-	@IsOptional()
+	@ApiProperty()
 	@IsString()
 	public role!: string;
 
-	@ApiProperty({ required: false })
-	@IsOptional()
+	@ApiProperty()
 	@IsString()
 	public desire!: string;
 
-	@ApiProperty({ required: false })
-	@IsOptional()
+	@ApiProperty()
 	@IsString()
 	public benefit!: string;
 
