@@ -20,7 +20,6 @@ export class ServerUc {
 			...this.config,
 			...this.boardConfig,
 			...this.videoConferenceConfig,
-			// TODO: remove from boardConfig, put into seperate DTO definition
 			// TODO: performance issue: multiple calls to runtime config service
 			FEATURE_COLUMN_BOARD_SOCKET_ENABLED: await this.runtimeConfigService.getBoolean(
 				'FEATURE_COLUMN_BOARD_SOCKET_ENABLED'
