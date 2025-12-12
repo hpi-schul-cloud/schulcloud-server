@@ -1,11 +1,11 @@
 import { Loggable } from '@core/logger';
-import { ErrorLogMessage } from '@core/logger/types';
+import { ErrorLogMessage, LogMessageDataObject } from '@core/logger/types';
 import { InternalServerErrorException } from '@nestjs/common';
 
 export class H5PUcErrorLoggable extends InternalServerErrorException implements Loggable {
 	constructor(
 		private readonly error: unknown,
-		private readonly data: Record<string, string> = {},
+		private readonly data: LogMessageDataObject = {},
 		private readonly context?: string
 	) {
 		super();
