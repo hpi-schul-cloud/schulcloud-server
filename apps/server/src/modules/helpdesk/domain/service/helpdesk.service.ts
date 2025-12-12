@@ -57,6 +57,7 @@ export class HelpdeskService {
 			},
 			replyTo: [replyTo],
 		};
+
 		if (this.config.shouldSendEmails) {
 			await this.emailService.send(email);
 		} else {
