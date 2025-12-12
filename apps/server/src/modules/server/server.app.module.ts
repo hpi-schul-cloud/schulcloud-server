@@ -32,6 +32,7 @@ import { OauthProviderApiModule } from '@modules/oauth-provider/oauth-provider-a
 import { OAuthApiModule } from '@modules/oauth/oauth-api.module';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
 import { RegistrationModule } from '@modules/registration';
+import { RegistrationApiModule } from '@modules/registration/registration-api.module';
 import { RocketChatModule } from '@modules/rocketchat';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { RosterModule } from '@modules/roster/roster.module';
@@ -56,13 +57,14 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { MediaSourceApiModule } from '../media-source/media-source-api.module';
 import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
+import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
-import { RegistrationApiModule } from '@modules/registration/registration-api.module';
-import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.module';
+import { HelpdeskApiModule } from '@modules/helpdesk';
 
 const serverModules = [
+	HelpdeskApiModule,
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	ConfigurationModule.register(VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig),
 	ConfigurationModule.register(BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig),
