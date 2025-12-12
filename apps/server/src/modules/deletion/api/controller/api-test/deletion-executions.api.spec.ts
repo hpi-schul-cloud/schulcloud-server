@@ -41,6 +41,8 @@ import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { TeamEntity } from '@modules/team/repo';
 import { groupEntityFactory } from '@modules/group/testing';
 import { GroupEntity } from '@modules/group/entity';
+import { roomArrangementEntityFactory } from '@modules/room/testing';
+import { RoomArrangementEntity } from '@modules/room';
 
 const baseRouteName = '/deletionExecutions';
 
@@ -232,6 +234,8 @@ describe(`deletionExecution (api)`, () => {
 
 				const rocketChatUser = rocketChatUserEntityFactory.buildWithId({ userId: studentUser.id });
 
+				const roomArrangement = roomArrangementEntityFactory.build({ userId: studentUser.id });
+
 				await em.persistAndFlush([
 					school,
 					teacherUser,
@@ -253,6 +257,7 @@ describe(`deletionExecution (api)`, () => {
 					groupSubmission,
 					registrationPin,
 					rocketChatUser,
+					roomArrangement,
 				]);
 				em.clear();
 
@@ -291,6 +296,7 @@ describe(`deletionExecution (api)`, () => {
 					groupSubmission,
 					registrationPin,
 					rocketChatUser,
+					roomArrangement,
 				};
 			};
 
@@ -315,6 +321,7 @@ describe(`deletionExecution (api)`, () => {
 					submission,
 					groupSubmission,
 					rocketChatUser,
+					roomArrangement,
 				} = await setup();
 
 				const teacherId = new ObjectId(teacherUser.id);
@@ -343,6 +350,7 @@ describe(`deletionExecution (api)`, () => {
 					ownerId: studentUser.id,
 					refOwnerModel: FileOwnerModel.USER,
 				};
+				const whereRoomArrayngement = { id: roomArrangement.id, userId: studentUser.id };
 
 				const checkCourseBefore = await em.findOne(CourseEntity, whereCourseTeacher);
 				expect(checkCourseBefore).not.toBeNull();
@@ -411,6 +419,9 @@ describe(`deletionExecution (api)`, () => {
 
 				const checkFile = await em.findOne(FileEntity, whereFile);
 				expect(checkFile).toBeNull();
+
+				const checkRoomArrangement = await em.findOne(RoomArrangementEntity, whereRoomArrayngement);
+				expect(checkRoomArrangement).toBeNull();
 
 				expect(rocketChatService.deleteUser).toHaveBeenCalledWith(rocketChatUser.username);
 
