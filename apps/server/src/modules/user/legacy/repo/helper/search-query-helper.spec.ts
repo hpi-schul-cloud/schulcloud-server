@@ -1,7 +1,7 @@
 import { ObjectId } from 'bson';
-import { UserSearchQuery } from '../../interfaces';
 import { SearchQueryHelper } from '.';
-import { RangeType, UsersSearchQueryParams } from '../../controller/dto';
+import { RangeDate, UsersSearchQueryParams } from '../../controller/dto';
+import { UserSearchQuery } from '../../interfaces';
 
 describe('Search query helper', () => {
 	afterEach(() => {
@@ -114,7 +114,7 @@ describe('Search query helper', () => {
 			const setup = () => {
 				const exampleId = '5fa31aacb229544f2c697b48';
 
-				const dateParam: Record<RangeType, Date> = {
+				const dateParam: RangeDate = {
 					$gt: new Date('2024-02-08T23:00:00Z'),
 					$gte: new Date('2024-02-08T23:00:00Z'),
 					$lt: new Date('2024-02-08T23:00:00Z'),

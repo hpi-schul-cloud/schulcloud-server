@@ -1,6 +1,8 @@
 import { ObjectId } from 'bson';
 import { UserSortQuery } from './user-sort.query';
 
+type DateRangeQuery = Record<string, Date>;
+
 export interface UserSearchQuery {
 	_id?: any;
 	schoolId: ObjectId;
@@ -13,7 +15,7 @@ export interface UserSearchQuery {
 	consentStatus?: Record<string, string[]>;
 	classes?: string[];
 	searchQuery?: string;
-	createdAt?: Date;
-	outdatedSince?: Date;
-	lastLoginSystemChange?: Date;
+	createdAt?: DateRangeQuery;
+	outdatedSince?: DateRangeQuery;
+	lastLoginSystemChange?: DateRangeQuery;
 }
