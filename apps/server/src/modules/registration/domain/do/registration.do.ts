@@ -107,7 +107,7 @@ export class Registration extends DomainObject<RegistrationProps> {
 	private generateRegistrationLink(): string {
 		const hostUrl = Configuration.get('HOST') as string;
 		const baseRegistrationUrl = `${hostUrl}/registration-external-members/`;
-		const registrationLink = `${baseRegistrationUrl}?registrationSecret=${this.registrationSecret}`;
+		const registrationLink = `${baseRegistrationUrl}?registration-secret=${this.registrationSecret}`;
 
 		return registrationLink;
 	}
