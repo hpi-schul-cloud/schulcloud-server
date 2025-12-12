@@ -1,3 +1,4 @@
+/* eslint-disable filename-rules/match */
 import {
 	AuthorizationBodyParamsReferenceType,
 	AuthorizationClientAdapter,
@@ -34,12 +35,12 @@ import { Request } from 'express';
 import { mkdtempSync, rmSync, unlinkSync } from 'fs';
 import { writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
-import { join } from 'path';
+import { dirname, join } from 'path';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, H5PContentResponse } from '../controller/dto';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
-import { H5PContentParentType, LumiUserWithContentData } from '../types';
+import { H5PContentParentType, H5PUploadFile, LumiUserWithContentData } from '../types';
 import { GetLibraryFile } from './dto/h5p-getLibraryFile';
 
 @Injectable()
@@ -135,23 +136,8 @@ export class H5PEditorUc {
 	> {
 		const user = this.changeUserType(userId);
 		const language = await this.getUserLanguage(userId);
-
-		let contentData = contentFile?.buffer;
-		let contentTempFilePath = 'unknown.type';
-		let contentTempDir = '';
-
-		if (contentFile && contentFile.originalname.endsWith('.svg')) {
-			const tempDir = mkdtempSync(join(tmpdir(), 'h5p-svg-'));
-			const tempFilePath = join(tempDir, contentFile.originalname);
-			await writeFile(tempFilePath, contentFile.buffer, 'utf8');
-			console.log(`SVG file written to temporary location: ${tempFilePath}`);
-			contentData = undefined;
-			contentTempFilePath = tempFilePath;
-			contentTempDir = tempDir;
-		}
-
-		const h5pBuffer = h5pFile?.buffer;
-		const h5pTempFilePath = 'unknown.type';
+		const contentUploadFile = await this.createContentUploadFile(contentFile);
+		const libraryUploadFile = this.createLibraryUploadFile(h5pFile);
 
 		try {
 			const result = await this.h5pAjaxEndpoint.postAjax(
@@ -159,35 +145,82 @@ export class H5PEditorUc {
 				body,
 				language,
 				user,
-				contentFile && {
-					data: contentData,
-					mimetype: contentFile.mimetype,
-					name: contentFile.originalname,
-					size: contentFile.size,
-					tempFilePath: contentTempFilePath,
-				},
+				contentUploadFile,
 				query.id,
 				undefined,
-				h5pFile && {
-					data: h5pBuffer,
-					mimetype: h5pFile.mimetype,
-					name: h5pFile.originalname,
-					size: h5pFile.size,
-					tempFilePath: h5pTempFilePath,
-				}
+				libraryUploadFile
 			);
 
 			return result;
 		} finally {
-			if (contentTempFilePath !== 'unknown.type') {
-				try {
-					unlinkSync(contentTempFilePath);
-					rmSync(contentTempDir, { recursive: true });
-					console.log(`Temporary SVG file and directory deleted: ${contentTempFilePath}`);
-				} catch (err) {
-					console.error(`Error deleting temporary SVG file or directory: ${contentTempFilePath}`, err);
-				}
+			if (this.isTemporarySvgFile(contentUploadFile) && contentUploadFile.tempFilePath) {
+				this.deleteTemporarySvgFile(contentUploadFile.tempFilePath);
 			}
+		}
+	}
+
+	private async createContentUploadFile(contentFile?: Express.Multer.File): Promise<H5PUploadFile | undefined> {
+		let contentTempFilePath = 'unknown.type';
+		let contentData = contentFile?.buffer;
+
+		if (this.isSvgFile(contentFile)) {
+			contentTempFilePath = await this.createTemporarySvgFile(contentFile);
+			contentData = undefined;
+		}
+
+		const contentUploadFile: H5PUploadFile | undefined = contentFile && {
+			data: contentData,
+			mimetype: contentFile.mimetype,
+			name: contentFile.originalname,
+			size: contentFile.size,
+			tempFilePath: contentTempFilePath,
+		};
+
+		return contentUploadFile;
+	}
+
+	private isSvgFile(contentFile?: Express.Multer.File): contentFile is Express.Multer.File {
+		const isSvgFile = !!contentFile && contentFile.originalname.endsWith('.svg');
+
+		return isSvgFile;
+	}
+
+	private async createTemporarySvgFile(contentFile: Express.Multer.File): Promise<string> {
+		const contentTempDir = mkdtempSync(join(tmpdir(), 'h5p-svg-'));
+		const contentTempFilePath = join(contentTempDir, contentFile.originalname);
+		await writeFile(contentTempFilePath, contentFile.buffer, 'utf8');
+		console.log(`SVG file written to temporary location: ${contentTempFilePath}`);
+
+		return contentTempFilePath;
+	}
+
+	private createLibraryUploadFile(h5pFile?: Express.Multer.File): H5PUploadFile | undefined {
+		const libraryUploadFile: H5PUploadFile | undefined = h5pFile && {
+			data: h5pFile?.buffer,
+			mimetype: h5pFile.mimetype,
+			name: h5pFile.originalname,
+			size: h5pFile.size,
+			tempFilePath: 'unknown.type',
+		};
+
+		return libraryUploadFile;
+	}
+
+	private isTemporarySvgFile(contentUploadFile: H5PUploadFile | undefined): contentUploadFile is H5PUploadFile {
+		const isTemporarySvgFile =
+			!!contentUploadFile && !!contentUploadFile.tempFilePath && contentUploadFile.tempFilePath !== 'unknown.type';
+
+		return isTemporarySvgFile;
+	}
+
+	private deleteTemporarySvgFile(filePath: string): void {
+		const dirPath = dirname(filePath);
+		try {
+			unlinkSync(filePath);
+			rmSync(dirPath, { recursive: true });
+			console.log(`Temporary SVG file and directory deleted: ${filePath}`);
+		} catch (err) {
+			console.error(`Error deleting temporary SVG file or directory: ${filePath}`, err);
 		}
 	}
 
