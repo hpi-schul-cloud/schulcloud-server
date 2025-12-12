@@ -6,16 +6,12 @@ export class TextFormatter {
 		userContext: UserContextProps,
 		userDevice?: UserDeviceProps
 	): string {
-		const userContextInfo = this.buildUserContextInfo(userContext);
-		const deviceInfo = problem.consent ? this.buildDeviceInfo(userDevice) : 'N/A';
-
-		let text = `Helpdesk Problem Submission\n\n`;
-		text += `--- Problem Details ---\n`;
-		text += this.buildProblemDescription(problem);
-		text += `\n--- System Information ---\n`;
-		text += userContextInfo;
-		text += `\n--- Device Information ---\n`;
-		text += deviceInfo;
+		const text = [
+			'Helpdesk Problem Submission\n\n',
+			'--- Problem Details ---\n',
+			this.buildProblemDescription(problem),
+			this.buildContextAndDeviceInfo(userContext, userDevice, problem.consent),
+		].join('');
 
 		return text;
 	}
@@ -25,69 +21,90 @@ export class TextFormatter {
 		userContext: UserContextProps,
 		userDevice?: UserDeviceProps
 	): string {
-		const userContextInfo = this.buildUserContextInfo(userContext);
-		const deviceInfo = wish.consent ? this.buildDeviceInfo(userDevice) : 'N/A';
-
-		let text = `Helpdesk Wish Submission\n\n`;
-		text += `--- Wish Details ---\n`;
-		text += this.buildWishDescription(wish);
-		text += `\n--- System Information ---\n`;
-		text += userContextInfo;
-		text += `\n--- Device Information ---\n`;
-		text += deviceInfo;
+		const text = [
+			'Helpdesk Wish Submission\n\n',
+			'--- Wish Details ---\n',
+			this.buildWishDescription(wish),
+			this.buildContextAndDeviceInfo(userContext, userDevice, wish.consent),
+		].join('');
 
 		return text;
 	}
 
-	public static buildWishDescription(wish: HelpdeskWishProps): string {
-		let details = `Subject: ${wish.subject}\n`;
-		details += `Problem Area: ${wish.problemArea.join(', ')}\n`;
-		details += `Role: ${wish.role}\n`;
-		details += `Desire: ${wish.desire}\n`;
-		details += `Benefit: ${wish.benefit}\n`;
+	private static buildWishDescription(wish: HelpdeskWishProps): string {
+		const details = [
+			`Subject: ${wish.subject}\n`,
+			`Problem Area: ${wish.problemArea.join(', ')}\n`,
+			`Role: ${wish.role}\n`,
+			`Desire: ${wish.desire}\n`,
+			`Benefit: ${wish.benefit}\n`,
+		];
+
 		if (wish.acceptanceCriteria) {
-			details += `Acceptance Criteria: ${wish.acceptanceCriteria}\n`;
+			details.push(`Acceptance Criteria: ${wish.acceptanceCriteria}\n`);
 		}
 
-		return details;
+		return details.join('');
 	}
 
-	public static buildProblemDescription(problem: HelpdeskProblemProps): string {
-		let details = `Subject: ${problem.subject}\n`;
-		details += `Problem Area: ${problem.problemArea.join(', ')}\n`;
-		details += `Problem Description: ${problem.problemDescription}\n`;
+	private static buildProblemDescription(problem: HelpdeskProblemProps): string {
+		const details = [
+			`Subject: ${problem.subject}\n`,
+			`Problem Area: ${problem.problemArea.join(', ')}\n`,
+			`Problem Description: ${problem.problemDescription}\n`,
+		];
+
 		if (problem.device) {
-			details += `Device: ${problem.device}\n`;
+			details.push(`Device: ${problem.device}\n`);
 		}
 
-		return details;
+		return details.join('');
 	}
 
-	public static buildUserContextInfo(userContext?: UserContextProps): string {
+	private static buildUserContextInfo(userContext?: UserContextProps): string {
 		if (!userContext) {
 			return 'No system information provided.';
 		}
 
-		let info = `User ID: ${userContext.userId}\n`;
-		info += `User Name: ${userContext.userName}\n`;
-		info += `User Email: ${userContext.userEmail}\n`;
-		info += `User Roles: ${userContext.userRoles?.join(', ') || 'N/A'}\n`;
-		info += `School ID: ${userContext.schoolId}\n`;
-		info += `School Name: ${userContext.schoolName}\n`;
+		const text = [
+			`User ID: ${userContext.userId}\n`,
+			`User Name: ${userContext.userName}\n`,
+			`User Email: ${userContext.userEmail}\n`,
+			`User Roles: ${userContext.userRoles?.join(', ') || 'N/A'}\n`,
+			`School ID: ${userContext.schoolId}\n`,
+			`School Name: ${userContext.schoolName}\n`,
+		].join('');
 
-		return info;
+		return text;
 	}
 
-	public static buildDeviceInfo(userDevice?: UserDeviceProps): string {
+	private static buildDeviceInfo(userDevice?: UserDeviceProps): string {
 		if (!userDevice) {
 			return 'No device information provided.';
 		}
 
-		let info = `Device User Agent: ${userDevice.deviceUserAgent || 'N/A'}\n`;
-		info += `Browser Name: ${userDevice.browserName || 'N/A'}\n`;
-		info += `Browser Version: ${userDevice.browserVersion || 'N/A'}\n`;
-		info += `Operating System: ${userDevice.os || 'N/A'}\n`;
+		const text = [
+			`Device User Agent: ${userDevice.deviceUserAgent || 'N/A'}\n`,
+			`Browser Name: ${userDevice.browserName || 'N/A'}\n`,
+			`Browser Version: ${userDevice.browserVersion || 'N/A'}\n`,
+			`Operating System: ${userDevice.os || 'N/A'}\n`,
+		].join('');
 
-		return info;
+		return text;
+	}
+
+	private static buildContextAndDeviceInfo(
+		userContext: UserContextProps,
+		userDevice: UserDeviceProps | undefined,
+		consent?: boolean
+	): string {
+		const userContextInfo = this.buildUserContextInfo(userContext);
+		const deviceInfo = consent ? this.buildDeviceInfo(userDevice) : 'N/A';
+
+		const text = ['\n--- System Information ---\n', userContextInfo, '\n--- Device Information ---\n', deviceInfo].join(
+			''
+		);
+
+		return text;
 	}
 }
