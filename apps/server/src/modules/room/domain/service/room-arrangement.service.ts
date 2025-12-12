@@ -40,6 +40,12 @@ export class RoomArrangementService {
 		await this.roomArrangementRepo.updateArrangement(userId, items);
 	}
 
+	public async deleteArrangements(userId: EntityId): Promise<EntityId[]> {
+		const deletedIds = await this.roomArrangementRepo.deleteArrangements(userId);
+
+		return deletedIds;
+	}
+
 	private async createArranagement(userId: EntityId, roomIds: EntityId[]): Promise<void> {
 		const items = roomIds.map((roomId): RoomArrangementItem => {
 			return { id: roomId };

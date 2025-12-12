@@ -2,6 +2,7 @@ import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { RoomArrangementService } from '@modules/room/domain';
 import { roomArrangementEntityFactory, roomEntityFactory } from '@modules/room/testing';
 import {
 	ModuleName,
@@ -32,6 +33,7 @@ describe(DeleteUserRoomDataStep.name, () => {
 				SagaService,
 				SagaRegistryService,
 				SagaStepRegistryService,
+				RoomArrangementService,
 				RoomArrangementRepo,
 				{
 					provide: Logger,
@@ -59,7 +61,7 @@ describe(DeleteUserRoomDataStep.name, () => {
 	describe('step registration', () => {
 		it('should register the step with the saga service', () => {
 			const sagaService = createMock<SagaService>();
-			const step = new DeleteUserRoomDataStep(sagaService, createMock<RoomArrangementRepo>(), createMock<Logger>());
+			const step = new DeleteUserRoomDataStep(sagaService, createMock<RoomArrangementService>(), createMock<Logger>());
 
 			expect(sagaService.registerStep).toHaveBeenCalledWith(ModuleName.ROOM, step);
 		});

@@ -350,7 +350,7 @@ describe(`deletionExecution (api)`, () => {
 					ownerId: studentUser.id,
 					refOwnerModel: FileOwnerModel.USER,
 				};
-				const whereRoomArrayngement = { id: roomArrangement.id, userId: studentUser.id };
+				const whereRoomArrangement = { id: roomArrangement.id, userId: studentUser.id };
 
 				const checkCourseBefore = await em.findOne(CourseEntity, whereCourseTeacher);
 				expect(checkCourseBefore).not.toBeNull();
@@ -420,7 +420,7 @@ describe(`deletionExecution (api)`, () => {
 				const checkFile = await em.findOne(FileEntity, whereFile);
 				expect(checkFile).toBeNull();
 
-				const checkRoomArrangement = await em.findOne(RoomArrangementEntity, whereRoomArrayngement);
+				const checkRoomArrangement = await em.findOne(RoomArrangementEntity, whereRoomArrangement);
 				expect(checkRoomArrangement).toBeNull();
 
 				expect(rocketChatService.deleteUser).toHaveBeenCalledWith(rocketChatUser.username);

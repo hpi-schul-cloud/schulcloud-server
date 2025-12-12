@@ -1,5 +1,4 @@
 import { Logger } from '@core/logger';
-import { RoomArrangementRepo } from '../../repo';
 import {
 	ModuleName,
 	SagaService,
@@ -14,6 +13,7 @@ import {
 } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { RoomArrangementService } from '../../domain';
 
 @Injectable()
 export class DeleteUserRoomDataStep extends SagaStep<'deleteUserData'> {
@@ -21,7 +21,7 @@ export class DeleteUserRoomDataStep extends SagaStep<'deleteUserData'> {
 
 	constructor(
 		private readonly sagaService: SagaService,
-		private readonly roomArrangementRepo: RoomArrangementRepo,
+		private readonly roomArrangementService: RoomArrangementService,
 		private readonly logger: Logger
 	) {
 		super('deleteUserData');
@@ -44,7 +44,7 @@ export class DeleteUserRoomDataStep extends SagaStep<'deleteUserData'> {
 			new UserDeletionStepOperationLoggable('Deleting user data from Room', this.moduleName, userId, StepStatus.PENDING)
 		);
 
-		const deletedIds = await this.roomArrangementRepo.deleteArrangements(userId);
+		const deletedIds = await this.roomArrangementService.deleteArrangements(userId);
 		const deletedCount = deletedIds.length;
 
 		const result = StepOperationReportBuilder.build(StepOperationType.DELETE, deletedCount, deletedIds);
