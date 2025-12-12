@@ -35,11 +35,16 @@ const getPersonalFilesByUserId = async (userId) => {
 };
 
 const removeFileById = async (id) => {
+	let promises = [];
 	const file = await getFileById(id);
 	if (file.isDirectory) {
-		await FileModel.delete({ parent: id }).lean().exec();
+		// Recursive deletion: First find all child files and directories
+		const children = await FileModel.find({ parent: id }).lean().exec();
+		promises = children.map((child) => removeFileById(child._id));
 	}
-	await FileModel.deleteById(id).lean().exec();
+
+	promises.push(FileModel.deleteById(id).lean().exec());
+	await Promise.all(promises);
 };
 
 /**

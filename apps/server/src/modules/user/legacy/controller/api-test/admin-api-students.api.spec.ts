@@ -185,5 +185,55 @@ describe('Users Admin Students Controller (API)', () => {
 				await loggedInStudentClient.get().query(query).send().expect(403);
 			});
 		});
+
+		describe('when date range filters are provided', () => {
+			it('should accept and process date range parameters for createdAt, lastLoginSystemChange, and outdatedSince', async () => {
+				const now = new Date();
+				const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+				const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+				const query = {
+					$skip: 0,
+					$limit: 5,
+					createdAt: {
+						$gte: yesterday,
+						$lte: tomorrow,
+					},
+					lastLoginSystemChange: {
+						$gt: yesterday,
+						$lt: tomorrow,
+					},
+					outdatedSince: {
+						$gt: yesterday,
+						$lt: tomorrow,
+					},
+				};
+
+				const response = await loggedInAdminClient.get().query(query).expect(200);
+
+				const { data, total } = response.body as UserListResponse;
+
+				expect(total).toBeGreaterThanOrEqual(0);
+				expect(Array.isArray(data)).toBe(true);
+			});
+
+			it('should filter users by createdAt date range and return matching results', async () => {
+				const query = {
+					$skip: 0,
+					$limit: 10,
+					createdAt: {
+						$gte: studentUser1.createdAt,
+						$lte: new Date(),
+					},
+				};
+
+				const response = await loggedInAdminClient.get().query(query).expect(200);
+
+				const { data, total } = response.body as UserListResponse;
+
+				expect(total).toBeGreaterThan(0);
+				expect(data.some((user) => user._id === studentUser1.id)).toBe(true);
+			});
+		});
 	});
 });

@@ -1,7 +1,7 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { DefaultEncryptionService, LdapEncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Role } from '@modules/role/repo';
@@ -30,7 +30,6 @@ describe('DatabaseManagementService', () => {
 	let configService: DeepMocked<ConfigService>;
 	let logger: DeepMocked<LegacyLogger>;
 	let defaultEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
-	let ldapEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
 	let mediaSourcesSeedDataService: DeepMocked<MediaSourcesSeedDataService>;
 	let systemsSeedDataService: DeepMocked<SystemsSeedDataService>;
 	let externalToolsSeedDataService: DeepMocked<ExternalToolsSeedDataService>;
@@ -114,21 +113,6 @@ describe('DatabaseManagementService', () => {
 		type: 'ldap',
 		alias: 'ldap',
 		ldapConfig: {
-			// eslint-disable-next-line no-template-curly-in-string
-			searchUserPassword: '${LDAP_SEARCHUSER_PASSWORD}',
-		},
-	};
-	const ldapSystemWithSecret = {
-		_id: {
-			$oid: '62c7f233f35a554ba3ed42f1',
-		},
-		__v: 0,
-		updatedAt: {
-			$date: '2022-07-12T14:01:58.588Z',
-		},
-		type: 'ldap',
-		alias: 'ldap',
-		ldapConfig: {
 			searchUserPassword: 'encryptedSearchuserPassword',
 		},
 	};
@@ -182,7 +166,6 @@ describe('DatabaseManagementService', () => {
 				{ provide: ConfigService, useValue: createMock<ConfigService>() },
 				{ provide: LegacyLogger, useValue: createMock<LegacyLogger>() },
 				{ provide: EntityManager, useValue: createMock<EntityManager>() },
-				{ provide: LdapEncryptionService, useValue: createMock<SymmetricKeyEncryptionService>() },
 				{ provide: MediaSourcesSeedDataService, useValue: createMock<MediaSourcesSeedDataService>() },
 				{ provide: SystemsSeedDataService, useValue: createMock<SystemsSeedDataService>() },
 				{ provide: ExternalToolsSeedDataService, useValue: createMock<ExternalToolsSeedDataService>() },
@@ -235,7 +218,7 @@ describe('DatabaseManagementService', () => {
 							if (collectionName === systemsCollectionName) {
 								// JSON used for cloning, so that oauthSystemWithSecrets' values can't be changed
 								return Promise.resolve(
-									JSON.parse(JSON.stringify([oauthSystemWithSecrets, oidcSystemWithSecrets, ldapSystemWithSecret]))
+									JSON.parse(JSON.stringify([oauthSystemWithSecrets, oidcSystemWithSecrets, ldapSystem]))
 								);
 							}
 							if (collectionName === storageprovidersCollectionName) {
@@ -260,7 +243,6 @@ describe('DatabaseManagementService', () => {
 		configService = module.get(ConfigService);
 		logger = module.get(LegacyLogger);
 		defaultEncryptionService = module.get(DefaultEncryptionService);
-		ldapEncryptionService = module.get(LdapEncryptionService);
 		mediaSourcesSeedDataService = module.get(MediaSourcesSeedDataService);
 		systemsSeedDataService = module.get(SystemsSeedDataService);
 		externalToolsSeedDataService = module.get(ExternalToolsSeedDataService);
@@ -620,27 +602,6 @@ describe('DatabaseManagementService', () => {
 						clientId: 'OIDC_CLIENT_ID',
 						clientSecret: 'OIDC_CLIENT_SECRET_encrypted',
 					});
-				});
-				it('should encrypt ldap secrets with ldap encryption service if key is configured in env var', async () => {
-					configGetSpy.mockImplementation((data) => data);
-					configHasSpy.mockReturnValue(true);
-					defaultEncryptionService.encrypt.mockImplementation((data) => `${data}_encrypted`);
-					ldapEncryptionService.encrypt.mockImplementation((data) => `${data}_encryptedLdap`);
-					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
-					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-					expect(dbService.collectionExists).toBeCalledTimes(1);
-					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
-					expect(dbService.clearCollection).not.toBeCalled();
-					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect(importedSystems as SystemEntity[]).toEqual(
-						expect.arrayContaining([
-							expect.objectContaining({
-								ldapConfig: {
-									searchUserPassword: 'LDAP_SEARCHUSER_PASSWORD_encryptedLdap',
-								},
-							}),
-						])
-					);
 				});
 			});
 		});
