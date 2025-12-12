@@ -120,11 +120,31 @@ export class RoomService {
 	}
 
 	private generateRoomWelcomeMailContent(roomName: string, roomLink: string): PlainTextMailContent {
+		const productName = Configuration.get('PRODUCT_NAME') as string;
+		const stripTags = (html: string): string =>
+			html.replace(/<(\/p>|<br\s*\/)>/gim, '\n').replace(/<\/?[^>]+(>|$)/g, '');
+
+		const germanTitle = `Benachrichtigung über Zugang zum Raum ${roomName}`;
+		const englishTitle = `Notification of access to room ${roomName}`;
+
+		const germanHtml = `<p>Der Zugriff auf den Raum ${roomName} wurde soeben freigeschaltet. Über den folgenden Link kann der Raum direkt aufgerufen werden:</p>
+				<p><a href="${roomLink}">${roomLink}</a></p>
+				<p>Mit freundlichen Grüßen<br />
+				${productName}-Team</p>`; // todo: schulcloud-name`
+		const englishHtml = `<p>Access to room ${roomName} has just been activated. The room can be accessed directly via the following link:</p>
+				<p><a href="${roomLink}">${roomLink}</a></p>
+				<p>Best regards,<br />
+				${productName}-Team</p>`; // todo: schulcloud-name
+		const htmlContent = `<div lang="de"><h1>${germanTitle}</h1>${germanHtml}</div>
+				<hr/>
+				<div lang="en"><h1>${englishTitle}</h1>${englishHtml}</div>`;
+
 		const mailContent = {
-			subject: 'Raumbeitritt-Benachrichtigung',
-			plainTextContent: `Benachrichtigung über Beitritt zum Raum ${roomName}, bitte nutze folgenden Link um darauf zuzugreifen: ${roomLink}`,
-			htmlContent: `<p>Benachrichtigung über Beitritt zum Raum ${roomName}</p><p>Bitte nutze folgenden Link um darauf zuzugreifen: <a href="${roomLink}">${roomLink}</a></p>`,
+			subject: `${germanTitle} / ${englishTitle}`,
+			plainTextContent: stripTags(htmlContent),
+			htmlContent: htmlContent,
 		};
+
 		return mailContent;
 	}
 
