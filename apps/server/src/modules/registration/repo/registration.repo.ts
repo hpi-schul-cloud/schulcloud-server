@@ -2,8 +2,8 @@ import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Registration } from '../domain/do/registration.do';
-import { RegistrationDomainMapper } from './registration-domain.mapper';
 import { RegistrationEntity } from './entity';
+import { RegistrationDomainMapper } from './registration-domain.mapper';
 import { RegistrationScope } from './registration.scope';
 
 @Injectable()
@@ -58,6 +58,11 @@ export class RegistrationRepo {
 		const domainObjects = entities.map((entity) => RegistrationDomainMapper.mapEntityToDo(entity));
 
 		return domainObjects;
+	}
+
+	public async deleteByIds(registrationIds: string[]): Promise<void> {
+		const ids = Utils.asArray(registrationIds);
+		await this.em.nativeDelete(RegistrationEntity, { id: { $in: ids } });
 	}
 
 	private async flush(): Promise<void> {
