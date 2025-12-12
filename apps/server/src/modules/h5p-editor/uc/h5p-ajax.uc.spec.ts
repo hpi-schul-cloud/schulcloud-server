@@ -12,6 +12,7 @@ import * as fs from 'fs';
 import * as fsPromises from 'fs/promises';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
+import { H5PUploadFile } from '../types';
 import { H5PEditorUc } from './h5p.uc';
 
 jest.mock('fs', (): unknown => {
@@ -241,7 +242,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			const svgBuffer = Buffer.from('<svg><circle cx="50" cy="50" r="40"/></svg>');
 
 			const mockTempDir = '/tmp/h5p-svg-abc123';
-			const mockTempFilePath = '/tmp/h5p-svg-abc123/test-icon.svg';
+			const mockTempFileMatcher = expect.stringMatching(new RegExp(`${mockTempDir}/[a-f0-9]{24}\\.svg$`)) as string;
 
 			const mkdtempSyncSpy = jest.spyOn(fs, 'mkdtempSync').mockReturnValue(mockTempDir);
 			const writeFileSpy = jest.spyOn(fsPromises, 'writeFile').mockResolvedValueOnce(undefined);
@@ -261,18 +262,18 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 				} as Express.Multer.File
 			);
 
-			const svgFileTest = {
+			const svgFileTest = expect.objectContaining({
 				data: undefined, // SVG files have data set to undefined due to temp file handling
 				mimetype: 'image/svg+xml',
 				name: 'test-icon.svg',
 				size: svgBuffer.length,
-				tempFilePath: mockTempFilePath,
-			};
+				tempFilePath: mockTempFileMatcher,
+			}) as H5PUploadFile;
 
 			// Verify fs function calls
 			expect(mkdtempSyncSpy).toHaveBeenCalledWith(expect.stringMatching(/.*h5p-svg-/));
-			expect(writeFileSpy).toHaveBeenCalledWith(mockTempFilePath, svgBuffer, 'utf8');
-			expect(unlinkSyncSpy).toHaveBeenCalledWith(mockTempFilePath);
+			expect(writeFileSpy).toHaveBeenCalledWith(mockTempFileMatcher, svgBuffer, 'utf8');
+			expect(unlinkSyncSpy).toHaveBeenCalledWith(mockTempFileMatcher);
 			expect(rmSyncSpy).toHaveBeenCalledWith(mockTempDir, { recursive: true });
 
 			expect(result).toBe(mockedResponse);
@@ -293,7 +294,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			const svgBuffer = Buffer.from('<svg><circle cx="50" cy="50" r="40"/></svg>');
 
 			const mockTempDir = '/tmp/h5p-svg-abc123';
-			const mockTempFilePath = '/tmp/h5p-svg-abc123/test-icon.svg';
+			const mockTempFileMatcher = expect.stringMatching(new RegExp(`${mockTempDir}/[a-f0-9]{24}\\.svg$`)) as string;
 
 			const mkdtempSyncSpy = jest.spyOn(fs, 'mkdtempSync').mockReturnValue(mockTempDir);
 			const writeFileSpy = jest.spyOn(fsPromises, 'writeFile').mockResolvedValueOnce(undefined);
@@ -315,18 +316,18 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 				} as Express.Multer.File
 			);
 
-			const svgFileTest = {
+			const svgFileTest = expect.objectContaining({
 				data: undefined, // SVG files have data set to undefined due to temp file handling
 				mimetype: 'image/svg+xml',
 				name: 'test-icon.svg',
 				size: svgBuffer.length,
-				tempFilePath: mockTempFilePath,
-			};
+				tempFilePath: mockTempFileMatcher,
+			}) as H5PUploadFile;
 
 			// Verify fs function calls
 			expect(mkdtempSyncSpy).toHaveBeenCalledWith(expect.stringMatching(/.*h5p-svg-/));
-			expect(writeFileSpy).toHaveBeenCalledWith(mockTempFilePath, svgBuffer, 'utf8');
-			expect(unlinkSyncSpy).toHaveBeenCalledWith(mockTempFilePath);
+			expect(writeFileSpy).toHaveBeenCalledWith(mockTempFileMatcher, svgBuffer, 'utf8');
+			expect(unlinkSyncSpy).toHaveBeenCalledWith(mockTempFileMatcher);
 			expect(rmSyncSpy).not.toHaveBeenCalled();
 
 			expect(result).toBe(mockedResponse);
@@ -347,7 +348,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			const svgBuffer = Buffer.from('<svg><circle cx="50" cy="50" r="40"/></svg>');
 
 			const mockTempDir = '/tmp/h5p-svg-abc123';
-			const mockTempFilePath = '/tmp/h5p-svg-abc123/test-icon.svg';
+			const mockTempFileMatcher = expect.stringMatching(new RegExp(`${mockTempDir}/[a-f0-9]{24}\\.svg$`)) as string;
 
 			const mkdtempSyncSpy = jest.spyOn(fs, 'mkdtempSync').mockReturnValue(mockTempDir);
 			const writeFileSpy = jest.spyOn(fsPromises, 'writeFile').mockResolvedValueOnce(undefined);
@@ -369,18 +370,18 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 				} as Express.Multer.File
 			);
 
-			const svgFileTest = {
+			const svgFileTest = expect.objectContaining({
 				data: undefined, // SVG files have data set to undefined due to temp file handling
 				mimetype: 'image/svg+xml',
 				name: 'test-icon.svg',
 				size: svgBuffer.length,
-				tempFilePath: mockTempFilePath,
-			};
+				tempFilePath: mockTempFileMatcher,
+			}) as H5PUploadFile;
 
 			// Verify fs function calls
 			expect(mkdtempSyncSpy).toHaveBeenCalledWith(expect.stringMatching(/.*h5p-svg-/));
-			expect(writeFileSpy).toHaveBeenCalledWith(mockTempFilePath, svgBuffer, 'utf8');
-			expect(unlinkSyncSpy).toHaveBeenCalledWith(mockTempFilePath);
+			expect(writeFileSpy).toHaveBeenCalledWith(mockTempFileMatcher, svgBuffer, 'utf8');
+			expect(unlinkSyncSpy).toHaveBeenCalledWith(mockTempFileMatcher);
 			expect(rmSyncSpy).toHaveBeenCalledWith(mockTempDir, { recursive: true });
 
 			expect(result).toBe(mockedResponse);
