@@ -61,6 +61,7 @@ import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 import { RegistrationApiModule } from '@modules/registration/registration-api.module';
 import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.module';
+import { ServerRuntimeConfigModule } from '@infra/runtime-config/server-runtime-config.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -86,6 +87,7 @@ const serverModules = [
 	FilesStorageClientModule,
 	SystemApiModule,
 	ServerMailModule,
+	ServerRuntimeConfigModule,
 	RocketChatModule.forRoot({
 		uri: Configuration.get('ROCKET_CHAT_URI') as string,
 		adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
