@@ -75,10 +75,10 @@ export class HelpdeskUc {
 
 	private createUserDevice(userAgent?: IResult): UserDevice {
 		const userDevice = new UserDevice({
-			deviceUserAgent: userAgent?.ua || '',
-			browserName: userAgent?.browser.name || '',
-			browserVersion: userAgent?.browser.version || '',
-			os: userAgent?.os.name || '',
+			deviceUserAgent: userAgent?.ua,
+			browserName: userAgent?.browser.name,
+			browserVersion: userAgent?.browser.version,
+			os: userAgent?.os.name,
 		});
 
 		return userDevice;
