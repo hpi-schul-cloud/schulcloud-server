@@ -9,11 +9,11 @@ import { HelpdeskUc } from './helpdesk.uc';
 
 @ApiTags('Helpdesk')
 @Controller('helpdesk')
+@JwtAuthentication()
 export class HelpdeskController {
 	constructor(private readonly helpdeskUc: HelpdeskUc) {}
 
 	@Post('/problem')
-	@JwtAuthentication()
 	@ApiOperation({ summary: 'Create a new helpdesk problem' })
 	@ApiOkResponse({ description: 'Helpdesk problem created successfully' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
@@ -31,7 +31,6 @@ export class HelpdeskController {
 	}
 
 	@Post('/wish')
-	@JwtAuthentication()
 	@ApiOperation({ summary: 'Create a new helpdesk wish' })
 	@ApiOkResponse({ description: 'Helpdesk wish created successfully' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
