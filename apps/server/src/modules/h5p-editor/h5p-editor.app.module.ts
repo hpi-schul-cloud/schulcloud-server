@@ -1,5 +1,5 @@
 import { CoreModule } from '@core/core.module';
-import { Logger } from '@core/logger';
+import { LoggerModule } from '@core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { AuthorizationClientModule } from '@infra/authorization-client';
@@ -39,12 +39,12 @@ const imports = [
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
 	AuthGuardModule.register([AuthGuardOptions.JWT]),
 	ConfigurationModule.register(H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig),
+	LoggerModule,
 ];
 
 const controllers = [H5PEditorController];
 
 const providers = [
-	Logger,
 	H5PEditorUc,
 	H5PContentRepo,
 	LibraryRepo,

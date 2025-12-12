@@ -39,3 +39,11 @@ export class LumiUserWithContentData implements IUser {
 		this.type = user.type;
 	}
 }
+
+export type H5PUploadFile = {
+	data?: Buffer;
+	mimetype: string;
+	name: string;
+	size: number;
+	tempFilePath?: string;
+};

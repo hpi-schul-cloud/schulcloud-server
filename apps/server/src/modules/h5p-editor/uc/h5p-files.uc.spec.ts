@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
@@ -85,6 +86,10 @@ describe('H5P Files', () => {
 					useValue: createMock<H5PContentRepo>(),
 				},
 				{ provide: H5P_CACHE_PROVIDER_TOKEN, useValue: createMock<Cache>() },
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
