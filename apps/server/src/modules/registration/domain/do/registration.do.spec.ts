@@ -1,11 +1,11 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { registrationFactory } from '../../testing';
 import { Registration, RegistrationProps } from './registration.do';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 describe('Registration', () => {
-	const setup = (roomIds?: string[]) => {
+	const setup = (overwrites: Partial<RegistrationProps> = {}) => {
 		const registrationId: EntityId = 'registrationId';
 		const roomId = new ObjectId().toHexString();
 		const registrationProps: RegistrationProps = {
@@ -13,10 +13,11 @@ describe('Registration', () => {
 			email: 'test@example.com',
 			firstName: 'John',
 			lastName: 'Doe',
-			roomIds: roomIds ?? [roomId],
+			roomIds: [roomId],
 			registrationSecret: 'someValue',
 			createdAt: new Date(),
 			updatedAt: new Date(),
+			...overwrites,
 		};
 		const registration = new Registration(registrationProps);
 		return { registration, registrationProps, roomId };
@@ -55,9 +56,7 @@ describe('Registration', () => {
 
 	it('should get and set lastName', () => {
 		const { registration } = setup();
-		const expectedLastName = 'Doe';
-
-		expect(registration.lastName).toEqual(expectedLastName);
+		expect(registration.lastName).toEqual('Doe');
 
 		const newLastName = 'Smith';
 
@@ -103,7 +102,7 @@ describe('Registration', () => {
 		describe('When room is added to the registration', () => {
 			it('should add the room to the roomIds', () => {
 				const testRoomId = new ObjectId().toHexString();
-				const { registration, roomId } = setup([testRoomId]);
+				const { registration, roomId } = setup({ roomIds: [testRoomId] });
 
 				registration.addRoomId(roomId);
 
@@ -112,7 +111,7 @@ describe('Registration', () => {
 
 			it('should add roomId only once', () => {
 				const roomId = new ObjectId().toHexString();
-				const { registration } = setup([roomId]);
+				const { registration } = setup({ roomIds: [roomId] });
 
 				registration.addRoomId(roomId);
 
@@ -121,6 +120,47 @@ describe('Registration', () => {
 			});
 		});
 	});
+
+	describe('removeRoomId', () => {
+		it('should remove the roomId from roomIds', () => {
+			const roomId = new ObjectId().toHexString();
+			const { registration } = setup({ roomIds: [roomId] });
+
+			registration.removeRoomId(roomId);
+
+			expect(registration.roomIds).not.toContain(roomId);
+		});
+
+		it('should do nothing when roomId does not exist', () => {
+			const roomId = new ObjectId().toHexString();
+			const { registration } = setup({ roomIds: [roomId] });
+
+			const nonExistingRoomId = new ObjectId().toHexString();
+			registration.removeRoomId(nonExistingRoomId);
+
+			expect(registration.roomIds).toHaveLength(1);
+			expect(registration.roomIds).toContain(roomId);
+		});
+	});
+
+	describe('hasNoRoomIds', () => {
+		it('should return true when there are no roomIds', () => {
+			const { registration } = setup({ roomIds: [] });
+
+			const result = registration.hasNoRoomIds();
+
+			expect(result).toBe(true);
+		});
+
+		it('should return false when there are roomIds', () => {
+			const roomId = new ObjectId().toHexString();
+			const { registration } = setup({ roomIds: [roomId] });
+			const result = registration.hasNoRoomIds();
+
+			expect(result).toBe(false);
+		});
+	});
+
 	describe('generateRegistrationMail', () => {
 		beforeEach(() => {
 			jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
