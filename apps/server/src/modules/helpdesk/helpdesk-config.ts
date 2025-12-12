@@ -14,5 +14,5 @@ export class HelpdeskConfig {
 
 	@ConfigProperty('FORCE_SEND_EMAILS')
 	@IsBoolean()
-	public forceSendEmails = false;
+	public shouldSendEmails = false;
 }
