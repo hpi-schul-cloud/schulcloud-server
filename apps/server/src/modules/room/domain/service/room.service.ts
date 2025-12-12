@@ -130,17 +130,17 @@ export class RoomService {
 		const germanHtml = `<p>Der Zugriff auf den Raum ${roomName} wurde soeben freigeschaltet. Über den folgenden Link kann der Raum direkt aufgerufen werden:</p>
 				<p><a href="${roomLink}">${roomLink}</a></p>
 				<p>Mit freundlichen Grüßen<br />
-				${productName}-Team</p>`; // todo: schulcloud-name`
+				${productName}-Team</p>`;
 		const englishHtml = `<p>Access to room ${roomName} has just been activated. The room can be accessed directly via the following link:</p>
 				<p><a href="${roomLink}">${roomLink}</a></p>
 				<p>Best regards,<br />
-				${productName}-Team</p>`; // todo: schulcloud-name
+				${productName}-Team</p>`;
 		const htmlContent = `<div lang="de"><h1>${germanTitle}</h1>${germanHtml}</div>
 				<hr/>
 				<div lang="en"><h1>${englishTitle}</h1>${englishHtml}</div>`;
 
 		const mailContent = {
-			subject: `${germanTitle} / ${englishTitle}`,
+			subject: `${productName}: ${germanTitle}`,
 			plainTextContent: stripTags(htmlContent),
 			htmlContent: htmlContent,
 		};
