@@ -3,7 +3,7 @@ import { IsMongoId } from 'class-validator';
 
 export class CancelRegistrationUrlParams {
 	@IsMongoId()
-	@ApiProperty({ description: 'The id of a registration is attached to.', required: true, nullable: false })
+	@ApiProperty({ description: 'The id of the registration the room is attached to.', required: true, nullable: false })
 	public registrationId!: string;
 
 	@IsMongoId()
