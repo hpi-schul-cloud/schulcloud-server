@@ -31,6 +31,7 @@ import {
 } from '@nestjs/common';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { ObjectId } from 'bson';
 import { Request } from 'express';
 import { mkdtempSync, rmSync, unlinkSync } from 'fs';
 import { writeFile } from 'fs/promises';
@@ -191,7 +192,8 @@ export class H5PEditorUc {
 
 	private async createTemporarySvgFile(contentFile: Express.Multer.File): Promise<string> {
 		const contentTempDir = mkdtempSync(join(tmpdir(), 'h5p-svg-'));
-		const contentTempFilePath = join(contentTempDir, contentFile.originalname);
+		const contentTempFileName = new ObjectId().toString() + '.svg';
+		const contentTempFilePath = join(contentTempDir, contentTempFileName);
 		await writeFile(contentTempFilePath, contentFile.buffer, 'utf8');
 		this.logger.info(new H5PUcLoggable(`SVG file written to temporary location: ${contentTempFilePath}`));
 
