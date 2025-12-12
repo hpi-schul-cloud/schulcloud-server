@@ -4,7 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { HELPDESK_CONFIG_TOKEN, HelpdeskConfig } from '../../helpdesk-config';
 import { HelpdeskProblemProps, HelpdeskWishProps, UserContextProps, UserDeviceProps } from '../interface';
 import { SendEmailLoggable } from '../loggable';
-import { TextMapper } from '../mapper';
+import { TextFormatter } from './text-formatter';
 
 @Injectable()
 export class HelpdeskService {
@@ -20,7 +20,7 @@ export class HelpdeskService {
 		userDevice?: UserDeviceProps,
 		files?: Express.Multer.File[]
 	): Promise<void> {
-		const plainTextContent = TextMapper.createProblemText(problem, userContext, userDevice);
+		const plainTextContent = TextFormatter.createProblemText(problem, userContext, userDevice);
 		await this.sendEmail(
 			[this.config.problemEmailAddress],
 			problem.replyEmail,
@@ -36,7 +36,7 @@ export class HelpdeskService {
 		userDevice?: UserDeviceProps,
 		files?: Express.Multer.File[]
 	): Promise<void> {
-		const plainTextContent = TextMapper.createWishText(wish, userContext, userDevice);
+		const plainTextContent = TextFormatter.createWishText(wish, userContext, userDevice);
 		await this.sendEmail([this.config.wishEmailAddress], wish.replyEmail, wish.subject, plainTextContent, files);
 	}
 
