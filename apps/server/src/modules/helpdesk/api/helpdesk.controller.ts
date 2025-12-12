@@ -27,7 +27,7 @@ export class HelpdeskController {
 	): Promise<void> {
 		const userAgent: IResult = this.parseUserAgent(userAgentHeader);
 
-		await this.helpdeskUc.createHelpdeskMessage(currentUser.userId, body, file?.file, userAgent);
+		await this.helpdeskUc.createHelpdeskProblem(currentUser.userId, body, file?.file, userAgent);
 	}
 
 	@Post('/wish')
@@ -44,7 +44,7 @@ export class HelpdeskController {
 	): Promise<void> {
 		const userAgent: IResult = this.parseUserAgent(userAgentHeader);
 
-		await this.helpdeskUc.createHelpdeskMessage(currentUser.userId, body, file?.file, userAgent);
+		await this.helpdeskUc.createHelpdeskWish(currentUser.userId, body, file?.file, userAgent);
 	}
 
 	private parseUserAgent(userAgentHeader: string): IResult {
