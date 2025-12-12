@@ -20,7 +20,7 @@ export interface HelpdeskWishProps extends HelpdeskProps {
 	acceptanceCriteria?: string;
 }
 
-export interface HelpdeskDeviceProps {
+export interface UserDeviceProps {
 	deviceUserAgent?: string;
 	browserName?: string;
 	browserVersion?: string;

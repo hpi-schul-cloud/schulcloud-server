@@ -1,9 +1,9 @@
 import { ValueObject } from '@shared/domain/value-object.decorator';
 import { IsString } from 'class-validator';
-import { HelpdeskDeviceProps } from '../interface';
+import { UserDeviceProps } from '../interface';
 
 @ValueObject()
-export class HelpdeskDevice implements HelpdeskDeviceProps {
+export class UserDevice implements UserDeviceProps {
 	@IsString()
 	public readonly deviceUserAgent: string;
 	@IsString()
@@ -13,7 +13,7 @@ export class HelpdeskDevice implements HelpdeskDeviceProps {
 	@IsString()
 	public readonly os: string;
 
-	constructor(props: HelpdeskDeviceProps) {
+	constructor(props: UserDeviceProps) {
 		this.deviceUserAgent = props.deviceUserAgent || '';
 		this.browserName = props.browserName || '';
 		this.browserVersion = props.browserVersion || '';

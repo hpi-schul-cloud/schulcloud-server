@@ -2,7 +2,7 @@ import { Logger } from '@core/logger';
 import { AppendedAttachment, Mail, MailService } from '@infra/mail';
 import { Inject, Injectable } from '@nestjs/common';
 import { HELPDESK_CONFIG_TOKEN, HelpdeskConfig } from '../../helpdesk-config';
-import { HelpdeskDeviceProps, HelpdeskProblemProps, HelpdeskSystemProps, HelpdeskWishProps } from '../interface';
+import { HelpdeskProblemProps, HelpdeskSystemProps, HelpdeskWishProps, UserDeviceProps } from '../interface';
 import { SendEmailLoggable } from '../loggable';
 import { TextMapper } from '../mapper';
 
@@ -17,7 +17,7 @@ export class HelpdeskService {
 	public async createProblem(
 		problemProps: HelpdeskProblemProps,
 		systemProps: HelpdeskSystemProps,
-		deviceProps?: HelpdeskDeviceProps,
+		deviceProps?: UserDeviceProps,
 		files?: Express.Multer.File[]
 	): Promise<void> {
 		const plainTextContent = TextMapper.createFeedbackText(problemProps, systemProps, deviceProps);
@@ -33,7 +33,7 @@ export class HelpdeskService {
 	public async createWish(
 		props: HelpdeskWishProps,
 		systemProps: HelpdeskSystemProps,
-		deviceProps?: HelpdeskDeviceProps,
+		deviceProps?: UserDeviceProps,
 		files?: Express.Multer.File[]
 	): Promise<void> {
 		const plainTextContent = TextMapper.createWishText(props, systemProps, deviceProps);

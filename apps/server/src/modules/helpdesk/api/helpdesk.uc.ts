@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { IResult } from 'ua-parser-js';
-import { HelpdeskDevice, HelpdeskService, HelpdeskSystem } from '../domain';
+import { HelpdeskService, HelpdeskSystem, UserDevice } from '../domain';
 import { HelpdeskProblemCreateParams, HelpdeskWishCreateParams } from './dto';
 
 @Injectable()
@@ -73,8 +73,8 @@ export class HelpdeskUc {
 		return system;
 	}
 
-	private createUserDevice(userAgent?: IResult): HelpdeskDevice {
-		const userDevice = new HelpdeskDevice({
+	private createUserDevice(userAgent?: IResult): UserDevice {
+		const userDevice = new UserDevice({
 			deviceUserAgent: userAgent?.ua || '',
 			browserName: userAgent?.browser.name || '',
 			browserVersion: userAgent?.browser.version || '',

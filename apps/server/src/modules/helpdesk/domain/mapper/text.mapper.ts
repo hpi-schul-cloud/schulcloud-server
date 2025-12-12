@@ -1,10 +1,10 @@
-import { HelpdeskDeviceProps, HelpdeskProblemProps, HelpdeskSystemProps, HelpdeskWishProps } from '../interface';
+import { HelpdeskProblemProps, HelpdeskSystemProps, HelpdeskWishProps, UserDeviceProps } from '../interface';
 
 export class TextMapper {
 	public static createFeedbackText(
 		problemProps: HelpdeskProblemProps,
 		systemProps: HelpdeskSystemProps,
-		deviceProps?: HelpdeskDeviceProps
+		deviceProps?: UserDeviceProps
 	): string {
 		const systemInfo = this.buildSystemInfo(systemProps);
 		const deviceInfo = problemProps.consent ? this.buildDeviceInfo(deviceProps) : 'N/A';
@@ -23,7 +23,7 @@ export class TextMapper {
 	public static createWishText(
 		wishProps: HelpdeskWishProps,
 		systemProps: HelpdeskSystemProps,
-		deviceProps?: HelpdeskDeviceProps
+		deviceProps?: UserDeviceProps
 	): string {
 		const systemInfo = this.buildSystemInfo(systemProps);
 		const deviceInfo = wishProps.consent ? this.buildDeviceInfo(deviceProps) : 'N/A';
@@ -78,7 +78,7 @@ export class TextMapper {
 		return info;
 	}
 
-	public static buildDeviceInfo(deviceProps?: HelpdeskDeviceProps): string {
+	public static buildDeviceInfo(deviceProps?: UserDeviceProps): string {
 		if (!deviceProps) {
 			return 'No device information provided.';
 		}
