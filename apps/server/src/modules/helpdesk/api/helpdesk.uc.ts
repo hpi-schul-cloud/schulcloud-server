@@ -1,10 +1,11 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { SchoolService } from '@modules/school';
+import { School, SchoolService } from '@modules/school';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { IResult } from 'ua-parser-js';
-import { HelpdeskDevice, HelpdeskService, HelpdeskSystem, SupportType } from '../domain';
+import { HelpdeskDevice, HelpdeskService, HelpdeskSystem } from '../domain';
 import { HelpdeskProblemCreateParams, HelpdeskWishCreateParams } from './dto';
 
 @Injectable()
@@ -15,12 +16,35 @@ export class HelpdeskUc {
 		private readonly schoolService: SchoolService
 	) {}
 
-	public async createHelpdeskMessage(
+	public async createHelpdeskProblem(
 		userId: EntityId,
-		params: HelpdeskProblemCreateParams | HelpdeskWishCreateParams,
+		params: HelpdeskProblemCreateParams,
 		files?: Express.Multer.File[],
 		userAgent?: IResult
 	): Promise<void> {
+		const { user, school } = await this.authorizeUserForSchool(userId);
+
+		const system = this.createSystem(user, school);
+		const userDevice = this.createUserDevice(userAgent);
+
+		await this.helpdeskProblemService.createProblem(params, system, userDevice, files);
+	}
+
+	public async createHelpdeskWish(
+		userId: EntityId,
+		params: HelpdeskWishCreateParams,
+		files?: Express.Multer.File[],
+		userAgent?: IResult
+	): Promise<void> {
+		const { user, school } = await this.authorizeUserForSchool(userId);
+
+		const system = this.createSystem(user, school);
+		const userDevice = this.createUserDevice(userAgent);
+
+		await this.helpdeskProblemService.createWish(params, system, userDevice, files);
+	}
+
+	private async authorizeUserForSchool(userId: EntityId): Promise<{ user: User; school: School }> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const school = await this.schoolService.getSchoolById(user.school.id);
 
@@ -30,7 +54,14 @@ export class HelpdeskUc {
 			AuthorizationContextBuilder.read([Permission.HELPDESK_CREATE])
 		);
 
-		const systemProps = new HelpdeskSystem({
+		return {
+			user,
+			school,
+		};
+	}
+
+	private createSystem(user: User, school: School): HelpdeskSystem {
+		const system = new HelpdeskSystem({
 			userId: user.id,
 			userName: `${user.firstName} ${user.lastName}`,
 			userEmail: user.email || '',
@@ -39,19 +70,17 @@ export class HelpdeskUc {
 			schoolName: school.getProps().name,
 		});
 
-		const userDeviceProps = new HelpdeskDevice({
+		return system;
+	}
+
+	private createUserDevice(userAgent?: IResult): HelpdeskDevice {
+		const userDevice = new HelpdeskDevice({
 			deviceUserAgent: userAgent?.ua || '',
 			browserName: userAgent?.browser.name || '',
 			browserVersion: userAgent?.browser.version || '',
 			os: userAgent?.os.name || '',
 		});
 
-		if (params.supportType === SupportType.PROBLEM && params instanceof HelpdeskProblemCreateParams) {
-			await this.helpdeskProblemService.createProblem(params, systemProps, userDeviceProps, files);
-		} else if (params.supportType === SupportType.WISH && params instanceof HelpdeskWishCreateParams) {
-			await this.helpdeskProblemService.createWish(params, systemProps, userDeviceProps, files);
-		} else {
-			throw new Error('Invalid support type');
-		}
+		return userDevice;
 	}
 }
