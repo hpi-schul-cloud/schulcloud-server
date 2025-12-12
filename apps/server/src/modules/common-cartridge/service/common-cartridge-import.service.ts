@@ -1,8 +1,11 @@
+import { ICurrentUser } from '@infra/auth-guard';
 import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { CardClientAdapter, CardControllerCreateElement201Response } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
+import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { Injectable } from '@nestjs/common';
+import pLimit from 'p-limit';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import {
 	CommonCartridgeFileFolderResourceProps,
@@ -11,8 +14,6 @@ import {
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
-import { FilesStorageClientAdapter } from '@infra/files-storage-client';
-import { ICurrentUser } from '@infra/auth-guard';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;
@@ -55,15 +56,27 @@ export class CommonCartridgeImportService {
 
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
-		for await (const board of boards) {
-			const response = await this.boardsClient.createBoard({
-				title: board.title,
-				layout: 'columns',
-				parentId,
-				parentType: 'course',
-			});
+		const createdBoardIds = new Map<string, string>();
+		const limit = pLimit(1);
 
-			await this.createColumns(response.id, board, parser, currentUser);
+		for await (const board of boards) {
+			const response = await limit(() =>
+				this.boardsClient.createBoard({
+					title: board.title,
+					layout: 'columns',
+					parentId,
+					parentType: 'course',
+				})
+			);
+			createdBoardIds.set(board.identifier, response.id);
+		}
+
+		for await (const board of boards) {
+			const responseId = createdBoardIds.get(board.identifier);
+
+			if (!responseId) continue;
+
+			await this.createColumns(responseId, board, parser, currentUser);
 		}
 	}
 
@@ -91,14 +104,16 @@ export class CommonCartridgeImportService {
 					!organization.isResource
 			);
 
+		const limit = pLimit(1);
+
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
 		for await (const column of columnsWithResource) {
-			await this.createColumnWithResource(parser, boardId, column, currentUser);
+			await limit(() => this.createColumnWithResource(parser, boardId, column, currentUser));
 		}
 
 		for await (const column of columnsWithoutResource) {
-			await this.createColumn(parser, boardId, column, currentUser);
+			await limit(() => this.createColumn(parser, boardId, column, currentUser));
 		}
 	}
 
@@ -108,7 +123,8 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
+		const limit = pLimit(1);
+		const columnResponse = await limit(() => this.boardsClient.createBoardColumn(boardId));
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
 		await this.createCardElementWithResource(parser, columnResponse, columnProps, currentUser);
@@ -120,7 +136,8 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
+		const limit = pLimit(1);
+		const columnResponse = await limit(() => this.boardsClient.createBoardColumn(boardId));
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
 		const cards = parser
