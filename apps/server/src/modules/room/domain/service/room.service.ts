@@ -120,7 +120,7 @@ export class RoomService {
 	}
 
 	private generateRoomWelcomeMailContent(roomName: string, roomLink: string): PlainTextMailContent {
-		const productName = Configuration.get('PRODUCT_NAME') as string;
+		const productName = Configuration.get('SC_TITLE') as string;
 		const stripTags = (html: string): string =>
 			html.replace(/<(\/p>|<br\s*\/)>/gim, '\n').replace(/<\/?[^>]+(>|$)/g, '');
 
