@@ -1,3 +1,4 @@
+import { MailService } from '@infra/mail';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
@@ -20,10 +21,19 @@ describe('Room Controller (API)', () => {
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
 
+	let mailServiceSendMock: jest.Mock;
+
 	beforeAll(async () => {
+		mailServiceSendMock = jest.fn();
+
 		const moduleFixture = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(MailService)
+			.useValue({
+				send: mailServiceSendMock,
+			})
+			.compile();
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
@@ -32,6 +42,7 @@ describe('Room Controller (API)', () => {
 	});
 
 	beforeEach(async () => {
+		mailServiceSendMock.mockClear();
 		await cleanupCollections(em);
 	});
 
@@ -156,6 +167,18 @@ describe('Room Controller (API)', () => {
 
 					expect(response.status).toBe(HttpStatus.OK);
 					expect(response.body).toEqual({ roomRoleName: RoleName.ROOMVIEWER });
+				});
+
+				it('should send a mail', async () => {
+					const { loggedInClient, room, externalPersonUser } = await setupRoomWithMembers();
+
+					const response = await loggedInClient.patch(`/${room.id}/members/add-by-email`, {
+						email: externalPersonUser.email,
+					});
+
+					expect(response.status).toBe(HttpStatus.OK);
+
+					expect(mailServiceSendMock).toHaveBeenCalledTimes(1);
 				});
 			});
 

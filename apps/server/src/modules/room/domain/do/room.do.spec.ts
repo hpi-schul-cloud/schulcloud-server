@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { roomFactory } from '../../testing';
-import { RoomColor } from '../type';
+import { RoomColor, RoomFeatures } from '../type';
 import { Room, RoomProps } from './room.do';
 
 describe('Room', () => {
@@ -72,5 +72,16 @@ describe('Room', () => {
 	it('should get updatedAt', () => {
 		const expectedUpdatedAt = new Date('2024-01-01');
 		expect(room.updatedAt).toEqual(expectedUpdatedAt);
+	});
+
+	it('should get and set features', () => {
+		expect(room.features).toEqual([]);
+		room.features = [RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE];
+		expect(room.features).toEqual([RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE]);
+	});
+
+	it('should get room name', () => {
+		const expectedRoomName = roomProps.name;
+		expect(room.getRoomName()).toBe(expectedRoomName);
 	});
 });
