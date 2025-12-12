@@ -85,6 +85,14 @@ export class Registration extends DomainObject<RegistrationProps> {
 		this.props.roomIds.push(roomId);
 	}
 
+	public removeRoomId(roomId: EntityId): void {
+		this.props.roomIds = this.props.roomIds.filter((id) => id !== roomId);
+	}
+
+	public hasNoRoomIds(): boolean {
+		return this.props.roomIds.length === 0;
+	}
+
 	public generateRegistrationMail(): Mail {
 		const mailContent = this.generateRegistrationMailContent();
 		const senderAddress = Configuration.get('SMTP_SENDER') as string;

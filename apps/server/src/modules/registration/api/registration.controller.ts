@@ -9,11 +9,14 @@ import {
 	HttpStatus,
 	NotFoundException,
 	Param,
+	Patch,
 	Post,
 	UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
+import { Registration } from '../domain';
+import { CancelRegistrationUrlParams } from './dto/request/cancel-registration.url.params';
 import { CompleteRegistrationBodyParams } from './dto/request/complete-registration.body.params';
 import { CreateOrUpdateRegistrationBodyParams } from './dto/request/create-registration.body.params';
 import { RegistrationByRoomIdUrlParams } from './dto/request/registration-by-room-id.url.params';
@@ -104,6 +107,26 @@ export class RegistrationController {
 			bodyParams.language,
 			bodyParams.password
 		);
+	}
+
+	@Patch('/:registrationId/cancel/:roomId')
+	@JwtAuthentication()
+	@ApiOperation({ summary: 'Cancel a registration for a specific roomId' })
+	@ApiResponse({ status: HttpStatus.OK })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async cancelRegistration(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: CancelRegistrationUrlParams
+	): Promise<Registration | null> {
+		const restult = await this.registrationUc.cancelRegistrationForRoom(
+			currentUser.userId,
+			urlParams.registrationId,
+			urlParams.roomId
+		);
+
+		return restult;
 	}
 
 	@Get('/by-room/:roomId')
