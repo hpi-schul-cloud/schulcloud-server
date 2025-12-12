@@ -61,11 +61,7 @@ export class TextFormatter {
 		return details.join('');
 	}
 
-	private static buildUserContextInfo(userContext?: UserContextProps): string {
-		if (!userContext) {
-			return 'No system information provided.';
-		}
-
+	private static buildUserContextInfo(userContext: UserContextProps): string {
 		const text = [
 			`User ID: ${userContext.userId}\n`,
 			`User Name: ${userContext.userName}\n`,
