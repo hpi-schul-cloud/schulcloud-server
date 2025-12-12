@@ -36,6 +36,7 @@ export class HelpdeskController {
 	@ApiOkResponse({ description: 'Helpdesk wish created successfully' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.', type: ApiValidationError })
+	@UseInterceptors(FileFieldsInterceptor([{ name: 'file' }]))
 	public async createWish(
 		@Body() body: HelpdeskWishCreateParams,
 		@CurrentUser() currentUser: ICurrentUser,
