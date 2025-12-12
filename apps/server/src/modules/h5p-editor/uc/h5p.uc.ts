@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import {
 	AuthorizationBodyParamsReferenceType,
 	AuthorizationClientAdapter,
@@ -36,6 +37,7 @@ import { writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { dirname, join } from 'path';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, H5PContentResponse } from '../controller/dto';
+import { H5PUcErrorLoggable, H5PUcLoggable } from '../loggable';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
@@ -51,7 +53,8 @@ export class H5PEditorUc {
 		private readonly libraryService: LibraryStorage,
 		private readonly userService: UserService,
 		private readonly authorizationClientAdapter: AuthorizationClientAdapter,
-		private readonly h5pContentRepo: H5PContentRepo
+		private readonly h5pContentRepo: H5PContentRepo,
+		private readonly logger: Logger
 	) {}
 
 	private async checkContentPermission(
@@ -188,7 +191,7 @@ export class H5PEditorUc {
 		const contentTempDir = mkdtempSync(join(tmpdir(), 'h5p-svg-'));
 		const contentTempFilePath = join(contentTempDir, contentFile.originalname);
 		await writeFile(contentTempFilePath, contentFile.buffer, 'utf8');
-		console.log(`SVG file written to temporary location: ${contentTempFilePath}`);
+		this.logger.info(new H5PUcLoggable(`SVG file written to temporary location: ${contentTempFilePath}`));
 
 		return contentTempFilePath;
 	}
@@ -217,9 +220,9 @@ export class H5PEditorUc {
 		try {
 			unlinkSync(filePath);
 			rmSync(dirPath, { recursive: true });
-			console.log(`Temporary SVG file and directory deleted: ${filePath}`);
+			this.logger.info(new H5PUcLoggable(`Temporary SVG file and directory deleted: ${filePath}`));
 		} catch (err) {
-			console.error(`Error deleting temporary SVG file or directory: ${filePath}`, err);
+			this.logger.warning(new H5PUcErrorLoggable(err, { filePath }, 'while deleting temporary SVG file or directory'));
 		}
 	}
 
