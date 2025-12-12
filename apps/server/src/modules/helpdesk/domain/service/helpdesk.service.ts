@@ -4,7 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { HELPDESK_CONFIG_TOKEN, HelpdeskConfig } from '../../helpdesk-config';
 import { HelpdeskProblemProps, HelpdeskWishProps, UserContextProps, UserDeviceProps } from '../interface';
 import { SendEmailLoggable } from '../loggable';
-import { TextFormatter } from './text-formatter';
+import { TextFormatter } from './text-formatter.helper';
 
 @Injectable()
 export class HelpdeskService {
