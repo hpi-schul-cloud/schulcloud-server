@@ -9,7 +9,7 @@ import { SchoolPurpose } from '@modules/school/domain';
 import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
-import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
 import { RegistrationRepo } from '../../repo';
@@ -341,6 +341,47 @@ describe('RegistrationService', () => {
 					expect(roomMembershipService.addMembersToRoom).toHaveBeenCalledWith(roomId1, [savedUser.id]);
 					expect(roomMembershipService.addMembersToRoom).toHaveBeenCalledWith(roomId2, [savedUser.id]);
 				});
+			});
+		});
+	});
+
+	describe('cancelRegistrationForRoom', () => {
+		describe('when registration exists', () => {
+			it('should remove roomId from registration', async () => {
+				const roomIdToRemove = new ObjectId().toHexString();
+				const registration = registrationFactory.build({ roomIds: [roomIdToRemove, new ObjectId().toHexString()] });
+				registrationRepo.findById.mockResolvedValue(registration);
+
+				const updatedRegistration = await service.cancelRegistrationForRoom(
+					registration.registrationSecret,
+					roomIdToRemove
+				);
+
+				expect(updatedRegistration?.roomIds).not.toContain(roomIdToRemove);
+				expect(registrationRepo.save).toHaveBeenCalledWith(updatedRegistration);
+			});
+		});
+
+		describe('when registration does not exist', () => {
+			it('should throw an error', async () => {
+				registrationRepo.findById.mockRejectedValueOnce(new NotFoundException());
+
+				await expect(
+					service.cancelRegistrationForRoom('nonExistingRegistrationId', new ObjectId().toHexString())
+				).rejects.toThrow(NotFoundException);
+			});
+		});
+
+		describe('when removing the roomId results in no roomIds left', () => {
+			it('should delete the registration and return null', async () => {
+				const roomIdToRemove = new ObjectId().toHexString();
+				const registration = registrationFactory.build({ roomIds: [roomIdToRemove] });
+				registrationRepo.findById.mockResolvedValue(registration);
+
+				const result = await service.cancelRegistrationForRoom(registration.registrationSecret, roomIdToRemove);
+
+				expect(registrationRepo.deleteByIds).toHaveBeenCalledWith([registration.id]);
+				expect(result).toBeNull();
 			});
 		});
 	});

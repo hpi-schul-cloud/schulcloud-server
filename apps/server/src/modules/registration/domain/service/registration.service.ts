@@ -53,8 +53,28 @@ export class RegistrationService {
 		await this.registrationRepo.deleteByIds([registration.id]);
 	}
 
+	public async cancelRegistrationForRoom(registrationId: string, roomId: string): Promise<Registration | null> {
+		const registration = await this.getSingleRegistrationById(registrationId);
+
+		registration.removeRoomId(roomId);
+
+		if (registration.hasNoRoomIds()) {
+			await this.registrationRepo.deleteByIds([registration.id]);
+			return null;
+		}
+
+		await this.saveRegistration(registration);
+		return registration;
+	}
+
 	public async saveRegistration(registration: Registration): Promise<void> {
 		await this.registrationRepo.save(registration);
+	}
+
+	public async getSingleRegistrationById(registrationId: string): Promise<Registration> {
+		const registrationResult = await this.registrationRepo.findById(registrationId);
+
+		return registrationResult;
 	}
 
 	public async getSingleRegistrationByEmail(email: string): Promise<Registration | null> {
