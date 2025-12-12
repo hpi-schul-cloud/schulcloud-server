@@ -10,8 +10,8 @@ export class ServerConfigController {
 	@ApiOperation({ summary: 'Useable configuration for clients' })
 	@ApiResponse({ status: 200, type: ConfigResponse })
 	@Get('/public')
-	public async publicConfig(): Promise<ConfigResponse> {
-		const configResponse = await this.serverUc.getConfig();
+	public publicConfig(): ConfigResponse {
+		const configResponse = this.serverUc.getConfig();
 
 		return configResponse;
 	}
