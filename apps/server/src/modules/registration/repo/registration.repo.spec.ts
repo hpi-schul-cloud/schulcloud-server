@@ -1,4 +1,4 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { RoomEntity } from '@modules/room';
 import { roomEntityFactory } from '@modules/room/testing';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -71,7 +71,7 @@ describe('RegistrationRepo', () => {
 			const result = await repo.findById(registrationEntity.id);
 			const expectedProps = {
 				...registrationEntity,
-				roomIds: registrationEntity.roomIds.map((id) => new ObjectId(id)),
+				roomIds: registrationEntity.roomIds,
 			};
 
 			expect(result.getProps()).toEqual(expectedProps);
@@ -93,7 +93,7 @@ describe('RegistrationRepo', () => {
 			const result = await repo.findByEmail(mockedEmail);
 			const expectedProps = {
 				...registrationEntity,
-				roomIds: registrationEntity.roomIds.map((id) => new ObjectId(id)),
+				roomIds: registrationEntity.roomIds,
 			};
 
 			expect(result?.getProps()).toEqual(expectedProps);
@@ -120,7 +120,7 @@ describe('RegistrationRepo', () => {
 			const result = await repo.findBySecret(registrationEntity.registrationSecret);
 			const expectedProps = {
 				...registrationEntity,
-				roomIds: registrationEntity.roomIds.map((id) => new ObjectId(id)),
+				roomIds: registrationEntity.roomIds,
 			};
 
 			expect(result.getProps()).toEqual(expectedProps);

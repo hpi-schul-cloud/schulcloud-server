@@ -103,7 +103,7 @@ describe(`create board in room (api)`, () => {
 				const boardId = (response.body as { id: string }).id;
 
 				// wait for event bus
-				await new Promise((resolve) => setTimeout(resolve, 10));
+				await new Promise((resolve) => setTimeout(resolve, 50));
 
 				const roomContent = await em.findOneOrFail('RoomContentEntity', {
 					roomId: room.id,
