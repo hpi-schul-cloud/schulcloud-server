@@ -7,7 +7,7 @@ import { SendEmailLoggable } from '../loggable';
 import { TextMapper } from '../mapper';
 
 @Injectable()
-export class HelpdeskProblemService {
+export class HelpdeskService {
 	constructor(
 		private readonly emailService: MailService,
 		@Inject(HELPDESK_CONFIG_TOKEN) private readonly config: HelpdeskConfig,

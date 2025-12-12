@@ -4,14 +4,13 @@ import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { IResult } from 'ua-parser-js';
-import { HelpdeskDevice, HelpdeskSystem, SupportType } from '../domain';
-import { HelpdeskProblemService } from '../domain/service';
+import { HelpdeskDevice, HelpdeskService, HelpdeskSystem, SupportType } from '../domain';
 import { HelpdeskProblemCreateParams, HelpdeskWishCreateParams } from './dto';
 
 @Injectable()
 export class HelpdeskUc {
 	constructor(
-		private readonly helpdeskProblemService: HelpdeskProblemService,
+		private readonly helpdeskProblemService: HelpdeskService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: SchoolService
 	) {}
