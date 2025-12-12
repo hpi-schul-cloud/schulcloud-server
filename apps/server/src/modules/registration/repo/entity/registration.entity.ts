@@ -15,7 +15,7 @@ export class RegistrationEntity extends BaseEntityWithTimestamps implements Regi
 	lastName!: string;
 
 	@Index()
-	@Property({ type: 'ObjectId', fieldName: 'roomIds', nullable: false })
+	@Property({ type: 'EntityId[]', fieldName: 'roomIds', nullable: false })
 	roomIds!: EntityId[];
 
 	@Index()
