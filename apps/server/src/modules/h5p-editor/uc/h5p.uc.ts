@@ -1,4 +1,3 @@
-/* eslint-disable filename-rules/match */
 import {
 	AuthorizationBodyParamsReferenceType,
 	AuthorizationClientAdapter,
