@@ -36,7 +36,8 @@ export class RoomArrangementRepo {
 		this.em.remove(roomArrangements);
 		await this.em.flush();
 
-		const deletedIds: EntityId[] = roomArrangements.map((arrangement) => arrangement.id);
+		const deletedIds = roomArrangements.map((arrangement) => arrangement.id);
+
 		return deletedIds;
 	}
 }
