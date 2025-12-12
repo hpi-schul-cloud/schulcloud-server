@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { IResult } from 'ua-parser-js';
-import { HelpdeskService, HelpdeskSystem, UserDevice } from '../domain';
+import { HelpdeskService, UserContext, UserDevice } from '../domain';
 import { HelpdeskProblemCreateParams, HelpdeskWishCreateParams } from './dto';
 
 @Injectable()
@@ -24,10 +24,10 @@ export class HelpdeskUc {
 	): Promise<void> {
 		const { user, school } = await this.authorizeUserForSchool(userId);
 
-		const system = this.createSystem(user, school);
+		const userContext = this.createUserContext(user, school);
 		const userDevice = this.createUserDevice(userAgent);
 
-		await this.helpdeskProblemService.createProblem(params, system, userDevice, files);
+		await this.helpdeskProblemService.createProblem(params, userContext, userDevice, files);
 	}
 
 	public async createHelpdeskWish(
@@ -38,10 +38,10 @@ export class HelpdeskUc {
 	): Promise<void> {
 		const { user, school } = await this.authorizeUserForSchool(userId);
 
-		const system = this.createSystem(user, school);
+		const userContext = this.createUserContext(user, school);
 		const userDevice = this.createUserDevice(userAgent);
 
-		await this.helpdeskProblemService.createWish(params, system, userDevice, files);
+		await this.helpdeskProblemService.createWish(params, userContext, userDevice, files);
 	}
 
 	private async authorizeUserForSchool(userId: EntityId): Promise<{ user: User; school: School }> {
@@ -60,17 +60,17 @@ export class HelpdeskUc {
 		};
 	}
 
-	private createSystem(user: User, school: School): HelpdeskSystem {
-		const system = new HelpdeskSystem({
+	private createUserContext(user: User, school: School): UserContext {
+		const userContext = new UserContext({
 			userId: user.id,
 			userName: `${user.firstName} ${user.lastName}`,
-			userEmail: user.email || '',
+			userEmail: user.email,
 			userRoles: user.roles?.getItems()?.map((role) => role.name),
 			schoolId: school.id,
 			schoolName: school.getProps().name,
 		});
 
-		return system;
+		return userContext;
 	}
 
 	private createUserDevice(userAgent?: IResult): UserDevice {

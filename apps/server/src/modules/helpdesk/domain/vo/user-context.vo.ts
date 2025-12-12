@@ -1,9 +1,9 @@
 import { ValueObject } from '@shared/domain/value-object.decorator';
 import { IsArray, IsEmail, IsMongoId, IsString } from 'class-validator';
-import { HelpdeskSystemProps } from '..';
+import { UserContextProps } from '..';
 
 @ValueObject()
-export class HelpdeskSystem implements HelpdeskSystemProps {
+export class UserContext implements UserContextProps {
 	@IsMongoId()
 	public readonly userId: string;
 
@@ -23,7 +23,7 @@ export class HelpdeskSystem implements HelpdeskSystemProps {
 	@IsString()
 	public readonly schoolName: string;
 
-	constructor(props: HelpdeskSystemProps) {
+	constructor(props: UserContextProps) {
 		this.userId = props.userId;
 		this.userName = props.userName;
 		this.userEmail = props.userEmail;

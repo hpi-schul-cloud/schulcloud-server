@@ -2,7 +2,7 @@ import { Logger } from '@core/logger';
 import { AppendedAttachment, Mail, MailService } from '@infra/mail';
 import { Inject, Injectable } from '@nestjs/common';
 import { HELPDESK_CONFIG_TOKEN, HelpdeskConfig } from '../../helpdesk-config';
-import { HelpdeskProblemProps, HelpdeskSystemProps, HelpdeskWishProps, UserDeviceProps } from '../interface';
+import { HelpdeskProblemProps, HelpdeskWishProps, UserContextProps, UserDeviceProps } from '../interface';
 import { SendEmailLoggable } from '../loggable';
 import { TextMapper } from '../mapper';
 
@@ -15,29 +15,29 @@ export class HelpdeskService {
 	) {}
 
 	public async createProblem(
-		problemProps: HelpdeskProblemProps,
-		systemProps: HelpdeskSystemProps,
-		deviceProps?: UserDeviceProps,
+		problem: HelpdeskProblemProps,
+		userContext: UserContextProps,
+		userDevice?: UserDeviceProps,
 		files?: Express.Multer.File[]
 	): Promise<void> {
-		const plainTextContent = TextMapper.createFeedbackText(problemProps, systemProps, deviceProps);
+		const plainTextContent = TextMapper.createFeedbackText(problem, userContext, userDevice);
 		await this.sendEmail(
 			[this.config.problemEmailAddress],
-			problemProps.replyEmail,
-			problemProps.subject,
+			problem.replyEmail,
+			problem.subject,
 			plainTextContent,
 			files
 		);
 	}
 
 	public async createWish(
-		props: HelpdeskWishProps,
-		systemProps: HelpdeskSystemProps,
-		deviceProps?: UserDeviceProps,
+		wish: HelpdeskWishProps,
+		userContext: UserContextProps,
+		userDevice?: UserDeviceProps,
 		files?: Express.Multer.File[]
 	): Promise<void> {
-		const plainTextContent = TextMapper.createWishText(props, systemProps, deviceProps);
-		await this.sendEmail([this.config.wishEmailAddress], props.replyEmail, props.subject, plainTextContent, files);
+		const plainTextContent = TextMapper.createWishText(wish, userContext, userDevice);
+		await this.sendEmail([this.config.wishEmailAddress], wish.replyEmail, wish.subject, plainTextContent, files);
 	}
 
 	private async sendEmail(

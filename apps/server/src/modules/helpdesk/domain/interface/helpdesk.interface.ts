@@ -27,7 +27,7 @@ export interface UserDeviceProps {
 	os?: string;
 }
 
-export interface HelpdeskSystemProps {
+export interface UserContextProps {
 	userId: EntityId;
 	userName: string;
 	userEmail: string;
