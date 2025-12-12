@@ -55,7 +55,9 @@ export class H5PEditorUc {
 		private readonly authorizationClientAdapter: AuthorizationClientAdapter,
 		private readonly h5pContentRepo: H5PContentRepo,
 		private readonly logger: Logger
-	) {}
+	) {
+		this.logger.setContext(H5PEditorUc.name);
+	}
 
 	private async checkContentPermission(
 		parentType: H5PContentParentType,
