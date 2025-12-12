@@ -91,7 +91,7 @@ export class TextFormatter {
 
 	private static buildContextAndDeviceInfo(
 		userContext: UserContextProps,
-		userDevice: UserDeviceProps | undefined,
+		userDevice?: UserDeviceProps,
 		consent?: boolean
 	): string {
 		const userContextInfo = this.buildUserContextInfo(userContext);
