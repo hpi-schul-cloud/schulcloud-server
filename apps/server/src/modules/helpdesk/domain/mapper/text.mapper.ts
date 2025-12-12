@@ -1,7 +1,7 @@
 import { HelpdeskProblemProps, HelpdeskWishProps, UserContextProps, UserDeviceProps } from '../interface';
 
 export class TextMapper {
-	public static createFeedbackText(
+	public static createProblemText(
 		problem: HelpdeskProblemProps,
 		userContext: UserContextProps,
 		userDevice?: UserDeviceProps

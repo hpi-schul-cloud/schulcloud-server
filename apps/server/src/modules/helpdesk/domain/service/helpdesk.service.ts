@@ -20,7 +20,7 @@ export class HelpdeskService {
 		userDevice?: UserDeviceProps,
 		files?: Express.Multer.File[]
 	): Promise<void> {
-		const plainTextContent = TextMapper.createFeedbackText(problem, userContext, userDevice);
+		const plainTextContent = TextMapper.createProblemText(problem, userContext, userDevice);
 		await this.sendEmail(
 			[this.config.problemEmailAddress],
 			problem.replyEmail,
