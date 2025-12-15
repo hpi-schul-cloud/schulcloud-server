@@ -124,22 +124,10 @@ export class CommonCartridgeImportService {
 				(organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(columnProps.path)
 			);
 
-		// for (const card of cards) {
-		// 	card.isResource
-		// 		? await this.createCardElementWithResource(parser, columnResponse, card, currentUser)
-		// 		: await this.createCard(parser, columnResponse, card, currentUser);
-		// }
-
-		const cardsWithResource = cards.filter((card) => card.isResource);
-
-		const cardsWithoutResource = cards.filter((card) => !card.isResource);
-
-		for await (const card of cardsWithoutResource) {
-			await this.createCard(parser, columnResponse, card, currentUser);
-		}
-
-		for await (const card of cardsWithResource) {
-			await this.createCardElementWithResource(parser, columnResponse, card, currentUser);
+		for (const card of cards) {
+			card.isResource
+				? await this.createCardElementWithResource(parser, columnResponse, card, currentUser)
+				: await this.createCard(parser, columnResponse, card, currentUser);
 		}
 	}
 
