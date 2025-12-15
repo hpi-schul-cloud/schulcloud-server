@@ -5,21 +5,26 @@ import {
 	Controller,
 	ForbiddenException,
 	Get,
+	HttpCode,
 	HttpStatus,
 	NotFoundException,
 	Param,
+	Patch,
 	Post,
 	UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
-import { RegistrationMapper } from './mapper/registration.mapper';
-import { RegistrationItemResponse } from './dto/response/registration-item.response';
-import { RegistrationUc } from './registration.uc';
+import { Registration } from '../domain';
+import { CancelRegistrationUrlParams } from './dto/request/cancel-registration.url.params';
+import { CompleteRegistrationBodyParams } from './dto/request/complete-registration.body.params';
 import { CreateOrUpdateRegistrationBodyParams } from './dto/request/create-registration.body.params';
-import { RegistrationBySecretUrlParams } from './dto/request/registration-by-secret.url.params';
 import { RegistrationByRoomIdUrlParams } from './dto/request/registration-by-room-id.url.params';
+import { RegistrationBySecretUrlParams } from './dto/request/registration-by-secret.url.params';
+import { RegistrationItemResponse } from './dto/response/registration-item.response';
 import { RegistrationListResponse } from './dto/response/registration-list.response';
+import { RegistrationMapper } from './mapper/registration.mapper';
+import { RegistrationUc } from './registration.uc';
 
 @ApiTags('Registration')
 @Controller('registrations')
@@ -61,7 +66,7 @@ export class RegistrationController {
 	})
 	@ApiResponse({
 		status: HttpStatus.NOT_FOUND,
-		description: 'Invalid registration hash',
+		description: 'Invalid registration secret',
 		type: NotFoundException,
 	})
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
@@ -72,6 +77,56 @@ export class RegistrationController {
 		const response = RegistrationMapper.mapToRegistrationItemResponse(registration);
 
 		return response;
+	}
+
+	@Post('/by-secret/:registrationSecret/complete')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({ summary: 'Complete a registration by its secret' })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Registration completed successfully. User and Useraccount were created.',
+	})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({
+		status: HttpStatus.FORBIDDEN,
+		description: 'The "registration for external person"-feature is disabled.',
+		type: ForbiddenException,
+	})
+	@ApiResponse({
+		status: HttpStatus.NOT_FOUND,
+		description: 'The registration secret does not belong to an existing registration.',
+		type: NotFoundException,
+	})
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async completeRegistration(
+		@Param() urlParams: RegistrationBySecretUrlParams,
+		@Body() bodyParams: CompleteRegistrationBodyParams
+	): Promise<void> {
+		await this.registrationUc.completeRegistration(
+			urlParams.registrationSecret,
+			bodyParams.language,
+			bodyParams.password
+		);
+	}
+
+	@Patch('/:registrationId/cancel/:roomId')
+	@JwtAuthentication()
+	@ApiOperation({ summary: 'Cancel a registration for a specific roomId' })
+	@ApiResponse({ status: HttpStatus.OK })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async cancelRegistration(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: CancelRegistrationUrlParams
+	): Promise<Registration | null> {
+		const restult = await this.registrationUc.cancelRegistrationForRoom(
+			currentUser.userId,
+			urlParams.registrationId,
+			urlParams.roomId
+		);
+
+		return restult;
 	}
 
 	@Get('/by-room/:roomId')

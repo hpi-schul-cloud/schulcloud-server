@@ -3,9 +3,10 @@ import { RoomArrangementService, RoomService } from '../domain';
 import { EntityId } from '@shared/domain/types';
 import { RoomPermissionService } from './service';
 import { Action, AuthorizationService } from '@modules/authorization';
-import { RoomMembershipService } from '@modules/room-membership';
+import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { RoleName } from '@modules/role';
-import { RoomWithLockedStatus } from './type/room-with-locked-status';
+import { RoomWithPermissionsAndLockedStatus } from './type/room-with-locked-status';
+import { Permission } from '@shared/domain/interface';
 
 @Injectable()
 export class RoomArrangementUc {
@@ -17,7 +18,7 @@ export class RoomArrangementUc {
 		private readonly roomArrangementService: RoomArrangementService
 	) {}
 
-	public async getRoomsByUserArrangement(userId: EntityId): Promise<RoomWithLockedStatus[]> {
+	public async getRoomsByUserArrangement(userId: EntityId): Promise<RoomWithPermissionsAndLockedStatus[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
 
@@ -31,7 +32,10 @@ export class RoomArrangementUc {
 		const orderedRoomIds = await this.roomArrangementService.sortRoomIdsByUserArrangement(userId, existingRoomIds);
 		rooms.sort((a, b) => orderedRoomIds.indexOf(a.id) - orderedRoomIds.indexOf(b.id));
 
-		const roomsWithLockedStatus = rooms.map((room) => {
+		const roomsWithPermissionsAndLockedStatus = rooms.map((room) => {
+			const roomAuthorizable = roomAuthorizables.find((item) => item.roomId === room.id);
+			const permissions = roomAuthorizable ? this.getPermissions(userId, roomAuthorizable) : [];
+
 			const hasOwner = roomAuthorizables.some(
 				(item) =>
 					item.roomId === room.id &&
@@ -39,11 +43,12 @@ export class RoomArrangementUc {
 			);
 			return {
 				room,
+				permissions,
 				isLocked: !hasOwner,
 			};
 		});
 
-		return roomsWithLockedStatus;
+		return roomsWithPermissionsAndLockedStatus;
 	}
 
 	public async moveRoomInUserArrangement(userId: EntityId, roomId: EntityId, toPosition: number): Promise<void> {
@@ -51,5 +56,14 @@ export class RoomArrangementUc {
 		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.read);
 
 		await this.roomArrangementService.moveRoom(userId, roomId, toPosition);
+	}
+
+	private getPermissions(userId: EntityId, roomMembershipAuthorizable: RoomMembershipAuthorizable): Permission[] {
+		const permissions = roomMembershipAuthorizable.members
+			.filter((member) => member.userId === userId)
+			.flatMap((member) => member.roles)
+			.flatMap((role) => role.permissions ?? []);
+
+		return permissions;
 	}
 }

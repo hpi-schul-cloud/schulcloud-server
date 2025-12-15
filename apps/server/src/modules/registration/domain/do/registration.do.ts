@@ -1,7 +1,7 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Mail } from '@infra/mail';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 export interface RegistrationProps extends AuthorizableObject {
 	id: EntityId;
@@ -88,6 +88,14 @@ export class Registration extends DomainObject<RegistrationProps> {
 		}
 
 		this.props.roomIds.push(roomId);
+	}
+
+	public removeRoomId(roomId: EntityId): void {
+		this.props.roomIds = this.props.roomIds.filter((id) => id !== roomId);
+	}
+
+	public hasNoRoomIds(): boolean {
+		return this.props.roomIds.length === 0;
 	}
 
 	public generateRegistrationMail(): Mail {
