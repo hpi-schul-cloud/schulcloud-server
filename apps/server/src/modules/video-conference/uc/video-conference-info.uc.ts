@@ -51,16 +51,6 @@ export class VideoConferenceInfoUc {
 			// TODO should be refactored to not use exceptions for flow control
 		}
 
-		const isGuest: boolean = await this.videoConferenceService.isExternalPersonOrTeamExpert(
-			currentUserId,
-			scope.scope,
-			scopeInfo.scopeId
-		);
-
-		if (isGuest && state === VideoConferenceState.RUNNING) {
-			options = {} as VideoConferenceOptionsDO;
-		}
-
 		const response = new VideoConferenceInfo({
 			state,
 			permission: PermissionMapping[bbbRole],
