@@ -5,6 +5,7 @@ import { H5PAjaxEndpoint, H5PEditor, H5PPlayer } from '@lumieducation/h5p-server
 import { IHubInfo, IUser as LumiIUser } from '@lumieducation/h5p-server/build/src/types';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
@@ -14,6 +15,8 @@ import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PUploadFile } from '../types';
 import { H5PEditorUc } from './h5p.uc';
+
+const fileNameRegEx = '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}.svg';
 
 jest.mock('fs', (): unknown => {
 	return {
@@ -242,7 +245,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			const svgBuffer = Buffer.from('<svg><circle cx="50" cy="50" r="40"/></svg>');
 
 			const mockTempDir = '/tmp/h5p-svg-abc123';
-			const mockTempFileMatcher = expect.stringMatching(new RegExp(`${mockTempDir}/[a-f0-9]{24}\\.svg$`)) as string;
+			const mockTempFileMatcher = expect.stringMatching(new RegExp(`${mockTempDir}/${fileNameRegEx}$`)) as string;
 
 			const mkdtempSyncSpy = jest.spyOn(fs, 'mkdtempSync').mockReturnValue(mockTempDir);
 			const writeFileSpy = jest.spyOn(fsPromises, 'writeFile').mockResolvedValueOnce(undefined);
@@ -294,7 +297,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			const svgBuffer = Buffer.from('<svg><circle cx="50" cy="50" r="40"/></svg>');
 
 			const mockTempDir = '/tmp/h5p-svg-abc123';
-			const mockTempFileMatcher = expect.stringMatching(new RegExp(`${mockTempDir}/[a-f0-9]{24}\\.svg$`)) as string;
+			const mockTempFileMatcher = expect.stringMatching(new RegExp(`${mockTempDir}/${fileNameRegEx}$`)) as string;
 
 			const mkdtempSyncSpy = jest.spyOn(fs, 'mkdtempSync').mockReturnValue(mockTempDir);
 			const writeFileSpy = jest.spyOn(fsPromises, 'writeFile').mockResolvedValueOnce(undefined);
@@ -348,7 +351,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			const svgBuffer = Buffer.from('<svg><circle cx="50" cy="50" r="40"/></svg>');
 
 			const mockTempDir = '/tmp/h5p-svg-abc123';
-			const mockTempFileMatcher = expect.stringMatching(new RegExp(`${mockTempDir}/[a-f0-9]{24}\\.svg$`)) as string;
+			const mockTempFileMatcher = expect.stringMatching(new RegExp(`${mockTempDir}/${fileNameRegEx}$`)) as string;
 
 			const mkdtempSyncSpy = jest.spyOn(fs, 'mkdtempSync').mockReturnValue(mockTempDir);
 			const writeFileSpy = jest.spyOn(fsPromises, 'writeFile').mockResolvedValueOnce(undefined);
@@ -395,6 +398,45 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 				undefined,
 				undefined
 			);
+		});
+
+		it('should throw and avoid cleanup when SVG temp write fails', async () => {
+			const { user } = setup();
+			const svgBuffer = Buffer.from('<svg><rect width="10" height="10"/></svg>');
+
+			const mockTempDir = '/tmp/h5p-svg-abc123';
+			const mockTempFileMatcher = expect.stringMatching(new RegExp(`${mockTempDir}/${fileNameRegEx}$`)) as string;
+
+			const mkdtempSyncSpy = jest.spyOn(fs, 'mkdtempSync').mockReturnValue(mockTempDir);
+			const writeFileSpy = jest.spyOn(fsPromises, 'writeFile').mockRejectedValueOnce(new Error('disk write error'));
+			const unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync');
+			const rmSyncSpy = jest.spyOn(fs, 'rmSync');
+
+			await expect(
+				uc.postAjax(
+					user.userId,
+					{ action: 'files' },
+					{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
+					{
+						fieldname: 'file',
+						buffer: svgBuffer,
+						originalname: 'test-icon.svg',
+						size: svgBuffer.length,
+						mimetype: 'image/svg+xml',
+					} as Express.Multer.File
+				)
+			).rejects.toThrow(InternalServerErrorException);
+
+			// Verify it attempted directory creation and write with UUID path
+			expect(mkdtempSyncSpy).toHaveBeenCalledWith(expect.stringMatching(/.*h5p-svg-/));
+			expect(writeFileSpy).toHaveBeenCalledWith(mockTempFileMatcher, svgBuffer, 'utf8');
+
+			// No cleanup should be attempted because file creation failed and path wasn't retained
+			expect(unlinkSyncSpy).not.toHaveBeenCalled();
+			expect(rmSyncSpy).not.toHaveBeenCalled();
+
+			// The H5P endpoint must not be invoked on failure
+			expect(ajaxEndpoint.postAjax).not.toHaveBeenCalled();
 		});
 	});
 });

@@ -26,12 +26,13 @@ import {
 	BadRequestException,
 	HttpException,
 	Injectable,
+	InternalServerErrorException,
 	NotAcceptableException,
 	NotFoundException,
 } from '@nestjs/common';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { randomUUID } from 'crypto';
 import { Request } from 'express';
 import { mkdtempSync, rmSync, unlinkSync } from 'fs';
 import { writeFile } from 'fs/promises';
@@ -44,6 +45,8 @@ import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PContentParentType, H5PUploadFile, LumiUserWithContentData } from '../types';
 import { GetLibraryFile } from './dto/h5p-getLibraryFile';
+
+const UNKNOWN_TYPE = 'unknown.type';
 
 @Injectable()
 export class H5PEditorUc {
@@ -139,12 +142,13 @@ export class H5PEditorUc {
 		| ILibraryOverviewForClient[]
 		| undefined
 	> {
-		const user = this.changeUserType(userId);
-		const language = await this.getUserLanguage(userId);
-		const contentUploadFile = await this.createContentUploadFile(contentFile);
-		const libraryUploadFile = this.createLibraryUploadFile(h5pFile);
-
+		let contentUploadFile: H5PUploadFile | undefined;
 		try {
+			const user = this.changeUserType(userId);
+			const language = await this.getUserLanguage(userId);
+			contentUploadFile = await this.createContentUploadFile(contentFile);
+			const libraryUploadFile = this.createLibraryUploadFile(h5pFile);
+
 			const result = await this.h5pAjaxEndpoint.postAjax(
 				query.action,
 				body,
@@ -157,6 +161,8 @@ export class H5PEditorUc {
 			);
 
 			return result;
+		} catch (err) {
+			throw new InternalServerErrorException('Error processing H5P AJAX request', { cause: err });
 		} finally {
 			if (this.isTemporarySvgFile(contentUploadFile) && contentUploadFile.tempFilePath) {
 				this.deleteTemporarySvgFile(contentUploadFile.tempFilePath);
@@ -165,7 +171,7 @@ export class H5PEditorUc {
 	}
 
 	private async createContentUploadFile(contentFile?: Express.Multer.File): Promise<H5PUploadFile | undefined> {
-		let contentTempFilePath = 'unknown.type';
+		let contentTempFilePath = UNKNOWN_TYPE;
 		let contentData = contentFile?.buffer;
 
 		if (this.isSvgFile(contentFile)) {
@@ -192,7 +198,7 @@ export class H5PEditorUc {
 
 	private async createTemporarySvgFile(contentFile: Express.Multer.File): Promise<string> {
 		const contentTempDir = mkdtempSync(join(tmpdir(), 'h5p-svg-'));
-		const contentTempFileName = new ObjectId().toString() + '.svg';
+		const contentTempFileName = randomUUID() + '.svg';
 		const contentTempFilePath = join(contentTempDir, contentTempFileName);
 		await writeFile(contentTempFilePath, contentFile.buffer, 'utf8');
 		this.logger.info(new H5PUcLoggable(`SVG file written to temporary location: ${contentTempFilePath}`));
@@ -206,7 +212,7 @@ export class H5PEditorUc {
 			mimetype: h5pFile.mimetype,
 			name: h5pFile.originalname,
 			size: h5pFile.size,
-			tempFilePath: 'unknown.type',
+			tempFilePath: UNKNOWN_TYPE,
 		};
 
 		return libraryUploadFile;
@@ -214,7 +220,7 @@ export class H5PEditorUc {
 
 	private isTemporarySvgFile(contentUploadFile: H5PUploadFile | undefined): contentUploadFile is H5PUploadFile {
 		const isTemporarySvgFile =
-			!!contentUploadFile && !!contentUploadFile.tempFilePath && contentUploadFile.tempFilePath !== 'unknown.type';
+			!!contentUploadFile && !!contentUploadFile.tempFilePath && contentUploadFile.tempFilePath !== UNKNOWN_TYPE;
 
 		return isTemporarySvgFile;
 	}
