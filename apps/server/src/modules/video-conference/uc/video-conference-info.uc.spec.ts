@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
 import { VideoConferenceDO, VideoConferenceScope } from '../domain';
-import { VideoConferenceOptions } from '../interface';
 import { BBBService, VideoConferenceService } from '../service';
 import { videoConferenceDOFactory } from '../testing';
 import { VideoConferenceInfo, VideoConferenceState } from './dto';
@@ -245,7 +244,11 @@ describe('VideoConferenceInfoUc', () => {
 
 							expect(result).toEqual<VideoConferenceInfo>({
 								state: VideoConferenceState.RUNNING,
-								options: {} as VideoConferenceOptions,
+								options: {
+									everyAttendeeJoinsMuted: true,
+									everybodyJoinsAsModerator: true,
+									moderatorMustApproveJoinRequests: true,
+								},
 								bbbResponse: bbbMeetingInfoResponse,
 								permission: Permission.JOIN_MEETING,
 							});
@@ -284,14 +287,18 @@ describe('VideoConferenceInfoUc', () => {
 						return { currentUserId, scope, bbbMeetingInfoResponse };
 					};
 
-					it('should return video conference info without options', async () => {
+					it('should return video conference info with existing options', async () => {
 						const { currentUserId, scope, bbbMeetingInfoResponse } = setup();
 
 						const result = await uc.getMeetingInfo(currentUserId, scope);
 
 						expect(result).toEqual<Partial<VideoConferenceInfo>>({
 							state: VideoConferenceState.RUNNING,
-							options: {} as VideoConferenceOptions,
+							options: {
+								everyAttendeeJoinsMuted: true,
+								everybodyJoinsAsModerator: true,
+								moderatorMustApproveJoinRequests: true,
+							},
 							bbbResponse: bbbMeetingInfoResponse,
 							permission: Permission.JOIN_MEETING,
 						});
