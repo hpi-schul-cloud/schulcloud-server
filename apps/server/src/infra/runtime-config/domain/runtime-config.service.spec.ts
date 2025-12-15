@@ -86,4 +86,12 @@ describe('RuntimeConfigService', () => {
 			await expect(service.getBoolean(configValue.getKey())).rejects.toThrowError();
 		});
 	});
+
+	describe('save', () => {
+		it('should call repo', async () => {
+			const configValue = runtimeConfigTestingFactory.build();
+			await service.save(configValue);
+			expect(repo.save).toHaveBeenCalledWith(configValue);
+		});
+	});
 });
