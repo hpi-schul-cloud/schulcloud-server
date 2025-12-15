@@ -8,6 +8,7 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { RuntimeConfigListResponse } from '../dto/response/runtime-config-list.response';
 
 describe('RuntimeConfig Controller (API)', () => {
 	let app: INestApplication;
@@ -76,6 +77,21 @@ describe('RuntimeConfig Controller (API)', () => {
 				const response = await loggedInClient.get('');
 
 				expect(response.status).toEqual(HttpStatus.OK);
+			});
+
+			it('should have some data', async () => {
+				const { loggedInClient } = await setup();
+
+				const response = await loggedInClient.get('');
+
+				const body = response.body as RuntimeConfigListResponse;
+				expect(body.data).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({ key: 'TEST_STRING' }),
+						expect.objectContaining({ key: 'TEST_NUMBER' }),
+						expect.objectContaining({ key: 'TEST_BOOLEAN' }),
+					])
+				);
 			});
 		});
 
