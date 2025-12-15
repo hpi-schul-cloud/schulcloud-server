@@ -1,4 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -16,6 +18,7 @@ describe('RoomService', () => {
 	let service: RoomService;
 	let roomRepo: DeepMocked<RoomRepo>;
 	let eventBus: DeepMocked<EventBus>;
+	let mailService: DeepMocked<MailService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -29,12 +32,17 @@ describe('RoomService', () => {
 					provide: EventBus,
 					useValue: createMock<EventBus>(),
 				},
+				{
+					provide: MailService,
+					useValue: createMock<MailService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get<RoomService>(RoomService);
 		roomRepo = module.get(RoomRepo);
 		eventBus = module.get(EventBus);
+		mailService = module.get(MailService);
 	});
 
 	afterAll(async () => {
@@ -221,6 +229,52 @@ describe('RoomService', () => {
 			const result = service.canEditorManageVideoconferences(room);
 
 			expect(result).toEqual(false);
+		});
+	});
+
+	describe('sendRoomWelcomeMail', () => {
+		const smtpSender = 'example@sender.com';
+		const host = 'https://example.com';
+		const roomName = 'My Test Room';
+
+		beforeEach(() => {
+			jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
+				if (config === 'SMTP_SENDER') {
+					return smtpSender;
+				}
+				if (config === 'HOST') {
+					return host;
+				}
+				if (config === 'SC_TITLE') {
+					return 'dBildungscloud';
+				}
+				return null;
+			});
+
+			const mockRoom = {
+				getRoomName: () => roomName,
+			} as Room;
+
+			roomRepo.findById.mockResolvedValue(mockRoom);
+		});
+
+		it('should call mail service to send mail', async () => {
+			const email = 'test@example.com';
+			const roomId = 'room123';
+			const title = `Benachrichtigung über Zugang zum Raum ${roomName}`;
+
+			await service.sendRoomWelcomeMail(email, roomId);
+
+			expect(mailService.send).toHaveBeenCalledTimes(1);
+			expect(mailService.send).toHaveBeenCalledWith({
+				recipients: [email],
+				from: smtpSender,
+				mail: expect.objectContaining({
+					subject: `dBildungscloud: ${title}`,
+					plainTextContent: expect.stringContaining(roomName) as unknown,
+					htmlContent: expect.stringContaining(`${host}/rooms/${roomId}`) as unknown,
+				}) as unknown,
+			});
 		});
 	});
 });
