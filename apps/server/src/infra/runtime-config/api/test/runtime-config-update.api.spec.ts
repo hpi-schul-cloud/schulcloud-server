@@ -101,7 +101,7 @@ describe('RuntimeConfig Controller (API)', () => {
 			it('should return 200 for number', async () => {
 				const { loggedInClient } = await setup();
 
-				const response = await loggedInClient.patch('/TEST_NUMBER', { value: 43 });
+				const response = await loggedInClient.patch('/TEST_NUMBER', { value: '43' });
 
 				expect(response.status).toEqual(HttpStatus.OK);
 			});
@@ -109,7 +109,7 @@ describe('RuntimeConfig Controller (API)', () => {
 			it('should return 200 for boolean', async () => {
 				const { loggedInClient } = await setup();
 
-				const response = await loggedInClient.patch('/TEST_BOOLEAN', { value: false });
+				const response = await loggedInClient.patch('/TEST_BOOLEAN', { value: 'false' });
 
 				expect(response.status).toEqual(HttpStatus.OK);
 			});
@@ -122,14 +122,14 @@ describe('RuntimeConfig Controller (API)', () => {
 				const updated = await loggedInClient.get('');
 
 				expect(updated.status).toEqual(HttpStatus.OK);
-				expect(updated.body).toEqual(
-					expect.arrayContaining([
+				expect(updated.body).toEqual({
+					data: expect.arrayContaining([
 						expect.objectContaining({
 							key: 'TEST_STRING',
 							value: 'new value',
 						}),
-					]) as RuntimeConfigListResponse
-				);
+					]) as RuntimeConfigListResponse,
+				});
 			});
 
 			it('should return 400 for invalid value type', async () => {

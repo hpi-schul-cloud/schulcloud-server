@@ -29,6 +29,23 @@ export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> {
 		return this;
 	}
 
+	public setValueFromString(value: string): RuntimeConfigValue {
+		if (this.props.type === 'string') {
+			this.props.value = value;
+		}
+		if (this.props.type === 'number') {
+			const number = Number(value);
+			if (isNaN(number)) {
+				throw new RuntimeConfigValueInvalidTypeLoggable(value, this);
+			}
+			this.props.value = number;
+		}
+		if (this.props.type === 'boolean') {
+			this.props.value = value === 'true';
+		}
+		return this;
+	}
+
 	public getKey(): string {
 		return this.props.key;
 	}
