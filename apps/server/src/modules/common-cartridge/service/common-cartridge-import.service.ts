@@ -21,6 +21,11 @@ const DEPTH_CARD_ELEMENTS = 3;
 
 const DEFAULT_NEW_COURSE_COLOR = '#455B6A';
 
+interface ColumnResource {
+	column: CommonCartridgeOrganizationProps;
+	isResourceColumn: boolean;
+}
+
 @Injectable()
 export class CommonCartridgeImportService {
 	constructor(
@@ -73,32 +78,49 @@ export class CommonCartridgeImportService {
 		parser: CommonCartridgeFileParser,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const columnsWithResource = parser
+		const columns: ColumnResource[] = parser
 			.getOrganizations()
 			.filter(
-				(organization) =>
-					organization.pathDepth === DEPTH_COLUMN &&
-					organization.path.startsWith(board.identifier) &&
-					organization.isResource
-			);
+				(organization) => organization.pathDepth === DEPTH_COLUMN && organization.path.startsWith(board.identifier)
+			)
+			.map((column) => {
+				return {
+					column,
+					isResourceColumn: column.isResource,
+				};
+			});
+		// const columnsWithResource = parser
+		// 	.getOrganizations()
+		// 	.filter(
+		// 		(organization) =>
+		// 			organization.pathDepth === DEPTH_COLUMN &&
+		// 			organization.path.startsWith(board.identifier) &&
+		// 			organization.isResource
+		// 	);
 
-		const columnsWithoutResource = parser
-			.getOrganizations()
-			.filter(
-				(organization) =>
-					organization.pathDepth === DEPTH_COLUMN &&
-					organization.path.startsWith(board.identifier) &&
-					!organization.isResource
-			);
+		// const columnsWithoutResource = parser
+		// 	.getOrganizations()
+		// 	.filter(
+		// 		(organization) =>
+		// 			organization.pathDepth === DEPTH_COLUMN &&
+		// 			organization.path.startsWith(board.identifier) &&
+		// 			!organization.isResource
+		// 	);
 
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
-		for await (const column of columnsWithResource) {
-			await this.createColumnWithResource(parser, boardId, column, currentUser);
-		}
+		// for await (const column of columnsWithResource) {
+		// 	await this.createColumnWithResource(parser, boardId, column, currentUser);
+		// }
 
-		for await (const column of columnsWithoutResource) {
-			await this.createColumn(parser, boardId, column, currentUser);
+		// for await (const column of columnsWithoutResource) {
+		// 	await this.createColumn(parser, boardId, column, currentUser);
+		// }
+
+		for await (const columnResource of columns) {
+			columnResource.isResourceColumn
+				? await this.createColumnWithResource(parser, boardId, columnResource.column, currentUser)
+				: await this.createColumn(parser, boardId, columnResource.column, currentUser);
 		}
 	}
 
