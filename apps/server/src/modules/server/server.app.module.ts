@@ -32,9 +32,11 @@ import { OauthProviderApiModule } from '@modules/oauth-provider/oauth-provider-a
 import { OAuthApiModule } from '@modules/oauth/oauth-api.module';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
 import { RegistrationModule } from '@modules/registration';
+import { RegistrationApiModule } from '@modules/registration/registration-api.module';
 import { RocketChatModule } from '@modules/rocketchat';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { RosterModule } from '@modules/roster/roster.module';
+import { RuntimeConfigApiModule, ServerRuntimeConfigModule } from '@modules/runtime-config-api';
 import { SchoolApiModule } from '@modules/school/school-api.module';
 import { SharingApiModule } from '@modules/sharing/sharing-api.module';
 import { ShdApiModule } from '@modules/shd/shd.api.module';
@@ -56,16 +58,17 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { MediaSourceApiModule } from '../media-source/media-source-api.module';
 import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
+import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
-import { RegistrationApiModule } from '@modules/registration/registration-api.module';
-import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	ConfigurationModule.register(VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig),
 	ConfigurationModule.register(BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig),
+	ServerRuntimeConfigModule,
+	RuntimeConfigApiModule,
 	CoreModule,
 	CourseApiModule,
 	AuthenticationApiModule,

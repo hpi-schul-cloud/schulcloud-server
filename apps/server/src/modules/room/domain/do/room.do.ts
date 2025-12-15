@@ -83,4 +83,8 @@ export class Room extends DomainObject<RoomProps> {
 	set features(value: RoomFeatures[]) {
 		this.props.features = value;
 	}
+
+	public getRoomName(): string {
+		return this.props.name;
+	}
 }

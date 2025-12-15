@@ -23,7 +23,7 @@ interface MailContent {
 	attachments?: (InlineAttachment | AppendedAttachment)[];
 }
 
-interface PlainTextMailContent extends MailContent {
+export interface PlainTextMailContent extends MailContent {
 	htmlContent?: string;
 
 	plainTextContent: string;
