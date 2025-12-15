@@ -47,8 +47,6 @@ export class VideoConferenceJoinUc {
 			joinBuilder.withRole(BBBRole.MODERATOR);
 		}
 
-		console.log('moderatorMustApproveJoinRequests:', videoConference.options.moderatorMustApproveJoinRequests);
-		console.log('isGuest:', isGuest);
 		if (!videoConference.options.moderatorMustApproveJoinRequests && isGuest) {
 			throw new ForbiddenException(
 				ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE,
