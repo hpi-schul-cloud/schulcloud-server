@@ -89,33 +89,6 @@ export class CommonCartridgeImportService {
 					isResourceColumn: column.isResource,
 				};
 			});
-		// const columnsWithResource = parser
-		// 	.getOrganizations()
-		// 	.filter(
-		// 		(organization) =>
-		// 			organization.pathDepth === DEPTH_COLUMN &&
-		// 			organization.path.startsWith(board.identifier) &&
-		// 			organization.isResource
-		// 	);
-
-		// const columnsWithoutResource = parser
-		// 	.getOrganizations()
-		// 	.filter(
-		// 		(organization) =>
-		// 			organization.pathDepth === DEPTH_COLUMN &&
-		// 			organization.path.startsWith(board.identifier) &&
-		// 			!organization.isResource
-		// 	);
-
-		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
-		// with Promise.all, the order of the columns would be random
-		// for await (const column of columnsWithResource) {
-		// 	await this.createColumnWithResource(parser, boardId, column, currentUser);
-		// }
-
-		// for await (const column of columnsWithoutResource) {
-		// 	await this.createColumn(parser, boardId, column, currentUser);
-		// }
 
 		for await (const columnResource of columns) {
 			columnResource.isResourceColumn
@@ -151,23 +124,23 @@ export class CommonCartridgeImportService {
 				(organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(columnProps.path)
 			);
 
-		for (const card of cards) {
-			card.isResource
-				? await this.createCardElementWithResource(parser, columnResponse, card, currentUser)
-				: await this.createCard(parser, columnResponse, card, currentUser);
+		// for (const card of cards) {
+		// 	card.isResource
+		// 		? await this.createCardElementWithResource(parser, columnResponse, card, currentUser)
+		// 		: await this.createCard(parser, columnResponse, card, currentUser);
+		// }
+
+		const cardsWithResource = cards.filter((card) => card.isResource);
+
+		const cardsWithoutResource = cards.filter((card) => !card.isResource);
+
+		for await (const card of cardsWithoutResource) {
+			await this.createCard(parser, columnResponse, card, currentUser);
 		}
 
-		// const cardsWithResource = cards.filter((card) => card.isResource);
-
-		// const cardsWithoutResource = cards.filter((card) => !card.isResource);
-
-		// for await (const card of cardsWithoutResource) {
-		// 	await this.createCard(parser, columnResponse, card, currentUser);
-		// }
-
-		// for await (const card of cardsWithResource) {
-		// 	await this.createCardElementWithResource(parser, columnResponse, card, currentUser);
-		// }
+		for await (const card of cardsWithResource) {
+			await this.createCardElementWithResource(parser, columnResponse, card, currentUser);
+		}
 	}
 
 	private async createCardElementWithResource(
