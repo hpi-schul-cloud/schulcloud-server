@@ -62,11 +62,14 @@ import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 import { RegistrationApiModule } from '@modules/registration/registration-api.module';
 import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.module';
 import { ServerRuntimeConfigModule } from '@infra/runtime-config/server-runtime-config.module';
+import { RuntimeConfigApiModule } from '@infra/runtime-config/runtime-config-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	ConfigurationModule.register(VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig),
 	ConfigurationModule.register(BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig),
+	ServerRuntimeConfigModule,
+	RuntimeConfigApiModule,
 	CoreModule,
 	CourseApiModule,
 	AuthenticationApiModule,

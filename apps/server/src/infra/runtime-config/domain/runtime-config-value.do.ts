@@ -36,4 +36,8 @@ export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> {
 	public getTypeAndValue(): RuntimeConfigValueAndType {
 		return { ...this.props };
 	}
+
+	public getDescription(): string | undefined {
+		return this.props.description;
+	}
 }
