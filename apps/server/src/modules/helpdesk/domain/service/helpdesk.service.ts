@@ -58,7 +58,7 @@ export class HelpdeskService {
 			replyTo: [replyTo],
 		};
 
-		if (this.config.shouldSendEmails) {
+		if (this.config.shouldSendEmail) {
 			await this.emailService.send(email);
 		} else {
 			this.logger.debug(new SendEmailLoggable(recipients, replyTo, subject, plainTextContent, !!attachments));

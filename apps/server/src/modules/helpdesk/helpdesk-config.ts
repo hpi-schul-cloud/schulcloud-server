@@ -12,7 +12,7 @@ export class HelpdeskConfig {
 	@IsEmail()
 	public wishEmailAddress = 'ticketsystem@dbildungscloud.de';
 
-	@ConfigProperty('FORCE_SEND_EMAILS')
+	@ConfigProperty('FORCE_SEND_EMAIL')
 	@IsBoolean()
-	public shouldSendEmails = false;
+	public shouldSendEmail = false;
 }
