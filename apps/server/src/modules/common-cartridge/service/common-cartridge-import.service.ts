@@ -90,6 +90,8 @@ export class CommonCartridgeImportService {
 				};
 			});
 
+		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
+		// with Promise.all, the order of the columns would be random
 		for await (const columnResource of columns) {
 			columnResource.isResourceColumn
 				? await this.createColumnWithResource(parser, boardId, columnResource.column, currentUser)
