@@ -14,6 +14,7 @@ import { RoomContentUc } from './api/room-content.uc';
 import { RoomCopyUc } from './api/room-copy.uc';
 import { CopyRoomStep } from './api/saga';
 import { CopyRoomContentStep } from './api/saga/copy-room-content.step';
+import { DeleteUserRoomDataStep } from './api/saga/delete-user-room-data.step';
 import {
 	RoomBoardCreatedHandler,
 	RoomBoardDeletedHandler,
@@ -44,6 +45,7 @@ import { RoomModule } from './room.module';
 		RoomContentUc,
 		CopyRoomStep,
 		CopyRoomContentStep,
+		DeleteUserRoomDataStep,
 		RoomPermissionService,
 		RoomBoardCreatedHandler,
 		RoomBoardDeletedHandler,
