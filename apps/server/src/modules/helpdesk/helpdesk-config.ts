@@ -1,4 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
+import { StringToBoolean } from '@shared/controller/transformer';
 import { IsBoolean, IsEmail } from 'class-validator';
 
 export const HELPDESK_CONFIG_TOKEN = 'HELPDESK_CONFIG_TOKEN';
@@ -13,6 +14,7 @@ export class HelpdeskConfig {
 	public wishEmailAddress = 'ticketsystem@dbildungscloud.de';
 
 	@ConfigProperty('FORCE_SEND_EMAIL')
+	@StringToBoolean()
 	@IsBoolean()
 	public shouldSendEmail = false;
 }
