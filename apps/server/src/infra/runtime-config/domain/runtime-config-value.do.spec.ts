@@ -82,12 +82,10 @@ describe('runtime config value DO', () => {
 			expect(configValue.getTypeAndValue().value).toEqual(false);
 		});
 
-		it('should set something else to boolean', () => {
+		it('should fail to set something else to boolean', () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'boolean', value: true });
 
-			configValue.setValueFromString('not a boolean');
-
-			expect(configValue.getTypeAndValue().value).toEqual(false);
+			expect(() => configValue.setValueFromString('not a boolean')).toThrowError();
 		});
 	});
 });

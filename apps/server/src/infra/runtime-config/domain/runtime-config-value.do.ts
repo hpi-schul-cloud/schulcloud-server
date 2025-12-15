@@ -34,14 +34,10 @@ export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> {
 			this.props.value = value;
 		}
 		if (this.props.type === 'number') {
-			const number = Number(value);
-			if (isNaN(number)) {
-				throw new RuntimeConfigValueInvalidTypeLoggable(value, this);
-			}
-			this.props.value = number;
+			this.props.value = this.toNumber(value);
 		}
 		if (this.props.type === 'boolean') {
-			this.props.value = value === 'true';
+			this.props.value = this.toBoolean(value);
 		}
 		return this;
 	}
@@ -56,5 +52,23 @@ export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> {
 
 	public getDescription(): string | undefined {
 		return this.props.description;
+	}
+
+	private toNumber(value: string): number {
+		const number = Number(value);
+		if (isNaN(number)) {
+			throw new RuntimeConfigValueInvalidTypeLoggable(value, this);
+		}
+		return number;
+	}
+
+	private toBoolean(value: string): boolean {
+		if (value === 'true') {
+			return true;
+		} else if (value === 'false') {
+			return false;
+		} else {
+			throw new RuntimeConfigValueInvalidTypeLoggable(value, this);
+		}
 	}
 }
