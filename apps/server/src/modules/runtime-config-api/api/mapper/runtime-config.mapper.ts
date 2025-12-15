@@ -1,4 +1,4 @@
-import { RuntimeConfigValue } from '../../domain/runtime-config-value.do';
+import { RuntimeConfigValue } from '@infra/runtime-config';
 import { RuntimeConfigListItemResponse } from '../dto/response/runtime-config-list-item.response';
 import { RuntimeConfigListResponse } from '../dto/response/runtime-config-list.response';
 

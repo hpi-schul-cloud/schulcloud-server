@@ -1,6 +1,6 @@
+import { RuntimeConfigModule } from '@infra/runtime-config/runtime-config.module';
 import { Module } from '@nestjs/common';
-import { RuntimeConfigModule } from './runtime-config.module';
-import RuntimeConfigDefaults from './runtime-config-defaults';
+import RuntimeConfigDefaults from 'config/runtime-config-defaults';
 
 @Module({
 	imports: [

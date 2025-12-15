@@ -1,13 +1,13 @@
+import { RuntimeConfigDefault } from '@infra/runtime-config';
 import { RuntimeConfigModule } from '@infra/runtime-config/runtime-config.module';
-import { ServerRuntimeConfigModule } from '@infra/runtime-config/server-runtime-config.module';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ServerRuntimeConfigModule } from '@modules/runtime-config-api/server-runtime-config.module';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication, Module } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { RuntimeConfigDefault } from '../../domain/runtime-config-value.do';
 
 describe('RuntimeConfig Controller (API)', () => {
 	let app: INestApplication;

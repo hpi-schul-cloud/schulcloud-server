@@ -1,4 +1,4 @@
-import { JwtAuthentication } from '@infra/auth-guard';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Get, Patch, Param, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { RuntimeConfigUc } from './runtime-config.uc';
 import { RuntimeConfigMapper } from './mapper/runtime-config.mapper';
@@ -23,8 +23,9 @@ export class RuntimeConfigController {
 	@HttpCode(HttpStatus.OK)
 	public async updateRuntimeConfigValue(
 		@Param() urlParams: UpdateRuntimeConfigValueUrlParams,
-		@Body() body: UpdateRuntimeConfigValueBodyParams
+		@Body() body: UpdateRuntimeConfigValueBodyParams,
+		@CurrentUser() user: ICurrentUser
 	): Promise<void> {
-		await this.runtimeConfigUc.updateRuntimeConfigValue(urlParams.key, body.value);
+		await this.runtimeConfigUc.updateRuntimeConfigValue(urlParams.key, body.value, user.userId);
 	}
 }
