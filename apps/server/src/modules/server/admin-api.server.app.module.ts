@@ -36,6 +36,7 @@ import { TeamApiModule } from '@modules/team/team-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
+import { RoomApiModule } from '@modules/room/room-api.module';
 import { adminApiServerConfig } from './admin-api-server.config';
 import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
 
@@ -67,6 +68,7 @@ const serverModules = [
 	TaskApiModule,
 	TeamApiModule,
 	UserApiModule,
+	RoomApiModule,
 ];
 
 @Module({
