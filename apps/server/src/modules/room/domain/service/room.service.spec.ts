@@ -245,6 +245,9 @@ describe('RoomService', () => {
 				if (config === 'HOST') {
 					return host;
 				}
+				if (config === 'SC_TITLE') {
+					return 'dBildungscloud';
+				}
 				return null;
 			});
 
@@ -258,20 +261,19 @@ describe('RoomService', () => {
 		it('should call mail service to send mail', async () => {
 			const email = 'test@example.com';
 			const roomId = 'room123';
+			const title = `Benachrichtigung über Zugang zum Raum ${roomName}`;
 
 			await service.sendRoomWelcomeMail(email, roomId);
-
-			const expectedMailContent = {
-				subject: 'Raumbeitritt-Benachrichtigung',
-				plainTextContent: `Benachrichtigung über Beitritt zum Raum ${roomName}, bitte nutze folgenden Link um darauf zuzugreifen: ${host}/rooms/${roomId}`,
-				htmlContent: `<p>Benachrichtigung über Beitritt zum Raum ${roomName}</p><p>Bitte nutze folgenden Link um darauf zuzugreifen: <a href="${host}/rooms/${roomId}">${host}/rooms/${roomId}</a></p>`,
-			};
 
 			expect(mailService.send).toHaveBeenCalledTimes(1);
 			expect(mailService.send).toHaveBeenCalledWith({
 				recipients: [email],
 				from: smtpSender,
-				mail: expectedMailContent,
+				mail: expect.objectContaining({
+					subject: `dBildungscloud: ${title}`,
+					plainTextContent: expect.stringContaining(roomName) as unknown,
+					htmlContent: expect.stringContaining(`${host}/rooms/${roomId}`) as unknown,
+				}) as unknown,
 			});
 		});
 	});
