@@ -100,16 +100,14 @@ export class CommonCartridgeImportService {
 					!organization.isResource
 			);
 
-		const limit = pLimit(1);
-
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
 		for await (const column of columnsWithResource) {
-			await limit(() => this.createColumnWithResource(parser, boardId, column, currentUser));
+			await this.createColumnWithResource(parser, boardId, column, currentUser);
 		}
 
 		for await (const column of columnsWithoutResource) {
-			await limit(() => this.createColumn(parser, boardId, column, currentUser));
+			await this.createColumn(parser, boardId, column, currentUser);
 		}
 	}
 
@@ -119,8 +117,7 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const limit = pLimit(1);
-		const columnResponse = await limit(() => this.boardsClient.createBoardColumn(boardId));
+		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
 		await this.createCardElementWithResource(parser, columnResponse, columnProps, currentUser);
@@ -132,8 +129,7 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const limit = pLimit(1);
-		const columnResponse = await limit(() => this.boardsClient.createBoardColumn(boardId));
+		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
 		const cards = parser
