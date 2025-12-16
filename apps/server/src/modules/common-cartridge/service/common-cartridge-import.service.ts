@@ -5,7 +5,6 @@ import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { Injectable } from '@nestjs/common';
-import pLimit from 'p-limit';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import {
 	CommonCartridgeFileFolderResourceProps,
@@ -57,17 +56,14 @@ export class CommonCartridgeImportService {
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
 		const createdBoardIds = new Map<string, string>();
-		const limit = pLimit(1);
-
 		for await (const board of boards) {
-			const response = await limit(() =>
-				this.boardsClient.createBoard({
-					title: board.title,
-					layout: 'columns',
-					parentId,
-					parentType: 'course',
-				})
-			);
+			const response = await this.boardsClient.createBoard({
+				title: board.title,
+				layout: 'columns',
+				parentId,
+				parentType: 'course',
+			});
+
 			createdBoardIds.set(board.identifier, response.id);
 		}
 
