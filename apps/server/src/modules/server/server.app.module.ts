@@ -21,6 +21,7 @@ import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-ed
 import { CourseApiModule } from '@modules/course/course-api.module';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
+import { HelpdeskApiModule } from '@modules/helpdesk';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
 import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school.api-module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
@@ -36,6 +37,7 @@ import { RegistrationApiModule } from '@modules/registration/registration-api.mo
 import { RocketChatModule } from '@modules/rocketchat';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { RosterModule } from '@modules/roster/roster.module';
+import { RuntimeConfigApiModule, ServerRuntimeConfigModule } from '@modules/runtime-config-api';
 import { SchoolApiModule } from '@modules/school/school-api.module';
 import { SharingApiModule } from '@modules/sharing/sharing-api.module';
 import { ShdApiModule } from '@modules/shd/shd.api.module';
@@ -61,13 +63,14 @@ import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.mod
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
-import { HelpdeskApiModule } from '@modules/helpdesk';
 
 const serverModules = [
 	HelpdeskApiModule,
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	ConfigurationModule.register(VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig),
 	ConfigurationModule.register(BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig),
+	ServerRuntimeConfigModule,
+	RuntimeConfigApiModule,
 	CoreModule,
 	CourseApiModule,
 	AuthenticationApiModule,
