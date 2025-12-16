@@ -35,10 +35,9 @@ describe(BoardCollaborationGateway.name, () => {
 		app = testingModule.createNestApplication();
 
 		em = app.get(EntityManager);
-		const mongoUrl = em.config.getClientUrl();
 
 		const mongoIoAdapter = new MongoIoAdapter(app);
-		await mongoIoAdapter.connectToMongoDb(mongoUrl);
+		await mongoIoAdapter.connectToMongoDb();
 		app.useWebSocketAdapter(mongoIoAdapter);
 		await app.init();
 
@@ -140,6 +139,35 @@ describe(BoardCollaborationGateway.name, () => {
 		});
 	});
 
+	describe('copy card', () => {
+		describe('when card exists', () => {
+			it('should answer with copied card', async () => {
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
+
+				ioClient.emit('duplicate-card-request', { cardId });
+				const success = (await waitForEvent(ioClient, 'duplicate-card-success')) as {
+					cardId: string;
+					copiedCard: CardProps;
+				};
+
+				expect(Object.keys(success)).toEqual(expect.arrayContaining(['cardId', 'duplicatedCard']));
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
+
+				unauthorizedIoClient.emit('duplicate-card-request', { cardId });
+				const failure = await waitForEvent(unauthorizedIoClient, 'duplicate-card-failure');
+
+				expect(failure).toEqual({ cardId });
+			});
+		});
+	});
+
 	describe('fetch board', () => {
 		describe('when board exists', () => {
 			it('should answer with success', async () => {
@@ -227,6 +255,79 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(unauthorizedIoClient, 'move-card-failure');
 
 				expect(failure).toEqual(moveCardProps);
+			});
+		});
+	});
+
+	describe('move card to board', () => {
+		describe('when moving card to another column', () => {
+			it('should answer with success', async () => {
+				const { columnNode, columnNode2, cardNodes } = await setup();
+
+				const moveCardToBoardProps = {
+					cardId: cardNodes[0].id,
+					fromColumnId: columnNode.id,
+					toColumnId: columnNode2.id,
+				};
+
+				ioClient.emit('move-card-to-board-request', moveCardToBoardProps);
+				const success = await waitForEvent(ioClient, 'move-card-to-board-success');
+
+				expect(success).toEqual(
+					expect.objectContaining({
+						toColumn: { id: columnNode2.id, title: columnNode2.title },
+					})
+				);
+			});
+		});
+
+		describe('when moving card to another board', () => {
+			const setupWithSecondBoard = async () => {
+				const params = await setup();
+				const { columnBoardNode } = params;
+
+				const secondColumnBoardNode = columnBoardEntityFactory.buildWithId({
+					context: columnBoardNode.context,
+				});
+				const secondColumnNode = columnEntityFactory.withParent(secondColumnBoardNode).build();
+				await em.persistAndFlush([secondColumnBoardNode, secondColumnNode]);
+				em.clear();
+
+				return { secondColumnNode, ...params };
+			};
+
+			it('should answer with success', async () => {
+				const { columnNode, secondColumnNode, cardNodes } = await setupWithSecondBoard();
+
+				const moveCardToBoardProps = {
+					cardId: cardNodes[0].id,
+					fromColumnId: columnNode.id,
+					toColumnId: secondColumnNode.id,
+				};
+
+				ioClient.emit('move-card-to-board-request', moveCardToBoardProps);
+				const success = await waitForEvent(ioClient, 'move-card-to-board-success');
+
+				expect(success).toEqual(
+					expect.objectContaining({ toColumn: { id: secondColumnNode.id, title: secondColumnNode.title } })
+				);
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { columnNode, cardNodes } = await setup();
+
+				const moveCardToBoardProps = {
+					cardId: cardNodes[0].id,
+					fromColumnId: columnNode.id,
+					toColumnId: columnNode.id,
+				};
+
+				unauthorizedIoClient.emit('move-card-to-board-request', moveCardToBoardProps);
+				const failure = await waitForEvent(unauthorizedIoClient, 'move-card-to-board-failure');
+
+				expect(failure).toEqual(moveCardToBoardProps);
 			});
 		});
 	});

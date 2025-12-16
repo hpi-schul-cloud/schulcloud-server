@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
+const { ObjectId } = require('mongoose').Types;
 const Schema = mongoose.Schema;
 
 const PeepsSchema = new Schema({
   customid: {
     type: Schema.Types.ObjectId,
     default: function () {
-      return new mongoose.Types.ObjectId();
+      return new ObjectId();
     }
   },
   name: { type: String, required: true },

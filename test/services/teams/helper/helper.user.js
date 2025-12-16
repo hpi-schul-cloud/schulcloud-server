@@ -40,7 +40,7 @@ const getRoleByKey = (key, value) =>
 		.then(([role]) => role);
 
 const createUser = async (userId, roleName = 'student', schoolId = '5f2987e020834114b8efd6f8') => {
-	if (!['expert', 'student', 'teacher', 'parent', 'administrator', 'superhero'].includes(roleName)) {
+	if (!['externalPerson', 'student', 'teacher', 'parent', 'administrator', 'superhero'].includes(roleName)) {
 		throw BadRequest(`You want to test a not related role .${roleName}`);
 	}
 

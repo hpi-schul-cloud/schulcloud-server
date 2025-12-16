@@ -13,6 +13,7 @@ import {
 	teacherPermissions,
 	userPermissions,
 	defaultSystemUserPermissions,
+	externalPersonPermissions,
 } from '@testing/user-role-permissions';
 import { DeepPartial } from 'fishery';
 import _ from 'lodash';
@@ -96,6 +97,15 @@ class UserFactory extends BaseFactory<User, UserProperties> {
 	public asSuperhero(additionalPermissions: Permission[] = []): this {
 		const permissions = _.union(userPermissions, superheroPermissions, additionalPermissions);
 		const role = roleFactory.buildWithId({ permissions, name: RoleName.SUPERHERO });
+
+		const params: DeepPartial<UserProperties> = { roles: [role] };
+
+		return this.params(params);
+	}
+
+	public asExternalPerson(additionalPermissions: Permission[] = []): this {
+		const permissions = _.union(userPermissions, externalPersonPermissions, additionalPermissions);
+		const role = roleFactory.buildWithId({ permissions, name: RoleName.EXTERNALPERSON });
 
 		const params: DeepPartial<UserProperties> = { roles: [role] };
 

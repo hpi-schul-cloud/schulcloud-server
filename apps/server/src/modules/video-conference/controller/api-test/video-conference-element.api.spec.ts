@@ -576,6 +576,11 @@ describe('VideoConferenceController (API)', () => {
 				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 				const cardNode = cardEntityFactory.withParent(columnNode).build();
 				const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
+
+				const videoConference = videoConferenceFactory.buildWithId({
+					targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
+					target: elementNode.id,
+				});
 				await em.persistAndFlush([
 					columnBoardNode,
 					columnNode,
@@ -589,6 +594,7 @@ describe('VideoConferenceController (API)', () => {
 					userGroup,
 					roomEditorRole,
 					roomViewerRole,
+					videoConference,
 				]);
 				em.clear();
 
@@ -988,18 +994,18 @@ describe('VideoConferenceController (API)', () => {
 							endDate: new Date('2024-10-20'),
 						});
 						const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
-						const expertRole = roleFactory.buildWithId({
-							name: RoleName.EXPERT,
+						const externalPersonRole = roleFactory.buildWithId({
+							name: RoleName.EXTERNALPERSON,
 							permissions: [Permission.JOIN_MEETING],
 						});
 
-						const expertUser = userFactory.buildWithId({ school, roles: [expertRole] });
-						const expertAccount = accountFactory.buildWithId({ userId: expertUser.id });
+						const externalPersonUser = userFactory.buildWithId({ school, roles: [externalPersonRole] });
+						const externalPersonAccount = accountFactory.buildWithId({ userId: externalPersonUser.id });
 
 						const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 						const userGroup = groupEntityFactory.buildWithId({
 							organization: school,
-							users: [{ role: expertRole, user: expertUser }],
+							users: [{ role: externalPersonRole, user: externalPersonUser }],
 						});
 						const roomMembership = roomMembershipEntityFactory.build({
 							roomId: room.id,
@@ -1024,8 +1030,8 @@ describe('VideoConferenceController (API)', () => {
 							columnNode,
 							cardNode,
 							elementNode,
-							expertAccount,
-							expertUser,
+							externalPersonAccount,
+							externalPersonUser,
 							room,
 							roomMembership,
 							school,
@@ -1041,7 +1047,7 @@ describe('VideoConferenceController (API)', () => {
 						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
 						const scopeId: string = elementNode.id;
 
-						const loggedInClient: TestApiClient = await testApiClient.login(expertAccount);
+						const loggedInClient: TestApiClient = await testApiClient.login(externalPersonAccount);
 
 						mockBbbMeetingInfoSuccess(scopeId);
 

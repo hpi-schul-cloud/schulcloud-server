@@ -87,8 +87,8 @@ describe('VideoConferenceUc', () => {
 	let user: UserDo;
 
 	let defaultRole: Role;
-	let expertRoleCourse: Role;
-	let expertRoleTeam: Role;
+	let externalPersonRole: Role;
+	let teamExpertRole: Role;
 
 	const setTeamRole = (role: Role) => {
 		team.teamUsers[0].role = role;
@@ -179,8 +179,8 @@ describe('VideoConferenceUc', () => {
 			moderatorMustApproveJoinRequests: false,
 		};
 		defaultRole = roleFactory.build({ permissions: [Permission.JOIN_MEETING] });
-		expertRoleCourse = roleFactory.build({ name: RoleName.EXPERT, permissions: [Permission.JOIN_MEETING] });
-		expertRoleTeam = roleFactory.build({ name: RoleName.TEAMEXPERT, permissions: [Permission.JOIN_MEETING] });
+		externalPersonRole = roleFactory.build({ name: RoleName.EXTERNALPERSON, permissions: [Permission.JOIN_MEETING] });
+		teamExpertRole = roleFactory.build({ name: RoleName.TEAMEXPERT, permissions: [Permission.JOIN_MEETING] });
 
 		team = teamFactory.withRoleAndUserId(defaultRole, defaultCurrentUser.userId).build();
 		user = userDoFactory.build({ id: defaultCurrentUser.userId, firstName: 'firstName', lastName: 'lastName' });
@@ -380,6 +380,25 @@ describe('VideoConferenceUc', () => {
 				expect(result.bbbResponse).toEqual(bbbResponse);
 			});
 
+			it('should add salt to existing preset if missing', async () => {
+				// Arrange
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				savedVcDO.salt = undefined;
+				videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(savedVcDO);
+				bbbService.create.mockResolvedValue(bbbResponse);
+
+				// Act
+				await useCase.create(defaultCurrentUser, VideoConferenceScope.COURSE, course.id, defaultOptions);
+
+				// Assert
+				expect(videoConferenceRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						salt: expect.any(String),
+					})
+				);
+			});
+
 			it('should successfully execute with options set', async () => {
 				// Arrange
 				videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(savedVcDO);
@@ -504,7 +523,7 @@ describe('VideoConferenceUc', () => {
 			authorizationService.hasPermission.mockReturnValueOnce(true);
 			courseVcDO.options.everybodyJoinsAsModerator = true;
 			courseVcDO.options.moderatorMustApproveJoinRequests = true;
-			setTeamRole(expertRoleCourse);
+			setTeamRole(externalPersonRole);
 			videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(courseVcDO);
 			bbbService.join.mockResolvedValue(joinUrl);
 			builderCourse.asGuest(true);
@@ -528,7 +547,7 @@ describe('VideoConferenceUc', () => {
 			authorizationService.hasPermission.mockReturnValueOnce(true);
 			courseVcDO.options.everybodyJoinsAsModerator = true;
 			courseVcDO.options.moderatorMustApproveJoinRequests = true;
-			setTeamRole(expertRoleTeam);
+			setTeamRole(teamExpertRole);
 			videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(eventVcDO);
 			bbbService.join.mockResolvedValue(joinUrl);
 			builderEvent.asGuest(true);
@@ -550,7 +569,7 @@ describe('VideoConferenceUc', () => {
 		it('should throw when joining as guest without waiting room', async () => {
 			// Arrange
 			courseVcDO.options.moderatorMustApproveJoinRequests = false;
-			setTeamRole(expertRoleTeam);
+			setTeamRole(teamExpertRole);
 			videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(eventVcDO);
 			bbbService.join.mockResolvedValue(joinUrl);
 
@@ -726,7 +745,7 @@ describe('VideoConferenceUc', () => {
 		it('should throw forbidden, when called as guest without waiting room', async () => {
 			// Arrange
 			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
-			setTeamRole(expertRoleTeam);
+			setTeamRole(teamExpertRole);
 			vcDO.options.moderatorMustApproveJoinRequests = false;
 			bbbService.getMeetingInfo.mockResolvedValue(bbbResponse);
 			videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(vcDO);
@@ -740,7 +759,7 @@ describe('VideoConferenceUc', () => {
 		it('should throw forbidden, when called as guest and meeting is not started yet', async () => {
 			// Arrange
 			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
-			setTeamRole(expertRoleTeam);
+			setTeamRole(teamExpertRole);
 			bbbService.getMeetingInfo.mockImplementation(() => Promise.reject());
 
 			// Act & Assert

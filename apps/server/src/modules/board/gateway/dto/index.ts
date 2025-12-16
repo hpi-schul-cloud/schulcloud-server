@@ -1,3 +1,4 @@
+export { CopyCardMessageParams } from './copy-card.message.param';
 export { CreateCardMessageParams } from './create-card.message.param';
 export { CreateColumnMessageParams } from './create-column.message.param';
 export { CreateContentElementMessageParams } from './create-content-element.message.param';
@@ -8,6 +9,7 @@ export { DeleteContentElementMessageParams } from './delete-content-element.mess
 export { FetchBoardMessageParams } from './fetch-board.message.param';
 export { FetchCardsMessageParams } from './fetch-cards.message.param';
 export { MoveCardMessageParams } from './move-card.message.param';
+export { MoveCardToBoardMessageParams } from './move-card-to-board.message.param';
 export { MoveColumnMessageParams } from './move-column.message.param';
 export { MoveContentElementMessageParams } from './move-content-element.message.param';
 export { UpdateBoardTitleMessageParams } from './update-board-title.message.param';

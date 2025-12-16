@@ -263,17 +263,24 @@
 					"format": "uri",
 					"default": "http://localhost:4444",
 					"description": "The URI of the file service"
-				},
-				"INCOMING_REQUEST_TIMEOUT": {
-					"type": "integer",
-					"minimum": 0,
-					"default": 600000,
-					"description": "Timeout for incoming requests to the file storage service in milliseconds."
 				}
 			},
 			"default": {
 				"SERVICE_BASE_URL": "http://localhost:4444"
 			}
+		},
+		"COMMON_CARTRIDGE": {
+			"type": "object",
+			"description": "Common cartridge properties, required always to be defined",
+			"properties": {
+				"INCOMING_REQUEST_TIMEOUT_MS": {
+					"type": "integer",
+					"minimum": 0,
+					"default": 600000,
+					"description": "Timeout for incoming requests to the common cartridge service in milliseconds."
+				}
+			},
+			"default": {}
 		},
 		"FWU_CONTENT": {
 			"type": "object",
@@ -382,6 +389,11 @@
 					"type": "string",
 					"default": "config/h5p-libraries.yaml",
 					"description": "Path to yaml file with list of h5p content type libraries which should be installed"
+				},
+				"EXIT_ON_ERROR": {
+					"type": "boolean",
+					"default": true,
+					"description": "By default, the application is terminated after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to false."
 				}
 			}
 		},
@@ -921,28 +933,6 @@
 			"description": "The password for edu-sharing api access",
 			"default": ""
 		},
-		"FEATURE_ES_MERLIN_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "When enabled, the merlin referene will generate a valid url"
-		},
-		"SECRET_ES_MERLIN_USERNAME": {
-			"type": "string",
-			"description": "The username for Merlin login, used for edusharing"
-		},
-		"SECRET_ES_MERLIN_PW": {
-			"type": "string",
-			"description": "The password for Merlin login, used for edusharing"
-		},
-		"ES_MERLIN_AUTH_URL": {
-			"type": "string",
-			"description": "Connection url for Merlin content",
-			"default": "http://merlin.nibis.de/auth.php"
-		},
-		"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS": {
-			"type": "string",
-			"description": "JSON stringified with credentials for merlin counties, used by Lern-Store"
-		},
 		"FEATURE_ES_SEARCHABLE_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1124,6 +1114,11 @@
 			"default": "ticketsystem@dbildungscloud.de",
 			"description": "Email address used for contacting"
 		},
+		"SC_CONTACT_EMAIL_SUBJECT": {
+			"type": "string",
+			"default": "Bildungscloud Anfrage",
+			"description": "Email subject used for contacting"
+		},
 		"ACCESSIBILITY_REPORT_EMAIL": {
 			"type": "string",
 			"default": "dbildungscloud@dataport.de",
@@ -1166,7 +1161,7 @@
 		},
 		"FEATURE_COLUMN_BOARD_COLLABORA_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables edit of office documents on the column board"
 		},
 		"COLUMN_BOARD_HELP_LINK": {
@@ -1591,6 +1586,11 @@
 			"default": true,
 			"description": "Enables the toggle that allows board readers to edit the board"
 		},
+		"FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the registation feature for external persons"
+		},
 		"FEATURE_ROOM_COPY_ENABLED": {
 			"type": "boolean",
 			"default": true,
@@ -1600,6 +1600,21 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Enables the room sharing feature"
+		},
+		"FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables adding external persons to a room."
+		},
+		"FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the registration of external persons in a room."
+		},
+		"FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables link based invitations for external persons in a room."
 		},
 		"FEATURE_ADMINISTRATE_ROOMS_ENABLED": {
 			"type": "boolean",

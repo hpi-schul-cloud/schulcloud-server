@@ -132,12 +132,28 @@ describe(CommonCartridgeImportService.name, () => {
 
 		boardsClientAdapterMock.createBoard.mockResolvedValueOnce({ id: boardId });
 
-		commonCartridgeFileParser.getResource.mockReturnValue({
-			type: CommonCartridgeXmlResourceType.FILE,
-			href: faker.internet.url(),
-			fileName: faker.system.fileName(),
-			file: new File([''], 'file.pdf', { type: faker.system.mimeType() }),
-			description: faker.lorem.sentence(),
+		commonCartridgeFileParser.getResource
+			.mockReturnValueOnce({
+				type: CommonCartridgeXmlResourceType.FILE_FOLDER,
+				title: faker.lorem.word(),
+				files: [new File([''], 'file1-folder.pdf'), new File([''], 'file2-folder.pdf')],
+			})
+			.mockReturnValue({
+				type: CommonCartridgeXmlResourceType.FILE,
+				href: faker.internet.url(),
+				fileName: faker.system.fileName(),
+				file: new File([''], 'file-element.pdf'),
+				description: faker.lorem.sentence(),
+			});
+
+		cardClientAdapterMock.createCardElement.mockResolvedValue({
+			type: 'fileFolder',
+			timestamps: {
+				createdAt: faker.date.past().toISOString(),
+				lastUpdatedAt: faker.date.recent().toISOString(),
+			},
+			id: faker.string.uuid(),
+			content: { title: faker.string.alpha() },
 		});
 
 		commonCartridgeFileParser.getTitle.mockReturnValue(undefined);
@@ -208,7 +224,35 @@ describe(CommonCartridgeImportService.name, () => {
 
 				await sut.importFile(file, currentUser);
 
-				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalled();
+				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledWith(
+					expect.any(String),
+					expect.any(String),
+					expect.any(String),
+					expect.any(String),
+					new File([''], 'file-element.pdf')
+				);
+			});
+
+			it('should upload file folder', async () => {
+				const { file, currentUser } = setup();
+
+				await sut.importFile(file, currentUser);
+
+				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledWith(
+					expect.any(String),
+					expect.any(String),
+					expect.any(String),
+					expect.any(String),
+					new File([''], 'file1-folder.pdf')
+				);
+
+				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledWith(
+					expect.any(String),
+					expect.any(String),
+					expect.any(String),
+					expect.any(String),
+					new File([''], 'file2-folder.pdf')
+				);
 			});
 
 			it('should create card element without resource', async () => {

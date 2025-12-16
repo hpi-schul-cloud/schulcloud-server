@@ -8,6 +8,7 @@ import {
 } from '../../testing/common-cartridge-element-props.factory';
 import {
 	createCommonCartridgeFileProps,
+	createCommonCartridgeFileFolderResourcePropsV130,
 	createCommonCartridgeWebLinkResourceProps,
 } from '../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
@@ -22,7 +23,7 @@ describe('CommonCartridgeFileBuilder', () => {
 	let logger: DeepMocked<Logger>;
 
 	const builderProps: CommonCartridgeFileBuilderProps = {
-		version: CommonCartridgeVersion.V_1_1_0,
+		version: CommonCartridgeVersion.V_1_3_0,
 		identifier: faker.string.uuid(),
 	};
 
@@ -85,12 +86,13 @@ describe('CommonCartridgeFileBuilder', () => {
 				const organizationProps = createCommonCartridgeOrganizationProps();
 				const webLinkProps = createCommonCartridgeWebLinkResourceProps();
 				const fileProps = createCommonCartridgeFileProps();
+				const fileFolderProps = createCommonCartridgeFileFolderResourcePropsV130();
 
-				return { metadataProps, organizationProps, webLinkProps, fileProps };
+				return { metadataProps, organizationProps, webLinkProps, fileProps, fileFolderProps };
 			};
 
 			it('should build the common cartridge file', () => {
-				const { metadataProps, organizationProps, webLinkProps, fileProps } = setup();
+				const { metadataProps, organizationProps, webLinkProps, fileProps, fileFolderProps } = setup();
 
 				sut.addMetadata(metadataProps);
 
@@ -98,10 +100,11 @@ describe('CommonCartridgeFileBuilder', () => {
 
 				org.addResource(webLinkProps);
 				org.addResource(fileProps);
+				org.addResource(fileFolderProps);
 
 				expect(() => sut.build()).not.toThrow();
 
-				expect(archive.append).toHaveBeenCalledTimes(3);
+				expect(archive.append).toHaveBeenCalledTimes(4);
 				expect(archive.finalize).toHaveBeenCalled();
 			});
 		});

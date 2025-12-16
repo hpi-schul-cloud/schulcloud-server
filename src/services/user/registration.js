@@ -8,7 +8,7 @@ const logger = require('../../logger');
 
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../config/globals');
 
-const permissionsAllowedToLogin = ['student', 'expert', 'administrator', 'teacher'];
+const permissionsAllowedToLogin = ['student', 'externalPerson', 'administrator', 'teacher'];
 
 const appendParent = (user, data) => {
 	const parent = {
@@ -231,8 +231,8 @@ const registerUser = function register(data, params, app) {
 				user = newUser;
 			})
 		)
-		.then(() => {
-			return app
+		.then(() =>
+			app
 				.service('nest-account-uc')
 				.saveAccount({
 					username: user.email,
@@ -248,8 +248,8 @@ const registerUser = function register(data, params, app) {
 					const msg = 'Fehler beim Erstellen des Accounts.';
 					logger.warning(msg, err);
 					return Promise.reject(new Error(msg));
-				});
-		})
+				})
+		)
 		.then(() => {
 			// store consent
 			if (data.parent_email) {
@@ -291,14 +291,14 @@ const registerUser = function register(data, params, app) {
 				if (oldUser) {
 					rollbackPromises.push(User.replaceOne({ _id: user._id }, oldUser).exec());
 				} else {
-					rollbackPromises.push(User.findOneAndRemove({ _id: user._id }).exec());
+					rollbackPromises.push(User.findOneAndDelete({ _id: user._id }).exec());
 				}
 			}
 			if (account && account._id) {
 				rollbackPromises.push(app.service('nest-account-service').delete(account.id));
 			}
 			if (consent && consent._id) {
-				rollbackPromises.push(consentModel.consentModel.findOneAndRemove({ _id: consent._id }).exec());
+				rollbackPromises.push(consentModel.consentModel.findOneAndDelete({ _id: consent._id }).exec());
 			}
 			return Promise.all(rollbackPromises)
 				.catch((err) => {

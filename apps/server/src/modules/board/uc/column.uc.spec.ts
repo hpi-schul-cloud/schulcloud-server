@@ -6,10 +6,11 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardNodeFactory, Card, Column, ContentElementType } from '../domain';
-import { BoardNodeService } from '../service';
+import { BoardNodeService, ColumnBoardService } from '../service';
 import { BoardNodePermissionService } from '../service/board-node-permission.service';
 import { cardFactory, columnBoardFactory, columnFactory } from '../testing';
 import { ColumnUc } from './column.uc';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 
 describe(ColumnUc.name, () => {
 	let module: TestingModule;
@@ -18,6 +19,7 @@ describe(ColumnUc.name, () => {
 	let boardNodePermissionService: DeepMocked<BoardNodePermissionService>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let boardNodeFactory: DeepMocked<BoardNodeFactory>;
+	let columnBoardService: DeepMocked<ColumnBoardService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -30,6 +32,10 @@ describe(ColumnUc.name, () => {
 				{
 					provide: BoardNodeService,
 					useValue: createMock<BoardNodeService>(),
+				},
+				{
+					provide: ColumnBoardService,
+					useValue: createMock<ColumnBoardService>(),
 				},
 				{
 					provide: BoardNodeFactory,
@@ -46,6 +52,7 @@ describe(ColumnUc.name, () => {
 		boardNodePermissionService = module.get(BoardNodePermissionService);
 		boardNodeService = module.get(BoardNodeService);
 		boardNodeFactory = module.get(BoardNodeFactory);
+		columnBoardService = module.get(ColumnBoardService);
 		await setupEntities([User]);
 	});
 
@@ -62,7 +69,9 @@ describe(ColumnUc.name, () => {
 		const board = columnBoardFactory.build();
 		const boardId = board.id;
 		const column = columnFactory.build();
+		board.addChild(column);
 		const card = cardFactory.build();
+		column.addChild(card);
 
 		const createCardBodyParams = {
 			requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
@@ -205,14 +214,6 @@ describe(ColumnUc.name, () => {
 				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Card, card.id);
 			});
 
-			it('should call the service to find the target column', async () => {
-				const { user, column, card } = setup();
-
-				await uc.moveCard(user.id, card.id, column.id, 5);
-
-				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, column.id);
-			});
-
 			it('should call the service to check the permissions for card', async () => {
 				const { user, column, card } = setup();
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
@@ -247,6 +248,46 @@ describe(ColumnUc.name, () => {
 				await uc.moveCard(user.id, card.id, column.id, 5);
 
 				expect(boardNodeService.move).toHaveBeenCalledWith(card, column, 5);
+			});
+
+			describe('when moving a card without a parent column', () => {
+				it('should throw UnprocessableEntityException', async () => {
+					const { user, column, card } = setup();
+					column.removeChild(card);
+					boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+
+					await expect(uc.moveCard(user.id, card.id, 'to-column-id', 2)).rejects.toThrowError(
+						'Card has no parent column'
+					);
+				});
+			});
+		});
+	});
+
+	describe('copyCard', () => {
+		describe('when something goes wrong', () => {
+			it('should throw UnprocessableEntityException when card has no parent', async () => {
+				const { user, card, column } = setup();
+				column.removeChild(card);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+
+				await expect(uc.copyCard(user.id, card.id, 'school-id')).rejects.toThrowError('Card has no parent column');
+			});
+
+			it('should throw InternalServerError if copyEntity is not a Card', async () => {
+				const { user, column, card } = setup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
+
+				const copyStatus: CopyStatus = {
+					status: CopyStatusEnum.SUCCESS,
+					type: CopyElementType.CARD,
+					elements: [],
+					copyEntity: column, // Intentionally incorrect type to trigger the error
+				};
+				columnBoardService.copyCard.mockResolvedValueOnce(copyStatus);
+
+				await expect(uc.copyCard(user.id, card.id, 'school-id')).rejects.toThrowError('Copied entity is not a card');
 			});
 		});
 	});

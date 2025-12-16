@@ -3,19 +3,20 @@ import { BoardExternalReferenceType } from '@modules/board';
 import { columnBoardEntityFactory } from '@modules/board/testing';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
+import { UserSchoolEmbeddable } from '@modules/user/repo';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { roomEntityFactory } from '../../testing';
-import { UserSchoolEmbeddable } from '@modules/user/repo';
-import { RoleName } from '@modules/role';
-import { roleFactory } from '@modules/role/testing';
+import { RoomContentType } from '../../domain';
+import { roomContentEntityFactory, roomEntityFactory } from '../../testing';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -72,9 +73,19 @@ describe('Room Controller (API)', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
 				const room = roomEntityFactory.build({ schoolId: school.id });
-				const board = columnBoardEntityFactory.build({
+				const boards = columnBoardEntityFactory.buildList(3, {
 					context: { type: BoardExternalReferenceType.Room, id: room.id },
 				});
+				const roomContent = roomContentEntityFactory.build({
+					roomId: room.id,
+					items: [boards[2], boards[0], boards[1]].map((board) => {
+						return {
+							id: board.id,
+							type: RoomContentType.BOARD,
+						};
+					}),
+				});
+				await em.persistAndFlush(roomContent);
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
@@ -94,7 +105,7 @@ describe('Room Controller (API)', () => {
 				});
 				await em.persistAndFlush([
 					room,
-					board,
+					...boards,
 					studentAccount,
 					studentUser,
 					teacherUser,
@@ -106,22 +117,40 @@ describe('Room Controller (API)', () => {
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
-				return { loggedInClient, room, board };
+				return { loggedInClient, room, boards };
 			};
 
 			describe('when the room exists', () => {
 				it('should return the room boards', async () => {
-					const { loggedInClient, room, board } = await setup();
+					const { loggedInClient, room, boards } = await setup();
 
 					const response = await loggedInClient.get(`${room.id}/boards`);
+
 					expect(response.status).toBe(HttpStatus.OK);
-					expect((response.body as { data: Record<string, unknown> }).data[0]).toEqual({
-						id: board.id,
-						title: board.title,
-						layout: board.layout,
-						isVisible: board.isVisible,
-						createdAt: board.createdAt.toISOString(),
-						updatedAt: board.updatedAt.toISOString(),
+					expect((response.body as { data: Record<string, unknown> }).data).toEqual(
+						[boards[2], boards[0], boards[1]].map((board) => {
+							return {
+								id: board.id,
+								title: board.title,
+								layout: board.layout,
+								isVisible: board.isVisible,
+								createdAt: board.createdAt.toISOString(),
+								updatedAt: board.updatedAt.toISOString(),
+							};
+						})
+					);
+				});
+
+				describe('when room content does not exist in db', () => {
+					it('should create one', async () => {
+						const { loggedInClient, room } = await setup();
+
+						await em.nativeDelete('RoomContentEntity', { roomId: room.id });
+
+						await loggedInClient.get(`${room.id}/boards`);
+
+						const roomContent = await em.findOneOrFail('RoomContentEntity', { roomId: room.id });
+						expect(roomContent['items']).toHaveLength(3);
 					});
 				});
 			});

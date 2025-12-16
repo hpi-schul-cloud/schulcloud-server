@@ -84,6 +84,30 @@ describe('SchoolMikroOrmRepo', () => {
 			});
 		});
 
+		describe('when purpose is given in query', () => {
+			const setup = async () => {
+				const entity1 = schoolEntityFactory.build({ purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL });
+				const entity2 = schoolEntityFactory.build();
+				await em.persistAndFlush([entity1, entity2]);
+				em.clear();
+				const schoolDo1 = SchoolEntityMapper.mapToDo(entity1);
+				const schoolDo2 = SchoolEntityMapper.mapToDo(entity2);
+
+				const query = { purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL };
+
+				return { schoolDo1, schoolDo2, query };
+			};
+
+			it('should return all schools matching purpose', async () => {
+				const { schoolDo1, schoolDo2, query } = await setup();
+
+				const result = await repo.getSchools(query);
+
+				expect(result).toContainEqual(schoolDo1);
+				expect(result).not.toContainEqual(schoolDo2);
+			});
+		});
+
 		describe('when pagination option is given', () => {
 			const setup = async () => {
 				const entities = schoolEntityFactory.buildList(3);
@@ -387,7 +411,7 @@ describe('SchoolMikroOrmRepo', () => {
 					previousExternalId: 'new previousExternalId',
 					inMaintenanceSince: new Date(),
 					inUserMigration: true,
-					purpose: SchoolPurpose.EXPERT,
+					purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
 					logo: {
 						dataUrl: 'new logo_dataUrl',
 						name: 'new logo_name',

@@ -1,3 +1,4 @@
+import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { H5pEditorClientModule } from '@infra/h5p-editor-client';
@@ -5,8 +6,8 @@ import { TldrawClientModule } from '@infra/tldraw-client';
 import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { CourseModule } from '@modules/course';
-import { RoomModule } from '@modules/room';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
+import { RoomModule } from '@modules/room';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
@@ -26,17 +27,20 @@ import {
 } from './service';
 import {
 	BoardContextService,
+	BoardCopyService,
 	BoardNodeCopyService,
 	BoardNodeDeleteHooksService,
-	ColumnBoardCopyService,
 	ColumnBoardLinkService,
 	ColumnBoardReferenceService,
 	ColumnBoardTitleService,
 	ContentElementUpdateService,
 } from './service/internal';
+import { BoardNodeEventSubscriber } from './repo/board-node-event-subscriber';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
 	imports: [
+		CoreModule,
 		CourseModule,
 		CopyHelperModule,
 		FilesStorageClientModule,
@@ -53,6 +57,7 @@ import {
 		RoomModule,
 		RoomMembershipModule,
 		H5pEditorClientModule,
+		CqrsModule,
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
@@ -67,13 +72,14 @@ import {
 		BoardNodeDeleteHooksService,
 		ColumnBoardService,
 		ContentElementUpdateService,
-		ColumnBoardCopyService,
+		BoardCopyService,
 		ColumnBoardLinkService,
 		ColumnBoardReferenceService,
 		ColumnBoardTitleService,
 		ContextExternalToolDeletedEventHandlerService,
 		// TODO replace by import of MediaBoardModule (fix dependency cycle)
 		MediaBoardService,
+		BoardNodeEventSubscriber,
 	],
 	exports: [
 		BoardNodeAuthorizableService,

@@ -91,6 +91,27 @@ describe(`create board in room (api)`, () => {
 				expect(dbResult.title).toEqual(title);
 			});
 
+			it('should add the board to the room content', async () => {
+				const { loggedInClient, room } = await setup();
+
+				const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+					title: 'new board',
+					parentId: room.id,
+					parentType: BoardExternalReferenceType.Room,
+					layout: BoardLayout.COLUMNS,
+				});
+				const boardId = (response.body as { id: string }).id;
+
+				// wait for event bus
+				await new Promise((resolve) => setTimeout(resolve, 50));
+
+				const roomContent = await em.findOneOrFail('RoomContentEntity', {
+					roomId: room.id,
+				});
+
+				expect(roomContent['items']).toEqual([{ id: boardId, type: 'board' }]);
+			});
+
 			describe('Board layout', () => {
 				describe(`When layout is set to "${BoardLayout.COLUMNS}"`, () => {
 					it('should create a column board', async () => {

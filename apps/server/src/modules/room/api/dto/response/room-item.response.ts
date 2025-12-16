@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
 import { RoomColor } from '../../../domain/type';
+import { Permission } from '@shared/domain/interface';
 
 export class RoomItemResponse {
 	@ApiProperty()
@@ -28,6 +29,9 @@ export class RoomItemResponse {
 	@ApiProperty({ type: Date })
 	updatedAt: Date;
 
+	@ApiProperty({ enum: Permission, isArray: true, enumName: 'Permission' })
+	permissions: Permission[];
+
 	@ApiProperty({ type: Boolean })
 	isLocked: boolean;
 
@@ -42,6 +46,7 @@ export class RoomItemResponse {
 		this.createdAt = room.createdAt;
 		this.updatedAt = room.updatedAt;
 
+		this.permissions = room.permissions;
 		this.isLocked = room.isLocked;
 	}
 }

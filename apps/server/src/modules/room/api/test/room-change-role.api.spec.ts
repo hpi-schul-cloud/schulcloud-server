@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { RoleName } from '@modules/role';
@@ -15,6 +15,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomRolesTestFactory } from '../../testing/room-roles.test.factory';
 import { RoomMemberListResponse } from '../dto/response/room-member-list.response';
+import { ApiValidationError } from '@shared/common/error';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -46,17 +47,22 @@ describe('Room Controller (API)', () => {
 	describe('PATCH /rooms/:roomId/members/roles', () => {
 		const setupRoomWithMembers = async () => {
 			const school = schoolEntityFactory.buildWithId();
+			const otherSchool = schoolEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser: owner } = UserAndAccountTestFactory.buildTeacher({ school });
 			const teacherRole = owner.roles[0];
 			const targetUser = userFactory.buildWithId({ school: owner.school, roles: [teacherRole] });
 			const room = roomEntityFactory.buildWithId({ schoolId: owner.school.id });
 			const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
+			const externalTeacherUser = userFactory.buildWithId({ school: otherSchool, roles: [teacherRole] });
+			const externalPersonRole = roleFactory.buildWithId({ name: RoleName.EXTERNALPERSON });
+			const externalPerson = userFactory.buildWithId({ school: otherSchool, roles: [externalPersonRole] });
 			const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 			const userGroupEntity = groupEntityFactory.buildWithId({
 				users: [
 					{ role: roomOwnerRole, user: owner },
 					{ role: roomViewerRole, user: targetUser },
+					{ role: roomViewerRole, user: externalPerson },
 				],
 				type: GroupEntityTypes.ROOM,
 				organization: owner.school,
@@ -83,12 +89,15 @@ describe('Room Controller (API)', () => {
 				targetUser,
 				targetUser,
 				userGroupEntity,
+				externalTeacherUser,
+				externalPersonRole,
+				externalPerson,
 			]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, room, targetUser, owner };
+			return { loggedInClient, room, targetUser, owner, externalTeacherUser, school, externalPerson };
 		};
 
 		describe('when the user is not authenticated', () => {
@@ -184,6 +193,75 @@ describe('Room Controller (API)', () => {
 				});
 
 				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			});
+
+			it('should allow to assign room role RoomViewer to external persons', async () => {
+				const { loggedInClient, room, externalPerson } = await setupRoomWithMembers();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [externalPerson.id],
+					roleName: RoleName.ROOMVIEWER,
+				});
+
+				expect(response.status).toBe(HttpStatus.OK);
+			});
+
+			it('should allow to assign room role RoomEditor to external persons', async () => {
+				const { loggedInClient, room, externalPerson } = await setupRoomWithMembers();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [externalPerson.id],
+					roleName: RoleName.ROOMEDITOR,
+				});
+
+				expect(response.status).toBe(HttpStatus.OK);
+			});
+
+			it('should not allow to assign room role RoomAdmin to external persons', async () => {
+				const { loggedInClient, room, externalPerson } = await setupRoomWithMembers();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [externalPerson.id],
+					roleName: RoleName.ROOMADMIN,
+				});
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
+
+			describe('when some of the users do not exist', () => {
+				it('should return a 404 error', async () => {
+					const { loggedInClient, room, targetUser } = await setupRoomWithMembers();
+
+					const nonExistingUserId = new ObjectId().toHexString();
+					const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+						userIds: [targetUser.id, nonExistingUserId],
+						roleName: RoleName.ROOMEDITOR,
+					});
+
+					expect(response.status).toBe(HttpStatus.NOT_FOUND);
+				});
+			});
+		});
+
+		describe('when the user is a school admin', () => {
+			const setupAdminLogin = async () => {
+				const { room, school, targetUser, externalTeacherUser } = await setupRoomWithMembers();
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+				await em.persistAndFlush([adminAccount, adminUser]);
+				const loggedInClient = await testApiClient.login(adminAccount);
+				return { loggedInClient, room, targetUser, externalTeacherUser };
+			};
+
+			it('should not allow to change anyone to role roomowner - with this endpoint', async () => {
+				const { loggedInClient, room, targetUser } = await setupAdminLogin();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [targetUser.id],
+					roleName: RoleName.ROOMOWNER,
+				});
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				expect(response.body as ApiValidationError).toEqual(expect.objectContaining({ type: 'API_VALIDATION_ERROR' }));
 			});
 		});
 	});

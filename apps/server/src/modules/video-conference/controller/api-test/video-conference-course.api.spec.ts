@@ -320,7 +320,12 @@ describe('VideoConferenceController (API)', () => {
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course]);
+					const videoConference = videoConferenceFactory.buildWithId({
+						targetModel: VideoConferenceTargetModels.COURSES,
+						target: course.id,
+					});
+
+					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -563,28 +568,35 @@ describe('VideoConferenceController (API)', () => {
 				const setup = async () => {
 					const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
-					const expertRole = roleFactory.buildWithId({
-						name: RoleName.EXPERT,
+					const externalPersonRole = roleFactory.buildWithId({
+						name: RoleName.EXTERNALPERSON,
 						permissions: [Permission.JOIN_MEETING],
 					});
 
-					const expertUser = userFactory.buildWithId({ school, roles: [expertRole] });
-					const expertAccount = accountFactory.buildWithId({ userId: expertUser.id });
+					const externalPersonUser = userFactory.buildWithId({ school, roles: [externalPersonRole] });
+					const externalPersonAccount = accountFactory.buildWithId({ userId: externalPersonUser.id });
 
-					const course = courseEntityFactory.buildWithId({ school, students: [expertUser] });
+					const course = courseEntityFactory.buildWithId({ school, students: [externalPersonUser] });
 					const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 						targetModel: VideoConferenceTargetModels.COURSES,
 						target: course.id,
 						options: { moderatorMustApproveJoinRequests: false },
 					});
 
-					await em.persistAndFlush([school, expertRole, expertAccount, expertUser, course, videoConference]);
+					await em.persistAndFlush([
+						school,
+						externalPersonRole,
+						externalPersonAccount,
+						externalPersonUser,
+						course,
+						videoConference,
+					]);
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					const loggedInClient: TestApiClient = await testApiClient.login(expertAccount);
+					const loggedInClient: TestApiClient = await testApiClient.login(externalPersonAccount);
 
 					mockBbbMeetingInfoSuccess(scopeId);
 

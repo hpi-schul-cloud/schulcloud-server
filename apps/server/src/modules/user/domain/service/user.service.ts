@@ -127,11 +127,13 @@ export class UserService {
 		const users = await this.userDoRepo.findByIds(userIds, true);
 		const guestStudent = await this.roleService.findByName(RoleName.GUESTSTUDENT);
 		const guestTeacher = await this.roleService.findByName(RoleName.GUESTTEACHER);
+		const guestExternalPerson = await this.roleService.findByName(RoleName.GUESTEXTERNALPERSON);
 
 		const roleMapping: Record<string, RoleDto> = {
 			[RoleName.STUDENT]: guestStudent,
 			[RoleName.TEACHER]: guestTeacher,
 			[RoleName.ADMINISTRATOR]: guestTeacher,
+			[RoleName.EXTERNALPERSON]: guestExternalPerson,
 		};
 
 		users

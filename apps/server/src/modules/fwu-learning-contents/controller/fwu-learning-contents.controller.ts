@@ -22,7 +22,7 @@ export class FwuLearningContentsController {
 	constructor(private readonly fwuLearningContentsUc: FwuLearningContentsUc) {}
 
 	@Get('*/:fwuLearningContent')
-	async get(
+	public async get(
 		@Req() req: Request,
 		@Res({ passthrough: true }) res: Response,
 		@Param() params: GetFwuLearningContentParams

@@ -1,8 +1,19 @@
+  - name: External Secret
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: external-secret.yml.j2
+      state: "{{ 'present' if WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool else 'absent' }}"
+    when:
+      - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
+    tags:
+      - 1password
+
   - name: Secret by 1Password (Library S3 Bucket)
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: api-h5p-library-management-onepassword.yml.j2
+      template: onepassword.yml.j2
       state: "{{ 'present' if WITH_H5P_LIBRARY_MANAGEMENT is defined and WITH_H5P_LIBRARY_MANAGEMENT|bool else 'absent'}}"
     tags:
       - 1password
@@ -11,7 +22,7 @@
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: api-h5p-library-management-configmap.yml.j2
+      template: configmap.yml.j2
       state: "{{ 'present' if WITH_H5P_LIBRARY_MANAGEMENT is defined and WITH_H5P_LIBRARY_MANAGEMENT|bool else 'absent'}}"
     tags:
       - configmap
@@ -20,7 +31,7 @@
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: api-h5p-library-management-cronjob.yml.j2
+      template: cronjob.yml.j2
       state: "{{ 'present' if WITH_H5P_LIBRARY_MANAGEMENT is defined and WITH_H5P_LIBRARY_MANAGEMENT|bool else 'absent'}}"
     tags:
       - cronjob

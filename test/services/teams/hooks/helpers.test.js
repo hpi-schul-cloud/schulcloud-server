@@ -50,12 +50,12 @@ describe('hook helpers', () => {
 		const userList = [];
 		let populatedUserList;
 		before(() => {
-			const schoolId = ObjectId();
-			const role = ObjectId();
+			const schoolId = new ObjectId();
+			const role = new ObjectId();
 			const data = [
-				{ schoolId, role, userId: ObjectId() },
-				{ schoolId, role, userId: ObjectId() },
-				{ schoolId, role, userId: ObjectId() },
+				{ schoolId, role, userId: new ObjectId() },
+				{ schoolId, role, userId: new ObjectId() },
+				{ schoolId, role, userId: new ObjectId() },
 			];
 			userList.push(new teamUserModel(data[0])._doc);
 			userList.push(new teamUserModel(data[1])._doc);

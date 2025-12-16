@@ -1,22 +1,24 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
-import { Page } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { RoomRepo } from '../../repo';
 import { roomFactory } from '../../testing';
 import { Room, RoomCreateProps, RoomUpdateProps } from '../do';
+import { RoomDeletedEvent } from '../events/room-deleted.event';
 import { RoomColor } from '../type';
 import { RoomService } from './room.service';
-import { EventBus } from '@nestjs/cqrs';
-import { RoomDeletedEvent } from '../events/room-deleted.event';
 
 describe('RoomService', () => {
 	let module: TestingModule;
 	let service: RoomService;
 	let roomRepo: DeepMocked<RoomRepo>;
 	let eventBus: DeepMocked<EventBus>;
+	let mailService: DeepMocked<MailService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -30,12 +32,17 @@ describe('RoomService', () => {
 					provide: EventBus,
 					useValue: createMock<EventBus>(),
 				},
+				{
+					provide: MailService,
+					useValue: createMock<MailService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get<RoomService>(RoomService);
 		roomRepo = module.get(RoomRepo);
 		eventBus = module.get(EventBus);
+		mailService = module.get(MailService);
 	});
 
 	afterAll(async () => {
@@ -44,34 +51,6 @@ describe('RoomService', () => {
 
 	beforeEach(() => {
 		jest.resetAllMocks();
-	});
-
-	describe('getRooms', () => {
-		const setup = () => {
-			const rooms: Room[] = roomFactory.buildList(2);
-			const paginatedRooms: Page<Room> = new Page<Room>(rooms, rooms.length);
-			roomRepo.findRooms.mockResolvedValue(paginatedRooms);
-
-			return {
-				paginatedRooms,
-			};
-		};
-
-		it('should call repo to get rooms', async () => {
-			setup();
-
-			await service.getRooms({});
-
-			expect(roomRepo.findRooms).toHaveBeenCalledWith({});
-		});
-
-		it('should return rooms', async () => {
-			const { paginatedRooms } = setup();
-
-			const result = await service.getRooms({});
-
-			expect(result).toEqual(paginatedRooms);
-		});
 	});
 
 	describe('createRoom', () => {
@@ -212,32 +191,6 @@ describe('RoomService', () => {
 	});
 
 	describe('getRoomsByIds', () => {
-		it('should return rooms for given ids', async () => {
-			const roomIds: EntityId[] = ['1', '2', '3'];
-			const mockRooms: Room[] = [
-				{ id: '1', name: 'Room 1' },
-				{ id: '2', name: 'Room 2' },
-				{ id: '3', name: 'Room 3' },
-			] as Room[];
-			const mockPage: Page<Room> = {
-				data: mockRooms,
-				total: 3,
-			};
-
-			jest.spyOn(roomRepo, 'findRoomsByIds').mockResolvedValue(mockPage);
-
-			const result = await service.getRoomsByIds(roomIds, {});
-
-			expect(roomRepo.findRoomsByIds).toHaveBeenCalledWith(roomIds, {});
-			expect(result).toEqual(mockPage);
-			expect(result.data.length).toBe(3);
-			expect(result.data[0].id).toBe('1');
-			expect(result.data[1].id).toBe('2');
-			expect(result.data[2].id).toBe('3');
-		});
-	});
-
-	describe('getAllByIds', () => {
 		const setup = () => {
 			const roomIds: EntityId[] = ['1', '2', '3'];
 			const mockRooms: Room[] = [
@@ -254,7 +207,7 @@ describe('RoomService', () => {
 		it('should return all rooms for given ids', async () => {
 			const { roomIds, mockRooms } = setup();
 
-			const result = await service.getAllByIds(roomIds);
+			const result = await service.getRoomsByIds(roomIds);
 
 			expect(roomRepo.findByIds).toHaveBeenCalledWith(roomIds);
 			expect(result).toEqual(mockRooms);
@@ -276,6 +229,52 @@ describe('RoomService', () => {
 			const result = service.canEditorManageVideoconferences(room);
 
 			expect(result).toEqual(false);
+		});
+	});
+
+	describe('sendRoomWelcomeMail', () => {
+		const smtpSender = 'example@sender.com';
+		const host = 'https://example.com';
+		const roomName = 'My Test Room';
+
+		beforeEach(() => {
+			jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
+				if (config === 'SMTP_SENDER') {
+					return smtpSender;
+				}
+				if (config === 'HOST') {
+					return host;
+				}
+				if (config === 'SC_TITLE') {
+					return 'dBildungscloud';
+				}
+				return null;
+			});
+
+			const mockRoom = {
+				getRoomName: () => roomName,
+			} as Room;
+
+			roomRepo.findById.mockResolvedValue(mockRoom);
+		});
+
+		it('should call mail service to send mail', async () => {
+			const email = 'test@example.com';
+			const roomId = 'room123';
+			const title = `Benachrichtigung über Zugang zum Raum ${roomName}`;
+
+			await service.sendRoomWelcomeMail(email, roomId);
+
+			expect(mailService.send).toHaveBeenCalledTimes(1);
+			expect(mailService.send).toHaveBeenCalledWith({
+				recipients: [email],
+				from: smtpSender,
+				mail: expect.objectContaining({
+					subject: `dBildungscloud: ${title}`,
+					plainTextContent: expect.stringContaining(roomName) as unknown,
+					htmlContent: expect.stringContaining(`${host}/rooms/${roomId}`) as unknown,
+				}) as unknown,
+			});
 		});
 	});
 });

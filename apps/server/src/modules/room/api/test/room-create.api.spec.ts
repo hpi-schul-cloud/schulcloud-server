@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntity } from '@modules/group/entity';
-import { RoomMembershipEntity } from '@modules/room-membership';
+import { RoomMembershipEntity, RoomMembershipService } from '@modules/room-membership';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -9,25 +9,33 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomEntity } from '../../repo';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { createMock } from '@golevelup/ts-jest';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let roomMembershipService: RoomMembershipService;
 
-	beforeAll(async () => {
-		const moduleFixture = await Test.createTestingModule({
+	const setupNestJs = async (mockRoomMembershipService = false) => {
+		const module = Test.createTestingModule({
 			imports: [ServerTestModule],
-		}).compile();
+		});
+		if (mockRoomMembershipService) {
+			module.overrideProvider(RoomMembershipService).useValue(createMock<RoomMembershipService>());
+		}
+		const moduleFixture = await module.compile();
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'rooms');
-	});
-
-	beforeEach(async () => {
+		roomMembershipService = moduleFixture.get(RoomMembershipService);
 		await cleanupCollections(em);
+	};
+
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
 	afterAll(async () => {
@@ -37,13 +45,15 @@ describe('Room Controller (API)', () => {
 	describe('POST /rooms', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
+				await setupNestJs();
 				const response = await testApiClient.post();
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
 		});
 
 		describe('when the user has the required permissions', () => {
-			const setup = async () => {
+			const setup = async (mockRoomMembershipService = false) => {
+				await setupNestJs(mockRoomMembershipService);
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const { roomEditorRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 				await em.persistAndFlush([teacherAccount, teacherUser, roomEditorRole, roomOwnerRole]);
@@ -173,10 +183,28 @@ describe('Room Controller (API)', () => {
 					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 				});
 			});
+
+			describe('when creating a room the room-membership fails', () => {
+				it('should rollback the room creation', async () => {
+					const { loggedInClient } = await setup(true);
+					const params = { name: 'Room #1', color: 'red', features: [] };
+
+					jest
+						.spyOn(roomMembershipService, 'createNewRoomMembership')
+						.mockRejectedValue(new Error('Simulated failure'));
+
+					const response = await loggedInClient.post(undefined, params);
+					expect(response.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+
+					const rooms = await em.find(RoomEntity, {});
+					expect(rooms).toHaveLength(0);
+				});
+			});
 		});
 
 		describe('when the user has not required permissions', () => {
-			const setup = async () => {
+			const setup = async (mockRoomMembershipService = false) => {
+				await setupNestJs(mockRoomMembershipService);
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				await em.persistAndFlush([studentAccount, studentUser]);
 				em.clear();

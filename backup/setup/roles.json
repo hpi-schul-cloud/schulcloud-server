@@ -144,7 +144,8 @@
 			"USER_CHANGE_OWN_NAME",
 			"MEDIA_SCHOOL_LICENSE_ADMIN",
 			"SCHOOL_LIST_DISCOVERABLE_TEACHERS",
-			"SCHOOL_ADMINISTRATE_ROOMS"
+			"SCHOOL_ADMINISTRATE_ROOMS",
+			"SCHOOL_LIST_ROOM_MEMBERS"
 		],
 		"__v": 2
 	},
@@ -276,7 +277,8 @@
 			"SCHOOL_DELETE_ROOM",
 			"SCHOOL_LIST_DISCOVERABLE_TEACHERS",
 			"SCHOOL_MANAGE_ROOM_INVITATIONLINKS",
-			"SCHOOL_BECOME_ROOMOWNER"
+			"SCHOOL_BECOME_ROOMOWNER",
+			"SCHOOL_LIST_ROOM_MEMBERS"
 		],
 		"__v": 2
 	},
@@ -301,7 +303,8 @@
 			"JOIN_MEETING",
 			"TEAM_CREATE",
 			"TEAM_EDIT",
-			"TOOL_CREATE_ETHERPAD"
+			"TOOL_CREATE_ETHERPAD",
+			"SCHOOL_LIST_ROOM_MEMBERS"
 		],
 		"__v": 0
 	},
@@ -417,7 +420,7 @@
 		"permissions": [
 			"DEFAULT_FILE_PERMISSIONS",
 			"INVITE_ADMINISTRATORS",
-			"INVITE_EXPERTS",
+			"INVITE_EXTERNAL_PERSONS",
 			"NEWS_EDIT",
 			"REMOVE_MEMBERS",
 			"RENAME_TEAM",
@@ -580,9 +583,9 @@
 		"_id": {
 			"$oid": "5bd0066a90a9ee0cb4947a9c"
 		},
-		"name": "expert",
+		"name": "externalPerson",
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
+			"$date": "2025-11-20T12:42:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -647,6 +650,13 @@
 	},
 	{
 		"_id": {
+			"$oid": "68ece70b963025351f0a98c4"
+		},
+		"name": "guestExternalPerson",
+		"permissions": []
+	},
+	{
+		"_id": {
 			"$oid": "675abdb4e76b1142cd4c89e3"
 		},
 		"name": "roomowner",
@@ -663,7 +673,8 @@
 			"ROOM_CHANGE_ROLES",
 			"ROOM_LIST_CONTENT",
 			"ROOM_LIST_DRAFTS",
-			"ROOM_MANAGE_VIDEOCONFERENCES"
+			"ROOM_MANAGE_VIDEOCONFERENCES",
+			"ROOM_COPY"
 		]
 	},
 	{
@@ -683,7 +694,8 @@
 			"ROOM_LEAVE_ROOM",
 			"ROOM_LIST_CONTENT",
 			"ROOM_LIST_DRAFTS",
-			"ROOM_MANAGE_VIDEOCONFERENCES"
+			"ROOM_MANAGE_VIDEOCONFERENCES",
+			"ROOM_COPY"
 		]
 	},
 	{

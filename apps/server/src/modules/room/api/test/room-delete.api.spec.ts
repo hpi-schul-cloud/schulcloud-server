@@ -16,6 +16,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomEntity } from '../../repo';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
+import { waitForEventBus } from './util/wait-for-event-bus';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -137,7 +138,20 @@ describe('Room Controller (API)', () => {
 
 					const response = await loggedInClient.delete(room.id);
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
+
+					await waitForEventBus();
 					await expect(em.findOneOrFail(BoardNodeEntity, { id: columnBoard.id })).rejects.toThrow(NotFoundException);
+				});
+
+				it('should delete the room content', async () => {
+					const { teacherOwnerAccount, room } = await setup();
+					const loggedInClient = await testApiClient.login(teacherOwnerAccount);
+
+					await expect(em.findOneOrFail('RoomContentEntity', { roomId: room.id })).resolves.not.toThrow();
+
+					const response = await loggedInClient.delete(room.id);
+					expect(response.status).toBe(HttpStatus.NO_CONTENT);
+					await expect(em.findOneOrFail('RoomContentEntity', { roomId: room.id })).rejects.toThrow(NotFoundException);
 				});
 
 				describe('when user is not the roomowner', () => {
