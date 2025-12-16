@@ -1,6 +1,6 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Headers, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiBadRequestResponse, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { IResult, UAParser } from 'ua-parser-js';
@@ -19,17 +19,17 @@ export class HelpdeskController {
 	@ApiOkResponse({ description: 'Helpdesk problem created successfully' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.', type: ApiValidationError })
-	@UseInterceptors(FileFieldsInterceptor([{ name: 'file' }]))
+	@UseInterceptors(FilesInterceptor('files'))
 	public async createProblem(
 		@Body() body: HelpdeskProblemCreateParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Headers('user-agent') userAgentHeader: string,
 		@UploadedFiles(new HelpdeskFileValidationPipe())
-		file?: { file?: Express.Multer.File[] }
+		files?: Express.Multer.File[]
 	): Promise<void> {
 		const userAgent: IResult = this.parseUserAgent(userAgentHeader);
 
-		await this.helpdeskUc.createHelpdeskProblem(currentUser.userId, body, file?.file, userAgent);
+		await this.helpdeskUc.createHelpdeskProblem(currentUser.userId, body, files, userAgent);
 	}
 
 	@Post('/wish')
@@ -37,17 +37,17 @@ export class HelpdeskController {
 	@ApiOkResponse({ description: 'Helpdesk wish created successfully' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.', type: ApiValidationError })
-	@UseInterceptors(FileFieldsInterceptor([{ name: 'file' }]))
+	@UseInterceptors(FilesInterceptor('files'))
 	public async createWish(
 		@Body() body: HelpdeskWishCreateParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Headers('user-agent') userAgentHeader: string,
 		@UploadedFiles(new HelpdeskFileValidationPipe())
-		file?: { file?: Express.Multer.File[] }
+		files?: Express.Multer.File[]
 	): Promise<void> {
 		const userAgent: IResult = this.parseUserAgent(userAgentHeader);
 
-		await this.helpdeskUc.createHelpdeskWish(currentUser.userId, body, file?.file, userAgent);
+		await this.helpdeskUc.createHelpdeskWish(currentUser.userId, body, files, userAgent);
 	}
 
 	private parseUserAgent(userAgentHeader: string): IResult {

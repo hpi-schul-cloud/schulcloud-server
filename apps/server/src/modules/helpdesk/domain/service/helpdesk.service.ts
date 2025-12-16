@@ -49,7 +49,7 @@ export class HelpdeskService {
 		plainTextContent: string,
 		files?: Express.Multer.File[]
 	): Promise<void> {
-		const attachments = files ? this.getAttachments(files) : undefined;
+		const attachments = files && files.length > 0 ? this.getAttachments(files) : undefined;
 		const email: Mail = {
 			recipients,
 			mail: {

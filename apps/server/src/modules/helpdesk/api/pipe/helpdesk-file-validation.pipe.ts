@@ -1,9 +1,7 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 
 @Injectable()
-export class HelpdeskFileValidationPipe
-	implements PipeTransform<{ file?: Express.Multer.File[] }, { file?: Express.Multer.File[] }>
-{
+export class HelpdeskFileValidationPipe implements PipeTransform<Express.Multer.File[], Express.Multer.File[]> {
 	private readonly allowedMimeTypes = [
 		'image/jpeg',
 		'image/jpg',
@@ -15,13 +13,14 @@ export class HelpdeskFileValidationPipe
 
 	private readonly maxFileSize = 5000 * 1024; // 5 MB
 
-	public transform(value: { file?: Express.Multer.File[] }): { file?: Express.Multer.File[] } {
-		if (!value || !value.file || value.file.length === 0) {
+	public transform(files: Express.Multer.File[]): Express.Multer.File[] {
+		console.log('HelpdeskFileValidationPipe transform called with value:', files);
+		if (!files || files.length === 0) {
 			// No file uploaded, which is allowed
-			return value;
+			return files;
 		}
 
-		const files = value.file;
+		console.log('Validating files:', files);
 		const totalFilesSize = files.reduce((acc, file) => acc + file.size, 0);
 		this.validateFilesSize(totalFilesSize);
 
@@ -29,7 +28,7 @@ export class HelpdeskFileValidationPipe
 			this.validateFileType(file);
 		}
 
-		return value;
+		return files;
 	}
 
 	private validateFileType(file: Express.Multer.File): void {
