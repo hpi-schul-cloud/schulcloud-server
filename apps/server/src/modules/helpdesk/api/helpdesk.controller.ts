@@ -1,5 +1,13 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Body, Controller, Headers, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Headers,
+	ParseFilePipeBuilder,
+	Post,
+	UploadedFiles,
+	UseInterceptors
+} from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiBadRequestResponse, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
@@ -23,7 +31,20 @@ export class HelpdeskController {
 		@Body() body: HelpdeskProblemCreateParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Headers('user-agent') userAgentHeader: string,
-		@UploadedFiles() file?: { file?: Express.Multer.File[] }
+		@UploadedFiles(
+			new ParseFilePipeBuilder()
+				.addFileTypeValidator({
+					fileType: /(jpg|jpeg|png|mp4|pdf|docx)$/,
+				})
+				.addMaxSizeValidator({
+					maxSize: 5000 * 1024, // 5 MB
+					message: (maxSize: number) => `File size should not exceed ${maxSize} bytes.`,
+				})
+				.build({
+					fileIsRequired: false,
+				})
+		)
+		file?: { file?: Express.Multer.File[] }
 	): Promise<void> {
 		const userAgent: IResult = this.parseUserAgent(userAgentHeader);
 
@@ -40,7 +61,20 @@ export class HelpdeskController {
 		@Body() body: HelpdeskWishCreateParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Headers('user-agent') userAgentHeader: string,
-		@UploadedFiles() file?: { file?: Express.Multer.File[] }
+		@UploadedFiles(
+			new ParseFilePipeBuilder()
+				.addFileTypeValidator({
+					fileType: /(jpg|jpeg|png|mp4|pdf|docx)$/,
+				})
+				.addMaxSizeValidator({
+					maxSize: 5000 * 1024, // 5 MB
+					message: (maxSize: number) => `File size should not exceed ${maxSize} bytes.`,
+				})
+				.build({
+					fileIsRequired: false,
+				})
+		)
+		file?: { file?: Express.Multer.File[] }
 	): Promise<void> {
 		const userAgent: IResult = this.parseUserAgent(userAgentHeader);
 
