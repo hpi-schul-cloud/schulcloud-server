@@ -9,7 +9,7 @@ export interface RuntimeConfigProperties {
 	description?: string;
 }
 
-@Entity()
+@Entity({ tableName: 'runtimeconfigs' })
 export class RuntimeConfigEntity extends BaseEntity implements RuntimeConfigProperties {
 	constructor(props: RuntimeConfigProperties) {
 		super();
