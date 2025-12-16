@@ -6,6 +6,5 @@
 	"public": "./public/",
 	"services": {
 		"hydra": "HYDRA_URI"
-	},
-	"FORCE_SEND_EMAIL": false
+	}
 }
