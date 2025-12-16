@@ -46,6 +46,8 @@ import { LibraryStorage } from '../service';
 import { H5PContentParentType, H5PUploadFile, LumiUserWithContentData } from '../types';
 import { GetLibraryFile } from './dto/h5p-getLibraryFile';
 
+// Wir müssen als Workaround allen Dateien den Typ "unknown.type" als "tempFilePath" zuweisen, da die H5P-Bibliothek sonst Fehler wirft.
+// Siehe: https://github.com/Lumieducation/H5P-Nodejs-library/blob/fb84581b3aa68cfd521e84b6438c0c177d34a4be/packages/h5p-server/src/H5PEditor.ts#L659
 const UNKNOWN_TYPE = 'unknown.type';
 
 @Injectable()
