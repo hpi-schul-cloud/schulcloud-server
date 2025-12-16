@@ -1,19 +1,12 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import {
-	Body,
-	Controller,
-	Headers,
-	ParseFilePipeBuilder,
-	Post,
-	UploadedFiles,
-	UseInterceptors
-} from '@nestjs/common';
+import { Body, Controller, Headers, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiBadRequestResponse, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { IResult, UAParser } from 'ua-parser-js';
 import { HelpdeskProblemCreateParams, HelpdeskWishCreateParams } from './dto';
 import { HelpdeskUc } from './helpdesk.uc';
+import { HelpdeskFileValidationPipe } from './pipe/helpdesk-file-validation.pipe';
 
 @ApiTags('Helpdesk')
 @Controller('helpdesk')
@@ -31,19 +24,7 @@ export class HelpdeskController {
 		@Body() body: HelpdeskProblemCreateParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Headers('user-agent') userAgentHeader: string,
-		@UploadedFiles(
-			new ParseFilePipeBuilder()
-				.addFileTypeValidator({
-					fileType: /(jpg|jpeg|png|mp4|pdf|docx)$/,
-				})
-				.addMaxSizeValidator({
-					maxSize: 5000 * 1024, // 5 MB
-					message: (maxSize: number) => `File size should not exceed ${maxSize} bytes.`,
-				})
-				.build({
-					fileIsRequired: false,
-				})
-		)
+		@UploadedFiles(new HelpdeskFileValidationPipe())
 		file?: { file?: Express.Multer.File[] }
 	): Promise<void> {
 		const userAgent: IResult = this.parseUserAgent(userAgentHeader);
@@ -61,19 +42,7 @@ export class HelpdeskController {
 		@Body() body: HelpdeskWishCreateParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Headers('user-agent') userAgentHeader: string,
-		@UploadedFiles(
-			new ParseFilePipeBuilder()
-				.addFileTypeValidator({
-					fileType: /(jpg|jpeg|png|mp4|pdf|docx)$/,
-				})
-				.addMaxSizeValidator({
-					maxSize: 5000 * 1024, // 5 MB
-					message: (maxSize: number) => `File size should not exceed ${maxSize} bytes.`,
-				})
-				.build({
-					fileIsRequired: false,
-				})
-		)
+		@UploadedFiles(new HelpdeskFileValidationPipe())
 		file?: { file?: Express.Multer.File[] }
 	): Promise<void> {
 		const userAgent: IResult = this.parseUserAgent(userAgentHeader);
