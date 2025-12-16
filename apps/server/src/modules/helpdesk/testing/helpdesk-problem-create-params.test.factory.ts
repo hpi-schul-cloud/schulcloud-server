@@ -7,7 +7,7 @@ export class HelpdeskProblemCreateParamsFactory {
 			supportType: SupportType.PROBLEM,
 			subject: 'Default Problem Subject',
 			replyEmail: 'user@example.com',
-			problemArea: ['Login'],
+			problemArea: ['Login', 'Performance'],
 			problemDescription: 'Default problem description',
 			...overrides,
 		};

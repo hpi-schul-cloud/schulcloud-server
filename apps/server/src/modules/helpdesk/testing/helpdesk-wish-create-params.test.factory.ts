@@ -7,7 +7,7 @@ export class HelpdeskWishCreateParamsFactory {
 			supportType: SupportType.WISH,
 			subject: 'Default Wish Subject',
 			replyEmail: 'user@example.com',
-			problemArea: ['Feature'],
+			problemArea: ['Feature', 'Usability'],
 			role: 'teacher',
 			desire: 'A new feature',
 			benefit: 'It helps teaching',
