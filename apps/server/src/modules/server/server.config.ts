@@ -134,15 +134,9 @@ export interface ServerConfig
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
 	ROOM_MEMBER_INFO_URL: string | null;
-	SUPPORT_PROBLEM_EMAIL_ADDRESS: string;
-	SUPPORT_WISH_EMAIL_ADDRESS: string;
-	FORCE_SEND_EMAIL: boolean;
 }
 
 const config: ServerConfig = {
-	SUPPORT_PROBLEM_EMAIL_ADDRESS: Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS') as string,
-	SUPPORT_WISH_EMAIL_ADDRESS: Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS') as string,
-	FORCE_SEND_EMAIL: Configuration.get('FORCE_SEND_EMAIL') as boolean,
 	ACCESSIBILITY_REPORT_EMAIL: Configuration.get('ACCESSIBILITY_REPORT_EMAIL') as string,
 	SC_CONTACT_EMAIL: Configuration.get('SC_CONTACT_EMAIL') as string,
 	SC_CONTACT_EMAIL_SUBJECT: Configuration.get('SC_CONTACT_EMAIL_SUBJECT') as string,
