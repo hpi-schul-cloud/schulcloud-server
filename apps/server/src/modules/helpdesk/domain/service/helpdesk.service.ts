@@ -12,7 +12,9 @@ export class HelpdeskService {
 		private readonly emailService: MailService,
 		@Inject(HELPDESK_CONFIG_TOKEN) private readonly config: HelpdeskConfig,
 		private readonly logger: Logger
-	) {}
+	) {
+		this.logger.setContext(HelpdeskService.name);
+	}
 
 	public async createProblem(
 		problem: HelpdeskProblemProps,
