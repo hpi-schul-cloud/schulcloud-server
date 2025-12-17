@@ -41,7 +41,7 @@ export class VideoConferenceController {
 		description: 'User does not have the permission to create this conference.',
 	})
 	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Unable to fetch required data.' })
-	async start(
+	public async start(
 		@Req() req: Request,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() scopeParams: VideoConferenceScopeParams,
@@ -74,7 +74,7 @@ export class VideoConferenceController {
 		description: 'User does not have the permission to join this conference.',
 	})
 	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Unable to fetch required data.' })
-	async join(
+	public async join(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() scopeParams: VideoConferenceScopeParams
 	): Promise<VideoConferenceJoinResponse> {
@@ -102,7 +102,7 @@ export class VideoConferenceController {
 		description: 'User does not have the permission to get information about this conference.',
 	})
 	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Unable to fetch required data.' })
-	async info(
+	public async info(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() scopeParams: VideoConferenceScopeParams
 	): Promise<VideoConferenceInfoResponse> {
@@ -129,7 +129,10 @@ export class VideoConferenceController {
 		description: 'User does not have the permission to end this conference.',
 	})
 	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Unable to fetch required data.' })
-	async end(@CurrentUser() currentUser: ICurrentUser, @Param() scopeParams: VideoConferenceScopeParams): Promise<void> {
+	public async end(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() scopeParams: VideoConferenceScopeParams
+	): Promise<void> {
 		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 
 		await this.videoConferenceEndUc.end(currentUser.userId, scopeRef);
