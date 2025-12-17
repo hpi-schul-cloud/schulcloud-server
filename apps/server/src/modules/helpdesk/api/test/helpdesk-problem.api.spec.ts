@@ -214,7 +214,7 @@ describe('Helpdesk Controller (API)', () => {
 					request = request.field('problemArea', area);
 				}
 
-				const response = await request.attach('file', largeFile, 'large.jpg');
+				const response = await request.attach('files', largeFile, 'large.jpg');
 
 				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 			});
@@ -249,7 +249,7 @@ describe('Helpdesk Controller (API)', () => {
 					request = request.field('problemArea', area);
 				}
 
-				const response = await request.attach('file', invalidFile, {
+				const response = await request.attach('files', invalidFile, {
 					filename: 'invalid.txt',
 					contentType: 'text/plain',
 				});
@@ -287,7 +287,7 @@ describe('Helpdesk Controller (API)', () => {
 					request = request.field('problemArea', area);
 				}
 
-				const response = await request.attach('file', validFile, {
+				const response = await request.attach('files', validFile, {
 					filename: 'valid.jpg',
 					contentType: 'image/jpeg',
 				});
@@ -324,7 +324,7 @@ describe('Helpdesk Controller (API)', () => {
 					request = request.field('problemArea', area);
 				}
 
-				const response = await request.attach('file', validFile, {
+				const response = await request.attach('files', validFile, {
 					filename: 'valid.png',
 					contentType: 'image/png',
 				});
@@ -361,7 +361,7 @@ describe('Helpdesk Controller (API)', () => {
 					request = request.field('problemArea', area);
 				}
 
-				const response = await request.attach('file', validFile, {
+				const response = await request.attach('files', validFile, {
 					filename: 'valid.mp4',
 					contentType: 'video/mp4',
 				});
@@ -398,7 +398,7 @@ describe('Helpdesk Controller (API)', () => {
 					request = request.field('problemArea', area);
 				}
 
-				const response = await request.attach('file', validFile, {
+				const response = await request.attach('files', validFile, {
 					filename: 'valid.pdf',
 					contentType: 'application/pdf',
 				});
@@ -435,7 +435,7 @@ describe('Helpdesk Controller (API)', () => {
 					request = request.field('problemArea', area);
 				}
 
-				const response = await request.attach('file', validFile, {
+				const response = await request.attach('files', validFile, {
 					filename: 'valid.docx',
 					contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 				});
