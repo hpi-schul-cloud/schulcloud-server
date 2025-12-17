@@ -21,6 +21,22 @@ const DEPTH_CARD_ELEMENTS = 3;
 
 const DEFAULT_NEW_COURSE_COLOR = '#455B6A';
 
+// Retry-Wrapper
+async function retry<T>(fn: () => Promise<T>, retries = 5, delayMs = 500): Promise<T> {
+	let lastError: unknown;
+	for (let attempt = 0; attempt < retries; attempt++) {
+		try {
+			return await fn();
+		} catch (err) {
+			lastError = err;
+			// Optional: Log für Debugging
+			// console.warn(`Retry attempt ${attempt + 1} failed:`, err);
+			await new Promise((resolve) => setTimeout(resolve, delayMs * (attempt + 1)));
+		}
+	}
+	throw lastError;
+}
+
 interface ColumnResource {
 	column: CommonCartridgeOrganizationProps;
 	isResourceColumn: boolean;
@@ -114,7 +130,7 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
+		const columnResponse = await retry(() => this.boardsClient.createBoardColumn(boardId));
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
 		await this.createCardElementWithResource(parser, columnResponse, columnProps, currentUser);
@@ -126,7 +142,7 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
+		const columnResponse = await retry(() => this.boardsClient.createBoardColumn(boardId));
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
 		const cards = parser
