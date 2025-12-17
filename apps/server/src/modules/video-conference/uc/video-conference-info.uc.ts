@@ -1,8 +1,7 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BBBBaseMeetingConfig, BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBService } from '../bbb';
 import { VideoConferenceDO, VideoConferenceOptionsDO } from '../domain';
-import { ErrorStatus } from '../error';
 import { defaultVideoConferenceOptions } from '../interface';
 import { PermissionMapping } from '../mapper/video-conference.mapper';
 import { VideoConferenceService } from '../service';
@@ -50,20 +49,6 @@ export class VideoConferenceInfoUc {
 			state = VideoConferenceState.RUNNING;
 		} catch (e) {
 			// TODO should be refactored to not use exceptions for flow control
-		}
-
-		const isGuest: boolean = await this.videoConferenceService.isExternalPersonOrTeamExpert(
-			currentUserId,
-			scope.scope,
-			scopeInfo.scopeId
-		);
-
-		if (!this.videoConferenceService.canGuestJoin(isGuest, state, options.moderatorMustApproveJoinRequests)) {
-			throw new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE);
-		}
-
-		if (isGuest && state === VideoConferenceState.RUNNING) {
-			options = {} as VideoConferenceOptionsDO;
 		}
 
 		const response = new VideoConferenceInfo({
