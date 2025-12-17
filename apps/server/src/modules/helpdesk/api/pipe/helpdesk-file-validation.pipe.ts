@@ -2,15 +2,6 @@ import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 
 @Injectable()
 export class HelpdeskFileValidationPipe implements PipeTransform<Express.Multer.File[], Express.Multer.File[]> {
-	private readonly allowedMimeTypes = [
-		'image/jpeg',
-		'image/jpg',
-		'image/png',
-		'video/mp4',
-		'application/pdf',
-		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-	];
-
 	private readonly maxFileSize = 5000 * 1024; // 5 MB
 
 	public transform(files: Express.Multer.File[]): Express.Multer.File[] {
@@ -30,8 +21,11 @@ export class HelpdeskFileValidationPipe implements PipeTransform<Express.Multer.
 	}
 
 	private validateFileType(file: Express.Multer.File): void {
-		if (!file.mimetype || !this.allowedMimeTypes.includes(file.mimetype)) {
-			throw new BadRequestException(`Invalid file type. Allowed types are: ${this.allowedMimeTypes.join(', ')}`);
+		const test = new RegExp(
+			'image/*|video/*|application/msword|application/vnd.openxmlformats-officedocument.wordprocessingml.document|application/pdf'
+		);
+		if (!file.mimetype || test.test(file.mimetype) === false) {
+			throw new BadRequestException(`Invalid file type. Allowed types are images, videos, Word documents, and PDFs.`);
 		}
 	}
 

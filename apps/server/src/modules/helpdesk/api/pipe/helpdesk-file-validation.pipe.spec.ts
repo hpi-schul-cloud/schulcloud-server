@@ -97,6 +97,20 @@ describe('HelpdeskFileValidationPipe', () => {
 			});
 		});
 
+		describe('when a valid MOV file is provided', () => {
+			it('should return the value without errors', () => {
+				const files = [
+					{
+						mimetype: 'video/quicktime',
+						size: 1000,
+					} as Express.Multer.File,
+				];
+				const result = pipe.transform(files);
+
+				expect(result).toEqual(files);
+			});
+		});
+
 		describe('when an invalid file type is provided', () => {
 			it('should throw a BadRequestException', () => {
 				const files = [
