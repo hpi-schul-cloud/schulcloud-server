@@ -51,7 +51,6 @@ const setupApp = async (orm) => {
 		.options('*', cors())
 		.use(cors())
 		.configure(setupConfiguration)
-		.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
 		.use('/', bodyParser.json({ limit: '10mb' }))
 		.use(bodyParser.urlencoded({ extended: true }))
 		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
