@@ -14,13 +14,11 @@ export class HelpdeskFileValidationPipe implements PipeTransform<Express.Multer.
 	private readonly maxFileSize = 5000 * 1024; // 5 MB
 
 	public transform(files: Express.Multer.File[]): Express.Multer.File[] {
-		console.log('HelpdeskFileValidationPipe transform called with value:', files);
 		if (!files || files.length === 0) {
 			// No file uploaded, which is allowed
 			return files;
 		}
 
-		console.log('Validating files:', files);
 		const totalFilesSize = files.reduce((acc, file) => acc + file.size, 0);
 		this.validateFilesSize(totalFilesSize);
 
