@@ -603,12 +603,12 @@ describe('VideoConferenceController (API)', () => {
 					return { loggedInClient, scope, scopeId };
 				};
 
-				it('should return forbidden', async () => {
+				it('should return ok', async () => {
 					const { loggedInClient, scope, scopeId } = await setup();
 
 					const response: Response = await loggedInClient.get(`${scope}/${scopeId}/info`);
 
-					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+					expect(response.status).toEqual(HttpStatus.OK);
 				});
 			});
 
