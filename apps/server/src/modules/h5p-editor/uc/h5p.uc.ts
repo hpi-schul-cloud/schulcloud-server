@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import {
 	AuthorizationBodyParamsReferenceType,
 	AuthorizationClientAdapter,
@@ -25,18 +26,29 @@ import {
 	BadRequestException,
 	HttpException,
 	Injectable,
+	InternalServerErrorException,
 	NotAcceptableException,
 	NotFoundException,
 } from '@nestjs/common';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { randomUUID } from 'crypto';
 import { Request } from 'express';
+import { mkdtempSync, rmSync, unlinkSync } from 'fs';
+import { writeFile } from 'fs/promises';
+import { tmpdir } from 'os';
+import { dirname, join } from 'path';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, H5PContentResponse } from '../controller/dto';
+import { H5PUcErrorLoggable, H5PUcLoggable } from '../loggable';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
-import { H5PContentParentType, LumiUserWithContentData } from '../types';
+import { H5PContentParentType, H5PUploadFile, LumiUserWithContentData } from '../types';
 import { GetLibraryFile } from './dto/h5p-getLibraryFile';
+
+// As a workaround, we have to assign all files the type “unknown.type” as “tempFilePath,” otherwise the H5P library throws errors.
+// See: https://github.com/Lumieducation/H5P-Nodejs-library/blob/fb84581b3aa68cfd521e84b6438c0c177d34a4be/packages/h5p-server/src/H5PEditor.ts#L659
+const UNKNOWN_TYPE = 'unknown.type';
 
 @Injectable()
 export class H5PEditorUc {
@@ -47,8 +59,11 @@ export class H5PEditorUc {
 		private readonly libraryService: LibraryStorage,
 		private readonly userService: UserService,
 		private readonly authorizationClientAdapter: AuthorizationClientAdapter,
-		private readonly h5pContentRepo: H5PContentRepo
-	) {}
+		private readonly h5pContentRepo: H5PContentRepo,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(H5PEditorUc.name);
+	}
 
 	private async checkContentPermission(
 		parentType: H5PContentParentType,
@@ -129,31 +144,98 @@ export class H5PEditorUc {
 		| ILibraryOverviewForClient[]
 		| undefined
 	> {
-		const user = this.changeUserType(userId);
-		const language = await this.getUserLanguage(userId);
+		let contentUploadFile: H5PUploadFile | undefined;
+		try {
+			const user = this.changeUserType(userId);
+			const language = await this.getUserLanguage(userId);
+			contentUploadFile = await this.createContentUploadFile(contentFile);
+			const libraryUploadFile = this.createLibraryUploadFile(h5pFile);
 
-		const result = await this.h5pAjaxEndpoint.postAjax(
-			query.action,
-			body,
-			language,
-			user,
-			contentFile && {
-				data: contentFile.buffer,
-				mimetype: contentFile.mimetype,
-				name: contentFile.originalname,
-				size: contentFile.size,
-			},
-			query.id,
-			undefined,
-			h5pFile && {
-				data: h5pFile.buffer,
-				mimetype: h5pFile.mimetype,
-				name: h5pFile.originalname,
-				size: h5pFile.size,
+			const result = await this.h5pAjaxEndpoint.postAjax(
+				query.action,
+				body,
+				language,
+				user,
+				contentUploadFile,
+				query.id,
+				undefined,
+				libraryUploadFile
+			);
+
+			return result;
+		} catch (err) {
+			throw new InternalServerErrorException('Error processing H5P AJAX request', { cause: err });
+		} finally {
+			if (this.isTemporarySvgFile(contentUploadFile) && contentUploadFile.tempFilePath) {
+				this.deleteTemporarySvgFile(contentUploadFile.tempFilePath);
 			}
-		);
+		}
+	}
 
-		return result;
+	private async createContentUploadFile(contentFile?: Express.Multer.File): Promise<H5PUploadFile | undefined> {
+		let contentTempFilePath = UNKNOWN_TYPE;
+		let contentData = contentFile?.buffer;
+
+		if (this.isSvgFile(contentFile)) {
+			contentTempFilePath = await this.createTemporarySvgFile(contentFile);
+			contentData = undefined;
+		}
+
+		const contentUploadFile: H5PUploadFile | undefined = contentFile && {
+			data: contentData,
+			mimetype: contentFile.mimetype,
+			name: contentFile.originalname,
+			size: contentFile.size,
+			tempFilePath: contentTempFilePath,
+		};
+
+		return contentUploadFile;
+	}
+
+	private isSvgFile(contentFile?: Express.Multer.File): contentFile is Express.Multer.File {
+		const isSvgFile = !!contentFile && contentFile.originalname.endsWith('.svg');
+
+		return isSvgFile;
+	}
+
+	private async createTemporarySvgFile(contentFile: Express.Multer.File): Promise<string> {
+		const contentTempDir = mkdtempSync(join(tmpdir(), 'h5p-svg-'));
+		const contentTempFileName = randomUUID() + '.svg';
+		const contentTempFilePath = join(contentTempDir, contentTempFileName);
+		await writeFile(contentTempFilePath, contentFile.buffer, 'utf8');
+		this.logger.info(new H5PUcLoggable(`SVG file written to temporary location: ${contentTempFilePath}`));
+
+		return contentTempFilePath;
+	}
+
+	private createLibraryUploadFile(h5pFile?: Express.Multer.File): H5PUploadFile | undefined {
+		const libraryUploadFile: H5PUploadFile | undefined = h5pFile && {
+			data: h5pFile?.buffer,
+			mimetype: h5pFile.mimetype,
+			name: h5pFile.originalname,
+			size: h5pFile.size,
+			tempFilePath: UNKNOWN_TYPE,
+		};
+
+		return libraryUploadFile;
+	}
+
+	private isTemporarySvgFile(contentUploadFile: H5PUploadFile | undefined): contentUploadFile is H5PUploadFile {
+		const isTemporarySvgFile =
+			!!contentUploadFile && !!contentUploadFile.tempFilePath && contentUploadFile.tempFilePath !== UNKNOWN_TYPE;
+
+		return isTemporarySvgFile;
+	}
+
+	private deleteTemporarySvgFile(filePath: string): void {
+		const dirPath = dirname(filePath);
+		try {
+			unlinkSync(filePath);
+			rmSync(dirPath, { recursive: true });
+			this.logger.info(new H5PUcLoggable(`Temporary SVG file and directory deleted: ${filePath}`));
+		} catch (err) {
+			this.logger.warning(new H5PUcErrorLoggable(err, { filePath }, 'while deleting temporary SVG file or directory'));
+		}
 	}
 
 	public async getContentParameters(contentId: string, userId: EntityId): Promise<H5PContentResponse> {
