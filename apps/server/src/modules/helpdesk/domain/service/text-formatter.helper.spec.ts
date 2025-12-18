@@ -23,24 +23,24 @@ describe('TextFormatter', () => {
 				const result = TextFormatter.createProblemText(problem, userContext, userDevice);
 
 				const expected =
-					'Helpdesk Problem Submission\n\n' +
-					'--- Problem Details ---\n' +
-					'Subject: Test Problem Subject\n' +
-					'Problem Area: General\n' +
-					'Problem Description: Test problem description\n' +
-					'Device: Desktop\n' +
-					'\n--- System Information ---\n' +
-					'User ID: test-user-id\n' +
-					'User Name: Test User\n' +
-					'User Email: testuser@example.com\n' +
-					'User Roles: student\n' +
-					'School ID: test-school-id\n' +
-					'School Name: Test School\n' +
-					'\n--- Device Information ---\n' +
-					'Device User Agent: Test User Agent\n' +
-					'Browser Name: Test Browser\n' +
-					'Browser Version: 1.0.0\n' +
-					'Operating System: Test OS\n';
+					'Helpdesk-Problem melden\n\n' +
+					'\n--- Systeminformationen ---\n' +
+					'Nutzer-ID: test-user-id\n' +
+					'Nutzername: Test User\n' +
+					'Nutzer-E-Mail: testuser@example.com\n' +
+					'Nutzerrollen: student\n' +
+					'Schul-ID: test-school-id\n' +
+					'Schulname: Test School\n' +
+					'\n--- Geräteinformationen ---\n' +
+					'Geräte-User-Agent: Test User Agent\n' +
+					'Browser-Name: Test Browser\n' +
+					'Browser-Version: 1.0.0\n' +
+					'Betriebssystem: Test OS\n' +
+					'\n--- Problemdetails ---\n' +
+					'Betreff: Test Problem Subject\n' +
+					'Problemfeld: General\n' +
+					'Problembeschreibung: Test problem description\n' +
+					'Gerät: Desktop\n';
 
 				expect(result).toBe(expected);
 			});
@@ -63,23 +63,23 @@ describe('TextFormatter', () => {
 				const result = TextFormatter.createProblemText(problem, userContext, userDevice);
 
 				const expected =
-					'Helpdesk Problem Submission\n\n' +
-					'--- Problem Details ---\n' +
-					'Subject: Test Problem Subject\n' +
-					'Problem Area: General\n' +
-					'Problem Description: Test problem description\n' +
-					'\n--- System Information ---\n' +
-					'User ID: test-user-id\n' +
-					'User Name: Test User\n' +
-					'User Email: testuser@example.com\n' +
-					'User Roles: student\n' +
-					'School ID: test-school-id\n' +
-					'School Name: Test School\n' +
-					'\n--- Device Information ---\n' +
-					'Device User Agent: Test User Agent\n' +
-					'Browser Name: Test Browser\n' +
-					'Browser Version: 1.0.0\n' +
-					'Operating System: Test OS\n';
+					'Helpdesk-Problem melden\n\n' +
+					'\n--- Systeminformationen ---\n' +
+					'Nutzer-ID: test-user-id\n' +
+					'Nutzername: Test User\n' +
+					'Nutzer-E-Mail: testuser@example.com\n' +
+					'Nutzerrollen: student\n' +
+					'Schul-ID: test-school-id\n' +
+					'Schulname: Test School\n' +
+					'\n--- Geräteinformationen ---\n' +
+					'Geräte-User-Agent: Test User Agent\n' +
+					'Browser-Name: Test Browser\n' +
+					'Browser-Version: 1.0.0\n' +
+					'Betriebssystem: Test OS\n' +
+					'\n--- Problemdetails ---\n' +
+					'Betreff: Test Problem Subject\n' +
+					'Problemfeld: General\n' +
+					'Problembeschreibung: Test problem description\n';
 
 				expect(result).toBe(expected);
 			});
@@ -102,21 +102,21 @@ describe('TextFormatter', () => {
 				const result = TextFormatter.createProblemText(problem, userContext, userDevice);
 
 				const expected =
-					'Helpdesk Problem Submission\n\n' +
-					'--- Problem Details ---\n' +
-					'Subject: Test Problem Subject\n' +
-					'Problem Area: General\n' +
-					'Problem Description: Test problem description\n' +
-					'Device: Desktop\n' +
-					'\n--- System Information ---\n' +
-					'User ID: test-user-id\n' +
-					'User Name: Test User\n' +
-					'User Email: testuser@example.com\n' +
-					'User Roles: student\n' +
-					'School ID: test-school-id\n' +
-					'School Name: Test School\n' +
-					'\n--- Device Information ---\n' +
-					'N/A';
+					'Helpdesk-Problem melden\n\n' +
+					'\n--- Systeminformationen ---\n' +
+					'Nutzer-ID: test-user-id\n' +
+					'Nutzername: Test User\n' +
+					'Nutzer-E-Mail: testuser@example.com\n' +
+					'Nutzerrollen: student\n' +
+					'Schul-ID: test-school-id\n' +
+					'Schulname: Test School\n' +
+					'\n--- Geräteinformationen ---\n' +
+					'N/A' +
+					'\n--- Problemdetails ---\n' +
+					'Betreff: Test Problem Subject\n' +
+					'Problemfeld: General\n' +
+					'Problembeschreibung: Test problem description\n' +
+					'Gerät: Desktop\n';
 
 				expect(result).toBe(expected);
 			});
@@ -136,21 +136,21 @@ describe('TextFormatter', () => {
 				const result = TextFormatter.createProblemText(problem, userContext, undefined);
 
 				const expected =
-					'Helpdesk Problem Submission\n\n' +
-					'--- Problem Details ---\n' +
-					'Subject: Test Problem Subject\n' +
-					'Problem Area: General\n' +
-					'Problem Description: Test problem description\n' +
-					'Device: Desktop\n' +
-					'\n--- System Information ---\n' +
-					'User ID: test-user-id\n' +
-					'User Name: Test User\n' +
-					'User Email: testuser@example.com\n' +
-					'User Roles: student\n' +
-					'School ID: test-school-id\n' +
-					'School Name: Test School\n' +
-					'\n--- Device Information ---\n' +
-					'No device information provided.';
+					'Helpdesk-Problem melden\n\n' +
+					'\n--- Systeminformationen ---\n' +
+					'Nutzer-ID: test-user-id\n' +
+					'Nutzername: Test User\n' +
+					'Nutzer-E-Mail: testuser@example.com\n' +
+					'Nutzerrollen: student\n' +
+					'Schul-ID: test-school-id\n' +
+					'Schulname: Test School\n' +
+					'\n--- Geräteinformationen ---\n' +
+					'Keine Geräteinformationen vorhanden.' +
+					'\n--- Problemdetails ---\n' +
+					'Betreff: Test Problem Subject\n' +
+					'Problemfeld: General\n' +
+					'Problembeschreibung: Test problem description\n' +
+					'Gerät: Desktop\n';
 
 				expect(result).toBe(expected);
 			});
@@ -173,26 +173,26 @@ describe('TextFormatter', () => {
 				const result = TextFormatter.createWishText(wish, userContext, userDevice);
 
 				const expected =
-					'Helpdesk Wish Submission\n\n' +
-					'--- Wish Details ---\n' +
-					'Subject: Test Wish Subject\n' +
-					'Problem Area: General\n' +
-					'Role: As a user\n' +
-					'Desire: I want to test\n' +
-					'Benefit: So I can verify functionality\n' +
-					'Acceptance Criteria: Feature works as expected\n' +
-					'\n--- System Information ---\n' +
-					'User ID: test-user-id\n' +
-					'User Name: Test User\n' +
-					'User Email: testuser@example.com\n' +
-					'User Roles: student\n' +
-					'School ID: test-school-id\n' +
-					'School Name: Test School\n' +
-					'\n--- Device Information ---\n' +
-					'Device User Agent: Test User Agent\n' +
-					'Browser Name: Test Browser\n' +
-					'Browser Version: 1.0.0\n' +
-					'Operating System: Test OS\n';
+					'Helpdesk-Wunsch einreichen\n\n' +
+					'--- Wunschdetails ---\n' +
+					'Betreff: Test Wish Subject\n' +
+					'Problemfeld: General\n' +
+					'Rolle: As a user\n' +
+					'Wunsch: I want to test\n' +
+					'Nutzen: So I can verify functionality\n' +
+					'Akzeptanzkriterien: Feature works as expected\n' +
+					'\n--- Systeminformationen ---\n' +
+					'Nutzer-ID: test-user-id\n' +
+					'Nutzername: Test User\n' +
+					'Nutzer-E-Mail: testuser@example.com\n' +
+					'Nutzerrollen: student\n' +
+					'Schul-ID: test-school-id\n' +
+					'Schulname: Test School\n' +
+					'\n--- Geräteinformationen ---\n' +
+					'Geräte-User-Agent: Test User Agent\n' +
+					'Browser-Name: Test Browser\n' +
+					'Browser-Version: 1.0.0\n' +
+					'Betriebssystem: Test OS\n';
 
 				expect(result).toBe(expected);
 			});
@@ -215,25 +215,25 @@ describe('TextFormatter', () => {
 				const result = TextFormatter.createWishText(wish, userContext, userDevice);
 
 				const expected =
-					'Helpdesk Wish Submission\n\n' +
-					'--- Wish Details ---\n' +
-					'Subject: Test Wish Subject\n' +
-					'Problem Area: General\n' +
-					'Role: As a user\n' +
-					'Desire: I want to test\n' +
-					'Benefit: So I can verify functionality\n' +
-					'\n--- System Information ---\n' +
-					'User ID: test-user-id\n' +
-					'User Name: Test User\n' +
-					'User Email: testuser@example.com\n' +
-					'User Roles: student\n' +
-					'School ID: test-school-id\n' +
-					'School Name: Test School\n' +
-					'\n--- Device Information ---\n' +
-					'Device User Agent: Test User Agent\n' +
-					'Browser Name: Test Browser\n' +
-					'Browser Version: 1.0.0\n' +
-					'Operating System: Test OS\n';
+					'Helpdesk-Wunsch einreichen\n\n' +
+					'--- Wunschdetails ---\n' +
+					'Betreff: Test Wish Subject\n' +
+					'Problemfeld: General\n' +
+					'Rolle: As a user\n' +
+					'Wunsch: I want to test\n' +
+					'Nutzen: So I can verify functionality\n' +
+					'\n--- Systeminformationen ---\n' +
+					'Nutzer-ID: test-user-id\n' +
+					'Nutzername: Test User\n' +
+					'Nutzer-E-Mail: testuser@example.com\n' +
+					'Nutzerrollen: student\n' +
+					'Schul-ID: test-school-id\n' +
+					'Schulname: Test School\n' +
+					'\n--- Geräteinformationen ---\n' +
+					'Geräte-User-Agent: Test User Agent\n' +
+					'Browser-Name: Test Browser\n' +
+					'Browser-Version: 1.0.0\n' +
+					'Betriebssystem: Test OS\n';
 
 				expect(result).toBe(expected);
 			});
@@ -256,22 +256,22 @@ describe('TextFormatter', () => {
 				const result = TextFormatter.createWishText(wish, userContext, userDevice);
 
 				const expected =
-					'Helpdesk Wish Submission\n\n' +
-					'--- Wish Details ---\n' +
-					'Subject: Test Wish Subject\n' +
-					'Problem Area: General\n' +
-					'Role: As a user\n' +
-					'Desire: I want to test\n' +
-					'Benefit: So I can verify functionality\n' +
-					'Acceptance Criteria: Feature works as expected\n' +
-					'\n--- System Information ---\n' +
-					'User ID: test-user-id\n' +
-					'User Name: Test User\n' +
-					'User Email: testuser@example.com\n' +
-					'User Roles: student\n' +
-					'School ID: test-school-id\n' +
-					'School Name: Test School\n' +
-					'\n--- Device Information ---\n' +
+					'Helpdesk-Wunsch einreichen\n\n' +
+					'--- Wunschdetails ---\n' +
+					'Betreff: Test Wish Subject\n' +
+					'Problemfeld: General\n' +
+					'Rolle: As a user\n' +
+					'Wunsch: I want to test\n' +
+					'Nutzen: So I can verify functionality\n' +
+					'Akzeptanzkriterien: Feature works as expected\n' +
+					'\n--- Systeminformationen ---\n' +
+					'Nutzer-ID: test-user-id\n' +
+					'Nutzername: Test User\n' +
+					'Nutzer-E-Mail: testuser@example.com\n' +
+					'Nutzerrollen: student\n' +
+					'Schul-ID: test-school-id\n' +
+					'Schulname: Test School\n' +
+					'\n--- Geräteinformationen ---\n' +
 					'N/A';
 
 				expect(result).toBe(expected);
@@ -292,23 +292,23 @@ describe('TextFormatter', () => {
 				const result = TextFormatter.createWishText(wish, userContext, undefined);
 
 				const expected =
-					'Helpdesk Wish Submission\n\n' +
-					'--- Wish Details ---\n' +
-					'Subject: Test Wish Subject\n' +
-					'Problem Area: General\n' +
-					'Role: As a user\n' +
-					'Desire: I want to test\n' +
-					'Benefit: So I can verify functionality\n' +
-					'Acceptance Criteria: Feature works as expected\n' +
-					'\n--- System Information ---\n' +
-					'User ID: test-user-id\n' +
-					'User Name: Test User\n' +
-					'User Email: testuser@example.com\n' +
-					'User Roles: student\n' +
-					'School ID: test-school-id\n' +
-					'School Name: Test School\n' +
-					'\n--- Device Information ---\n' +
-					'No device information provided.';
+					'Helpdesk-Wunsch einreichen\n\n' +
+					'--- Wunschdetails ---\n' +
+					'Betreff: Test Wish Subject\n' +
+					'Problemfeld: General\n' +
+					'Rolle: As a user\n' +
+					'Wunsch: I want to test\n' +
+					'Nutzen: So I can verify functionality\n' +
+					'Akzeptanzkriterien: Feature works as expected\n' +
+					'\n--- Systeminformationen ---\n' +
+					'Nutzer-ID: test-user-id\n' +
+					'Nutzername: Test User\n' +
+					'Nutzer-E-Mail: testuser@example.com\n' +
+					'Nutzerrollen: student\n' +
+					'Schul-ID: test-school-id\n' +
+					'Schulname: Test School\n' +
+					'\n--- Geräteinformationen ---\n' +
+					'Keine Geräteinformationen vorhanden.';
 
 				expect(result).toBe(expected);
 			});
@@ -333,26 +333,26 @@ describe('TextFormatter', () => {
 				const result = TextFormatter.createWishText(wish, userContext, userDevice);
 
 				const expected =
-					'Helpdesk Wish Submission\n\n' +
-					'--- Wish Details ---\n' +
-					'Subject: Test Wish Subject\n' +
-					'Problem Area: General\n' +
-					'Role: As a user\n' +
-					'Desire: I want to test\n' +
-					'Benefit: So I can verify functionality\n' +
-					'Acceptance Criteria: Feature works as expected\n' +
-					'\n--- System Information ---\n' +
-					'User ID: test-user-id\n' +
-					'User Name: Test User\n' +
-					'User Email: testuser@example.com\n' +
-					'User Roles: student\n' +
-					'School ID: test-school-id\n' +
-					'School Name: Test School\n' +
-					'\n--- Device Information ---\n' +
-					'Device User Agent: N/A\n' +
-					'Browser Name: Test Browser\n' +
-					'Browser Version: N/A\n' +
-					'Operating System: N/A\n';
+					'Helpdesk-Wunsch einreichen\n\n' +
+					'--- Wunschdetails ---\n' +
+					'Betreff: Test Wish Subject\n' +
+					'Problemfeld: General\n' +
+					'Rolle: As a user\n' +
+					'Wunsch: I want to test\n' +
+					'Nutzen: So I can verify functionality\n' +
+					'Akzeptanzkriterien: Feature works as expected\n' +
+					'\n--- Systeminformationen ---\n' +
+					'Nutzer-ID: test-user-id\n' +
+					'Nutzername: Test User\n' +
+					'Nutzer-E-Mail: testuser@example.com\n' +
+					'Nutzerrollen: student\n' +
+					'Schul-ID: test-school-id\n' +
+					'Schulname: Test School\n' +
+					'\n--- Geräteinformationen ---\n' +
+					'Geräte-User-Agent: N/A\n' +
+					'Browser-Name: Test Browser\n' +
+					'Browser-Version: N/A\n' +
+					'Betriebssystem: N/A\n';
 
 				expect(result).toBe(expected);
 			});

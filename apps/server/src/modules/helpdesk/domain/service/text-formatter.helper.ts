@@ -8,9 +8,9 @@ export class TextFormatter {
 	): string {
 		const text = [
 			'Helpdesk-Problem melden\n\n',
-			'--- Problemdetails ---\n',
-			this.buildProblemDescription(problem),
 			this.buildContextAndDeviceInfo(userContext, userDevice, problem.consent),
+			'\n--- Problemdetails ---\n',
+			this.buildProblemDescription(problem),
 		].join('');
 
 		return text;
