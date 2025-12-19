@@ -16,6 +16,7 @@ import {
 	AccessTokenPayloadResponse,
 	AccessTokenResponse,
 	AuthorizationBodyParams,
+	AuthorizationMultiReferenceBodyParams,
 	AuthorizedResponse,
 	CreateAccessTokenParams,
 } from './dto';
@@ -40,6 +41,27 @@ export class AuthorizationReferenceController {
 			user.userId,
 			body.referenceType,
 			body.referenceId,
+			body.context
+		);
+
+		return authorizationReponse;
+	}
+
+	@ApiOperation({ summary: 'Checks if user is authorized to perform the given operation.' })
+	@ApiResponse({ status: 200, type: AuthorizedResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 401, type: UnauthorizedException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@Post('by-references')
+	@JwtAuthentication()
+	public async authorizeByReferences(
+		@Body() body: AuthorizationMultiReferenceBodyParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise<AuthorizedResponse> {
+		const authorizationReponse = await this.authorizationReferenceUc.authorizeByReferences(
+			user.userId,
+			body.referenceTypes,
+			body.referenceIds,
 			body.context
 		);
 

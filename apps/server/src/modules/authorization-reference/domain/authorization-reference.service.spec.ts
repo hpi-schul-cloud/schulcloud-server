@@ -120,7 +120,7 @@ describe('AuthorizationReferenceService', () => {
 			it('should reject with this error', async () => {
 				const { context, userId, entityId, entityName } = setup();
 
-				await expect(service.hasPermissionByReferences(userId, entityName, entityId, context)).rejects.toThrow(
+				await expect(service.hasPermissionByReference(userId, entityName, entityId, context)).rejects.toThrow(
 					new NotFoundException()
 				);
 			});
@@ -140,7 +140,7 @@ describe('AuthorizationReferenceService', () => {
 			it('should reject with this error', async () => {
 				const { context, userId, entityId, entityName } = setup();
 
-				await expect(service.hasPermissionByReferences(userId, entityName, entityId, context)).rejects.toThrow(
+				await expect(service.hasPermissionByReference(userId, entityName, entityId, context)).rejects.toThrow(
 					new NotFoundException()
 				);
 			});
@@ -160,7 +160,7 @@ describe('AuthorizationReferenceService', () => {
 			it('should resolve to true', async () => {
 				const { context, userId, entityId, entityName } = setup();
 
-				const result = await service.hasPermissionByReferences(userId, entityName, entityId, context);
+				const result = await service.hasPermissionByReference(userId, entityName, entityId, context);
 
 				expect(result).toBe(true);
 			});
@@ -180,7 +180,7 @@ describe('AuthorizationReferenceService', () => {
 			it('should resolve to false', async () => {
 				const { context, userId, entityId, entityName } = setup();
 
-				const result = await service.hasPermissionByReferences(userId, entityName, entityId, context);
+				const result = await service.hasPermissionByReference(userId, entityName, entityId, context);
 
 				expect(result).toBe(false);
 			});

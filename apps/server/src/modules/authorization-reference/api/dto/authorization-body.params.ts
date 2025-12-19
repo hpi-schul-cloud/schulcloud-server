@@ -49,6 +49,27 @@ export class AuthorizationBodyParams {
 	public referenceId!: EntityId;
 }
 
+export class AuthorizationMultiReferenceBodyParams {
+	@ValidateNested()
+	@Type(() => AuthorizationContextParams)
+	@ApiProperty({
+		type: AuthorizationContextParams,
+	})
+	public context!: AuthorizationContextParams;
+
+	@IsEnum(AuthorizableReferenceType)
+	@ApiProperty({
+		enum: AuthorizableReferenceType,
+		description: 'The entities or domain objects the operation should be performed on.',
+		example: AuthorizableReferenceType.User,
+	})
+	public referenceTypes!: AuthorizableReferenceType[];
+
+	@IsMongoId({ each: true })
+	@ApiProperty({ description: 'The ids of the entities/domain objects of the defined referenceTypes.' })
+	public referenceIds!: EntityId[];
+}
+
 export class CreateAccessTokenParams extends AuthorizationBodyParams {
 	@ApiProperty({ description: 'Lifetime of token' })
 	@IsNumber()

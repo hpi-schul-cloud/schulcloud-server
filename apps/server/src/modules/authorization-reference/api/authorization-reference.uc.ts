@@ -12,8 +12,8 @@ import {
 	AuthorizedResponse,
 	CreateAccessTokenParams,
 } from './dto';
-import { AuthorizationResponseMapper } from './mapper';
 import { TokenMetadataFactory } from './factory';
+import { AuthorizationResponseMapper } from './mapper';
 import { TokenMetadata } from './vo';
 
 @Injectable()
@@ -30,10 +30,28 @@ export class AuthorizationReferenceUc {
 		authorizableReferenceId: EntityId,
 		context: AuthorizationContext
 	): Promise<AuthorizedResponse> {
-		const hasPermission = await this.authorizationReferenceService.hasPermissionByReferences(
+		const hasPermission = await this.authorizationReferenceService.hasPermissionByReference(
 			userId,
 			authorizableReferenceType,
 			authorizableReferenceId,
+			context
+		);
+
+		const authorizationResponse = AuthorizationResponseMapper.mapToAuthorizedResponse(userId, hasPermission);
+
+		return authorizationResponse;
+	}
+
+	public async authorizeByReferences(
+		userId: EntityId,
+		authorizableReferenceTypes: AuthorizableReferenceType[],
+		authorizableReferenceIds: EntityId[],
+		context: AuthorizationContext
+	): Promise<AuthorizedResponse> {
+		const hasPermission = await this.authorizationReferenceService.hasPermissionByReferences(
+			userId,
+			authorizableReferenceTypes,
+			authorizableReferenceIds,
 			context
 		);
 

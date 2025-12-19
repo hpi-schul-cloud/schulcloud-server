@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
 import {
+	AuthorizableReferenceType,
 	AuthorizationContext,
 	AuthorizationService,
 	ForbiddenLoggableException,
-	AuthorizableReferenceType,
 } from '@modules/authorization';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { ReferenceLoader } from './reference.loader';
 
 /**
@@ -21,12 +21,12 @@ export class AuthorizationReferenceService {
 		entityId: EntityId,
 		context: AuthorizationContext
 	): Promise<void> {
-		if (!(await this.hasPermissionByReferences(userId, entityName, entityId, context))) {
+		if (!(await this.hasPermissionByReference(userId, entityName, entityId, context))) {
 			throw new ForbiddenLoggableException(userId, entityName, context);
 		}
 	}
 
-	public async hasPermissionByReferences(
+	public async hasPermissionByReference(
 		userId: EntityId,
 		entityName: AuthorizableReferenceType,
 		entityId: EntityId,
@@ -40,5 +40,18 @@ export class AuthorizationReferenceService {
 		const hasPermission = this.authorizationService.hasPermission(user, object, context);
 
 		return hasPermission;
+	}
+
+	public async hasPermissionByReferences(
+		userId: EntityId,
+		entityName: AuthorizableReferenceType[],
+		entityId: EntityId[],
+		context: AuthorizationContext
+	): Promise<boolean> {
+		const results = await Promise.all(
+			entityName.map((name, idx) => this.hasPermissionByReference(userId, name, entityId[idx], context))
+		);
+
+		return results.every(Boolean);
 	}
 }
