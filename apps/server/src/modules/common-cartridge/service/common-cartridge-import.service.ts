@@ -213,9 +213,11 @@ export class CommonCartridgeImportService {
 
 		if (!resourceBody) return;
 
-		const contentElement = await this.cardClient.createCardElement(cardId, {
-			type: contentElementType,
-		});
+		const contentElement = await retry(() =>
+			this.cardClient.createCardElement(cardId, {
+				type: contentElementType,
+			})
+		);
 
 		if (resource.type === 'file' || resource.type === 'fileFolder') {
 			await this.uploadFiles(currentUser, resource, contentElement);
