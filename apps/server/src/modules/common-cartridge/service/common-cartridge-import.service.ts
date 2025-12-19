@@ -164,7 +164,7 @@ export class CommonCartridgeImportService {
 		cardProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const card = await this.columnClient.createCard(columnResponse.id, {});
+		const card = await retry(() => this.columnClient.createCard(columnResponse.id, {}));
 
 		await this.createCardElement(parser, card.id, cardProps, currentUser);
 	}
@@ -175,7 +175,7 @@ export class CommonCartridgeImportService {
 		cardProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const card = await this.columnClient.createCard(column.id, {});
+		const card = await retry(() => this.columnClient.createCard(column.id, {}));
 		await this.cardClient.updateCardTitle(card.id, {
 			title: cardProps.title,
 		});
