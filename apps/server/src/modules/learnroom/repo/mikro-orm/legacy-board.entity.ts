@@ -1,13 +1,11 @@
-import { Collection, Entity, Ref, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, OneToOne, Ref, wrap } from '@mikro-orm/core';
+import type { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
 import { CourseEntity } from '@modules/course/repo';
-import { LessonEntity } from '@modules/lesson/repo';
-import { Task } from '@modules/task/repo';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { LearnroomElement } from '../../types';
+import { isColumnBoard, isLesson, isTask, LearnroomElement } from '../../types';
 import { ColumnBoardBoardElement } from './column-board-board-element.entity';
-import { ColumnBoardNode } from './column-board-node.entity';
 import { LegacyBoardElement, LegacyBoardElementReference } from './legacy-board-element.entity';
 import { LessonBoardElement } from './lesson-board-element.entity';
 import { TaskBoardElement } from './task-board-element.entity';
@@ -33,7 +31,8 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 
 	public getByTargetId(id: EntityId): LearnroomElement {
 		const element = this.getElementByTargetId(id);
-		return element.target;
+
+		return element.target as LearnroomElement;
 	}
 
 	public getElements(): LegacyBoardElement[] {
@@ -94,14 +93,14 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 	}
 
 	private createBoardElementFor(boardElementTarget: LegacyBoardElementReference): LegacyBoardElement {
-		if (boardElementTarget instanceof Task) {
+		if (isTask(boardElementTarget)) {
 			return new TaskBoardElement({ target: boardElementTarget });
 		}
-		if (boardElementTarget instanceof LessonEntity) {
+		if (isLesson(boardElementTarget)) {
 			return new LessonBoardElement({ target: boardElementTarget });
 		}
-		if (boardElementTarget instanceof ColumnBoardNode) {
-			return new ColumnBoardBoardElement({ target: boardElementTarget });
+		if (isColumnBoard(boardElementTarget)) {
+			return new ColumnBoardBoardElement({ target: boardElementTarget as BoardNodeEntity });
 		}
 		throw new Error('not a valid boardElementReference');
 	}

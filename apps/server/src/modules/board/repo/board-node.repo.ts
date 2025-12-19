@@ -11,7 +11,7 @@ import { TreeBuilder } from './tree-builder';
 export class BoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findById(id: EntityId, depth?: number): Promise<AnyBoardNode> {
+	public async findById(id: EntityId, depth?: number): Promise<AnyBoardNode> {
 		const props = await this.em.findOneOrFail(BoardNodeEntity, { id });
 		const descendants = await this.findDescendants(props, depth);
 
@@ -21,7 +21,7 @@ export class BoardNodeRepo {
 		return boardNode;
 	}
 
-	async findByIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
+	public async findByIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
 		const entities = await this.em.find(BoardNodeEntity, { id: { $in: ids } });
 
 		// TODO refactor descendants mapping, more DRY?
@@ -38,7 +38,7 @@ export class BoardNodeRepo {
 		return boardNodes;
 	}
 
-	async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise<AnyBoardNode[]> {
+	public async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise<AnyBoardNode[]> {
 		const entities = await this.em.find(BoardNodeEntity, {
 			context: {
 				_contextId: new ObjectId(reference.id),
@@ -60,7 +60,10 @@ export class BoardNodeRepo {
 		return boardNodes;
 	}
 
-	async findByContextExternalToolIds(contextExternalToolIds: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
+	public async findByContextExternalToolIds(
+		contextExternalToolIds: EntityId[],
+		depth?: number
+	): Promise<AnyBoardNode[]> {
 		const entities = await this.em.find(BoardNodeEntity, {
 			contextExternalToolId: { $in: contextExternalToolIds },
 		});
@@ -79,11 +82,11 @@ export class BoardNodeRepo {
 		return boardNodes;
 	}
 
-	async save(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
-		return this.persist(boardNode).flush();
+	public async save(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
+		await this.persist(boardNode).flush();
 	}
 
-	async delete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
+	public async delete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
 		await this.remove(boardNode).flush();
 	}
 
@@ -169,7 +172,7 @@ export class BoardNodeRepo {
 	}
 
 	private async flush(): Promise<void> {
-		return this.em.flush();
+		await this.em.flush();
 	}
 
 	private getProps(boardNode: AnyBoardNode): BoardNodeEntity {

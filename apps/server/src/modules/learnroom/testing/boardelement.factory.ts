@@ -1,9 +1,10 @@
+import { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
 import { LessonEntity } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { ColumnBoardBoardElement, ColumnBoardNode, LessonBoardElement, TaskBoardElement } from '../repo';
+import { ColumnBoardBoardElement, LessonBoardElement, TaskBoardElement } from '../repo';
 import { columnBoardNodeFactory } from './column-board-node.factory';
 
 export const taskBoardElementFactory = BaseFactory.define<TaskBoardElement, { target: Task }>(TaskBoardElement, () => {
@@ -19,7 +20,7 @@ export const lessonBoardElementFactory = BaseFactory.define<LessonBoardElement, 
 	}
 );
 
-export const columnboardBoardElementFactory = BaseFactory.define<ColumnBoardBoardElement, { target: ColumnBoardNode }>(
+export const columnboardBoardElementFactory = BaseFactory.define<ColumnBoardBoardElement, { target: BoardNodeEntity }>(
 	ColumnBoardBoardElement,
 	() => {
 		const target = columnBoardNodeFactory.build();
