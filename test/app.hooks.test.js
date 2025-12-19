@@ -179,42 +179,6 @@ describe('Sanitization Hook', () => {
 		expect(result.content).to.equal('a');
 	});
 
-	it('sanitize in helpdesk, example 1', () => {
-		const data = {
-			subject: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
-			type: 'problem',
-			currentState:
-				'<p>SanitizationTest<script>alert("test);</script>' +
-				'<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
-			targetState:
-				'<p>SanitizationTest<script>alert("test);</script>' +
-				'<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
-			category: 'dashboard',
-			schoolId: '5f2987e020834114b8efd6f8',
-		};
-
-		const path = 'helpdesk';
-		const result = sanitizeDeep(data, path);
-
-		expect(result.subject).to.equal('SanitizationTest äöüß§$%/()=');
-		expect(result.type).to.equal('problem');
-		expect(result.currentState).to.equal('SanitizationTestSanitizationTestäöüß§$%/()=');
-		expect(result.targetState).to.equal('SanitizationTestSanitizationTestäöüß§$%/()=');
-		expect(result.category).to.equal('dashboard');
-		expect(result.schoolId).to.equal('5f2987e020834114b8efd6f8');
-	});
-
-	it('sanitize in helpdesk, example 2', () => {
-		const data = {
-			subject: '<script>alert("test");</script><b></b><i></i><img src="bla" />',
-		};
-
-		const path = 'helpdesk';
-		const result = sanitizeDeep(data, path);
-
-		expect(result.subject).to.equal(''); // filter all
-	});
-
 	it('sanitize in submissions, avoid img onerror attribute', () => {
 		const data = {
 			comment: '<img onerror="window.location = \'google.com\'" src="x" />',

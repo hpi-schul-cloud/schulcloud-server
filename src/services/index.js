@@ -22,7 +22,6 @@ const teamEvents = require('./teams/events');
 const homework = require('./homework');
 const passwordRecovery = require('./passwordRecovery');
 const releases = require('./releases');
-const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
 const statisticMails = require('./statisticMail');
 const wopi = require('./wopi');
@@ -72,7 +71,6 @@ module.exports = function initializeServices() {
 	app.configure(federalState);
 	app.configure(passwordRecovery);
 	app.configure(releases);
-	app.configure(helpdesk);
 	app.configure(statistic);
 	app.configure(statisticMails);
 	app.configure(wopi);
