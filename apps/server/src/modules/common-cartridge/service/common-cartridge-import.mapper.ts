@@ -6,7 +6,6 @@ import {
 	RichTextElementContentBody,
 } from '@infra/cards-client';
 import { InputFormat } from '@shared/domain/types';
-import { load } from 'cheerio';
 import { CommonCartridgeImportResourceProps, CommonCartridgeImportWebContentResourceProps } from '..';
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 import {
@@ -77,15 +76,11 @@ export class CommonCartridgeImportMapper {
 		resource: CommonCartridgeImportWebContentResourceProps,
 		inputFormat: InputFormat
 	): RichTextElementContentBody {
-		const content = load(resource.html, {}, false);
-		content('h1, h2, h3').replaceWith((_, e) => `<h4>${content(e).html() ?? content(e).text()}</h4>`);
-		content('h6').replaceWith((_, e) => `<h5>${content(e).html() ?? content(e).text()}</h5>`);
-
 		const richTextBody: RichTextElementContentBody = {
 			type: 'richText',
 			content: {
 				inputFormat,
-				text: content.html(),
+				text: resource.html,
 			},
 		};
 

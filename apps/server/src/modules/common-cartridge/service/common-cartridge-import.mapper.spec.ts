@@ -104,13 +104,13 @@ describe('CommonCartridgeImportMapper', () => {
 			const setup = () => {
 				const resource: CommonCartridgeWebContentResourceProps = {
 					type: CommonCartridgeXmlResourceType.WEB_CONTENT,
-					html: '<p>Test</p><h1>H1</h1><h2>H2</h2><h3>H3</h3><h4>H4</h4><h5>H5</h5><h6>H6</h6>',
+					html: '<p>Test</p>',
 				};
 
 				return { resource };
 			};
 
-			it('should return rich text body with headers replaced', () => {
+			it('should return rich text body', () => {
 				const { resource } = setup();
 
 				const result = sut.mapResourceToContentBody(resource, InputFormat.RICH_TEXT_CK4);
@@ -119,7 +119,7 @@ describe('CommonCartridgeImportMapper', () => {
 					type: 'richText',
 					content: {
 						inputFormat: 'richTextCk4',
-						text: '<p>Test</p><h4>H1</h4><h4>H2</h4><h4>H3</h4><h4>H4</h4><h5>H5</h5><h5>H6</h5>',
+						text: '<p>Test</p>',
 					},
 				});
 			});
