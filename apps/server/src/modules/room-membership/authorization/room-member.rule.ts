@@ -52,7 +52,7 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 			action: Action.write,
 			requiredPermissions: [permission],
 		});
-		const isCurrentUser = object.member.userId == user.id;
+		const isCurrentUser = object.member.userId === user.id;
 
 		return hasPermission && !isCurrentUser;
 	}

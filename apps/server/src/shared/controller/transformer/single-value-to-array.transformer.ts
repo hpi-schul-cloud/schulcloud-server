@@ -9,7 +9,7 @@ export function SingleValueToArrayTransformer<T>(): PropertyDecorator {
 	return Transform((params: TransformFnParams) => {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const value = params.obj[params.key] as unknown;
-		if (value == null) return value;
+		if (value === null || value === undefined) return value;
 		if (Array.isArray(value)) {
 			return value as Array<T>;
 		}

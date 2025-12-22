@@ -42,6 +42,7 @@ module.exports = {
 				argsIgnorePattern: 'app|req|res|next|options|params|^_',
 			},
 		],
+		'eqeqeq': ['error', 'smart'],
 		'arrow-parens': ['error', 'always'],
 		'arrow-body-style': ['error', 'as-needed', { requireReturnForObjectLiteral: true }],
 		'no-only-tests/no-only-tests': 'error',
