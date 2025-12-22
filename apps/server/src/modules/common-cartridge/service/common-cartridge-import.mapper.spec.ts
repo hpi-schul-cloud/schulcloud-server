@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
@@ -106,13 +104,13 @@ describe('CommonCartridgeImportMapper', () => {
 			const setup = () => {
 				const resource: CommonCartridgeWebContentResourceProps = {
 					type: CommonCartridgeXmlResourceType.WEB_CONTENT,
-					html: '<p>Test</p>',
+					html: '<p>Test</p><h1>H1</h1><h2>H2</h2><h3>H3</h3><h4>H4</h4><h5>H5</h5><h6>H6</h6>',
 				};
 
 				return { resource };
 			};
 
-			it('should return rich text body', () => {
+			it('should return rich text body with headers replaced', () => {
 				const { resource } = setup();
 
 				const result = sut.mapResourceToContentBody(resource, InputFormat.RICH_TEXT_CK4);
@@ -121,7 +119,7 @@ describe('CommonCartridgeImportMapper', () => {
 					type: 'richText',
 					content: {
 						inputFormat: 'richTextCk4',
-						text: '<p>Test</p>',
+						text: '<p>Test</p><h4>H1</h4><h4>H2</h4><h4>H3</h4><h4>H4</h4><h5>H5</h5><h5>H6</h5>',
 					},
 				});
 			});

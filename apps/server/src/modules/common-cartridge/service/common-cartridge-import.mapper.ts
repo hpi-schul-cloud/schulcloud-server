@@ -77,7 +77,7 @@ export class CommonCartridgeImportMapper {
 		resource: CommonCartridgeImportWebContentResourceProps,
 		inputFormat: InputFormat
 	): RichTextElementContentBody {
-		const content = load(resource.html);
+		const content = load(resource.html, {}, false);
 		content('h1, h2, h3').replaceWith((_, e) => `<h4>${content(e).html() ?? ''}</h4>`);
 		content('h6').replaceWith((_, e) => `<h5>${content(e).html() ?? ''}</h5>`);
 
