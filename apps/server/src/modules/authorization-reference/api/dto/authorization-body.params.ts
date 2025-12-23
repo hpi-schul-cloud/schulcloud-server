@@ -49,6 +49,17 @@ export class AuthorizationBodyParams {
 	public referenceId!: EntityId;
 }
 
+export class AuthorizationManyReferencesBodyParams {
+	@ApiProperty({
+		type: [AuthorizationBodyParams],
+		description: 'List of references to authorize against.',
+	})
+	@IsArray()
+	@ValidateNested({ each: true })
+	@Type(() => AuthorizationBodyParams)
+	public references!: AuthorizationBodyParams[];
+}
+
 export class CreateAccessTokenParams extends AuthorizationBodyParams {
 	@ApiProperty({ description: 'Lifetime of token' })
 	@IsNumber()
