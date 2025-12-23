@@ -1,6 +1,6 @@
 import { AmqpConnectionManager, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Global, Module, OnModuleDestroy } from '@nestjs/common';
+import { Global, Module, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import {
 	FilesStorageExchange,
 	H5pEditorExchange,
@@ -9,6 +9,9 @@ import {
 	RabbitMqURI,
 	SchulconnexProvisioningExchange,
 } from './rabbitmq.config';
+import { SchemaRegistryService } from './schema-registry.service';
+import { SchemaValidatedProducerService } from './schema-validated-producer.service';
+import { registerAllSchemas } from './schemas/schema-definitions';
 
 /**
  * https://www.npmjs.com/package/@golevelup/nestjs-rabbitmq#usage
@@ -50,17 +53,34 @@ const imports = [
 @Global()
 @Module({
 	imports,
-	exports: [RabbitMQModule],
+	providers: [SchemaRegistryService, SchemaValidatedProducerService],
+	exports: [RabbitMQModule, SchemaRegistryService, SchemaValidatedProducerService],
 })
-export class RabbitMQWrapperModule {}
+export class RabbitMQWrapperModule implements OnModuleInit {
+	constructor(private readonly schemaRegistry: SchemaRegistryService) {}
+
+	async onModuleInit(): Promise<void> {
+		// Register all predefined schemas when module initializes
+		registerAllSchemas(this.schemaRegistry);
+	}
+}
 
 @Global()
 @Module({
 	imports,
-	exports: [RabbitMQModule],
+	providers: [SchemaRegistryService, SchemaValidatedProducerService],
+	exports: [RabbitMQModule, SchemaRegistryService, SchemaValidatedProducerService],
 })
-export class RabbitMQWrapperTestModule implements OnModuleDestroy {
-	constructor(private readonly amqpConnectionManager: AmqpConnectionManager) {}
+export class RabbitMQWrapperTestModule implements OnModuleDestroy, OnModuleInit {
+	constructor(
+		private readonly amqpConnectionManager: AmqpConnectionManager,
+		private readonly schemaRegistry: SchemaRegistryService
+	) {}
+
+	async onModuleInit(): Promise<void> {
+		// Register all predefined schemas when module initializes
+		registerAllSchemas(this.schemaRegistry);
+	}
 
 	// In tests, we need to close connections when the module is destroyed.
 	public async onModuleDestroy(): Promise<void> {
