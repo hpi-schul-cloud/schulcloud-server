@@ -138,6 +138,10 @@ export class CommonCartridgeResourceFactory {
 	): CommonCartridgeWebContentResourceProps | undefined {
 		const content = this.archive.readAsText(resourcePath);
 		const document = load(content);
+
+		document('h1, h2, h3').replaceWith((_, e) => `<h4>${document(e).html() ?? document(e).text()}</h4>`);
+		document('h6').replaceWith((_, e) => `<h5>${document(e).html() ?? document(e).text()}</h5>`);
+
 		const unsanitizedHtml = document('body').html()?.trim() ?? content;
 		const sanitizedHtml = sanitizeRichText(unsanitizedHtml, inputFormat);
 

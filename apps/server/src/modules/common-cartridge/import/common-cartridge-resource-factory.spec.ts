@@ -31,7 +31,7 @@ describe('CommonCartridgeResourceFactory', () => {
 					<title>Title</title>
 				</head>
 				<body>
-					<p>Content</p>
+					<p>Test</p><h1>H1</h1><h2>H2</h2><h3>H3</h3><h4>H4</h4><h5>H5</h5><h6>H6</h6>
 				</body>
 			</html>`;
 
@@ -164,14 +164,14 @@ describe('CommonCartridgeResourceFactory', () => {
 				return { organizationProps };
 			};
 
-			it('should create a web content resource', () => {
+			it('should create a web content resource with headers adjusted to supported ones', () => {
 				const { organizationProps } = setup();
 
 				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
 
 				expect(result).toStrictEqual({
 					type: CommonCartridgeXmlResourceType.WEB_CONTENT,
-					html: '<p>Content</p>',
+					html: '<p>Test</p><h4>H1</h4><h4>H2</h4><h4>H3</h4><h4>H4</h4><h5>H5</h5><h5>H6</h5>',
 				});
 			});
 		});
