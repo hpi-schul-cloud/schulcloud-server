@@ -11,6 +11,7 @@ export class RegistrationMapper {
 			lastName: registration.lastName,
 			createdAt: registration.createdAt,
 			updatedAt: registration.updatedAt,
+			resentAt: registration.resentAt,
 		});
 
 		return response;
