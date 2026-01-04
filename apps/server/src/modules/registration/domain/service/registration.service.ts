@@ -100,6 +100,15 @@ export class RegistrationService {
 		await this.mailService.send(registrationMail);
 	}
 
+	public async resendRegistrationMail(registrationId: string): Promise<void> {
+		const registration = await this.getSingleRegistrationById(registrationId);
+
+		registration.resentAt = new Date();
+		await this.saveRegistration(registration);
+
+		await this.sendRegistrationMail(registration);
+	}
+
 	private createRegistrationUUID(): string {
 		const registrationUUID = new UUID().toString();
 
@@ -134,6 +143,7 @@ export class RegistrationService {
 			roomIds: [props.roomId],
 			createdAt: new Date(),
 			updatedAt: new Date(),
+			resentAt: undefined,
 		};
 		const registration = new Registration(registrationProps);
 

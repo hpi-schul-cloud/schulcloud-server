@@ -21,6 +21,7 @@ import { CompleteRegistrationBodyParams } from './dto/request/complete-registrat
 import { CreateOrUpdateRegistrationBodyParams } from './dto/request/create-registration.body.params';
 import { RegistrationByRoomIdUrlParams } from './dto/request/registration-by-room-id.url.params';
 import { RegistrationBySecretUrlParams } from './dto/request/registration-by-secret.url.params';
+import { ResendRegistrationUrlParams } from './dto/request/resend-registration.url.params';
 import { RegistrationItemResponse } from './dto/response/registration-item.response';
 import { RegistrationListResponse } from './dto/response/registration-list.response';
 import { RegistrationMapper } from './mapper/registration.mapper';
@@ -127,6 +128,23 @@ export class RegistrationController {
 		);
 
 		return restult;
+	}
+
+	@Patch('/:registrationId/resend-mail/:roomId')
+	@JwtAuthentication()
+	@ApiOperation({ summary: 'Resend registration mail for a specific registration and roomId' })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Registration Mail resent successfully.',
+	})
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async resendRegistrationMail(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: ResendRegistrationUrlParams
+	): Promise<void> {
+		await this.registrationUc.resendRegistrationMail(currentUser.userId, urlParams.registrationId, urlParams.roomId);
 	}
 
 	@Get('/by-room/:roomId')

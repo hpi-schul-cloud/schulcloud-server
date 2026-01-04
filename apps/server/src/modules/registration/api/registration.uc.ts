@@ -91,4 +91,18 @@ export class RegistrationUc {
 
 		return updatedRegistration;
 	}
+
+	public async resendRegistrationMail(userId: EntityId, registrationId: EntityId, roomId: EntityId): Promise<void> {
+		this.registrationFeatureService.checkFeatureRegistrationEnabled();
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		this.authorizationService.checkPermission(
+			user,
+			roomMembershipAuthorizable,
+			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
+		);
+
+		await this.registrationService.resendRegistrationMail(registrationId);
+	}
 }

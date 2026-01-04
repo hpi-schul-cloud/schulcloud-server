@@ -124,6 +124,7 @@ describe('RegistrationService', () => {
 						firstName: props.firstName,
 						lastName: props.lastName,
 						roomIds: [props.roomId],
+						resentAt: undefined,
 					})
 				);
 			});
@@ -150,6 +151,18 @@ describe('RegistrationService', () => {
 			const registration = registrationFactory.build();
 
 			await service.saveRegistration(registration);
+
+			expect(registrationRepo.save).toHaveBeenCalledWith(registration);
+		});
+	});
+
+	describe('resendRegistrationMail', () => {
+		it('should call repo to save registration with new resendAt date', async () => {
+			const registration = registrationFactory.build();
+			const resentAtDate = new Date();
+
+			registration.resentAt = resentAtDate;
+			await service.resendRegistrationMail(registration.id);
 
 			expect(registrationRepo.save).toHaveBeenCalledWith(registration);
 		});
