@@ -116,10 +116,7 @@ describe('Room Controller (API)', () => {
 				const { registration, teacherAccount } = await setup();
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
-				const response = await loggedInClient.patch(`/${registration.id}/cancel/${registration.roomIds[0]}`, {
-					language: 'en',
-					password: 'password123',
-				});
+				const response = await loggedInClient.patch(`/${registration.id}/cancel/${registration.roomIds[0]}`);
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -132,11 +129,7 @@ describe('Room Controller (API)', () => {
 				const someNonExistingRegistrationId = new ObjectId().toHexString();
 				const someNonExistingRoomId = new ObjectId().toHexString();
 				const response = await loggedInClient.patch(
-					`/${someNonExistingRegistrationId}/cancel/${someNonExistingRoomId}`,
-					{
-						language: 'en',
-						password: 'password123',
-					}
+					`/${someNonExistingRegistrationId}/cancel/${someNonExistingRoomId}`
 				);
 
 				expect(response.status).toBe(HttpStatus.NOT_FOUND);
@@ -150,10 +143,7 @@ describe('Room Controller (API)', () => {
 
 					const loggedInClient = await testApiClient.login(otherTeacherAccount);
 
-					const response = await loggedInClient.patch(`/${registration.id}/cancel/${registration.roomIds[0]}`, {
-						language: 'en',
-						password: 'password123',
-					});
+					const response = await loggedInClient.patch(`/${registration.id}/cancel/${registration.roomIds[0]}`);
 					expect(response.status).toBe(HttpStatus.FORBIDDEN);
 				});
 			});
@@ -164,10 +154,7 @@ describe('Room Controller (API)', () => {
 						const { registration, teacherAccount } = await setup();
 						const loggedInClient = await testApiClient.login(teacherAccount);
 
-						const response = await loggedInClient.patch(`/${registration.id}/cancel/${registration.roomIds[0]}`, {
-							language: 'en',
-							password: 'password123',
-						});
+						const response = await loggedInClient.patch(`/${registration.id}/cancel/${registration.roomIds[0]}`);
 
 						expect(response.status).toBe(HttpStatus.OK);
 					});
@@ -176,10 +163,7 @@ describe('Room Controller (API)', () => {
 						const { registration, teacherAccount, room } = await setup();
 						const loggedInClient = await testApiClient.login(teacherAccount);
 
-						await loggedInClient.patch(`/${registration.id}/cancel/${room.id}`, {
-							language: 'en',
-							password: 'password123',
-						});
+						await loggedInClient.patch(`/${registration.id}/cancel/${room.id}`);
 
 						const canceledRegistration = await em.findOne(RegistrationEntity, { id: registration.id });
 						expect(canceledRegistration).toBeNull();
