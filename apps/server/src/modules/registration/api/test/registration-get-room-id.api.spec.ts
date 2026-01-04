@@ -1,17 +1,17 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { GroupEntityTypes } from '@modules/group/entity';
+import { groupEntityFactory } from '@modules/group/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { roomEntityFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { registrationEntityFactory } from '../../testing/registration-entity.factory';
-import { roomEntityFactory } from '@modules/room/testing';
-import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
-import { groupEntityFactory } from '@modules/group/testing';
-import { GroupEntityTypes } from '@modules/group/entity';
-import { schoolEntityFactory } from '@modules/school/testing';
-import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { RegistrationListResponse } from '../dto/response/registration-list.response';
 
 describe('Room Controller (API)', () => {
@@ -84,6 +84,10 @@ describe('Room Controller (API)', () => {
 			const registrationThree = registrationEntityFactory.build({
 				roomIds: [roomTwo.id],
 			});
+			const registrationWithResentAt = registrationEntityFactory.build({
+				roomIds: [roomOne.id],
+				resentAt: new Date(),
+			});
 
 			await em.persistAndFlush([
 				roomOne,
@@ -91,6 +95,7 @@ describe('Room Controller (API)', () => {
 				registrationOne,
 				registrationTwo,
 				registrationThree,
+				registrationWithResentAt,
 				school,
 				studentAccount,
 				studentUser,
@@ -107,6 +112,7 @@ describe('Room Controller (API)', () => {
 				registrationOne,
 				registrationTwo,
 				registrationThree,
+				registrationWithResentAt,
 				roomOne,
 				roomTwo,
 				studentAccount,
@@ -144,11 +150,24 @@ describe('Room Controller (API)', () => {
 					const responseBody = response.body as RegistrationListResponse;
 
 					expect(response.status).toBe(HttpStatus.OK);
-					expect(responseBody.data).toHaveLength(2);
+					expect(responseBody.data).toHaveLength(3);
 					const registrationIds = responseBody.data.map((reg: { id: string }) => reg.id);
 					expect(registrationIds).toContain(registrationOne.id);
 					expect(registrationIds).toContain(registrationTwo.id);
 					expect(registrationIds).not.toContain(registrationThree.id);
+				});
+
+				it('should include the resentAt field in the response', async () => {
+					const { registrationWithResentAt, roomOne, teacherAccount } = await setup();
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					const response = await loggedInClient.get(`/by-room/${roomOne.id}`);
+					const responseBody = response.body as RegistrationListResponse;
+
+					expect(response.status).toBe(HttpStatus.OK);
+					const registration = responseBody.data.find((reg: { id: string }) => reg.id === registrationWithResentAt.id);
+					expect(registration).toBeDefined();
+					expect(registration?.resentAt).toBeDefined();
 				});
 			});
 
