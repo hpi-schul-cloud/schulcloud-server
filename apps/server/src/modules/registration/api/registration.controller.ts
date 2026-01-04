@@ -135,7 +135,7 @@ export class RegistrationController {
 	@ApiResponse({
 		status: HttpStatus.OK,
 		description: 'Returns all registrations for a specific roomId',
-		type: RegistrationItemResponse,
+		type: RegistrationListResponse,
 	})
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
