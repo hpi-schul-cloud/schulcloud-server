@@ -157,7 +157,7 @@ describe('RegistrationService', () => {
 	});
 
 	describe('resendRegistrationMail', () => {
-		it('should call repo to save registration with new resendAt date', async () => {
+		it('should call repo to save registration with new resentAt date', async () => {
 			const registration = registrationFactory.build();
 			const resentAtDate = new Date();
 
