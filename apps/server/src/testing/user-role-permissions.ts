@@ -1,6 +1,6 @@
 /*
 	This permission set is based on the current state of dBildungscloud.
-	Last Update: 2025-11-10
+	Last Update: 2026-01-05
 */
 import { Permission } from '@shared/domain/interface';
 

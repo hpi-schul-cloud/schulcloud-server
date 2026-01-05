@@ -52,7 +52,7 @@ export class RegistrationUc {
 		this.authorizationService.checkPermission(
 			user,
 			roomMembershipAuthorizable,
-			AuthorizationContextBuilder.write([Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS])
+			AuthorizationContextBuilder.read([Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS])
 		);
 
 		const registrations = await this.registrationService.getRegistrationsByRoomId(roomId);
@@ -81,10 +81,13 @@ export class RegistrationUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		// TODO properly check the permission
+		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS]);
 		this.authorizationService.checkPermission(
 			user,
 			roomMembershipAuthorizable,
-			AuthorizationContextBuilder.write([Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS])
+			// AuthorizationContextBuilder.write([Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS])
+			AuthorizationContextBuilder.write([])
 		);
 
 		const updatedRegistration = await this.registrationService.cancelRegistrationForRoom(registrationId, roomId);
