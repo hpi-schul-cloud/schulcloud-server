@@ -27,8 +27,10 @@ export class RegistrationUc {
 		this.authorizationService.checkPermission(
 			user,
 			roomMembershipAuthorizable,
-			AuthorizationContextBuilder.write([Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS])
+			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
 		);
+		// TODO properly check the permission
+		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS]);
 
 		const registration = await this.registrationService.createOrUpdateRegistration({ ...props });
 		await this.registrationService.sendRegistrationMail(registration);
@@ -52,8 +54,10 @@ export class RegistrationUc {
 		this.authorizationService.checkPermission(
 			user,
 			roomMembershipAuthorizable,
-			AuthorizationContextBuilder.read([Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS])
+			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
 		);
+		// TODO properly check the permission
+		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS]);
 
 		const registrations = await this.registrationService.getRegistrationsByRoomId(roomId);
 
@@ -81,14 +85,13 @@ export class RegistrationUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		// TODO properly check the permission
-		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS]);
 		this.authorizationService.checkPermission(
 			user,
 			roomMembershipAuthorizable,
-			// AuthorizationContextBuilder.write([Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS])
-			AuthorizationContextBuilder.write([])
+			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
 		);
+		// TODO properly check the permission
+		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS]);
 
 		const updatedRegistration = await this.registrationService.cancelRegistrationForRoom(registrationId, roomId);
 
