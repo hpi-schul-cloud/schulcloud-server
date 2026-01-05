@@ -158,13 +158,16 @@ describe('RegistrationService', () => {
 
 	describe('resendRegistrationMail', () => {
 		it('should call repo to save registration with new resentAt date', async () => {
-			const registration = registrationFactory.build();
-			const resentAtDate = new Date();
+			const now = new Date();
+			jest.useFakeTimers().setSystemTime(now);
 
-			registration.resentAt = resentAtDate;
+			const registration = registrationFactory.build();
+			registrationRepo.findById.mockResolvedValue(registration);
+			const expectedRegistration = registrationFactory.build({ ...registration.getProps(), resentAt: now });
+
 			await service.resendRegistrationMail(registration.id);
 
-			expect(registrationRepo.save).toHaveBeenCalledWith(registration);
+			expect(registrationRepo.save).toHaveBeenCalledWith(expectedRegistration);
 		});
 	});
 
