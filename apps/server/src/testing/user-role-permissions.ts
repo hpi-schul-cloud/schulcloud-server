@@ -110,6 +110,7 @@ export const teacherPermissions = [
 	Permission.TEACHER_LIST,
 	Permission.SCHOOL_LIST_DISCOVERABLE_TEACHERS,
 	Permission.SCHOOL_LIST_ROOM_MEMBERS,
+	Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS,
 ];
 
 export const adminPermissions = [
