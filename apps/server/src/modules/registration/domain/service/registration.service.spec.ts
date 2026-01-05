@@ -16,6 +16,7 @@ import { RegistrationRepo } from '../../repo';
 import { registrationFactory } from '../../testing/registration.factory';
 import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
 import { RegistrationService } from './registration.service';
+import { RoomService } from '@modules/room';
 
 describe('RegistrationService', () => {
 	let module: TestingModule;
@@ -57,6 +58,10 @@ describe('RegistrationService', () => {
 				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
+				},
+				{
+					provide: RoomService,
+					useValue: createMock<RoomService>(),
 				},
 			],
 		}).compile();
