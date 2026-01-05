@@ -21,6 +21,7 @@ import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-ed
 import { CourseApiModule } from '@modules/course/course-api.module';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
+import { HelpdeskApiModule } from '@modules/helpdesk';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
 import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school.api-module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
@@ -64,6 +65,7 @@ import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 
 const serverModules = [
+	HelpdeskApiModule,
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	ConfigurationModule.register(VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig),
 	ConfigurationModule.register(BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig),

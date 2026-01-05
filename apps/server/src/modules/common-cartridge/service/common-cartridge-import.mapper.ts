@@ -1,9 +1,9 @@
 import {
 	ContentElementType,
 	FileElementContentBody,
+	FileFolderElementContentBody,
 	LinkElementContentBody,
 	RichTextElementContentBody,
-	FileFolderElementContentBody,
 } from '@infra/cards-client';
 import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeImportResourceProps, CommonCartridgeImportWebContentResourceProps } from '..';
