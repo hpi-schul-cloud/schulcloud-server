@@ -176,8 +176,9 @@ describe('Registration', () => {
 
 		it('should generate registration mail with correct structure', () => {
 			const { registration } = setup();
+			const roomName = 'Test Room';
 
-			const result = registration.generateRegistrationMail();
+			const result = registration.generateRegistrationMail(roomName);
 
 			expect(Configuration.get).toHaveBeenCalledWith('SMTP_SENDER');
 			expect(Configuration.get).toHaveBeenCalledWith('HOST');
