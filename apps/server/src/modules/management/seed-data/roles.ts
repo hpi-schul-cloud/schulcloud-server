@@ -225,6 +225,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.HOMEWORK_EDIT,
 			Permission.CONTEXT_TOOL_ADMIN,
 			Permission.SCHOOL_LIST_ROOM_MEMBERS,
+			Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS,
 		],
 	},
 	student: {
