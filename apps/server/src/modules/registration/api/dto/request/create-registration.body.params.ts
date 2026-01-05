@@ -1,8 +1,7 @@
 import { RegistrationCreateProps } from '../../../domain';
 import { ApiProperty } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller/transformer';
-import { LanguageType } from '@shared/domain/interface';
-import { IsEmail, IsEnum, IsMongoId, IsString } from 'class-validator';
+import { IsEmail, IsMongoId, IsString } from 'class-validator';
 
 export class CreateOrUpdateRegistrationBodyParams implements RegistrationCreateProps {
 	@IsEmail()
