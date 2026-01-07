@@ -15,7 +15,6 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
-import { Registration } from '../domain';
 import { CancelRegistrationBodyParams } from './dto/request/cancel-registration.body.params';
 import { CancelRegistrationUrlParams } from './dto/request/cancel-registration.url.params';
 import { CompleteRegistrationBodyParams } from './dto/request/complete-registration.body.params';
@@ -114,7 +113,7 @@ export class RegistrationController {
 	@Patch('/cancel/:roomId')
 	@JwtAuthentication()
 	@ApiOperation({ summary: 'Cancel registrations for a specific roomId' })
-	@ApiResponse({ status: HttpStatus.OK })
+	@ApiResponse({ status: HttpStatus.OK, type: RegistrationListResponse })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
@@ -122,14 +121,16 @@ export class RegistrationController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CancelRegistrationUrlParams,
 		@Body() bodyParams: CancelRegistrationBodyParams
-	): Promise<Registration[] | null> {
+	): Promise<RegistrationListResponse> {
 		const result = await this.registrationUc.cancelRegistrationsForRoom(
 			currentUser.userId,
 			bodyParams.registrationIds,
 			urlParams.roomId
 		);
 
-		return result;
+		const response = RegistrationMapper.mapToRegistrationListResponse(result ?? []);
+
+		return response;
 	}
 
 	@Patch('/:registrationId/resend-mail/:roomId')

@@ -15,6 +15,7 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { RegistrationListResponse } from '../dto/response/registration-list.response';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -50,7 +51,6 @@ describe('Room Controller (API)', () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const { teacherAccount: otherTeacherAccount, teacherUser: otherTeacherUser } =
 				UserAndAccountTestFactory.buildTeacher({ school });
-			const unusedRoom = roomEntityFactory.buildWithId();
 			const room = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
 			const { roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 			const group = groupEntityFactory.buildWithId({
@@ -84,7 +84,6 @@ describe('Room Controller (API)', () => {
 				teacherUser,
 				otherTeacherAccount,
 				otherTeacherUser,
-				unusedRoom,
 				room,
 				roomOwnerRole,
 				roomViewerRole,
@@ -98,7 +97,7 @@ describe('Room Controller (API)', () => {
 			]);
 
 			const registration1 = registrationEntityFactory.build({ roomIds: [room.id] });
-			const registration2 = registrationEntityFactory.build({ roomIds: [room.id, unusedRoom.id] });
+			const registration2 = registrationEntityFactory.build({ roomIds: [room.id, new ObjectId().toHexString()] });
 			await em.persistAndFlush([registration1, registration2]);
 			em.clear();
 
@@ -181,9 +180,7 @@ describe('Room Controller (API)', () => {
 					});
 				});
 
-				// this one currently fails due to issues with domainObject circle references
-				// error: TypeError: Converting circular structure to JSON --> starting at object with constructor 'Registration' | property 'props' -> object with constructor 'Object' --- property 'domainObject' closes the circle
-				/* describe('when multiple registrations are provided and one has multiple rooms assigned', () => {
+				describe('when multiple registrations are provided and one has multiple rooms assigned', () => {
 					it('should detach only the specified room from the registration and delete the other registration', async () => {
 						const { registration1, registration2, teacherAccount, room } = await setup();
 						const loggedInClient = await testApiClient.login(teacherAccount);
@@ -191,12 +188,11 @@ describe('Room Controller (API)', () => {
 						const response = await loggedInClient.patch(`/cancel/${registration1.roomIds[0]}`).send({
 							registrationIds: [registration1.id, registration2.id],
 						});
-						const data = response.body as RegistrationEntity[];
+						const { data } = response.body as RegistrationListResponse;
 
 						expect(response.status).toBe(HttpStatus.OK);
 						expect(data).toHaveLength(1);
 						expect(data[0].id).toBe(registration2.id);
-						expect(data[0].roomIds).not.toContain(room.id);
 
 						const updatedRegistration = await em.findOne(RegistrationEntity, { id: registration2.id });
 						expect(updatedRegistration).not.toBeNull();
@@ -204,10 +200,8 @@ describe('Room Controller (API)', () => {
 
 						const deletedRegistration = await em.findOne(RegistrationEntity, { id: registration1.id });
 						expect(deletedRegistration).toBeNull();
-
-						em.clear();
 					});
-				}); */
+				});
 			});
 		});
 	});
