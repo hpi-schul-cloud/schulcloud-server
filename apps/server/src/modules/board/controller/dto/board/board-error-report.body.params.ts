@@ -1,5 +1,5 @@
-import { IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsNumber, IsString } from 'class-validator';
 
 export class BoardErrorReportBodyParams {
 	@ApiProperty({
@@ -36,4 +36,33 @@ export class BoardErrorReportBodyParams {
 	})
 	@IsNumber()
 	public retryCount!: number;
+
+	@ApiProperty({
+		type: [String],
+		description: 'List of logged steps',
+	})
+	@IsArray()
+	@IsString({ each: true })
+	public logSteps!: string[];
+
+	@ApiProperty({
+		type: String,
+		description: 'Operating System of the user',
+	})
+	@IsString()
+	public os!: string;
+
+	@ApiProperty({
+		type: String,
+		description: 'Browser of the user',
+	})
+	@IsString()
+	public browser!: string;
+
+	@ApiProperty({
+		type: String,
+		description: 'Device type of the user',
+	})
+	@IsString()
+	public deviceType!: string;
 }
