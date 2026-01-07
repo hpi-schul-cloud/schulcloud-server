@@ -72,11 +72,11 @@ export class RegistrationUc {
 		await this.registrationService.completeRegistration(registration, language, password);
 	}
 
-	public async cancelRegistrationForRoom(
+	public async cancelRegistrationsForRoom(
 		userId: EntityId,
-		registrationId: EntityId,
+		registrationIds: Array<EntityId>,
 		roomId: EntityId
-	): Promise<Registration | null> {
+	): Promise<Registration[] | null> {
 		this.registrationFeatureService.checkFeatureRegistrationEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -87,9 +87,9 @@ export class RegistrationUc {
 			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
 		);
 
-		const updatedRegistration = await this.registrationService.cancelRegistrationForRoom(registrationId, roomId);
+		const updatedRegistrations = await this.registrationService.cancelRegistrationsForRoom(registrationIds, roomId);
 
-		return updatedRegistration;
+		return updatedRegistrations;
 	}
 
 	public async resendRegistrationMail(userId: EntityId, registrationId: EntityId, roomId: EntityId): Promise<void> {

@@ -53,18 +53,17 @@ export class RegistrationService {
 		await this.registrationRepo.deleteByIds([registration.id]);
 	}
 
-	public async cancelRegistrationForRoom(registrationId: string, roomId: string): Promise<Registration | null> {
-		const registration = await this.getSingleRegistrationById(registrationId);
+	public async cancelRegistrationsForRoom(registrationIds: string[], roomId: string): Promise<Registration[] | null> {
+		const updatedRegistrations: Registration[] = [];
 
-		registration.removeRoomId(roomId);
-
-		if (registration.hasNoRoomIds()) {
-			await this.registrationRepo.deleteByIds([registration.id]);
-			return null;
+		for (const registrationId of registrationIds) {
+			const updatedRegistration = await this.cancelSingleRegistrationForRoom(registrationId, roomId);
+			if (updatedRegistration) {
+				updatedRegistrations.push(updatedRegistration);
+			}
 		}
 
-		await this.saveRegistration(registration);
-		return registration;
+		return updatedRegistrations.length > 0 ? updatedRegistrations : null;
 	}
 
 	public async saveRegistration(registration: Registration): Promise<void> {
@@ -218,5 +217,19 @@ export class RegistrationService {
 	private async addUserToRooms(roomIds: string[], userId: string): Promise<void> {
 		const promises = roomIds.map((roomId) => this.roomMembershipService.addMembersToRoom(roomId, [userId]));
 		await Promise.all(promises);
+	}
+
+	private async cancelSingleRegistrationForRoom(registrationId: string, roomId: string): Promise<Registration | null> {
+		const registration = await this.getSingleRegistrationById(registrationId);
+
+		registration.removeRoomId(roomId);
+
+		if (registration.hasNoRoomIds()) {
+			await this.registrationRepo.deleteByIds([registration.id]);
+			return null;
+		}
+
+		await this.saveRegistration(registration);
+		return registration;
 	}
 }

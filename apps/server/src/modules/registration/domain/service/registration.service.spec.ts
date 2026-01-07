@@ -361,20 +361,17 @@ describe('RegistrationService', () => {
 		});
 	});
 
-	describe('cancelRegistrationForRoom', () => {
+	describe('cancelRegistrationsForRoom', () => {
 		describe('when registration exists', () => {
 			it('should remove roomId from registration', async () => {
 				const roomIdToRemove = new ObjectId().toHexString();
 				const registration = registrationFactory.build({ roomIds: [roomIdToRemove, new ObjectId().toHexString()] });
 				registrationRepo.findById.mockResolvedValue(registration);
 
-				const updatedRegistration = await service.cancelRegistrationForRoom(
-					registration.registrationSecret,
-					roomIdToRemove
-				);
+				const updatedRegistrations = await service.cancelRegistrationsForRoom([registration.id], roomIdToRemove);
 
-				expect(updatedRegistration?.roomIds).not.toContain(roomIdToRemove);
-				expect(registrationRepo.save).toHaveBeenCalledWith(updatedRegistration);
+				expect(updatedRegistrations?.[0].roomIds).not.toContain(roomIdToRemove);
+				expect(registrationRepo.save).toHaveBeenCalledWith(updatedRegistrations?.[0]);
 			});
 		});
 
@@ -383,7 +380,7 @@ describe('RegistrationService', () => {
 				registrationRepo.findById.mockRejectedValueOnce(new NotFoundException());
 
 				await expect(
-					service.cancelRegistrationForRoom('nonExistingRegistrationId', new ObjectId().toHexString())
+					service.cancelRegistrationsForRoom(['nonExistingRegistrationId'], new ObjectId().toHexString())
 				).rejects.toThrow(NotFoundException);
 			});
 		});
@@ -394,10 +391,38 @@ describe('RegistrationService', () => {
 				const registration = registrationFactory.build({ roomIds: [roomIdToRemove] });
 				registrationRepo.findById.mockResolvedValue(registration);
 
-				const result = await service.cancelRegistrationForRoom(registration.registrationSecret, roomIdToRemove);
+				const result = await service.cancelRegistrationsForRoom([registration.id], roomIdToRemove);
 
 				expect(registrationRepo.deleteByIds).toHaveBeenCalledWith([registration.id]);
 				expect(result).toBeNull();
+			});
+		});
+
+		describe('when multiple registrationIds are provided', () => {
+			it('should process all registrationIds and return updated registrations', async () => {
+				const roomIdToRemove = new ObjectId().toHexString();
+
+				const registration1 = registrationFactory.build({
+					roomIds: [roomIdToRemove, new ObjectId().toHexString()],
+				});
+				const registration2 = registrationFactory.build({
+					roomIds: [roomIdToRemove],
+				});
+
+				registrationRepo.findById.mockResolvedValueOnce(registration1).mockResolvedValueOnce(registration2);
+
+				const updatedRegistrations = await service.cancelRegistrationsForRoom(
+					[registration1.id, registration2.id],
+					roomIdToRemove
+				);
+
+				expect(updatedRegistrations).toHaveLength(1);
+				expect(updatedRegistrations?.[0].id).toBe(registration1.id);
+				expect(updatedRegistrations?.[0].roomIds).not.toContain(roomIdToRemove);
+
+				expect(registrationRepo.save).toHaveBeenCalledTimes(1);
+				expect(registrationRepo.save).toHaveBeenCalledWith(updatedRegistrations?.[0]);
+				expect(registrationRepo.deleteByIds).toHaveBeenCalledWith([registration2.id]);
 			});
 		});
 	});
