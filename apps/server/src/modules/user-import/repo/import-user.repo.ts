@@ -13,11 +13,11 @@ import { ImportUserScope } from './import-user.scope';
 
 @Injectable()
 export class ImportUserRepo extends BaseRepo<ImportUser> {
-	get entityName() {
+	get entityName(): typeof ImportUser {
 		return ImportUser;
 	}
 
-	async findById(id: EntityId): Promise<ImportUser> {
+	public async findById(id: EntityId): Promise<ImportUser> {
 		if (!ObjectId.isValid(id)) throw new Error('invalid id');
 		const importUser = await this._em.findOneOrFail(ImportUser, { id });
 		if (importUser.user != null) {
@@ -29,14 +29,14 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 	/**
 	 * resolves with importusers matched with a local user account
 	 */
-	async hasMatch(user: User): Promise<ImportUser | null> {
+	public async hasMatch(user: User): Promise<ImportUser | null> {
 		const scope = new ImportUserScope();
 		scope.byUserMatch(user);
 		const importUser = await this._em.findOne(ImportUser, scope.query);
 		return importUser;
 	}
 
-	async findImportUsers(
+	public async findImportUsers(
 		school: SchoolEntity,
 		filters?: ImportUserFilter,
 		options?: IFindOptions<ImportUser>
@@ -74,11 +74,11 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 		return [importUserEntities, count];
 	}
 
-	async deleteImportUsersBySchool(school: SchoolEntity): Promise<void> {
+	public async deleteImportUsersBySchool(school: SchoolEntity): Promise<void> {
 		await this._em.nativeDelete(ImportUser, { school });
 	}
 
 	public async saveImportUsers(importUsers: ImportUser[]): Promise<void> {
-		await this._em.persistAndFlush(importUsers);
+		await this._em.persist(importUsers).flush();
 	}
 }

@@ -32,7 +32,7 @@ export class LegacyBoardRepo extends BaseRepo<LegacyBoard> {
 	private async createBoardForCourse(courseId: EntityId): Promise<LegacyBoard> {
 		const course = await this._em.findOneOrFail(CourseEntity, courseId);
 		const board = new LegacyBoard({ course, references: [] });
-		await this._em.persistAndFlush(board);
+		await this._em.persist(board).flush();
 		return board;
 	}
 

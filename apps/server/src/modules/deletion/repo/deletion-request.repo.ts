@@ -12,7 +12,7 @@ import { StatusModel } from '../domain/types';
 export class DeletionRequestRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	get entityName() {
+	get entityName(): typeof DeletionRequestEntity {
 		return DeletionRequestEntity;
 	}
 
@@ -76,7 +76,7 @@ export class DeletionRequestRepo {
 		const deletionRequestEntity = DeletionRequestMapper.mapToEntity(deletionRequest);
 		const referencedEntity = this.em.getReference(DeletionRequestEntity, deletionRequestEntity.id);
 
-		await this.em.persistAndFlush(referencedEntity);
+		await this.em.persist(referencedEntity).flush();
 	}
 
 	public async markDeletionRequestAsExecuted(deletionRequestId: EntityId): Promise<boolean> {
@@ -85,7 +85,7 @@ export class DeletionRequestRepo {
 		});
 
 		deletionRequest.executed();
-		await this.em.persistAndFlush(deletionRequest);
+		await this.em.persist(deletionRequest).flush();
 
 		return true;
 	}
@@ -96,7 +96,7 @@ export class DeletionRequestRepo {
 		});
 
 		deletionRequest.failed();
-		await this.em.persistAndFlush(deletionRequest);
+		await this.em.persist(deletionRequest).flush();
 
 		return true;
 	}
@@ -107,17 +107,17 @@ export class DeletionRequestRepo {
 		});
 
 		deletionRequest.pending();
-		await this.em.persistAndFlush(deletionRequest);
+		await this.em.persist(deletionRequest).flush();
 
 		return true;
 	}
 
-	async deleteById(deletionRequestId: EntityId): Promise<boolean> {
+	public async deleteById(deletionRequestId: EntityId): Promise<boolean> {
 		const entity: DeletionRequestEntity | null = await this.em.findOneOrFail(DeletionRequestEntity, {
 			id: deletionRequestId,
 		});
 
-		await this.em.removeAndFlush(entity);
+		await this.em.remove(entity).flush();
 
 		return true;
 	}

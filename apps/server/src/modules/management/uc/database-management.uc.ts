@@ -184,7 +184,7 @@ export class DatabaseManagementUc {
 				}
 				await this.dropCollectionIfExists(collectionName);
 
-				await this.em.persistAndFlush(data);
+				await this.em.persist(data).flush();
 
 				return `${collectionName}:${data.length}`;
 			});
