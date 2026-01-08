@@ -1,7 +1,7 @@
 import { LegacyLogger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { HttpStatus, StreamableFile } from '@nestjs/common';
+import { HttpStatus, StreamableFile, UnauthorizedException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
@@ -14,6 +14,7 @@ import { CommonCartridgeController } from './common-cartridge.controller';
 import { ExportCourseParams } from './dto';
 import { CourseExportBodyParams } from './dto/course-export.body.params';
 import { CourseQueryParams } from './dto/course.query.params';
+import { CommonCartridgeStartImportBodyParams } from './dto/common-cartridge-start-import-body.params';
 
 describe('CommonCartridgeController', () => {
 	let module: TestingModule;
@@ -96,19 +97,42 @@ describe('CommonCartridgeController', () => {
 		describe('when importing a course', () => {
 			const setup = () => {
 				const user = currentUserFactory.build();
-				const file: Express.Multer.File = new StreamableFile(
-					Buffer.from(faker.lorem.paragraphs(100)),
-					'file.zip'
-				) as unknown as Express.Multer.File;
+				const request = createMock<Request>();
+				const startImportParams: CommonCartridgeStartImportBodyParams = {
+					fileName: faker.system.fileName(),
+					fileRecordId: faker.string.uuid(),
+					fileUrl: faker.internet.url(),
+				};
 
-				return { user, file };
+				request.headers.cookie = `jwt=${faker.internet.jwt()}`;
+
+				return { user, request, startImportParams };
 			};
 			it('should call the uc with the correct parameters', async () => {
-				const { user, file } = setup();
+				const { user, request, startImportParams } = setup();
 
-				await sut.importCourse(user, file);
+				await sut.importCourse(user, request, startImportParams);
 
-				expect(commonCartridgeUcMock.importCourse).toHaveBeenCalledTimes(1);
+				expect(commonCartridgeUcMock.startCourseImport).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('when importing a course without jwt', () => {
+			const setup = () => {
+				const user = currentUserFactory.build();
+				const request = createMock<Request>();
+				const startImportParams: CommonCartridgeStartImportBodyParams = {
+					fileName: faker.system.fileName(),
+					fileRecordId: faker.string.uuid(),
+					fileUrl: faker.internet.url(),
+				};
+
+				return { user, request, startImportParams };
+			};
+			it('should throw UnauthorizedException', async () => {
+				const { user, request, startImportParams } = setup();
+
+				await expect(sut.importCourse(user, request, startImportParams)).rejects.toThrow(UnauthorizedException);
 			});
 		});
 	});
