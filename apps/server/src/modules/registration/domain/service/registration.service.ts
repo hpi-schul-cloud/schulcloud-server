@@ -240,10 +240,6 @@ export class RegistrationService {
 	private async resendSingleRegistrationMail(registrationId: string): Promise<Registration | null> {
 		const registration = await this.getSingleRegistrationById(registrationId);
 
-		if (!registration) {
-			return null;
-		}
-
 		const canBeResend = this.checkCanRegistrationMailBeResend(registration);
 		if (!canBeResend) {
 			return null;
