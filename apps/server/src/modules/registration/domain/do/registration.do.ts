@@ -91,7 +91,7 @@ export class Registration extends DomainObject<RegistrationProps> {
 			return;
 		}
 
-		this.props.roomIds.push(roomId);
+		this.props.roomIds = [...this.props.roomIds, roomId];
 	}
 
 	public removeRoomId(roomId: EntityId): void {

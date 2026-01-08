@@ -1,5 +1,5 @@
 import { MailService } from '@infra/mail';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { registrationEntityFactory } from '@modules/registration/testing';
@@ -58,6 +58,7 @@ describe('Registration Controller (API)', () => {
 		const setup = async () => {
 			const school = schoolEntityFactory.buildWithId();
 			const room = roomEntityFactory.buildWithId({ schoolId: school.id });
+			const room2 = roomEntityFactory.buildWithId({ schoolId: school.id });
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 			const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
@@ -75,6 +76,11 @@ describe('Registration Controller (API)', () => {
 				roomId: room.id,
 				schoolId: school.id,
 			});
+			const roomMembership2 = roomMembershipEntityFactory.build({
+				userGroupId: userGroupEntity.id,
+				roomId: room2.id,
+				schoolId: school.id,
+			});
 			await em.persistAndFlush([
 				school,
 				studentAccount,
@@ -82,8 +88,10 @@ describe('Registration Controller (API)', () => {
 				teacherAccount,
 				teacherUser,
 				room,
+				room2,
 				userGroupEntity,
 				roomMembership,
+				roomMembership2,
 			]);
 			em.clear();
 
@@ -94,7 +102,7 @@ describe('Registration Controller (API)', () => {
 				roomId: room.id,
 			};
 
-			return { studentAccount, teacherAccount, params };
+			return { studentAccount, teacherAccount, params, secondRoomId: room2.id };
 		};
 
 		describe('when the user is not authenticated', () => {
@@ -106,10 +114,10 @@ describe('Registration Controller (API)', () => {
 
 		describe('when the user has the required permissions', () => {
 			const setupForTeacher = async () => {
-				const { teacherAccount, params } = await setup();
+				const { teacherAccount, params, secondRoomId } = await setup();
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
-				return { loggedInClient, params };
+				return { loggedInClient, params, secondRoomId };
 			};
 			describe('when the feature is disabled', () => {
 				it('should return a 403 error', async () => {
@@ -184,6 +192,26 @@ describe('Registration Controller (API)', () => {
 						firstName: params.firstName,
 						lastName: params.lastName,
 					});
+				});
+
+				it('should add the room id to the list of room ids', async () => {
+					const { loggedInClient, params, secondRoomId } = await setupForTeacher();
+					const existingRegistration = registrationEntityFactory.build({
+						email: params.email,
+						firstName: params.firstName,
+						lastName: params.lastName,
+						roomIds: [params.roomId],
+					});
+
+					await em.persistAndFlush(existingRegistration);
+					em.clear();
+
+					const response = await loggedInClient.post(undefined, { ...params, roomId: secondRoomId });
+					expect(response.status).toBe(HttpStatus.CREATED);
+
+					const persistedRegistration = await em.findOne(RegistrationEntity, { id: existingRegistration.id });
+					expect(persistedRegistration?.roomIds).toContain(params.roomId);
+					expect(persistedRegistration?.roomIds).toContain(secondRoomId);
 				});
 			});
 		});
