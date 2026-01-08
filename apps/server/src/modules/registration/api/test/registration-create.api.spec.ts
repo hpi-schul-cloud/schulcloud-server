@@ -1,5 +1,5 @@
 import { MailService } from '@infra/mail';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { registrationEntityFactory } from '@modules/registration/testing';
