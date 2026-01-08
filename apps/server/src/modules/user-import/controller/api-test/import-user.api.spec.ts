@@ -103,7 +103,7 @@ describe('ImportUser Controller (API)', () => {
 		});
 
 		afterAll(async () => {
-			await em.removeAndFlush(importusers);
+			await em.remove(importusers).flush();
 		});
 
 		describe('Generic Errors', () => {

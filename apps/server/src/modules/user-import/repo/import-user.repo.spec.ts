@@ -75,9 +75,9 @@ describe('ImportUserRepo', () => {
 		it('should fail for not existing importuser', async () => {
 			const importUser = importUserFactory.build();
 
-			await em.persistAndFlush(importUser);
+			await em.persist(importUser).flush();
 			const { id } = importUser;
-			await em.removeAndFlush(importUser);
+			await em.remove(importUser).flush();
 
 			await expect(async () => repo.findById(id)).rejects.toThrowError(NotFoundError);
 		});
@@ -90,21 +90,21 @@ describe('ImportUserRepo', () => {
 		it('should return import-user if a match is assigned', async () => {
 			const { school, user } = await persistedReferences();
 			const importUser = importUserFactory.build({ user, matchedBy: MatchCreator.AUTO, school });
-			await em.persistAndFlush([importUser]);
+			await em.persist([importUser]).flush();
 			const result = await repo.hasMatch(user);
 			expect(result).toBe(importUser);
 		});
 		it('should return null if no match is assigned', async () => {
 			const { user } = await persistedReferences();
 			const importUser = importUserFactory.build();
-			await em.persistAndFlush([importUser]);
+			await em.persist([importUser]).flush();
 			const result = await repo.hasMatch(user);
 			expect(result).toBeNull();
 		});
 		it('should throw error for wrong id given', async () => {
 			await persistedReferences();
 			const importUser = importUserFactory.build();
-			await em.persistAndFlush([importUser]);
+			await em.persist([importUser]).flush();
 			await expect(async () => repo.hasMatch({} as unknown as User)).rejects.toThrowError('invalid user match id');
 		});
 	});
@@ -115,7 +115,7 @@ describe('ImportUserRepo', () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ school });
 				const otherSchoolsImportUser = importUserFactory.build();
-				await em.persistAndFlush([school, importUser, otherSchoolsImportUser]);
+				await em.persist([school, importUser, otherSchoolsImportUser]).flush();
 				const [results, count] = await repo.findImportUsers(school);
 				expect(results).toContain(importUser);
 				expect(count).toEqual(1);
@@ -124,7 +124,7 @@ describe('ImportUserRepo', () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ school });
 				const otherSchoolsImportUser = importUserFactory.build({ school: schoolEntityFactory.build() });
-				await em.persistAndFlush([school, importUser, otherSchoolsImportUser]);
+				await em.persist([school, importUser, otherSchoolsImportUser]).flush();
 				const [results] = await repo.findImportUsers(school);
 				expect(results).not.toContain(otherSchoolsImportUser);
 			});
@@ -132,7 +132,7 @@ describe('ImportUserRepo', () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ school });
 				const otherSchoolsImportUser = importUserFactory.build();
-				await em.persistAndFlush([school, importUser, otherSchoolsImportUser]);
+				await em.persist([school, importUser, otherSchoolsImportUser]).flush();
 				await expect(async () =>
 					repo.findImportUsers({ _id: 'invalid_id' } as unknown as SchoolEntity)
 				).rejects.toThrowError('invalid school id');
@@ -141,7 +141,7 @@ describe('ImportUserRepo', () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ school });
 				const otherSchoolsImportUser = importUserFactory.build();
-				await em.persistAndFlush([school, importUser, otherSchoolsImportUser]);
+				await em.persist([school, importUser, otherSchoolsImportUser]).flush();
 				await expect(async () => repo.findImportUsers({} as unknown as SchoolEntity)).rejects.toThrowError(
 					'invalid school id'
 				);
@@ -153,7 +153,7 @@ describe('ImportUserRepo', () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ firstName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ firstName: 'Peter', school });
-				await em.persistAndFlush([school, importUser, otherImportUser]);
+				await em.persist([school, importUser, otherImportUser]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, { firstName: 'Marie-Luise' });
 				expect(results).toContain(importUser);
 				expect(results).not.toContain(otherImportUser);
@@ -163,7 +163,7 @@ describe('ImportUserRepo', () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ firstName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ firstName: 'Marie', school });
-				await em.persistAndFlush([school, importUser, otherImportUser]);
+				await em.persist([school, importUser, otherImportUser]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, { firstName: 'marie-luise' });
 				expect(results).toContain(importUser);
 				expect(results).not.toContain(otherImportUser);
@@ -174,7 +174,7 @@ describe('ImportUserRepo', () => {
 				const importUser = importUserFactory.build({ firstName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ firstName: 'Marie', school });
 				const otherImportUser2 = importUserFactory.build({ firstName: 'Peter', school });
-				await em.persistAndFlush([school, importUser, otherImportUser, otherImportUser2]);
+				await em.persist([school, importUser, otherImportUser, otherImportUser2]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, { firstName: 'marie' });
 				expect(results).toContain(importUser);
 				expect(results).toContain(otherImportUser);
@@ -186,7 +186,7 @@ describe('ImportUserRepo', () => {
 				const importUser = importUserFactory.build({ firstName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ firstName: 'Luise', school });
 				const otherImportUser2 = importUserFactory.build({ firstName: 'Peter', school });
-				await em.persistAndFlush([school, importUser, otherImportUser, otherImportUser2]);
+				await em.persist([school, importUser, otherImportUser, otherImportUser2]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, { firstName: 'luise' });
 				expect(results).toContain(importUser);
 				expect(results).toContain(otherImportUser);
@@ -197,7 +197,7 @@ describe('ImportUserRepo', () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ firstName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ firstName: 'Peter', school });
-				await em.persistAndFlush([school, importUser, otherImportUser]);
+				await em.persist([school, importUser, otherImportUser]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, { firstName: undefined });
 				expect(results).toContain(importUser);
 				expect(results).toContain(otherImportUser);
@@ -207,7 +207,7 @@ describe('ImportUserRepo', () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ firstName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ firstName: 'Peter', school });
-				await em.persistAndFlush([school, importUser, otherImportUser]);
+				await em.persist([school, importUser, otherImportUser]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, { firstName: ' ' });
 				expect(results).toContain(importUser);
 				expect(results).toContain(otherImportUser);
@@ -217,7 +217,7 @@ describe('ImportUserRepo', () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ firstName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ firstName: 'Peter', school });
-				await em.persistAndFlush([school, importUser, otherImportUser]);
+				await em.persist([school, importUser, otherImportUser]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, { firstName: '<§$%&/()=?!:.#' });
 				expect(results).toContain(importUser);
 				expect(results).toContain(otherImportUser);

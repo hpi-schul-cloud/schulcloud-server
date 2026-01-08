@@ -46,7 +46,7 @@ describe('Runtime Config Repo', () => {
 		it('should return default value when not set', async () => {
 			const found = await em.find(RuntimeConfigEntity, { key: 'TEST_STRING' });
 			if (found.length > 0) {
-				await em.removeAndFlush(found);
+				await em.remove(found).flush();
 			}
 
 			const retrieved = await repo.getByKey('TEST_STRING');
