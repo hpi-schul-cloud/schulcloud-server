@@ -15,12 +15,12 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
-import { CancelRegistrationBodyParams } from './dto/request/cancel-registration.body.params';
 import { CancelRegistrationUrlParams } from './dto/request/cancel-registration.url.params';
 import { CompleteRegistrationBodyParams } from './dto/request/complete-registration.body.params';
 import { CreateOrUpdateRegistrationBodyParams } from './dto/request/create-registration.body.params';
 import { RegistrationByRoomIdUrlParams } from './dto/request/registration-by-room-id.url.params';
 import { RegistrationBySecretUrlParams } from './dto/request/registration-by-secret.url.params';
+import { RegistrationBodyParams } from './dto/request/registration.body.params';
 import { ResendRegistrationUrlParams } from './dto/request/resend-registration.url.params';
 import { RegistrationItemResponse } from './dto/response/registration-item.response';
 import { RegistrationListResponse } from './dto/response/registration-list.response';
@@ -120,7 +120,7 @@ export class RegistrationController {
 	public async cancelRegistrations(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CancelRegistrationUrlParams,
-		@Body() bodyParams: CancelRegistrationBodyParams
+		@Body() bodyParams: RegistrationBodyParams
 	): Promise<RegistrationListResponse> {
 		const result = await this.registrationUc.cancelRegistrationsForRoom(
 			currentUser.userId,
@@ -133,21 +133,31 @@ export class RegistrationController {
 		return response;
 	}
 
-	@Patch('/:registrationId/resend-mail/:roomId')
+	@Patch('/resend-mail/:roomId')
 	@JwtAuthentication()
-	@ApiOperation({ summary: 'Resend registration mail for a specific registration and roomId' })
+	@ApiOperation({ summary: 'Resend registration mail for specific registrations and roomId' })
 	@ApiResponse({
 		status: HttpStatus.OK,
-		description: 'Registration Mail resent successfully.',
+		description: 'Registration Mails resent successfully.',
+		type: RegistrationListResponse,
 	})
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	public async resendRegistrationMail(
+	public async resendRegistrationMails(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: ResendRegistrationUrlParams
-	): Promise<void> {
-		await this.registrationUc.resendRegistrationMail(currentUser.userId, urlParams.registrationId, urlParams.roomId);
+		@Param() urlParams: ResendRegistrationUrlParams,
+		@Body() bodyParams: RegistrationBodyParams
+	): Promise<RegistrationListResponse> {
+		const result = await this.registrationUc.resendRegistrationMails(
+			currentUser.userId,
+			bodyParams.registrationIds,
+			urlParams.roomId
+		);
+
+		const response = RegistrationMapper.mapToRegistrationListResponse(result ?? []);
+
+		return response;
 	}
 
 	@Get('/by-room/:roomId')

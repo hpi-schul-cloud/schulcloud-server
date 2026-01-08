@@ -106,12 +106,14 @@ describe('Room Controller (API)', () => {
 				externalPersonsSchool,
 			]);
 
-			const registration = registrationEntityFactory.build({ roomIds: [room.id] });
-			await em.persistAndFlush([registration]);
+			const registration1 = registrationEntityFactory.build({ roomIds: [room.id], resentAt: undefined });
+			const registration2 = registrationEntityFactory.build({ roomIds: [room.id, new ObjectId().toHexString()] });
+			await em.persistAndFlush([registration1, registration2]);
 			em.clear();
 
 			return {
-				registration,
+				registration1,
+				registration2,
 				externalPersonRole,
 				teacherAccount,
 				teacherUser,
@@ -124,10 +126,12 @@ describe('Room Controller (API)', () => {
 		describe('when the feature is disabled', () => {
 			it('should return a 403 error', async () => {
 				config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = false;
-				const { registration, teacherAccount } = await setup();
+				const { registration1, teacherAccount } = await setup();
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
-				const response = await loggedInClient.patch(`/${registration.id}/resend-mail/${registration.roomIds[0]}`);
+				const response = await loggedInClient.patch(`/resend-mail/${registration1.roomIds[0]}`, {
+					registrationIds: [registration1.id],
+				});
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -139,9 +143,9 @@ describe('Room Controller (API)', () => {
 				const loggedInClient = await testApiClient.login(teacherAccount);
 				const someNonExistingRegistrationId = new ObjectId().toHexString();
 				const someNonExistingRoomId = new ObjectId().toHexString();
-				const response = await loggedInClient.patch(
-					`/${someNonExistingRegistrationId}/resend-mail/${someNonExistingRoomId}`
-				);
+				const response = await loggedInClient.patch(`/resend-mail/${someNonExistingRoomId}`, {
+					registrationIds: [someNonExistingRegistrationId],
+				});
 
 				expect(response.status).toBe(HttpStatus.NOT_FOUND);
 			});
@@ -150,11 +154,13 @@ describe('Room Controller (API)', () => {
 		describe('when the registration exists', () => {
 			describe('when the user does not have the required permissions', () => {
 				it('should return a 403 error', async () => {
-					const { registration, otherTeacherAccount } = await setup();
+					const { registration1, otherTeacherAccount } = await setup();
 
 					const loggedInClient = await testApiClient.login(otherTeacherAccount);
 
-					const response = await loggedInClient.patch(`/${registration.id}/resend-mail/${registration.roomIds[0]}`);
+					const response = await loggedInClient.patch(`/resend-mail/${registration1.roomIds[0]}`, {
+						registrationIds: [registration1.id],
+					});
 					expect(response.status).toBe(HttpStatus.FORBIDDEN);
 				});
 			});
@@ -162,25 +168,70 @@ describe('Room Controller (API)', () => {
 			describe('when the user has the required permissions', () => {
 				describe('when the registration is for one room', () => {
 					it('should return 200 and update registration', async () => {
-						const { registration, teacherAccount } = await setup();
+						const { registration1, teacherAccount } = await setup();
 						const loggedInClient = await testApiClient.login(teacherAccount);
 
-						expect(registration.resentAt).toBeUndefined();
+						expect(registration1.resentAt).toBeUndefined();
 
-						const response = await loggedInClient.patch(`/${registration.id}/resend-mail/${registration.roomIds[0]}`);
-						const updatedRegistration = await em.findOne(RegistrationEntity, { id: registration.id });
+						const response = await loggedInClient.patch(`/resend-mail/${registration1.roomIds[0]}`, {
+							registrationIds: [registration1.id],
+						});
+						const updatedRegistration = await em.findOne(RegistrationEntity, { id: registration1.id });
 
 						expect(response.status).toBe(HttpStatus.OK);
 						expect(updatedRegistration?.resentAt).toBeDefined();
 					});
 
 					it('should resend a mail', async () => {
-						const { registration, teacherAccount, room } = await setup();
+						const { registration1, teacherAccount, room } = await setup();
 						const loggedInClient = await testApiClient.login(teacherAccount);
 
-						await loggedInClient.patch(`/${registration.id}/resend-mail/${room.id}`);
+						await loggedInClient.patch(`/resend-mail/${room.id}`, {
+							registrationIds: [registration1.id],
+						});
 
 						expect(mailServiceSendMock).toHaveBeenCalledTimes(1);
+					});
+				});
+
+				describe('when multiple registrations are resent', () => {
+					describe('and one of the registrations was resent within last two minutes', () => {
+						it('should return 200 and update registrations', async () => {
+							const { registration1, teacherAccount } = await setup();
+							const oneMinuteAgo = new Date(Date.now() - 1 * 60 * 1000);
+							const anotherRegistration = registrationEntityFactory.build({
+								roomIds: [registration1.roomIds[0]],
+								resentAt: oneMinuteAgo,
+							});
+							await em.persistAndFlush([anotherRegistration]);
+							const loggedInClient = await testApiClient.login(teacherAccount);
+
+							expect(registration1.resentAt).toBeUndefined();
+							expect(anotherRegistration.resentAt).toEqual(oneMinuteAgo);
+
+							const response = await loggedInClient.patch(`/resend-mail/${registration1.roomIds[0]}`, {
+								registrationIds: [registration1.id, anotherRegistration.id],
+							});
+							const updatedRegistration = await em.findOne(RegistrationEntity, { id: registration1.id });
+							const notUpdatedAnotherRegistration = await em.findOne(RegistrationEntity, {
+								id: anotherRegistration.id,
+							});
+
+							expect(response.status).toBe(HttpStatus.OK);
+							expect(updatedRegistration?.resentAt).toEqual(expect.any(Date));
+							expect(notUpdatedAnotherRegistration).toEqual(anotherRegistration);
+						});
+
+						it('should resend multiple mails', async () => {
+							const { registration1, registration2, teacherAccount, room } = await setup();
+							const loggedInClient = await testApiClient.login(teacherAccount);
+
+							await loggedInClient.patch(`/resend-mail/${room.id}`, {
+								registrationIds: [registration1.id, registration2.id],
+							});
+
+							expect(mailServiceSendMock).toHaveBeenCalledTimes(2);
+						});
 					});
 				});
 			});

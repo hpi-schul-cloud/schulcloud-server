@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RegistrationItemResponse {
 	@ApiProperty()
@@ -19,9 +19,6 @@ export class RegistrationItemResponse {
 	@ApiProperty({ type: Date })
 	public updatedAt: Date;
 
-	@ApiPropertyOptional({ type: Date })
-	public resentAt?: Date;
-
 	constructor(registration: RegistrationItemResponse) {
 		this.id = registration.id;
 		this.email = registration.email;
@@ -29,6 +26,5 @@ export class RegistrationItemResponse {
 		this.lastName = registration.lastName;
 		this.createdAt = registration.createdAt;
 		this.updatedAt = registration.updatedAt;
-		this.resentAt = registration.resentAt;
 	}
 }

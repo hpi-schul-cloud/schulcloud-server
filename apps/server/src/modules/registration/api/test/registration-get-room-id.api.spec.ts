@@ -84,10 +84,6 @@ describe('Room Controller (API)', () => {
 			const registrationThree = registrationEntityFactory.build({
 				roomIds: [roomTwo.id],
 			});
-			const registrationWithResentAt = registrationEntityFactory.build({
-				roomIds: [roomOne.id],
-				resentAt: new Date(),
-			});
 
 			await em.persistAndFlush([
 				roomOne,
@@ -95,7 +91,6 @@ describe('Room Controller (API)', () => {
 				registrationOne,
 				registrationTwo,
 				registrationThree,
-				registrationWithResentAt,
 				school,
 				studentAccount,
 				studentUser,
@@ -112,7 +107,6 @@ describe('Room Controller (API)', () => {
 				registrationOne,
 				registrationTwo,
 				registrationThree,
-				registrationWithResentAt,
 				roomOne,
 				roomTwo,
 				studentAccount,
@@ -155,19 +149,6 @@ describe('Room Controller (API)', () => {
 					expect(registrationIds).toContain(registrationOne.id);
 					expect(registrationIds).toContain(registrationTwo.id);
 					expect(registrationIds).not.toContain(registrationThree.id);
-				});
-
-				it('should include the resentAt field in the response', async () => {
-					const { registrationWithResentAt, roomOne, teacherAccount } = await setup();
-					const loggedInClient = await testApiClient.login(teacherAccount);
-
-					const response = await loggedInClient.get(`/by-room/${roomOne.id}`);
-					const responseBody = response.body as RegistrationListResponse;
-
-					expect(response.status).toBe(HttpStatus.OK);
-					const registration = responseBody.data.find((reg: { id: string }) => reg.id === registrationWithResentAt.id);
-					expect(registration).toBeDefined();
-					expect(registration?.resentAt).toBeDefined();
 				});
 			});
 

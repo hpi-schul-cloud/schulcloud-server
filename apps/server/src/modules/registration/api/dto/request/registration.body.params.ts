@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsMongoId } from 'class-validator';
 
-export class CancelRegistrationBodyParams {
+export class RegistrationBodyParams {
 	@ApiProperty({
 		description: 'The registration ids the room is attached to',
 		required: true,

@@ -99,13 +99,17 @@ export class RegistrationService {
 		await this.mailService.send(registrationMail);
 	}
 
-	public async resendRegistrationMail(registrationId: string): Promise<void> {
-		const registration = await this.getSingleRegistrationById(registrationId);
+	public async resendRegistrationMails(registrationIds: string[]): Promise<Registration[] | null> {
+		const resentRegistrations: Registration[] = [];
 
-		registration.resentAt = new Date();
-		await this.saveRegistration(registration);
+		for (const registrationId of registrationIds) {
+			const resentRegistration = await this.resendSingleRegistrationMail(registrationId);
+			if (resentRegistration) {
+				resentRegistrations.push(resentRegistration);
+			}
+		}
 
-		await this.sendRegistrationMail(registration);
+		return resentRegistrations.length > 0 ? resentRegistrations : null;
 	}
 
 	private createRegistrationUUID(): string {
@@ -231,5 +235,37 @@ export class RegistrationService {
 
 		await this.saveRegistration(registration);
 		return registration;
+	}
+
+	private async resendSingleRegistrationMail(registrationId: string): Promise<Registration | null> {
+		const registration = await this.getSingleRegistrationById(registrationId);
+
+		if (!registration) {
+			return null;
+		}
+
+		const canBeResend = this.checkCanRegistrationMailBeResend(registration);
+		if (!canBeResend) {
+			return null;
+		}
+
+		registration.resentAt = new Date();
+		await this.sendRegistrationMail(registration);
+
+		await this.saveRegistration(registration);
+		return registration;
+	}
+
+	private checkCanRegistrationMailBeResend(registration: Registration): boolean {
+		if (!registration.resentAt) {
+			return true;
+		}
+
+		const lastResent = new Date(registration.resentAt).getTime();
+		const now = new Date().getTime();
+		const TWO_MINUTES_MS = 2 * 60 * 1000;
+
+		const twoMinutesHavePassed = now - lastResent >= TWO_MINUTES_MS;
+		return twoMinutesHavePassed;
 	}
 }

@@ -25,6 +25,7 @@ describe('RegistrationService', () => {
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
 	let schoolService: DeepMocked<SchoolService>;
 	let userService: DeepMocked<UserService>;
+	let mailService: DeepMocked<MailService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -67,6 +68,7 @@ describe('RegistrationService', () => {
 		roomMembershipService = module.get(RoomMembershipService);
 		userService = module.get(UserService);
 		schoolService = module.get(SchoolService);
+		mailService = module.get(MailService);
 	});
 
 	afterAll(async () => {
@@ -156,18 +158,62 @@ describe('RegistrationService', () => {
 		});
 	});
 
-	describe('resendRegistrationMail', () => {
-		it('should call repo to save registration with new resentAt date', async () => {
-			const now = new Date();
-			jest.useFakeTimers().setSystemTime(now);
+	describe('resendRegistrationMails', () => {
+		describe('when registration mail was not resent within last two minutes', () => {
+			it('should call repo to save registration with new resentAt date', async () => {
+				const now = new Date();
+				jest.useFakeTimers().setSystemTime(now);
 
-			const registration = registrationFactory.build();
-			registrationRepo.findById.mockResolvedValue(registration);
-			const expectedRegistration = registrationFactory.build({ ...registration.getProps(), resentAt: now });
+				const registration = registrationFactory.build();
+				registrationRepo.findById.mockResolvedValueOnce(registration);
+				const expectedRegistration = registrationFactory.build({ ...registration.getProps(), resentAt: now });
 
-			await service.resendRegistrationMail(registration.id);
+				await service.resendRegistrationMails([registration.id]);
 
-			expect(registrationRepo.save).toHaveBeenCalledWith(expectedRegistration);
+				expect(registrationRepo.save).toHaveBeenCalledWith(expectedRegistration);
+			});
+
+			it('should call mail service to resend registration mail', async () => {
+				const registrationWithoutResentAt = registrationFactory.build({ resentAt: undefined });
+				const registrationWithResentAt = registrationFactory.build({
+					resentAt: new Date(Date.now() - 5 * 60 * 1000),
+				});
+				registrationRepo.findById
+					.mockResolvedValueOnce(registrationWithoutResentAt)
+					.mockResolvedValueOnce(registrationWithResentAt);
+
+				await service.resendRegistrationMails([registrationWithoutResentAt.id, registrationWithResentAt.id]);
+
+				expect(mailService.send).toHaveBeenCalledTimes(2);
+			});
+		});
+
+		describe('when registration mail was resent within last two minutes', () => {
+			it('should not call repo to save registration', async () => {
+				const recentDate = new Date();
+				jest.useFakeTimers().setSystemTime(recentDate);
+
+				const oneMinuteAgo = new Date(recentDate.getTime() - 1 * 60 * 1000);
+				const registration = registrationFactory.build({ resentAt: oneMinuteAgo });
+				registrationRepo.findById.mockResolvedValueOnce(registration);
+
+				await service.resendRegistrationMails([registration.id]);
+
+				expect(registrationRepo.save).not.toHaveBeenCalled();
+			});
+
+			it('should not call mail service to resend registration mail', async () => {
+				const recentDate = new Date();
+				jest.useFakeTimers().setSystemTime(recentDate);
+
+				const oneMinuteAgo = new Date(recentDate.getTime() - 1 * 60 * 1000);
+				const registration = registrationFactory.build({ resentAt: oneMinuteAgo });
+				registrationRepo.findById.mockResolvedValueOnce(registration);
+
+				await service.resendRegistrationMails([registration.id]);
+
+				expect(mailService.send).not.toHaveBeenCalled();
+			});
 		});
 	});
 
