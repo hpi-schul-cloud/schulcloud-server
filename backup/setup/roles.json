@@ -650,6 +650,13 @@
 	},
 	{
 		"_id": {
+			"$oid": "68ece70b963025351f0a98c4"
+		},
+		"name": "guestExternalPerson",
+		"permissions": []
+	},
+	{
+		"_id": {
 			"$oid": "675abdb4e76b1142cd4c89e3"
 		},
 		"name": "roomowner",
@@ -696,13 +703,6 @@
 			"$oid": "6834512d020bf0a70deb4b22"
 		},
 		"name": "roomapplicant",
-		"permissions": []
-	},
-	{
-		"_id": {
-			"$oid": "68ece70b963025351f0a98c4"
-		},
-		"name": "guestExternalPerson",
 		"permissions": []
 	}
 ]
