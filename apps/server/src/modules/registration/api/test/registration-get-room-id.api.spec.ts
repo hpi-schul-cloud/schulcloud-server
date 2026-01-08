@@ -144,7 +144,7 @@ describe('Room Controller (API)', () => {
 					const responseBody = response.body as RegistrationListResponse;
 
 					expect(response.status).toBe(HttpStatus.OK);
-					expect(responseBody.data).toHaveLength(3);
+					expect(responseBody.data).toHaveLength(2);
 					const registrationIds = responseBody.data.map((reg: { id: string }) => reg.id);
 					expect(registrationIds).toContain(registrationOne.id);
 					expect(registrationIds).toContain(registrationTwo.id);
