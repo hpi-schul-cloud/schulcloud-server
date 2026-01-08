@@ -13,7 +13,7 @@ import { getFieldName } from '@shared/repo/utils/repo-helper';
 export class NewsRepo extends BaseRepo<News> {
 	private readonly propertiesToPopulate = ['school', 'target', 'creator', 'updater'];
 
-	get entityName() {
+	get entityName(): typeof News {
 		return News;
 	}
 
