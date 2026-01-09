@@ -1,3 +1,4 @@
+import { isURL } from 'class-validator';
 import { AxiosErrorLoggable } from '@core/error/loggable';
 import { Logger } from '@core/logger';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
@@ -122,6 +123,10 @@ export class BiloMediaClientAdapter {
 			}
 
 			const validationErrors: ValidationError[] = await validate(plainToClass(BiloMediaQueryResponse, response));
+			const coverError = this.validateCoverUrl(response);
+			if (coverError) {
+				validationErrors.push(coverError);
+			}
 			if (validationErrors.length > 0) {
 				badResponseReports.push({ mediumId: response.query.id, status: response.status, validationErrors });
 				return;
@@ -152,10 +157,32 @@ export class BiloMediaClientAdapter {
 			throw new BiloMediaQueryUnprocessableResponseLoggableException();
 		}
 		const validationErrors: ValidationError[] = await validate(plainToClass(BiloMediaQueryResponse, response));
+		const coverError = this.validateCoverUrl(response);
+		if (coverError) {
+			validationErrors.push(coverError);
+		}
 		if (validationErrors.length > 0) {
 			throw new BiloMediaQueryBadResponseLoggableException([
 				{ mediumId: response.query.id, status: response.status, validationErrors },
 			]);
+		}
+	}
+
+	private validateCoverUrl(response: BiloMediaQueryResponse): ValidationError | void {
+		if (!isURL(response.data.coverSmall.href) && !isURL(response.data.cover.href)) {
+			const validationError: ValidationError = {
+				property: 'cover.href / coverSmall.href',
+				constraints: {
+					isUrl: 'Both cover.href and coverSmall.href are not valid URLs',
+				},
+			};
+			return validationError;
+		} else {
+			if (!isURL(response.data.coverSmall.href)) {
+				response.data.coverSmall.href = response.data.cover.href;
+			} else if (!isURL(response.data.cover.href)) {
+				response.data.cover.href = response.data.coverSmall.href;
+			}
 		}
 	}
 
