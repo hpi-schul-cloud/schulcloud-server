@@ -43,7 +43,7 @@ describe(`share token lookup (api)`, () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
 			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-			await em.persistAndFlush([course, teacherAccount, teacherUser]);
+			await em.persist([course, teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const shareToken = await shareTokenService.createToken(
@@ -81,7 +81,7 @@ describe(`share token lookup (api)`, () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
 			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-			await em.persistAndFlush([course, teacherAccount, teacherUser]);
+			await em.persist([course, teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const shareToken = await shareTokenService.createToken(
@@ -124,7 +124,7 @@ describe(`share token lookup (api)`, () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
 			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-			await em.persistAndFlush([course, teacherAccount, teacherUser]);
+			await em.persist([course, teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -159,7 +159,7 @@ describe(`share token lookup (api)`, () => {
 			const otherSchool = schoolEntityFactory.build();
 			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-			await em.persistAndFlush([course, teacherAccount, teacherUser, otherSchool]);
+			await em.persist([course, teacherAccount, teacherUser, otherSchool]).flush();
 			em.clear();
 
 			const context = {

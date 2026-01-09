@@ -145,7 +145,7 @@ describe('Runtime Config Repo', () => {
 				type: 'string',
 				value: 'some value',
 			});
-			await em.persistAndFlush(entity);
+			await em.persist(entity).flush();
 
 			const retrieved = await repo.getAll();
 			expect(retrieved.map((r) => r.getProps())).not.toEqual(
@@ -165,7 +165,7 @@ describe('Runtime Config Repo', () => {
 				type: 'number',
 				value: 'not a number',
 			} as unknown as RuntimeConfigProperties);
-			await em.persistAndFlush(entity);
+			await em.persist(entity).flush();
 			await expect(() => repo.getByKey('TEST_NUMBER')).rejects.toThrowError();
 		});
 
@@ -175,7 +175,7 @@ describe('Runtime Config Repo', () => {
 				type: 'string',
 				value: 'some value',
 			});
-			await em.persistAndFlush(entity);
+			await em.persist(entity).flush();
 			await expect(() => repo.getByKey('UNDEFINED_IN_CONFIG')).rejects.toThrowError();
 		});
 
@@ -185,7 +185,7 @@ describe('Runtime Config Repo', () => {
 				type: 'infinite number',
 				value: 'its a lot',
 			} as unknown as RuntimeConfigProperties);
-			await em.persistAndFlush(entity);
+			await em.persist(entity).flush();
 			await expect(() => repo.getByKey('TEST_NUMBER')).rejects.toThrowError();
 		});
 	});

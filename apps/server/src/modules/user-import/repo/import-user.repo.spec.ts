@@ -23,7 +23,7 @@ describe('ImportUserRepo', () => {
 	const persistedReferences = async () => {
 		const school = schoolEntityFactory.build();
 		const user = userFactory.build({ school });
-		await em.persistAndFlush([school, user]);
+		await em.persist([school, user]).flush();
 		return { user, school };
 	};
 
@@ -66,7 +66,7 @@ describe('ImportUserRepo', () => {
 			const importUser = importUserFactory.build();
 			const otherImportUser = importUserFactory.build();
 
-			await em.persistAndFlush([importUser, otherImportUser]);
+			await em.persist([importUser, otherImportUser]).flush();
 
 			const result = await repo.findById(importUser.id);
 			expect(importUser).toBe(result);
@@ -230,7 +230,7 @@ describe('ImportUserRepo', () => {
 					school,
 				});
 				const otherImportUser = importUserFactory.build({ firstName: 'Marie-Luise 0987654321', school });
-				await em.persistAndFlush([school, importUser, otherImportUser]);
+				await em.persist([school, importUser, otherImportUser]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, {
 					firstName: 'marie-luise áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ0987654321',
 				});
@@ -244,7 +244,7 @@ describe('ImportUserRepo', () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ lastName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ lastName: 'Peter', school });
-				await em.persistAndFlush([school, importUser, otherImportUser]);
+				await em.persist([school, importUser, otherImportUser]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, { lastName: 'Marie-Luise' });
 				expect(results).toContain(importUser);
 				expect(results).not.toContain(otherImportUser);
@@ -254,7 +254,7 @@ describe('ImportUserRepo', () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ lastName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ lastName: 'Marie', school });
-				await em.persistAndFlush([school, importUser, otherImportUser]);
+				await em.persist([school, importUser, otherImportUser]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, { lastName: 'marie-luise' });
 				expect(results).toContain(importUser);
 				expect(results).not.toContain(otherImportUser);
@@ -265,7 +265,7 @@ describe('ImportUserRepo', () => {
 				const importUser = importUserFactory.build({ lastName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ lastName: 'Marie', school });
 				const otherImportUser2 = importUserFactory.build({ lastName: 'Peter', school });
-				await em.persistAndFlush([school, importUser, otherImportUser, otherImportUser2]);
+				await em.persist([school, importUser, otherImportUser, otherImportUser2]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, { lastName: 'marie' });
 				expect(results).toContain(importUser);
 				expect(results).toContain(otherImportUser);
@@ -277,7 +277,7 @@ describe('ImportUserRepo', () => {
 				const importUser = importUserFactory.build({ lastName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ lastName: 'Luise', school });
 				const otherImportUser2 = importUserFactory.build({ lastName: 'Peter', school });
-				await em.persistAndFlush([school, importUser, otherImportUser, otherImportUser2]);
+				await em.persist([school, importUser, otherImportUser, otherImportUser2]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, { lastName: 'luise' });
 				expect(results).toContain(importUser);
 				expect(results).toContain(otherImportUser);
@@ -288,7 +288,7 @@ describe('ImportUserRepo', () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ lastName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ lastName: 'Peter', school });
-				await em.persistAndFlush([school, importUser, otherImportUser]);
+				await em.persist([school, importUser, otherImportUser]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, { lastName: undefined });
 				expect(results).toContain(importUser);
 				expect(results).toContain(otherImportUser);
@@ -298,7 +298,7 @@ describe('ImportUserRepo', () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ lastName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ lastName: 'Peter', school });
-				await em.persistAndFlush([school, importUser, otherImportUser]);
+				await em.persist([school, importUser, otherImportUser]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, { lastName: ' ' });
 				expect(results).toContain(importUser);
 				expect(results).toContain(otherImportUser);
@@ -308,7 +308,7 @@ describe('ImportUserRepo', () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ lastName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ lastName: 'Peter', school });
-				await em.persistAndFlush([school, importUser, otherImportUser]);
+				await em.persist([school, importUser, otherImportUser]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, { lastName: '<§$%&/()=?!:.#' });
 				expect(results).toContain(importUser);
 				expect(results).toContain(otherImportUser);
@@ -321,7 +321,7 @@ describe('ImportUserRepo', () => {
 					school,
 				});
 				const otherImportUser = importUserFactory.build({ lastName: 'Marie-Luise 0987654321', school });
-				await em.persistAndFlush([school, importUser, otherImportUser]);
+				await em.persist([school, importUser, otherImportUser]).flush();
 				const [results, count] = await repo.findImportUsers(importUser.school, {
 					lastName: 'marie-luise áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ0987654321',
 				});
@@ -339,7 +339,7 @@ describe('ImportUserRepo', () => {
 				school,
 			});
 			const otherImportUser = importUserFactory.build({ ldapDn: 'uid=Peter,cn=schueler', school });
-			await em.persistAndFlush([school, importUser, otherImportUser]);
+			await em.persist([school, importUser, otherImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, { loginName: 'MarieLuise12' });
 			expect(results).toContain(importUser);
 			expect(results).not.toContain(otherImportUser);
@@ -352,7 +352,7 @@ describe('ImportUserRepo', () => {
 				school,
 			});
 			const otherImportUser = importUserFactory.build({ ldapDn: 'uid=Peter,cn=schueler', school });
-			await em.persistAndFlush([school, importUser, otherImportUser]);
+			await em.persist([school, importUser, otherImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, { loginName: 'marieluise12' });
 			expect(results).toContain(importUser);
 			expect(results).not.toContain(otherImportUser);
@@ -369,7 +369,7 @@ describe('ImportUserRepo', () => {
 				ldapDn: 'uid=Marie23,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
 				school,
 			});
-			await em.persistAndFlush([school, importUser, otherImportUser, otherImportUser2]);
+			await em.persist([school, importUser, otherImportUser, otherImportUser2]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, { loginName: 'marie' });
 			expect(results).toContain(importUser);
 			expect(results).not.toContain(otherImportUser);
@@ -387,7 +387,7 @@ describe('ImportUserRepo', () => {
 				ldapDn: 'uid=Luise23,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
 				school,
 			});
-			await em.persistAndFlush([school, importUser, otherImportUser, otherImportUser2]);
+			await em.persist([school, importUser, otherImportUser, otherImportUser2]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, { loginName: 'luise' });
 			expect(results).toContain(importUser);
 			expect(results).not.toContain(otherImportUser);
@@ -401,7 +401,7 @@ describe('ImportUserRepo', () => {
 				school,
 			});
 			const otherImportUser = importUserFactory.build({ ldapDn: 'uid=Peter,cn=schueler', school });
-			await em.persistAndFlush([school, importUser, otherImportUser]);
+			await em.persist([school, importUser, otherImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, { loginName: undefined });
 			expect(results).toContain(importUser);
 			expect(results).toContain(otherImportUser);
@@ -414,7 +414,7 @@ describe('ImportUserRepo', () => {
 				school,
 			});
 			const otherImportUser = importUserFactory.build({ ldapDn: 'uid=Peter,cn=schueler', school });
-			await em.persistAndFlush([school, importUser, otherImportUser]);
+			await em.persist([school, importUser, otherImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, { loginName: ' ' });
 			expect(results).toContain(importUser);
 			expect(results).toContain(otherImportUser);
@@ -427,7 +427,7 @@ describe('ImportUserRepo', () => {
 				school,
 			});
 			const otherImportUser = importUserFactory.build({ ldapDn: 'uid=Peter,cn=schueler', school });
-			await em.persistAndFlush([school, importUser, otherImportUser]);
+			await em.persist([school, importUser, otherImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, { loginName: '<§$%&/()=?!:.#' });
 			expect(results).toContain(importUser);
 			expect(results).toContain(otherImportUser);
@@ -440,7 +440,7 @@ describe('ImportUserRepo', () => {
 				school,
 			});
 			const otherImportUser = importUserFactory.build({ ldapDn: 'uid=Marie-Luise0987654321,foo', school });
-			await em.persistAndFlush([school, importUser, otherImportUser]);
+			await em.persist([school, importUser, otherImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, {
 				loginName: 'marie-luise áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ0987654321',
 			});
@@ -463,7 +463,7 @@ describe('ImportUserRepo', () => {
 			});
 			const skippedImportUser = importUserFactory.build({ roleNames: [RoleName.STUDENT] });
 			const otherSkippedImportUser = importUserFactory.build({ roleNames: [] });
-			await em.persistAndFlush([school, importUser, otherImportUser, skippedImportUser, otherSkippedImportUser]);
+			await em.persist([school, importUser, otherImportUser, skippedImportUser, otherSkippedImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, { role: RoleName.ADMINISTRATOR });
 			expect(results).toContain(importUser); // single match
 			expect(results).toContain(otherImportUser); //  contains match
@@ -478,7 +478,7 @@ describe('ImportUserRepo', () => {
 			const otherImportUser = importUserFactory.build({ roleNames: [RoleName.STUDENT, RoleName.TEACHER], school });
 			const skippedImportUser = importUserFactory.build({ roleNames: [RoleName.ADMINISTRATOR] });
 			const otherSkippedImportUser = importUserFactory.build({ roleNames: [] });
-			await em.persistAndFlush([school, importUser, otherImportUser, skippedImportUser, otherSkippedImportUser]);
+			await em.persist([school, importUser, otherImportUser, skippedImportUser, otherSkippedImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, { role: RoleName.STUDENT });
 			expect(results).toContain(importUser); // single match
 			expect(results).toContain(otherImportUser); //  contains match
@@ -496,7 +496,7 @@ describe('ImportUserRepo', () => {
 			});
 			const skippedImportUser = importUserFactory.build({ roleNames: [RoleName.STUDENT] });
 			const otherSkippedImportUser = importUserFactory.build({ roleNames: [] });
-			await em.persistAndFlush([school, importUser, otherImportUser, skippedImportUser, otherSkippedImportUser]);
+			await em.persist([school, importUser, otherImportUser, skippedImportUser, otherSkippedImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, { role: RoleName.TEACHER });
 			expect(results).toContain(importUser); // single match
 			expect(results).toContain(otherImportUser); //  contains match
@@ -504,7 +504,7 @@ describe('ImportUserRepo', () => {
 		});
 		it('should fail for all other, invalid role names', async () => {
 			const school = schoolEntityFactory.build();
-			await em.persistAndFlush(school);
+			await em.persist(school).flush();
 			await expect(async () =>
 				repo.findImportUsers(school, { role: 'foo' as unknown as ImportUserRoleName })
 			).rejects.toThrowError('unexpected role name');
@@ -515,7 +515,7 @@ describe('ImportUserRepo', () => {
 			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({ classNames: ['1a'], school });
 			const otherImportUser = importUserFactory.build({ classNames: ['2a'], school });
-			await em.persistAndFlush([importUser, otherImportUser]);
+			await em.persist([importUser, otherImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(school, { classes: ' ' });
 			expect(results).toContain(importUser);
 			expect(results).toContain(otherImportUser);
@@ -525,7 +525,7 @@ describe('ImportUserRepo', () => {
 			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({ classNames: ['1a'], school });
 			const otherImportUser = importUserFactory.build({ classNames: ['2a'], school });
-			await em.persistAndFlush([importUser, otherImportUser]);
+			await em.persist([importUser, otherImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(school, { classes: '1a' });
 			expect(results).toContain(importUser);
 			expect(results).not.toContain(otherImportUser);
@@ -535,7 +535,7 @@ describe('ImportUserRepo', () => {
 			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({ classNames: ['1a'], school });
 			const otherImportUser = importUserFactory.build({ classNames: ['2a'], school });
-			await em.persistAndFlush([importUser, otherImportUser]);
+			await em.persist([importUser, otherImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(school, { classes: '1' });
 			expect(results).toContain(importUser);
 			expect(results).not.toContain(otherImportUser);
@@ -545,7 +545,7 @@ describe('ImportUserRepo', () => {
 			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({ classNames: ['1a'], school });
 			const otherImportUser = importUserFactory.build({ classNames: ['2a'], school });
-			await em.persistAndFlush([importUser, otherImportUser]);
+			await em.persist([importUser, otherImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(school, { classes: 'a' });
 			expect(results).toContain(importUser);
 			expect(results).toContain(otherImportUser);
@@ -555,7 +555,7 @@ describe('ImportUserRepo', () => {
 			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({ classNames: ['1a'], school });
 			const otherImportUser = importUserFactory.build({ classNames: ['2a'], school });
-			await em.persistAndFlush([importUser, otherImportUser]);
+			await em.persist([importUser, otherImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(school, { classes: ' 1a ' });
 			expect(results).toContain(importUser);
 			expect(results).not.toContain(otherImportUser);
@@ -573,7 +573,7 @@ describe('ImportUserRepo', () => {
 				school,
 			});
 			const unmatchedImportUser = importUserFactory.build({ school });
-			await em.persistAndFlush([school, matchedImportUser, autoMatchedImportUser, unmatchedImportUser]);
+			await em.persist([school, matchedImportUser, autoMatchedImportUser, unmatchedImportUser]).flush();
 			const [results] = await repo.findImportUsers(school, {});
 			expect(results).toContain(matchedImportUser);
 			expect(results).toContain(autoMatchedImportUser);
@@ -589,7 +589,7 @@ describe('ImportUserRepo', () => {
 				school,
 			});
 			const otherSkippedImportUser = importUserFactory.build({ school });
-			await em.persistAndFlush([school, importUser, skippedImportUser, otherSkippedImportUser]);
+			await em.persist([school, importUser, skippedImportUser, otherSkippedImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(school, { matches: [ImportUserMatchCreatorScope.MANUAL] });
 			expect(results).toContain(importUser); // single match
 			expect(results).not.toContain(skippedImportUser); // other match
@@ -606,7 +606,7 @@ describe('ImportUserRepo', () => {
 				school,
 			});
 			const otherSkippedImportUser = importUserFactory.build({ school });
-			await em.persistAndFlush([school, importUser, skippedImportUser, otherSkippedImportUser]);
+			await em.persist([school, importUser, skippedImportUser, otherSkippedImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, {
 				matches: [ImportUserMatchCreatorScope.AUTO],
 			});
@@ -624,7 +624,7 @@ describe('ImportUserRepo', () => {
 				school,
 			});
 			const otherSkippedImportUser = importUserFactory.build({ school });
-			await em.persistAndFlush([school, importUser, otherImportUser, otherSkippedImportUser]);
+			await em.persist([school, importUser, otherImportUser, otherSkippedImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, {
 				matches: [ImportUserMatchCreatorScope.AUTO, ImportUserMatchCreatorScope.MANUAL],
 			});
@@ -644,7 +644,7 @@ describe('ImportUserRepo', () => {
 			const otherMatchedImportUser = importUserFactory
 				.matched(MatchCreator.MANUAL, userFactory.build({ school }))
 				.build({ school });
-			await em.persistAndFlush([school, importUser, matchedImportUser, otherMatchedImportUser]);
+			await em.persist([school, importUser, matchedImportUser, otherMatchedImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, {
 				matches: [ImportUserMatchCreatorScope.NONE],
 			});
@@ -664,7 +664,7 @@ describe('ImportUserRepo', () => {
 			const otherMatchedImportUser = importUserFactory
 				.matched(MatchCreator.MANUAL, userFactory.build({ school }))
 				.build({ school });
-			await em.persistAndFlush([school, importUser, matchedImportUser, otherMatchedImportUser]);
+			await em.persist([school, importUser, matchedImportUser, otherMatchedImportUser]).flush();
 			const [results, count] = await repo.findImportUsers(importUser.school, {
 				matches: [
 					ImportUserMatchCreatorScope.NONE,
@@ -680,7 +680,7 @@ describe('ImportUserRepo', () => {
 		it('should skip all other, invalid match names', async () => {
 			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({ school });
-			await em.persistAndFlush([school, importUser]);
+			await em.persist([school, importUser]).flush();
 			const [results] = await repo.findImportUsers(school, {
 				matches: ['foo'] as unknown as [ImportUserMatchCreatorScope],
 			});
@@ -698,7 +698,7 @@ describe('ImportUserRepo', () => {
 				school,
 				flagged: true,
 			});
-			await em.persistAndFlush([school, importUser, flaggedImportUser]);
+			await em.persist([school, importUser, flaggedImportUser]).flush();
 			const [results] = await repo.findImportUsers(school, {});
 			expect(results).toContain(importUser);
 			expect(results).toContain(flaggedImportUser);
@@ -712,7 +712,7 @@ describe('ImportUserRepo', () => {
 				school,
 				flagged: true,
 			});
-			await em.persistAndFlush([school, importUser, flaggedImportUser]);
+			await em.persist([school, importUser, flaggedImportUser]).flush();
 			const [results] = await repo.findImportUsers(school, { flagged: true });
 			expect(results).not.toContain(importUser);
 			expect(results).toContain(flaggedImportUser);
@@ -723,7 +723,7 @@ describe('ImportUserRepo', () => {
 		it('should apply limit', async () => {
 			const school = schoolEntityFactory.build();
 			const importUsers = importUserFactory.buildList(10, { school });
-			await em.persistAndFlush(importUsers);
+			await em.persist(importUsers).flush();
 			const [results, count] = await repo.findImportUsers(school, {}, { pagination: { limit: 3 } });
 			expect(results.length).toEqual(3);
 			expect(count).toEqual(10);
@@ -737,7 +737,7 @@ describe('ImportUserRepo', () => {
 		it('should apply offset', async () => {
 			const school = schoolEntityFactory.build();
 			const importUsers = importUserFactory.buildList(10, { school });
-			await em.persistAndFlush(importUsers);
+			await em.persist(importUsers).flush();
 			const [results, count] = await repo.findImportUsers(school, {}, { pagination: { skip: 3 } });
 			expect(results.length).toEqual(7);
 			expect(count).toEqual(10);
@@ -757,9 +757,9 @@ describe('ImportUserRepo', () => {
 		describe('on user (match_userId)', () => {
 			it('[SPARSE] should allow to unset items (acceppt null or undefined multiple times)', async () => {
 				const school = schoolEntityFactory.build();
-				await em.persistAndFlush(school);
+				await em.persist(school).flush();
 				const users = userFactory.buildList(10, { school });
-				await em.persistAndFlush(users);
+				await em.persist(users).flush();
 				const importUsers = importUserFactory.buildList(10, {
 					school,
 				});
@@ -767,28 +767,28 @@ describe('ImportUserRepo', () => {
 				for (const [i, importuser] of importUsers.entries()) {
 					importuser.setMatch(users[i], MatchCreator.AUTO);
 				}
-				await em.persistAndFlush(importUsers);
+				await em.persist(importUsers).flush();
 				em.clear();
 				const [reloadedImportUsers] = await repo.findImportUsers(school);
 				const result = reloadedImportUsers.map(async (importuser) => {
 					expect(importuser.user).toBeDefined();
 					expect(importuser.matchedBy).toBeDefined();
 					importuser.revokeMatch();
-					await em.persistAndFlush(importuser);
+					await em.persist(importuser).flush();
 				});
 				await Promise.all(result);
 			});
 			it('[UNIQUE] should prohibit same match of one user ', async () => {
 				await orm.getSchemaGenerator().ensureIndexes();
 				const school = schoolEntityFactory.build();
-				await em.persistAndFlush(school);
+				await em.persist(school).flush();
 				const user = userFactory.build({ school });
-				await em.persistAndFlush(user);
+				await em.persist(user).flush();
 				const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build({ school });
-				await em.persistAndFlush(importUser);
+				await em.persist(importUser).flush();
 				const importUserWithSameMatch = importUserFactory.matched(MatchCreator.AUTO, user).build({ school });
 
-				await expect(async () => em.persistAndFlush(importUserWithSameMatch)).rejects.toThrowError(
+				await expect(async () => em.persist(importUserWithSameMatch).flush()).rejects.toThrowError(
 					'duplicate key error'
 				);
 			});

@@ -34,7 +34,7 @@ describe('RoomInvitationLinkRepo', () => {
 	describe('findById', () => {
 		it('should find a room invitation link by id', async () => {
 			const roomInvitationLinks = roomInvitationLinkEntityFactory.buildList(3);
-			await em.persistAndFlush(roomInvitationLinks);
+			await em.persist(roomInvitationLinks).flush();
 			em.clear();
 			const [, second] = roomInvitationLinks;
 
@@ -47,7 +47,7 @@ describe('RoomInvitationLinkRepo', () => {
 	describe('findByIds', () => {
 		it('should find a room invitation link by id', async () => {
 			const roomInvitationLinks = roomInvitationLinkEntityFactory.buildList(3);
-			await em.persistAndFlush(roomInvitationLinks);
+			await em.persist(roomInvitationLinks).flush();
 			em.clear();
 			const [, second, third] = roomInvitationLinks;
 
@@ -63,7 +63,7 @@ describe('RoomInvitationLinkRepo', () => {
 		describe('when roomId is not found', () => {
 			it('should return an empty array', async () => {
 				const roomInvitationLinks = roomInvitationLinkEntityFactory.buildList(3);
-				await em.persistAndFlush(roomInvitationLinks);
+				await em.persist(roomInvitationLinks).flush();
 				em.clear();
 
 				const result = await repo.findByRoomId('non-existing-room-id');
@@ -77,7 +77,7 @@ describe('RoomInvitationLinkRepo', () => {
 				const roomId = 'room-id';
 				const roomInvitationLinks = roomInvitationLinkEntityFactory.buildList(2, { roomId });
 				const otherInvitationLinks = roomInvitationLinkEntityFactory.buildList(2);
-				await em.persistAndFlush([...roomInvitationLinks, ...otherInvitationLinks]);
+				await em.persist([...roomInvitationLinks, ...otherInvitationLinks]).flush();
 				em.clear();
 
 				const roomLinks = await repo.findByRoomId(roomId);
@@ -122,7 +122,7 @@ describe('RoomInvitationLinkRepo', () => {
 	describe('delete', () => {
 		it('should delete the room invitation link', async () => {
 			const roomInvitationLink = roomInvitationLinkEntityFactory.build();
-			await em.persistAndFlush(roomInvitationLink);
+			await em.persist(roomInvitationLink).flush();
 			em.clear();
 
 			await repo.delete([roomInvitationLink.id]);

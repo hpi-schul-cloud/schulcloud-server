@@ -35,7 +35,7 @@ describe('RoomRepo', () => {
 	describe('findById', () => {
 		const setup = async () => {
 			const roomEntity = roomEntityFactory.buildWithId();
-			await em.persistAndFlush(roomEntity);
+			await em.persist(roomEntity).flush();
 			em.clear();
 
 			return { roomEntity };
@@ -78,7 +78,7 @@ describe('RoomRepo', () => {
 	describe('delete', () => {
 		const setup = async () => {
 			const roomEntities = roomEntityFactory.buildListWithId(3);
-			await em.persistAndFlush(roomEntities);
+			await em.persist(roomEntities).flush();
 			const rooms = roomEntities.map((entity) => new Room(entity));
 			em.clear();
 
@@ -106,7 +106,7 @@ describe('RoomRepo', () => {
 	describe('findByIds', () => {
 		const setup = async () => {
 			const roomEntities = roomEntityFactory.buildListWithId(5);
-			await em.persistAndFlush(roomEntities);
+			await em.persist(roomEntities).flush();
 			em.clear();
 
 			const rooms = roomEntities.map((entity) => RoomDomainMapper.mapEntityToDo(entity));
@@ -136,7 +136,7 @@ describe('RoomRepo', () => {
 	describe('findByIds', () => {
 		const setup = async () => {
 			const roomEntities = roomEntityFactory.buildListWithId(3);
-			await em.persistAndFlush(roomEntities);
+			await em.persist(roomEntities).flush();
 			em.clear();
 
 			return { roomEntities };

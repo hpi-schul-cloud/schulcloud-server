@@ -64,7 +64,7 @@ describe('LegacyRoomBoardRepo', () => {
 			const taskElement = taskBoardElementFactory.build({ target: { course } });
 			const lessonElement = lessonBoardElementFactory.build({ target: { course } });
 			const board = boardFactory.build({ course, references: [taskElement, lessonElement] });
-			await em.persistAndFlush(board);
+			await em.persist(board).flush();
 
 			em.clear();
 
@@ -74,7 +74,7 @@ describe('LegacyRoomBoardRepo', () => {
 
 		it('should return fresh board if none exists yet', async () => {
 			const course = courseEntityFactory.build();
-			await em.persistAndFlush(course);
+			await em.persist(course).flush();
 			em.clear();
 			const result = await repo.findByCourseId(course.id);
 			expect(result).toHaveProperty('id');
@@ -102,7 +102,7 @@ describe('LegacyRoomBoardRepo', () => {
 		const taskElement = taskBoardElementFactory.build();
 		const lessonElement = lessonBoardElementFactory.build();
 		const board = boardFactory.build({ references: [taskElement, lessonElement] });
-		await em.persistAndFlush(board);
+		await em.persist(board).flush();
 
 		em.clear();
 
@@ -124,7 +124,7 @@ describe('LegacyRoomBoardRepo', () => {
 
 	it('should populate lesson in element', async () => {
 		const lesson = lessonFactory.build();
-		await em.persistAndFlush(lesson);
+		await em.persist(lesson).flush();
 		const lessonElement = lessonBoardElementFactory.build({ target: lesson });
 		const board = boardFactory.build({ references: [lessonElement] });
 		await repo.save(board);

@@ -54,7 +54,7 @@ describe('MediumMetadataController (API)', () => {
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,
 				]);
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
 				axiosMock.onPost(/(.*)\/oauth(.*)/).replyOnce<OauthTokenResponse>(HttpStatus.OK, {
@@ -94,7 +94,7 @@ describe('MediumMetadataController (API)', () => {
 			const setup = async () => {
 				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
@@ -118,7 +118,7 @@ describe('MediumMetadataController (API)', () => {
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,
 				]);
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
 				const responses: OfferDTO[] = vidisOfferItemFactory.buildList(1);
@@ -144,7 +144,7 @@ describe('MediumMetadataController (API)', () => {
 				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
 
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
 				axiosMock.onPost(/(.*)\/oauth(.*)/).replyOnce<OauthTokenResponse>(HttpStatus.OK, {
@@ -175,7 +175,7 @@ describe('MediumMetadataController (API)', () => {
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,
 				]);
-				await em.persistAndFlush([superheroAccount, superheroUser]);
+				await em.persist([superheroAccount, superheroUser]).flush();
 				em.clear();
 
 				axiosMock.onPost(/(.*)\/oauth(.*)/).replyOnce<OauthTokenResponse>(HttpStatus.OK, {
@@ -225,7 +225,7 @@ describe('MediumMetadataController (API)', () => {
 					Permission.MEDIA_SOURCE_ADMIN,
 				]);
 
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
 				axiosMock.onPost(/(.*)\/oauth(.*)/).replyOnce<OauthTokenResponse>(HttpStatus.OK, {
@@ -271,7 +271,7 @@ describe('MediumMetadataController (API)', () => {
 					Permission.MEDIA_SOURCE_ADMIN,
 				]);
 
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
 				axiosMock.onPost(/(.*)\/oauth(.*)/).replyOnce<OauthTokenResponse>(HttpStatus.OK, {
@@ -317,7 +317,7 @@ describe('MediumMetadataController (API)', () => {
 					Permission.MEDIA_SOURCE_ADMIN,
 				]);
 
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
 				axiosMock.onPost(/(.*)\/oauth(.*)/).replyOnce<OauthTokenResponse>(HttpStatus.OK, {

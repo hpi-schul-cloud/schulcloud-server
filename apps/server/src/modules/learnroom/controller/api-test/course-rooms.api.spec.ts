@@ -66,7 +66,7 @@ describe('Course Rooms Controller (API)', () => {
 				const course = courseEntityFactory.build({ school: school, students: [studentUser], teachers: [teacherUser] });
 				const task = taskFactory.build({ course });
 
-				await em.persistAndFlush([course, task, studentAccount, studentUser, teacherUser]);
+				await em.persist([course, task, studentAccount, studentUser, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(studentAccount);
@@ -91,7 +91,7 @@ describe('Course Rooms Controller (API)', () => {
 				const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
 				const task = taskFactory.build({ course });
 
-				await em.persistAndFlush([course, task, studentAccount, studentUser]);
+				await em.persist([course, task, studentAccount, studentUser]).flush();
 				em.clear();
 
 				return { course };
@@ -116,7 +116,7 @@ describe('Course Rooms Controller (API)', () => {
 				const task = taskFactory.draft().build({ course });
 				board.syncBoardElementReferences([task]);
 
-				await em.persistAndFlush([course, board, task, teacherAccount, teacherUser]);
+				await em.persist([course, board, task, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const params = { visibility: true };
@@ -163,7 +163,7 @@ describe('Course Rooms Controller (API)', () => {
 				const task = taskFactory.draft().build({ course });
 				board.syncBoardElementReferences([task]);
 
-				await em.persistAndFlush([course, board, task, teacherAccount, teacherUser]);
+				await em.persist([course, board, task, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const params = { visibility: true };
@@ -191,7 +191,7 @@ describe('Course Rooms Controller (API)', () => {
 				const lessons = lessonFactory.buildList(3, { course });
 				board.syncBoardElementReferences([...tasks, ...lessons]);
 
-				await em.persistAndFlush([course, board, ...tasks, ...lessons, teacherAccount, teacherUser]);
+				await em.persist([course, board, ...tasks, ...lessons, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const params = {
@@ -221,7 +221,7 @@ describe('Course Rooms Controller (API)', () => {
 				const lessons = lessonFactory.buildList(3, { course });
 				board.syncBoardElementReferences([...tasks, ...lessons]);
 
-				await em.persistAndFlush([course, board, ...tasks, ...lessons, teacherAccount, teacherUser]);
+				await em.persist([course, board, ...tasks, ...lessons, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const params = {
@@ -251,7 +251,7 @@ describe('Course Rooms Controller (API)', () => {
 				const lessons = lessonFactory.buildList(3, { course });
 				board.syncBoardElementReferences([...tasks, ...lessons]);
 
-				await em.persistAndFlush([course, teacherAccount, teacherUser, board, ...tasks, ...lessons]);
+				await em.persist([course, teacherAccount, teacherUser, board, ...tasks, ...lessons]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(teacherAccount);
@@ -299,7 +299,7 @@ describe('Course Rooms Controller (API)', () => {
 				const lessons = lessonFactory.buildList(3, { course });
 				board.syncBoardElementReferences([...tasks, ...lessons]);
 
-				await em.persistAndFlush([course, teacherAccount, teacherUser, board, ...tasks, ...lessons]);
+				await em.persist([course, teacherAccount, teacherUser, board, ...tasks, ...lessons]).flush();
 				em.clear();
 
 				return { course };
@@ -350,29 +350,31 @@ describe('Course Rooms Controller (API)', () => {
 
 				const legacyBoard = boardFactory.buildWithId({ course });
 
-				await em.persistAndFlush([
-					teacherAccount,
-					teacherUser,
-					course,
-					lesson,
-					task,
-					columnBoard1,
-					columnBoard2,
-					columnNode,
-					cardNode,
-					linkElementToTask,
-					linkElementToLesson,
-					linkElementToColumnBoard,
-					linkElementToCourse,
-					legacyBoard,
-				]);
+				await em
+					.persist([
+						teacherAccount,
+						teacherUser,
+						course,
+						lesson,
+						task,
+						columnBoard1,
+						columnBoard2,
+						columnNode,
+						cardNode,
+						linkElementToTask,
+						linkElementToLesson,
+						linkElementToColumnBoard,
+						linkElementToCourse,
+						legacyBoard,
+					])
+					.flush();
 				em.clear();
 
 				const columnBoardNode1 = await em.findOneOrFail(ColumnBoardNode, columnBoard1.id);
 				const columnBoardNode2 = await em.findOneOrFail(ColumnBoardNode, columnBoard2.id);
 				legacyBoard.syncBoardElementReferences([task, lesson, columnBoardNode1, columnBoardNode2]);
 
-				await em.persistAndFlush([legacyBoard]);
+				await em.persist([legacyBoard]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(teacherAccount);
@@ -423,7 +425,7 @@ describe('Course Rooms Controller (API)', () => {
 				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				const lesson = lessonFactory.build({ course });
 
-				await em.persistAndFlush([lesson, course, teacherAccount, teacherUser]);
+				await em.persist([lesson, course, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(teacherAccount);
@@ -446,7 +448,7 @@ describe('Course Rooms Controller (API)', () => {
 				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				const lesson = lessonFactory.build({ course });
 
-				await em.persistAndFlush([lesson, course, teacherAccount, teacherUser]);
+				await em.persist([lesson, course, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				return { course, lesson };

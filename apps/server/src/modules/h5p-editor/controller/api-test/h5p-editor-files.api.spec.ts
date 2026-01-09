@@ -48,7 +48,7 @@ const helpers = {
 			schoolId: new ObjectId().toString(),
 			metadata,
 			content,
-			parentType: H5PContentParentType.Lesson,
+			parentType: H5PContentParentType.BoardElement,
 		};
 		const h5pContent = new H5PContent(h5pContentProperties);
 
@@ -183,8 +183,8 @@ describe('H5PEditor Controller (api)', () => {
 
 				const parentId = new ObjectId().toString();
 
-				const content = h5pContentFactory.build({ parentId, parentType: H5PContentParentType.Lesson });
-				await em.persistAndFlush([content]);
+				const content = h5pContentFactory.build({ parentId, parentType: H5PContentParentType.BoardElement });
+				await em.persist([content]).flush();
 				em.clear();
 
 				return { loggedInClient, content };
@@ -323,8 +323,8 @@ describe('H5PEditor Controller (api)', () => {
 
 				const parentId = new ObjectId().toString();
 
-				const content = h5pContentFactory.build({ parentId, parentType: H5PContentParentType.Lesson });
-				await em.persistAndFlush([content]);
+				const content = h5pContentFactory.build({ parentId, parentType: H5PContentParentType.BoardElement });
+				await em.persist([content]).flush();
 				em.clear();
 
 				return { loggedInClient, content };
