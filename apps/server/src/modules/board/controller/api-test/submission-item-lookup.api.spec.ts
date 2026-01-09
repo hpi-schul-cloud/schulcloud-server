@@ -58,15 +58,9 @@ describe('submission item lookup (api)', () => {
 				teachers: [teacherUser],
 				students: [studentUser1, studentUser2],
 			});
-			await em.persistAndFlush([
-				studentAccount1,
-				studentUser1,
-				studentAccount2,
-				studentUser2,
-				teacherAccount,
-				teacherUser,
-				course,
-			]);
+			await em
+				.persist([studentAccount1, studentUser1, studentAccount2, studentUser2, teacherAccount, teacherUser, course])
+				.flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -91,17 +85,19 @@ describe('submission item lookup (api)', () => {
 				.withParent(submissionContainerNode2)
 				.build({ userId: studentUser2.id });
 
-			await em.persistAndFlush([
-				columnBoardNode,
-				columnNode,
-				cardNode,
-				submissionContainerNode1,
-				submissionContainerNode2,
-				item11,
-				item12,
-				item21,
-				item22,
-			]);
+			await em
+				.persist([
+					columnBoardNode,
+					columnNode,
+					cardNode,
+					submissionContainerNode1,
+					submissionContainerNode2,
+					item11,
+					item12,
+					item21,
+					item22,
+				])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -176,7 +172,7 @@ describe('submission item lookup (api)', () => {
 				school,
 			});
 			const course = courseEntityFactory.build({ school, teachers: [], students: [studentUser1, studentUser2] });
-			await em.persistAndFlush([studentAccount1, studentUser1, studentAccount2, studentUser2, course]);
+			await em.persist([studentAccount1, studentUser1, studentAccount2, studentUser2, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -190,7 +186,7 @@ describe('submission item lookup (api)', () => {
 			const item1 = submissionItemEntityFactory.withParent(submissionContainerNode).build({ userId: studentUser1.id });
 			const item2 = submissionItemEntityFactory.withParent(submissionContainerNode).build({ userId: studentUser2.id });
 
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode, item1, item2]);
+			await em.persist([columnBoardNode, columnNode, cardNode, submissionContainerNode, item1, item2]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(studentAccount1);
@@ -232,7 +228,7 @@ describe('submission item lookup (api)', () => {
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-			await em.persistAndFlush([user, teacherAccount, teacherUser, course]);
+			await em.persist([user, teacherAccount, teacherUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -244,7 +240,7 @@ describe('submission item lookup (api)', () => {
 
 			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
 
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
+			await em.persist([columnBoardNode, columnNode, cardNode, submissionContainerNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -256,7 +252,7 @@ describe('submission item lookup (api)', () => {
 			const { loggedInClient, submissionContainerNode } = await setup();
 
 			const invalidUser = userFactory.build();
-			await em.persistAndFlush([invalidUser]);
+			await em.persist([invalidUser]).flush();
 
 			const response = await loggedInClient.get(`${submissionContainerNode.id}`);
 
@@ -273,7 +269,7 @@ describe('submission item lookup (api)', () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 				const course = courseEntityFactory.build({ school, teachers: [teacherUser], students: [studentUser] });
-				await em.persistAndFlush([studentAccount, studentUser, teacherAccount, teacherUser, course]);
+				await em.persist([studentAccount, studentUser, teacherAccount, teacherUser, course]).flush();
 
 				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -289,14 +285,9 @@ describe('submission item lookup (api)', () => {
 					.build({ userId: studentUser.id });
 				const richTextElement = richTextElementEntityFactory.withParent(submissionItem).build();
 
-				await em.persistAndFlush([
-					columnBoardNode,
-					columnNode,
-					cardNode,
-					submissionContainer,
-					submissionItem,
-					richTextElement,
-				]);
+				await em
+					.persist([columnBoardNode, columnNode, cardNode, submissionContainer, submissionItem, richTextElement])
+					.flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -329,7 +320,7 @@ describe('submission item lookup (api)', () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 				const course = courseEntityFactory.build({ school, teachers: [teacherUser], students: [studentUser] });
-				await em.persistAndFlush([studentAccount, studentUser, teacherAccount, teacherUser, course]);
+				await em.persist([studentAccount, studentUser, teacherAccount, teacherUser, course]).flush();
 
 				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -345,14 +336,9 @@ describe('submission item lookup (api)', () => {
 					.build({ userId: studentUser.id });
 				const fileElement = fileElementEntityFactory.withParent(submissionItem).build();
 
-				await em.persistAndFlush([
-					columnBoardNode,
-					columnNode,
-					cardNode,
-					submissionContainer,
-					submissionItem,
-					fileElement,
-				]);
+				await em
+					.persist([columnBoardNode, columnNode, cardNode, submissionContainer, submissionItem, fileElement])
+					.flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 

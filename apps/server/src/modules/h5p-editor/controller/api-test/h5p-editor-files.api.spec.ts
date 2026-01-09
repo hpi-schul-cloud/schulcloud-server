@@ -184,7 +184,7 @@ describe('H5PEditor Controller (api)', () => {
 				const parentId = new ObjectId().toString();
 
 				const content = h5pContentFactory.build({ parentId, parentType: H5PContentParentType.BoardElement });
-				await em.persistAndFlush([content]);
+				await em.persist([content]).flush();
 				em.clear();
 
 				return { loggedInClient, content };
@@ -324,7 +324,7 @@ describe('H5PEditor Controller (api)', () => {
 				const parentId = new ObjectId().toString();
 
 				const content = h5pContentFactory.build({ parentId, parentType: H5PContentParentType.BoardElement });
-				await em.persistAndFlush([content]);
+				await em.persist([content]).flush();
 				em.clear();
 
 				return { loggedInClient, content };

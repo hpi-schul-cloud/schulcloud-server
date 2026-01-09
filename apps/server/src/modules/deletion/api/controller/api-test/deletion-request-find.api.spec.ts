@@ -40,7 +40,7 @@ describe(`deletionRequest find (api)`, () => {
 				await cleanupCollections(em);
 				const deletionRequest = deletionRequestEntityFactory.build();
 
-				await em.persistAndFlush(deletionRequest);
+				await em.persist(deletionRequest).flush();
 				em.clear();
 
 				return { deletionRequest };

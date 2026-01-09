@@ -57,7 +57,7 @@ describe('Media Element (API)', () => {
 				const mediaElementA = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ position: 0 });
 				const mediaElementB = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ position: 1 });
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine, mediaElementA, mediaElementB]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine, mediaElementA, mediaElementB]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -102,7 +102,7 @@ describe('Media Element (API)', () => {
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 				const mediaElement = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ position: 0 });
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -147,7 +147,7 @@ describe('Media Element (API)', () => {
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 				const mediaElement = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ position: 0 });
 
-				await em.persistAndFlush([mediaBoard, mediaLine]);
+				await em.persist([mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				return {
@@ -197,14 +197,9 @@ describe('Media Element (API)', () => {
 				});
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					mediaBoard,
-					mediaLine,
-					externalTool,
-					schoolExternalTool,
-				]);
+				await em
+					.persist([studentAccount, studentUser, mediaBoard, mediaLine, externalTool, schoolExternalTool])
+					.flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -269,7 +264,7 @@ describe('Media Element (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -328,16 +323,18 @@ describe('Media Element (API)', () => {
 					.withParent(mediaLine)
 					.build({ contextExternalToolId: contextExternalTool.id });
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					mediaBoard,
-					mediaLine,
-					mediaElement,
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
-				]);
+				await em
+					.persist([
+						studentAccount,
+						studentUser,
+						mediaBoard,
+						mediaLine,
+						mediaElement,
+						externalTool,
+						schoolExternalTool,
+						contextExternalTool,
+					])
+					.flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -391,7 +388,7 @@ describe('Media Element (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);

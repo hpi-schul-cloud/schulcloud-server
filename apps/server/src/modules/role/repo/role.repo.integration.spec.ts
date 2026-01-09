@@ -46,17 +46,17 @@ describe('role repo', () => {
 	describe('entity', () => {
 		it.skip('should fail for double creating a unique role name.', async () => {
 			const roleA1 = roleFactory.build({ name: RoleName.STUDENT });
-			await em.persistAndFlush([roleA1]);
+			await em.persist([roleA1]).flush();
 			const roleA2 = roleFactory.build({ name: RoleName.STUDENT });
 
-			await expect(em.persistAndFlush([roleA2])).rejects.toThrow(ValidationError);
+			await expect(em.persist([roleA2]).flush()).rejects.toThrow(ValidationError);
 		});
 
 		it.skip('should fail for double creating a unique role name in same step', async () => {
 			const roleA1 = roleFactory.build({ name: RoleName.STUDENT });
 			const roleA2 = roleFactory.build({ name: RoleName.STUDENT });
 
-			await expect(em.persistAndFlush([roleA1, roleA2])).rejects.toThrow(ValidationError);
+			await expect(em.persist([roleA1, roleA2]).flush()).rejects.toThrow(ValidationError);
 		});
 
 		it.todo('should fail if permission by creating is added, that not exist as enum.');
@@ -66,7 +66,7 @@ describe('role repo', () => {
 		it('should return right keys', async () => {
 			const roleA = roleFactory.build({ name: RoleName.STUDENT });
 
-			await em.persistAndFlush([roleA]);
+			await em.persist([roleA]).flush();
 			const result = await repo.findByName(RoleName.STUDENT);
 			expect(Object.keys(result).sort()).toEqual(
 				['createdAt', 'updatedAt', 'permissions', 'roles', 'name', '_id'].sort()
@@ -77,7 +77,7 @@ describe('role repo', () => {
 			const roleA = roleFactory.build({ name: RoleName.STUDENT });
 			const roleB = roleFactory.build({ name: RoleName.TEACHER });
 
-			await em.persistAndFlush([roleA, roleB]);
+			await em.persist([roleA, roleB]).flush();
 
 			const result = await repo.findByName(RoleName.STUDENT);
 			expect(result).toEqual(roleA);
@@ -95,7 +95,7 @@ describe('role repo', () => {
 		beforeEach(async () => {
 			roleA = roleFactory.build({ name: RoleName.STUDENT });
 			roleB = roleFactory.build({ name: RoleName.TEAMMEMBER });
-			await em.persistAndFlush([roleA, roleB]);
+			await em.persist([roleA, roleB]).flush();
 		});
 
 		afterEach(() => {
@@ -113,7 +113,7 @@ describe('role repo', () => {
 		it('should return right keys', async () => {
 			const roleA = roleFactory.build();
 
-			await em.persistAndFlush([roleA]);
+			await em.persist([roleA]).flush();
 			const result = await repo.findById(roleA.id);
 			expect(Object.keys(result).sort()).toEqual(
 				['createdAt', 'updatedAt', 'permissions', 'roles', 'name', '_id'].sort()
@@ -124,7 +124,7 @@ describe('role repo', () => {
 			const roleA = roleFactory.build();
 			const roleB = roleFactory.build();
 
-			await em.persistAndFlush([roleA, roleB]);
+			await em.persist([roleA, roleB]).flush();
 			const result = await repo.findById(roleA.id);
 			expect(result).toEqual(roleA);
 		});
@@ -133,7 +133,7 @@ describe('role repo', () => {
 			const idB = new ObjectId().toHexString();
 			const roleA = roleFactory.build();
 
-			await em.persistAndFlush([roleA]);
+			await em.persist([roleA]).flush();
 			await expect(repo.findById(idB)).rejects.toThrow(NotFoundError);
 		});
 	});
@@ -143,7 +143,7 @@ describe('role repo', () => {
 			const roleA = roleFactory.build();
 			const roleB = roleFactory.build();
 
-			await em.persistAndFlush([roleA, roleB]);
+			await em.persist([roleA, roleB]).flush();
 			const result: Role[] = await repo.findByIds([roleA.id, roleB.id]);
 			expect(result).toContainEqual(roleA);
 			expect(result).toContainEqual(roleB);
@@ -155,7 +155,7 @@ describe('role repo', () => {
 			const roleA = roleFactory.build();
 			const roleB = roleFactory.build();
 
-			await em.persistAndFlush([roleA, roleB]);
+			await em.persist([roleA, roleB]).flush();
 
 			const firstResult = await repo.findByName(roleA.name);
 			expect(firstResult).toEqual(roleA);

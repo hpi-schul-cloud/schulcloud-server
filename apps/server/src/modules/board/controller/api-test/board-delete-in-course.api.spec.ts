@@ -40,14 +40,14 @@ describe(`board delete in course (api)`, () => {
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 		const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
-		await em.persistAndFlush([teacherUser, teacherAccount, course]);
+		await em.persist([teacherUser, teacherAccount, course]).flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
 		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-		await em.persistAndFlush([columnBoardNode, columnNode]);
+		await em.persist([columnBoardNode, columnNode]).flush();
 		em.clear();
 
 		const loggedInClient = await testApiClient.login(teacherAccount);
@@ -86,7 +86,7 @@ describe(`board delete in course (api)`, () => {
 			const vars = await setup();
 
 			const { studentAccount: noAccessAccount, studentUser: noAccessUser } = UserAndAccountTestFactory.buildStudent();
-			await em.persistAndFlush([noAccessAccount, noAccessUser]);
+			await em.persist([noAccessAccount, noAccessUser]).flush();
 			const loggedInClient = await testApiClient.login(noAccessAccount);
 
 			return {

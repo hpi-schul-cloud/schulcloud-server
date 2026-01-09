@@ -88,7 +88,7 @@ describe('KeycloakConfigurationService Integration', () => {
 			dbAndIdmAccounts = accountFactory.buildList(123);
 			allAccounts = [...dbOnlyAccounts, ...dbAndIdmAccounts];
 
-			await em.persistAndFlush(allAccounts);
+			await em.persist(allAccounts).flush();
 			for (const account of dbAndIdmAccounts) {
 				// eslint-disable-next-line no-await-in-loop
 				await createAccountInIdm(account);

@@ -48,7 +48,7 @@ export class SchoolExternalToolRepo {
 	}
 
 	public deleteById(id: EntityId): Promise<void> {
-		return this.em.removeAndFlush(this.em.getReference(this.entityName, id));
+		return this.em.remove(this.em.getReference(this.entityName, id)).flush();
 	}
 
 	public async findByExternalToolId(toolId: string): Promise<SchoolExternalTool[]> {

@@ -44,7 +44,7 @@ describe(`card lookup (api)`, () => {
 	const setup = async () => {
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 		const course = courseEntityFactory.buildWithId({ school: teacherUser.school, teachers: [teacherUser] });
-		await em.persistAndFlush([teacherUser, teacherAccount, course]);
+		await em.persist([teacherUser, teacherAccount, course]).flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -55,7 +55,7 @@ describe(`card lookup (api)`, () => {
 		const cardNode3 = cardEntityFactory.withParent(columnNode).build();
 		const richTextElement = richTextElementEntityFactory.withParent(cardNode1).build();
 
-		await em.persistAndFlush([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, richTextElement]);
+		await em.persist([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, richTextElement]).flush();
 		em.clear();
 
 		const loggedInClient = await testApiClient.login(teacherAccount);
@@ -138,7 +138,7 @@ describe(`card lookup (api)`, () => {
 			const vars = await setup();
 
 			const { studentAccount: noAccessAccount, studentUser: noAccessUser } = UserAndAccountTestFactory.buildStudent();
-			await em.persistAndFlush([noAccessAccount, noAccessUser]);
+			await em.persist([noAccessAccount, noAccessUser]).flush();
 			const loggedInClient = await testApiClient.login(noAccessAccount);
 
 			return {
