@@ -1,3 +1,4 @@
+import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { DeletionConfig } from '@modules/deletion';
@@ -6,7 +7,6 @@ import { RegistrationPinConfig } from '@modules/registration-pin';
 import { ToolConfig } from '@modules/tool';
 import { UserConfig } from '@modules/user';
 import { LanguageType } from '@shared/domain/interface';
-import type { CoreModuleConfig } from '@core/core.config';
 
 export interface AdminApiServerConfig
 	extends CoreModuleConfig,
@@ -15,10 +15,7 @@ export interface AdminApiServerConfig
 		UserConfig,
 		RegistrationPinConfig,
 		ToolConfig,
-		XApiKeyAuthGuardConfig {
-	ETHERPAD__API_KEY?: string;
-	ETHERPAD__URI?: string;
-}
+		XApiKeyAuthGuardConfig {}
 
 const config: AdminApiServerConfig = {
 	ADMIN_API__DELETION_DELETE_AFTER_MINUTES: Configuration.get('ADMIN_API__DELETION_DELETE_AFTER_MINUTES') as number,

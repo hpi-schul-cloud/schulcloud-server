@@ -131,7 +131,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const sessionId = 'sessionId';
 					etherpadClientAdapter.getOrCreateSessionId.mockResolvedValueOnce(sessionId);
 
-					const basePath = Configuration.get('ETHERPAD__PAD_URI') as string;
+					const basePath = 'http://localhost:9001/p';
 					const expectedPath = `${basePath}/${editorId}`;
 
 					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD__COOKIE_EXPIRES_SECONDS')) * 1000;
@@ -202,7 +202,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const sessionId = 'sessionId';
 					etherpadClientAdapter.getOrCreateSessionId.mockResolvedValueOnce(sessionId);
 
-					const basePath = Configuration.get('ETHERPAD__PAD_URI') as string;
+					const basePath = 'http://localhost:9001/p';
 					const expectedPath = `${basePath}/${editorId}`;
 
 					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD__COOKIE_EXPIRES_SECONDS')) * 1000;
@@ -273,7 +273,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(otherSessionIds);
 					etherpadClientAdapter.getOrCreateSessionId.mockResolvedValueOnce(sessionId);
 
-					const basePath = Configuration.get('ETHERPAD__PAD_URI') as string;
+					const basePath = 'http://localhost:9001/p';
 					const expectedPath = `${basePath}/${editorId}`;
 
 					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD__COOKIE_EXPIRES_SECONDS')) * 1000;

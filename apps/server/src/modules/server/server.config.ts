@@ -13,7 +13,6 @@ import type { AccountConfig } from '@modules/account';
 import type { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
-import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
@@ -63,7 +62,6 @@ export interface ServerConfig
 		SharingConfig,
 		UserImportConfig,
 		SchulconnexClientConfig,
-		CollaborativeTextEditorConfig,
 		ProvisioningConfig,
 		RoomConfig,
 		UserImportConfig,
@@ -243,9 +241,6 @@ const config: ServerConfig = {
 		? (Configuration.get('MIGRATION_WIZARD_DOCUMENTATION_LINK') as string)
 		: undefined,
 	FEATURE_ETHERPAD_ENABLED: Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean,
-	ETHERPAD__PAD_URI: Configuration.get('ETHERPAD__PAD_URI') as string,
-	ETHERPAD__COOKIE_EXPIRES_SECONDS: Configuration.get('ETHERPAD__COOKIE_EXPIRES_SECONDS') as number,
-	ETHERPAD__COOKIE_RELEASE_THRESHOLD: Configuration.get('ETHERPAD__COOKIE_RELEASE_THRESHOLD') as number,
 	I18N__AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,
