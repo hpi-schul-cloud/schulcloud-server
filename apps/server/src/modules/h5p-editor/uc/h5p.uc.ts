@@ -30,6 +30,7 @@ import {
 	NotAcceptableException,
 	NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { randomUUID } from 'crypto';
@@ -40,6 +41,7 @@ import { tmpdir } from 'os';
 import { dirname, join } from 'path';
 import { parse } from 'yaml';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, H5PContentResponse } from '../controller/dto';
+import { H5PEditorConfig } from '../h5p-editor.config';
 import { H5PUcErrorLoggable, H5PUcLoggable } from '../loggable';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
 import { H5PContentRepo } from '../repo';
@@ -58,6 +60,7 @@ interface LibrariesContentType {
 @Injectable()
 export class H5PEditorUc {
 	constructor(
+		private readonly configService: ConfigService<H5PEditorConfig, true>,
 		private readonly h5pEditor: H5PEditor,
 		private readonly h5pPlayer: H5PPlayer,
 		private readonly h5pAjaxEndpoint: H5PAjaxEndpoint,
@@ -146,12 +149,20 @@ export class H5PEditorUc {
 	}
 
 	private readWhitelistFromConfig(): string[] {
-		const filePath = 'config/h5p-libraries.yaml';
+		const filePath = this.configService.get<string>('H5P_EDITOR__LIBRARY_LIST_PATH');
 		const librariesYamlContent = readFileSync(filePath, { encoding: 'utf-8' });
 		const librariesContentType = this.castToLibrariesContentType(parse(librariesYamlContent));
 		const libraryWhiteList = librariesContentType.h5p_libraries;
 
 		return libraryWhiteList;
+	}
+
+	private castToLibrariesContentType(object: unknown): LibrariesContentType {
+		if (!this.isLibrariesContentType(object)) {
+			throw new InternalServerErrorException('Invalid input type for castToLibrariesContentType');
+		}
+
+		return object;
 	}
 
 	private isLibrariesContentType(object: unknown): object is LibrariesContentType {
@@ -163,14 +174,6 @@ export class H5PEditorUc {
 			Array.isArray(object.h5p_libraries);
 
 		return isType;
-	}
-
-	private castToLibrariesContentType(object: unknown): LibrariesContentType {
-		if (!this.isLibrariesContentType(object)) {
-			throw new InternalServerErrorException('Invalid input type for castToLibrariesContentType');
-		}
-
-		return object;
 	}
 
 	public async postAjax(
