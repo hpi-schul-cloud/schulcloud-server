@@ -23,15 +23,8 @@ export class CommonCartridgeUc {
 		return exportedCourse;
 	}
 
-	public async startCourseImport(
-		userId: string,
-		jwt: string,
-		fileRecordId: string,
-		fileName: string,
-		fileUrl: string
-	): Promise<void> {
+	public async startCourseImport(jwt: string, fileRecordId: string, fileName: string, fileUrl: string): Promise<void> {
 		await this.commonCartridgeProducer.importCourse({
-			userId,
 			jwt,
 			fileRecordId,
 			fileName,

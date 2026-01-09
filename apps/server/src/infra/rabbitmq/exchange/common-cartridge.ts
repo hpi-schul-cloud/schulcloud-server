@@ -5,7 +5,6 @@ export enum CommonCartridgeEvents {
 }
 
 export interface ImportCourseParams {
-	userId: EntityId;
 	jwt: string;
 
 	fileRecordId: EntityId;

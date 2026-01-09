@@ -1,7 +1,8 @@
-import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
+	HttpCode,
 	HttpStatus,
 	Param,
 	Post,
@@ -15,8 +16,8 @@ import {
 	ApiBadRequestResponse,
 	ApiBody,
 	ApiConsumes,
-	ApiCreatedResponse,
 	ApiInternalServerErrorResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiProduces,
 	ApiTags,
@@ -66,12 +67,12 @@ export class CommonCartridgeController {
 	@ApiConsumes('application/json')
 	@ApiProduces('application/json')
 	@ApiBody({ type: CommonCartridgeStartImportBodyParams, required: true })
-	@ApiCreatedResponse({ description: 'Import was started successfully.' })
+	@ApiOkResponse({ description: 'Import was started successfully.' })
 	@ApiUnauthorizedResponse({ description: 'Request is unauthorized.' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+	@HttpCode(200)
 	public async importCourse(
-		@CurrentUser() currentUser: ICurrentUser,
 		@Req() request: Request,
 		@Body() startImportParams: CommonCartridgeStartImportBodyParams
 	): Promise<void> {
@@ -81,7 +82,6 @@ export class CommonCartridgeController {
 		}
 
 		await this.commonCartridgeUC.startCourseImport(
-			currentUser.userId,
 			jwt,
 			startImportParams.fileRecordId,
 			startImportParams.fileName,

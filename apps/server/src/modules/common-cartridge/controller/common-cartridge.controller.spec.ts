@@ -4,7 +4,6 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { HttpStatus, StreamableFile, UnauthorizedException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { Request, Response } from 'express';
 import { Readable } from 'stream';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
@@ -96,7 +95,6 @@ describe('CommonCartridgeController', () => {
 	describe('importCourse', () => {
 		describe('when importing a course', () => {
 			const setup = () => {
-				const user = currentUserFactory.build();
 				const request = createMock<Request>();
 				const startImportParams: CommonCartridgeStartImportBodyParams = {
 					fileName: faker.system.fileName(),
@@ -106,12 +104,12 @@ describe('CommonCartridgeController', () => {
 
 				request.headers.cookie = `jwt=${faker.internet.jwt()}`;
 
-				return { user, request, startImportParams };
+				return { request, startImportParams };
 			};
 			it('should call the uc with the correct parameters', async () => {
-				const { user, request, startImportParams } = setup();
+				const { request, startImportParams } = setup();
 
-				await sut.importCourse(user, request, startImportParams);
+				await sut.importCourse(request, startImportParams);
 
 				expect(commonCartridgeUcMock.startCourseImport).toHaveBeenCalledTimes(1);
 			});
@@ -119,7 +117,6 @@ describe('CommonCartridgeController', () => {
 
 		describe('when importing a course without jwt', () => {
 			const setup = () => {
-				const user = currentUserFactory.build();
 				const request = createMock<Request>();
 				const startImportParams: CommonCartridgeStartImportBodyParams = {
 					fileName: faker.system.fileName(),
@@ -127,12 +124,12 @@ describe('CommonCartridgeController', () => {
 					fileUrl: faker.internet.url(),
 				};
 
-				return { user, request, startImportParams };
+				return { request, startImportParams };
 			};
 			it('should throw UnauthorizedException', async () => {
-				const { user, request, startImportParams } = setup();
+				const { request, startImportParams } = setup();
 
-				await expect(sut.importCourse(user, request, startImportParams)).rejects.toThrow(UnauthorizedException);
+				await expect(sut.importCourse(request, startImportParams)).rejects.toThrow(UnauthorizedException);
 			});
 		});
 	});

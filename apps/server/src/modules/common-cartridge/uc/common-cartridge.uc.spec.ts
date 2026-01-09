@@ -75,22 +75,20 @@ describe('CommonCartridgeUc', () => {
 
 	describe('importCourse', () => {
 		const setup = () => {
-			const userId = faker.string.uuid();
 			const jwt = faker.internet.jwt();
 			const fileRecordId = faker.string.uuid();
 			const fileName = faker.system.fileName();
 			const fileUrl = faker.internet.url();
 
-			return { userId, jwt, fileRecordId, fileName, fileUrl };
+			return { jwt, fileRecordId, fileName, fileUrl };
 		};
 
 		it('should call the import service', async () => {
-			const { userId, jwt, fileRecordId, fileName, fileUrl } = setup();
+			const { jwt, fileRecordId, fileName, fileUrl } = setup();
 
-			await sut.startCourseImport(userId, jwt, fileRecordId, fileName, fileUrl);
+			await sut.startCourseImport(jwt, fileRecordId, fileName, fileUrl);
 
 			expect(commonCartridgeProducerMock.importCourse).toHaveBeenCalledWith({
-				userId,
 				jwt,
 				fileRecordId,
 				fileName,
