@@ -1,3 +1,4 @@
+// eslint-disable-next-line filename-rules/match
 import { Logger } from '@core/logger';
 import {
 	AuthorizationBodyParamsReferenceType,
@@ -34,10 +35,11 @@ import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { randomUUID } from 'crypto';
 import { Request } from 'express';
-import { mkdtempSync, rmSync, unlinkSync } from 'fs';
+import { mkdtempSync, readFileSync, rmSync, unlinkSync } from 'fs';
 import { writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { dirname, join } from 'path';
+import { parse } from 'yaml';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, H5PContentResponse } from '../controller/dto';
 import { H5PUcErrorLoggable, H5PUcLoggable } from '../loggable';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
@@ -49,6 +51,10 @@ import { GetLibraryFile } from './dto/h5p-getLibraryFile';
 // As a workaround, we have to assign all files the type “unknown.type” as “tempFilePath,” otherwise the H5P library throws errors.
 // See: https://github.com/Lumieducation/H5P-Nodejs-library/blob/fb84581b3aa68cfd521e84b6438c0c177d34a4be/packages/h5p-server/src/H5PEditor.ts#L659
 const UNKNOWN_TYPE = 'unknown.type';
+
+interface LibrariesContentType {
+	h5p_libraries: string[];
+}
 
 @Injectable()
 export class H5PEditorUc {
@@ -124,7 +130,48 @@ export class H5PEditorUc {
 			language,
 			user
 		);
+
+		if (query.action === 'content-type-cache') {
+			// filter response for libraries not contained in whitelist
+			const ajaxResponse = result as IHubInfo;
+			if (ajaxResponse && Array.isArray(ajaxResponse.libraries)) {
+				const libraryWhiteList = this.readWhitelistFromConfig();
+
+				ajaxResponse.libraries = ajaxResponse.libraries.filter((library) =>
+					libraryWhiteList.includes(library.machineName)
+				);
+			}
+		}
+
 		return result;
+	}
+
+	private readWhitelistFromConfig(): string[] {
+		const filePath = 'config/h5p-libraries.yaml';
+		const librariesYamlContent = readFileSync(filePath, { encoding: 'utf-8' });
+		const librariesContentType = this.castToLibrariesContentType(parse(librariesYamlContent));
+		const libraryWhiteList = librariesContentType.h5p_libraries;
+
+		return libraryWhiteList;
+	}
+
+	private isLibrariesContentType(object: unknown): object is LibrariesContentType {
+		const isType =
+			typeof object === 'object' &&
+			!Array.isArray(object) &&
+			object !== null &&
+			'h5p_libraries' in object &&
+			Array.isArray(object.h5p_libraries);
+
+		return isType;
+	}
+
+	private castToLibrariesContentType(object: unknown): LibrariesContentType {
+		if (!this.isLibrariesContentType(object)) {
+			throw new InternalServerErrorException('Invalid input type for castToLibrariesContentType');
+		}
+
+		return object;
 	}
 
 	public async postAjax(
