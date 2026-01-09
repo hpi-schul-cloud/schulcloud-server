@@ -43,7 +43,13 @@ export class CommonCartridgeController {
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
+		const jwt = JwtExtractor.extractJwtFromRequest(req);
+		if (!jwt) {
+			throw new UnauthorizedException();
+		}
+
 		const result = await this.commonCartridgeUC.exportCourse(
+			jwt,
 			exportCourseParams.courseId,
 			queryParams.version,
 			bodyParams.topics,
@@ -73,10 +79,10 @@ export class CommonCartridgeController {
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	@HttpCode(200)
 	public async importCourse(
-		@Req() request: Request,
+		@Req() req: Request,
 		@Body() startImportParams: CommonCartridgeStartImportBodyParams
 	): Promise<void> {
-		const jwt = JwtExtractor.extractJwtFromRequest(request);
+		const jwt = JwtExtractor.extractJwtFromRequest(req);
 		if (!jwt) {
 			throw new UnauthorizedException();
 		}
