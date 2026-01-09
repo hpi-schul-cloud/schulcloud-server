@@ -119,11 +119,51 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			const mockedResponse: IHubInfo = {
 				apiVersion: { major: 1, minor: 1 },
 				details: [],
-				libraries: [],
+				libraries: [
+					{
+						machineName: 'LibraryToBeFilteredOut',
+						canInstall: false,
+						installed: false,
+						isUpToDate: false,
+						localMajorVersion: 0,
+						localMinorVersion: 0,
+						localPatchVersion: 0,
+						restricted: false,
+						description: '',
+						icon: '',
+						majorVersion: 0,
+						minorVersion: 0,
+						owner: '',
+						patchVersion: 0,
+						title: '',
+					},
+					{
+						machineName: 'H5P.Accordion',
+						canInstall: false,
+						installed: false,
+						isUpToDate: false,
+						localMajorVersion: 0,
+						localMinorVersion: 0,
+						localPatchVersion: 0,
+						restricted: false,
+						description: '',
+						icon: '',
+						majorVersion: 0,
+						minorVersion: 0,
+						owner: '',
+						patchVersion: 0,
+						title: '',
+					},
+				],
 				outdated: false,
 				recentlyUsed: [],
 				user: 'DummyUser',
 			};
+
+			const expectedResponse = { ...mockedResponse };
+			expectedResponse.libraries = expectedResponse.libraries.filter(
+				(library) => library.machineName === 'H5P.Accordion'
+			);
 
 			ajaxEndpoint.getAjax.mockResolvedValueOnce(mockedResponse);
 			userService.findById.mockResolvedValueOnce(userDo);
@@ -131,16 +171,16 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			return {
 				user,
 				language,
-				mockedResponse,
+				expectedResponse,
 			};
 		};
 
-		it('should call H5PAjaxEndpoint.getAjax and return the result', async () => {
-			const { user, language, mockedResponse } = setup();
+		it('should call H5PAjaxEndpoint.getAjax, filter out unwanted library and return the result', async () => {
+			const { user, language, expectedResponse } = setup();
 
 			const result = await uc.getAjax({ action: 'content-type-cache' }, user.userId);
 
-			expect(result).toBe(mockedResponse);
+			expect(result).toStrictEqual(expectedResponse);
 			expect(ajaxEndpoint.getAjax).toHaveBeenCalledWith(
 				'content-type-cache',
 				undefined, // MachineName
