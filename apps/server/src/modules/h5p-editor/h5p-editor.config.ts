@@ -11,7 +11,9 @@ export interface H5PEditorCoreConfig extends CoreModuleConfig, AuthorizationClie
 	INCOMING_REQUEST_TIMEOUT: number;
 }
 
-export interface H5PEditorConfig extends H5PEditorCoreConfig, JwtAuthGuardConfig {}
+export interface H5PEditorConfig extends H5PEditorCoreConfig, JwtAuthGuardConfig {
+	H5P_EDITOR__LIBRARY_LIST_PATH: string;
+}
 
 export const authorizationClientConfig: AuthorizationClientConfig = {
 	basePath: `${Configuration.get('API_HOST') as string}/v3/`,
@@ -28,6 +30,7 @@ const h5pEditorCoreConfig: H5PEditorCoreConfig = {
 const getH5pEditorConfig = (): H5PEditorConfig => {
 	return {
 		...h5pEditorCoreConfig,
+		H5P_EDITOR__LIBRARY_LIST_PATH: Configuration.get('H5P_EDITOR__LIBRARY_LIST_PATH') as string,
 		// Node's process.env escapes newlines. We need to reverse it for the keys to work.
 		// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
 		JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),

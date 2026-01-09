@@ -142,7 +142,7 @@ export class H5PEditorController {
 		@Query() query: AjaxGetQueryParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<IHubInfo | ILibraryDetailedDataForClient | IAjaxResponse | undefined> {
-		const response = this.h5pEditorUc.getAjax(query, currentUser.userId);
+		const response = await this.h5pEditorUc.getAjax(query, currentUser.userId);
 
 		return response;
 	}

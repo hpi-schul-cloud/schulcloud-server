@@ -57,7 +57,7 @@ describe('H5PLibraryManagementService', () => {
 	});
 
 	describe('castToLibrariesContentType', () => {
-		describe('when castToLibrariesContentType has been called successfully', () => {
+		describe('when castToLibrariesContentType has been called with an invalid object', () => {
 			it('should throw InternalServerErrorException', () => {
 				const randomObject = {
 					random: 1,
