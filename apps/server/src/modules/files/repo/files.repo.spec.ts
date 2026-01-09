@@ -206,7 +206,7 @@ describe(FilesRepo.name, () => {
 
 			describe('when there are no files that match this criteria', () => {
 				it('should return an empty array', async () => {
-					await em.persist([fileEntityFactory.build().flush(), fileEntityFactory.build(), fileEntityFactory.build()]);
+					await em.persist([fileEntityFactory.build(), fileEntityFactory.build(), fileEntityFactory.build()]).flush();
 
 					em.clear();
 
@@ -433,7 +433,7 @@ describe(FilesRepo.name, () => {
 
 			describe('when there are no files that match this criteria', () => {
 				it('should return an empty array', async () => {
-					await em.persist([fileEntityFactory.build().flush(), fileEntityFactory.build(), fileEntityFactory.build()]);
+					await em.persist([fileEntityFactory.build(), fileEntityFactory.build(), fileEntityFactory.build()]).flush();
 					em.clear();
 
 					const results = await repo.findByPermissionRefIdOrCreatorId(new ObjectId().toHexString());

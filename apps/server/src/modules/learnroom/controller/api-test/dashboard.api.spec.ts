@@ -193,7 +193,7 @@ describe('Dashboard Controller (API)', () => {
 				],
 				userId: teacherUser.id,
 			});
-			await dashboardRepo.persist(dashboard).flush();
+			await dashboardRepo.persistAndFlush(dashboard);
 			const params = {
 				from: { x: 1, y: 3 },
 				to: { x: 4, y: 2 },
@@ -225,7 +225,7 @@ describe('Dashboard Controller (API)', () => {
 				],
 				userId: teacherUser.id,
 			});
-			await dashboardRepo.persist(dashboard).flush();
+			await dashboardRepo.persistAndFlush(dashboard);
 			const params = {
 				from: { x: 1, y: 3 },
 				to: { x: 2, y: 2 },
@@ -260,7 +260,7 @@ describe('Dashboard Controller (API)', () => {
 				],
 				userId: teacherUser.id,
 			});
-			await dashboardRepo.persist(dashboard).flush();
+			await dashboardRepo.persistAndFlush(dashboard);
 			const params = {
 				from: { x: 2, y: 2 },
 				to: { x: 3, y: 3 },
@@ -288,7 +288,7 @@ describe('Dashboard Controller (API)', () => {
 				],
 				userId: teacherUser.id,
 			});
-			await dashboardRepo.persist(dashboard).flush();
+			await dashboardRepo.persistAndFlush(dashboard);
 			const params = {
 				from: { x: 3, y: 3, groupIndex: 0 },
 				to: { x: 2, y: 3 },
@@ -315,7 +315,7 @@ describe('Dashboard Controller (API)', () => {
 				],
 				userId: teacherUser.id,
 			});
-			await dashboardRepo.persist(dashboard).flush();
+			await dashboardRepo.persistAndFlush(dashboard);
 			const params = {
 				from: { x: 1, y: 3 },
 				to: { x: 4 },
@@ -354,7 +354,7 @@ describe('Dashboard Controller (API)', () => {
 				],
 				userId: teacherUser.id,
 			});
-			await dashboardRepo.persist(dashboard).flush();
+			await dashboardRepo.persistAndFlush(dashboard);
 			const params = {
 				title: 'COURSESILOVE',
 			};
