@@ -6,6 +6,7 @@ import { IHubInfo, IUser as LumiIUser } from '@lumieducation/h5p-server/build/sr
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
@@ -15,6 +16,7 @@ import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PUploadFile } from '../types';
 import { H5PEditorUc } from './h5p.uc';
+import { H5PEditorConfig } from '../h5p-editor.config';
 
 jest.mock('fs', (): unknown => {
 	return {
@@ -42,6 +44,12 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				H5PEditorUc,
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService<H5PEditorConfig, true>>({
+						get: () => 'config/h5p-libraries.yaml',
+					}),
+				},
 				{
 					provide: H5PEditor,
 					useValue: createMock<H5PEditor>(),

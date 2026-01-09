@@ -5,7 +5,9 @@ import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/
 import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { UserService } from '@modules/user';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { H5PEditorConfig } from '../h5p-editor.config';
 import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
@@ -38,6 +40,12 @@ describe('save or create H5P content', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				H5PEditorUc,
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService<H5PEditorConfig, true>>({
+						get: () => 'config/h5p-libraries.yaml',
+					}),
+				},
 				H5PAjaxEndpointProvider,
 				{
 					provide: H5PEditor,

@@ -5,9 +5,11 @@ import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/
 import { H5PAjaxEndpoint, H5PEditor, IPlayerModel } from '@lumieducation/h5p-server';
 import { UserService } from '@modules/user';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import { Readable } from 'stream';
+import { H5PEditorConfig } from '../h5p-editor.config';
 import { H5P_CACHE_PROVIDER_TOKEN, H5PEditorProvider, H5PPlayerProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { ContentStorage, LibraryStorage } from '../service';
@@ -55,6 +57,12 @@ describe('H5P Files', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				H5PEditorUc,
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService<H5PEditorConfig, true>>({
+						get: () => 'config/h5p-libraries.yaml',
+					}),
+				},
 				H5PEditorProvider,
 				H5PPlayerProvider,
 				{
