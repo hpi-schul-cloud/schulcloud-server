@@ -1,10 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { Readable } from 'stream';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { CommonCartridgeImportService } from '../service';
+import { CommonCartridgeProducer } from '../service';
 import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 import { CommonCartridgeUc } from './common-cartridge.uc';
@@ -13,7 +12,7 @@ describe('CommonCartridgeUc', () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeUc;
 	let commonCartridgeExportServiceMock: DeepMocked<CommonCartridgeExportService>;
-	let commonCartridgeImportServiceMock: DeepMocked<CommonCartridgeImportService>;
+	let commonCartridgeProducerMock: DeepMocked<CommonCartridgeProducer>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -24,15 +23,15 @@ describe('CommonCartridgeUc', () => {
 					useValue: createMock<CommonCartridgeExportService>(),
 				},
 				{
-					provide: CommonCartridgeImportService,
-					useValue: createMock<CommonCartridgeImportService>(),
+					provide: CommonCartridgeProducer,
+					useValue: createMock<CommonCartridgeProducer>(),
 				},
 			],
 		}).compile();
 
 		sut = module.get(CommonCartridgeUc);
 		commonCartridgeExportServiceMock = module.get(CommonCartridgeExportService);
-		commonCartridgeImportServiceMock = module.get(CommonCartridgeImportService);
+		commonCartridgeProducerMock = module.get(CommonCartridgeProducer);
 	});
 
 	afterAll(async () => {
@@ -76,18 +75,25 @@ describe('CommonCartridgeUc', () => {
 
 	describe('importCourse', () => {
 		const setup = () => {
-			const file = Buffer.from(faker.lorem.paragraphs());
-			const currentUser = currentUserFactory.build();
+			const jwt = faker.internet.jwt();
+			const fileRecordId = faker.string.uuid();
+			const fileName = faker.system.fileName();
+			const fileUrl = faker.internet.url();
 
-			return { file, currentUser };
+			return { jwt, fileRecordId, fileName, fileUrl };
 		};
 
 		it('should call the import service', async () => {
-			const { file, currentUser } = setup();
+			const { jwt, fileRecordId, fileName, fileUrl } = setup();
 
-			await sut.importCourse(file, currentUser);
+			await sut.startCourseImport(jwt, fileRecordId, fileName, fileUrl);
 
-			expect(commonCartridgeImportServiceMock.importFile).toHaveBeenCalledWith(file, currentUser);
+			expect(commonCartridgeProducerMock.importCourse).toHaveBeenCalledWith({
+				jwt,
+				fileRecordId,
+				fileName,
+				fileUrl,
+			});
 		});
 	});
 });
