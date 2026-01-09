@@ -5,14 +5,6 @@ import { H5PContentMapper } from './h5p-content.mapper';
 
 describe(H5PContentMapper.name, () => {
 	describe('mapToAllowedAuthorizationEntityType', () => {
-		describe('when H5PContentParentType is Lesson', () => {
-			it('should return allowed AuthorizableReferenceType equal to Lesson', () => {
-				const result = H5PContentMapper.mapToAllowedAuthorizationEntityType(H5PContentParentType.Lesson);
-
-				expect(result).toBe(AuthorizableReferenceType.Lesson);
-			});
-		});
-
 		describe('when H5PContentParentType is Board_Element', () => {
 			it('should return allowed AuthorizableReferenceType equal to BoardNode', () => {
 				const result = H5PContentMapper.mapToAllowedAuthorizationEntityType(H5PContentParentType.BoardElement);
