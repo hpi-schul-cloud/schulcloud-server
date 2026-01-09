@@ -71,7 +71,7 @@ export class ExternalToolRepo {
 	}
 
 	public async deleteById(id: EntityId): Promise<void> {
-		await this.em.remove(this.em.getReference(this.entityName, id).flush());
+		await this.em.remove(this.em.getReference(this.entityName, id)).flush();
 	}
 
 	public async findByName(name: string): Promise<ExternalTool | null> {
