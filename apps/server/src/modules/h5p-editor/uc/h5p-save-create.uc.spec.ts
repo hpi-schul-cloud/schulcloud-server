@@ -251,7 +251,7 @@ describe('save or create H5P content', () => {
 				);
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
-					H5PContentParentType.BoardElement,
+					AuthorizationBodyParamsReferenceType.BOARDNODES,
 					parentId,
 					AuthorizationContextBuilder.write([])
 				);
