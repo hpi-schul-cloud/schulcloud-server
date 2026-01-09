@@ -30,6 +30,8 @@ import { ApiValidationError } from '@shared/common/error';
 import { Request, Response } from 'express';
 import { H5PEditorUc } from '../uc';
 
+import { readFileSync } from 'fs';
+import { parse } from 'yaml';
 import {
 	AjaxGetQueryParams,
 	AjaxPostBodyParams,
@@ -48,6 +50,29 @@ import {
 } from './dto';
 import { AjaxPostBodyParamsTransformPipe } from './dto/ajax/post.body.params.transform-pipe';
 import { H5pAjaxErrorResponseFilter } from './filter';
+
+interface LibrariesContentType {
+	h5p_libraries: string[];
+}
+
+function isLibrariesContentType(object: unknown): object is LibrariesContentType {
+	const isType =
+		typeof object === 'object' &&
+		!Array.isArray(object) &&
+		object !== null &&
+		'h5p_libraries' in object &&
+		Array.isArray(object.h5p_libraries);
+
+	return isType;
+}
+
+const castToLibrariesContentType = (object: unknown): LibrariesContentType => {
+	if (!isLibrariesContentType(object)) {
+		throw new InternalServerErrorException('Invalid input type for castToLibrariesContentType');
+	}
+
+	return object;
+};
 
 @ApiTags('h5p-editor')
 @JwtAuthentication()
@@ -142,7 +167,23 @@ export class H5PEditorController {
 		@Query() query: AjaxGetQueryParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<IHubInfo | ILibraryDetailedDataForClient | IAjaxResponse | undefined> {
-		const response = this.h5pEditorUc.getAjax(query, currentUser.userId);
+		const response = await this.h5pEditorUc.getAjax(query, currentUser.userId);
+
+		if (query.action === 'content-type-cache') {
+			// filter response for libraries not contained in whitelist
+			const ajaxResponse = response as IHubInfo;
+			if (ajaxResponse && Array.isArray(ajaxResponse.libraries)) {
+				// read whitelist from config/h5p-libraries.yaml
+				const filePath = 'config/h5p-libraries.yaml';
+				const librariesYamlContent = readFileSync(filePath, { encoding: 'utf-8' });
+				const librariesContentType = castToLibrariesContentType(parse(librariesYamlContent));
+				const libraryWhiteList = librariesContentType.h5p_libraries;
+
+				ajaxResponse.libraries = ajaxResponse.libraries.filter((library) =>
+					libraryWhiteList.includes(library.machineName)
+				);
+			}
+		}
 
 		return response;
 	}
