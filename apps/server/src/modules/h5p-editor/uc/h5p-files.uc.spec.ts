@@ -1,7 +1,11 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
-import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
+import {
+	AuthorizationBodyParamsReferenceType,
+	AuthorizationClientAdapter,
+	AuthorizationContextBuilder,
+} from '@infra/authorization-client';
 import { H5PAjaxEndpoint, H5PEditor, IPlayerModel } from '@lumieducation/h5p-server';
 import { UserService } from '@modules/user';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
@@ -134,7 +138,7 @@ describe('H5P Files', () => {
 				await uc.getContentParameters(content.id, mockCurrentUser.userId);
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
-					content.parentType,
+					AuthorizationBodyParamsReferenceType.BOARDNODES,
 					content.parentId,
 					AuthorizationContextBuilder.read([])
 				);
@@ -249,7 +253,7 @@ describe('H5P Files', () => {
 				await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser.userId);
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
-					content.parentType,
+					AuthorizationBodyParamsReferenceType.BOARDNODES,
 					content.parentId,
 					AuthorizationContextBuilder.read([])
 				);

@@ -1,7 +1,11 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
-import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
+import {
+	AuthorizationBodyParamsReferenceType,
+	AuthorizationClientAdapter,
+	AuthorizationContextBuilder,
+} from '@infra/authorization-client';
 import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { UserService } from '@modules/user';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
@@ -110,7 +114,7 @@ describe('save or create H5P content', () => {
 				await uc.deleteH5pContent(mockCurrentUser.userId, content.id);
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
-					content.parentType,
+					AuthorizationBodyParamsReferenceType.BOARDNODES,
 					content.parentId,
 					AuthorizationContextBuilder.write([])
 				);

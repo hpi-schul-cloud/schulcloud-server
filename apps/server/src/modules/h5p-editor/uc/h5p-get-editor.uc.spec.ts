@@ -1,7 +1,11 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
-import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
+import {
+	AuthorizationBodyParamsReferenceType,
+	AuthorizationClientAdapter,
+	AuthorizationContextBuilder,
+} from '@infra/authorization-client';
 import { H5PEditor, H5PPlayer, IEditorModel } from '@lumieducation/h5p-server';
 import { UserService } from '@modules/user';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
@@ -178,7 +182,7 @@ describe('get H5P editor', () => {
 				await uc.getH5pEditor(mockCurrentUser.userId, content.id, language);
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
-					content.parentType,
+					AuthorizationBodyParamsReferenceType.BOARDNODES,
 					content.parentId,
 					AuthorizationContextBuilder.write([])
 				);
