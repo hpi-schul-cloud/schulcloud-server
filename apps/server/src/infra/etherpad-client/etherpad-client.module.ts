@@ -1,52 +1,47 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { ConfigurationModule } from '@infra/configuration';
+import { Module } from '@nestjs/common';
 import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
-import { Configuration, ConfigurationParameters } from './etherpad-api-client/configuration';
+import { Configuration } from './etherpad-api-client/configuration';
 import { EtherpadClientAdapter } from './etherpad-client.adapter';
+import { ETHERPAD_CLIENT_CONFIG_TOKEN, EtherpadClientConfig } from './etherpad-client.config';
 
-export interface EtherpadClientConfig extends ConfigurationParameters {
-	apiKey?: string;
-	basePath?: string;
-}
-
-@Module({})
-export class EtherpadClientModule {
-	static register(config: EtherpadClientConfig): DynamicModule {
-		const providers = [
-			EtherpadClientAdapter,
-			{
-				provide: GroupApi,
-				useFactory: () => {
-					const configuration = new Configuration(config);
-					return new GroupApi(configuration);
-				},
+@Module({
+	imports: [ConfigurationModule.register(ETHERPAD_CLIENT_CONFIG_TOKEN, EtherpadClientConfig)],
+	providers: [
+		EtherpadClientAdapter,
+		{
+			provide: GroupApi,
+			useFactory: (config: EtherpadClientConfig): GroupApi => {
+				const configuration = new Configuration(config);
+				return new GroupApi(configuration);
 			},
-			{
-				provide: SessionApi,
-				useFactory: () => {
-					const configuration = new Configuration(config);
-					return new SessionApi(configuration);
-				},
+			inject: [ETHERPAD_CLIENT_CONFIG_TOKEN],
+		},
+		{
+			provide: SessionApi,
+			useFactory: (config: EtherpadClientConfig): SessionApi => {
+				const configuration = new Configuration(config);
+				return new SessionApi(configuration);
 			},
-			{
-				provide: AuthorApi,
-				useFactory: () => {
-					const configuration = new Configuration(config);
-					return new AuthorApi(configuration);
-				},
+			inject: [ETHERPAD_CLIENT_CONFIG_TOKEN],
+		},
+		{
+			provide: AuthorApi,
+			useFactory: (config: EtherpadClientConfig): AuthorApi => {
+				const configuration = new Configuration(config);
+				return new AuthorApi(configuration);
 			},
-			{
-				provide: PadApi,
-				useFactory: () => {
-					const configuration = new Configuration(config);
-					return new PadApi(configuration);
-				},
+			inject: [ETHERPAD_CLIENT_CONFIG_TOKEN],
+		},
+		{
+			provide: PadApi,
+			useFactory: (config: EtherpadClientConfig): PadApi => {
+				const configuration = new Configuration(config);
+				return new PadApi(configuration);
 			},
-		];
-
-		return {
-			module: EtherpadClientModule,
-			providers,
-			exports: [EtherpadClientAdapter],
-		};
-	}
-}
+			inject: [ETHERPAD_CLIENT_CONFIG_TOKEN],
+		},
+	],
+	exports: [EtherpadClientAdapter],
+})
+export class EtherpadClientModule {}

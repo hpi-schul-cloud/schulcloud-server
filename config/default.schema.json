@@ -812,29 +812,11 @@
 			"description": "Etherpad settings",
 			"required": ["PAD_URI"],
 			"properties": {
-				"URI": {
-					"type": "string",
-					"description": "The etherpad api version uri."
-				},
 				"PAD_URI": {
 					"type": "string",
 					"format": "uri",
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
-				},
-				"API_KEY": {
-					"type": "string",
-					"description": "The etherpad api key for sending requests."
-				},
-				"COOKIE_EXPIRES_SECONDS": {
-					"type": "integer",
-					"default": 7200,
-					"description": "Number of seconds after an etherpad cookie expires."
-				},
-				"COOKIE_RELEASE_THRESHOLD": {
-					"type": "integer",
-					"default": 7200,
-					"description": "If Session Valid time is smaller than this, a new session is created on request."
 				}
 			}
 		},
