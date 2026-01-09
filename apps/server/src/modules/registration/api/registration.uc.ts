@@ -1,6 +1,6 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { RoomMembershipService } from '@modules/room-membership';
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Registration, RegistrationService } from '../domain';
@@ -24,13 +24,18 @@ export class RegistrationUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(props.roomId);
-		this.authorizationService.checkPermission(
+		const hasRoomPermission = this.authorizationService.hasPermission(
 			user,
 			roomMembershipAuthorizable,
 			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
 		);
-		// TODO properly check the permission
-		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS]);
+		const hasRegistrationManagementPersmission = this.authorizationService.hasAllPermissions(user, [
+			Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS,
+		]);
+
+		if (!hasRoomPermission || !hasRegistrationManagementPersmission) {
+			throw new ForbiddenException('User does not have permission to create or update registrations for this room.');
+		}
 
 		const registration = await this.registrationService.createOrUpdateRegistration({ ...props });
 		await this.registrationService.sendRegistrationMail(registration);
@@ -51,13 +56,18 @@ export class RegistrationUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		this.authorizationService.checkPermission(
+		const hasRoomPermission = this.authorizationService.hasPermission(
 			user,
 			roomMembershipAuthorizable,
 			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
 		);
-		// TODO properly check the permission
-		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS]);
+		const hasRegistrationManagementPersmission = this.authorizationService.hasAllPermissions(user, [
+			Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS,
+		]);
+
+		if (!hasRoomPermission || !hasRegistrationManagementPersmission) {
+			throw new ForbiddenException('User does not have permission to see registrations for this room.');
+		}
 
 		const registrations = await this.registrationService.getRegistrationsByRoomId(roomId);
 
@@ -85,13 +95,18 @@ export class RegistrationUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		this.authorizationService.checkPermission(
+		const hasRoomPermission = this.authorizationService.hasPermission(
 			user,
 			roomMembershipAuthorizable,
 			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
 		);
-		// TODO properly check the permission
-		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS]);
+		const hasRegistrationManagementPersmission = this.authorizationService.hasAllPermissions(user, [
+			Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS,
+		]);
+
+		if (!hasRoomPermission || !hasRegistrationManagementPersmission) {
+			throw new ForbiddenException('User does not have permission to cancel registrations for this room.');
+		}
 
 		const updatedRegistration = await this.registrationService.cancelRegistrationForRoom(registrationId, roomId);
 
