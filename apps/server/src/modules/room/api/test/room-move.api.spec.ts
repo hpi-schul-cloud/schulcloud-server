@@ -149,7 +149,7 @@ describe('Room Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const room = roomEntityFactory.build({ schoolId: school.id });
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-				await em.persistAndFlush([school, room, teacherAccount, teacherUser]);
+				await em.persist([school, room, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

@@ -54,7 +54,7 @@ describe('Room Controller (API)', () => {
 		describe('when id is not a valid mongo id', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -184,7 +184,7 @@ describe('Room Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const room = roomEntityFactory.build({ schoolId: school.id });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
-				await em.persistAndFlush([room, adminAccount, adminUser]);
+				await em.persist([room, adminAccount, adminUser]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(adminAccount);
 				return { loggedInClient, room };
@@ -205,7 +205,7 @@ describe('Room Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const room = roomEntityFactory.build({ schoolId: school.id });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin();
-				await em.persistAndFlush([room, adminAccount, adminUser]);
+				await em.persist([room, adminAccount, adminUser]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(adminAccount);
 				return { loggedInClient, room };
@@ -224,7 +224,7 @@ describe('Room Controller (API)', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([room, teacherAccount, teacherUser]);
+				await em.persist([room, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

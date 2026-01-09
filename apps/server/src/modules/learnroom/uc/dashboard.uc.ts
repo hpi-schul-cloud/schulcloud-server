@@ -22,7 +22,7 @@ export class DashboardUc {
 		);
 
 		dashboard.setLearnRooms(courses);
-		await this.dashboardRepo.persistAndFlush(dashboard);
+		await this.dashboardRepo.persist(dashboard).flush();
 		return dashboard;
 	}
 
@@ -37,7 +37,7 @@ export class DashboardUc {
 
 		dashboard.moveElement(from, to);
 
-		await this.dashboardRepo.persistAndFlush(dashboard);
+		await this.dashboardRepo.persist(dashboard).flush();
 		return dashboard;
 	}
 
@@ -53,7 +53,7 @@ export class DashboardUc {
 		const gridElement = dashboard.getElement(position);
 		gridElement.setGroupName(params);
 
-		await this.dashboardRepo.persistAndFlush(dashboard);
+		await this.dashboardRepo.persist(dashboard).flush();
 		return dashboard;
 	}
 

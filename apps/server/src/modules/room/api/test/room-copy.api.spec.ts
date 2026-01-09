@@ -60,7 +60,7 @@ describe('POST /rooms/:roomId/copy', () => {
 			config.FEATURE_ROOM_COPY_ENABLED = false;
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			await em.persistAndFlush([teacherAccount, teacherUser]);
+			await em.persist([teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -80,7 +80,7 @@ describe('POST /rooms/:roomId/copy', () => {
 	describe('when id is not a valid mongo id', () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			await em.persistAndFlush([teacherAccount, teacherUser]);
+			await em.persist([teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);

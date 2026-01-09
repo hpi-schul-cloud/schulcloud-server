@@ -162,7 +162,7 @@ describe('Room Controller (API)', () => {
 							return { id: room.id };
 						}),
 					});
-					await em.persistAndFlush([roomArrangement]);
+					await em.persist([roomArrangement]).flush();
 					em.clear();
 
 					return { ...fixtures, roomArrangement };
@@ -190,7 +190,7 @@ describe('Room Controller (API)', () => {
 							roomId: otherRoom.id,
 							schoolId: school.id,
 						});
-						await em.persistAndFlush([otherRoom, roomMembership]);
+						await em.persist([otherRoom, roomMembership]).flush();
 						em.clear();
 
 						const response = await loggedInClient.get();

@@ -92,7 +92,7 @@ describe(`board delete in room (api)`, () => {
 		});
 		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-		await em.persistAndFlush([columnBoardNode, columnNode]);
+		await em.persist([columnBoardNode, columnNode]).flush();
 		em.clear();
 
 		return { accountWithEditRole, accountWithViewRole, noAccessAccount, columnBoardNode, columnNode };

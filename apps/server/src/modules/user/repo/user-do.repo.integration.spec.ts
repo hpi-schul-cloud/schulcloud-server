@@ -61,7 +61,7 @@ describe('UserRepo', () => {
 		it('should find user without populating roles', async () => {
 			const user = userFactory.buildWithId();
 
-			await em.persistAndFlush(user);
+			await em.persist(user).flush();
 
 			const result = await repo.findById(user.id);
 
@@ -71,16 +71,16 @@ describe('UserRepo', () => {
 
 		it('should find user and populate roles', async () => {
 			const roles3 = roleFactory.buildList(1);
-			await em.persistAndFlush(roles3);
+			await em.persist(roles3).flush();
 
 			const roles2 = roleFactory.buildList(1, { roles: roles3 });
-			await em.persistAndFlush(roles2);
+			await em.persist(roles2).flush();
 
 			const roles1 = roleFactory.buildList(1, { roles: roles2 });
-			await em.persistAndFlush(roles1);
+			await em.persist(roles1).flush();
 
 			const user = userFactory.build({ roles: roles1 });
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 
 			em.clear();
 
@@ -98,9 +98,9 @@ describe('UserRepo', () => {
 		it('should find user and populate secondary schools', async () => {
 			const school = schoolEntityFactory.buildWithId();
 			const role = roleFactory.buildWithId();
-			await em.persistAndFlush([school, role]);
+			await em.persist([school, role]).flush();
 			const user = userFactory.buildWithId({ secondarySchools: [{ school, role }] });
-			await em.persistAndFlush(user);
+			await em.persist(user).flush();
 
 			em.clear();
 
@@ -127,7 +127,7 @@ describe('UserRepo', () => {
 				school.systems.add(system);
 				user = userFactory.buildWithId({ externalId, school });
 
-				await em.persistAndFlush([user, system, school]);
+				await em.persist([user, system, school]).flush();
 			});
 
 			it('should find a user by its external id', async () => {
@@ -171,7 +171,7 @@ describe('UserRepo', () => {
 				school.systems.add(system);
 				users = userFactory.buildList(2, { externalId, school });
 
-				await em.persistAndFlush([...users, system, school]);
+				await em.persist([...users, system, school]).flush();
 			});
 
 			it('should throw error', async () => {
@@ -192,7 +192,7 @@ describe('UserRepo', () => {
 				const user1 = userFactory.buildWithId({ externalId: 'externalId', school: school1 });
 				const user2 = userFactory.buildWithId({ externalId: 'externalId', school: school2 });
 
-				await em.persistAndFlush([system1, system2, school1, school2, user1, user2]);
+				await em.persist([system1, system2, school1, school2, user1, user2]).flush();
 
 				const result = await repo.findByExternalId(user2.externalId as string, system2.id);
 
@@ -219,7 +219,7 @@ describe('UserRepo', () => {
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });
 
-			await em.persistAndFlush([user, system, school]);
+			await em.persist([user, system, school]).flush();
 		});
 
 		it('should find a user by its external id', async () => {
@@ -248,7 +248,7 @@ describe('UserRepo', () => {
 		it('should find user by email', async () => {
 			const originalUsername = 'USER@EXAMPLE.COM';
 			const user = userFactory.build({ email: originalUsername });
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 			em.clear();
 
 			const result = await repo.findByEmail('USER@EXAMPLE.COM');
@@ -259,7 +259,7 @@ describe('UserRepo', () => {
 		it('should find user by email, ignoring case', async () => {
 			const originalUsername = 'USER@EXAMPLE.COM';
 			const user = userFactory.build({ email: originalUsername });
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 			em.clear();
 
 			const result = await repo.findByEmail('USER@example.COM');
@@ -274,7 +274,7 @@ describe('UserRepo', () => {
 		it('should not find by wildcard', async () => {
 			const originalUsername = 'USER@EXAMPLE.COM';
 			const user = userFactory.build({ email: originalUsername });
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 			em.clear();
 
 			const result = await repo.findByEmail('USER@EXAMPLECCOM');
@@ -288,7 +288,7 @@ describe('UserRepo', () => {
 			const email = 'USER@EXAMPLE.COM';
 			const role = roleFactory.buildWithId();
 			const user = userFactory.build({ email, roles: [role] });
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 			em.clear();
 
 			const result = await repo.findByEmail(email);
@@ -628,7 +628,7 @@ describe('UserRepo', () => {
 			const userB = userFactory.buildWithId({ firstName: 'B' });
 			const userC = userFactory.buildWithId({ firstName: 'C' });
 			const users = [userA, userB, userC];
-			await em.persistAndFlush(users);
+			await em.persist(users).flush();
 
 			const emFindAndCountSpy = jest.spyOn(em, 'findAndCount');
 
@@ -752,7 +752,7 @@ describe('UserRepo', () => {
 				const userB = userFactory.buildWithId({ firstName: 'B' });
 				const userC = userFactory.buildWithId({ firstName: 'C' });
 				const users = [userA, userB, userC];
-				await em.persistAndFlush(users);
+				await em.persist(users).flush();
 
 				const emFindAndCountSpy = jest.spyOn(em, 'findAndCount');
 
@@ -834,7 +834,7 @@ describe('UserRepo', () => {
 
 				const user = userFactory.buildWithId({ roles: [role] });
 
-				await em.persistAndFlush([user, role]);
+				await em.persist([user, role]).flush();
 				em.clear();
 
 				return { user, role };

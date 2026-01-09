@@ -96,7 +96,7 @@ describe('Room Controller (API)', () => {
 			]);
 
 			const registration = registrationEntityFactory.build({ roomIds: [room.id] });
-			await em.persistAndFlush([registration]);
+			await em.persist([registration]).flush();
 			em.clear();
 
 			return {

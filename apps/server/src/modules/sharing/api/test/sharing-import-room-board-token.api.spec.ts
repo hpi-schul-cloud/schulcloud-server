@@ -62,7 +62,7 @@ describe('Sharing Controller (API)', () => {
 			const board = columnBoardEntityFactory.build({
 				context: { id: room.id, type: BoardExternalReferenceType.Room },
 			});
-			await em.persistAndFlush([room, roomMembership, teacherAccount, teacherUser, userGroup, roomEditorRole, board]);
+			await em.persist([room, roomMembership, teacherAccount, teacherUser, userGroup, roomEditorRole, board]).flush();
 			em.clear();
 
 			const shareToken = await shareTokenService.createToken({

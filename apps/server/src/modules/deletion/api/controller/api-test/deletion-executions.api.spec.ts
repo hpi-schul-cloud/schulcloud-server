@@ -96,7 +96,7 @@ describe(`deletionExecution (api)`, () => {
 				testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 				const deletionRequest = deletionRequestEntityFactory.build();
 
-				await em.persistAndFlush(deletionRequest);
+				await em.persist(deletionRequest).flush();
 				em.clear();
 
 				return { deletionRequest };
@@ -269,7 +269,7 @@ describe(`deletionExecution (api)`, () => {
 				const deletionRequestsStudent = deletionRequestEntityFactory.build({
 					targetRefId: studentUser.id,
 				});
-				await em.persistAndFlush([deletionRequestsTeacher, deletionRequestsStudent]);
+				await em.persist([deletionRequestsTeacher, deletionRequestsStudent]).flush();
 				const deletionRequestIds = [deletionRequestsTeacher.id, deletionRequestsStudent.id];
 
 				testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
@@ -440,7 +440,7 @@ describe(`deletionExecution (api)`, () => {
 
 			const deletionRequest = deletionRequestEntityFactory.build();
 
-			await em.persistAndFlush(deletionRequest);
+			await em.persist(deletionRequest).flush();
 			em.clear();
 
 			return { deletionRequest, testApiClient };

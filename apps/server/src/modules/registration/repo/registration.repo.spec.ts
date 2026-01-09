@@ -59,7 +59,7 @@ describe('RegistrationRepo', () => {
 	describe('findById', () => {
 		const setup = async () => {
 			const registrationEntity = registrationEntityFactory.buildWithId();
-			await em.persistAndFlush(registrationEntity);
+			await em.persist(registrationEntity).flush();
 			em.clear();
 
 			return { registrationEntity };
@@ -82,7 +82,7 @@ describe('RegistrationRepo', () => {
 		const setup = async () => {
 			const mockedEmail = 'test@example.com';
 			const registrationEntity = registrationEntityFactory.buildWithId({ email: mockedEmail });
-			await em.persistAndFlush(registrationEntity);
+			await em.persist(registrationEntity).flush();
 			em.clear();
 
 			return { registrationEntity, mockedEmail };
@@ -108,7 +108,7 @@ describe('RegistrationRepo', () => {
 	describe('findByHash', () => {
 		const setup = async () => {
 			const registrationEntity = registrationEntityFactory.buildWithId();
-			await em.persistAndFlush(registrationEntity);
+			await em.persist(registrationEntity).flush();
 			em.clear();
 
 			return { registrationEntity };
@@ -161,7 +161,7 @@ describe('RegistrationRepo', () => {
 	describe('deleteByIds', () => {
 		const setup = async () => {
 			const registrationEntities = registrationEntityFactory.buildList(3);
-			await em.persistAndFlush(registrationEntities);
+			await em.persist(registrationEntities).flush();
 			em.clear();
 
 			const registrationIds = registrationEntities.map((r) => r.id.toString());

@@ -36,7 +36,7 @@ describe('FederalStateRepo', () => {
 	describe('findByName', () => {
 		const setup = async () => {
 			const federalState: FederalStateEntity = federalStateEntityFactory.build();
-			await em.persistAndFlush(federalState);
+			await em.persist(federalState).flush();
 			em.clear();
 
 			return {

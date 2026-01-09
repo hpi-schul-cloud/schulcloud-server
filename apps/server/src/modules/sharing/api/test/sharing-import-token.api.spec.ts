@@ -80,7 +80,7 @@ describe(`Share Token Import (API)`, () => {
 			contextId: school.id,
 		});
 
-		await em.persistAndFlush([teacherAccount, teacherUser, school, course, shareToken]);
+		await em.persist([teacherAccount, teacherUser, school, course, shareToken]).flush();
 		em.clear();
 
 		const loggedInClient = await testApiClient.login(teacherAccount);
@@ -157,7 +157,7 @@ describe(`Share Token Import (API)`, () => {
 					contextId: undefined,
 				});
 
-				await em.persistAndFlush([teacherAccount, teacherUser, targetSchool, course, shareToken]);
+				await em.persist([teacherAccount, teacherUser, targetSchool, course, shareToken]).flush();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
@@ -187,7 +187,7 @@ describe(`Share Token Import (API)`, () => {
 							tool: externalTool,
 						});
 
-						await em.persistAndFlush([externalTool, targetSchoolTool, sourceSchoolTool, ...sourceCourseTools]);
+						await em.persist([externalTool, targetSchoolTool, sourceSchoolTool, ...sourceCourseTools]).flush();
 						em.clear();
 
 						return {
@@ -243,7 +243,7 @@ describe(`Share Token Import (API)`, () => {
 							contextId: course.id,
 						});
 
-						await em.persistAndFlush([sourceSchoolTool, ...sourceCourseTools]);
+						await em.persist([sourceSchoolTool, ...sourceCourseTools]).flush();
 						em.clear();
 
 						return { loggedInClient, token, targetSchool };
@@ -429,7 +429,7 @@ describe(`Share Token Import (API)`, () => {
 
 						setupBoardEntitiesWithTools(course, sourceBoardToolOne, sourceBoardToolTwo);
 
-						await em.persistAndFlush([sourceSchoolTool, sourceBoardToolOne, sourceBoardToolTwo]);
+						await em.persist([sourceSchoolTool, sourceBoardToolOne, sourceBoardToolTwo]).flush();
 						em.clear();
 
 						return { loggedInClient, token, targetSchool };
@@ -695,7 +695,7 @@ describe(`Share Token Import (API)`, () => {
 
 						populateColumnBoardWithTools(columnBoardNode, sourceBoardToolOne, sourceBoardToolTwo);
 
-						await em.persistAndFlush([sourceSchoolTool, sourceBoardToolOne, sourceBoardToolTwo]);
+						await em.persist([sourceSchoolTool, sourceBoardToolOne, sourceBoardToolTwo]).flush();
 						em.clear();
 
 						return { loggedInClient, token, targetSchool, targetCourse };
@@ -789,7 +789,7 @@ describe(`Share Token Import (API)`, () => {
 					contextId: otherSchool.id,
 				});
 
-				await em.persistAndFlush([teacherUser, teacherAccount, school, course, otherSchool, shareToken]);
+				await em.persist([teacherUser, teacherAccount, school, course, otherSchool, shareToken]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

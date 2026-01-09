@@ -103,7 +103,7 @@ describe(`card move to board (api)`, () => {
 					schoolId: teacherUser.school.id,
 				});
 
-				await em.persistAndFlush([userGroup, roomMembership, roomEditorRole]);
+				await em.persist([userGroup, roomMembership, roomEditorRole]).flush();
 				em.clear();
 			};
 
@@ -258,7 +258,7 @@ describe(`card move to board (api)`, () => {
 				teachers: [teacherUser],
 				students: [studentUser],
 			});
-			await em.persistAndFlush([teacherUser, teacherAccount, studentUser, studentAccount, course]);
+			await em.persist([teacherUser, teacherAccount, studentUser, studentAccount, course]).flush();
 
 			const columnBoardNodes = columnBoardEntityFactory.buildList(2, {
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -268,7 +268,7 @@ describe(`card move to board (api)`, () => {
 			const toColumnNode = columnEntityFactory.withParent(columnBoardNodes[1]).build();
 			const cardNode = cardEntityFactory.withParent(fromColumnNode).build();
 
-			await em.persistAndFlush([...columnBoardNodes, fromColumnNode, toColumnNode, cardNode]);
+			await em.persist([...columnBoardNodes, fromColumnNode, toColumnNode, cardNode]).flush();
 			em.clear();
 
 			const loginTeacher = () => testApiClient.login(teacherAccount);

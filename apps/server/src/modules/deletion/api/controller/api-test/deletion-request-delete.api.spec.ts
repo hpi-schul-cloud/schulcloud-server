@@ -45,7 +45,7 @@ describe(`deletionRequest delete (api)`, () => {
 				targetRefId: studentUser.id,
 			});
 
-			await em.persistAndFlush([deletionRequest, studentUser, studentAccount]);
+			await em.persist([deletionRequest, studentUser, studentAccount]).flush();
 			em.clear();
 
 			return { deletionRequest };

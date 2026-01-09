@@ -61,7 +61,7 @@ describe('PseudonymController (API)', () => {
 					userId: studentUser.id,
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, pseudonym, externalToolEntity, school]);
+				await em.persist([studentAccount, studentUser, pseudonym, externalToolEntity, school]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
@@ -133,7 +133,7 @@ describe('PseudonymController (API)', () => {
 					userId: studentUser.id,
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, pseudonym, externalToolEntity, school]);
+				await em.persist([studentAccount, studentUser, pseudonym, externalToolEntity, school]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);

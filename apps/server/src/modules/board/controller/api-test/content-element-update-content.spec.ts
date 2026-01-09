@@ -48,7 +48,7 @@ describe(`content element update content (api)`, () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
-			await em.persistAndFlush([teacherUser, course]);
+			await em.persist([teacherUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -241,7 +241,7 @@ describe(`content element update content (api)`, () => {
 				UserAndAccountTestFactory.buildTeacher();
 
 			const course = courseEntityFactory.build({ teachers: [] });
-			await em.persistAndFlush([invalidTeacherUser, invalidTeacherAccount, course]);
+			await em.persist([invalidTeacherUser, invalidTeacherAccount, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -252,7 +252,7 @@ describe(`content element update content (api)`, () => {
 			const richTextElement = richTextElementEntityFactory.withParent(parentCard).build();
 			const submissionContainerElement = submissionContainerElementEntityFactory.withParent(parentCard).build();
 
-			await em.persistAndFlush([parentCard, column, columnBoardNode, richTextElement, submissionContainerElement]);
+			await em.persist([parentCard, column, columnBoardNode, richTextElement, submissionContainerElement]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(invalidTeacherAccount);

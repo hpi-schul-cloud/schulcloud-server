@@ -133,7 +133,7 @@ describe('Course Controller (API)', () => {
 					syncedWithGroup: group,
 				});
 
-				await em.persistAndFlush([teacher.account, teacher.user, course, group]);
+				await em.persist([teacher.account, teacher.user, course, group]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacher.account);
@@ -165,7 +165,7 @@ describe('Course Controller (API)', () => {
 					syncedWithGroup: group,
 				});
 
-				await em.persistAndFlush([teacher.account, teacher.user, course, group]);
+				await em.persist([teacher.account, teacher.user, course, group]).flush();
 				em.clear();
 
 				return {
@@ -204,7 +204,7 @@ describe('Course Controller (API)', () => {
 
 		it('should return teacher course permissions', async () => {
 			const { course, teacher } = setup();
-			await em.persistAndFlush([teacher.account, teacher.user, course]);
+			await em.persist([teacher.account, teacher.user, course]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacher.account);
@@ -228,7 +228,7 @@ describe('Course Controller (API)', () => {
 					teachers: [teacher.user],
 				});
 
-				await em.persistAndFlush([teacher.account, teacher.user, course, group]);
+				await em.persist([teacher.account, teacher.user, course, group]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacher.account);
@@ -261,7 +261,7 @@ describe('Course Controller (API)', () => {
 					teachers: [teacher.user],
 				});
 
-				await em.persistAndFlush([teacher.account, teacher.user, course, group]);
+				await em.persist([teacher.account, teacher.user, course, group]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacher.account);
@@ -295,7 +295,7 @@ describe('Course Controller (API)', () => {
 					syncedWithGroup: otherGroup,
 				});
 
-				await em.persistAndFlush([teacher.account, teacher.user, course, group]);
+				await em.persist([teacher.account, teacher.user, course, group]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacher.account);
@@ -335,7 +335,7 @@ describe('Course Controller (API)', () => {
 					teachers: [teacher.user],
 				});
 
-				await em.persistAndFlush([teacher.account, teacher.user, course, group]);
+				await em.persist([teacher.account, teacher.user, course, group]).flush();
 				em.clear();
 
 				return {
@@ -370,7 +370,7 @@ describe('Course Controller (API)', () => {
 				students: [],
 			});
 
-			await em.persistAndFlush([teacher.account, teacher.user, course]);
+			await em.persist([teacher.account, teacher.user, course]).flush();
 			em.clear();
 
 			return { course, teacher };
@@ -394,7 +394,7 @@ describe('Course Controller (API)', () => {
 			const teacher = createTeacher(school);
 			const course = courseEntityFactory.build();
 
-			await em.persistAndFlush([teacher.account, teacher.user]);
+			await em.persist([teacher.account, teacher.user]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacher.account);

@@ -71,7 +71,7 @@ describe('Dashboard Controller (API)', () => {
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const twoDaysInMilliSeconds = 172800000;
 				const courses = courseBuild(studentUser, teacherUser, twoDaysInMilliSeconds);
-				await em.persistAndFlush([teacherUser, teacherAccount, studentUser, ...courses]);
+				await em.persist([teacherUser, teacherAccount, studentUser, ...courses]).flush();
 				const { id: dashboardId } = await dashboardRepo.getUsersDashboard(teacherUser.id);
 
 				const loggedInClient = await apiClient.login(teacherAccount);
@@ -101,7 +101,7 @@ describe('Dashboard Controller (API)', () => {
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const twoDaysInMilliSeconds = 172800000;
 				const courses = courseBuild(studentUser, teacherUser, twoDaysInMilliSeconds);
-				await em.persistAndFlush([teacherUser, teacherAccount, studentUser, ...courses]);
+				await em.persist([teacherUser, teacherAccount, studentUser, ...courses]).flush();
 				const { id: dashboardId } = await dashboardRepo.getUsersDashboard(teacherUser.id);
 
 				return { teacherUser, dashboardId };
@@ -129,7 +129,7 @@ describe('Dashboard Controller (API)', () => {
 					students: [studentUser],
 					school: school,
 				});
-				await em.persistAndFlush([teacherUser, studentAccount, studentUser, ...courses, lockedCourse]);
+				await em.persist([teacherUser, studentAccount, studentUser, ...courses, lockedCourse]).flush();
 				const { id: dashboardId } = await dashboardRepo.getUsersDashboard(studentUser.id);
 
 				const loggedInClient = await apiClient.login(studentAccount);
@@ -170,7 +170,7 @@ describe('Dashboard Controller (API)', () => {
 			const { studentUser } = UserAndAccountTestFactory.buildStudent();
 			const twoDaysInMilliSeconds = 172800000;
 			const courses = courseBuild(studentUser, teacherUser, twoDaysInMilliSeconds);
-			await em.persistAndFlush([teacherUser, teacherAccount, studentUser, ...courses]);
+			await em.persist([teacherUser, teacherAccount, studentUser, ...courses]).flush();
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(teacherUser.id);
 
 			const loggedInClient = await apiClient.login(teacherAccount);
@@ -193,7 +193,7 @@ describe('Dashboard Controller (API)', () => {
 				],
 				userId: teacherUser.id,
 			});
-			await dashboardRepo.persistAndFlush(dashboard);
+			await dashboardRepo.persist(dashboard).flush();
 			const params = {
 				from: { x: 1, y: 3 },
 				to: { x: 4, y: 2 },
@@ -225,7 +225,7 @@ describe('Dashboard Controller (API)', () => {
 				],
 				userId: teacherUser.id,
 			});
-			await dashboardRepo.persistAndFlush(dashboard);
+			await dashboardRepo.persist(dashboard).flush();
 			const params = {
 				from: { x: 1, y: 3 },
 				to: { x: 2, y: 2 },
@@ -260,7 +260,7 @@ describe('Dashboard Controller (API)', () => {
 				],
 				userId: teacherUser.id,
 			});
-			await dashboardRepo.persistAndFlush(dashboard);
+			await dashboardRepo.persist(dashboard).flush();
 			const params = {
 				from: { x: 2, y: 2 },
 				to: { x: 3, y: 3 },
@@ -288,7 +288,7 @@ describe('Dashboard Controller (API)', () => {
 				],
 				userId: teacherUser.id,
 			});
-			await dashboardRepo.persistAndFlush(dashboard);
+			await dashboardRepo.persist(dashboard).flush();
 			const params = {
 				from: { x: 3, y: 3, groupIndex: 0 },
 				to: { x: 2, y: 3 },
@@ -315,7 +315,7 @@ describe('Dashboard Controller (API)', () => {
 				],
 				userId: teacherUser.id,
 			});
-			await dashboardRepo.persistAndFlush(dashboard);
+			await dashboardRepo.persist(dashboard).flush();
 			const params = {
 				from: { x: 1, y: 3 },
 				to: { x: 4 },
@@ -331,7 +331,7 @@ describe('Dashboard Controller (API)', () => {
 			const { studentUser } = UserAndAccountTestFactory.buildStudent();
 			const twoDaysInMilliSeconds = 172800000;
 			const courses = courseBuild(studentUser, teacherUser, twoDaysInMilliSeconds);
-			await em.persistAndFlush([teacherUser, teacherAccount, studentUser, ...courses]);
+			await em.persist([teacherUser, teacherAccount, studentUser, ...courses]).flush();
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(teacherUser.id);
 
 			const loggedInClient = await apiClient.login(teacherAccount);
@@ -354,7 +354,7 @@ describe('Dashboard Controller (API)', () => {
 				],
 				userId: teacherUser.id,
 			});
-			await dashboardRepo.persistAndFlush(dashboard);
+			await dashboardRepo.persist(dashboard).flush();
 			const params = {
 				title: 'COURSESILOVE',
 			};

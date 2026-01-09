@@ -18,7 +18,7 @@ export interface IDashboardRepo {
 	getUsersDashboard(userId: EntityId): Promise<Dashboard>;
 	getUsersDashboardIfExist(userId: EntityId): Promise<Dashboard | null>;
 	getDashboardById(id: EntityId): Promise<Dashboard>;
-	persistAndFlush(entity: Dashboard): Promise<Dashboard>;
+	persist(entity: Dashboard).flush(): Promise<Dashboard>;
 	deleteDashboardByUserId(userId: EntityId): Promise<number>;
 }
 
@@ -34,9 +34,9 @@ export class DashboardRepo implements IDashboardRepo {
 		return this.mapper.mapDashboardToEntity(modelEntity);
 	}
 
-	public async persistAndFlush(entity: Dashboard): Promise<Dashboard> {
+	public async persist(entity: Dashboard).flush(): Promise<Dashboard> {
 		const modelEntity = await this.mapper.mapDashboardToModel(entity);
-		await this.em.persistAndFlush(modelEntity);
+		await this.em.persist(modelEntity).flush();
 
 		return this.mapper.mapDashboardToEntity(modelEntity);
 	}
@@ -55,7 +55,7 @@ export class DashboardRepo implements IDashboardRepo {
 		}
 
 		const dashboard = generateEmptyDashboard(userId);
-		await this.persistAndFlush(dashboard);
+		await this.persist(dashboard).flush();
 
 		return dashboard;
 	}

@@ -51,7 +51,7 @@ describe('Room Controller (API)', () => {
 	const createRoomUsers = async (school: SchoolEntity, roomRoleNames: Array<RoleName>) => {
 		const { roomOwnerRole, roomAdminRole, roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 		const roles = [roomOwnerRole, roomAdminRole, roomEditorRole, roomViewerRole];
-		await em.persistAndFlush(roles);
+		await em.persist(roles).flush();
 
 		const usersWithRoomRoles: Array<{ role: Role; user: User }> = [];
 		const users: User[] = [];
@@ -63,7 +63,7 @@ describe('Room Controller (API)', () => {
 				throw new Error(`Role with name ${roleName} not found`);
 			}
 			usersWithRoomRoles.push({ role, user: teacherUser });
-			await em.persistAndFlush([teacherUser, teacherAccount]);
+			await em.persist([teacherUser, teacherAccount]).flush();
 			users.push(teacherUser);
 			accounts.push(teacherAccount);
 		}
@@ -134,7 +134,7 @@ describe('Room Controller (API)', () => {
 			describe('when the user has not the required permissions', () => {
 				const setupLoggedInUser = async (school: SchoolEntity) => {
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-					await em.persistAndFlush([teacherAccount, teacherUser]);
+					await em.persist([teacherAccount, teacherUser]).flush();
 
 					const loggedInClient = await testApiClient.login(teacherAccount);
 
@@ -170,7 +170,7 @@ describe('Room Controller (API)', () => {
 					const { loggedInClient, room } = await setupRoomWithMembers();
 					const school = schoolEntityFactory.buildWithId();
 					const targetUser = userFactory.buildWithId({ school, discoverable: false });
-					await em.persistAndFlush(targetUser);
+					await em.persist(targetUser).flush();
 
 					const response = await loggedInClient.patch(`/${room.id}/members/add`, {
 						userIds: [targetUser.id],
@@ -193,11 +193,11 @@ describe('Room Controller (API)', () => {
 				]);
 
 				const { roomEntity, userGroup, roomMembership } = createRoomWithUserGroup(school, usersWithRoomRoles);
-				await em.persistAndFlush([school, roomEntity, userGroup, roomMembership]);
+				await em.persist([school, roomEntity, userGroup, roomMembership]).flush();
 				em.clear();
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -209,7 +209,7 @@ describe('Room Controller (API)', () => {
 				it('should return OK', async () => {
 					const { loggedInClient, room, school } = await setupRoomWithMembers();
 					const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
-					await em.persistAndFlush([teacherUser, teacherAccount]);
+					await em.persist([teacherUser, teacherAccount]).flush();
 
 					const response = await loggedInClient.patch(`/${room.id}/members/add`, {
 						userIds: [teacherUser.id],
@@ -225,7 +225,7 @@ describe('Room Controller (API)', () => {
 					const otherSchool = schoolEntityFactory.buildWithId();
 
 					const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school: otherSchool });
-					await em.persistAndFlush([school, teacherUser, teacherAccount]);
+					await em.persist([school, teacherUser, teacherAccount]).flush();
 
 					const response = await loggedInClient.patch(`/${room.id}/members/add`, {
 						userIds: [teacherUser.id],

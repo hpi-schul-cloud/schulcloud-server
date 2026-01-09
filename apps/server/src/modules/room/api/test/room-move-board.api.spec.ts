@@ -51,7 +51,7 @@ describe('Room Controller (API)', () => {
 		describe('when id is not a valid mongo id', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -108,7 +108,7 @@ describe('Room Controller (API)', () => {
 						return { id: board.id, type: RoomContentType.BOARD };
 					}),
 				});
-				await em.persistAndFlush(roomContent);
+				await em.persist(roomContent).flush();
 
 				em.clear();
 
@@ -136,7 +136,7 @@ describe('Room Controller (API)', () => {
 						const { loggedInClient, room } = await setup();
 						const someBoard = columnBoardEntityFactory.buildWithId();
 
-						await em.persistAndFlush(someBoard);
+						await em.persist(someBoard).flush();
 						em.clear();
 
 						const response = await loggedInClient.patch(`${room.id}/boards`, { id: someBoard.id, toPosition: 0 });
@@ -185,7 +185,7 @@ describe('Room Controller (API)', () => {
 					endDate: new Date('2024-10-20'),
 				});
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([room, teacherAccount, teacherUser]);
+				await em.persist([room, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

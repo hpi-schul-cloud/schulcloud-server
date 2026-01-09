@@ -175,7 +175,7 @@ describe('Room Controller (API)', () => {
 					const { room } = roomSetup;
 
 					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school: roomSetup.sameSchool });
-					await em.persistAndFlush([adminAccount, adminUser]);
+					await em.persist([adminAccount, adminUser]).flush();
 					em.clear();
 					const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -197,7 +197,7 @@ describe('Room Controller (API)', () => {
 					]);
 
 					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school: roomSetup.sameSchool });
-					await em.persistAndFlush([adminAccount, adminUser]);
+					await em.persist([adminAccount, adminUser]).flush();
 					em.clear();
 					const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -234,7 +234,7 @@ describe('Room Controller (API)', () => {
 					const { room } = roomSetup;
 
 					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school: roomSetup.otherSchool });
-					await em.persistAndFlush([adminAccount, adminUser]);
+					await em.persist([adminAccount, adminUser]).flush();
 					em.clear();
 
 					const targetUser = roomSetup.getUserByName(targetUserName);

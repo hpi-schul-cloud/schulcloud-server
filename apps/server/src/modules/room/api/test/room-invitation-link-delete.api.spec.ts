@@ -52,7 +52,7 @@ describe('Room Controller (API)', () => {
 		describe('when id is not a valid mongo id', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -134,7 +134,7 @@ describe('Room Controller (API)', () => {
 					const additionalLinks = roomInvitationLinkEntityFactory.buildList(3, {
 						roomId: room.id,
 					});
-					await em.persistAndFlush(additionalLinks);
+					await em.persist(additionalLinks).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(teacherOwnerAccount);
@@ -174,7 +174,7 @@ describe('Room Controller (API)', () => {
 				const room = roomEntityFactory.build();
 				const roomInvitationLink = roomInvitationLinkEntityFactory.build({ roomId: room.id });
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([room, roomInvitationLink, teacherAccount, teacherUser]);
+				await em.persist([room, roomInvitationLink, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

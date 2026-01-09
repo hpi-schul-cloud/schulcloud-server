@@ -89,7 +89,7 @@ describe(`board update title with room relation (api)`, () => {
 			context: { id: room.id, type: BoardExternalReferenceType.Room },
 		});
 
-		await em.persistAndFlush([columnBoardNode]);
+		await em.persist([columnBoardNode]).flush();
 		em.clear();
 
 		return { accountWithEditRole, accountWithViewRole, noAccessAccount, columnBoardNode, originalTitle };

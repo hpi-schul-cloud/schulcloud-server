@@ -158,7 +158,7 @@ describe('VideoConferenceController (API)', () => {
 					Permission.JOIN_MEETING,
 				]);
 
-				await em.persistAndFlush([school, teacherAccount, teacherUser]);
+				await em.persist([school, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const params: VideoConferenceCreateParams = {
@@ -200,7 +200,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course]);
+					await em.persist([school, teacherAccount, teacherUser, course]).flush();
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -242,7 +242,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const course = courseEntityFactory.buildWithId({ school, students: [studentUser] });
 
-					await em.persistAndFlush([school, studentRole, studentAccount, studentUser, course]);
+					await em.persist([school, studentRole, studentAccount, studentUser, course]).flush();
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -281,7 +281,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course]);
+					await em.persist([school, teacherAccount, teacherUser, course]).flush();
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -325,7 +325,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -380,7 +380,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -417,7 +417,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -457,7 +457,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -506,7 +506,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -542,7 +542,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -627,7 +627,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -676,7 +676,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -712,7 +712,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, studentAccount, studentUser, course, videoConference]);
+					await em.persist([school, studentAccount, studentUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -747,7 +747,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;

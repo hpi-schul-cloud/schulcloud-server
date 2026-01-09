@@ -82,7 +82,7 @@ describe('News Controller (API)', () => {
 
 	const createTestNews = async (targetModel: NewsTargetModel, targetId: EntityId, user: User, unpublished = false) => {
 		const news = newTestNews(targetModel, targetId, user, unpublished);
-		await em.persistAndFlush(news);
+		await em.persist(news).flush();
 		return news;
 	};
 
@@ -91,7 +91,7 @@ describe('News Controller (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await newsApiClient.login(studentAccount);
 
@@ -155,7 +155,7 @@ describe('News Controller (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await newsApiClient.login(studentAccount);
 
@@ -183,7 +183,7 @@ describe('News Controller (API)', () => {
 
 				const news = await createTestNews(NewsTargetModel.Course, courseTargetId, studentUser);
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				return { news };
 			};
@@ -202,7 +202,7 @@ describe('News Controller (API)', () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				const news = await createTestNews(NewsTargetModel.Team, teamTargetId, studentUser);
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await teamsApiClient.login(studentAccount);
 
@@ -231,7 +231,7 @@ describe('News Controller (API)', () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				const news = await createTestNews(NewsTargetModel.Team, teamTargetId, studentUser);
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				return { news };
 			};
@@ -249,7 +249,7 @@ describe('News Controller (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await newsApiClient.login(studentAccount);
 
@@ -314,7 +314,7 @@ describe('News Controller (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await newsApiClient.login(studentAccount);
 
@@ -383,7 +383,7 @@ describe('News Controller (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await newsApiClient.login(studentAccount);
 
@@ -410,7 +410,7 @@ describe('News Controller (API)', () => {
 			const setup = async () => {
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentUser]);
+				await em.persist([studentUser]).flush();
 
 				const news = await createTestNews(NewsTargetModel.Course, courseTargetId, studentUser);
 				const newsId = news._id.toHexString();

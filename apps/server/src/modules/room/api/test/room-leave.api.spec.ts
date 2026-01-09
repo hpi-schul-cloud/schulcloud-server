@@ -102,7 +102,7 @@ describe('Room Controller (API)', () => {
 		describe('when the user has not the required permissions', () => {
 			const setupLoggedInUser = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 				const loggedInClient = await testApiClient.login(teacherAccount);
 				return { loggedInClient, teacherUser };
 			};

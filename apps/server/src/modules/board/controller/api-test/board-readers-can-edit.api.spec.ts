@@ -99,7 +99,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 			context: { id: room.id, type: BoardExternalReferenceType.Room },
 		});
 
-		await em.persistAndFlush([columnBoardNode]);
+		await em.persist([columnBoardNode]).flush();
 		em.clear();
 
 		return { accountWithAdminRole, accountWithEditRole, accountWithViewRole, noAccessAccount, columnBoardNode };

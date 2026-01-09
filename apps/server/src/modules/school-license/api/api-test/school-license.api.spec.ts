@@ -61,7 +61,7 @@ describe('SchoolLicenseController (API)', () => {
 				const mediaSource = mediaSourceEntityFactory.withVidisFormat().build();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school });
-				await em.persistAndFlush([adminUser, adminAccount, federalState, school, mediaSource]);
+				await em.persist([adminUser, adminAccount, federalState, school, mediaSource]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -91,7 +91,7 @@ describe('SchoolLicenseController (API)', () => {
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([adminUser, adminAccount, school, mediaSource]);
+				await em.persist([adminUser, adminAccount, school, mediaSource]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -121,7 +121,7 @@ describe('SchoolLicenseController (API)', () => {
 				});
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school });
-				await em.persistAndFlush([adminUser, adminAccount, school]);
+				await em.persist([adminUser, adminAccount, school]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -150,7 +150,7 @@ describe('SchoolLicenseController (API)', () => {
 				const mediaSource = mediaSourceEntityFactory.withVidisFormat().build();
 
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
-				await em.persistAndFlush([teacherUser, teacherAccount, school, mediaSource]);
+				await em.persist([teacherUser, teacherAccount, school, mediaSource]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -246,7 +246,7 @@ describe('SchoolLicenseController (API)', () => {
 				});
 
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
-				await em.persistAndFlush([teacherUser, teacherAccount, school, mediaSource, mediaSchoolLicense]);
+				await em.persist([teacherUser, teacherAccount, school, mediaSource, mediaSchoolLicense]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

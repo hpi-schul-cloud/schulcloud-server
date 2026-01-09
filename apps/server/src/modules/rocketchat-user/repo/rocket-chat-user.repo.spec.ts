@@ -54,7 +54,7 @@ describe(RocketChatUserRepo.name, () => {
 			const setup = async () => {
 				const userId = new ObjectId();
 				const entity: RocketChatUserEntity = rocketChatUserEntityFactory.build({ userId });
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 				em.clear();
 				const expectedRocketChatUser = {
 					id: entity.id,
@@ -105,7 +105,7 @@ describe(RocketChatUserRepo.name, () => {
 			const setup = async () => {
 				const entity: RocketChatUserEntity = rocketChatUserEntityFactory.build();
 				const rocketChatUserId = entity.userId.toHexString();
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 				em.clear();
 
 				return { rocketChatUserId };

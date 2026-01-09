@@ -82,7 +82,7 @@ describe('School Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -108,7 +108,7 @@ describe('School Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -135,7 +135,7 @@ describe('School Controller (API)', () => {
 				const teachersOfSchool = userFactory.buildList(3, { school, roles: [teacherRole] });
 				const publicTeachersOfSchool = userFactory.buildList(2, { school, roles: [teacherRole], discoverable: true });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, ...teachersOfSchool, ...publicTeachersOfSchool]);
+				await em.persist([teacherAccount, teacherUser, ...teachersOfSchool, ...publicTeachersOfSchool]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -214,7 +214,7 @@ describe('School Controller (API)', () => {
 				const otherSchool = schoolEntityFactory.build();
 				const teachersOfOtherSchool = userFactory.buildList(3, { school: otherSchool, roles: [teacherRole] });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, ...teachersOfSchool, ...teachersOfOtherSchool]);
+				await em.persist([teacherAccount, teacherUser, ...teachersOfSchool, ...teachersOfOtherSchool]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -258,7 +258,7 @@ describe('School Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -284,7 +284,7 @@ describe('School Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -317,7 +317,7 @@ describe('School Controller (API)', () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: userSchool });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school: userSchool });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, studentUser, studentAccount, userSchool, school]);
+				await em.persist([teacherAccount, teacherUser, studentUser, studentAccount, userSchool, school]).flush();
 
 				const { studentIds: studentIdsOfCurrentClass } = await buildClassWithAdditionalStudents({
 					teacherUser,
@@ -490,7 +490,7 @@ describe('School Controller (API)', () => {
 					year: classYear?._id,
 				});
 
-				await em.persistAndFlush([createdClass, ...studentsOfSchoolInClass]);
+				await em.persist([createdClass, ...studentsOfSchoolInClass]).flush();
 
 				return { createdClass, studentIds };
 			};
@@ -532,7 +532,7 @@ describe('School Controller (API)', () => {
 
 				const studentIds = [data.studentUser._id, ...studentsOfSchoolInMoinSchuleClass.map((student) => student._id)];
 
-				await em.persistAndFlush([moinSchuleClass, ...studentsOfSchoolInMoinSchuleClass]);
+				await em.persist([moinSchuleClass, ...studentsOfSchoolInMoinSchuleClass]).flush();
 
 				return { moinSchuleClass, studentIds };
 			};
@@ -543,7 +543,7 @@ describe('School Controller (API)', () => {
 					roles: [role],
 				});
 
-				await em.persistAndFlush(users);
+				await em.persist(users).flush();
 
 				const userIds = users.map((user) => user._id);
 
@@ -560,7 +560,7 @@ describe('School Controller (API)', () => {
 				const studentRole = studentUser.roles[0];
 				const studentsOfSchool = userFactory.buildList(3, { school, roles: [studentRole] });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, ...studentsOfSchool]);
+				await em.persist([teacherAccount, teacherUser, studentAccount, studentUser, ...studentsOfSchool]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -588,7 +588,7 @@ describe('School Controller (API)', () => {
 				const studentRole = studentUser.roles[0];
 				const studentsOfSchool = userFactory.buildList(3, { school, roles: [studentRole] });
 
-				await em.persistAndFlush([studentUser, studentAccount, teacherAccount, teacherUser, ...studentsOfSchool]);
+				await em.persist([studentUser, studentAccount, teacherAccount, teacherUser, ...studentsOfSchool]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

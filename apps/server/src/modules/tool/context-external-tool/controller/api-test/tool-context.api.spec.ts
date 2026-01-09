@@ -94,7 +94,7 @@ describe('ToolContextController (API)', () => {
 					],
 				};
 
-				await em.persistAndFlush([teacherUser, teacherAccount, course, school, schoolExternalToolEntity]);
+				await em.persist([teacherUser, teacherAccount, course, school, schoolExternalToolEntity]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
@@ -136,7 +136,7 @@ describe('ToolContextController (API)', () => {
 					school,
 				});
 
-				await em.persistAndFlush([course, otherCourse, school, teacherUser, teacherAccount, schoolExternalToolEntity]);
+				await em.persist([course, otherCourse, school, teacherUser, teacherAccount, schoolExternalToolEntity]).flush();
 				em.clear();
 
 				const postParams: ContextExternalToolPostParams = {
@@ -191,7 +191,7 @@ describe('ToolContextController (API)', () => {
 					parameters: [],
 				};
 
-				await em.persistAndFlush([teacherUser, teacherAccount, course, school, schoolExternalToolEntity]);
+				await em.persist([teacherUser, teacherAccount, course, school, schoolExternalToolEntity]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
@@ -246,7 +246,7 @@ describe('ToolContextController (API)', () => {
 					parameters: [],
 				};
 
-				await em.persistAndFlush([teacherUser, teacherAccount, course, school, schoolExternalToolEntity]);
+				await em.persist([teacherUser, teacherAccount, course, school, schoolExternalToolEntity]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
@@ -584,7 +584,7 @@ describe('ToolContextController (API)', () => {
 					school,
 				});
 
-				await em.persistAndFlush([school, course, teacherAccount, teacherUser]);
+				await em.persist([school, course, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
@@ -620,7 +620,7 @@ describe('ToolContextController (API)', () => {
 					contextType: ContextExternalToolType.COURSE,
 				});
 
-				await em.persistAndFlush([school, course, externalTool, schoolExternalTool, contextExternalTool]);
+				await em.persist([school, course, externalTool, schoolExternalTool, contextExternalTool]).flush();
 				em.clear();
 
 				return {
@@ -654,7 +654,7 @@ describe('ToolContextController (API)', () => {
 					tool: externalTool,
 				});
 
-				await em.persistAndFlush([school, course, externalTool, schoolExternalTool, studentAccount, studentUser]);
+				await em.persist([school, course, externalTool, schoolExternalTool, studentAccount, studentUser]).flush();
 
 				const contextExternalTool: ContextExternalToolEntity = contextExternalToolEntityFactory.build({
 					contextId: course.id,
@@ -662,7 +662,7 @@ describe('ToolContextController (API)', () => {
 					contextType: ContextExternalToolType.COURSE,
 				});
 
-				await em.persistAndFlush([contextExternalTool]);
+				await em.persist([contextExternalTool]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
@@ -809,7 +809,7 @@ describe('ToolContextController (API)', () => {
 					parameters: [],
 				});
 
-				await em.persistAndFlush([contextExternalToolEntity]);
+				await em.persist([contextExternalToolEntity]).flush();
 
 				em.clear();
 

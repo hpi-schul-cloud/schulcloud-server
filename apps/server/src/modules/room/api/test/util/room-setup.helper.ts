@@ -82,7 +82,7 @@ export class RoomSetup {
 			throw new Error(`Logged in user ${loggedinUserName} not found in users`);
 		}
 		const loggedInAccount = UserAndAccountTestFactory.buildAccount(loggedInUser);
-		await this.em.persistAndFlush(loggedInAccount);
+		await this.em.persist(loggedInAccount).flush();
 		this.em.clear();
 		return loggedInAccount;
 	};
@@ -229,7 +229,7 @@ export class RoomSetup {
 			schoolId: school.id,
 		});
 
-		await this.em.persistAndFlush([room, roomMembership, userGroupEntity]);
+		await this.em.persist([room, roomMembership, userGroupEntity]).flush();
 		this.em.clear();
 
 		this._room = room;
@@ -256,7 +256,7 @@ export class RoomSetup {
 			};
 			return userFactory.buildWithId(data);
 		});
-		await this.em.persistAndFlush(users);
+		await this.em.persist(users).flush();
 		this.em.clear();
 		return users;
 	};

@@ -153,7 +153,7 @@ describe('Registration Controller (API)', () => {
 						roomIds: [],
 					});
 
-					await em.persistAndFlush(existingRegistration);
+					await em.persist(existingRegistration).flush();
 					em.clear();
 
 					const response = await loggedInClient.post(undefined, params);
@@ -173,7 +173,7 @@ describe('Registration Controller (API)', () => {
 						roomIds: [],
 					});
 
-					await em.persistAndFlush(existingRegistration);
+					await em.persist(existingRegistration).flush();
 					em.clear();
 
 					const response = await loggedInClient.post(undefined, params);

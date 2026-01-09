@@ -162,7 +162,7 @@ describe('Group (API)', () => {
 						organization: school,
 					});
 
-					await em.persistAndFlush([teacherAccount, teacherUser, group]);
+					await em.persist([teacherAccount, teacherUser, group]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(teacherAccount);
@@ -209,7 +209,7 @@ describe('Group (API)', () => {
 				const setup = async () => {
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-					await em.persistAndFlush([teacherAccount, teacherUser]);
+					await em.persist([teacherAccount, teacherUser]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(teacherAccount);
@@ -241,7 +241,7 @@ describe('Group (API)', () => {
 
 				const group = groupEntityFactory.buildWithId();
 
-				await em.persistAndFlush([studentAccount, studentUser, group]);
+				await em.persist([studentAccount, studentUser, group]).flush();
 				em.clear();
 
 				return {
@@ -643,7 +643,7 @@ describe('Group (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 			};
 

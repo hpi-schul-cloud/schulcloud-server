@@ -88,7 +88,7 @@ describe('Me Controller (API)', () => {
 						const school = schoolEntityFactory.build({ permissions: { student: { LERNSTORE_VIEW: true } } });
 						const { studentAccount: account, studentUser: user } = UserAndAccountTestFactory.buildStudent({ school });
 
-						await em.persistAndFlush([account, user]);
+						await em.persist([account, user]).flush();
 						em.clear();
 
 						const loggedInClient = await testApiClient.login(account);
@@ -112,7 +112,7 @@ describe('Me Controller (API)', () => {
 					const setup = async () => {
 						const { teacherAccount: account, teacherUser: user } = UserAndAccountTestFactory.buildTeacher();
 
-						await em.persistAndFlush([account, user]);
+						await em.persist([account, user]).flush();
 						em.clear();
 
 						const loggedInClient = await testApiClient.login(account);
@@ -136,7 +136,7 @@ describe('Me Controller (API)', () => {
 					const setup = async () => {
 						const { adminAccount: account, adminUser: user } = UserAndAccountTestFactory.buildAdmin();
 
-						await em.persistAndFlush([account, user]);
+						await em.persist([account, user]).flush();
 						em.clear();
 
 						const loggedInClient = await testApiClient.login(account);
@@ -191,7 +191,7 @@ describe('Me Controller (API)', () => {
 
 					const system = systemEntityFactory.build();
 
-					await em.persistAndFlush([studentAccount, studentUser, system]);
+					await em.persist([studentAccount, studentUser, system]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);

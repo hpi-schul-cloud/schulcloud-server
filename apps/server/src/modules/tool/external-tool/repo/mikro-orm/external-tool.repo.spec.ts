@@ -69,7 +69,7 @@ describe(ExternalToolRepo.name, () => {
 			.buildWithId();
 		const externalLti11Tool: ExternalToolEntity = externalToolEntityFactory.withLti11Config().buildWithId();
 
-		await em.persistAndFlush([externalToolEntity, externalOauthTool, externalOauthTool2, externalLti11Tool]);
+		await em.persist([externalToolEntity, externalOauthTool, externalOauthTool2, externalLti11Tool]).flush();
 		em.clear();
 
 		const queryExternalToolDO: ExternalToolSearchQuery = { name: 'external-tool-*' };
@@ -277,7 +277,7 @@ describe(ExternalToolRepo.name, () => {
 				.buildWithId();
 			const ltiTools: ExternalToolEntity[] = [ltiToolA, ltiToolB, ltiToolC, ltiDraftTool, ltiTemplateTool];
 
-			await em.persistAndFlush(ltiTools);
+			await em.persist(ltiTools).flush();
 			em.clear();
 
 			return { queryExternalToolDO, options, ltiTools };
@@ -386,7 +386,7 @@ describe(ExternalToolRepo.name, () => {
 		const setup2 = async () => {
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 
-			await em.persistAndFlush(externalToolEntity);
+			await em.persist(externalToolEntity).flush();
 			em.clear();
 
 			return {
@@ -429,7 +429,7 @@ describe(ExternalToolRepo.name, () => {
 					},
 				});
 
-				await em.persistAndFlush([externalToolEntity, otherExternalToolEntity]);
+				await em.persist([externalToolEntity, otherExternalToolEntity]).flush();
 				em.clear();
 
 				return {
@@ -464,7 +464,7 @@ describe(ExternalToolRepo.name, () => {
 					},
 				});
 
-				await em.persistAndFlush(externalToolEntity);
+				await em.persist(externalToolEntity).flush();
 				em.clear();
 			};
 
@@ -489,7 +489,7 @@ describe(ExternalToolRepo.name, () => {
 					},
 				});
 
-				await em.persistAndFlush([entity]);
+				await em.persist([entity]).flush();
 				em.clear();
 
 				return {
@@ -517,7 +517,7 @@ describe(ExternalToolRepo.name, () => {
 					},
 				});
 
-				await em.persistAndFlush([entity]);
+				await em.persist([entity]).flush();
 				em.clear();
 
 				return {
@@ -544,7 +544,7 @@ describe(ExternalToolRepo.name, () => {
 					},
 				});
 
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 				em.clear();
 			};
 
@@ -562,7 +562,7 @@ describe(ExternalToolRepo.name, () => {
 		const setup2 = async () => {
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 
-			await em.persistAndFlush(externalToolEntity);
+			await em.persist(externalToolEntity).flush();
 			em.clear();
 
 			return {
@@ -636,7 +636,7 @@ describe(ExternalToolRepo.name, () => {
 					},
 				});
 
-				await em.persistAndFlush(externalToolEntity);
+				await em.persist(externalToolEntity).flush();
 				em.clear();
 			};
 
@@ -708,7 +708,7 @@ describe(ExternalToolRepo.name, () => {
 					)
 				);
 
-				await em.persistAndFlush(externalToolEntities);
+				await em.persist(externalToolEntities).flush();
 				em.clear();
 
 				const externalToolDOs: ExternalTool[] = existingTools.map((existingTool: ExternalTool) =>
@@ -775,7 +775,7 @@ describe(ExternalToolRepo.name, () => {
 			const name = 'test-tool';
 			const entities: ExternalToolEntity[] = externalToolEntityFactory.buildList(3, { name });
 
-			await em.persistAndFlush(entities);
+			await em.persist(entities).flush();
 
 			const domainObjects: ExternalTool[] = entities.map((entity: ExternalToolEntity) =>
 				repo.mapEntityToDomainObject(entity)

@@ -43,14 +43,14 @@ describe(`column update title (api)`, () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
-			await em.persistAndFlush([teacherUser, course]);
+			await em.persist([teacherUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-			await em.persistAndFlush([teacherAccount, teacherUser, columnNode, columnBoardNode]);
+			await em.persist([teacherAccount, teacherUser, columnNode, columnBoardNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -99,7 +99,7 @@ describe(`column update title (api)`, () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 			const course = courseEntityFactory.build({ students: [studentUser] });
-			await em.persistAndFlush([studentUser, course]);
+			await em.persist([studentUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -107,7 +107,7 @@ describe(`column update title (api)`, () => {
 			const title = 'old title';
 			const columnNode = columnEntityFactory.withParent(columnBoardNode).build({ title });
 
-			await em.persistAndFlush([studentAccount, studentUser, columnNode, columnBoardNode]);
+			await em.persist([studentAccount, studentUser, columnNode, columnBoardNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(studentAccount);

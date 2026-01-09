@@ -92,7 +92,7 @@ describe(`board lookup in room (api)`, () => {
 		const cardNode3 = cardEntityFactory.withParent(columnNode).build();
 		const notOfThisBoardCardNode = cardEntityFactory.build();
 
-		await em.persistAndFlush([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, notOfThisBoardCardNode]);
+		await em.persist([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, notOfThisBoardCardNode]).flush();
 		em.clear();
 
 		return {

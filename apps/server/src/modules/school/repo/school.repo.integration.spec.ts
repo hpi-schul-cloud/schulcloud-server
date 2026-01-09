@@ -41,7 +41,7 @@ describe('SchoolMikroOrmRepo', () => {
 		describe('when no query and options are given', () => {
 			const setup = async () => {
 				const entities = schoolEntityFactory.buildList(3);
-				await em.persistAndFlush(entities);
+				await em.persist(entities).flush();
 				em.clear();
 				const schools = entities.map((entity) => SchoolEntityMapper.mapToDo(entity));
 
@@ -64,7 +64,7 @@ describe('SchoolMikroOrmRepo', () => {
 				const systems = systemEntityFactory.buildList(1);
 				const entity1 = schoolEntityFactory.build({ federalState, externalId, systems });
 				const entity2 = schoolEntityFactory.build();
-				await em.persistAndFlush([entity1, entity2]);
+				await em.persist([entity1, entity2]).flush();
 				em.clear();
 				const schoolDo1 = SchoolEntityMapper.mapToDo(entity1);
 				const schoolDo2 = SchoolEntityMapper.mapToDo(entity2);
@@ -88,7 +88,7 @@ describe('SchoolMikroOrmRepo', () => {
 			const setup = async () => {
 				const entity1 = schoolEntityFactory.build({ purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL });
 				const entity2 = schoolEntityFactory.build();
-				await em.persistAndFlush([entity1, entity2]);
+				await em.persist([entity1, entity2]).flush();
 				em.clear();
 				const schoolDo1 = SchoolEntityMapper.mapToDo(entity1);
 				const schoolDo2 = SchoolEntityMapper.mapToDo(entity2);
@@ -111,7 +111,7 @@ describe('SchoolMikroOrmRepo', () => {
 		describe('when pagination option is given', () => {
 			const setup = async () => {
 				const entities = schoolEntityFactory.buildList(3);
-				await em.persistAndFlush(entities);
+				await em.persist(entities).flush();
 				em.clear();
 				const schoolDos = entities.map((entity) => SchoolEntityMapper.mapToDo(entity));
 
@@ -138,7 +138,7 @@ describe('SchoolMikroOrmRepo', () => {
 			const setup = async () => {
 				const entity1 = schoolEntityFactory.build({ name: 'bbb' });
 				const entity2 = schoolEntityFactory.build({ name: 'aaa' });
-				await em.persistAndFlush([entity1, entity2]);
+				await em.persist([entity1, entity2]).flush();
 				em.clear();
 				const schoolDo1 = SchoolEntityMapper.mapToDo(entity1);
 				const schoolDo2 = SchoolEntityMapper.mapToDo(entity2);
@@ -166,7 +166,7 @@ describe('SchoolMikroOrmRepo', () => {
 		describe('when no options are given', () => {
 			const setup = async () => {
 				const entities = schoolEntityFactory.buildList(3);
-				await em.persistAndFlush(entities);
+				await em.persist(entities).flush();
 				em.clear();
 
 				return { entities };
@@ -184,7 +184,7 @@ describe('SchoolMikroOrmRepo', () => {
 		describe('when pagination option is given', () => {
 			const setup = async () => {
 				const entities = schoolEntityFactory.buildList(3);
-				await em.persistAndFlush(entities);
+				await em.persist(entities).flush();
 				em.clear();
 
 				return { entities };
@@ -214,7 +214,7 @@ describe('SchoolMikroOrmRepo', () => {
 				const entity1 = schoolEntityFactory.build({ name: 'bbb' });
 				const entity2 = schoolEntityFactory.build({ name: 'aaa' });
 				const entity3 = schoolEntityFactory.build({ name: 'ccc' });
-				await em.persistAndFlush([entity1, entity2, entity3]);
+				await em.persist([entity1, entity2, entity3]).flush();
 				em.clear();
 
 				return { entity1, entity2, entity3 };
@@ -254,7 +254,7 @@ describe('SchoolMikroOrmRepo', () => {
 				const county = countyEmbeddableFactory.build();
 				const schoolId = new ObjectId().toHexString();
 				const entity = schoolEntityFactory.buildWithId({ systems, county }, schoolId);
-				await em.persistAndFlush([entity]);
+				await em.persist([entity]).flush();
 				em.clear();
 				const schoolDos = SchoolEntityMapper.mapToDo(entity);
 
@@ -287,7 +287,7 @@ describe('SchoolMikroOrmRepo', () => {
 				const systems = systemEntityFactory.buildList(2);
 				const county = countyEmbeddableFactory.build();
 				const entities = schoolEntityFactory.buildListWithId(3, { systems, county });
-				await em.persistAndFlush(entities);
+				await em.persist(entities).flush();
 				em.clear();
 				const schoolDos = entities.map((entity) => SchoolEntityMapper.mapToDo(entity));
 
@@ -310,7 +310,7 @@ describe('SchoolMikroOrmRepo', () => {
 		describe('when no school has systems', () => {
 			const setup = async () => {
 				const entities = schoolEntityFactory.buildList(2);
-				await em.persistAndFlush(entities);
+				await em.persist(entities).flush();
 				em.clear();
 
 				return { entities };
@@ -371,7 +371,7 @@ describe('SchoolMikroOrmRepo', () => {
 				const federalState = federalStateEntityFactory.build();
 				const currentYear = schoolYearEntityFactory.build();
 
-				await em.persistAndFlush([federalState, currentYear]);
+				await em.persist([federalState, currentYear]).flush();
 				em.clear();
 
 				const entity = schoolEntityFactory.build({ federalState, currentYear });
@@ -397,7 +397,7 @@ describe('SchoolMikroOrmRepo', () => {
 				const newSchoolYearEntity = schoolYearEntityFactory.build();
 				const newSystemEntity = systemEntityFactory.build();
 
-				await em.persistAndFlush([entity, newFederalStateEntity, newSchoolYearEntity, newSystemEntity]);
+				await em.persist([entity, newFederalStateEntity, newSchoolYearEntity, newSystemEntity]).flush();
 				em.clear();
 
 				const newCounty = countyFactory.build();
@@ -457,7 +457,7 @@ describe('SchoolMikroOrmRepo', () => {
 					officialSchoolNumber: '11011',
 				});
 
-				await em.persistAndFlush([schoolEntity, otherSchoolEntity]);
+				await em.persist([schoolEntity, otherSchoolEntity]).flush();
 				em.clear();
 
 				const expectedSchoolDO = SchoolEntityMapper.mapToDo(schoolEntity);
@@ -494,7 +494,7 @@ describe('SchoolMikroOrmRepo', () => {
 				const systems = systemEntityFactory.withLdapConfig({ active: true }).buildList(1);
 				const school = schoolEntityFactory.buildWithId({ systems });
 
-				await em.persistAndFlush([school]);
+				await em.persist([school]).flush();
 				em.clear();
 
 				return {
@@ -516,7 +516,7 @@ describe('SchoolMikroOrmRepo', () => {
 				const systems = systemEntityFactory.withLdapConfig({ active: false }).buildList(1);
 				const school = schoolEntityFactory.buildWithId({ systems });
 
-				await em.persistAndFlush([school]);
+				await em.persist([school]).flush();
 				em.clear();
 
 				return {
@@ -538,7 +538,7 @@ describe('SchoolMikroOrmRepo', () => {
 				const systems = systemEntityFactory.withOauthConfig().buildList(1);
 				const school = schoolEntityFactory.buildWithId({ systems });
 
-				await em.persistAndFlush([school]);
+				await em.persist([school]).flush();
 				em.clear();
 
 				return {
@@ -559,7 +559,7 @@ describe('SchoolMikroOrmRepo', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId({ systems: [] });
 
-				await em.persistAndFlush([school]);
+				await em.persist([school]).flush();
 				em.clear();
 
 				return {
