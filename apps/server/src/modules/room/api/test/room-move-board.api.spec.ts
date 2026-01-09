@@ -90,17 +90,19 @@ describe('Room Controller (API)', () => {
 					roomId: room.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([
-					room,
-					...boards,
-					studentAccount,
-					studentUser,
-					teacherAccount,
-					teacherUser,
-					roomViewerRole,
-					userGroupEntity,
-					roomMembership,
-				]);
+				await em
+					.persist([
+						room,
+						...boards,
+						studentAccount,
+						studentUser,
+						teacherAccount,
+						teacherUser,
+						roomViewerRole,
+						userGroupEntity,
+						roomMembership,
+					])
+					.flush();
 
 				const roomContent = roomContentEntityFactory.build({
 					roomId: room.id,

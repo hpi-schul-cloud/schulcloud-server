@@ -75,16 +75,18 @@ describe('Registration Controller (API)', () => {
 				roomId: room.id,
 				schoolId: school.id,
 			});
-			await em.persistAndFlush([
-				school,
-				studentAccount,
-				studentUser,
-				teacherAccount,
-				teacherUser,
-				room,
-				userGroupEntity,
-				roomMembership,
-			]);
+			await em
+				.persist([
+					school,
+					studentAccount,
+					studentUser,
+					teacherAccount,
+					teacherUser,
+					room,
+					userGroupEntity,
+					roomMembership,
+				])
+				.flush();
 			em.clear();
 
 			const params: CreateOrUpdateRegistrationBodyParams = {

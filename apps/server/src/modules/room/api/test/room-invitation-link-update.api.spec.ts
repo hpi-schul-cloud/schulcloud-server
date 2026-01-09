@@ -87,15 +87,9 @@ describe('Room Invitation Link Controller (API)', () => {
 					userGroupId: userGroup.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([
-					room,
-					roomInvitationLink,
-					roomMembership,
-					teacherAccount,
-					teacherUser,
-					userGroup,
-					roomAdminRole,
-				]);
+				await em
+					.persist([room, roomInvitationLink, roomMembership, teacherAccount, teacherUser, userGroup, roomAdminRole])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -177,15 +171,17 @@ describe('Room Invitation Link Controller (API)', () => {
 					creatorUserId: teacherUser.id,
 					creatorSchoolId: school.id,
 				});
-				await em.persistAndFlush([
-					room,
-					roomInvitationLink,
-					teacherAccount,
-					teacherUser,
-					userGroupEntity,
-					roomMembership,
-					roomViewerRole,
-				]);
+				await em
+					.persist([
+						room,
+						roomInvitationLink,
+						teacherAccount,
+						teacherUser,
+						userGroupEntity,
+						roomMembership,
+						roomViewerRole,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

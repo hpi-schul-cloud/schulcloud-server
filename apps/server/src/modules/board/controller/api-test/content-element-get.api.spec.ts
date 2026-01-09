@@ -130,17 +130,19 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 				});
 				const fileFolderElement = fileFolderElementEntityFactory.withParent(columnBoardNode).build();
 
-				await em.persistAndFlush([
-					columnBoardNode,
-					fileFolderElement,
-					room,
-					roomEditorRole,
-					school,
-					teacherUser,
-					teacherAccount,
-					userGroup,
-					roomMembership,
-				]);
+				await em
+					.persist([
+						columnBoardNode,
+						fileFolderElement,
+						room,
+						roomEditorRole,
+						school,
+						teacherUser,
+						teacherAccount,
+						userGroup,
+						roomMembership,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -335,19 +337,21 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 				const { teacherAccount: otherTeacherAccount, teacherUser: otherTeacherUser } =
 					UserAndAccountTestFactory.buildTeacher({ school });
 
-				await em.persistAndFlush([
-					columnBoardNode,
-					fileFolderElement,
-					room,
-					roomEditorRole,
-					school,
-					teacherUser,
-					teacherAccount,
-					otherTeacherAccount,
-					otherTeacherUser,
-					userGroup,
-					roomMembership,
-				]);
+				await em
+					.persist([
+						columnBoardNode,
+						fileFolderElement,
+						room,
+						roomEditorRole,
+						school,
+						teacherUser,
+						teacherAccount,
+						otherTeacherAccount,
+						otherTeacherUser,
+						userGroup,
+						roomMembership,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(otherTeacherAccount);

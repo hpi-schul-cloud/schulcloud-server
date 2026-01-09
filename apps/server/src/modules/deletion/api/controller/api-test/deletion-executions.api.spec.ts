@@ -236,29 +236,31 @@ describe(`deletionExecution (api)`, () => {
 
 				const roomArrangement = roomArrangementEntityFactory.build({ userId: studentUser.id });
 
-				await em.persistAndFlush([
-					school,
-					teacherUser,
-					teacherAccount,
-					studentUser,
-					studentAccount,
-					course,
-					schoolClass,
-					courseGroup,
-					file,
-					group,
-					lesson,
-					news,
-					pseudonym,
-					mediaBoard,
-					task,
-					team,
-					submission,
-					groupSubmission,
-					registrationPin,
-					rocketChatUser,
-					roomArrangement,
-				]);
+				await em
+					.persist([
+						school,
+						teacherUser,
+						teacherAccount,
+						studentUser,
+						studentAccount,
+						course,
+						schoolClass,
+						courseGroup,
+						file,
+						group,
+						lesson,
+						news,
+						pseudonym,
+						mediaBoard,
+						task,
+						team,
+						submission,
+						groupSubmission,
+						registrationPin,
+						rocketChatUser,
+						roomArrangement,
+					])
+					.flush();
 				em.clear();
 
 				const dashboard = await dashboardRepo.getUsersDashboard(teacherUser.id);

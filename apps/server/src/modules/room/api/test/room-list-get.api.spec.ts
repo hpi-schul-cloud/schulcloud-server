@@ -79,16 +79,18 @@ describe('Room Controller (API)', () => {
 					roomMembershipEntityFactory.build({ userGroupId: userGroupNoOwner.id, roomId: room.id, schoolId: school.id })
 				);
 
-				await em.persistAndFlush([
-					...rooms,
-					...roomsLocked,
-					...roomMemberships,
-					...roomMembershipsNoOnwer,
-					studentAccount,
-					studentUser,
-					userGroupEntity,
-					userGroupNoOwner,
-				]);
+				await em
+					.persist([
+						...rooms,
+						...roomsLocked,
+						...roomMemberships,
+						...roomMembershipsNoOnwer,
+						studentAccount,
+						studentUser,
+						userGroupEntity,
+						userGroupNoOwner,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -241,14 +243,9 @@ describe('Room Controller (API)', () => {
 					})
 				);
 
-				await em.persistAndFlush([
-					...rooms,
-					...roomMemberships,
-					studentAccount,
-					studentUser,
-					teacherUser,
-					userGroupEntity,
-				]);
+				await em
+					.persist([...rooms, ...roomMemberships, studentAccount, studentUser, teacherUser, userGroupEntity])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);

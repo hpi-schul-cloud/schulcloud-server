@@ -100,13 +100,15 @@ describe(ContextExternalToolRepo.name, () => {
 				contextExternalTool3,
 			} = createExternalTools();
 
-			await em.persistAndFlush([
-				schoolExternalTool1,
-				schoolExternalTool2,
-				contextExternalTool1,
-				contextExternalTool2,
-				contextExternalTool3,
-			]);
+			await em
+				.persist([
+					schoolExternalTool1,
+					schoolExternalTool2,
+					contextExternalTool1,
+					contextExternalTool2,
+					contextExternalTool3,
+				])
+				.flush();
 
 			return { schoolExternalTool1, schoolExternalTool2, contextExternalTool1 };
 		};
@@ -482,12 +484,14 @@ describe(ContextExternalToolRepo.name, () => {
 					}
 				);
 
-				await em.persistAndFlush([
-					schoolExternalTool1,
-					schoolExternalTool2,
-					...contextExternalToolsInCourses,
-					...contextExternalToolsOnBoards,
-				]);
+				await em
+					.persist([
+						schoolExternalTool1,
+						schoolExternalTool2,
+						...contextExternalToolsInCourses,
+						...contextExternalToolsOnBoards,
+					])
+					.flush();
 
 				return {
 					schoolExternalTool1,

@@ -197,14 +197,16 @@ describe('SchoolLicenseController (API)', () => {
 				});
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school });
-				await em.persistAndFlush([
-					adminUser,
-					adminAccount,
-					school,
-					mediaSource,
-					mediaSchoolLicense,
-					mediaSchoolLicenseFromOtherSchool,
-				]);
+				await em
+					.persist([
+						adminUser,
+						adminAccount,
+						school,
+						mediaSource,
+						mediaSchoolLicense,
+						mediaSchoolLicenseFromOtherSchool,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);

@@ -82,15 +82,9 @@ describe('ToolConfigurationController (API)', () => {
 					contextId: course.id,
 				});
 
-				await em.persistAndFlush([
-					school,
-					course,
-					studentUser,
-					studentAccount,
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
-				]);
+				await em
+					.persist([school, course, studentUser, studentAccount, externalTool, schoolExternalTool, contextExternalTool])
+					.flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
@@ -150,19 +144,21 @@ describe('ToolConfigurationController (API)', () => {
 					tool: externalToolWithoutContextRestriction,
 				});
 
-				await em.persistAndFlush([
-					school,
-					course,
-					board,
-					columnNode,
-					cardNode,
-					teacherUser,
-					teacherAccount,
-					externalTool,
-					externalToolWithoutContextRestriction,
-					schoolExternalTool,
-					schoolExternalTool2,
-				]);
+				await em
+					.persist([
+						school,
+						course,
+						board,
+						columnNode,
+						cardNode,
+						teacherUser,
+						teacherAccount,
+						externalTool,
+						externalToolWithoutContextRestriction,
+						schoolExternalTool,
+						schoolExternalTool2,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
@@ -615,15 +611,9 @@ describe('ToolConfigurationController (API)', () => {
 					contextId: course.id,
 				});
 
-				await em.persistAndFlush([
-					teacherUser,
-					teacherAccount,
-					school,
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
-					course,
-				]);
+				await em
+					.persist([teacherUser, teacherAccount, school, externalTool, schoolExternalTool, contextExternalTool, course])
+					.flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
@@ -819,15 +809,17 @@ describe('ToolConfigurationController (API)', () => {
 					tool: externalToolWithContextRestriction,
 				});
 
-				await em.persistAndFlush([
-					school,
-					teacherUser,
-					teacherAccount,
-					externalTool,
-					externalToolWithContextRestriction,
-					schoolExternalTool,
-					schoolExternalTool2,
-				]);
+				await em
+					.persist([
+						school,
+						teacherUser,
+						teacherAccount,
+						externalTool,
+						externalToolWithContextRestriction,
+						schoolExternalTool,
+						schoolExternalTool2,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);

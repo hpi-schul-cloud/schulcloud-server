@@ -134,13 +134,9 @@ describe('RegistrationRepo', () => {
 			const registrationEntityOne = registrationEntityFactory.buildWithId({ roomIds: [roomOne.id] });
 			const registrationEntityTwo = registrationEntityFactory.buildWithId({ roomIds: [roomOne.id, roomTwo.id] });
 			const registrationEntityThree = registrationEntityFactory.buildWithId({ roomIds: [roomTwo.id] });
-			await em.persistAndFlush([
-				roomOne,
-				roomTwo,
-				registrationEntityOne,
-				registrationEntityTwo,
-				registrationEntityThree,
-			]);
+			await em
+				.persist([roomOne, roomTwo, registrationEntityOne, registrationEntityTwo, registrationEntityThree])
+				.flush();
 			em.clear();
 
 			return { roomOne, roomTwo, registrationEntityOne, registrationEntityTwo, registrationEntityThree };

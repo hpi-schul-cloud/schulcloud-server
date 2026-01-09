@@ -285,13 +285,9 @@ describe(`content element create (api)`, () => {
 					userId: studentUser.id,
 				});
 
-				await em.persistAndFlush([
-					columnBoardNode,
-					columnNode,
-					cardNode,
-					submissionElementContainerNode,
-					submissionItemNode,
-				]);
+				await em
+					.persist([columnBoardNode, columnNode, cardNode, submissionElementContainerNode, submissionItemNode])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClientSubmission.login(studentAccount);
@@ -372,13 +368,9 @@ describe(`content element create (api)`, () => {
 					userId: teacherUser.id,
 				});
 
-				await em.persistAndFlush([
-					columnBoardNode,
-					columnNode,
-					cardNode,
-					submissionElementContainerNode,
-					submissionItemNode,
-				]);
+				await em
+					.persist([columnBoardNode, columnNode, cardNode, submissionElementContainerNode, submissionItemNode])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClientSubmission.login(studentAccount);
@@ -415,13 +407,9 @@ describe(`content element create (api)`, () => {
 					.withParent(submissionElementContainerNode)
 					.build({ userId: teacherUser.id });
 
-				await em.persistAndFlush([
-					columnBoardNode,
-					columnNode,
-					cardNode,
-					submissionElementContainerNode,
-					submissionItemNode,
-				]);
+				await em
+					.persist([columnBoardNode, columnNode, cardNode, submissionElementContainerNode, submissionItemNode])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClientSubmission.login(teacherAccount);
@@ -459,13 +447,9 @@ describe(`content element create (api)`, () => {
 					userId: studentUser.id,
 				});
 
-				await em.persistAndFlush([
-					columnBoardNode,
-					columnNode,
-					cardNode,
-					submissionElementContainerNode,
-					submissionItemNode,
-				]);
+				await em
+					.persist([columnBoardNode, columnNode, cardNode, submissionElementContainerNode, submissionItemNode])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClientSubmission.login(studentAccount);

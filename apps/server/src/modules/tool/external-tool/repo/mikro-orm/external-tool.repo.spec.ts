@@ -603,12 +603,9 @@ describe(ExternalToolRepo.name, () => {
 					.withMedium({ status: ExternalToolMediumStatus.TEMPLATE, mediumId: undefined })
 					.buildWithId();
 
-				await em.persistAndFlush([
-					externalToolEntity,
-					otherExternalToolEntity,
-					draftExternalToolEntity,
-					templateExternalToolEntity,
-				]);
+				await em
+					.persist([externalToolEntity, otherExternalToolEntity, draftExternalToolEntity, templateExternalToolEntity])
+					.flush();
 				em.clear();
 
 				return {

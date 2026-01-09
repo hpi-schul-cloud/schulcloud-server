@@ -69,14 +69,9 @@ describe('Course Controller (API)', () => {
 				school,
 			});
 
-			await em.persistAndFlush([
-				teacher.account,
-				teacher.user,
-				student.account,
-				student.user,
-				course,
-				courseWithoutTeacher,
-			]);
+			await em
+				.persist([teacher.account, teacher.user, student.account, student.user, course, courseWithoutTeacher])
+				.flush();
 			em.clear();
 
 			return { student, course, courseWithoutTeacher, teacher };

@@ -342,18 +342,20 @@ describe('Media Board (API)', () => {
 					.withParent(mediaLine)
 					.build({ contextExternalToolId: contextExternalTool.id });
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					externalTool,
-					unusedExternalTool,
-					schoolExternalTool,
-					unusedSchoolExternalTool,
-					contextExternalTool,
-					mediaBoard,
-					mediaLine,
-					mediaElement,
-				]);
+				await em
+					.persist([
+						studentAccount,
+						studentUser,
+						externalTool,
+						unusedExternalTool,
+						schoolExternalTool,
+						unusedSchoolExternalTool,
+						contextExternalTool,
+						mediaBoard,
+						mediaLine,
+						mediaElement,
+					])
+					.flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -562,21 +564,23 @@ describe('Media Board (API)', () => {
 					mediaSource,
 				});
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					externalTool,
-					licensedUnusedExternalTool,
-					unusedExternalTool,
-					schoolExternalTool,
-					licensedUnusedSchoolExternalTool,
-					unusedSchoolExternalTool,
-					contextExternalTool,
-					mediaBoard,
-					mediaLine,
-					mediaElement,
-					userLicense,
-				]);
+				await em
+					.persist([
+						studentAccount,
+						studentUser,
+						externalTool,
+						licensedUnusedExternalTool,
+						unusedExternalTool,
+						schoolExternalTool,
+						licensedUnusedSchoolExternalTool,
+						unusedSchoolExternalTool,
+						contextExternalTool,
+						mediaBoard,
+						mediaLine,
+						mediaElement,
+						userLicense,
+					])
+					.flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -654,18 +658,20 @@ describe('Media Board (API)', () => {
 					.withParent(mediaLine)
 					.build({ contextExternalToolId: contextExternalTool.id });
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					externalTool,
-					unusedExternalTool,
-					schoolExternalTool,
-					unusedSchoolExternalTool,
-					contextExternalTool,
-					mediaBoard,
-					mediaLine,
-					mediaElement,
-				]);
+				await em
+					.persist([
+						studentAccount,
+						studentUser,
+						externalTool,
+						unusedExternalTool,
+						schoolExternalTool,
+						unusedSchoolExternalTool,
+						contextExternalTool,
+						mediaBoard,
+						mediaLine,
+						mediaElement,
+					])
+					.flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -813,18 +819,20 @@ describe('Media Board (API)', () => {
 					.withParent(mediaLine)
 					.build({ contextExternalToolId: contextExternalTool.id });
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					externalTool,
-					unusedExternalTool,
-					schoolExternalTool,
-					unusedSchoolExternalTool,
-					contextExternalTool,
-					mediaBoard,
-					mediaLine,
-					mediaElement,
-				]);
+				await em
+					.persist([
+						studentAccount,
+						studentUser,
+						externalTool,
+						unusedExternalTool,
+						schoolExternalTool,
+						unusedSchoolExternalTool,
+						contextExternalTool,
+						mediaBoard,
+						mediaLine,
+						mediaElement,
+					])
+					.flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);

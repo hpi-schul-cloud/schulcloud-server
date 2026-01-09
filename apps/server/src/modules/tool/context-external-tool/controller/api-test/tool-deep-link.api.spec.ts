@@ -78,15 +78,17 @@ describe('ToolDeepLinkController (API)', () => {
 					data: ltiDeepLinkToken.state,
 				});
 
-				await em.persistAndFlush([
-					teacherAccount,
-					teacherUser,
-					ltiDeepLinkToken,
-					course,
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
-				]);
+				await em
+					.persist([
+						teacherAccount,
+						teacherUser,
+						ltiDeepLinkToken,
+						course,
+						externalTool,
+						schoolExternalTool,
+						contextExternalTool,
+					])
+					.flush();
 				em.clear();
 
 				const targetContent = requestFactory.build({

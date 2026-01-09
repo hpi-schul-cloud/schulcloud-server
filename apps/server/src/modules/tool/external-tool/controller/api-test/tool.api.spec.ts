@@ -838,18 +838,20 @@ describe('ToolController (API)', () => {
 					.buildList(2, { contextExternalToolId: boardTools[0].id });
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([
-					adminAccount,
-					adminUser,
-					school,
-					externalToolEntity,
-					...schoolExternalToolEntities,
-					...courseTools,
-					...boardTools,
-					...mediaBoardTools,
-					board,
-					...externalToolElements,
-				]);
+				await em
+					.persist([
+						adminAccount,
+						adminUser,
+						school,
+						externalToolEntity,
+						...schoolExternalToolEntities,
+						...courseTools,
+						...boardTools,
+						...mediaBoardTools,
+						board,
+						...externalToolElements,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);

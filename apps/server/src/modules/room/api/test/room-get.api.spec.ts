@@ -85,16 +85,18 @@ describe('Room Controller (API)', () => {
 					roomId: room.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([
-					room,
-					studentAccount,
-					studentUser,
-					teacherUser,
-					roomOwnerRole,
-					roomViewerRole,
-					userGroupEntity,
-					roomMembership,
-				]);
+				await em
+					.persist([
+						room,
+						studentAccount,
+						studentUser,
+						teacherUser,
+						roomOwnerRole,
+						roomViewerRole,
+						userGroupEntity,
+						roomMembership,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -231,18 +233,20 @@ describe('Room Controller (API)', () => {
 					roomId: room.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([
-					room,
-					adminAccount,
-					adminUser,
-					teacherUser,
-					teacherUser2,
-					studentUser,
-					roomOwnerRole,
-					roomViewerRole,
-					userGroupEntity,
-					roomMembership,
-				]);
+				await em
+					.persist([
+						room,
+						adminAccount,
+						adminUser,
+						teacherUser,
+						teacherUser2,
+						studentUser,
+						roomOwnerRole,
+						roomViewerRole,
+						userGroupEntity,
+						roomMembership,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -337,23 +341,25 @@ describe('Room Controller (API)', () => {
 					schoolId: otherSchool.id,
 				});
 
-				await em.persistAndFlush([
-					school,
-					otherSchool,
-					adminAccount,
-					adminUser,
-					teacherUser,
-					studentUser,
-					room,
-					roomWithOwnStudents,
-					studentUserFromOwnSchool,
-					roomViewerRole,
-					roomOwnerRole,
-					userGroupEntityRoom,
-					userGroupEntityRoomWithOwnStudent,
-					roomMembership,
-					roomMembershipWithOwnStudent,
-				]);
+				await em
+					.persist([
+						school,
+						otherSchool,
+						adminAccount,
+						adminUser,
+						teacherUser,
+						studentUser,
+						room,
+						roomWithOwnStudents,
+						studentUserFromOwnSchool,
+						roomViewerRole,
+						roomOwnerRole,
+						userGroupEntityRoom,
+						userGroupEntityRoomWithOwnStudent,
+						roomMembership,
+						roomMembershipWithOwnStudent,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);

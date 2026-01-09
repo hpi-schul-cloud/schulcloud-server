@@ -583,14 +583,9 @@ describe('VideoConferenceController (API)', () => {
 						options: { moderatorMustApproveJoinRequests: false },
 					});
 
-					await em.persistAndFlush([
-						school,
-						externalPersonRole,
-						externalPersonAccount,
-						externalPersonUser,
-						course,
-						videoConference,
-					]);
+					await em
+						.persist([school, externalPersonRole, externalPersonAccount, externalPersonUser, course, videoConference])
+						.flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;

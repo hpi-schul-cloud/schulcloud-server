@@ -184,13 +184,9 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const cardNode = cardEntityFactory.withParent(columnNode).build();
 					const collaborativeTextEditorElement = collaborativeTextEditorEntityFactory.withParent(cardNode).build();
 
-					await em.persistAndFlush([
-						studentAccount,
-						collaborativeTextEditorElement,
-						columnBoardNode,
-						columnNode,
-						cardNode,
-					]);
+					await em
+						.persist([studentAccount, collaborativeTextEditorElement, columnBoardNode, columnNode, cardNode])
+						.flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -255,13 +251,9 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const cardNode = cardEntityFactory.withParent(columnNode).build();
 					const collaborativeTextEditorElement = collaborativeTextEditorEntityFactory.withParent(cardNode).build();
 
-					await em.persistAndFlush([
-						studentAccount,
-						collaborativeTextEditorElement,
-						columnBoardNode,
-						columnNode,
-						cardNode,
-					]);
+					await em
+						.persist([studentAccount, collaborativeTextEditorElement, columnBoardNode, columnNode, cardNode])
+						.flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);

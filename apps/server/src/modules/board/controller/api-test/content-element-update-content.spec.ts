@@ -69,17 +69,19 @@ describe(`content element update content (api)`, () => {
 					dueDate: tomorrow,
 				});
 
-			await em.persistAndFlush([
-				teacherAccount,
-				teacherUser,
-				parentCard,
-				column,
-				columnBoardNode,
-				richTextElement,
-				fileElement,
-				submissionContainerElement,
-				submissionContainerElementWithDueDate,
-			]);
+			await em
+				.persist([
+					teacherAccount,
+					teacherUser,
+					parentCard,
+					column,
+					columnBoardNode,
+					richTextElement,
+					fileElement,
+					submissionContainerElement,
+					submissionContainerElementWithDueDate,
+				])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);

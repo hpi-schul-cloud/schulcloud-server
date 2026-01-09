@@ -274,13 +274,15 @@ describe(FilesRepo.name, () => {
 					permissions: [filePermissionEntityFactory.build({ refId: mainUserId })],
 				});
 
-				await em.persistAndFlush([
-					otherUserFileWithMainUserCreator,
-					mainUserSharedFile,
-					otherUserSharedFile,
-					mainUserFile,
-					otherUserFile,
-				]);
+				await em
+					.persist([
+						otherUserFileWithMainUserCreator,
+						mainUserSharedFile,
+						otherUserSharedFile,
+						mainUserFile,
+						otherUserFile,
+					])
+					.flush();
 				em.clear();
 
 				const expectedOtherUserFileWithMainUserCreatorProps = {

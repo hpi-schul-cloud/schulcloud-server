@@ -648,13 +648,15 @@ describe(GroupRepo.name, () => {
 
 				const scope = new GroupAggregateScope().byAvailableForSync(true);
 
-				await em.persistAndFlush([
-					availableCourseGroup,
-					synchronizedCourseGroup,
-					courseSynchronizedWithCourseGroup,
-					synchronizedClassGroup,
-					courseSynchronizedWithClassGroup,
-				]);
+				await em
+					.persist([
+						availableCourseGroup,
+						synchronizedCourseGroup,
+						courseSynchronizedWithCourseGroup,
+						synchronizedClassGroup,
+						courseSynchronizedWithClassGroup,
+					])
+					.flush();
 				em.clear();
 
 				return {

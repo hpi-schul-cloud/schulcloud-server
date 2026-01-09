@@ -459,12 +459,14 @@ describe('UserRepo', () => {
 						roleId: role.id,
 					};
 
-					await em.persistAndFlush([
-						userWithSchoolAndMultipleRoles,
-						userWithSchoolAndRole,
-						userWithDifferentSchool,
-						userWithDifferentRole,
-					]);
+					await em
+						.persist([
+							userWithSchoolAndMultipleRoles,
+							userWithSchoolAndRole,
+							userWithDifferentSchool,
+							userWithDifferentRole,
+						])
+						.flush();
 
 					return {
 						userWithDifferentRole,
@@ -520,13 +522,9 @@ describe('UserRepo', () => {
 					const userWithDifferentRole = userFactory.buildWithId({ school, roles: [otherRole] });
 					const userWithDifferentSchool = userFactory.buildWithId({ school: otherSchool, roles: [role] });
 
-					await em.persistAndFlush([
-						userOptedIn,
-						userOptedOut,
-						userUndecided,
-						userWithDifferentRole,
-						userWithDifferentSchool,
-					]);
+					await em
+						.persist([userOptedIn, userOptedOut, userUndecided, userWithDifferentRole, userWithDifferentSchool])
+						.flush();
 
 					return {
 						userOptedOut,

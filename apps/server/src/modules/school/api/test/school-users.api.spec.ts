@@ -167,15 +167,17 @@ describe('School Controller (API)', () => {
 				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
 				const teachersOfSchool = userFactory.buildList(3, { school: teachersSchool, roles: [studentRole] });
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					...teachersOfSchool,
-					studentRole,
-					teacherRole,
-					teachersSchool,
-					userSchool,
-				]);
+				await em
+					.persist([
+						studentAccount,
+						studentUser,
+						...teachersOfSchool,
+						studentRole,
+						teacherRole,
+						teachersSchool,
+						userSchool,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);

@@ -68,18 +68,20 @@ describe(`card move to board (api)`, () => {
 			const toColumnNodeInOtherRoom = columnEntityFactory.withParent(columnBoardNodeOnOtherRoom).build();
 			const cardNode = cardEntityFactory.withParent(fromColumnNode).build();
 
-			await em.persistAndFlush([
-				teacherUser,
-				teacherAccount,
-				studentUser,
-				studentAccount,
-				...rooms,
-				...columnBoardNodes,
-				fromColumnNode,
-				toColumnNode,
-				toColumnNodeInOtherRoom,
-				cardNode,
-			]);
+			await em
+				.persist([
+					teacherUser,
+					teacherAccount,
+					studentUser,
+					studentAccount,
+					...rooms,
+					...columnBoardNodes,
+					fromColumnNode,
+					toColumnNode,
+					toColumnNodeInOtherRoom,
+					cardNode,
+				])
+				.flush();
 			em.clear();
 
 			const createRoomMembership = async (user: User, roomId: EntityId, role: 'viewer' | 'editor' | 'admin') => {

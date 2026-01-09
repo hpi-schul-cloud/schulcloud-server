@@ -103,16 +103,18 @@ describe('Room Controller (API)', () => {
 					roomId: room.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([
-					room,
-					...boards,
-					studentAccount,
-					studentUser,
-					teacherUser,
-					roomViewerRole,
-					userGroupEntity,
-					roomMembership,
-				]);
+				await em
+					.persist([
+						room,
+						...boards,
+						studentAccount,
+						studentUser,
+						teacherUser,
+						roomViewerRole,
+						userGroupEntity,
+						roomMembership,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -225,20 +227,22 @@ describe('Room Controller (API)', () => {
 					roomId: room.id,
 					schoolId: schoolA.id,
 				});
-				await em.persistAndFlush([
-					room,
-					board,
-					studentAccount,
-					studentUser,
-					teacherUserA,
-					teacherAccountA,
-					foreignTeacherUser,
-					foreignTeacherAccount,
-					roomViewerRole,
-					roomOwnerRole,
-					userGroupEntity,
-					roomMembership,
-				]);
+				await em
+					.persist([
+						room,
+						board,
+						studentAccount,
+						studentUser,
+						teacherUserA,
+						teacherAccountA,
+						foreignTeacherUser,
+						foreignTeacherAccount,
+						roomViewerRole,
+						roomOwnerRole,
+						userGroupEntity,
+						roomMembership,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(foreignTeacherAccount);

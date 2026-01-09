@@ -336,15 +336,17 @@ describe('SchoolMikroOrmRepo', () => {
 				const schoolEntityWithOtherSystem = schoolEntityFactory.build({ systems: [otherSystem] });
 				const schoolEntityWithEmptySystemsArray = schoolEntityFactory.build({ systems: [] });
 				const schoolEntityWithoutSystems = schoolEntityFactory.build();
-				await em.persistAndFlush([
-					specifiedSystem,
-					otherSystem,
-					schoolEntityWithSpecifiedSystem,
-					schoolEntityWithSpecifiedSystemAndOtherSystem,
-					schoolEntityWithOtherSystem,
-					schoolEntityWithEmptySystemsArray,
-					schoolEntityWithoutSystems,
-				]);
+				await em
+					.persist([
+						specifiedSystem,
+						otherSystem,
+						schoolEntityWithSpecifiedSystem,
+						schoolEntityWithSpecifiedSystemAndOtherSystem,
+						schoolEntityWithOtherSystem,
+						schoolEntityWithEmptySystemsArray,
+						schoolEntityWithoutSystems,
+					])
+					.flush();
 				em.clear();
 
 				const expected = [

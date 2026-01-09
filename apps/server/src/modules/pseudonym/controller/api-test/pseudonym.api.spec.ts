@@ -96,15 +96,9 @@ describe('PseudonymController (API)', () => {
 					userId: teacherUser.id,
 				});
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					teacherUser,
-					teacherAccount,
-					pseudonym,
-					externalToolEntity,
-					school,
-				]);
+				await em
+					.persist([studentAccount, studentUser, teacherUser, teacherAccount, pseudonym, externalToolEntity, school])
+					.flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);

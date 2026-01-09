@@ -96,18 +96,20 @@ describe('Room Controller (API)', () => {
 				const columnBoard = columnBoardEntityFactory.buildWithId({
 					context: { type: BoardExternalReferenceType.Room, id: room.id },
 				});
-				await em.persistAndFlush([
-					room,
-					roomInvitationLink,
-					roomMembership,
-					teacherOwnerAccount,
-					teacherOwnerUser,
-					teacherEditorAccount,
-					teacherEditorUser,
-					userGroup,
-					roomOwnerRole,
-					columnBoard,
-				]);
+				await em
+					.persist([
+						room,
+						roomInvitationLink,
+						roomMembership,
+						teacherOwnerAccount,
+						teacherOwnerUser,
+						teacherEditorAccount,
+						teacherEditorUser,
+						userGroup,
+						roomOwnerRole,
+						columnBoard,
+					])
+					.flush();
 				em.clear();
 
 				return { teacherOwnerAccount, teacherEditorAccount, room, roomInvitationLink, columnBoard };

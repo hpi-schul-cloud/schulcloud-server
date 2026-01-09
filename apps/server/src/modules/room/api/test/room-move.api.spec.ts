@@ -72,18 +72,20 @@ describe('Room Controller (API)', () => {
 						return { id: room.id };
 					}),
 				});
-				await em.persistAndFlush([
-					...rooms,
-					otherRoom,
-					studentAccount,
-					studentUser,
-					teacherAccount,
-					teacherUser,
-					roomViewerRole,
-					userGroupEntity,
-					...roomMemberships,
-					roomArrangement,
-				]);
+				await em
+					.persist([
+						...rooms,
+						otherRoom,
+						studentAccount,
+						studentUser,
+						teacherAccount,
+						teacherUser,
+						roomViewerRole,
+						userGroupEntity,
+						...roomMemberships,
+						roomArrangement,
+					])
+					.flush();
 
 				em.clear();
 

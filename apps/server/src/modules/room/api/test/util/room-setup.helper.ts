@@ -178,16 +178,18 @@ export class RoomSetup {
 		});
 		const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 
-		await this.em.persistAndFlush([
-			administrator,
-			teacher,
-			student,
-			externalPerson,
-			roomEditorRole,
-			roomAdminRole,
-			roomOwnerRole,
-			roomViewerRole,
-		]);
+		await this.em
+			.persist([
+				administrator,
+				teacher,
+				student,
+				externalPerson,
+				roomEditorRole,
+				roomAdminRole,
+				roomOwnerRole,
+				roomViewerRole,
+			])
+			.flush();
 		this.em.clear();
 
 		this.roles = {

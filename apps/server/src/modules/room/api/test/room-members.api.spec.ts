@@ -83,21 +83,23 @@ describe('Room Controller (API)', () => {
 				roomId: room.id,
 				schoolId: school.id,
 			});
-			await em.persistAndFlush([
-				adminAccount,
-				adminUser,
-				externalPersonAccount,
-				externalPersonUser,
-				room,
-				roomMemberships,
-				teacherAccount,
-				teacherUser,
-				userGroupEntity,
-				externalStudent,
-				...externalTeachers,
-				...students,
-				...teachers,
-			]);
+			await em
+				.persist([
+					adminAccount,
+					adminUser,
+					externalPersonAccount,
+					externalPersonUser,
+					room,
+					roomMemberships,
+					teacherAccount,
+					teacherUser,
+					userGroupEntity,
+					externalStudent,
+					...externalTeachers,
+					...students,
+					...teachers,
+				])
+				.flush();
 			em.clear();
 
 			const getAccountByRole = (

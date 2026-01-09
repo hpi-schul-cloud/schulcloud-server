@@ -130,16 +130,18 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 				contents: [{ ...contents, component: ComponentType.LERNSTORE, content: contentLernstore }],
 			});
 
-			await em.persistAndFlush([
-				teacherAccount,
-				teacherUser,
-				course,
-				lessonWithText,
-				lessonWithGeogebra,
-				lessonWithEtherpad,
-				lessonWithInternal,
-				lessonWithLernstore,
-			]);
+			await em
+				.persist([
+					teacherAccount,
+					teacherUser,
+					course,
+					lessonWithText,
+					lessonWithGeogebra,
+					lessonWithEtherpad,
+					lessonWithInternal,
+					lessonWithLernstore,
+				])
+				.flush();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 

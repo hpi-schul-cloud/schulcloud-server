@@ -350,22 +350,24 @@ describe('Course Rooms Controller (API)', () => {
 
 				const legacyBoard = boardFactory.buildWithId({ course });
 
-				await em.persistAndFlush([
-					teacherAccount,
-					teacherUser,
-					course,
-					lesson,
-					task,
-					columnBoard1,
-					columnBoard2,
-					columnNode,
-					cardNode,
-					linkElementToTask,
-					linkElementToLesson,
-					linkElementToColumnBoard,
-					linkElementToCourse,
-					legacyBoard,
-				]);
+				await em
+					.persist([
+						teacherAccount,
+						teacherUser,
+						course,
+						lesson,
+						task,
+						columnBoard1,
+						columnBoard2,
+						columnNode,
+						cardNode,
+						linkElementToTask,
+						linkElementToLesson,
+						linkElementToColumnBoard,
+						linkElementToCourse,
+						legacyBoard,
+					])
+					.flush();
 				em.clear();
 
 				const columnBoardNode1 = await em.findOneOrFail(ColumnBoardNode, columnBoard1.id);

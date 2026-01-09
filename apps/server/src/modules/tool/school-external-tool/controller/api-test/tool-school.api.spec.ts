@@ -617,16 +617,18 @@ describe('ToolSchoolController (API)', () => {
 					Permission.SCHOOL_TOOL_ADMIN,
 				]);
 
-				await em.persistAndFlush([
-					adminAccount,
-					adminUser,
-					schoolExternalToolEntity,
-					...courseExternalToolEntitys,
-					...boardExternalToolEntitys,
-					...mediaBoardExternalToolEntitys,
-					board,
-					...externalToolElements,
-				]);
+				await em
+					.persist([
+						adminAccount,
+						adminUser,
+						schoolExternalToolEntity,
+						...courseExternalToolEntitys,
+						...boardExternalToolEntitys,
+						...mediaBoardExternalToolEntitys,
+						board,
+						...externalToolElements,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
