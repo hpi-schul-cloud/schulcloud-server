@@ -115,7 +115,7 @@ export class Registration extends DomainObject<RegistrationProps> {
 	private generateRegistrationMailContent(roomName: string): PlainTextMailContent {
 		const stripTags = (html: string): string =>
 			html
-				.replace(/<hr\s*\/?>/gim, '------------')
+				.replace(/<hr\s*\/?>/gim, '\n\n------------\n\n')
 				.replace(/<(\/p>|<br\s*\/)>/gim, '\n')
 				.replace(/<\/?[^>]+(>|$)/g, '');
 
@@ -123,25 +123,25 @@ export class Registration extends DomainObject<RegistrationProps> {
 		const subject = `${productName}: Einladung zur Registrierung und Zugriff auf den Raum ${roomName}`;
 		const registrationLink = this.generateRegistrationLink();
 
-		const germanHtml = `Hallo ${this.firstName} ${this.lastName}, 
-dies ist eine Einladung, dem Raum ${roomName} beizutreten. Um den Raum betreten zu können, ist eine Registrierung in der ${productName} erforderlich. Bitte auf den folgenden Link klicken, um die Registrierung vorzunehmen: 
-${registrationLink}
-Hinweis: Der Link sollte nicht weitergegeben und nur in einer sicheren Umgebung verwendet werden. 
-Nach der Registrierung wird der Zugriff auf den Raum ${roomName} sofort freigeschaltet. 
-Mit freundlichen Grüßen
+		const germanHtml = `Hallo ${this.firstName} ${this.lastName},
+<p>dies ist eine Einladung, dem Raum ${roomName} beizutreten. Um den Raum betreten zu können, ist eine Registrierung in der ${productName} erforderlich. Bitte auf den folgenden Link klicken, um die Registrierung vorzunehmen:<br />
+${registrationLink}<br />
+Hinweis: Der Link sollte nicht weitergegeben und nur in einer sicheren Umgebung verwendet werden.<br />
+Nach der Registrierung wird der Zugriff auf den Raum ${roomName} sofort freigeschaltet.
+</p>
+Mit freundlichen Grüßen<br />
 ${productName}-Team`;
 
 		const englishHtml = `Hello ${this.firstName} ${this.lastName},
-This is an invitation to join the ${roomName} room. To enter the room, you must register with ${productName}. Please click on the following link to register:
-${registrationLink}
-Note: The link should not be shared and should only be used in a secure environment. 
-After registration, access to the room ${roomName} will be activated immediately. 
-Best regards,
+<p>This is an invitation to join the ${roomName} room. To enter the room, you must register with ${productName}. Please click on the following link to register:<br />
+${registrationLink}<br />
+Note: The link should not be shared and should only be used in a secure environment.<br />
+After registration, access to the room ${roomName} will be activated immediately.
+</p>
+Best regards,<br />
 ${productName} team`;
 
-		const htmlContent = `<div lang="de">${germanHtml}</div>
-				<hr/>
-				<div lang="en">${englishHtml}</div>`;
+		const htmlContent = `<div lang="de">${germanHtml}</div><hr /><div lang="en">${englishHtml}</div>`;
 
 		const mailContent = {
 			subject,
