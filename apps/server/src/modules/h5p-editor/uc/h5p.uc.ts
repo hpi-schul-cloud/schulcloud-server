@@ -38,8 +38,7 @@ import { Request } from 'express';
 import { mkdtempSync, readFileSync, rmSync, unlinkSync } from 'fs';
 import { writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
-import { dirname, join } from 'path';
-import { parse } from 'yaml';
+import { dirname, join, parse } from 'path';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, H5PContentResponse } from '../controller/dto';
 import { H5PEditorConfig } from '../h5p-editor.config';
 import { H5PUcErrorLoggable, H5PUcLoggable } from '../loggable';
@@ -59,6 +58,8 @@ interface LibrariesContentType {
 
 @Injectable()
 export class H5PEditorUc {
+	private readonly libraryWhiteList: string[];
+
 	constructor(
 		private readonly configService: ConfigService<H5PEditorConfig, true>,
 		private readonly h5pEditor: H5PEditor,
@@ -71,6 +72,36 @@ export class H5PEditorUc {
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(H5PEditorUc.name);
+
+		this.libraryWhiteList = this.readWhitelistFromConfig();
+	}
+
+	private readWhitelistFromConfig(): string[] {
+		const filePath = this.configService.get<string>('H5P_EDITOR__LIBRARY_LIST_PATH');
+		const librariesYamlContent = readFileSync(filePath, { encoding: 'utf-8' });
+		const librariesContentType = this.castToLibrariesContentType(parse(librariesYamlContent));
+		const libraryWhiteList = librariesContentType.h5p_libraries;
+
+		return libraryWhiteList;
+	}
+
+	private castToLibrariesContentType(object: unknown): LibrariesContentType {
+		if (!this.isLibrariesContentType(object)) {
+			throw new InternalServerErrorException('Invalid input type for castToLibrariesContentType');
+		}
+
+		return object;
+	}
+
+	private isLibrariesContentType(object: unknown): object is LibrariesContentType {
+		const isType =
+			typeof object === 'object' &&
+			!Array.isArray(object) &&
+			object !== null &&
+			'h5p_libraries' in object &&
+			Array.isArray(object.h5p_libraries);
+
+		return isType;
 	}
 
 	private async checkContentPermission(
@@ -137,43 +168,13 @@ export class H5PEditorUc {
 			// filter response for libraries not contained in whitelist
 			const ajaxResponse = result as IHubInfo;
 			if (ajaxResponse && Array.isArray(ajaxResponse.libraries)) {
-				const libraryWhiteList = this.readWhitelistFromConfig();
-
 				ajaxResponse.libraries = ajaxResponse.libraries.filter((library) =>
-					libraryWhiteList.includes(library.machineName)
+					this.libraryWhiteList.includes(library.machineName)
 				);
 			}
 		}
 
 		return result;
-	}
-
-	private readWhitelistFromConfig(): string[] {
-		const filePath = this.configService.get<string>('H5P_EDITOR__LIBRARY_LIST_PATH');
-		const librariesYamlContent = readFileSync(filePath, { encoding: 'utf-8' });
-		const librariesContentType = this.castToLibrariesContentType(parse(librariesYamlContent));
-		const libraryWhiteList = librariesContentType.h5p_libraries;
-
-		return libraryWhiteList;
-	}
-
-	private castToLibrariesContentType(object: unknown): LibrariesContentType {
-		if (!this.isLibrariesContentType(object)) {
-			throw new InternalServerErrorException('Invalid input type for castToLibrariesContentType');
-		}
-
-		return object;
-	}
-
-	private isLibrariesContentType(object: unknown): object is LibrariesContentType {
-		const isType =
-			typeof object === 'object' &&
-			!Array.isArray(object) &&
-			object !== null &&
-			'h5p_libraries' in object &&
-			Array.isArray(object.h5p_libraries);
-
-		return isType;
 	}
 
 	public async postAjax(
