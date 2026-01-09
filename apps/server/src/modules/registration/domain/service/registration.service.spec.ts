@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -15,6 +16,7 @@ import { LanguageType } from '@shared/domain/interface';
 import { RegistrationRepo } from '../../repo';
 import { registrationFactory } from '../../testing/registration.factory';
 import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
+import { ResendingRegistrationMailLoggable } from '../error/resend-registration-mail.loggable';
 import { RegistrationService } from './registration.service';
 
 describe('RegistrationService', () => {
@@ -26,6 +28,7 @@ describe('RegistrationService', () => {
 	let schoolService: DeepMocked<SchoolService>;
 	let userService: DeepMocked<UserService>;
 	let mailService: DeepMocked<MailService>;
+	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -34,6 +37,10 @@ describe('RegistrationService', () => {
 				{
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 				{
 					provide: MailService,
@@ -69,6 +76,7 @@ describe('RegistrationService', () => {
 		userService = module.get(UserService);
 		schoolService = module.get(SchoolService);
 		mailService = module.get(MailService);
+		logger = module.get(Logger);
 	});
 
 	afterAll(async () => {
@@ -213,6 +221,19 @@ describe('RegistrationService', () => {
 				await service.resendRegistrationMails([registration.id]);
 
 				expect(mailService.send).not.toHaveBeenCalled();
+			});
+
+			it('should log with not resent registration id', async () => {
+				const recentDate = new Date();
+				jest.useFakeTimers().setSystemTime(recentDate);
+
+				const oneMinuteAgo = new Date(recentDate.getTime() - 1 * 60 * 1000);
+				const registration = registrationFactory.build({ resentAt: oneMinuteAgo });
+				registrationRepo.findById.mockResolvedValueOnce(registration);
+
+				await service.resendRegistrationMails([registration.id]);
+
+				expect(logger.debug).toHaveBeenCalledWith(new ResendingRegistrationMailLoggable(registration.id));
 			});
 		});
 	});

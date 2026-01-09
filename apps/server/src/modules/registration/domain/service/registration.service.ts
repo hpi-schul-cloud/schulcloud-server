@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountSave, AccountService } from '@modules/account';
@@ -13,6 +14,7 @@ import { UUID } from 'bson';
 import { isDisposableEmail as _isDisposableEmail } from 'disposable-email-domains-js';
 import { RegistrationRepo } from '../../repo';
 import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
+import { ResendingRegistrationMailLoggable } from '../error/resend-registration-mail.loggable';
 
 @Injectable()
 export class RegistrationService {
@@ -23,7 +25,8 @@ export class RegistrationService {
 		private readonly accountService: AccountService,
 		private readonly schoolService: SchoolService,
 		private readonly mailService: MailService,
-		private readonly roomMembershipService: RoomMembershipService
+		private readonly roomMembershipService: RoomMembershipService,
+		private readonly logger: Logger
 	) {}
 
 	public async createOrUpdateRegistration(props: RegistrationCreateProps): Promise<Registration> {
@@ -242,6 +245,7 @@ export class RegistrationService {
 
 		const canBeResend = this.checkCanRegistrationMailBeResend(registration);
 		if (!canBeResend) {
+			this.logger.debug(new ResendingRegistrationMailLoggable(registration.id));
 			return null;
 		}
 
