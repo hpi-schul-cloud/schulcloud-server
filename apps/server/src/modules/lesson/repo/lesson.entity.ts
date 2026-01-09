@@ -118,34 +118,34 @@ export class LessonEntity extends BaseEntityWithTimestamps implements TaskParent
 		return tasks;
 	}
 
-	getNumberOfPublishedTasks(): number {
+	public getNumberOfPublishedTasks(): number {
 		const tasks = this.getTasksItems();
 		const filtered = tasks.filter((task) => task.isPublished());
 		return filtered.length;
 	}
 
-	getNumberOfDraftTasks(): number {
+	public getNumberOfDraftTasks(): number {
 		const tasks = this.getTasksItems();
 		const filtered = tasks.filter((task) => task.isDraft());
 		return filtered.length;
 	}
 
-	getNumberOfPlannedTasks(): number {
+	public getNumberOfPlannedTasks(): number {
 		const tasks = this.getTasksItems();
 		const filtered = tasks.filter((task) => task.isPlanned());
 		return filtered.length;
 	}
 
-	getLessonComponents(): ComponentProperties[] | [] {
+	public getLessonComponents(): ComponentProperties[] | [] {
 		return this.contents;
 	}
 
-	getLessonLinkedTasks(): Task[] {
+	public getLessonLinkedTasks(): Task[] {
 		const tasks = this.getTasksItems();
 		return tasks;
 	}
 
-	getLessonMaterials(): Material[] {
+	public getLessonMaterials(): Material[] {
 		if (!this.materials.isInitialized(true)) {
 			throw new InternalServerErrorException('Lessons trying to access their materials that are not loaded.');
 		}
@@ -153,7 +153,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements TaskParent
 		return materials;
 	}
 
-	getSchoolId(): EntityId {
+	public getSchoolId(): EntityId {
 		if (!this.courseGroup) {
 			return this.course.school.id;
 		}
@@ -161,11 +161,11 @@ export class LessonEntity extends BaseEntityWithTimestamps implements TaskParent
 		return this.courseGroup.school.id;
 	}
 
-	publish() {
+	public publish(): void {
 		this.hidden = false;
 	}
 
-	unpublish() {
+	public unpublish(): void {
 		this.hidden = true;
 	}
 

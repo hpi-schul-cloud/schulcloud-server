@@ -1,4 +1,4 @@
-import { ObjectId } from '@mikro-orm/mongodb';
+import { FilterQuery, ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
 import { ToolContextType } from '../../../common/enum';
@@ -30,7 +30,7 @@ export class ContextExternalToolScope extends Scope<ContextExternalToolEntity> {
 
 	public byContextType(contextType: ToolContextType | undefined): ContextExternalToolScope {
 		if (contextType !== undefined) {
-			this.addQuery({ contextType });
+			this.addQuery({ contextType: contextType as unknown as ContextExternalToolEntity['contextType'] });
 		}
 		return this;
 	}

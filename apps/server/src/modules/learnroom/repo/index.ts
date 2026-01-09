@@ -1,5 +1,4 @@
 export { ColumnBoardBoardElement } from './mikro-orm/column-board-board-element.entity';
-export { ColumnBoardNode, ColumnBoardNodeProps } from './mikro-orm/column-board-node.entity';
 export { ColumnBoardNodeRepo } from './mikro-orm/column-board-node.repo';
 export { DashboardElementRepo } from './mikro-orm/dashboard-element.repo';
 export { DashboardEntity, DashboardGridElementEntity } from './mikro-orm/dashboard.entity';

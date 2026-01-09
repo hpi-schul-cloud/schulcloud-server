@@ -12,7 +12,7 @@ import { StatusModel } from '../domain/types';
 export class DeletionRequestRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	get entityName() {
+	get entityName(): typeof DeletionRequestEntity {
 		return DeletionRequestEntity;
 	}
 
@@ -112,7 +112,7 @@ export class DeletionRequestRepo {
 		return true;
 	}
 
-	async deleteById(deletionRequestId: EntityId): Promise<boolean> {
+	public async deleteById(deletionRequestId: EntityId): Promise<boolean> {
 		const entity: DeletionRequestEntity | null = await this.em.findOneOrFail(DeletionRequestEntity, {
 			id: deletionRequestId,
 		});

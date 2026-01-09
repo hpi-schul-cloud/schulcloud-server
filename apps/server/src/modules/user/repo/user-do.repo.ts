@@ -8,7 +8,6 @@ import { type IFindOptions, type Pagination, SortOrder, type SortOrderMap } from
 import type { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { Scope } from '@shared/repo/scope';
-import { ObjectId } from 'bson';
 import { Consent, MultipleUsersFoundLoggableException, ParentConsent, UserConsent, type UserDoRepo } from '../domain';
 import { SecondarySchoolReference, UserDo } from '../domain/do/user.do';
 import { UserQuery } from '../domain/query/user-query';
@@ -17,6 +16,7 @@ import { ParentConsentEntity } from './parent-consent.entity';
 import { UserScope } from './scope/user.scope';
 import { UserConsentEntity } from './user-consent.entity';
 import { User, UserSchoolEmbeddable } from './user.entity';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 @Injectable()
 export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements UserDoRepo {

@@ -14,7 +14,6 @@ import { EntityId } from '@shared/domain/types';
 import { sortBy } from 'lodash';
 import {
 	ColumnBoardBoardElement,
-	ColumnBoardNode,
 	ColumnBoardNodeRepo,
 	LegacyBoard,
 	LegacyBoardElement,
@@ -23,6 +22,7 @@ import {
 	LessonBoardElement,
 	TaskBoardElement,
 } from '../repo';
+import { isColumnBoard } from '../types';
 
 export type BoardCopyParams = {
 	originalBoard: LegacyBoard;
@@ -48,6 +48,7 @@ export class LegacyBoardCopyService {
 		const { originalBoard, user, originalCourse, destinationCourse } = params;
 
 		const boardElements: LegacyBoardElement[] = originalBoard.getElements();
+		// TODO populate element targets
 		const elements: CopyStatus[] = await this.copyBoardElements(boardElements, user, originalCourse, destinationCourse);
 
 		const references: LegacyBoardElement[] = await this.extractReferences(elements);
@@ -100,10 +101,7 @@ export class LegacyBoardCopyService {
 				return this.copyLesson(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
-			if (
-				element.boardElementType === LegacyBoardElementType.ColumnBoard &&
-				element.target instanceof ColumnBoardNode
-			) {
+			if (element.boardElementType === LegacyBoardElementType.ColumnBoard && isColumnBoard(element.target)) {
 				return this.copyColumnBoard(element.target, user, originalCourse, destinationCourse).then((status) => [
 					pos,
 					status,
@@ -139,7 +137,7 @@ export class LegacyBoardCopyService {
 	}
 
 	private copyColumnBoard(
-		columnBoard: ColumnBoardNode,
+		columnBoard: { id: EntityId },
 		user: User,
 		originalCourse: CourseEntity,
 		destinationCourse: CourseEntity
