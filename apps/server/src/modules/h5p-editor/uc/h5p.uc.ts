@@ -86,7 +86,7 @@ export class H5PEditorUc {
 		return libraryWhiteList;
 	}
 
-	private castToLibrariesContentType(object: unknown): LibrariesContentType {
+	public castToLibrariesContentType(object: unknown): LibrariesContentType {
 		if (!this.isLibrariesContentType(object)) {
 			throw new InternalServerErrorException('Invalid input type for castToLibrariesContentType');
 		}

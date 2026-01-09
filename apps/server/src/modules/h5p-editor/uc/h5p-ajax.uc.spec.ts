@@ -12,11 +12,11 @@ import { LanguageType } from '@shared/domain/interface';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import * as fs from 'fs';
 import * as fsPromises from 'fs/promises';
+import { H5PEditorConfig } from '../h5p-editor.config';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PUploadFile } from '../types';
 import { H5PEditorUc } from './h5p.uc';
-import { H5PEditorConfig } from '../h5p-editor.config';
 
 jest.mock('fs', (): unknown => {
 	return {
@@ -96,6 +96,17 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('castToLibrariesContentType', () => {
+		describe('when castToLibrariesContentType has been called with an invalid object', () => {
+			it('should throw InternalServerErrorException', () => {
+				const randomObject = {
+					random: 1,
+				};
+				expect(() => uc.castToLibrariesContentType(randomObject)).toThrow(InternalServerErrorException);
+			});
+		});
 	});
 
 	describe('when calling GET', () => {
