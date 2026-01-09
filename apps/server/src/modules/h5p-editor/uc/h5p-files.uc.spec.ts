@@ -245,7 +245,7 @@ describe('H5P Files', () => {
 				await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser.userId);
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
-					content.parentType,
+					AuthorizationBodyParamsReferenceType.BOARDNODES,
 					content.parentId,
 					AuthorizationContextBuilder.read([])
 				);
