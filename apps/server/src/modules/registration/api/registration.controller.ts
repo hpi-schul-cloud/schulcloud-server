@@ -120,13 +120,13 @@ export class RegistrationController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CancelRegistrationUrlParams
 	): Promise<Registration | null> {
-		const restult = await this.registrationUc.cancelRegistrationForRoom(
+		const result = await this.registrationUc.cancelRegistrationForRoom(
 			currentUser.userId,
 			urlParams.registrationId,
 			urlParams.roomId
 		);
 
-		return restult;
+		return result;
 	}
 
 	@Get('/by-room/:roomId')

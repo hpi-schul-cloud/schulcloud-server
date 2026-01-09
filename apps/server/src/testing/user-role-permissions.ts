@@ -1,6 +1,6 @@
 /*
 	This permission set is based on the current state of dBildungscloud.
-	Last Update: 2025-11-10
+	Last Update: 2026-01-05
 */
 import { Permission } from '@shared/domain/interface';
 
@@ -110,6 +110,7 @@ export const teacherPermissions = [
 	Permission.TEACHER_LIST,
 	Permission.SCHOOL_LIST_DISCOVERABLE_TEACHERS,
 	Permission.SCHOOL_LIST_ROOM_MEMBERS,
+	Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS,
 ];
 
 export const adminPermissions = [
