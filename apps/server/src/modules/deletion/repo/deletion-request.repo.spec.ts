@@ -257,13 +257,8 @@ describe(DeletionRequestRepo.name, () => {
 				status: StatusModel.REGISTERED,
 			});
 
-			await em.persist([
-				.persist([
-					deletionRequestEntity1,
-					deletionRequestEntity2,
-					deletionRequestEntity3,
-					deletionRequestEntity4,
-				])
+			await em
+				.persist([deletionRequestEntity1, deletionRequestEntity2, deletionRequestEntity3, deletionRequestEntity4])
 				.flush();
 			em.clear();
 

@@ -109,9 +109,9 @@ describe('dashboard repo', () => {
 			],
 			userId: user.id,
 		});
-		await repo.persist(dashboard).flush();
+		await repo.persistAndFlush(dashboard);
 		dashboard.moveElement({ x: 1, y: 3 }, { x: 1, y: 4 });
-		await repo.persist(dashboard).flush();
+		await repo.persistAndFlush(dashboard);
 		const result = await repo.getDashboardById(dashboard.id);
 		expect(result.getGrid().length).toEqual(1);
 		expect(result.getGrid()[0].gridElement.getReferences().length).toEqual(2);
@@ -135,9 +135,9 @@ describe('dashboard repo', () => {
 			],
 			userId: user.id,
 		});
-		await repo.persist(dashboard).flush();
+		await repo.persistAndFlush(dashboard);
 		dashboard.moveElement({ x: 1, y: 3 }, { x: 1, y: 4 });
-		await repo.persist(dashboard).flush();
+		await repo.persistAndFlush(dashboard);
 
 		const findOrphan = () => em.findOneOrFail(DashboardGridElementEntity, elementId);
 
@@ -158,7 +158,7 @@ describe('dashboard repo', () => {
 				],
 				userId: user.id,
 			});
-			await repo.persist(dashboard).flush();
+			await repo.persistAndFlush(dashboard);
 			em.clear();
 			const result = await repo.getDashboardById(dashboard.id);
 			expect(dashboard.id).toEqual(result.id);
@@ -181,8 +181,8 @@ describe('dashboard repo', () => {
 				],
 				userId: user.id,
 			});
-			await repo.persist(dashboard).flush();
-			await repo.persist(dashboard).flush();
+			await repo.persistAndFlush(dashboard);
+			await repo.persistAndFlush(dashboard);
 
 			const result = await repo.getDashboardById(dashboard.id);
 			expect(dashboard.id).toEqual(result.id);
@@ -202,7 +202,7 @@ describe('dashboard repo', () => {
 				],
 				userId: user.id,
 			});
-			await repo.persist(dashboard).flush();
+			await repo.persistAndFlush(dashboard);
 
 			const result = await repo.getDashboardById(dashboard.id);
 			expect(result.id).toEqual(result.id);
@@ -235,7 +235,7 @@ describe('dashboard repo', () => {
 					],
 					userId: user.id,
 				});
-				await repo.persist(dashboard).flush();
+				await repo.persistAndFlush(dashboard);
 
 				const result = await repo.getUsersDashboard(user.id);
 				expect(result.id).toEqual(dashboard.id);
@@ -285,7 +285,7 @@ describe('dashboard repo', () => {
 					],
 					userId: user.id,
 				});
-				await repo.persist(dashboard).flush();
+				await repo.persistAndFlush(dashboard);
 
 				return { user, dashboard };
 			};
@@ -315,7 +315,7 @@ describe('dashboard repo', () => {
 				],
 				userId: user.id,
 			});
-			await repo.persist(dashboard).flush();
+			await repo.persistAndFlush(dashboard);
 
 			return { userWithoutDashoard, user };
 		};

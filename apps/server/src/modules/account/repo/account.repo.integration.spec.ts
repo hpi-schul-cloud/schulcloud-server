@@ -216,8 +216,8 @@ describe('AccountMikroOrmRepo', () => {
 					userId: new ObjectId().toHexString(),
 				});
 
-				await em.persist(AccountDoToEntityMapper.mapToEntity(anAccountToFind).flush());
-				await em.persist(AccountDoToEntityMapper.mapToEntity(anotherAccountToFind).flush());
+				await em.persist(AccountDoToEntityMapper.mapToEntity(anAccountToFind)).flush();
+				await em.persist(AccountDoToEntityMapper.mapToEntity(anotherAccountToFind)).flush();
 				em.clear();
 
 				return { anAccountToFind, anotherAccountToFind };
