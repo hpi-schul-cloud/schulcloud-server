@@ -39,7 +39,7 @@ describe(`card update height (api)`, () => {
 		const school = schoolEntityFactory.buildWithId();
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 		const course = courseEntityFactory.build({ school, teachers: [teacherUser] });
-		await em.persistAndFlush([teacherAccount, teacherUser, course, school]);
+		await em.persist([teacherAccount, teacherUser, course, school]).flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -47,7 +47,7 @@ describe(`card update height (api)`, () => {
 		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 		const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-		await em.persistAndFlush([cardNode, columnNode, columnBoardNode]);
+		await em.persist([cardNode, columnNode, columnBoardNode]).flush();
 		em.clear();
 		const teacherClient = await testApiClient.login(teacherAccount);
 
@@ -83,7 +83,7 @@ describe(`card update height (api)`, () => {
 			const { cardNode } = await setup();
 
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			await em.persistAndFlush([studentAccount, studentUser]);
+			await em.persist([studentAccount, studentUser]).flush();
 			const studentClient = await testApiClient.login(studentAccount);
 
 			const newHeight = 350;

@@ -45,7 +45,7 @@ describe('submission item delete (api)', () => {
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
-			await em.persistAndFlush([teacherAccount, teacherUser, course]);
+			await em.persist([teacherAccount, teacherUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -61,7 +61,7 @@ describe('submission item delete (api)', () => {
 				completed: true,
 			});
 
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode, submissionItemNode]);
+			await em.persist([columnBoardNode, columnNode, cardNode, submissionContainerNode, submissionItemNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -91,7 +91,7 @@ describe('submission item delete (api)', () => {
 
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 			const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
-			await em.persistAndFlush([studentAccount, studentUser, course]);
+			await em.persist([studentAccount, studentUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -108,7 +108,7 @@ describe('submission item delete (api)', () => {
 				completed: true,
 			});
 
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode, submissionItemNode]);
+			await em.persist([columnBoardNode, columnNode, cardNode, submissionContainerNode, submissionItemNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(studentAccount);
@@ -142,7 +142,7 @@ describe('submission item delete (api)', () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 			const { studentAccount: studentAccount2, studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent();
 			const course = courseEntityFactory.build({ school, students: [studentUser, studentUser2] });
-			await em.persistAndFlush([studentAccount, studentUser, studentAccount2, studentUser2, course]);
+			await em.persist([studentAccount, studentUser, studentAccount2, studentUser2, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -158,7 +158,7 @@ describe('submission item delete (api)', () => {
 				userId: studentUser.id,
 				completed: true,
 			});
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode, submissionItemNode]);
+			await em.persist([columnBoardNode, columnNode, cardNode, submissionContainerNode, submissionItemNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(studentAccount2);
@@ -191,7 +191,7 @@ describe('submission item delete (api)', () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 			const { studentAccount: studentAccount2, studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent();
 			const course = courseEntityFactory.build({ school, students: [studentUser] });
-			await em.persistAndFlush([studentAccount, studentUser, studentAccount2, studentUser2, course]);
+			await em.persist([studentAccount, studentUser, studentAccount2, studentUser2, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -207,7 +207,7 @@ describe('submission item delete (api)', () => {
 				userId: studentUser.id,
 				completed: true,
 			});
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode, submissionItemNode]);
+			await em.persist([columnBoardNode, columnNode, cardNode, submissionContainerNode, submissionItemNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(studentAccount2);

@@ -49,7 +49,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 					},
 				});
 
-				await em.persistAndFlush(schoolSystemOptionsEntity);
+				await em.persist(schoolSystemOptionsEntity).flush();
 				em.clear();
 
 				return {
@@ -101,7 +101,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 					},
 				});
 
-				await em.persistAndFlush(schoolSystemOptionsEntity);
+				await em.persist(schoolSystemOptionsEntity).flush();
 				em.clear();
 
 				return {
@@ -132,7 +132,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 					schoolId: schoolEntity.id,
 				});
 
-				await em.persistAndFlush([schoolEntity]);
+				await em.persist([schoolEntity]).flush();
 				em.clear();
 
 				return {
@@ -195,7 +195,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 					}),
 				});
 
-				await em.persistAndFlush([schoolEntity]);
+				await em.persist([schoolEntity]).flush();
 				em.clear();
 
 				return {
@@ -251,7 +251,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 					schoolId: schoolEntity.id,
 				});
 
-				await em.persistAndFlush([schoolEntity]);
+				await em.persist([schoolEntity]).flush();
 				em.clear();
 
 				return {

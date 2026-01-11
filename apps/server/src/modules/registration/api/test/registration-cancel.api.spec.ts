@@ -78,27 +78,29 @@ describe('Room Controller (API)', () => {
 				name: 'External Persons School',
 				purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
 			});
-			await em.persistAndFlush([
-				school,
-				teacherAccount,
-				teacherUser,
-				otherTeacherAccount,
-				otherTeacherUser,
-				room,
-				roomOwnerRole,
-				roomViewerRole,
-				group,
-				roomMembership,
-				externalPersonRole,
-				guestStudent,
-				guestTeacher,
-				guestExternalPerson,
-				externalPersonsSchool,
-			]);
+			await em
+				.persist([
+					school,
+					teacherAccount,
+					teacherUser,
+					otherTeacherAccount,
+					otherTeacherUser,
+					room,
+					roomOwnerRole,
+					roomViewerRole,
+					group,
+					roomMembership,
+					externalPersonRole,
+					guestStudent,
+					guestTeacher,
+					guestExternalPerson,
+					externalPersonsSchool,
+				])
+				.flush();
 
 			const registration1 = registrationEntityFactory.build({ roomIds: [room.id] });
 			const registration2 = registrationEntityFactory.build({ roomIds: [room.id, new ObjectId().toHexString()] });
-			await em.persistAndFlush([registration1, registration2]);
+			await em.persist([registration1, registration2]).flush();
 			em.clear();
 
 			return {

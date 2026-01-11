@@ -49,7 +49,7 @@ describe('user repo', () => {
 		it('should return right keys', async () => {
 			const user = userFactory.build();
 
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 			em.clear();
 
 			const result = await repo.findById(user.id);
@@ -91,7 +91,7 @@ describe('user repo', () => {
 			const userA = userFactory.build();
 			const userB = userFactory.build();
 
-			await em.persistAndFlush([userA, userB]);
+			await em.persist([userA, userB]).flush();
 			em.clear();
 
 			const result = await repo.findById(userA.id);
@@ -111,16 +111,16 @@ describe('user repo', () => {
 
 		it('should populate user roles recursively if requested', async () => {
 			const roles3 = roleFactory.buildList(1);
-			await em.persistAndFlush(roles3);
+			await em.persist(roles3).flush();
 
 			const roles2 = roleFactory.buildList(1, { roles: roles3 });
-			await em.persistAndFlush(roles2);
+			await em.persist(roles2).flush();
 
 			const roles1 = roleFactory.buildList(1, { roles: roles2 });
-			await em.persistAndFlush(roles1);
+			await em.persist(roles1).flush();
 
 			const user = userFactory.build({ roles: roles1 });
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 			em.clear();
 
 			const result = await repo.findById(user.id, true);
@@ -152,7 +152,7 @@ describe('user repo', () => {
 			const setup = async () => {
 				const user = userFactory.buildWithId();
 
-				await em.persistAndFlush([user]);
+				await em.persist([user]).flush();
 				em.clear();
 
 				return { user };
@@ -174,13 +174,13 @@ describe('user repo', () => {
 		let userB: User;
 		beforeEach(async () => {
 			sys = systemEntityFactory.build();
-			await em.persistAndFlush([sys]);
+			await em.persist([sys]).flush();
 			const school = schoolEntityFactory.build({ systems: [sys] });
 			// const school = schoolFactory.withSystem().build();
 
 			userA = userFactory.build({ school, externalId: '111' });
 			userB = userFactory.build({ externalId: '111' });
-			await em.persistAndFlush([userA, userB]);
+			await em.persist([userA, userB]).flush();
 			em.clear();
 		});
 
@@ -242,7 +242,7 @@ describe('user repo', () => {
 			const school = schoolEntityFactory.build();
 			const user = userFactory.build({ school });
 
-			await em.persistAndFlush([user, school]);
+			await em.persist([user, school]).flush();
 			em.clear();
 			return { user, school };
 		};
@@ -258,7 +258,7 @@ describe('user repo', () => {
 		it('should exclude deleted users', async () => {
 			const school = schoolEntityFactory.build();
 			const user = userFactory.build({ school, deletedAt: new Date() });
-			await em.persistAndFlush([school, user]);
+			await em.persist([school, user]).flush();
 			em.clear();
 			const [result, count] = await repo.findForImportUser(school);
 			expect(result.map((u) => u.id)).not.toContain(user.id);
@@ -269,7 +269,7 @@ describe('user repo', () => {
 			const school = schoolEntityFactory.build();
 			const user = userFactory.build({ firstName: 'Papa', lastName: 'Pane', school });
 			const otherUser = userFactory.build({ school });
-			await em.persistAndFlush([user, otherUser]);
+			await em.persist([user, otherUser]).flush();
 			em.clear();
 			// full first name
 			const [result1, count1] = await repo.findForImportUser(school, 'papa');
@@ -307,7 +307,7 @@ describe('user repo', () => {
 			const school = schoolEntityFactory.build();
 			const user = userFactory.build({ school, firstName: 'Anna', lastName: 'Schmidt' });
 			const otherUser = userFactory.build({ school, firstName: 'Peter', lastName: 'Ball' });
-			await em.persistAndFlush([user, otherUser]);
+			await em.persist([user, otherUser]).flush();
 			em.clear();
 			const [result, count] = await repo.findForImportUser(school, undefined, {
 				order: { firstName: SortOrder.desc },
@@ -342,7 +342,7 @@ describe('user repo', () => {
 			const school = schoolEntityFactory.build();
 			const user = userFactory.build({ school });
 			const otherUser = userFactory.build({ school });
-			await em.persistAndFlush([user, otherUser]);
+			await em.persist([user, otherUser]).flush();
 			em.clear();
 			const [result, count] = await repo.findForImportUser(school, undefined, { pagination: { skip: 1 } });
 			expect(result.map((u) => u.id)).not.toContain(user.id);
@@ -355,7 +355,7 @@ describe('user repo', () => {
 			const school = schoolEntityFactory.build();
 			const user = userFactory.build({ school });
 			const otherUser = userFactory.build({ school });
-			await em.persistAndFlush([user, otherUser]);
+			await em.persist([user, otherUser]).flush();
 			em.clear();
 			const [result, count] = await repo.findForImportUser(school, undefined, { pagination: { limit: 1 } });
 			expect(result.map((u) => u.id)).toContain(user.id);
@@ -375,7 +375,7 @@ describe('user repo', () => {
 				const setup = async () => {
 					const school = schoolEntityFactory.build();
 					const user = userFactory.build({ school, firstName: 'Martin', lastName: 'Beißner' });
-					await em.persistAndFlush([user]);
+					await em.persist([user]).flush();
 					em.clear();
 
 					return {
@@ -400,7 +400,7 @@ describe('user repo', () => {
 		it('should find user by email', async () => {
 			const originalUsername = 'USER@EXAMPLE.COM';
 			const user = userFactory.build({ email: originalUsername });
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 			em.clear();
 
 			const result = await repo.findByEmail('USER@EXAMPLE.COM');
@@ -411,7 +411,7 @@ describe('user repo', () => {
 		it('should find user by email, ignoring case', async () => {
 			const originalUsername = 'USER@EXAMPLE.COM';
 			const user = userFactory.build({ email: originalUsername });
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 			em.clear();
 
 			let result: User[];
@@ -428,7 +428,7 @@ describe('user repo', () => {
 		it('should not find by wildcard', async () => {
 			const originalUsername = 'USER@EXAMPLE.COM';
 			const user = userFactory.build({ email: originalUsername });
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 			em.clear();
 
 			let result: User[];
@@ -486,7 +486,7 @@ describe('user repo', () => {
 				const user1: User = userFactory.buildWithId();
 				const user2: User = userFactory.buildWithId();
 				const user3: User = userFactory.buildWithId();
-				await em.persistAndFlush([user1, user2, user3]);
+				await em.persist([user1, user2, user3]).flush();
 				em.clear();
 
 				return {
@@ -541,7 +541,7 @@ describe('user repo', () => {
 
 			const expectedParentEmail = [parentOfUser.email];
 
-			await em.persistAndFlush(user);
+			await em.persist(user).flush();
 			em.clear();
 
 			return {
@@ -576,7 +576,7 @@ describe('user repo', () => {
 			const setup = async () => {
 				const user = userFactory.buildWithId();
 
-				await em.persistAndFlush(user);
+				await em.persist(user).flush();
 				em.clear();
 
 				return {
@@ -597,7 +597,7 @@ describe('user repo', () => {
 			const setup = async () => {
 				const user = userFactory.buildWithId();
 
-				await em.persistAndFlush(user);
+				await em.persist(user).flush();
 				em.clear();
 
 				return {
@@ -622,7 +622,7 @@ describe('user repo', () => {
 				const userB = userFactory.buildWithId({ externalId: '222' });
 				const userC = userFactory.buildWithId({ externalId: '333' });
 
-				await em.persistAndFlush([userA, userB, userC]);
+				await em.persist([userA, userB, userC]).flush();
 				em.clear();
 
 				const externalIds: string[] = ['111', '222'];
@@ -659,7 +659,7 @@ describe('user repo', () => {
 				const userB = userFactory.buildWithId();
 				const userC = userFactory.buildWithId();
 
-				await em.persistAndFlush([userA, userB, userC]);
+				await em.persist([userA, userB, userC]).flush();
 				em.clear();
 
 				const userIds = [userA.id, userC.id];
@@ -696,7 +696,7 @@ describe('user repo', () => {
 				const userB = userFactory.buildWithId({ lastSyncedAt: dateB });
 				const userC = userFactory.buildWithId({ lastSyncedAt: dateC });
 
-				await em.persistAndFlush([userA, userB, userC]);
+				await em.persist([userA, userB, userC]).flush();
 				em.clear();
 
 				const userIds = [userB.id, userC.id];
@@ -725,7 +725,7 @@ describe('user repo', () => {
 			const first = userFactory.build({ externalId, source: 'same' });
 			const second = userFactory.build({ externalId, source: 'same' });
 
-			await expect(() => em.persistAndFlush([first, second])).rejects.toThrow();
+			await expect(() => em.persist([first, second]).flush()).rejects.toThrow();
 		});
 
 		it('should successfully save the same externalId with a different source', async () => {
@@ -733,7 +733,7 @@ describe('user repo', () => {
 			const first = userFactory.build({ externalId, source: 'same' });
 			const second = userFactory.build({ externalId, source: 'different' });
 
-			await em.persistAndFlush([first, second]);
+			await em.persist([first, second]).flush();
 
 			expect('we made it here').toBeTruthy();
 		});
@@ -743,7 +743,7 @@ describe('user repo', () => {
 			const first = userFactory.build({ externalId });
 			const second = userFactory.build({ externalId });
 
-			await em.persistAndFlush([first, second]);
+			await em.persist([first, second]).flush();
 
 			expect('we made it here').toBeTruthy();
 		});

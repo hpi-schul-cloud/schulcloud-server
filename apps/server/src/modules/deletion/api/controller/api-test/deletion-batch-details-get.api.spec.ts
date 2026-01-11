@@ -55,7 +55,7 @@ describe('getBatchDetails ', () => {
 				status: StatusModel.SUCCESS,
 			});
 
-			await em.persistAndFlush([student, teacher, deletionBatch, deletionRequest]);
+			await em.persist([student, teacher, deletionBatch, deletionRequest]).flush();
 			em.clear();
 
 			const expectedResponse: DeletionBatchDetailsResponse = {
@@ -105,7 +105,7 @@ describe('getBatchDetails ', () => {
 	describe('when batch has no ids', () => {
 		const setup = async () => {
 			const batch = deletionBatchEntityFactory.build();
-			await em.persistAndFlush(batch);
+			await em.persist(batch).flush();
 			em.clear();
 
 			const expectedResponse: DeletionBatchDetailsResponse = {

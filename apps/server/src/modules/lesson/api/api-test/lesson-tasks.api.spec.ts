@@ -37,7 +37,7 @@ describe('Lesson Controller (API) - GET list of lesson tasks /lessons/:lessonId/
 			const lesson = lessonFactory.build({ course });
 			const tasks = taskFactory.buildList(3, { creator: teacherUser, lesson });
 
-			await em.persistAndFlush([teacherAccount, teacherUser, course, lesson, ...tasks]);
+			await em.persist([teacherAccount, teacherUser, course, lesson, ...tasks]).flush();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 

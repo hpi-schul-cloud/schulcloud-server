@@ -51,7 +51,7 @@ describe('Task copy (API)', () => {
 		const course = courseEntityFactory.build({ name: 'course #1', teachers: [teacherUser] });
 		const task = taskFactory.build({ name: 'task #1', course });
 
-		await em.persistAndFlush([task, course, teacherAccount, teacherUser]);
+		await em.persist([task, course, teacherAccount, teacherUser]).flush();
 		em.clear();
 
 		const loggedInClient = await apiClient.login(teacherAccount);

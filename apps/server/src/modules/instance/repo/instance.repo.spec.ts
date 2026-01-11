@@ -35,7 +35,7 @@ describe(InstanceRepo.name, () => {
 			const setup = async () => {
 				const instanceEntity = instanceEntityFactory.buildWithId();
 
-				await em.persistAndFlush(instanceEntity);
+				await em.persist(instanceEntity).flush();
 				em.clear();
 
 				return {
@@ -87,7 +87,7 @@ describe(InstanceRepo.name, () => {
 			const setup = async () => {
 				const instanceEntity = instanceEntityFactory.buildWithId();
 
-				await em.persistAndFlush(instanceEntity);
+				await em.persist(instanceEntity).flush();
 				em.clear();
 
 				const instance = instanceFactory.build({ id: instanceEntity.id, name: 'not_nbc' });
@@ -124,7 +124,7 @@ describe(InstanceRepo.name, () => {
 				const instanceEntity = instanceEntityFactory.buildWithId();
 
 				await em.getCollection(InstanceEntity.name).deleteMany({});
-				await em.persistAndFlush(instanceEntity);
+				await em.persist(instanceEntity).flush();
 				em.clear();
 
 				return {
