@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger/logger.module';
 import { AccountModule } from '@modules/account';
 import { RoleService } from '@modules/role';
 import { RoleRepo } from '@modules/role/repo';
@@ -10,7 +11,7 @@ import { RegistrationService } from './domain';
 import { RegistrationRepo } from './repo';
 
 @Module({
-	imports: [AccountModule, RoomMembershipModule, SchoolModule, ServerMailModule, UserModule],
+	imports: [AccountModule, LoggerModule, RoomMembershipModule, SchoolModule, ServerMailModule, UserModule],
 	providers: [RegistrationRepo, RegistrationService, RoleService, RoleRepo],
 	exports: [RegistrationService],
 })
