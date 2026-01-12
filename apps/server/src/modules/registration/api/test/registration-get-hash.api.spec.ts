@@ -38,7 +38,7 @@ describe('Room Controller (API)', () => {
 		const setup = async () => {
 			const registration = registrationEntityFactory.build();
 
-			await em.persistAndFlush([registration]);
+			await em.persist([registration]).flush();
 			em.clear();
 
 			const expectedResponse = {

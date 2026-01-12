@@ -72,18 +72,20 @@ describe('Room Controller (API)', () => {
 						return { id: room.id };
 					}),
 				});
-				await em.persistAndFlush([
-					...rooms,
-					otherRoom,
-					studentAccount,
-					studentUser,
-					teacherAccount,
-					teacherUser,
-					roomViewerRole,
-					userGroupEntity,
-					...roomMemberships,
-					roomArrangement,
-				]);
+				await em
+					.persist([
+						...rooms,
+						otherRoom,
+						studentAccount,
+						studentUser,
+						teacherAccount,
+						teacherUser,
+						roomViewerRole,
+						userGroupEntity,
+						...roomMemberships,
+						roomArrangement,
+					])
+					.flush();
 
 				em.clear();
 
@@ -149,7 +151,7 @@ describe('Room Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const room = roomEntityFactory.build({ schoolId: school.id });
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-				await em.persistAndFlush([school, room, teacherAccount, teacherUser]);
+				await em.persist([school, room, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

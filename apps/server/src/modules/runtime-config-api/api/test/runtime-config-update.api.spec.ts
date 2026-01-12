@@ -66,7 +66,7 @@ describe('RuntimeConfig Controller (API)', () => {
 		describe('when user is logged in as teacher', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(teacherAccount);
 				return { loggedInClient };
@@ -84,7 +84,7 @@ describe('RuntimeConfig Controller (API)', () => {
 		describe('when user is logged in as superhero', () => {
 			const setup = async () => {
 				const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
-				await em.persistAndFlush([superheroAccount, superheroUser]);
+				await em.persist([superheroAccount, superheroUser]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(superheroAccount);
 				return { loggedInClient };

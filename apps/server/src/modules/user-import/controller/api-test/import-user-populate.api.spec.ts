@@ -39,10 +39,10 @@ describe('ImportUser Controller Populate (API)', () => {
 			externalId: schoolHasExternalId ? system.id : undefined,
 		});
 		const roles = [roleFactory.build({ name: RoleName.ADMINISTRATOR, permissions })];
-		await em.persistAndFlush([system, school, ...roles]);
+		await em.persist([system, school, ...roles]).flush();
 		const user = userFactory.buildWithId({ roles, school });
 		const account = accountFactory.withUser(user).buildWithId();
-		await em.persistAndFlush([user, account]);
+		await em.persist([user, account]).flush();
 		em.clear();
 		return { user, account, roles, school, system };
 	};
@@ -125,7 +125,7 @@ describe('ImportUser Controller Populate (API)', () => {
 				config.FEATURE_USER_MIGRATION_SYSTEM_ID = system.id;
 
 				const userLoginMigration = userLoginMigrationFactory.buildWithId({ school });
-				await em.persistAndFlush([userLoginMigration]);
+				await em.persist([userLoginMigration]).flush();
 
 				const loggedInClient = await testApiClient.login(account);
 
@@ -156,7 +156,7 @@ describe('ImportUser Controller Populate (API)', () => {
 				config.FEATURE_USER_MIGRATION_SYSTEM_ID = system.id;
 
 				const userLoginMigration = userLoginMigrationFactory.buildWithId({ school });
-				await em.persistAndFlush([userLoginMigration]);
+				await em.persist([userLoginMigration]).flush();
 
 				axiosMock.onPost(/(.*)\/token/).reply<OauthTokenResponse>(HttpStatus.OK, {
 					id_token: 'idToken',

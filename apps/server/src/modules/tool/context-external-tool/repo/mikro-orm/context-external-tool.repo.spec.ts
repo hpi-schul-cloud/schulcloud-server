@@ -100,13 +100,15 @@ describe(ContextExternalToolRepo.name, () => {
 				contextExternalTool3,
 			} = createExternalTools();
 
-			await em.persistAndFlush([
-				schoolExternalTool1,
-				schoolExternalTool2,
-				contextExternalTool1,
-				contextExternalTool2,
-				contextExternalTool3,
-			]);
+			await em
+				.persist([
+					schoolExternalTool1,
+					schoolExternalTool2,
+					contextExternalTool1,
+					contextExternalTool2,
+					contextExternalTool3,
+				])
+				.flush();
 
 			return { schoolExternalTool1, schoolExternalTool2, contextExternalTool1 };
 		};
@@ -238,7 +240,7 @@ describe(ContextExternalToolRepo.name, () => {
 			const setup = async () => {
 				const { schoolExternalTool1, contextExternalTool1 } = createExternalTools();
 
-				await em.persistAndFlush([schoolExternalTool1, contextExternalTool1]);
+				await em.persist([schoolExternalTool1, contextExternalTool1]).flush();
 
 				return {
 					schoolExternalTool1,
@@ -262,7 +264,7 @@ describe(ContextExternalToolRepo.name, () => {
 			const setup = async () => {
 				const { schoolExternalTool1, contextExternalTool1 } = createExternalTools();
 
-				await em.persistAndFlush([schoolExternalTool1, contextExternalTool1]);
+				await em.persist([schoolExternalTool1, contextExternalTool1]).flush();
 
 				return {
 					contextExternalTool1,
@@ -288,7 +290,7 @@ describe(ContextExternalToolRepo.name, () => {
 			const setup = async () => {
 				const { schoolExternalTool1, contextExternalTool1 } = createExternalTools();
 
-				await em.persistAndFlush([schoolExternalTool1, contextExternalTool1]);
+				await em.persist([schoolExternalTool1, contextExternalTool1]).flush();
 
 				const query: ContextExternalToolQuery = {
 					context: {
@@ -314,7 +316,7 @@ describe(ContextExternalToolRepo.name, () => {
 			const setup = async () => {
 				const { contextExternalTool1 } = createExternalTools();
 				contextExternalTool1.contextType = 'UNKNOWN' as ContextExternalToolType;
-				await em.persistAndFlush(contextExternalTool1);
+				await em.persist(contextExternalTool1).flush();
 				em.clear();
 
 				const query: ContextExternalToolQuery = {
@@ -338,7 +340,7 @@ describe(ContextExternalToolRepo.name, () => {
 		describe('when no matches found', () => {
 			const setup = async () => {
 				const { schoolExternalTool1 } = createExternalTools();
-				await em.persistAndFlush(schoolExternalTool1);
+				await em.persist(schoolExternalTool1).flush();
 				em.clear();
 
 				const query: ContextExternalToolQuery = {
@@ -373,7 +375,7 @@ describe(ContextExternalToolRepo.name, () => {
 					schoolTool: schoolExternalTool,
 				});
 
-				await em.persistAndFlush([schoolExternalTool, contextExternalTool]);
+				await em.persist([schoolExternalTool, contextExternalTool]).flush();
 
 				return {
 					contextExternalTool,
@@ -417,7 +419,7 @@ describe(ContextExternalToolRepo.name, () => {
 					schoolTool: schoolExternalTool,
 				});
 
-				await em.persistAndFlush([schoolExternalTool, contextExternalTool]);
+				await em.persist([schoolExternalTool, contextExternalTool]).flush();
 
 				return {
 					contextExternalTool,
@@ -482,12 +484,14 @@ describe(ContextExternalToolRepo.name, () => {
 					}
 				);
 
-				await em.persistAndFlush([
-					schoolExternalTool1,
-					schoolExternalTool2,
-					...contextExternalToolsInCourses,
-					...contextExternalToolsOnBoards,
-				]);
+				await em
+					.persist([
+						schoolExternalTool1,
+						schoolExternalTool2,
+						...contextExternalToolsInCourses,
+						...contextExternalToolsOnBoards,
+					])
+					.flush();
 
 				return {
 					schoolExternalTool1,

@@ -67,27 +67,29 @@ describe('board get context in room (api)', () => {
 
 		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
-		await em.persistAndFlush([
-			school,
-			accountWithEditRole,
-			accountWithViewRole,
-			noAccessAccount,
-			userWithEditRole,
-			userWithViewRole,
-			noAccessUser,
-			roomEditorRole,
-			roomViewerRole,
-			userGroup,
-			room,
-			roomMembership,
-		]);
+		await em
+			.persist([
+				school,
+				accountWithEditRole,
+				accountWithViewRole,
+				noAccessAccount,
+				userWithEditRole,
+				userWithViewRole,
+				noAccessUser,
+				roomEditorRole,
+				roomViewerRole,
+				userGroup,
+				room,
+				roomMembership,
+			])
+			.flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			isVisible: false,
 			context: { id: room.id, type: BoardExternalReferenceType.Room },
 		});
 
-		await em.persistAndFlush([columnBoardNode]);
+		await em.persist([columnBoardNode]).flush();
 		em.clear();
 
 		return { accountWithEditRole, accountWithViewRole, noAccessAccount, columnBoardNode };

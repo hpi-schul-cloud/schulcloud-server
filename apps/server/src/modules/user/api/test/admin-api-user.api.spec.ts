@@ -57,7 +57,7 @@ describe('Admin API - Users (API)', () => {
 		describe('with api token', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
-				await em.persistAndFlush(school);
+				await em.persist(school).flush();
 
 				const schoolId = school.id;
 				const firstName = 'firstname';

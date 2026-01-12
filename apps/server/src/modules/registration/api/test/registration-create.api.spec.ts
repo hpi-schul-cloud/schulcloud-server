@@ -75,16 +75,18 @@ describe('Registration Controller (API)', () => {
 				roomId: room.id,
 				schoolId: school.id,
 			});
-			await em.persistAndFlush([
-				school,
-				studentAccount,
-				studentUser,
-				teacherAccount,
-				teacherUser,
-				room,
-				userGroupEntity,
-				roomMembership,
-			]);
+			await em
+				.persist([
+					school,
+					studentAccount,
+					studentUser,
+					teacherAccount,
+					teacherUser,
+					room,
+					userGroupEntity,
+					roomMembership,
+				])
+				.flush();
 			em.clear();
 
 			const params: CreateOrUpdateRegistrationBodyParams = {
@@ -153,7 +155,7 @@ describe('Registration Controller (API)', () => {
 						roomIds: [],
 					});
 
-					await em.persistAndFlush(existingRegistration);
+					await em.persist(existingRegistration).flush();
 					em.clear();
 
 					const response = await loggedInClient.post(undefined, params);
@@ -173,7 +175,7 @@ describe('Registration Controller (API)', () => {
 						roomIds: [],
 					});
 
-					await em.persistAndFlush(existingRegistration);
+					await em.persist(existingRegistration).flush();
 					em.clear();
 
 					const response = await loggedInClient.post(undefined, params);

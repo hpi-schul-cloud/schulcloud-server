@@ -86,7 +86,7 @@ describe(SynchronizationRepo.name, () => {
 			const setup = async () => {
 				// Test synchronization entity
 				const entity: SynchronizationEntity = synchronizationEntityFactory.build();
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				const expectedSynchronization = {
 					id: entity.id,
@@ -117,7 +117,7 @@ describe(SynchronizationRepo.name, () => {
 		describe('when update a synchronization', () => {
 			const setup = async () => {
 				const entity: SynchronizationEntity = synchronizationEntityFactory.build();
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				// Arrange expected DeletionRequestEntity after changing status
 				entity.status = SynchronizationStatusModel.SUCCESS;

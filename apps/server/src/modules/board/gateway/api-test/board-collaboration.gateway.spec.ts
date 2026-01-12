@@ -76,7 +76,7 @@ describe(BoardCollaborationGateway.name, () => {
 		});
 
 		const course = courseEntityFactory.build({ school: school, teachers: [teacherUser] });
-		await em.persistAndFlush([teacherUser, teacherAccount, studentUser, studentAccount, course]);
+		await em.persist([teacherUser, teacherAccount, studentUser, studentAccount, course]).flush();
 
 		ioClient = await getSocketApiClient(app, teacherAuthJwt);
 		unauthorizedIoClient = await getSocketApiClient(app, studentAuthJwt);
@@ -94,7 +94,7 @@ describe(BoardCollaborationGateway.name, () => {
 		];
 		const elementNodes = richTextElementEntityFactory.withParent(cardNodes[0]).buildList(3);
 
-		await em.persistAndFlush([columnBoardNode, columnNode, columnNode2, ...cardNodes, ...elementNodes]);
+		await em.persist([columnBoardNode, columnNode, columnNode2, ...cardNodes, ...elementNodes]).flush();
 
 		em.clear();
 
@@ -290,7 +290,7 @@ describe(BoardCollaborationGateway.name, () => {
 					context: columnBoardNode.context,
 				});
 				const secondColumnNode = columnEntityFactory.withParent(secondColumnBoardNode).build();
-				await em.persistAndFlush([secondColumnBoardNode, secondColumnNode]);
+				await em.persist([secondColumnBoardNode, secondColumnNode]).flush();
 				em.clear();
 
 				return { secondColumnNode, ...params };
