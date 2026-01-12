@@ -222,18 +222,16 @@ describe('RegistrationService', () => {
 
 				expect(mailService.send).not.toHaveBeenCalled();
 			});
+		});
 
-			it('should log with not resent registration id', async () => {
-				const recentDate = new Date();
-				jest.useFakeTimers().setSystemTime(recentDate);
-
-				const oneMinuteAgo = new Date(recentDate.getTime() - 1 * 60 * 1000);
-				const registration = registrationFactory.build({ resentAt: oneMinuteAgo });
-				registrationRepo.findById.mockResolvedValueOnce(registration);
+		describe('when an error occurs during resending', () => {
+			it('should log with failed registration id', async () => {
+				const registration = registrationFactory.build();
+				registrationRepo.findById.mockRejectedValueOnce(new Error('Database error'));
 
 				await service.resendRegistrationMails([registration.id]);
 
-				expect(logger.debug).toHaveBeenCalledWith(new ResendingRegistrationMailLoggable(registration.id));
+				expect(logger.warning).toHaveBeenCalledWith(new ResendingRegistrationMailLoggable(registration.id));
 			});
 		});
 	});
@@ -469,27 +467,29 @@ describe('RegistrationService', () => {
 			it('should process all registrationIds and return updated registrations', async () => {
 				const roomIdToRemove = new ObjectId().toHexString();
 
-				const registration1 = registrationFactory.build({
+				const registrationWithRoomRemaining = registrationFactory.build({
 					roomIds: [roomIdToRemove, new ObjectId().toHexString()],
 				});
-				const registration2 = registrationFactory.build({
+				const registrationToBeDeleted = registrationFactory.build({
 					roomIds: [roomIdToRemove],
 				});
 
-				registrationRepo.findById.mockResolvedValueOnce(registration1).mockResolvedValueOnce(registration2);
+				registrationRepo.findById
+					.mockResolvedValueOnce(registrationWithRoomRemaining)
+					.mockResolvedValueOnce(registrationToBeDeleted);
 
 				const updatedRegistrations = await service.cancelRegistrationsForRoom(
-					[registration1.id, registration2.id],
+					[registrationWithRoomRemaining.id, registrationToBeDeleted.id],
 					roomIdToRemove
 				);
 
 				expect(updatedRegistrations).toHaveLength(1);
-				expect(updatedRegistrations?.[0].id).toBe(registration1.id);
+				expect(updatedRegistrations?.[0].id).toBe(registrationWithRoomRemaining.id);
 				expect(updatedRegistrations?.[0].roomIds).not.toContain(roomIdToRemove);
 
 				expect(registrationRepo.save).toHaveBeenCalledTimes(1);
 				expect(registrationRepo.save).toHaveBeenCalledWith(updatedRegistrations?.[0]);
-				expect(registrationRepo.deleteByIds).toHaveBeenCalledWith([registration2.id]);
+				expect(registrationRepo.deleteByIds).toHaveBeenCalledWith([registrationToBeDeleted.id]);
 			});
 		});
 	});

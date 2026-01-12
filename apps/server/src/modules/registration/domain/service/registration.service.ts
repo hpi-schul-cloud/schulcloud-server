@@ -241,19 +241,23 @@ export class RegistrationService {
 	}
 
 	private async resendSingleRegistrationMail(registrationId: string): Promise<Registration | null> {
-		const registration = await this.getSingleRegistrationById(registrationId);
+		try {
+			const registration = await this.getSingleRegistrationById(registrationId);
 
-		const canBeResend = this.checkCanRegistrationMailBeResend(registration);
-		if (!canBeResend) {
-			this.logger.debug(new ResendingRegistrationMailLoggable(registration.id));
+			const canBeResend = this.checkCanRegistrationMailBeResend(registration);
+			if (!canBeResend) {
+				return null;
+			}
+
+			registration.resentAt = new Date();
+			await this.sendRegistrationMail(registration);
+
+			await this.saveRegistration(registration);
+			return registration;
+		} catch (error) {
+			this.logger.warning(new ResendingRegistrationMailLoggable(registrationId));
 			return null;
 		}
-
-		registration.resentAt = new Date();
-		await this.sendRegistrationMail(registration);
-
-		await this.saveRegistration(registration);
-		return registration;
 	}
 
 	private checkCanRegistrationMailBeResend(registration: Registration): boolean {
