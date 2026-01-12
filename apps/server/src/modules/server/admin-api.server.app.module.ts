@@ -1,9 +1,7 @@
 import { LoggerModule } from '@core/logger';
 import { ValidationModule } from '@core/validation';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
-import { EtherpadClientModule } from '@infra/etherpad-client';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
@@ -48,10 +46,6 @@ const serverModules = [
 	UserAdminApiModule,
 	AdminApiRegistrationPinModule,
 	ToolAdminApiModule,
-	EtherpadClientModule.register({
-		apiKey: Configuration.has('ETHERPAD__API_KEY') ? (Configuration.get('ETHERPAD__API_KEY') as string) : undefined,
-		basePath: Configuration.has('ETHERPAD__URI') ? (Configuration.get('ETHERPAD__URI') as string) : undefined,
-	}),
 	AuthGuardModule.register([AuthGuardOptions.X_API_KEY]),
 	AccountApiModule,
 	MediaBoardApiModule,

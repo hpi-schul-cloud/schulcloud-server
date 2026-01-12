@@ -15,10 +15,7 @@ export interface AdminApiServerConfig
 		UserConfig,
 		RegistrationPinConfig,
 		ToolConfig,
-		XApiKeyAuthGuardConfig {
-	ETHERPAD__API_KEY?: string;
-	ETHERPAD__URI?: string;
-}
+		XApiKeyAuthGuardConfig {}
 
 const config: AdminApiServerConfig = {
 	ADMIN_API__DELETION_DELETE_AFTER_MINUTES: Configuration.get('ADMIN_API__DELETION_DELETE_AFTER_MINUTES') as number,
