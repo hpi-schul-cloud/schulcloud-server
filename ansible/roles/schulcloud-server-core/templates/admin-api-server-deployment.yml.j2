@@ -62,7 +62,7 @@ spec:
             name: admin-api-server-configmap
         - secretRef:
             name: admin-api-server-secret
-         - secretRef:
+        - secretRef:
             name: api-secret
         command: ['npm', 'run', 'nest:start:admin-api-server:prod']
         resources:
