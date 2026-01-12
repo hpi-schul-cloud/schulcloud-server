@@ -4,7 +4,7 @@ import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { CardClientAdapter, CardControllerCreateElement201Response } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
-import { FilesStorageClientAdapter } from '@infra/files-storage-client';
+import { FilesStorageClientAdapter, FilesStorageClientConfig } from '@infra/files-storage-client';
 import { CommonCartridgeEvents, CommonCartridgeExchange, ImportCourseParams } from '@infra/rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { HttpService } from '@nestjs/axios';
@@ -12,7 +12,6 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import jwt from 'jsonwebtoken';
 import { lastValueFrom } from 'rxjs';
-import { CommonCartridgeConfig } from '../common-cartridge.config';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import {
 	CommonCartridgeFileFolderResourceProps,
@@ -38,7 +37,7 @@ interface ColumnResource {
 export class CommonCartridgeImportService {
 	constructor(
 		private readonly orm: MikroORM,
-		private readonly configService: ConfigService<CommonCartridgeConfig>,
+		private readonly configService: ConfigService<FilesStorageClientConfig, true>,
 		private readonly httpService: HttpService,
 		private readonly coursesClient: CoursesClientAdapter,
 		private readonly boardsClient: BoardsClientAdapter,
@@ -67,7 +66,7 @@ export class CommonCartridgeImportService {
 	}
 
 	private async fetchFile(payload: ImportCourseParams): Promise<Buffer | null> {
-		const baseUrl = this.configService.getOrThrow<string>('API_HOST');
+		const baseUrl = this.configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL');
 		const fullFileUrl = new URL(payload.fileUrl, baseUrl).toString();
 
 		const getRequestObservable = this.httpService.get(fullFileUrl.toString(), {
