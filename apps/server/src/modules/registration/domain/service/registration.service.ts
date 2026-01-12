@@ -47,7 +47,7 @@ export class RegistrationService {
 		const userDo = await this.createUser(registration, language);
 		const user = await this.userService.save(userDo);
 		const account = this.createAccount(user, password);
-		await this.accountService.save(account);
+		await this.accountService.saveWithValidation(account);
 
 		if (user.id === undefined) {
 			throw new InternalServerErrorException('User ID is undefined after saving user.');
