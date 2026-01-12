@@ -254,7 +254,7 @@ export class RegistrationService {
 
 			await this.saveRegistration(registration);
 			return registration;
-		} catch (error) {
+		} catch {
 			this.logger.warning(new ResendingRegistrationMailLoggable(registrationId));
 			return null;
 		}
