@@ -46,7 +46,7 @@ describe('LessonRepo', () => {
 		it('should find the lesson', async () => {
 			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build({ course });
-			await em.persistAndFlush([course, lesson]);
+			await em.persist([course, lesson]).flush();
 			em.clear();
 			const resultLesson = await repo.findById(lesson.id);
 			// TODO for some reason, comparing the whole object does not work
@@ -57,7 +57,7 @@ describe('LessonRepo', () => {
 		it('should populate course', async () => {
 			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build({ course });
-			await em.persistAndFlush([course, lesson]);
+			await em.persist([course, lesson]).flush();
 			em.clear();
 			const resultLesson = await repo.findById(lesson.id);
 			expect(resultLesson.course.name).toEqual(course.name);
@@ -67,7 +67,7 @@ describe('LessonRepo', () => {
 			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build({ course });
 			const tasks = [taskFactory.build({ course, lesson }), taskFactory.draft().build({ course, lesson })];
-			await em.persistAndFlush([course, lesson, ...tasks]);
+			await em.persist([course, lesson, ...tasks]).flush();
 			em.clear();
 
 			const resultLesson = await repo.findById(lesson.id);
@@ -78,7 +78,7 @@ describe('LessonRepo', () => {
 		it('should populate materials', async () => {
 			const material = materialFactory.build();
 			const lesson = lessonFactory.build({ materials: [material] });
-			await em.persistAndFlush([lesson, material]);
+			await em.persist([lesson, material]).flush();
 			em.clear();
 			const resultLesson = await repo.findById(lesson.id);
 			expect(resultLesson.materials[0]).toEqual(material);
@@ -91,7 +91,7 @@ describe('LessonRepo', () => {
 			const lesson1 = lessonFactory.build({ course: course1 });
 			const lesson2 = lessonFactory.build({ course: course2 });
 
-			await em.persistAndFlush([lesson1, lesson2]);
+			await em.persist([lesson1, lesson2]).flush();
 			em.clear();
 			const [result, total] = await repo.findAllByCourseIds([course2.id]);
 			expect(total).toEqual(1);
@@ -103,7 +103,7 @@ describe('LessonRepo', () => {
 			const lesson1 = lessonFactory.build({ course });
 			const lesson2 = lessonFactory.build({});
 
-			await em.persistAndFlush([lesson1, lesson2]);
+			await em.persist([lesson1, lesson2]).flush();
 			em.clear();
 			const [result, total] = await repo.findAllByCourseIds([course.id]);
 			expect(total).toEqual(1);
@@ -114,7 +114,7 @@ describe('LessonRepo', () => {
 			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build({ course, hidden: true });
 
-			await em.persistAndFlush([lesson]);
+			await em.persist([lesson]).flush();
 			em.clear();
 			const [result, total] = await repo.findAllByCourseIds([course.id], { hidden: false });
 			expect(total).toBe(0);
@@ -125,7 +125,7 @@ describe('LessonRepo', () => {
 			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build({ course, hidden: true });
 
-			await em.persistAndFlush([lesson]);
+			await em.persist([lesson]).flush();
 			em.clear();
 			const [result, total] = await repo.findAllByCourseIds([course.id]);
 			expect(total).toBe(1);
@@ -139,7 +139,7 @@ describe('LessonRepo', () => {
 				lessonFactory.build({ course, position: 0 }),
 				lessonFactory.build({ course, position: 1 }),
 			];
-			await em.persistAndFlush(lessons);
+			await em.persist(lessons).flush();
 			em.clear();
 			const expectedOrder = [lessons[1], lessons[2], lessons[0]].map((lesson) => lesson.id);
 			const [results] = await repo.findAllByCourseIds([course.id]);
@@ -150,7 +150,7 @@ describe('LessonRepo', () => {
 			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build({ course });
 			const tasks = [taskFactory.build({ course, lesson }), taskFactory.draft().build({ course, lesson })];
-			await em.persistAndFlush([course, lesson, ...tasks]);
+			await em.persist([course, lesson, ...tasks]).flush();
 			em.clear();
 			const [[resultLesson]] = await repo.findAllByCourseIds([course.id]);
 			expect(resultLesson.tasks.isInitialized()).toEqual(true);
@@ -161,7 +161,7 @@ describe('LessonRepo', () => {
 			const course = courseEntityFactory.build();
 			const material = materialFactory.build();
 			const lesson = lessonFactory.build({ course, materials: [material] });
-			await em.persistAndFlush([lesson, material]);
+			await em.persist([lesson, material]).flush();
 			em.clear();
 
 			const [[resultLesson]] = await repo.findAllByCourseIds([course.id]);
@@ -183,7 +183,7 @@ describe('LessonRepo', () => {
 			const lesson1 = lessonFactory.buildWithId({ contents: [contentExample, contentExample] });
 			const lesson2 = lessonFactory.buildWithId({ contents: [contentExample] });
 			const lesson3 = lessonFactory.buildWithId();
-			await em.persistAndFlush([lesson1, lesson2, lesson3]);
+			await em.persist([lesson1, lesson2, lesson3]).flush();
 			em.clear();
 
 			const emSpy = jest.spyOn(em, 'map');
@@ -223,7 +223,7 @@ describe('LessonRepo', () => {
 			const lesson1 = lessonFactory.buildWithId({ contents: [contentExample1, contentExample2] });
 			const lesson2 = lessonFactory.buildWithId({ contents: [contentExample1] });
 			const lesson3 = lessonFactory.buildWithId({ contents: [contentExample2] });
-			await em.persistAndFlush([lesson1, lesson2, lesson3]);
+			await em.persist([lesson1, lesson2, lesson3]).flush();
 			em.clear();
 
 			return {

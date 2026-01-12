@@ -46,7 +46,7 @@ describe('submission repo', () => {
 			const student = userFactory.build();
 			const courseGroup = courseGroupEntityFactory.build({ students: [student] });
 			const submission = submissionFactory.build({ courseGroup });
-			await em.persistAndFlush(submission);
+			await em.persist(submission).flush();
 			em.clear();
 
 			const result = await repo.findById(submission.id);
@@ -61,7 +61,7 @@ describe('submission repo', () => {
 			const lesson = lessonFactory.build({ course, courseGroup });
 			const task = taskFactory.build({ course, lesson });
 			const submission = submissionFactory.build({ courseGroup, task });
-			await em.persistAndFlush(submission);
+			await em.persist(submission).flush();
 			em.clear();
 
 			const result = await repo.findById(submission.id);
@@ -84,7 +84,7 @@ describe('submission repo', () => {
 			task1.submissions.add(submissionFactory.build({ task: task1, student }));
 			task2.submissions.add(submissionFactory.build({ task: task2, student }));
 			task3.submissions.add(submissionFactory.build({ task: task3, student }));
-			await em.persistAndFlush([task1, task2, task3]);
+			await em.persist([task1, task2, task3]).flush();
 			em.clear();
 
 			const [result, count] = await repo.findAllByTaskIds([task1.id, task2.id]);
@@ -102,7 +102,7 @@ describe('submission repo', () => {
 			const student = userFactory.build();
 			const task = taskFactory.build();
 			task.submissions.add(submissionFactory.build({ task, student }));
-			await em.persistAndFlush([task]);
+			await em.persist([task]).flush();
 			em.clear();
 
 			const [result, count] = await repo.findAllByUserId(student.id);
@@ -117,7 +117,7 @@ describe('submission repo', () => {
 			const student2 = userFactory.build();
 			const task = taskFactory.build();
 			task.submissions.add(submissionFactory.build({ task, student: student1, teamMembers: [student1, student2] }));
-			await em.persistAndFlush([task]);
+			await em.persist([task]).flush();
 			em.clear();
 
 			const [result, count] = await repo.findAllByUserId(student1.id);
@@ -128,14 +128,14 @@ describe('submission repo', () => {
 
 		it('should return submissions when the user is in the course group', async () => {
 			const course = courseEntityFactory.build();
-			await em.persistAndFlush(course);
+			await em.persist(course).flush();
 			const student1 = userFactory.build();
 			const student2 = userFactory.build();
 			const courseGroup = courseGroupEntityFactory.build({ course, students: [student1, student2] });
 			const task = taskFactory.build({ course });
 			const submission = submissionFactory.build({ student: student1, task });
 			submission.courseGroup = courseGroup;
-			await em.persistAndFlush([task, courseGroup]);
+			await em.persist([task, courseGroup]).flush();
 			em.clear();
 
 			const [result, count] = await repo.findAllByUserId(student1.id);
@@ -151,7 +151,7 @@ describe('submission repo', () => {
 			const student2 = userFactory.build();
 			const submission1 = submissionFactory.build({ teamMembers: [student1, student2] });
 			const submission2 = submissionFactory.build({ teamMembers: [student1] });
-			await em.persistAndFlush([student1, student2, submission1, submission2]);
+			await em.persist([student1, student2, submission1, submission2]).flush();
 			em.clear();
 
 			return { student1, student2, submission1, submission2 };
@@ -184,7 +184,7 @@ describe('submission repo', () => {
 			const student2 = userFactory.build();
 			const submission1 = submissionFactory.build({ student: student1 });
 			const submission2 = submissionFactory.build({ student: student2 });
-			await em.persistAndFlush([student1, student2, submission1, submission2]);
+			await em.persist([student1, student2, submission1, submission2]).flush();
 			em.clear();
 
 			return { student1, student2, submission1, submission2 };

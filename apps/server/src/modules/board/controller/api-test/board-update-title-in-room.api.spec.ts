@@ -69,19 +69,21 @@ describe(`board update title with room relation (api)`, () => {
 
 		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
-		await em.persistAndFlush([
-			accountWithEditRole,
-			accountWithViewRole,
-			noAccessAccount,
-			userWithEditRole,
-			userWithViewRole,
-			noAccessUser,
-			roomEditorRole,
-			roomViewerRole,
-			userGroup,
-			room,
-			roomMembership,
-		]);
+		await em
+			.persist([
+				accountWithEditRole,
+				accountWithViewRole,
+				noAccessAccount,
+				userWithEditRole,
+				userWithViewRole,
+				noAccessUser,
+				roomEditorRole,
+				roomViewerRole,
+				userGroup,
+				room,
+				roomMembership,
+			])
+			.flush();
 
 		const originalTitle = 'old title';
 		const columnBoardNode = columnBoardEntityFactory.build({
@@ -89,7 +91,7 @@ describe(`board update title with room relation (api)`, () => {
 			context: { id: room.id, type: BoardExternalReferenceType.Room },
 		});
 
-		await em.persistAndFlush([columnBoardNode]);
+		await em.persist([columnBoardNode]).flush();
 		em.clear();
 
 		return { accountWithEditRole, accountWithViewRole, noAccessAccount, columnBoardNode, originalTitle };

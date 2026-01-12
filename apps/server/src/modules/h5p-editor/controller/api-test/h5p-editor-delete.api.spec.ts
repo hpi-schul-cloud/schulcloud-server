@@ -108,7 +108,7 @@ describe('H5PEditor Controller (api)', () => {
 					const parentId = new ObjectId().toHexString();
 					const h5pContent = h5pContentFactory.build({ parentId });
 
-					await em.persistAndFlush([h5pContent]);
+					await em.persist([h5pContent]).flush();
 					em.clear();
 
 					return { contentId: h5pContent.id, loggedInClient };

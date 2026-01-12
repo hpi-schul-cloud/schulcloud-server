@@ -58,7 +58,7 @@ describe('OAuth Controller (API)', () => {
 					systemId: system.id,
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, system]);
+				await em.persist([studentAccount, studentUser, system]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -90,7 +90,7 @@ describe('OAuth Controller (API)', () => {
 
 				const sessionToken = oauthSessionTokenEntityFactory.build({ system, user: studentUser });
 
-				await em.persistAndFlush([studentAccount, studentUser, system, sessionToken]);
+				await em.persist([studentAccount, studentUser, system, sessionToken]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -124,7 +124,7 @@ describe('OAuth Controller (API)', () => {
 					expiresAt: new Date(latestSessionToken.expiresAt.getTime() - 3600 * 1000),
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, system, latestSessionToken, olderSessionToken]);
+				await em.persist([studentAccount, studentUser, system, latestSessionToken, olderSessionToken]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -151,7 +151,7 @@ describe('OAuth Controller (API)', () => {
 					systemId: system.id,
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, system]);
+				await em.persist([studentAccount, studentUser, system]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);

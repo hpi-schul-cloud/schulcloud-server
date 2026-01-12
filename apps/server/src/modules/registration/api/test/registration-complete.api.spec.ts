@@ -61,10 +61,10 @@ describe('Room Controller (API)', () => {
 			const guestStudent = roleFactory.build({ name: RoleName.GUESTSTUDENT });
 			const guestTeacher = roleFactory.build({ name: RoleName.GUESTTEACHER });
 			const guestExternalPerson = roleFactory.build({ name: RoleName.GUESTEXTERNALPERSON });
-			await em.persistAndFlush([roomViewerRole, guestStudent, guestTeacher, guestExternalPerson, externalPersonRole]);
+			await em.persist([roomViewerRole, guestStudent, guestTeacher, guestExternalPerson, externalPersonRole]).flush();
 
 			const registration = registrationEntityFactory.build({ roomIds: [roomMembership.roomId] });
-			await em.persistAndFlush([registration, externalPersonsSchool, roomMembership, group, room]);
+			await em.persist([registration, externalPersonsSchool, roomMembership, group, room]).flush();
 			em.clear();
 
 			return { registration, externalPersonRole };

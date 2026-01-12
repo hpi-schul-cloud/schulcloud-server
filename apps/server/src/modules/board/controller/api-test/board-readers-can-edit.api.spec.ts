@@ -76,30 +76,32 @@ describe(`board readersCanEdit setting (api)`, () => {
 
 		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
-		await em.persistAndFlush([
-			accountWithAdminRole,
-			accountWithEditRole,
-			accountWithViewRole,
-			noAccessAccount,
-			userWithAdminRole,
-			userWithEditRole,
-			userWithViewRole,
-			noAccessUser,
-			roomAdminRole,
-			roomEditorRole,
-			roomViewerRole,
-			userGroup,
-			room,
-			roomMembership,
-			school,
-		]);
+		await em
+			.persist([
+				accountWithAdminRole,
+				accountWithEditRole,
+				accountWithViewRole,
+				noAccessAccount,
+				userWithAdminRole,
+				userWithEditRole,
+				userWithViewRole,
+				noAccessUser,
+				roomAdminRole,
+				roomEditorRole,
+				roomViewerRole,
+				userGroup,
+				room,
+				roomMembership,
+				school,
+			])
+			.flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			readersCanEdit: false,
 			context: { id: room.id, type: BoardExternalReferenceType.Room },
 		});
 
-		await em.persistAndFlush([columnBoardNode]);
+		await em.persist([columnBoardNode]).flush();
 		em.clear();
 
 		return { accountWithAdminRole, accountWithEditRole, accountWithViewRole, noAccessAccount, columnBoardNode };
