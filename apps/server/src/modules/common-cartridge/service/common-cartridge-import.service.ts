@@ -6,7 +6,7 @@ import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { CommonCartridgeEvents, CommonCartridgeExchange, ImportCourseParams } from '@infra/rabbitmq';
-import { UseRequestContext } from '@mikro-orm/core';
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import jwt from 'jsonwebtoken';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
@@ -33,6 +33,7 @@ interface ColumnResource {
 @Injectable()
 export class CommonCartridgeImportService {
 	constructor(
+		private readonly orm: MikroORM,
 		private readonly coursesClient: CoursesClientAdapter,
 		private readonly boardsClient: BoardsClientAdapter,
 		private readonly columnClient: ColumnClientAdapter,
