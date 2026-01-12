@@ -21,21 +21,7 @@ export class RegistrationUc {
 		props: CreateOrUpdateRegistrationBodyParams
 	): Promise<Registration> {
 		this.registrationFeatureService.checkFeatureRegistrationEnabled();
-
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(props.roomId);
-		const hasRoomPermission = this.authorizationService.hasPermission(
-			user,
-			roomMembershipAuthorizable,
-			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
-		);
-		const hasRegistrationManagementPersmission = this.authorizationService.hasAllPermissions(user, [
-			Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS,
-		]);
-
-		if (!hasRoomPermission || !hasRegistrationManagementPersmission) {
-			throw new ForbiddenException('User does not have permission to create or update registrations for this room.');
-		}
+		await this.checkPermissions(userId, props.roomId);
 
 		const registration = await this.registrationService.createOrUpdateRegistration({ ...props });
 		await this.registrationService.sendRegistrationMail(registration);
@@ -53,21 +39,7 @@ export class RegistrationUc {
 
 	public async getRegistrationsByRoomId(userId: EntityId, roomId: EntityId): Promise<Registration[]> {
 		this.registrationFeatureService.checkFeatureRegistrationEnabled();
-
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		const hasRoomPermission = this.authorizationService.hasPermission(
-			user,
-			roomMembershipAuthorizable,
-			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
-		);
-		const hasRegistrationManagementPersmission = this.authorizationService.hasAllPermissions(user, [
-			Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS,
-		]);
-
-		if (!hasRoomPermission || !hasRegistrationManagementPersmission) {
-			throw new ForbiddenException('User does not have permission to see registrations for this room.');
-		}
+		await this.checkPermissions(userId, roomId);
 
 		const registrations = await this.registrationService.getRegistrationsByRoomId(roomId);
 
@@ -92,7 +64,14 @@ export class RegistrationUc {
 		roomId: EntityId
 	): Promise<Registration | null> {
 		this.registrationFeatureService.checkFeatureRegistrationEnabled();
+		await this.checkPermissions(userId, roomId);
 
+		const updatedRegistration = await this.registrationService.cancelRegistrationForRoom(registrationId, roomId);
+
+		return updatedRegistration;
+	}
+
+	private async checkPermissions(userId: EntityId, roomId: EntityId): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 		const hasRoomPermission = this.authorizationService.hasPermission(
@@ -105,11 +84,7 @@ export class RegistrationUc {
 		]);
 
 		if (!hasRoomPermission || !hasRegistrationManagementPersmission) {
-			throw new ForbiddenException('User does not have permission to cancel registrations for this room.');
+			throw new ForbiddenException('User does not have permission for this action.');
 		}
-
-		const updatedRegistration = await this.registrationService.cancelRegistrationForRoom(registrationId, roomId);
-
-		return updatedRegistration;
 	}
 }
