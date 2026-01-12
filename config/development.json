@@ -75,7 +75,8 @@
 		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token"
 	},
 	"ETHERPAD": {
-		"PAD_URI": "http://localhost:9001/p"
+		"PAD_URI": "http://localhost:9001/p",
+		"URI": "http://localhost:9001/api/1.2.14"
 	},
 	"PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL": "http://localhost:8888/v1/policies-info",
 	"BOARD_COLLABORATION_URI": "ws://localhost:4450",
