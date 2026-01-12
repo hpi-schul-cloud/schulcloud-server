@@ -22,6 +22,9 @@ export class RegistrationEntity extends BaseEntityWithTimestamps implements Regi
 	@Property({ nullable: false })
 	registrationSecret!: string;
 
+	@Property({ nullable: true })
+	resentAt?: Date;
+
 	@Property({ persist: false })
 	domainObject: Registration | undefined;
 }
