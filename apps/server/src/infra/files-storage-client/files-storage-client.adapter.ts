@@ -99,6 +99,10 @@ export class FilesStorageClientAdapter {
 		}
 	}
 
+	public async deleteFile(jwt: string, fileRecordId: string): Promise<void> {
+		await this.fileApi(jwt).deleteFile(fileRecordId);
+	}
+
 	private fileApi(jwt: string): FileApi {
 		const basePath = this.configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL');
 

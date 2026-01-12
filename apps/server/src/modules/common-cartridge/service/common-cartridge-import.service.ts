@@ -62,7 +62,10 @@ export class CommonCartridgeImportService {
 
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
 
-		await this.createCourse(parser, payload);
+		await Promise.allSettled([
+			this.createCourse(parser, payload),
+			this.fileClient.deleteFile(payload.jwt, payload.fileRecordId),
+		]);
 	}
 
 	private async fetchFile(payload: ImportCourseParams): Promise<Buffer | null> {
