@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsMongoId } from 'class-validator';
 
-export class CancelRegistrationUrlParams {
+export class ResendRegistrationUrlParams {
 	@IsMongoId()
 	@ApiProperty({
-		description: 'The id of a room that should get detached from the registration.',
+		description: 'The id of a room that the registration is associated with.',
 		required: true,
 		nullable: false,
 	})
