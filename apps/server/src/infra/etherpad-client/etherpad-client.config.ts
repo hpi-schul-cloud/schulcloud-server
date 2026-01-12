@@ -10,6 +10,6 @@ export class EtherpadClientConfig {
 	public apiKey!: string;
 
 	@ConfigProperty('ETHERPAD__URI')
-	@IsUrl()
+	@IsUrl({ require_tld: false })
 	public basePath!: string;
 }

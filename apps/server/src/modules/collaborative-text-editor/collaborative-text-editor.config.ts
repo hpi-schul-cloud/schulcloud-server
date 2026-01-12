@@ -14,6 +14,6 @@ export class CollaborativeTextEditorConfig {
 	public cookieExpiresInSeconds = 7200;
 
 	@ConfigProperty('ETHERPAD__PAD_URI')
-	@IsUrl()
+	@IsUrl({ require_tld: false })
 	public padUri!: string;
 }
