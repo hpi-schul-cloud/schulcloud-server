@@ -7,9 +7,11 @@ import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { CommonCartridgeEvents, CommonCartridgeExchange, ImportCourseParams } from '@infra/rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import jwt from 'jsonwebtoken';
+import { lastValueFrom } from 'rxjs';
 import { CommonCartridgeConfig } from '../common-cartridge.config';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import {
@@ -37,6 +39,7 @@ export class CommonCartridgeImportService {
 	constructor(
 		private readonly orm: MikroORM,
 		private readonly configService: ConfigService<CommonCartridgeConfig>,
+		private readonly httpService: HttpService,
 		private readonly coursesClient: CoursesClientAdapter,
 		private readonly boardsClient: BoardsClientAdapter,
 		private readonly columnClient: ColumnClientAdapter,
@@ -54,18 +57,29 @@ export class CommonCartridgeImportService {
 	public async importFile(@RabbitPayload() payload: ImportCourseParams): Promise<void> {
 		const file = await this.fetchFile(payload);
 
+		if (!file) {
+			return;
+		}
+
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
 
 		await this.createCourse(parser, payload);
 	}
 
-	private async fetchFile(payload: ImportCourseParams): Promise<Buffer> {
+	private async fetchFile(payload: ImportCourseParams): Promise<Buffer | null> {
 		const baseUrl = this.configService.getOrThrow<string>('API_HOST');
 		const fullFileUrl = new URL(payload.fileUrl, baseUrl).toString();
-		const response = await fetch(fullFileUrl);
-		const buffer = await response.arrayBuffer();
 
-		return Buffer.from(buffer);
+		const getRequestObservable = this.httpService.get(fullFileUrl.toString(), {
+			responseType: 'arraybuffer',
+			headers: {
+				Authorization: `Bearer ${payload.jwt}`,
+			},
+		});
+		const response = await lastValueFrom(getRequestObservable);
+		const data = Buffer.isBuffer(response.data) ? response.data : null;
+
+		return data;
 	}
 
 	private async createCourse(parser: CommonCartridgeFileParser, payload: ImportCourseParams): Promise<void> {
