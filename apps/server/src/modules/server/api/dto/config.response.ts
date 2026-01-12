@@ -1,3 +1,4 @@
+import { AlertPublicApiConfig } from '@modules/alert';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -256,12 +257,14 @@ export class ConfigResponse {
 	@ApiProperty({ type: String, nullable: true })
 	ROOM_MEMBER_INFO_URL: string | null;
 
-	constructor(config: ServerConfig & VideoConferencePublicApiConfig & BoardContextPublicApiConfig) {
+	constructor(
+		config: ServerConfig & VideoConferencePublicApiConfig & BoardContextPublicApiConfig & AlertPublicApiConfig
+	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
 		this.SC_CONTACT_EMAIL_SUBJECT = config.SC_CONTACT_EMAIL_SUBJECT;
 		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN;
-		this.ALERT_STATUS_URL = config.ALERT_STATUS_URL;
+		this.ALERT_STATUS_URL = config.alertStatusUrl;
 		this.CALENDAR_SERVICE_ENABLED = config.CALENDAR_SERVICE_ENABLED;
 		this.FEATURE_ES_COLLECTIONS_ENABLED = config.FEATURE_ES_COLLECTIONS_ENABLED;
 		this.FEATURE_EXTENSIONS_ENABLED = config.FEATURE_EXTENSIONS_ENABLED;

@@ -10,7 +10,6 @@ import type { TspSyncConfig } from '@infra/sync';
 import type { TspClientConfig } from '@infra/tsp-client';
 import { ValkeyMode } from '@infra/valkey-client';
 import type { AccountConfig } from '@modules/account';
-import type { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
@@ -67,7 +66,6 @@ export interface ServerConfig
 		UserImportConfig,
 		TspClientConfig,
 		TspSyncConfig,
-		AlertConfig,
 		ShdConfig,
 		OauthConfig,
 		EncryptionConfig,
@@ -80,7 +78,6 @@ export interface ServerConfig
 	SC_CONTACT_EMAIL: string;
 	SC_CONTACT_EMAIL_SUBJECT: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
-	ALERT_STATUS_URL: string | null;
 	CALENDAR_SERVICE_ENABLED: boolean;
 	FEATURE_ES_COLLECTIONS_ENABLED: boolean;
 	FEATURE_EXTENSIONS_ENABLED: boolean;
@@ -139,10 +136,6 @@ const config: ServerConfig = {
 	SC_CONTACT_EMAIL: Configuration.get('SC_CONTACT_EMAIL') as string,
 	SC_CONTACT_EMAIL_SUBJECT: Configuration.get('SC_CONTACT_EMAIL_SUBJECT') as string,
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN') as boolean,
-	ALERT_STATUS_URL:
-		Configuration.get('ALERT_STATUS_URL') === null
-			? (Configuration.get('ALERT_STATUS_URL') as null)
-			: (Configuration.get('ALERT_STATUS_URL') as string),
 	CALENDAR_SERVICE_ENABLED: Configuration.get('CALENDAR_SERVICE_ENABLED') as boolean,
 	FEATURE_ES_COLLECTIONS_ENABLED: Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') as boolean,
 	FEATURE_EXTENSIONS_ENABLED: Configuration.get('FEATURE_EXTENSIONS_ENABLED') as boolean,
@@ -277,7 +270,6 @@ const config: ServerConfig = {
 	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
 		'FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED'
 	) as boolean,
-	ALERT_CACHE_INTERVAL_MIN: Configuration.get('ALERT_CACHE_INTERVAL_MIN') as number,
 	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
 	PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL') as string,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,

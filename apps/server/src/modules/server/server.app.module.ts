@@ -8,6 +8,7 @@ import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitm
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
+import { ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig } from '@modules/alert';
 import { AlertModule } from '@modules/alert/alert.module';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { AuthorizationReferenceApiModule } from '@modules/authorization-reference/authorization-reference.api.module';
@@ -69,6 +70,7 @@ const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	ConfigurationModule.register(VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig),
 	ConfigurationModule.register(BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig),
+	ConfigurationModule.register(ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,
 	CoreModule,
