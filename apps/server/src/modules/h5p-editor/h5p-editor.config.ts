@@ -5,6 +5,7 @@ import { AuthorizationClientConfig } from '@infra/authorization-client';
 import { S3Config } from '@infra/s3-client';
 import { LanguageType } from '@shared/domain/interface';
 import { Algorithm } from 'jsonwebtoken';
+import { getLibraryWhiteList } from './helper';
 
 export interface H5PEditorCoreConfig extends CoreModuleConfig, AuthorizationClientConfig {
 	NEST_LOG_LEVEL: string;
@@ -12,7 +13,7 @@ export interface H5PEditorCoreConfig extends CoreModuleConfig, AuthorizationClie
 }
 
 export interface H5PEditorConfig extends H5PEditorCoreConfig, JwtAuthGuardConfig {
-	H5P_EDITOR__LIBRARY_LIST_PATH: string;
+	H5P_EDITOR__LIBRARY_WHITE_LIST: string[];
 }
 
 export const authorizationClientConfig: AuthorizationClientConfig = {
@@ -28,9 +29,12 @@ const h5pEditorCoreConfig: H5PEditorCoreConfig = {
 
 // Lazy-load the full config to avoid eager evaluation of JWT values
 const getH5pEditorConfig = (): H5PEditorConfig => {
+	const filePath = Configuration.get('H5P_EDITOR__LIBRARY_LIST_PATH') as string;
+	const libraryWhiteList = getLibraryWhiteList(filePath);
+
 	return {
 		...h5pEditorCoreConfig,
-		H5P_EDITOR__LIBRARY_LIST_PATH: Configuration.get('H5P_EDITOR__LIBRARY_LIST_PATH') as string,
+		H5P_EDITOR__LIBRARY_WHITE_LIST: libraryWhiteList,
 		// Node's process.env escapes newlines. We need to reverse it for the keys to work.
 		// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
 		JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
