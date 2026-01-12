@@ -58,10 +58,10 @@ describe('ImportUser Controller (API)', () => {
 			externalId: schoolHasExternalId ? system.id : undefined,
 		});
 		const roles = [roleFactory.build({ name: RoleName.ADMINISTRATOR, permissions })];
-		await em.persistAndFlush([system, school, ...roles]);
+		await em.persist([system, school, ...roles]).flush();
 		const user = userFactory.buildWithId({ roles, school });
 		const account = accountFactory.withUser(user).buildWithId();
-		await em.persistAndFlush([user, account]);
+		await em.persist([user, account]).flush();
 		em.clear();
 		return { user, account, roles, school, system };
 	};
@@ -99,11 +99,11 @@ describe('ImportUser Controller (API)', () => {
 		beforeAll(async () => {
 			const { school } = await authenticatedUser();
 			importusers = importUserFactory.buildList(10, { school });
-			await em.persistAndFlush(importusers);
+			await em.persist(importusers).flush();
 		});
 
 		afterAll(async () => {
-			await em.removeAndFlush(importusers);
+			await em.remove(importusers).flush();
 		});
 
 		describe('Generic Errors', () => {
@@ -237,7 +237,7 @@ describe('ImportUser Controller (API)', () => {
 				it('GET user/import is authorized, despite feature not enabled', async () => {
 					const usermatch = userFactory.build({ school });
 					const importuser = importUserFactory.build({ school });
-					await em.persistAndFlush([usermatch, importuser]);
+					await em.persist([usermatch, importuser]).flush();
 					await testApiClient.get().expect(HttpStatus.OK);
 				});
 			});
@@ -256,7 +256,7 @@ describe('ImportUser Controller (API)', () => {
 				it('GET /user/import responds with importusers', async () => {
 					const usermatch = userFactory.build({ school });
 					const importuser = importUserFactory.build({ school });
-					await em.persistAndFlush([usermatch, importuser]);
+					await em.persist([usermatch, importuser]).flush();
 					await testApiClient.get().expect(HttpStatus.OK);
 				});
 
@@ -309,7 +309,7 @@ describe('ImportUser Controller (API)', () => {
 				it('GET /user/import is UNAUTHORIZED', async () => {
 					const usermatch = userFactory.build({ school });
 					const importuser = importUserFactory.build({ school });
-					await em.persistAndFlush([usermatch, importuser]);
+					await em.persist([usermatch, importuser]).flush();
 					em.clear();
 					await testApiClient.get().expect(HttpStatus.UNAUTHORIZED);
 				});
@@ -321,7 +321,7 @@ describe('ImportUser Controller (API)', () => {
 				it('PATCH /user/import/:id/match is allowed', async () => {
 					const userMatch = userFactory.build({ school });
 					const importUser = importUserFactory.build({ school });
-					await em.persistAndFlush([userMatch, importUser]);
+					await em.persist([userMatch, importUser]).flush();
 					em.clear();
 					const params: UpdateMatchParams = { userId: user.id };
 					await testApiClient.patch(`${importUser.id}/match`).send(params).expect(HttpStatus.OK);
@@ -330,14 +330,14 @@ describe('ImportUser Controller (API)', () => {
 				it('DELETE /user/import/:id/match is allowed', async () => {
 					const userMatch = userFactory.build({ school });
 					const importUser = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({ school });
-					await em.persistAndFlush([userMatch, importUser]);
+					await em.persist([userMatch, importUser]).flush();
 					em.clear();
 					await testApiClient.delete(`${importUser.id}/match`).send().expect(HttpStatus.OK);
 				});
 
 				it('PATCH /user/import/:id/flag is allowed', async () => {
 					const importUser = importUserFactory.build({ school });
-					await em.persistAndFlush(importUser);
+					await em.persist(importUser).flush();
 					em.clear();
 					const params: UpdateFlagParams = { flagged: true };
 					await testApiClient.patch(`${importUser.id}/flag`).send(params).expect(HttpStatus.OK);
@@ -420,7 +420,7 @@ describe('ImportUser Controller (API)', () => {
 						const importUser = importUserFactory.build({ school });
 						const otherSchool = schoolEntityFactory.build();
 						const userMatch = userFactory.build({ school: otherSchool });
-						await em.persistAndFlush([userMatch, importUser]);
+						await em.persist([userMatch, importUser]).flush();
 						em.clear();
 						const params: UpdateMatchParams = { userId: userMatch.id };
 						await testApiClient.patch(`${importUser.id}/match`).send(params).expect(HttpStatus.FORBIDDEN);
@@ -430,7 +430,7 @@ describe('ImportUser Controller (API)', () => {
 						const otherSchool = schoolEntityFactory.build();
 						const importUser = importUserFactory.build({ school: otherSchool });
 						const userMatch = userFactory.build({ school: otherSchool });
-						await em.persistAndFlush([userMatch, importUser]);
+						await em.persist([userMatch, importUser]).flush();
 						em.clear();
 						const params: UpdateMatchParams = { userId: userMatch.id };
 						await testApiClient.patch(`${importUser.id}/match`).send(params).expect(HttpStatus.FORBIDDEN);
@@ -442,7 +442,7 @@ describe('ImportUser Controller (API)', () => {
 						const userMatch = userFactory.build({ school });
 						const importUser = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({ school });
 						const unmatchedImportUser = importUserFactory.build({ school });
-						await em.persistAndFlush([userMatch, importUser]);
+						await em.persist([userMatch, importUser]).flush();
 						em.clear();
 						const params: UpdateMatchParams = { userId: userMatch.id };
 						await testApiClient.patch(`${unmatchedImportUser.id}/match`).send(params).expect(HttpStatus.BAD_REQUEST);
@@ -455,7 +455,7 @@ describe('ImportUser Controller (API)', () => {
 					it('should fail for different school of current- and import-user', async () => {
 						const otherSchool = schoolEntityFactory.build();
 						const importUser = importUserFactory.build({ school: otherSchool });
-						await em.persistAndFlush(importUser);
+						await em.persist(importUser).flush();
 						em.clear();
 						await testApiClient.delete(`${importUser.id}/match`).send().expect(HttpStatus.FORBIDDEN);
 					});
@@ -466,7 +466,7 @@ describe('ImportUser Controller (API)', () => {
 					it('should fail for different school of current- and import-user', async () => {
 						const otherSchool = schoolEntityFactory.build();
 						const importUser = importUserFactory.build({ school: otherSchool });
-						await em.persistAndFlush(importUser);
+						await em.persist(importUser).flush();
 						em.clear();
 						const params: UpdateFlagParams = { flagged: true };
 						await testApiClient.patch(`${importUser.id}/flag`).send(params).expect(HttpStatus.FORBIDDEN);
@@ -527,7 +527,7 @@ describe('ImportUser Controller (API)', () => {
 						it('should respond with users of own school', async () => {
 							const otherSchoolsUser = userFactory.build();
 							const currentSchoolsUser = userFactory.build({ school });
-							await em.persistAndFlush([otherSchoolsUser, currentSchoolsUser]);
+							await em.persist([otherSchoolsUser, currentSchoolsUser]).flush();
 							em.clear();
 
 							const response = await testApiClient.get('unassigned').expect(HttpStatus.OK);
@@ -540,7 +540,7 @@ describe('ImportUser Controller (API)', () => {
 							const otherSchoolsUser = userFactory.build();
 							const currentSchoolsUser = userFactory.build({ school });
 							const importUser = importUserFactory.matched(MatchCreator.AUTO, currentSchoolsUser).build({ school });
-							await em.persistAndFlush([otherSchoolsUser, currentSchoolsUser, importUser]);
+							await em.persist([otherSchoolsUser, currentSchoolsUser, importUser]).flush();
 							em.clear();
 
 							const response = await testApiClient.get('unassigned').expect(HttpStatus.OK);
@@ -553,7 +553,7 @@ describe('ImportUser Controller (API)', () => {
 							const currentSchoolsUser = userFactory.withRoleByName(RoleName.TEACHER).build({
 								school,
 							});
-							await em.persistAndFlush([currentSchoolsUser]);
+							await em.persist([currentSchoolsUser]).flush();
 							em.clear();
 
 							const response = await testApiClient.get('unassigned').expect(HttpStatus.OK);
@@ -565,7 +565,7 @@ describe('ImportUser Controller (API)', () => {
 						describe('when use pagination', () => {
 							it('should skip users', async () => {
 								const unassignedUsers = userFactory.buildList(10, { school });
-								await em.persistAndFlush(unassignedUsers);
+								await em.persist(unassignedUsers).flush();
 								const query: PaginationParams = { skip: 3 };
 
 								const response = await testApiClient.get('unassigned').query(query).expect(HttpStatus.OK);
@@ -577,7 +577,7 @@ describe('ImportUser Controller (API)', () => {
 
 							it('should limit users', async () => {
 								const unassignedUsers = userFactory.buildList(10, { school });
-								await em.persistAndFlush(unassignedUsers);
+								await em.persist(unassignedUsers).flush();
 								const query: PaginationParams = { limit: 3 };
 
 								const response = await testApiClient.get('unassigned').query(query).expect(HttpStatus.OK);
@@ -593,7 +593,7 @@ describe('ImportUser Controller (API)', () => {
 								const users = userFactory.buildList(10, { school });
 								const searchUser = userFactory.build({ school, firstName: 'Peter' });
 								users.push(searchUser);
-								await em.persistAndFlush(users);
+								await em.persist(users).flush();
 								const query: FilterUserParams = { name: 'ETE' };
 
 								const response = await testApiClient.get('unassigned').query(query).expect(HttpStatus.OK);
@@ -607,7 +607,7 @@ describe('ImportUser Controller (API)', () => {
 								const users = userFactory.buildList(10, { school });
 								const searchUser = userFactory.build({ school, firstName: 'Peter', lastName: 'fox' });
 								users.push(searchUser);
-								await em.persistAndFlush(users);
+								await em.persist(users).flush();
 								const query: FilterUserParams = { name: 'X' };
 
 								const response = await testApiClient.get('unassigned').query(query).expect(HttpStatus.OK);
@@ -626,7 +626,7 @@ describe('ImportUser Controller (API)', () => {
 						const currentSchoolsImportUser = importUserFactory.build({
 							school,
 						});
-						await em.persistAndFlush([otherSchoolsImportUser, currentSchoolsImportUser]);
+						await em.persist([otherSchoolsImportUser, currentSchoolsImportUser]).flush();
 						em.clear();
 
 						const response = await testApiClient.get().expect(HttpStatus.OK);
@@ -641,7 +641,7 @@ describe('ImportUser Controller (API)', () => {
 						const otherSchoolsImportUser = importUserFactory.build();
 						const userMatch = userFactory.withRoleByName(RoleName.TEACHER).build({ school });
 						const currentSchoolsImportUser = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({ school });
-						await em.persistAndFlush([otherSchoolsImportUser, currentSchoolsImportUser]);
+						await em.persist([otherSchoolsImportUser, currentSchoolsImportUser]).flush();
 						em.clear();
 
 						const response = await testApiClient.get().expect(HttpStatus.OK);
@@ -659,7 +659,7 @@ describe('ImportUser Controller (API)', () => {
 							});
 							currentSchoolsImportUsers[3].firstName = 'Anne';
 							currentSchoolsImportUsers[7].firstName = 'Zoe';
-							await em.persistAndFlush(currentSchoolsImportUsers);
+							await em.persist(currentSchoolsImportUsers).flush();
 							em.clear();
 							const query: SortImportUserParams = {
 								sortBy: ImportUserSortOrder.FIRSTNAME,
@@ -680,7 +680,7 @@ describe('ImportUser Controller (API)', () => {
 							});
 							currentSchoolsImportUsers[3].firstName = 'Anne';
 							currentSchoolsImportUsers[7].firstName = 'Zoe';
-							await em.persistAndFlush(currentSchoolsImportUsers);
+							await em.persist(currentSchoolsImportUsers).flush();
 							em.clear();
 							const query: SortImportUserParams = {
 								sortBy: ImportUserSortOrder.FIRSTNAME,
@@ -701,7 +701,7 @@ describe('ImportUser Controller (API)', () => {
 							});
 							currentSchoolsImportUsers[3].lastName = 'Schmidt';
 							currentSchoolsImportUsers[7].lastName = 'Müller';
-							await em.persistAndFlush(currentSchoolsImportUsers);
+							await em.persist(currentSchoolsImportUsers).flush();
 							em.clear();
 							const query: SortImportUserParams = {
 								sortBy: ImportUserSortOrder.LASTNAME,
@@ -722,7 +722,7 @@ describe('ImportUser Controller (API)', () => {
 							});
 							currentSchoolsImportUsers[3].lastName = 'Schmidt';
 							currentSchoolsImportUsers[7].lastName = 'Müller';
-							await em.persistAndFlush(currentSchoolsImportUsers);
+							await em.persist(currentSchoolsImportUsers).flush();
 							em.clear();
 							const query: SortImportUserParams = {
 								sortBy: ImportUserSortOrder.LASTNAME,
@@ -741,7 +741,7 @@ describe('ImportUser Controller (API)', () => {
 					describe('when use pagination', () => {
 						it('should skip importusers', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
-							await em.persistAndFlush(importUsers);
+							await em.persist(importUsers).flush();
 							const query: PaginationParams = { skip: 3 };
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
@@ -753,7 +753,7 @@ describe('ImportUser Controller (API)', () => {
 
 						it('should limit importusers', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
-							await em.persistAndFlush(importUsers);
+							await em.persist(importUsers).flush();
 							const query: PaginationParams = { limit: 3 };
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
@@ -768,7 +768,7 @@ describe('ImportUser Controller (API)', () => {
 						it('should filter by firstname', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].firstName = 'Klaus-Peter';
-							await em.persistAndFlush(importUsers);
+							await em.persist(importUsers).flush();
 							const query: FilterImportUserParams = { firstName: 's-p' };
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
@@ -781,7 +781,7 @@ describe('ImportUser Controller (API)', () => {
 						it('should filter by lastname', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].lastName = 'Weimann';
-							await em.persistAndFlush(importUsers);
+							await em.persist(importUsers).flush();
 							const query: FilterImportUserParams = { lastName: 'Mann' };
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
@@ -794,7 +794,7 @@ describe('ImportUser Controller (API)', () => {
 						it('should filter by username', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].ldapDn = 'uid=EinarWeimann12,...';
-							await em.persistAndFlush(importUsers);
+							await em.persist(importUsers).flush();
 							const query: FilterImportUserParams = { loginName: 'Mann1' };
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
@@ -807,7 +807,7 @@ describe('ImportUser Controller (API)', () => {
 						it('should filter by one role of student, teacher, or admin', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].roleNames = [RoleName.TEACHER];
-							await em.persistAndFlush(importUsers);
+							await em.persist(importUsers).flush();
 							const query: FilterImportUserParams = { role: FilterRoleType.TEACHER };
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
@@ -820,7 +820,7 @@ describe('ImportUser Controller (API)', () => {
 						it('should filter by class', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].classNames = ['class1', 'second'];
-							await em.persistAndFlush(importUsers);
+							await em.persist(importUsers).flush();
 							const query: FilterImportUserParams = { classes: 'ss1' };
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
@@ -833,7 +833,7 @@ describe('ImportUser Controller (API)', () => {
 						it('should filter by match type none', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.AUTO);
-							await em.persistAndFlush(importUsers);
+							await em.persist(importUsers).flush();
 							const query: FilterImportUserParams = { match: [FilterMatchType.NONE] };
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
@@ -847,9 +847,9 @@ describe('ImportUser Controller (API)', () => {
 						it('should filter by match type none also deleted matches', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.AUTO);
-							await em.persistAndFlush(importUsers);
+							await em.persist(importUsers).flush();
 							importUsers[0].revokeMatch();
-							await em.persistAndFlush(importUsers);
+							await em.persist(importUsers).flush();
 							const query: FilterImportUserParams = { match: [FilterMatchType.NONE] };
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
@@ -863,7 +863,7 @@ describe('ImportUser Controller (API)', () => {
 						it('should filter by match type admin (manual)', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.MANUAL);
-							await em.persistAndFlush(importUsers);
+							await em.persist(importUsers).flush();
 							const query: FilterImportUserParams = { match: [FilterMatchType.MANUAL] };
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
@@ -877,7 +877,7 @@ describe('ImportUser Controller (API)', () => {
 						it('should filter by match type auto', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.AUTO);
-							await em.persistAndFlush(importUsers);
+							await em.persist(importUsers).flush();
 							const query: FilterImportUserParams = { match: [FilterMatchType.AUTO] };
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
@@ -892,7 +892,7 @@ describe('ImportUser Controller (API)', () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.MANUAL);
 							importUsers[1].setMatch(userFactory.build({ school }), MatchCreator.AUTO);
-							await em.persistAndFlush(importUsers);
+							await em.persist(importUsers).flush();
 							const query: FilterImportUserParams = {
 								match: [FilterMatchType.AUTO, FilterMatchType.MANUAL],
 							};
@@ -908,7 +908,7 @@ describe('ImportUser Controller (API)', () => {
 						it('should filter by flag enabled', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].flagged = true;
-							await em.persistAndFlush(importUsers);
+							await em.persist(importUsers).flush();
 							const query: FilterImportUserParams = { flagged: true };
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
@@ -940,7 +940,7 @@ describe('ImportUser Controller (API)', () => {
 							const unmatchedImportUser = importUserFactory.build({
 								school,
 							});
-							await em.persistAndFlush([userToBeMatched, unmatchedImportUser]);
+							await em.persist([userToBeMatched, unmatchedImportUser]).flush();
 							em.clear();
 							const params: UpdateMatchParams = { userId: userToBeMatched.id };
 
@@ -965,7 +965,7 @@ describe('ImportUser Controller (API)', () => {
 							const manualUserMatch = userFactory.withRoleByName(RoleName.STUDENT).build({
 								school,
 							});
-							await em.persistAndFlush([userMatch, alreadyMatchedImportUser, manualUserMatch]);
+							await em.persist([userMatch, alreadyMatchedImportUser, manualUserMatch]).flush();
 							em.clear();
 							const params: UpdateMatchParams = { userId: manualUserMatch.id };
 
@@ -991,7 +991,7 @@ describe('ImportUser Controller (API)', () => {
 							const importUserWithMatch = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({
 								school,
 							});
-							await em.persistAndFlush([importUserWithMatch]);
+							await em.persist([importUserWithMatch]).flush();
 							em.clear();
 
 							const result = await testApiClient.delete(`${importUserWithMatch.id}/match`).send().expect(HttpStatus.OK);
@@ -1003,7 +1003,7 @@ describe('ImportUser Controller (API)', () => {
 							const importUserWithoutMatch = importUserFactory.build({
 								school,
 							});
-							await em.persistAndFlush([importUserWithoutMatch]);
+							await em.persist([importUserWithoutMatch]).flush();
 							em.clear();
 
 							const result = await testApiClient
@@ -1022,7 +1022,7 @@ describe('ImportUser Controller (API)', () => {
 							const importUser = importUserFactory.build({
 								school,
 							});
-							await em.persistAndFlush([importUser]);
+							await em.persist([importUser]).flush();
 							em.clear();
 							const params: UpdateFlagParams = { flagged: true };
 
@@ -1038,7 +1038,7 @@ describe('ImportUser Controller (API)', () => {
 								school,
 								flagged: true,
 							});
-							await em.persistAndFlush([importUser]);
+							await em.persist([importUser]).flush();
 							em.clear();
 							const params: UpdateFlagParams = { flagged: false };
 
@@ -1072,7 +1072,7 @@ describe('ImportUser Controller (API)', () => {
 						const importUser = importUserFactory.build({
 							school,
 						});
-						await em.persistAndFlush([importUser]);
+						await em.persist([importUser]).flush();
 						em.clear();
 
 						await testApiClient.post('migrate').expect(HttpStatus.CREATED);
@@ -1110,13 +1110,13 @@ describe('ImportUser Controller (API)', () => {
 								permissions: [Permission.IMPORT_USER_MIGRATE],
 							}),
 						];
-						await em.persistAndFlush([school, ...roles]);
+						await em.persist([school, ...roles]).flush();
 
 						const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 							Permission.IMPORT_USER_MIGRATE,
 						]);
 
-						await em.persistAndFlush([adminUser, adminAccount]);
+						await em.persist([adminUser, adminAccount]).flush();
 						em.clear();
 
 						testApiClient = await testApiClient.login(adminAccount);
@@ -1172,7 +1172,7 @@ describe('ImportUser Controller (API)', () => {
 				setConfig(system._id.toString());
 
 				const importusers = importUserFactory.buildList(10, { school });
-				await em.persistAndFlush(importusers);
+				await em.persist(importusers).flush();
 
 				const loggedInClient = await testApiClient.login(account);
 
@@ -1228,7 +1228,7 @@ describe('ImportUser Controller (API)', () => {
 				setConfig(system._id.toString());
 
 				const importusers = importUserFactory.buildList(10, { school });
-				await em.persistAndFlush(importusers);
+				await em.persist(importusers).flush();
 
 				const loggedInClient = await testApiClient.login(account);
 

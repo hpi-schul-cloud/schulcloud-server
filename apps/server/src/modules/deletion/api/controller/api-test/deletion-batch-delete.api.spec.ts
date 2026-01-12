@@ -37,7 +37,7 @@ describe('deleteBatch', () => {
 	describe('when getting a deletion batch details', () => {
 		const setup = async () => {
 			const batch = deletionBatchEntityFactory.build();
-			await em.persistAndFlush(batch);
+			await em.persist(batch).flush();
 			em.clear();
 
 			return { id: batch.id };

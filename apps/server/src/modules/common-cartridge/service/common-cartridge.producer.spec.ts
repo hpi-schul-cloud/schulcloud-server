@@ -38,7 +38,6 @@ describe(CommonCartridgeProducer.name, () => {
 		describe('when sending a message', () => {
 			const setup = () => {
 				const message: ImportCourseParams = {
-					userId: faker.string.uuid(),
 					jwt: faker.internet.jwt(),
 					fileRecordId: faker.string.uuid(),
 					fileName: faker.system.fileName(),

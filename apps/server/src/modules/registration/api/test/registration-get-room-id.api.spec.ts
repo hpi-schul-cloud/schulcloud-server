@@ -1,17 +1,17 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { GroupEntityTypes } from '@modules/group/entity';
+import { groupEntityFactory } from '@modules/group/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { roomEntityFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { registrationEntityFactory } from '../../testing/registration-entity.factory';
-import { roomEntityFactory } from '@modules/room/testing';
-import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
-import { groupEntityFactory } from '@modules/group/testing';
-import { GroupEntityTypes } from '@modules/group/entity';
-import { schoolEntityFactory } from '@modules/school/testing';
-import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { RegistrationListResponse } from '../dto/response/registration-list.response';
 
 describe('Room Controller (API)', () => {
@@ -85,22 +85,24 @@ describe('Room Controller (API)', () => {
 				roomIds: [roomTwo.id],
 			});
 
-			await em.persistAndFlush([
-				roomOne,
-				roomTwo,
-				registrationOne,
-				registrationTwo,
-				registrationThree,
-				school,
-				studentAccount,
-				studentUser,
-				teacherAccount,
-				teacherUser,
-				userGroupEntityOne,
-				userGroupEntityTwo,
-				roomMembershipOne,
-				roomMembershipTwo,
-			]);
+			await em
+				.persist([
+					roomOne,
+					roomTwo,
+					registrationOne,
+					registrationTwo,
+					registrationThree,
+					school,
+					studentAccount,
+					studentUser,
+					teacherAccount,
+					teacherUser,
+					userGroupEntityOne,
+					userGroupEntityTwo,
+					roomMembershipOne,
+					roomMembershipTwo,
+				])
+				.flush();
 			em.clear();
 
 			return {

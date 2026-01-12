@@ -60,7 +60,7 @@ describe('Shd API', () => {
 			const setup = async () => {
 				const { superheroAccount, superheroUser, studentAccount, studentUser, instance } = prepareData();
 
-				await em.persistAndFlush([superheroAccount, superheroUser, studentAccount, studentUser, instance]);
+				await em.persist([superheroAccount, superheroUser, studentAccount, studentUser, instance]).flush();
 				em.clear();
 
 				const data: TargetUserIdParams = {
@@ -99,7 +99,7 @@ describe('Shd API', () => {
 			const setup = async (userId?: string) => {
 				const { superheroAccount, superheroUser, studentAccount, studentUser, instance } = prepareData();
 
-				await em.persistAndFlush([superheroAccount, superheroUser, studentAccount, studentUser, instance]);
+				await em.persist([superheroAccount, superheroUser, studentAccount, studentUser, instance]).flush();
 				em.clear();
 
 				const data: TargetUserIdParams = {

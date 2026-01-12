@@ -77,19 +77,21 @@ describe('Group (API)', () => {
 				});
 				const course = courseEntityFactory.buildWithId({ syncedWithGroup: group });
 
-				await em.persistAndFlush([
-					school,
-					adminAccount,
-					adminUser,
-					teacherRole,
-					studentRole,
-					teacherUser,
-					system,
-					classEntity,
-					group,
-					schoolYear,
-					course,
-				]);
+				await em
+					.persist([
+						school,
+						adminAccount,
+						adminUser,
+						teacherRole,
+						studentRole,
+						teacherUser,
+						system,
+						classEntity,
+						group,
+						schoolYear,
+						course,
+					])
+					.flush();
 				em.clear();
 
 				const adminClient = await testApiClient.login(adminAccount);
@@ -162,7 +164,7 @@ describe('Group (API)', () => {
 						organization: school,
 					});
 
-					await em.persistAndFlush([teacherAccount, teacherUser, group]);
+					await em.persist([teacherAccount, teacherUser, group]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(teacherAccount);
@@ -209,7 +211,7 @@ describe('Group (API)', () => {
 				const setup = async () => {
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-					await em.persistAndFlush([teacherAccount, teacherUser]);
+					await em.persist([teacherAccount, teacherUser]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(teacherAccount);
@@ -241,7 +243,7 @@ describe('Group (API)', () => {
 
 				const group = groupEntityFactory.buildWithId();
 
-				await em.persistAndFlush([studentAccount, studentUser, group]);
+				await em.persist([studentAccount, studentUser, group]).flush();
 				em.clear();
 
 				return {
@@ -333,16 +335,18 @@ describe('Group (API)', () => {
 
 				const nameQuery: string = availableGroupInSchool.name.slice(-2);
 
-				await em.persistAndFlush([
-					adminAccount,
-					adminUser,
-					groupInSchool,
-					availableGroupInSchool,
-					groupInOtherSchool,
-					school,
-					otherSchool,
-					syncedCourse,
-				]);
+				await em
+					.persist([
+						adminAccount,
+						adminUser,
+						groupInSchool,
+						availableGroupInSchool,
+						groupInOtherSchool,
+						school,
+						otherSchool,
+						syncedCourse,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -510,14 +514,9 @@ describe('Group (API)', () => {
 
 				const nameQuery: string = availableTeachersGroup.name.slice(-2);
 
-				await em.persistAndFlush([
-					teacherAccount,
-					teacherUser,
-					teachersGroup,
-					availableTeachersGroup,
-					school,
-					syncedCourse,
-				]);
+				await em
+					.persist([teacherAccount, teacherUser, teachersGroup, availableTeachersGroup, school, syncedCourse])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -643,7 +642,7 @@ describe('Group (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 			};
 

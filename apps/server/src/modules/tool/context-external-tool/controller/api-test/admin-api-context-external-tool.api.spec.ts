@@ -104,7 +104,7 @@ describe('AdminApiContextExternalTool (API)', () => {
 					],
 				};
 
-				await em.persistAndFlush([school, externalToolEntity]);
+				await em.persist([school, externalToolEntity]).flush();
 				em.clear();
 
 				return {
