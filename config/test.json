@@ -34,7 +34,7 @@
 		"ADMIN_USER": "dbildungscloud",
 		"ADMIN_PASSWORD": "dBildungscloud"
 	},
-	"LOG_LEVEL" : "emerg",
+	"LOG_LEVEL": "emerg",
 	"NEST_LOG_LEVEL": "error",
 	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",
@@ -77,9 +77,7 @@
 		"IS_VISIBLE": true
 	},
 	"ETHERPAD": {
-		"URI": "http://localhost:9001/api/1/",
-		"PAD_URI": "http://localhost:9001/p",
-		"API_KEY": "381d67e6347d235ac9446"
+		"PAD_URI": "http://localhost:9001/p"
 	},
 	"SESSION_VALKEY": {
 		"MODE": "in-memory"
