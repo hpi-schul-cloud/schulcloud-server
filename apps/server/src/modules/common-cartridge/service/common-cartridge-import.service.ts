@@ -8,7 +8,9 @@ import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { CommonCartridgeEvents, CommonCartridgeExchange, ImportCourseParams } from '@infra/rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import jwt from 'jsonwebtoken';
+import { CommonCartridgeConfig } from '../common-cartridge.config';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import {
 	CommonCartridgeFileFolderResourceProps,
@@ -34,6 +36,7 @@ interface ColumnResource {
 export class CommonCartridgeImportService {
 	constructor(
 		private readonly orm: MikroORM,
+		private readonly configService: ConfigService<CommonCartridgeConfig>,
 		private readonly coursesClient: CoursesClientAdapter,
 		private readonly boardsClient: BoardsClientAdapter,
 		private readonly columnClient: ColumnClientAdapter,
@@ -57,7 +60,9 @@ export class CommonCartridgeImportService {
 	}
 
 	private async fetchFile(payload: ImportCourseParams): Promise<Buffer> {
-		const response = await fetch(payload.fileUrl);
+		const baseUrl = this.configService.getOrThrow<string>('API_HOST');
+		const fullFileUrl = new URL(payload.fileUrl, baseUrl).toString();
+		const response = await fetch(fullFileUrl);
 		const buffer = await response.arrayBuffer();
 
 		return Buffer.from(buffer);
