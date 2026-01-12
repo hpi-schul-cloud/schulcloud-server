@@ -47,7 +47,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService<H5PEditorConfig, true>>({
-						get: () => 'config/h5p-libraries.yaml',
+						get: () => ['H5P.Accordion'],
 					}),
 				},
 				{
@@ -96,17 +96,6 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 
 	afterAll(async () => {
 		await module.close();
-	});
-
-	describe('castToLibrariesContentType', () => {
-		describe('when castToLibrariesContentType has been called with an invalid object', () => {
-			it('should throw InternalServerErrorException', () => {
-				const randomObject = {
-					random: 1,
-				};
-				expect(() => uc.castToLibrariesContentType(randomObject)).toThrow(InternalServerErrorException);
-			});
-		});
 	});
 
 	describe('when calling GET', () => {

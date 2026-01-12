@@ -51,7 +51,7 @@ describe('get H5P player', () => {
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService<H5PEditorConfig, true>>({
-						get: () => 'config/h5p-libraries.yaml',
+						get: () => ['H5P.Accordion'],
 					}),
 				},
 				H5PAjaxEndpointProvider,

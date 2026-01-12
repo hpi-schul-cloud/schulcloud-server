@@ -6,13 +6,14 @@ interface LibrariesContentType {
 	h5p_libraries: string[];
 }
 
-let libraryWhiteList: string[] | null;
+let libraryWhiteList: string[] | null = null;
 
 const readWhitelistFromConfig = (filePath: string): string[] => {
 	const librariesYamlContent = readFileSync(filePath, { encoding: 'utf-8' });
 	const librariesContentType = castToLibrariesContentType(parse(librariesYamlContent));
+	const libraryWhiteList = librariesContentType.h5p_libraries;
 
-	return librariesContentType.h5p_libraries;
+	return libraryWhiteList;
 };
 
 const castToLibrariesContentType = (object: unknown): LibrariesContentType => {
@@ -40,4 +41,8 @@ export const getLibraryWhiteList = (filePath: string): string[] => {
 	}
 
 	return libraryWhiteList;
+};
+
+export const resetLibraryWhiteList = (): void => {
+	libraryWhiteList = null;
 };
