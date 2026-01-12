@@ -228,20 +228,6 @@ dBildungscloud team`;
 			expect(result.mail.plainTextContent).toBe(expectedPlainTextContent);
 			expect(result.recipients).toEqual([registration.email]);
 			expect(result.from).toBe('example@sender.com');
-
-			/*
-			expect(result).toEqual(
-				expect.objectContaining({
-					recipients: [registration.email],
-					from: 'example@sender.com',
-					mail: {
-						subject: expectedSubject,
-						htmlContent: expectedHtmlContent,
-						plainTextContent: expectedPlainTextContent,
-					},
-				})
-			);
-			*/
 		});
 	});
 });
