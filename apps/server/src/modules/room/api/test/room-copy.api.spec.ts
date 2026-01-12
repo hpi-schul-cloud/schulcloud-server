@@ -60,7 +60,7 @@ describe('POST /rooms/:roomId/copy', () => {
 			config.FEATURE_ROOM_COPY_ENABLED = false;
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			await em.persistAndFlush([teacherAccount, teacherUser]);
+			await em.persist([teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -80,7 +80,7 @@ describe('POST /rooms/:roomId/copy', () => {
 	describe('when id is not a valid mongo id', () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			await em.persistAndFlush([teacherAccount, teacherUser]);
+			await em.persist([teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -118,17 +118,19 @@ describe('POST /rooms/:roomId/copy', () => {
 				schoolId: studentUser.school.id,
 			});
 
-			await em.persistAndFlush([
-				school,
-				room,
-				roomViewerRole,
-				roomOwnerRole,
-				studentAccount,
-				studentUser,
-				teacherUser,
-				userGroup,
-				roomMembership,
-			]);
+			await em
+				.persist([
+					school,
+					room,
+					roomViewerRole,
+					roomOwnerRole,
+					studentAccount,
+					studentUser,
+					teacherUser,
+					userGroup,
+					roomMembership,
+				])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(studentAccount);
@@ -174,18 +176,20 @@ describe('POST /rooms/:roomId/copy', () => {
 				],
 			});
 
-			await em.persistAndFlush([
-				school,
-				room,
-				roomOwnerRole,
-				teacherAccount,
-				teacherAccount,
-				teacherUser,
-				userGroup,
-				roomMembership,
-				...boards,
-				roomContent,
-			]);
+			await em
+				.persist([
+					school,
+					room,
+					roomOwnerRole,
+					teacherAccount,
+					teacherAccount,
+					teacherUser,
+					userGroup,
+					roomMembership,
+					...boards,
+					roomContent,
+				])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -270,16 +274,9 @@ describe('POST /rooms/:roomId/copy', () => {
 				schoolId: teacherUser.school.id,
 			});
 
-			await em.persistAndFlush([
-				school,
-				room,
-				roomOwnerRole,
-				teacherAccount,
-				teacherAccount,
-				teacherUser,
-				userGroup,
-				roomMembership,
-			]);
+			await em
+				.persist([school, room, roomOwnerRole, teacherAccount, teacherAccount, teacherUser, userGroup, roomMembership])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -321,19 +318,21 @@ describe('POST /rooms/:roomId/copy', () => {
 				schoolId: teacherUserOwner.school.id,
 			});
 
-			await em.persistAndFlush([
-				school,
-				otherSchool,
-				room,
-				roomAdminRole,
-				roomOwnerRole,
-				teacherAccountOwner,
-				teacherUserOwner,
-				userGroup,
-				roomMembership,
-				teacherAccountExternal,
-				teacherUserExternal,
-			]);
+			await em
+				.persist([
+					school,
+					otherSchool,
+					room,
+					roomAdminRole,
+					roomOwnerRole,
+					teacherAccountOwner,
+					teacherUserOwner,
+					userGroup,
+					roomMembership,
+					teacherAccountExternal,
+					teacherUserExternal,
+				])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccountExternal);

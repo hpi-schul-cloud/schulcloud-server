@@ -91,7 +91,7 @@ describe('UserLoginMigrationController (API)', () => {
 				});
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, teacherAccount, teacherUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, teacherAccount, teacherUser, userLoginMigration]).flush();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
@@ -156,7 +156,7 @@ describe('UserLoginMigrationController (API)', () => {
 				});
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]).flush();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -192,7 +192,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([school, adminAccount, adminUser]);
+				await em.persist([school, adminAccount, adminUser]).flush();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -245,7 +245,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser]).flush();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -300,7 +300,7 @@ describe('UserLoginMigrationController (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
@@ -338,7 +338,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]).flush();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -379,7 +379,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]).flush();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -408,7 +408,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser]).flush();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -503,7 +503,7 @@ describe('UserLoginMigrationController (API)', () => {
 					externalId: 'externalUserId',
 				});
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -570,7 +570,7 @@ describe('UserLoginMigrationController (API)', () => {
 					externalId: 'externalUserId',
 				});
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -644,7 +644,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -695,7 +695,7 @@ describe('UserLoginMigrationController (API)', () => {
 					school: teacherUser.school,
 				});
 
-				await em.persistAndFlush([teacherAccount, teacherUser, userLoginMigration]);
+				await em.persist([teacherAccount, teacherUser, userLoginMigration]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -741,7 +741,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -781,7 +781,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -823,7 +823,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -875,7 +875,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -918,7 +918,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -957,7 +957,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -1005,7 +1005,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, teacherAccount, teacherUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, teacherAccount, teacherUser, userLoginMigration]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -1048,15 +1048,9 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([
-					sourceSystem,
-					targetSystem,
-					school,
-					adminAccount,
-					adminUser,
-					userLoginMigration,
-					migratedUser,
-				]);
+				await em
+					.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration, migratedUser])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -1114,7 +1108,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -1170,15 +1164,9 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([
-					sourceSystem,
-					targetSystem,
-					school,
-					adminAccount,
-					adminUser,
-					userLoginMigration,
-					migratedUser,
-				]);
+				await em
+					.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration, migratedUser])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -1232,7 +1220,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -1279,7 +1267,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, teacherAccount, teacherUser, userLoginMigration]);
+				await em.persist([sourceSystem, targetSystem, school, teacherAccount, teacherUser, userLoginMigration]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -1318,15 +1306,9 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([
-					sourceSystem,
-					targetSystem,
-					school,
-					adminAccount,
-					adminUser,
-					userLoginMigration,
-					user,
-				]);
+				await em
+					.persist([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration, user])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -1370,16 +1352,18 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([
-					sourceSystem,
-					targetSystem,
-					school,
-					adminAccount,
-					adminUser,
-					userLoginMigration,
-					migratedUser,
-					importUser,
-				]);
+				await em
+					.persist([
+						sourceSystem,
+						targetSystem,
+						school,
+						adminAccount,
+						adminUser,
+						userLoginMigration,
+						migratedUser,
+						importUser,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -1463,15 +1447,9 @@ describe('UserLoginMigrationController (API)', () => {
 					});
 					const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
 
-					await em.persistAndFlush([
-						sourceSystem,
-						targetSystem,
-						school,
-						superheroAccount,
-						superheroUser,
-						adminAccount,
-						adminUser,
-					]);
+					await em
+						.persist([sourceSystem, targetSystem, school, superheroAccount, superheroUser, adminAccount, adminUser])
+						.flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(superheroAccount);
@@ -1575,15 +1553,9 @@ describe('UserLoginMigrationController (API)', () => {
 					});
 					const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
 
-					await em.persistAndFlush([
-						sourceSystem,
-						targetSystem,
-						school,
-						superheroAccount,
-						superheroUser,
-						adminAccount,
-						adminUser,
-					]);
+					await em
+						.persist([sourceSystem, targetSystem, school, superheroAccount, superheroUser, adminAccount, adminUser])
+						.flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(superheroAccount);
@@ -1672,16 +1644,18 @@ describe('UserLoginMigrationController (API)', () => {
 							targetSystem,
 						});
 
-						await em.persistAndFlush([
-							sourceSystem,
-							targetSystem,
-							school,
-							superheroAccount,
-							superheroUser,
-							studentAccount,
-							studentUser,
-							userLoginMigration,
-						]);
+						await em
+							.persist([
+								sourceSystem,
+								targetSystem,
+								school,
+								superheroAccount,
+								superheroUser,
+								studentAccount,
+								studentUser,
+								userLoginMigration,
+							])
+							.flush();
 						em.clear();
 
 						const loggedInClient = await testApiClient.login(superheroAccount);
@@ -1749,16 +1723,18 @@ describe('UserLoginMigrationController (API)', () => {
 							targetSystem,
 						});
 
-						await em.persistAndFlush([
-							sourceSystem,
-							targetSystem,
-							school,
-							superheroAccount,
-							superheroUser,
-							studentAccount,
-							studentUser,
-							userLoginMigration,
-						]);
+						await em
+							.persist([
+								sourceSystem,
+								targetSystem,
+								school,
+								superheroAccount,
+								superheroUser,
+								studentAccount,
+								studentUser,
+								userLoginMigration,
+							])
+							.flush();
 						em.clear();
 
 						const loggedInClient = await testApiClient.login(superheroAccount);
@@ -1821,16 +1797,18 @@ describe('UserLoginMigrationController (API)', () => {
 
 					const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
 
-					await em.persistAndFlush([
-						sourceSystem,
-						targetSystem,
-						school,
-						superheroAccount,
-						superheroUser,
-						teacherAccount,
-						teacherUser,
-						userLoginMigration,
-					]);
+					await em
+						.persist([
+							sourceSystem,
+							targetSystem,
+							school,
+							superheroAccount,
+							superheroUser,
+							teacherAccount,
+							teacherUser,
+							userLoginMigration,
+						])
+						.flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(superheroAccount);
@@ -1909,16 +1887,18 @@ describe('UserLoginMigrationController (API)', () => {
 
 					const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
 
-					await em.persistAndFlush([
-						sourceSystem,
-						targetSystem,
-						school,
-						superheroAccount,
-						superheroUser,
-						teacherAccount,
-						teacherUser,
-						userLoginMigration,
-					]);
+					await em
+						.persist([
+							sourceSystem,
+							targetSystem,
+							school,
+							superheroAccount,
+							superheroUser,
+							teacherAccount,
+							teacherUser,
+							userLoginMigration,
+						])
+						.flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(superheroAccount);

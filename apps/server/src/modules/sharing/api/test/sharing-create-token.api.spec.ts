@@ -40,7 +40,7 @@ describe(`share token creation (api)`, () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-			await em.persistAndFlush([teacherAccount, teacherUser, course]);
+			await em.persist([teacherAccount, teacherUser, course]).flush();
 			em.clear();
 
 			Configuration.set('FEATURE_COURSE_SHARE', false);
@@ -69,7 +69,7 @@ describe(`share token creation (api)`, () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-			await em.persistAndFlush([teacherAccount, teacherUser, course]);
+			await em.persist([teacherAccount, teacherUser, course]).flush();
 			em.clear();
 
 			Configuration.set('FEATURE_COURSE_SHARE', true);
@@ -168,7 +168,7 @@ describe(`share token creation (api)`, () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, course]);
+				await em.persist([teacherAccount, teacherUser, course]).flush();
 				em.clear();
 
 				Configuration.set('FEATURE_COURSE_SHARE', true);
@@ -282,7 +282,7 @@ describe(`share token creation (api)`, () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, course]);
+				await em.persist([teacherAccount, teacherUser, course]).flush();
 				em.clear();
 
 				Configuration.set('FEATURE_COURSE_SHARE', true);

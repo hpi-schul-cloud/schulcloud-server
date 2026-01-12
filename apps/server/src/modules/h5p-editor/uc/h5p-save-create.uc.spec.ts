@@ -1,7 +1,11 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
-import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
+import {
+	AuthorizationBodyParamsReferenceType,
+	AuthorizationClientAdapter,
+	AuthorizationContextBuilder,
+} from '@infra/authorization-client';
 import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
@@ -110,12 +114,12 @@ describe('save or create H5P content', () => {
 					parameters,
 					metadata,
 					mainLibraryUbername,
-					H5PContentParentType.Lesson,
+					H5PContentParentType.BoardElement,
 					parentId
 				);
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
-					H5PContentParentType.Lesson,
+					AuthorizationBodyParamsReferenceType.BOARDNODES,
 					parentId,
 					AuthorizationContextBuilder.write([])
 				);
@@ -131,7 +135,7 @@ describe('save or create H5P content', () => {
 					parameters,
 					metadata,
 					mainLibraryUbername,
-					H5PContentParentType.Lesson,
+					H5PContentParentType.BoardElement,
 					parentId
 				);
 
@@ -154,7 +158,7 @@ describe('save or create H5P content', () => {
 					parameters,
 					metadata,
 					mainLibraryUbername,
-					H5PContentParentType.Lesson,
+					H5PContentParentType.BoardElement,
 					parentId
 				);
 
@@ -181,7 +185,7 @@ describe('save or create H5P content', () => {
 					parameters,
 					metadata,
 					mainLibraryUbername,
-					H5PContentParentType.Lesson,
+					H5PContentParentType.BoardElement,
 					parentId
 				);
 
@@ -213,7 +217,7 @@ describe('save or create H5P content', () => {
 					parameters,
 					metadata,
 					mainLibraryUbername,
-					H5PContentParentType.Lesson,
+					H5PContentParentType.BoardElement,
 					parentId
 				);
 
@@ -242,12 +246,12 @@ describe('save or create H5P content', () => {
 					parameters,
 					metadata,
 					mainLibraryUbername,
-					H5PContentParentType.Lesson,
+					H5PContentParentType.BoardElement,
 					parentId
 				);
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
-					H5PContentParentType.Lesson,
+					AuthorizationBodyParamsReferenceType.BOARDNODES,
 					parentId,
 					AuthorizationContextBuilder.write([])
 				);
@@ -262,7 +266,7 @@ describe('save or create H5P content', () => {
 					parameters,
 					metadata,
 					mainLibraryUbername,
-					H5PContentParentType.Lesson,
+					H5PContentParentType.BoardElement,
 					parentId
 				);
 
@@ -284,7 +288,7 @@ describe('save or create H5P content', () => {
 					parameters,
 					metadata,
 					mainLibraryUbername,
-					H5PContentParentType.Lesson,
+					H5PContentParentType.BoardElement,
 					parentId
 				);
 
@@ -310,7 +314,7 @@ describe('save or create H5P content', () => {
 					parameters,
 					metadata,
 					mainLibraryUbername,
-					H5PContentParentType.Lesson,
+					H5PContentParentType.BoardElement,
 					parentId
 				);
 
@@ -341,7 +345,7 @@ describe('save or create H5P content', () => {
 					parameters,
 					metadata,
 					mainLibraryUbername,
-					H5PContentParentType.Lesson,
+					H5PContentParentType.BoardElement,
 					parentId
 				);
 

@@ -30,7 +30,7 @@ class H5PContentFactory extends BaseFactory<H5PContent, H5PContentProperties> {
 export const h5pContentFactory = H5PContentFactory.define(H5PContent, ({ sequence }) => {
 	const content: H5PContentProperties = {
 		id: new ObjectId().toHexString(),
-		parentType: H5PContentParentType.Lesson,
+		parentType: H5PContentParentType.BoardElement,
 		parentId: new ObjectId().toHexString(),
 		creatorId: new ObjectId().toHexString(),
 		schoolId: new ObjectId().toHexString(),

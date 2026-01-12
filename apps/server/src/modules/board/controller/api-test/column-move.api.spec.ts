@@ -41,7 +41,7 @@ describe(`column move (api)`, () => {
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 		const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
-		await em.persistAndFlush([teacherUser, teacherAccount, course]);
+		await em.persist([teacherUser, teacherAccount, course]).flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -53,7 +53,7 @@ describe(`column move (api)`, () => {
 		const columnToMove = columnNodes[2];
 		const cardNode = cardEntityFactory.withParent(columnToMove).build();
 
-		await em.persistAndFlush([cardNode, ...columnNodes, columnBoardNode]);
+		await em.persist([cardNode, ...columnNodes, columnBoardNode]).flush();
 		em.clear();
 
 		const loggedInClient = await testApiClient.login(teacherAccount);
@@ -95,7 +95,7 @@ describe(`column move (api)`, () => {
 			const vars = await setup();
 
 			const { studentAccount: noAccessAccount, studentUser: noAccessUser } = UserAndAccountTestFactory.buildStudent();
-			await em.persistAndFlush([noAccessAccount, noAccessUser]);
+			await em.persist([noAccessAccount, noAccessUser]).flush();
 			const loggedInClient = await testApiClient.login(noAccessAccount);
 
 			return {

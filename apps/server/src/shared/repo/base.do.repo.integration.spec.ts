@@ -111,7 +111,7 @@ describe('BaseDORepo', () => {
 
 		it('should persist and flush a single updated entity', async () => {
 			const testEntity = em.create(TestEntity, new TestEntity());
-			await em.persistAndFlush(testEntity);
+			await em.persist(testEntity).flush();
 
 			const testDO = new TestDO({ id: testEntity.id, name: 'test123' });
 
@@ -145,7 +145,7 @@ describe('BaseDORepo', () => {
 		describe('single entity', () => {
 			it('should remove a single entity', async () => {
 				const testEntity = new TestEntity();
-				await em.persistAndFlush(testEntity);
+				await em.persist(testEntity).flush();
 				em.clear();
 
 				await repo.deleteById(testEntity.id);
@@ -156,7 +156,7 @@ describe('BaseDORepo', () => {
 
 			it('should remove a single entity and return 1', async () => {
 				const testEntity = new TestEntity();
-				await em.persistAndFlush(testEntity);
+				await em.persist(testEntity).flush();
 				em.clear();
 
 				const result: number = await repo.deleteById(testEntity.id);
@@ -169,7 +169,7 @@ describe('BaseDORepo', () => {
 			it('should remove an array of entities', async () => {
 				const testEntity1 = new TestEntity();
 				const testEntity2 = new TestEntity();
-				await em.persistAndFlush([testEntity1, testEntity2]);
+				await em.persist([testEntity1, testEntity2]).flush();
 				em.clear();
 
 				await repo.deleteById([testEntity1.id, testEntity2.id]);
@@ -182,7 +182,7 @@ describe('BaseDORepo', () => {
 			it('should remove a two entity and return 2', async () => {
 				const testEntity1 = new TestEntity();
 				const testEntity2 = new TestEntity();
-				await em.persistAndFlush([testEntity1, testEntity2]);
+				await em.persist([testEntity1, testEntity2]).flush();
 				em.clear();
 
 				const result: number = await repo.deleteById([testEntity1.id, testEntity2.id]);
@@ -196,7 +196,7 @@ describe('BaseDORepo', () => {
 		it('should find entity', async () => {
 			const testEntity1 = new TestEntity();
 			const testEntity2 = new TestEntity();
-			await em.persistAndFlush([testEntity1, testEntity2]);
+			await em.persist([testEntity1, testEntity2]).flush();
 			em.clear();
 
 			const result: TestDO = await repo.findById(testEntity1.id);
@@ -207,7 +207,7 @@ describe('BaseDORepo', () => {
 		it('should throw if entity not found', async () => {
 			const testEntity1 = new TestEntity();
 			const testEntity2 = new TestEntity();
-			await em.persistAndFlush([testEntity1, testEntity2]);
+			await em.persist([testEntity1, testEntity2]).flush();
 			em.clear();
 
 			const unknownId = new ObjectId().toHexString();
@@ -222,7 +222,7 @@ describe('BaseDORepo', () => {
 		const setupDelete = async () => {
 			const testEntity1 = new TestEntity({ name: 'test1' });
 			const testEntity2 = new TestEntity({ name: 'test2' });
-			await em.persistAndFlush([testEntity1, testEntity2]);
+			await em.persist([testEntity1, testEntity2]).flush();
 
 			const testDO1 = new TestDO({ id: testEntity1.id, name: testEntity1.name });
 			const testDO2 = new TestDO({ id: testEntity2.id, name: testEntity2.name });

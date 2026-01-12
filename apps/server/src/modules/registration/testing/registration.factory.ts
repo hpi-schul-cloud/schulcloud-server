@@ -12,6 +12,7 @@ export const registrationFactory = BaseFactory.define<Registration, Registration
 		registrationSecret: `hash${sequence}`,
 		createdAt: new Date(),
 		updatedAt: new Date(),
+		resentAt: undefined,
 	};
 
 	return props;

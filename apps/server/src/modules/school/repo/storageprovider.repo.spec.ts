@@ -37,7 +37,7 @@ describe('StorageProviderRepo', () => {
 	describe('findAll', () => {
 		it('should return all storage providers', async () => {
 			const storageProviders = storageProviderFactory.buildList(3);
-			await em.persistAndFlush(storageProviders);
+			await em.persist(storageProviders).flush();
 
 			const result = await repo.findAll();
 

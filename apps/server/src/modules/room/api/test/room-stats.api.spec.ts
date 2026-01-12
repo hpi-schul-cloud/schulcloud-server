@@ -76,7 +76,7 @@ describe('Room Controller (API)', () => {
 					schoolId: school.id,
 				});
 
-				await em.persistAndFlush([room, userGroupEntity, roomMembership]);
+				await em.persist([room, userGroupEntity, roomMembership]).flush();
 				em.clear();
 
 				return { room, userGroupEntity, roomMembership };
@@ -90,7 +90,7 @@ describe('Room Controller (API)', () => {
 					users.push(teacherUser);
 					accounts.push(teacherAccount);
 				}
-				await em.persistAndFlush([school, ...users, ...accounts]);
+				await em.persist([school, ...users, ...accounts]).flush();
 				em.clear();
 
 				return { school, users, accounts };
@@ -111,8 +111,8 @@ describe('Room Controller (API)', () => {
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 				const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 
-				await em.persistAndFlush([adminAccount, adminUser, roomOwnerRole, school, otherSchool, schoolSystemOptions]);
-				await em.persistAndFlush([roomViewerRole, roomOwnerRole]);
+				await em.persist([adminAccount, adminUser, roomOwnerRole, school, otherSchool, schoolSystemOptions]).flush();
+				await em.persist([roomViewerRole, roomOwnerRole]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -251,7 +251,7 @@ describe('Room Controller (API)', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([room, teacherAccount, teacherUser]);
+				await em.persist([room, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
