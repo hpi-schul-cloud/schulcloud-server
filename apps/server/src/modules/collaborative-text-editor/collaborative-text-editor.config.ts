@@ -1,5 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsUrl } from 'class-validator';
 
 export const COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN = 'COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN';
 
@@ -14,6 +14,6 @@ export class CollaborativeTextEditorConfig {
 	public cookieExpiresInSeconds = 7200;
 
 	@ConfigProperty('ETHERPAD__PAD_URI')
-	@IsString()
+	@IsUrl()
 	public padUri!: string;
 }

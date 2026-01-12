@@ -1,5 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { IsString } from 'class-validator';
+import { IsString, IsUrl } from 'class-validator';
 
 export const ETHERPAD_CLIENT_CONFIG_TOKEN = 'ETHERPAD_CLIENT_CONFIG_TOKEN';
 
@@ -10,6 +10,6 @@ export class EtherpadClientConfig {
 	public apiKey!: string;
 
 	@ConfigProperty('ETHERPAD__URI')
-	@IsString()
+	@IsUrl()
 	public basePath!: string;
 }
