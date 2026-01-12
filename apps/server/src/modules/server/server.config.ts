@@ -9,7 +9,6 @@ import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { TspSyncConfig } from '@infra/sync';
 import type { TspClientConfig } from '@infra/tsp-client';
 import { ValkeyMode } from '@infra/valkey-client';
-import type { AccountConfig } from '@modules/account';
 import type { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
@@ -47,8 +46,8 @@ export interface ServerConfig
 	extends CoreModuleConfig,
 		UserConfig,
 		FilesMetadataClientConfig,
-		AccountConfig,
 		IdentityManagementConfig,
+		AuthenticationConfig,
 		SchoolConfig,
 		MailConfig,
 		JwtAuthGuardConfig,
