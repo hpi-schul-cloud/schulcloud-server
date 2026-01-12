@@ -12,6 +12,7 @@ export interface RegistrationProps extends AuthorizableObject {
 	registrationSecret: string;
 	createdAt: Date;
 	updatedAt: Date;
+	resentAt?: Date;
 }
 
 export type RegistrationCreateProps = {
@@ -72,6 +73,14 @@ export class Registration extends DomainObject<RegistrationProps> {
 		return this.props.updatedAt;
 	}
 
+	get resentAt(): Date | undefined {
+		return this.props.resentAt;
+	}
+
+	set resentAt(value: Date | undefined) {
+		this.props.resentAt = value;
+	}
+
 	public updateName(value: { firstName: string; lastName: string }): void {
 		this.props.firstName = value.firstName;
 		this.props.lastName = value.lastName;
@@ -82,7 +91,7 @@ export class Registration extends DomainObject<RegistrationProps> {
 			return;
 		}
 
-		this.props.roomIds.push(roomId);
+		this.props.roomIds = [...this.props.roomIds, roomId];
 	}
 
 	public removeRoomId(roomId: EntityId): void {

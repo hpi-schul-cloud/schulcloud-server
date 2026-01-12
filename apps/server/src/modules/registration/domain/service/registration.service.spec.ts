@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -15,6 +16,7 @@ import { LanguageType } from '@shared/domain/interface';
 import { RegistrationRepo } from '../../repo';
 import { registrationFactory } from '../../testing/registration.factory';
 import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
+import { ResendingRegistrationMailLoggable } from '../error/resend-registration-mail.loggable';
 import { RegistrationService } from './registration.service';
 import { RoomService } from '@modules/room';
 
@@ -26,6 +28,8 @@ describe('RegistrationService', () => {
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
 	let schoolService: DeepMocked<SchoolService>;
 	let userService: DeepMocked<UserService>;
+	let mailService: DeepMocked<MailService>;
+	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -34,6 +38,10 @@ describe('RegistrationService', () => {
 				{
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 				{
 					provide: MailService,
@@ -72,6 +80,8 @@ describe('RegistrationService', () => {
 		roomMembershipService = module.get(RoomMembershipService);
 		userService = module.get(UserService);
 		schoolService = module.get(SchoolService);
+		mailService = module.get(MailService);
+		logger = module.get(Logger);
 	});
 
 	afterAll(async () => {
@@ -129,6 +139,7 @@ describe('RegistrationService', () => {
 						firstName: props.firstName,
 						lastName: props.lastName,
 						roomIds: [props.roomId],
+						resentAt: undefined,
 					})
 				);
 			});
@@ -157,6 +168,76 @@ describe('RegistrationService', () => {
 			await service.saveRegistration(registration);
 
 			expect(registrationRepo.save).toHaveBeenCalledWith(registration);
+		});
+	});
+
+	describe('resendRegistrationMails', () => {
+		describe('when registration mail was not resent within last two minutes', () => {
+			it('should call repo to save registration with new resentAt date', async () => {
+				const now = new Date();
+				jest.useFakeTimers().setSystemTime(now);
+
+				const registration = registrationFactory.build();
+				registrationRepo.findById.mockResolvedValueOnce(registration);
+				const expectedRegistration = registrationFactory.build({ ...registration.getProps(), resentAt: now });
+
+				await service.resendRegistrationMails([registration.id]);
+
+				expect(registrationRepo.save).toHaveBeenCalledWith(expectedRegistration);
+			});
+
+			it('should call mail service to resend registration mail', async () => {
+				const registrationWithoutResentAt = registrationFactory.build({ resentAt: undefined });
+				const registrationWithResentAt = registrationFactory.build({
+					resentAt: new Date(Date.now() - 5 * 60 * 1000),
+				});
+				registrationRepo.findById
+					.mockResolvedValueOnce(registrationWithoutResentAt)
+					.mockResolvedValueOnce(registrationWithResentAt);
+
+				await service.resendRegistrationMails([registrationWithoutResentAt.id, registrationWithResentAt.id]);
+
+				expect(mailService.send).toHaveBeenCalledTimes(2);
+			});
+		});
+
+		describe('when registration mail was resent within last two minutes', () => {
+			it('should not call repo to save registration', async () => {
+				const recentDate = new Date();
+				jest.useFakeTimers().setSystemTime(recentDate);
+
+				const oneMinuteAgo = new Date(recentDate.getTime() - 1 * 60 * 1000);
+				const registration = registrationFactory.build({ resentAt: oneMinuteAgo });
+				registrationRepo.findById.mockResolvedValueOnce(registration);
+
+				await service.resendRegistrationMails([registration.id]);
+
+				expect(registrationRepo.save).not.toHaveBeenCalled();
+			});
+
+			it('should not call mail service to resend registration mail', async () => {
+				const recentDate = new Date();
+				jest.useFakeTimers().setSystemTime(recentDate);
+
+				const oneMinuteAgo = new Date(recentDate.getTime() - 1 * 60 * 1000);
+				const registration = registrationFactory.build({ resentAt: oneMinuteAgo });
+				registrationRepo.findById.mockResolvedValueOnce(registration);
+
+				await service.resendRegistrationMails([registration.id]);
+
+				expect(mailService.send).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when an error occurs during resending', () => {
+			it('should log with failed registration id', async () => {
+				const registration = registrationFactory.build();
+				registrationRepo.findById.mockRejectedValueOnce(new Error('Database error'));
+
+				await service.resendRegistrationMails([registration.id]);
+
+				expect(logger.warning).toHaveBeenCalledWith(new ResendingRegistrationMailLoggable(registration.id));
+			});
 		});
 	});
 
@@ -350,20 +431,17 @@ describe('RegistrationService', () => {
 		});
 	});
 
-	describe('cancelRegistrationForRoom', () => {
+	describe('cancelRegistrationsForRoom', () => {
 		describe('when registration exists', () => {
 			it('should remove roomId from registration', async () => {
 				const roomIdToRemove = new ObjectId().toHexString();
 				const registration = registrationFactory.build({ roomIds: [roomIdToRemove, new ObjectId().toHexString()] });
 				registrationRepo.findById.mockResolvedValue(registration);
 
-				const updatedRegistration = await service.cancelRegistrationForRoom(
-					registration.registrationSecret,
-					roomIdToRemove
-				);
+				const updatedRegistrations = await service.cancelRegistrationsForRoom([registration.id], roomIdToRemove);
 
-				expect(updatedRegistration?.roomIds).not.toContain(roomIdToRemove);
-				expect(registrationRepo.save).toHaveBeenCalledWith(updatedRegistration);
+				expect(updatedRegistrations?.[0].roomIds).not.toContain(roomIdToRemove);
+				expect(registrationRepo.save).toHaveBeenCalledWith(updatedRegistrations?.[0]);
 			});
 		});
 
@@ -372,7 +450,7 @@ describe('RegistrationService', () => {
 				registrationRepo.findById.mockRejectedValueOnce(new NotFoundException());
 
 				await expect(
-					service.cancelRegistrationForRoom('nonExistingRegistrationId', new ObjectId().toHexString())
+					service.cancelRegistrationsForRoom(['nonExistingRegistrationId'], new ObjectId().toHexString())
 				).rejects.toThrow(NotFoundException);
 			});
 		});
@@ -383,10 +461,40 @@ describe('RegistrationService', () => {
 				const registration = registrationFactory.build({ roomIds: [roomIdToRemove] });
 				registrationRepo.findById.mockResolvedValue(registration);
 
-				const result = await service.cancelRegistrationForRoom(registration.registrationSecret, roomIdToRemove);
+				const result = await service.cancelRegistrationsForRoom([registration.id], roomIdToRemove);
 
 				expect(registrationRepo.deleteByIds).toHaveBeenCalledWith([registration.id]);
 				expect(result).toBeNull();
+			});
+		});
+
+		describe('when multiple registrationIds are provided', () => {
+			it('should process all registrationIds and return updated registrations', async () => {
+				const roomIdToRemove = new ObjectId().toHexString();
+
+				const registrationWithRoomRemaining = registrationFactory.build({
+					roomIds: [roomIdToRemove, new ObjectId().toHexString()],
+				});
+				const registrationToBeDeleted = registrationFactory.build({
+					roomIds: [roomIdToRemove],
+				});
+
+				registrationRepo.findById
+					.mockResolvedValueOnce(registrationWithRoomRemaining)
+					.mockResolvedValueOnce(registrationToBeDeleted);
+
+				const updatedRegistrations = await service.cancelRegistrationsForRoom(
+					[registrationWithRoomRemaining.id, registrationToBeDeleted.id],
+					roomIdToRemove
+				);
+
+				expect(updatedRegistrations).toHaveLength(1);
+				expect(updatedRegistrations?.[0].id).toBe(registrationWithRoomRemaining.id);
+				expect(updatedRegistrations?.[0].roomIds).not.toContain(roomIdToRemove);
+
+				expect(registrationRepo.save).toHaveBeenCalledTimes(1);
+				expect(registrationRepo.save).toHaveBeenCalledWith(updatedRegistrations?.[0]);
+				expect(registrationRepo.deleteByIds).toHaveBeenCalledWith([registrationToBeDeleted.id]);
 			});
 		});
 	});
