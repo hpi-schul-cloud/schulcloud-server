@@ -483,50 +483,37 @@ describe(BiloMediaClientAdapter.name, () => {
 					refreshToken: 'mock-refresh-token',
 				});
 
-				const validResponse: BiloMediaQueryResponse = biloMediaQueryResponseFactory.build();
-				const badData: BiloMediaQueryDataResponse = biloMediaQueryDataResponseFactory.build({
+				const data: BiloMediaQueryDataResponse = biloMediaQueryDataResponseFactory.build({
 					cover: { href: 'invalid', rel: 'src' },
-					coverSmall: { href: 'also-invalid', rel: 'src' },
+					coverSmall: { href: 'invalid', rel: 'src' },
 				});
-				const badResponse: BiloMediaQueryResponse = biloMediaQueryResponseFactory.build({
+				const response: BiloMediaQueryResponse = biloMediaQueryResponseFactory.build({
 					status: 200,
-					data: badData,
-					query: { id: badData.id },
+					data,
+					query: { id: data.id },
 				});
 
 				const mockAxiosResponse: AxiosResponse<BiloMediaQueryResponse[]> = axiosResponseFactory.build({
-					data: [validResponse, badResponse],
+					data: [response],
 				});
 
 				jest.spyOn(oauthAdapterService, 'sendTokenRequest').mockResolvedValueOnce(mockToken);
 				jest.spyOn(httpService, 'post').mockReturnValueOnce(of(mockAxiosResponse));
 				jest.spyOn(encryptionService, 'decrypt').mockReturnValueOnce('client-secret-decrypted');
 
-				return { mediaSource, badResponse };
+				return { mediaSource, response };
 			};
 
-			it('should filter out the bad response and log a validation error', async () => {
-				const { mediaSource, badResponse } = setup();
+			it('it should set cover to empty strig', async () => {
+				const { mediaSource, response } = setup();
 
 				const results = await service.fetchMediaMetadata(['ignored1', 'ignored2'], mediaSource);
 
 				expect(results.length).toBe(1);
-				expect(logger.debug).toHaveBeenCalledWith(
-					new BiloMediaQueryBadResponseLoggable([
-						{
-							mediumId: badResponse.query.id,
-							status: badResponse.status,
-							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-							validationErrors: expect.arrayContaining([
-								expect.objectContaining({
-									property: 'cover.href / coverSmall.href',
-									// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-									constraints: expect.objectContaining({ isUrl: expect.any(String) }),
-								}),
-							]),
-						},
-					])
-				);
+				const correctedBad = results.find((r) => r.id === response.data.id);
+				expect(correctedBad).toBeDefined();
+				expect(correctedBad?.cover.href).toBe('');
+				expect(correctedBad?.coverSmall.href).toBe('');
 			});
 		});
 	});
@@ -900,12 +887,12 @@ describe(BiloMediaClientAdapter.name, () => {
 				return { mediaSource };
 			};
 
-			it('should throw a BiloMediaQueryBadResponseLoggableException', async () => {
+			it('should set cover to empty string', async () => {
 				const { mediaSource } = setup();
 
-				await expect(service.fetchMediumMetadata('id', mediaSource)).rejects.toThrow(
-					BiloMediaQueryBadResponseLoggableException
-				);
+				const correctedResponse = await service.fetchMediumMetadata('id', mediaSource);
+				expect(correctedResponse.cover.href).toBe('');
+				expect(correctedResponse.coverSmall.href).toBe('');
 			});
 		});
 	});

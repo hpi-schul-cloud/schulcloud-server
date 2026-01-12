@@ -1,4 +1,3 @@
-import { isURL } from 'class-validator';
 import { AxiosErrorLoggable } from '@core/error/loggable';
 import { Logger } from '@core/logger';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
@@ -18,7 +17,7 @@ import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
-import { validate, ValidationError } from 'class-validator';
+import { isURL, validate, ValidationError } from 'class-validator';
 import { lastValueFrom } from 'rxjs';
 import { MediaQueryBadResponseReport } from './interface';
 import {
@@ -122,11 +121,9 @@ export class BiloMediaClientAdapter {
 				return;
 			}
 
+			this.fallbackLogo(response);
+
 			const validationErrors: ValidationError[] = await validate(plainToClass(BiloMediaQueryResponse, response));
-			const coverError = this.validateCoverUrl(response);
-			if (coverError) {
-				validationErrors.push(coverError);
-			}
 			if (validationErrors.length > 0) {
 				badResponseReports.push({ mediumId: response.query.id, status: response.status, validationErrors });
 				return;
@@ -156,11 +153,10 @@ export class BiloMediaClientAdapter {
 		if (!response.data) {
 			throw new BiloMediaQueryUnprocessableResponseLoggableException();
 		}
+
+		this.fallbackLogo(response);
+
 		const validationErrors: ValidationError[] = await validate(plainToClass(BiloMediaQueryResponse, response));
-		const coverError = this.validateCoverUrl(response);
-		if (coverError) {
-			validationErrors.push(coverError);
-		}
 		if (validationErrors.length > 0) {
 			throw new BiloMediaQueryBadResponseLoggableException([
 				{ mediumId: response.query.id, status: response.status, validationErrors },
@@ -168,15 +164,10 @@ export class BiloMediaClientAdapter {
 		}
 	}
 
-	private validateCoverUrl(response: BiloMediaQueryResponse): ValidationError | void {
+	private fallbackLogo(response: BiloMediaQueryResponse): ValidationError | void {
 		if (!isURL(response.data.coverSmall.href) && !isURL(response.data.cover.href)) {
-			const validationError: ValidationError = {
-				property: 'cover.href / coverSmall.href',
-				constraints: {
-					isUrl: 'Both cover.href and coverSmall.href are not valid URLs',
-				},
-			};
-			return validationError;
+			response.data.coverSmall.href = '';
+			response.data.cover.href = '';
 		} else {
 			if (!isURL(response.data.coverSmall.href)) {
 				response.data.coverSmall.href = response.data.cover.href;
