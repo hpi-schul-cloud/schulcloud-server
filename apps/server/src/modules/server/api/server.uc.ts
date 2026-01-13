@@ -1,3 +1,4 @@
+import { ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig } from '@modules/alert';
 import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@modules/board-context';
 import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { Inject, Injectable } from '@nestjs/common';
@@ -10,7 +11,8 @@ export class ServerUc {
 	constructor(
 		@Inject(SERVER_CONFIG_TOKEN) private readonly config: ServerConfig,
 		@Inject(BOARD_CONTEXT_PUBLIC_API_CONFIG) private readonly boardConfig: BoardContextPublicApiConfig,
-		@Inject(VIDEO_CONFERENCE_PUBLIC_API_CONFIG) private readonly videoConferenceConfig: VideoConferencePublicApiConfig
+		@Inject(VIDEO_CONFERENCE_PUBLIC_API_CONFIG) private readonly videoConferenceConfig: VideoConferencePublicApiConfig,
+		@Inject(ALERT_PUBLIC_API_CONFIG) private readonly alertConfig: AlertPublicApiConfig
 	) {}
 
 	public getConfig(): ConfigResponse {
@@ -18,6 +20,7 @@ export class ServerUc {
 			...this.config,
 			...this.boardConfig,
 			...this.videoConferenceConfig,
+			...this.alertConfig,
 		});
 
 		return configDto;
