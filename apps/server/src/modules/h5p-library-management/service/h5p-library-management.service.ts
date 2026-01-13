@@ -131,6 +131,14 @@ export class H5PLibraryManagementService {
 			);
 		} catch (error: unknown) {
 			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, {}, 'during run script'));
+
+			// Re-throw S3Client errors to cause graceful shutdown
+			if (this.isS3ClientError(error)) {
+				this.logger.warning(
+					new H5PLibraryManagementLoggable('S3Client error detected. Shutting down process gracefully.')
+				);
+				throw error;
+			}
 		}
 	}
 
@@ -205,6 +213,11 @@ export class H5PLibraryManagementService {
 				uninstalledLibraries.push(library);
 			} catch (error: unknown) {
 				failedLibraries.push(library);
+
+				// Re-throw any S3Client error to cause graceful shutdown
+				if (this.isS3ClientError(error)) {
+					throw error;
+				}
 			}
 		}
 		const result = { uninstalledLibraries, failedLibraries };
@@ -237,6 +250,8 @@ export class H5PLibraryManagementService {
 			this.logger.warning(
 				new H5PLibraryManagementErrorLoggable(error, { library: unwantedLibrary.machineName }, 'during force uninstall')
 			);
+
+			// Always re-throw to maintain existing behavior, especially for S3Client errors
 			throw error;
 		}
 		this.logFinishedForceUninstallLibrary(unwantedLibrary.machineName);
@@ -309,13 +324,25 @@ export class H5PLibraryManagementService {
 			if (this.isH5pTimeoutError(error) && TypeGuard.isString(error.replacements.ubername)) {
 				this.logTimeOutError(error.replacements.ubername);
 				const libraryName = LibraryName.fromUberName(error.replacements.ubername);
-				await this.libraryStorage.deleteLibrary(libraryName);
+				try {
+					await this.libraryStorage.deleteLibrary(libraryName);
+				} catch (deleteError: unknown) {
+					if (this.isS3ClientError(deleteError)) {
+						throw deleteError;
+					}
+				}
 			}
 
 			if (this.isH5pConsistencyError(error) && TypeGuard.isString(error.replacements.name)) {
 				this.logConsistencyError(error.replacements.name);
 				const libraryName = LibraryName.fromUberName(error.replacements.name);
-				await this.libraryStorage.deleteLibrary(libraryName);
+				try {
+					await this.libraryStorage.deleteLibrary(libraryName);
+				} catch (deleteError: unknown) {
+					if (this.isS3ClientError(deleteError)) {
+						throw deleteError;
+					}
+				}
 			}
 
 			return [];
@@ -561,8 +588,20 @@ export class H5PLibraryManagementService {
 					'during library update'
 				)
 			);
+
+			// Re-throw S3Client errors to cause graceful shutdown
+			if (this.isS3ClientError(error)) {
+				throw error;
+			}
+
 			this.logRemoveLibraryDueToError(newLibraryMetadata);
-			await this.libraryStorage.deleteLibrary(newLibraryMetadata);
+			try {
+				await this.libraryStorage.deleteLibrary(newLibraryMetadata);
+			} catch (deleteError: unknown) {
+				if (this.isS3ClientError(deleteError)) {
+					throw deleteError;
+				}
+			}
 
 			return { type: 'none' };
 		}
@@ -610,6 +649,11 @@ export class H5PLibraryManagementService {
 					'during library installation'
 				)
 			);
+
+			// Re-throw S3Client errors to cause graceful shutdown
+			if (this.isS3ClientError(error)) {
+				throw error;
+			}
 
 			return { type: 'none' };
 		}
@@ -723,7 +767,21 @@ export class H5PLibraryManagementService {
 				// If the folder exists without a library.json in S3 and we don't have
 				// a metadata entry stored in the database, we remove the folder, as we
 				// cannot determine the correct state of the library.
-				await this.libraryStorage.deleteFolder(libraryName);
+				try {
+					await this.libraryStorage.deleteFolder(libraryName);
+				} catch (deleteError: unknown) {
+					// Re-throw S3Client errors to cause graceful shutdown
+					if (this.isS3ClientError(deleteError)) {
+						throw deleteError;
+					}
+					this.logger.warning(
+						new H5PLibraryManagementErrorLoggable(
+							deleteError,
+							{ library: LibraryName.toUberName(libraryName) },
+							'while deleting lost library folder'
+						)
+					);
+				}
 			} else {
 				this.logger.warning(
 					new H5PLibraryManagementErrorLoggable(
@@ -732,6 +790,11 @@ export class H5PLibraryManagementService {
 						'while reading library'
 					)
 				);
+
+				// Re-throw S3Client errors to cause graceful shutdown
+				if (this.isS3ClientError(error)) {
+					throw error;
+				}
 			}
 
 			return;
@@ -750,6 +813,11 @@ export class H5PLibraryManagementService {
 					'while adding library.json to S3'
 				)
 			);
+
+			// Re-throw S3Client errors to cause graceful shutdown
+			if (this.isS3ClientError(error)) {
+				throw error;
+			}
 		}
 		if (fileAdded) {
 			this.logLibraryJsonAddedToS3(metadata);
@@ -838,8 +906,19 @@ export class H5PLibraryManagementService {
 					)
 				);
 
+				// Re-throw S3Client errors to cause graceful shutdown
+				if (this.isS3ClientError(error)) {
+					throw error;
+				}
+
 				this.logRemovalOfBrokenLibrary(libraryName);
-				await this.libraryStorage.deleteLibrary(libraryName);
+				try {
+					await this.libraryStorage.deleteLibrary(libraryName);
+				} catch (deleteError: unknown) {
+					if (this.isS3ClientError(deleteError)) {
+						throw deleteError;
+					}
+				}
 				brokenLibraries.push(library);
 			}
 		}
@@ -855,6 +934,13 @@ export class H5PLibraryManagementService {
 				)} from database and S3 as the library did not pass consistency check.`
 			)
 		);
+	}
+
+	private isS3ClientError(error: unknown): boolean {
+		if (error instanceof Error && error.message) {
+			return error.message.includes('S3ClientAdapter') || error.message.includes('S3Client');
+		}
+		return false;
 	}
 
 	private filterObjectByInterface<T>(obj: Record<string, any>, allowedKeys: (keyof T)[]): Partial<T> {
