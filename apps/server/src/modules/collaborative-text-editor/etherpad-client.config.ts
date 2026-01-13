@@ -4,6 +4,11 @@ import { IsString, IsUrl } from 'class-validator';
 
 @Configuration()
 export class EtherpadClientConfig implements InternalEtherpadClientConfig {
+	/**
+	 * The default values only exist because the SchulconnexLicenseProvisioningAMQPModule
+	 * has an unnecessary dependency on this module.
+	 * After resolving this dependency, this default value can be removed.
+	 */
 	@ConfigProperty('ETHERPAD__API_KEY')
 	@IsString()
 	public apiKey = 'defaultApiKey';
