@@ -194,8 +194,14 @@ describe('RegistrationService', () => {
 			it('should call mail service to resend registration mail', async () => {
 				const roomOne = roomFactory.build({ name: 'First Room' });
 				const roomTwo = roomFactory.build({ name: 'Second Room' });
-				const registrationWithoutResentAt = registrationFactory.build({ resentAt: undefined });
+				const registrationWithoutResentAt = registrationFactory.build({
+					email: 'test@example.com',
+					roomIds: [roomOne.id],
+					resentAt: undefined,
+				});
 				const registrationWithResentAt = registrationFactory.build({
+					email: 'test@example.com',
+					roomIds: [roomTwo.id],
 					resentAt: new Date(Date.now() - 5 * 60 * 1000),
 				});
 
