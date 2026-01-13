@@ -193,23 +193,36 @@ describe('RegistrationService', () => {
 
 			it('should call mail service to resend registration mail', async () => {
 				const room = roomFactory.build({ name: 'A test room' });
-				const registrationWithoutResentAt = registrationFactory.build({
+				const registrationData = {
 					email: 'test@example.com',
+					firstName: 'John',
+					lastName: 'Doe',
 					roomIds: [room.id],
+				};
+				const registrationWithoutResentAt = registrationFactory.build({
+					...registrationData,
 					resentAt: undefined,
 				});
 				const registrationWithResentAt = registrationFactory.build({
-					email: 'test@example.com',
-					roomIds: [room.id],
+					...registrationData,
 					resentAt: new Date(Date.now() - 5 * 60 * 1000),
+				});
+				const registrationWithUnelapsedCooldown = registrationFactory.build({
+					...registrationData,
+					resentAt: new Date(Date.now() - 60 * 1000),
 				});
 
 				registrationRepo.findById
 					.mockResolvedValueOnce(registrationWithoutResentAt)
-					.mockResolvedValueOnce(registrationWithResentAt);
+					.mockResolvedValueOnce(registrationWithResentAt)
+					.mockResolvedValueOnce(registrationWithUnelapsedCooldown);
 				roomService.getSingleRoom.mockResolvedValue(room);
 
-				await service.resendRegistrationMails([registrationWithoutResentAt.id, registrationWithResentAt.id]);
+				await service.resendRegistrationMails([
+					registrationWithoutResentAt.id,
+					registrationWithResentAt.id,
+					registrationWithUnelapsedCooldown.id,
+				]);
 
 				expect(mailService.send).toHaveBeenCalledTimes(2);
 			});

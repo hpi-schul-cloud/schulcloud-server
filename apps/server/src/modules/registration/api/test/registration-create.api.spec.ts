@@ -205,7 +205,7 @@ describe('Registration Controller (API)', () => {
 						roomIds: [params.roomId],
 					});
 
-					await em.persistAndFlush(existingRegistration);
+					await em.persist(existingRegistration).flush();
 					em.clear();
 
 					const response = await loggedInClient.post(undefined, { ...params, roomId: secondRoomId });

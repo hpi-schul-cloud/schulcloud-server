@@ -62,6 +62,7 @@ describe('Room Controller (API)', () => {
 			const { teacherAccount: otherTeacherAccount, teacherUser: otherTeacherUser } =
 				UserAndAccountTestFactory.buildTeacher({ school });
 			const room = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
+			const room2 = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
 			const { roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 			const group = groupEntityFactory.buildWithId({
 				users: [
@@ -88,26 +89,31 @@ describe('Room Controller (API)', () => {
 				name: 'External Persons School',
 				purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
 			});
-			await em.persistAndFlush([
-				school,
-				teacherAccount,
-				teacherUser,
-				otherTeacherAccount,
-				otherTeacherUser,
-				room,
-				roomOwnerRole,
-				roomViewerRole,
-				group,
-				roomMembership,
-				externalPersonRole,
-				guestStudent,
-				guestTeacher,
-				guestExternalPerson,
-				externalPersonsSchool,
-			]);
+			await em
+				.persist([
+					school,
+					teacherAccount,
+					teacherUser,
+					otherTeacherAccount,
+					otherTeacherUser,
+					room,
+					room2,
+					roomOwnerRole,
+					roomViewerRole,
+					group,
+					roomMembership,
+					externalPersonRole,
+					guestStudent,
+					guestTeacher,
+					guestExternalPerson,
+					externalPersonsSchool,
+				])
+				.flush();
 
 			const registration1 = registrationEntityFactory.build({ roomIds: [room.id], resentAt: undefined });
-			const registration2 = registrationEntityFactory.build({ roomIds: [room.id, new ObjectId().toHexString()] });
+			const registration2 = registrationEntityFactory.build({
+				roomIds: [room.id, room2.id],
+			});
 			await em.persistAndFlush([registration1, registration2]);
 			em.clear();
 
@@ -119,6 +125,7 @@ describe('Room Controller (API)', () => {
 				teacherUser,
 				otherTeacherAccount,
 				room,
+				room2,
 				roomOwnerRole,
 			};
 		};
