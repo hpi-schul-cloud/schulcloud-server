@@ -65,7 +65,7 @@ describe(LtiDeepLinkTokenMikroOrmRepo.name, () => {
 					state: 'token1',
 				});
 
-				await em.persistAndFlush(ltiDeepLinkTokenEntity);
+				await em.persist(ltiDeepLinkTokenEntity).flush();
 				em.clear();
 
 				const ltiDeepLinkToken = new LtiDeepLinkToken({
@@ -111,7 +111,7 @@ describe(LtiDeepLinkTokenMikroOrmRepo.name, () => {
 			const setup = async () => {
 				const ltiDeepLinkTokenEntity = ltiDeepLinkTokenEntityFactory.buildWithId();
 
-				await em.persistAndFlush([ltiDeepLinkTokenEntity]);
+				await em.persist([ltiDeepLinkTokenEntity]).flush();
 				em.clear();
 
 				const ltiDeepLinkToken = LtiDeepLinkTokenEntityMapper.mapEntityToDo(ltiDeepLinkTokenEntity);

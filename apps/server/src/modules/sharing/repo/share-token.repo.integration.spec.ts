@@ -52,7 +52,7 @@ describe('ShareTokenRepo', () => {
 
 		it('should include context id', async () => {
 			const school = schoolEntityFactory.build();
-			await em.persistAndFlush([school]);
+			await em.persist([school]).flush();
 			const shareToken = shareTokenDOFactory.build({
 				context: { contextType: ShareTokenContextType.School, contextId: school.id },
 			});

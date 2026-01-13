@@ -42,7 +42,7 @@ describe(`create board in course (api)`, () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 				const course = courseEntityFactory.build({ teachers: [teacherUser] });
-				await em.persistAndFlush([teacherUser, course, teacherAccount]);
+				await em.persist([teacherUser, course, teacherAccount]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -147,7 +147,7 @@ describe(`create board in course (api)`, () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 				const course = courseEntityFactory.build();
-				await em.persistAndFlush([teacherUser, course, teacherAccount]);
+				await em.persist([teacherUser, course, teacherAccount]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -174,7 +174,7 @@ describe(`create board in course (api)`, () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				const course = courseEntityFactory.build({ students: [studentUser] });
-				await em.persistAndFlush([studentUser, course, studentAccount]);
+				await em.persist([studentUser, course, studentAccount]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -203,7 +203,7 @@ describe(`create board in course (api)`, () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 				const course = courseEntityFactory.build({ teachers: [teacherUser] });
-				await em.persistAndFlush([teacherUser, course, teacherAccount]);
+				await em.persist([teacherUser, course, teacherAccount]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -229,7 +229,7 @@ describe(`create board in course (api)`, () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 				const course = courseEntityFactory.build({ teachers: [teacherUser] });
-				await em.persistAndFlush([teacherUser, course, teacherAccount]);
+				await em.persist([teacherUser, course, teacherAccount]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -254,7 +254,7 @@ describe(`create board in course (api)`, () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				await em.persistAndFlush([teacherUser, teacherAccount]);
+				await em.persist([teacherUser, teacherAccount]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -281,7 +281,7 @@ describe(`create board in course (api)`, () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 				const course = courseEntityFactory.build({ teachers: [teacherUser] });
-				await em.persistAndFlush([teacherUser, course, teacherAccount]);
+				await em.persist([teacherUser, course, teacherAccount]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

@@ -59,15 +59,9 @@ describe(`board copy with room relation (api)`, () => {
 				...columnBoardProps,
 				context: { id: room.id, type: BoardExternalReferenceType.Room },
 			});
-			await em.persistAndFlush([
-				room,
-				roomMembership,
-				teacherAccount,
-				teacherUser,
-				userGroup,
-				roomEditorRole,
-				columnBoardNode,
-			]);
+			await em
+				.persist([room, roomMembership, teacherAccount, teacherUser, userGroup, roomEditorRole, columnBoardNode])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);

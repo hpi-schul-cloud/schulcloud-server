@@ -36,7 +36,7 @@ describe('ContentRepo', () => {
 	describe('createContentMetadata', () => {
 		it('should be able to retrieve entity', async () => {
 			const h5pContent = h5pContentFactory.build();
-			await em.persistAndFlush(h5pContent);
+			await em.persist(h5pContent).flush();
 
 			const result = await repo.findById(h5pContent.id);
 
@@ -48,7 +48,7 @@ describe('ContentRepo', () => {
 	describe('findById', () => {
 		it('should be able to retrieve entity', async () => {
 			const h5pContent = h5pContentFactory.build();
-			await em.persistAndFlush(h5pContent);
+			await em.persist(h5pContent).flush();
 
 			const result = await repo.findById(h5pContent.id);
 
@@ -68,7 +68,7 @@ describe('ContentRepo', () => {
 	describe('existsOne', () => {
 		it('should return true if entity exists', async () => {
 			const h5pContent = h5pContentFactory.build();
-			await em.persistAndFlush(h5pContent);
+			await em.persist(h5pContent).flush();
 
 			const result = await repo.existsOne(h5pContent.id);
 
@@ -80,7 +80,7 @@ describe('ContentRepo', () => {
 	describe('deleteContent', () => {
 		it('should delete data', async () => {
 			const h5pContent = h5pContentFactory.build();
-			await em.persistAndFlush(h5pContent);
+			await em.persist(h5pContent).flush();
 
 			await repo.deleteContent(h5pContent);
 
@@ -101,7 +101,7 @@ describe('ContentRepo', () => {
 		it('should return correct counts for used main library', async () => {
 			const library = h5pEntityLibraryTestFactory.build();
 			const h5pContents = h5pContentFactory.withMainLibrary(library).buildList(2);
-			await em.persistAndFlush([...h5pContents, library]);
+			await em.persist([...h5pContents, library]).flush();
 
 			const result = await repo.countUsage(library);
 
@@ -111,7 +111,7 @@ describe('ContentRepo', () => {
 		it('should return correct counts preloaded dependencies', async () => {
 			const libaries = h5pEntityLibraryTestFactory.buildList(2);
 			const h5pContents = h5pContentFactory.addPreloadedDependencies(libaries).buildList(2);
-			await em.persistAndFlush([...h5pContents, ...libaries]);
+			await em.persist([...h5pContents, ...libaries]).flush();
 
 			const result = await repo.countUsage(libaries[0]);
 

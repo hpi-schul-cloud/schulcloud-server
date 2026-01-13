@@ -98,6 +98,17 @@ describe('Registration', () => {
 		expect(registration.updatedAt).toBeInstanceOf(Date);
 	});
 
+	it('should get and set resentAt', () => {
+		const { registration } = setup();
+
+		expect(registration.resentAt).toBeUndefined();
+
+		const newResentAt = new Date();
+		registration.resentAt = newResentAt;
+
+		expect(registration.resentAt).toEqual(newResentAt);
+	});
+
 	describe('addRoomId', () => {
 		describe('When room is added to the registration', () => {
 			it('should add the room to the roomIds', () => {

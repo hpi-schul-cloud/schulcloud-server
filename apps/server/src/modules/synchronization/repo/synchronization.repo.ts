@@ -26,7 +26,7 @@ export class SynchronizationRepo {
 	async create(synchronizations: Synchronization): Promise<void> {
 		const synchronizationsEntity: SynchronizationEntity = SynchronizationMapper.mapToEntity(synchronizations);
 
-		await this.em.persistAndFlush(synchronizationsEntity);
+		await this.em.persist(synchronizationsEntity).flush();
 	}
 
 	async update(synchronization: Synchronization): Promise<void> {
@@ -36,6 +36,6 @@ export class SynchronizationRepo {
 		referencedEntity.count = synchronization.count;
 		referencedEntity.failureCause = synchronization.failureCause;
 
-		await this.em.persistAndFlush(referencedEntity);
+		await this.em.persist(referencedEntity).flush();
 	}
 }

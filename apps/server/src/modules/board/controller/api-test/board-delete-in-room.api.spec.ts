@@ -73,26 +73,28 @@ describe(`board delete in room (api)`, () => {
 			schoolId: school.id,
 		});
 
-		await em.persistAndFlush([
-			accountWithEditRole,
-			accountWithViewRole,
-			noAccessAccount,
-			userWithEditRole,
-			userWithViewRole,
-			noAccessUser,
-			roomEditorRole,
-			roomViewerRole,
-			userGroup,
-			room,
-			roomMembership,
-		]);
+		await em
+			.persist([
+				accountWithEditRole,
+				accountWithViewRole,
+				noAccessAccount,
+				userWithEditRole,
+				userWithViewRole,
+				noAccessUser,
+				roomEditorRole,
+				roomViewerRole,
+				userGroup,
+				room,
+				roomMembership,
+			])
+			.flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: room.id, type: BoardExternalReferenceType.Room },
 		});
 		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-		await em.persistAndFlush([columnBoardNode, columnNode]);
+		await em.persist([columnBoardNode, columnNode]).flush();
 		em.clear();
 
 		return { accountWithEditRole, accountWithViewRole, noAccessAccount, columnBoardNode, columnNode };

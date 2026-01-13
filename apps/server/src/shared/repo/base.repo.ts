@@ -19,11 +19,11 @@ export abstract class BaseRepo<T extends BaseEntity> {
 	}
 
 	async save(entities: T | T[]): Promise<void> {
-		await this._em.persistAndFlush(entities);
+		await this._em.persist(entities).flush();
 	}
 
 	async delete(entities: T | T[]): Promise<void> {
-		await this._em.removeAndFlush(entities);
+		await this._em.remove(entities).flush();
 	}
 
 	async findById(id: EntityId | ObjectId): Promise<T> {

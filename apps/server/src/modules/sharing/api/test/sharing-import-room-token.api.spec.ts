@@ -61,15 +61,9 @@ describe('Sharing Controller (API)', () => {
 
 				const shareToken = shareTokenFactory.build({ parentId: room.id, parentType: ShareTokenParentType.Room });
 
-				await em.persistAndFlush([
-					room,
-					roomMembership,
-					teacherAccount,
-					teacherUser,
-					userGroup,
-					roomOwnerRole,
-					shareToken,
-				]);
+				await em
+					.persist([room, roomMembership, teacherAccount, teacherUser, userGroup, roomOwnerRole, shareToken])
+					.flush();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 				return { loggedInClient, token: shareToken.token, room };
@@ -108,15 +102,9 @@ describe('Sharing Controller (API)', () => {
 						contextId: undefined,
 					});
 
-					await em.persistAndFlush([
-						room,
-						roomMembership,
-						teacherAccount,
-						teacherUser,
-						userGroup,
-						roomOwnerRole,
-						shareToken,
-					]);
+					await em
+						.persist([room, roomMembership, teacherAccount, teacherUser, userGroup, roomOwnerRole, shareToken])
+						.flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(teacherAccount);
@@ -166,18 +154,20 @@ describe('Sharing Controller (API)', () => {
 						contextId: undefined,
 					});
 
-					await em.persistAndFlush([
-						room,
-						roomMembership,
-						roomMembershipStudent,
-						teacherAccount,
-						teacherUser,
-						studentAccount,
-						studentUser,
-						userGroup,
-						roomOwnerRole,
-						shareToken,
-					]);
+					await em
+						.persist([
+							room,
+							roomMembership,
+							roomMembershipStudent,
+							teacherAccount,
+							teacherUser,
+							studentAccount,
+							studentUser,
+							userGroup,
+							roomOwnerRole,
+							shareToken,
+						])
+						.flush();
 					em.clear();
 
 					const loggedInClientStudent = await testApiClient.login(studentAccount);
@@ -231,18 +221,20 @@ describe('Sharing Controller (API)', () => {
 					contextId: undefined,
 				});
 
-				await em.persistAndFlush([
-					room,
-					roomMembership,
-					roomMembershipExternal,
-					teacherAccount,
-					teacherUser,
-					teacherAccountExternal,
-					teacherUserExternal,
-					userGroup,
-					roomOwnerRole,
-					shareToken,
-				]);
+				await em
+					.persist([
+						room,
+						roomMembership,
+						roomMembershipExternal,
+						teacherAccount,
+						teacherUser,
+						teacherAccountExternal,
+						teacherUserExternal,
+						userGroup,
+						roomOwnerRole,
+						shareToken,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccountExternal);

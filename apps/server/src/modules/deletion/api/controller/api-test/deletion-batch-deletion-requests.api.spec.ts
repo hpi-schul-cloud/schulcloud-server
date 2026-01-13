@@ -48,7 +48,7 @@ describe('createDeletionRequestsForBatch', () => {
 				skippedIds: [teacher1.id],
 				invalidIds: [invalidId1],
 			});
-			await em.persistAndFlush([student1, student2, teacher1, batch]);
+			await em.persist([student1, student2, teacher1, batch]).flush();
 			em.clear();
 
 			return { batch };

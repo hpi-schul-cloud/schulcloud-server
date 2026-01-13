@@ -46,7 +46,7 @@ describe('Lesson Controller (API) - delete', () => {
 			const setup = async () => {
 				const lesson = lessonFactory.build();
 
-				await em.persistAndFlush([lesson]);
+				await em.persist([lesson]).flush();
 				em.clear();
 
 				return { lessonId: lesson.id };
@@ -80,7 +80,7 @@ describe('Lesson Controller (API) - delete', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -142,7 +142,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const course = courseEntityFactory.build({ students: [studentUser] });
 					const lesson = lessonFactory.build({ course });
 
-					await em.persistAndFlush([studentAccount, studentUser, lesson]);
+					await em.persist([studentAccount, studentUser, lesson]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -175,7 +175,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const course = courseEntityFactory.build({ students: [] });
 					const lesson = lessonFactory.build({ course });
 
-					await em.persistAndFlush([studentAccount, studentUser, lesson]);
+					await em.persist([studentAccount, studentUser, lesson]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -208,7 +208,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const courseGroup = courseGroupEntityFactory.build({ students: [studentUser] });
 					const lesson = lessonFactory.build({ courseGroup });
 
-					await em.persistAndFlush([studentAccount, studentUser, lesson]);
+					await em.persist([studentAccount, studentUser, lesson]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -241,7 +241,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const courseGroup = courseGroupEntityFactory.build({ students: [] });
 					const lesson = lessonFactory.build({ courseGroup });
 
-					await em.persistAndFlush([studentAccount, studentUser, lesson]);
+					await em.persist([studentAccount, studentUser, lesson]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -278,7 +278,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const course = courseEntityFactory.build({ teachers: [teacherUser] });
 					const lesson = lessonFactory.build({ course });
 
-					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
+					await em.persist([teacherAccount, teacherUser, lesson]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(teacherAccount);
@@ -311,7 +311,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const course = courseEntityFactory.build({ teachers: [] });
 					const lesson = lessonFactory.build({ course });
 
-					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
+					await em.persist([teacherAccount, teacherUser, lesson]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(teacherAccount);
@@ -345,7 +345,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const courseGroup = courseGroupEntityFactory.build({ students: [], course });
 					const lesson = lessonFactory.build({ courseGroup });
 
-					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
+					await em.persist([teacherAccount, teacherUser, lesson]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(teacherAccount);
@@ -379,7 +379,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const courseGroup = courseGroupEntityFactory.build({ students: [], course });
 					const lesson = lessonFactory.build({ courseGroup });
 
-					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
+					await em.persist([teacherAccount, teacherUser, lesson]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(teacherAccount);
@@ -416,7 +416,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const course = courseEntityFactory.build({ substitutionTeachers: [adminUser] });
 					const lesson = lessonFactory.build({ course });
 
-					await em.persistAndFlush([adminAccount, adminUser, lesson]);
+					await em.persist([adminAccount, adminUser, lesson]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(adminAccount);
@@ -449,7 +449,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const course = courseEntityFactory.build({ teachers: [] });
 					const lesson = lessonFactory.build({ course });
 
-					await em.persistAndFlush([adminAccount, adminUser, lesson]);
+					await em.persist([adminAccount, adminUser, lesson]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(adminAccount);

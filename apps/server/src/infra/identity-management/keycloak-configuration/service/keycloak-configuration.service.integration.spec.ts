@@ -43,7 +43,7 @@ describe('KeycloakConfigurationService Integration', () => {
 		isKeycloakAvailable = await keycloakAdministrationService.testKcConnection();
 		if (isKeycloakAvailable) {
 			keycloak = await keycloakAdministrationService.callKcAdminClient();
-			await em.persistAndFlush(systems);
+			await em.persist(systems).flush();
 		}
 	});
 

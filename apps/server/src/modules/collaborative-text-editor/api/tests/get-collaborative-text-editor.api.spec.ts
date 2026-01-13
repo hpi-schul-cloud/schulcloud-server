@@ -51,7 +51,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -110,7 +110,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 					const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
 
-					await em.persistAndFlush([studentAccount, studentUser, course]);
+					await em.persist([studentAccount, studentUser, course]).flush();
 
 					const columnBoardNode = columnBoardEntityFactory.buildWithId({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -119,7 +119,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const cardNode = cardEntityFactory.withParent(columnNode).build();
 					const collaborativeTextEditorElement = collaborativeTextEditorEntityFactory.withParent(cardNode).build();
 
-					await em.persistAndFlush([collaborativeTextEditorElement, columnBoardNode, columnNode, cardNode]);
+					await em.persist([collaborativeTextEditorElement, columnBoardNode, columnNode, cardNode]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -175,7 +175,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 					const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
 
-					await em.persistAndFlush([studentUser, course]);
+					await em.persist([studentUser, course]).flush();
 
 					const columnBoardNode = columnBoardEntityFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -184,13 +184,9 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const cardNode = cardEntityFactory.withParent(columnNode).build();
 					const collaborativeTextEditorElement = collaborativeTextEditorEntityFactory.withParent(cardNode).build();
 
-					await em.persistAndFlush([
-						studentAccount,
-						collaborativeTextEditorElement,
-						columnBoardNode,
-						columnNode,
-						cardNode,
-					]);
+					await em
+						.persist([studentAccount, collaborativeTextEditorElement, columnBoardNode, columnNode, cardNode])
+						.flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -246,7 +242,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 					const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
 
-					await em.persistAndFlush([studentUser, course]);
+					await em.persist([studentUser, course]).flush();
 
 					const columnBoardNode = columnBoardEntityFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -255,13 +251,9 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const cardNode = cardEntityFactory.withParent(columnNode).build();
 					const collaborativeTextEditorElement = collaborativeTextEditorEntityFactory.withParent(cardNode).build();
 
-					await em.persistAndFlush([
-						studentAccount,
-						collaborativeTextEditorElement,
-						columnBoardNode,
-						columnNode,
-						cardNode,
-					]);
+					await em
+						.persist([studentAccount, collaborativeTextEditorElement, columnBoardNode, columnNode, cardNode])
+						.flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
