@@ -571,13 +571,7 @@ export class H5PLibraryManagementService {
 			}
 
 			this.logRemoveLibraryDueToError(newLibraryMetadata);
-			try {
-				await this.libraryStorage.deleteLibrary(newLibraryMetadata);
-			} catch (deleteError: unknown) {
-				if (this.isS3ClientError(deleteError)) {
-					throw deleteError;
-				}
-			}
+			await this.libraryStorage.deleteLibrary(newLibraryMetadata);
 
 			return { type: 'none' };
 		}
@@ -742,13 +736,7 @@ export class H5PLibraryManagementService {
 				// If the folder exists without a library.json in S3 and we don't have
 				// a metadata entry stored in the database, we remove the folder, as we
 				// cannot determine the correct state of the library.
-				try {
-					await this.libraryStorage.deleteFolder(libraryName);
-				} catch (deleteError: unknown) {
-					if (this.isS3ClientError(deleteError)) {
-						throw deleteError;
-					}
-				}
+				await this.libraryStorage.deleteFolder(libraryName);
 			} else {
 				this.logger.warning(
 					new H5PLibraryManagementErrorLoggable(
@@ -862,13 +850,7 @@ export class H5PLibraryManagementService {
 				}
 
 				this.logRemovalOfBrokenLibrary(libraryName);
-				try {
-					await this.libraryStorage.deleteLibrary(libraryName);
-				} catch (deleteError: unknown) {
-					if (this.isS3ClientError(deleteError)) {
-						throw deleteError;
-					}
-				}
+				await this.libraryStorage.deleteLibrary(libraryName);
 				brokenLibraries.push(library);
 			}
 		}
