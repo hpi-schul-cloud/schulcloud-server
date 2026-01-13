@@ -45,7 +45,7 @@ describe('team repo', () => {
 		it('should return right keys', async () => {
 			const team = teamFactory.build();
 
-			await em.persistAndFlush([team]);
+			await em.persist([team]).flush();
 			em.clear();
 
 			const result = await repo.findById(team.id);
@@ -57,16 +57,16 @@ describe('team repo', () => {
 			const userId: EntityId = new ObjectId().toHexString();
 
 			const roles3 = roleFactory.buildList(1);
-			await em.persistAndFlush(roles3);
+			await em.persist(roles3).flush();
 
 			const roles2 = roleFactory.buildList(1, { roles: roles3 });
-			await em.persistAndFlush(roles2);
+			await em.persist(roles2).flush();
 
 			const role = roleFactory.build({ roles: roles2 });
-			await em.persistAndFlush(role);
+			await em.persist(role).flush();
 
 			const team: TeamEntity = teamFactory.withRoleAndUserId(role, userId).buildWithId();
-			await em.persistAndFlush(team);
+			await em.persist(team).flush();
 			em.clear();
 
 			// Act
@@ -83,7 +83,7 @@ describe('team repo', () => {
 			const teamA = teamFactory.build();
 			const teamB = teamFactory.build();
 
-			await em.persistAndFlush([teamA, teamB]);
+			await em.persist([teamA, teamB]).flush();
 			em.clear();
 
 			const result = await repo.findById(teamA.id, true);
@@ -105,7 +105,7 @@ describe('team repo', () => {
 		it('should return right keys', async () => {
 			// Arrange
 			const team = teamFactory.buildWithId();
-			await em.persistAndFlush([team]);
+			await em.persist([team]).flush();
 			em.clear();
 
 			// Act
@@ -122,7 +122,7 @@ describe('team repo', () => {
 			const team1 = teamFactory.withTeamUser([teamUser]).build();
 			const team2 = teamFactory.withTeamUser([teamUser]).build();
 			const team3 = teamFactory.buildWithId();
-			await em.persistAndFlush([team1, team2, team3]);
+			await em.persist([team1, team2, team3]).flush();
 			em.clear();
 
 			// Act
@@ -147,7 +147,7 @@ describe('team repo', () => {
 			const team3 = teamFactory.withTeamUser([teamUser1]).buildWithId();
 			const team4 = teamFactory.withTeamUser([teamUser2]).buildWithId();
 
-			await em.persistAndFlush([team1, team2, team3, team4]);
+			await em.persist([team1, team2, team3, team4]).flush();
 			em.clear();
 
 			return { teamUser1, teamUser2, team1, team2, team3, team4 };

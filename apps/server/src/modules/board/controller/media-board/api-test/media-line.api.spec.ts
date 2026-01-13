@@ -53,7 +53,7 @@ describe('Media Line (API)', () => {
 					position: 1,
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLineA, mediaLineB]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLineA, mediaLineB]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -99,7 +99,7 @@ describe('Media Line (API)', () => {
 					position: 0,
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -144,7 +144,7 @@ describe('Media Line (API)', () => {
 					position: 0,
 				});
 
-				await em.persistAndFlush([mediaBoard, mediaLine]);
+				await em.persist([mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				return {
@@ -190,7 +190,7 @@ describe('Media Line (API)', () => {
 					title: '',
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -232,7 +232,7 @@ describe('Media Line (API)', () => {
 					title: '',
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -275,7 +275,7 @@ describe('Media Line (API)', () => {
 					title: '',
 				});
 
-				await em.persistAndFlush([mediaBoard, mediaLine]);
+				await em.persist([mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				return {
@@ -317,7 +317,7 @@ describe('Media Line (API)', () => {
 				});
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -359,7 +359,7 @@ describe('Media Line (API)', () => {
 					.withParent(mediaBoard)
 					.build({ backgroundColor: MediaBoardColors.TRANSPARENT });
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -402,7 +402,7 @@ describe('Media Line (API)', () => {
 					backgroundColor: MediaBoardColors.TRANSPARENT,
 				});
 
-				await em.persistAndFlush([mediaBoard, mediaLine]);
+				await em.persist([mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				return {
@@ -444,7 +444,7 @@ describe('Media Line (API)', () => {
 				});
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({ collapsed: false });
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -484,7 +484,7 @@ describe('Media Line (API)', () => {
 				});
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({ title: '' });
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -527,7 +527,7 @@ describe('Media Line (API)', () => {
 					title: '',
 				});
 
-				await em.persistAndFlush([mediaBoard, mediaLine]);
+				await em.persist([mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				return {
@@ -569,7 +569,7 @@ describe('Media Line (API)', () => {
 				});
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -607,7 +607,7 @@ describe('Media Line (API)', () => {
 				});
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -646,7 +646,7 @@ describe('Media Line (API)', () => {
 				});
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 
-				await em.persistAndFlush([mediaBoard, mediaLine]);
+				await em.persist([mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				return {

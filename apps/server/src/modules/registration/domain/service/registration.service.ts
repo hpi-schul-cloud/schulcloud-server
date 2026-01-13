@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountSave, AccountService } from '@modules/account';
@@ -13,6 +14,7 @@ import { UUID } from 'bson';
 import { isDisposableEmail as _isDisposableEmail } from 'disposable-email-domains-js';
 import { RegistrationRepo } from '../../repo';
 import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
+import { ResendingRegistrationMailLoggable } from '../error/resend-registration-mail.loggable';
 
 @Injectable()
 export class RegistrationService {
@@ -23,7 +25,8 @@ export class RegistrationService {
 		private readonly accountService: AccountService,
 		private readonly schoolService: SchoolService,
 		private readonly mailService: MailService,
-		private readonly roomMembershipService: RoomMembershipService
+		private readonly roomMembershipService: RoomMembershipService,
+		private readonly logger: Logger
 	) {}
 
 	public async createOrUpdateRegistration(props: RegistrationCreateProps): Promise<Registration> {
@@ -44,7 +47,7 @@ export class RegistrationService {
 		const userDo = await this.createUser(registration, language);
 		const user = await this.userService.save(userDo);
 		const account = this.createAccount(user, password);
-		await this.accountService.save(account);
+		await this.accountService.saveWithValidation(account);
 
 		if (user.id === undefined) {
 			throw new InternalServerErrorException('User ID is undefined after saving user.');
@@ -53,18 +56,17 @@ export class RegistrationService {
 		await this.registrationRepo.deleteByIds([registration.id]);
 	}
 
-	public async cancelRegistrationForRoom(registrationId: string, roomId: string): Promise<Registration | null> {
-		const registration = await this.getSingleRegistrationById(registrationId);
+	public async cancelRegistrationsForRoom(registrationIds: string[], roomId: string): Promise<Registration[] | null> {
+		const updatedRegistrations: Registration[] = [];
 
-		registration.removeRoomId(roomId);
-
-		if (registration.hasNoRoomIds()) {
-			await this.registrationRepo.deleteByIds([registration.id]);
-			return null;
+		for (const registrationId of registrationIds) {
+			const updatedRegistration = await this.cancelSingleRegistrationForRoom(registrationId, roomId);
+			if (updatedRegistration) {
+				updatedRegistrations.push(updatedRegistration);
+			}
 		}
 
-		await this.saveRegistration(registration);
-		return registration;
+		return updatedRegistrations.length > 0 ? updatedRegistrations : null;
 	}
 
 	public async saveRegistration(registration: Registration): Promise<void> {
@@ -98,6 +100,19 @@ export class RegistrationService {
 	public async sendRegistrationMail(registration: Registration): Promise<void> {
 		const registrationMail = registration.generateRegistrationMail();
 		await this.mailService.send(registrationMail);
+	}
+
+	public async resendRegistrationMails(registrationIds: string[]): Promise<Registration[] | null> {
+		const resentRegistrations: Registration[] = [];
+
+		for (const registrationId of registrationIds) {
+			const resentRegistration = await this.resendSingleRegistrationMail(registrationId);
+			if (resentRegistration) {
+				resentRegistrations.push(resentRegistration);
+			}
+		}
+
+		return resentRegistrations.length > 0 ? resentRegistrations : null;
 	}
 
 	private createRegistrationUUID(): string {
@@ -134,6 +149,7 @@ export class RegistrationService {
 			roomIds: [props.roomId],
 			createdAt: new Date(),
 			updatedAt: new Date(),
+			resentAt: undefined,
 		};
 		const registration = new Registration(registrationProps);
 
@@ -208,5 +224,52 @@ export class RegistrationService {
 	private async addUserToRooms(roomIds: string[], userId: string): Promise<void> {
 		const promises = roomIds.map((roomId) => this.roomMembershipService.addMembersToRoom(roomId, [userId]));
 		await Promise.all(promises);
+	}
+
+	private async cancelSingleRegistrationForRoom(registrationId: string, roomId: string): Promise<Registration | null> {
+		const registration = await this.getSingleRegistrationById(registrationId);
+
+		registration.removeRoomId(roomId);
+
+		if (registration.hasNoRoomIds()) {
+			await this.registrationRepo.deleteByIds([registration.id]);
+			return null;
+		}
+
+		await this.saveRegistration(registration);
+		return registration;
+	}
+
+	private async resendSingleRegistrationMail(registrationId: string): Promise<Registration | null> {
+		try {
+			const registration = await this.getSingleRegistrationById(registrationId);
+
+			const canBeResend = this.checkCanRegistrationMailBeResend(registration);
+			if (!canBeResend) {
+				return null;
+			}
+
+			registration.resentAt = new Date();
+			await this.sendRegistrationMail(registration);
+
+			await this.saveRegistration(registration);
+			return registration;
+		} catch {
+			this.logger.warning(new ResendingRegistrationMailLoggable(registrationId));
+			return null;
+		}
+	}
+
+	private checkCanRegistrationMailBeResend(registration: Registration): boolean {
+		if (!registration.resentAt) {
+			return true;
+		}
+
+		const lastResent = new Date(registration.resentAt).getTime();
+		const now = new Date().getTime();
+		const TWO_MINUTES_MS = 2 * 60 * 1000;
+
+		const twoMinutesHavePassed = now - lastResent >= TWO_MINUTES_MS;
+		return twoMinutesHavePassed;
 	}
 }

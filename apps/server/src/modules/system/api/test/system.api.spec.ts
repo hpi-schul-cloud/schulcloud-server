@@ -39,7 +39,7 @@ describe('System (API)', () => {
 				const system2: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId();
 				const system2OauthConfig: OauthConfigEntity = system2.oauthConfig as OauthConfigEntity;
 
-				await em.persistAndFlush([system1, system2]);
+				await em.persist([system1, system2]).flush();
 				em.clear();
 
 				return { system1, system2, system2OauthConfig };
@@ -91,7 +91,7 @@ describe('System (API)', () => {
 				const system1: SystemEntity = systemEntityFactory.buildWithId();
 				const system2: SystemEntity = systemEntityFactory.buildWithId();
 
-				await em.persistAndFlush([system1, system2]);
+				await em.persist([system1, system2]).flush();
 				em.clear();
 
 				return { system1, system2 };
@@ -119,7 +119,7 @@ describe('System (API)', () => {
 				const school = schoolEntityFactory.build({ systems: [system] });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([system, adminAccount, adminUser, school]);
+				await em.persist([system, adminAccount, adminUser, school]).flush();
 				em.clear();
 
 				const adminClient = await testApiClient.login(adminAccount);

@@ -74,25 +74,27 @@ describe('Room Controller (API)', () => {
 				roomId: room.id,
 				schoolId: school.id,
 			});
-			await em.persistAndFlush([
-				room,
-				roomMemberships,
-				teacherAccount,
-				owner,
-				teacherRole,
-				teacherGuestRole,
-				studentGuestRole,
-				roomEditorRole,
-				roomAdminRole,
-				roomOwnerRole,
-				roomViewerRole,
-				targetUser,
-				targetUser,
-				userGroupEntity,
-				externalTeacherUser,
-				externalPersonRole,
-				externalPerson,
-			]);
+			await em
+				.persist([
+					room,
+					roomMemberships,
+					teacherAccount,
+					owner,
+					teacherRole,
+					teacherGuestRole,
+					studentGuestRole,
+					roomEditorRole,
+					roomAdminRole,
+					roomOwnerRole,
+					roomViewerRole,
+					targetUser,
+					targetUser,
+					userGroupEntity,
+					externalTeacherUser,
+					externalPersonRole,
+					externalPerson,
+				])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -113,7 +115,7 @@ describe('Room Controller (API)', () => {
 		describe('when the user has not the required permissions', () => {
 			const setupLoggedInUser = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
@@ -247,7 +249,7 @@ describe('Room Controller (API)', () => {
 			const setupAdminLogin = async () => {
 				const { room, school, targetUser, externalTeacherUser } = await setupRoomWithMembers();
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				const loggedInClient = await testApiClient.login(adminAccount);
 				return { loggedInClient, room, targetUser, externalTeacherUser };
 			};

@@ -7,7 +7,7 @@ describe(H5PContent.name, () => {
 		const setup = () => {
 			const props: H5PContentProperties = {
 				creatorId: new ObjectId().toHexString(),
-				parentType: H5PContentParentType.Lesson,
+				parentType: H5PContentParentType.BoardElement,
 				parentId: new ObjectId().toHexString(),
 				schoolId: new ObjectId().toHexString(),
 				metadata: new ContentMetadata({

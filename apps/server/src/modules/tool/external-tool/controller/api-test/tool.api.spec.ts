@@ -103,7 +103,7 @@ describe('ToolController (API)', () => {
 				const instance = instanceEntityFactory.build();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser, instance]);
+				await em.persist([adminAccount, adminUser, instance]).flush();
 				em.clear();
 
 				const logoBuffer: Buffer = Buffer.from(base64TestLogo, 'base64');
@@ -173,7 +173,7 @@ describe('ToolController (API)', () => {
 		describe('when invalid data is given', () => {
 			const setup = async () => {
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -213,7 +213,7 @@ describe('ToolController (API)', () => {
 				const params: ExternalToolCreateParams = { ...postParams };
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -275,7 +275,7 @@ describe('ToolController (API)', () => {
 				const instance = instanceEntityFactory.build();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser, instance]);
+				await em.persist([adminAccount, adminUser, instance]).flush();
 				em.clear();
 
 				const logoBuffer: Buffer = Buffer.from(base64TestLogo, 'base64');
@@ -347,7 +347,7 @@ describe('ToolController (API)', () => {
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
+				await em.persist([adminAccount, adminUser, externalToolEntity]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -383,7 +383,7 @@ describe('ToolController (API)', () => {
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
-				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
+				await em.persist([adminAccount, adminUser, externalToolEntity]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -408,7 +408,7 @@ describe('ToolController (API)', () => {
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin(undefined, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
+				await em.persist([adminAccount, adminUser, externalToolEntity]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -432,7 +432,7 @@ describe('ToolController (API)', () => {
 				const toolId: string = new ObjectId().toHexString();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -463,7 +463,7 @@ describe('ToolController (API)', () => {
 
 				const externalTool = externalToolEntityFactory.build();
 
-				await em.persistAndFlush([adminAccount, adminUser, externalTool]);
+				await em.persist([adminAccount, adminUser, externalTool]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -541,7 +541,7 @@ describe('ToolController (API)', () => {
 				const instance = instanceEntityFactory.build();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity, instance]);
+				await em.persist([adminAccount, adminUser, externalToolEntity, instance]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -613,7 +613,7 @@ describe('ToolController (API)', () => {
 				const params = { ...postParams, id: toolId };
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -654,7 +654,7 @@ describe('ToolController (API)', () => {
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
-				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
+				await em.persist([adminAccount, adminUser, externalToolEntity]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -679,7 +679,7 @@ describe('ToolController (API)', () => {
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				const instance = instanceEntityFactory.build();
-				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity, instance]);
+				await em.persist([adminAccount, adminUser, externalToolEntity, instance]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -703,7 +703,7 @@ describe('ToolController (API)', () => {
 				const toolId: string = new ObjectId().toHexString();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -733,7 +733,7 @@ describe('ToolController (API)', () => {
 				const externalTool = externalToolEntityFactory.build();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
-				await em.persistAndFlush([adminAccount, adminUser, externalTool]);
+				await em.persist([adminAccount, adminUser, externalTool]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -756,7 +756,7 @@ describe('ToolController (API)', () => {
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.withBase64Logo().buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-			await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
+			await em.persist([adminAccount, adminUser, externalToolEntity]).flush();
 			em.clear();
 
 			const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -838,18 +838,20 @@ describe('ToolController (API)', () => {
 					.buildList(2, { contextExternalToolId: boardTools[0].id });
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([
-					adminAccount,
-					adminUser,
-					school,
-					externalToolEntity,
-					...schoolExternalToolEntities,
-					...courseTools,
-					...boardTools,
-					...mediaBoardTools,
-					board,
-					...externalToolElements,
-				]);
+				await em
+					.persist([
+						adminAccount,
+						adminUser,
+						school,
+						externalToolEntity,
+						...schoolExternalToolEntities,
+						...courseTools,
+						...boardTools,
+						...mediaBoardTools,
+						board,
+						...externalToolElements,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -898,7 +900,7 @@ describe('ToolController (API)', () => {
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
+				await em.persist([adminAccount, adminUser, externalToolEntity]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -934,7 +936,7 @@ describe('ToolController (API)', () => {
 				const toolId: string = new ObjectId().toHexString();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
