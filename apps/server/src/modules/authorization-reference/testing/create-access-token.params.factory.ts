@@ -17,12 +17,6 @@ class CreateAccessTokenParamsTestBuilder {
 		return this;
 	}
 
-	public expired(): this {
-		this.props.tokenTtlInSeconds = 0;
-
-		return this;
-	}
-
 	public withWriteAccess(): this {
 		this.props.context = AuthorizationContextBuilder.write([]);
 
