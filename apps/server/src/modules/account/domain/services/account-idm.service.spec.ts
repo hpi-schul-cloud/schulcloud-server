@@ -46,10 +46,7 @@ describe('AccountIdmService', () => {
 				},
 				{
 					provide: ACCOUNT_CONFIG_TOKEN,
-					useValue: createMock<AccountConfig>({
-						identityManagementLoginEnabled: true,
-						identityManagementStoreEnabled: true,
-					}),
+					useValue: new AccountConfig(),
 				},
 				{
 					provide: IdentityManagementOauthService,
@@ -85,6 +82,9 @@ describe('AccountIdmService', () => {
 				idmServiceMock.updateAccountPassword.mockResolvedValue(mockIdmAccount.id);
 				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
 				idmServiceMock.findAccountByDbcAccountId.mockResolvedValue(mockIdmAccount);
+
+				configMock.identityManagementLoginEnabled = true;
+				configMock.identityManagementStoreEnabled = true;
 
 				const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
 				const createSpy = jest.spyOn(idmServiceMock, 'createAccount');
@@ -189,6 +189,8 @@ describe('AccountIdmService', () => {
 				idmServiceMock.updateAccount.mockResolvedValue(mockIdmAccount.id);
 				idmServiceMock.updateAccountPassword.mockResolvedValue(mockIdmAccount.id);
 				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
+
+				configMock.identityManagementLoginEnabled = true;
 				configMock.identityManagementStoreEnabled = false;
 
 				const mockAccountSave = {
@@ -200,7 +202,8 @@ describe('AccountIdmService', () => {
 
 				return { mockAccountDto: mockAccountSave };
 			};
-			it.skip('should create a new account on update error', async () => {
+
+			it('should create a new account on update error', async () => {
 				const { mockAccountDto } = setup();
 
 				const ret = await accountIdmService.save(mockAccountDto);

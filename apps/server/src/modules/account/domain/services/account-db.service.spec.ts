@@ -51,7 +51,7 @@ describe('AccountDbService', () => {
 				},
 				{
 					provide: ACCOUNT_CONFIG_TOKEN,
-					useValue: createMock<AccountConfig>(),
+					useValue: new AccountConfig(),
 				},
 				{
 					provide: IdentityManagementService,
