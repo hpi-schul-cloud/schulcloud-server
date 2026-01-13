@@ -244,16 +244,9 @@ export class H5PLibraryManagementService {
 
 	private async forceUninstallLibrary(unwantedLibrary: ILibraryAdministrationOverviewItem): Promise<void> {
 		this.logStartForceUninstallLibrary(unwantedLibrary.machineName);
-		try {
-			await this.libraryStorage.deleteLibrary(unwantedLibrary);
-		} catch (error: unknown) {
-			this.logger.warning(
-				new H5PLibraryManagementErrorLoggable(error, { library: unwantedLibrary.machineName }, 'during force uninstall')
-			);
 
-			// Always re-throw to maintain existing behavior, especially for S3Client errors
-			throw error;
-		}
+		await this.libraryStorage.deleteLibrary(unwantedLibrary);
+
 		this.logFinishedForceUninstallLibrary(unwantedLibrary.machineName);
 	}
 
