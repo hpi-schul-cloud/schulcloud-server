@@ -192,23 +192,22 @@ describe('RegistrationService', () => {
 			});
 
 			it('should call mail service to resend registration mail', async () => {
-				const roomOne = roomFactory.build({ name: 'First Room' });
-				const roomTwo = roomFactory.build({ name: 'Second Room' });
+				const room = roomFactory.build({ name: 'A test room' });
 				const registrationWithoutResentAt = registrationFactory.build({
 					email: 'test@example.com',
-					roomIds: [roomOne.id],
+					roomIds: [room.id],
 					resentAt: undefined,
 				});
 				const registrationWithResentAt = registrationFactory.build({
 					email: 'test@example.com',
-					roomIds: [roomTwo.id],
+					roomIds: [room.id],
 					resentAt: new Date(Date.now() - 5 * 60 * 1000),
 				});
 
 				registrationRepo.findById
 					.mockResolvedValueOnce(registrationWithoutResentAt)
 					.mockResolvedValueOnce(registrationWithResentAt);
-				roomService.getSingleRoom.mockResolvedValueOnce(roomOne).mockResolvedValueOnce(roomTwo);
+				roomService.getSingleRoom.mockResolvedValue(room);
 
 				await service.resendRegistrationMails([registrationWithoutResentAt.id, registrationWithResentAt.id]);
 
