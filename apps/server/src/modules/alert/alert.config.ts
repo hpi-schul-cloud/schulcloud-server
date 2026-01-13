@@ -22,5 +22,5 @@ export class AlertConfig extends AlertPublicApiConfig {
 
 	@ConfigProperty('SC_THEME')
 	@IsEnum(SchulcloudTheme)
-	public scTheme = SchulcloudTheme.DEFAULT;
+	public scTheme!: SchulcloudTheme;
 }
