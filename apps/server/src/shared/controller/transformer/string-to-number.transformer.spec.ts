@@ -18,4 +18,19 @@ describe('ToNumberTransformer Decorator', () => {
 			expect(instance.booleanProp).toEqual(456);
 		});
 	});
+
+	describe('when transform a non-string to number', () => {
+		class WithNumberDto {
+			@StringToNumber()
+			booleanProp!: boolean;
+		}
+
+		it('should throw error', () => {
+			const plainNum = { booleanProp: 123 };
+			expect(() => plainToClass(WithNumberDto, plainNum)).toThrowError();
+
+			const plainNum2 = { booleanProp: true };
+			expect(() => plainToClass(WithNumberDto, plainNum2)).toThrowError();
+		});
+	});
 });
