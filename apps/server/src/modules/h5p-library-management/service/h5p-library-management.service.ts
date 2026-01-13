@@ -132,9 +132,7 @@ export class H5PLibraryManagementService {
 		} catch (error: unknown) {
 			// Re-throw S3Client errors to cause graceful shutdown
 			if (this.isS3ClientError(error)) {
-				this.logger.warning(
-					new H5PLibraryManagementLoggable('S3Client error detected. Shutting down process gracefully.')
-				);
+				this.logger.warning(new H5PLibraryManagementLoggable('S3Client error detected. Shutting down process.'));
 				throw error;
 			}
 
