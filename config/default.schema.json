@@ -792,11 +792,6 @@
 			"description": "Symmetric encryption key used to encrypt and decrypt secrets.",
 			"pattern": ".{16}.*"
 		},
-		"FEATURE_ETHERPAD_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Etherpad feature enabled"
-		},
 		"ETHERPAD": {
 			"type": "object",
 			"description": "Etherpad settings",

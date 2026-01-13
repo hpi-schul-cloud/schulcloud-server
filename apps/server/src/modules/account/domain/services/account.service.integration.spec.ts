@@ -5,6 +5,7 @@ import { KeycloakAdministrationService } from '@infra/identity-management/keyclo
 import { KeycloakIdentityManagementService } from '@infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '@modules/account/account-config';
 import { UserModule } from '@modules/user';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -45,7 +46,7 @@ describe('AccountService Integration', () => {
 			userId: testAccount.userId,
 			systemId: testAccount.systemId,
 		});
-		await em.persistAndFlush(accountEntity);
+		await em.persist(accountEntity).flush();
 		return accountEntity.id;
 	};
 
@@ -105,6 +106,13 @@ describe('AccountService Integration', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: ACCOUNT_CONFIG_TOKEN,
+					useValue: createMock<AccountConfig>({
+						identityManagementStoreEnabled: true,
+						identityManagementLoginEnabled: false,
+					}),
 				},
 			],
 		}).compile();

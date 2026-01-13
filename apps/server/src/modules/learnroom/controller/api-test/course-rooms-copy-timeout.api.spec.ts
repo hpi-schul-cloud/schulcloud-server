@@ -49,7 +49,7 @@ describe('Course Rooms copy (API)', () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const course = courseEntityFactory.build({ name: 'course #1', teachers: [teacherUser] });
 
-			await em.persistAndFlush([course, teacherAccount, teacherUser]);
+			await em.persist([course, teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await apiClient.login(teacherAccount);
@@ -72,7 +72,7 @@ describe('Course Rooms copy (API)', () => {
 			const course = courseEntityFactory.build({ name: 'course #1', teachers: [teacherUser] });
 			const lesson = lessonFactory.build({ name: 'lesson #1', course });
 
-			await em.persistAndFlush([course, lesson, teacherAccount, teacherUser]);
+			await em.persist([course, lesson, teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await apiClient.login(teacherAccount);

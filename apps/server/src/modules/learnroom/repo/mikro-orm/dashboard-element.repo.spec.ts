@@ -51,7 +51,7 @@ describe(DashboardElementRepo.name, () => {
 			const user1 = userFactory.build();
 			const user2 = userFactory.build();
 			const course = courseEntityFactory.build({ students: [user1], name: 'Mathe' });
-			await em.persistAndFlush([user1, course]);
+			await em.persist([user1, course]).flush();
 
 			const dashboard = new DashboardEntity({ id: new ObjectId().toString(), user: user1 });
 			const dashboardWithoutDashboardElement = new DashboardEntity({ id: new ObjectId().toString(), user: user2 });
@@ -66,7 +66,7 @@ describe(DashboardElementRepo.name, () => {
 
 			dashboard.gridElements.add(element);
 
-			await em.persistAndFlush([dashboard, dashboardWithoutDashboardElement]);
+			await em.persist([dashboard, dashboardWithoutDashboardElement]).flush();
 			em.clear();
 
 			return { dashboard, dashboardWithoutDashboardElement };

@@ -44,7 +44,7 @@ describe(SystemMikroOrmRepo.name, () => {
 				const ldapSystem = systemEntityFactory.buildWithId({ type: SystemType.LDAP });
 				const oauthSystem = systemEntityFactory.buildWithId({ type: SystemType.OAUTH });
 
-				await em.persistAndFlush([ldapSystem, oauthSystem]);
+				await em.persist([ldapSystem, oauthSystem]).flush();
 				em.clear();
 
 				return {
@@ -66,7 +66,7 @@ describe(SystemMikroOrmRepo.name, () => {
 			const setup = async () => {
 				const ldapSystem = systemEntityFactory.buildWithId({ type: SystemType.LDAP });
 
-				await em.persistAndFlush([ldapSystem]);
+				await em.persist([ldapSystem]).flush();
 				em.clear();
 			};
 
@@ -85,7 +85,7 @@ describe(SystemMikroOrmRepo.name, () => {
 				const oauthSystem1 = systemEntityFactory.buildWithId({ type: SystemType.OAUTH });
 				const oauthSystem2 = systemEntityFactory.buildWithId({ type: SystemType.OAUTH });
 
-				await em.persistAndFlush([ldapSystem, oauthSystem1, oauthSystem2]);
+				await em.persist([ldapSystem, oauthSystem1, oauthSystem2]).flush();
 				em.clear();
 
 				return {
@@ -123,7 +123,7 @@ describe(SystemMikroOrmRepo.name, () => {
 					oidcConfig,
 				});
 
-				await em.persistAndFlush([system]);
+				await em.persist([system]).flush();
 				em.clear();
 
 				return {
@@ -219,7 +219,7 @@ describe(SystemMikroOrmRepo.name, () => {
 				});
 				const otherSystem = systemEntityFactory.buildWithId({ type: SystemTypeEnum.OAUTH });
 
-				await em.persistAndFlush([activeLdapSystem, inActiveLdapSystem, activeLdapSystemWithOauthConfig, otherSystem]);
+				await em.persist([activeLdapSystem, inActiveLdapSystem, activeLdapSystemWithOauthConfig, otherSystem]).flush();
 				em.clear();
 
 				const activeLdapSystemDo = SystemEntityMapper.mapToDo(activeLdapSystem);
@@ -254,7 +254,7 @@ describe(SystemMikroOrmRepo.name, () => {
 				const system2: SystemEntity = systemEntityFactory.buildWithId();
 				const system3: SystemEntity = systemEntityFactory.buildWithId();
 
-				await em.persistAndFlush([system1, system2, system3]);
+				await em.persist([system1, system2, system3]).flush();
 				em.clear();
 
 				const system1Props = SystemEntityMapper.mapToDo(system1);
@@ -302,7 +302,7 @@ describe(SystemMikroOrmRepo.name, () => {
 			const setup = async () => {
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
 
-				await em.persistAndFlush([systemEntity]);
+				await em.persist([systemEntity]).flush();
 				em.clear();
 
 				const props: SystemProps = SystemEntityMapper.mapToDo(systemEntity);
@@ -378,7 +378,7 @@ describe(SystemMikroOrmRepo.name, () => {
 				const systemId = new ObjectId().toHexString();
 				const systemEntity = systemEntityFactory.buildWithId({ alias: 'Initial Name' }, systemId);
 
-				await em.persistAndFlush(systemEntity);
+				await em.persist(systemEntity).flush();
 				em.clear();
 
 				const newName = 'New Name';
@@ -418,7 +418,7 @@ describe(SystemMikroOrmRepo.name, () => {
 				const issuer = 'external-system-issuer';
 				const systemEntity: SystemEntity = systemEntityFactory.withOauthConfig({ issuer }).buildWithId();
 
-				await em.persistAndFlush([systemEntity]);
+				await em.persist([systemEntity]).flush();
 				em.clear();
 
 				return {

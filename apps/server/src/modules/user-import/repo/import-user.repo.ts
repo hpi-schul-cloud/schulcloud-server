@@ -79,6 +79,6 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 	}
 
 	public async saveImportUsers(importUsers: ImportUser[]): Promise<void> {
-		await this._em.persistAndFlush(importUsers);
+		await this._em.persist(importUsers).flush();
 	}
 }

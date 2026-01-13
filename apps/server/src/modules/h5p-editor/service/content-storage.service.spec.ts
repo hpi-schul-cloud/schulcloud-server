@@ -52,7 +52,7 @@ const helpers = {
 			schoolId: new ObjectId().toString(),
 			metadata,
 			content,
-			parentType: H5PContentParentType.Lesson,
+			parentType: H5PContentParentType.BoardElement,
 		};
 		const h5pContent = new H5PContent(h5pContentProperties);
 
@@ -141,7 +141,7 @@ describe('ContentStorage', () => {
 			};
 			const parentParams: H5PContentParentParams = {
 				schoolId: new ObjectId().toHexString(),
-				parentType: H5PContentParentType.Lesson,
+				parentType: H5PContentParentType.BoardElement,
 				parentId: new ObjectId().toHexString(),
 			};
 			const user = new LumiUserWithContentData(iUser, parentParams);
