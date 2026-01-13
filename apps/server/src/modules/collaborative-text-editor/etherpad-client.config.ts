@@ -1,15 +1,13 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { IsString, IsUrl } from 'class-validator';
 
-export const ETHERPAD_CLIENT_CONFIG_TOKEN = 'ETHERPAD_CLIENT_CONFIG_TOKEN';
-
 @Configuration()
 export class EtherpadClientConfig {
 	@ConfigProperty('ETHERPAD__API_KEY')
 	@IsString()
-	public apiKey!: string;
+	public apiKey = 'defaultApiKey';
 
 	@ConfigProperty('ETHERPAD__URI')
 	@IsUrl({ require_tld: false })
-	public basePath!: string;
+	public basePath = 'http://default/api/1.2.14';
 }
