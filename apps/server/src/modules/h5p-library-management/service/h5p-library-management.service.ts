@@ -130,12 +130,12 @@ export class H5PLibraryManagementService {
 				brokenLibraries
 			);
 		} catch (error: unknown) {
+			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, {}, 'during run script'));
+
 			if (this.isS3ClientError(error)) {
 				this.logger.warning(new H5PLibraryManagementLoggable('S3Client error detected. Shutting down process.'));
 				throw error;
 			}
-
-			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, {}, 'during run script'));
 		}
 	}
 
