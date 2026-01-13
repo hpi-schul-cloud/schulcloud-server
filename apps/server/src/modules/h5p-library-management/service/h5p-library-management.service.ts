@@ -130,7 +130,6 @@ export class H5PLibraryManagementService {
 				brokenLibraries
 			);
 		} catch (error: unknown) {
-			// Re-throw S3Client errors to cause graceful shutdown
 			if (this.isS3ClientError(error)) {
 				this.logger.warning(new H5PLibraryManagementLoggable('S3Client error detected. Shutting down process.'));
 				throw error;
@@ -212,7 +211,6 @@ export class H5PLibraryManagementService {
 			} catch (error: unknown) {
 				failedLibraries.push(library);
 
-				// Re-throw any S3Client error to cause graceful shutdown
 				if (this.isS3ClientError(error)) {
 					throw error;
 				}
@@ -315,25 +313,13 @@ export class H5PLibraryManagementService {
 			if (this.isH5pTimeoutError(error) && TypeGuard.isString(error.replacements.ubername)) {
 				this.logTimeOutError(error.replacements.ubername);
 				const libraryName = LibraryName.fromUberName(error.replacements.ubername);
-				try {
-					await this.libraryStorage.deleteLibrary(libraryName);
-				} catch (deleteError: unknown) {
-					if (this.isS3ClientError(deleteError)) {
-						throw deleteError;
-					}
-				}
+				await this.libraryStorage.deleteLibrary(libraryName);
 			}
 
 			if (this.isH5pConsistencyError(error) && TypeGuard.isString(error.replacements.name)) {
 				this.logConsistencyError(error.replacements.name);
 				const libraryName = LibraryName.fromUberName(error.replacements.name);
-				try {
-					await this.libraryStorage.deleteLibrary(libraryName);
-				} catch (deleteError: unknown) {
-					if (this.isS3ClientError(deleteError)) {
-						throw deleteError;
-					}
-				}
+				await this.libraryStorage.deleteLibrary(libraryName);
 			}
 
 			return [];
@@ -580,7 +566,6 @@ export class H5PLibraryManagementService {
 				)
 			);
 
-			// Re-throw S3Client errors to cause graceful shutdown
 			if (this.isS3ClientError(error)) {
 				throw error;
 			}
@@ -641,7 +626,6 @@ export class H5PLibraryManagementService {
 				)
 			);
 
-			// Re-throw S3Client errors to cause graceful shutdown
 			if (this.isS3ClientError(error)) {
 				throw error;
 			}
@@ -761,7 +745,6 @@ export class H5PLibraryManagementService {
 				try {
 					await this.libraryStorage.deleteFolder(libraryName);
 				} catch (deleteError: unknown) {
-					// Re-throw S3Client errors to cause graceful shutdown
 					if (this.isS3ClientError(deleteError)) {
 						throw deleteError;
 					}
@@ -775,7 +758,6 @@ export class H5PLibraryManagementService {
 					)
 				);
 
-				// Re-throw S3Client errors to cause graceful shutdown
 				if (this.isS3ClientError(error)) {
 					throw error;
 				}
@@ -875,7 +857,6 @@ export class H5PLibraryManagementService {
 					)
 				);
 
-				// Re-throw S3Client errors to cause graceful shutdown
 				if (this.isS3ClientError(error)) {
 					throw error;
 				}
