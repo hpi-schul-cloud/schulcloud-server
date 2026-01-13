@@ -1,4 +1,5 @@
 import { ErrorResponse } from '@core/error/dto';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BiloMediaQueryResponse, biloMediaQueryResponseFactory } from '@infra/bilo-client';
 import { OfferDTO } from '@infra/vidis-client/generated';
 import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
@@ -49,7 +50,9 @@ describe('MediumMetadataController (API)', () => {
 	describe('[GET] medium-metadata/medium/:mediumId/media-source/:mediaSourceId', () => {
 		describe('when mediumId, mediaSourceId are given', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const mediaSourceEntity = mediaSourceEntityFactory
+					.withBiloFormat({ encryptionKey: Configuration.get('AES_KEY') as string })
+					.build();
 
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,
@@ -92,7 +95,9 @@ describe('MediumMetadataController (API)', () => {
 
 		describe('when mediumId not valid', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const mediaSourceEntity = mediaSourceEntityFactory
+					.withBiloFormat({ encryptionKey: Configuration.get('AES_KEY') as string })
+					.build();
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
 				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
@@ -113,7 +118,9 @@ describe('MediumMetadataController (API)', () => {
 
 		describe('when medium does not exist', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withVidisFormat().build();
+				const mediaSourceEntity = mediaSourceEntityFactory
+					.withVidisFormat({ encryptionKey: Configuration.get('AES_KEY') as string })
+					.build();
 
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,
@@ -141,7 +148,9 @@ describe('MediumMetadataController (API)', () => {
 
 		describe('when mediaSource does not exist', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const mediaSourceEntity = mediaSourceEntityFactory
+					.withBiloFormat({ encryptionKey: Configuration.get('AES_KEY') as string })
+					.build();
 
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
 				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
@@ -200,7 +209,9 @@ describe('MediumMetadataController (API)', () => {
 
 		describe('when user is not authenticated', () => {
 			const setup = () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const mediaSourceEntity = mediaSourceEntityFactory
+					.withBiloFormat({ encryptionKey: Configuration.get('AES_KEY') as string })
+					.build();
 				return {
 					mediaSourceEntity,
 				};
@@ -219,7 +230,9 @@ describe('MediumMetadataController (API)', () => {
 
 		describe('when the media source responded with not found', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const mediaSourceEntity = mediaSourceEntityFactory
+					.withBiloFormat({ encryptionKey: Configuration.get('AES_KEY') as string })
+					.build();
 
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,
@@ -265,7 +278,9 @@ describe('MediumMetadataController (API)', () => {
 
 		describe('when the media source responded with bad request', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const mediaSourceEntity = mediaSourceEntityFactory
+					.withBiloFormat({ encryptionKey: Configuration.get('AES_KEY') as string })
+					.build();
 
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,
@@ -311,7 +326,9 @@ describe('MediumMetadataController (API)', () => {
 
 		describe('when the media source responded with unprocessable response', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const mediaSourceEntity = mediaSourceEntityFactory
+					.withBiloFormat({ encryptionKey: Configuration.get('AES_KEY') as string })
+					.build();
 
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,

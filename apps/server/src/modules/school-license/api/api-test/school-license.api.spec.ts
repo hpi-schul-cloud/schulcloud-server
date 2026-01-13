@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { PageOfferDTO } from '@infra/vidis-client';
 import { vidisPageOfferFactory } from '@infra/vidis-client/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
@@ -58,7 +59,9 @@ describe('SchoolLicenseController (API)', () => {
 					officialSchoolNumber: '00100',
 					federalState,
 				});
-				const mediaSource = mediaSourceEntityFactory.withVidisFormat().build();
+				const mediaSource = mediaSourceEntityFactory
+					.withVidisFormat({ encryptionKey: Configuration.get('AES_KEY') as string })
+					.build();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school });
 				await em.persist([adminUser, adminAccount, federalState, school, mediaSource]).flush();
@@ -87,7 +90,9 @@ describe('SchoolLicenseController (API)', () => {
 		describe('when official school number was not found', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId({});
-				const mediaSource = mediaSourceEntityFactory.withVidisFormat().build();
+				const mediaSource = mediaSourceEntityFactory
+					.withVidisFormat({ encryptionKey: Configuration.get('AES_KEY') as string })
+					.build();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school });
 
@@ -147,7 +152,9 @@ describe('SchoolLicenseController (API)', () => {
 		describe('when user has no permission', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId({ officialSchoolNumber: '00100' });
-				const mediaSource = mediaSourceEntityFactory.withVidisFormat().build();
+				const mediaSource = mediaSourceEntityFactory
+					.withVidisFormat({ encryptionKey: Configuration.get('AES_KEY') as string })
+					.build();
 
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
 				await em.persist([teacherUser, teacherAccount, school, mediaSource]).flush();
@@ -186,7 +193,9 @@ describe('SchoolLicenseController (API)', () => {
 		describe('when the user has media school licenses', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
-				const mediaSource = mediaSourceEntityFactory.withVidisFormat().buildWithId({ name: 'Vidis' });
+				const mediaSource = mediaSourceEntityFactory
+					.withVidisFormat({ encryptionKey: Configuration.get('AES_KEY') as string })
+					.buildWithId({ name: 'Vidis' });
 				const mediaSchoolLicense = mediaSchoolLicenseEntityFactory.buildWithId({
 					school,
 					mediaSource,
@@ -241,7 +250,9 @@ describe('SchoolLicenseController (API)', () => {
 		describe('when user has no permission', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
-				const mediaSource = mediaSourceEntityFactory.withVidisFormat().buildWithId({ name: 'Vidis' });
+				const mediaSource = mediaSourceEntityFactory
+					.withVidisFormat({ encryptionKey: Configuration.get('AES_KEY') as string })
+					.buildWithId({ name: 'Vidis' });
 				const mediaSchoolLicense = mediaSchoolLicenseEntityFactory.buildWithId({
 					school,
 					mediaSource,
