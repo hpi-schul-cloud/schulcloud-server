@@ -19,6 +19,7 @@ import { Registration, RegistrationCreateProps, RegistrationProps } from '../do'
 import { ResendingRegistrationMailLoggable } from '../error/resend-registration-mail.loggable';
 import { RegistrationService } from './registration.service';
 import { RoomService } from '@modules/room';
+import { roomFactory } from '@modules/room/testing';
 
 describe('RegistrationService', () => {
 	let module: TestingModule;
@@ -31,6 +32,7 @@ describe('RegistrationService', () => {
 	let mailService: DeepMocked<MailService>;
 	let logger: DeepMocked<Logger>;
 	let accountService: DeepMocked<AccountService>;
+	let roomService: DeepMocked<RoomService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -84,6 +86,7 @@ describe('RegistrationService', () => {
 		mailService = module.get(MailService);
 		logger = module.get(Logger);
 		accountService = module.get(AccountService);
+		roomService = module.get(RoomService);
 	});
 
 	afterAll(async () => {
@@ -189,13 +192,17 @@ describe('RegistrationService', () => {
 			});
 
 			it('should call mail service to resend registration mail', async () => {
+				const roomOne = roomFactory.build({ name: 'First Room' });
+				const roomTwo = roomFactory.build({ name: 'Second Room' });
 				const registrationWithoutResentAt = registrationFactory.build({ resentAt: undefined });
 				const registrationWithResentAt = registrationFactory.build({
 					resentAt: new Date(Date.now() - 5 * 60 * 1000),
 				});
+
 				registrationRepo.findById
 					.mockResolvedValueOnce(registrationWithoutResentAt)
 					.mockResolvedValueOnce(registrationWithResentAt);
+				roomService.getSingleRoom.mockResolvedValueOnce(roomOne).mockResolvedValueOnce(roomTwo);
 
 				await service.resendRegistrationMails([registrationWithoutResentAt.id, registrationWithResentAt.id]);
 
