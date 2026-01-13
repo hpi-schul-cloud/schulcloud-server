@@ -30,6 +30,7 @@ describe('RegistrationService', () => {
 	let userService: DeepMocked<UserService>;
 	let mailService: DeepMocked<MailService>;
 	let logger: DeepMocked<Logger>;
+	let accountService: DeepMocked<AccountService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -82,6 +83,7 @@ describe('RegistrationService', () => {
 		schoolService = module.get(SchoolService);
 		mailService = module.get(MailService);
 		logger = module.get(Logger);
+		accountService = module.get(AccountService);
 	});
 
 	afterAll(async () => {
@@ -322,6 +324,11 @@ describe('RegistrationService', () => {
 			const registration = registrationFactory.build();
 			registrationRepo.findBySecret.mockResolvedValue(registration);
 
+			userService.save.mockImplementation((user) => {
+				user.id = new ObjectId().toHexString();
+				return Promise.resolve(user);
+			});
+
 			await service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!');
 
 			expect(userService.save).toHaveBeenCalledWith(
@@ -329,6 +336,13 @@ describe('RegistrationService', () => {
 					email: registration.email,
 					firstName: registration.firstName,
 					lastName: registration.lastName,
+				})
+			);
+
+			expect(accountService.saveWithValidation).toHaveBeenCalledWith(
+				expect.objectContaining({
+					username: registration.email,
+					password: 'SecurePassword123!',
 				})
 			);
 		});
