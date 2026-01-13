@@ -114,7 +114,7 @@ describe('Room Controller (API)', () => {
 			const registration2 = registrationEntityFactory.build({
 				roomIds: [room.id, room2.id],
 			});
-			await em.persistAndFlush([registration1, registration2]);
+			await em.persist([registration1, registration2]).flush();
 			em.clear();
 
 			return {
@@ -210,7 +210,7 @@ describe('Room Controller (API)', () => {
 								roomIds: [registration1.roomIds[0]],
 								resentAt: oneMinuteAgo,
 							});
-							await em.persistAndFlush([anotherRegistration]);
+							await em.persist(anotherRegistration).flush();
 							const loggedInClient = await testApiClient.login(teacherAccount);
 
 							expect(registration1.resentAt).toBeUndefined();
