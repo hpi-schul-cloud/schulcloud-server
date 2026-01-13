@@ -130,8 +130,6 @@ export class H5PLibraryManagementService {
 				brokenLibraries
 			);
 		} catch (error: unknown) {
-			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, {}, 'during run script'));
-
 			// Re-throw S3Client errors to cause graceful shutdown
 			if (this.isS3ClientError(error)) {
 				this.logger.warning(
@@ -139,6 +137,8 @@ export class H5PLibraryManagementService {
 				);
 				throw error;
 			}
+
+			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, {}, 'during run script'));
 		}
 	}
 
@@ -774,13 +774,6 @@ export class H5PLibraryManagementService {
 					if (this.isS3ClientError(deleteError)) {
 						throw deleteError;
 					}
-					this.logger.warning(
-						new H5PLibraryManagementErrorLoggable(
-							deleteError,
-							{ library: LibraryName.toUberName(libraryName) },
-							'while deleting lost library folder'
-						)
-					);
 				}
 			} else {
 				this.logger.warning(
