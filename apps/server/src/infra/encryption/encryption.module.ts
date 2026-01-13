@@ -1,24 +1,29 @@
 import { LegacyLogger, LoggerModule } from '@core/logger';
-import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigurationModule } from '@infra/configuration';
+import { DynamicModule, Module } from '@nestjs/common';
+import { EncryptionConfig } from './encryption-config.interface';
 import { DefaultEncryptionService } from './encryption.interface';
 import { SymmetricKeyEncryptionService } from './encryption.service';
 
-function encryptionProviderFactory(configService: ConfigService, logger: LegacyLogger, aesKey: string) {
-	const key = configService.get<string>(aesKey);
-	return new SymmetricKeyEncryptionService(logger, key);
-}
+const configToken = 'INTERNAL_ENCRYPTION_CONFIG_TOKEN';
 
-@Module({
-	imports: [LoggerModule],
-	providers: [
-		{
-			provide: DefaultEncryptionService,
-			useFactory: (configService: ConfigService, logger: LegacyLogger) =>
-				encryptionProviderFactory(configService, logger, 'AES_KEY'),
-			inject: [ConfigService, LegacyLogger],
-		},
-	],
-	exports: [DefaultEncryptionService],
-})
-export class EncryptionModule {}
+@Module({})
+export class EncryptionModule {
+	public static register<T extends EncryptionConfig>(constructor: new () => T): DynamicModule {
+		const providers = [
+			{
+				provide: DefaultEncryptionService,
+				useFactory: (config: EncryptionConfig, logger: LegacyLogger) =>
+					new SymmetricKeyEncryptionService(logger, config.aesKey),
+				inject: [configToken, LegacyLogger],
+			},
+		];
+
+		return {
+			module: EncryptionModule,
+			imports: [LoggerModule, ConfigurationModule.register(configToken, constructor)],
+			providers,
+			exports: [DefaultEncryptionService],
+		};
+	}
+}
