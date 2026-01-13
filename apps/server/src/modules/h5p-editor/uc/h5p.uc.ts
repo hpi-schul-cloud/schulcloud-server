@@ -30,6 +30,7 @@ import {
 	NotAcceptableException,
 	NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { randomUUID } from 'crypto';
@@ -39,6 +40,7 @@ import { writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { dirname, join } from 'path';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, H5PContentResponse } from '../controller/dto';
+import { H5PEditorConfig } from '../h5p-editor.config';
 import { H5PUcErrorLoggable, H5PUcLoggable } from '../loggable';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
 import { H5PContentRepo } from '../repo';
@@ -53,6 +55,7 @@ const UNKNOWN_TYPE = 'unknown.type';
 @Injectable()
 export class H5PEditorUc {
 	constructor(
+		private readonly configService: ConfigService<H5PEditorConfig, true>,
 		private readonly h5pEditor: H5PEditor,
 		private readonly h5pPlayer: H5PPlayer,
 		private readonly h5pAjaxEndpoint: H5PAjaxEndpoint,
@@ -124,6 +127,18 @@ export class H5PEditorUc {
 			language,
 			user
 		);
+
+		if (query.action === 'content-type-cache') {
+			// filter response for libraries not contained in whitelist
+			const ajaxResponse = result as IHubInfo;
+			if (ajaxResponse && Array.isArray(ajaxResponse.libraries)) {
+				const libraryWhiteList = this.configService.get('H5P_EDITOR__LIBRARY_WHITE_LIST', { infer: true });
+				ajaxResponse.libraries = ajaxResponse.libraries.filter((library) =>
+					libraryWhiteList.includes(library.machineName)
+				);
+			}
+		}
+
 		return result;
 	}
 

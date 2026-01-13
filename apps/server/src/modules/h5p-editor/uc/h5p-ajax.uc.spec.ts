@@ -6,11 +6,13 @@ import { IHubInfo, IUser as LumiIUser } from '@lumieducation/h5p-server/build/sr
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import * as fs from 'fs';
 import * as fsPromises from 'fs/promises';
+import { H5PEditorConfig } from '../h5p-editor.config';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PUploadFile } from '../types';
@@ -42,6 +44,12 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				H5PEditorUc,
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService<H5PEditorConfig, true>>({
+						get: () => ['H5P.Accordion'],
+					}),
+				},
 				{
 					provide: H5PEditor,
 					useValue: createMock<H5PEditor>(),
@@ -100,11 +108,51 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			const mockedResponse: IHubInfo = {
 				apiVersion: { major: 1, minor: 1 },
 				details: [],
-				libraries: [],
+				libraries: [
+					{
+						machineName: 'LibraryToBeFilteredOut',
+						canInstall: false,
+						installed: false,
+						isUpToDate: false,
+						localMajorVersion: 0,
+						localMinorVersion: 0,
+						localPatchVersion: 0,
+						restricted: false,
+						description: '',
+						icon: '',
+						majorVersion: 0,
+						minorVersion: 0,
+						owner: '',
+						patchVersion: 0,
+						title: '',
+					},
+					{
+						machineName: 'H5P.Accordion',
+						canInstall: false,
+						installed: false,
+						isUpToDate: false,
+						localMajorVersion: 0,
+						localMinorVersion: 0,
+						localPatchVersion: 0,
+						restricted: false,
+						description: '',
+						icon: '',
+						majorVersion: 0,
+						minorVersion: 0,
+						owner: '',
+						patchVersion: 0,
+						title: '',
+					},
+				],
 				outdated: false,
 				recentlyUsed: [],
 				user: 'DummyUser',
 			};
+
+			const expectedResponse = { ...mockedResponse };
+			expectedResponse.libraries = expectedResponse.libraries.filter(
+				(library) => library.machineName === 'H5P.Accordion'
+			);
 
 			ajaxEndpoint.getAjax.mockResolvedValueOnce(mockedResponse);
 			userService.findById.mockResolvedValueOnce(userDo);
@@ -112,16 +160,16 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			return {
 				user,
 				language,
-				mockedResponse,
+				expectedResponse,
 			};
 		};
 
-		it('should call H5PAjaxEndpoint.getAjax and return the result', async () => {
-			const { user, language, mockedResponse } = setup();
+		it('should call H5PAjaxEndpoint.getAjax, filter out unwanted library and return the result', async () => {
+			const { user, language, expectedResponse } = setup();
 
 			const result = await uc.getAjax({ action: 'content-type-cache' }, user.userId);
 
-			expect(result).toBe(mockedResponse);
+			expect(result).toStrictEqual(expectedResponse);
 			expect(ajaxEndpoint.getAjax).toHaveBeenCalledWith(
 				'content-type-cache',
 				undefined, // MachineName
