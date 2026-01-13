@@ -60,7 +60,7 @@ describe('getBatches ', () => {
 				invalidIds: [invalidId2],
 				createdAt: now,
 			});
-			await em.persistAndFlush([student1, student2, student3, teacher1, teacher2, batch1, batch2]);
+			await em.persist([student1, student2, student3, teacher1, teacher2, batch1, batch2]).flush();
 			em.clear();
 
 			const deletionBatchListResponse1 = {

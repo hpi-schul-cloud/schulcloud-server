@@ -60,7 +60,7 @@ describe('School Controller (API)', () => {
 						const school = schoolEntityFactory.build();
 						const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-						await em.persistAndFlush([adminAccount, adminUser, school]);
+						await em.persist([adminAccount, adminUser, school]).flush();
 						em.clear();
 
 						const loggedInClient = await testApiClient.login(adminAccount);
@@ -260,7 +260,7 @@ describe('School Controller (API)', () => {
 							const otherSchool = schoolEntityFactory.build();
 							const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school: adminsSchool });
 
-							await em.persistAndFlush([adminAccount, adminUser, adminsSchool, otherSchool]);
+							await em.persist([adminAccount, adminUser, adminsSchool, otherSchool]).flush();
 							em.clear();
 
 							const loggedInClient = await testApiClient.login(adminAccount);
@@ -289,7 +289,7 @@ describe('School Controller (API)', () => {
 							const school = schoolEntityFactory.build({ currentYear, federalState, systems, county });
 							const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-							await em.persistAndFlush([...schoolYears, federalState, adminAccount, adminUser, school]);
+							await em.persist([...schoolYears, federalState, adminAccount, adminUser, school]).flush();
 							em.clear();
 
 							const loggedInClient = await testApiClient.login(adminAccount);
@@ -396,7 +396,7 @@ describe('School Controller (API)', () => {
 					const school = schoolEntityFactory.build();
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
-					await em.persistAndFlush([teacherAccount, teacherUser, school]);
+					await em.persist([teacherAccount, teacherUser, school]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(teacherAccount);
@@ -420,7 +420,7 @@ describe('School Controller (API)', () => {
 					const school = schoolEntityFactory.build();
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 
-					await em.persistAndFlush([studentAccount, studentUser, school]);
+					await em.persist([studentAccount, studentUser, school]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -462,7 +462,7 @@ describe('School Controller (API)', () => {
 					const school = schoolEntityFactory.build({ systems: [system] });
 					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-					await em.persistAndFlush([adminAccount, adminUser, school, system]);
+					await em.persist([adminAccount, adminUser, school, system]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(adminAccount);
@@ -499,7 +499,7 @@ describe('School Controller (API)', () => {
 					const school = schoolEntityFactory.build({ systems: [system] });
 					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-					await em.persistAndFlush([adminAccount, adminUser, school, system]);
+					await em.persist([adminAccount, adminUser, school, system]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(adminAccount);

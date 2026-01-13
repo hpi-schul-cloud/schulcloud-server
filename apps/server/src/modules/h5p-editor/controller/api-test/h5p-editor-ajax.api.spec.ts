@@ -62,7 +62,7 @@ describe('H5PEditor Controller (api)', () => {
 
 				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
-				await em.persistAndFlush([studentUser]);
+				await em.persist([studentUser]).flush();
 				em.clear();
 
 				const dummyResponse = {
@@ -107,7 +107,7 @@ describe('H5PEditor Controller (api)', () => {
 
 				const loggedInClient = testApiClient.loginByUser(teacherAccount, teacherUser);
 
-				await em.persistAndFlush([teacherUser]);
+				await em.persist([teacherUser]).flush();
 				em.clear();
 
 				const exception = new H5pError('error-id');
@@ -155,7 +155,7 @@ describe('H5PEditor Controller (api)', () => {
 
 				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
-				await em.persistAndFlush([studentUser]);
+				await em.persist([studentUser]).flush();
 				em.clear();
 
 				const dummyResponse = [
@@ -210,7 +210,7 @@ describe('H5PEditor Controller (api)', () => {
 
 				const loggedInClient = testApiClient.loginByUser(teacherAccount, teacherUser);
 
-				await em.persistAndFlush([teacherUser]);
+				await em.persist([teacherUser]).flush();
 				em.clear();
 
 				const exception = new H5pError('error-id');

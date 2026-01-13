@@ -63,7 +63,7 @@ describe('H5PEditor Controller (api)', () => {
 					title: '123',
 				};
 				const params: PostH5PContentCreateParams = {
-					parentType: H5PContentParentType.Lesson,
+					parentType: H5PContentParentType.BoardElement,
 					parentId: new ObjectId().toString(),
 					params: {
 						params: undefined,
@@ -115,7 +115,7 @@ describe('H5PEditor Controller (api)', () => {
 					title: '123',
 				};
 				const params: PostH5PContentCreateParams = {
-					parentType: H5PContentParentType.Lesson,
+					parentType: H5PContentParentType.BoardElement,
 					parentId: new ObjectId().toString(),
 					params: {
 						params: undefined,
@@ -153,7 +153,7 @@ describe('H5PEditor Controller (api)', () => {
 		describe('when id is not mongo id', () => {
 			const setup = () => {
 				const params: PostH5PContentCreateParams = {
-					parentType: H5PContentParentType.Lesson,
+					parentType: H5PContentParentType.BoardElement,
 					parentId: new ObjectId().toString(),
 					params: {
 						params: undefined,

@@ -96,7 +96,7 @@ describe(`deletionExecution (api)`, () => {
 				testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 				const deletionRequest = deletionRequestEntityFactory.build();
 
-				await em.persistAndFlush(deletionRequest);
+				await em.persist(deletionRequest).flush();
 				em.clear();
 
 				return { deletionRequest };
@@ -236,29 +236,31 @@ describe(`deletionExecution (api)`, () => {
 
 				const roomArrangement = roomArrangementEntityFactory.build({ userId: studentUser.id });
 
-				await em.persistAndFlush([
-					school,
-					teacherUser,
-					teacherAccount,
-					studentUser,
-					studentAccount,
-					course,
-					schoolClass,
-					courseGroup,
-					file,
-					group,
-					lesson,
-					news,
-					pseudonym,
-					mediaBoard,
-					task,
-					team,
-					submission,
-					groupSubmission,
-					registrationPin,
-					rocketChatUser,
-					roomArrangement,
-				]);
+				await em
+					.persist([
+						school,
+						teacherUser,
+						teacherAccount,
+						studentUser,
+						studentAccount,
+						course,
+						schoolClass,
+						courseGroup,
+						file,
+						group,
+						lesson,
+						news,
+						pseudonym,
+						mediaBoard,
+						task,
+						team,
+						submission,
+						groupSubmission,
+						registrationPin,
+						rocketChatUser,
+						roomArrangement,
+					])
+					.flush();
 				em.clear();
 
 				const dashboard = await dashboardRepo.getUsersDashboard(teacherUser.id);
@@ -269,7 +271,7 @@ describe(`deletionExecution (api)`, () => {
 				const deletionRequestsStudent = deletionRequestEntityFactory.build({
 					targetRefId: studentUser.id,
 				});
-				await em.persistAndFlush([deletionRequestsTeacher, deletionRequestsStudent]);
+				await em.persist([deletionRequestsTeacher, deletionRequestsStudent]).flush();
 				const deletionRequestIds = [deletionRequestsTeacher.id, deletionRequestsStudent.id];
 
 				testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
@@ -440,7 +442,7 @@ describe(`deletionExecution (api)`, () => {
 
 			const deletionRequest = deletionRequestEntityFactory.build();
 
-			await em.persistAndFlush(deletionRequest);
+			await em.persist(deletionRequest).flush();
 			em.clear();
 
 			return { deletionRequest, testApiClient };

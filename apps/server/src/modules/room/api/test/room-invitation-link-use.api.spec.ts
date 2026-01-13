@@ -136,20 +136,22 @@ describe('Room Invitation Link Controller (API)', () => {
 			const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
 			const externalPersonGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTEXTERNALPERSON });
-			await em.persistAndFlush([
-				school,
-				user,
-				account,
-				room,
-				roomInvitationLink,
-				roomMembership,
-				roomViewerRole,
-				roomApplicantRole,
-				teacherGuestRole,
-				studentGuestRole,
-				externalPersonGuestRole,
-				userGroupEntity,
-			]);
+			await em
+				.persist([
+					school,
+					user,
+					account,
+					room,
+					roomInvitationLink,
+					roomMembership,
+					roomViewerRole,
+					roomApplicantRole,
+					teacherGuestRole,
+					studentGuestRole,
+					externalPersonGuestRole,
+					userGroupEntity,
+				])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(account);

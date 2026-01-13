@@ -44,7 +44,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 			const material = materialFactory.buildWithId();
 			const lesson = lessonFactory.build({ course, materials: [material] });
 			const hiddenLesson = lessonFactory.build({ course, hidden: true });
-			await em.persistAndFlush([teacherAccount, teacherUser, course, material, lesson, hiddenLesson]);
+			await em.persist([teacherAccount, teacherUser, course, material, lesson, hiddenLesson]).flush();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
@@ -130,16 +130,18 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 				contents: [{ ...contents, component: ComponentType.LERNSTORE, content: contentLernstore }],
 			});
 
-			await em.persistAndFlush([
-				teacherAccount,
-				teacherUser,
-				course,
-				lessonWithText,
-				lessonWithGeogebra,
-				lessonWithEtherpad,
-				lessonWithInternal,
-				lessonWithLernstore,
-			]);
+			await em
+				.persist([
+					teacherAccount,
+					teacherUser,
+					course,
+					lessonWithText,
+					lessonWithGeogebra,
+					lessonWithEtherpad,
+					lessonWithInternal,
+					lessonWithLernstore,
+				])
+				.flush();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
@@ -230,7 +232,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 			const lesson = lessonFactory.build({ course });
 			const hiddenLesson = lessonFactory.build({ course, hidden: true });
 
-			await em.persistAndFlush([studentAccount, studentUser, course, lesson, hiddenLesson]);
+			await em.persist([studentAccount, studentUser, course, lesson, hiddenLesson]).flush();
 
 			const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -259,7 +261,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 			const course = courseEntityFactory.buildWithId({ students: [] });
 			const lesson = lessonFactory.build({ course });
-			await em.persistAndFlush([studentAccount, studentUser, course, lesson]);
+			await em.persist([studentAccount, studentUser, course, lesson]).flush();
 
 			const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -278,7 +280,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 			const course = courseEntityFactory.buildWithId({ teachers: [teacherUser] });
 			const courseGroup = courseGroupEntityFactory.buildWithId({ course });
 			const lesson = lessonFactory.build({ courseGroup });
-			await em.persistAndFlush([teacherAccount, teacherUser, course, courseGroup, lesson]);
+			await em.persist([teacherAccount, teacherUser, course, courseGroup, lesson]).flush();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 

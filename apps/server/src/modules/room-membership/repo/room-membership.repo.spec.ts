@@ -34,7 +34,7 @@ describe('RoomMembershipRepo', () => {
 	describe('findByRoomId', () => {
 		const setup = async () => {
 			const roomMembershipEntity = roomMembershipEntityFactory.buildWithId();
-			await em.persistAndFlush([roomMembershipEntity]);
+			await em.persist([roomMembershipEntity]).flush();
 			em.clear();
 
 			return { roomMembershipEntity };
@@ -61,7 +61,7 @@ describe('RoomMembershipRepo', () => {
 				roomMembershipEntityFactory.buildWithId({ roomId: roomId2 }),
 			];
 
-			await em.persistAndFlush(roomMemberEntities);
+			await em.persist(roomMemberEntities).flush();
 			em.clear();
 
 			return { roomMemberEntities, roomId1, roomId2 };
@@ -85,7 +85,7 @@ describe('RoomMembershipRepo', () => {
 				roomMembershipEntityFactory.build({ userGroupId: new ObjectId().toHexString() }),
 			];
 
-			await em.persistAndFlush(roomMemberEntities);
+			await em.persist(roomMemberEntities).flush();
 			em.clear();
 
 			return { roomMemberEntities, groupId };
@@ -128,7 +128,7 @@ describe('RoomMembershipRepo', () => {
 	describe('delete', () => {
 		const setup = async () => {
 			const roomMemberEntities = roomMembershipEntityFactory.buildListWithId(3);
-			await em.persistAndFlush(roomMemberEntities);
+			await em.persist(roomMemberEntities).flush();
 			const roomMemberships = roomMemberEntities.map((entity) => new RoomMembership(entity));
 			em.clear();
 

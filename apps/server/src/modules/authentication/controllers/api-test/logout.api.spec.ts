@@ -63,7 +63,7 @@ describe('Logout Controller (api)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -107,7 +107,7 @@ describe('Logout Controller (api)', () => {
 					systemId: system.id,
 				});
 
-				await em.persistAndFlush([system, school, studentAccount, studentUser]);
+				await em.persist([system, school, studentAccount, studentUser]).flush();
 				em.clear();
 
 				const logoutToken = JwtTestFactory.createLogoutToken({
@@ -177,7 +177,7 @@ describe('Logout Controller (api)', () => {
 				const system = systemEntityFactory.withOauthConfig().build();
 				const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
 
-				await em.persistAndFlush([studentAccount, studentUser, system, token]);
+				await em.persist([studentAccount, studentUser, system, token]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -218,7 +218,7 @@ describe('Logout Controller (api)', () => {
 					const system = systemEntityFactory.withOauthConfig().build();
 					const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
 
-					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -255,7 +255,7 @@ describe('Logout Controller (api)', () => {
 					const system = systemEntityFactory.withOauthConfig().build();
 					const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
 
-					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -292,7 +292,7 @@ describe('Logout Controller (api)', () => {
 					const system = systemEntityFactory.build();
 					const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
 
-					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -331,7 +331,7 @@ describe('Logout Controller (api)', () => {
 					const system = systemEntityFactory.withOauthConfig().build({ oauthConfig });
 					const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
 
-					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -368,7 +368,7 @@ describe('Logout Controller (api)', () => {
 					const oauthConfig = systemOauthConfigFactory.build();
 					const system = systemEntityFactory.withOauthConfig().build({ oauthConfig });
 
-					await em.persistAndFlush([studentAccount, studentUser, system]);
+					await em.persist([studentAccount, studentUser, system]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -403,7 +403,7 @@ describe('Logout Controller (api)', () => {
 					const system = systemEntityFactory.withOauthConfig().build({ oauthConfig });
 					const token = oauthSessionTokenEntityFactory.build({ expiresAt: new Date(Date.now() - 5000) });
 
-					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);

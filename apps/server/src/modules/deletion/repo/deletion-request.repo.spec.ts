@@ -73,7 +73,7 @@ describe(DeletionRequestRepo.name, () => {
 				const userId = new ObjectId().toHexString();
 
 				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId });
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				const expectedDeletionRequest = {
 					id: entity.id,
@@ -155,13 +155,15 @@ describe(DeletionRequestRepo.name, () => {
 					status: StatusModel.REGISTERED,
 				});
 
-				await em.persistAndFlush([
-					deletionRequestEntity1,
-					deletionRequestEntity2,
-					deletionRequestEntity3,
-					deletionRequestEntity4,
-					deletionRequestEntity5,
-				]);
+				await em
+					.persist([
+						deletionRequestEntity1,
+						deletionRequestEntity2,
+						deletionRequestEntity3,
+						deletionRequestEntity4,
+						deletionRequestEntity5,
+					])
+					.flush();
 				em.clear();
 
 				const expectedArray = [
@@ -255,12 +257,9 @@ describe(DeletionRequestRepo.name, () => {
 				status: StatusModel.REGISTERED,
 			});
 
-			await em.persistAndFlush([
-				deletionRequestEntity1,
-				deletionRequestEntity2,
-				deletionRequestEntity3,
-				deletionRequestEntity4,
-			]);
+			await em
+				.persist([deletionRequestEntity1, deletionRequestEntity2, deletionRequestEntity3, deletionRequestEntity4])
+				.flush();
 			em.clear();
 
 			return { limit, olderThan, newerThan, deletionRequestEntity1, deletionRequestEntity2 };
@@ -292,7 +291,7 @@ describe(DeletionRequestRepo.name, () => {
 				const userId = new ObjectId().toHexString();
 
 				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId });
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				// Arrange expected DeletionRequestEntity after changing status
 				entity.status = StatusModel.SUCCESS;
@@ -322,7 +321,7 @@ describe(DeletionRequestRepo.name, () => {
 				const userId = new ObjectId().toHexString();
 
 				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId });
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				return { entity };
 			};
@@ -353,7 +352,7 @@ describe(DeletionRequestRepo.name, () => {
 				const userId = new ObjectId().toHexString();
 
 				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId });
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				return { entity };
 			};
@@ -384,7 +383,7 @@ describe(DeletionRequestRepo.name, () => {
 				const userId = new ObjectId().toHexString();
 
 				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId });
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				return { entity };
 			};
@@ -415,7 +414,7 @@ describe(DeletionRequestRepo.name, () => {
 				const userId = new ObjectId().toHexString();
 				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId });
 				const deletionRequestId = entity.id;
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 				em.clear();
 
 				return { deletionRequestId };
@@ -449,7 +448,7 @@ describe(DeletionRequestRepo.name, () => {
 				const entity1: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId1 });
 				const entity2: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId2 });
 
-				await em.persistAndFlush([entity1, entity2]);
+				await em.persist([entity1, entity2]).flush();
 				em.clear();
 
 				return {
@@ -501,7 +500,7 @@ describe(DeletionRequestRepo.name, () => {
 					targetRefId: userId,
 					status: StatusModel.REGISTERED,
 				});
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				return { userId, entity };
 			};
@@ -526,7 +525,7 @@ describe(DeletionRequestRepo.name, () => {
 					targetRefId: userId,
 					status: StatusModel.FAILED,
 				});
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				return { userId, entity };
 			};
@@ -551,7 +550,7 @@ describe(DeletionRequestRepo.name, () => {
 					targetRefId: userId,
 					status: StatusModel.PENDING,
 				});
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				return { userId, entity };
 			};
@@ -576,7 +575,7 @@ describe(DeletionRequestRepo.name, () => {
 					targetRefId: userId,
 					status: StatusModel.SUCCESS,
 				});
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				return { userId, entity };
 			};

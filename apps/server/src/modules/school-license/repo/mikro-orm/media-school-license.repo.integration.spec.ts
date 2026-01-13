@@ -48,7 +48,7 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 				});
 				const otherSchoolId = new ObjectId().toHexString();
 
-				await em.persistAndFlush([school, mediaSource, ...mediaSchoolLicenseEntities]);
+				await em.persist([school, mediaSource, ...mediaSchoolLicenseEntities]).flush();
 				em.clear();
 				return { mediaSchoolLicenseEntities, school, otherSchoolId };
 			};
@@ -129,7 +129,7 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 					mediaSource: otherMediaSource,
 				});
 
-				await em.persistAndFlush([...mediaSchoolLicenseEntities, otherEntity]);
+				await em.persist([...mediaSchoolLicenseEntities, otherEntity]).flush();
 				em.clear();
 
 				return { mediaSource, otherEntity };
@@ -163,7 +163,7 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 					school,
 				});
 
-				await em.persistAndFlush([...mediaSchoolLicenseEntities, otherEntity, school]);
+				await em.persist([...mediaSchoolLicenseEntities, otherEntity, school]).flush();
 				em.clear();
 
 				return { mediaSource, otherEntity, school };

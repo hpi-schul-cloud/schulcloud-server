@@ -96,7 +96,7 @@ describe('AdminApiSchoolExternalTool (API)', () => {
 					isDeactivated: false,
 				};
 
-				await em.persistAndFlush([school, externalToolEntity]);
+				await em.persist([school, externalToolEntity]).flush();
 				em.clear();
 
 				return {

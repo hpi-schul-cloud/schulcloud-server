@@ -1,5 +1,4 @@
 import { ValkeyMode } from '@infra/valkey-client';
-import { AccountConfig } from '@modules/account';
 import { Algorithm } from 'jsonwebtoken';
 
 interface CacheConfig {
@@ -10,7 +9,7 @@ interface CacheConfig {
 	SESSION_VALKEY__SENTINEL_SERVICE_NAME?: string;
 }
 
-export interface AuthenticationConfig extends AccountConfig, CacheConfig {
+export interface AuthenticationConfig extends CacheConfig {
 	FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED: boolean;
 	JWT_PRIVATE_KEY: string;
 	JWT_PUBLIC_KEY: string;
