@@ -80,7 +80,7 @@ describe(`deletionRequest create (api)`, () => {
 		const setup = async () => {
 			const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-			await em.persistAndFlush([studentUser, studentAccount]);
+			await em.persist([studentUser, studentAccount]).flush();
 			em.clear();
 
 			const deletionRequestToCreate: DeletionRequestBodyParams = {

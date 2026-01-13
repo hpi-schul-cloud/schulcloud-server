@@ -46,7 +46,7 @@ describe('AccountService Integration', () => {
 			userId: testAccount.userId,
 			systemId: testAccount.systemId,
 		});
-		await em.persistAndFlush(accountEntity);
+		await em.persist(accountEntity).flush();
 		return accountEntity.id;
 	};
 

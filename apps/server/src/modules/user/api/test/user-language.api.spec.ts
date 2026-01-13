@@ -46,7 +46,7 @@ describe(baseRouteName, () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-			await em.persistAndFlush([teacherAccount, teacherUser]);
+			await em.persist([teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await apiClient.login(teacherAccount);
@@ -73,7 +73,7 @@ describe(baseRouteName, () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ language: LanguageType.DE });
 
-			await em.persistAndFlush([teacherAccount, teacherUser]);
+			await em.persist([teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await apiClient.login(teacherAccount);

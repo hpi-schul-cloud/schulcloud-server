@@ -41,14 +41,14 @@ describe(`board update visibility with course relation (api)`, () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
-			await em.persistAndFlush([teacherAccount, teacherUser, course]);
+			await em.persist([teacherAccount, teacherUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				isVisible: false,
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			await em.persistAndFlush([columnBoardNode]);
+			await em.persist([columnBoardNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -84,14 +84,14 @@ describe(`board update visibility with course relation (api)`, () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 			const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
-			await em.persistAndFlush([studentUser, course]);
+			await em.persist([studentUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				isVisible: false,
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			await em.persistAndFlush([studentAccount, studentUser, columnBoardNode]);
+			await em.persist([studentAccount, studentUser, columnBoardNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(studentAccount);
