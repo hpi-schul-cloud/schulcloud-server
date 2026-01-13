@@ -88,7 +88,7 @@ describe('H5PEditor Controller (api)', () => {
 
 					const h5pContent = h5pContentFactory.build({ parentId });
 
-					await em.persistAndFlush([h5pContent]);
+					await em.persist([h5pContent]).flush();
 					em.clear();
 
 					const { playerResult } = buildContent();

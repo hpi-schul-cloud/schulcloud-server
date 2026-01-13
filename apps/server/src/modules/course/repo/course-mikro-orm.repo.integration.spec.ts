@@ -52,7 +52,7 @@ describe(CourseMikroOrmRepo.name, () => {
 			const setup = async () => {
 				const entity = courseEntityFactory.build();
 
-				await em.persistAndFlush([entity]);
+				await em.persist([entity]).flush();
 				em.clear();
 
 				const course = CourseEntityMapper.mapEntityToDo(entity);
@@ -78,7 +78,7 @@ describe(CourseMikroOrmRepo.name, () => {
 				const otherCourseEntity = courseEntityFactory.build({ syncedWithGroup: undefined });
 				const group = groupFactory.build({ id: groupEntity.id });
 
-				await em.persistAndFlush([syncedCourseEntity, groupEntity, otherCourseEntity]);
+				await em.persist([syncedCourseEntity, groupEntity, otherCourseEntity]).flush();
 				em.clear();
 
 				const course = CourseEntityMapper.mapEntityToDo(syncedCourseEntity);
@@ -104,7 +104,7 @@ describe(CourseMikroOrmRepo.name, () => {
 			const setup = async () => {
 				const entity = courseEntityFactory.build();
 
-				await em.persistAndFlush([entity.school]);
+				await em.persist([entity.school]).flush();
 				em.clear();
 
 				const course = CourseEntityMapper.mapEntityToDo(entity);
@@ -130,7 +130,7 @@ describe(CourseMikroOrmRepo.name, () => {
 				const classEntity = classEntityFactory.buildWithId();
 				const courseGroupEntity = courseGroupEntityFactory.buildWithId();
 
-				await em.persistAndFlush([courseEntity, userEntity, schoolEntity, groupEntity, classEntity, courseGroupEntity]);
+				await em.persist([courseEntity, userEntity, schoolEntity, groupEntity, classEntity, courseGroupEntity]).flush();
 				em.clear();
 
 				const expectedProps = {
@@ -180,7 +180,7 @@ describe(CourseMikroOrmRepo.name, () => {
 					untilDate: new Date('2050-04-24'),
 				});
 
-				await em.persistAndFlush([schoolEntity, ...courseEntities]);
+				await em.persist([schoolEntity, ...courseEntities]).flush();
 				em.clear();
 
 				const filter = { schoolId: schoolEntity.id, status: CourseStatus.ARCHIVE };
@@ -213,7 +213,7 @@ describe(CourseMikroOrmRepo.name, () => {
 					})
 				);
 
-				await em.persistAndFlush([schoolEntity, ...courseEntities]);
+				await em.persist([schoolEntity, ...courseEntities]).flush();
 				em.clear();
 
 				const pagination = { skip: 0, limit: 10 };

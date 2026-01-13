@@ -69,7 +69,7 @@ describe('AccountMikroOrmRepo', () => {
 		describe('When an existing account is given', () => {
 			const setup = async () => {
 				const account = accountFactory.build();
-				await em.persistAndFlush(account);
+				await em.persist(account).flush();
 				em.clear();
 				return account;
 			};
@@ -110,7 +110,7 @@ describe('AccountMikroOrmRepo', () => {
 		describe('When the account exists', () => {
 			const setup = async () => {
 				const account = accountFactory.build();
-				await em.persistAndFlush(account);
+				await em.persist(account).flush();
 				em.clear();
 				return account;
 			};
@@ -133,7 +133,7 @@ describe('AccountMikroOrmRepo', () => {
 		describe('When calling findByUserId with id', () => {
 			const setup = async () => {
 				const accountToFind = accountFactory.build();
-				await em.persistAndFlush(accountToFind);
+				await em.persist(accountToFind).flush();
 				em.clear();
 				return accountToFind;
 			};
@@ -158,7 +158,7 @@ describe('AccountMikroOrmRepo', () => {
 			const setup = async () => {
 				const accountToFind = accountFactory.build();
 
-				await em.persistAndFlush(accountToFind);
+				await em.persist(accountToFind).flush();
 				em.clear();
 
 				return accountToFind;
@@ -186,7 +186,7 @@ describe('AccountMikroOrmRepo', () => {
 		describe('When username and systemId are given', () => {
 			const setup = async () => {
 				const accountToFind = accountFactory.withSystemId(new ObjectId(10)).build();
-				await em.persistAndFlush(accountToFind);
+				await em.persist(accountToFind).flush();
 				em.clear();
 				return accountToFind;
 			};
@@ -216,8 +216,8 @@ describe('AccountMikroOrmRepo', () => {
 					userId: new ObjectId().toHexString(),
 				});
 
-				await em.persistAndFlush(AccountDoToEntityMapper.mapToEntity(anAccountToFind));
-				await em.persistAndFlush(AccountDoToEntityMapper.mapToEntity(anotherAccountToFind));
+				await em.persist(AccountDoToEntityMapper.mapToEntity(anAccountToFind)).flush();
+				await em.persist(AccountDoToEntityMapper.mapToEntity(anotherAccountToFind)).flush();
 				em.clear();
 
 				return { anAccountToFind, anotherAccountToFind };
@@ -250,7 +250,7 @@ describe('AccountMikroOrmRepo', () => {
 		describe('When existing id is given', () => {
 			const setup = async () => {
 				const accountToFind = accountFactory.build();
-				await em.persistAndFlush(accountToFind);
+				await em.persist(accountToFind).flush();
 				em.clear();
 				return accountToFind;
 			};
@@ -274,7 +274,7 @@ describe('AccountMikroOrmRepo', () => {
 			const setup = async () => {
 				const user = userFactory.buildWithId();
 				const account = accountFactory.build({ userId: user.id });
-				await em.persistAndFlush([user, account]);
+				await em.persist([user, account]).flush();
 				return { user, account };
 			};
 
@@ -305,7 +305,7 @@ describe('AccountMikroOrmRepo', () => {
 		describe('When an account is updated', () => {
 			const setup = async () => {
 				const account = accountFactory.build();
-				await em.persistAndFlush(account);
+				await em.persist(account).flush();
 				em.clear();
 				return account;
 			};
@@ -348,7 +348,7 @@ describe('AccountMikroOrmRepo', () => {
 				const originalUsername = 'USER@EXAMPLE.COM';
 				const partialUsername = 'user';
 				const account = accountFactory.build({ username: originalUsername });
-				await em.persistAndFlush([account]);
+				await em.persist([account]).flush();
 				em.clear();
 				return { originalUsername, partialUsername, account };
 			};
@@ -367,7 +367,7 @@ describe('AccountMikroOrmRepo', () => {
 			const setup = async () => {
 				const originalUsername = 'USER@EXAMPLE.COM';
 				const account = accountFactory.build({ username: originalUsername });
-				await em.persistAndFlush([account]);
+				await em.persist([account]).flush();
 				em.clear();
 				return { originalUsername, account };
 			};
@@ -387,7 +387,7 @@ describe('AccountMikroOrmRepo', () => {
 				const missingDotUserName = 'USER@EXAMPLECCOM';
 				const wildcard = '.*';
 				const account = accountFactory.build({ username: originalUsername });
-				await em.persistAndFlush([account]);
+				await em.persist([account]).flush();
 				em.clear();
 				return { originalUsername, missingDotUserName, wildcard, account };
 			};
@@ -408,7 +408,7 @@ describe('AccountMikroOrmRepo', () => {
 		describe('When an id is given', () => {
 			const setup = async () => {
 				const account = accountFactory.buildWithId();
-				await em.persistAndFlush([account]);
+				await em.persist([account]).flush();
 
 				return account;
 			};
@@ -428,7 +428,7 @@ describe('AccountMikroOrmRepo', () => {
 			const setup = async () => {
 				const user = userFactory.buildWithId();
 				const account = accountFactory.build({ userId: user.id });
-				await em.persistAndFlush([user, account]);
+				await em.persist([user, account]).flush();
 
 				return { user, account };
 			};
@@ -459,7 +459,7 @@ describe('AccountMikroOrmRepo', () => {
 					accountFactory.build({ username: 'Susi Doe' }),
 					accountFactory.build({ username: 'Tim Doe' }),
 				];
-				await em.persistAndFlush(mockAccounts);
+				await em.persist(mockAccounts).flush();
 				return mockAccounts;
 			};
 
@@ -480,7 +480,7 @@ describe('AccountMikroOrmRepo', () => {
 					accountFactory.build({ username: 'Susi Doe' }),
 					accountFactory.build({ username: 'Tim Doe' }),
 				];
-				await em.persistAndFlush(mockAccounts);
+				await em.persist(mockAccounts).flush();
 				return { limit, mockAccounts };
 			};
 
@@ -501,7 +501,7 @@ describe('AccountMikroOrmRepo', () => {
 					accountFactory.build({ username: 'Susi Doe' }),
 					accountFactory.build({ username: 'Tim Doe' }),
 				];
-				await em.persistAndFlush(mockAccounts);
+				await em.persist(mockAccounts).flush();
 				return { offset, mockAccounts };
 			};
 
@@ -526,7 +526,7 @@ describe('AccountMikroOrmRepo', () => {
 				const accountB = accountFactory.withSystemId(systemId).build({ userId: userBId });
 				const accountC = accountFactory.withSystemId(new ObjectId().toHexString()).build({ userId: userCId });
 
-				await em.persistAndFlush([accountA, accountB, accountC]);
+				await em.persist([accountA, accountB, accountC]).flush();
 				em.clear();
 
 				const userIds = [userAId, userBId, userCId];
