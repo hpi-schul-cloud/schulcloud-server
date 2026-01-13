@@ -16,6 +16,8 @@ import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { h5pContentFactory } from '../testing';
 import { H5PEditorUc } from './h5p.uc';
+import { ConfigService } from '@nestjs/config';
+import { H5PEditorConfig } from '../h5p-editor.config';
 
 const createParams = () => {
 	const content = h5pContentFactory.build();
@@ -55,6 +57,12 @@ describe('get H5P editor', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				H5PEditorUc,
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService<H5PEditorConfig, true>>({
+						get: () => ['H5P.Accordion'],
+					}),
+				},
 				H5PAjaxEndpointProvider,
 				{
 					provide: H5PEditor,
