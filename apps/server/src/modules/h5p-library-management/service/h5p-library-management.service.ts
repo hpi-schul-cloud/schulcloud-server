@@ -787,22 +787,7 @@ export class H5PLibraryManagementService {
 		let fileAdded = false;
 		const filteredMetadata = this.filterInstalledLibrary(metadata);
 		const dataStream = Readable.from(JSON.stringify(filteredMetadata, null, 2));
-		try {
-			fileAdded = await this.libraryStorage.addFile(libraryName, 'library.json', dataStream);
-		} catch (error: unknown) {
-			this.logger.warning(
-				new H5PLibraryManagementErrorLoggable(
-					error,
-					{ library: LibraryName.toUberName(libraryName) },
-					'while adding library.json to S3'
-				)
-			);
-
-			// Re-throw S3Client errors to cause graceful shutdown
-			if (this.isS3ClientError(error)) {
-				throw error;
-			}
-		}
+		fileAdded = await this.libraryStorage.addFile(libraryName, 'library.json', dataStream);
 		if (fileAdded) {
 			this.logLibraryJsonAddedToS3(metadata);
 		}
