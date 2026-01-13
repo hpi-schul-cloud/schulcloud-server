@@ -1,8 +1,9 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
+import { EtherpadClientConfig as InternalEtherpadClientConfig } from '@infra/etherpad-client';
 import { IsString, IsUrl } from 'class-validator';
 
 @Configuration()
-export class EtherpadClientConfig {
+export class EtherpadClientConfig implements InternalEtherpadClientConfig {
 	@ConfigProperty('ETHERPAD__API_KEY')
 	@IsString()
 	public apiKey = 'defaultApiKey';

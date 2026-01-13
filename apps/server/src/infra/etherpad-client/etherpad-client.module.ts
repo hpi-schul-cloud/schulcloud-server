@@ -1,13 +1,9 @@
 import { ConfigurationModule } from '@infra/configuration';
 import { DynamicModule, Module } from '@nestjs/common';
 import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
-import { Configuration, ConfigurationParameters } from './etherpad-api-client/configuration';
+import { Configuration } from './etherpad-api-client/configuration';
+import { EtherpadClientConfig } from './etherpad-client-config.interface';
 import { EtherpadClientAdapter } from './etherpad-client.adapter';
-
-export interface EtherpadClientConfig extends ConfigurationParameters {
-	apiKey?: string;
-	basePath?: string;
-}
 
 const configToken = 'INTERNAL_ETHERPAD_CLIENT_CONFIG_TOKEN';
 
