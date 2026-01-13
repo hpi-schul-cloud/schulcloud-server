@@ -3,10 +3,9 @@ import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementOauthService, IdentityManagementService } from '@infra/identity-management';
 import { NotImplementedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
-import { AccountConfig } from '../../account-config';
+import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '../../account-config';
 import { Account, AccountSave, IdmAccount } from '../do';
 import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
@@ -17,7 +16,7 @@ describe('AccountIdmService', () => {
 	let mapper: AccountIdmToDoMapper;
 	let idmServiceMock: DeepMocked<IdentityManagementService>;
 	let idmOauthServiceMock: DeepMocked<IdentityManagementOauthService>;
-	let configServiceMock: DeepMocked<ConfigService>;
+	let configMock: DeepMocked<AccountConfig>;
 
 	const mockIdmAccountRefId = 'dbcAccountId';
 	const mockIdmAccount: IdmAccount = {
@@ -46,8 +45,8 @@ describe('AccountIdmService', () => {
 					useValue: createMock<IdentityManagementService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<AccountConfig, true>>(),
+					provide: ACCOUNT_CONFIG_TOKEN,
+					useValue: new AccountConfig(),
 				},
 				{
 					provide: IdentityManagementOauthService,
@@ -63,15 +62,16 @@ describe('AccountIdmService', () => {
 		mapper = module.get(AccountIdmToDoMapper);
 		idmServiceMock = module.get(IdentityManagementService);
 		idmOauthServiceMock = module.get(IdentityManagementOauthService);
-		configServiceMock = module.get(ConfigService);
+		configMock = module.get(ACCOUNT_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	beforeEach(() => {
+	afterEach(() => {
 		jest.clearAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	describe('save', () => {
@@ -82,7 +82,9 @@ describe('AccountIdmService', () => {
 				idmServiceMock.updateAccountPassword.mockResolvedValue(mockIdmAccount.id);
 				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
 				idmServiceMock.findAccountByDbcAccountId.mockResolvedValue(mockIdmAccount);
-				configServiceMock.get.mockReturnValue(true);
+
+				configMock.identityManagementLoginEnabled = true;
+				configMock.identityManagementStoreEnabled = true;
 
 				const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
 				const createSpy = jest.spyOn(idmServiceMock, 'createAccount');
@@ -187,7 +189,9 @@ describe('AccountIdmService', () => {
 				idmServiceMock.updateAccount.mockResolvedValue(mockIdmAccount.id);
 				idmServiceMock.updateAccountPassword.mockResolvedValue(mockIdmAccount.id);
 				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
-				configServiceMock.get.mockReturnValue(false);
+
+				configMock.identityManagementLoginEnabled = true;
+				configMock.identityManagementStoreEnabled = false;
 
 				const mockAccountSave = {
 					id: mockIdmAccountRefId,
@@ -198,6 +202,7 @@ describe('AccountIdmService', () => {
 
 				return { mockAccountDto: mockAccountSave };
 			};
+
 			it('should create a new account on update error', async () => {
 				const { mockAccountDto } = setup();
 
@@ -250,7 +255,7 @@ describe('AccountIdmService', () => {
 	describe('updateUsername', () => {
 		describe('when update Username', () => {
 			const setup = () => {
-				configServiceMock.get.mockReturnValue(true);
+				configMock.identityManagementStoreEnabled = true;
 				idmServiceMock.findAccountByDbcAccountId.mockResolvedValue(mockIdmAccount);
 			};
 			it('should map result correctly', async () => {
@@ -272,7 +277,7 @@ describe('AccountIdmService', () => {
 	describe('updatePassword', () => {
 		describe('when update password', () => {
 			const setup = () => {
-				configServiceMock.get.mockReturnValue(true);
+				configMock.identityManagementStoreEnabled = true;
 				idmServiceMock.findAccountByDbcAccountId.mockResolvedValue(mockIdmAccount);
 			};
 			it('should map result correctly', async () => {
@@ -322,7 +327,7 @@ describe('AccountIdmService', () => {
 			const setup = () => {
 				idmServiceMock.deleteAccountById.mockResolvedValue(mockIdmAccount.id);
 				idmServiceMock.findAccountByDbcAccountId.mockResolvedValue(mockIdmAccount);
-				configServiceMock.get.mockReturnValueOnce(true);
+				configMock.identityManagementStoreEnabled = true;
 			};
 
 			it('should delete account via idm', async () => {
@@ -335,7 +340,8 @@ describe('AccountIdmService', () => {
 		describe('when deleting non existing account', () => {
 			const setup = () => {
 				idmServiceMock.deleteAccountById.mockResolvedValue(mockIdmAccount.id);
-				configServiceMock.get.mockReturnValueOnce(false);
+				idmServiceMock.findAccountByDbcAccountId.mockRejectedValue(new Error());
+				configMock.identityManagementStoreEnabled = false;
 			};
 
 			it('should throw account not found error', async () => {
@@ -542,7 +548,7 @@ describe('AccountIdmService', () => {
 			const setup = () => {
 				idmServiceMock.findAccountByDbcAccountId.mockResolvedValue(mockIdmAccount);
 				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
-				configServiceMock.get.mockReturnValue(true);
+				configMock.identityManagementStoreEnabled = true;
 			};
 
 			it('should return the account', async () => {

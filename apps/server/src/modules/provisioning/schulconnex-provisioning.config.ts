@@ -31,7 +31,9 @@ export interface SchulconnexProvisioningConfig
 		MediaSourceConfig,
 		ToolConfig,
 		CourseSynchronizationHistoryConfig,
-		EncryptionConfig {}
+		EncryptionConfig {
+	LOGIN_BLOCK_TIME: number; // @TODO temporary until removed from other configs
+}
 
 const config: SchulconnexProvisioningConfig = {
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
@@ -59,8 +61,6 @@ const config: SchulconnexProvisioningConfig = {
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
 	) as boolean,
-	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
-	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	CTL_TOOLS__PREFERRED_TOOLS_LIMIT: Configuration.get('CTL_TOOLS__PREFERRED_TOOLS_LIMIT') as number,
 	FEATURE_PREFERRED_CTL_TOOLS_ENABLED: Configuration.get('FEATURE_PREFERRED_CTL_TOOLS_ENABLED') as boolean,
 	TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: Configuration.get(
