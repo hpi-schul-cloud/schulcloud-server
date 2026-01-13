@@ -9,9 +9,13 @@ import { Transform, TransformFnParams } from 'class-transformer';
 export function StringToNumber(): PropertyDecorator {
 	return Transform((params: TransformFnParams) => {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-		const str = params.obj[params.key] as string;
-		TypeGuard.checkString(str);
+		const value = params.obj[params.key];
+		if (typeof value === 'number') {
+			return value;
+		}
 
-		return parseInt(str);
+		TypeGuard.checkString(value);
+
+		return parseInt(value as string);
 	});
 }

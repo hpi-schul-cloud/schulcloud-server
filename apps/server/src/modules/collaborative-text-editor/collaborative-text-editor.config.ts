@@ -13,7 +13,12 @@ export class CollaborativeTextEditorConfig {
 	@IsNumber()
 	public cookieExpiresInSeconds = 7200;
 
+	/**
+	 * The default value only exists because the SchulconnexLicenseProvisioningAMQPModule
+	 * has an unnecessary dependency on this module.
+	 * After resolving this dependency, this default value can be removed.
+	 */
 	@ConfigProperty('ETHERPAD__PAD_URI')
 	@IsUrl({ require_tld: false })
-	public padUri!: string;
+	public padUri = 'http://default/p/';
 }
