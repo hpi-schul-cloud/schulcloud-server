@@ -105,8 +105,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T,
 	 * @returns a new factory
 	 */
 	public afterBuild(afterBuildFn: HookFn<T>): this {
-		const newPropsFactory = this.propsFactory['clone']();
-		newPropsFactory.afterBuild(afterBuildFn);
+		const newPropsFactory = this.propsFactory.afterBuild(afterBuildFn);
 		const newFactory = this.clone(newPropsFactory);
 
 		return newFactory;
@@ -118,8 +117,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T,
 	 * @returns a new factory
 	 */
 	public associations(associations: Partial<T>): this {
-		const newPropsFactory = this.propsFactory['clone']();
-		newPropsFactory.associations(associations);
+		const newPropsFactory = this.propsFactory.associations(associations);
 		const newFactory = this.clone(newPropsFactory);
 
 		return newFactory;
@@ -131,8 +129,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T,
 	 * @returns a new factory
 	 */
 	public params(params: P): this {
-		const newPropsFactory = this.propsFactory['clone']();
-		newPropsFactory.params(params);
+		const newPropsFactory = this.propsFactory.params(params);
 		const newFactory = this.clone(newPropsFactory);
 
 		return newFactory;
@@ -144,8 +141,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T,
 	 * @returns a new factory
 	 */
 	public transient(transient: Partial<I>): this {
-		const newPropsFactory = this.propsFactory['clone']();
-		newPropsFactory.transient(transient);
+		const newPropsFactory = this.propsFactory.transient(transient);
 		const newFactory = this.clone(newPropsFactory);
 
 		return newFactory;
