@@ -6,7 +6,7 @@ import { SchoolModule } from '@modules/school';
 import { SchoolLicenseModule } from '@modules/school-license';
 import { ExternalToolModule } from '@modules/tool';
 import { Module } from '@nestjs/common';
-import { MediaSourceSyncEncryptionConfig } from './encryption.config';
+import { MEDIA_SOURCE_SYNC_ENCRYPTION_CONFIG_TOKEN, MediaSourceSyncEncryptionConfig } from './encryption.config';
 import { ExternalToolMetadataUpdateService, MediaSourceSyncService } from './service';
 import { BiloMetadataSyncStrategy, VidisActivationSyncStrategy, VidisMetadataSyncStrategy } from './service/strategy';
 
@@ -17,7 +17,7 @@ import { BiloMetadataSyncStrategy, VidisActivationSyncStrategy, VidisMetadataSyn
 		ExternalToolModule,
 		MediumMetadataModule,
 		SchoolLicenseModule,
-		VidisClientModule.register(MediaSourceSyncEncryptionConfig),
+		VidisClientModule.register(MediaSourceSyncEncryptionConfig, MEDIA_SOURCE_SYNC_ENCRYPTION_CONFIG_TOKEN),
 		SchoolModule,
 	],
 	providers: [

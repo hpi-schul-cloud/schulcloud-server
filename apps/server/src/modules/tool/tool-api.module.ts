@@ -15,7 +15,7 @@ import { ToolPermissionHelper } from './common/uc/tool-permission-helper';
 import { ToolContextController, ToolDeepLinkController } from './context-external-tool/controller';
 import { ToolReferenceController } from './context-external-tool/controller/tool-reference.controller';
 import { ContextExternalToolUc, ToolReferenceUc } from './context-external-tool/uc';
-import { ToolEncryptionConfig } from './encryption.config';
+import { TOOL_ENCRYPTION_CONFIG_TOKEN, ToolEncryptionConfig } from './encryption.config';
 import { ToolConfigurationController, ToolController } from './external-tool/controller';
 import { ExternalToolRequestMapper, ExternalToolResponseMapper } from './external-tool/mapper';
 import { ExternalToolConfigurationService } from './external-tool/service';
@@ -42,7 +42,7 @@ import { ToolModule } from './tool.module';
 		SchoolModule,
 		UserLicenseModule,
 		SchoolLicenseModule,
-		EncryptionModule.register(ToolEncryptionConfig),
+		EncryptionModule.register(ToolEncryptionConfig, TOOL_ENCRYPTION_CONFIG_TOKEN),
 		ExternalToolUtilizationModule,
 	],
 	controllers: [

@@ -5,7 +5,6 @@ import { EncryptionModule } from '@infra/encryption';
 import { FeathersModule } from '@infra/feathers';
 import { FileSystemModule } from '@infra/file-system';
 import { KeycloakConfigurationModule } from '@infra/identity-management/keycloak-configuration/keycloak-configuration.module';
-import { AccountEncryptionConfig } from '@modules/account/encryption.config';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { serverConfig } from '@modules/server';
@@ -18,6 +17,7 @@ import { InstanceModule } from '../instance';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';
+import { MANAGMENT_ENCRYPTION_CONFIG_TOKEN, ManagmentEncryptionConfig } from './encryption.config';
 import {
 	ExternalToolsSeedDataService,
 	InstancesSeedDataService,
@@ -31,7 +31,7 @@ const baseImports = [
 	FileSystemModule,
 	LoggerModule,
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
-	EncryptionModule.register(AccountEncryptionConfig),
+	EncryptionModule.register(ManagmentEncryptionConfig, MANAGMENT_ENCRYPTION_CONFIG_TOKEN),
 	FeathersModule,
 	MediaSourceModule,
 	SystemModule,
@@ -41,7 +41,7 @@ const baseImports = [
 ];
 
 const imports = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
-	? [...baseImports, KeycloakConfigurationModule.register(AccountEncryptionConfig)]
+	? [...baseImports, KeycloakConfigurationModule.register(ManagmentEncryptionConfig, MANAGMENT_ENCRYPTION_CONFIG_TOKEN)]
 	: baseImports;
 
 const providers = [

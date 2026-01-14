@@ -11,14 +11,14 @@ import { KeycloakIdentityManagementService } from './keycloak/service/keycloak-i
 
 @Module({})
 export class IdentityManagementModule {
-	public static register<T extends EncryptionConfig>(constructor: new () => T): DynamicModule {
+	public static register<T extends EncryptionConfig>(constructor: new () => T, token: string): DynamicModule {
 		return {
 			module: IdentityManagementModule,
 			imports: [
-				KeycloakModule.register(constructor),
+				KeycloakModule.register(constructor, token),
 				KeycloakAdministrationModule,
 				HttpModule,
-				EncryptionModule.register(constructor),
+				EncryptionModule.register(constructor, token),
 				LoggerModule,
 			],
 			providers: [
