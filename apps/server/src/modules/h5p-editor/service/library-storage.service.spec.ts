@@ -1,7 +1,7 @@
 import { HeadObjectCommandOutput, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { S3ClientAdapter } from '@infra/s3-client';
-import { H5pError, ILibraryMetadata, ILibraryName } from '@lumieducation/h5p-server';
+import { ILibraryMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import pLimit from 'p-limit';
@@ -622,14 +622,13 @@ describe('LibraryStorage', () => {
 					const { testingLib } = await setup();
 					const filename = 'test/abc.json';
 
+					const error = new Error('S3 Exception');
 					s3ClientAdapter.create.mockImplementationOnce(() => {
-						throw Error('S3 Exception');
+						throw error;
 					});
 
 					const addFile = () => storage.addFile(testingLib, filename, Readable.from(Buffer.from('')));
-					return expect(addFile).rejects.toThrow(
-						new H5pError(`mongo-s3-library-storage:s3-upload-error (ubername: testing-1.2, filename: test/abc.json)`)
-					);
+					return expect(addFile).rejects.toThrow(error);
 				});
 			});
 
@@ -680,15 +679,16 @@ describe('LibraryStorage', () => {
 						const mockFilename = 'mock-file.txt';
 						const mockS3Key = `h5p-libraries/${mockLibraryName.machineName}-${mockLibraryName.majorVersion}.${mockLibraryName.minorVersion}/${mockFilename}`;
 
-						s3ClientAdapter.create.mockRejectedValueOnce(new Error('S3 upload failed'));
+						const error = new Error('S3 upload failed');
+						s3ClientAdapter.create.mockRejectedValueOnce(error);
 
-						return { mockDataStream, mockS3Key, mockLibraryName, mockFilename };
+						return { error, mockDataStream, mockS3Key, mockLibraryName, mockFilename };
 					};
 
-					it('should throw an H5pError', async () => {
-						const { mockDataStream, mockS3Key, mockLibraryName, mockFilename } = setup();
+					it('should rethrow the error', async () => {
+						const { error, mockDataStream, mockS3Key, mockLibraryName, mockFilename } = setup();
 
-						await expect(storage.addFile(mockLibraryName, mockFilename, mockDataStream)).rejects.toThrow(H5pError);
+						await expect(storage.addFile(mockLibraryName, mockFilename, mockDataStream)).rejects.toThrow(error);
 
 						expect(s3ClientAdapter.create).toHaveBeenCalledWith(
 							mockS3Key,
