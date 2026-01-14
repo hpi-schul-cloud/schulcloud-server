@@ -11,13 +11,14 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { OAUTH_SESSION_TOKEN_REPO, OauthSessionTokenMikroOrmRepo } from './repo';
 import { OAuthService, OauthSessionTokenService } from './service';
+import { EncryptionConfig } from './encryption.config';
 
 @Module({
 	imports: [
 		LoggerModule,
 		AuthorizationModule,
 		HttpModule,
-		EncryptionModule,
+		EncryptionModule.register(EncryptionConfig),
 		UserModule,
 		ProvisioningModule,
 		SystemModule,

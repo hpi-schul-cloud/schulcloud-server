@@ -22,13 +22,14 @@ import {
 	ExternalToolServiceMapper,
 	ExternalToolValidationService,
 } from './service';
+import { EncryptionConfig } from './encryption.config';
 
 @Module({
 	imports: [
 		CommonToolModule,
 		LoggerModule,
 		OauthProviderServiceModule,
-		EncryptionModule,
+		EncryptionModule.register(EncryptionConfig),
 		HttpModule,
 		InstanceModule,
 		AuthorizationModule,

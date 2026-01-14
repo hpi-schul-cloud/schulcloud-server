@@ -21,6 +21,7 @@ import {
 	AutoSchoolNumberStrategy,
 } from './service/auto-parameter-strategy';
 import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrategy } from './service/launch-strategy';
+import { EncryptionConfig } from '../encryption.config';
 
 @Module({
 	imports: [
@@ -34,7 +35,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		CourseModule,
 		BoardModule,
 		GroupModule,
-		EncryptionModule,
+		EncryptionModule.register(EncryptionConfig),
 	],
 	providers: [
 		ToolLaunchService,

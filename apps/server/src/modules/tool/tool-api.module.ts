@@ -26,6 +26,7 @@ import { ToolLaunchUc } from './tool-launch/uc';
 import { ExternalToolUtilizationUc, SchoolExternalToolUtilizationUc } from './tool-utilization';
 import { ExternalToolUtilizationModule } from './tool-utilization/tool-utilization.module';
 import { ToolModule } from './tool.module';
+import { EncryptionConfig } from './encryption.config';
 
 @Module({
 	imports: [
@@ -41,7 +42,7 @@ import { ToolModule } from './tool.module';
 		SchoolModule,
 		UserLicenseModule,
 		SchoolLicenseModule,
-		EncryptionModule,
+		EncryptionModule.register(EncryptionConfig),
 		ExternalToolUtilizationModule,
 	],
 	controllers: [
