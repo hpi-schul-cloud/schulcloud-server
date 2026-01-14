@@ -1,3 +1,4 @@
+import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 import { EntityManager } from '@mikro-orm/core';
 import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { INestApplication } from '@nestjs/common';
@@ -10,6 +11,7 @@ import { CreateDeletionBatchBodyParams } from '../dto';
 import { DeletionBatchItemResponse } from '../dto/response/deletion-batch-item.response';
 
 const baseRouteName = '/deletion-batches';
+const encryptionKey = 'test-key-with-32-characters-long';
 
 describe('createBatch', () => {
 	let app: INestApplication;
@@ -23,7 +25,10 @@ describe('createBatch', () => {
 
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
+			.useValue({ aesKey: encryptionKey })
+			.compile();
 
 		app = module.createNestApplication();
 		em = module.get(EntityManager);

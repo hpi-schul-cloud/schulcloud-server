@@ -3,13 +3,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { KeycloakModule } from './keycloak.module';
 import { KeycloakIdentityManagementOauthService } from './service/keycloak-identity-management-oauth.service';
 import { KeycloakIdentityManagementService } from './service/keycloak-identity-management.service';
+import { TestEncryptionConfig } from '@infra/encryption';
 
 describe('KeycloakModule', () => {
 	let module: TestingModule;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [KeycloakModule, ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true })],
+			imports: [
+				KeycloakModule.register(TestEncryptionConfig),
+				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
+			],
 		}).compile();
 	});
 

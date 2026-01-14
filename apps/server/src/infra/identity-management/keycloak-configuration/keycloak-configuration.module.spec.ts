@@ -6,13 +6,14 @@ import { KeycloakConsole } from './console/keycloak-configuration.console';
 import { KeycloakConfigurationModule } from './keycloak-configuration.module';
 import { KeycloakConfigurationService } from './service/keycloak-configuration.service';
 import { KeycloakSeedService } from './service/keycloak-seed.service';
+import { TestEncryptionConfig } from '@infra/encryption';
 
 describe('KeycloakManagementModule', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				KeycloakConfigurationModule,
+				KeycloakConfigurationModule.register(TestEncryptionConfig),
 				MongoMemoryDatabaseModule.forRoot({ entities: [SystemEntity] }),
 				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
 			],

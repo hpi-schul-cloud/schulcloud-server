@@ -1,16 +1,18 @@
+import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/repo';
 import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { TestApiClient } from '@testing/test-api-client';
-import { AccountEntity } from '@modules/account/repo';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { DeletionRequestEntity } from '../../../repo/entity';
 import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
 
 const baseRouteName = '/deletionRequests';
+const encryptionKey = 'test-key-with-32-characters-long';
 
 describe(`deletionRequest delete (api)`, () => {
 	let app: INestApplication;
@@ -24,7 +26,10 @@ describe(`deletionRequest delete (api)`, () => {
 
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
+			.useValue({ aesKey: encryptionKey })
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();

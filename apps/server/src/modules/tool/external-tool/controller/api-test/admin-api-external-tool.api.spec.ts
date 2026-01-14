@@ -13,6 +13,9 @@ import {
 } from '../../../common/enum';
 import { ExternalToolEntity } from '../../repo';
 import { ExternalToolCreateParams, ExternalToolResponse } from '../dto';
+import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
+
+const encryptionKey = 'test-key-with-32-characters-long';
 
 describe('AdminApiExternalTool (API)', () => {
 	let app: INestApplication;
@@ -25,7 +28,10 @@ describe('AdminApiExternalTool (API)', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
+			.useValue({ aesKey: encryptionKey })
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();

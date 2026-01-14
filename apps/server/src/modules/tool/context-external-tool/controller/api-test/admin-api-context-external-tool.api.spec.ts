@@ -5,6 +5,7 @@ import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.m
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 // admin-api-context-external-tool and test file is wrong placed need to be part of a admin-api-module folder
+import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { TestApiClient } from '@testing/test-api-client';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../../common/enum';
@@ -14,6 +15,8 @@ import { customParameterEntityFactory, externalToolEntityFactory } from '../../.
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalToolEntity } from '../../repo';
 import { ContextExternalToolPostParams, ContextExternalToolResponse } from '../dto';
+
+const encryptionKey = 'test-key-with-32-characters-long';
 
 describe('AdminApiContextExternalTool (API)', () => {
 	let app: INestApplication;
@@ -26,7 +29,10 @@ describe('AdminApiContextExternalTool (API)', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
+			.useValue({ aesKey: encryptionKey })
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();

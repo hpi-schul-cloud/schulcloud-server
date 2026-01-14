@@ -1,4 +1,5 @@
 import { LoggerModule } from '@core/logger';
+import { TestEncryptionConfig } from '@infra/encryption';
 import { KeycloakModule } from '@infra/identity-management/keycloak/keycloak.module';
 import { AccountEntity } from '@modules/account/repo';
 import { ConfigModule } from '@nestjs/config';
@@ -23,8 +24,8 @@ describe('KeycloakIdentityManagementOauthService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				KeycloakModule,
-				KeycloakConfigurationModule,
+				KeycloakModule.register(TestEncryptionConfig),
+				KeycloakConfigurationModule.register(TestEncryptionConfig),
 				KeycloakAdministrationModule,
 				LoggerModule,
 				MongoMemoryDatabaseModule.forRoot({ allowGlobalContext: true, entities: [AccountEntity] }),

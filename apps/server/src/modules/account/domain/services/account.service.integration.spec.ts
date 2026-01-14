@@ -21,6 +21,7 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { TestEncryptionConfig } from '@infra/encryption';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
@@ -72,7 +73,7 @@ describe('AccountService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				IdentityManagementModule,
+				IdentityManagementModule.register(TestEncryptionConfig),
 				UserModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 				ConfigModule.forRoot({

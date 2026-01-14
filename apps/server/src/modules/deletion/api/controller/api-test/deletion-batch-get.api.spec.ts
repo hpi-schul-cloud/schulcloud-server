@@ -1,3 +1,4 @@
+import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
@@ -10,6 +11,7 @@ import { deletionBatchEntityFactory } from '../../../repo/entity/testing'; // te
 import { DeletionBatchListResponse } from '../dto/response/deletion-batch-list.response'; // barrel file
 
 const baseRouteName = '/deletion-batches';
+const encryptionKey = 'test-key-with-32-characters-long';
 
 describe('getBatches ', () => {
 	let app: INestApplication;
@@ -23,7 +25,10 @@ describe('getBatches ', () => {
 
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
+			.useValue({ aesKey: encryptionKey })
+			.compile();
 
 		app = module.createNestApplication();
 		em = module.get(EntityManager);

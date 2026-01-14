@@ -1,9 +1,10 @@
+import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { RoleName } from '@modules/role';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
@@ -12,6 +13,7 @@ import { User } from '../../repo';
 import { AdminApiUserCreateResponse } from '../dto/admin-api-user-create.response.dto';
 
 const baseRouteName = '/admin/users';
+const encryptionKey = 'test-key-with-32-characters-long';
 
 describe('Admin API - Users (API)', () => {
 	let app: INestApplication;
@@ -21,7 +23,10 @@ describe('Admin API - Users (API)', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
+			.useValue({ aesKey: encryptionKey })
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();

@@ -12,6 +12,7 @@ import { v1 } from 'uuid';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
 import { KeycloakConfigurationService } from './keycloak-configuration.service';
+import { TestEncryptionConfig } from '@infra/encryption';
 
 describe('KeycloakConfigurationService Integration', () => {
 	let module: TestingModule;
@@ -28,7 +29,7 @@ describe('KeycloakConfigurationService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				KeycloakConfigurationModule,
+				KeycloakConfigurationModule.register(TestEncryptionConfig),
 				LoggerModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 				ConfigModule.forRoot({
