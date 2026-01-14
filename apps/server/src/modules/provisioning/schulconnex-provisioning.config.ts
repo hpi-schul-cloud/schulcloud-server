@@ -1,7 +1,6 @@
 import type { CoreModuleConfig } from '@core/core.config';
 import type { LoggerConfig } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import type { EncryptionConfig } from '@infra/encryption/encryption.config';
 import type { RabbitMqConfig } from '@infra/rabbitmq';
 import type { CourseSynchronizationHistoryConfig } from '@modules/course-synchronization-history';
 import type { GroupConfig } from '@modules/group';
@@ -30,8 +29,7 @@ export interface SchulconnexProvisioningConfig
 		UserLicenseConfig,
 		MediaSourceConfig,
 		ToolConfig,
-		CourseSynchronizationHistoryConfig,
-		EncryptionConfig {
+		CourseSynchronizationHistoryConfig {
 	LOGIN_BLOCK_TIME: number; // @TODO temporary until removed from other configs
 }
 
