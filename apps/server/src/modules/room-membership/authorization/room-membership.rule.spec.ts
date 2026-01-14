@@ -208,5 +208,37 @@ describe(RoomMembershipRule.name, () => {
 				});
 			});
 		});
+
+		describe("when user's school is not room's school", () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const otherSchool = schoolEntityFactory.buildWithId();
+				const roomMembershipAuthorizable = new RoomMembershipAuthorizable('', [], otherSchool.id);
+
+				return { user, roomMembershipAuthorizable };
+			};
+
+			it('should return "false" for read action', () => {
+				const { user, roomMembershipAuthorizable } = setup();
+
+				const res = service.hasPermission(user, roomMembershipAuthorizable, {
+					action: Action.read,
+					requiredPermissions: [],
+				});
+
+				expect(res).toBe(false);
+			});
+
+			it('should return "false" for write action', () => {
+				const { user, roomMembershipAuthorizable } = setup();
+
+				const res = service.hasPermission(user, roomMembershipAuthorizable, {
+					action: Action.write,
+					requiredPermissions: [],
+				});
+
+				expect(res).toBe(false);
+			});
+		});
 	});
 });

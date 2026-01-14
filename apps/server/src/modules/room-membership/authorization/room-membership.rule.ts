@@ -17,30 +17,21 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 	}
 
 	public hasPermission(user: User, object: RoomMembershipAuthorizable, context: AuthorizationContext): boolean {
-		// Copy and Share Room are allowed when user has permission but belongs to external school
-		if (
-			!context.requiredPermissions.includes(Permission.ROOM_SHARE_ROOM) &&
-			!context.requiredPermissions.includes(Permission.ROOM_COPY_ROOM)
-		) {
-			if (!this.hasAccessToSchool(user, object.schoolId)) {
-				return false;
-			}
-		}
+		const { action, requiredPermissions } = context;
+		const roomPermissions = this.resolveRoomPermissions(user, object);
 
-		if (!this.hasRequiredRoomPermissions(user, object, context.requiredPermissions)) {
+		if (!this.hasAccessToSchool(user, object.schoolId)) {
 			return false;
 		}
 
-		const { action } = context;
-		const permissionsThisUserHas = object.members
-			.filter((member) => member.userId === user.id)
-			.flatMap((member) => member.roles)
-			.flatMap((role) => role.permissions ?? []);
+		if (!this.hasRequiredRoomPermissions(roomPermissions, requiredPermissions)) {
+			return false;
+		}
 
 		if (action === Action.read) {
-			return permissionsThisUserHas.includes(Permission.ROOM_LIST_CONTENT);
+			return roomPermissions.includes(Permission.ROOM_LIST_CONTENT);
 		}
-		return permissionsThisUserHas.includes(Permission.ROOM_EDIT_CONTENT);
+		return roomPermissions.includes(Permission.ROOM_EDIT_CONTENT);
 	}
 
 	private hasAccessToSchool(user: User, schoolId: string): boolean {
@@ -54,21 +45,15 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 		return includesSchool;
 	}
 
-	private hasRequiredRoomPermissions(
-		user: User,
-		object: RoomMembershipAuthorizable,
-		requiredPermissions: string[]
-	): boolean {
-		const roomPermissionsOfUser = this.resolveRoomPermissions(user, object);
+	private hasRequiredRoomPermissions(roomPermissionsOfUser: Permission[], requiredPermissions: Permission[]): boolean {
 		const missingPermissions = requiredPermissions.filter((permission) => !roomPermissionsOfUser.includes(permission));
 		return missingPermissions.length === 0;
 	}
 
-	private resolveRoomPermissions(user: User, object: RoomMembershipAuthorizable): string[] {
-		const member = object.members.find((m) => m.userId === user.id);
-		if (!member) {
-			return [];
-		}
-		return member.roles.flatMap((role) => role.permissions ?? []);
+	private resolveRoomPermissions(user: User, object: RoomMembershipAuthorizable): Permission[] {
+		return object.members
+			.filter((member) => member.userId === user.id)
+			.flatMap((member) => member.roles)
+			.flatMap((role) => role.permissions ?? []);
 	}
 }
