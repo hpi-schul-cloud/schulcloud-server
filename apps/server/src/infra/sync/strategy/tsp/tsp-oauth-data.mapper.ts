@@ -205,7 +205,9 @@ export class TspOauthDataMapper {
 				);
 
 				const externalSchool =
-					tspTeacher.schuleNummer == null ? undefined : externalSchools.get(tspTeacher.schuleNummer);
+					tspTeacher.schuleNummer === null || tspTeacher.schuleNummer === undefined
+						? undefined
+						: externalSchools.get(tspTeacher.schuleNummer);
 
 				const oauthDataDto = new OauthDataDto({
 					system: systemDto,
@@ -258,7 +260,9 @@ export class TspOauthDataMapper {
 				});
 
 				const externalSchool =
-					tspStudent.schuleNummer == null ? undefined : externalSchools.get(tspStudent.schuleNummer);
+					tspStudent.schuleNummer === null || tspStudent.schuleNummer === undefined
+						? undefined
+						: externalSchools.get(tspStudent.schuleNummer);
 
 				const oauthDataDto = new OauthDataDto({
 					system: systemDto,

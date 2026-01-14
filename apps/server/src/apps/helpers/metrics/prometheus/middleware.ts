@@ -12,7 +12,7 @@ class RequestInfo {
 	routePath = '';
 
 	private hasPath(reqRoute: unknown): reqRoute is { path: string } {
-		return typeof reqRoute === 'object' && reqRoute != null && 'path' in reqRoute;
+		return typeof reqRoute === 'object' && reqRoute !== null && 'path' in reqRoute;
 	}
 
 	constructor(req: Request) {

@@ -98,7 +98,7 @@ describe('Room Invitation Link Controller (API)', () => {
 			const otherSchoool = schoolEntityFactory.buildWithId();
 
 			const { user, account } = UserAndAccountTestFactory.buildByRole(roleName, {
-				school: userSchool == UserSchool.SAME_SCHOOL ? school : otherSchoool,
+				school: userSchool === UserSchool.SAME_SCHOOL ? school : otherSchoool,
 			});
 
 			const roomInvitationLink = roomInvitationLinkEntityFactory.buildWithId({
