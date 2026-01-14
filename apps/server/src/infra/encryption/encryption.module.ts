@@ -1,11 +1,9 @@
 import { LegacyLogger, LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { DynamicModule, Module } from '@nestjs/common';
-import { EncryptionConfig } from './encryption-config.interface';
+import { EncryptionConfig, INTERNAL_ENCRYPTION_CONFIG_TOKEN } from './encryption-config.interface';
 import { DefaultEncryptionService } from './encryption.interface';
 import { SymmetricKeyEncryptionService } from './encryption.service';
-
-const configToken = 'INTERNAL_ENCRYPTION_CONFIG_TOKEN';
 
 @Module({})
 export class EncryptionModule {
@@ -15,13 +13,13 @@ export class EncryptionModule {
 				provide: DefaultEncryptionService,
 				useFactory: (config: EncryptionConfig, logger: LegacyLogger) =>
 					new SymmetricKeyEncryptionService(logger, config.aesKey),
-				inject: [configToken, LegacyLogger],
+				inject: [INTERNAL_ENCRYPTION_CONFIG_TOKEN, LegacyLogger],
 			},
 		];
 
 		return {
 			module: EncryptionModule,
-			imports: [LoggerModule, ConfigurationModule.register(configToken, constructor)],
+			imports: [LoggerModule, ConfigurationModule.register(INTERNAL_ENCRYPTION_CONFIG_TOKEN, constructor)],
 			providers,
 			exports: [DefaultEncryptionService],
 		};
