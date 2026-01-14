@@ -34,7 +34,6 @@ export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 		return {
 			module: MongoMemoryDatabaseModule,
 			imports: [createMikroOrmModule({ ...options })],
-			exports: [MikroOrmModule],
 		};
 	}
 
