@@ -20,6 +20,9 @@ import {
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from '../dto';
+import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
+
+const encryptionKey = 'test-key-with-32-characters-long';
 
 describe('Account Controller (API)', () => {
 	const basePath = '/account';
@@ -41,7 +44,10 @@ describe('Account Controller (API)', () => {
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
+			.useValue({ aesKey: encryptionKey })
+			.compile();
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
