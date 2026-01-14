@@ -7,17 +7,15 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ConsoleModule } from 'nestjs-console';
 import { MediaSyncConsole } from './api/media-sync-console';
-import { mediaSyncConsoleConfig } from './media-sync-console.config';
 import { ENTITIES } from './media-sync-console.entity.imports';
 import { MediaSourceSyncUc } from './uc';
 
 @Module({
 	imports: [
-		ConfigModule.forRoot(createConfigModuleOptions(mediaSyncConsoleConfig)),
+		ConfigModule.forRoot({ isGlobal: true }),
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
