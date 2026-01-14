@@ -1,8 +1,9 @@
 import { DomainErrorHandler, ErrorModule } from '@core/error';
 import { Logger, LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { StorageClient, ValkeyClientModuleAsyncOptions } from './types';
-import { ValkeyConfig, ValkeyMode } from './valkey.config';
+import { InMemoryConfig, VALKEY_CLIENT_CONFIG_TOKEN, ValkeyConfig } from './valkey.config';
 import { VALKEY_CLIENT_OPTIONS } from './valkey.constants';
 import { ValkeyFactory } from './valkey.factory';
 
@@ -20,29 +21,27 @@ const createValkeyClient = (
 @Module({})
 export class ValkeyClientModule {
 	public static registerInMemory(injectionToken: string): DynamicModule {
-		return this.register(injectionToken, {
-			MODE: ValkeyMode.IN_MEMORY,
-		});
+		return this.register(injectionToken, InMemoryConfig);
 	}
 
-	public static register(injectionToken: string, config: ValkeyConfig): DynamicModule {
+	public static register<T extends object>(injectionToken: string, Constructor: new () => T): DynamicModule {
 		const providers = [
 			{
 				provide: injectionToken,
-				useFactory: (logger: Logger, domainErrorHandler: DomainErrorHandler) =>
+				useFactory: (logger: Logger, domainErrorHandler: DomainErrorHandler, config: ValkeyConfig) =>
 					createValkeyClient(config, logger, domainErrorHandler),
-				inject: [Logger, DomainErrorHandler],
+				inject: [Logger, DomainErrorHandler, VALKEY_CLIENT_CONFIG_TOKEN],
 			},
 		];
 
 		return {
 			module: ValkeyClientModule,
-			imports: [LoggerModule, ErrorModule],
+			imports: [LoggerModule, ErrorModule, ConfigurationModule.register(VALKEY_CLIENT_CONFIG_TOKEN, Constructor)],
 			providers: providers,
 			exports: providers,
 		};
 	}
-
+	// @TODO: Refactor to use only one of the register methods
 	public static registerAsync(options: ValkeyClientModuleAsyncOptions): DynamicModule {
 		const providers = [
 			{
