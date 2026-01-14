@@ -1,4 +1,3 @@
-import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { federalStateEntityFactory, schoolYearEntityFactory, storageProviderFactory } from '@modules/school/testing';
@@ -10,7 +9,6 @@ import { TestApiClient } from '@testing/test-api-client';
 import { AdminApiSchoolCreateResponseDto } from '../dto/response/admin-api-school-create.response.dto';
 
 const baseRouteName = '/admin/schools';
-const encryptionKey = 'test-key-with-32-characters-long';
 
 describe('Admin API - Schools (API)', () => {
 	let app: INestApplication;
@@ -20,10 +18,7 @@ describe('Admin API - Schools (API)', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		})
-			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
-			.useValue({ aesKey: encryptionKey })
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();

@@ -1,10 +1,10 @@
 import { ErrorResponse } from '@core/error/dto';
 import { BiloMediaQueryResponse, biloMediaQueryResponseFactory } from '@infra/bilo-client';
-import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 import { OfferDTO } from '@infra/vidis-client/generated';
 import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { mediaSourceEntityFactory } from '@modules/media-source';
+import { MEDIUM_METADATA_ENCRYPTION_CONFIG_TOKEN } from '@modules/medium-metadata/encryption.config';
 import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -30,7 +30,7 @@ describe('MediumMetadataController (API)', () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
-			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
+			.overrideProvider(MEDIUM_METADATA_ENCRYPTION_CONFIG_TOKEN)
 			.useValue({ aesKey: encryptionKey })
 			.compile();
 

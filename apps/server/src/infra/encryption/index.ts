@@ -1,4 +1,4 @@
-export { EncryptionConfig, INTERNAL_ENCRYPTION_CONFIG_TOKEN } from './encryption-config.interface';
+export { EncryptionConfig } from './encryption-config.interface';
 export * from './encryption.interface';
 export * from './encryption.module';
 export * from './encryption.service';

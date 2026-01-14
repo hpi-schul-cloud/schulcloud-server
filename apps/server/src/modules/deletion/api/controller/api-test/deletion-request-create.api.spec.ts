@@ -1,4 +1,3 @@
-import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
@@ -53,8 +52,6 @@ const isDeletionPlannedWithinAcceptableRange = (
 	return deletionPlannedAt >= minDeletionPlannedAt && deletionPlannedAt <= maxDeletionPlannedAt;
 };
 
-const encryptionKey = 'test-key-with-32-characters-long';
-
 describe(`deletionRequest create (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -67,10 +64,7 @@ describe(`deletionRequest create (api)`, () => {
 
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		})
-			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
-			.useValue({ aesKey: encryptionKey })
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();

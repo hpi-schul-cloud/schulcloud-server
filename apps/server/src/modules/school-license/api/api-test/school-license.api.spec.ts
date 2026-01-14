@@ -2,6 +2,7 @@ import { PageOfferDTO } from '@infra/vidis-client';
 import { vidisPageOfferFactory } from '@infra/vidis-client/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
+import { SCHOOL_LICENSE_ENCRYPTION_CONFIG_TOKEN } from '@modules/school-license/encryption.config';
 import { federalStateEntityFactory, schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -13,7 +14,6 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { mediaSchoolLicenseEntityFactory } from '../../testing';
 import { MediaSchoolLicenseListResponse } from '../dto';
-import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 
 const encryptionKey = 'test-key-with-32-characters-long';
 
@@ -27,7 +27,7 @@ describe('SchoolLicenseController (API)', () => {
 		const moduleFixture = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
-			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
+			.overrideProvider(SCHOOL_LICENSE_ENCRYPTION_CONFIG_TOKEN)
 			.useValue({ aesKey: encryptionKey })
 			.compile();
 

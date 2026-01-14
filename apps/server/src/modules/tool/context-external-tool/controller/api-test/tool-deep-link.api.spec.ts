@@ -2,11 +2,12 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
+import { TOOL_ENCRYPTION_CONFIG_TOKEN } from '@modules/tool/encryption.config';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AesEncryptionHelper } from '@shared/common/utils';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { AesEncryptionHelper } from '@shared/common/utils';
 import { externalToolEntityFactory, lti11ToolConfigEntityFactory } from '../../../external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalToolEntity, ContextExternalToolType, LtiDeepLinkEmbeddable } from '../../repo';
@@ -25,12 +26,16 @@ describe('ToolDeepLinkController (API)', () => {
 
 	const basePath = '/tools/context-external-tools';
 	const decryptedSecret = 'secret';
-	const encryptedSecret = AesEncryptionHelper.encrypt(decryptedSecret, Configuration.get('AES_KEY') as string);
+	const encryptionKey = 'test-key-with-32-characters-long';
+	const encryptedSecret = AesEncryptionHelper.encrypt(decryptedSecret, encryptionKey);
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(TOOL_ENCRYPTION_CONFIG_TOKEN)
+			.useValue({ aesKey: encryptionKey })
+			.compile();
 
 		app = moduleRef.createNestApplication();
 		await app.init();

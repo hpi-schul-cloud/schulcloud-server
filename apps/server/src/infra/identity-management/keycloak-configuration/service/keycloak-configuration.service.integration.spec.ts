@@ -1,4 +1,5 @@
 import { LoggerModule } from '@core/logger';
+import { TestEncryptionConfig } from '@infra/encryption';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import AuthenticationExecutionExportRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionExportRepresentation';
 import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
@@ -12,7 +13,6 @@ import { v1 } from 'uuid';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
 import { KeycloakConfigurationService } from './keycloak-configuration.service';
-import { TestEncryptionConfig } from '@infra/encryption';
 
 describe('KeycloakConfigurationService Integration', () => {
 	let module: TestingModule;
@@ -29,7 +29,7 @@ describe('KeycloakConfigurationService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				KeycloakConfigurationModule.register(TestEncryptionConfig),
+				KeycloakConfigurationModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
 				LoggerModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 				ConfigModule.forRoot({

@@ -1,4 +1,3 @@
-import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { RoleName } from '@modules/role';
@@ -13,7 +12,6 @@ import { User } from '../../repo';
 import { AdminApiUserCreateResponse } from '../dto/admin-api-user-create.response.dto';
 
 const baseRouteName = '/admin/users';
-const encryptionKey = 'test-key-with-32-characters-long';
 
 describe('Admin API - Users (API)', () => {
 	let app: INestApplication;
@@ -23,10 +21,7 @@ describe('Admin API - Users (API)', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		})
-			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
-			.useValue({ aesKey: encryptionKey })
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();

@@ -1,5 +1,4 @@
 import { DeepMocked } from '@golevelup/ts-jest';
-import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 import { Test, TestingModule } from '@nestjs/testing';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -9,8 +8,6 @@ import { TEST_ENTITIES } from './deletion-console.entity.imports';
 import { DeletionExecutionConsole } from './deletion-execution.console';
 import { TriggerDeletionExecutionOptions } from './interface';
 import { DeletionExecutionUc } from './uc';
-
-const encryptionKey = 'test-key-with-32-characters-long';
 
 describe(DeletionExecutionConsole.name, () => {
 	let module: TestingModule;
@@ -23,10 +20,7 @@ describe(DeletionExecutionConsole.name, () => {
 				DeletionConsoleModule,
 				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
 			],
-		})
-			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
-			.useValue({ aesKey: encryptionKey })
-			.compile();
+		}).compile();
 
 		console = module.get(DeletionExecutionConsole);
 		deletionExecutionUc = module.get(DeletionExecutionUc);

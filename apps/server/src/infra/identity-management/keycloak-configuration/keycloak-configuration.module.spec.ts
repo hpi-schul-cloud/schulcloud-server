@@ -1,3 +1,4 @@
+import { TestEncryptionConfig } from '@infra/encryption';
 import { SystemEntity } from '@modules/system/repo';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -6,14 +7,13 @@ import { KeycloakConsole } from './console/keycloak-configuration.console';
 import { KeycloakConfigurationModule } from './keycloak-configuration.module';
 import { KeycloakConfigurationService } from './service/keycloak-configuration.service';
 import { KeycloakSeedService } from './service/keycloak-seed.service';
-import { TestEncryptionConfig } from '@infra/encryption';
 
 describe('KeycloakManagementModule', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				KeycloakConfigurationModule.register(TestEncryptionConfig),
+				KeycloakConfigurationModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
 				MongoMemoryDatabaseModule.forRoot({ entities: [SystemEntity] }),
 				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
 			],

@@ -11,10 +11,8 @@ import { StatusModel } from '../../../domain/types'; // barrel file
 import { DeletionBatchEntity } from '../../../repo/entity'; // barrel file
 import { deletionBatchEntityFactory, deletionRequestEntityFactory } from '../../../repo/entity/testing'; // testing need to be changed to top level of the module
 import { DeletionBatchDetailsResponse } from '../dto/response/deletion-batch-details.response'; // barrel file
-import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 
 const baseRouteName = '/deletion-batches';
-const encryptionKey = 'test-key-with-32-characters-long';
 
 describe('getBatchDetails ', () => {
 	let app: INestApplication;
@@ -28,10 +26,7 @@ describe('getBatchDetails ', () => {
 
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		})
-			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
-			.useValue({ aesKey: encryptionKey })
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		em = module.get(EntityManager);

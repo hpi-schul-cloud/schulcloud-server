@@ -1,5 +1,6 @@
 import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
+import { TestEncryptionConfig } from '@infra/encryption';
 import { IdentityManagementModule, IdentityManagementService } from '@infra/identity-management';
 import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementService } from '@infra/identity-management/keycloak/service/keycloak-identity-management.service';
@@ -21,7 +22,6 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { TestEncryptionConfig } from '@infra/encryption';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
@@ -73,7 +73,7 @@ describe('AccountService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				IdentityManagementModule.register(TestEncryptionConfig),
+				IdentityManagementModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
 				UserModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 				ConfigModule.forRoot({

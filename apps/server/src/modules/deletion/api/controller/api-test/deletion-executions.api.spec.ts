@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CalendarService } from '@infra/calendar';
-import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 import { FileDO, FileRecordParentType, ScanStatus } from '@infra/rabbitmq';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
@@ -46,7 +45,6 @@ import { TestApiClient } from '@testing/test-api-client';
 import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
 
 const baseRouteName = '/deletionExecutions';
-const encryptionKey = 'test-key-with-32-characters-long';
 
 describe(`deletionExecution (api)`, () => {
 	let app: INestApplication;
@@ -72,8 +70,6 @@ describe(`deletionExecution (api)`, () => {
 			.useValue(createMock<CalendarService>())
 			.overrideProvider(RocketChatService)
 			.useValue(createMock<RocketChatService>())
-			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
-			.useValue({ aesKey: encryptionKey })
 			.compile();
 
 		app = module.createNestApplication();

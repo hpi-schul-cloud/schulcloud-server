@@ -1,4 +1,3 @@
-import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 import { Test, TestingModule } from '@nestjs/testing';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -11,8 +10,6 @@ import { TEST_ENTITIES } from './deletion-console.entity.imports';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { BatchDeletionUc } from './uc';
 
-const encryptionKey = 'test-key-with-32-characters-long';
-
 describe(DeletionQueueConsole.name, () => {
 	let module: TestingModule;
 	let console: DeletionQueueConsole;
@@ -24,10 +21,7 @@ describe(DeletionQueueConsole.name, () => {
 				DeletionConsoleModule,
 				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
 			],
-		})
-			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
-			.useValue({ aesKey: encryptionKey })
-			.compile();
+		}).compile();
 
 		console = module.get(DeletionQueueConsole);
 		batchDeletionUc = module.get(BatchDeletionUc);

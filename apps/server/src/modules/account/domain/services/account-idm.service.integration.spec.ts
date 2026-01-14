@@ -56,7 +56,7 @@ describe('AccountIdmService Integration', () => {
 						};
 					},
 				}),
-				IdentityManagementModule.register(TestEncryptionConfig),
+				IdentityManagementModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
 				LoggerModule,
 			],
 			providers: [

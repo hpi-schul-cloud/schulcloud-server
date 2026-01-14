@@ -24,8 +24,8 @@ describe('KeycloakIdentityManagementOauthService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				KeycloakModule.register(TestEncryptionConfig),
-				KeycloakConfigurationModule.register(TestEncryptionConfig),
+				KeycloakModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
+				KeycloakConfigurationModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
 				KeycloakAdministrationModule,
 				LoggerModule,
 				MongoMemoryDatabaseModule.forRoot({ allowGlobalContext: true, entities: [AccountEntity] }),

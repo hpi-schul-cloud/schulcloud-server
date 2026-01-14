@@ -1,4 +1,3 @@
-import { INTERNAL_ENCRYPTION_CONFIG_TOKEN } from '@infra/encryption';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
@@ -10,7 +9,6 @@ import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
 import { DeletionRequestLogResponse } from '../dto';
 
 const baseRouteName = '/deletionRequests';
-const encryptionKey = 'test-key-with-32-characters-long';
 
 describe(`deletionRequest find (api)`, () => {
 	let app: INestApplication;
@@ -24,10 +22,7 @@ describe(`deletionRequest find (api)`, () => {
 
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		})
-			.overrideProvider(INTERNAL_ENCRYPTION_CONFIG_TOKEN)
-			.useValue({ aesKey: encryptionKey })
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
