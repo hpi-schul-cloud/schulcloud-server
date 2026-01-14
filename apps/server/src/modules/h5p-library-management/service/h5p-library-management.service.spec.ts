@@ -1304,17 +1304,16 @@ describe('H5PLibraryManagementService', () => {
 						compare: jest.fn(),
 						compareVersions: jest.fn(),
 					});
-					libraryStorage.addFile.mockRejectedValueOnce(new Error('Mocked error during addFile'));
+					const error = new Error('Mocked error during addFile');
+					libraryStorage.addFile.mockRejectedValueOnce(error);
 
-					return { service };
+					return { error, service };
 				};
 
-				it('should return an empty result list', async () => {
-					const { service } = setup();
+				it('should rethrow the error', async () => {
+					const { error, service } = setup();
 
-					const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
-
-					expect(synchronizedLibraries).toEqual([]);
+					await expect(service.synchronizeDbEntryAndLibraryJson()).rejects.toThrow(error);
 				});
 			});
 		});
