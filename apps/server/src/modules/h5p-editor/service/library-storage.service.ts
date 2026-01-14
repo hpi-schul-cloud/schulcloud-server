@@ -71,24 +71,16 @@ export class LibraryStorage implements ILibraryStorage {
 
 		const s3Path = this.getS3Key(libraryName, filename);
 
-		try {
-			await this.promiseLimiter(() =>
-				this.s3Client.create(
-					s3Path,
-					new H5pFileDto({
-						name: s3Path,
-						mimeType: 'application/octet-stream',
-						data: dataStream,
-					})
-				)
-			);
-		} catch {
-			throw new H5pError(
-				`mongo-s3-library-storage:s3-upload-error`,
-				{ ubername: LibraryName.toUberName(libraryName), filename },
-				500
-			);
-		}
+		await this.promiseLimiter(() =>
+			this.s3Client.create(
+				s3Path,
+				new H5pFileDto({
+					name: s3Path,
+					mimeType: 'application/octet-stream',
+					data: dataStream,
+				})
+			)
+		);
 
 		return true;
 	}
