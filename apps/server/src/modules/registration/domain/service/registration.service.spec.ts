@@ -194,21 +194,23 @@ describe('RegistrationService', () => {
 			it('should call mail service to resend registration mail', async () => {
 				const room = roomFactory.build({ name: 'A test room' });
 				const registrationData = {
-					email: 'test@example.com',
 					firstName: 'John',
 					lastName: 'Doe',
 					roomIds: [room.id],
 				};
 				const registrationWithoutResentAt = registrationFactory.build({
 					...registrationData,
+					email: 'registrationWithoutResentAt@example.com',
 					resentAt: undefined,
 				});
 				const registrationWithResentAt = registrationFactory.build({
 					...registrationData,
+					email: 'registrationWithResentAt@example.com',
 					resentAt: new Date(Date.now() - 5 * 60 * 1000),
 				});
 				const registrationWithUnelapsedCooldown = registrationFactory.build({
 					...registrationData,
+					email: 'registrationWithUnelapsedCooldown@example.com',
 					resentAt: new Date(Date.now() - 60 * 1000),
 				});
 
@@ -225,6 +227,24 @@ describe('RegistrationService', () => {
 				]);
 
 				expect(mailService.send).toHaveBeenCalledTimes(2);
+				expect(mailService.send).toHaveBeenNthCalledWith(
+					1,
+					expect.objectContaining({
+						recipients: [registrationWithoutResentAt.email],
+					})
+				);
+				expect(mailService.send).toHaveBeenNthCalledWith(
+					2,
+					expect.objectContaining({
+						recipients: [registrationWithResentAt.email],
+					})
+				);
+				expect(mailService.send).not.toHaveBeenNthCalledWith(
+					3,
+					expect.objectContaining({
+						recipients: [registrationWithUnelapsedCooldown.email],
+					})
+				);
 			});
 		});
 
