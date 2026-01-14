@@ -121,7 +121,7 @@ export class BiloMediaClientAdapter {
 				return;
 			}
 
-			this.fallbackLogo(response);
+			this.validateAndCorrectCoverUrls(response);
 
 			const validationErrors: ValidationError[] = await validate(plainToClass(BiloMediaQueryResponse, response));
 			if (validationErrors.length > 0) {
@@ -154,7 +154,7 @@ export class BiloMediaClientAdapter {
 			throw new BiloMediaQueryUnprocessableResponseLoggableException();
 		}
 
-		this.fallbackLogo(response);
+		this.validateAndCorrectCoverUrls(response);
 
 		const validationErrors: ValidationError[] = await validate(plainToClass(BiloMediaQueryResponse, response));
 		if (validationErrors.length > 0) {
@@ -164,7 +164,7 @@ export class BiloMediaClientAdapter {
 		}
 	}
 
-	private fallbackLogo(response: BiloMediaQueryResponse): ValidationError | void {
+	private validateAndCorrectCoverUrls(response: BiloMediaQueryResponse): ValidationError | void {
 		if (!isURL(response.data.coverSmall.href) && !isURL(response.data.cover.href)) {
 			response.data.coverSmall.href = '';
 			response.data.cover.href = '';

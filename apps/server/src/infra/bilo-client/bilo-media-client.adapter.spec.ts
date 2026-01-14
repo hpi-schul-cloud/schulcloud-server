@@ -891,6 +891,7 @@ describe(BiloMediaClientAdapter.name, () => {
 				const { mediaSource } = setup();
 
 				const correctedResponse = await service.fetchMediumMetadata('id', mediaSource);
+
 				expect(correctedResponse.cover.href).toBe('');
 				expect(correctedResponse.coverSmall.href).toBe('');
 			});
