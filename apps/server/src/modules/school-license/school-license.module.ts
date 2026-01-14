@@ -6,9 +6,10 @@ import { Module } from '@nestjs/common';
 import { MEDIA_SCHOOL_LICENSE_REPO } from './repo';
 import { MediaSchoolLicenseMikroOrmRepo } from './repo/mikro-orm/media-school-license.repo';
 import { MediaSchoolLicenseService } from './service';
+import { EncryptionConfig } from './encryption.config';
 
 @Module({
-	imports: [MediaSourceModule, SchoolModule, LoggerModule, VidisClientModule],
+	imports: [MediaSourceModule, SchoolModule, LoggerModule, VidisClientModule.register(EncryptionConfig)],
 	providers: [
 		{ provide: MEDIA_SCHOOL_LICENSE_REPO, useClass: MediaSchoolLicenseMikroOrmRepo },
 		MediaSchoolLicenseService,

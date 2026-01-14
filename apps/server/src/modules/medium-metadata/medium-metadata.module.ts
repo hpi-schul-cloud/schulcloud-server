@@ -7,7 +7,11 @@ import { MediumMetadataService } from './service';
 import { BiloStrategy, VidisStrategy } from './strategy';
 
 @Module({
-	imports: [BiloClientModule.register(EncryptionConfig), MediaSourceModule, VidisClientModule],
+	imports: [
+		BiloClientModule.register(EncryptionConfig),
+		MediaSourceModule,
+		VidisClientModule.register(EncryptionConfig),
+	],
 	providers: [BiloStrategy, VidisStrategy, MediumMetadataService],
 	exports: [MediumMetadataService],
 })

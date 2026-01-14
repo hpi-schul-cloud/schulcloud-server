@@ -8,6 +8,7 @@ import { ExternalToolModule } from '@modules/tool';
 import { Module } from '@nestjs/common';
 import { ExternalToolMetadataUpdateService, MediaSourceSyncService } from './service';
 import { BiloMetadataSyncStrategy, VidisActivationSyncStrategy, VidisMetadataSyncStrategy } from './service/strategy';
+import { EncryptionConfig } from './encryption.config';
 
 @Module({
 	imports: [
@@ -16,7 +17,7 @@ import { BiloMetadataSyncStrategy, VidisActivationSyncStrategy, VidisMetadataSyn
 		ExternalToolModule,
 		MediumMetadataModule,
 		SchoolLicenseModule,
-		VidisClientModule,
+		VidisClientModule.register(EncryptionConfig),
 		SchoolModule,
 	],
 	providers: [
