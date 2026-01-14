@@ -70,13 +70,13 @@ export class FwuLearningContentsController {
 			{
 				id: '5501458',
 				title: 'Nachhaltig Bauen: Gebäudeaufbau',
-				thumbnail_url: '/api/v3/fwu//5501458/bild/Intro_550485864772_thumb_1024x576.jpg',
+				thumbnail_url: '/api/v3/fwu/5501458/bild/Intro_550485864772_thumb_1024x576.jpg',
 				target_url: '/api/v3/5501458/index.html',
 			},
 			{
 				id: '5501191',
 				title: 'Parteien in Deutschland',
-				thumbnail_url: 'api/v3/fwu/5501191/bild/16318234647710_thumb_1024x576.jpg',
+				thumbnail_url: '/api/v3/fwu/5501191/bild/16318234647710_thumb_1024x576.jpg',
 				target_url: '/api/v3/fwu/5501191/index.html',
 			},
 			{
