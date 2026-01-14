@@ -15,7 +15,7 @@ export class IdentityManagementModule {
 		return {
 			module: IdentityManagementModule,
 			imports: [
-				KeycloakModule,
+				KeycloakModule.register(constructor),
 				KeycloakAdministrationModule,
 				HttpModule,
 				EncryptionModule.register(constructor),

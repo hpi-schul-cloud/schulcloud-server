@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { ConsoleModule } from 'nestjs-console';
 import mikroOrmCliConfig from './mikro-orm-cli.config';
+import { EncryptionConfig } from './encryption.config';
 
 @Module({
 	imports: [
@@ -19,7 +20,9 @@ import mikroOrmCliConfig from './mikro-orm-cli.config';
 		ConsoleWriterModule,
 		FilesModule,
 		ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
-		...((Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean) ? [KeycloakModule] : []), // TODO: Was macht das KeycloakModule hier?
+		...((Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
+			? [KeycloakModule.register(EncryptionConfig)]
+			: []), // TODO: Was macht das KeycloakModule hier?
 		MikroOrmModule.forRoot(mikroOrmCliConfig),
 		SyncModule,
 	],
