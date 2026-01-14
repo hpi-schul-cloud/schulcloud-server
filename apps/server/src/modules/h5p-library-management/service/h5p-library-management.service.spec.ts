@@ -152,6 +152,71 @@ describe('H5PLibraryManagementService', () => {
 				checkBrokenLibsSpy.mockRestore();
 			});
 		});
+
+		describe('when a malformed exception occurs', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+
+				return { service };
+			};
+
+			it('should exit gracefully', async () => {
+				const { service } = setup();
+
+				const error = new Error('Mocked unhandled exception');
+				(error as { message?: string }).message = undefined;
+				jest.spyOn(service.libraryAdministration, 'getLibraries').mockRejectedValueOnce(error);
+
+				const uninstallSpy = jest.spyOn(service, 'uninstallUnwantedLibrariesAsBulk');
+				const installSpy = jest.spyOn(service, 'installLibrariesAsBulk');
+				const synchronizeSpy = jest.spyOn(service, 'synchronizeDbEntryAndLibraryJson');
+				const checkBrokenLibsSpy = jest.spyOn(service, 'checkAndRemoveBrokenLibraries');
+
+				await service.run();
+
+				expect(uninstallSpy).not.toHaveBeenCalled();
+				expect(installSpy).not.toHaveBeenCalled();
+				expect(synchronizeSpy).not.toHaveBeenCalled();
+				expect(checkBrokenLibsSpy).not.toHaveBeenCalled();
+
+				uninstallSpy.mockRestore();
+				installSpy.mockRestore();
+				synchronizeSpy.mockRestore();
+				checkBrokenLibsSpy.mockRestore();
+			});
+		});
+
+		describe('when an S3 client exception occurs', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+
+				return { service };
+			};
+
+			it('should rethrow the error', async () => {
+				const { service } = setup();
+
+				const error = new Error('S3ClientAdapter: Mocked S3 client exception');
+				jest.spyOn(service.libraryAdministration, 'getLibraries').mockRejectedValueOnce(error);
+
+				const uninstallSpy = jest.spyOn(service, 'uninstallUnwantedLibrariesAsBulk');
+				const installSpy = jest.spyOn(service, 'installLibrariesAsBulk');
+				const synchronizeSpy = jest.spyOn(service, 'synchronizeDbEntryAndLibraryJson');
+				const checkBrokenLibsSpy = jest.spyOn(service, 'checkAndRemoveBrokenLibraries');
+
+				await expect(service.run()).rejects.toThrow(error);
+
+				expect(uninstallSpy).not.toHaveBeenCalled();
+				expect(installSpy).not.toHaveBeenCalled();
+				expect(synchronizeSpy).not.toHaveBeenCalled();
+				expect(checkBrokenLibsSpy).not.toHaveBeenCalled();
+
+				uninstallSpy.mockRestore();
+				installSpy.mockRestore();
+				synchronizeSpy.mockRestore();
+				checkBrokenLibsSpy.mockRestore();
+			});
+		});
 	});
 
 	describe('uninstallUnwantedLibraries', () => {
@@ -260,7 +325,7 @@ describe('H5PLibraryManagementService', () => {
 
 				service.libraryWishList = wantedLibraries;
 
-				return { service, wantedLibraries, expectedUninstalled };
+				return { service, expectedUninstalled };
 			};
 
 			it('should uninstall unwanted libraries except the failed library and return the list of uninstalled libraries', async () => {
@@ -272,6 +337,49 @@ describe('H5PLibraryManagementService', () => {
 				const uninstalledLibraries = await service.uninstallUnwantedLibrariesAsBulk();
 
 				expect(uninstalledLibraries).toEqual(expectedUninstalled);
+			});
+		});
+
+		describe('when deleteLibrary fails with an S3 error', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+
+				const wantedLibraries = ['a'];
+				const availableLibraries = [
+					ILibraryAdministrationOverviewItemTestFactory.create({
+						machineName: 'a',
+						dependentsCount: 1,
+						title: 'Library A',
+					}),
+					ILibraryAdministrationOverviewItemTestFactory.create({
+						machineName: 'b',
+						dependentsCount: 0,
+						title: 'Library B',
+					}),
+					ILibraryAdministrationOverviewItemTestFactory.create({
+						machineName: 'c',
+						dependentsCount: 0,
+						title: 'Library C',
+					}),
+				];
+
+				jest.spyOn(service.libraryAdministration, 'getLibraries').mockResolvedValue(availableLibraries);
+
+				const s3Error = new Error('S3ClientAdapter: Mocked S3 client exception');
+				libraryStorage.deleteLibrary.mockRejectedValueOnce(s3Error);
+
+				service.libraryWishList = wantedLibraries;
+
+				return { s3Error, service };
+			};
+
+			it('should rethrow the error', async () => {
+				const { s3Error, service } = setup();
+
+				// Call the method to uninstall unwanted libraries
+				// This will use the mocked getLibraries and deleteLibrary methods
+
+				await expect(service.uninstallUnwantedLibrariesAsBulk()).rejects.toThrow(s3Error);
 			});
 		});
 
@@ -832,6 +940,57 @@ describe('H5PLibraryManagementService', () => {
 				});
 			});
 
+			describe('when an S3 client error occured in updateLibrary', () => {
+				const setup = () => {
+					const service = module.get(H5PLibraryManagementService);
+
+					libraryStorage.getAllLibraryFolders.mockResolvedValueOnce(['libraryA-1.0']);
+					libraryStorage.fileExists.mockResolvedValueOnce(true);
+					libraryStorage.getFileAsJson.mockResolvedValueOnce({
+						machineName: 'libraryA',
+						majorVersion: 1,
+						minorVersion: 0,
+						patchVersion: 1,
+						runnable: false,
+						title: 'Library A',
+					});
+					libraryStorage.isInstalled.mockResolvedValueOnce(true);
+					libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
+						{
+							machineName: 'libraryA',
+							majorVersion: 1,
+							minorVersion: 0,
+						},
+					]);
+					libraryStorage.getLibrary.mockResolvedValueOnce({
+						machineName: 'libraryA',
+						majorVersion: 1,
+						minorVersion: 0,
+						patchVersion: 0,
+						files: [],
+						_id: new ObjectId(),
+						id: 'mock_id',
+						createdAt: new Date(),
+						updatedAt: new Date(),
+						restricted: false,
+						runnable: true,
+						title: 'Library A',
+						compare: jest.fn(),
+						compareVersions: jest.fn(),
+					});
+					const s3Error = new Error('S3ClientAdapter: Mocked S3 client exception');
+					libraryStorage.updateLibrary.mockRejectedValueOnce(s3Error);
+
+					return { s3Error, service };
+				};
+
+				it('should return an empty result list', async () => {
+					const { s3Error, service } = setup();
+
+					await expect(service.synchronizeDbEntryAndLibraryJson()).rejects.toThrow(s3Error);
+				});
+			});
+
 			describe('checkConsistency', () => {
 				describe('when library is not installed', () => {
 					const setup = () => {
@@ -1192,6 +1351,34 @@ describe('H5PLibraryManagementService', () => {
 					expect(synchronizedLibraries).toEqual([]);
 				});
 			});
+
+			describe('when an S3 client error occured in addLibrary', () => {
+				const setup = () => {
+					const service = module.get(H5PLibraryManagementService);
+
+					libraryStorage.getAllLibraryFolders.mockResolvedValueOnce(['libraryA-1.0']);
+					libraryStorage.fileExists.mockResolvedValueOnce(true);
+					libraryStorage.getFileAsJson.mockResolvedValueOnce({
+						machineName: 'libraryA',
+						majorVersion: 1,
+						minorVersion: 0,
+						patchVersion: 1,
+						runnable: 0,
+						title: 'Library A',
+					});
+					libraryStorage.isInstalled.mockResolvedValueOnce(false);
+					const s3Error = new Error('S3ClientAdapter: Mocked S3 client exception');
+					libraryStorage.addLibrary.mockRejectedValueOnce(s3Error);
+
+					return { s3Error, service };
+				};
+
+				it('should rethrow the error', async () => {
+					const { s3Error, service } = setup();
+
+					await expect(service.synchronizeDbEntryAndLibraryJson()).rejects.toThrow(s3Error);
+				});
+			});
 		});
 
 		describe('addLibraryJsonToS3', () => {
@@ -1278,6 +1465,25 @@ describe('H5PLibraryManagementService', () => {
 						const synchronizedLibraries = await service.synchronizeDbEntryAndLibraryJson();
 
 						expect(synchronizedLibraries).toEqual([]);
+					});
+				});
+
+				describe('when getLibrary fails with an S3 client error', () => {
+					const setup = () => {
+						const service = module.get(H5PLibraryManagementService);
+
+						libraryStorage.getAllLibraryFolders.mockResolvedValueOnce(['libraryA-1.0']);
+						libraryStorage.fileExists.mockResolvedValueOnce(false);
+						const s3Error = new Error('S3ClientAdapter: Mocked S3 client exception');
+						libraryStorage.getLibrary.mockRejectedValueOnce(s3Error);
+
+						return { s3Error, service };
+					};
+
+					it('should return an empty result list', async () => {
+						const { s3Error, service } = setup();
+
+						await expect(service.synchronizeDbEntryAndLibraryJson()).rejects.toThrow(s3Error);
 					});
 				});
 			});
@@ -1399,6 +1605,51 @@ describe('H5PLibraryManagementService', () => {
 				const result = await service.checkAndRemoveBrokenLibraries();
 
 				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when an S3 client error occurs during the check', () => {
+			const setup = () => {
+				const service = module.get(H5PLibraryManagementService);
+
+				const availableLibraries = [
+					ILibraryAdministrationOverviewItemTestFactory.create({
+						machineName: 'a',
+						dependentsCount: 1,
+						title: 'Library A',
+					}),
+				];
+				jest.spyOn(service.libraryAdministration, 'getLibraries').mockResolvedValue(availableLibraries);
+
+				libraryStorage.isInstalled.mockResolvedValueOnce(true);
+				libraryStorage.getLibrary.mockResolvedValueOnce({
+					machineName: 'libraryA',
+					majorVersion: 1,
+					minorVersion: 0,
+					patchVersion: 0,
+					files: [],
+					_id: new ObjectId(),
+					id: 'mock_id',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					restricted: false,
+					runnable: true,
+					title: 'Library A',
+					compare: jest.fn(),
+					compareVersions: jest.fn(),
+					preloadedJs: [{ path: 'path/to/preloaded.js' }],
+					preloadedCss: [{ path: 'path/to/preloaded.css' }],
+				});
+				const s3Error = new Error('S3ClientAdapter: Mocked S3 client exception');
+				libraryStorage.fileExists.mockRejectedValueOnce(s3Error);
+
+				return { s3Error, service };
+			};
+
+			it('should return "broken" library', async () => {
+				const { s3Error, service } = setup();
+
+				await expect(service.checkAndRemoveBrokenLibraries()).rejects.toThrow(s3Error);
 			});
 		});
 	});
