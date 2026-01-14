@@ -1,8 +1,8 @@
 import { LoggerModule } from '@core/logger';
 import { OauthAdapterModule } from '@modules/oauth-adapter';
 import { DynamicModule, Module } from '@nestjs/common';
-import { EncryptionConfig, EncryptionModule } from '../encryption';
 import { TspClientFactory } from './tsp-client-factory';
+import { EncryptionConfig, EncryptionModule } from '@infra/encryption';
 
 @Module({})
 export class TspClientModule {
