@@ -12,7 +12,7 @@ import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { SyncConsole } from './console/sync.console';
-import { EncryptionConfig } from './encryption.config';
+import { SyncEncryptionConfig } from './encryption.config';
 import { SyncService } from './service/sync.service';
 import { TspFetchService } from './strategy/tsp/tsp-fetch.service';
 import { TspOauthDataMapper } from './strategy/tsp/tsp-oauth-data.mapper';
@@ -27,7 +27,7 @@ import { SyncUc } from './uc/sync.uc';
 		ConsoleWriterModule,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [
-					TspClientModule.register(EncryptionConfig),
+					TspClientModule.register(SyncEncryptionConfig),
 					SystemModule,
 					SchoolModule,
 					LegacySchoolModule,

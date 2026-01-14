@@ -3,13 +3,13 @@ import { VidisClientModule } from '@infra/vidis-client';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { SchoolModule } from '@modules/school';
 import { Module } from '@nestjs/common';
+import { SchoolLicenseEncryptionConfig } from './encryption.config';
 import { MEDIA_SCHOOL_LICENSE_REPO } from './repo';
 import { MediaSchoolLicenseMikroOrmRepo } from './repo/mikro-orm/media-school-license.repo';
 import { MediaSchoolLicenseService } from './service';
-import { EncryptionConfig } from './encryption.config';
 
 @Module({
-	imports: [MediaSourceModule, SchoolModule, LoggerModule, VidisClientModule.register(EncryptionConfig)],
+	imports: [MediaSourceModule, SchoolModule, LoggerModule, VidisClientModule.register(SchoolLicenseEncryptionConfig)],
 	providers: [
 		{ provide: MEDIA_SCHOOL_LICENSE_REPO, useClass: MediaSchoolLicenseMikroOrmRepo },
 		MediaSchoolLicenseService,

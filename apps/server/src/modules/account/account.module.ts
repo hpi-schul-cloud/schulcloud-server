@@ -10,9 +10,9 @@ import { ACCOUNT_REPO, AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmT
 import { AccountServiceDb } from './domain/services/account-db.service';
 import { AccountServiceIdm } from './domain/services/account-idm.service';
 import { AccountService } from './domain/services/account.service';
+import { AccountEncryptionConfig } from './encryption.config';
 import { AccountMikroOrmRepo } from './repo';
 import { DeleteUserAccountDataStep } from './saga';
-import { EncryptionConfig } from './encryption.config';
 
 function accountIdmToDtoMapperFactory(config: AccountConfig): AccountIdmToDoMapper {
 	if (config.identityManagementLoginEnabled === true) {
@@ -23,7 +23,7 @@ function accountIdmToDtoMapperFactory(config: AccountConfig): AccountIdmToDoMapp
 
 @Module({
 	imports: [
-		IdentityManagementModule.register(EncryptionConfig),
+		IdentityManagementModule.register(AccountEncryptionConfig),
 		SystemModule,
 		LoggerModule,
 		UserModule,

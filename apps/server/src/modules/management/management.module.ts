@@ -5,7 +5,7 @@ import { EncryptionModule } from '@infra/encryption';
 import { FeathersModule } from '@infra/feathers';
 import { FileSystemModule } from '@infra/file-system';
 import { KeycloakConfigurationModule } from '@infra/identity-management/keycloak-configuration/keycloak-configuration.module';
-import { EncryptionConfig } from '@modules/account/encryption.config';
+import { AccountEncryptionConfig } from '@modules/account/encryption.config';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { serverConfig } from '@modules/server';
@@ -31,7 +31,7 @@ const baseImports = [
 	FileSystemModule,
 	LoggerModule,
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
-	EncryptionModule.register(EncryptionConfig),
+	EncryptionModule.register(AccountEncryptionConfig),
 	FeathersModule,
 	MediaSourceModule,
 	SystemModule,
@@ -41,7 +41,7 @@ const baseImports = [
 ];
 
 const imports = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
-	? [...baseImports, KeycloakConfigurationModule.register(EncryptionConfig)]
+	? [...baseImports, KeycloakConfigurationModule.register(AccountEncryptionConfig)]
 	: baseImports;
 
 const providers = [

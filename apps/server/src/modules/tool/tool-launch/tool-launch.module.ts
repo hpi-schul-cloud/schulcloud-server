@@ -8,6 +8,7 @@ import { UserModule } from '@modules/user';
 import { forwardRef, Module } from '@nestjs/common';
 import { CommonToolModule } from '../common';
 import { ContextExternalToolModule } from '../context-external-tool';
+import { ToolEncryptionConfig } from '../encryption.config';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolModule } from '../school-external-tool';
 import { ToolLaunchService } from './service';
@@ -21,7 +22,6 @@ import {
 	AutoSchoolNumberStrategy,
 } from './service/auto-parameter-strategy';
 import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrategy } from './service/launch-strategy';
-import { EncryptionConfig } from '../encryption.config';
 
 @Module({
 	imports: [
@@ -35,7 +35,7 @@ import { EncryptionConfig } from '../encryption.config';
 		CourseModule,
 		BoardModule,
 		GroupModule,
-		EncryptionModule.register(EncryptionConfig),
+		EncryptionModule.register(ToolEncryptionConfig),
 	],
 	providers: [
 		ToolLaunchService,

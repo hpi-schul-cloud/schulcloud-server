@@ -9,16 +9,16 @@ import { UserModule } from '@modules/user';
 import { UserLoginMigrationModule } from '@modules/user-login-migration';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { OauthEncryptionConfig } from './encryption.config';
 import { OAUTH_SESSION_TOKEN_REPO, OauthSessionTokenMikroOrmRepo } from './repo';
 import { OAuthService, OauthSessionTokenService } from './service';
-import { EncryptionConfig } from './encryption.config';
 
 @Module({
 	imports: [
 		LoggerModule,
 		AuthorizationModule,
 		HttpModule,
-		EncryptionModule.register(EncryptionConfig),
+		EncryptionModule.register(OauthEncryptionConfig),
 		UserModule,
 		ProvisioningModule,
 		SystemModule,

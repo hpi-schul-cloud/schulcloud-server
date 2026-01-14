@@ -1,9 +1,9 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { EncryptionConfig as InternalEncryptionConfig } from '@infra/encryption';
+import { EncryptionConfig } from '@infra/encryption';
 import { IsString } from 'class-validator';
 
 @Configuration()
-export class EncryptionConfig implements InternalEncryptionConfig {
+export class ManagmentEncryptionConfig implements EncryptionConfig {
 	@ConfigProperty('AES_KEY')
 	@IsString()
 	public aesKey!: string;

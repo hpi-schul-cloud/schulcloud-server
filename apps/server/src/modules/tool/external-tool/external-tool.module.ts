@@ -9,6 +9,7 @@ import { InstanceModule } from '../../instance';
 import { CommonToolModule } from '../common';
 import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
 import { ExternalToolRule } from './authorization/external-tool.rule';
+import { ExternalEncryptionConfig } from './encryption.config';
 import { ExternalToolUtilizationMapper } from './mapper';
 import {
 	DatasheetPdfService,
@@ -22,14 +23,13 @@ import {
 	ExternalToolServiceMapper,
 	ExternalToolValidationService,
 } from './service';
-import { EncryptionConfig } from './encryption.config';
 
 @Module({
 	imports: [
 		CommonToolModule,
 		LoggerModule,
 		OauthProviderServiceModule,
-		EncryptionModule.register(EncryptionConfig),
+		EncryptionModule.register(ExternalEncryptionConfig),
 		HttpModule,
 		InstanceModule,
 		AuthorizationModule,
