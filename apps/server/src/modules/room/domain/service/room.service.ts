@@ -122,7 +122,10 @@ export class RoomService {
 	private generateRoomWelcomeMailContent(roomName: string, roomLink: string): PlainTextMailContent {
 		const productName = Configuration.get('SC_TITLE') as string;
 		const stripTags = (html: string): string =>
-			html.replace(/<(\/p>|<br\s*\/)>/gim, '\n').replace(/<\/?[^>]+(>|$)/g, '');
+			html
+				.replace(/<(\/p>|<br\s*\/)>/gim, '\n')
+				.replace(/<hr\s*\/?>/gim, '\n\n------------\n\n')
+				.replace(/<\/?[^>]+(>|$)/g, '');
 
 		const germanTitle = `Benachrichtigung über Zugang zum Raum ${roomName}`;
 		const englishTitle = `Notification of access to room ${roomName}`;
@@ -136,7 +139,7 @@ export class RoomService {
 				<p>Best regards,<br />
 				${productName}-Team</p>`;
 		const htmlContent = `<div lang="de"><h1>${germanTitle}</h1>${germanHtml}</div>
-				<hr/>
+				<hr />
 				<div lang="en"><h1>${englishTitle}</h1>${englishHtml}</div>`;
 
 		const mailContent = {
