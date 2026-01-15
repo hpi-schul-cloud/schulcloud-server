@@ -1,14 +1,25 @@
 import { AlertPublicApiConfig } from '@modules/alert';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
+import { OauthConfig } from '@modules/oauth';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ServerConfig } from '../../server.config';
 import { ConfigResponse } from '../dto';
 
 export class ConfigResponseMapper {
 	public static mapToResponse(
-		config: ServerConfig & VideoConferencePublicApiConfig & BoardContextPublicApiConfig & AlertPublicApiConfig
+		serverConfig: ServerConfig,
+		videoConferenceConfig: VideoConferencePublicApiConfig,
+		boardContextConfig: BoardContextPublicApiConfig,
+		alertConfig: AlertPublicApiConfig,
+		oauthConfig: OauthConfig
 	): ConfigResponse {
-		const configResponse = new ConfigResponse(config);
+		const configResponse = new ConfigResponse({
+			...serverConfig,
+			...videoConferenceConfig,
+			...boardContextConfig,
+			...alertConfig,
+			...oauthConfig,
+		});
 
 		return configResponse;
 	}

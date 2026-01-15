@@ -1,5 +1,6 @@
 import { AlertPublicApiConfig } from '@modules/alert';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
+import { OauthConfig } from '@modules/oauth';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
@@ -258,7 +259,11 @@ export class ConfigResponse {
 	ROOM_MEMBER_INFO_URL: string | null;
 
 	constructor(
-		config: ServerConfig & VideoConferencePublicApiConfig & BoardContextPublicApiConfig & AlertPublicApiConfig
+		config: ServerConfig &
+			VideoConferencePublicApiConfig &
+			BoardContextPublicApiConfig &
+			AlertPublicApiConfig &
+			OauthConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -288,7 +293,7 @@ export class ConfigResponse {
 		this.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = config.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED;
 		this.FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED = config.FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED;
 		this.FEATURE_COURSE_SHARE = config.FEATURE_COURSE_SHARE;
-		this.FEATURE_LOGIN_LINK_ENABLED = config.FEATURE_LOGIN_LINK_ENABLED;
+		this.FEATURE_LOGIN_LINK_ENABLED = config.featureLoginLinkEnabled;
 		this.FEATURE_LESSON_SHARE = config.FEATURE_LESSON_SHARE;
 		this.FEATURE_TASK_SHARE = config.FEATURE_TASK_SHARE;
 		this.FEATURE_BOARD_LAYOUT_ENABLED = config.FEATURE_BOARD_LAYOUT_ENABLED;

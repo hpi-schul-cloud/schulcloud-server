@@ -1,5 +1,6 @@
 import { ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig } from '@modules/alert';
 import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@modules/board-context';
+import { OAUTH_CONFIG_TOKEN, OauthConfig } from '@modules/oauth';
 import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { Inject, Injectable } from '@nestjs/common';
 import { SERVER_CONFIG_TOKEN, ServerConfig } from '../server.config';
@@ -12,16 +13,18 @@ export class ServerUc {
 		@Inject(SERVER_CONFIG_TOKEN) private readonly config: ServerConfig,
 		@Inject(BOARD_CONTEXT_PUBLIC_API_CONFIG) private readonly boardConfig: BoardContextPublicApiConfig,
 		@Inject(VIDEO_CONFERENCE_PUBLIC_API_CONFIG) private readonly videoConferenceConfig: VideoConferencePublicApiConfig,
-		@Inject(ALERT_PUBLIC_API_CONFIG) private readonly alertConfig: AlertPublicApiConfig
+		@Inject(ALERT_PUBLIC_API_CONFIG) private readonly alertConfig: AlertPublicApiConfig,
+		@Inject(OAUTH_CONFIG_TOKEN) private readonly oauthConfig: OauthConfig
 	) {}
 
 	public getConfig(): ConfigResponse {
-		const configDto = ConfigResponseMapper.mapToResponse({
-			...this.config,
-			...this.boardConfig,
-			...this.videoConferenceConfig,
-			...this.alertConfig,
-		});
+		const configDto = ConfigResponseMapper.mapToResponse(
+			this.config,
+			this.videoConferenceConfig,
+			this.boardConfig,
+			this.alertConfig,
+			this.oauthConfig
+		);
 
 		return configDto;
 	}
