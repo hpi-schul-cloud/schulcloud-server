@@ -1,6 +1,6 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { RoomMembershipService } from '@modules/room-membership';
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Registration, RegistrationService } from '../domain';
@@ -21,14 +21,7 @@ export class RegistrationUc {
 		props: CreateOrUpdateRegistrationBodyParams
 	): Promise<Registration> {
 		this.registrationFeatureService.checkFeatureRegistrationEnabled();
-
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(props.roomId);
-		this.authorizationService.checkPermission(
-			user,
-			roomMembershipAuthorizable,
-			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
-		);
+		await this.checkPermissions(userId, props.roomId);
 
 		const registration = await this.registrationService.createOrUpdateRegistration({ ...props });
 		await this.registrationService.sendRegistrationMail(registration);
@@ -46,14 +39,7 @@ export class RegistrationUc {
 
 	public async getRegistrationsByRoomId(userId: EntityId, roomId: EntityId): Promise<Registration[]> {
 		this.registrationFeatureService.checkFeatureRegistrationEnabled();
-
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		this.authorizationService.checkPermission(
-			user,
-			roomMembershipAuthorizable,
-			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
-		);
+		await this.checkPermissions(userId, roomId);
 
 		const registrations = await this.registrationService.getRegistrationsByRoomId(roomId);
 
@@ -72,11 +58,24 @@ export class RegistrationUc {
 		await this.registrationService.completeRegistration(registration, language, password);
 	}
 
-	public async cancelRegistrationForRoom(
+	public async cancelRegistrationsForRoom(
 		userId: EntityId,
-		registrationId: EntityId,
+		registrationIds: Array<EntityId>,
 		roomId: EntityId
-	): Promise<Registration | null> {
+	): Promise<Registration[] | null> {
+		this.registrationFeatureService.checkFeatureRegistrationEnabled();
+		await this.checkPermissions(userId, roomId);
+
+		const updatedRegistrations = await this.registrationService.cancelRegistrationsForRoom(registrationIds, roomId);
+
+		return updatedRegistrations;
+	}
+
+	public async resendRegistrationMails(
+		userId: EntityId,
+		registrationIds: Array<EntityId>,
+		roomId: EntityId
+	): Promise<Registration[] | null> {
 		this.registrationFeatureService.checkFeatureRegistrationEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -87,8 +86,25 @@ export class RegistrationUc {
 			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
 		);
 
-		const updatedRegistration = await this.registrationService.cancelRegistrationForRoom(registrationId, roomId);
+		const resentRegistrations = await this.registrationService.resendRegistrationMails(registrationIds);
 
-		return updatedRegistration;
+		return resentRegistrations;
+	}
+
+	private async checkPermissions(userId: EntityId, roomId: EntityId): Promise<void> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const hasRoomPermission = this.authorizationService.hasPermission(
+			user,
+			roomMembershipAuthorizable,
+			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
+		);
+		const hasRegistrationManagementPersmission = this.authorizationService.hasAllPermissions(user, [
+			Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS,
+		]);
+
+		if (!hasRoomPermission || !hasRegistrationManagementPersmission) {
+			throw new ForbiddenException('User does not have permission for this action.');
+		}
 	}
 }

@@ -131,6 +131,11 @@ export class H5PLibraryManagementService {
 			);
 		} catch (error: unknown) {
 			this.logger.warning(new H5PLibraryManagementErrorLoggable(error, {}, 'during run script'));
+
+			if (this.isS3ClientError(error)) {
+				this.logger.warning(new H5PLibraryManagementLoggable('S3Client error detected. Shutting down process.'));
+				throw error;
+			}
 		}
 	}
 
@@ -205,6 +210,10 @@ export class H5PLibraryManagementService {
 				uninstalledLibraries.push(library);
 			} catch (error: unknown) {
 				failedLibraries.push(library);
+
+				if (this.isS3ClientError(error)) {
+					throw error;
+				}
 			}
 		}
 		const result = { uninstalledLibraries, failedLibraries };
@@ -231,14 +240,9 @@ export class H5PLibraryManagementService {
 
 	private async forceUninstallLibrary(unwantedLibrary: ILibraryAdministrationOverviewItem): Promise<void> {
 		this.logStartForceUninstallLibrary(unwantedLibrary.machineName);
-		try {
-			await this.libraryStorage.deleteLibrary(unwantedLibrary);
-		} catch (error: unknown) {
-			this.logger.warning(
-				new H5PLibraryManagementErrorLoggable(error, { library: unwantedLibrary.machineName }, 'during force uninstall')
-			);
-			throw error;
-		}
+
+		await this.libraryStorage.deleteLibrary(unwantedLibrary);
+
 		this.logFinishedForceUninstallLibrary(unwantedLibrary.machineName);
 	}
 
@@ -561,6 +565,11 @@ export class H5PLibraryManagementService {
 					'during library update'
 				)
 			);
+
+			if (this.isS3ClientError(error)) {
+				throw error;
+			}
+
 			this.logRemoveLibraryDueToError(newLibraryMetadata);
 			await this.libraryStorage.deleteLibrary(newLibraryMetadata);
 
@@ -610,6 +619,10 @@ export class H5PLibraryManagementService {
 					'during library installation'
 				)
 			);
+
+			if (this.isS3ClientError(error)) {
+				throw error;
+			}
 
 			return { type: 'none' };
 		}
@@ -732,6 +745,10 @@ export class H5PLibraryManagementService {
 						'while reading library'
 					)
 				);
+
+				if (this.isS3ClientError(error)) {
+					throw error;
+				}
 			}
 
 			return;
@@ -740,17 +757,7 @@ export class H5PLibraryManagementService {
 		let fileAdded = false;
 		const filteredMetadata = this.filterInstalledLibrary(metadata);
 		const dataStream = Readable.from(JSON.stringify(filteredMetadata, null, 2));
-		try {
-			fileAdded = await this.libraryStorage.addFile(libraryName, 'library.json', dataStream);
-		} catch (error: unknown) {
-			this.logger.warning(
-				new H5PLibraryManagementErrorLoggable(
-					error,
-					{ library: LibraryName.toUberName(libraryName) },
-					'while adding library.json to S3'
-				)
-			);
-		}
+		fileAdded = await this.libraryStorage.addFile(libraryName, 'library.json', dataStream);
 		if (fileAdded) {
 			this.logLibraryJsonAddedToS3(metadata);
 		}
@@ -838,6 +845,10 @@ export class H5PLibraryManagementService {
 					)
 				);
 
+				if (this.isS3ClientError(error)) {
+					throw error;
+				}
+
 				this.logRemovalOfBrokenLibrary(libraryName);
 				await this.libraryStorage.deleteLibrary(libraryName);
 				brokenLibraries.push(library);
@@ -855,6 +866,13 @@ export class H5PLibraryManagementService {
 				)} from database and S3 as the library did not pass consistency check.`
 			)
 		);
+	}
+
+	private isS3ClientError(error: unknown): boolean {
+		if (error instanceof Error && error.message) {
+			return error.message.includes('S3ClientAdapter') || error.message.includes('S3Client');
+		}
+		return false;
 	}
 
 	private filterObjectByInterface<T>(obj: Record<string, any>, allowedKeys: (keyof T)[]): Partial<T> {

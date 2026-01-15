@@ -1,3 +1,4 @@
+import { MailService } from '@infra/mail';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { groupEntityFactory } from '@modules/group/testing/group-entity.factory';
 import { RegistrationEntity } from '@modules/registration/repo';
@@ -15,7 +16,6 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { RegistrationListResponse } from '../dto/response/registration-list.response';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -23,10 +23,19 @@ describe('Room Controller (API)', () => {
 	let testApiClient: TestApiClient;
 	let config: ServerConfig;
 
+	let mailServiceSendMock: jest.Mock;
+
 	beforeAll(async () => {
+		mailServiceSendMock = jest.fn();
+
 		const moduleFixture = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(MailService)
+			.useValue({
+				send: mailServiceSendMock,
+			})
+			.compile();
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
@@ -37,6 +46,7 @@ describe('Room Controller (API)', () => {
 	});
 
 	beforeEach(async () => {
+		mailServiceSendMock.mockClear();
 		await cleanupCollections(em);
 		config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = true;
 	});
@@ -45,13 +55,14 @@ describe('Room Controller (API)', () => {
 		await app.close();
 	});
 
-	describe('PATCH /:registrationId/cancel/:roomId', () => {
+	describe('PATCH /:registrationId/resend-mail/:roomId', () => {
 		const setup = async () => {
 			const school = schoolEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const { teacherAccount: otherTeacherAccount, teacherUser: otherTeacherUser } =
 				UserAndAccountTestFactory.buildTeacher({ school });
 			const room = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
+			const room2 = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
 			const { roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 			const group = groupEntityFactory.buildWithId({
 				users: [
@@ -86,6 +97,7 @@ describe('Room Controller (API)', () => {
 					otherTeacherAccount,
 					otherTeacherUser,
 					room,
+					room2,
 					roomOwnerRole,
 					roomViewerRole,
 					group,
@@ -98,8 +110,10 @@ describe('Room Controller (API)', () => {
 				])
 				.flush();
 
-			const registration1 = registrationEntityFactory.build({ roomIds: [room.id] });
-			const registration2 = registrationEntityFactory.build({ roomIds: [room.id, new ObjectId().toHexString()] });
+			const registration1 = registrationEntityFactory.build({ roomIds: [room.id], resentAt: undefined });
+			const registration2 = registrationEntityFactory.build({
+				roomIds: [room.id, room2.id],
+			});
 			await em.persist([registration1, registration2]).flush();
 			em.clear();
 
@@ -111,6 +125,7 @@ describe('Room Controller (API)', () => {
 				teacherUser,
 				otherTeacherAccount,
 				room,
+				room2,
 				roomOwnerRole,
 			};
 		};
@@ -121,7 +136,7 @@ describe('Room Controller (API)', () => {
 				const { registration1, teacherAccount } = await setup();
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
-				const response = await loggedInClient.patch(`/cancel/${registration1.roomIds[0]}`, {
+				const response = await loggedInClient.patch(`/resend-mail/${registration1.roomIds[0]}`, {
 					registrationIds: [registration1.id],
 				});
 
@@ -135,7 +150,7 @@ describe('Room Controller (API)', () => {
 				const loggedInClient = await testApiClient.login(teacherAccount);
 				const someNonExistingRegistrationId = new ObjectId().toHexString();
 				const someNonExistingRoomId = new ObjectId().toHexString();
-				const response = await loggedInClient.patch(`/cancel/${someNonExistingRoomId}`, {
+				const response = await loggedInClient.patch(`/resend-mail/${someNonExistingRoomId}`, {
 					registrationIds: [someNonExistingRegistrationId],
 				});
 
@@ -150,7 +165,7 @@ describe('Room Controller (API)', () => {
 
 					const loggedInClient = await testApiClient.login(otherTeacherAccount);
 
-					const response = await loggedInClient.patch(`/cancel/${registration1.roomIds[0]}`, {
+					const response = await loggedInClient.patch(`/resend-mail/${registration1.roomIds[0]}`, {
 						registrationIds: [registration1.id],
 					});
 					expect(response.status).toBe(HttpStatus.FORBIDDEN);
@@ -159,49 +174,71 @@ describe('Room Controller (API)', () => {
 
 			describe('when the user has the required permissions', () => {
 				describe('when the registration is for one room', () => {
-					it('should return 200', async () => {
+					it('should return 200 and update registration', async () => {
 						const { registration1, teacherAccount } = await setup();
 						const loggedInClient = await testApiClient.login(teacherAccount);
 
-						const response = await loggedInClient.patch(`/cancel/${registration1.roomIds[0]}`, {
+						expect(registration1.resentAt).toBeUndefined();
+
+						const response = await loggedInClient.patch(`/resend-mail/${registration1.roomIds[0]}`, {
 							registrationIds: [registration1.id],
 						});
+						const updatedRegistration = await em.findOne(RegistrationEntity, { id: registration1.id });
 
 						expect(response.status).toBe(HttpStatus.OK);
+						expect(updatedRegistration?.resentAt).toBeDefined();
 					});
 
-					it('should delete the registration', async () => {
-						const { registration1, teacherAccount } = await setup();
+					it('should resend a mail', async () => {
+						const { registration1, teacherAccount, room } = await setup();
 						const loggedInClient = await testApiClient.login(teacherAccount);
 
-						await loggedInClient.patch(`/cancel/${registration1.roomIds[0]}`, {
+						await loggedInClient.patch(`/resend-mail/${room.id}`, {
 							registrationIds: [registration1.id],
 						});
-						const canceledRegistration = await em.findOne(RegistrationEntity, { id: registration1.id });
-						expect(canceledRegistration).toBeNull();
+
+						expect(mailServiceSendMock).toHaveBeenCalledTimes(1);
 					});
 				});
 
-				describe('when multiple registrations are provided and one has multiple rooms assigned', () => {
-					it('should detach only the specified room from the registration and delete the other registration', async () => {
-						const { registration1, registration2, teacherAccount, room } = await setup();
-						const loggedInClient = await testApiClient.login(teacherAccount);
+				describe('when multiple registrations are resent', () => {
+					describe('and one of the registrations was resent within last two minutes', () => {
+						it('should return 200 and update registrations', async () => {
+							const { registration1, teacherAccount } = await setup();
+							const oneMinuteAgo = new Date(Date.now() - 1 * 60 * 1000);
+							const anotherRegistration = registrationEntityFactory.build({
+								roomIds: [registration1.roomIds[0]],
+								resentAt: oneMinuteAgo,
+							});
+							await em.persist(anotherRegistration).flush();
+							const loggedInClient = await testApiClient.login(teacherAccount);
 
-						const response = await loggedInClient.patch(`/cancel/${registration1.roomIds[0]}`).send({
-							registrationIds: [registration1.id, registration2.id],
+							expect(registration1.resentAt).toBeUndefined();
+							expect(anotherRegistration.resentAt).toEqual(oneMinuteAgo);
+
+							const response = await loggedInClient.patch(`/resend-mail/${registration1.roomIds[0]}`, {
+								registrationIds: [registration1.id, anotherRegistration.id],
+							});
+							const updatedRegistration = await em.findOne(RegistrationEntity, { id: registration1.id });
+							const notUpdatedAnotherRegistration = await em.findOne(RegistrationEntity, {
+								id: anotherRegistration.id,
+							});
+
+							expect(response.status).toBe(HttpStatus.OK);
+							expect(updatedRegistration?.resentAt).toEqual(expect.any(Date));
+							expect(notUpdatedAnotherRegistration).toEqual(anotherRegistration);
 						});
-						const { data } = response.body as RegistrationListResponse;
 
-						expect(response.status).toBe(HttpStatus.OK);
-						expect(data).toHaveLength(1);
-						expect(data[0].id).toBe(registration2.id);
+						it('should resend multiple mails', async () => {
+							const { registration1, registration2, teacherAccount, room } = await setup();
+							const loggedInClient = await testApiClient.login(teacherAccount);
 
-						const updatedRegistration = await em.findOne(RegistrationEntity, { id: registration2.id });
-						expect(updatedRegistration).not.toBeNull();
-						expect(updatedRegistration?.roomIds).not.toContain(room.id);
+							await loggedInClient.patch(`/resend-mail/${room.id}`, {
+								registrationIds: [registration1.id, registration2.id],
+							});
 
-						const deletedRegistration = await em.findOne(RegistrationEntity, { id: registration1.id });
-						expect(deletedRegistration).toBeNull();
+							expect(mailServiceSendMock).toHaveBeenCalledTimes(2);
+						});
 					});
 				});
 			});
