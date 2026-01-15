@@ -1,3 +1,3 @@
 export interface EncryptionConfig {
-	AES_KEY: string;
+	aesKey: string;
 }

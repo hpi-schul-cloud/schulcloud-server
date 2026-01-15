@@ -1,5 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { faker } from '@faker-js/faker';
+import { TestEncryptionConfig } from '@infra/encryption';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { AccountEntity } from '@modules/account/repo';
 import { ConfigModule } from '@nestjs/config';
@@ -34,7 +35,7 @@ describe('KeycloakSeedService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				KeycloakConfigurationModule,
+				KeycloakConfigurationModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
 				LoggerModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 				ConfigModule.forRoot({
