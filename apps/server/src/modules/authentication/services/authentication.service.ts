@@ -2,12 +2,11 @@ import { Logger } from '@core/logger';
 import { CreateJwtPayload, ICurrentUser, JwtPayloadFactory } from '@infra/auth-guard';
 import { Account, AccountService } from '@modules/account';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { AuthenticationConfig } from '../authentication-config';
+import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { ShdUserCreateTokenLoggable, UserAccountDeactivatedLoggableException } from '../loggable';
@@ -19,7 +18,7 @@ export class AuthenticationService {
 		private readonly jwtService: JwtService,
 		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		private readonly accountService: AccountService,
-		private readonly configService: ConfigService<AuthenticationConfig, true>,
+		@Inject(AUTHENTICATION_CONFIG_TOKEN) private readonly config: AuthenticationConfig,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(AuthenticationService.name);
@@ -83,7 +82,7 @@ export class AuthenticationService {
 			targetUserAccount.systemId
 		);
 		const createJwtPayload = JwtPayloadFactory.buildFromSupportUser(currentUser, supportUser.id);
-		const expiresIn = this.configService.get<number>('JWT_LIFETIME_SUPPORT_SECONDS');
+		const expiresIn = this.config.jwtLifetimeSupportSeconds;
 
 		const jwtToken = await this.generateJwtAndAddToWhitelist(createJwtPayload, expiresIn);
 
@@ -112,8 +111,8 @@ export class AuthenticationService {
 		if (account.lasttriedFailedLogin) {
 			const timeDifference = (new Date().getTime() - account.lasttriedFailedLogin.getTime()) / 1000;
 
-			if (timeDifference < this.configService.get<number>('LOGIN_BLOCK_TIME')) {
-				const timeToWait = this.configService.get<number>('LOGIN_BLOCK_TIME') - Math.ceil(timeDifference);
+			if (timeDifference < this.config.loginBlockTime) {
+				const timeToWait = this.config.loginBlockTime - Math.ceil(timeDifference);
 				throw new BruteForceError(timeToWait, `Brute Force Prevention! Time to wait: ${timeToWait} s`);
 			}
 		}

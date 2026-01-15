@@ -10,6 +10,7 @@ import { ACCOUNT_REPO, AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmT
 import { AccountServiceDb } from './domain/services/account-db.service';
 import { AccountServiceIdm } from './domain/services/account-idm.service';
 import { AccountService } from './domain/services/account.service';
+import { ACCOUNT_ENCRYPTION_CONFIG_TOKEN, AccountEncryptionConfig } from './encryption.config';
 import { AccountMikroOrmRepo } from './repo';
 import { DeleteUserAccountDataStep } from './saga';
 
@@ -22,7 +23,7 @@ function accountIdmToDtoMapperFactory(config: AccountConfig): AccountIdmToDoMapp
 
 @Module({
 	imports: [
-		IdentityManagementModule,
+		IdentityManagementModule.register(AccountEncryptionConfig, ACCOUNT_ENCRYPTION_CONFIG_TOKEN),
 		SystemModule,
 		LoggerModule,
 		UserModule,

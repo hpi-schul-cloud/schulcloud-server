@@ -5,7 +5,7 @@ import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { ServerTestModule } from '@modules/server/server.app.module';
+import { ServerTestModule } from '@modules/server';
 import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';

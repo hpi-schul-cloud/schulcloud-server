@@ -1,5 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { RoleName } from '@modules/role';
 import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { userFactory } from '@modules/user/testing';
@@ -10,7 +11,6 @@ import { StatusModel } from '../../../domain/types'; // barrel file
 import { DeletionBatchEntity } from '../../../repo/entity'; // barrel file
 import { deletionBatchEntityFactory, deletionRequestEntityFactory } from '../../../repo/entity/testing'; // testing need to be changed to top level of the module
 import { DeletionBatchDetailsResponse } from '../dto/response/deletion-batch-details.response'; // barrel file
-import { RoleName } from '@modules/role';
 
 const baseRouteName = '/deletion-batches';
 
