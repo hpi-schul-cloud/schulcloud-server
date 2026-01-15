@@ -3,7 +3,6 @@ import { XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { CalendarConfig } from '@infra/calendar';
 import { ClassConfig } from '@modules/class';
 import { FilesConfig } from '@modules/files';
-import { NewsConfig } from '@modules/news';
 import { PseudonymConfig } from '@modules/pseudonym';
 import { RocketChatUserConfig } from '@modules/rocketchat-user';
 import { TeamConfig } from '@modules/team';
@@ -13,7 +12,6 @@ export interface DeletionConfig
 	extends LoggerConfig,
 		CalendarConfig,
 		ClassConfig,
-		NewsConfig,
 		TeamConfig,
 		PseudonymConfig,
 		FilesConfig,
