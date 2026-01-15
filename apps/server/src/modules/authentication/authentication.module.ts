@@ -23,7 +23,11 @@ import { LdapService } from './services/ldap.service';
 import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
-import { SESSION_VALKEY_CLIENT, ValkeyClientSessionConfig } from './valkey-client-session.config';
+import {
+	SESSION_VALKEY_CLIENT,
+	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
+	ValkeyClientSessionConfig,
+} from './valkey-client-session.config';
 
 const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 	const { algorithm, expiresIn, scDomain, privateKey, publicKey } = config;
@@ -60,7 +64,11 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		OauthModule,
 		RoleModule,
 		IdentityManagementModule,
-		ValkeyClientModule.register(SESSION_VALKEY_CLIENT, ValkeyClientSessionConfig),
+		ValkeyClientModule.register({
+			clientInjectionToken: SESSION_VALKEY_CLIENT,
+			configConstructor: ValkeyClientSessionConfig,
+			configInjectionToken: SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
+		}),
 		UserModule,
 		HttpModule,
 		EncryptionModule,

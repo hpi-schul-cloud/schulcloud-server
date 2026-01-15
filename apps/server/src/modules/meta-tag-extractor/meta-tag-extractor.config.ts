@@ -1,8 +1,11 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { ConfigProperty, Configuration } from '@infra/configuration';
+import { IsString } from 'class-validator';
 
-const metaTagExtractorConfig = {
-	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
-	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
-};
+export const META_TAG_EXTRACTOR_CONFIG_TOKEN = 'META_TAG_EXTRACTOR_CONFIG';
 
-export default () => metaTagExtractorConfig;
+@Configuration()
+export class MetaTagExtractorConfig {
+	@ConfigProperty('SC_DOMAIN')
+	@IsString()
+	public scDomain!: string;
+}
