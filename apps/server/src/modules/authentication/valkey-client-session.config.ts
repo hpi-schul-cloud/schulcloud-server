@@ -9,29 +9,29 @@ export const SESSION_VALKEY_CLIENT_CONFIG_TOKEN = 'SESSION_VALKEY_CLIENT_CONFIG_
 export class ValkeyClientSessionConfig implements ValkeyConfig {
 	@ConfigProperty('SESSION_VALKEY__MODE')
 	@IsEnum(ValkeyMode)
-	public MODE!: ValkeyMode;
+	public mode!: ValkeyMode;
 
 	@ConfigProperty('SESSION_VALKEY__URI')
 	@IsOptional()
 	@IsString()
-	@ValidateIf((o: ValkeyClientSessionConfig) => o.MODE === ValkeyMode.SINGLE)
-	public URI?: string;
+	@ValidateIf((o: ValkeyClientSessionConfig) => o.mode === ValkeyMode.SINGLE)
+	public uri?: string;
 
 	@ConfigProperty('SESSION_VALKEY__SENTINEL_NAME')
 	@IsOptional()
 	@IsString()
-	@ValidateIf((o: ValkeyClientSessionConfig) => o.MODE === ValkeyMode.CLUSTER)
-	public SENTINEL_NAME?: string;
+	@ValidateIf((o: ValkeyClientSessionConfig) => o.mode === ValkeyMode.CLUSTER)
+	public sentinelName?: string;
 
 	@ConfigProperty('SESSION_VALKEY__SENTINEL_PASSWORD')
 	@IsOptional()
 	@IsString()
-	@ValidateIf((o: ValkeyClientSessionConfig) => o.MODE === ValkeyMode.CLUSTER)
-	public SENTINEL_PASSWORD?: string;
+	@ValidateIf((o: ValkeyClientSessionConfig) => o.mode === ValkeyMode.CLUSTER)
+	public sentinelPassword?: string;
 
 	@ConfigProperty('SESSION_VALKEY__SENTINEL_SERVICE_NAME')
 	@IsOptional()
 	@IsString()
-	@ValidateIf((o: ValkeyClientSessionConfig) => o.MODE === ValkeyMode.CLUSTER)
-	public SENTINEL_SERVICE_NAME?: string;
+	@ValidateIf((o: ValkeyClientSessionConfig) => o.mode === ValkeyMode.CLUSTER)
+	public sentinelServiceName?: string;
 }

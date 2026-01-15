@@ -7,11 +7,11 @@ export enum ValkeyMode {
 }
 
 export interface ValkeyConfig {
-	MODE: ValkeyMode;
-	URI?: string;
-	SENTINEL_NAME?: string;
-	SENTINEL_PASSWORD?: string;
-	SENTINEL_SERVICE_NAME?: string;
+	mode: ValkeyMode;
+	uri?: string;
+	sentinelName?: string;
+	sentinelPassword?: string;
+	sentinelServiceName?: string;
 }
 
 export const IN_MEMORY_VALKEY_CLIENT_CONFIG = 'IN_MEMORY_VALKEY_CLIENT_CONFIG';
@@ -19,5 +19,5 @@ export const IN_MEMORY_VALKEY_CLIENT_CONFIG = 'IN_MEMORY_VALKEY_CLIENT_CONFIG';
 @Configuration()
 export class InMemoryConfig {
 	@ConfigProperty()
-	public MODE = ValkeyMode.IN_MEMORY;
+	public mode = ValkeyMode.IN_MEMORY;
 }
