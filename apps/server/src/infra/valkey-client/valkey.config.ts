@@ -21,11 +21,3 @@ export class InMemoryConfig {
 	@ConfigProperty()
 	public mode = ValkeyMode.IN_MEMORY;
 }
-
-export const VALKEY_CLIENT_CONFIG_TOKEN = 'VALKEY_CLIENT_CONFIG_TOKEN';
-
-@Configuration()
-export class InMemoryConfig {
-	@ConfigProperty()
-	public MODE = ValkeyMode.IN_MEMORY;
-}
