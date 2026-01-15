@@ -6,10 +6,13 @@ import { TspClientFactory } from './tsp-client-factory';
 
 @Module({})
 export class TspClientModule {
-	public static register<T extends EncryptionConfig>(constructor: new () => T, token: string): DynamicModule {
+	public static register<T extends EncryptionConfig>(
+		constructor: new () => T,
+		configInjectionToken: string
+	): DynamicModule {
 		return {
 			module: TspClientModule,
-			imports: [LoggerModule, OauthAdapterModule, EncryptionModule.register(constructor, token)],
+			imports: [LoggerModule, OauthAdapterModule, EncryptionModule.register(constructor, configInjectionToken)],
 			providers: [TspClientFactory],
 			exports: [TspClientFactory],
 		};

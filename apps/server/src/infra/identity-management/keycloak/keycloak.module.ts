@@ -8,10 +8,18 @@ import { KeycloakIdentityManagementService } from './service/keycloak-identity-m
 
 @Module({})
 export class KeycloakModule {
-	public static register<T extends EncryptionConfig>(constructor: new () => T, token: string): DynamicModule {
+	public static register<T extends EncryptionConfig>(
+		constructor: new () => T,
+		configInjectionToken: string
+	): DynamicModule {
 		return {
 			module: KeycloakModule,
-			imports: [LoggerModule, EncryptionModule.register(constructor, token), HttpModule, KeycloakAdministrationModule],
+			imports: [
+				LoggerModule,
+				EncryptionModule.register(constructor, configInjectionToken),
+				HttpModule,
+				KeycloakAdministrationModule,
+			],
 			providers: [KeycloakIdentityManagementService, KeycloakIdentityManagementOauthService],
 			exports: [KeycloakIdentityManagementService, KeycloakIdentityManagementOauthService],
 		};

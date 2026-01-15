@@ -17,13 +17,16 @@ import { KeycloakConfigurationUc } from './uc/keycloak-configuration.uc';
 
 @Module({})
 export class KeycloakConfigurationModule {
-	public static register<T extends EncryptionConfig>(constructor: new () => T, token: string): DynamicModule {
+	public static register<T extends EncryptionConfig>(
+		constructor: new () => T,
+		configInjectionToken: string
+	): DynamicModule {
 		return {
 			module: KeycloakConfigurationModule,
 			imports: [
 				KeycloakAdministrationModule,
 				LoggerModule,
-				EncryptionModule.register(constructor, token),
+				EncryptionModule.register(constructor, configInjectionToken),
 				ConsoleWriterModule,
 				SystemModule,
 				AccountModule,
