@@ -1,10 +1,10 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserSortQuery } from './user-sort.query';
 
 type DateRangeQuery = Record<string, Date>;
 
 export interface UserSearchQuery {
-	_id?: any;
+	_id?: ObjectId;
 	schoolId: ObjectId;
 	roles: ObjectId;
 	schoolYearId?: ObjectId;

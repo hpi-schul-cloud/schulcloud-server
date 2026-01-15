@@ -4,7 +4,7 @@ import { Task, TaskParent } from '@modules/task/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { LernstoreResources } from '../api';
 import { Material } from './materials.entity';
 
