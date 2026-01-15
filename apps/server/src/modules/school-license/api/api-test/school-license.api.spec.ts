@@ -2,7 +2,6 @@ import { PageOfferDTO } from '@infra/vidis-client';
 import { vidisPageOfferFactory } from '@infra/vidis-client/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
-import { SCHOOL_LICENSE_ENCRYPTION_CONFIG_TOKEN } from '@modules/school-license/encryption.config';
 import { federalStateEntityFactory, schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -12,24 +11,21 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { SCHOOL_LICENSE_ENCRYPTION_CONFIG_TOKEN, SchoolLicenseEncryptionConfig } from '../../encryption.config';
 import { mediaSchoolLicenseEntityFactory } from '../../testing';
 import { MediaSchoolLicenseListResponse } from '../dto';
-
-const encryptionKey = 'test-key-with-32-characters-long';
 
 describe('SchoolLicenseController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
 	let axiosMock: MockAdapter;
+	let encryptionConfig: SchoolLicenseEncryptionConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideProvider(SCHOOL_LICENSE_ENCRYPTION_CONFIG_TOKEN)
-			.useValue({ aesKey: encryptionKey })
-			.compile();
+		}).compile();
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
@@ -38,6 +34,8 @@ describe('SchoolLicenseController (API)', () => {
 		axiosMock = new MockAdapter(axios);
 
 		testApiClient = new TestApiClient(app, 'school-licenses');
+
+		encryptionConfig = app.get<SchoolLicenseEncryptionConfig>(SCHOOL_LICENSE_ENCRYPTION_CONFIG_TOKEN);
 	});
 
 	beforeEach(async () => {
@@ -59,6 +57,7 @@ describe('SchoolLicenseController (API)', () => {
 
 		describe('when update media school licenses was successful', () => {
 			const setup = async () => {
+				const encryptionKey = encryptionConfig.aesKey;
 				const federalState = federalStateEntityFactory.build();
 				const school = schoolEntityFactory.buildWithId({
 					officialSchoolNumber: '00100',
@@ -92,6 +91,7 @@ describe('SchoolLicenseController (API)', () => {
 
 		describe('when official school number was not found', () => {
 			const setup = async () => {
+				const encryptionKey = encryptionConfig.aesKey;
 				const school = schoolEntityFactory.buildWithId({});
 				const mediaSource = mediaSourceEntityFactory.withVidisFormat({ encryptionKey }).build();
 
@@ -152,6 +152,7 @@ describe('SchoolLicenseController (API)', () => {
 
 		describe('when user has no permission', () => {
 			const setup = async () => {
+				const encryptionKey = encryptionConfig.aesKey;
 				const school = schoolEntityFactory.buildWithId({ officialSchoolNumber: '00100' });
 				const mediaSource = mediaSourceEntityFactory.withVidisFormat({ encryptionKey }).build();
 
@@ -191,6 +192,7 @@ describe('SchoolLicenseController (API)', () => {
 
 		describe('when the user has media school licenses', () => {
 			const setup = async () => {
+				const encryptionKey = encryptionConfig.aesKey;
 				const school = schoolEntityFactory.buildWithId();
 				const mediaSource = mediaSourceEntityFactory.withVidisFormat({ encryptionKey }).buildWithId({ name: 'Vidis' });
 				const mediaSchoolLicense = mediaSchoolLicenseEntityFactory.buildWithId({
@@ -246,6 +248,7 @@ describe('SchoolLicenseController (API)', () => {
 
 		describe('when user has no permission', () => {
 			const setup = async () => {
+				const encryptionKey = encryptionConfig.aesKey;
 				const school = schoolEntityFactory.buildWithId();
 				const mediaSource = mediaSourceEntityFactory.withVidisFormat({ encryptionKey }).buildWithId({ name: 'Vidis' });
 				const mediaSchoolLicense = mediaSchoolLicenseEntityFactory.buildWithId({

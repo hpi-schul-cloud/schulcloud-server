@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
-import { TOOL_ENCRYPTION_CONFIG_TOKEN } from '@modules/tool/encryption.config';
+import { TOOL_ENCRYPTION_CONFIG_TOKEN, ToolEncryptionConfig } from '@modules/tool/encryption.config';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AesEncryptionHelper } from '@shared/common/utils';
@@ -23,25 +23,22 @@ describe('ToolDeepLinkController (API)', () => {
 	let em: EntityManager;
 	let orm: MikroORM;
 	let testApiClient: TestApiClient;
+	let encryptionConfig: ToolEncryptionConfig;
 
 	const basePath = '/tools/context-external-tools';
-	const decryptedSecret = 'secret';
-	const encryptionKey = 'test-key-with-32-characters-long';
-	const encryptedSecret = AesEncryptionHelper.encrypt(decryptedSecret, encryptionKey);
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideProvider(TOOL_ENCRYPTION_CONFIG_TOKEN)
-			.useValue({ aesKey: encryptionKey })
-			.compile();
+		}).compile();
 
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
 		orm = app.get(MikroORM);
 		testApiClient = new TestApiClient(app, basePath);
+
+		encryptionConfig = app.get<ToolEncryptionConfig>(TOOL_ENCRYPTION_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -55,6 +52,10 @@ describe('ToolDeepLinkController (API)', () => {
 	describe('[POST] tools/context-external-tools/:contextExternalToolId/lti11-deep-link-callback', () => {
 		describe('when the lti deep linking callback is successfully', () => {
 			const setup = async () => {
+				const encryptionKey = encryptionConfig.aesKey;
+				const decryptedSecret = 'secret';
+				const encryptedSecret = AesEncryptionHelper.encrypt(decryptedSecret, encryptionKey);
+
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 				const ltiDeepLinkToken = ltiDeepLinkTokenEntityFactory.build({ user: teacherUser });
