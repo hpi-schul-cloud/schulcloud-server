@@ -97,6 +97,16 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 		return result;
 	}
 
+	public canGetRoomMembers(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { schoolPermissions, roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+		const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_LIST_ROOM_MEMBERS);
+		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_LIST_CONTENT);
+
+		const result = hasSchoolPermission && hasRoomPermission;
+
+		return result;
+	}
+
 	private hasAccessToSchool(user: User, schoolId: string): boolean {
 		const primarySchoolId = user.school.id;
 		const secondarySchools = user.secondarySchools ?? [];
