@@ -165,8 +165,6 @@ export class BiloMediaClientAdapter {
 	}
 
 	private validateAndCorrectCoverUrls(response: BiloMediaQueryResponse): ValidationError | void {
-		response.data.cover.href = 'test';
-		response.data.coverSmall.href = 'test';
 		if (!isURL(response.data.coverSmall.href) && !isURL(response.data.cover.href)) {
 			// having empty cover URLs is acceptable, as this will allow the default logo to load in front-end
 			response.data.coverSmall.href = '';
