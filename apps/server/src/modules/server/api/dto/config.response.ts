@@ -1,12 +1,12 @@
 import { AlertPublicApiConfig } from '@modules/alert';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
-import { OauthConfig } from '@modules/oauth';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
 import type { ServerConfig } from '../..';
 import { Timezone } from '../../types/timezone.enum';
+import { OauthPublicApiConfig } from '@modules/oauth';
 
 export class ConfigResponse {
 	@ApiProperty()
@@ -263,7 +263,7 @@ export class ConfigResponse {
 			VideoConferencePublicApiConfig &
 			BoardContextPublicApiConfig &
 			AlertPublicApiConfig &
-			OauthConfig
+			OauthPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -341,7 +341,7 @@ export class ConfigResponse {
 		this.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED;
 		this.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED =
 			config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED;
-		this.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED;
+		this.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = config.featureExternalSystemLogoutEnabled;
 		this.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED = config.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED;
 		this.LICENSE_SUMMARY_URL = config.LICENSE_SUMMARY_URL;
 		this.ROOM_MEMBER_INFO_URL = config.ROOM_MEMBER_INFO_URL;

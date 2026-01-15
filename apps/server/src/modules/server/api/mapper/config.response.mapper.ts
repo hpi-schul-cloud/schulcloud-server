@@ -1,6 +1,6 @@
 import { AlertPublicApiConfig } from '@modules/alert';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
-import { OauthConfig } from '@modules/oauth';
+import { OauthPublicApiConfig } from '@modules/oauth';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ServerConfig } from '../../server.config';
 import { ConfigResponse } from '../dto';
@@ -11,7 +11,7 @@ export class ConfigResponseMapper {
 		videoConferenceConfig: VideoConferencePublicApiConfig,
 		boardContextConfig: BoardContextPublicApiConfig,
 		alertConfig: AlertPublicApiConfig,
-		oauthConfig: OauthConfig
+		oauthConfig: OauthPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,

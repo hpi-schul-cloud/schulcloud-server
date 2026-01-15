@@ -11,7 +11,7 @@ import { UserLoginMigrationModule } from '@modules/user-login-migration';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { OAUTH_ENCRYPTION_CONFIG_TOKEN, OauthEncryptionConfig } from './encryption.config';
-import { OAUTH_CONFIG_TOKEN, OauthConfig } from './oauth.config';
+import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig } from './oauth.config';
 import { OAUTH_SESSION_TOKEN_REPO, OauthSessionTokenMikroOrmRepo } from './repo';
 import { OAuthService, OauthSessionTokenService } from './service';
 
@@ -27,7 +27,7 @@ import { OAuthService, OauthSessionTokenService } from './service';
 		UserLoginMigrationModule,
 		LegacySchoolModule,
 		OauthAdapterModule,
-		ConfigurationModule.register(OAUTH_CONFIG_TOKEN, OauthConfig),
+		ConfigurationModule.register(OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig),
 	],
 	providers: [
 		OAuthService,
