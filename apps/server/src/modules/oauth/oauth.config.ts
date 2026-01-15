@@ -9,7 +9,7 @@ export class OauthPublicApiConfig {
 	@ConfigProperty('FEATURE_LOGIN_LINK_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
-	public featureLoginLinkEnabled!: boolean;
+	public featureLoginLinkEnabled = false;
 
 	@ConfigProperty('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED')
 	@StringToBoolean()
