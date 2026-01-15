@@ -14,7 +14,7 @@ export interface ValkeyConfig {
 	SENTINEL_SERVICE_NAME?: string;
 }
 
-export const VALKEY_CLIENT_CONFIG_TOKEN = 'VALKEY_CLIENT_CONFIG_TOKEN';
+export const IN_MEMORY_VALKEY_CLIENT_CONFIG = 'IN_MEMORY_VALKEY_CLIENT_CONFIG';
 
 @Configuration()
 export class InMemoryConfig {

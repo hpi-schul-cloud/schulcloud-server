@@ -3,6 +3,7 @@ import { ValkeyConfig, ValkeyMode } from '@infra/valkey-client';
 import { IsEnum, IsOptional, IsString, ValidateIf } from 'class-validator';
 
 export const SESSION_VALKEY_CLIENT = 'SESSION_VALKEY_CLIENT';
+export const SESSION_VALKEY_CLIENT_CONFIG_TOKEN = 'SESSION_VALKEY_CLIENT_CONFIG_TOKEN';
 
 @Configuration()
 export class ValkeyClientSessionConfig implements ValkeyConfig {
