@@ -1,7 +1,7 @@
 import { createRedisIdentifierFromJwtData, getRedisData, JwtRedisData } from '@imports-from-feathers';
 import { StorageClient } from '@infra/valkey-client';
 import { Inject, Injectable } from '@nestjs/common';
-import { SESSION_VALKEY_CLIENT } from '../authentication-config';
+import { SESSION_VALKEY_CLIENT } from '../valkey-client-session.config';
 
 @Injectable()
 export class JwtWhitelistAdapter {

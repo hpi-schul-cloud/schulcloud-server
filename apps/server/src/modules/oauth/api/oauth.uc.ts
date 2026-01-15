@@ -1,15 +1,14 @@
-import type { AuthenticationConfig } from '@modules/authentication';
-import { OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException, NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain/types';
-import { ConfigService } from '@nestjs/config';
+import { OauthConfig, OauthSessionToken, OauthSessionTokenService } from '../';
 
 @Injectable()
 export class OAuthUc {
 	constructor(
 		private readonly oauthSessionTokenService: OauthSessionTokenService,
-		private readonly configService: ConfigService<AuthenticationConfig, true>
+		private readonly configService: ConfigService<OauthConfig, true>
 	) {}
 
 	public async getLatestSessionTokenByUser(userId: EntityId): Promise<OauthSessionToken> {
