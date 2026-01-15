@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { Redis } from 'iovalkey';
@@ -10,9 +9,7 @@ export class RedisIoAdapter extends IoAdapter {
 	private adapterConstructor: ReturnType<typeof createAdapter> | undefined = undefined;
 
 	public connectToRedis(): void {
-		const redisUri = Configuration.has('SESSION_VALKEY__URI')
-			? (Configuration.get('SESSION_VALKEY__URI') as string)
-			: 'localhost:6379';
+		const redisUri = 'localhost:6379';
 		const pubClient = new Redis(redisUri);
 		const subClient = new Redis(redisUri);
 
