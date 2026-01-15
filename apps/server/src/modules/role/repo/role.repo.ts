@@ -13,7 +13,7 @@ export class RoleRepo extends BaseRepo<Role> {
 	private cacheExpiration = 60000;
 
 	public async findAll(): Promise<Role[]> {
-		const promise = await this._em.find(Role, {}, { cache: this.cacheExpiration });
+		const promise = await this._em.find(Role, {}, { cache: [`roles-cache-all`, this.cacheExpiration] });
 		return promise;
 	}
 

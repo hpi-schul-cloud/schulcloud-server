@@ -35,6 +35,7 @@ describe('Room Controller (API)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
+		await em.clearCache('roles-cache-all');
 	});
 
 	afterAll(async () => {
@@ -56,6 +57,7 @@ describe('Room Controller (API)', () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const { externalPersonAccount, externalPersonUser } = UserAndAccountTestFactory.buildExternalPerson({ school });
 			const { roomEditorRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+			em.persist([roomEditorRole, roomOwnerRole, roomViewerRole]);
 			const teacherRole = teacherUser.roles[0];
 			const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
 			const students = userFactory.buildList(2, { school, roles: [studentRole] });
@@ -254,12 +256,12 @@ describe('Room Controller (API)', () => {
 		});
 
 		describe('when the user is external and has no right to access room members', () => {
-			it('should return unauthorized', async () => {
+			it('should return forbidden', async () => {
 				const { loggedInClient, room } = await setupRoomWithExternalMembers(RoleName.EXTERNALPERSON);
 
 				const response = await loggedInClient.get(`/${room.id}/members`);
 
-				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 
