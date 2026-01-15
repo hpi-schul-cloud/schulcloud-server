@@ -92,8 +92,8 @@ describe('News Controller (API)', () => {
 		return news;
 	};
 
-	const createCourseTarget = async (id: EntityId) => {
-		const course = courseEntityFactory.build();
+	const createCourseTarget = async (id: EntityId, user: User) => {
+		const course = courseEntityFactory.build({ school: user.school });
 		course.id = id;
 		await em.persist(course).flush();
 		return course;
@@ -130,7 +130,7 @@ describe('News Controller (API)', () => {
 
 			it('should get for /news without parameters', async () => {
 				const { loggedInClient, studentUser } = await setup();
-				await createCourseTarget(courseTargetId);
+				await createCourseTarget(courseTargetId, studentUser);
 				const news = await createTestNews(NewsTargetModel.Course, courseTargetId, studentUser);
 				const expected = {
 					data: [news],
@@ -145,7 +145,7 @@ describe('News Controller (API)', () => {
 
 			it('should get for /news with unpublished params only unpublished news', async () => {
 				const { loggedInClient, studentUser } = await setup();
-				await createCourseTarget(unpublishedCourseTargetId);
+				await createCourseTarget(unpublishedCourseTargetId, studentUser);
 				const unpublishedNews = await createTestNews(
 					NewsTargetModel.Course,
 					unpublishedCourseTargetId,
@@ -186,7 +186,7 @@ describe('News Controller (API)', () => {
 
 			it('should get news by id', async () => {
 				const { loggedInClient, studentUser } = await setup();
-				await createCourseTarget(courseTargetId);
+				await createCourseTarget(courseTargetId, studentUser);
 				const news = await createTestNews(NewsTargetModel.Course, courseTargetId, studentUser);
 				const response = await loggedInClient.get(`${news._id.toHexString()}`).expect(200);
 				const body = response.body as NewsResponse;
@@ -347,7 +347,7 @@ describe('News Controller (API)', () => {
 
 			it('should update news by update params', async () => {
 				const { loggedInClient, studentUser } = await setup();
-				await createCourseTarget(courseTargetId);
+				await createCourseTarget(courseTargetId, studentUser);
 				const news = await createTestNews(NewsTargetModel.Course, courseTargetId, studentUser);
 
 				const params = {
@@ -367,7 +367,7 @@ describe('News Controller (API)', () => {
 			it('should do nothing if path an empty object for update', async () => {
 				const { loggedInClient, studentUser } = await setup();
 
-				await createCourseTarget(courseTargetId);
+				await createCourseTarget(courseTargetId, studentUser);
 				const news = await createTestNews(NewsTargetModel.Course, courseTargetId, studentUser);
 				const params = {} as UpdateNewsParams;
 				await loggedInClient.patch(`${news._id.toString()}`).send(params).expect(200);
@@ -418,7 +418,7 @@ describe('News Controller (API)', () => {
 
 			it('should delete news', async () => {
 				const { loggedInClient, studentUser } = await setup();
-				await createCourseTarget(courseTargetId);
+				await createCourseTarget(courseTargetId, studentUser);
 				const news = await createTestNews(NewsTargetModel.Course, courseTargetId, studentUser);
 				const newsId = news._id.toHexString();
 
