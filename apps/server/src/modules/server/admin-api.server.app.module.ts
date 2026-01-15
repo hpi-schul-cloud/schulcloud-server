@@ -1,7 +1,12 @@
 import { LoggerModule } from '@core/logger';
 import { ValidationModule } from '@core/validation';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
-import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
+import {
+	AuthGuardModule,
+	AuthGuardOptions,
+	X_API_KEY_AUTH_GUARD_CONFIG_TOKEN,
+	XApiKeyAuthGuardConfig,
+} from '@infra/auth-guard';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
@@ -46,7 +51,13 @@ const serverModules = [
 	UserAdminApiModule,
 	AdminApiRegistrationPinModule,
 	ToolAdminApiModule,
-	AuthGuardModule.register([AuthGuardOptions.X_API_KEY]),
+	AuthGuardModule.register([
+		{
+			option: AuthGuardOptions.X_API_KEY,
+			configInjectionToken: X_API_KEY_AUTH_GUARD_CONFIG_TOKEN,
+			configConstructor: XApiKeyAuthGuardConfig,
+		},
+	]),
 	AccountApiModule,
 	MediaBoardApiModule,
 	ClassModule,

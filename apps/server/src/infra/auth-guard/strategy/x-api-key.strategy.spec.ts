@@ -1,31 +1,28 @@
-import { createMock } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { XApiKeyAuthGuardConfig } from '../config/x-api-key-auth-guard.config';
+import { X_API_KEY_AUTH_GUARD_CONFIG_TOKEN, XApiKeyAuthGuardConfig } from '../config/x-api-key-auth-guard.config';
 import { XApiKeyStrategy } from './x-api-key.strategy';
 
 describe('XApiKeyStrategy', () => {
 	let module: TestingModule;
 	let strategy: XApiKeyStrategy;
-	let configService: ConfigService<XApiKeyAuthGuardConfig, true>;
+	let configService: XApiKeyAuthGuardConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [
-				XApiKeyStrategy,
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<XApiKeyAuthGuardConfig, true>>({
-						get: () => ['7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4'],
-					}),
+					provide: X_API_KEY_AUTH_GUARD_CONFIG_TOKEN,
+					useValue: {
+						allowedApiKeys: ['7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4'],
+					},
 				},
 			],
 		}).compile();
 
-		strategy = module.get(XApiKeyStrategy);
-		configService = module.get(ConfigService<XApiKeyAuthGuardConfig, true>);
+		configService = module.get(X_API_KEY_AUTH_GUARD_CONFIG_TOKEN);
+		strategy = new XApiKeyStrategy(configService);
 	});
 
 	afterAll(async () => {

@@ -5,7 +5,6 @@ import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.m
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 // admin-api-context-external-tool and test file is wrong placed need to be part of a admin-api-module folder
-import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { TestApiClient } from '@testing/test-api-client';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../../common/enum';
 import { ExternalToolResponse } from '../../../external-tool/controller/dto';
@@ -33,9 +32,7 @@ describe('AdminApiContextExternalTool (API)', () => {
 		em = module.get(EntityManager);
 		orm = app.get(MikroORM);
 
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-		const apiKeys = adminApiServerConfig().ADMIN_API__ALLOWED_API_KEYS as string[]; // check config/test.json
-		testApiClient = new TestApiClient(app, basePath, apiKeys[0], true);
+		testApiClient = new TestApiClient(app, basePath, 'someotherkey', true);
 	});
 
 	afterAll(async () => {

@@ -1,6 +1,5 @@
 import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import type { JwtAuthGuardConfig } from '@infra/auth-guard';
 import type { EncryptionConfig } from '@infra/encryption/encryption.config';
 import type { FilesStorageClientConfig } from '@infra/files-storage-client';
 import type { IdentityManagementConfig } from '@infra/identity-management';
@@ -25,7 +24,6 @@ import type { UserImportConfig } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
 import type { LanguageType } from '@shared/domain/interface';
 import type { SchulcloudTheme } from '@shared/domain/types';
-import type { Algorithm } from 'jsonwebtoken';
 import type { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
@@ -44,7 +42,6 @@ export interface ServerConfig
 		IdentityManagementConfig,
 		SchoolConfig,
 		MailConfig,
-		JwtAuthGuardConfig,
 		RocketChatUserConfig,
 		LearnroomConfig,
 		ToolConfig,
@@ -170,10 +167,6 @@ const config: ServerConfig = {
 	ROCKETCHAT_SERVICE_ENABLED: Configuration.get('ROCKETCHAT_SERVICE_ENABLED') as boolean,
 	JWT_SHOW_TIMEOUT_WARNING_SECONDS: Configuration.get('JWT_SHOW_TIMEOUT_WARNING_SECONDS') as number,
 	JWT_TIMEOUT_SECONDS: Configuration.get('JWT_TIMEOUT_SECONDS') as number,
-	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
-	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
-	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
-	JWT_SIGNING_ALGORITHM: Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm,
 	NOT_AUTHENTICATED_REDIRECT_URL: Configuration.get('NOT_AUTHENTICATED_REDIRECT_URL') as string,
 	DOCUMENT_BASE_DIR: Configuration.get('DOCUMENT_BASE_DIR') as string,
 	SC_THEME: Configuration.get('SC_THEME') as SchulcloudTheme,

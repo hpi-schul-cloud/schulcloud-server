@@ -65,7 +65,6 @@
 		"CLIENT_SECRET": "secret"
 	},
 	"ADMIN_API": {
-		"ALLOWED_API_KEYS": "onlyusedintests:thisistheadminapitokeninthetestconfig,someotherkey",
 		"MODIFICATION_THRESHOLD_MS": 60000,
 		"DELETION_DELAY_MILLISECONDS": 10000
 	},

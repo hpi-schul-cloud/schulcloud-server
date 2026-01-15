@@ -1,6 +1,5 @@
 import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { DeletionConfig } from '@modules/deletion';
 import { LegacySchoolConfig } from '@modules/legacy-school';
 import { RegistrationPinConfig } from '@modules/registration-pin';
@@ -14,8 +13,7 @@ export interface AdminApiServerConfig
 		LegacySchoolConfig,
 		UserConfig,
 		RegistrationPinConfig,
-		ToolConfig,
-		XApiKeyAuthGuardConfig {}
+		ToolConfig {}
 
 const config: AdminApiServerConfig = {
 	ADMIN_API__DELETION_DELETE_AFTER_MINUTES: Configuration.get('ADMIN_API__DELETION_DELETE_AFTER_MINUTES') as number,
@@ -53,9 +51,6 @@ const config: AdminApiServerConfig = {
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
 	ROCKET_CHAT_ADMIN_USER: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 	ROCKET_CHAT_ADMIN_PASSWORD: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
-	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
-		.split(',')
-		.map((part) => (part.split(':').pop() ?? '').trim()),
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
 	) as boolean,
