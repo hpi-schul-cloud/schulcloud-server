@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MetaData, MetaDataEntityType } from '../types';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } from './url-handler';
+import { META_TAG_EXTRACTOR_CONFIG_TOKEN } from '../meta-tag-extractor.config';
 
 const INTERNAL_DOMAIN = 'my-school-cloud.org';
 const INTERNAL_URL = new URL(`https://${INTERNAL_DOMAIN}/my-article`);
@@ -38,6 +38,12 @@ describe(MetaTagInternalUrlService.name, () => {
 					provide: BoardUrlHandler,
 					useValue: createMock<BoardUrlHandler>(),
 				},
+				{
+					provide: META_TAG_EXTRACTOR_CONFIG_TOKEN,
+					useValue: {
+						scDomain: INTERNAL_DOMAIN,
+					},
+				},
 			],
 		}).compile();
 
@@ -60,7 +66,6 @@ describe(MetaTagInternalUrlService.name, () => {
 
 	describe('isInternalUrl', () => {
 		const setup = () => {
-			Configuration.set('SC_DOMAIN', INTERNAL_DOMAIN);
 			taskUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
 			lessonUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
 			courseUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
@@ -91,7 +96,6 @@ describe(MetaTagInternalUrlService.name, () => {
 
 	describe('tryInternalLinkMetaTags', () => {
 		const setup = () => {
-			Configuration.set('SC_DOMAIN', INTERNAL_DOMAIN);
 			taskUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
 			lessonUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
 			boardUrlHandler.doesUrlMatch.mockReturnValueOnce(false);
