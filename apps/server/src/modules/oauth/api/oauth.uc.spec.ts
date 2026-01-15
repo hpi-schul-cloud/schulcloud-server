@@ -12,7 +12,7 @@ describe(OAuthUc.name, () => {
 	let uc: OAuthUc;
 
 	let oauthSessionTokenService: DeepMocked<OauthSessionTokenService>;
-	let config: DeepMocked<OauthPublicApiConfig>;
+	let config: OauthPublicApiConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
