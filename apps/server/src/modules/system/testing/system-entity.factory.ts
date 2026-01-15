@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AesEncryptionHelper } from '@shared/common/utils';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { BaseFactory } from '@testing/factory/base.factory';
@@ -11,7 +10,7 @@ export const systemOauthConfigEntityFactory = BaseFactory.define<OauthConfigEnti
 	() => {
 		return {
 			clientId: '12345',
-			clientSecret: AesEncryptionHelper.encrypt('mocksecret', Configuration.get('AES_KEY') as string),
+			clientSecret: AesEncryptionHelper.encrypt('mocksecret', 'test-key-with-32-characters-long'),
 			idpHint: 'mock-oauth-idpHint',
 			tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
 			grantType: 'authorization_code',
@@ -55,7 +54,7 @@ export const systemOidcConfigEntityFactory = BaseFactory.define<OidcConfigEntity
 );
 
 export class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityProps> {
-	withOauthConfig(otherParams?: DeepPartial<OauthConfigEntity>): this {
+	public withOauthConfig(otherParams?: DeepPartial<OauthConfigEntity>): this {
 		const params: DeepPartial<SystemEntityProps> = {
 			type: SystemTypeEnum.OAUTH,
 			oauthConfig: systemOauthConfigEntityFactory.build(otherParams),
@@ -64,7 +63,7 @@ export class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityP
 		return this.params(params);
 	}
 
-	withLdapConfig(otherParams?: DeepPartial<LdapConfigEntity>): this {
+	public withLdapConfig(otherParams?: DeepPartial<LdapConfigEntity>): this {
 		const params: DeepPartial<SystemEntityProps> = {
 			type: SystemTypeEnum.LDAP,
 			ldapConfig: systemLdapConfigEntityFactory.build(otherParams),
@@ -73,7 +72,7 @@ export class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityP
 		return this.params(params);
 	}
 
-	withOidcConfig(otherParams?: DeepPartial<OidcConfigEntity>): this {
+	public withOidcConfig(otherParams?: DeepPartial<OidcConfigEntity>): this {
 		const params = {
 			type: SystemTypeEnum.OIDC,
 			oidcConfig: systemOidcConfigEntityFactory.build(otherParams),

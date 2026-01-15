@@ -1,10 +1,18 @@
-import { EncryptionModule } from '@infra/encryption';
-import { Module } from '@nestjs/common';
+import { EncryptionConfig, EncryptionModule } from '@infra/encryption';
+import { DynamicModule, Module } from '@nestjs/common';
 import { VidisClientAdapter } from './vidis-client.adapter';
 
-@Module({
-	imports: [EncryptionModule],
-	providers: [VidisClientAdapter],
-	exports: [VidisClientAdapter],
-})
-export class VidisClientModule {}
+@Module({})
+export class VidisClientModule {
+	public static register<T extends EncryptionConfig>(
+		constructor: new () => T,
+		configInjectionToken: string
+	): DynamicModule {
+		return {
+			module: VidisClientModule,
+			imports: [EncryptionModule.register(constructor, configInjectionToken)],
+			providers: [VidisClientAdapter],
+			exports: [VidisClientAdapter],
+		};
+	}
+}

@@ -15,6 +15,7 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { SignOptions } from 'jsonwebtoken';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from './authentication-config';
+import { AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN, AuthenticationEncryptionConfig } from './encryption.config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { JWT_STRATEGY_CONFIG_TOKEN, JwtModuleConfig } from './jwt-module.config';
 import { LogoutService } from './services';
@@ -63,7 +64,7 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		SystemModule,
 		OauthModule,
 		RoleModule,
-		IdentityManagementModule,
+		IdentityManagementModule.register(AuthenticationEncryptionConfig, AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN),
 		ValkeyClientModule.register({
 			clientInjectionToken: SESSION_VALKEY_CLIENT,
 			configConstructor: ValkeyClientSessionConfig,
@@ -71,7 +72,7 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		}),
 		UserModule,
 		HttpModule,
-		EncryptionModule,
+		EncryptionModule.register(AuthenticationEncryptionConfig, AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN),
 	],
 	providers: [
 		LegacySchoolRepo,
