@@ -43,6 +43,7 @@ export class Migration20251110093306 extends Migration {
 		const roleUpdate = await this.getCollection('roles').updateOne(
 			{ name: roleName },
 			{
+				// @ts-ignore // MongoDB types are wrong here
 				$pull: {
 					permissions: {
 						$in: permissions,
