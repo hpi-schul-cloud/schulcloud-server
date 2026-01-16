@@ -7,7 +7,6 @@ import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { TspSyncConfig } from '@infra/sync';
-import type { TspClientConfig } from '@infra/tsp-client';
 import { ValkeyMode } from '@infra/valkey-client';
 import type { AccountConfig } from '@modules/account';
 import type { AlertConfig } from '@modules/alert';
@@ -67,7 +66,6 @@ export interface ServerConfig
 		ProvisioningConfig,
 		RoomConfig,
 		UserImportConfig,
-		TspClientConfig,
 		TspSyncConfig,
 		AlertConfig,
 		ShdConfig,
@@ -318,8 +316,6 @@ const config: ServerConfig = {
 	FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED: Configuration.get(
 		'FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED'
 	) as boolean,
-	TSP_API_CLIENT_BASE_URL: Configuration.get('TSP_API_CLIENT_BASE_URL') as string,
-	TSP_API_CLIENT_TOKEN_LIFETIME_MS: Configuration.get('TSP_API_CLIENT_TOKEN_LIFETIME_MS') as number,
 	TSP_SYNC_SCHOOL_LIMIT: Configuration.get('TSP_SYNC_SCHOOL_LIMIT') as number,
 	TSP_SYNC_SCHOOL_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_SCHOOL_DAYS_TO_FETCH') as number,
 	TSP_SYNC_DATA_LIMIT: Configuration.get('TSP_SYNC_DATA_LIMIT') as number,
