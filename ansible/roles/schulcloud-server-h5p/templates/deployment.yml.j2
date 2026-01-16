@@ -65,6 +65,8 @@ spec:
             name: api-h5p-configmap
         - secretRef:
             name: api-h5p-secret
+        - secretRef:
+            name: session-valkey-password
         command: ['npm', 'run', 'nest:start:h5p:prod']
         readinessProbe:
           httpGet:

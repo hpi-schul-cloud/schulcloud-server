@@ -4,13 +4,13 @@ const { GeneralError } = require('../errors');
 let redisClient = false;
 
 /**
- * 
- * @param {Redis} redisInstance 
+ *
+ * @param {Redis} redisInstance
  */
-async function initializeRedisClient(redisInstance) {
+function initializeRedisClient(redisInstance) {
 	if (redisInstance) {
 		try {
-			redisClient = redisInstance
+			redisClient = redisInstance;
 		} catch (err) {
 			throw new GeneralError('Redis connection failed!', err);
 		}
