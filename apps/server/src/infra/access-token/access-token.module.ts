@@ -6,11 +6,11 @@ import { AccessTokenService } from './domain';
 
 const createValkeyModuleOptions = (configService: ConfigService<AccessTokenConfig>): ValkeyConfig => {
 	const config = {
-		MODE: configService.getOrThrow('SESSION_VALKEY__MODE', { infer: true }),
-		URI: configService.get('SESSION_VALKEY__URI', { infer: true }),
-		SENTINEL_NAME: configService.get('SESSION_VALKEY__SENTINEL_NAME', { infer: true }),
-		SENTINEL_PASSWORD: configService.get('SESSION_VALKEY__SENTINEL_PASSWORD', { infer: true }),
-		SENTINEL_SERVICE_NAME: configService.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME', { infer: true }),
+		mode: configService.getOrThrow('SESSION_VALKEY__MODE', { infer: true }),
+		uri: configService.get('SESSION_VALKEY__URI', { infer: true }),
+		sentinelName: configService.get('SESSION_VALKEY__SENTINEL_NAME', { infer: true }),
+		sentinelPassword: configService.get('SESSION_VALKEY__SENTINEL_PASSWORD', { infer: true }),
+		sentinelServiceName: configService.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME', { infer: true }),
 	};
 
 	return config;

@@ -1,10 +1,8 @@
 import { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { JwtAuthGuardConfig } from '@infra/auth-guard';
 import { AuthorizationClientConfig } from '@infra/authorization-client';
 import { S3Config } from '@infra/s3-client';
 import { LanguageType } from '@shared/domain/interface';
-import { Algorithm } from 'jsonwebtoken';
 import { getLibraryWhiteList } from './helper';
 
 export interface H5PEditorCoreConfig extends CoreModuleConfig, AuthorizationClientConfig {
@@ -12,7 +10,7 @@ export interface H5PEditorCoreConfig extends CoreModuleConfig, AuthorizationClie
 	INCOMING_REQUEST_TIMEOUT: number;
 }
 
-export interface H5PEditorConfig extends H5PEditorCoreConfig, JwtAuthGuardConfig {
+export interface H5PEditorConfig extends H5PEditorCoreConfig {
 	H5P_EDITOR__LIBRARY_WHITE_LIST: string[];
 }
 
@@ -35,11 +33,6 @@ const getH5pEditorConfig = (): H5PEditorConfig => {
 	return {
 		...h5pEditorCoreConfig,
 		H5P_EDITOR__LIBRARY_WHITE_LIST: libraryWhiteList,
-		// Node's process.env escapes newlines. We need to reverse it for the keys to work.
-		// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
-		JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
-		JWT_SIGNING_ALGORITHM: Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm,
-		SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	};
 };
 

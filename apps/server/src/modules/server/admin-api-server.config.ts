@@ -1,12 +1,11 @@
+import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { DeletionConfig } from '@modules/deletion';
 import { LegacySchoolConfig } from '@modules/legacy-school';
 import { RegistrationPinConfig } from '@modules/registration-pin';
 import { ToolConfig } from '@modules/tool';
 import { UserConfig } from '@modules/user';
 import { LanguageType } from '@shared/domain/interface';
-import type { CoreModuleConfig } from '@core/core.config';
 
 export interface AdminApiServerConfig
 	extends CoreModuleConfig,
@@ -14,11 +13,7 @@ export interface AdminApiServerConfig
 		LegacySchoolConfig,
 		UserConfig,
 		RegistrationPinConfig,
-		ToolConfig,
-		XApiKeyAuthGuardConfig {
-	ETHERPAD__API_KEY?: string;
-	ETHERPAD__URI?: string;
-}
+		ToolConfig {}
 
 const config: AdminApiServerConfig = {
 	ADMIN_API__DELETION_DELETE_AFTER_MINUTES: Configuration.get('ADMIN_API__DELETION_DELETE_AFTER_MINUTES') as number,
@@ -56,15 +51,9 @@ const config: AdminApiServerConfig = {
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
 	ROCKET_CHAT_ADMIN_USER: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 	ROCKET_CHAT_ADMIN_PASSWORD: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
-	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
-		.split(',')
-		.map((part) => (part.split(':').pop() ?? '').trim()),
-	LOGIN_BLOCK_TIME: 0,
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
 	) as boolean,
-	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
-	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	CTL_TOOLS__PREFERRED_TOOLS_LIMIT: Configuration.get('CTL_TOOLS__PREFERRED_TOOLS_LIMIT') as number,
 	FEATURE_PREFERRED_CTL_TOOLS_ENABLED: Configuration.get('FEATURE_PREFERRED_CTL_TOOLS_ENABLED') as boolean,
 	TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: Configuration.get(

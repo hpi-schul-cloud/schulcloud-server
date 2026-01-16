@@ -1,7 +1,7 @@
 import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
-import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
+import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { AuthorizationClientModule } from '@infra/authorization-client';
 import { ConfigurationModule } from '@infra/configuration';
 import { S3ClientModule } from '@infra/s3-client';
@@ -37,7 +37,13 @@ const imports = [
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
-	AuthGuardModule.register([AuthGuardOptions.JWT]),
+	AuthGuardModule.register([
+		{
+			option: AuthGuardOptions.JWT,
+			configInjectionToken: JWT_AUTH_GUARD_CONFIG_TOKEN,
+			configConstructor: JwtAuthGuardConfig,
+		},
+	]),
 	ConfigurationModule.register(H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig),
 	LoggerModule,
 ];

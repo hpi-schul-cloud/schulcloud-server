@@ -3,7 +3,6 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ConsoleWriterConfig } from '@infra/console';
 import { RabbitMqConfig } from '@infra/rabbitmq';
 import { SchulconnexClientConfig } from '@infra/schulconnex-client';
-import { AccountConfig } from '@modules/account';
 import { SynchronizationConfig } from '@modules/synchronization';
 import { UserConfig } from '@modules/user';
 import { LanguageType } from '@shared/domain/interface';
@@ -12,11 +11,11 @@ export interface IdpConsoleConfig
 	extends ConsoleWriterConfig,
 		RabbitMqConfig,
 		LoggerConfig,
-		AccountConfig,
 		UserConfig,
 		SynchronizationConfig,
 		SchulconnexClientConfig {
 	SYNCHRONIZATION_CHUNK: number;
+	LOGIN_BLOCK_TIME: number; // @TODO temporary until removed from other configs
 }
 
 const config: IdpConsoleConfig = {
@@ -27,8 +26,6 @@ const config: IdpConsoleConfig = {
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
 	) as boolean,
-	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
-	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: Configuration.get(
 		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'

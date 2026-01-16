@@ -80,9 +80,6 @@
 	},
 	"PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL": "http://localhost:8888/v1/policies-info",
 	"BOARD_COLLABORATION_URI": "ws://localhost:4450",
-	"ADMIN_API": {
-		"ALLOWED_API_KEYS": "thisisasupersecureapikeythatisabsolutelysave"
-	},
 	"ADMIN_API_CLIENT": {
 		"API_KEY": "thisisasupersecureapikeythatisabsolutelysave",
 		"BASE_URL": "http://localhost:4030"

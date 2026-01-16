@@ -1,8 +1,11 @@
 import { LoggerModule } from '@core/logger';
+import { createMock } from '@golevelup/ts-jest';
+import { TestEncryptionConfig } from '@infra/encryption';
 import { IdentityManagementModule, IdentityManagementService } from '@infra/identity-management';
 import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '@modules/account/account-config';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v1 } from 'uuid';
@@ -53,7 +56,7 @@ describe('AccountIdmService Integration', () => {
 						};
 					},
 				}),
-				IdentityManagementModule,
+				IdentityManagementModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
 				LoggerModule,
 			],
 			providers: [
@@ -61,6 +64,10 @@ describe('AccountIdmService Integration', () => {
 				{
 					provide: AccountIdmToDoMapper,
 					useClass: AccountIdmToDoMapperDb,
+				},
+				{
+					provide: ACCOUNT_CONFIG_TOKEN,
+					useValue: createMock<AccountConfig>(),
 				},
 			],
 		}).compile();
