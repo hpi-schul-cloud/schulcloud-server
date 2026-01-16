@@ -32,14 +32,14 @@ export abstract class BaseDomainObjectRepo<D extends DomainObject<AuthorizableOb
 	}
 
 	private async createOrUpdateEntity(domainObject: D): Promise<{ domainObject: D; persistedEntity: E }> {
-		const entityData = this.mapDOToEntityProperties(domainObject);
+		const entityData: EntityData<unknown> = this.mapDOToEntityProperties(domainObject);
 		this.removeProtectedEntityFields(entityData);
 		const { id } = domainObject;
 		const existingEntity = await this.em.findOne(this.entityName, { id } as FilterQuery<E>);
 
 		const persistedEntity = existingEntity
-			? this.em.assign(existingEntity, entityData)
-			: this.em.create(this.entityName, { ...entityData, id } as RequiredEntityData<E>);
+			? (this.em.assign(existingEntity, entityData) as E)
+			: this.em.create(this.entityName, { ...entityData, id } as unknown as RequiredEntityData<E>);
 
 		return { domainObject, persistedEntity };
 	}
@@ -66,7 +66,7 @@ export abstract class BaseDomainObjectRepo<D extends DomainObject<AuthorizableOb
 	/**
 	 * Ignore base entity properties when updating entity
 	 */
-	private removeProtectedEntityFields(entityData: EntityData<E>) {
+	private removeProtectedEntityFields(entityData: EntityData<E>): void {
 		Object.keys(entityData).forEach((key) => {
 			if (baseEntityProperties.includes(key)) {
 				delete entityData[key];

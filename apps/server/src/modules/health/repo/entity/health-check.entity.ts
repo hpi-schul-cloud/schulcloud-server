@@ -1,4 +1,4 @@
-import { Entity, PrimaryKeyType, PrimaryKey, Property, Index } from '@mikro-orm/core';
+import { Entity, PrimaryKeyProp, PrimaryKey, Property, Index } from '@mikro-orm/core';
 
 export interface HealthCheckEntityProps {
 	id: string;
@@ -7,7 +7,7 @@ export interface HealthCheckEntityProps {
 
 @Entity({ tableName: 'healthchecks' })
 export class HealthCheckEntity {
-	[PrimaryKeyType]?: string;
+	[PrimaryKeyProp]?: string;
 
 	@PrimaryKey({ name: '_id' })
 	id!: string;

@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { FailedUpdateLastSyncedAtLoggableException } from './failed-update-lastsyncedat.loggable-exception';
 import { AxiosErrorLoggable } from '@core/error/loggable';
 import * as axios from 'axios';

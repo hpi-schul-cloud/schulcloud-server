@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionRequestBodyPropsBuilder } from '.';
 import { DomainName } from '../../domain/types';
 

@@ -4,13 +4,18 @@ import { User } from '@modules/user/repo';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Dashboard, GridElement, GridElementWithPosition } from '../../../domain/do/dashboard';
 import { DashboardEntity, DashboardGridElementEntity } from '../dashboard.entity';
+import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 
 @Injectable()
 export class DashboardModelMapper {
 	constructor(protected readonly em: EntityManager) {}
 
 	public async mapReferenceToEntity(modelEntity: CourseEntity): Promise<CourseEntity> {
-		const domainEntity: CourseEntity = await wrap(modelEntity).init();
+		const domainEntity = await wrap(modelEntity).init();
+
+		if (domainEntity == null) {
+			throw new ReferenceNotPopulatedLoggableException('dashboardelement', 'references');
+		}
 
 		return domainEntity;
 	}

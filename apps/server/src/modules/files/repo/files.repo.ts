@@ -1,10 +1,11 @@
-import { EntityDictionary } from '@mikro-orm/core';
+import { EntityDictionary, EntityName } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { FileOwnerModel } from '../domain';
 import { FileEntity } from '../entity';
+import { FindOptions } from '@mikro-orm/mongodb';
 
 @Injectable()
 export class FilesRepo extends BaseRepo<FileEntity> {
@@ -12,13 +13,13 @@ export class FilesRepo extends BaseRepo<FileEntity> {
 		super(_em);
 	}
 
-	get entityName() {
+	get entityName(): EntityName<FileEntity> {
 		return FileEntity;
 	}
 
 	public async findForCleanup(thresholdDate: Date, batchSize: number, offset: number): Promise<FileEntity[]> {
 		const filter = { deletedAt: { $lte: thresholdDate } };
-		const options = {
+		const options: FindOptions<FileEntity> = {
 			orderBy: { id: 'asc' },
 			limit: batchSize,
 			offset,

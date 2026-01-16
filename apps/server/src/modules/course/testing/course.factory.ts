@@ -1,5 +1,5 @@
 import { DomainObjectFactory } from '@testing/factory/domainobject';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Course, CourseProps } from '../domain';
 
 export const courseFactory = DomainObjectFactory.define<Course, CourseProps>(Course, ({ sequence }) => {

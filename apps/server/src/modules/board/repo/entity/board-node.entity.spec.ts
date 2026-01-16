@@ -12,7 +12,6 @@ describe('entity', () => {
 		orm = await MikroORM.init({
 			entities: [BaseEntityWithTimestamps, BoardNodeEntity],
 			clientUrl: 'mongodb://localhost:27017/boardtest',
-			type: 'mongo',
 			validate: true,
 			allowGlobalContext: true,
 		});

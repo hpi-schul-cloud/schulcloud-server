@@ -125,7 +125,7 @@ describe('user repo', () => {
 
 			const result = await repo.findById(user.id, true);
 
-			expect(result.roles.toArray()).toEqual(user.roles.toArray());
+			expect(result.roles.toArray()).toEqual([expect.objectContaining({ id: roles1[0].id, name: roles1[0].name })]);
 			expect(result.roles[0].roles.toArray()).toEqual(user.roles[0].roles.toArray());
 			expect(result.roles[0].roles[0].roles.toArray()).toEqual(user.roles[0].roles[0].roles.toArray());
 		});

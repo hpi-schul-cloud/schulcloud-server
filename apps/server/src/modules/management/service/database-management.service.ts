@@ -3,7 +3,7 @@ import { MigrateOptions, UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Collection, Db } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BaseEntity } from '@shared/domain/entity';
+import { Document } from 'mongodb';
 
 @Injectable()
 export class DatabaseManagementService {
@@ -19,12 +19,12 @@ export class DatabaseManagementService {
 		return collection;
 	}
 
-	public async importCollection(collectionName: string, jsonDocuments: unknown[]): Promise<number> {
+	public async importCollection(collectionName: string, jsonDocuments: Document[]): Promise<number> {
 		if (jsonDocuments.length === 0) {
 			return 0;
 		}
 		const collection = this.getDatabaseCollection(collectionName);
-		const { insertedCount } = await collection.insertMany(jsonDocuments as BaseEntity[], {
+		const { insertedCount } = await collection.insertMany(jsonDocuments, {
 			forceServerObjectId: true,
 		});
 

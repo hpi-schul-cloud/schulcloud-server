@@ -1,4 +1,4 @@
-import { columnBoardFactory } from '@modules/board/testing';
+import { columnBoardEntityFactory, columnBoardFactory } from '@modules/board/testing';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonEntity, Material } from '@modules/lesson/repo';
@@ -11,7 +11,6 @@ import { setupEntities } from '@testing/database';
 import {
 	boardFactory,
 	columnboardBoardElementFactory,
-	columnBoardNodeFactory,
 	lessonBoardElementFactory,
 	taskBoardElementFactory,
 } from '../../testing';
@@ -121,8 +120,8 @@ describe('Board Entity', () => {
 		});
 
 		it('should remove columnBoards from board that are not in list', () => {
-			const columnBoard = columnBoardFactory.build();
-			const columnboardBoardElement = columnboardBoardElementFactory.buildWithId({ target: columnBoard });
+			const columnBoardNode = columnBoardEntityFactory.build();
+			const columnboardBoardElement = columnboardBoardElementFactory.buildWithId({ target: columnBoardNode });
 			const board = boardFactory.buildWithId({ references: [columnboardBoardElement] });
 
 			board.syncBoardElementReferences([]);
@@ -191,7 +190,7 @@ describe('Board Entity', () => {
 		});
 
 		it('should add columnboards to board', () => {
-			const columnBoardTarget = columnBoardNodeFactory.buildWithId();
+			const columnBoardTarget = columnBoardEntityFactory.buildWithId();
 			const board = boardFactory.buildWithId({ references: [] });
 
 			board.syncBoardElementReferences([columnBoardTarget]);
@@ -200,7 +199,7 @@ describe('Board Entity', () => {
 		});
 
 		it('should NOT add columnboards to board that is already there', () => {
-			const target = columnBoardNodeFactory.buildWithId();
+			const target = columnBoardEntityFactory.buildWithId();
 			const boardElement = columnboardBoardElementFactory.buildWithId({ target });
 			const board = boardFactory.buildWithId({ references: [boardElement] });
 
@@ -210,8 +209,8 @@ describe('Board Entity', () => {
 		});
 
 		it('should add new columnboards to the beginning of the list', () => {
-			const newTarget = columnBoardNodeFactory.buildWithId();
-			const existingTarget = columnBoardNodeFactory.buildWithId();
+			const newTarget = columnBoardEntityFactory.buildWithId();
+			const existingTarget = columnBoardEntityFactory.buildWithId();
 			const existingElement = columnboardBoardElementFactory.buildWithId({ target: existingTarget });
 			const board = boardFactory.buildWithId({ references: [existingElement] });
 

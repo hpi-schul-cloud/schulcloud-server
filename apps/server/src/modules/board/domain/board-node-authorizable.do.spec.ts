@@ -1,7 +1,7 @@
 import { columnBoardFactory, columnFactory } from '../testing';
 import { BoardNodeAuthorizable, BoardRoles, BoardContextSettings } from './board-node-authorizable.do';
 import { Permission } from '@shared/domain/interface';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ColumnBoardProps } from './types';
 
 describe('Board Node Authorizable Domain Object', () => {

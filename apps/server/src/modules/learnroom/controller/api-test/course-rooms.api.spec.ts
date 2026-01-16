@@ -1,20 +1,20 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager, FilterQuery, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { CopyApiResponse } from '@modules/copy-helper';
-import { CourseEntity } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo/course.entity';
 import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { lessonFactory } from '@modules/lesson/testing';
-import { Task } from '@modules/task/repo';
+import { Task } from '@modules/task/repo/task.entity';
 import { taskFactory } from '@modules/task/testing';
-import { BoardExternalReferenceType, BoardNodeType } from '@modules/board';
+import { BoardExternalReference, BoardExternalReferenceType, BoardNodeType } from '@modules/board';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
@@ -22,10 +22,10 @@ import {
 	linkElementEntityFactory,
 } from '@modules/board/testing';
 import { SingleColumnBoardResponse } from '../dto';
-import { ColumnBoardNode, LegacyBoard } from '../../repo';
+import { LegacyBoard } from '../../repo';
 import { boardFactory } from '../../testing';
-import { BoardNodeEntity } from '../../../board/repo';
-import { LessonEntity } from '../../../lesson/repo';
+import { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
+import { LessonEntity } from '@modules/lesson/repo/lesson.entity';
 
 describe('Course Rooms Controller (API)', () => {
 	let app: INestApplication;
@@ -370,8 +370,8 @@ describe('Course Rooms Controller (API)', () => {
 					.flush();
 				em.clear();
 
-				const columnBoardNode1 = await em.findOneOrFail(ColumnBoardNode, columnBoard1.id);
-				const columnBoardNode2 = await em.findOneOrFail(ColumnBoardNode, columnBoard2.id);
+				const columnBoardNode1 = await em.findOneOrFail(BoardNodeEntity, columnBoard1.id);
+				const columnBoardNode2 = await em.findOneOrFail(BoardNodeEntity, columnBoard2.id);
 				legacyBoard.syncBoardElementReferences([task, lesson, columnBoardNode1, columnBoardNode2]);
 
 				await em.persist([legacyBoard]).flush();
@@ -391,7 +391,12 @@ describe('Course Rooms Controller (API)', () => {
 
 				const copiedTask = await em.findOneOrFail(Task, { course: copyCourseId });
 				const copiedLesson = await em.findOneOrFail(LessonEntity, { course: copyCourseId });
-				const copiedColumnBoards = await em.find(ColumnBoardNode, { contextId: new ObjectId(copyCourseId) });
+				const copiedColumnBoards = await em.find(BoardNodeEntity, {
+					context: {
+						_contextId: new ObjectId(copyCourseId),
+						_contextType: BoardExternalReferenceType.Course,
+					} as FilterQuery<BoardExternalReference>,
+				});
 
 				const linkElements = await em.find(BoardNodeEntity, {
 					type: BoardNodeType.LINK_ELEMENT,
