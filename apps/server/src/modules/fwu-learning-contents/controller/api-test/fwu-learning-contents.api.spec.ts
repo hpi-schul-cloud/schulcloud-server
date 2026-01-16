@@ -8,6 +8,13 @@ import { TestApiClient } from '@testing/test-api-client';
 import { Readable } from 'stream';
 import { FwuLearningContentsTestModule } from '../../fwu-learning-contents-test.module';
 import { FWU_CONTENT_S3_CONNECTION } from '../../fwu-learning-contents.config';
+import { fwuIndex } from '../../interface/fwuIndex.type';
+
+jest.mock('../../fwu.filesIndex', () => {
+	return {
+		filesIndex: ['5521408'],
+	};
+});
 
 describe('FwuLearningContents Controller (api)', () => {
 	let app: INestApplication;
@@ -154,5 +161,69 @@ describe('FwuLearningContents Controller (api)', () => {
 			const setup = () => {
 				Configuration.set('FEATURE_FWU_CONTENT_ENABLED', false);
 
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+
+				return { loggedInClient };
+			};
+
+			it('should return 500 status', async () => {
+				const { loggedInClient } = setup();
+				const response = await loggedInClient.get();
+
+				expect(response.status).toEqual(500);
+			});
+
+			describe('when feature is enabled', () => {
+				const setup = () => {
+					Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
+
+					const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
+					const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+
+					const htmlContent = `<html>
+				<body>
+					<div class="pname">Test Title</div>
+					<div class="ptext">Test Description</div>
+					<div class="player_outer" style="background-image: url(thumbnail.jpg);"></div>
+				</body>
+			</html>
+		 `;
+					const stream = Readable.from(htmlContent);
+					const response = {
+						data: stream,
+						contentType: 'text/html',
+						contentLength: htmlContent.length,
+					};
+					s3ClientAdapter.get.mockResolvedValue(response);
+
+					const expected: fwuIndex = {
+						id: '5521408',
+						title: 'Test Title',
+						target_url: '/api/v3/fwu/5521408/index.html',
+						thumbnail_url: '/api/v3/fwu/5521408/thumbnail.jpg',
+						description: 'Test Description',
+					};
+
+					return { loggedInClient, expected };
+				};
+
+				it('should return 200 status', async () => {
+					const { loggedInClient } = setup();
+
+					const response = await loggedInClient.get();
+
 					expect(response.status).toEqual(200);
+				});
+
+				it('should return a list with fwu', async () => {
+					const { loggedInClient, expected } = setup();
+
+					const response = await loggedInClient.get();
+					const responseBody = response.body as fwuIndex[];
+					expect(responseBody[0]).toEqual(expected);
+				});
+			});
+		});
+	});
 });
