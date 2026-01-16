@@ -9,7 +9,6 @@ describe('SchulconnexProvisioningConfig', () => {
 				expect.objectContaining<Partial<SchulconnexProvisioningConfig>>({
 					EXIT_ON_ERROR: expect.any(Boolean),
 					NEST_LOG_LEVEL: expect.any(String),
-					FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED: expect.any(Boolean),
 				})
 			);
 		});
