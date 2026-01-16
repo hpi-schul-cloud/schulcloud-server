@@ -1,17 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { RoomArrangementService, RoomService } from '../domain';
-import { EntityId } from '@shared/domain/types';
-import { RoomPermissionService } from './service';
-import { Action, AuthorizationService } from '@modules/authorization';
-import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { Action } from '@modules/authorization';
 import { RoleName } from '@modules/role';
-import { RoomWithPermissionsAndLockedStatus } from './type/room-with-locked-status';
+import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
+import { RoomArrangementService, RoomService } from '../domain';
+import { RoomPermissionService } from './service';
+import { RoomWithPermissionsAndLockedStatus } from './type/room-with-locked-status';
 
 @Injectable()
 export class RoomArrangementUc {
 	constructor(
-		private readonly authorizationService: AuthorizationService,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly roomService: RoomService,
 		private readonly roomPermissionService: RoomPermissionService,
@@ -19,24 +18,19 @@ export class RoomArrangementUc {
 	) {}
 
 	public async getRoomsByUserArrangement(userId: EntityId): Promise<RoomWithPermissionsAndLockedStatus[]> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
+		const accessibleRoomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
+		const roomIds = accessibleRoomAuthorizables.map((item) => item.roomId);
 
-		const readableRoomIds = roomAuthorizables
-			.filter((item) =>
-				this.authorizationService.hasPermission(user, item, { action: Action.read, requiredPermissions: [] })
-			)
-			.map((item) => item.roomId);
-		const rooms = await this.roomService.getRoomsByIds(readableRoomIds);
+		const rooms = await this.roomService.getRoomsByIds(roomIds);
 		const existingRoomIds = rooms.map((room) => room.id);
 		const orderedRoomIds = await this.roomArrangementService.sortRoomIdsByUserArrangement(userId, existingRoomIds);
 		rooms.sort((a, b) => orderedRoomIds.indexOf(a.id) - orderedRoomIds.indexOf(b.id));
 
 		const roomsWithPermissionsAndLockedStatus = rooms.map((room) => {
-			const roomAuthorizable = roomAuthorizables.find((item) => item.roomId === room.id);
+			const roomAuthorizable = accessibleRoomAuthorizables.find((item) => item.roomId === room.id);
 			const permissions = roomAuthorizable ? this.getPermissions(userId, roomAuthorizable) : [];
 
-			const hasOwner = roomAuthorizables.some(
+			const hasOwner = accessibleRoomAuthorizables.some(
 				(item) =>
 					item.roomId === room.id &&
 					item.members.some((member) => member.roles.some((role) => role.name === RoleName.ROOMOWNER))
