@@ -4,31 +4,38 @@ import { BoardsClientAdapter } from '@infra/boards-client';
 import { CardClientAdapter } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
+import { FilesStorageClientAdapter, FilesStorageClientConfig } from '@infra/files-storage-client';
+import { ImportCourseParams } from '@infra/rabbitmq';
+import { ENTITIES } from '@modules/server/server.entity.imports';
+import { HttpService } from '@nestjs/axios';
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@testing/database';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import { from } from 'rxjs';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
+import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 import { commonCartridgeOrganizationPropsFactory as organizationFactory } from '../testing/common-cartridge-organization-props.factory';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
-import { CommonCartridgeImportService } from './common-cartridge-import.service';
-import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import { FilesStorageClientAdapter } from '@infra/files-storage-client';
-import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
+import { CommonCartridgeImportConsumer } from './common-cartridge-import.consumer';
 
 jest.mock('../import/common-cartridge-file-parser');
 
-describe(CommonCartridgeImportService.name, () => {
+describe(CommonCartridgeImportConsumer.name, () => {
 	let module: TestingModule;
-	let sut: CommonCartridgeImportService;
+	let sut: CommonCartridgeImportConsumer;
 	let coursesClientAdapterMock: DeepMocked<CoursesClientAdapter>;
 	let boardsClientAdapterMock: DeepMocked<BoardsClientAdapter>;
 	let columnClientAdapterMock: DeepMocked<ColumnClientAdapter>;
 	let cardClientAdapterMock: DeepMocked<CardClientAdapter>;
 	let filesStorageClientAdapterMock: DeepMocked<FilesStorageClientAdapter>;
 	let commonCartridgeFileParser: DeepMocked<CommonCartridgeFileParser>;
+	let httpServiceMock: DeepMocked<HttpService>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				CommonCartridgeImportService,
+				CommonCartridgeImportConsumer,
 				{
 					provide: CoursesClientAdapter,
 					useValue: createMock<CoursesClientAdapter>(),
@@ -57,15 +64,36 @@ describe(CommonCartridgeImportService.name, () => {
 					provide: CommonCartridgeFileParser,
 					useValue: createMock<CommonCartridgeFileParser>(),
 				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
+			],
+			imports: [
+				ConfigModule.forRoot({
+					isGlobal: true,
+					load: [
+						(): FilesStorageClientConfig => {
+							return {
+								FILES_STORAGE__SERVICE_BASE_URL: faker.internet.url(),
+							};
+						},
+					],
+				}),
+				MongoMemoryDatabaseModule.forRoot({
+					entities: ENTITIES,
+				}),
 			],
 		}).compile();
 
-		sut = module.get(CommonCartridgeImportService);
+		sut = module.get(CommonCartridgeImportConsumer);
 		coursesClientAdapterMock = module.get(CoursesClientAdapter);
 		boardsClientAdapterMock = module.get(BoardsClientAdapter);
 		columnClientAdapterMock = module.get(ColumnClientAdapter);
 		cardClientAdapterMock = module.get(CardClientAdapter);
 		filesStorageClientAdapterMock = module.get(FilesStorageClientAdapter);
+		httpServiceMock = module.get(HttpService);
+
 		commonCartridgeFileParser = createMock<CommonCartridgeFileParser>();
 		(CommonCartridgeFileParser as jest.Mock).mockImplementation(() => commonCartridgeFileParser);
 	});
@@ -120,9 +148,9 @@ describe(CommonCartridgeImportService.name, () => {
 		element3.isResource = true;
 		element3.pathDepth = 3;
 
-		const currentUser = currentUserFactory.build();
-
 		const orgs = [board, column1, card1, element1, column2, card2, element2, column3, card3, element3];
+
+		httpServiceMock.get.mockReturnValue(from([axiosResponseFactory.build({ data: file })]));
 
 		commonCartridgeFileParser.getTitle.mockReturnValueOnce('test course');
 
@@ -158,7 +186,19 @@ describe(CommonCartridgeImportService.name, () => {
 
 		commonCartridgeFileParser.getTitle.mockReturnValue(undefined);
 
-		return { file, currentUser, column1, column2, card1, card2, element1, element2, board };
+		const schoolId = faker.string.uuid();
+		const payload: ImportCourseParams = {
+			jwt: faker.internet.jwt({
+				payload: {
+					schoolId,
+				},
+			}),
+			fileName: faker.system.fileName(),
+			fileRecordId: faker.string.uuid(),
+			fileUrl: faker.internet.url(),
+		};
+
+		return { column1, column2, card1, card2, element1, element2, board, payload, schoolId };
 	};
 
 	describe('importFile', () => {
@@ -166,19 +206,22 @@ describe(CommonCartridgeImportService.name, () => {
 			const setup = () => setupBase();
 
 			it('should create a course', async () => {
-				const { file, currentUser } = setup();
+				const { payload } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importFile(payload);
 
-				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ name: 'test course', color: '#455B6A' });
+				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith(payload.jwt, {
+					name: 'test course',
+					color: '#455B6A',
+				});
 			});
 
 			it('should create a board', async () => {
-				const { file, currentUser } = setup();
+				const { payload } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importFile(payload);
 
-				expect(boardsClientAdapterMock.createBoard).toHaveBeenCalledWith({
+				expect(boardsClientAdapterMock.createBoard).toHaveBeenCalledWith(payload.jwt, {
 					title: 'Mock Board',
 					layout: 'columns',
 					parentId: expect.any(String),
@@ -187,80 +230,91 @@ describe(CommonCartridgeImportService.name, () => {
 			});
 
 			it('should create a column', async () => {
-				const { file, currentUser } = setup();
+				const { payload } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importFile(payload);
 
-				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledWith(expect.any(String));
+				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledWith(payload.jwt, expect.any(String));
 				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledTimes(3);
 			});
 
 			it('should update column title', async () => {
-				const { file, currentUser } = setup();
+				const { payload } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importFile(payload);
 
 				expect(columnClientAdapterMock.updateBoardColumnTitle).toHaveBeenCalledTimes(3);
 			});
 
 			it('should create cards and update titles', async () => {
-				const { file, currentUser } = setup();
+				const { payload } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importFile(payload);
 
 				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(3);
 			});
 
 			it('should create an element', async () => {
-				const { file, currentUser } = setup();
+				const { payload } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importFile(payload);
 
 				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(3);
 			});
 
 			it('should upload files', async () => {
-				const { file, currentUser } = setup();
+				const { payload, schoolId } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importFile(payload);
 
 				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledWith(
+					payload.jwt,
+					schoolId,
+					'school',
 					expect.any(String),
-					expect.any(String),
-					expect.any(String),
-					expect.any(String),
+					'boardnodes',
 					new File([''], 'file-element.pdf')
 				);
 			});
 
 			it('should upload file folder', async () => {
-				const { file, currentUser } = setup();
+				const { payload, schoolId } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importFile(payload);
 
 				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledWith(
+					payload.jwt,
+					schoolId,
+					'school',
 					expect.any(String),
-					expect.any(String),
-					expect.any(String),
-					expect.any(String),
+					'boardnodes',
 					new File([''], 'file1-folder.pdf')
 				);
 
 				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledWith(
+					payload.jwt,
+					schoolId,
+					'school',
 					expect.any(String),
-					expect.any(String),
-					expect.any(String),
-					expect.any(String),
+					'boardnodes',
 					new File([''], 'file2-folder.pdf')
 				);
 			});
 
 			it('should create card element without resource', async () => {
-				const { file, currentUser } = setup();
+				const { payload } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importFile(payload);
 
 				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalled();
+			});
+
+			it('should delete the course file', async () => {
+				const { payload } = setup();
+
+				await sut.importFile(payload);
+
+				expect(filesStorageClientAdapterMock.deleteFile).toHaveBeenCalledWith(payload.jwt, payload.fileRecordId);
 			});
 		});
 
@@ -268,20 +322,36 @@ describe(CommonCartridgeImportService.name, () => {
 			const setup = () => {
 				commonCartridgeFileParser.getTitle.mockReturnValueOnce(undefined);
 
-				const { file, currentUser } = setupBase();
-
-				return { file, currentUser };
+				return setupBase();
 			};
 
 			it(`should give 'Untitled Course' as title`, async () => {
-				const { file, currentUser } = setup();
+				const { payload } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importFile(payload);
 
-				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({
+				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith(payload.jwt, {
 					name: 'Untitled Course',
 					color: '#455B6A',
 				});
+			});
+		});
+
+		describe('when no file can be retrieved', () => {
+			const setup = () => {
+				const setupData = setupBase();
+
+				httpServiceMock.get.mockReturnValue(from([axiosResponseFactory.build({ data: null })]));
+
+				return setupData;
+			};
+
+			it(`should stop processing`, async () => {
+				const { payload } = setup();
+
+				await sut.importFile(payload);
+
+				expect(coursesClientAdapterMock.createCourse).not.toHaveBeenCalled();
 			});
 		});
 	});

@@ -1,29 +1,43 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardCardApi, BoardElementApi, ContentElementType } from './generated';
-import { CardClientAdapter } from '.';
+import { CardClientAdapter, CardClientConfig } from '.';
 import { faker } from '@faker-js/faker/.';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import { ConfigModule } from '@nestjs/config';
+
+const cardApiMock = createMock<BoardCardApi>();
+jest.mock('./generated/api/board-card-api', () => {
+	return {
+		BoardCardApi: jest.fn().mockImplementation(() => cardApiMock),
+	};
+});
+
+const boardElementApiMock = createMock<BoardElementApi>();
+jest.mock('./generated/api/board-element-api', () => {
+	return {
+		BoardElementApi: jest.fn().mockImplementation(() => boardElementApiMock),
+	};
+});
 
 describe(CardClientAdapter.name, () => {
 	let module: TestingModule;
 	let sut: CardClientAdapter;
 
-	const cardApiMock = createMock<BoardCardApi>();
-	const boardElementApiMock = createMock<BoardElementApi>();
-
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [
-				CardClientAdapter,
-				{
-					provide: BoardElementApi,
-					useValue: boardElementApiMock,
-				},
-				{
-					provide: BoardCardApi,
-					useValue: cardApiMock,
-				},
+			providers: [CardClientAdapter],
+			imports: [
+				ConfigModule.forRoot({
+					isGlobal: true,
+					load: [
+						(): CardClientConfig => {
+							return {
+								API_HOST: faker.internet.url(),
+							};
+						},
+					],
+				}),
 			],
 		}).compile();
 		sut = module.get(CardClientAdapter);
@@ -54,16 +68,19 @@ describe(CardClientAdapter.name, () => {
 					axiosResponseFactory.build({ data: { id: cardId, type: ContentElementType.RICH_TEXT } })
 				);
 
+				const jwt = faker.internet.jwt();
+
 				return {
 					cardId,
 					createContentElementBodyParams,
+					jwt,
 				};
 			};
 
 			it('should call cardApi.cardControllerCreateElement', async () => {
-				const { cardId, createContentElementBodyParams } = setup();
+				const { cardId, createContentElementBodyParams, jwt } = setup();
 
-				const response = await sut.createCardElement(cardId, createContentElementBodyParams);
+				const response = await sut.createCardElement(jwt, cardId, createContentElementBodyParams);
 
 				expect(response.id).toEqual(cardId);
 				expect(response.type).toEqual(ContentElementType.RICH_TEXT);
@@ -79,17 +96,19 @@ describe(CardClientAdapter.name, () => {
 				const renameBodyParams = {
 					title: faker.lorem.words(),
 				};
+				const jwt = faker.internet.jwt();
 
 				return {
 					cardId,
 					renameBodyParams,
+					jwt,
 				};
 			};
 
 			it('should call cardApi.cardControllerUpdateCardTitle', async () => {
-				const { cardId, renameBodyParams } = setup();
+				const { cardId, renameBodyParams, jwt } = setup();
 
-				await sut.updateCardTitle(cardId, renameBodyParams);
+				await sut.updateCardTitle(jwt, cardId, renameBodyParams);
 
 				expect(cardApiMock.cardControllerUpdateCardTitle).toHaveBeenCalledWith(cardId, renameBodyParams);
 			});
@@ -114,16 +133,19 @@ describe(CardClientAdapter.name, () => {
 					axiosResponseFactory.build({ data: updateElementContentBodyParams })
 				);
 
+				const jwt = faker.internet.jwt();
+
 				return {
 					elementId,
 					updateElementContentBodyParams,
+					jwt,
 				};
 			};
 
 			it('should call elementAPI.elementControllerUpdateElement', async () => {
-				const { elementId, updateElementContentBodyParams } = setup();
+				const { elementId, updateElementContentBodyParams, jwt } = setup();
 
-				const response = await sut.updateCardElement(elementId, updateElementContentBodyParams);
+				const response = await sut.updateCardElement(jwt, elementId, updateElementContentBodyParams);
 
 				expect(response).toEqual(updateElementContentBodyParams);
 				expect(boardElementApiMock.elementControllerUpdateElement).toHaveBeenCalledWith(

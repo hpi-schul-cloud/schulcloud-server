@@ -1,32 +1,27 @@
 import { AxiosErrorLoggable } from '@core/error/loggable';
 import { ErrorLogger, Logger } from '@core/logger';
 import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { REQUEST } from '@nestjs/core';
-import { JwtExtractor } from '@shared/common/utils/jwt';
 import { AxiosError } from 'axios';
-import type { Request } from 'express';
 import { lastValueFrom } from 'rxjs';
 import { Stream } from 'stream';
 import { FilesStorageClientConfig } from './files-storage-client.config';
-import { FileApi, FileRecordParentType, FileRecordResponse, StorageLocation } from './generated';
+import { Configuration, FileApi, FileRecordParentType, FileRecordResponse, StorageLocation } from './generated';
 
 @Injectable()
 export class FilesStorageClientAdapter {
 	constructor(
-		private readonly api: FileApi,
 		private readonly logger: Logger,
 		private readonly errorLogger: ErrorLogger,
 		// these should be removed when the generated client supports downloading files as arraybuffer
 		private readonly httpService: HttpService,
-		private readonly configService: ConfigService<FilesStorageClientConfig, true>,
-		@Inject(REQUEST) private readonly req: Request
+		private readonly configService: ConfigService<FilesStorageClientConfig, true>
 	) {
 		this.logger.setContext(FilesStorageClientAdapter.name);
 	}
 
-	public async getStream(fileRecordId: string, fileName: string): Promise<Stream | null> {
+	public async getStream(jwt: string, fileRecordId: string, fileName: string): Promise<Stream | null> {
 		try {
 			// Originally used with arraybuffer type:
 			// INFO: we need to stream the file from the files storage service without using the generated client,
@@ -37,7 +32,6 @@ export class FilesStorageClientAdapter {
 			// 	responseType: 'stream',
 			// });
 
-			const token = JwtExtractor.extractJwtFromRequestOrFail(this.req);
 			const url = new URL(
 				`${this.configService.getOrThrow<string>(
 					'FILES_STORAGE__SERVICE_BASE_URL'
@@ -46,7 +40,7 @@ export class FilesStorageClientAdapter {
 			const observable = this.httpService.get(url.toString(), {
 				responseType: 'stream',
 				headers: {
-					Authorization: `Bearer ${token}`,
+					Authorization: `Bearer ${jwt}`,
 				},
 			});
 
@@ -64,6 +58,7 @@ export class FilesStorageClientAdapter {
 	}
 
 	public async upload(
+		jwt: string,
 		storageLocationId: string,
 		storageLocation: StorageLocation,
 		parentId: string,
@@ -74,8 +69,6 @@ export class FilesStorageClientAdapter {
 			// INFO: we need to upload the file to the files storage service without using the generated client,
 			// because the generated client does not support uploading files as FormData. Otherwise files with
 			// binary content would be corrupted like pdfs, zip files, etc.
-
-			const token = JwtExtractor.extractJwtFromRequestOrFail(this.req);
 
 			const formData = new FormData();
 
@@ -93,7 +86,7 @@ export class FilesStorageClientAdapter {
 
 			const observable = this.httpService.post(url.toString(), formData, {
 				headers: {
-					Authorization: `Bearer ${token}`,
+					Authorization: `Bearer ${jwt}`,
 				},
 			});
 			const response = await lastValueFrom(observable);
@@ -104,5 +97,20 @@ export class FilesStorageClientAdapter {
 
 			return null;
 		}
+	}
+
+	public async deleteFile(jwt: string, fileRecordId: string): Promise<void> {
+		await this.fileApi(jwt).deleteFile(fileRecordId);
+	}
+
+	private fileApi(jwt: string): FileApi {
+		const basePath = this.configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL');
+
+		const config = new Configuration({
+			accessToken: jwt,
+			basePath: `${basePath}/api/v3`,
+		});
+
+		return new FileApi(config);
 	}
 }

@@ -12,13 +12,14 @@ export class CommonCartridgeUc {
 	) {}
 
 	public async exportCourse(
+		jwt: string,
 		courseId: EntityId,
 		version: CommonCartridgeVersion,
 		topics: string[],
 		tasks: string[],
 		columnBoards: string[]
 	): Promise<CommonCartridgeExportResponse> {
-		const exportedCourse = await this.exportService.exportCourse(courseId, version, topics, tasks, columnBoards);
+		const exportedCourse = await this.exportService.exportCourse(jwt, courseId, version, topics, tasks, columnBoards);
 
 		return exportedCourse;
 	}

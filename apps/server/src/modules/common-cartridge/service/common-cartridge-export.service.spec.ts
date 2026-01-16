@@ -92,6 +92,7 @@ describe('CommonCartridgeExportService', () => {
 		courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
 
 		const exported = await sut.exportCourse(
+			faker.internet.jwt(),
 			courseMetadata.id,
 			version,
 			exportTopics ? [room.elements[1].content.id] : [],
@@ -457,13 +458,15 @@ describe('CommonCartridgeExportService', () => {
 				courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
 
 				const courseId = faker.string.uuid();
-				return { courseId };
+				const jwt = faker.internet.jwt();
+
+				return { courseId, jwt };
 			};
 
 			it('should log warning on warning level', async () => {
-				const { courseId } = setup();
+				const { courseId, jwt } = setup();
 
-				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
+				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
 				const archive = result.data;
 
 				archive.emit('warning', {} as unknown as ArchiverError);
@@ -477,9 +480,9 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should log progress updates on debug level', async () => {
-				const { courseId } = setup();
+				const { courseId, jwt } = setup();
 
-				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
+				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
 				const archive = result.data;
 
 				archive.emit('progress', {
@@ -509,9 +512,9 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should throw on error', async () => {
-				const { courseId } = setup();
+				const { courseId, jwt } = setup();
 
-				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
+				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
 				const archive = result.data;
 
 				expect(() => archive.emit('error', {} as unknown as ArchiverError)).toThrow(

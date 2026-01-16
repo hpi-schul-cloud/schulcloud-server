@@ -58,37 +58,66 @@ describe('CommonCartridgeController', () => {
 	});
 
 	describe('exportCourse', () => {
-		const setup = () => {
-			const courseId = faker.string.uuid();
-			const params = { courseId } as ExportCourseParams;
-			const query = { version: CommonCartridgeVersion.V_1_1_0 } as CourseQueryParams;
-			const body = {
-				topics: [faker.string.uuid(), faker.string.uuid()],
-				tasks: [faker.string.uuid()],
-				columnBoards: [faker.string.uuid(), faker.string.uuid()],
-			} as CourseExportBodyParams;
-			const expected: CommonCartridgeExportResponse = {
-				data: Readable.from(faker.lorem.paragraphs(100)),
-				name: faker.string.alpha(),
+		describe('when exporting a course', () => {
+			const setup = () => {
+				const courseId = faker.string.uuid();
+				const params = { courseId } as ExportCourseParams;
+				const query = { version: CommonCartridgeVersion.V_1_1_0 } as CourseQueryParams;
+				const body = {
+					topics: [faker.string.uuid(), faker.string.uuid()],
+					tasks: [faker.string.uuid()],
+					columnBoards: [faker.string.uuid(), faker.string.uuid()],
+				} as CourseExportBodyParams;
+				const expected: CommonCartridgeExportResponse = {
+					data: Readable.from(faker.lorem.paragraphs(100)),
+					name: faker.string.alpha(),
+				};
+				const mockRequest = createMock<Request>();
+				mockRequest.headers.cookie = `jwt=${faker.internet.jwt()}`;
+
+				const mockResponse = createMock<Response>();
+
+				commonCartridgeUcMock.exportCourse.mockResolvedValue(expected);
+
+				return { params, expected, query, body, mockRequest, mockResponse };
 			};
-			const mockRequest = createMock<Request>();
-			const mockResponse = createMock<Response>();
 
-			commonCartridgeUcMock.exportCourse.mockResolvedValue(expected);
+			it('should return a streamable file', async () => {
+				const { params, expected, query, body, mockRequest, mockResponse } = setup();
 
-			return { params, expected, query, body, mockRequest, mockResponse };
-		};
+				const result = await sut.exportCourse(params, query, body, mockRequest, mockResponse);
 
-		it('should return a streamable file', async () => {
-			const { params, expected, query, body, mockRequest, mockResponse } = setup();
+				expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+				expect(result).toBeInstanceOf(StreamableFile);
+				expect(result.options.disposition).toBe(
+					`attachment; filename="${expected.name}"; filename*=UTF-8''${expected.name}`
+				);
+			});
+		});
 
-			const result = await sut.exportCourse(params, query, body, mockRequest, mockResponse);
+		describe('when exporting a course without jwt', () => {
+			const setup = () => {
+				const courseId = faker.string.uuid();
+				const params = { courseId } as ExportCourseParams;
+				const query = { version: CommonCartridgeVersion.V_1_1_0 } as CourseQueryParams;
+				const body = {
+					topics: [faker.string.uuid(), faker.string.uuid()],
+					tasks: [faker.string.uuid()],
+					columnBoards: [faker.string.uuid(), faker.string.uuid()],
+				} as CourseExportBodyParams;
+				const mockRequest = createMock<Request>();
+				const mockResponse = createMock<Response>();
 
-			expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
-			expect(result).toBeInstanceOf(StreamableFile);
-			expect(result.options.disposition).toBe(
-				`attachment; filename="${expected.name}"; filename*=UTF-8''${expected.name}`
-			);
+				return { params, query, body, mockRequest, mockResponse };
+			};
+
+			it('should throw UnauthorizedException', async () => {
+				const { params, query, body, mockRequest, mockResponse } = setup();
+
+				await expect(sut.exportCourse(params, query, body, mockRequest, mockResponse)).rejects.toThrow(
+					UnauthorizedException
+				);
+			});
 		});
 	});
 
@@ -106,6 +135,7 @@ describe('CommonCartridgeController', () => {
 
 				return { request, startImportParams };
 			};
+
 			it('should call the uc with the correct parameters', async () => {
 				const { request, startImportParams } = setup();
 
@@ -126,6 +156,7 @@ describe('CommonCartridgeController', () => {
 
 				return { request, startImportParams };
 			};
+
 			it('should throw UnauthorizedException', async () => {
 				const { request, startImportParams } = setup();
 

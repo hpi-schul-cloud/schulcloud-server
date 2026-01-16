@@ -4,21 +4,34 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ColumnClientAdapter } from './column-client.adapter';
 import { BoardColumnApi, CreateCardBodyParamsRequiredEmptyElements } from './generated';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import { ConfigModule } from '@nestjs/config';
+import { ColumnClientConfig } from './column-client.config';
+
+const columnApiMock = createMock<BoardColumnApi>();
+jest.mock('./generated/api/board-column-api', () => {
+	return {
+		BoardColumnApi: jest.fn().mockImplementation(() => columnApiMock),
+	};
+});
 
 describe(ColumnClientAdapter.name, () => {
 	let module: TestingModule;
 	let sut: ColumnClientAdapter;
 
-	const columnApiMock = createMock<BoardColumnApi>();
-
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [
-				ColumnClientAdapter,
-				{
-					provide: BoardColumnApi,
-					useValue: columnApiMock,
-				},
+			providers: [ColumnClientAdapter],
+			imports: [
+				ConfigModule.forRoot({
+					isGlobal: true,
+					load: [
+						(): ColumnClientConfig => {
+							return {
+								API_HOST: faker.internet.url(),
+							};
+						},
+					],
+				}),
 			],
 		}).compile();
 		sut = module.get(ColumnClientAdapter);
@@ -46,16 +59,19 @@ describe(ColumnClientAdapter.name, () => {
 
 				columnApiMock.columnControllerCreateCard.mockResolvedValue(axiosResponseFactory.build({ data: columnId }));
 
+				const jwt = faker.internet.jwt();
+
 				return {
 					columnId,
 					cardParams,
+					jwt,
 				};
 			};
 
 			it('should call boardColumnApi.ColumnControllerCreateCard', async () => {
-				const { columnId, cardParams } = setup();
+				const { columnId, cardParams, jwt } = setup();
 
-				const response = await sut.createCard(columnId, cardParams);
+				const response = await sut.createCard(jwt, columnId, cardParams);
 
 				expect(response).toEqual(columnId);
 				expect(columnApiMock.columnControllerCreateCard).toHaveBeenCalledWith(columnId, cardParams);
@@ -69,16 +85,19 @@ describe(ColumnClientAdapter.name, () => {
 				const columnId = faker.string.uuid();
 				const title = faker.lorem.words();
 
+				const jwt = faker.internet.jwt();
+
 				return {
 					columnId,
 					title,
+					jwt,
 				};
 			};
 
 			it('should call boardColumnApi.columnControllerUpdateColumnTitle', async () => {
-				const { columnId, title } = setup();
+				const { columnId, title, jwt } = setup();
 
-				await sut.updateBoardColumnTitle(columnId, { title });
+				await sut.updateBoardColumnTitle(jwt, columnId, { title });
 
 				expect(columnApiMock.columnControllerUpdateColumnTitle).toHaveBeenCalledWith(columnId, { title });
 			});
