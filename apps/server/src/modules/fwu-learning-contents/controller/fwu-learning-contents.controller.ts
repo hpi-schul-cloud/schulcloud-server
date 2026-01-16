@@ -21,8 +21,6 @@ import { filesIndex } from '../fwu.filesIndex';
 @JwtAuthentication()
 @Controller('fwu')
 export class FwuLearningContentsController {
-	private readonly ttl = 86400 * 30;
-
 	constructor(private readonly fwuLearningContentsUc: FwuLearningContentsUc) {}
 
 	@Get('*/:fwuLearningContent')
