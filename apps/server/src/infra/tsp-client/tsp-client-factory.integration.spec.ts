@@ -1,7 +1,6 @@
-import { createMock } from '@golevelup/ts-jest';
 import { ServerTestModule } from '@modules/server';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TSP_CLIENT_CONFIG_TOKEN } from './tsp-client-config';
 import { TspClientFactory } from './tsp-client-factory';
 import { TspClientModule } from './tsp-client.module';
 
@@ -17,28 +16,20 @@ describe.skip('TspClientFactory Integration', () => {
 		module = await Test.createTestingModule({
 			imports: [ServerTestModule, TspClientModule],
 		})
-			.overrideProvider(ConfigService)
-			.useValue(
-				createMock<ConfigService>({
-					getOrThrow: (key: string) => {
-						switch (key) {
-							case 'TSP_API_CLIENT_BASE_URL':
-								return 'https://test.schulportal-thueringen.de/tip-ms/api';
-							case 'TSP_API_CLIENT_TOKEN_LIFETIME_MS':
-								return 30_000;
-							default:
-								throw new Error(`Unknown key: ${key}`);
-						}
-					},
-				})
-			)
+			.overrideProvider(TSP_CLIENT_CONFIG_TOKEN)
+			.useValue({
+				baseUrl: 'https://test.schulportal-thueringen.de/tip-ms/api',
+				tokenLifetimeMs: 30000,
+			})
 			.compile();
 
 		sut = module.get(TspClientFactory);
 	});
 
 	afterAll(async () => {
-		await module.close();
+		if (module) {
+			await module.close();
+		}
 	});
 
 	it('should be defined', () => {
