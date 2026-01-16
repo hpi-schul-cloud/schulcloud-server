@@ -205,9 +205,6 @@ const ignorePathsList = [
 	/|(.*\/courses\/copy($|\/$))/,
 	/|(.*\/courses\/share($|\/$))/,
 	/|(.*\/courses\/share\/[0-9a-f]{24}($|\/$))/,
-	/|(.*\/wopi\/files\/[0-9a-f]{24}\/contents($|\/$))/,
-	/|(.*\/wopi\/files\/[0-9a-f]{24}($|\/$))/,
-	/|(.*\/wopi\/api($|\/$))/,
 	/|(.*\/legacy\/v1\/\/api($|\/$))/,
 ];
 
