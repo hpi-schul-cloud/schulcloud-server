@@ -4,6 +4,7 @@ import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { S3ClientModule } from '@infra/s3-client';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
@@ -12,6 +13,7 @@ import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
 
 @Module({
 	imports: [
+		CacheModule.register(),
 		CoreModule,
 		LoggerModule,
 		HttpModule,

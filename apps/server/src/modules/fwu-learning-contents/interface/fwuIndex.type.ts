@@ -3,4 +3,5 @@ export type fwuIndex = {
 	title: string;
 	target_url: string;
 	thumbnail_url: string;
+	description?: string;
 };

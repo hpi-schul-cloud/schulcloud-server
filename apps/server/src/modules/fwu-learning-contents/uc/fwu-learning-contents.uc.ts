@@ -15,12 +15,12 @@ export class FwuLearningContentsUc {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 
-	async get(path: string, bytesRange?: string) {
+	public async get(path: string, bytesRange?: string) {
 		const response = await this.storageClient.get(path, bytesRange);
 		return response;
 	}
 
-	async getList(): Promise<fwuIndex[]> {
+	public async getList(): Promise<fwuIndex[]> {
 		const filesIndex = [
 			'5501191',
 			'5501193',
@@ -114,12 +114,14 @@ export class FwuLearningContentsUc {
 				const $ = cheerio.load(indexFileContent);
 
 				const title = $('.pname').text().trim();
+				const description = $('.ptext').text().trim();
 				const thumbnailUrl = this.extractThumbnailUrl($);
 				fwuList.push({
 					id: fileId,
-					title: title,
+					title,
 					target_url: `/api/v3/fwu/${fileId}/index.html`,
 					thumbnail_url: `/api/v3/fwu/${fileId}/${thumbnailUrl}`,
+					description,
 				});
 			} catch (error) {
 				this.logger.error(`Failed to process file for id ${fileId}`, error);
