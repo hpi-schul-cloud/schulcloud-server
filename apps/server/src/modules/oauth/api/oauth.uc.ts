@@ -1,18 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { FeatureDisabledLoggableException, NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain/types';
-import { OauthConfig, OauthSessionToken, OauthSessionTokenService } from '../';
+import { OauthSessionToken } from '../domain';
+import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig } from '../oauth.config';
+import { OauthSessionTokenService } from '../service';
 
 @Injectable()
 export class OAuthUc {
 	constructor(
 		private readonly oauthSessionTokenService: OauthSessionTokenService,
-		private readonly configService: ConfigService<OauthConfig, true>
+		@Inject(OAUTH_PUBLIC_API_CONFIG_TOKEN)
+		private readonly config: OauthPublicApiConfig
 	) {}
 
 	public async getLatestSessionTokenByUser(userId: EntityId): Promise<OauthSessionToken> {
-		if (!this.configService.getOrThrow<boolean>('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED')) {
+		if (!this.config.featureExternalSystemLogoutEnabled) {
 			throw new FeatureDisabledLoggableException('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED');
 		}
 
