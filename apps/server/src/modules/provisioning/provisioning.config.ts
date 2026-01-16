@@ -1,5 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { StringToBoolean } from '@shared/controller/transformer';
+import { StringToBoolean, StringToNumber } from '@shared/controller/transformer';
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export const PROVISIONING_CONFIG_TOKEN = 'PROVISIONING_CONFIG_TOKEN';
@@ -27,6 +27,7 @@ export class ProvisioningConfig extends ProvisioningPublicApiConfig {
 	@ConfigProperty('PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT')
 	@IsOptional()
 	@IsNumber()
+	@StringToNumber()
 	public provisioningSchulconnexGroupUsersLimit?: number;
 
 	@ConfigProperty('FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED')
@@ -41,5 +42,6 @@ export class ProvisioningConfig extends ProvisioningPublicApiConfig {
 
 	@ConfigProperty('SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS')
 	@IsNumber()
+	@StringToNumber()
 	public schulconnexCourseSyncHistoryExpirationSeconds = 864000;
 }
