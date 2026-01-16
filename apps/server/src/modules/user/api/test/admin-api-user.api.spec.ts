@@ -2,7 +2,6 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { RoleName } from '@modules/role';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -26,10 +25,8 @@ describe('Admin API - Users (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-		const apiKeys = adminApiServerConfig().ADMIN_API__ALLOWED_API_KEYS as string[]; // check config/test.json
 
-		testApiClient = new TestApiClient(app, baseRouteName, apiKeys[0], true);
+		testApiClient = new TestApiClient(app, baseRouteName, 'someotherkey', true);
 	});
 
 	afterAll(async () => {

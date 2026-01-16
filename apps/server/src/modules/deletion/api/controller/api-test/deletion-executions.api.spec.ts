@@ -58,7 +58,6 @@ describe(`deletionExecution (api)`, () => {
 
 	beforeAll(async () => {
 		const config = adminApiServerConfig();
-		config.ADMIN_API__ALLOWED_API_KEYS = [API_KEY];
 		config.CALENDAR_SERVICE_ENABLED = true;
 
 		const module: TestingModule = await Test.createTestingModule({

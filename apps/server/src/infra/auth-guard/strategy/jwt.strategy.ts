@@ -1,5 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { JwtExtractor } from '@shared/common/utils';
 import { Strategy } from 'passport-jwt';
@@ -8,18 +7,14 @@ import { JwtAuthGuardConfig } from '../config';
 import { ICurrentUser, JwtPayload } from '../interface';
 import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 
-@Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-	constructor(
-		private readonly jwtValidationAdapter: JwtValidationAdapter,
-		configService: ConfigService<JwtAuthGuardConfig>
-	) {
-		const strategyOptions = JwtStrategyOptionsFactory.build(JwtExtractor.extractJwtFromRequest, configService);
+	constructor(private readonly jwtValidationAdapter: JwtValidationAdapter, config: JwtAuthGuardConfig) {
+		const strategyOptions = JwtStrategyOptionsFactory.build(JwtExtractor.extractJwtFromRequest, config);
 
 		super(strategyOptions);
 	}
 
-	async validate(payload: JwtPayload): Promise<ICurrentUser> {
+	public async validate(payload: JwtPayload): Promise<ICurrentUser> {
 		const { accountId, jti } = payload;
 		// check user exists
 		try {

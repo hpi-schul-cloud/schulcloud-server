@@ -1,6 +1,6 @@
 import { CoreModule } from '@core/core.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
-import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
+import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { AuthorizationClientModule } from '@infra/authorization-client';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { User } from '@modules/user/repo';
@@ -18,7 +18,13 @@ import { CommonCartridgeController } from './controller/common-cartridge.control
 		CoreModule,
 		HttpModule,
 		AuthorizationClientModule.register(authorizationClientConfig),
-		AuthGuardModule.register([AuthGuardOptions.JWT]),
+		AuthGuardModule.register([
+			{
+				option: AuthGuardOptions.JWT,
+				configInjectionToken: JWT_AUTH_GUARD_CONFIG_TOKEN,
+				configConstructor: JwtAuthGuardConfig,
+			},
+		]),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 		CommonCartridgeModule,
 		// Will remove this in the BC-8925

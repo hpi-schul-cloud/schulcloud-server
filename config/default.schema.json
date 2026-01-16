@@ -1303,11 +1303,6 @@
 					"default": 4030,
 					"description": "Port of the exposed Admin API server."
 				},
-				"ALLOWED_API_KEYS": {
-					"type": "string",
-					"default": "",
-					"description": "Allowed Admin API keys (for accessing the Admin API). - A comma seperated list of strings where description is optional e.g. [<description>:]<token>,[<description>:]<token>"
-				},
 				"DELETION_DELETE_AFTER_MINUTES": {
 					"type": "number",
 					"default": 43200,

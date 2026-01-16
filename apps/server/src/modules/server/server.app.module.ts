@@ -2,7 +2,7 @@ import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
-import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
+import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
@@ -78,7 +78,13 @@ const serverModules = [
 	CoreModule,
 	CourseApiModule,
 	AuthenticationApiModule,
-	AuthGuardModule.register([AuthGuardOptions.JWT]),
+	AuthGuardModule.register([
+		{
+			option: AuthGuardOptions.JWT,
+			configInjectionToken: JWT_AUTH_GUARD_CONFIG_TOKEN,
+			configConstructor: JwtAuthGuardConfig,
+		},
+	]),
 	AuthorizationReferenceApiModule,
 	AuthorizationRulesModule,
 	AccountApiModule,

@@ -1,7 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { RoleName } from '@modules/role';
-import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
@@ -21,9 +20,6 @@ describe('getBatchDetails ', () => {
 	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
-		const config = adminApiServerConfig();
-		config.ADMIN_API__ALLOWED_API_KEYS = [API_KEY];
-
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		}).compile();
