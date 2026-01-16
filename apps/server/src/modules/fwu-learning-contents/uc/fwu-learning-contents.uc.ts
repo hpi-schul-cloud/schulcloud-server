@@ -1,7 +1,10 @@
+import * as cheerio from 'cheerio';
 import { Inject, Injectable } from '@nestjs/common';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { LegacyLogger } from '@core/logger';
 import { FWU_CONTENT_S3_CONNECTION } from '../fwu-learning-contents.config';
+import { fwuIndex } from '../interface/fwuIndex.type';
+import { Readable } from 'stream';
 
 @Injectable()
 export class FwuLearningContentsUc {
@@ -12,8 +15,60 @@ export class FwuLearningContentsUc {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 
-	async get(path: string, bytesRange?: string) {
+	public async get(path: string, bytesRange?: string) {
 		const response = await this.storageClient.get(path, bytesRange);
 		return response;
+	}
+
+	public async getList(filesIndex: string[]): Promise<fwuIndex[]> {
+		const fwuList: fwuIndex[] = [];
+		for (const fileId of filesIndex) {
+			try {
+				const response = await this.storageClient.get(`${fileId}/index.html`);
+				const indexFileContent = await this.streamToString(response.data);
+				if (!indexFileContent) continue;
+
+				const $ = cheerio.load(indexFileContent);
+
+				const title = $('.pname').text().trim();
+				const description = $('.ptext').text().trim();
+				const thumbnailUrl = this.extractThumbnailUrl($);
+				fwuList.push({
+					id: fileId,
+					title,
+					target_url: `/api/v3/fwu/${fileId}/index.html`,
+					thumbnail_url: `/api/v3/fwu/${fileId}/${thumbnailUrl}`,
+					description,
+				});
+			} catch (error) {
+				this.logger.error(`Failed to process file for id ${fileId}`, error);
+			}
+		}
+		return fwuList;
+	}
+
+	private streamToString(stream: Readable): Promise<string> {
+		const chunks: Buffer[] = [];
+		return new Promise((resolve, reject) => {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
+			stream.on('error', (err) => reject(err));
+			stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+		});
+	}
+
+	private extractThumbnailUrl(htmlContent: cheerio.CheerioAPI): string {
+		const style = htmlContent('.player_outer').attr('style');
+
+		let thumbnailUrl = '';
+		if (style) {
+			// Use a regular expression to find the URL within the style string
+			const match = style.match(/url\((.*?)\)/);
+			if (match && match[1]) {
+				thumbnailUrl = match[1];
+			}
+		}
+
+		return thumbnailUrl;
 	}
 }
