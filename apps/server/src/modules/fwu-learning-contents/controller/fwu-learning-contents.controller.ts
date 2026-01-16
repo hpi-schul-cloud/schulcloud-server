@@ -17,7 +17,7 @@ import { GetFwuLearningContentParams } from './dto/fwu-learning-contents.params'
 import { fwuIndex } from '../interface/fwuIndex.type';
 
 @ApiTags('fwu')
-//@JwtAuthentication()
+@JwtAuthentication()
 @Controller('fwu')
 export class FwuLearningContentsController {
 	private readonly ttl = 86400 * 30;
