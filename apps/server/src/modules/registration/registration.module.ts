@@ -9,9 +9,10 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { RegistrationService } from './domain';
 import { RegistrationRepo } from './repo';
+import { RoomModule } from '@modules/room';
 
 @Module({
-	imports: [AccountModule, LoggerModule, RoomMembershipModule, SchoolModule, ServerMailModule, UserModule],
+	imports: [AccountModule, RoomModule, RoomMembershipModule, SchoolModule, ServerMailModule, UserModule, LoggerModule],
 	providers: [RegistrationRepo, RegistrationService, RoleService, RoleRepo],
 	exports: [RegistrationService],
 })

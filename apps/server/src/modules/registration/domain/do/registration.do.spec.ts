@@ -181,24 +181,64 @@ describe('Registration', () => {
 				if (config === 'HOST') {
 					return 'https://example.com';
 				}
+				if (config === 'SC_TITLE') {
+					return 'dBildungscloud';
+				}
 				return null;
 			});
 		});
 
 		it('should generate registration mail with correct structure', () => {
 			const { registration } = setup();
+			const roomName = 'Test Room';
 
-			const result = registration.generateRegistrationMail();
+			const result = registration.generateRegistrationMail(roomName);
 
 			expect(Configuration.get).toHaveBeenCalledWith('SMTP_SENDER');
 			expect(Configuration.get).toHaveBeenCalledWith('HOST');
+			expect(Configuration.get).toHaveBeenCalledWith('SC_TITLE');
 
-			expect(result).toEqual(
-				expect.objectContaining({
-					recipients: [registration.email],
-					from: 'example@sender.com',
-				})
-			);
+			const expectedSubject = `dBildungscloud: Einladung zur Registrierung und Zugriff auf den Raum ${roomName}`;
+			const expectedHtmlContent = `<div lang=\"de\">Hallo John Doe,
+<p>dies ist eine Einladung, dem Raum Test Room beizutreten. Um den Raum betreten zu können, ist eine Registrierung in der dBildungscloud erforderlich. Bitte auf den folgenden Link klicken, um die Registrierung vorzunehmen:<br />
+https://example.com/registration-external-members/?registration-secret=someValue<br />
+Hinweis: Der Link sollte nicht weitergegeben und nur in einer sicheren Umgebung verwendet werden.<br />
+Nach der Registrierung wird der Zugriff auf den Raum Test Room sofort freigeschaltet.
+</p>
+Mit freundlichen Grüßen<br />
+dBildungscloud-Team</div><hr /><div lang=\"en\">Hello John Doe,
+<p>This is an invitation to join the Test Room room. To enter the room, you must register with dBildungscloud. Please click on the following link to register:<br />
+https://example.com/registration-external-members/?registration-secret=someValue<br />
+Note: The link should not be shared and should only be used in a secure environment.<br />
+After registration, access to the room Test Room will be activated immediately.
+</p>
+Best regards,<br />
+dBildungscloud team</div>`;
+			const expectedPlainTextContent = `Hallo John Doe,
+dies ist eine Einladung, dem Raum Test Room beizutreten. Um den Raum betreten zu können, ist eine Registrierung in der dBildungscloud erforderlich. Bitte auf den folgenden Link klicken, um die Registrierung vorzunehmen:
+https://example.com/registration-external-members/?registration-secret=someValue
+Hinweis: Der Link sollte nicht weitergegeben und nur in einer sicheren Umgebung verwendet werden.
+Nach der Registrierung wird der Zugriff auf den Raum Test Room sofort freigeschaltet.
+
+Mit freundlichen Grüßen
+dBildungscloud-Team
+
+------------
+
+Hello John Doe,
+This is an invitation to join the Test Room room. To enter the room, you must register with dBildungscloud. Please click on the following link to register:
+https://example.com/registration-external-members/?registration-secret=someValue
+Note: The link should not be shared and should only be used in a secure environment.
+After registration, access to the room Test Room will be activated immediately.
+
+Best regards,
+dBildungscloud team`;
+
+			expect(result.mail.subject).toBe(expectedSubject);
+			expect(result.mail.htmlContent).toBe(expectedHtmlContent);
+			expect(result.mail.plainTextContent).toBe(expectedPlainTextContent);
+			expect(result.recipients).toEqual([registration.email]);
+			expect(result.from).toBe('example@sender.com');
 		});
 	});
 });
