@@ -140,4 +140,5 @@ describe('FwuLearningContents Controller (api)', () => {
 			});
 		});
 	});
+
 });

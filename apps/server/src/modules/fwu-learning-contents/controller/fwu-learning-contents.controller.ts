@@ -4,15 +4,12 @@ import {
 	Controller,
 	Get,
 	HttpStatus,
-	Inject,
 	InternalServerErrorException,
 	Param,
 	Req,
 	Res,
 	StreamableFile,
-	UseInterceptors,
 } from '@nestjs/common';
-import { Cache, CACHE_MANAGER, CacheInterceptor } from '@nestjs/cache-manager';
 import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { FwuLearningContentsUc } from '../uc/fwu-learning-contents.uc';
@@ -20,15 +17,12 @@ import { GetFwuLearningContentParams } from './dto/fwu-learning-contents.params'
 import { fwuIndex } from '../interface/fwuIndex.type';
 
 @ApiTags('fwu')
-@JwtAuthentication()
+//@JwtAuthentication()
 @Controller('fwu')
 export class FwuLearningContentsController {
 	private readonly ttl = 86400 * 30;
 
-	constructor(
-		@Inject(CACHE_MANAGER) private cacheManager: Cache,
-		private readonly fwuLearningContentsUc: FwuLearningContentsUc
-	) {}
+	constructor(private readonly fwuLearningContentsUc: FwuLearningContentsUc) {}
 
 	@Get('*/:fwuLearningContent')
 	public async get(
@@ -64,19 +58,12 @@ export class FwuLearningContentsController {
 	}
 
 	@Get()
-	@UseInterceptors(CacheInterceptor)
 	public async getList(): Promise<fwuIndex[]> {
 		if (!Configuration.get('FEATURE_FWU_CONTENT_ENABLED')) {
 			throw new InternalServerErrorException('Feature FWU content is not enabled.');
 		}
 
-		const cached = await this.cacheManager.get('fwuList');
-		if (cached && Array.isArray(cached) && cached.length > 0) {
-			return cached as fwuIndex[];
-		}
-
 		const list = await this.fwuLearningContentsUc.getList();
-		await this.cacheManager.set('fwuList', list, this.ttl);
 
 		return list;
 	}
