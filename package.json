@@ -198,7 +198,7 @@
 		"axios": "^1.12.2",
 		"bcryptjs": "*",
 		"body-parser": "^2.2.1",
-		"bson": "^6.10.4",
+		"bson": "^4.7.2",
 		"cache-manager": "^7.2.4",
 		"cheerio": "^1.1.2",
 		"class-transformer": "^0.5.1",
