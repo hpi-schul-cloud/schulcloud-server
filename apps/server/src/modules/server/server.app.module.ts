@@ -65,6 +65,7 @@ import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.mod
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
+import { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from '@modules/provisioning';
 
 const serverModules = [
 	HelpdeskApiModule,
@@ -73,6 +74,7 @@ const serverModules = [
 	ConfigurationModule.register(BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig),
 	ConfigurationModule.register(ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig),
 	ConfigurationModule.register(OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig),
+	ConfigurationModule.register(PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,
 	CoreModule,

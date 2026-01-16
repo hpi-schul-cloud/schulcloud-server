@@ -4,6 +4,7 @@ import { OauthPublicApiConfig } from '@modules/oauth';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ServerConfig } from '../../server.config';
 import { ConfigResponse } from '../dto';
+import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 
 export class ConfigResponseMapper {
 	public static mapToResponse(
@@ -11,7 +12,8 @@ export class ConfigResponseMapper {
 		videoConferenceConfig: VideoConferencePublicApiConfig,
 		boardContextConfig: BoardContextPublicApiConfig,
 		alertConfig: AlertPublicApiConfig,
-		oauthConfig: OauthPublicApiConfig
+		oauthConfig: OauthPublicApiConfig,
+		provisioningPublicApiConfig: ProvisioningPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,
@@ -19,6 +21,7 @@ export class ConfigResponseMapper {
 			...boardContextConfig,
 			...alertConfig,
 			...oauthConfig,
+			...provisioningPublicApiConfig,
 		});
 
 		return configResponse;
