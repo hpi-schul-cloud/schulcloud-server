@@ -1,6 +1,5 @@
 import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { H5pEditorClientModule } from '@infra/h5p-editor-client';
 import { TldrawClientModule } from '@infra/tldraw-client';
 import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
@@ -12,11 +11,13 @@ import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 import { AuthorizationModule } from '../authorization';
 import { RoomMembershipModule } from '../room-membership';
 import { BoardNodeRule } from './authorisation/board-node.rule';
 import { BoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
+import { BoardNodeEventSubscriber } from './repo/board-node-event-subscriber';
 import {
 	BoardCommonToolService,
 	BoardNodeAuthorizableService,
@@ -35,8 +36,7 @@ import {
 	ColumnBoardTitleService,
 	ContentElementUpdateService,
 } from './service/internal';
-import { BoardNodeEventSubscriber } from './repo/board-node-event-subscriber';
-import { CqrsModule } from '@nestjs/cqrs';
+import { TLDRAW_CLIENT_CONFIG_TOKEN, TldrawClientConfig } from './tldraw-client.config';
 
 @Module({
 	imports: [
@@ -48,10 +48,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 		UserModule,
 		ContextExternalToolModule,
 		HttpModule,
-		TldrawClientModule.register({
-			TLDRAW_ADMIN_API_CLIENT_BASE_URL: Configuration.get('TLDRAW_ADMIN_API_CLIENT__BASE_URL') as string,
-			TLDRAW_ADMIN_API_CLIENT_API_KEY: Configuration.get('TLDRAW_ADMIN_API_CLIENT__API_KEY') as string,
-		}),
+		TldrawClientModule.register(TLDRAW_CLIENT_CONFIG_TOKEN, TldrawClientConfig),
 		CollaborativeTextEditorModule,
 		AuthorizationModule,
 		RoomModule,
