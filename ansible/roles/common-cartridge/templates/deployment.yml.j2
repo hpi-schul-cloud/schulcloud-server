@@ -61,8 +61,6 @@ spec:
             name: common-cartridge-configmap
         - secretRef:
             name: common-cartridge-secret
-        - secretRef:
-            name: session-valkey-password
         command: ['npm', 'run', 'nest:start:common-cartridge']
         resources:
           limits:

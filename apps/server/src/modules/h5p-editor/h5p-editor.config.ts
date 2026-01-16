@@ -3,7 +3,6 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { JwtAuthGuardConfig } from '@infra/auth-guard';
 import { AuthorizationClientConfig } from '@infra/authorization-client';
 import { S3Config } from '@infra/s3-client';
-import { ValkeyMode } from '@infra/valkey-client';
 import { LanguageType } from '@shared/domain/interface';
 import { Algorithm } from 'jsonwebtoken';
 import { getLibraryWhiteList } from './helper';
@@ -41,19 +40,6 @@ const getH5pEditorConfig = (): H5PEditorConfig => {
 		JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
 		JWT_SIGNING_ALGORITHM: Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm,
 		SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
-		SESSION_VALKEY__MODE: Configuration.get('SESSION_VALKEY__MODE') as ValkeyMode,
-		SESSION_VALKEY__URI: Configuration.has('SESSION_VALKEY__URI')
-			? (Configuration.get('SESSION_VALKEY__URI') as string)
-			: undefined,
-		SESSION_VALKEY__SENTINEL_NAME: Configuration.has('SESSION_VALKEY__SENTINEL_NAME')
-			? (Configuration.get('SESSION_VALKEY__SENTINEL_NAME') as string)
-			: undefined,
-		SESSION_VALKEY__SENTINEL_PASSWORD: Configuration.has('SESSION_VALKEY__SENTINEL_PASSWORD')
-			? (Configuration.get('SESSION_VALKEY__SENTINEL_PASSWORD') as string)
-			: undefined,
-		SESSION_VALKEY__SENTINEL_SERVICE_NAME: Configuration.has('SESSION_VALKEY__SENTINEL_SERVICE_NAME')
-			? (Configuration.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME') as string)
-			: undefined,
 	};
 };
 
