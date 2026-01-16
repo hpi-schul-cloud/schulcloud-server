@@ -1,2 +1,2 @@
-export { AlertConfig } from './alert.config';
+export { ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig } from './alert.config';
 export { AlertModule } from './alert.module';

@@ -2,12 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchulcloudTheme } from '@shared/domain/types';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import type { Server } from 'node:net';
 import { of } from 'rxjs';
 import request from 'supertest';
-import { serverConfig, ServerTestModule } from '../../../server';
+import { ServerTestModule } from '../../../server';
 import { ComponentDto, ComponentResponse, IncidentsResponse } from '../../adapter/dto';
 import { createComponent, createIncident } from '../../testing';
 import { AlertResponse } from '../dto';
@@ -26,10 +25,6 @@ describe('Alert Controller api', () => {
 	let httpService: DeepMocked<HttpService>;
 
 	beforeEach(async () => {
-		const config = serverConfig();
-		config.ALERT_STATUS_URL = 'test';
-		config.SC_THEME = SchulcloudTheme.DEFAULT;
-
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})

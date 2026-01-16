@@ -1,6 +1,6 @@
 import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
-import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
+import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { S3ClientModule } from '@infra/s3-client';
 import { AuthorizationModule } from '@modules/authorization';
 import { HttpModule } from '@nestjs/axios';
@@ -23,7 +23,13 @@ const imports = [
 	CoreModule,
 	LoggerModule,
 	S3ClientModule.register([s3Config]),
-	AuthGuardModule.register([AuthGuardOptions.JWT]),
+	AuthGuardModule.register([
+		{
+			option: AuthGuardOptions.JWT,
+			configInjectionToken: JWT_AUTH_GUARD_CONFIG_TOKEN,
+			configConstructor: JwtAuthGuardConfig,
+		},
+	]),
 ];
 const controllers = [FwuLearningContentsController];
 const providers = [FwuLearningContentsUc];

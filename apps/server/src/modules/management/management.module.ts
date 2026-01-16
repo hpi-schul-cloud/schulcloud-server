@@ -17,6 +17,7 @@ import { InstanceModule } from '../instance';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';
+import { MANAGMENT_ENCRYPTION_CONFIG_TOKEN, ManagmentEncryptionConfig } from './encryption.config';
 import {
 	ExternalToolsSeedDataService,
 	InstancesSeedDataService,
@@ -30,7 +31,7 @@ const baseImports = [
 	FileSystemModule,
 	LoggerModule,
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
-	EncryptionModule,
+	EncryptionModule.register(ManagmentEncryptionConfig, MANAGMENT_ENCRYPTION_CONFIG_TOKEN),
 	FeathersModule,
 	MediaSourceModule,
 	SystemModule,
@@ -40,7 +41,7 @@ const baseImports = [
 ];
 
 const imports = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
-	? [...baseImports, KeycloakConfigurationModule]
+	? [...baseImports, KeycloakConfigurationModule.register(ManagmentEncryptionConfig, MANAGMENT_ENCRYPTION_CONFIG_TOKEN)]
 	: baseImports;
 
 const providers = [

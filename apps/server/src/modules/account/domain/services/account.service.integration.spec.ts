@@ -1,10 +1,12 @@
 import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
+import { TestEncryptionConfig } from '@infra/encryption';
 import { IdentityManagementModule, IdentityManagementService } from '@infra/identity-management';
 import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementService } from '@infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '@modules/account/account-config';
 import { UserModule } from '@modules/user';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -71,7 +73,7 @@ describe('AccountService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				IdentityManagementModule,
+				IdentityManagementModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
 				UserModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 				ConfigModule.forRoot({
@@ -105,6 +107,13 @@ describe('AccountService Integration', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: ACCOUNT_CONFIG_TOKEN,
+					useValue: createMock<AccountConfig>({
+						identityManagementStoreEnabled: true,
+						identityManagementLoginEnabled: false,
+					}),
 				},
 			],
 		}).compile();

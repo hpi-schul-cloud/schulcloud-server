@@ -1,6 +1,6 @@
 import { CoreModule } from '@core/core.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
-import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
+import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
@@ -21,7 +21,13 @@ const imports = [
 	BoardModule,
 	AuthorizationModule,
 	BoardWsApiModule,
-	AuthGuardModule.register([AuthGuardOptions.WS_JWT]),
+	AuthGuardModule.register([
+		{
+			option: AuthGuardOptions.WS_JWT,
+			configInjectionToken: JWT_AUTH_GUARD_CONFIG_TOKEN,
+			configConstructor: JwtAuthGuardConfig,
+		},
+	]),
 ];
 
 @Module({

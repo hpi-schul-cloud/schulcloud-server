@@ -2,11 +2,12 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
+import { TOOL_ENCRYPTION_CONFIG_TOKEN, ToolEncryptionConfig } from '@modules/tool/encryption.config';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AesEncryptionHelper } from '@shared/common/utils';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { AesEncryptionHelper } from '@shared/common/utils';
 import { externalToolEntityFactory, lti11ToolConfigEntityFactory } from '../../../external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalToolEntity, ContextExternalToolType, LtiDeepLinkEmbeddable } from '../../repo';
@@ -22,10 +23,9 @@ describe('ToolDeepLinkController (API)', () => {
 	let em: EntityManager;
 	let orm: MikroORM;
 	let testApiClient: TestApiClient;
+	let encryptionConfig: ToolEncryptionConfig;
 
 	const basePath = '/tools/context-external-tools';
-	const decryptedSecret = 'secret';
-	const encryptedSecret = AesEncryptionHelper.encrypt(decryptedSecret, Configuration.get('AES_KEY') as string);
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -37,6 +37,8 @@ describe('ToolDeepLinkController (API)', () => {
 		em = app.get(EntityManager);
 		orm = app.get(MikroORM);
 		testApiClient = new TestApiClient(app, basePath);
+
+		encryptionConfig = app.get<ToolEncryptionConfig>(TOOL_ENCRYPTION_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -50,6 +52,10 @@ describe('ToolDeepLinkController (API)', () => {
 	describe('[POST] tools/context-external-tools/:contextExternalToolId/lti11-deep-link-callback', () => {
 		describe('when the lti deep linking callback is successfully', () => {
 			const setup = async () => {
+				const encryptionKey = encryptionConfig.aesKey;
+				const decryptedSecret = 'secret';
+				const encryptedSecret = AesEncryptionHelper.encrypt(decryptedSecret, encryptionKey);
+
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 				const ltiDeepLinkToken = ltiDeepLinkTokenEntityFactory.build({ user: teacherUser });

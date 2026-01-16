@@ -1,13 +1,11 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ConfigProperty, Configuration } from '@infra/configuration';
+import { IsString } from 'class-validator';
 
-export const OauthProviderFeatures = Symbol('OauthProviderFeatures');
+export const OAUTH_PROVIDER_CONFIG_TOKEN = 'OAUTH_PROVIDER_CONFIG_TOKEN';
 
-export interface IOauthProviderFeatures {
-	hydraUri: string;
-}
-
-export default class OauthProviderConfiguration {
-	static features: IOauthProviderFeatures = {
-		hydraUri: Configuration.get('HYDRA_URI') as string,
-	};
+@Configuration()
+export class OauthProviderConfig {
+	@ConfigProperty('HYDRA_URI')
+	@IsString()
+	public hydraUri!: string;
 }

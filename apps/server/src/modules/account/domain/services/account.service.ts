@@ -3,7 +3,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
 	AuthorizationError,
 	EntityNotFoundError,
@@ -12,7 +11,7 @@ import {
 } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
 import { isEmail, isNotEmpty } from 'class-validator';
-import { AccountConfig } from '../../account-config';
+import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '../../account-config';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../do';
 import {
 	DeletedAccountLoggable,
@@ -45,14 +44,14 @@ export class AccountService extends AbstractAccountService {
 	constructor(
 		private readonly accountDb: AccountServiceDb,
 		private readonly accountIdm: AccountServiceIdm,
-		private readonly configService: ConfigService<AccountConfig, true>,
+		@Inject(ACCOUNT_CONFIG_TOKEN) private readonly config: AccountConfig,
 		private readonly logger: Logger,
 		private readonly userService: UserService,
 		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
+		if (this.config.identityManagementLoginEnabled === true) {
 			this.accountImpl = accountIdm;
 		} else {
 			this.accountImpl = accountDb;
@@ -292,7 +291,7 @@ export class AccountService extends AbstractAccountService {
 			return account;
 		});
 
-		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+		if (this.config.identityManagementStoreEnabled === true) {
 			if (
 				idmAccount === null ||
 				(accountSave.username && idmAccount.username.toLowerCase() !== accountSave.username.toLowerCase())
@@ -445,7 +444,7 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	private async executeIdmMethod<T>(idmCallback: () => Promise<T>): Promise<T | null> {
-		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+		if (this.config.identityManagementStoreEnabled === true) {
 			try {
 				return await idmCallback();
 			} catch (error) {

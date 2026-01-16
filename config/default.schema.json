@@ -589,16 +589,6 @@
 			"pattern": ".*(?<!/)$",
 			"description": "The server api url that is accessible from the web (should end without a slash)."
 		},
-		"ALERT_STATUS_URL": {
-			"type": "string",
-			"default": null,
-			"description": "The url of status message provider (should end without a slash)."
-		},
-		"ALERT_CACHE_INTERVAL_MIN": {
-			"type": "number",
-			"default": 1,
-			"description": "Time between updating alerts (in minutes)"
-		},
 		"HYDRA_URI": {
 			"type": "string",
 			"format": "uri",
@@ -684,11 +674,6 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Oauth Login Endpoints Enabled."
-		},
-		"FEATURE_LOGIN_LINK_ENABLED": {
-			"type": "boolean",
-			"default": "false",
-			"description": "Login via Link generation (to the right form)."
 		},
 		"FEATURE_USER_LOGIN_MIGRATION_ENABLED": {
 			"type": "boolean",
@@ -796,16 +781,6 @@
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
 			"pattern": ".{16}.*"
-		},
-		"AES_KEY": {
-			"type": "string",
-			"description": "Symmetric encryption key used to encrypt and decrypt secrets.",
-			"pattern": ".{16}.*"
-		},
-		"FEATURE_ETHERPAD_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Etherpad feature enabled"
 		},
 		"ETHERPAD": {
 			"type": "object",
@@ -1327,11 +1302,6 @@
 					"type": "number",
 					"default": 4030,
 					"description": "Port of the exposed Admin API server."
-				},
-				"ALLOWED_API_KEYS": {
-					"type": "string",
-					"default": "",
-					"description": "Allowed Admin API keys (for accessing the Admin API). - A comma seperated list of strings where description is optional e.g. [<description>:]<token>,[<description>:]<token>"
 				},
 				"DELETION_DELETE_AFTER_MINUTES": {
 					"type": "number",

@@ -1,12 +1,12 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { ConsoleWriterConfig } from '@infra/console';
 import { UserConfig } from '@modules/user';
-import { AccountConfig } from '@modules/account';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { LanguageType } from '@shared/domain/interface';
 
-export interface DeletionConsoleConfig extends ConsoleWriterConfig, UserConfig, AccountConfig {
+export interface DeletionConsoleConfig extends ConsoleWriterConfig, UserConfig {
 	ADMIN_API_CLIENT_BASE_URL: string;
 	ADMIN_API_CLIENT_API_KEY: string;
+	LOGIN_BLOCK_TIME: number; // @TODO temporary until removed from other configs
 }
 
 const config: DeletionConsoleConfig = {
@@ -20,8 +20,6 @@ const config: DeletionConsoleConfig = {
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
 	) as boolean,
-	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
-	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
 	CALENDAR_SERVICE_ENABLED: Configuration.get('CALENDAR_SERVICE_ENABLED') as boolean,
