@@ -8,6 +8,7 @@ import {
 	MailSendExchange,
 	RabbitMqURI,
 	SchulconnexProvisioningExchange,
+	CommonCartridgeExchange,
 } from './rabbitmq.config';
 
 /**
@@ -38,6 +39,10 @@ const imports = [
 			},
 			{
 				name: H5pEditorExchange,
+				type: 'direct',
+			},
+			{
+				name: CommonCartridgeExchange,
 				type: 'direct',
 			},
 		],

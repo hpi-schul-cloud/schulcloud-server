@@ -1,7 +1,8 @@
-import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
+	HttpCode,
 	HttpStatus,
 	Param,
 	Post,
@@ -9,25 +10,24 @@ import {
 	Req,
 	Res,
 	StreamableFile,
-	UploadedFile,
-	UseInterceptors,
+	UnauthorizedException,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import {
 	ApiBadRequestResponse,
 	ApiBody,
 	ApiConsumes,
-	ApiCreatedResponse,
 	ApiInternalServerErrorResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiProduces,
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { JwtExtractor } from '@shared/common/utils';
 import { Request, Response } from 'express';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
-import { CommonCartridgeImportBodyParams, CourseExportBodyParams, CourseQueryParams, ExportCourseParams } from './dto';
-import { CommonCartridgeFileValidatorPipe } from './utils';
+import { CourseExportBodyParams, CourseQueryParams, ExportCourseParams } from './dto';
+import { CommonCartridgeStartImportBodyParams } from './dto/common-cartridge-start-import-body.params';
 
 @JwtAuthentication()
 @ApiTags('common-cartridge')
@@ -62,21 +62,30 @@ export class CommonCartridgeController {
 		return streamableFile;
 	}
 
-	@Post('import')
-	@UseInterceptors(FileInterceptor('file'))
-	@ApiOperation({ summary: 'Imports a course from a Common Cartridge file.' })
-	@ApiConsumes('multipart/form-data')
+	@Post('start-import')
+	@ApiOperation({ summary: 'Start the import of a previously uploaded file.' })
+	@ApiConsumes('application/json')
 	@ApiProduces('application/json')
-	@ApiBody({ type: CommonCartridgeImportBodyParams, required: true })
-	@ApiCreatedResponse({ description: 'Course was successfully imported.' })
+	@ApiBody({ type: CommonCartridgeStartImportBodyParams, required: true })
+	@ApiOkResponse({ description: 'Import was started successfully.' })
 	@ApiUnauthorizedResponse({ description: 'Request is unauthorized.' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+	@HttpCode(200)
 	public async importCourse(
-		@CurrentUser() currentUser: ICurrentUser,
-		@UploadedFile(CommonCartridgeFileValidatorPipe)
-		file: Express.Multer.File
+		@Req() request: Request,
+		@Body() startImportParams: CommonCartridgeStartImportBodyParams
 	): Promise<void> {
-		await this.commonCartridgeUC.importCourse(file.buffer, currentUser);
+		const jwt = JwtExtractor.extractJwtFromRequest(request);
+		if (!jwt) {
+			throw new UnauthorizedException();
+		}
+
+		await this.commonCartridgeUC.startCourseImport(
+			jwt,
+			startImportParams.fileRecordId,
+			startImportParams.fileName,
+			startImportParams.fileUrl
+		);
 	}
 }
