@@ -467,7 +467,6 @@ describe(BiloMediaClientAdapter.name, () => {
 
 				const [result] = await service.fetchMediaMetadata(['ignored'], mediaSource);
 
-				// both hrefs should be valid and equal after correction
 				expect(result.cover.href).toBe(validSmall);
 				expect(result.coverSmall.href).toBe(validSmall);
 			});
@@ -504,7 +503,7 @@ describe(BiloMediaClientAdapter.name, () => {
 				return { mediaSource, response };
 			};
 
-			it('it should set cover to empty strig', async () => {
+			it('should set cover to empty strig', async () => {
 				const { mediaSource, response } = setup();
 
 				const results = await service.fetchMediaMetadata(['ignored1', 'ignored2'], mediaSource);
