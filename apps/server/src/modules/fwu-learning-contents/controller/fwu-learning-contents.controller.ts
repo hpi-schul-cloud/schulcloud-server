@@ -15,6 +15,7 @@ import { Request, Response } from 'express';
 import { FwuLearningContentsUc } from '../uc/fwu-learning-contents.uc';
 import { GetFwuLearningContentParams } from './dto/fwu-learning-contents.params';
 import { fwuIndex } from '../interface/fwuIndex.type';
+import { filesIndex } from '../fwu.filesIndex';
 
 @ApiTags('fwu')
 @JwtAuthentication()
@@ -63,7 +64,7 @@ export class FwuLearningContentsController {
 			throw new InternalServerErrorException('Feature FWU content is not enabled.');
 		}
 
-		const list = await this.fwuLearningContentsUc.getList();
+		const list = await this.fwuLearningContentsUc.getList(filesIndex);
 
 		return list;
 	}

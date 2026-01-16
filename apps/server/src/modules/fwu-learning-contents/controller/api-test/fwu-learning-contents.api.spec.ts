@@ -141,4 +141,18 @@ describe('FwuLearningContents Controller (api)', () => {
 		});
 	});
 
+	describe('getList', () => {
+		describe('when user is not authenticated', () => {
+			it('should return 401 status', async () => {
+				const response = await testApiClient.get('');
+
+				expect(response.status).toEqual(401);
+			});
+		});
+
+		describe('when feature is not enabled', () => {
+			const setup = () => {
+				Configuration.set('FEATURE_FWU_CONTENT_ENABLED', false);
+
+					expect(response.status).toEqual(200);
 });
