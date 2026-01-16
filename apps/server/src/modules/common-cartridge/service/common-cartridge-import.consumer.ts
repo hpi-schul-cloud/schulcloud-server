@@ -34,7 +34,7 @@ interface ColumnResource {
 }
 
 @Injectable()
-export class CommonCartridgeImportService {
+export class CommonCartridgeImportConsumer {
 	constructor(
 		private readonly orm: MikroORM,
 		private readonly configService: ConfigService<FilesStorageClientConfig, true>,

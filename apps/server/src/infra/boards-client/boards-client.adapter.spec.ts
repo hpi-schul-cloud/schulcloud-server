@@ -4,21 +4,34 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { BoardsClientAdapter } from './boards-client.adapter';
 import { BoardApi, BoardResponse, CreateBoardBodyParams, CreateBoardResponse } from './generated';
+import { ConfigModule } from '@nestjs/config';
+import { BoardsClientConfig } from './boards-client.config';
+
+const boardApiMock = createMock<BoardApi>();
+jest.mock('./generated/api/board-api', () => {
+	return {
+		BoardApi: jest.fn().mockImplementation(() => boardApiMock),
+	};
+});
 
 describe(BoardsClientAdapter.name, () => {
 	let module: TestingModule;
 	let sut: BoardsClientAdapter;
 
-	const boardApiMock = createMock<BoardApi>();
-
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [
-				BoardsClientAdapter,
-				{
-					provide: BoardApi,
-					useValue: boardApiMock,
-				},
+			providers: [BoardsClientAdapter],
+			imports: [
+				ConfigModule.forRoot({
+					isGlobal: true,
+					load: [
+						(): BoardsClientConfig => {
+							return {
+								API_HOST: faker.internet.url(),
+							};
+						},
+					],
+				}),
 			],
 		}).compile();
 		sut = module.get(BoardsClientAdapter);
@@ -51,16 +64,19 @@ describe(BoardsClientAdapter.name, () => {
 
 				boardApiMock.boardControllerCreateBoard.mockResolvedValue(axiosResponseFactory.build({ data: responseData }));
 
+				const jwt = faker.internet.jwt();
+
 				return {
 					params,
 					responseData,
+					jwt,
 				};
 			};
 
 			it('should call boardApi.boardControllerCreateBoard', async () => {
-				const { params, responseData } = setup();
+				const { params, responseData, jwt } = setup();
 
-				const response = await sut.createBoard(params);
+				const response = await sut.createBoard(jwt, params);
 
 				expect(response).toEqual(responseData);
 				expect(boardApiMock.boardControllerCreateBoard).toHaveBeenCalledWith(params);
@@ -89,16 +105,19 @@ describe(BoardsClientAdapter.name, () => {
 					axiosResponseFactory.build({ data: responseData })
 				);
 
+				const jwt = faker.internet.jwt();
+
 				return {
 					boardId,
 					responseData,
+					jwt,
 				};
 			};
 
 			it('should call boardApi.boardControllerGetBoardSkeleton', async () => {
-				const { boardId, responseData } = setup();
+				const { boardId, responseData, jwt } = setup();
 
-				const response = await sut.getBoardSkeletonById(boardId);
+				const response = await sut.getBoardSkeletonById(jwt, boardId);
 
 				expect(response).toEqual(responseData);
 				expect(boardApiMock.boardControllerGetBoardSkeleton).toHaveBeenCalledWith(boardId);
@@ -116,16 +135,19 @@ describe(BoardsClientAdapter.name, () => {
 
 				boardApiMock.boardControllerCreateColumn.mockResolvedValue(axiosResponseFactory.build({ data: responseData }));
 
+				const jwt = faker.internet.jwt();
+
 				return {
 					boardId,
 					responseData,
+					jwt,
 				};
 			};
 
 			it('should call boardApi.boardControllerCreateColumn', async () => {
-				const { boardId, responseData } = setup();
+				const { boardId, responseData, jwt } = setup();
 
-				const response = await sut.createBoardColumn(boardId);
+				const response = await sut.createBoardColumn(jwt, boardId);
 
 				expect(response).toEqual(responseData);
 				expect(boardApiMock.boardControllerCreateColumn).toHaveBeenCalledWith(boardId);

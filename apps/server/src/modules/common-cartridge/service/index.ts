@@ -1,3 +1,3 @@
 export { CommonCartridgeExportService } from './common-cartridge-export.service';
-export { CommonCartridgeImportService } from './common-cartridge-import.service';
+export { CommonCartridgeImportConsumer } from './common-cartridge-import.consumer';
 export { CommonCartridgeProducer } from './common-cartridge.producer';

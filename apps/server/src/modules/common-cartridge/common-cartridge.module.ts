@@ -12,7 +12,7 @@ import { Module } from '@nestjs/common';
 import { CardClientModule as OldCardClientModule } from './common-cartridge-client/card-client/card-client.module';
 import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
 import { CourseRoomsModule } from './common-cartridge-client/room-client';
-import { CommonCartridgeExportService, CommonCartridgeImportService, CommonCartridgeProducer } from './service';
+import { CommonCartridgeExportService, CommonCartridgeImportConsumer, CommonCartridgeProducer } from './service';
 import { CommonCartridgeExportMapper } from './service/common-cartridge-export.mapper';
 import { CommonCartridgeImportMapper } from './service/common-cartridge-import.mapper';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
@@ -43,7 +43,7 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 		CommonCartridgeImportMapper,
 		CommonCartridgeUc,
 		CommonCartridgeExportService,
-		CommonCartridgeImportService,
+		CommonCartridgeImportConsumer,
 		CommonCartridgeProducer,
 	],
 	exports: [CommonCartridgeUc],
