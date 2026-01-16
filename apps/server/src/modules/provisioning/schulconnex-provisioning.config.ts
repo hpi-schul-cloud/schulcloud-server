@@ -3,7 +3,6 @@ import type { LoggerConfig } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import type { RabbitMqConfig } from '@infra/rabbitmq';
 import type { CourseSynchronizationHistoryConfig } from '@modules/course-synchronization-history';
-import type { GroupConfig } from '@modules/group';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LegacySchoolConfig } from '@modules/legacy-school';
 import type { MediaSourceConfig } from '@modules/media-source';
@@ -13,17 +12,14 @@ import type { ToolConfig } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
 import type { UserLicenseConfig } from '@modules/user-license';
 import type { LanguageType } from '@shared/domain/interface';
-import type { ProvisioningConfig } from './provisioning.config';
 
 export interface SchulconnexProvisioningConfig
-	extends ProvisioningConfig,
-		RabbitMqConfig,
+	extends RabbitMqConfig,
 		UserConfig,
 		LoggerConfig,
 		LegacySchoolConfig,
 		RoleConfig,
 		SystemConfig,
-		GroupConfig,
 		LearnroomConfig,
 		CoreModuleConfig,
 		UserLicenseConfig,
@@ -67,20 +63,9 @@ const config: SchulconnexProvisioningConfig = {
 	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: Configuration.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED') as boolean,
 	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
-	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
-		'FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED'
-	) as boolean,
-	FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED: Configuration.get(
-		'FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED'
-	) as boolean,
-	FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') as boolean,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
-	PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL') as string,
 	RABBITMQ_URI: Configuration.get('RABBITMQ_URI') as string,
 	GEOGEBRA_BASE_URL: Configuration.get('GEOGEBRA_BASE_URL') as string,
-	SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS: Configuration.get(
-		'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
-	) as number,
 	CALENDAR_SERVICE_ENABLED: Configuration.get('CALENDAR_SERVICE_ENABLED') as boolean,
 };
 

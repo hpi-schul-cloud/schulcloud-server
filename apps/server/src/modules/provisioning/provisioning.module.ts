@@ -1,4 +1,5 @@
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { AccountModule } from '@modules/account';
 import { ClassModule } from '@modules/class';
@@ -19,6 +20,7 @@ import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
 import { MediumMetadataModule } from '../medium-metadata';
 import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from './amqp';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from './provisioning.config';
 import { ProvisioningService } from './service/provisioning.service';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
 import {
@@ -48,6 +50,7 @@ import {
 		CourseModule,
 		SchulconnexClientModule.registerAsync(),
 		UserLicenseModule,
+		ConfigurationModule.register(PROVISIONING_CONFIG_TOKEN, ProvisioningConfig),
 		SchoolLicenseModule,
 		MediaSourceModule,
 		ExternalToolModule,

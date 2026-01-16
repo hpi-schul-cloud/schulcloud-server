@@ -11,7 +11,6 @@ import { classFactory } from '@modules/class/domain/testing/factory/class.factor
 import { Course, CourseDoService } from '@modules/course';
 import { courseFactory } from '@modules/course/testing';
 import { ClassGroupUc } from '@modules/group/uc/class-group.uc';
-import { ProvisioningConfig } from '@modules/provisioning';
 import { RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { School, SchoolService, SchoolYearService } from '@modules/school/domain';
@@ -21,14 +20,15 @@ import { systemFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { GroupConfig } from '..';
 import { ClassSortQueryType, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group } from '../domain';
+import { GROUP_CONFIG_TOKEN } from '../group.config';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { groupFactory } from '../testing';
@@ -46,7 +46,7 @@ describe('ClassGroupUc', () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
 	let courseService: DeepMocked<CourseDoService>;
-	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
+	let config: GroupConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -85,8 +85,10 @@ describe('ClassGroupUc', () => {
 					useValue: createMock<CourseDoService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: GROUP_CONFIG_TOKEN,
+					useValue: {
+						featureSchulconnexCourseSyncEnabled: true,
+					},
 				},
 			],
 		}).compile();
@@ -100,7 +102,7 @@ describe('ClassGroupUc', () => {
 		authorizationService = module.get(AuthorizationService);
 		schoolYearService = module.get(SchoolYearService);
 		courseService = module.get(CourseDoService);
-		configService = module.get(ConfigService);
+		config = module.get(GROUP_CONFIG_TOKEN);
 
 		await setupEntities([User]);
 	});
@@ -201,7 +203,7 @@ describe('ClassGroupUc', () => {
 				groupService.findByScope.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.getSystems.mockResolvedValueOnce([system]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
-				configService.get.mockReturnValue(true); // FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED
+				config.featureSchulconnexCourseSyncEnabled = true;
 				courseService.findBySyncedGroup.mockImplementation((g: Group) => {
 					const courses: Course[] = [];
 
@@ -534,7 +536,7 @@ describe('ClassGroupUc', () => {
 				groupService.findByScope.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.getSystems.mockResolvedValueOnce([system]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
-				configService.get.mockReturnValue(true); // FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED
+				config.featureSchulconnexCourseSyncEnabled = true;
 				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
 				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
 
@@ -771,7 +773,7 @@ describe('ClassGroupUc', () => {
 				groupService.findByScope.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.getSystems.mockResolvedValueOnce([system]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
-				configService.get.mockReturnValue(true); // FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED
+				config.featureSchulconnexCourseSyncEnabled = true;
 				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
 				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
 
