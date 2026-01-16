@@ -2,7 +2,11 @@ import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
 import { IdentityManagementModule } from '@infra/identity-management';
-import { ValkeyClientModule } from '@infra/valkey-client';
+import {
+	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
+	ValkeyClientModule,
+	ValkeyClientSessionConfig,
+} from '@infra/valkey-client';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { OauthModule } from '@modules/oauth/oauth.module';
@@ -14,7 +18,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { SignOptions } from 'jsonwebtoken';
-import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from './authentication-config';
+import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig, SESSION_VALKEY_CLIENT } from './authentication-config';
 import { AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN, AuthenticationEncryptionConfig } from './encryption.config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { JWT_STRATEGY_CONFIG_TOKEN, JwtModuleConfig } from './jwt-module.config';
@@ -24,11 +28,6 @@ import { LdapService } from './services/ldap.service';
 import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
-import {
-	SESSION_VALKEY_CLIENT,
-	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
-	ValkeyClientSessionConfig,
-} from './valkey-client-session.config';
 
 const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 	const { algorithm, expiresIn, scDomain, privateKey, publicKey } = config;

@@ -1,8 +1,12 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { ValkeyConfig, ValkeyMode } from '@infra/valkey-client';
 import { IsEnum, IsOptional, IsString, ValidateIf } from 'class-validator';
+import { ValkeyConfig, ValkeyMode } from './valkey.config';
 
-export const SESSION_VALKEY_CLIENT = 'SESSION_VALKEY_CLIENT';
+/**
+ * This is default Configuration for the Valkey Client used for Session Storage.
+ * If you need a different configuration, please create a custom one.
+ * Based on the ValkeyConfig interface and logic of @ValidateIf decorators from this class
+ */
 export const SESSION_VALKEY_CLIENT_CONFIG_TOKEN = 'SESSION_VALKEY_CLIENT_CONFIG_TOKEN';
 
 @Configuration()
