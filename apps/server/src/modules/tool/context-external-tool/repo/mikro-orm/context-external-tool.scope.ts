@@ -1,4 +1,4 @@
-import { FilterQuery, ObjectId } from '@mikro-orm/mongodb';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
 import { ToolContextType } from '../../../common/enum';
