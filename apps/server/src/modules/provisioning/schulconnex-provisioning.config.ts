@@ -6,7 +6,6 @@ import type { CourseSynchronizationHistoryConfig } from '@modules/course-synchro
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LegacySchoolConfig } from '@modules/legacy-school';
 import type { MediaSourceConfig } from '@modules/media-source';
-import type { RoleConfig } from '@modules/role';
 import type { SystemConfig } from '@modules/system';
 import type { ToolConfig } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
@@ -18,7 +17,6 @@ export interface SchulconnexProvisioningConfig
 		UserConfig,
 		LoggerConfig,
 		LegacySchoolConfig,
-		RoleConfig,
 		SystemConfig,
 		LearnroomConfig,
 		CoreModuleConfig,
