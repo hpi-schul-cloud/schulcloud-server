@@ -11,5 +11,5 @@ export class TspClientConfig {
 
 	@ConfigProperty('TSP_API_CLIENT_TOKEN_LIFETIME_MS')
 	@IsNumber()
-	public tokenLifetimeMs = 3600000; // 1 hour default
+	public tokenLifetimeMs = 30000;
 }
