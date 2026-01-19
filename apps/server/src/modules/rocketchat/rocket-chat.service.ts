@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { ROCKET_CHAT_CONFIG_TOKEN, RocketChatConfig } from './rocket-chat.config';
 
 export interface RocketChatOptions {
 	uri?: string;
@@ -73,7 +74,7 @@ export class RocketChatService {
 	private adminIdAndToken?: AdminIdAndToken;
 
 	constructor(
-		@Inject('ROCKET_CHAT_OPTIONS') private readonly options: RocketChatOptions,
+		@Inject(ROCKET_CHAT_CONFIG_TOKEN) private readonly config: RocketChatConfig,
 		private readonly httpService: HttpService
 	) {}
 
@@ -201,7 +202,7 @@ export class RocketChatService {
 		const response = await lastValueFrom(
 			this.httpService
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				.get(`${this.options.uri}${path}`, {
+				.get(`${this.config.uri}${path}`, {
 					headers: {
 						'X-Auth-Token': authToken,
 						'X-User-ID': userId,
@@ -220,7 +221,7 @@ export class RocketChatService {
 		const response = await lastValueFrom(
 			this.httpService
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				.post(`${this.options.uri}${path}`, body, {
+				.post(`${this.config.uri}${path}`, body, {
 					headers: {
 						'X-Auth-Token': authToken,
 						'X-User-ID': userId,
@@ -242,17 +243,17 @@ export class RocketChatService {
 			return this.adminIdAndToken;
 		}
 
-		if (this.options.adminId && this.options.adminToken) {
-			const newVar = { id: this.options.adminId, token: this.options.adminToken } as AdminIdAndToken;
+		if (this.config.adminId && this.config.adminToken) {
+			const newVar = { id: this.config.adminId, token: this.config.adminToken } as AdminIdAndToken;
 			this.adminIdAndToken = newVar;
 			return newVar;
 		}
 		const response = await lastValueFrom(
 			this.httpService
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				.post(`${this.options.uri}/api/v1/login`, {
-					user: this.options.adminUser,
-					password: this.options.adminPassword,
+				.post(`${this.config.uri}/api/v1/login`, {
+					user: this.config.adminUser,
+					password: this.config.adminPassword,
 				})
 				.pipe(
 					catchError((e) => {
@@ -273,10 +274,10 @@ export class RocketChatService {
 	}
 
 	private validateRocketChatConfig(): void {
-		if (!this.options.uri) {
+		if (!this.config.uri) {
 			throw new Error('rocket chat uri not set');
 		}
-		if (!(this.options.adminId && this.options.adminToken) && !(this.options.adminUser && this.options.adminPassword)) {
+		if (!(this.config.adminId && this.config.adminToken) && !(this.config.adminUser && this.config.adminPassword)) {
 			throw new Error('rocket chat adminId and adminToken OR adminUser and adminPassword must be set');
 		}
 	}

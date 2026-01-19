@@ -9,7 +9,6 @@ import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { ManagementSeedDataConfig } from '@modules/management';
-import type { RocketChatUserConfig } from '@modules/rocketchat-user';
 import type { RoomConfig } from '@modules/room';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
@@ -38,7 +37,6 @@ export interface ServerConfig
 		IdentityManagementConfig,
 		SchoolConfig,
 		MailConfig,
-		RocketChatUserConfig,
 		LearnroomConfig,
 		ToolConfig,
 		UserLoginMigrationConfig,
@@ -110,6 +108,9 @@ export interface ServerConfig
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
 	ROOM_MEMBER_INFO_URL: string | null;
+	ROCKET_CHAT_URI: string;
+	ROCKET_CHAT_ADMIN_ID: string;
+	ROCKET_CHAT_ADMIN_TOKEN: string;
 }
 
 const config: ServerConfig = {
@@ -267,8 +268,6 @@ const config: ServerConfig = {
 	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
 	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
-	ROCKET_CHAT_ADMIN_USER: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
-	ROCKET_CHAT_ADMIN_PASSWORD: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	CTL_TOOLS__PREFERRED_TOOLS_LIMIT: Configuration.get('CTL_TOOLS__PREFERRED_TOOLS_LIMIT') as number,
 	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: Configuration.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED') as boolean,

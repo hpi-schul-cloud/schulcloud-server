@@ -3,7 +3,6 @@ import { CalendarConfig } from '@infra/calendar';
 import { ClassConfig } from '@modules/class';
 import { FilesConfig } from '@modules/files';
 import { PseudonymConfig } from '@modules/pseudonym';
-import { RocketChatUserConfig } from '@modules/rocketchat-user';
 import { TeamConfig } from '@modules/team';
 import { UserConfig } from '@modules/user';
 
@@ -14,7 +13,6 @@ export interface DeletionConfig
 		TeamConfig,
 		PseudonymConfig,
 		FilesConfig,
-		RocketChatUserConfig,
 		UserConfig {
 	ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS: number;
 	ADMIN_API__DELETION_EXECUTION_BATCH_NUMBER: number;
