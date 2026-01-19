@@ -33,9 +33,14 @@ import { NewsModule } from '@modules/news';
 import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig } from '@modules/oauth';
 import { OauthProviderApiModule } from '@modules/oauth-provider/oauth-provider-api.module';
 import { OAuthApiModule } from '@modules/oauth/oauth-api.module';
+import { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
-import { RegistrationModule } from '@modules/registration';
-import { RegistrationApiModule } from '@modules/registration/registration-api.module';
+import {
+	REGISTRATION_PUBLIC_API_CONFIG_TOKEN,
+	RegistrationApiModule,
+	RegistrationModule,
+	RegistrationPublicApiConfig,
+} from '@modules/registration';
 import { RocketChatModule } from '@modules/rocketchat';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { RosterModule } from '@modules/roster/roster.module';
@@ -65,7 +70,6 @@ import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.mod
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
-import { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from '@modules/provisioning';
 
 const serverModules = [
 	HelpdeskApiModule,
@@ -75,6 +79,7 @@ const serverModules = [
 	ConfigurationModule.register(ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig),
 	ConfigurationModule.register(OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig),
 	ConfigurationModule.register(PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig),
+	ConfigurationModule.register(REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,
 	CoreModule,
