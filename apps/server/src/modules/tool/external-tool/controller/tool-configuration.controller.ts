@@ -166,11 +166,14 @@ export class ToolConfigurationController {
 		return mapped;
 	}
 
-	@Patch('/activate-in-all-schools/:contextExternalToolId')
-	public async activateToolInAllSchools(
+	@Patch('/add-and-activate-for-all-schools/:contextExternalToolId')
+	public async addAndActivateToolForAllSchools(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams
 	): Promise<void> {
-		await this.externalToolConfigurationUc.activateToolInAllSchools(currentUser.userId, params.contextExternalToolId);
+		await this.externalToolConfigurationUc.addAndActivateToolForAllSchools(
+			currentUser.userId,
+			params.contextExternalToolId
+		);
 	}
 }

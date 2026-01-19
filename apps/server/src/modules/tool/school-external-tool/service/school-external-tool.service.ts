@@ -137,7 +137,7 @@ export class SchoolExternalToolService {
 		return createdSchoolExternalTool;
 	}
 
-	public async activateToolInAllSchools(toolId: EntityId): Promise<void> {
+	public async addAndActivateToolForAllSchools(toolId: EntityId): Promise<void> {
 		const allSchoolIds = await this.schoolService.getAllSchoolIds();
 		const existingSchoolExternalTools = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
 
