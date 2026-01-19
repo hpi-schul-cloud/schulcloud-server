@@ -1,6 +1,6 @@
 import { CoreModule } from '@core/core.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
-import { AuthGuardModule, AuthGuardOptions, JwtAuthGuardConfig } from '@infra/auth-guard';
+import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { ValkeyClientModule, ValkeyConfig } from '@infra/valkey-client';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
