@@ -4,7 +4,6 @@ import type { FilesStorageClientConfig } from '@infra/files-storage-client';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
-import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { ManagementSeedDataConfig } from '@modules/management';
@@ -41,8 +40,6 @@ export interface ServerConfig
 		LearnroomConfig,
 		ToolConfig,
 		UserLoginMigrationConfig,
-		BoardConfig,
-		MediaBoardConfig,
 		SharingConfig,
 		UserImportConfig,
 		SchulconnexClientConfig,
@@ -98,8 +95,6 @@ export interface ServerConfig
 	BOARD_COLLABORATION_URI: string;
 	FEATURE_AI_TUTOR_ENABLED: boolean;
 	FEATURE_ADMINISTRATE_ROOMS_ENABLED: boolean;
-	FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE: boolean;
-	FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED: boolean;
 	FEATURE_ROOM_COPY_ENABLED: boolean;
 	FEATURE_ROOM_SHARE: boolean;
 	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: boolean;
@@ -230,7 +225,6 @@ const config: ServerConfig = {
 	SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS'
 	) as number,
-	FEATURE_MEDIA_SHELF_ENABLED: Configuration.get('FEATURE_MEDIA_SHELF_ENABLED') as boolean,
 	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
 	CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: Configuration.get(
@@ -249,10 +243,6 @@ const config: ServerConfig = {
 	) as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
 	FEATURE_ADMINISTRATE_ROOMS_ENABLED: Configuration.get('FEATURE_ADMINISTRATE_ROOMS_ENABLED') as boolean,
-	FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE: Configuration.get('FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE') as boolean,
-	FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED: Configuration.get(
-		'FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED'
-	) as boolean,
 	FEATURE_ROOM_COPY_ENABLED: Configuration.get('FEATURE_ROOM_COPY_ENABLED') as boolean,
 	FEATURE_ROOM_SHARE: Configuration.get('FEATURE_ROOM_SHARE') as boolean,
 	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: Configuration.get('FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED') as boolean,

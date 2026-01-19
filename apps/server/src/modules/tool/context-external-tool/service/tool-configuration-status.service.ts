@@ -1,4 +1,3 @@
-import { MediaBoardConfig } from '@modules/board/media-board.config';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
@@ -14,6 +13,7 @@ import {
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { ToolConfig } from '../../tool-config';
 import { ContextExternalToolLaunchable } from '../domain';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class ToolConfigurationStatusService {
 		private readonly commonToolValidationService: CommonToolValidationService,
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
 		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
-		private readonly configService: ConfigService<MediaBoardConfig, true>,
+		private readonly configService: ConfigService<ToolConfig, true>,
 		private readonly userService: UserService
 	) {}
 

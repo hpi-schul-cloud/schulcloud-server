@@ -1,7 +1,9 @@
 import { AlertPublicApiConfig } from '@modules/alert';
+import { BoardPublicApiConfig } from '@modules/board';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
 import { OauthPublicApiConfig } from '@modules/oauth';
-import { ProvisioningPublicApiConfig } from '@modules/provisioning/provisioning.config';
+import { ProvisioningPublicApiConfig } from '@modules/provisioning';
+import { RegistrationPublicApiConfig } from '@modules/registration';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
@@ -265,7 +267,9 @@ export class ConfigResponse {
 			BoardContextPublicApiConfig &
 			AlertPublicApiConfig &
 			OauthPublicApiConfig &
-			ProvisioningPublicApiConfig
+			BoardPublicApiConfig &
+			ProvisioningPublicApiConfig &
+			RegistrationPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -329,14 +333,14 @@ export class ConfigResponse {
 		this.MIGRATION_WIZARD_DOCUMENTATION_LINK = config.MIGRATION_WIZARD_DOCUMENTATION_LINK;
 		this.FEATURE_TLDRAW_ENABLED = config.FEATURE_TLDRAW_ENABLED;
 		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.FEATURE_VIDEOCONFERENCE_ENABLED;
+		this.FEATURE_MEDIA_SHELF_ENABLED = config.featureMediaShelfEnabled;
 		this.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = config.featureSchulconnexCourseSyncEnabled;
-		this.FEATURE_MEDIA_SHELF_ENABLED = config.FEATURE_MEDIA_SHELF_ENABLED;
 		this.BOARD_COLLABORATION_URI = config.BOARD_COLLABORATION_URI;
 		this.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = config.featureSchulconnexMediaLicenseEnabled;
 		this.FEATURE_AI_TUTOR_ENABLED = config.FEATURE_AI_TUTOR_ENABLED;
 		this.FEATURE_ADMINISTRATE_ROOMS_ENABLED = config.FEATURE_ADMINISTRATE_ROOMS_ENABLED;
-		this.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = config.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE;
-		this.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED;
+		this.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = config.featureBoardReadersCanEditToggle;
+		this.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = config.featureExternalPersonRegistrationEnabled;
 		this.FEATURE_ROOM_COPY_ENABLED = config.FEATURE_ROOM_COPY_ENABLED;
 		this.FEATURE_ROOM_SHARE = config.FEATURE_ROOM_SHARE;
 		this.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED;
