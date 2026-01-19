@@ -4,7 +4,7 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -26,8 +26,6 @@ describe('Group (API)', () => {
 	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
-		const config: ServerConfig = serverConfig();
-		config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		}).compile();

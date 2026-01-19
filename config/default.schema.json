@@ -104,35 +104,6 @@
 			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "defines wheter students may create teams or not. if enabled system wide there are options general enabled or opt-in/-out by school admin required."
 		},
-		"SESSION_VALKEY": {
-			"type": "object",
-			"description": "Session configuration ",
-			"properties": {
-				"MODE": {
-					"type": "string",
-					"default": "cluster",
-					"enum": ["cluster", "single", "in-memory"],
-					"description": "Define valkey mode."
-				},
-				"URI": {
-					"type": "string",
-					"pattern": "(rediss?:)?//((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
-					"description": "URL of a Valkey server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
-				},
-				"SENTINEL_NAME": {
-					"type": "string",
-					"description": "The name of the Redis Sentinel."
-				},
-				"SENTINEL_PASSWORD": {
-					"type": "string",
-					"description": "The password for the Redis Sentinel service."
-				},
-				"SENTINEL_SERVICE_NAME": {
-					"type": "string",
-					"description": "The name of the Redis Sentinel service."
-				}
-			}
-		},
 		"PIN_MAX_AGE_SECONDS": {
 			"type": "integer",
 			"default": 86400,
@@ -684,11 +655,6 @@
 			"type": "number",
 			"default": "604800000",
 			"description": "Grace period before school admin cannot restart oauth migration anymore. Value is given in ms and default is 7 days"
-		},
-		"FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Groups of type class also gets provisioned, when provisioning a user via oauth login."
 		},
 		"SC_TITLE": {
 			"type": "string",
@@ -1491,11 +1457,6 @@
 			"default": false,
 			"description": "Toggle that, when enabled, excludes MongoDB from the health checks."
 		},
-		"FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the synchronization of courses with linked groups during provisioning."
-		},
 		"SYNCHRONIZATION_CHUNK": {
 			"type": "number",
 			"default": 10000,
@@ -1511,25 +1472,10 @@
 			"default": false,
 			"description": "Enables the migration wizard to use the user login migration process"
 		},
-		"FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the provisioning of other groupusers"
-		},
 		"FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the storing and checking media license of users"
-		},
-		"PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL": {
-			"type": "string",
-			"default": "",
-			"description": "URL for fetching policies info from moin.schule schulconnex",
-			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/policies-info"]
-		},
-		"PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT": {
-			"type": "number",
-			"description": "Maximum number of users in group that still get processed during schulconnex provisioning"
 		},
 		"PROVISIONING_SCHULCONNEX_EXCHANGE": {
 			"type": "string",
@@ -1615,11 +1561,6 @@
 			"type": "string",
 			"default": null,
 			"description": "The url for further information in room member administration."
-		},
-		"SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS": {
-			"type": "number",
-			"default": 864000,
-			"description": "Number of seconds for a course synchronization history from schulconnex provisioning to expire."
 		},
 		"RELEASE_NOTES_REPO_URL": {
 			"type": "string",

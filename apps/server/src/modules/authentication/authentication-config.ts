@@ -2,8 +2,9 @@ import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean, StringToNumber } from '@shared/controller/transformer';
 import { IsBoolean, IsNumber } from 'class-validator';
 
-export const AUTHENTICATION_CONFIG_TOKEN = 'AUTHENTICATION_CONFIG_TOKEN';
+export const SESSION_VALKEY_CLIENT = 'SESSION_VALKEY_CLIENT';
 
+export const AUTHENTICATION_CONFIG_TOKEN = 'AUTHENTICATION_CONFIG_TOKEN';
 @Configuration()
 export class AuthenticationConfig {
 	@ConfigProperty('JWT_LIFETIME_SUPPORT_SECONDS')
