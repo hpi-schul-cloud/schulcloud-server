@@ -7,13 +7,12 @@ import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@testing/database';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import { MediaBoard, MediaBoardNodeFactory, MediaExternalToolElement, MediaLine } from '../../domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
-import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
 import { mediaBoardFactory, mediaExternalToolElementFactory, mediaLineFactory } from '../../testing';
 import { MediaElementUc } from './media-element.uc';
@@ -25,7 +24,7 @@ describe(MediaElementUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let boardNodePermissionService: DeepMocked<BoardNodePermissionService>;
-	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
+	let config: BoardConfig;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
 	let mediaBoardNodeFactory: DeepMocked<MediaBoardNodeFactory>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
@@ -49,8 +48,8 @@ describe(MediaElementUc.name, () => {
 					useValue: createMock<BoardNodePermissionService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: BOARD_CONFIG_TOKEN,
+					useValue: new BoardConfig(),
 				},
 				{
 					provide: MediaBoardService,
@@ -71,7 +70,7 @@ describe(MediaElementUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		boardNodeService = module.get(BoardNodeService);
 		boardNodePermissionService = module.get(BoardNodePermissionService);
-		configService = module.get(ConfigService);
+		config = module.get(BOARD_CONFIG_TOKEN);
 		mediaBoardService = module.get(MediaBoardService);
 		mediaBoardNodeFactory = module.get(MediaBoardNodeFactory);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
@@ -92,7 +91,7 @@ describe(MediaElementUc.name, () => {
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 				boardNodeService.findAnyMediaElementById.mockResolvedValueOnce(mediaElement);
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine);
 
@@ -139,7 +138,7 @@ describe(MediaElementUc.name, () => {
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,
@@ -170,7 +169,7 @@ describe(MediaElementUc.name, () => {
 					.withSchoolExternalToolRef(schoolExternalTool.id, user.school.id)
 					.buildWithId();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine).mockResolvedValueOnce(mediaBoard);
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -272,7 +271,7 @@ describe(MediaElementUc.name, () => {
 					.withSchoolExternalToolRef(schoolExternalTool.id, user.school.id)
 					.buildWithId();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine).mockResolvedValueOnce(mediaBoard);
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -305,7 +304,7 @@ describe(MediaElementUc.name, () => {
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,
@@ -330,7 +329,7 @@ describe(MediaElementUc.name, () => {
 				const user = userFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 				boardNodeService.findAnyMediaElementById.mockResolvedValueOnce(mediaElement);
 
 				return {
@@ -365,7 +364,7 @@ describe(MediaElementUc.name, () => {
 				const user = userFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,
