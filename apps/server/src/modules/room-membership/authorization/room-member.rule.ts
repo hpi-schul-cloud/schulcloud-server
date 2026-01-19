@@ -10,6 +10,7 @@ import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { RoomMemberAuthorizable } from '../do/room-member-authorizable.do';
+import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
 import { RoomMembershipRule } from './room-membership.rule';
 
 @Injectable()
@@ -75,6 +76,28 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 		return hasPermission && !isCurrentUser;
 	}
 
+	public canRemoveMember(user: User, object: RoomMemberAuthorizable): boolean {
+		const { roomPermissions } = this.resolveUserPermissions(user, object.roomMembershipAuthorizable);
+
+		const isRemoveRoomOwner = object.member.roomRoleName === RoleName.ROOMOWNER;
+		if (isRemoveRoomOwner) {
+			return false;
+		}
+
+		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_REMOVE_MEMBERS);
+		const isHimself = object.member.userId === user.id;
+		if (hasRoomPermission && !isHimself) {
+			return true;
+		}
+
+		const isAdminOfUserSchool = this.isAdminOfUserSchool(user, object);
+		if (isAdminOfUserSchool) {
+			return true;
+		}
+
+		return false;
+	}
+
 	private isAdminOfUserSchool(user: User, object: RoomMemberAuthorizable): boolean {
 		const canAdministrateSchoolRooms = this.authorizationHelper.hasOneOfPermissions(user, [
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
@@ -93,5 +116,30 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 		const includesSchool = allSchools.includes(schoolId);
 
 		return includesSchool;
+	}
+
+	private resolveUserPermissions(
+		user: User,
+		object: RoomMembershipAuthorizable
+	): { schoolPermissions: Permission[]; roomPermissions: Permission[]; allPermissions: Permission[] } {
+		const schoolPermissions = this.resolveSchoolPermissions(user);
+		const roomPermissions = this.resolveRoomPermissions(user, object);
+		const allPermissions = [...schoolPermissions, ...roomPermissions];
+		return {
+			schoolPermissions,
+			roomPermissions,
+			allPermissions,
+		};
+	}
+
+	private resolveSchoolPermissions(user: User): Permission[] {
+		return [...user.roles].flatMap((role) => role.permissions ?? []);
+	}
+
+	private resolveRoomPermissions(user: User, object: RoomMembershipAuthorizable): Permission[] {
+		return object.members
+			.filter((member) => member.userId === user.id)
+			.flatMap((member) => member.roles)
+			.flatMap((role) => role.permissions ?? []);
 	}
 }

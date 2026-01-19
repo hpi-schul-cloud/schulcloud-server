@@ -223,9 +223,11 @@ export class RoomUc {
 	}
 
 	public async leaveRoom(currentUserId: EntityId, roomId: EntityId): Promise<void> {
-		await this.roomPermissionService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.read, [
-			Permission.ROOM_LEAVE_ROOM,
-		]);
+		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+
+		throwForbiddenIfFalse(this.roomMembershipRule.canLeaveRoom(user, roomMembershipAuthorizable));
+
 		await this.roomMembershipService.removeMembersFromRoom(roomId, [currentUserId]);
 	}
 
@@ -235,14 +237,14 @@ export class RoomUc {
 		const roomMembers = await this.roomMembershipService.getRoomMembers(roomId);
 		const roomMembersToBeDeleted = roomMembers.filter((member) => userIds.includes(member.userId));
 
-		await this.checkAreAllUsersAccessible(user, userIds);
-
+		const roomMemberAuthorizables = await this.getRoomMemberAuthorizables(roomMembershipAuthorizable);
 		for (const member of roomMembersToBeDeleted) {
-			const roomMemberAuthorizable = new RoomMemberAuthorizable(roomMembershipAuthorizable, member);
-			this.authorizationService.checkPermission(user, roomMemberAuthorizable, {
-				action: Action.write,
-				requiredPermissions: [Permission.ROOM_REMOVE_MEMBERS],
-			});
+			const roomMemberAuthorizable = roomMemberAuthorizables.find(
+				(authorizable) => authorizable.member.userId === member.userId
+			);
+			if (roomMemberAuthorizable) {
+				throwForbiddenIfFalse(this.roomMemberRule.canRemoveMember(user, roomMemberAuthorizable));
+			}
 		}
 		await this.roomMembershipService.removeMembersFromRoom(roomId, userIds);
 	}
@@ -388,14 +390,25 @@ export class RoomUc {
 		roomMembershipAuthorizable: RoomMembershipAuthorizable,
 		targetUserId: EntityId
 	): Promise<RoomMemberAuthorizable> {
-		const roomMembers = await this.roomMembershipService.getRoomMembers(roomMembershipAuthorizable.roomId);
-		const roomMember = roomMembers.find((member) => member.userId === targetUserId);
+		const roomMemberAuthorizables = await this.getRoomMemberAuthorizables(roomMembershipAuthorizable);
+		const roomMemberAuthorizable = roomMemberAuthorizables.find(
+			(authorizable) => authorizable.member.userId === targetUserId
+		);
 
-		if (!roomMember) {
+		if (!roomMemberAuthorizable) {
 			throw new ForbiddenException();
 		}
-		const roomMemberAuthorizable = new RoomMemberAuthorizable(roomMembershipAuthorizable, roomMember);
 		return roomMemberAuthorizable;
+	}
+
+	private async getRoomMemberAuthorizables(
+		roomMembershipAuthorizable: RoomMembershipAuthorizable
+	): Promise<RoomMemberAuthorizable[]> {
+		const roomMembers = await this.roomMembershipService.getRoomMembers(roomMembershipAuthorizable.roomId);
+		const roomMemberAuthorizables = roomMembers.map(
+			(roomMember) => new RoomMemberAuthorizable(roomMembershipAuthorizable, roomMember)
+		);
+		return roomMemberAuthorizables;
 	}
 }
 

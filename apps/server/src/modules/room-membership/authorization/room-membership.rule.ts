@@ -105,6 +105,14 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 		return hasRoomPermission;
 	}
 
+	public canLeaveRoom(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+
+		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_LEAVE_ROOM);
+
+		return hasRoomPermission;
+	}
+
 	public canUpdateRoom(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
 		const { roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
 
