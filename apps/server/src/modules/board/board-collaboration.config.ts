@@ -6,6 +6,11 @@ import { Algorithm } from 'jsonwebtoken';
 
 export interface BoardCollaborationConfig extends JwtAuthGuardConfig, TldrawClientConfig {
 	NEST_LOG_LEVEL: string;
+	SESSION_VALKEY__MODE?: ValkeyMode;
+	SESSION_VALKEY__URI?: string;
+	SESSION_VALKEY__SENTINEL_NAME?: string;
+	SESSION_VALKEY__SENTINEL_PASSWORD?: string;
+	SESSION_VALKEY__SENTINEL_SERVICE_NAME?: string;
 }
 
 const boardCollaborationConfig: BoardCollaborationConfig = {
@@ -32,4 +37,4 @@ const boardCollaborationConfig: BoardCollaborationConfig = {
 	TLDRAW_ADMIN_API_CLIENT_API_KEY: Configuration.get('TLDRAW_ADMIN_API_CLIENT__API_KEY') as string,
 };
 
-export const config = () => boardCollaborationConfig;
+export const config = (): BoardCollaborationConfig => boardCollaborationConfig;
