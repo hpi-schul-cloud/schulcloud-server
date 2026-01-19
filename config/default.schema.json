@@ -148,16 +148,6 @@
 			"default": 2629746,
 			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration."
 		},
-		"TSP_API_CLIENT_BASE_URL": {
-			"type": "string",
-			"default": "",
-			"description": "The TSP API base URL."
-		},
-		"TSP_API_CLIENT_TOKEN_LIFETIME_MS": {
-			"type": "number",
-			"default": "30000",
-			"description": "The TSP token lifetime in milliseconds."
-		},
 		"TSP_SYNC_SCHOOL_LIMIT": {
 			"type": "number",
 			"default": "10",
