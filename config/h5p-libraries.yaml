@@ -6,6 +6,8 @@ h5p_libraries:
   - H5P.ArithmeticQuiz
   - H5P.Chart
   - H5P.Collage
+  - H5P.Column
+  - H5P.CoursePresentation
   - H5P.Cornell
   - H5P.Crossword
   - H5P.Dialogcards
@@ -27,6 +29,7 @@ h5p_libraries:
   - H5P.ImageSlider
   - H5P.InfoWall
   - H5P.InteractiveBook
+  - H5P.InteractiveVideo
   - H5P.KewArCode
   - H5P.MarkTheWords
   - H5P.MultiChoice
@@ -38,10 +41,3 @@ h5p_libraries:
   - H5P.Summary
   - H5P.Timeline
   - H5P.TrueFalse
-  # libraries to be added
-  - H5P.Column
-  - H5P.CoursePresentation
-  - H5P.InteractiveVideo
-  # additional libraries in order to avoid deletion and installation cycles
-  - H5P.IFrameEmbed
-  - H5P.MemoryGame
