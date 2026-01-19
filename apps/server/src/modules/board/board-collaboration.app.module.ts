@@ -12,12 +12,12 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { AuthorizationModule } from '../authorization';
 import { serverConfig } from '../server';
-import { config } from './board-collaboration.config';
+import { BoardCollaborationConfig, config } from './board-collaboration.config';
 import { BoardWsApiModule } from './board-ws-api.module';
 import { ENTITIES, TEST_ENTITIES } from './board.entity.imports';
 import { BoardModule } from './board.module';
 
-const createValkeyModuleOptions = (configService: ConfigService<JwtAuthGuardConfig>): ValkeyConfig => {
+const createValkeyModuleOptions = (configService: ConfigService<BoardCollaborationConfig>): ValkeyConfig => {
 	const config = {
 		MODE: configService.getOrThrow('SESSION_VALKEY__MODE', { infer: true }),
 		URI: configService.get('SESSION_VALKEY__URI', { infer: true }),
