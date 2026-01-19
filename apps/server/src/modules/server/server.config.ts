@@ -4,7 +4,6 @@ import type { FilesStorageClientConfig } from '@infra/files-storage-client';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
-import type { TspSyncConfig } from '@infra/sync';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
@@ -49,7 +48,6 @@ export interface ServerConfig
 		SchulconnexClientConfig,
 		RoomConfig,
 		UserImportConfig,
-		TspSyncConfig,
 		ShdConfig,
 		FilesStorageClientConfig,
 		ManagementSeedDataConfig {
@@ -264,10 +262,6 @@ const config: ServerConfig = {
 	FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED: Configuration.get(
 		'FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED'
 	) as boolean,
-	TSP_SYNC_SCHOOL_LIMIT: Configuration.get('TSP_SYNC_SCHOOL_LIMIT') as number,
-	TSP_SYNC_SCHOOL_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_SCHOOL_DAYS_TO_FETCH') as number,
-	TSP_SYNC_DATA_LIMIT: Configuration.get('TSP_SYNC_DATA_LIMIT') as number,
-	TSP_SYNC_DATA_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_DATA_DAYS_TO_FETCH') as number,
 	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
 	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
