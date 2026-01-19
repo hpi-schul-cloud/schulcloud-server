@@ -29,17 +29,35 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 	}
 
 	public hasPermission(user: User, object: RoomMemberAuthorizable, context: AuthorizationContext): boolean {
+		if (!this.hasAccessToSchool(user, object.schoolId)) {
+			return false;
+		}
 		const { requiredPermissions } = context;
-		const hasPermissions = requiredPermissions.every((permission) =>
-			this.hasDynamicPermission(user, object, permission)
-		);
+		const hasAllPermissions: boolean = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
 
-		return hasPermissions;
+		return hasAllPermissions;
 	}
 
-	private hasDynamicPermission(user: User, object: RoomMemberAuthorizable, permission: Permission): boolean {
+	public canPassOwnershipTo(user: User, object: RoomMemberAuthorizable): boolean {
 		const isAlreadyRoomOwner = object.member.roomRoleName === RoleName.ROOMOWNER;
 		if (isAlreadyRoomOwner) {
+			return false;
+		}
+
+		const isUserOfRoom = object.roomMembershipAuthorizable.members.some(
+			(member) => member.userId === object.member.userId
+		);
+		if (!isUserOfRoom) {
+			return false;
+		}
+
+		const isStudent = object.member.schoolRoleNames.includes(RoleName.STUDENT);
+		if (isStudent) {
+			return false;
+		}
+
+		const isExternalPerson = object.member.schoolRoleNames.includes(RoleName.EXTERNALPERSON);
+		if (isExternalPerson) {
 			return false;
 		}
 
@@ -50,7 +68,7 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 
 		const hasPermission = this.roomMembershipRule.hasPermission(user, object.roomMembershipAuthorizable, {
 			action: Action.write,
-			requiredPermissions: [permission],
+			requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
 		});
 		const isCurrentUser = object.member.userId == user.id;
 
@@ -64,5 +82,16 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 		const isSameSchool = object.member.schoolId === user.school.id;
 
 		return canAdministrateSchoolRooms && isSameSchool;
+	}
+
+	private hasAccessToSchool(user: User, schoolId: string): boolean {
+		const primarySchoolId = user.school.id;
+		const secondarySchools = user.secondarySchools ?? [];
+		const secondarySchoolIds = secondarySchools.map(({ school }) => school.id);
+
+		const allSchools = [primarySchoolId, ...secondarySchoolIds];
+		const includesSchool = allSchools.includes(schoolId);
+
+		return includesSchool;
 	}
 }

@@ -70,6 +70,7 @@ export class RoomMembershipService {
 					roomRoleId: role.id,
 					roomRoleName: role.name,
 					schoolId: user.schoolId,
+					schoolRoleNames: user.roles.map((role) => role.name),
 				});
 			})
 			.filter((user) => user !== undefined);

@@ -2,6 +2,7 @@ import { AccountService } from '@modules/account';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { RoleName, RoomRole } from '@modules/role';
 import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { RoomMemberRule } from '@modules/room-membership/authorization/room-member.rule';
 import { RoomMembershipRule } from '@modules/room-membership/authorization/room-membership.rule';
 import { RoomMemberAuthorizable } from '@modules/room-membership/do/room-member-authorizable.do';
 import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
@@ -26,8 +27,6 @@ import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomMemberResponse } from './dto/response/room-member.response';
 import { CantAssignRoomRoleToExternalPersonLoggableException } from './loggables/cant-assign-roomrole-to-external-person.error.loggable';
 import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-roomowners-role.error.loggable';
-import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pass-ownership-to-student.error.loggable';
-import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
 import { RoomBoardService, RoomPermissionService } from './service';
 import { RoomStats } from './type/room-stats.type';
 
@@ -45,7 +44,8 @@ export class RoomUc {
 		private readonly schoolService: SchoolService,
 		private readonly roomBoardService: RoomBoardService,
 		private readonly accountService: AccountService,
-		private readonly roomMembershipRule: RoomMembershipRule
+		private readonly roomMembershipRule: RoomMembershipRule,
+		private readonly roomMemberRule: RoomMemberRule
 	) {}
 
 	public async getRoomStats(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomStats>> {
@@ -195,44 +195,29 @@ export class RoomUc {
 		userIds: Array<EntityId>,
 		roleName: RoomRole
 	): Promise<void> {
-		const roomAuthorizable = await this.roomPermissionService.checkRoomAuthorizationByIds(
-			currentUserId,
-			roomId,
-			Action.write,
-			[Permission.ROOM_CHANGE_ROLES]
-		);
+		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+
+		throwForbiddenIfFalse(this.roomMembershipRule.canChangeRolesOfMembers(user, roomMembershipAuthorizable));
 
 		await this.checkRoomRolesForExternalPersons(userIds, roleName);
-		this.preventChangingOwnersRole(roomAuthorizable, userIds, currentUserId);
+		this.preventChangingOwnersRole(roomMembershipAuthorizable, userIds, currentUserId);
+
 		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, userIds, roleName);
 	}
 
 	public async passOwnership(currentUserId: EntityId, roomId: EntityId, targetUserId: EntityId): Promise<void> {
-		const ownershipContext = await this.getPassOwnershipContext(roomId, currentUserId, targetUserId);
 		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
-
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		const roomMembers = await this.roomMembershipService.getRoomMembers(roomId);
-		const roomMember = roomMembers.find((member) => member.userId === targetUserId);
-		const roomOwner = roomMembers.find((member) => member.roomRoleName === RoleName.ROOMOWNER);
-		if (!roomMember) {
-			throw new CantPassOwnershipToUserNotInRoomLoggableException({
-				roomId,
-				currentUserId,
-				targetUserId,
-			});
-		}
+		const roomMemberAuthorizable = await this.getRoomMemberAuthorizable(roomMembershipAuthorizable, targetUserId);
 
-		const roomMemberAuthorizable = new RoomMemberAuthorizable(roomMembershipAuthorizable, roomMember);
-		this.authorizationService.checkPermission(user, roomMemberAuthorizable, {
-			action: Action.write,
-			requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
-		});
-		this.checkUserIsNotStudent(ownershipContext);
-		await this.checkRoomRolesForExternalPersons([targetUserId], RoleName.ROOMOWNER);
+		throwForbiddenIfFalse(this.roomMemberRule.canPassOwnershipTo(user, roomMemberAuthorizable));
 
-		if (roomOwner) {
-			await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [roomOwner.userId], RoleName.ROOMADMIN);
+		const currenRoomOwner = roomMembershipAuthorizable.members.find((member) =>
+			member.roles.some((role) => role.name === RoleName.ROOMOWNER)
+		);
+		if (currenRoomOwner) {
+			await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [currenRoomOwner.userId], RoleName.ROOMADMIN);
 		}
 		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [targetUserId], RoleName.ROOMOWNER);
 	}
@@ -270,41 +255,6 @@ export class RoomUc {
 		const membersResponse = this.buildRoomMembersResponse(users, roomMembershipAuthorizable);
 
 		return membersResponse;
-	}
-
-	private async getPassOwnershipContext(
-		roomId: EntityId,
-		currentUserId: EntityId,
-		targetUserId: EntityId
-	): Promise<OwnershipContext> {
-		const [roomContext, targetUser] = await Promise.all([
-			this.getRoomContext(roomId, currentUserId),
-			this.userService.findById(targetUserId),
-		]);
-		const context = { ...roomContext, targetUser };
-
-		return context;
-	}
-
-	private async getRoomContext(roomId: EntityId, currentUserId: EntityId): Promise<BaseContext> {
-		const [roomAuthorizable, currentUser] = await Promise.all([
-			this.roomMembershipService.getRoomMembershipAuthorizable(roomId),
-			this.authorizationService.getUserWithPermissions(currentUserId),
-		]);
-
-		const context = { roomAuthorizable, currentUser };
-
-		return context;
-	}
-
-	private checkUserIsNotStudent(context: OwnershipContext): void {
-		if (context.targetUser.roles.find((role) => role.name === RoleName.STUDENT)) {
-			throw new CantPassOwnershipToStudentLoggableException({
-				roomId: context.roomAuthorizable.roomId,
-				currentUserId: context.currentUser.id,
-				targetUserId: context.targetUser.id || 'undefined',
-			});
-		}
 	}
 
 	private checkUserIsExternalPerson(user: UserDo): void {
@@ -432,6 +382,20 @@ export class RoomUc {
 
 		const existingUser = await this.userService.findById(userId);
 		return { ...existingUser, id: userId };
+	}
+
+	private async getRoomMemberAuthorizable(
+		roomMembershipAuthorizable: RoomMembershipAuthorizable,
+		targetUserId: EntityId
+	): Promise<RoomMemberAuthorizable> {
+		const roomMembers = await this.roomMembershipService.getRoomMembers(roomMembershipAuthorizable.roomId);
+		const roomMember = roomMembers.find((member) => member.userId === targetUserId);
+
+		if (!roomMember) {
+			throw new ForbiddenException();
+		}
+		const roomMemberAuthorizable = new RoomMemberAuthorizable(roomMembershipAuthorizable, roomMember);
+		return roomMemberAuthorizable;
 	}
 }
 
