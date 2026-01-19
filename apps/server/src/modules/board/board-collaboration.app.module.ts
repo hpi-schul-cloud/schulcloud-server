@@ -10,6 +10,7 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { AuthorizationModule } from '../authorization';
 import { serverConfig } from '../server';
+import { config } from './board-collaboration.config';
 import { BoardWsApiModule } from './board-ws-api.module';
 import { ENTITIES, TEST_ENTITIES } from './board.entity.imports';
 import { BoardModule } from './board.module';
@@ -32,6 +33,7 @@ const imports = [
 @Module({
 	imports: [
 		...imports,
+		ConfigModule.forRoot(createConfigModuleOptions(config)),
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
@@ -47,7 +49,7 @@ const imports = [
 export class BoardCollaborationModule {}
 
 const testConfig = () => {
-	return { ...serverConfig() };
+	return { ...serverConfig(), ...config() };
 };
 
 @Module({
