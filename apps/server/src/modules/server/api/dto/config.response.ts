@@ -10,6 +10,7 @@ import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
 import type { ServerConfig } from '../..';
 import { Timezone } from '../../types/timezone.enum';
+import { RosterPublicApiConfig } from '@modules/roster';
 
 export class ConfigResponse {
 	@ApiProperty()
@@ -269,7 +270,8 @@ export class ConfigResponse {
 			OauthPublicApiConfig &
 			BoardPublicApiConfig &
 			ProvisioningPublicApiConfig &
-			RegistrationPublicApiConfig
+			RegistrationPublicApiConfig &
+			RosterPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -293,7 +295,7 @@ export class ConfigResponse {
 		this.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED =
 			config.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED;
 		this.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED = config.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED;
-		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED = config.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED;
+		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED = config.featureColumnBoardExternalToolsEnabled;
 		this.FEATURE_COLUMN_BOARD_SHARE = config.FEATURE_COLUMN_BOARD_SHARE;
 		this.FEATURE_COLUMN_BOARD_SOCKET_ENABLED = config.FEATURE_COLUMN_BOARD_SOCKET_ENABLED;
 		this.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = config.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED;

@@ -31,10 +31,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { RosterConfig } from '../roster.config';
 import { FeathersRosterService } from './feathers-roster.service';
 
+import { ServerConfig } from '@modules/server';
 import { Permission } from '@shared/domain/interface';
+import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '../roster.config';
 
 describe('FeathersRosterService', () => {
 	let module: TestingModule;
@@ -49,7 +50,8 @@ describe('FeathersRosterService', () => {
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let roomService: DeepMocked<RoomService>;
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
-	let configService: DeepMocked<ConfigService<RosterConfig, true>>;
+	let configService: DeepMocked<ConfigService<ServerConfig, true>>;
+	let config: RosterPublicApiConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -95,6 +97,10 @@ describe('FeathersRosterService', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
+				{
+					provide: ROSTER_PUBLIC_API_CONFIG_TOKEN,
+					useValue: new RosterPublicApiConfig(),
+				},
 			],
 		}).compile();
 
@@ -109,6 +115,7 @@ describe('FeathersRosterService', () => {
 		roomService = module.get(RoomService);
 		roomMembershipService = module.get(RoomMembershipService);
 		configService = module.get(ConfigService);
+		config = module.get<RosterPublicApiConfig>(ROSTER_PUBLIC_API_CONFIG_TOKEN);
 
 		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
@@ -251,6 +258,8 @@ describe('FeathersRosterService', () => {
 						}),
 					});
 
+				config.featureColumnBoardExternalToolsEnabled = false;
+
 				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
 				userService.findById.mockResolvedValueOnce(user);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
@@ -371,6 +380,9 @@ describe('FeathersRosterService', () => {
 				// Course C
 				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]);
 				configService.get.mockReturnValueOnce(false);
+				columnBoardService.findByExternalReference.mockResolvedValueOnce([]);
+
+				config.featureColumnBoardExternalToolsEnabled = true;
 
 				return {
 					pseudonym,
@@ -444,6 +456,8 @@ describe('FeathersRosterService', () => {
 						}),
 					});
 				externalToolElement.contextExternalToolId = contextExternalTool.id;
+
+				config.featureColumnBoardExternalToolsEnabled = true;
 
 				pseudonymService.findPseudonymByPseudonym.mockResolvedValueOnce(pseudonym);
 				userService.findById.mockResolvedValue(user);
@@ -687,6 +701,8 @@ describe('FeathersRosterService', () => {
 							}),
 						});
 
+					config.featureColumnBoardExternalToolsEnabled = false;
+
 					courseService.findById.mockResolvedValue(courseA);
 					externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
 					schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
@@ -837,6 +853,8 @@ describe('FeathersRosterService', () => {
 						groups: [],
 					});
 
+					config.featureColumnBoardExternalToolsEnabled = false;
+
 					courseService.findById.mockResolvedValue(courseA);
 					externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
 					schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
@@ -944,6 +962,8 @@ describe('FeathersRosterService', () => {
 							}),
 						});
 					otherExternalToolElement.contextExternalToolId = otherContextExternalTool.id;
+
+					config.featureColumnBoardExternalToolsEnabled = true;
 
 					courseService.findById.mockResolvedValue(courseA);
 					externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
@@ -1096,6 +1116,8 @@ describe('FeathersRosterService', () => {
 					const externalTool = externalToolFactory.buildWithId();
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId();
 					const course = courseEntityFactory.buildWithId();
+
+					config.featureColumnBoardExternalToolsEnabled = false;
 
 					courseService.findById.mockResolvedValue(course);
 					externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(externalTool);
@@ -1277,6 +1299,8 @@ describe('FeathersRosterService', () => {
 						.mockResolvedValueOnce(pseudonymStudent)
 						.mockResolvedValueOnce(pseudonymTeacher);
 					pseudonymService.getIframeSubject.mockReturnValue('mockedIframeSubject');
+
+					config.featureColumnBoardExternalToolsEnabled = true;
 
 					return {
 						clientId,
