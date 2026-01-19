@@ -10,12 +10,11 @@ import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
-import { BOARD_CONFIG_TOKEN } from '../board.config';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../board.config';
 import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, BoardRoles, Column, ColumnBoard } from '../domain';
 import {
 	BoardNodeAuthorizableService,
@@ -88,7 +87,7 @@ describe(BoardUc.name, () => {
 				},
 				{
 					provide: BOARD_CONFIG_TOKEN,
-					useValue: new ConfigService(),
+					useValue: new BoardConfig(),
 				},
 			],
 		}).compile();

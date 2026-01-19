@@ -1,4 +1,4 @@
-export { BOARD_CONFIG_TOKEN, BOARD_PUBLIC_API_CONFIG_TOKEN, BoardConfig, BoardPublicApiConfig } from './board.config';
+export { BOARD_PUBLIC_API_CONFIG_TOKEN, BoardPublicApiConfig } from './board.config';
 export { BoardModule } from './board.module';
 export { AnyElementContentBody, LinkContentBody, RichTextContentBody } from './controller/dto';
 export {
