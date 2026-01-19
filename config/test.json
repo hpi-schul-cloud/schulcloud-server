@@ -77,8 +77,5 @@
 	},
 	"ETHERPAD": {
 		"PAD_URI": "http://localhost:9001/p"
-	},
-	"SESSION_VALKEY": {
-		"MODE": "in-memory"
 	}
 }

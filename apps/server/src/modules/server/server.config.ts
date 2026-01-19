@@ -9,7 +9,6 @@ import type { TspClientConfig } from '@infra/tsp-client';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { ManagementSeedDataConfig } from '@modules/management';
-import type { ProvisioningConfig } from '@modules/provisioning';
 import type { RocketChatUserConfig } from '@modules/rocketchat-user';
 import type { RoomConfig } from '@modules/room';
 import type { SchoolConfig } from '@modules/school';
@@ -46,7 +45,6 @@ export interface ServerConfig
 		SharingConfig,
 		UserImportConfig,
 		SchulconnexClientConfig,
-		ProvisioningConfig,
 		RoomConfig,
 		UserImportConfig,
 		TspClientConfig,
@@ -233,15 +231,7 @@ const config: ServerConfig = {
 	SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS'
 	) as number,
-	PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT: Configuration.has('PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT')
-		? (Configuration.get('PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT') as number)
-		: undefined,
-	FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') as boolean,
-	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
-		'FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED'
-	) as boolean,
 	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
-	PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL') as string,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
 	CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: Configuration.get(
 		'CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES'
@@ -256,9 +246,6 @@ const config: ServerConfig = {
 	FEATURE_USER_MIGRATION_SYSTEM_ID: Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string,
 	FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: Configuration.get(
 		'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
-	) as boolean,
-	FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED: Configuration.get(
-		'FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED'
 	) as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
 	FEATURE_ADMINISTRATE_ROOMS_ENABLED: Configuration.get('FEATURE_ADMINISTRATE_ROOMS_ENABLED') as boolean,
@@ -313,9 +300,6 @@ const config: ServerConfig = {
 		Configuration.get('ROOM_MEMBER_INFO_URL') === null
 			? (Configuration.get('ROOM_MEMBER_INFO_URL') as null)
 			: (Configuration.get('ROOM_MEMBER_INFO_URL') as string),
-	SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS: Configuration.get(
-		'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
-	) as number,
 	NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME: Configuration.has('NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME')
 		? (Configuration.get('NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME') as string)
 		: undefined,

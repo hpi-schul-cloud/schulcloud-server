@@ -3,11 +3,10 @@ import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { SchulconnexProvisioningEvents, SchulconnexProvisioningExchange } from '@infra/rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { type Group } from '@modules/group';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { SchulconnexGroupRemovalMessage } from '../domain';
 import { GroupRemovalSuccessfulLoggable } from '../loggable';
-import { ProvisioningConfig } from '../provisioning.config';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../provisioning.config';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
 
 @Injectable()
@@ -16,7 +15,8 @@ export class SchulconnexGroupRemovalConsumer {
 		private readonly logger: Logger,
 		private readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
 		private readonly schulconnexCourseSyncService: SchulconnexCourseSyncService,
-		private readonly configService: ConfigService<ProvisioningConfig, true>,
+		@Inject(PROVISIONING_CONFIG_TOKEN)
+		private readonly config: ProvisioningConfig,
 		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(SchulconnexGroupRemovalConsumer.name);
@@ -37,7 +37,7 @@ export class SchulconnexGroupRemovalConsumer {
 			payload.groupId
 		);
 
-		if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') && removedFromGroup) {
+		if (this.config.featureSchulconnexCourseSyncEnabled && removedFromGroup) {
 			await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(removedFromGroup, removedFromGroup);
 		}
 

@@ -11,8 +11,10 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { GroupController } from './controller';
 import { GroupModule } from './group.module';
-import { ClassGroupUc, GroupUc } from './uc';
 import { DeleteUserGroupDataStep } from './saga/delete-user-group-data.step';
+import { ClassGroupUc, GroupUc } from './uc';
+import { ConfigurationModule } from '@infra/configuration';
+import { GROUP_CONFIG_TOKEN, GroupConfig } from './group.config';
 
 @Module({
 	imports: [
@@ -27,6 +29,7 @@ import { DeleteUserGroupDataStep } from './saga/delete-user-group-data.step';
 		LoggerModule,
 		CourseModule,
 		SagaModule,
+		ConfigurationModule.register(GROUP_CONFIG_TOKEN, GroupConfig),
 	],
 	controllers: [GroupController],
 	providers: [GroupUc, ClassGroupUc, DeleteUserGroupDataStep],
