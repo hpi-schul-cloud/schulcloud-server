@@ -4,7 +4,7 @@ import { StorageClient } from '@infra/valkey-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtWhitelistAdapter } from './jwt-whitelist.adapter';
-import { SESSION_VALKEY_CLIENT } from '../valkey-client-session.config';
+import { SESSION_VALKEY_CLIENT } from '../authentication-config';
 
 describe(JwtWhitelistAdapter.name, () => {
 	let module: TestingModule;
