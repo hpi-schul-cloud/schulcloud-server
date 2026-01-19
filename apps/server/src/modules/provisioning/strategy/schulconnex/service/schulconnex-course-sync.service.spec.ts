@@ -10,10 +10,10 @@ import { courseSynchronizationHistoryFactory } from '@modules/course-synchroniza
 import { courseFactory } from '@modules/course/testing';
 import { Group } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
-import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '@modules/provisioning/provisioning.config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSource } from '@shared/domain/domainobject';
 import { CourseSyncHistoryGroupExternalSourceMissingLoggableException } from '../../../loggable';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../../provisioning.config';
 import { SchulconnexCourseSyncService } from './schulconnex-course-sync.service';
 
 describe(SchulconnexCourseSyncService.name, () => {
