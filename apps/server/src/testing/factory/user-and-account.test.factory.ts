@@ -19,6 +19,7 @@ interface UserParams {
 	externalId?: string;
 	language?: LanguageType;
 	secondarySchools?: UserSchoolEmbeddable[];
+	discoverable?: boolean;
 }
 
 interface AccountParams {
@@ -30,7 +31,16 @@ export interface UserAndAccountParams extends UserParams, AccountParams {}
 
 export class UserAndAccountTestFactory {
 	private static getUserParams(params: UserAndAccountParams): UserParams {
-		const userParams = _.pick(params, 'firstName', 'lastName', 'email', 'school', 'externalId', 'secondarySchools');
+		const userParams = _.pick(
+			params,
+			'firstName',
+			'lastName',
+			'email',
+			'school',
+			'externalId',
+			'secondarySchools',
+			'discoverable'
+		);
 		return userParams;
 	}
 
@@ -110,6 +120,16 @@ export class UserAndAccountTestFactory {
 	): { account: AccountEntity; user: User } {
 		const user = UserAndAccountTestFactory.buildUser(roleName, params, additionalPermissions);
 		const account = UserAndAccountTestFactory.buildAccount(user, params);
+		return { account, user };
+	}
+
+	public static buildTeacherAndAdmin(params: UserAndAccountParams = {}): {
+		account: AccountEntity;
+		user: User;
+	} {
+		const user = userFactory.asTeacherAndAdmin().buildWithId(UserAndAccountTestFactory.getUserParams(params));
+		const account = UserAndAccountTestFactory.buildAccount(user, params);
+
 		return { account, user };
 	}
 

@@ -78,6 +78,25 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 		return false;
 	}
 
+	public canAddMembers(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { schoolPermissions, roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+		const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
+		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ADD_MEMBERS);
+
+		const isRoomOfAdminSchool = roomMembershipAuthorizable.schoolId === user.school.id;
+
+		const result = hasRoomPermission || (hasSchoolPermission && isRoomOfAdminSchool);
+
+		return result;
+	}
+
+	public canAddExternalPersonByEmail(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ADD_MEMBERS);
+
+		return hasRoomPermission;
+	}
+
 	public canUpdateRoom(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
 		const { roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
 
@@ -105,6 +124,13 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 		const result = hasSchoolPermission && hasRoomPermission;
 
 		return result;
+	}
+
+	public canGetRoomMembersRedacted(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { schoolPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+		const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
+
+		return hasSchoolPermission;
 	}
 
 	private hasAccessToSchool(user: User, schoolId: string): boolean {
