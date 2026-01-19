@@ -1,11 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
-import type { ProvisioningConfig } from '@modules/provisioning';
 import { RoleName, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
@@ -20,6 +18,7 @@ import {
 	GroupUser,
 	GroupVisibilityPermission,
 } from '../domain';
+import { GROUP_CONFIG_TOKEN, GroupConfig } from '../group.config';
 import { GroupRepo } from '../repo';
 
 @Injectable()
@@ -29,7 +28,8 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
 		private readonly eventBus: EventBus,
-		private readonly configService: ConfigService<ProvisioningConfig, true>
+		@Inject(GROUP_CONFIG_TOKEN)
+		private readonly config: GroupConfig
 	) {}
 
 	public async findById(id: EntityId): Promise<Group> {
@@ -82,9 +82,7 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		// TODO this should be moved to repo
 		const scope = new GroupAggregateScope(options)
 			.byName(nameQuery)
-			.byAvailableForSync(
-				availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')
-			);
+			.byAvailableForSync(availableGroupsForCourseSync && this.config.featureSchulconnexCourseSyncEnabled);
 
 		if (permission === GroupVisibilityPermission.ALL_SCHOOL_GROUPS) {
 			scope.byOrganization(user.school.id);
