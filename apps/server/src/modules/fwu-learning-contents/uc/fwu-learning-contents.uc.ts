@@ -31,14 +31,12 @@ export class FwuLearningContentsUc {
 				const $ = cheerio.load(indexFileContent);
 
 				const title = $('.pname').text().trim();
-				const description = $('.ptext').text().trim();
 				const thumbnailUrl = this.extractThumbnailUrl($);
 				fwuList.push({
 					id: fileId,
 					title,
 					target_url: `/api/v3/fwu/${fileId}/index.html`,
 					thumbnail_url: `/api/v3/fwu/${fileId}/${thumbnailUrl}`,
-					description,
 				});
 			} catch (error) {
 				this.logger.error(`Failed to process file for id ${fileId}`, error);
