@@ -2,13 +2,12 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import type { EntityId } from '@shared/domain/types';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import { MediaBoard, MediaBoardNodeFactory, MediaExternalToolElement, MediaLine } from '../../domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
-import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
 
 @Injectable()
@@ -17,7 +16,7 @@ export class MediaElementUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodePermissionService: BoardNodePermissionService,
-		private readonly configService: ConfigService<MediaBoardConfig, true>,
+		@Inject(BOARD_CONFIG_TOKEN) private readonly config: BoardConfig,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly mediaBoardNodeFactory: MediaBoardNodeFactory,
 		private readonly schoolExternalToolService: SchoolExternalToolService
@@ -83,8 +82,8 @@ export class MediaElementUc {
 		await this.boardNodeService.delete(element);
 	}
 
-	private checkFeatureEnabled() {
-		if (!this.configService.get('FEATURE_MEDIA_SHELF_ENABLED')) {
+	private checkFeatureEnabled(): void {
+		if (!this.config.featureMediaShelfEnabled) {
 			throw new FeatureDisabledLoggableException('FEATURE_MEDIA_SHELF_ENABLED');
 		}
 	}

@@ -12,6 +12,7 @@ import { AlertModule } from '@modules/alert/alert.module';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { AuthorizationReferenceApiModule } from '@modules/authorization-reference/authorization-reference.api.module';
 import { AuthorizationRulesModule } from '@modules/authorization-rules';
+import { BOARD_PUBLIC_API_CONFIG_TOKEN, BoardPublicApiConfig } from '@modules/board';
 import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@modules/board-context';
 import { BoardApiModule } from '@modules/board/board-api.module';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
@@ -77,6 +78,7 @@ const serverModules = [
 	ConfigurationModule.register(BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig),
 	ConfigurationModule.register(ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig),
 	ConfigurationModule.register(OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig),
+	ConfigurationModule.register(BOARD_PUBLIC_API_CONFIG_TOKEN, BoardPublicApiConfig),
 	ConfigurationModule.register(PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig),
 	ConfigurationModule.register(REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig),
 	ServerRuntimeConfigModule,

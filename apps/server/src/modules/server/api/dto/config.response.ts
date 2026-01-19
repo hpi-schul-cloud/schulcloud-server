@@ -1,4 +1,5 @@
 import { AlertPublicApiConfig } from '@modules/alert';
+import { BoardPublicApiConfig } from '@modules/board';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
@@ -266,6 +267,7 @@ export class ConfigResponse {
 			BoardContextPublicApiConfig &
 			AlertPublicApiConfig &
 			OauthPublicApiConfig &
+			BoardPublicApiConfig &
 			ProvisioningPublicApiConfig &
 			RegistrationPublicApiConfig
 	) {
@@ -331,13 +333,13 @@ export class ConfigResponse {
 		this.MIGRATION_WIZARD_DOCUMENTATION_LINK = config.MIGRATION_WIZARD_DOCUMENTATION_LINK;
 		this.FEATURE_TLDRAW_ENABLED = config.FEATURE_TLDRAW_ENABLED;
 		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.FEATURE_VIDEOCONFERENCE_ENABLED;
+		this.FEATURE_MEDIA_SHELF_ENABLED = config.featureMediaShelfEnabled;
 		this.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = config.featureSchulconnexCourseSyncEnabled;
-		this.FEATURE_MEDIA_SHELF_ENABLED = config.FEATURE_MEDIA_SHELF_ENABLED;
 		this.BOARD_COLLABORATION_URI = config.BOARD_COLLABORATION_URI;
 		this.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = config.featureSchulconnexMediaLicenseEnabled;
 		this.FEATURE_AI_TUTOR_ENABLED = config.FEATURE_AI_TUTOR_ENABLED;
 		this.FEATURE_ADMINISTRATE_ROOMS_ENABLED = config.FEATURE_ADMINISTRATE_ROOMS_ENABLED;
-		this.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = config.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE;
+		this.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = config.featureBoardReadersCanEditToggle;
 		this.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = config.featureExternalPersonRegistrationEnabled;
 		this.FEATURE_ROOM_COPY_ENABLED = config.FEATURE_ROOM_COPY_ENABLED;
 		this.FEATURE_ROOM_SHARE = config.FEATURE_ROOM_SHARE;
