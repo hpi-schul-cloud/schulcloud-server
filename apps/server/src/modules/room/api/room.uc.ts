@@ -30,9 +30,6 @@ import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-r
 import { RoomBoardService, RoomPermissionService } from './service';
 import { RoomStats } from './type/room-stats.type';
 
-type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
-type OwnershipContext = BaseContext & { targetUser: UserDo };
-
 @Injectable()
 export class RoomUc {
 	constructor(
