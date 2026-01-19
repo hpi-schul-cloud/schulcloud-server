@@ -36,8 +36,12 @@ import { OauthProviderApiModule } from '@modules/oauth-provider/oauth-provider-a
 import { OAuthApiModule } from '@modules/oauth/oauth-api.module';
 import { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
-import { RegistrationModule } from '@modules/registration';
-import { RegistrationApiModule } from '@modules/registration/registration-api.module';
+import {
+	REGISTRATION_PUBLIC_API_CONFIG_TOKEN,
+	RegistrationApiModule,
+	RegistrationModule,
+	RegistrationPublicApiConfig,
+} from '@modules/registration';
 import { RocketChatModule } from '@modules/rocketchat';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { RosterModule } from '@modules/roster/roster.module';
@@ -77,6 +81,7 @@ const serverModules = [
 	ConfigurationModule.register(OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig),
 	ConfigurationModule.register(BOARD_PUBLIC_API_CONFIG_TOKEN, BoardPublicApiConfig),
 	ConfigurationModule.register(PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig),
+	ConfigurationModule.register(REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,
 	CoreModule,

@@ -3,6 +3,7 @@ import { BoardPublicApiConfig } from '@modules/board';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
+import { RegistrationPublicApiConfig } from '@modules/registration';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
@@ -267,7 +268,8 @@ export class ConfigResponse {
 			AlertPublicApiConfig &
 			OauthPublicApiConfig &
 			BoardPublicApiConfig &
-			ProvisioningPublicApiConfig
+			ProvisioningPublicApiConfig &
+			RegistrationPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -338,7 +340,7 @@ export class ConfigResponse {
 		this.FEATURE_AI_TUTOR_ENABLED = config.FEATURE_AI_TUTOR_ENABLED;
 		this.FEATURE_ADMINISTRATE_ROOMS_ENABLED = config.FEATURE_ADMINISTRATE_ROOMS_ENABLED;
 		this.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = config.featureBoardReadersCanEditToggle;
-		this.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED;
+		this.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = config.featureExternalPersonRegistrationEnabled;
 		this.FEATURE_ROOM_COPY_ENABLED = config.FEATURE_ROOM_COPY_ENABLED;
 		this.FEATURE_ROOM_SHARE = config.FEATURE_ROOM_SHARE;
 		this.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED;

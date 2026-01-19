@@ -3,6 +3,7 @@ import { BoardPublicApiConfig } from '@modules/board';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
+import { RegistrationPublicApiConfig } from '@modules/registration';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ServerConfig } from '../../server.config';
 import { ConfigResponse } from '../dto';
@@ -15,7 +16,8 @@ export class ConfigResponseMapper {
 		alertConfig: AlertPublicApiConfig,
 		oauthConfig: OauthPublicApiConfig,
 		boardConfig: BoardPublicApiConfig,
-		provisioningConfig: ProvisioningPublicApiConfig
+		provisioningConfig: ProvisioningPublicApiConfig,
+		registrationConfig: RegistrationPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,
@@ -25,6 +27,7 @@ export class ConfigResponseMapper {
 			...oauthConfig,
 			...boardConfig,
 			...provisioningConfig,
+			...registrationConfig,
 		});
 
 		return configResponse;

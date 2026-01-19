@@ -3,6 +3,7 @@ import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ConsoleWriterModule } from '@infra/console';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { TSP_CLIENT_CONFIG_TOKEN, TspClientConfig } from '@infra/tsp-client';
 import { TspClientModule } from '@infra/tsp-client/tsp-client.module';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolModule } from '@modules/legacy-school';
@@ -27,7 +28,16 @@ import { SyncUc } from './uc/sync.uc';
 		ConsoleWriterModule,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [
-					TspClientModule.register(SyncEncryptionConfig, SYNC_ENCRYPTION_CONFIG_TOKEN),
+					TspClientModule.register({
+						encryptionConfig: {
+							configConstructor: SyncEncryptionConfig,
+							configInjectionToken: SYNC_ENCRYPTION_CONFIG_TOKEN,
+						},
+						tspClientConfig: {
+							configConstructor: TspClientConfig,
+							configInjectionToken: TSP_CLIENT_CONFIG_TOKEN,
+						},
+					}),
 					SystemModule,
 					SchoolModule,
 					LegacySchoolModule,

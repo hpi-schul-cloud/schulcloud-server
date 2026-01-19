@@ -5,7 +5,6 @@ import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { TspSyncConfig } from '@infra/sync';
-import type { TspClientConfig } from '@infra/tsp-client';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { ManagementSeedDataConfig } from '@modules/management';
@@ -47,7 +46,6 @@ export interface ServerConfig
 		SchulconnexClientConfig,
 		RoomConfig,
 		UserImportConfig,
-		TspClientConfig,
 		TspSyncConfig,
 		ToolConfig,
 		ShdConfig,
@@ -100,7 +98,6 @@ export interface ServerConfig
 	BOARD_COLLABORATION_URI: string;
 	FEATURE_AI_TUTOR_ENABLED: boolean;
 	FEATURE_ADMINISTRATE_ROOMS_ENABLED: boolean;
-	FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED: boolean;
 	FEATURE_ROOM_COPY_ENABLED: boolean;
 	FEATURE_ROOM_SHARE: boolean;
 	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: boolean;
@@ -249,9 +246,6 @@ const config: ServerConfig = {
 	) as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
 	FEATURE_ADMINISTRATE_ROOMS_ENABLED: Configuration.get('FEATURE_ADMINISTRATE_ROOMS_ENABLED') as boolean,
-	FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED: Configuration.get(
-		'FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED'
-	) as boolean,
 	FEATURE_ROOM_COPY_ENABLED: Configuration.get('FEATURE_ROOM_COPY_ENABLED') as boolean,
 	FEATURE_ROOM_SHARE: Configuration.get('FEATURE_ROOM_SHARE') as boolean,
 	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: Configuration.get('FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED') as boolean,
@@ -261,8 +255,6 @@ const config: ServerConfig = {
 	FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED: Configuration.get(
 		'FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED'
 	) as boolean,
-	TSP_API_CLIENT_BASE_URL: Configuration.get('TSP_API_CLIENT_BASE_URL') as string,
-	TSP_API_CLIENT_TOKEN_LIFETIME_MS: Configuration.get('TSP_API_CLIENT_TOKEN_LIFETIME_MS') as number,
 	TSP_SYNC_SCHOOL_LIMIT: Configuration.get('TSP_SYNC_SCHOOL_LIMIT') as number,
 	TSP_SYNC_SCHOOL_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_SCHOOL_DAYS_TO_FETCH') as number,
 	TSP_SYNC_DATA_LIMIT: Configuration.get('TSP_SYNC_DATA_LIMIT') as number,
