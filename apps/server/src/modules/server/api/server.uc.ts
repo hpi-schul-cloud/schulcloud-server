@@ -5,6 +5,7 @@ import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig } from '@modules/oa
 import { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } from '@modules/registration';
 import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room';
+import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '@modules/roster';
 import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { Inject, Injectable } from '@nestjs/common';
 import { SERVER_CONFIG_TOKEN, ServerConfig } from '../server.config';
@@ -22,6 +23,7 @@ export class ServerUc {
 		@Inject(BOARD_PUBLIC_API_CONFIG_TOKEN) private readonly boardConfig: BoardPublicApiConfig,
 		@Inject(PROVISIONING_PUBLIC_API_CONFIG) private readonly provisioningConfig: ProvisioningPublicApiConfig,
 		@Inject(REGISTRATION_PUBLIC_API_CONFIG_TOKEN) private readonly registrationConfig: RegistrationPublicApiConfig,
+		@Inject(ROSTER_PUBLIC_API_CONFIG_TOKEN) private readonly rosterConfig: RosterPublicApiConfig,
 		@Inject(ROOM_PUBLIC_API_CONFIG_TOKEN) private readonly roomConfig: RoomPublicApiConfig
 	) {}
 
@@ -35,6 +37,7 @@ export class ServerUc {
 			this.boardConfig,
 			this.provisioningConfig,
 			this.registrationConfig,
+			this.rosterConfig,
 			this.roomConfig
 		);
 

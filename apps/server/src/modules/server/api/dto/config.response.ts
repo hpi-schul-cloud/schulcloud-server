@@ -5,6 +5,7 @@ import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { RegistrationPublicApiConfig } from '@modules/registration';
 import { RoomPublicApiConfig } from '@modules/room/room.config';
+import { RosterPublicApiConfig } from '@modules/roster';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
@@ -271,6 +272,7 @@ export class ConfigResponse {
 			BoardPublicApiConfig &
 			ProvisioningPublicApiConfig &
 			RegistrationPublicApiConfig &
+			RosterPublicApiConfig &
 			RoomPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
@@ -295,7 +297,7 @@ export class ConfigResponse {
 		this.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED =
 			config.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED;
 		this.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED = config.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED;
-		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED = config.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED;
+		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED = config.featureColumnBoardExternalToolsEnabled;
 		this.FEATURE_COLUMN_BOARD_SHARE = config.FEATURE_COLUMN_BOARD_SHARE;
 		this.FEATURE_COLUMN_BOARD_SOCKET_ENABLED = config.FEATURE_COLUMN_BOARD_SOCKET_ENABLED;
 		this.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = config.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED;
