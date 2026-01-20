@@ -1,28 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { BoardColumnApi, CardResponse, Configuration, CreateCardBodyParams, RenameBodyParams } from './generated';
-import { ConfigService } from '@nestjs/config';
-import { ColumnClientConfig } from './column-client.config';
+import { BoardColumnApi, CardResponse, CreateCardBodyParams, RenameBodyParams } from './generated';
+import { RawAxiosRequestConfig } from 'axios';
 
 @Injectable()
 export class ColumnClientAdapter {
-	constructor(private readonly configService: ConfigService<ColumnClientConfig, true>) {}
+	constructor(private readonly columnApi: BoardColumnApi) {}
 
 	public async updateBoardColumnTitle(jwt: string, columnId: string, params: RenameBodyParams): Promise<void> {
-		await this.columnApi(jwt).columnControllerUpdateColumnTitle(columnId, params);
+		await this.columnApi.columnControllerUpdateColumnTitle(columnId, params, this.getAxiosConfig(jwt));
 	}
 
 	public async createCard(jwt: string, columnId: string, cardParams: CreateCardBodyParams): Promise<CardResponse> {
-		const { data: cardResponse } = await this.columnApi(jwt).columnControllerCreateCard(columnId, cardParams);
+		const { data: cardResponse } = await this.columnApi.columnControllerCreateCard(
+			columnId,
+			cardParams,
+			this.getAxiosConfig(jwt)
+		);
 		return cardResponse;
 	}
 
-	private columnApi(jwt: string): BoardColumnApi {
-		const basePath = this.configService.getOrThrow<string>('API_HOST');
-		const configuration = new Configuration({
-			basePath: `${basePath}/v3`,
-			accessToken: jwt,
-		});
-
-		return new BoardColumnApi(configuration);
+	private getAxiosConfig(jwt: string): RawAxiosRequestConfig {
+		return {
+			headers: {
+				Authorization: `Bearer ${jwt}`,
+			},
+		};
 	}
 }
