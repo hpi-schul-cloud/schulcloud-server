@@ -1,6 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
-// import { GroupEntity } from '@modules/group/repo';
 import { GroupEntity } from '@modules/group/entity/group.entity';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
@@ -146,6 +145,23 @@ describe('Room Controller (API)', () => {
 					const response = await testApiClient.patch(`/${room.id}/members/add`);
 
 					expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+				});
+			});
+
+			describe('when trying to add invalid user ids', () => {
+				it('should return 404 error', async () => {
+					const { room, school, userGroup, roomRoles } = await setupRoomWithMembers();
+					const { loggedInClient, teacherUser } = await loginAsTeacher(school);
+					userGroup.users.push({ role: roomRoles.roomAdminRole, user: teacherUser });
+					await em.persist(userGroup).flush();
+
+					const imaginaryUserId = '507f1f77bcf86cd799439011';
+
+					const response = await loggedInClient.patch(`/${room.id}/members/add`, {
+						userIds: [imaginaryUserId],
+					});
+
+					expect(response.status).toBe(HttpStatus.NOT_FOUND);
 				});
 			});
 
