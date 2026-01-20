@@ -72,7 +72,9 @@
 	"FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED": true,
 	"SCHULCONNEX_CLIENT": {
 		"API_URL": "http://localhost:8888/v1/",
-		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token"
+		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token",
+		"CLIENT_ID": "schulcloud",
+		"CLIENT_SECRET": "secret"
 	},
 	"ETHERPAD": {
 		"PAD_URI": "http://localhost:9001/p",
