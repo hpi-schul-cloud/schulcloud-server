@@ -9,7 +9,6 @@ import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@mod
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { ManagementSeedDataConfig } from '@modules/management';
 import type { RocketChatUserConfig } from '@modules/rocketchat-user';
-import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import type { ShdConfig } from '@modules/shd';
 import type { ToolConfig } from '@modules/tool';
@@ -34,7 +33,6 @@ export interface ServerConfig
 		UserConfig,
 		FilesMetadataClientConfig,
 		IdentityManagementConfig,
-		SchoolConfig,
 		MailConfig,
 		RocketChatUserConfig,
 		LearnroomConfig,
@@ -101,6 +99,7 @@ export interface ServerConfig
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
 	ROOM_MEMBER_INFO_URL: string | null;
+	STUDENT_TEAM_CREATION: string;
 }
 
 const config: ServerConfig = {
