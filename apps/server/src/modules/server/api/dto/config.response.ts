@@ -4,6 +4,7 @@ import { BoardContextPublicApiConfig } from '@modules/board-context';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { RegistrationPublicApiConfig } from '@modules/registration';
+import { RoomPublicApiConfig } from '@modules/room/room.config';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
@@ -269,7 +270,8 @@ export class ConfigResponse {
 			OauthPublicApiConfig &
 			BoardPublicApiConfig &
 			ProvisioningPublicApiConfig &
-			RegistrationPublicApiConfig
+			RegistrationPublicApiConfig &
+			RoomPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -338,15 +340,14 @@ export class ConfigResponse {
 		this.BOARD_COLLABORATION_URI = config.BOARD_COLLABORATION_URI;
 		this.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = config.featureSchulconnexMediaLicenseEnabled;
 		this.FEATURE_AI_TUTOR_ENABLED = config.FEATURE_AI_TUTOR_ENABLED;
-		this.FEATURE_ADMINISTRATE_ROOMS_ENABLED = config.FEATURE_ADMINISTRATE_ROOMS_ENABLED;
+		this.FEATURE_ADMINISTRATE_ROOMS_ENABLED = config.featureAdministrateRoomsEnabled;
 		this.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = config.featureBoardReadersCanEditToggle;
 		this.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = config.featureExternalPersonRegistrationEnabled;
-		this.FEATURE_ROOM_COPY_ENABLED = config.FEATURE_ROOM_COPY_ENABLED;
+		this.FEATURE_ROOM_COPY_ENABLED = config.featureRoomCopyEnabled;
 		this.FEATURE_ROOM_SHARE = config.FEATURE_ROOM_SHARE;
 		this.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED;
 		this.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED;
-		this.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED =
-			config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED;
+		this.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = config.featureRoomLinkInvitationExternalPersonsEnabled;
 		this.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = config.featureExternalSystemLogoutEnabled;
 		this.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED = config.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED;
 		this.LICENSE_SUMMARY_URL = config.LICENSE_SUMMARY_URL;

@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MediaBoardConfig } from '@modules/board/media-board.config';
 import { MediaSchoolLicense } from '@modules/school-license';
 import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
 import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
@@ -33,7 +32,7 @@ describe(ToolConfigurationStatusService.name, () => {
 	let mediaSchoolLicenseService: DeepMocked<MediaSchoolLicenseService>;
 	let userService: DeepMocked<UserService>;
 
-	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
+	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -53,7 +52,7 @@ describe(ToolConfigurationStatusService.name, () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					useValue: createMock<ConfigService<ToolConfig, true>>(),
 				},
 				{
 					provide: UserService,
