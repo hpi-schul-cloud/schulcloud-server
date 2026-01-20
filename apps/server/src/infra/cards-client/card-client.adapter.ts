@@ -33,7 +33,7 @@ export class CardClientAdapter {
 		elementId: string,
 		updateElementContentBodyParams: UpdateElementContentBodyParams
 	): Promise<ElementControllerUpdateElement200Response> {
-		const anyElementResponse = await this.elementAPI(jwt).elementControllerUpdateElement(
+		const anyElementResponse = await this.elementApi(jwt).elementControllerUpdateElement(
 			elementId,
 			updateElementContentBodyParams
 		);
@@ -51,7 +51,7 @@ export class CardClientAdapter {
 		return new BoardCardApi(configuration);
 	}
 
-	private elementAPI(jwt: string): BoardElementApi {
+	private elementApi(jwt: string): BoardElementApi {
 		const basePath = this.configService.getOrThrow<string>('API_HOST');
 		const configuration = new Configuration({
 			basePath: `${basePath}/v3`,

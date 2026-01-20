@@ -6,11 +6,9 @@ import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter, FilesStorageClientConfig } from '@infra/files-storage-client';
 import { ImportCourseParams } from '@infra/rabbitmq';
-import { ENTITIES } from '@modules/server/server.entity.imports';
 import { HttpService } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@testing/database';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { from } from 'rxjs';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
@@ -79,9 +77,6 @@ describe(CommonCartridgeImportConsumer.name, () => {
 							};
 						},
 					],
-				}),
-				MongoMemoryDatabaseModule.forRoot({
-					entities: ENTITIES,
 				}),
 			],
 		}).compile();

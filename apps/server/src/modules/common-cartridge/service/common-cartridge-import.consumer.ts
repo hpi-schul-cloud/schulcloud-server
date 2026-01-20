@@ -6,7 +6,6 @@ import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter, FilesStorageClientConfig } from '@infra/files-storage-client';
 import { CommonCartridgeEvents, CommonCartridgeExchange, ImportCourseParams } from '@infra/rabbitmq';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -36,7 +35,6 @@ interface ColumnResource {
 @Injectable()
 export class CommonCartridgeImportConsumer {
 	constructor(
-		private readonly orm: MikroORM,
 		private readonly configService: ConfigService<FilesStorageClientConfig, true>,
 		private readonly httpService: HttpService,
 		private readonly coursesClient: CoursesClientAdapter,
@@ -52,7 +50,6 @@ export class CommonCartridgeImportConsumer {
 		routingKey: CommonCartridgeEvents.IMPORT_COURSE,
 		queue: CommonCartridgeEvents.IMPORT_COURSE,
 	})
-	@UseRequestContext()
 	public async importFile(@RabbitPayload() payload: ImportCourseParams): Promise<void> {
 		const file = await this.fetchFile(payload);
 
