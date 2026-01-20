@@ -5,15 +5,6 @@ import { lastValueFrom } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ROCKET_CHAT_CONFIG_TOKEN, RocketChatConfig } from './rocket-chat.config';
 
-export interface RocketChatOptions {
-	uri?: string;
-	adminUser?: string;
-	adminPassword?: string;
-	adminId?: string;
-	adminToken?: string;
-	rocketchatClientTimeoutInMs?: number;
-}
-
 export interface RocketChatGroupModel {
 	group: {
 		_id: string;

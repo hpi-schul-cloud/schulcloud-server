@@ -1,5 +1,6 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { IsString } from 'class-validator';
+import { StringToNumber } from '@shared/controller/transformer';
+import { IsNumber, IsString } from 'class-validator';
 
 export const ROCKET_CHAT_CONFIG_TOKEN = 'ROCKET_CHAT_CONFIG_TOKEN';
 
@@ -24,4 +25,9 @@ export class RocketChatConfig {
 	@ConfigProperty('ROCKET_CHAT_ADMIN_PASSWORD')
 	@IsString()
 	public adminPassword!: string;
+
+	@ConfigProperty('ROCKET_CHAT_CLIENT_TIMEOUT_MS')
+	@IsNumber()
+	@StringToNumber()
+	public clientTimeoutInMs!: number;
 }
