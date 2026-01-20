@@ -15,8 +15,8 @@ import {
 	Injectable,
 	InternalServerErrorException,
 	NotFoundException,
-	UnauthorizedException,
 } from '@nestjs/common';
+import { throwForbiddenIfFalse, throwUnauthorizedIfFalse } from '@shared/common/utils';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -409,14 +409,3 @@ export class RoomUc {
 }
 
 // TODO: extract to shared utility
-const throwForbiddenIfFalse = (condition: boolean): void => {
-	if (!condition) {
-		throw new ForbiddenException();
-	}
-};
-
-const throwUnauthorizedIfFalse = (condition: boolean): void => {
-	if (!condition) {
-		throw new UnauthorizedException();
-	}
-};

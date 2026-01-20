@@ -339,7 +339,7 @@ describe('POST /rooms/:roomId/copy', () => {
 			return { loggedInClient, room, school, otherSchool };
 		};
 
-		it("should copy the room in the user's school", async () => {
+		it("should copy the room into the user's school", async () => {
 			const { loggedInClient, room, otherSchool } = await setup();
 
 			const response = await loggedInClient.post(`${room.id}/copy`);
