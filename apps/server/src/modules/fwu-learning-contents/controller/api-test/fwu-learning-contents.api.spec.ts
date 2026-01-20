@@ -9,6 +9,7 @@ import { Readable } from 'stream';
 import { FwuLearningContentsTestModule } from '../../fwu-learning-contents-test.module';
 import { FWU_CONTENT_S3_CONNECTION } from '../../fwu-learning-contents.config';
 import { fwuIndex } from '../../interface/fwuIndex.type';
+import { FwuListResponse } from '../dto/fwu-list.response';
 
 jest.mock('../../fwu.filesIndex', () => {
 	return {
@@ -200,8 +201,8 @@ describe('FwuLearningContents Controller (api)', () => {
 					const expected: fwuIndex = {
 						id: '5521408',
 						title: 'Test Title',
-						target_url: '/api/v3/fwu/5521408/index.html',
-						thumbnail_url: '/api/v3/fwu/5521408/thumbnail.jpg',
+						targetUrl: '/api/v3/fwu/5521408/index.html',
+						thumbnailUrl: '/api/v3/fwu/5521408/thumbnail.jpg',
 						description: 'Test Description',
 					};
 
@@ -220,8 +221,8 @@ describe('FwuLearningContents Controller (api)', () => {
 					const { loggedInClient, expected } = setup();
 
 					const response = await loggedInClient.get();
-					const responseBody = response.body as fwuIndex[];
-					expect(responseBody[0]).toEqual(expected);
+					const responseBody = response.body as FwuListResponse;
+					expect(responseBody.data[0]).toEqual(expected);
 				});
 			});
 		});

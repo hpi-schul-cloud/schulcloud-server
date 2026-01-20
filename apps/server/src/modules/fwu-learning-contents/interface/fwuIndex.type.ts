@@ -1,7 +1,7 @@
-export type fwuIndex = {
+export interface fwuIndex {
 	id: string;
 	title: string;
-	target_url: string;
-	thumbnail_url: string;
+	targetUrl: string;
+	thumbnailUrl: string;
 	description?: string;
-};
+}

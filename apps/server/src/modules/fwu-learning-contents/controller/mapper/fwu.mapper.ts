@@ -1,0 +1,20 @@
+import { fwuIndex } from '../../interface/fwuIndex.type';
+import { FwuItemResponse } from '../dto/fwu-item.response';
+import { FwuListResponse } from '../dto/fwu-list.response';
+
+export class FwuMapper {
+	public static mapToFwuItemResponse(item: fwuIndex): FwuItemResponse {
+		return new FwuItemResponse({
+			id: item.id,
+			title: item.title,
+			targetUrl: item.targetUrl,
+			thumbnailUrl: item.thumbnailUrl,
+			description: item.description,
+		});
+	}
+
+	public static mapToFwuListResponse(items: fwuIndex[]): FwuListResponse {
+		const data = items.map((item) => this.mapToFwuItemResponse(item));
+		return new FwuListResponse(data);
+	}
+}

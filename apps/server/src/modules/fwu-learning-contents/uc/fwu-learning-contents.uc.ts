@@ -1,10 +1,10 @@
-import * as cheerio from 'cheerio';
-import { Inject, Injectable } from '@nestjs/common';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { LegacyLogger } from '@core/logger';
+import { S3ClientAdapter } from '@infra/s3-client';
+import { Inject, Injectable } from '@nestjs/common';
+import * as cheerio from 'cheerio';
+import { Readable } from 'stream';
 import { FWU_CONTENT_S3_CONNECTION } from '../fwu-learning-contents.config';
 import { fwuIndex } from '../interface/fwuIndex.type';
-import { Readable } from 'stream';
 
 @Injectable()
 export class FwuLearningContentsUc {
@@ -36,8 +36,8 @@ export class FwuLearningContentsUc {
 				fwuList.push({
 					id: fileId,
 					title,
-					target_url: `/api/v3/fwu/${fileId}/index.html`,
-					thumbnail_url: `/api/v3/fwu/${fileId}/${thumbnailUrl}`,
+					targetUrl: `/api/v3/fwu/${fileId}/index.html`,
+					thumbnailUrl: `/api/v3/fwu/${fileId}/${thumbnailUrl}`,
 					description,
 				});
 			} catch (error) {
