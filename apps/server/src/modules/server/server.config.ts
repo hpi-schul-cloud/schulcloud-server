@@ -7,7 +7,6 @@ import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { ManagementSeedDataConfig } from '@modules/management';
-import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import type { ShdConfig } from '@modules/shd';
 import type { ToolConfig } from '@modules/tool';
@@ -32,7 +31,6 @@ export interface ServerConfig
 		UserConfig,
 		FilesMetadataClientConfig,
 		IdentityManagementConfig,
-		SchoolConfig,
 		MailConfig,
 		LearnroomConfig,
 		ToolConfig,
@@ -95,6 +93,7 @@ export interface ServerConfig
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
 	ROOM_MEMBER_INFO_URL: string | null;
+	STUDENT_TEAM_CREATION: string;
 	ROCKET_CHAT_URI: string;
 	ROCKET_CHAT_ADMIN_ID: string;
 	ROCKET_CHAT_ADMIN_TOKEN: string;
