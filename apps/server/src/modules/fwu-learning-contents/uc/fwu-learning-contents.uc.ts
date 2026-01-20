@@ -4,7 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import * as cheerio from 'cheerio';
 import { Readable } from 'stream';
 import { FWU_CONTENT_S3_CONNECTION } from '../fwu-learning-contents.config';
-import { fwuIndex } from '../interface/fwuIndex.type';
+import { FwuItem } from '../interface/fwu-item';
 
 @Injectable()
 export class FwuLearningContentsUc {
@@ -20,8 +20,8 @@ export class FwuLearningContentsUc {
 		return response;
 	}
 
-	public async getList(filesIndex: string[]): Promise<fwuIndex[]> {
-		const fwuList: fwuIndex[] = [];
+	public async getList(filesIndex: string[]): Promise<FwuItem[]> {
+		const fwuList: FwuItem[] = [];
 		for (const fileId of filesIndex) {
 			try {
 				const response = await this.storageClient.get(`${fileId}/index.html`);

@@ -1,4 +1,4 @@
-export interface fwuIndex {
+export interface FwuItem {
 	id: string;
 	title: string;
 	targetUrl: string;

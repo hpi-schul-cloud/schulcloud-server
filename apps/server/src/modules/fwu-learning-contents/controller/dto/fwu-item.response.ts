@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { fwuIndex } from '../../interface/fwuIndex.type';
+import { FwuItem } from '../../interface/fwu-item';
 
-export class FwuItemResponse implements fwuIndex {
+export class FwuItemResponse implements FwuItem {
 	@ApiProperty()
 	id: string;
 

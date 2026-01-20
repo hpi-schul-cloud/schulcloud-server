@@ -8,7 +8,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { Readable } from 'stream';
 import { FwuLearningContentsTestModule } from '../../fwu-learning-contents-test.module';
 import { FWU_CONTENT_S3_CONNECTION } from '../../fwu-learning-contents.config';
-import { fwuIndex } from '../../interface/fwuIndex.type';
+import { FwuItem } from '../../interface/fwu-item';
 import { FwuListResponse } from '../dto/fwu-list.response';
 
 jest.mock('../../fwu.filesIndex', () => {
@@ -198,12 +198,11 @@ describe('FwuLearningContents Controller (api)', () => {
 					};
 					s3ClientAdapter.get.mockResolvedValue(response);
 
-					const expected: fwuIndex = {
+					const expected: FwuItem = {
 						id: '5521408',
 						title: 'Test Title',
 						targetUrl: '/api/v3/fwu/5521408/index.html',
 						thumbnailUrl: '/api/v3/fwu/5521408/thumbnail.jpg',
-						description: 'Test Description',
 					};
 
 					return { loggedInClient, expected };
