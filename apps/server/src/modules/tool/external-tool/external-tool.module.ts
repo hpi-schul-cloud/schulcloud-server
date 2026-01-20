@@ -1,6 +1,10 @@
 import { LoggerModule } from '@core/logger';
 import { EncryptionModule } from '@infra/encryption';
-import { FilesStorageClientModule } from '@infra/files-storage-client';
+import {
+	FILE_STORAGE_API_HOST_CONFIG_TOKEN,
+	FilesStorageClientModule,
+	FileStorageClientConfig,
+} from '@infra/files-storage-client';
 import { AuthorizationModule } from '@modules/authorization';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { HttpModule } from '@nestjs/axios';
@@ -33,7 +37,7 @@ import {
 		HttpModule,
 		InstanceModule,
 		AuthorizationModule,
-		FilesStorageClientModule,
+		FilesStorageClientModule.register(FILE_STORAGE_API_HOST_CONFIG_TOKEN, FileStorageClientConfig),
 	],
 	providers: [
 		ExternalToolService,

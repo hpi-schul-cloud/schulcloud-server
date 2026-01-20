@@ -17,9 +17,6 @@
 	"S3_KEY": "abcdefghijklmnop",
 	"AES_KEY": "thisisnotsecure12",
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "thisisnotsecure12",
-	"FILES_STORAGE": {
-		"SERVICE_BASE_URL": "http://localhost:4444"
-	},
 	"FWU_CONTENT": {
 		"S3_ENDPOINT": "http://localhost:4568",
 		"S3_REGION": "eu-central-1",

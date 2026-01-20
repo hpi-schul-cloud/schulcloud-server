@@ -1,11 +1,10 @@
 import { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { AuthorizationClientConfig } from '@infra/authorization-client';
 import { S3Config } from '@infra/s3-client';
 import { LanguageType } from '@shared/domain/interface';
 import { getLibraryWhiteList } from './helper';
 
-export interface H5PEditorCoreConfig extends CoreModuleConfig, AuthorizationClientConfig {
+export interface H5PEditorCoreConfig extends CoreModuleConfig {
 	NEST_LOG_LEVEL: string;
 	INCOMING_REQUEST_TIMEOUT: number;
 }
@@ -14,14 +13,9 @@ export interface H5PEditorConfig extends H5PEditorCoreConfig {
 	H5P_EDITOR__LIBRARY_WHITE_LIST: string[];
 }
 
-export const authorizationClientConfig: AuthorizationClientConfig = {
-	basePath: `${Configuration.get('API_HOST') as string}/v3/`,
-};
-
 const h5pEditorCoreConfig: H5PEditorCoreConfig = {
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('H5P_EDITOR__INCOMING_REQUEST_TIMEOUT') as number,
-	...authorizationClientConfig,
 	EXIT_ON_ERROR: Configuration.get('H5P_EDITOR__EXIT_ON_ERROR') as boolean,
 };
 

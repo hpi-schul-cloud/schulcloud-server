@@ -214,22 +214,6 @@
 			"type": "string",
 			"description": "The value is used to disable logging color in terminal and is set in production always to true. It is not connected to the loggers it self."
 		},
-		"FILES_STORAGE": {
-			"type": "object",
-			"description": "Files storage server properties, required always to be defined",
-			"required": ["SERVICE_BASE_URL"],
-			"properties": {
-				"SERVICE_BASE_URL": {
-					"type": "string",
-					"format": "uri",
-					"default": "http://localhost:4444",
-					"description": "The URI of the file service"
-				}
-			},
-			"default": {
-				"SERVICE_BASE_URL": "http://localhost:4444"
-			}
-		},
 		"COMMON_CARTRIDGE": {
 			"type": "object",
 			"description": "Common cartridge properties, required always to be defined",

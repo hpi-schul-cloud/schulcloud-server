@@ -1,7 +1,11 @@
 import { CoreModule } from '@core/core.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
-import { AuthorizationClientModule } from '@infra/authorization-client';
+import {
+	AUTHORIZATION_API_CONFIG_TOKEN,
+	AuthorizationClientConfig,
+	AuthorizationClientModule,
+} from '@infra/authorization-client';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { User } from '@modules/user/repo';
 import { HttpModule } from '@nestjs/axios';
@@ -9,7 +13,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { authorizationClientConfig, config } from './common-cartridge.config';
+import { config } from './common-cartridge.config';
 import { CommonCartridgeModule } from './common-cartridge.module';
 import { CommonCartridgeController } from './controller/common-cartridge.controller';
 
@@ -17,7 +21,7 @@ import { CommonCartridgeController } from './controller/common-cartridge.control
 	imports: [
 		CoreModule,
 		HttpModule,
-		AuthorizationClientModule.register(authorizationClientConfig),
+		AuthorizationClientModule.register(AUTHORIZATION_API_CONFIG_TOKEN, AuthorizationClientConfig),
 		AuthGuardModule.register([
 			{
 				option: AuthGuardOptions.JWT,
