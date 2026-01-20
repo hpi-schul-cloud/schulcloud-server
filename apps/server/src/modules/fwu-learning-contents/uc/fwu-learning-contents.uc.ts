@@ -1,5 +1,5 @@
 import { LegacyLogger } from '@core/logger';
-import { S3ClientAdapter } from '@infra/s3-client';
+import { GetFile, S3ClientAdapter } from '@infra/s3-client';
 import { Inject, Injectable } from '@nestjs/common';
 import * as cheerio from 'cheerio';
 import { Readable } from 'stream';
@@ -15,7 +15,7 @@ export class FwuLearningContentsUc {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 
-	public async get(path: string, bytesRange?: string) {
+	public async get(path: string, bytesRange?: string): Promise<GetFile> {
 		const response = await this.storageClient.get(path, bytesRange);
 		return response;
 	}
@@ -31,14 +31,12 @@ export class FwuLearningContentsUc {
 				const $ = cheerio.load(indexFileContent);
 
 				const title = $('.pname').text().trim();
-				const description = $('.ptext').text().trim();
 				const thumbnailUrl = this.extractThumbnailUrl($);
 				fwuList.push({
 					id: fileId,
 					title,
 					targetUrl: `/api/v3/fwu/${fileId}/index.html`,
 					thumbnailUrl: `/api/v3/fwu/${fileId}/${thumbnailUrl}`,
-					description,
 				});
 			} catch (error) {
 				this.logger.error(`Failed to process file for id ${fileId}`, error);
