@@ -1,7 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { CopyApiResponse } from '@modules/copy-helper';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
+import { RoomEntity } from '@modules/room';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
@@ -12,8 +14,6 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { CopyApiResponse } from '@modules/copy-helper';
-import { RoomEntity } from '@modules/room';
 import { ShareTokenParentType } from '../../domainobject/share-token.do';
 import { shareTokenFactory } from '../../testing/share-token.factory';
 
@@ -36,7 +36,6 @@ describe('Sharing Controller (API)', () => {
 	beforeEach(async () => {
 		await cleanupCollections(em);
 		Configuration.set('FEATURE_ROOM_SHARE', true);
-		Configuration.set('FEATURE_ROOM_COPY_ENABLED', true);
 	});
 
 	afterAll(async () => {
