@@ -1,26 +1,39 @@
+import { ConfigurationModule } from '@infra/configuration';
 import { DynamicModule, Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { MailConfig } from './interfaces/mail-config';
 import { MailService } from './mail.service';
 
-interface MailModuleOptions {
-	exchange: string;
-	routingKey: string;
+export interface InternalMailModuleConfig {
+	mailSendExchange: string;
+	mailSendRoutingKey: string;
+	blocklistOfEmailDomains: string[];
 }
-
 @Module({})
 export class MailModule {
-	static forRoot(options: MailModuleOptions): DynamicModule {
+	public static register<T extends InternalMailModuleConfig>(
+		constructor: new () => T,
+		configInjectionToken: string
+	): DynamicModule {
+		const providers = [
+			MailService,
+			{
+				provide: 'MAIL_SERVICE_OPTIONS',
+				useFactory: (
+					config: InternalMailModuleConfig
+				): { exchange: string; routingKey: string; domainBlacklist: string[] } => {
+					return {
+						exchange: config.mailSendExchange,
+						routingKey: config.mailSendRoutingKey,
+						domainBlacklist: config.blocklistOfEmailDomains,
+					};
+				},
+				inject: [configInjectionToken],
+			},
+		];
+
 		return {
 			module: MailModule,
-			providers: [
-				MailService,
-				{
-					provide: 'MAIL_SERVICE_OPTIONS',
-					useValue: { exchange: options.exchange, routingKey: options.routingKey },
-				},
-				ConfigService<MailConfig, true>,
-			],
+			imports: [ConfigurationModule.register(configInjectionToken, constructor)],
+			providers,
 			exports: [MailService],
 		};
 	}
