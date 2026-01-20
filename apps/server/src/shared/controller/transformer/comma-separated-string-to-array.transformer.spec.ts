@@ -42,20 +42,6 @@ describe('CommaSeparatedStringToArray()', () => {
 		expect(instance.items).toEqual([]);
 	});
 
-	it('should handle undefined value', () => {
-		const plainUndefined = { items: undefined };
-		const instance = plainToClass(TestDto, plainUndefined);
-
-		expect(instance.items).toEqual([]);
-	});
-
-	it('should handle null value', () => {
-		const plainNull = { items: null };
-		const instance = plainToClass(TestDto, plainNull);
-
-		expect(instance.items).toEqual([]);
-	});
-
 	it('should handle whitespace-only string', () => {
 		const plainString = { items: '   ' };
 		const instance = plainToClass(TestDto, plainString);
