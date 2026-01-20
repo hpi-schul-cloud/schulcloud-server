@@ -3,7 +3,6 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import type { FilesStorageClientConfig } from '@infra/files-storage-client';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
-import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { TspSyncConfig } from '@infra/sync';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
@@ -38,7 +37,6 @@ export interface ServerConfig
 		UserLoginMigrationConfig,
 		SharingConfig,
 		UserImportConfig,
-		SchulconnexClientConfig,
 		UserImportConfig,
 		TspSyncConfig,
 		ToolConfig,
@@ -197,27 +195,6 @@ const config: ServerConfig = {
 	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as Timezone,
 	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: Configuration.get(
 		'IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS'
-	) as number,
-	SCHULCONNEX_CLIENT__API_URL: Configuration.has('SCHULCONNEX_CLIENT__API_URL')
-		? (Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string)
-		: undefined,
-	SCHULCONNEX_CLIENT__TOKEN_ENDPOINT: Configuration.has('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT')
-		? (Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string)
-		: undefined,
-	SCHULCONNEX_CLIENT__CLIENT_ID: Configuration.has('SCHULCONNEX_CLIENT__CLIENT_ID')
-		? (Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string)
-		: undefined,
-	SCHULCONNEX_CLIENT__CLIENT_SECRET: Configuration.has('SCHULCONNEX_CLIENT__CLIENT_SECRET')
-		? (Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string)
-		: undefined,
-	SCHULCONNEX_CLIENT__PERSON_INFO_TIMEOUT_IN_MS: Configuration.get(
-		'SCHULCONNEX_CLIENT__PERSON_INFO_TIMEOUT_IN_MS'
-	) as number,
-	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
-		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
-	) as number,
-	SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS: Configuration.get(
-		'SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS'
 	) as number,
 	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,

@@ -13,6 +13,7 @@ import { ImportUserController } from './controller/import-user.controller';
 import { ImportUserRepo } from './repo';
 import { SchulconnexFetchImportUsersService, UserImportService } from './service';
 import { PopulateUserImportFetchUc, UserImportUc } from './uc';
+import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from '@infra/schulconnex-client';
 
 @Module({
 	imports: [
@@ -23,7 +24,7 @@ import { PopulateUserImportFetchUc, UserImportUc } from './uc';
 		HttpModule,
 		UserModule,
 		OauthModule,
-		SchulconnexClientModule.registerAsync(),
+		SchulconnexClientModule.register(SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig),
 		UserLoginMigrationModule,
 		SystemModule,
 		UserModule,

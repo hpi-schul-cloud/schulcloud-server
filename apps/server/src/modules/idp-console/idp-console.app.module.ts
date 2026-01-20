@@ -1,7 +1,9 @@
+import { ErrorModule } from '@core/error';
 import { LoggerModule } from '@core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { ConsoleWriterModule } from '@infra/console';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountModule } from '@modules/account';
@@ -15,12 +17,11 @@ import { ConsoleModule } from 'nestjs-console';
 import { IdpSyncConsole, SynchronizationUc } from './api';
 import { idpConsoleConfigConfig } from './idp-console.config';
 import { ENTITIES } from './idp.entity.imports';
-import { ErrorModule } from '@core/error';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot(createConfigModuleOptions(idpConsoleConfigConfig)),
-		SchulconnexClientModule.registerAsync(),
+		SchulconnexClientModule.register(SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig),
 		SynchronizationModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
