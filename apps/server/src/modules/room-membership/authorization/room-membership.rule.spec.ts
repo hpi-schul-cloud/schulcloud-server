@@ -93,7 +93,7 @@ describe(RoomMembershipRule.name, () => {
 					const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
 					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
 						'',
-						[{ roles: [roleDto], userId: user.id }],
+						[{ roles: [roleDto], userId: user.id, userSchoolId: user.school.id }],
 						user.school.id
 					);
 
@@ -178,7 +178,7 @@ describe(RoomMembershipRule.name, () => {
 					const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
 					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
 						room.id,
-						[{ roles: [roleDto], userId: user.id }],
+						[{ roles: [roleDto], userId: user.id, userSchoolId: otherSchool.id }],
 						otherSchool.id
 					);
 
