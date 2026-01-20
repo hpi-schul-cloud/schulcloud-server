@@ -11,7 +11,7 @@ import { createConfigModuleOptions } from '@shared/common/config-module-options'
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { AuthorizationModule } from '../authorization';
-import { serverConfig } from '../server';
+import { ServerConfig, serverConfig } from '../server';
 import { BoardCollaborationConfig, config } from './board-collaboration.config';
 import { BoardWsApiModule } from './board-ws-api.module';
 import { ENTITIES, TEST_ENTITIES } from './board.entity.imports';
@@ -61,7 +61,7 @@ const imports = [
 })
 export class BoardCollaborationModule {}
 
-const testConfig = () => {
+const testConfig = (): ServerConfig & BoardCollaborationConfig => {
 	return { ...serverConfig(), ...config() };
 };
 
