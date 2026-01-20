@@ -148,11 +148,6 @@
 			"default": 2629746,
 			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration."
 		},
-		"FEATURE_TSP_SYNC_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Feature toggle for TSP sync."
-		},
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS": {
 			"type": "boolean",
 			"default": true,
