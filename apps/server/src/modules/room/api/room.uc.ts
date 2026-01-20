@@ -20,7 +20,6 @@ import { throwForbiddenIfFalse, throwUnauthorizedIfFalse } from '@shared/common/
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { InvalidArgumentError } from 'commander';
 import { Room, RoomService } from '../domain';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
