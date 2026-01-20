@@ -42,7 +42,9 @@ import {
 	RegistrationPublicApiConfig,
 } from '@modules/registration';
 import { RocketChatModule } from '@modules/rocketchat';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room';
 import { RoomApiModule } from '@modules/room/room-api.module';
+import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '@modules/roster';
 import { RosterModule } from '@modules/roster/roster.module';
 import { RuntimeConfigApiModule, ServerRuntimeConfigModule } from '@modules/runtime-config-api';
 import { SchoolApiModule } from '@modules/school/school-api.module';
@@ -81,6 +83,8 @@ const serverModules = [
 	ConfigurationModule.register(BOARD_PUBLIC_API_CONFIG_TOKEN, BoardPublicApiConfig),
 	ConfigurationModule.register(PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig),
 	ConfigurationModule.register(REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig),
+	ConfigurationModule.register(ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig),
+	ConfigurationModule.register(ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,
 	CoreModule,

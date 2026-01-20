@@ -1287,11 +1287,6 @@
 			"default": false,
 			"description": "Enables the configuration of custom parameters for context external tools"
 		},
-		"FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables external tools on the column board"
-		},
 		"FEATURE_PREFERRED_CTL_TOOLS_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1477,11 +1472,6 @@
 			"default": true,
 			"description": "Enables calender service"
 		},
-		"FEATURE_ROOM_COPY_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables the rooms feature to duplicate rooms"
-		},
 		"FEATURE_ROOM_SHARE": {
 			"type": "boolean",
 			"default": true,
@@ -1496,16 +1486,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the registration of external persons in a room."
-		},
-		"FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables link based invitations for external persons in a room."
-		},
-		"FEATURE_ADMINISTRATE_ROOMS_ENABLED": {
-			"type": "boolean",
-			"default": "false",
-			"description": "Enables the administration of rooms by school admins"
 		},
 		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
 			"type": "boolean",
