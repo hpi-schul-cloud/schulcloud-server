@@ -495,6 +495,8 @@ describe('RoomMembershipService', () => {
 			roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 			groupService.findById.mockResolvedValue(group);
 			roleService.findByIds.mockResolvedValue([role]);
+			roleService.findAll.mockResolvedValue([role]);
+			userService.findByIds.mockResolvedValue([userDoFactory.buildWithId({ id: userId })]);
 
 			return { roomId, userId, groupId, roleId, roomMembership, group, role };
 		};
@@ -509,6 +511,7 @@ describe('RoomMembershipService', () => {
 			expect(result.members).toHaveLength(1);
 			expect(result.members[0].userId).toBe(userId);
 			expect(result.members[0].roles[0].id).toBe(roleId);
+			expect(result.members[0].userSchoolId).toBeDefined();
 		});
 
 		it('should return empty RoomMembershipAuthorizable when roomMembership not exists', async () => {
@@ -650,6 +653,8 @@ describe('RoomMembershipService', () => {
 			groupService.findGroups.mockResolvedValue({ data: groups, total: groups.length });
 			roomMembershipRepo.findByGroupIds.mockResolvedValue(roomMemberships);
 			roleService.findByIds.mockResolvedValue(roles);
+			roleService.findAll.mockResolvedValue(roles);
+			userService.findByIds.mockResolvedValue([userDoFactory.buildWithId({ id: userId })]);
 
 			return { userId, roomMemberships, roles };
 		};
