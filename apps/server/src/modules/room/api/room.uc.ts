@@ -355,7 +355,7 @@ export class RoomUc {
 	private async checkAreAllUsersAccessible(currentUser: User, newUserIds: EntityId[]): Promise<void> {
 		const newUsers = await this.userService.findByIds(newUserIds);
 		if (newUsers.length !== newUserIds.length) {
-			throw new InvalidArgumentError('One or more user IDs are invalid'); // TODO: loggable ?!?
+			throw new NotFoundException('One or more user IDs are invalid'); // TODO: loggable? Different HTTP code as one could check for valid user ids, but this is after persmissions are checked already
 		}
 
 		const areAllAccessible = newUsers.every((user) =>
