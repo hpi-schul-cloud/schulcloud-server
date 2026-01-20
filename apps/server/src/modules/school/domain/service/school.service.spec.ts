@@ -5,6 +5,7 @@ import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
+import { SCHOOL_CONFIG_TOKEN, SchoolConfig, StudentTeamCreationOption } from '../../school.config';
 import { schoolFactory } from '../../testing';
 import { SchoolForLdapLogin, SchoolProps, SystemForLdapLogin } from '../do';
 import { SchoolFactory } from '../factory';
@@ -21,7 +22,7 @@ describe('SchoolService', () => {
 	let service: SchoolService;
 	let schoolRepo: DeepMocked<SchoolRepo>;
 	let systemService: DeepMocked<SystemService>;
-	let configService: DeepMocked<ConfigService>;
+	let config: SchoolConfig;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -39,13 +40,17 @@ describe('SchoolService', () => {
 					provide: SystemService,
 					useValue: createMock<SystemService>(),
 				},
+				{
+					provide: SCHOOL_CONFIG_TOKEN,
+					useValue: new SchoolConfig(),
+				},
 			],
 		}).compile();
 
 		service = module.get(SchoolService);
 		schoolRepo = module.get('SCHOOL_REPO');
 		systemService = module.get(SystemService);
-		configService = module.get(ConfigService);
+		config = module.get(SCHOOL_CONFIG_TOKEN);
 	});
 
 	afterEach(() => {
@@ -79,7 +84,7 @@ describe('SchoolService', () => {
 				const school = schoolFactory.build();
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 
-				configService.get.mockReturnValueOnce('enabled');
+				config.studentTeamCreation = StudentTeamCreationOption.ENABLED;
 
 				return { school, id: school.id };
 			};
@@ -99,7 +104,7 @@ describe('SchoolService', () => {
 				const school = schoolFactory.build();
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 
-				configService.get.mockReturnValueOnce('disabled');
+				config.studentTeamCreation = StudentTeamCreationOption.DISABLED;
 
 				return { school, id: school.id };
 			};
@@ -119,7 +124,7 @@ describe('SchoolService', () => {
 				const school = schoolFactory.build({ enableStudentTeamCreation: true });
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 
-				configService.get.mockReturnValueOnce('opt-in');
+				config.studentTeamCreation = StudentTeamCreationOption.OPT_IN;
 
 				return { school, id: school.id };
 			};
@@ -139,7 +144,7 @@ describe('SchoolService', () => {
 				const school = schoolFactory.build({ enableStudentTeamCreation: false });
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 
-				configService.get.mockReturnValueOnce('opt-in');
+				config.studentTeamCreation = StudentTeamCreationOption.OPT_IN;
 
 				return { school, id: school.id };
 			};
@@ -159,7 +164,7 @@ describe('SchoolService', () => {
 				const school = schoolFactory.build({ enableStudentTeamCreation: undefined });
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 
-				configService.get.mockReturnValueOnce('opt-in');
+				config.studentTeamCreation = StudentTeamCreationOption.OPT_IN;
 
 				return { school, id: school.id };
 			};
@@ -179,7 +184,7 @@ describe('SchoolService', () => {
 				const school = schoolFactory.build({ enableStudentTeamCreation: true });
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 
-				configService.get.mockReturnValueOnce('opt-out');
+				config.studentTeamCreation = StudentTeamCreationOption.OPT_OUT;
 
 				return { school, id: school.id };
 			};
@@ -199,7 +204,7 @@ describe('SchoolService', () => {
 				const school = schoolFactory.build({ enableStudentTeamCreation: false });
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 
-				configService.get.mockReturnValueOnce('opt-out');
+				config.studentTeamCreation = StudentTeamCreationOption.OPT_OUT;
 
 				return { school, id: school.id };
 			};
@@ -219,7 +224,7 @@ describe('SchoolService', () => {
 				const school = schoolFactory.build({ enableStudentTeamCreation: undefined });
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 
-				configService.get.mockReturnValueOnce('opt-out');
+				config.studentTeamCreation = StudentTeamCreationOption.OPT_OUT;
 
 				return { school, id: school.id };
 			};
@@ -523,6 +528,7 @@ describe('SchoolService', () => {
 		describe('when school exists and save is successfull', () => {
 			const setup = () => {
 				const school = schoolFactory.build({ name: 'old name' });
+				config.studentTeamCreation = StudentTeamCreationOption.DISABLED;
 
 				return { school };
 			};

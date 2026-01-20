@@ -13,7 +13,11 @@ export interface AdminApiServerConfig
 		LegacySchoolConfig,
 		UserConfig,
 		RegistrationPinConfig,
-		ToolConfig {}
+		ToolConfig {
+	ROCKET_CHAT_URI: string;
+	ROCKET_CHAT_ADMIN_ID: string;
+	ROCKET_CHAT_ADMIN_TOKEN: string;
+}
 
 const config: AdminApiServerConfig = {
 	ADMIN_API__DELETION_DELETE_AFTER_MINUTES: Configuration.get('ADMIN_API__DELETION_DELETE_AFTER_MINUTES') as number,
@@ -48,8 +52,6 @@ const config: AdminApiServerConfig = {
 	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
 	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
-	ROCKET_CHAT_ADMIN_USER: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
-	ROCKET_CHAT_ADMIN_PASSWORD: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
 	) as boolean,

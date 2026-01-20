@@ -7,9 +7,6 @@ import type { TspSyncConfig } from '@infra/sync';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { ManagementSeedDataConfig } from '@modules/management';
-import type { RocketChatUserConfig } from '@modules/rocketchat-user';
-import type { RoomConfig } from '@modules/room';
-import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import type { ShdConfig } from '@modules/shd';
 import type { ToolConfig } from '@modules/tool';
@@ -34,16 +31,13 @@ export interface ServerConfig
 		UserConfig,
 		FilesMetadataClientConfig,
 		IdentityManagementConfig,
-		SchoolConfig,
 		MailConfig,
-		RocketChatUserConfig,
 		LearnroomConfig,
 		ToolConfig,
 		UserLoginMigrationConfig,
 		SharingConfig,
 		UserImportConfig,
 		SchulconnexClientConfig,
-		RoomConfig,
 		UserImportConfig,
 		TspSyncConfig,
 		ToolConfig,
@@ -68,7 +62,6 @@ export interface ServerConfig
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: boolean;
-	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_SHARE: boolean;
 	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
@@ -95,16 +88,17 @@ export interface ServerConfig
 	I18N__DEFAULT_TIMEZONE: Timezone;
 	BOARD_COLLABORATION_URI: string;
 	FEATURE_AI_TUTOR_ENABLED: boolean;
-	FEATURE_ADMINISTRATE_ROOMS_ENABLED: boolean;
-	FEATURE_ROOM_COPY_ENABLED: boolean;
 	FEATURE_ROOM_SHARE: boolean;
 	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: boolean;
 	FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED: boolean;
-	FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED: boolean;
 	FEATURE_TSP_SYNC_ENABLED: boolean;
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
 	ROOM_MEMBER_INFO_URL: string | null;
+	STUDENT_TEAM_CREATION: string;
+	ROCKET_CHAT_URI: string;
+	ROCKET_CHAT_ADMIN_ID: string;
+	ROCKET_CHAT_ADMIN_TOKEN: string;
 }
 
 const config: ServerConfig = {
@@ -125,9 +119,6 @@ const config: ServerConfig = {
 	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED') as boolean,
 	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: Configuration.get(
 		'FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED'
-	) as boolean,
-	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: Configuration.get(
-		'FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED'
 	) as boolean,
 	FEATURE_COLUMN_BOARD_SHARE: Configuration.get('FEATURE_COLUMN_BOARD_SHARE') as boolean,
 	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_SOCKET_ENABLED') as boolean,
@@ -242,15 +233,10 @@ const config: ServerConfig = {
 		'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
 	) as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
-	FEATURE_ADMINISTRATE_ROOMS_ENABLED: Configuration.get('FEATURE_ADMINISTRATE_ROOMS_ENABLED') as boolean,
-	FEATURE_ROOM_COPY_ENABLED: Configuration.get('FEATURE_ROOM_COPY_ENABLED') as boolean,
 	FEATURE_ROOM_SHARE: Configuration.get('FEATURE_ROOM_SHARE') as boolean,
 	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: Configuration.get('FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED') as boolean,
 	FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED: Configuration.get(
 		'FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED'
-	) as boolean,
-	FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED: Configuration.get(
-		'FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED'
 	) as boolean,
 	TSP_SYNC_SCHOOL_LIMIT: Configuration.get('TSP_SYNC_SCHOOL_LIMIT') as number,
 	TSP_SYNC_SCHOOL_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_SCHOOL_DAYS_TO_FETCH') as number,
@@ -259,8 +245,6 @@ const config: ServerConfig = {
 	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
 	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
-	ROCKET_CHAT_ADMIN_USER: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
-	ROCKET_CHAT_ADMIN_PASSWORD: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	CTL_TOOLS__PREFERRED_TOOLS_LIMIT: Configuration.get('CTL_TOOLS__PREFERRED_TOOLS_LIMIT') as number,
 	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: Configuration.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED') as boolean,
