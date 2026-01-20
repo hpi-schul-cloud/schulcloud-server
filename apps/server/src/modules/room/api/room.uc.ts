@@ -371,14 +371,13 @@ export class RoomUc {
 
 	private async getUserByEmail(email: string): Promise<UserDo & { id: EntityId }> {
 		const [existingAccounts, totalNumberOfFoundAccounts] = await this.accountService.searchByUsernameExactMatch(email);
-		if (totalNumberOfFoundAccounts !== 1) {
+		if (existingAccounts.length === 0 || existingAccounts[0].userId === undefined) {
+			throw new NotFoundException('No user found with the provided email');
+		}
+		if (totalNumberOfFoundAccounts > 1) {
 			throw new InternalServerErrorException('Invalid data found');
 		}
 		const { userId } = existingAccounts[0];
-		if (existingAccounts.length === 0 || userId === undefined) {
-			throw new NotFoundException('No user found with the provided email');
-		}
-
 		const existingUser = await this.userService.findById(userId);
 		return { ...existingUser, id: userId };
 	}
