@@ -40,7 +40,7 @@ export class FeathersServiceProvider {
 
 	getService(path: string): FeathersService {
 		const feathersApp = this.request.app.get('feathersApp') as Application;
-		if (feathersApp == null) {
+		if (feathersApp === null || feathersApp === undefined) {
 			// missing a feathers instance defined in module definition
 			// see main.ts how it might work
 			// sample: nestExpress.set('feathersApp', feathersExpress);
