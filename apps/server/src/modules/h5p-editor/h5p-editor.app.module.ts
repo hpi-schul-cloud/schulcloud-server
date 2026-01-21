@@ -3,7 +3,7 @@ import { LoggerModule } from '@core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import {
-	AUTHORIZATION_API_CONFIG_TOKEN,
+	AUTHORIZATION_CLIENT_CONFIG_TOKEN,
 	AuthorizationClientConfig,
 	AuthorizationClientModule,
 } from '@infra/authorization-client';
@@ -25,7 +25,7 @@ import { ContentStorage, H5pEditorContentService, LibraryStorage, TemporaryFileS
 import { H5PEditorUc } from './uc';
 
 const imports = [
-	AuthorizationClientModule.register(AUTHORIZATION_API_CONFIG_TOKEN, AuthorizationClientConfig),
+	AuthorizationClientModule.register(AUTHORIZATION_CLIENT_CONFIG_TOKEN, AuthorizationClientConfig),
 	CoreModule,
 	UserModule,
 	MikroOrmModule.forRoot({

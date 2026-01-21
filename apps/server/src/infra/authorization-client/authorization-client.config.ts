@@ -6,8 +6,13 @@ export interface InternalAuthorizationClientConfig extends ConfigurationParamete
 	basePath: string;
 }
 
-export const AUTHORIZATION_API_CONFIG_TOKEN = 'AUTHORIZATION_API_CONFIG_TOKEN';
+export const AUTHORIZATION_CLIENT_CONFIG_TOKEN = 'AUTHORIZATION_CLIENT_CONFIG_TOKEN';
 
+/**
+ * This is default Configuration for the API_HOST in AuthorizationClient.
+ * if you need to read values from different env variables, create your own config class
+ * implementing InternalAuthorizationClientConfig and provide it via the AuthorizationModule.register method.
+ */
 @Configuration()
 export class AuthorizationClientConfig implements InternalAuthorizationClientConfig {
 	@ConfigProperty('API_HOST')

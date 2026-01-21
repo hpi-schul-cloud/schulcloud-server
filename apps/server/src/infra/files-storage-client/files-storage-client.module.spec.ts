@@ -43,11 +43,7 @@ describe(FilesStorageClientModule.name, () => {
 
 	describe('resolve providers', () => {
 		describe('when resolving FilesStorageRestClientAdapter', () => {
-			const setup = () => {};
-
 			it('should resolve FilesStorageRestClientAdapter', async () => {
-				setup();
-
 				const provider = await module.resolve(FilesStorageClientAdapter);
 
 				expect(provider).toBeInstanceOf(FilesStorageClientAdapter);

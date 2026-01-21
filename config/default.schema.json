@@ -1119,27 +1119,12 @@
 			"default": false,
 			"description": "Toggle for copy course feature."
 		},
-		"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the IMSCC course download feature."
-		},
 		"GEOGEBRA_BASE_URL": {
 			"type": "string",
 			"format": "uri",
 			"default": "https://www.geogebra.org",
 			"pattern": ".*(?<!/)$",
 			"description": "Base URL of GeoGebra materials"
-		},
-		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the Common Cartridge course import feature."
-		},
-		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE": {
-			"type": "integer",
-			"default": 2000000000,
-			"description": "The maximum file upload size in bytes for the Common Cartridge file during import."
 		},
 		"GHOST_BASE_URL": {
 			"type": "string",

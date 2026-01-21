@@ -2,7 +2,7 @@ import { ConfigurationModule } from '@infra/configuration';
 import { DynamicModule, Module } from '@nestjs/common';
 import { AuthorizationApi, Configuration } from './authorization-api-client';
 import { AuthorizationClientAdapter } from './authorization-client.adapter';
-import { InternalAuthorizationClientConfig } from './authorization-api-client.config';
+import { InternalAuthorizationClientConfig } from './authorization-client.config';
 
 @Module({})
 export class AuthorizationClientModule {

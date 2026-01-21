@@ -17,7 +17,7 @@ describe(FilesStorageClientAdapter.name, () => {
 	let filesStorageClientAdapter: FilesStorageClientAdapter;
 	let httpServiceMock: DeepMocked<HttpService>;
 	let errorLoggerMock: DeepMocked<ErrorLogger>;
-	let configMock: FileStorageClientConfig;
+	let config: FileStorageClientConfig;
 	let loggerMock: DeepMocked<Logger>;
 
 	beforeAll(async () => {
@@ -59,13 +59,13 @@ describe(FilesStorageClientAdapter.name, () => {
 		loggerMock = module.get(Logger);
 		errorLoggerMock = module.get(ErrorLogger);
 		httpServiceMock = module.get(HttpService);
-		configMock = module.get(FILE_STORAGE_API_HOST_CONFIG_TOKEN);
+		config = module.get(FILE_STORAGE_API_HOST_CONFIG_TOKEN);
 
 		filesStorageClientAdapter = new FilesStorageClientAdapter(
 			loggerMock,
 			errorLoggerMock,
 			httpServiceMock,
-			configMock,
+			config,
 			module.get(REQUEST)
 		);
 	});

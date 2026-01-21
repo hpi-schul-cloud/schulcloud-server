@@ -9,7 +9,7 @@ import { BoardsClientAdapter } from './boards-client.adapter';
 import { InternalBoardsClientConfig } from './boards-client.config';
 import { BoardsClientModule } from './boards-client.module';
 @Configuration()
-class TestConfig implements InternalBoardsClientConfig {
+class TestInternalBoardsClientConfig implements InternalBoardsClientConfig {
 	@ConfigProperty('API_HOST')
 	@IsUrl({ require_tld: false })
 	basePath = 'https://api.example.com/boards';
@@ -26,7 +26,7 @@ describe(BoardsClientModule.name, () => {
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			imports: [BoardsClientModule.register('BOARDS_CLIENT_CONFIG', TestConfig)],
+			imports: [BoardsClientModule.register('BOARDS_CLIENT_CONFIG', TestInternalBoardsClientConfig)],
 		})
 			.overrideProvider(REQUEST)
 			.useValue(requestMock)

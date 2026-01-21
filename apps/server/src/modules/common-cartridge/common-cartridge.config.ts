@@ -1,20 +1,27 @@
 import { LoggerConfig } from '@core/logger';
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { ConfigProperty, Configuration } from '@infra/configuration';
+import { StringToBoolean } from '@shared/controller/transformer/string-to-boolean.transformer';
+import { IsBoolean } from 'class-validator';
 
-export interface CommonCartridgeConfig extends LoggerConfig {
-	INCOMING_REQUEST_TIMEOUT: number;
-	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: number;
+export interface InternalCommonCartridgeConfig extends LoggerConfig {}
+
+export const COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN = 'COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN';
+export const COMMON_CARTRIDGE_CONFIG_TOKEN = 'COMMON_CARTRIDGE_CONFIG_TOKEN';
+
+@Configuration()
+export class CommonCartridgePublicApiConfig {
+	@ConfigProperty('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public courseImportEnabled = false;
+	@ConfigProperty('FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public courseExportEnabled = false;
 }
 
-const commonCartridgeConfig: CommonCartridgeConfig = {
-	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
-	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
-	INCOMING_REQUEST_TIMEOUT: Configuration.get('COMMON_CARTRIDGE__INCOMING_REQUEST_TIMEOUT_MS') as number,
-	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: Configuration.get(
-		'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE'
-	) as number,
-};
-
-export function config(): CommonCartridgeConfig {
-	return commonCartridgeConfig;
+@Configuration()
+export class CommonCartridgeConfig extends CommonCartridgePublicApiConfig {
+	@ConfigProperty('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE')
+	public courseImportMaxFileSize = 2000000000; // 2GB
 }

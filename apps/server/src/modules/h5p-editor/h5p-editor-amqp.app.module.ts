@@ -2,7 +2,7 @@ import { CoreModule } from '@core/core.module';
 import { Logger } from '@core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import {
-	AUTHORIZATION_API_CONFIG_TOKEN,
+	AUTHORIZATION_CLIENT_CONFIG_TOKEN,
 	AuthorizationClientConfig,
 	AuthorizationClientModule,
 } from '@infra/authorization-client';
@@ -28,7 +28,7 @@ import { H5PEditorUc } from './uc';
 const imports = [
 	ConfigModule.forRoot(createConfigModuleOptions(coreConfig)),
 	CoreModule,
-	AuthorizationClientModule.register(AUTHORIZATION_API_CONFIG_TOKEN, AuthorizationClientConfig),
+	AuthorizationClientModule.register(AUTHORIZATION_CLIENT_CONFIG_TOKEN, AuthorizationClientConfig),
 	UserModule,
 	MikroOrmModule.forRoot({
 		...defaultMikroOrmOptions,
