@@ -10,6 +10,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import pLimit from 'p-limit';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
+import { SYNC_CONFIG_TOKEN, SyncConfig } from '../../sync.config';
 import { SyncStrategy } from '../sync-strategy';
 import {
 	TspClassSyncBatchLoggable,
@@ -27,7 +28,6 @@ import { TspSyncingUsersLoggable } from './loggable/tsp-syncing-users.loggable';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspOauthDataMapper, TspUserInfo } from './tsp-oauth-data.mapper';
 import { TspSchoolService } from './tsp-school.service';
-import { TSP_SYNC_CONFIG_TOKEN, TspSyncConfig } from './tsp-sync.config';
 
 type TspSchoolData = {
 	tspTeachers: RobjExportLehrer[];
@@ -52,7 +52,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		private readonly tspSchoolService: TspSchoolService,
 		private readonly tspFetchService: TspFetchService,
 		private readonly tspOauthDataMapper: TspOauthDataMapper,
-		@Inject(TSP_SYNC_CONFIG_TOKEN) private readonly config: TspSyncConfig,
+		@Inject(SYNC_CONFIG_TOKEN) private readonly config: SyncConfig,
 		private readonly systemService: SystemService,
 		private readonly provisioningService: TspProvisioningService
 	) {

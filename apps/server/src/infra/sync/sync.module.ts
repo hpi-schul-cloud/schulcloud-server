@@ -15,7 +15,6 @@ import { Module } from '@nestjs/common';
 import { SyncConsole } from './console/sync.console';
 import { SYNC_ENCRYPTION_CONFIG_TOKEN, SyncEncryptionConfig } from './encryption.config';
 import { SyncService } from './service/sync.service';
-import { TSP_SYNC_CONFIG_TOKEN, TspSyncConfig } from './strategy/tsp';
 import { TspFetchService } from './strategy/tsp/tsp-fetch.service';
 import { TspOauthDataMapper } from './strategy/tsp/tsp-oauth-data.mapper';
 import { TspSchoolService } from './strategy/tsp/tsp-school.service';
@@ -47,7 +46,6 @@ import { SyncUc } from './uc/sync.uc';
 		UserModule,
 		AccountModule,
 		ConfigurationModule.register(SYNC_CONFIG_TOKEN, SyncConfig),
-		ConfigurationModule.register(TSP_SYNC_CONFIG_TOKEN, TspSyncConfig),
 	],
 	providers: [SyncConsole, SyncUc, SyncService, TspSyncStrategy, TspSchoolService, TspOauthDataMapper, TspFetchService],
 	exports: [SyncConsole],
