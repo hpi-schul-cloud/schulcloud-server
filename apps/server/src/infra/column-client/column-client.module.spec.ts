@@ -1,12 +1,20 @@
 import { faker } from '@faker-js/faker/.';
 import { createMock } from '@golevelup/ts-jest';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigProperty, Configuration } from '@infra/configuration';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { IsUrl } from 'class-validator';
 import { Request } from 'express';
-import { ColumnClientModule } from './column-client.module';
-import { ColumnClientConfig } from './column-client.config';
 import { ColumnClientAdapter } from './column-client.adapter';
+import { InternalColumnClientConfig } from './column-client.config';
+import { ColumnClientModule } from './column-client.module';
+
+@Configuration()
+class TestConfig implements InternalColumnClientConfig {
+	@ConfigProperty('API_HOST')
+	@IsUrl({ require_tld: false })
+	basePath = 'https://api.example.com/columns';
+}
 
 describe('ColumnClientModule', () => {
 	let module: TestingModule;
@@ -19,19 +27,7 @@ describe('ColumnClientModule', () => {
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				ColumnClientModule,
-				ConfigModule.forRoot({
-					isGlobal: true,
-					load: [
-						(): ColumnClientConfig => {
-							return {
-								API_HOST: faker.internet.url(),
-							};
-						},
-					],
-				}),
-			],
+			imports: [ColumnClientModule.register('COLUMN_CLIENT_CONFIG', TestConfig)],
 		})
 			.overrideProvider(REQUEST)
 			.useValue(requestMock)

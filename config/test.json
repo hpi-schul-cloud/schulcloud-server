@@ -21,9 +21,6 @@
 	"SYNC_LOG_LEVEL": "info",
 	"SYNC_QUEUE_NAME": "test_ldap_queue",
 	"S3_KEY": "abcdefghijklmnop",
-	"FILES_STORAGE": {
-		"SERVICE_BASE_URL": "http://localhost:4444"
-	},
 	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
 	"IDENTITY_MANAGEMENT": {
 		"INTERNAL_URI": "http://localhost:8080",
@@ -37,8 +34,6 @@
 	"LOG_LEVEL": "emerg",
 	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",
-	"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": true,
-	"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": true,
 	"SESSION": {
 		"SAME_SITE": "lax",
 		"SECURE": false,

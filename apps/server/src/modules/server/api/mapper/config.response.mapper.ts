@@ -1,6 +1,7 @@
 import { AlertPublicApiConfig } from '@modules/alert';
 import { BoardPublicApiConfig } from '@modules/board';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
+import { CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { RegistrationPublicApiConfig } from '@modules/registration';
@@ -21,7 +22,8 @@ export class ConfigResponseMapper {
 		provisioningConfig: ProvisioningPublicApiConfig,
 		registrationConfig: RegistrationPublicApiConfig,
 		rosterConfig: RosterPublicApiConfig,
-		roomConfig: RoomPublicApiConfig
+		roomConfig: RoomPublicApiConfig,
+		commonCartridgeConfig: CommonCartridgePublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,
@@ -34,6 +36,7 @@ export class ConfigResponseMapper {
 			...registrationConfig,
 			...rosterConfig,
 			...roomConfig,
+			...commonCartridgeConfig,
 		});
 
 		return configResponse;
