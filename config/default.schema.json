@@ -189,22 +189,6 @@
 			"type": "string",
 			"description": "The value is used to disable logging color in terminal and is set in production always to true. It is not connected to the loggers it self."
 		},
-		"FILES_STORAGE": {
-			"type": "object",
-			"description": "Files storage server properties, required always to be defined",
-			"required": ["SERVICE_BASE_URL"],
-			"properties": {
-				"SERVICE_BASE_URL": {
-					"type": "string",
-					"format": "uri",
-					"default": "http://localhost:4444",
-					"description": "The URI of the file service"
-				}
-			},
-			"default": {
-				"SERVICE_BASE_URL": "http://localhost:4444"
-			}
-		},
 		"COMMON_CARTRIDGE": {
 			"type": "object",
 			"description": "Common cartridge properties, required always to be defined",
@@ -1110,27 +1094,12 @@
 			"default": false,
 			"description": "Toggle for copy course feature."
 		},
-		"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the IMSCC course download feature."
-		},
 		"GEOGEBRA_BASE_URL": {
 			"type": "string",
 			"format": "uri",
 			"default": "https://www.geogebra.org",
 			"pattern": ".*(?<!/)$",
 			"description": "Base URL of GeoGebra materials"
-		},
-		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the Common Cartridge course import feature."
-		},
-		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE": {
-			"type": "integer",
-			"default": 2000000000,
-			"description": "The maximum file upload size in bytes for the Common Cartridge file during import."
 		},
 		"GHOST_BASE_URL": {
 			"type": "string",

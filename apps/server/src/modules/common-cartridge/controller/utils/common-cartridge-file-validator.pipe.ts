@@ -1,12 +1,11 @@
-import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { CommonCartridgeConfig } from '../../common-cartridge.config';
+import { BadRequestException, Inject, Injectable, PipeTransform } from '@nestjs/common';
+import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../../common-cartridge.config';
 
 @Injectable()
 export class CommonCartridgeFileValidatorPipe implements PipeTransform<Express.Multer.File, Express.Multer.File> {
 	private zipFileMagicNumber = '504b0304';
 
-	constructor(private readonly configService: ConfigService<CommonCartridgeConfig, true>) {}
+	constructor(@Inject(COMMON_CARTRIDGE_CONFIG_TOKEN) private readonly config: CommonCartridgeConfig) {}
 
 	public transform(value: Express.Multer.File): Express.Multer.File {
 		this.checkValue(value);
@@ -23,7 +22,7 @@ export class CommonCartridgeFileValidatorPipe implements PipeTransform<Express.M
 	}
 
 	private checkSize(value: Express.Multer.File): void {
-		if (value.size > this.configService.getOrThrow<number>('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE')) {
+		if (value.size > this.config.courseImportMaxFileSize) {
 			throw new BadRequestException('File is too large');
 		}
 	}

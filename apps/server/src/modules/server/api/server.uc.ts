@@ -1,6 +1,7 @@
 import { ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig } from '@modules/alert';
 import { BOARD_PUBLIC_API_CONFIG_TOKEN, BoardPublicApiConfig } from '@modules/board';
 import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@modules/board-context';
+import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig } from '@modules/oauth';
 import { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } from '@modules/registration';
@@ -24,7 +25,9 @@ export class ServerUc {
 		@Inject(PROVISIONING_PUBLIC_API_CONFIG) private readonly provisioningConfig: ProvisioningPublicApiConfig,
 		@Inject(REGISTRATION_PUBLIC_API_CONFIG_TOKEN) private readonly registrationConfig: RegistrationPublicApiConfig,
 		@Inject(ROSTER_PUBLIC_API_CONFIG_TOKEN) private readonly rosterConfig: RosterPublicApiConfig,
-		@Inject(ROOM_PUBLIC_API_CONFIG_TOKEN) private readonly roomConfig: RoomPublicApiConfig
+		@Inject(ROOM_PUBLIC_API_CONFIG_TOKEN) private readonly roomConfig: RoomPublicApiConfig,
+		@Inject(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN)
+		private readonly commonCartridgeConfig: CommonCartridgePublicApiConfig
 	) {}
 
 	public getConfig(): ConfigResponse {
@@ -38,7 +41,8 @@ export class ServerUc {
 			this.provisioningConfig,
 			this.registrationConfig,
 			this.rosterConfig,
-			this.roomConfig
+			this.roomConfig,
+			this.commonCartridgeConfig
 		);
 
 		return configDto;

@@ -1,3 +1,5 @@
-export interface ColumnClientConfig {
-	API_HOST: string;
+import { ConfigurationParameters } from './generated';
+
+export interface InternalColumnClientConfig extends ConfigurationParameters {
+	basePath: string;
 }

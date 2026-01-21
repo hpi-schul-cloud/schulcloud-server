@@ -1,10 +1,20 @@
 import { faker } from '@faker-js/faker/.';
 import { createMock } from '@golevelup/ts-jest';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigProperty, Configuration } from '@infra/configuration';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { IsUrl } from 'class-validator';
 import { Request } from 'express';
-import { CardClientAdapter, CardClientConfig, CardClientModule } from '.';
+import { CardClientAdapter } from './card-client.adapter';
+import { InternalCardClientConfig } from './card-client.config';
+import { CardClientModule } from './card-client.module';
+
+@Configuration()
+class TestConfig implements InternalCardClientConfig {
+	@ConfigProperty('API_HOST')
+	@IsUrl({ require_tld: false })
+	basePath = 'https://api.example.com/cards';
+}
 
 describe('CardClientModule', () => {
 	let module: TestingModule;
@@ -17,19 +27,7 @@ describe('CardClientModule', () => {
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				CardClientModule,
-				ConfigModule.forRoot({
-					isGlobal: true,
-					load: [
-						(): CardClientConfig => {
-							return {
-								API_HOST: faker.internet.url(),
-							};
-						},
-					],
-				}),
-			],
+			imports: [CardClientModule.register('CARD_CLIENT_CONFIG', TestConfig)],
 		})
 			.overrideProvider(REQUEST)
 			.useValue(requestMock)
