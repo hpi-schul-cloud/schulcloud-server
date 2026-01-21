@@ -1,8 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { createMock } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MailConfig } from './interfaces/mail-config';
 import { Mail } from './mail.interface';
 import { MailService } from './mail.service';
 
@@ -14,6 +11,7 @@ describe('MailService', () => {
 	const mailServiceOptions = {
 		exchange: 'exchange',
 		routingKey: 'routingKey',
+		domainBlacklist: ['schul-cloud.org', 'example.com'],
 	};
 
 	beforeAll(async () => {
@@ -22,10 +20,6 @@ describe('MailService', () => {
 				MailService,
 				{ provide: AmqpConnection, useValue: { publish: () => {} } },
 				{ provide: 'MAIL_SERVICE_OPTIONS', useValue: mailServiceOptions },
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<MailConfig, true>>({ get: () => ['schul-cloud.org', 'example.com'] }),
-				},
 			],
 		}).compile();
 
