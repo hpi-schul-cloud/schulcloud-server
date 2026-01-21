@@ -24,20 +24,20 @@ export class SchulconnexClientConfig {
 	@ConfigProperty('SCHULCONNEX_CLIENT__API_URL')
 	@IsOptional()
 	@IsString()
-	public apiUrl = '';
+	public apiUrl?: string;
 
 	@ConfigProperty('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT')
 	@IsOptional()
 	@IsString()
-	public tokenEndpoint = '';
+	public tokenEndpoint?: string;
 
 	@ConfigProperty('SCHULCONNEX_CLIENT__CLIENT_ID')
 	@IsOptional()
 	@IsString()
-	public clientId = '';
+	public clientId?: string;
 
 	@ConfigProperty('SCHULCONNEX_CLIENT__CLIENT_SECRET')
 	@IsOptional()
 	@IsString()
-	public clientSecret = '';
+	public clientSecret?: string;
 }
