@@ -6,6 +6,7 @@ import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { RegistrationPublicApiConfig } from '@modules/registration';
 import { RoomPublicApiConfig } from '@modules/room';
 import { RosterPublicApiConfig } from '@modules/roster';
+import { SharingPublicApiConfig } from '@modules/sharing';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ServerConfig } from '../../server.config';
 import { ConfigResponse } from '../dto';
@@ -21,7 +22,8 @@ export class ConfigResponseMapper {
 		provisioningConfig: ProvisioningPublicApiConfig,
 		registrationConfig: RegistrationPublicApiConfig,
 		rosterConfig: RosterPublicApiConfig,
-		roomConfig: RoomPublicApiConfig
+		roomConfig: RoomPublicApiConfig,
+		sharingConfig: SharingPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,
@@ -34,6 +36,7 @@ export class ConfigResponseMapper {
 			...registrationConfig,
 			...rosterConfig,
 			...roomConfig,
+			...sharingConfig,
 		});
 
 		return configResponse;

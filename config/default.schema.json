@@ -1085,26 +1085,6 @@
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
 			"description": "link to userfacing documentation of the column board feature"
 		},
-		"FEATURE_COURSE_SHARE": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for course sharing feature."
-		},
-		"FEATURE_LESSON_SHARE": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for lesson sharing feature."
-		},
-		"FEATURE_TASK_SHARE": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the task sharing feature."
-		},
-		"FEATURE_COLUMN_BOARD_SHARE": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the column board sharing feature."
-		},
 		"FEATURE_COLUMN_BOARD_SOCKET_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1466,11 +1446,6 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Enables calender service"
-		},
-		"FEATURE_ROOM_SHARE": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables the room sharing feature"
 		},
 		"FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED": {
 			"type": "boolean",

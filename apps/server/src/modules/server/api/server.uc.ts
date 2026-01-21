@@ -6,6 +6,7 @@ import { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from '@mo
 import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } from '@modules/registration';
 import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room';
 import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '@modules/roster';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '@modules/sharing';
 import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { Inject, Injectable } from '@nestjs/common';
 import { SERVER_CONFIG_TOKEN, ServerConfig } from '../server.config';
@@ -24,7 +25,8 @@ export class ServerUc {
 		@Inject(PROVISIONING_PUBLIC_API_CONFIG) private readonly provisioningConfig: ProvisioningPublicApiConfig,
 		@Inject(REGISTRATION_PUBLIC_API_CONFIG_TOKEN) private readonly registrationConfig: RegistrationPublicApiConfig,
 		@Inject(ROSTER_PUBLIC_API_CONFIG_TOKEN) private readonly rosterConfig: RosterPublicApiConfig,
-		@Inject(ROOM_PUBLIC_API_CONFIG_TOKEN) private readonly roomConfig: RoomPublicApiConfig
+		@Inject(ROOM_PUBLIC_API_CONFIG_TOKEN) private readonly roomConfig: RoomPublicApiConfig,
+		@Inject(SHARING_PUBLIC_API_CONFIG_TOKEN) private readonly sharingConfig: SharingPublicApiConfig
 	) {}
 
 	public getConfig(): ConfigResponse {
@@ -38,7 +40,8 @@ export class ServerUc {
 			this.provisioningConfig,
 			this.registrationConfig,
 			this.rosterConfig,
-			this.roomConfig
+			this.roomConfig,
+			this.sharingConfig
 		);
 
 		return configDto;
