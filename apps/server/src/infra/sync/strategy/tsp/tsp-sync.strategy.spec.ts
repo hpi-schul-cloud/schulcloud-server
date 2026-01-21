@@ -39,6 +39,7 @@ describe(TspSyncStrategy.name, () => {
 	let sut: TspSyncStrategy;
 	let tspSyncService: DeepMocked<TspSchoolService>;
 	let tspFetchService: DeepMocked<TspFetchService>;
+	let config: TspSyncConfig;
 	let provisioningService: DeepMocked<TspProvisioningService>;
 	let tspOauthDataMapper: DeepMocked<TspOauthDataMapper>;
 	let systemService: DeepMocked<SystemService>;
@@ -81,6 +82,7 @@ describe(TspSyncStrategy.name, () => {
 		sut = module.get(TspSyncStrategy);
 		tspSyncService = module.get(TspSchoolService);
 		tspFetchService = module.get(TspFetchService);
+		config = module.get(TSP_SYNC_CONFIG_TOKEN);
 		provisioningService = module.get(TspProvisioningService);
 		tspOauthDataMapper = module.get(TspOauthDataMapper);
 		systemService = module.get(SystemService);
@@ -229,13 +231,13 @@ describe(TspSyncStrategy.name, () => {
 				await sut.sync();
 
 				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalledTimes(1);
-				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalledWith(system, 1);
+				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalledWith(system, config.dataDaysToFetch);
 
 				expect(tspFetchService.fetchTspStudents).toHaveBeenCalledTimes(1);
-				expect(tspFetchService.fetchTspStudents).toHaveBeenCalledWith(system, 1);
+				expect(tspFetchService.fetchTspStudents).toHaveBeenCalledWith(system, config.dataDaysToFetch);
 
 				expect(tspFetchService.fetchTspClasses).toHaveBeenCalledTimes(1);
-				expect(tspFetchService.fetchTspClasses).toHaveBeenCalledWith(system, 1);
+				expect(tspFetchService.fetchTspClasses).toHaveBeenCalledWith(system, config.dataDaysToFetch);
 			});
 
 			it('should load all schools', async () => {
