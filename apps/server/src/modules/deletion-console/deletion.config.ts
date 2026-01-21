@@ -20,8 +20,6 @@ const config: DeletionConsoleConfig = {
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
 	) as boolean,
-	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
-	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
 	CALENDAR_SERVICE_ENABLED: Configuration.get('CALENDAR_SERVICE_ENABLED') as boolean,
 };
 

@@ -1,3 +1,2 @@
-import { LoggerConfig } from '@core/logger';
-
-export interface FilesConfig extends LoggerConfig {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface FilesConfig {}

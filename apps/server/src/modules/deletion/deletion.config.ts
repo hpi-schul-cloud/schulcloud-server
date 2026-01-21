@@ -1,4 +1,3 @@
-import { LoggerConfig } from '@core/logger';
 import { CalendarConfig } from '@infra/calendar';
 import { ClassConfig } from '@modules/class';
 import { FilesConfig } from '@modules/files';
@@ -7,8 +6,7 @@ import { TeamConfig } from '@modules/team';
 import { UserConfig } from '@modules/user';
 
 export interface DeletionConfig
-	extends LoggerConfig,
-		CalendarConfig,
+	extends CalendarConfig,
 		ClassConfig,
 		TeamConfig,
 		PseudonymConfig,
