@@ -5,7 +5,7 @@ import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
-import { FILE_STORAGE_API_HOST_CONFIG_TOKEN, FileStorageClientConfig } from './files-storage-client.config';
+import { FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig } from './files-storage-client.config';
 import { FilesStorageClientModule } from './files-storage-client.module';
 
 describe(FilesStorageClientModule.name, () => {
@@ -20,7 +20,7 @@ describe(FilesStorageClientModule.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				FilesStorageClientModule.register(FILE_STORAGE_API_HOST_CONFIG_TOKEN, FileStorageClientConfig),
+				FilesStorageClientModule.register(FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig),
 				ConfigModule.forRoot({ isGlobal: true }),
 			],
 		})

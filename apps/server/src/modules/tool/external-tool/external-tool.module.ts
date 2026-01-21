@@ -1,7 +1,7 @@
 import { LoggerModule } from '@core/logger';
 import { EncryptionModule } from '@infra/encryption';
 import {
-	FILE_STORAGE_API_HOST_CONFIG_TOKEN,
+	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
 	FilesStorageClientModule,
 	FileStorageClientConfig,
 } from '@infra/files-storage-client';
@@ -37,7 +37,7 @@ import {
 		HttpModule,
 		InstanceModule,
 		AuthorizationModule,
-		FilesStorageClientModule.register(FILE_STORAGE_API_HOST_CONFIG_TOKEN, FileStorageClientConfig),
+		FilesStorageClientModule.register(FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig),
 	],
 	providers: [
 		ExternalToolService,

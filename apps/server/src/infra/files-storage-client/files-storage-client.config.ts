@@ -6,8 +6,13 @@ export interface InternalFilesStorageClientConfig extends ConfigurationParameter
 	basePath: string;
 }
 
-export const FILE_STORAGE_API_HOST_CONFIG_TOKEN = 'FILE_STORAGE_API_HOST_CONFIG_TOKEN';
+export const FILE_STORAGE_CLIENT_CONFIG_TOKEN = 'FILE_STORAGE_CLIENT_CONFIG_TOKEN';
 
+/**
+ * This is default Configuration for the FILES_STORAGE__SERVICE_BASE_URL in FileStorageClient.
+ * if you need to read values from different env variables, create your own config class
+ * implementing InternalFileStorageClientConfig and provide it via the FileStorageClientModule.register method.
+ */
 @Configuration()
 export class FileStorageClientConfig implements InternalFilesStorageClientConfig {
 	@ConfigProperty('FILES_STORAGE__SERVICE_BASE_URL')

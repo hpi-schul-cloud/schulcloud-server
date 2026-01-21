@@ -4,7 +4,7 @@ import { CardClientModule } from '@infra/cards-client';
 import { ColumnClientModule } from '@infra/column-client';
 import { CoursesClientModule } from '@infra/courses-client';
 import {
-	FILE_STORAGE_API_HOST_CONFIG_TOKEN,
+	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
 	FilesStorageClientModule,
 	FileStorageClientConfig,
 } from '@infra/files-storage-client';
@@ -24,7 +24,7 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 	imports: [
 		RabbitMQWrapperModule,
 		FilesMetadataClientModule,
-		FilesStorageClientModule.register(FILE_STORAGE_API_HOST_CONFIG_TOKEN, FileStorageClientConfig),
+		FilesStorageClientModule.register(FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig),
 		LoggerModule,
 		CoursesClientModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
 		BoardsClientModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),

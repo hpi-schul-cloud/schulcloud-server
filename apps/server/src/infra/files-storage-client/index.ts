@@ -1,6 +1,6 @@
 export { FilesStorageClientAdapter } from './files-storage-client.adapter';
 export {
-	FILE_STORAGE_API_HOST_CONFIG_TOKEN,
+	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
 	FileStorageClientConfig,
 	InternalFilesStorageClientConfig,
 } from './files-storage-client.config';

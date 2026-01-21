@@ -9,7 +9,7 @@ import type { Request } from 'express';
 import { Readable } from 'node:stream';
 import { from, throwError } from 'rxjs';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
-import { FILE_STORAGE_API_HOST_CONFIG_TOKEN, FileStorageClientConfig } from './files-storage-client.config';
+import { FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig } from './files-storage-client.config';
 import { FileApi, FileRecordParentType, StorageLocation } from './generated';
 
 describe(FilesStorageClientAdapter.name, () => {
@@ -40,7 +40,7 @@ describe(FilesStorageClientAdapter.name, () => {
 					useValue: createMock<HttpService>(),
 				},
 				{
-					provide: FILE_STORAGE_API_HOST_CONFIG_TOKEN,
+					provide: FILE_STORAGE_CLIENT_CONFIG_TOKEN,
 					useValue: {
 						basePath: faker.internet.url(),
 					},
@@ -59,7 +59,7 @@ describe(FilesStorageClientAdapter.name, () => {
 		loggerMock = module.get(Logger);
 		errorLoggerMock = module.get(ErrorLogger);
 		httpServiceMock = module.get(HttpService);
-		config = module.get(FILE_STORAGE_API_HOST_CONFIG_TOKEN);
+		config = module.get(FILE_STORAGE_CLIENT_CONFIG_TOKEN);
 
 		filesStorageClientAdapter = new FilesStorageClientAdapter(
 			loggerMock,
