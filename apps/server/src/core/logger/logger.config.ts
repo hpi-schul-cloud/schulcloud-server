@@ -2,7 +2,7 @@ import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer';
 import { IsBoolean, IsEnum } from 'class-validator';
 
-export enum LOG_LEVELS {
+export enum LogLevels {
 	DEBUG = 'debug',
 	INFO = 'info',
 	NOTICE = 'notice',
@@ -18,8 +18,8 @@ export const LOGGER_CONFIG_TOKEN = 'LOGGER_CONFIG_TOKEN';
 @Configuration()
 export class LoggerConfig {
 	@ConfigProperty('NEST_LOG_LEVEL')
-	@IsEnum(LOG_LEVELS)
-	public nestLogLevel = LOG_LEVELS.NOTICE;
+	@IsEnum(LogLevels)
+	public nestLogLevel = LogLevels.NOTICE;
 
 	/**
 	 * By default, the application is terminated after an uncaughtException has been logged.

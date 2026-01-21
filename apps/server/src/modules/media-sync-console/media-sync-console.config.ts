@@ -1,16 +1,10 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { BiloClientConfig } from '@infra/bilo-client';
 import { ConsoleWriterConfig } from '@infra/console';
 import { RabbitMqConfig } from '@infra/rabbitmq';
 import { MediaSourceConfig } from '@modules/media-source';
 import { ToolConfig } from '@modules/tool';
 
-export interface MediaSyncConsoleConfig
-	extends ConsoleWriterConfig,
-		RabbitMqConfig,
-		BiloClientConfig,
-		MediaSourceConfig,
-		ToolConfig {}
+export interface MediaSyncConsoleConfig extends ConsoleWriterConfig, RabbitMqConfig, MediaSourceConfig, ToolConfig {}
 
 const config: MediaSyncConsoleConfig = {
 	CTL_TOOLS_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,

@@ -1,14 +1,11 @@
 import { ConfigurationModule } from '@infra/configuration';
-import { DynamicModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { utilities, WinstonModule } from 'nest-winston';
 import winston from 'winston';
 import { ErrorLogger } from './error-logger';
 import { LegacyLogger } from './legacy-logger.service';
 import { Logger } from './logger';
 import { LOGGER_CONFIG_TOKEN, LoggerConfig } from './logger.config';
-
-const providers = [LegacyLogger, Logger, ErrorLogger];
-const exportsArray = [LegacyLogger, Logger, ErrorLogger];
 
 @Module({
 	imports: [
@@ -35,16 +32,7 @@ const exportsArray = [LegacyLogger, Logger, ErrorLogger];
 			inject: [LOGGER_CONFIG_TOKEN],
 		}),
 	],
-	providers,
-	exports: exportsArray,
+	providers: [LegacyLogger, Logger, ErrorLogger],
+	exports: [LegacyLogger, Logger, ErrorLogger],
 })
-export class LoggerModule {
-	public static register(configInjectionToken: string, configConstructor: new () => LoggerConfig): DynamicModule {
-		return {
-			module: LoggerModule,
-			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
-			providers,
-			exports: exportsArray,
-		};
-	}
-}
+export class LoggerModule {}
