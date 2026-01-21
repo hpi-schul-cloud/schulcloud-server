@@ -4,6 +4,7 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { BoardResponse, BoardsClientAdapter } from '@infra/boards-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
+import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { InternalServerErrorException } from '@nestjs/common';
@@ -124,7 +125,7 @@ describe('CommonCartridgeExportService', () => {
 		};
 	};
 	const setupFile = () => {
-		const fileRecord: FileDto = new FileDto({
+		const fileDto: FileDto = new FileDto({
 			id: faker.string.uuid(),
 			name: faker.system.fileName(),
 			parentId: faker.string.uuid(),
@@ -132,12 +133,20 @@ describe('CommonCartridgeExportService', () => {
 			createdAt: faker.date.past(),
 			updatedAt: faker.date.recent(),
 		});
+		const fileRecord = fileRecordResponseFactory.build({
+			id: fileDto.id,
+			name: fileDto.name,
+			parentId: fileDto.parentId,
+			parentType: fileDto.parentType,
+		});
+
 		const file = Readable.from(faker.lorem.paragraphs(100));
 
-		filesMetadataClientAdapterMock.listFilesOfParent.mockResolvedValue([fileRecord]);
+		filesMetadataClientAdapterMock.listFilesOfParent.mockResolvedValue([fileDto]);
+		filesStorageClientAdapterMock.getFileRecord.mockResolvedValue(fileRecord);
 		filesStorageClientAdapterMock.getStream.mockResolvedValue(file);
 
-		return { fileRecord, file };
+		return { fileDto, file };
 	};
 
 	beforeAll(async () => {
@@ -239,13 +248,13 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should add task with file', async () => {
-				const { archive, boardTask, fileRecord } = await setup();
+				const { archive, boardTask, fileDto } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('title', boardTask.name));
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(`<resource identifier="i${boardTask.id}"`);
 
-				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(`${fileRecord.name}"`);
+				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(`${fileDto.name}"`);
 			});
 
 			it('should add tasks of lesson to manifest file', async () => {
