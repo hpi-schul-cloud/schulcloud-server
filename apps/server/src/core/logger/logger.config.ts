@@ -2,7 +2,7 @@ import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer';
 import { IsBoolean, IsEnum } from 'class-validator';
 
-export enum LogLevels {
+enum LogLevels {
 	DEBUG = 'debug',
 	INFO = 'info',
 	NOTICE = 'notice',
