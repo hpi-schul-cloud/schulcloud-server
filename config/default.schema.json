@@ -148,31 +148,6 @@
 			"default": 2629746,
 			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration."
 		},
-		"TSP_SYNC_SCHOOL_LIMIT": {
-			"type": "number",
-			"default": "10",
-			"description": "The amount of schools the sync handles at once."
-		},
-		"TSP_SYNC_SCHOOL_DAYS_TO_FETCH": {
-			"type": "number",
-			"default": "1",
-			"description": "The amount of days for which the sync fetches schools from the TSP."
-		},
-		"TSP_SYNC_DATA_LIMIT": {
-			"type": "number",
-			"default": "150",
-			"description": "The amount of school data updates the sync handles at once."
-		},
-		"TSP_SYNC_DATA_DAYS_TO_FETCH": {
-			"type": "number",
-			"default": "1",
-			"description": "The amount of days for which the sync fetches school data from the TSP."
-		},
-		"FEATURE_TSP_SYNC_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Feature toggle for TSP sync."
-		},
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS": {
 			"type": "boolean",
 			"default": true,
@@ -213,22 +188,6 @@
 		"NO_COLOR": {
 			"type": "string",
 			"description": "The value is used to disable logging color in terminal and is set in production always to true. It is not connected to the loggers it self."
-		},
-		"FILES_STORAGE": {
-			"type": "object",
-			"description": "Files storage server properties, required always to be defined",
-			"required": ["SERVICE_BASE_URL"],
-			"properties": {
-				"SERVICE_BASE_URL": {
-					"type": "string",
-					"format": "uri",
-					"default": "http://localhost:4444",
-					"description": "The URI of the file service"
-				}
-			},
-			"default": {
-				"SERVICE_BASE_URL": "http://localhost:4444"
-			}
 		},
 		"COMMON_CARTRIDGE": {
 			"type": "object",
@@ -1115,27 +1074,12 @@
 			"default": false,
 			"description": "Toggle for copy course feature."
 		},
-		"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the IMSCC course download feature."
-		},
 		"GEOGEBRA_BASE_URL": {
 			"type": "string",
 			"format": "uri",
 			"default": "https://www.geogebra.org",
 			"pattern": ".*(?<!/)$",
 			"description": "Base URL of GeoGebra materials"
-		},
-		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the Common Cartridge course import feature."
-		},
-		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE": {
-			"type": "integer",
-			"default": 2000000000,
-			"description": "The maximum file upload size in bytes for the Common Cartridge file during import."
 		},
 		"GHOST_BASE_URL": {
 			"type": "string",

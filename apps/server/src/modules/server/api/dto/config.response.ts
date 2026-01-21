@@ -1,6 +1,7 @@
 import { AlertPublicApiConfig } from '@modules/alert';
 import { BoardPublicApiConfig } from '@modules/board';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
+import { CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { RegistrationPublicApiConfig } from '@modules/registration';
@@ -275,7 +276,8 @@ export class ConfigResponse {
 			RegistrationPublicApiConfig &
 			RosterPublicApiConfig &
 			RoomPublicApiConfig &
-			SharingPublicApiConfig
+			SharingPublicApiConfig &
+			CommonCartridgePublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -312,8 +314,8 @@ export class ConfigResponse {
 		this.FEATURE_USER_MIGRATION_ENABLED = config.FEATURE_USER_MIGRATION_ENABLED;
 		this.FEATURE_COPY_SERVICE_ENABLED = config.FEATURE_COPY_SERVICE_ENABLED;
 		this.FEATURE_CONSENT_NECESSARY = config.FEATURE_CONSENT_NECESSARY;
-		this.FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED = config.FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED;
-		this.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED = config.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED;
+		this.FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED = config.courseExportEnabled;
+		this.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED = config.courseImportEnabled;
 		this.FEATURE_USER_LOGIN_MIGRATION_ENABLED = config.FEATURE_USER_LOGIN_MIGRATION_ENABLED;
 		this.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED = config.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED;
 		this.GHOST_BASE_URL = config.GHOST_BASE_URL;

@@ -1,23 +1,28 @@
 import { Logger } from '@core/logger';
-import { Injectable, Optional } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InvalidTargetLoggable } from '../errors/invalid-target.loggable';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { TspSyncStrategy } from '../strategy/tsp/tsp-sync.strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
+import { SYNC_CONFIG_TOKEN, SyncConfig } from '../sync.config';
 
 @Injectable()
 export class SyncService {
 	private strategies: Map<SyncStrategyTarget, SyncStrategy> = new Map<SyncStrategyTarget, SyncStrategy>();
 
-	constructor(private readonly logger: Logger, @Optional() private readonly tspSyncStrategy?: TspSyncStrategy) {
+	constructor(
+		private readonly logger: Logger,
+		@Inject(SYNC_CONFIG_TOKEN) private readonly config: SyncConfig,
+		private readonly tspSyncStrategy: TspSyncStrategy
+	) {
 		this.logger.setContext(SyncService.name);
-		this.registerStrategy(tspSyncStrategy);
+		if (this.config.tspSyncEnabled) {
+			this.registerStrategy(this.tspSyncStrategy);
+		}
 	}
 
-	protected registerStrategy(strategy?: SyncStrategy): void {
-		if (strategy) {
-			this.strategies.set(strategy.getType(), strategy);
-		}
+	protected registerStrategy(strategy: SyncStrategy): void {
+		this.strategies.set(strategy.getType(), strategy);
 	}
 
 	public async startSync(target: string): Promise<void> {

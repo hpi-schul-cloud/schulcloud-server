@@ -1,10 +1,8 @@
 import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import type { FilesStorageClientConfig } from '@infra/files-storage-client';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
-import type { TspSyncConfig } from '@infra/sync';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { ManagementSeedDataConfig } from '@modules/management';
@@ -38,10 +36,7 @@ export interface ServerConfig
 		UserImportConfig,
 		SchulconnexClientConfig,
 		UserImportConfig,
-		TspSyncConfig,
-		ToolConfig,
 		ShdConfig,
-		FilesStorageClientConfig,
 		ManagementSeedDataConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
@@ -89,7 +84,6 @@ export interface ServerConfig
 	FEATURE_AI_TUTOR_ENABLED: boolean;
 	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: boolean;
 	FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED: boolean;
-	FEATURE_TSP_SYNC_ENABLED: boolean;
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
 	ROOM_MEMBER_INFO_URL: string | null;
@@ -156,14 +150,10 @@ const config: ServerConfig = {
 	TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: Configuration.get(
 		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
 	) as string,
-	FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED: Configuration.get(
-		'FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED'
-	) as boolean,
 	GEOGEBRA_BASE_URL: Configuration.get('GEOGEBRA_BASE_URL') as string,
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
-	FEATURE_TSP_SYNC_ENABLED: Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean,
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
 	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
@@ -174,12 +164,6 @@ const config: ServerConfig = {
 	FEATURE_SHOW_OUTDATED_USERS: Configuration.get('FEATURE_SHOW_OUTDATED_USERS') as boolean,
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: Configuration.get('FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION') as boolean,
 	FEATURE_SHOW_MIGRATION_WIZARD: Configuration.get('FEATURE_SHOW_MIGRATION_WIZARD') as boolean,
-	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED: Configuration.get(
-		'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED'
-	) as boolean,
-	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: Configuration.get(
-		'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE'
-	) as number,
 	MIGRATION_WIZARD_DOCUMENTATION_LINK: Configuration.has('MIGRATION_WIZARD_DOCUMENTATION_LINK')
 		? (Configuration.get('MIGRATION_WIZARD_DOCUMENTATION_LINK') as string)
 		: undefined,
@@ -221,7 +205,6 @@ const config: ServerConfig = {
 	FEATURE_PREFERRED_CTL_TOOLS_ENABLED: Configuration.get('FEATURE_PREFERRED_CTL_TOOLS_ENABLED') as boolean,
 	CTL_TOOLS_RELOAD_TIME_MS: Configuration.get('CTL_TOOLS_RELOAD_TIME_MS') as number,
 	HOST: Configuration.get('HOST') as string,
-	FILES_STORAGE__SERVICE_BASE_URL: Configuration.get('FILES_STORAGE__SERVICE_BASE_URL') as string,
 	FEATURE_USER_MIGRATION_ENABLED: Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean,
 	FEATURE_USER_MIGRATION_SYSTEM_ID: Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string,
 	FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: Configuration.get(
@@ -232,10 +215,6 @@ const config: ServerConfig = {
 	FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED: Configuration.get(
 		'FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED'
 	) as boolean,
-	TSP_SYNC_SCHOOL_LIMIT: Configuration.get('TSP_SYNC_SCHOOL_LIMIT') as number,
-	TSP_SYNC_SCHOOL_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_SCHOOL_DAYS_TO_FETCH') as number,
-	TSP_SYNC_DATA_LIMIT: Configuration.get('TSP_SYNC_DATA_LIMIT') as number,
-	TSP_SYNC_DATA_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_DATA_DAYS_TO_FETCH') as number,
 	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
 	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
