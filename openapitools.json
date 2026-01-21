@@ -107,10 +107,10 @@
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
-					"FILTER": "operationId:upload|download|uploadFromUrl|deleteByParent|deleteFile"
+					"FILTER": "operationId:upload|download|uploadFromUrl|deleteByParent|deleteFile|getFileRecord"
 				},
 				"globalProperty": {
-					"models": "FileRecordResponse:StreamableFile:FileRecordParentType:FileRecordScanStatus:PreviewStatus:StorageLocation:FileUrlParams:FileRecordListResponse",
+					"models": "FileRecordResponse:StreamableFile:FileRecordParentType:FileRecordScanStatus:PreviewStatus:StorageLocation:FileUrlParams:FileRecordListResponse:SingleFileParams",
 					"apis": "",
 					"supportingFiles": ""
 				},
