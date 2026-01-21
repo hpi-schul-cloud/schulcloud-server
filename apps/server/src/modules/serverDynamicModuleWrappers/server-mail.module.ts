@@ -1,14 +1,9 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MailModule } from '@infra/mail';
 import { Module } from '@nestjs/common';
+import { MailConfig, SERVER_MAIL_CONFIG_TOKEN } from './server-mail.config';
 
 @Module({
-	imports: [
-		MailModule.forRoot({
-			exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
-			routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
-		}),
-	],
+	imports: [MailModule.register(MailConfig, SERVER_MAIL_CONFIG_TOKEN)],
 	exports: [MailModule],
 })
 export class ServerMailModule {}
