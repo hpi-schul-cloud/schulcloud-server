@@ -345,7 +345,6 @@
 		"permissions": [
 			"NEWS_VIEW",
 			"UPLOAD_FILES",
-			"USE_LIBREOFFICE",
 			"USE_ROCKETCHAT",
 			"JOIN_MEETING"
 		],
@@ -367,7 +366,6 @@
 			"CALENDAR_VIEW",
 			"NEWS_VIEW",
 			"UPLOAD_FILES",
-			"USE_LIBREOFFICE",
 			"USE_ROCKETCHAT",
 			"JOIN_MEETING"
 		],
