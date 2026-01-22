@@ -1,6 +1,4 @@
-import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import { LtiDeepLinkingService } from './lti-deep-linking.service';
@@ -15,10 +13,7 @@ describe(LtiDeepLinkingService.name, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				LtiDeepLinkingService,
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
-				},
+
 				{
 					provide: TOOL_CONFIG_TOKEN,
 					useValue: { publicBackendUrl: '' },

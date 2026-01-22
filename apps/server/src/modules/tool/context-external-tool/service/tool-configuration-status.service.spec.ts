@@ -7,10 +7,8 @@ import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
 import { userDoFactory } from '@modules/user/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
-import { ToolConfig } from '../..';
 import {
 	ContextExternalToolConfigurationStatus,
 	ToolParameterDuplicateLoggableException,
@@ -20,7 +18,7 @@ import {
 import { CommonToolValidationService } from '../../common/service';
 import { customParameterFactory, externalToolFactory } from '../../external-tool/testing';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
-import { TOOL_CONFIG_TOKEN } from '../../tool-config';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import { contextExternalToolFactory } from '../testing';
 import { ToolConfigurationStatusService } from './tool-configuration-status.service';
 
@@ -49,10 +47,6 @@ describe(ToolConfigurationStatusService.name, () => {
 				{
 					provide: MediaSchoolLicenseService,
 					useValue: createMock<MediaSchoolLicenseService>(),
-				},
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<ToolConfig, true>>(),
 				},
 				{
 					provide: UserService,
