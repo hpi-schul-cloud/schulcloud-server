@@ -33,10 +33,15 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 		if (!this.hasAccessToSchool(user, object.schoolId)) {
 			return false;
 		}
-		const { requiredPermissions } = context;
-		const hasAllPermissions: boolean = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
+		const hasAllPermissions = this.hasAllPermissions(user, object, context.requiredPermissions ?? []);
 
 		return hasAllPermissions;
+	}
+
+	private hasAllPermissions(user: User, object: RoomMemberAuthorizable, requiredPermissions: Permission[]): boolean {
+		const { allPermissions } = this.resolveUserPermissions(user, object.roomMembershipAuthorizable);
+		const missingPermissions = requiredPermissions.filter((permission) => !allPermissions.includes(permission));
+		return missingPermissions.length === 0;
 	}
 
 	public canPassOwnershipTo(user: User, object: RoomMemberAuthorizable): boolean {

@@ -1,10 +1,16 @@
 import { EntityManager } from '@mikro-orm/core';
-import { AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@modules/authorization';
 import { Role } from '@modules/role/repo';
 import { roomEntityFactory } from '@modules/room/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomSetup } from '../../room/api/test/util/room-setup.helper';
@@ -12,6 +18,7 @@ import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.d
 import { buildRoomMemberAuthorizable } from '../testing';
 import { RoomMemberRule } from './room-member.rule';
 import { RoomMembershipRule } from './room-membership.rule';
+
 describe(RoomMemberRule.name, () => {
 	let service: RoomMemberRule;
 	// let roomMembershipRule: RoomMembershipRule;
@@ -156,12 +163,6 @@ describe(RoomMemberRule.name, () => {
 		const targetUser = roomSetup.getUserByName(targetUserAlias);
 		const { room, userGroupEntity } = roomSetup;
 
-		// const roomRoles = RoomRolesTestFactory.createRoomRoles();
-		// const members: UserWithRoomRoles[] = [];
-		// if (roomRole !== 'none') {
-		// 	const roomRoleDto = roomRoles[roomRole];
-		// 	members.push({ userId: user.id, roles: [roomRoleDto], userSchoolId: user.school.id });
-		// }
 		const members: { userId: string; roles: Role[]; userSchoolId: string }[] = userGroupEntity.users.map(
 			({ user, role }) => {
 				return {
@@ -177,6 +178,22 @@ describe(RoomMemberRule.name, () => {
 		// return roomSetup;
 		return { user, roomMemberAuthorizable };
 	};
+
+	describe('hasPermission', () => {
+		it.each([['sameSchool_teacher_roomadmin', Permission.ROOM_ADD_MEMBERS, true]])(
+			'%s has permission %s  =  (%s)',
+			async (alias, permission, expected) => {
+				const { user, roomMemberAuthorizable } = await setup(alias, 'sameSchool_student_roomviewer');
+				const context: AuthorizationContext = new AuthorizationContext({
+					requiredPermissions: [permission],
+					action: Action.write,
+				});
+				const result = service.hasPermission(user, roomMemberAuthorizable, context);
+
+				expect(result).toBe(expected);
+			}
+		);
+	});
 
 	describe('canPassOwnershipTo', () => {
 		describe('when user is teacher', () => {
