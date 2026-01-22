@@ -1,7 +1,6 @@
 import { TestEncryptionConfig } from '@infra/encryption';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IDENTITY_MANAGEMENT_CONFIG_TOKEN, IdentityManagementConfig } from './identity-management.config';
 import { IdentityManagementModule } from './identity-management.module';
 import { IdentityManagementService } from './identity-management.service';
 import {
@@ -18,10 +17,6 @@ describe('IdentityManagementModule', () => {
 			imports: [
 				IdentityManagementModule.register({
 					encryptionConfig: { Constructor: TestEncryptionConfig, injectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN' },
-					identityManagementConfig: {
-						Constructor: IdentityManagementConfig,
-						injectionToken: IDENTITY_MANAGEMENT_CONFIG_TOKEN,
-					},
 					keycloakAdministrationConfig: {
 						Constructor: KeycloakAdministrationConfig,
 						injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,

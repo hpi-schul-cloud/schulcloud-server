@@ -2,8 +2,6 @@ import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
 import {
-	IDENTITY_MANAGEMENT_CONFIG_TOKEN,
-	IdentityManagementConfig,
 	IdentityManagementModule,
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
@@ -73,10 +71,6 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 			encryptionConfig: {
 				Constructor: AuthenticationEncryptionConfig,
 				injectionToken: AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN,
-			},
-			identityManagementConfig: {
-				Constructor: IdentityManagementConfig,
-				injectionToken: IDENTITY_MANAGEMENT_CONFIG_TOKEN,
 			},
 			keycloakAdministrationConfig: {
 				Constructor: KeycloakAdministrationConfig,

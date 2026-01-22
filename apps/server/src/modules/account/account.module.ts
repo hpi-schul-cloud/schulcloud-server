@@ -1,8 +1,6 @@
 import { LoggerModule } from '@core/logger/logger.module';
 import { ConfigurationModule } from '@infra/configuration';
 import {
-	IDENTITY_MANAGEMENT_CONFIG_TOKEN,
-	IdentityManagementConfig,
 	IdentityManagementModule,
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
@@ -31,10 +29,6 @@ function accountIdmToDtoMapperFactory(config: AccountConfig): AccountIdmToDoMapp
 	imports: [
 		IdentityManagementModule.register({
 			encryptionConfig: { Constructor: AccountEncryptionConfig, injectionToken: ACCOUNT_ENCRYPTION_CONFIG_TOKEN },
-			identityManagementConfig: {
-				Constructor: IdentityManagementConfig,
-				injectionToken: IDENTITY_MANAGEMENT_CONFIG_TOKEN,
-			},
 			keycloakAdministrationConfig: {
 				Constructor: KeycloakAdministrationConfig,
 				injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,

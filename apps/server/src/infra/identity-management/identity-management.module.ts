@@ -1,5 +1,4 @@
 import { LoggerModule } from '@core/logger';
-import { ConfigurationModule } from '@infra/configuration';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
 import { EncryptionModule } from '../encryption';
@@ -14,11 +13,10 @@ import { IdentityManagementModuleOptions } from './types';
 @Module({})
 export class IdentityManagementModule {
 	public static register(options: IdentityManagementModuleOptions): DynamicModule {
-		const { encryptionConfig, identityManagementConfig, keycloakAdministrationConfig } = options;
+		const { encryptionConfig, keycloakAdministrationConfig } = options;
 		return {
 			module: IdentityManagementModule,
 			imports: [
-				ConfigurationModule.register(identityManagementConfig.injectionToken, identityManagementConfig.Constructor),
 				KeycloakModule.register({
 					encryptionConfig,
 					keycloakAdministrationConfig,

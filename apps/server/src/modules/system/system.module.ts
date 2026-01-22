@@ -1,6 +1,4 @@
 import {
-	IDENTITY_MANAGEMENT_CONFIG_TOKEN,
-	IdentityManagementConfig,
 	IdentityManagementModule,
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
@@ -14,10 +12,6 @@ import { SystemMikroOrmRepo } from './repo/mikro-orm/system.repo';
 	imports: [
 		IdentityManagementModule.register({
 			encryptionConfig: { Constructor: SystemEncryptionConfig, injectionToken: SYSTEM_ENCRYPTION_CONFIG_TOKEN },
-			identityManagementConfig: {
-				Constructor: IdentityManagementConfig,
-				injectionToken: IDENTITY_MANAGEMENT_CONFIG_TOKEN,
-			},
 			keycloakAdministrationConfig: {
 				Constructor: KeycloakAdministrationConfig,
 				injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,

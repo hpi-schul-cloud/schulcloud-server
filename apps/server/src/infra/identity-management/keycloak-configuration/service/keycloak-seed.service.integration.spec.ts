@@ -10,6 +10,11 @@ import { v1 } from 'uuid';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
 import { KeycloakSeedService } from './keycloak-seed.service';
+import {
+	KeycloakAdministrationConfig,
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+} from '@infra/identity-management/keycloak-administration/keycloak-administration-config';
+import { KeycloakConfigurationConfig, KEYCLOAK_CONFIGURATION_CONFIG_TOKEN } from '../keycloak-configuration-config';
 
 describe('KeycloakSeedService Integration', () => {
 	let module: TestingModule;
@@ -35,7 +40,17 @@ describe('KeycloakSeedService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				KeycloakConfigurationModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
+				KeycloakConfigurationModule.register({
+					encryptionConfig: { Constructor: TestEncryptionConfig, injectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN' },
+					keycloakAdministrationConfig: {
+						Constructor: KeycloakAdministrationConfig,
+						injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+					},
+					keycloakConfigurationConfig: {
+						Constructor: KeycloakConfigurationConfig,
+						injectionToken: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
+					},
+				}),
 				LoggerModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 				ConfigModule.forRoot({
