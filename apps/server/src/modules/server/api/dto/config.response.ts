@@ -7,6 +7,7 @@ import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { RegistrationPublicApiConfig } from '@modules/registration';
 import { RoomPublicApiConfig } from '@modules/room/room.config';
 import { RosterPublicApiConfig } from '@modules/roster';
+import { SharingPublicApiConfig } from '@modules/sharing';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
@@ -275,6 +276,7 @@ export class ConfigResponse {
 			RegistrationPublicApiConfig &
 			RosterPublicApiConfig &
 			RoomPublicApiConfig &
+			SharingPublicApiConfig &
 			CommonCartridgePublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
@@ -300,14 +302,14 @@ export class ConfigResponse {
 			config.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED;
 		this.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED = config.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED;
 		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED = config.featureColumnBoardExternalToolsEnabled;
-		this.FEATURE_COLUMN_BOARD_SHARE = config.FEATURE_COLUMN_BOARD_SHARE;
+		this.FEATURE_COLUMN_BOARD_SHARE = config.featureColumnBoardShare;
 		this.FEATURE_COLUMN_BOARD_SOCKET_ENABLED = config.FEATURE_COLUMN_BOARD_SOCKET_ENABLED;
 		this.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = config.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED;
 		this.FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED = config.FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED;
-		this.FEATURE_COURSE_SHARE = config.FEATURE_COURSE_SHARE;
+		this.FEATURE_COURSE_SHARE = config.featureCourseShare;
 		this.FEATURE_LOGIN_LINK_ENABLED = config.featureLoginLinkEnabled;
-		this.FEATURE_LESSON_SHARE = config.FEATURE_LESSON_SHARE;
-		this.FEATURE_TASK_SHARE = config.FEATURE_TASK_SHARE;
+		this.FEATURE_LESSON_SHARE = config.featureLessonShare;
+		this.FEATURE_TASK_SHARE = config.featureTaskShare;
 		this.FEATURE_BOARD_LAYOUT_ENABLED = config.FEATURE_BOARD_LAYOUT_ENABLED;
 		this.FEATURE_USER_MIGRATION_ENABLED = config.FEATURE_USER_MIGRATION_ENABLED;
 		this.FEATURE_COPY_SERVICE_ENABLED = config.FEATURE_COPY_SERVICE_ENABLED;
@@ -348,7 +350,7 @@ export class ConfigResponse {
 		this.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = config.featureBoardReadersCanEditToggle;
 		this.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = config.featureExternalPersonRegistrationEnabled;
 		this.FEATURE_ROOM_COPY_ENABLED = config.featureRoomCopyEnabled;
-		this.FEATURE_ROOM_SHARE = config.FEATURE_ROOM_SHARE;
+		this.FEATURE_ROOM_SHARE = config.featureRoomShare;
 		this.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED;
 		this.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED;
 		this.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = config.featureRoomLinkInvitationExternalPersonsEnabled;

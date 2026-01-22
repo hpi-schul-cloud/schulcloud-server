@@ -7,8 +7,7 @@ describe('SchulconnexProvisioningConfig', () => {
 
 			expect(result).toEqual(
 				expect.objectContaining<Partial<SchulconnexProvisioningConfig>>({
-					EXIT_ON_ERROR: expect.any(Boolean),
-					NEST_LOG_LEVEL: expect.any(String),
+					INCOMING_REQUEST_TIMEOUT: expect.any(Number),
 				})
 			);
 		});

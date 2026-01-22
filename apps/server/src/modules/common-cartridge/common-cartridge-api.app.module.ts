@@ -20,8 +20,6 @@ import { CommonCartridgeModule } from './common-cartridge.module';
 import { CommonCartridgeController } from './controller/common-cartridge.controller';
 
 const config = {
-	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
-	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('COMMON_CARTRIDGE__INCOMING_REQUEST_TIMEOUT_MS') as number,
 };
 @Module({

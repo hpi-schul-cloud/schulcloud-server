@@ -2,7 +2,6 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { S3Config } from '@infra/s3-client';
 
 export interface FwuLearningContentsConfig {
-	NEST_LOG_LEVEL: string;
 	INCOMING_REQUEST_TIMEOUT: number;
 }
 
@@ -18,7 +17,6 @@ export const s3Config: S3Config = {
 };
 
 const fwuLearningContentsConfig: FwuLearningContentsConfig = {
-	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('FWU_CONTENT__INCOMING_REQUEST_TIMEOUT_MS') as number,
 };
 

@@ -15,7 +15,6 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from '../mapper';
-import { ShareTokenUC, ImportTokenUC } from './index';
 import {
 	ShareTokenBodyParams,
 	ShareTokenImportBodyParams,
@@ -23,6 +22,8 @@ import {
 	ShareTokenResponse,
 	ShareTokenUrlParams,
 } from './dto';
+import { ImportTokenUC } from './import-token.uc';
+import { ShareTokenUC } from './share-token.uc';
 
 @ApiTags('ShareToken')
 @JwtAuthentication()
