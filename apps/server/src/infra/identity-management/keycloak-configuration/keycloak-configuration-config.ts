@@ -12,4 +12,8 @@ export class KeycloakConfigurationConfig {
 	@ConfigProperty('KEYCLOAK_USERS_FILE')
 	@IsString()
 	public usersFile = './backup/setup/users.json';
+
+	@ConfigProperty('SC_DOMAIN')
+	@IsString()
+	public scDomain!: string;
 }
