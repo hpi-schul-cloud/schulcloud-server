@@ -55,8 +55,10 @@ describe('CommonCartridgeExportService', () => {
 
 	const createXmlString = (nodeName: string, value: boolean | number | string): string =>
 		`<${nodeName}>${value.toString()}</${nodeName}>`;
+
 	const getFileContent = (archive: AdmZip, filePath: string): string | undefined =>
 		archive.getEntry(filePath)?.getData().toString();
+
 	const setupParams = async (
 		version: CommonCartridgeVersion,
 		exportTopics: boolean,
@@ -124,6 +126,7 @@ describe('CommonCartridgeExportService', () => {
 			linkElement: listOfCardsResponse.data[0].elements[1].content as LinkElementContentDto,
 		};
 	};
+
 	const setupFile = () => {
 		const fileDto: FileDto = new FileDto({
 			id: faker.string.uuid(),
@@ -526,6 +529,152 @@ describe('CommonCartridgeExportService', () => {
 				expect(() => archive.emit('error', {} as unknown as ArchiverError)).toThrow(
 					new InternalServerErrorException('Error while creating archive', { cause: {} })
 				);
+			});
+		});
+
+		describe('when file on task is blocked by antivirus', () => {
+			const setup = () => {
+				const courseMetadata = courseMetadataFactory.build();
+				const lessons = lessonFactory.buildList(2);
+				const [lesson] = lessons;
+				lesson.courseId = courseMetadata.id;
+
+				const boardSkeleton: BoardResponse = columnBoardFactory.build();
+				const cardIds = boardSkeleton.columns
+					.map((c) => c.cards)
+					.flat()
+					.map((c) => c.cardId);
+				const listOfCardsResponse: CardListResponseDto = listOfCardResponseFactory.withCardIds(cardIds).build();
+				const boardTask: BoardTaskDto = boardTaskFactory.build();
+				boardTask.courseName = courseMetadata.title;
+
+				const room: RoomBoardDto = roomFactory.build();
+				room.title = courseMetadata.title;
+				room.elements[0].content = boardTask;
+				room.elements[1].content = new BoardLessonDto(boardLessonFactory.build());
+				room.elements[1].content.id = lesson.lessonId;
+				room.elements[1].content.name = lesson.name;
+				room.elements[2].content = new BoardColumnBoardDto(boardColumnFactory.build());
+
+				coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(courseMetadata);
+				lessonClientAdapterMock.getLessonById.mockResolvedValue(lesson);
+				lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lesson.linkedTasks ?? []);
+				boardClientAdapterMock.getBoardSkeletonById.mockResolvedValue(boardSkeleton);
+				cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
+				courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
+
+				const fileDto1: FileDto = new FileDto({
+					id: faker.string.uuid(),
+					name: faker.system.fileName(),
+					parentId: faker.string.uuid(),
+					parentType: FileRecordParentType.Course,
+					createdAt: faker.date.past(),
+					updatedAt: faker.date.recent(),
+				});
+				const fileDto2: FileDto = new FileDto({
+					id: faker.string.uuid(),
+					name: faker.system.fileName(),
+					parentId: faker.string.uuid(),
+					parentType: FileRecordParentType.Course,
+					createdAt: faker.date.past(),
+					updatedAt: faker.date.recent(),
+				});
+
+				filesMetadataClientAdapterMock.listFilesOfParent.mockResolvedValueOnce([fileDto1, fileDto2]);
+				const fileRecord = fileRecordResponseFactory.build({
+					securityCheckStatus: 'blocked',
+				});
+				filesStorageClientAdapterMock.getFileRecord
+					.mockResolvedValueOnce(fileRecord)
+					.mockResolvedValueOnce(fileRecordResponseFactory.build());
+
+				const courseId = faker.string.uuid();
+				return { courseId, taskId: boardTask.id, fileDto1, fileDto2 };
+			};
+
+			it('should be skipped', async () => {
+				const { courseId, taskId, fileDto1, fileDto2 } = setup();
+
+				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [taskId], []);
+				expect(result).toBeDefined();
+
+				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(fileDto1.id, fileDto1.name);
+				expect(filesStorageClientAdapterMock.getStream).toHaveBeenCalledWith(fileDto2.id, fileDto2.name);
+			});
+		});
+
+		describe('when file on card is blocked by antivirus', () => {
+			const setup = () => {
+				const courseMetadata = courseMetadataFactory.build();
+				const lessons = lessonFactory.buildList(2);
+				const [lesson] = lessons;
+				lesson.courseId = courseMetadata.id;
+
+				const boardSkeleton: BoardResponse = columnBoardFactory.build();
+				const cardIds = boardSkeleton.columns
+					.map((c) => c.cards)
+					.flat()
+					.map((c) => c.cardId);
+				const listOfCardsResponse: CardListResponseDto = listOfCardResponseFactory.withCardIds(cardIds).build();
+				const boardTask: BoardTaskDto = boardTaskFactory.build();
+				boardTask.courseName = courseMetadata.title;
+
+				const room: RoomBoardDto = roomFactory.build();
+				room.title = courseMetadata.title;
+				room.elements[0].content = boardTask;
+				room.elements[1].content = new BoardLessonDto(boardLessonFactory.build());
+				room.elements[1].content.id = lesson.lessonId;
+				room.elements[1].content.name = lesson.name;
+				room.elements[2].content = new BoardColumnBoardDto(boardColumnFactory.build());
+
+				coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(courseMetadata);
+				lessonClientAdapterMock.getLessonById.mockResolvedValue(lesson);
+				lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lesson.linkedTasks ?? []);
+				boardClientAdapterMock.getBoardSkeletonById.mockResolvedValue(boardSkeleton);
+				cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
+				courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
+
+				const fileDto1: FileDto = new FileDto({
+					id: faker.string.uuid(),
+					name: faker.system.fileName(),
+					parentId: faker.string.uuid(),
+					parentType: FileRecordParentType.Course,
+					createdAt: faker.date.past(),
+					updatedAt: faker.date.recent(),
+				});
+				const fileDto2: FileDto = new FileDto({
+					id: faker.string.uuid(),
+					name: faker.system.fileName(),
+					parentId: faker.string.uuid(),
+					parentType: FileRecordParentType.Course,
+					createdAt: faker.date.past(),
+					updatedAt: faker.date.recent(),
+				});
+
+				filesMetadataClientAdapterMock.listFilesOfParent.mockResolvedValue([fileDto1, fileDto2]);
+				const fileRecordBlocked = fileRecordResponseFactory.build({
+					securityCheckStatus: 'blocked',
+				});
+				const fileRecordNotBlocked = fileRecordResponseFactory.build();
+				filesStorageClientAdapterMock.getFileRecord.mockImplementation((fileRecordId) => {
+					if (fileRecordId === fileDto1.id) {
+						return Promise.resolve(fileRecordBlocked);
+					}
+					return Promise.resolve(fileRecordNotBlocked);
+				});
+
+				const courseId = faker.string.uuid();
+				return { courseId, boardId: room.elements[2].content.id, fileDto1, fileDto2 };
+			};
+
+			it('should be skipped', async () => {
+				const { courseId, boardId, fileDto1, fileDto2 } = setup();
+
+				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [], [boardId]);
+				expect(result).toBeDefined();
+
+				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(fileDto1.id, fileDto1.name);
+				expect(filesStorageClientAdapterMock.getStream).toHaveBeenCalledWith(fileDto2.id, fileDto2.name);
 			});
 		});
 	});
