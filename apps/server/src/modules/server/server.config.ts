@@ -6,7 +6,6 @@ import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { ManagementSeedDataConfig } from '@modules/management';
-import type { SharingConfig } from '@modules/sharing';
 import type { ShdConfig } from '@modules/shd';
 import type { ToolConfig } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
@@ -34,7 +33,6 @@ export interface ServerConfig
 		LearnroomConfig,
 		ToolConfig,
 		UserLoginMigrationConfig,
-		SharingConfig,
 		UserImportConfig,
 		SchulconnexClientConfig,
 		UserImportConfig,
@@ -60,7 +58,6 @@ export interface ServerConfig
 	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: boolean;
-	FEATURE_COLUMN_BOARD_SHARE: boolean;
 	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_H5P_ENABLED: boolean;
@@ -85,7 +82,6 @@ export interface ServerConfig
 	I18N__DEFAULT_TIMEZONE: Timezone;
 	BOARD_COLLABORATION_URI: string;
 	FEATURE_AI_TUTOR_ENABLED: boolean;
-	FEATURE_ROOM_SHARE: boolean;
 	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: boolean;
 	FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED: boolean;
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
@@ -116,14 +112,10 @@ const config: ServerConfig = {
 	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: Configuration.get(
 		'FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED'
 	) as boolean,
-	FEATURE_COLUMN_BOARD_SHARE: Configuration.get('FEATURE_COLUMN_BOARD_SHARE') as boolean,
 	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_SOCKET_ENABLED') as boolean,
 	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED') as boolean,
 	FEATURE_COLUMN_BOARD_H5P_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_H5P_ENABLED') as boolean,
 	FEATURE_COLUMN_BOARD_COLLABORA_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_COLLABORA_ENABLED') as boolean,
-	FEATURE_COURSE_SHARE: Configuration.get('FEATURE_COURSE_SHARE') as boolean,
-	FEATURE_LESSON_SHARE: Configuration.get('FEATURE_LESSON_SHARE') as boolean,
-	FEATURE_TASK_SHARE: Configuration.get('FEATURE_TASK_SHARE') as boolean,
 	FEATURE_BOARD_LAYOUT_ENABLED: Configuration.get('FEATURE_BOARD_LAYOUT_ENABLED') as boolean,
 	FEATURE_COPY_SERVICE_ENABLED: Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean,
 	FEATURE_CONSENT_NECESSARY: Configuration.get('FEATURE_CONSENT_NECESSARY') as boolean,
@@ -217,7 +209,6 @@ const config: ServerConfig = {
 		'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
 	) as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
-	FEATURE_ROOM_SHARE: Configuration.get('FEATURE_ROOM_SHARE') as boolean,
 	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: Configuration.get('FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED') as boolean,
 	FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED: Configuration.get(
 		'FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED'
