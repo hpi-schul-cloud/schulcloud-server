@@ -1,11 +1,11 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { KeycloakAdministrationConfig } from '@infra/identity-management/keycloak-administration/keycloak-administration-config';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Account, AccountService } from '@modules/account';
 import { Test, TestingModule } from '@nestjs/testing';
+import { KeycloakAdministrationConfig } from '../../keycloak-administration/keycloak-administration-config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN } from '../keycloak-configuration-config';
 import { KeycloakMigrationService } from './keycloak-migration.service';

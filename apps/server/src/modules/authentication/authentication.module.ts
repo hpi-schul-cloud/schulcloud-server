@@ -1,11 +1,11 @@
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
+import { IdentityManagementModule } from '@infra/identity-management';
 import {
-	IdentityManagementModule,
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
-} from '@infra/identity-management';
+} from '@infra/identity-management/keycloak-administration/keycloak-administration-config';
 import {
 	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
 	ValkeyClientModule,

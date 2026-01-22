@@ -7,14 +7,14 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
+import {
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+	KeycloakAdministrationConfig,
+} from '../../keycloak-administration/keycloak-administration-config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration-config';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
 import { KeycloakSeedService } from './keycloak-seed.service';
-import {
-	KeycloakAdministrationConfig,
-	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
-} from '@infra/identity-management/keycloak-administration/keycloak-administration-config';
-import { KeycloakConfigurationConfig, KEYCLOAK_CONFIGURATION_CONFIG_TOKEN } from '../keycloak-configuration-config';
 
 describe('KeycloakSeedService Integration', () => {
 	let module: TestingModule;

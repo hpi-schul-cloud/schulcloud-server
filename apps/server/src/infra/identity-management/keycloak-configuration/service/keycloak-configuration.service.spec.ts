@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SymmetricKeyEncryptionService } from '@infra/encryption';
-import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN } from '@infra/identity-management/keycloak-administration/keycloak-administration-config';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
@@ -16,6 +15,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { v1 } from 'uuid';
+import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN } from '../../keycloak-administration/keycloak-administration-config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration-config';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';

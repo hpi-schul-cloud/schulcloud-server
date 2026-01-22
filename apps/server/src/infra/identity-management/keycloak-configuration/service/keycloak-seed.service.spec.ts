@@ -1,12 +1,15 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN, KeycloakAdministrationConfig } from '@infra/identity-management';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/resources/authenticationManagement';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v1 } from 'uuid';
+import {
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+	KeycloakAdministrationConfig,
+} from '../../keycloak-administration/keycloak-administration-config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { JsonAccount } from '../interface/json-account.interface';
 import { JsonUser } from '../interface/json-user.interface';
@@ -95,6 +98,7 @@ describe('KeycloakSeedService', () => {
 	const keycloakConfig: KeycloakConfigurationConfig = {
 		accountsFile: 'accounts.json',
 		usersFile: 'users.json',
+		scDomain: 'localhost	',
 	};
 
 	beforeAll(async () => {

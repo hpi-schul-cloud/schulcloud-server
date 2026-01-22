@@ -1,10 +1,10 @@
 import { LoggerModule } from '@core/logger/logger.module';
 import { ConfigurationModule } from '@infra/configuration';
+import { IdentityManagementModule } from '@infra/identity-management';
 import {
-	IdentityManagementModule,
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
-} from '@infra/identity-management';
+} from '@infra/identity-management/keycloak-administration/keycloak-administration-config';
 import { SagaModule } from '@modules/saga';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';

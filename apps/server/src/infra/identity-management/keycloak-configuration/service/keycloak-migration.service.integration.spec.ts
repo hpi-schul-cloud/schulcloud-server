@@ -1,17 +1,18 @@
 import { LoggerModule } from '@core/logger';
 import { TestEncryptionConfig } from '@infra/encryption';
-import {
-	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
-	KeycloakAdministrationConfig,
-} from '@infra/identity-management/keycloak-administration/keycloak-administration-config';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing';
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
+import {
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+	KeycloakAdministrationConfig,
+} from '../../keycloak-administration/keycloak-administration-config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration-config';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
@@ -69,6 +70,16 @@ describe('KeycloakConfigurationService Integration', () => {
 				}),
 				LoggerModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
+				ConfigModule.forRoot({
+					isGlobal: true,
+					ignoreEnvFile: true,
+					ignoreEnvVars: true,
+					validate: () => {
+						return {
+							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
+						};
+					},
+				}),
 			],
 			providers: [],
 		}).compile();
