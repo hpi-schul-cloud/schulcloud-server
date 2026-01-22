@@ -1,27 +1,31 @@
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration/configuration.module';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
-import { EncryptionConfig, EncryptionModule } from '../encryption';
+import { EncryptionModule } from '../encryption';
 import { IdentityManagementOauthService } from './identity-management-oauth.service';
 import { IdentityManagementService } from './identity-management.service';
 import { KeycloakAdministrationModule } from './keycloak-administration/keycloak-administration.module';
 import { KeycloakModule } from './keycloak/keycloak.module';
 import { KeycloakIdentityManagementOauthService } from './keycloak/service/keycloak-identity-management-oauth.service';
 import { KeycloakIdentityManagementService } from './keycloak/service/keycloak-identity-management.service';
+import { IdentityManagementModuleOptions } from './types';
 
 @Module({})
 export class IdentityManagementModule {
-	public static register<T extends EncryptionConfig>(
-		constructor: new () => T,
-		configInjectionToken: string
-	): DynamicModule {
+	public static register(options: IdentityManagementModuleOptions): DynamicModule {
+		const { encryptionConfig, identityManagementConfig, keycloakAdministrationConfig } = options;
 		return {
 			module: IdentityManagementModule,
 			imports: [
-				KeycloakModule.register(constructor, configInjectionToken),
-				KeycloakAdministrationModule,
+				ConfigurationModule.register(identityManagementConfig.injectionToken, identityManagementConfig.Constructor),
+				KeycloakModule.register(encryptionConfig.Constructor, encryptionConfig.injectionToken),
+				KeycloakAdministrationModule.register(
+					keycloakAdministrationConfig.injectionToken,
+					keycloakAdministrationConfig.Constructor
+				),
 				HttpModule,
-				EncryptionModule.register(constructor, configInjectionToken),
+				EncryptionModule.register(encryptionConfig.Constructor, encryptionConfig.injectionToken),
 				LoggerModule,
 			],
 			providers: [

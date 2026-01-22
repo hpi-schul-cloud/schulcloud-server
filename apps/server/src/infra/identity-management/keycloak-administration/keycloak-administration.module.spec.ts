@@ -1,3 +1,4 @@
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { KeycloakAdministrationModule } from './keycloak-administration.module';
 import { KeycloakAdministrationService } from './service/keycloak-administration.service';
@@ -6,7 +7,10 @@ describe('KeycloakManagementModule', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [KeycloakAdministrationModule],
+			imports: [
+				KeycloakAdministrationModule,
+				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
+			],
 		}).compile();
 	});
 
