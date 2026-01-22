@@ -176,20 +176,7 @@ describe('FwuLearningContents Controller (api)', () => {
 			});
 
 			describe('when feature is enabled', () => {
-				const setup = () => {
-					Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
-
-					const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-					const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
-
-					const htmlContent = `<html>
-				<body>
-					<div class="pname">Test Title</div>
-					<div class="ptext">Test Description</div>
-					<div class="player_outer" style="background-image: url(thumbnail.jpg);"></div>
-				</body>
-			</html>
-		 `;
+				const mockS3GetResponse = (htmlContent: string) => {
 					const stream = Readable.from(htmlContent);
 					const response = {
 						data: stream,
@@ -197,6 +184,23 @@ describe('FwuLearningContents Controller (api)', () => {
 						contentLength: htmlContent.length,
 					};
 					s3ClientAdapter.get.mockResolvedValue(response);
+				};
+
+				const setup = () => {
+					Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
+
+					const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
+					const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+
+					const htmlContent = `<html>
+						<body>
+							<div class="pname">Test Title</div>
+							<div class="ptext">Test Description</div>
+							<div class="player_outer" style="background-image: url(thumbnail.jpg);"></div>
+						</body>
+					</html>`;
+
+					mockS3GetResponse(htmlContent);
 
 					const expected: FwuItem = {
 						id: '5521408',
@@ -222,6 +226,95 @@ describe('FwuLearningContents Controller (api)', () => {
 					const response = await loggedInClient.get();
 					const responseBody = response.body as FwuListResponse;
 					expect(responseBody.data[0]).toEqual(expected);
+				});
+
+				describe('thumbnailUrl parsing', () => {
+					const setupWithPlayerTag = (playerHtmlContent: string) => {
+						Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
+
+						const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
+						const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+
+						const htmlContent = `<html>
+						<body>
+							<div class="pname">Test Title</div>
+							<div class="ptext">Test Description</div>
+							${playerHtmlContent}
+						</body>
+						</html>`;
+
+						mockS3GetResponse(htmlContent);
+
+						return { loggedInClient };
+					};
+
+					describe('when player tag is missing', () => {
+						it('should return undefined thumbnailUrl', async () => {
+							const { loggedInClient } = setupWithPlayerTag('');
+
+							const response = await loggedInClient.get();
+							const responseBody = response.body as FwuListResponse;
+							expect(responseBody.data[0].thumbnailUrl).toBeUndefined();
+						});
+					});
+
+					describe('when style attribute is missing', () => {
+						it('should return undefined thumbnailUrl', async () => {
+							const { loggedInClient } = setupWithPlayerTag('<div class="player_outer"></div>');
+
+							const response = await loggedInClient.get();
+							const responseBody = response.body as FwuListResponse;
+							expect(responseBody.data[0].thumbnailUrl).toBeUndefined();
+						});
+					});
+
+					describe('when style attribute has no url()', () => {
+						it('should return undefined thumbnailUrl', async () => {
+							const { loggedInClient } = setupWithPlayerTag(
+								'<div class="player_outer" style="background-color: red;"></div>'
+							);
+
+							const response = await loggedInClient.get();
+							const responseBody = response.body as FwuListResponse;
+							expect(responseBody.data[0].thumbnailUrl).toBeUndefined();
+						});
+					});
+
+					describe('when style attribute has url()', () => {
+						it('should return correct thumbnailUrl', async () => {
+							const { loggedInClient } = setupWithPlayerTag(
+								'<div class="player_outer" style="background-image: url(\'thumb.png\');"></div>'
+							);
+
+							const response = await loggedInClient.get();
+							const responseBody = response.body as FwuListResponse;
+							expect(responseBody.data[0].thumbnailUrl).toEqual('/api/v3/fwu/5521408/thumb.png');
+						});
+					});
+
+					describe('when url() has no quotes', () => {
+						it('should return correct thumbnailUrl', async () => {
+							const { loggedInClient } = setupWithPlayerTag(
+								'<div class="player_outer" style="background-image: url(thumb.png);"></div>'
+							);
+
+							const response = await loggedInClient.get();
+							const responseBody = response.body as FwuListResponse;
+							expect(responseBody.data[0].thumbnailUrl).toEqual('/api/v3/fwu/5521408/thumb.png');
+						});
+					});
+
+					describe('when url() has double quotes', () => {
+						it('should return correct thumbnailUrl', async () => {
+							const { loggedInClient } = setupWithPlayerTag(
+								`<div class="player_outer" style='background-image: url("thumb.png");'></div>`
+							);
+
+							const response = await loggedInClient.get();
+							const responseBody = response.body as FwuListResponse;
+							expect(responseBody.data[0].thumbnailUrl).toEqual('/api/v3/fwu/5521408/thumb.png');
+						});
+					});
 				});
 			});
 		});
