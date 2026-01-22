@@ -43,7 +43,7 @@ export class ToolConfig extends ToolPublicApiConfig {
 	@IsNumber()
 	public ctlToolsExternalToolMaxLogoSizeInBytes = 300000;
 
-	@ConfigProperty('CTL_TOOLS_BACKEND_URL')
+	@ConfigProperty('PUBLIC_BACKEND_URL')
 	@IsUrl({ require_tld: false })
 	public ctlToolsBackendUrl!: string;
 
