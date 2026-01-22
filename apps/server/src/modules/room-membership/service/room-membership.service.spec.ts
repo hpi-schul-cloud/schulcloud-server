@@ -683,5 +683,61 @@ describe('RoomMembershipService', () => {
 
 			expect(result).toHaveLength(0);
 		});
+
+		it('should handle paginated data by making recursive calls when not all room group data is loaded with the initial call', async () => {
+			const userId = 'user123';
+			const groupId1 = 'group456';
+			const groupId2 = 'group789';
+			const groupId3 = 'group101';
+			const roomId1 = 'room111';
+			const roomId2 = 'room222';
+			const roomId3 = 'room333';
+			const roleId = 'role333';
+
+			const firstBatchGroups = [
+				groupFactory.build({ id: groupId1, users: [{ userId, roleId }] }),
+				groupFactory.build({ id: groupId2, users: [{ userId, roleId }] }),
+			];
+			const secondBatchGroups = [groupFactory.build({ id: groupId3, users: [{ userId, roleId }] })];
+
+			const roomMemberships = [
+				roomMembershipFactory.build({ roomId: roomId1, userGroupId: groupId1 }),
+				roomMembershipFactory.build({ roomId: roomId2, userGroupId: groupId2 }),
+				roomMembershipFactory.build({ roomId: roomId3, userGroupId: groupId3 }),
+			];
+			const roles = [roleDtoFactory.build({ id: roleId })];
+
+			groupService.findGroups
+				.mockResolvedValueOnce({ data: firstBatchGroups, total: 3 })
+				.mockResolvedValueOnce({ data: secondBatchGroups, total: 3 });
+
+			roomMembershipRepo.findByGroupIds.mockResolvedValue(roomMemberships);
+			roleService.findByIds.mockResolvedValue(roles);
+			roleService.findAll.mockResolvedValue(roles);
+			userService.findByIds.mockResolvedValue([userDoFactory.buildWithId({ id: userId })]);
+
+			const result = await service.getRoomMembershipAuthorizablesByUserId(userId);
+
+			expect(groupService.findGroups).toHaveBeenCalledTimes(2);
+			expect(groupService.findGroups).toHaveBeenNthCalledWith(
+				1,
+				{
+					groupTypes: [GroupTypes.ROOM],
+					userId,
+				},
+				{ pagination: { skip: 0, limit: 100 } }
+			);
+			expect(groupService.findGroups).toHaveBeenNthCalledWith(
+				2,
+				{
+					groupTypes: [GroupTypes.ROOM],
+					userId,
+				},
+				{ pagination: { skip: 2, limit: 100 } }
+			);
+
+			expect(result).toHaveLength(3);
+			expect(result.map((r) => r.roomId)).toEqual(expect.arrayContaining([roomId1, roomId2, roomId3]));
+		});
 	});
 });
