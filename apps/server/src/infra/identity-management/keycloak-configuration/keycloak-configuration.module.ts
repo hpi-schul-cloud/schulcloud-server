@@ -5,6 +5,10 @@ import { EncryptionConfig, EncryptionModule } from '@infra/encryption';
 import { AccountModule } from '@modules/account';
 import { SystemModule } from '@modules/system';
 import { DynamicModule, Module } from '@nestjs/common';
+import {
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+	KeycloakAdministrationConfig,
+} from '../keycloak-administration/keycloak-administration-config';
 import { KeycloakAdministrationModule } from '../keycloak-administration/keycloak-administration.module';
 import { KeycloakConsole } from './console/keycloak-configuration.console';
 import { KeycloakManagementController } from './controller/keycloak-configuration.controller';
@@ -14,10 +18,6 @@ import { KeycloakConfigurationService } from './service/keycloak-configuration.s
 import { KeycloakMigrationService } from './service/keycloak-migration.service';
 import { KeycloakSeedService } from './service/keycloak-seed.service';
 import { KeycloakConfigurationUc } from './uc/keycloak-configuration.uc';
-import {
-	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
-	KeycloakAdministrationConfig,
-} from '../keycloak-administration/keycloak-administration-config';
 
 @Module({})
 export class KeycloakConfigurationModule {
