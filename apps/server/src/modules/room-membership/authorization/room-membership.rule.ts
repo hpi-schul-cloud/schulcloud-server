@@ -36,9 +36,6 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 	}
 
 	public canCreateRoom(user: User): boolean {
-		if (!this.hasAccessToSchool(user, user.school.id)) {
-			return false;
-		}
 		const schoolPermissions = this.resolveSchoolPermissions(user);
 
 		const result = schoolPermissions.includes(Permission.SCHOOL_CREATE_ROOM);

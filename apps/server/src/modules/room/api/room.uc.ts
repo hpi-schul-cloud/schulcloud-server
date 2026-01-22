@@ -20,7 +20,6 @@ import { throwForbiddenIfFalse, throwUnauthorizedIfFalse } from '@shared/common/
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { InvalidArgumentError } from 'commander';
 import { Room, RoomService } from '../domain';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
@@ -355,7 +354,7 @@ export class RoomUc {
 	private async checkAreAllUsersAccessible(currentUser: User, newUserIds: EntityId[]): Promise<void> {
 		const newUsers = await this.userService.findByIds(newUserIds);
 		if (newUsers.length !== newUserIds.length) {
-			throw new InvalidArgumentError('One or more user IDs are invalid'); // TODO: loggable ?!?
+			throw new NotFoundException('One or more user IDs are invalid'); // TODO: loggable? Different HTTP code as one could check for valid user ids, but this is after persmissions are checked already
 		}
 
 		const areAllAccessible = newUsers.every((user) =>
