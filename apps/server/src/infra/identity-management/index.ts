@@ -6,3 +6,8 @@ export {
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
 } from './keycloak-administration/keycloak-administration-config';
+export {
+	KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
+	KeycloakConfigurationConfig,
+} from './keycloak-configuration/keycloak-configuration-config';
+export { KeycloakConfigurationModule } from './keycloak-configuration/keycloak-configuration.module';

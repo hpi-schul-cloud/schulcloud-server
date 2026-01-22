@@ -1,6 +1,5 @@
 import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
@@ -28,7 +27,6 @@ export interface ServerConfig
 	extends CoreModuleConfig,
 		UserConfig,
 		FilesMetadataClientConfig,
-		IdentityManagementConfig,
 		MailConfig,
 		LearnroomConfig,
 		ToolConfig,
@@ -149,9 +147,6 @@ const config: ServerConfig = {
 		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
 	) as string,
 	GEOGEBRA_BASE_URL: Configuration.get('GEOGEBRA_BASE_URL') as string,
-	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean,
-	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
-	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
 	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)

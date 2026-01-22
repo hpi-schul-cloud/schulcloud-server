@@ -1,10 +1,10 @@
 import {
 	IDENTITY_MANAGEMENT_CONFIG_TOKEN,
 	IdentityManagementConfig,
+	IdentityManagementModule,
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
 } from '@infra/identity-management';
-import { IdentityManagementModule } from '@infra/identity-management/identity-management.module';
 import { Module } from '@nestjs/common';
 import { SYSTEM_REPO, SystemService } from './domain';
 import { SYSTEM_ENCRYPTION_CONFIG_TOKEN, SystemEncryptionConfig } from './encryption.config';

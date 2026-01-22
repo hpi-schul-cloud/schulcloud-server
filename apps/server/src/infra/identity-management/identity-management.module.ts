@@ -19,7 +19,10 @@ export class IdentityManagementModule {
 			module: IdentityManagementModule,
 			imports: [
 				ConfigurationModule.register(identityManagementConfig.injectionToken, identityManagementConfig.Constructor),
-				KeycloakModule.register(encryptionConfig.Constructor, encryptionConfig.injectionToken),
+				KeycloakModule.register({
+					encryptionConfig,
+					keycloakAdministrationConfig,
+				}),
 				KeycloakAdministrationModule.register(
 					keycloakAdministrationConfig.injectionToken,
 					keycloakAdministrationConfig.Constructor

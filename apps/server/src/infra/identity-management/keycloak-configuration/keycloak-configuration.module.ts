@@ -1,37 +1,38 @@
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration/configuration.module';
 import { ConsoleWriterModule } from '@infra/console';
-import { EncryptionConfig, EncryptionModule } from '@infra/encryption';
+import { EncryptionModule } from '@infra/encryption';
 import { AccountModule } from '@modules/account';
 import { SystemModule } from '@modules/system';
 import { DynamicModule, Module } from '@nestjs/common';
-import {
-	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
-	KeycloakAdministrationConfig,
-} from '../keycloak-administration/keycloak-administration-config';
 import { KeycloakAdministrationModule } from '../keycloak-administration/keycloak-administration.module';
 import { KeycloakConsole } from './console/keycloak-configuration.console';
 import { KeycloakManagementController } from './controller/keycloak-configuration.controller';
-import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from './keycloak-configuration-config';
 import { OidcIdentityProviderMapper } from './mapper/identity-provider.mapper';
 import { KeycloakConfigurationService } from './service/keycloak-configuration.service';
 import { KeycloakMigrationService } from './service/keycloak-migration.service';
 import { KeycloakSeedService } from './service/keycloak-seed.service';
+import { KeycloakConfigurationModuleOptions } from './types/module-options';
 import { KeycloakConfigurationUc } from './uc/keycloak-configuration.uc';
 
 @Module({})
 export class KeycloakConfigurationModule {
-	public static register<T extends EncryptionConfig>(
-		constructor: new () => T,
-		configInjectionToken: string
-	): DynamicModule {
+	public static register(options: KeycloakConfigurationModuleOptions): DynamicModule {
+		const { encryptionConfig, keycloakAdministrationConfig, keycloakConfigurationConfig } = options;
+
 		return {
 			module: KeycloakConfigurationModule,
 			imports: [
-				ConfigurationModule.register(KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig),
-				KeycloakAdministrationModule.register(KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN, KeycloakAdministrationConfig),
+				ConfigurationModule.register(
+					keycloakConfigurationConfig.injectionToken,
+					keycloakConfigurationConfig.Constructor
+				),
+				KeycloakAdministrationModule.register(
+					keycloakAdministrationConfig.injectionToken,
+					keycloakAdministrationConfig.Constructor
+				),
 				LoggerModule,
-				EncryptionModule.register(constructor, configInjectionToken),
+				EncryptionModule.register(encryptionConfig.Constructor, encryptionConfig.injectionToken),
 				ConsoleWriterModule,
 				SystemModule,
 				AccountModule,

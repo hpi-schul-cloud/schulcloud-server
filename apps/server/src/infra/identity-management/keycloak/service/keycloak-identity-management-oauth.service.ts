@@ -6,8 +6,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import qs from 'qs';
 import { lastValueFrom } from 'rxjs';
 import { IdentityManagementOauthService } from '../../identity-management-oauth.service';
-import { KeycloakAdministrationService } from '../../keycloak-administration';
-import { IDMLoginError } from '../errors';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { IDMLoginError } from '../errors/idm-login-error.loggable';
 
 @Injectable()
 export class KeycloakIdentityManagementOauthService extends IdentityManagementOauthService {

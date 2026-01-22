@@ -4,7 +4,13 @@ import { ConsoleWriterService } from '@infra/console';
 import { EncryptionModule } from '@infra/encryption';
 import { FeathersModule } from '@infra/feathers';
 import { FileSystemModule } from '@infra/file-system';
-import { KeycloakConfigurationModule } from '@infra/identity-management/keycloak-configuration/keycloak-configuration.module';
+import {
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+	KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
+	KeycloakAdministrationConfig,
+	KeycloakConfigurationConfig,
+	KeycloakConfigurationModule,
+} from '@infra/identity-management';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { serverConfig } from '@modules/server';
@@ -41,7 +47,20 @@ const baseImports = [
 ];
 
 const imports = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
-	? [...baseImports, KeycloakConfigurationModule.register(ManagmentEncryptionConfig, MANAGMENT_ENCRYPTION_CONFIG_TOKEN)]
+	? [
+			...baseImports,
+			KeycloakConfigurationModule.register({
+				encryptionConfig: { injectionToken: MANAGMENT_ENCRYPTION_CONFIG_TOKEN, Constructor: ManagmentEncryptionConfig },
+				keycloakAdministrationConfig: {
+					injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+					Constructor: KeycloakAdministrationConfig,
+				},
+				keycloakConfigurationConfig: {
+					injectionToken: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
+					Constructor: KeycloakConfigurationConfig,
+				},
+			}),
+	  ]
 	: baseImports;
 
 const providers = [
