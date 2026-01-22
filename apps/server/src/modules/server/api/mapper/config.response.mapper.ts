@@ -8,6 +8,7 @@ import { RegistrationPublicApiConfig } from '@modules/registration';
 import { RoomPublicApiConfig } from '@modules/room';
 import { RosterPublicApiConfig } from '@modules/roster';
 import { SharingPublicApiConfig } from '@modules/sharing';
+import { TaskPublicApiConfig } from '@modules/task';
 import { ToolPublicApiConfig } from '@modules/tool/tool-config';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ServerConfig } from '../../server.config';
@@ -27,7 +28,8 @@ export class ConfigResponseMapper {
 		roomConfig: RoomPublicApiConfig,
 		sharingConfig: SharingPublicApiConfig,
 		commonCartridgeConfig: CommonCartridgePublicApiConfig,
-		toolConfig: ToolPublicApiConfig
+		toolConfig: ToolPublicApiConfig,
+		taskConfig: TaskPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,
@@ -43,6 +45,7 @@ export class ConfigResponseMapper {
 			...sharingConfig,
 			...commonCartridgeConfig,
 			...toolConfig,
+			...taskConfig,
 		});
 
 		return configResponse;

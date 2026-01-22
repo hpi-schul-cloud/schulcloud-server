@@ -5,7 +5,6 @@ import type { CourseSynchronizationHistoryConfig } from '@modules/course-synchro
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LegacySchoolConfig } from '@modules/legacy-school';
 import type { MediaSourceConfig } from '@modules/media-source';
-import type { SystemConfig } from '@modules/system';
 import type { UserConfig } from '@modules/user';
 import type { UserLicenseConfig } from '@modules/user-license';
 import type { LanguageType } from '@shared/domain/interface';
@@ -14,7 +13,6 @@ export interface SchulconnexProvisioningConfig
 	extends RabbitMqConfig,
 		UserConfig,
 		LegacySchoolConfig,
-		SystemConfig,
 		LearnroomConfig,
 		CoreModuleConfig,
 		UserLicenseConfig,
