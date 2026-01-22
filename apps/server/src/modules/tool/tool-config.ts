@@ -3,7 +3,7 @@ export interface ToolConfig {
 }
 
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { StringToBoolean } from '@shared/controller/transformer';
+import { StringToBoolean, StringToNumber } from '@shared/controller/transformer';
 import { IsBoolean, IsNumber, IsUrl } from 'class-validator';
 
 export const TOOL_PUBLIC_API_CONFIG_TOKEN = 'TOOL_PUBLIC_API_CONFIG_TOKEN';
@@ -12,6 +12,7 @@ export const TOOL_CONFIG_TOKEN = 'TOOL_CONFIG_TOKEN';
 @Configuration()
 export class ToolPublicApiConfig {
 	@ConfigProperty('CTL_TOOLS_RELOAD_TIME_MS')
+	@StringToNumber()
 	@IsNumber()
 	public ctlToolsReloadTimeMs = 299000;
 
