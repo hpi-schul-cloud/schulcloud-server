@@ -24,7 +24,6 @@ const passwordRecovery = require('./passwordRecovery');
 const releases = require('./releases');
 const statistic = require('./statistic');
 const statisticMails = require('./statisticMail');
-const wopi = require('./wopi');
 const consent = require('./consent');
 const oauth2 = require('./oauth2');
 const roster = require('./roster');
@@ -73,7 +72,6 @@ module.exports = function initializeServices() {
 	app.configure(releases);
 	app.configure(statistic);
 	app.configure(statisticMails);
-	app.configure(wopi);
 	app.configure(consent);
 	app.configure(ldap);
 	app.configure(ldapConfig);

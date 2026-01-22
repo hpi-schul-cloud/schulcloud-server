@@ -32,7 +32,6 @@
 		"ADMIN_PASSWORD": "dBildungscloud"
 	},
 	"LOG_LEVEL": "emerg",
-	"NEST_LOG_LEVEL": "error",
 	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",
 	"SESSION": {
@@ -63,7 +62,6 @@
 		"MODIFICATION_THRESHOLD_MS": 60000,
 		"DELETION_DELAY_MILLISECONDS": 10000
 	},
-	"EXIT_ON_ERROR": false,
 	"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": "opt-in",
 	"TEACHER_STUDENT_VISIBILITY": {
 		"IS_CONFIGURABLE": false,
