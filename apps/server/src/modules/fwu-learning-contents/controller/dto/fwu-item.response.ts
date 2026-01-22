@@ -11,8 +11,8 @@ export class FwuItemResponse implements FwuItem {
 	@ApiProperty()
 	targetUrl: string;
 
-	@ApiProperty()
-	thumbnailUrl: string;
+	@ApiPropertyOptional()
+	thumbnailUrl?: string;
 
 	@ApiPropertyOptional()
 	description?: string;

@@ -36,7 +36,7 @@ export class FwuLearningContentsUc {
 					id: fileId,
 					title,
 					targetUrl: `/api/v3/fwu/${fileId}/index.html`,
-					thumbnailUrl: `/api/v3/fwu/${fileId}/${thumbnailUrl}`,
+					thumbnailUrl: thumbnailUrl ? `/api/v3/fwu/${fileId}/${thumbnailUrl}` : undefined,
 				});
 			} catch (error) {
 				this.logger.error(`Failed to process file for id ${fileId}`, error);
@@ -55,14 +55,14 @@ export class FwuLearningContentsUc {
 		});
 	}
 
-	private extractThumbnailUrl(htmlContent: cheerio.CheerioAPI): string {
+	private extractThumbnailUrl(htmlContent: cheerio.CheerioAPI): string | undefined {
 		const style = htmlContent('.player_outer').attr('style');
 
-		let thumbnailUrl = '';
+		let thumbnailUrl: string | undefined;
 		if (style) {
 			// Use a regular expression to find the URL within the style string
-			const match = style.match(/url\((.*?)\)/);
-			if (match && match[1]) {
+			const match = style.match(/url\((['"]?)(.*?)\1\)/);
+			if (match && match[2]) {
 				thumbnailUrl = match[1];
 			}
 		}
