@@ -210,6 +210,12 @@ export class CommonCartridgeExportService {
 				await Promise.all(
 					filesMetadata.map(async (fileMetadata, index) => {
 						if (fileRecords[index].securityCheckStatus === FileRecordScanStatus.BLOCKED) {
+							this.logger.info(
+								new CommonCartridgeExportMessageLoggable(
+									'A file was skipped because the securityCheckStatus is BLOCKED',
+									{ fileId: fileMetadata.id, taskId: task.id }
+								)
+							);
 							return;
 						}
 
@@ -307,6 +313,12 @@ export class CommonCartridgeExportService {
 
 			const streamPromises = filesMetadata.map(async (fileMetadata, index) => {
 				if (fileRecords[index].securityCheckStatus === FileRecordScanStatus.BLOCKED) {
+					this.logger.info(
+						new CommonCartridgeExportMessageLoggable('A file was skipped because the securityCheckStatus is BLOCKED', {
+							fileId: fileMetadata.id,
+							elementId: element.id,
+						})
+					);
 					return;
 				}
 

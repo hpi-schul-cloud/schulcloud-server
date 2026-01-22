@@ -592,7 +592,7 @@ describe('CommonCartridgeExportService', () => {
 				return { courseId, taskId: boardTask.id, fileDto1, fileDto2 };
 			};
 
-			it('should be skipped', async () => {
+			it('should be skipped and logged', async () => {
 				const { courseId, taskId, fileDto1, fileDto2 } = setup();
 
 				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [taskId], []);
@@ -600,6 +600,7 @@ describe('CommonCartridgeExportService', () => {
 
 				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(fileDto1.id, fileDto1.name);
 				expect(filesStorageClientAdapterMock.getStream).toHaveBeenCalledWith(fileDto2.id, fileDto2.name);
+				expect(logger.info).toHaveBeenCalledTimes(1);
 			});
 		});
 
@@ -667,7 +668,7 @@ describe('CommonCartridgeExportService', () => {
 				return { courseId, boardId: room.elements[2].content.id, fileDto1, fileDto2 };
 			};
 
-			it('should be skipped', async () => {
+			it('should be skipped and logged', async () => {
 				const { courseId, boardId, fileDto1, fileDto2 } = setup();
 
 				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [], [boardId]);
@@ -675,6 +676,7 @@ describe('CommonCartridgeExportService', () => {
 
 				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(fileDto1.id, fileDto1.name);
 				expect(filesStorageClientAdapterMock.getStream).toHaveBeenCalledWith(fileDto2.id, fileDto2.name);
+				expect(logger.info).toHaveBeenCalledTimes(4);
 			});
 		});
 	});
