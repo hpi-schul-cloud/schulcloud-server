@@ -56,6 +56,7 @@ import { SystemApiModule } from '@modules/system/system-api.module';
 import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamApiModule } from '@modules/team/team-api.module';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
+import { TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig } from '@modules/tool/tool-config';
 import { ImportUserModule } from '@modules/user-import';
 import { UserLicenseModule } from '@modules/user-license';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
@@ -89,6 +90,7 @@ const serverModules = [
 	ConfigurationModule.register(ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig),
 	ConfigurationModule.register(SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig),
 	ConfigurationModule.register(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig),
+	ConfigurationModule.register(TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,
 	CoreModule,

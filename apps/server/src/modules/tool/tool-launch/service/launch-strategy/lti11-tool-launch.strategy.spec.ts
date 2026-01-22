@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { pseudonymFactory } from '@modules/pseudonym/testing';
 import { RoleName } from '@modules/role';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '@modules/tool/tool-config';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
@@ -48,6 +48,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 	let ltiDeepLinkTokenService: DeepMocked<LtiDeepLinkTokenService>;
 	let ltiDeepLinkingService: DeepMocked<LtiDeepLinkingService>;
 	let encryptionService: DeepMocked<EncryptionService>;
+	let config: ToolConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -105,6 +106,10 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					provide: DefaultEncryptionService,
 					useValue: createMock<EncryptionService>(),
 				},
+				{
+					provide: TOOL_CONFIG_TOKEN,
+					useValue: new ToolConfig(),
+				},
 			],
 		}).compile();
 
@@ -116,6 +121,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 		ltiDeepLinkTokenService = module.get(LtiDeepLinkTokenService);
 		ltiDeepLinkingService = module.get(LtiDeepLinkingService);
 		encryptionService = module.get(DefaultEncryptionService);
+		config = module.get(TOOL_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -656,7 +662,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					const user = userDoFactory.buildWithId(undefined, userId);
 					const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build();
 
-					const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+					const { publicBackendUrl } = config;
 					const callbackUrl = `${publicBackendUrl}/v3/tools/context-external-tools/${contextExternalTool.id}/lti11-deep-link-callback`;
 
 					userService.findById.mockResolvedValue(user);

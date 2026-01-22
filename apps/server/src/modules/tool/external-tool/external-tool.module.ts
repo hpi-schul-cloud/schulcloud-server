@@ -1,4 +1,5 @@
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
 import {
 	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
@@ -13,6 +14,7 @@ import { InstanceModule } from '../../instance';
 import { CommonToolModule } from '../common';
 import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
 import { TOOL_ENCRYPTION_CONFIG_TOKEN, ToolEncryptionConfig } from '../encryption.config';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../tool-config';
 import { ExternalToolRule } from './authorization/external-tool.rule';
 import { ExternalToolUtilizationMapper } from './mapper';
 import {
@@ -38,6 +40,7 @@ import {
 		InstanceModule,
 		AuthorizationModule,
 		FilesStorageClientModule.register(FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig),
+		ConfigurationModule.register(TOOL_CONFIG_TOKEN, ToolConfig),
 	],
 	providers: [
 		ExternalToolService,

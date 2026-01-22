@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaSchoolLicense } from '@modules/school-license';
 import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
 import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
+import { TOOL_CONFIG_TOKEN } from '@modules/tool/tool-config';
 import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
@@ -31,8 +32,7 @@ describe(ToolConfigurationStatusService.name, () => {
 	let mediaUserLicenseService: DeepMocked<MediaUserLicenseService>;
 	let mediaSchoolLicenseService: DeepMocked<MediaSchoolLicenseService>;
 	let userService: DeepMocked<UserService>;
-
-	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
+	let config: ToolConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -58,6 +58,10 @@ describe(ToolConfigurationStatusService.name, () => {
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
+				{
+					provide: TOOL_CONFIG_TOKEN,
+					useValue: {},
+				},
 			],
 		}).compile();
 
@@ -66,7 +70,7 @@ describe(ToolConfigurationStatusService.name, () => {
 		mediaUserLicenseService = module.get(MediaUserLicenseService);
 		mediaSchoolLicenseService = module.get(MediaSchoolLicenseService);
 		userService = module.get(UserService);
-		configService = module.get(ConfigService);
+		config = module.get(TOOL_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -81,11 +85,8 @@ describe(ToolConfigurationStatusService.name, () => {
 	describe('determineToolConfigurationStatus', () => {
 		describe('determineToolConfigurationStatus whithout media license activations', () => {
 			beforeEach(() => {
-				const config: Partial<ToolConfig> = {
-					FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: false,
-					FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: false,
-				};
-				configService.get.mockImplementation((key: keyof Partial<ToolConfig>) => config[key]);
+				config.featureSchulconnexMediaLicenseEnabled = false;
+				config.featureVidisMediaActivationsEnabled = false;
 			});
 
 			describe('when validation runs through', () => {
@@ -610,12 +611,10 @@ describe(ToolConfigurationStatusService.name, () => {
 		describe('determineToolConfigurationStatus with media license activations', () => {
 			describe('determineToolConfigurationStatus with FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED', () => {
 				beforeEach(() => {
-					const config: Partial<ToolConfig> = {
-						FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: true,
-						FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: false,
-					};
-					configService.get.mockImplementation((key: keyof Partial<ToolConfig>) => config[key]);
+					config.featureSchulconnexMediaLicenseEnabled = true;
+					config.featureVidisMediaActivationsEnabled = false;
 				});
+
 				describe('when license feature is enabled and user has no license for externalTool', () => {
 					const setup = () => {
 						const userId = new ObjectId().toHexString();
@@ -677,11 +676,8 @@ describe(ToolConfigurationStatusService.name, () => {
 			});
 			describe('determineToolConfigurationStatus with FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED media license activations', () => {
 				beforeEach(() => {
-					const config: Partial<ToolConfig> = {
-						FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: false,
-						FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: true,
-					};
-					configService.get.mockImplementation((key: keyof Partial<ToolConfig>) => config[key]);
+					config.featureSchulconnexMediaLicenseEnabled = false;
+					config.featureVidisMediaActivationsEnabled = true;
 				});
 				describe('when license feature is enabled and user school has no license for externalTool', () => {
 					const setup = () => {

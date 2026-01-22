@@ -1,11 +1,10 @@
 import { Logger } from '@core/logger';
 import { HttpService } from '@nestjs/axios';
-import { HttpException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { EntityId, ImageMimeType } from '@shared/domain/types';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
-import { ToolConfig } from '../../tool-config';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
 import {
@@ -24,7 +23,7 @@ import { ExternalToolLogoSanitizerService } from './external-tool-logo-sanitizer
 @Injectable()
 export class ExternalToolLogoService {
 	constructor(
-		private readonly configService: ConfigService<ToolConfig, true>,
+		@Inject(TOOL_CONFIG_TOKEN) private readonly config: ToolConfig,
 		private readonly logger: Logger,
 		private readonly httpService: HttpService,
 		private readonly externalToolService: ExternalToolService,
@@ -33,7 +32,7 @@ export class ExternalToolLogoService {
 
 	public buildLogoUrl(externalTool: ExternalTool): string | undefined {
 		const { logo, id } = externalTool;
-		const backendUrl = this.configService.get<string>('CTL_TOOLS_BACKEND_URL');
+		const backendUrl = this.config.ctlToolsBackendUrl;
 
 		if (logo && id) {
 			return `${backendUrl}/v3/tools/external-tools/${id}/logo`;
@@ -49,10 +48,10 @@ export class ExternalToolLogoService {
 
 		const buffer: Buffer = Buffer.from(externalTool.logo, 'base64');
 
-		if (buffer.length > this.configService.get('CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES')) {
+		if (buffer.length > this.config.ctlToolsExternalToolMaxLogoSizeInBytes) {
 			throw new ExternalToolLogoSizeExceededLoggableException(
 				externalTool.id,
-				this.configService.get('CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES')
+				this.config.ctlToolsExternalToolMaxLogoSizeInBytes
 			);
 		}
 	}

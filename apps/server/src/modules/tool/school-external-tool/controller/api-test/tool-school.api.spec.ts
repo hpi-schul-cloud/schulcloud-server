@@ -6,7 +6,8 @@ import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@mod
 import { MediaSourceLicenseType } from '@modules/media-source';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerTestModule } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '@modules/tool/tool-config';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -36,6 +37,7 @@ describe('ToolSchoolController (API)', () => {
 	let em: EntityManager;
 	let orm: MikroORM;
 	let testApiClient: TestApiClient;
+	let config: ToolConfig;
 
 	const basePath = '/tools/school-external-tools';
 
@@ -49,8 +51,9 @@ describe('ToolSchoolController (API)', () => {
 		em = app.get(EntityManager);
 		orm = app.get(MikroORM);
 		testApiClient = new TestApiClient(app, basePath);
+		config = app.get<ToolConfig>(TOOL_CONFIG_TOKEN);
 
-		serverConfig().FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = true;
+		config.featureSchulconnexMediaLicenseEnabled = true;
 	});
 
 	afterAll(async () => {

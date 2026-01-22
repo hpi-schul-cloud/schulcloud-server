@@ -11,10 +11,9 @@ import {
 	contextExternalToolFactory,
 	copyContextExternalToolRejectDataFactory,
 } from '@modules/tool/context-external-tool/testing';
-import { ToolConfig } from '@modules/tool/tool-config';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { BoardConfig } from '@modules/board/board.config';
 import { copyFileDtoFactory } from '@modules/files-storage-client/testing';
 import {
 	Card,
@@ -53,21 +52,13 @@ import {
 } from '../../testing';
 import { BoardNodeCopyContext, BoardNodeCopyContextProps } from './board-node-copy-context';
 import { BoardNodeCopyService } from './board-node-copy.service';
+import { ToolConfig } from '@modules/tool';
+import { ConfigService } from '@nestjs/config';
 
 describe(BoardNodeCopyService.name, () => {
 	let module: TestingModule;
 	let service: BoardNodeCopyService;
-	const config: ToolConfig = {
-		CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: 0,
-		CTL_TOOLS_BACKEND_URL: '',
-		FEATURE_CTL_TOOLS_COPY_ENABLED: false,
-		CTL_TOOLS_RELOAD_TIME_MS: 0,
-		CTL_TOOLS__PREFERRED_TOOLS_LIMIT: 10,
-		FEATURE_PREFERRED_CTL_TOOLS_ENABLED: false,
-		PUBLIC_BACKEND_URL: '',
-		FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: false,
-		FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: false,
-	};
+	const config: BoardConfig = {};
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let h5pEditorProducer: DeepMocked<H5pEditorProducer>;
@@ -538,7 +529,7 @@ describe(BoardNodeCopyService.name, () => {
 			const setupCopyEnabled = () => {
 				const { copyContext, externalToolElement } = setup();
 
-				config.FEATURE_CTL_TOOLS_COPY_ENABLED = true;
+				config.featureCtlToolsCopyEnabled = true;
 
 				return { copyContext, externalToolElement };
 			};
@@ -653,7 +644,7 @@ describe(BoardNodeCopyService.name, () => {
 			const setupCopyDisabled = () => {
 				const { copyContext, externalToolElement } = setup();
 
-				config.FEATURE_CTL_TOOLS_COPY_ENABLED = false;
+				config.featureCtlToolsCopyEnabled = false;
 
 				return { copyContext, externalToolElement };
 			};
