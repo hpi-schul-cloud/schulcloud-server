@@ -1,5 +1,4 @@
 import type { CoreModuleConfig } from '@core/core.config';
-import type { LoggerConfig } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import type { RabbitMqConfig } from '@infra/rabbitmq';
 import type { CourseSynchronizationHistoryConfig } from '@modules/course-synchronization-history';
@@ -15,7 +14,6 @@ import type { LanguageType } from '@shared/domain/interface';
 export interface SchulconnexProvisioningConfig
 	extends RabbitMqConfig,
 		UserConfig,
-		LoggerConfig,
 		LegacySchoolConfig,
 		SystemConfig,
 		LearnroomConfig,
@@ -28,8 +26,6 @@ export interface SchulconnexProvisioningConfig
 }
 
 const config: SchulconnexProvisioningConfig = {
-	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
-	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
 	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	FEATURE_COLUMN_BOARD_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean,
 	FEATURE_COPY_SERVICE_ENABLED: Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean,

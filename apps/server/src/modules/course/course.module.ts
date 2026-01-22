@@ -14,10 +14,10 @@ import {
 	// TODO: remove?
 	GroupDeletedHandlerService,
 } from './domain';
+import { UserChangedSchoolHandlerService } from './domain/service/user-changed-school-handler.service';
 import { CourseGroupRepo, CourseRepo } from './repo';
 import { CourseMikroOrmRepo } from './repo/course-mikro-orm.repo';
 import { DeleteUserCourseDataStep, DeleteUserCourseGroupDataStep } from './saga';
-import { UserChangedSchoolHandlerService } from '@modules/course/domain/service/user-changed-school-handler.service';
 
 @Module({
 	imports: [RoleModule, LoggerModule, AuthorizationModule, SagaModule],

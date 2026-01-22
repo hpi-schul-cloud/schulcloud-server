@@ -1,4 +1,3 @@
-import { LoggerConfig } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ConsoleWriterConfig } from '@infra/console';
 import { RabbitMqConfig } from '@infra/rabbitmq';
@@ -10,7 +9,6 @@ import { LanguageType } from '@shared/domain/interface';
 export interface IdpConsoleConfig
 	extends ConsoleWriterConfig,
 		RabbitMqConfig,
-		LoggerConfig,
 		UserConfig,
 		SynchronizationConfig,
 		SchulconnexClientConfig {
@@ -20,8 +18,6 @@ export interface IdpConsoleConfig
 
 const config: IdpConsoleConfig = {
 	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
-	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
-	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
 	LOGIN_BLOCK_TIME: Configuration.get('LOGIN_BLOCK_TIME') as number,
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
