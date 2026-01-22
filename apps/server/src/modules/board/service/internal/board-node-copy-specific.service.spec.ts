@@ -13,7 +13,7 @@ import {
 } from '@modules/tool/context-external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { BoardConfig } from '@modules/board/board.config';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
 import { copyFileDtoFactory } from '@modules/files-storage-client/testing';
 import {
 	Card,
@@ -52,13 +52,11 @@ import {
 } from '../../testing';
 import { BoardNodeCopyContext, BoardNodeCopyContextProps } from './board-node-copy-context';
 import { BoardNodeCopyService } from './board-node-copy.service';
-import { ToolConfig } from '@modules/tool';
-import { ConfigService } from '@nestjs/config';
 
 describe(BoardNodeCopyService.name, () => {
 	let module: TestingModule;
 	let service: BoardNodeCopyService;
-	const config: BoardConfig = {};
+	let config: BoardConfig;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let h5pEditorProducer: DeepMocked<H5pEditorProducer>;
@@ -68,10 +66,8 @@ describe(BoardNodeCopyService.name, () => {
 			providers: [
 				BoardNodeCopyService,
 				{
-					provide: ConfigService,
-					useValue: {
-						get: jest.fn().mockImplementation((key: keyof ToolConfig) => config[key]),
-					},
+					provide: BOARD_CONFIG_TOKEN,
+					useValue: {},
 				},
 				{
 					provide: ContextExternalToolService,
@@ -92,6 +88,7 @@ describe(BoardNodeCopyService.name, () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		copyHelperService = module.get(CopyHelperService);
 		h5pEditorProducer = module.get(H5pEditorProducer);
+		config = module.get<BoardConfig>(BOARD_CONFIG_TOKEN);
 	});
 
 	beforeEach(() => {

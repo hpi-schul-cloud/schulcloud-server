@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MediaSourceLicenseType, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
-import { TOOL_CONFIG_TOKEN, ToolConfig } from '@modules/tool/tool-config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
 import { ToolContextType } from '../../common/enum';
@@ -10,6 +9,7 @@ import { ExternalToolService } from '../../external-tool';
 import { type ExternalTool } from '../../external-tool/domain';
 import { ExternalToolMediumStatus } from '../../external-tool/enum';
 import { externalToolFactory } from '../../external-tool/testing';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import { SchoolExternalTool, SchoolExternalToolConfigurationStatus, SchoolExternalToolMedium } from '../domain';
 import { SchoolExternalToolRepo } from '../repo';
 import { schoolExternalToolFactory } from '../testing';

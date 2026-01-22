@@ -4,7 +4,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { pseudonymFactory } from '@modules/pseudonym/testing';
 import { RoleName } from '@modules/role';
-import { TOOL_CONFIG_TOKEN, ToolConfig } from '@modules/tool/tool-config';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
@@ -26,6 +25,7 @@ import {
 import { externalToolFactory } from '../../../external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../../tool-config';
 import { LaunchRequestMethod, LaunchType, PropertyData, PropertyLocation, ToolLaunchRequest } from '../../types';
 import {
 	AutoContextIdStrategy,

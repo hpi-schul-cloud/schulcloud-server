@@ -2,7 +2,6 @@ import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
 import { TOOL_ENCRYPTION_CONFIG_TOKEN, ToolEncryptionConfig } from '@modules/tool/encryption.config';
-import { TOOL_CONFIG_TOKEN, ToolConfig } from '@modules/tool/tool-config';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AesEncryptionHelper } from '@shared/common/utils';
@@ -10,6 +9,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { externalToolEntityFactory, lti11ToolConfigEntityFactory } from '../../../external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../../tool-config';
 import { ContextExternalToolEntity, ContextExternalToolType, LtiDeepLinkEmbeddable } from '../../repo';
 import {
 	contextExternalToolEntityFactory,

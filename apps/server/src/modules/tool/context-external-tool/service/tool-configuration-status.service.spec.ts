@@ -3,7 +3,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaSchoolLicense } from '@modules/school-license';
 import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
 import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
-import { TOOL_CONFIG_TOKEN } from '@modules/tool/tool-config';
 import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
@@ -21,6 +20,7 @@ import {
 import { CommonToolValidationService } from '../../common/service';
 import { customParameterFactory, externalToolFactory } from '../../external-tool/testing';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
+import { TOOL_CONFIG_TOKEN } from '../../tool-config';
 import { contextExternalToolFactory } from '../testing';
 import { ToolConfigurationStatusService } from './tool-configuration-status.service';
 
