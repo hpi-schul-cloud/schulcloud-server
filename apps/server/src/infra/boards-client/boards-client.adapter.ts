@@ -1,44 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { BoardsClientConfig } from './boards-client.config';
-import {
-	BoardApi,
-	BoardResponse,
-	ColumnResponse,
-	Configuration,
-	CreateBoardBodyParams,
-	CreateBoardResponse,
-} from './generated';
+import { RawAxiosRequestConfig } from 'axios';
+import { BoardApi, BoardResponse, ColumnResponse, CreateBoardBodyParams, CreateBoardResponse } from './generated';
 
 @Injectable()
 export class BoardsClientAdapter {
-	constructor(private readonly configService: ConfigService<BoardsClientConfig, true>) {}
+	constructor(private readonly boardApi: BoardApi) {}
 
 	public async createBoard(jwt: string, params: CreateBoardBodyParams): Promise<CreateBoardResponse> {
-		const response = await this.boardApi(jwt).boardControllerCreateBoard(params);
+		const response = await this.boardApi.boardControllerCreateBoard(params, this.getAxiosConfig(jwt));
 
 		return response.data;
 	}
 
 	public async createBoardColumn(jwt: string, boardId: string): Promise<ColumnResponse> {
-		const response = await this.boardApi(jwt).boardControllerCreateColumn(boardId);
+		const response = await this.boardApi.boardControllerCreateColumn(boardId, this.getAxiosConfig(jwt));
 
 		return response.data;
 	}
 
 	public async getBoardSkeletonById(jwt: string, boardId: string): Promise<BoardResponse> {
-		const response = await this.boardApi(jwt).boardControllerGetBoardSkeleton(boardId);
+		const response = await this.boardApi.boardControllerGetBoardSkeleton(boardId, this.getAxiosConfig(jwt));
 
 		return response.data;
 	}
 
-	private boardApi(jwt: string): BoardApi {
-		const basePath = this.configService.getOrThrow<string>('API_HOST');
-		const configuration = new Configuration({
-			basePath: `${basePath}/v3`,
-			accessToken: jwt,
-		});
-
-		return new BoardApi(configuration);
+	private getAxiosConfig(jwt: string): RawAxiosRequestConfig {
+		return {
+			headers: {
+				Authorization: `Bearer ${jwt}`,
+			},
+		};
 	}
 }

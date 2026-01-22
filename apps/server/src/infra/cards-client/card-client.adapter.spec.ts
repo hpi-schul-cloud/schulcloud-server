@@ -1,46 +1,33 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardCardApi, BoardElementApi, ContentElementType } from './generated';
-import { CardClientAdapter, CardClientConfig } from '.';
+import { CardClientAdapter } from '.';
 import { faker } from '@faker-js/faker/.';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { ConfigModule } from '@nestjs/config';
-
-const cardApiMock = createMock<BoardCardApi>();
-jest.mock('./generated/api/board-card-api', () => {
-	return {
-		BoardCardApi: jest.fn().mockImplementation(() => cardApiMock),
-	};
-});
-
-const boardElementApiMock = createMock<BoardElementApi>();
-jest.mock('./generated/api/board-element-api', () => {
-	return {
-		BoardElementApi: jest.fn().mockImplementation(() => boardElementApiMock),
-	};
-});
 
 describe(CardClientAdapter.name, () => {
 	let module: TestingModule;
 	let sut: CardClientAdapter;
+	let cardApiMock: DeepMocked<BoardCardApi>;
+	let boardElementApiMock: DeepMocked<BoardElementApi>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [CardClientAdapter],
-			imports: [
-				ConfigModule.forRoot({
-					isGlobal: true,
-					load: [
-						(): CardClientConfig => {
-							return {
-								API_HOST: faker.internet.url(),
-							};
-						},
-					],
-				}),
+			providers: [
+				CardClientAdapter,
+				{
+					provide: BoardCardApi,
+					useValue: createMock<BoardCardApi>(),
+				},
+				{
+					provide: BoardElementApi,
+					useValue: createMock<BoardElementApi>(),
+				},
 			],
 		}).compile();
 		sut = module.get(CardClientAdapter);
+		cardApiMock = module.get(BoardCardApi);
+		boardElementApiMock = module.get(BoardElementApi);
 	});
 
 	afterAll(async () => {
@@ -84,7 +71,11 @@ describe(CardClientAdapter.name, () => {
 
 				expect(response.id).toEqual(cardId);
 				expect(response.type).toEqual(ContentElementType.RICH_TEXT);
-				expect(cardApiMock.cardControllerCreateElement).toHaveBeenCalledWith(cardId, createContentElementBodyParams);
+				expect(cardApiMock.cardControllerCreateElement).toHaveBeenCalledWith(cardId, createContentElementBodyParams, {
+					headers: {
+						Authorization: `Bearer ${jwt}`,
+					},
+				});
 			});
 		});
 	});
@@ -110,7 +101,11 @@ describe(CardClientAdapter.name, () => {
 
 				await sut.updateCardTitle(jwt, cardId, renameBodyParams);
 
-				expect(cardApiMock.cardControllerUpdateCardTitle).toHaveBeenCalledWith(cardId, renameBodyParams);
+				expect(cardApiMock.cardControllerUpdateCardTitle).toHaveBeenCalledWith(cardId, renameBodyParams, {
+					headers: {
+						Authorization: `Bearer ${jwt}`,
+					},
+				});
 			});
 		});
 	});
@@ -150,7 +145,12 @@ describe(CardClientAdapter.name, () => {
 				expect(response).toEqual(updateElementContentBodyParams);
 				expect(boardElementApiMock.elementControllerUpdateElement).toHaveBeenCalledWith(
 					elementId,
-					updateElementContentBodyParams
+					updateElementContentBodyParams,
+					{
+						headers: {
+							Authorization: `Bearer ${jwt}`,
+						},
+					}
 				);
 			});
 		});
