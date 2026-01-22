@@ -114,7 +114,7 @@ export class UserAndAccountTestFactory {
 	}
 
 	public static buildByRole(
-		roleName: 'administrator' | 'externalPerson' | 'teacher' | 'student',
+		roleName: 'administrator' | 'externalPerson' | 'teacherAndAdmin' | 'teacher' | 'student',
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
 	): { account: AccountEntity; user: User } {
@@ -134,7 +134,7 @@ export class UserAndAccountTestFactory {
 	}
 
 	private static buildUser(
-		roleName: 'administrator' | 'externalPerson' | 'teacher' | 'student',
+		roleName: 'administrator' | 'externalPerson' | 'teacherAndAdmin' | 'teacher' | 'student',
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
 	): User {
@@ -145,6 +145,8 @@ export class UserAndAccountTestFactory {
 				return userFactory
 					.asExternalPerson(additionalPermissions)
 					.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+			case 'teacherAndAdmin':
+				return userFactory.asTeacherAndAdmin().buildWithId(UserAndAccountTestFactory.getUserParams(params));
 			case 'teacher':
 				return userFactory
 					.asTeacher(additionalPermissions)
