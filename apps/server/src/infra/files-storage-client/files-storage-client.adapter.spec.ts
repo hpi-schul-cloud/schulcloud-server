@@ -2,7 +2,6 @@ import { ErrorLogger, Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
@@ -10,19 +9,20 @@ import type { Request } from 'express';
 import { Readable } from 'node:stream';
 import { from, throwError } from 'rxjs';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
+import { FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig } from './files-storage-client.config';
 import { FileApi, FileRecordParentType, StorageLocation } from './generated';
 
 describe(FilesStorageClientAdapter.name, () => {
 	let module: TestingModule;
-	let sut: FilesStorageClientAdapter;
+	let filesStorageClientAdapter: FilesStorageClientAdapter;
 	let httpServiceMock: DeepMocked<HttpService>;
 	let errorLoggerMock: DeepMocked<ErrorLogger>;
-	let configServiceMock: DeepMocked<ConfigService>;
+	let config: FileStorageClientConfig;
+	let loggerMock: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				FilesStorageClientAdapter,
 				{
 					provide: FileApi,
 					useValue: createMock<FileApi>(),
@@ -40,8 +40,10 @@ describe(FilesStorageClientAdapter.name, () => {
 					useValue: createMock<HttpService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: FILE_STORAGE_CLIENT_CONFIG_TOKEN,
+					useValue: {
+						basePath: faker.internet.url(),
+					},
 				},
 				{
 					provide: REQUEST,
@@ -54,10 +56,18 @@ describe(FilesStorageClientAdapter.name, () => {
 			],
 		}).compile();
 
-		sut = module.get(FilesStorageClientAdapter);
-		httpServiceMock = module.get(HttpService);
+		loggerMock = module.get(Logger);
 		errorLoggerMock = module.get(ErrorLogger);
-		configServiceMock = module.get(ConfigService);
+		httpServiceMock = module.get(HttpService);
+		config = module.get(FILE_STORAGE_CLIENT_CONFIG_TOKEN);
+
+		filesStorageClientAdapter = new FilesStorageClientAdapter(
+			loggerMock,
+			errorLoggerMock,
+			httpServiceMock,
+			config,
+			module.get(REQUEST)
+		);
 	});
 
 	afterAll(async () => {
@@ -69,7 +79,7 @@ describe(FilesStorageClientAdapter.name, () => {
 	});
 
 	it('should be defined', () => {
-		expect(sut).toBeDefined();
+		expect(filesStorageClientAdapter).toBeDefined();
 	});
 
 	describe('getStream', () => {
@@ -80,7 +90,6 @@ describe(FilesStorageClientAdapter.name, () => {
 				const observable = from([axiosResponseFactory.build({ data: Readable.from('') })]);
 
 				httpServiceMock.get.mockReturnValue(observable);
-				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return {
 					fileRecordId,
@@ -91,7 +100,7 @@ describe(FilesStorageClientAdapter.name, () => {
 			it('should return the response stream', async () => {
 				const { fileRecordId, fileName } = setup();
 
-				const result = await sut.getStream(fileRecordId, fileName);
+				const result = await filesStorageClientAdapter.getStream(fileRecordId, fileName);
 
 				expect(result).toBeDefined();
 				expect(httpServiceMock.get).toBeCalledWith(expect.any(String), {
@@ -120,7 +129,7 @@ describe(FilesStorageClientAdapter.name, () => {
 			it('should return null', async () => {
 				const { fileRecordId, fileName } = setup();
 
-				const result = await sut.getStream(fileRecordId, fileName);
+				const result = await filesStorageClientAdapter.getStream(fileRecordId, fileName);
 
 				expect(result).toBeNull();
 				expect(errorLoggerMock.error).toBeCalled();
@@ -134,7 +143,6 @@ describe(FilesStorageClientAdapter.name, () => {
 				const observable = from([axiosResponseFactory.build({ data: Buffer.from('') })]);
 
 				httpServiceMock.get.mockReturnValue(observable);
-				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return {
 					fileRecordId,
@@ -145,7 +153,7 @@ describe(FilesStorageClientAdapter.name, () => {
 			it('should return null', async () => {
 				const { fileRecordId, fileName } = setup();
 
-				const result = await sut.getStream(fileRecordId, fileName);
+				const result = await filesStorageClientAdapter.getStream(fileRecordId, fileName);
 
 				expect(result).toBeNull();
 				expect(errorLoggerMock.error).not.toBeCalled();
@@ -163,7 +171,6 @@ describe(FilesStorageClientAdapter.name, () => {
 				const file = new File([], faker.system.fileName());
 
 				httpServiceMock.post.mockReturnValue(from([axiosResponseFactory.build({ data: { id: faker.string.uuid() } })]));
-				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return {
 					storageLocationId,
@@ -177,7 +184,13 @@ describe(FilesStorageClientAdapter.name, () => {
 			it('should return the response data', async () => {
 				const { storageLocationId, storageLocation, parentId, parentType, file } = setup();
 
-				const result = await sut.upload(storageLocationId, storageLocation, parentId, parentType, file);
+				const result = await filesStorageClientAdapter.upload(
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					file
+				);
 
 				expect(result).toEqual({ id: expect.any(String) });
 			});
@@ -206,7 +219,13 @@ describe(FilesStorageClientAdapter.name, () => {
 			it('should return null', async () => {
 				const { storageLocationId, storageLocation, parentId, parentType, file } = setup();
 
-				const result = await sut.upload(storageLocationId, storageLocation, parentId, parentType, file);
+				const result = await filesStorageClientAdapter.upload(
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					file
+				);
 
 				expect(result).toBeNull();
 			});

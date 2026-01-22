@@ -1,4 +1,4 @@
-export { CommonCartridgeConfig } from './common-cartridge.config';
+export { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from './common-cartridge.config';
 export {
 	CommonCartridgeFileBuilder,
 	CommonCartridgeFileBuilderProps,
@@ -13,7 +13,7 @@ export {
 } from './export/common-cartridge.enums';
 export { CommonCartridgeElementProps } from './export/elements/common-cartridge-element-factory';
 export { CommonCartridgeResourceProps } from './export/resources/common-cartridge-resource-factory';
-export { OmitVersion, createIdentifier } from './export/utils';
+export { createIdentifier, OmitVersion } from './export/utils';
 export { CommonCartridgeFileParser } from './import/common-cartridge-file-parser';
 export { CommonCartridgeXmlResourceType } from './import/common-cartridge-import.enums';
 export {

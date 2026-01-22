@@ -1,31 +1,42 @@
-import { Module, Scope } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigurationModule } from '@infra/configuration';
+import { DynamicModule, Module, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { JwtExtractor } from '@shared/common/utils';
 import { Request } from 'express';
 import { CoursesClientAdapter } from './courses-client.adapter';
-import { CoursesClientConfig } from './courses-client.config';
+import { InternalCoursesClientConfig } from './courses-client.config';
 import { Configuration, CoursesApi } from './generated';
 
-@Module({
-	providers: [
-		CoursesClientAdapter,
-		{
-			provide: CoursesApi,
-			scope: Scope.REQUEST,
-			useFactory: (configService: ConfigService<CoursesClientConfig, true>, request: Request): CoursesApi => {
-				const basePath = configService.getOrThrow<string>('API_HOST');
-				const accessToken = JwtExtractor.extractJwtFromRequestOrFail(request);
-				const configuration = new Configuration({
-					basePath: `${basePath}/v3`,
-					accessToken,
-				});
+@Module({})
+export class CoursesClientModule {
+	public static register(
+		configInjectionToken: string,
+		configConstructor: new () => InternalCoursesClientConfig
+	): DynamicModule {
+		const providers = [
+			CoursesClientAdapter,
+			{
+				provide: CoursesApi,
+				scope: Scope.REQUEST,
+				useFactory: (config: InternalCoursesClientConfig, request: Request): CoursesApi => {
+					const { basePath } = config;
+					const accessToken = JwtExtractor.extractJwtFromRequestOrFail(request);
+					const configuration = new Configuration({
+						basePath: `${basePath}/v3`,
+						accessToken,
+					});
 
-				return new CoursesApi(configuration);
+					return new CoursesApi(configuration);
+				},
+				inject: [configInjectionToken, REQUEST],
 			},
-			inject: [ConfigService, REQUEST],
-		},
-	],
-	exports: [CoursesClientAdapter],
-})
-export class CoursesClientModule {}
+		];
+
+		return {
+			module: CoursesClientModule,
+			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
+			providers,
+			exports: [CoursesClientAdapter],
+		};
+	}
+}
