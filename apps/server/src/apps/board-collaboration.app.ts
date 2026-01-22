@@ -8,6 +8,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { LegacyLogger, Logger } from '@core/logger';
 import { MongoIoAdapter } from '@infra/socketio';
+import { SESSION_VALKEY_CLIENT } from '@modules/authentication/authentication-config';
 import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
@@ -18,6 +19,7 @@ import {
 	enableOpenApiDocs,
 } from './helpers';
 import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
+import legacyRedisUtils = require('../../../../src/utils/redis');
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
@@ -40,6 +42,12 @@ async function bootstrap(): Promise<void> {
 	enableOpenApiDocs(nestApp, 'docs', options);
 	const logger = await nestApp.resolve(Logger);
 	nestApp.use(createRequestLoggerMiddleware());
+
+	// The redisClient must be initialized in the legacy part for the session handling (whitelisting of JWTs) to work.
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const sessionValkeyClient = await nestApp.resolve(SESSION_VALKEY_CLIENT);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+	legacyRedisUtils.initializeRedisClient(sessionValkeyClient);
 
 	await nestApp.init();
 
