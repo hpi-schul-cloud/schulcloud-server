@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType } from '@modules/board';
 import { columnBoardEntityFactory } from '@modules/board/testing';
@@ -16,12 +15,14 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenParentType } from '../../domainobject/share-token.do';
 import { ShareTokenService } from '../../service';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '../../sharing.config';
 
 describe('Sharing Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
 	let shareTokenService: ShareTokenService;
+	let config: SharingPublicApiConfig;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -33,11 +34,12 @@ describe('Sharing Controller (API)', () => {
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'sharetoken');
 		shareTokenService = module.get(ShareTokenService);
+		config = module.get<SharingPublicApiConfig>(SHARING_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		Configuration.set('FEATURE_COLUMN_BOARD_SHARE', true);
+		config.featureColumnBoardShare = true;
 	});
 
 	afterAll(async () => {
@@ -77,7 +79,7 @@ describe('Sharing Controller (API)', () => {
 
 		describe('when the feature is disabled', () => {
 			beforeEach(() => {
-				Configuration.set('FEATURE_COLUMN_BOARD_SHARE', false);
+				config.featureColumnBoardShare = false;
 			});
 
 			it('should return a 403 error', async () => {

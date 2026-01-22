@@ -309,11 +309,6 @@
 					"type": "string",
 					"default": "config/h5p-libraries.yaml",
 					"description": "Path to yaml file with list of h5p content type libraries which should be installed"
-				},
-				"EXIT_ON_ERROR": {
-					"type": "boolean",
-					"default": true,
-					"description": "By default, the application is terminated after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to false."
 				}
 			}
 		},
@@ -356,11 +351,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Defines if backend for the FWU content in the Learnstore is enabled."
-		},
-		"WOPI_MAX_FILE_SIZE": {
-			"type": "integer",
-			"default": 20971520,
-			"description": "The maximum file size in bytes that can be handled by the WOPI API. Download of larger files throws an error."
 		},
 		"FEATURE_IDENTITY_MANAGEMENT_ENABLED": {
 			"type": "boolean",
@@ -918,17 +908,6 @@
 			"description": "Log level for api.",
 			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
-		"NEST_LOG_LEVEL": {
-			"type": "string",
-			"default": "notice",
-			"description": "Nest Log level for api. The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'.",
-			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
-		},
-		"EXIT_ON_ERROR": {
-			"type": "boolean",
-			"default": true,
-			"description": "By default, the application is terminated after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to false."
-		},
 		"SYNC_QUEUE_NAME": {
 			"type": "string",
 			"default": "sync_ldap",
@@ -1043,26 +1022,6 @@
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
 			"description": "link to userfacing documentation of the column board feature"
-		},
-		"FEATURE_COURSE_SHARE": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for course sharing feature."
-		},
-		"FEATURE_LESSON_SHARE": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for lesson sharing feature."
-		},
-		"FEATURE_TASK_SHARE": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the task sharing feature."
-		},
-		"FEATURE_COLUMN_BOARD_SHARE": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the column board sharing feature."
 		},
 		"FEATURE_COLUMN_BOARD_SOCKET_ENABLED": {
 			"type": "boolean",
@@ -1410,11 +1369,6 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Enables calender service"
-		},
-		"FEATURE_ROOM_SHARE": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables the room sharing feature"
 		},
 		"FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED": {
 			"type": "boolean",
