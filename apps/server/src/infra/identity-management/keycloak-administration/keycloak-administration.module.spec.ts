@@ -1,5 +1,5 @@
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN, KeycloakAdministrationConfig } from './keycloak-administration-config';
 import { KeycloakAdministrationModule } from './keycloak-administration.module';
 import { KeycloakAdministrationService } from './service/keycloak-administration.service';
 
@@ -8,8 +8,7 @@ describe('KeycloakManagementModule', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				KeycloakAdministrationModule,
-				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
+				KeycloakAdministrationModule.register(KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN, KeycloakAdministrationConfig),
 			],
 		}).compile();
 	});

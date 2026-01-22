@@ -1,6 +1,12 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AccountService } from '@modules/account';
+import { SystemService } from '@modules/system/domain';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration-config';
+import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakConfigurationService } from '../service/keycloak-configuration.service';
 import { KeycloakMigrationService } from '../service/keycloak-migration.service';
 import { KeycloakSeedService } from '../service/keycloak-seed.service';
@@ -33,6 +39,30 @@ describe('KeycloakConfigurationUc', () => {
 				{
 					provide: KeycloakMigrationService,
 					useValue: createMock<KeycloakMigrationService>(),
+				},
+				{
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
+				{
+					provide: OidcIdentityProviderMapper,
+					useValue: createMock<OidcIdentityProviderMapper>(),
+				},
+				{
+					provide: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
+					useValue: KeycloakConfigurationConfig,
 				},
 			],
 		}).compile();
