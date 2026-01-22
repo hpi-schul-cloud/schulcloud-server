@@ -63,7 +63,7 @@ export class FwuLearningContentsUc {
 			// Use a regular expression to find the URL within the style string
 			const match = style.match(/url\((['"]?)(.*?)\1\)/);
 			if (match && match[2]) {
-				thumbnailUrl = match[1];
+				thumbnailUrl = match[2];
 			}
 		}
 
