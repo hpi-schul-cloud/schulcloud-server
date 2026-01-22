@@ -11,6 +11,7 @@ import { SharingPublicApiConfig } from '@modules/sharing';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ServerConfig } from '../../server.config';
 import { ConfigResponse } from '../dto';
+import { TaskPublicApiConfig } from '@modules/task';
 
 export class ConfigResponseMapper {
 	public static mapToResponse(
@@ -25,7 +26,8 @@ export class ConfigResponseMapper {
 		rosterConfig: RosterPublicApiConfig,
 		roomConfig: RoomPublicApiConfig,
 		sharingConfig: SharingPublicApiConfig,
-		commonCartridgeConfig: CommonCartridgePublicApiConfig
+		commonCartridgeConfig: CommonCartridgePublicApiConfig,
+		taskConfig: TaskPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,
@@ -40,6 +42,7 @@ export class ConfigResponseMapper {
 			...roomConfig,
 			...sharingConfig,
 			...commonCartridgeConfig,
+			...taskConfig,
 		});
 
 		return configResponse;
