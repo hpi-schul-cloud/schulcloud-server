@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Readable } from 'stream';
-import { FWU_S3_CLIENT_INJECTION_TOKEN } from '../fwu-s3-client.config';
+import { FWU_S3_CLIENT_INJECTION_TOKEN } from '../fwu.const';
 import { FwuLearningContentsUc } from './fwu-learning-contents.uc';
 
 describe('FwuLearningContentsUC', () => {
