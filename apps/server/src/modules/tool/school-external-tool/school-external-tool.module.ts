@@ -5,6 +5,7 @@ import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolRule } from './authorization/school-external-tool.rule';
 import { SchoolExternalToolAuthorizableService, SchoolExternalToolService } from './service';
+import { SchoolModule } from '@modules/school';
 
 @Module({
 	imports: [
@@ -12,6 +13,7 @@ import { SchoolExternalToolAuthorizableService, SchoolExternalToolService } from
 		forwardRef(() => ExternalToolModule),
 		AuthorizationModule,
 		MediaSourceModule,
+		SchoolModule,
 	],
 	providers: [SchoolExternalToolService, SchoolExternalToolRule, SchoolExternalToolAuthorizableService],
 	exports: [SchoolExternalToolService],
