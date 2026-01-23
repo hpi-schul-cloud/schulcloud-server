@@ -198,6 +198,13 @@ export class ExternalToolConfigurationUc {
 		return preferedTools;
 	}
 
+	public async addAndActivateToolForAllSchools(userId: EntityId, toolId: EntityId): Promise<void> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+
+		await this.schoolExternalToolService.addAndActivateToolForAllSchools(toolId);
+	}
+
 	private prepareAvailableToolsForContext(
 		externalTools: ExternalTool[],
 		schoolExternalTools: SchoolExternalTool[],
