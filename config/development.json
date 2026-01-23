@@ -60,10 +60,6 @@
 	"HYDRA_URI": "http://localhost:9001",
 	"FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED": true,
 	"FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED": true,
-	"SCHULCONNEX_CLIENT": {
-		"API_URL": "http://localhost:8888/v1/",
-		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token"
-	},
 	"ETHERPAD": {
 		"PAD_URI": "http://localhost:9001/p",
 		"URI": "http://localhost:9001/api/1.2.14"

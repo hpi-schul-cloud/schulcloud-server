@@ -1285,6 +1285,9 @@
 					"description": "Timeout in milliseconds for fetching personen info from schulconnex",
 					"default": 120000
 				}
+			},
+			"default": {
+				"PERSONEN_INFO_TIMEOUT_IN_MS": 120000
 			}
 		},
 		"HOSTNAME": {
