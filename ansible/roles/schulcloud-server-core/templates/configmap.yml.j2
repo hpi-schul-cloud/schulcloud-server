@@ -20,7 +20,6 @@ data:
   #  LEAD_TIME: "4000"
   PORT: "{{ PORT_SERVER }}"
   TZ: "Europe/Berlin"
-  PUBLIC_BACKEND_URL: "https://{{ DOMAIN }}/api"
   CTL_TOOLS_BACKEND_URL: "https://{{ DOMAIN }}/api"
 {% for name, data in configuration_all.items() %}
   {% if data.server is defined and data.server == true %}
