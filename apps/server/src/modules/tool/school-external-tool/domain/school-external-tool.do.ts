@@ -64,4 +64,8 @@ export class SchoolExternalTool extends DomainObject<SchoolExternalToolProps> {
 	get medium(): SchoolExternalToolMedium | undefined {
 		return this.props.medium;
 	}
+
+	public activate(): void {
+		this.props.isDeactivated = false;
+	}
 }

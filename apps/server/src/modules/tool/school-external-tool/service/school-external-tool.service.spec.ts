@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MediaSourceLicenseType, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
+import { SchoolService } from '@modules/school';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
 import { ToolContextType } from '../../common/enum';
@@ -54,6 +55,10 @@ describe(SchoolExternalToolService.name, () => {
 				{
 					provide: TOOL_CONFIG_TOKEN,
 					useValue: {},
+				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 			],
 		}).compile();

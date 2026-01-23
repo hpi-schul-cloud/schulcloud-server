@@ -1,4 +1,6 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaSource, MediaSourceDataFormat, MediaSourceLicenseType, MediaSourceService } from '@modules/media-source';
+import { SchoolService } from '@modules/school';
 import { Inject, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
@@ -18,7 +20,8 @@ export class SchoolExternalToolService {
 		private readonly commonToolValidationService: CommonToolValidationService,
 		private readonly commonToolDeleteService: CommonToolDeleteService,
 		private readonly mediaSourceService: MediaSourceService,
-		@Inject(TOOL_CONFIG_TOKEN) private readonly config: ToolConfig
+		@Inject(TOOL_CONFIG_TOKEN) private readonly config: ToolConfig,
+		private readonly schoolService: SchoolService
 	) {}
 
 	public async findById(schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {
@@ -131,5 +134,31 @@ export class SchoolExternalToolService {
 		createdSchoolExternalTool = await this.enrichWithDataFromExternalTool(createdSchoolExternalTool);
 
 		return createdSchoolExternalTool;
+	}
+
+	public async addAndActivateToolForAllSchools(toolId: EntityId): Promise<void> {
+		const allSchoolIds = await this.schoolService.getAllSchoolIds();
+		const existingSchoolExternalTools = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
+
+		existingSchoolExternalTools.forEach((tool) => tool.activate());
+		const updatePromises = existingSchoolExternalTools.map((tool) => this.schoolExternalToolRepo.save(tool));
+		await Promise.all(updatePromises);
+
+		const schoolIdsWhereExisting = existingSchoolExternalTools.map((tool) => tool.schoolId);
+		const schoolIdsWhereNotExisting = allSchoolIds.filter((schoolId) => !schoolIdsWhereExisting.includes(schoolId));
+		const createPromises = schoolIdsWhereNotExisting.map((schoolId) => this.createSchoolExternalTool(toolId, schoolId));
+		await Promise.all(createPromises);
+	}
+
+	private createSchoolExternalTool(toolId: EntityId, schoolId: EntityId): Promise<SchoolExternalTool> {
+		const schoolExternalTool = new SchoolExternalTool({
+			id: new ObjectId().toHexString(),
+			toolId,
+			schoolId,
+			parameters: [],
+			isDeactivated: false,
+		});
+
+		return this.schoolExternalToolRepo.save(schoolExternalTool);
 	}
 }
