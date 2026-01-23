@@ -172,7 +172,7 @@ describe(RoomMemberRule.name, () => {
 				};
 			}
 		);
-		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(room.id, members, user.school.id);
+		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(room.id, members, roomSetup.sameSchool.id);
 		const roomMemberAuthorizable = buildRoomMemberAuthorizable(roomMembershipAuthorizable, targetUser);
 
 		// return roomSetup;
@@ -192,6 +192,7 @@ describe(RoomMemberRule.name, () => {
 				requiredPermissions: [permission],
 				action: Action.write,
 			});
+
 			const result = service.hasPermission(user, roomMemberAuthorizable, context);
 
 			expect(result).toBe(expected);
