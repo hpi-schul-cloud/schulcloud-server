@@ -205,34 +205,7 @@
 		"FWU_CONTENT": {
 			"type": "object",
 			"description": "Properties of the S3 storage containing FWU content",
-			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY", "S3_SECRET_KEY"],
 			"properties": {
-				"S3_ENDPOINT": {
-					"type": "string",
-					"format": "uri",
-					"default": "http://localhost:4568",
-					"description": "The URI of the S3 provider"
-				},
-				"S3_REGION": {
-					"type": "string",
-					"default": "de",
-					"description": "Region name of bucket"
-				},
-				"S3_BUCKET": {
-					"type": "string",
-					"default": "",
-					"description": "Bucket name"
-				},
-				"S3_ACCESS_KEY": {
-					"type": "string",
-					"default": "",
-					"description": "Access Key to S3"
-				},
-				"S3_SECRET_KEY": {
-					"type": "string",
-					"default": "",
-					"description": "Secret key to S3"
-				},
 				"INCOMING_REQUEST_TIMEOUT_MS": {
 					"type": "integer",
 					"minimum": 0,
@@ -244,50 +217,8 @@
 		"H5P_EDITOR": {
 			"type": "object",
 			"description": "Properties of the H5P server microservice and library management job",
-			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET_CONTENT", "S3_BUCKET_LIBRARIES"],
 			"default": {},
 			"properties": {
-				"S3_ENDPOINT": {
-					"type": "string",
-					"format": "uri",
-					"default": "http://localhost:4568",
-					"description": "The URI of the S3 provider"
-				},
-				"S3_REGION": {
-					"type": "string",
-					"default": "eu-central-2",
-					"description": "Region name of bucket"
-				},
-				"S3_ACCESS_KEY_ID": {
-					"type": "string",
-					"default": "",
-					"description": "Access Key to S3_BUCKET_CONTENT with RW and listing buckets permissions"
-				},
-				"S3_SECRET_ACCESS_KEY": {
-					"type": "string",
-					"default": "",
-					"description": "Secret key to to S3_BUCKET_CONTENT with RW and listing buckets permissions"
-				},
-				"LIBRARIES_S3_ACCESS_KEY_ID": {
-					"type": "string",
-					"default": "",
-					"description": "Access Key to S3_BUCKET_LIBRARIES (at least read and listing buckets permissions for editor, aditionally write permission for library management)"
-				},
-				"LIBRARIES_S3_SECRET_ACCESS_KEY": {
-					"type": "string",
-					"default": "",
-					"description": "Secret key to S3_BUCKET_LIBRARIES (at least read and listing buckets permissions for editor, aditionally write permission for library management)"
-				},
-				"S3_BUCKET_CONTENT": {
-					"type": "string",
-					"default": "",
-					"description": "Content Bucket name"
-				},
-				"S3_BUCKET_LIBRARIES": {
-					"type": "string",
-					"default": "",
-					"description": "Library Bucket name"
-				},
 				"EXCHANGE": {
 					"type": "string",
 					"default": "h5p-editor",
@@ -309,41 +240,6 @@
 					"type": "string",
 					"default": "config/h5p-libraries.yaml",
 					"description": "Path to yaml file with list of h5p content type libraries which should be installed"
-				}
-			}
-		},
-		"H5P_Library": {
-			"type": "object",
-			"description": "Properties of the H5P server microservice",
-			"required": ["S3_ENDPOINT", "S3_BUCKET_LIBRARIES", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"],
-			"default": {},
-			"properties": {
-				"S3_ENDPOINT": {
-					"type": "string",
-					"format": "uri",
-					"default": "http://localhost:4568",
-					"description": "The URI of the S3 provider"
-				},
-				"S3_ACCESS_KEY_ID": {
-					"type": "string",
-					"default": "",
-					"description": "Access Key to S3_BUCKET_CONTENT with R/W permissions"
-				},
-				"S3_SECRET_ACCESS_KEY": {
-					"type": "string",
-					"default": "",
-					"description": "Secret key to S3_BUCKET_CONTENT with R/W permissions"
-				},
-				"S3_BUCKET_LIBRARIES": {
-					"type": "string",
-					"default": "",
-					"description": "Library Bucket name"
-				},
-				"LOG_LEVEL": {
-					"type": "string",
-					"default": "info",
-					"description": "Log level for H5P library manager.",
-					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 				}
 			}
 		},
@@ -907,11 +803,6 @@
 			"default": "dbildungscloud@dataport.de",
 			"description": "Email to report accessibility issue"
 		},
-		"FEATURE_COLUMN_BOARD_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Toggle for activating the column board."
-		},
 		"FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED": {
 			"type": "boolean",
 			"default": true,
@@ -976,18 +867,6 @@
 			"type": "integer",
 			"description": "Timeout in milliseconds for saving all import user matches",
 			"default": 60000
-		},
-		"FEATURE_COPY_SERVICE_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for copy course feature."
-		},
-		"GEOGEBRA_BASE_URL": {
-			"type": "string",
-			"format": "uri",
-			"default": "https://www.geogebra.org",
-			"pattern": ".*(?<!/)$",
-			"description": "Base URL of GeoGebra materials"
 		},
 		"GHOST_BASE_URL": {
 			"type": "string",
@@ -1123,11 +1002,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the calculation of the outdated status of an external tool without the usage of the db attribute version"
-		},
-		"FEATURE_CTL_TOOLS_COPY_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the copying of ctl tools when copying a course."
 		},
 		"FEATURE_SHOW_MIGRATION_WIZARD": {
 			"type": "boolean",

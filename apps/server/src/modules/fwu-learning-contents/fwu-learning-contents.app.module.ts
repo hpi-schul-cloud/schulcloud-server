@@ -8,7 +8,9 @@ import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
-import { config, s3Config } from './fwu-learning-contents.config';
+import { config } from './fwu-learning-contents.config';
+import { FWU_S3_CLIENT_CONFIG_TOKEN, FwuS3ClientConfig } from './fwu-s3-client.config';
+import { FWU_S3_CLIENT_INJECTION_TOKEN } from './fwu.const';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
@@ -21,7 +23,11 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 		LoggerModule,
 		HttpModule,
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
-		S3ClientModule.register([s3Config]),
+		S3ClientModule.register({
+			clientInjectionToken: FWU_S3_CLIENT_INJECTION_TOKEN,
+			configInjectionToken: FWU_S3_CLIENT_CONFIG_TOKEN,
+			configConstructor: FwuS3ClientConfig,
+		}),
 		AuthGuardModule.register([
 			{
 				option: AuthGuardOptions.JWT,

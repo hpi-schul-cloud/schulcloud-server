@@ -12,7 +12,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Readable } from 'stream';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
-import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
+import { H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN, H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN } from '../../h5p-editor.const';
 import { H5PContent, H5PContentProperties } from '../../repo';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from '../../service';
 import { h5pContentFactory } from '../../testing';
@@ -83,9 +83,9 @@ describe('H5PEditor Controller (api)', () => {
 		const module = await Test.createTestingModule({
 			imports: [H5PEditorTestModule, ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig)],
 		})
-			.overrideProvider(H5P_CONTENT_S3_CONNECTION)
+			.overrideProvider(H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN)
 			.useValue(createMock<S3ClientAdapter>())
-			.overrideProvider(H5P_LIBRARIES_S3_CONNECTION)
+			.overrideProvider(H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN)
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(ContentStorage)
 			.useValue(createMock<ContentStorage>())

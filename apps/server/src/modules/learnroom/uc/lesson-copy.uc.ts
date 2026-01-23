@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
@@ -6,9 +5,10 @@ import { CourseEntity } from '@modules/course/repo';
 import { LessonCopyParentParams, LessonCopyService, LessonService } from '@modules/lesson';
 import { LessonEntity } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
-import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { EntityId } from '@shared/domain/types';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../learnroom.config';
 
 @Injectable()
 export class LessonCopyUC {
@@ -17,7 +17,8 @@ export class LessonCopyUC {
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly lessonService: LessonService,
 		private readonly courseService: CourseService,
-		private readonly copyHelperService: CopyHelperService
+		private readonly copyHelperService: CopyHelperService,
+		@Inject(LEARNROOM_CONFIG_TOKEN) private readonly config: LearnroomConfig
 	) {}
 
 	public async copyLesson(
@@ -72,7 +73,8 @@ export class LessonCopyUC {
 	}
 
 	private checkFeatureEnabled() {
-		const enabled = Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean;
+		const enabled = this.config.featureCopyServiceEnabled;
+
 		if (!enabled) {
 			throw new InternalServerErrorException('Copy Feature not enabled');
 		}
