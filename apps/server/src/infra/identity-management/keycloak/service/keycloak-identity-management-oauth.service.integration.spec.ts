@@ -17,7 +17,7 @@ import {
 } from '../../keycloak-configuration/keycloak-configuration-config';
 import { KeycloakConfigurationModule } from '../../keycloak-configuration/keycloak-configuration.module';
 import { KeycloakConfigurationService } from '../../keycloak-configuration/service/keycloak-configuration.service';
-import { KeycloakModule } from '../../keycloak/keycloak.module';
+import { KeycloakModule } from '../keycloak.module';
 import { KeycloakIdentityManagementOauthService } from './keycloak-identity-management-oauth.service';
 
 describe('KeycloakIdentityManagementOauthService Integration', () => {

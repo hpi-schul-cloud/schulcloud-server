@@ -13,7 +13,7 @@ import {
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { JsonAccount } from '../interface/json-account.interface';
 import { JsonUser } from '../interface/json-user.interface';
-import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration-config';
+import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN } from '../keycloak-configuration-config';
 import { KeycloakSeedService } from './keycloak-seed.service';
 
 const accountsFile = 'accounts.json';
@@ -95,18 +95,17 @@ describe('KeycloakSeedService', () => {
 			username: 'notUnique',
 		},
 	];
-	const keycloakConfig: KeycloakConfigurationConfig = {
-		accountsFile: 'accounts.json',
-		usersFile: 'users.json',
-		scDomain: 'localhost	',
-	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				{
 					provide: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
-					useValue: keycloakConfig,
+					useValue: {
+						accountsFile: 'accounts.json',
+						usersFile: 'users.json',
+						scDomain: 'localhost	',
+					},
 				},
 				KeycloakSeedService,
 				{

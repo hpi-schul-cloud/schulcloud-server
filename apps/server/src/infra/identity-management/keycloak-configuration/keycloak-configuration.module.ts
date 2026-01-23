@@ -1,5 +1,5 @@
 import { LoggerModule } from '@core/logger';
-import { ConfigurationModule } from '@infra/configuration/configuration.module';
+import { ConfigurationModule } from '@infra/configuration';
 import { ConsoleWriterModule } from '@infra/console';
 import { EncryptionModule } from '@infra/encryption';
 import { AccountModule } from '@modules/account';
