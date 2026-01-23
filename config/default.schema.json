@@ -1276,6 +1276,17 @@
 				"API_KEY": ""
 			}
 		},
+		"SCHULCONNEX_CLIENT": {
+			"type": "object",
+			"description": "Configuration of the schulcloud's schulconnex client.",
+			"properties": {
+				"PERSONEN_INFO_TIMEOUT_IN_MS": {
+					"type": "integer",
+					"description": "Timeout in milliseconds for fetching personen info from schulconnex",
+					"default": 120000
+				}
+			}
+		},
 		"HOSTNAME": {
 			"type": "string",
 			"description": "Hostname. Should usually not be defined as it's expected to be taken from the process env."
