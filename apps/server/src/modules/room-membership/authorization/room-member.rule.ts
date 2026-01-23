@@ -46,22 +46,9 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 
 	public canPassOwnershipTo(user: User, object: RoomMemberAuthorizable): boolean {
 		const isAlreadyRoomOwner = object.member.roomRoleName === RoleName.ROOMOWNER;
-		if (isAlreadyRoomOwner) {
-			return false;
-		}
-
-		const isUserMemberOfRoom = object.roomMembershipAuthorizable.members.some((member) => member.userId === user.id);
-		if (!isUserMemberOfRoom) {
-			return false;
-		}
-
 		const isStudent = object.member.schoolRoleNames.includes(RoleName.STUDENT);
-		if (isStudent) {
-			return false;
-		}
-
 		const isExternalPerson = object.member.schoolRoleNames.includes(RoleName.EXTERNALPERSON);
-		if (isExternalPerson) {
+		if (isAlreadyRoomOwner || isStudent || isExternalPerson) {
 			return false;
 		}
 
@@ -74,9 +61,9 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 			action: Action.write,
 			requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
 		});
-		const isCurrentUser = object.member.userId == user.id;
+		const isNotHimself = object.member.userId !== user.id;
 
-		return hasPermission && !isCurrentUser;
+		return hasPermission && isNotHimself;
 	}
 
 	public canRemoveMember(user: User, object: RoomMemberAuthorizable): boolean {
