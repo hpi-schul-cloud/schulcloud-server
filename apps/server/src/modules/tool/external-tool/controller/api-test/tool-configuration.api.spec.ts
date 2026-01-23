@@ -30,6 +30,7 @@ import {
 	SchoolExternalToolConfigurationTemplateResponse,
 	ToolContextTypesListResponse,
 } from '../dto';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 
 describe('ToolConfigurationController (API)', () => {
 	let app: INestApplication;
@@ -911,6 +912,81 @@ describe('ToolConfigurationController (API)', () => {
 
 				expect(response.body).toEqual<PreferredToolListResponse>({
 					data: [],
+				});
+			});
+		});
+	});
+
+	describe('PATCH tools/add-and-activate-for-all-schools', () => {
+		describe('when user does not have the required permission', () => {
+			const setup = async () => {
+				// It is irrelevant which role different than superhero is chosen.
+				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher();
+
+				await em.persist([teacherUser, teacherAccount]).flush();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient };
+			};
+
+			it('should respond with Unauthorized exception', async () => {
+				const { loggedInClient } = await setup();
+				const someId = new ObjectId().toString();
+
+				const res = await loggedInClient.patch(`add-and-activate-for-all-schools/${someId}`);
+
+				expect(res.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user has the required permissions', () => {
+			const setup = async () => {
+				const school1 = schoolEntityFactory.buildWithId();
+				const school2 = schoolEntityFactory.buildWithId();
+				const school3 = schoolEntityFactory.buildWithId();
+				const tool = externalToolEntityFactory.buildWithId();
+				const activeSchoolExternalToolInSchool1 = schoolExternalToolEntityFactory.build({ school: school1, tool });
+				const inactiveSchoolExternalToolInSchool2 = schoolExternalToolEntityFactory.build({
+					school: school2,
+					tool,
+					isDeactivated: true,
+				});
+
+				// It is necessary to assign the superhero to one of the above schools, so that not another school is created while building the user,
+				// which would distort the test results. It is irrelevant which of the above schools is used.
+				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({ school: school1 });
+
+				await em
+					.persist([
+						superheroUser,
+						superheroAccount,
+						school1,
+						school2,
+						school3,
+						tool,
+						activeSchoolExternalToolInSchool1,
+						inactiveSchoolExternalToolInSchool2,
+					])
+					.flush();
+
+				const loggedInClient = await testApiClient.login(superheroAccount);
+
+				return { school1, school2, school3, tool, loggedInClient };
+			};
+
+			it('should add and activate the given tool in all schools', async () => {
+				const { school1, school2, school3, tool, loggedInClient } = await setup();
+
+				await loggedInClient.patch(`add-and-activate-for-all-schools/${tool.id}`);
+
+				const schoolExternalTools = await em.find(SchoolExternalToolEntity, {});
+				expect(schoolExternalTools).toHaveLength(3);
+				expect(schoolExternalTools.filter((item) => item.school._id === school1._id)).toHaveLength(1);
+				expect(schoolExternalTools.filter((item) => item.school._id === school2._id)).toHaveLength(1);
+				expect(schoolExternalTools.filter((item) => item.school._id === school3._id)).toHaveLength(1);
+				schoolExternalTools.forEach((item) => {
+					expect(item.isDeactivated).toBe(false);
 				});
 			});
 		});

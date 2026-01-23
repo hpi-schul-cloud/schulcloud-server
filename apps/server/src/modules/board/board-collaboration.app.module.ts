@@ -2,7 +2,13 @@ import { CoreModule } from '@core/core.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
+import {
+	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
+	ValkeyClientModule,
+	ValkeyClientSessionConfig,
+} from '@infra/valkey-client';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { SESSION_VALKEY_CLIENT } from '@modules/authentication';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
@@ -27,6 +33,11 @@ const imports = [
 			configConstructor: JwtAuthGuardConfig,
 		},
 	]),
+	ValkeyClientModule.register({
+		clientInjectionToken: SESSION_VALKEY_CLIENT,
+		configConstructor: ValkeyClientSessionConfig,
+		configInjectionToken: SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
+	}),
 ];
 
 @Module({

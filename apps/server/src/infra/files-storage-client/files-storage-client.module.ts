@@ -44,13 +44,15 @@ export class FilesStorageClientModule {
 					provide: FilesStorageClientAdapter,
 					scope: Scope.REQUEST,
 					useFactory: (
+						api: FileApi,
 						logger: Logger,
 						errorLogger: ErrorLogger,
 						httpService: HttpService,
 						config: InternalFilesStorageClientConfig,
 						req: Request
-					): FilesStorageClientAdapter => new FilesStorageClientAdapter(logger, errorLogger, httpService, config, req),
-					inject: [Logger, ErrorLogger, HttpService, configInjectionToken, REQUEST],
+					): FilesStorageClientAdapter =>
+						new FilesStorageClientAdapter(api, logger, errorLogger, httpService, config, req),
+					inject: [FileApi, Logger, ErrorLogger, HttpService, configInjectionToken, REQUEST],
 				},
 			],
 			exports: [FilesStorageClientAdapter, FileApi],

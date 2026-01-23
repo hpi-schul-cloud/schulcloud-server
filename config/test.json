@@ -62,5 +62,8 @@
 	},
 	"ETHERPAD": {
 		"PAD_URI": "http://localhost:9001/p"
+	},
+	"FWU_CONTENT": {
+		"INCOMING_REQUEST_TIMEOUT_MS": 2000
 	}
 }
