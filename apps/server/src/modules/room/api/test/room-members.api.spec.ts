@@ -1,4 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/repo';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { RoleName } from '@modules/role';
@@ -15,7 +16,6 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomMemberListResponse } from '../dto/response/room-member-list.response';
-import { AccountEntity } from '@modules/account/repo';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -35,7 +35,6 @@ describe('Room Controller (API)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		await em.clearCache('roles-cache-all');
 	});
 
 	afterAll(async () => {

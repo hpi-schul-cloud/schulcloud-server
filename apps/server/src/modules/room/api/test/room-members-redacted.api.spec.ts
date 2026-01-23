@@ -35,7 +35,6 @@ describe('Room Controller (API)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		await em.clearCache('roles-cache-all');
 	});
 
 	afterAll(async () => {

@@ -37,7 +37,6 @@ describe('Room Controller (API)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		await em.clearCache('roles-cache-all');
 		config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = true;
 	});
 
