@@ -868,11 +868,6 @@
 			"default": "dbildungscloud@dataport.de",
 			"description": "Email to report accessibility issue"
 		},
-		"FEATURE_COLUMN_BOARD_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Toggle for activating the column board."
-		},
 		"FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED": {
 			"type": "boolean",
 			"default": true,
@@ -937,18 +932,6 @@
 			"type": "integer",
 			"description": "Timeout in milliseconds for saving all import user matches",
 			"default": 60000
-		},
-		"FEATURE_COPY_SERVICE_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for copy course feature."
-		},
-		"GEOGEBRA_BASE_URL": {
-			"type": "string",
-			"format": "uri",
-			"default": "https://www.geogebra.org",
-			"pattern": ".*(?<!/)$",
-			"description": "Base URL of GeoGebra materials"
 		},
 		"GHOST_BASE_URL": {
 			"type": "string",
@@ -1084,11 +1067,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the calculation of the outdated status of an external tool without the usage of the db attribute version"
-		},
-		"FEATURE_CTL_TOOLS_COPY_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the copying of ctl tools when copying a course."
 		},
 		"FEATURE_SHOW_MIGRATION_WIZARD": {
 			"type": "boolean",

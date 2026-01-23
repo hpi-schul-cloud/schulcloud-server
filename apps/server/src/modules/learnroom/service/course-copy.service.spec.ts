@@ -13,14 +13,13 @@ import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/te
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import {
 	contextExternalToolFactory,
 	copyContextExternalToolRejectDataFactory,
 } from '../../tool/context-external-tool/testing';
-import { LearnroomConfig } from '../learnroom.config';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../learnroom.config';
 import { LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import { boardFactory } from '../testing';
 import { CourseCopyService } from './course-copy.service';
@@ -38,7 +37,7 @@ describe('course copy service', () => {
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let userService: DeepMocked<UserService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
-	let configService: DeepMocked<ConfigService<LearnroomConfig, true>>;
+	let config: LearnroomConfig;
 
 	afterAll(async () => {
 		await module.close();
@@ -86,8 +85,10 @@ describe('course copy service', () => {
 					useValue: createMock<ContextExternalToolService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<LearnroomConfig, true>>(),
+					provide: LEARNROOM_CONFIG_TOKEN,
+					useValue: {
+						featureCtlToolsCopyEnabled: true,
+					},
 				},
 			],
 		}).compile();
@@ -101,7 +102,7 @@ describe('course copy service', () => {
 		copyHelperService = module.get(CopyHelperService);
 		userService = module.get(UserService);
 		contextExternalToolService = module.get(ContextExternalToolService);
-		configService = module.get(ConfigService);
+		config = module.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
 	});
 
 	beforeEach(() => {
@@ -147,8 +148,6 @@ describe('course copy service', () => {
 			boardCopyService.copyBoard.mockResolvedValue(boardCopyStatus);
 
 			lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(boardCopyStatus);
-
-			configService.get.mockReturnValue(true);
 
 			return {
 				user,
@@ -498,7 +497,7 @@ describe('course copy service', () => {
 
 			lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(boardCopyStatus);
 
-			configService.get.mockReturnValue(false);
+			config.featureCtlToolsCopyEnabled = false;
 
 			return {
 				user,
