@@ -16,7 +16,7 @@ import path from 'node:path/posix';
 import pLimit from 'p-limit';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto';
-import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
+import { H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN } from '../h5p-editor.const';
 import { InstalledLibrary, LibraryRepo } from '../repo';
 
 enum LibraryDependencyType {
@@ -35,7 +35,7 @@ export class LibraryStorage implements ILibraryStorage {
 	 */
 	constructor(
 		private readonly libraryRepo: LibraryRepo,
-		@Inject(H5P_LIBRARIES_S3_CONNECTION) private readonly s3Client: S3ClientAdapter
+		@Inject(H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN) private readonly s3Client: S3ClientAdapter
 	) {}
 
 	/**
