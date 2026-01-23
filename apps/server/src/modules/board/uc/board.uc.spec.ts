@@ -24,6 +24,7 @@ import {
 import { boardNodeAuthorizableFactory, columnBoardFactory, columnFactory } from '../testing';
 import { BoardUc } from './board.uc';
 import { ConfigService } from '@nestjs/config';
+import { BoardNodeRule } from '../authorisation/board-node.rule';
 
 describe(BoardUc.name, () => {
 	let module: TestingModule;
@@ -88,6 +89,10 @@ describe(BoardUc.name, () => {
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
+				},
+				{
+					provide: BoardNodeRule,
+					useValue: createMock<BoardNodeRule>(),
 				},
 			],
 		}).compile();
