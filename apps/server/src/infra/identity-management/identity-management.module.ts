@@ -1,7 +1,7 @@
 import { LoggerModule } from '@core/logger';
+import { EncryptionModule } from '@infra/encryption';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
-import { EncryptionModule } from '../encryption';
 import { IdentityManagementOauthService } from './identity-management-oauth.service';
 import { IdentityManagementService } from './identity-management.service';
 import { KeycloakAdministrationModule } from './keycloak-administration/keycloak-administration.module';

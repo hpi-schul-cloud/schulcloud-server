@@ -1,4 +1,4 @@
-import { TestEncryptionConfig } from '@infra/encryption/testing/test-encryption-config';
+import { TestEncryptionConfig } from '@infra/encryption/testing';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { ObjectId } from '@mikro-orm/mongodb';
