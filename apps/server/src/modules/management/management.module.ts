@@ -1,5 +1,4 @@
 import { LoggerModule } from '@core/logger';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ConsoleWriterService } from '@infra/console';
 import { EncryptionModule } from '@infra/encryption';
 import { FeathersModule } from '@infra/feathers';
@@ -35,7 +34,7 @@ import {
 import { DatabaseManagementService } from './service/database-management.service';
 import { DatabaseManagementUc } from './uc/database-management.uc';
 
-const baseImports = [
+const imports = [
 	FileSystemModule,
 	LoggerModule,
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -46,24 +45,18 @@ const baseImports = [
 	ExternalToolModule,
 	OauthProviderServiceModule,
 	InstanceModule,
+	KeycloakConfigurationModule.register({
+		encryptionConfig: { injectionToken: MANAGMENT_ENCRYPTION_CONFIG_TOKEN, Constructor: ManagmentEncryptionConfig },
+		keycloakAdministrationConfig: {
+			injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+			Constructor: KeycloakAdministrationConfig,
+		},
+		keycloakConfigurationConfig: {
+			injectionToken: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
+			Constructor: KeycloakConfigurationConfig,
+		},
+	}),
 ];
-
-const imports = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
-	? [
-			...baseImports,
-			KeycloakConfigurationModule.register({
-				encryptionConfig: { injectionToken: MANAGMENT_ENCRYPTION_CONFIG_TOKEN, Constructor: ManagmentEncryptionConfig },
-				keycloakAdministrationConfig: {
-					injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
-					Constructor: KeycloakAdministrationConfig,
-				},
-				keycloakConfigurationConfig: {
-					injectionToken: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
-					Constructor: KeycloakConfigurationConfig,
-				},
-			}),
-	  ]
-	: baseImports;
 
 const providers = [
 	DatabaseManagementUc,

@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ConsoleWriterModule } from '@infra/console/console-writer/console-writer.module';
 import {
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
@@ -24,20 +23,16 @@ import mikroOrmCliConfig from './mikro-orm-cli.config';
 		ConsoleWriterModule,
 		FilesModule,
 		ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
-		...((Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
-			? [
-					KeycloakModule.register({
-						encryptionConfig: {
-							Constructor: ManagmentEncryptionConfig,
-							injectionToken: MANAGMENT_ENCRYPTION_CONFIG_TOKEN,
-						},
-						keycloakAdministrationConfig: {
-							Constructor: KeycloakAdministrationConfig,
-							injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
-						},
-					}),
-			  ]
-			: []), // TODO: Was macht das KeycloakModule hier?
+		KeycloakModule.register({
+			encryptionConfig: {
+				Constructor: ManagmentEncryptionConfig,
+				injectionToken: MANAGMENT_ENCRYPTION_CONFIG_TOKEN,
+			},
+			keycloakAdministrationConfig: {
+				Constructor: KeycloakAdministrationConfig,
+				injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+			}, // TODO: Was macht das KeycloakModule hier?
+		}),
 		MikroOrmModule.forRoot(mikroOrmCliConfig),
 		SyncModule,
 	],
