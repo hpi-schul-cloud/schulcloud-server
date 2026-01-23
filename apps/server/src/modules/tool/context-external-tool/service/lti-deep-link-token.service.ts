@@ -1,9 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
 import { UUID } from 'bson';
-import { ToolConfig } from '../../tool-config';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import { LtiDeepLinkToken } from '../domain';
 import { LTI_DEEP_LINK_TOKEN_REPO, LtiDeepLinkTokenRepo } from '../repo';
 
@@ -11,12 +10,11 @@ import { LTI_DEEP_LINK_TOKEN_REPO, LtiDeepLinkTokenRepo } from '../repo';
 export class LtiDeepLinkTokenService {
 	constructor(
 		@Inject(LTI_DEEP_LINK_TOKEN_REPO) private readonly ltiDeepLinkTokenRepo: LtiDeepLinkTokenRepo,
-		private readonly configService: ConfigService<ToolConfig, true>
+		@Inject(TOOL_CONFIG_TOKEN) private readonly config: ToolConfig
 	) {}
 
 	public async generateToken(userId: EntityId): Promise<LtiDeepLinkToken> {
-		const tokenDurationMs = this.configService.get<number>('CTL_TOOLS_RELOAD_TIME_MS');
-
+		const tokenDurationMs = this.config.ctlToolsReloadTimeMs;
 		const ltiDeepLinkToken: LtiDeepLinkToken = await this.ltiDeepLinkTokenRepo.save(
 			new LtiDeepLinkToken({
 				id: new ObjectId().toHexString(),

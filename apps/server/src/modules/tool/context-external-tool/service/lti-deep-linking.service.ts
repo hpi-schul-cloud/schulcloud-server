@@ -1,14 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ToolConfig } from '../../tool-config';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 
 @Injectable()
 export class LtiDeepLinkingService {
-	constructor(private readonly configService: ConfigService<ToolConfig, true>) {}
+	constructor(@Inject(TOOL_CONFIG_TOKEN) private readonly config: ToolConfig) {}
 
 	public getCallbackUrl(contextExternalToolId: EntityId): string {
-		const publicBackendUrl: string = this.configService.get<string>('PUBLIC_BACKEND_URL');
+		const { publicBackendUrl } = this.config;
 
 		const callbackUrl = new URL(
 			`${publicBackendUrl}/v3/tools/context-external-tools/${contextExternalToolId}/lti11-deep-link-callback`

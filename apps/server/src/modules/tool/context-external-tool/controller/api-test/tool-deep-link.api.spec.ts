@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
@@ -10,6 +9,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { externalToolEntityFactory, lti11ToolConfigEntityFactory } from '../../../external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../../tool-config';
 import { ContextExternalToolEntity, ContextExternalToolType, LtiDeepLinkEmbeddable } from '../../repo';
 import {
 	contextExternalToolEntityFactory,
@@ -24,6 +24,7 @@ describe('ToolDeepLinkController (API)', () => {
 	let orm: MikroORM;
 	let testApiClient: TestApiClient;
 	let encryptionConfig: ToolEncryptionConfig;
+	let config: ToolConfig;
 
 	const basePath = '/tools/context-external-tools';
 
@@ -39,6 +40,7 @@ describe('ToolDeepLinkController (API)', () => {
 		testApiClient = new TestApiClient(app, basePath);
 
 		encryptionConfig = app.get<ToolEncryptionConfig>(TOOL_ENCRYPTION_CONFIG_TOKEN);
+		config = app.get<ToolConfig>(TOOL_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -77,7 +79,7 @@ describe('ToolDeepLinkController (API)', () => {
 					contextType: ContextExternalToolType.COURSE,
 				});
 
-				const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+				const { publicBackendUrl } = config;
 				const callbackUrl = `${publicBackendUrl}/v3${basePath}/${contextExternalTool.id}/lti11-deep-link-callback`;
 				const requestFactory = new Lti11DeepLinkParamsFactory(callbackUrl, lti11Config.key, decryptedSecret);
 				const postParams = requestFactory.buildRaw({

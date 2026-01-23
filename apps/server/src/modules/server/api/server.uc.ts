@@ -14,6 +14,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { SERVER_CONFIG_TOKEN, ServerConfig } from '../server.config';
 import { ConfigResponse } from './dto';
 import { ConfigResponseMapper } from './mapper';
+import { TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig } from '@modules/tool';
 
 @Injectable()
 export class ServerUc {
@@ -31,6 +32,7 @@ export class ServerUc {
 		@Inject(SHARING_PUBLIC_API_CONFIG_TOKEN) private readonly sharingConfig: SharingPublicApiConfig,
 		@Inject(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN)
 		private readonly commonCartridgeConfig: CommonCartridgePublicApiConfig,
+		@Inject(TOOL_PUBLIC_API_CONFIG_TOKEN) private readonly toolConfig: ToolPublicApiConfig,
 		@Inject(TASK_PUBLIC_API_CONFIG_TOKEN) private readonly taskConfig: TaskPublicApiConfig
 	) {}
 
@@ -48,6 +50,7 @@ export class ServerUc {
 			this.roomConfig,
 			this.sharingConfig,
 			this.commonCartridgeConfig,
+			this.toolConfig,
 			this.taskConfig
 		);
 

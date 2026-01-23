@@ -2,11 +2,10 @@ import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { of, throwError } from 'rxjs';
-import { ToolConfig } from '../../tool-config';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
 import {
@@ -38,9 +37,9 @@ describe(ExternalToolLogoService.name, () => {
 
 	let httpService: DeepMocked<HttpService>;
 	let logger: DeepMocked<Logger>;
-	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let externalToolImageSanitizerService: DeepMocked<ExternalToolLogoSanitizerService>;
+	let config: ToolConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -55,10 +54,6 @@ describe(ExternalToolLogoService.name, () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<ToolConfig, true>>(),
-				},
-				{
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
 				},
@@ -66,13 +61,17 @@ describe(ExternalToolLogoService.name, () => {
 					provide: ExternalToolLogoSanitizerService,
 					useValue: createMock<ExternalToolLogoSanitizerService>(),
 				},
+				{
+					provide: TOOL_CONFIG_TOKEN,
+					useValue: {},
+				},
 			],
 		}).compile();
 
 		service = module.get(ExternalToolLogoService);
 		httpService = module.get(HttpService);
 		logger = module.get(Logger);
-		configService = module.get(ConfigService);
+		config = module.get(TOOL_CONFIG_TOKEN);
 		externalToolService = module.get(ExternalToolService);
 		externalToolImageSanitizerService = module.get(ExternalToolLogoSanitizerService);
 	});
@@ -109,7 +108,7 @@ describe(ExternalToolLogoService.name, () => {
 				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().buildWithId();
 
 				const baseUrl = 'https://backend.com';
-				configService.get.mockReturnValue(baseUrl);
+				config.ctlToolsBackendUrl = baseUrl;
 				const { id } = externalTool;
 				const expected = `${baseUrl}/v3/tools/external-tools/${id}/logo`;
 
@@ -134,7 +133,7 @@ describe(ExternalToolLogoService.name, () => {
 			describe('when size is exceeded', () => {
 				const setup = () => {
 					const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
-					configService.get.mockReturnValue(1);
+					config.ctlToolsExternalToolMaxLogoSizeInBytes = 1;
 
 					return { externalTool };
 				};
@@ -149,7 +148,7 @@ describe(ExternalToolLogoService.name, () => {
 			describe('when size is not exceeded', () => {
 				const setup = () => {
 					const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
-					configService.get.mockReturnValue(30000);
+					config.ctlToolsExternalToolMaxLogoSizeInBytes = 300000;
 
 					return { externalTool };
 				};
