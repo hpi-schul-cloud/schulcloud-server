@@ -1,18 +1,21 @@
 import { AxiosErrorLoggable } from '@core/error/loggable';
 import { ErrorLogger, Logger } from '@core/logger';
 import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
 import { JwtExtractor } from '@shared/common/utils/jwt';
 import { AxiosError } from 'axios';
 import type { Request } from 'express';
 import { lastValueFrom } from 'rxjs';
 import { Stream } from 'stream';
+import util from 'util';
 import { InternalFilesStorageClientConfig } from './files-storage-client.config';
-import { FileRecordParentType, FileRecordResponse, StorageLocation } from './generated';
-import { Injectable } from '@nestjs/common';
+import { FileApi, FileRecordParentType, FileRecordResponse, StorageLocation } from './generated';
+import { GenericFileStorageLoggable } from './loggables';
 
 @Injectable()
 export class FilesStorageClientAdapter {
 	constructor(
+		private readonly api: FileApi,
 		private readonly logger: Logger,
 		private readonly errorLogger: ErrorLogger,
 		// these should be removed when the generated client supports downloading files as arraybuffer
@@ -21,6 +24,13 @@ export class FilesStorageClientAdapter {
 		private readonly req: Request
 	) {
 		this.logger.setContext(FilesStorageClientAdapter.name);
+	}
+
+	public async getFileRecord(fileRecordId: string): Promise<FileRecordResponse> {
+		const response = await this.api.getFileRecord(fileRecordId);
+		const { data } = response;
+
+		return data;
 	}
 
 	public async getStream(fileRecordId: string, fileName: string): Promise<Stream | null> {
@@ -46,7 +56,15 @@ export class FilesStorageClientAdapter {
 			const response = await lastValueFrom(observable);
 			return FilesStorageClientAdapter.isStream(response.data) ? response.data : null;
 		} catch (error: unknown) {
-			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.getStream'));
+			if (error instanceof AxiosError) {
+				this.errorLogger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.getStream'));
+			} else {
+				this.errorLogger.error(
+					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.getStream`, {
+						error: util.inspect(error),
+					})
+				);
+			}
 
 			return null;
 		}
@@ -92,7 +110,15 @@ export class FilesStorageClientAdapter {
 
 			return response.data as FileRecordResponse;
 		} catch (error: unknown) {
-			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.upload'));
+			if (error instanceof AxiosError) {
+				this.errorLogger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.upload'));
+			} else {
+				this.errorLogger.error(
+					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.upload`, {
+						error: util.inspect(error),
+					})
+				);
+			}
 
 			return null;
 		}

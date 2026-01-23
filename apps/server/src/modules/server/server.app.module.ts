@@ -53,6 +53,7 @@ import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '@module
 import { SharingApiModule } from '@modules/sharing/sharing-api.module';
 import { ShdApiModule } from '@modules/shd/shd.api.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
+import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '@modules/task';
 import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamApiModule } from '@modules/team/team-api.module';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
@@ -74,7 +75,7 @@ import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.mod
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
-import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '@modules/task';
+import { TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig } from '@modules/tool';
 
 const serverModules = [
 	HelpdeskApiModule,
@@ -90,6 +91,7 @@ const serverModules = [
 	ConfigurationModule.register(ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig),
 	ConfigurationModule.register(SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig),
 	ConfigurationModule.register(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig),
+	ConfigurationModule.register(TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig),
 	ConfigurationModule.register(TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,

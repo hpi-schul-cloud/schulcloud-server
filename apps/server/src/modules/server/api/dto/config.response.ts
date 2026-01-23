@@ -9,6 +9,7 @@ import { RoomPublicApiConfig } from '@modules/room';
 import { RosterPublicApiConfig } from '@modules/roster';
 import { SharingPublicApiConfig } from '@modules/sharing';
 import { TaskPublicApiConfig } from '@modules/task';
+import { ToolPublicApiConfig } from '@modules/tool';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
@@ -70,6 +71,9 @@ export class ConfigResponse {
 
 	@ApiProperty()
 	FEATURE_LERNSTORE_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_FWU_CONTENT_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: boolean;
@@ -279,6 +283,7 @@ export class ConfigResponse {
 			RoomPublicApiConfig &
 			SharingPublicApiConfig &
 			CommonCartridgePublicApiConfig &
+			ToolPublicApiConfig &
 			TaskPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
@@ -291,6 +296,7 @@ export class ConfigResponse {
 		this.FEATURE_EXTENSIONS_ENABLED = config.FEATURE_EXTENSIONS_ENABLED;
 		this.FEATURE_TEAMS_ENABLED = config.FEATURE_TEAMS_ENABLED;
 		this.FEATURE_LERNSTORE_ENABLED = config.FEATURE_LERNSTORE_ENABLED;
+		this.FEATURE_FWU_CONTENT_ENABLED = config.FEATURE_FWU_CONTENT_ENABLED;
 		this.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED =
 			config.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED;
 		this.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE = config.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE;
@@ -336,9 +342,9 @@ export class ConfigResponse {
 		this.MIGRATION_END_GRACE_PERIOD_MS = config.MIGRATION_END_GRACE_PERIOD_MS;
 		this.FEATURE_SHOW_OUTDATED_USERS = config.FEATURE_SHOW_OUTDATED_USERS;
 		this.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION = config.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION;
-		this.CTL_TOOLS_RELOAD_TIME_MS = config.CTL_TOOLS_RELOAD_TIME_MS;
-		this.FEATURE_CTL_TOOLS_COPY_ENABLED = config.FEATURE_CTL_TOOLS_COPY_ENABLED;
-		this.FEATURE_PREFERRED_CTL_TOOLS_ENABLED = config.FEATURE_PREFERRED_CTL_TOOLS_ENABLED;
+		this.CTL_TOOLS_RELOAD_TIME_MS = config.ctlToolsReloadTimeMs;
+		this.FEATURE_CTL_TOOLS_COPY_ENABLED = config.featureCtlToolsCopyEnabled;
+		this.FEATURE_PREFERRED_CTL_TOOLS_ENABLED = config.featurePreferredCtlToolsEnabled;
 		this.FEATURE_SHOW_MIGRATION_WIZARD = config.FEATURE_SHOW_MIGRATION_WIZARD;
 		this.MIGRATION_WIZARD_DOCUMENTATION_LINK = config.MIGRATION_WIZARD_DOCUMENTATION_LINK;
 		this.FEATURE_TLDRAW_ENABLED = config.FEATURE_TLDRAW_ENABLED;
@@ -357,7 +363,7 @@ export class ConfigResponse {
 		this.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED;
 		this.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = config.featureRoomLinkInvitationExternalPersonsEnabled;
 		this.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = config.featureExternalSystemLogoutEnabled;
-		this.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED = config.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED;
+		this.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED = config.featureVidisMediaActivationsEnabled;
 		this.LICENSE_SUMMARY_URL = config.LICENSE_SUMMARY_URL;
 		this.ROOM_MEMBER_INFO_URL = config.ROOM_MEMBER_INFO_URL;
 		this.FEATURE_COLUMN_BOARD_H5P_ENABLED = config.FEATURE_COLUMN_BOARD_H5P_ENABLED;

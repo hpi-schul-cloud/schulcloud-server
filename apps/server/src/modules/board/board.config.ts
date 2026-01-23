@@ -29,4 +29,9 @@ export class BoardConfig extends BoardPublicApiConfig {
 	@StringToBoolean()
 	@IsBoolean()
 	public featureVidisMediaActivationsEnabled = false;
+
+	@ConfigProperty('FEATURE_CTL_TOOLS_COPY_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureCtlToolsCopyEnabled = false;
 }

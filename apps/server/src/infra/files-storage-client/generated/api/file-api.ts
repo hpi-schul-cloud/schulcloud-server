@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Schulcloud-Verbund-Software Server API
- * This is v3 of Schulcloud-Verbund-Software Server. Checkout /docs for v1.
+ * Schulcloud-Verbund-Software File Storage API
+ * This is the API documentation for the Schulcloud-Verbund-Software File Storage API
  *
  * The version of the OpenAPI document: 3.0
  * 
@@ -91,7 +91,7 @@ export const FileApiAxiosParamCreator = function (configuration?: Configuration)
         },
         /**
          * 
-         * @summary Mark a single file for deletion. The files are permanently deleted after a certain time.
+         * @summary Mark a single file for deletion. The file is permanently deleted after a certain time.
          * @param {string} fileRecordId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -162,6 +162,44 @@ export const FileApiAxiosParamCreator = function (configuration?: Configuration)
             if (range != null) {
                 localVarHeaderParameter['Range'] = String(range);
             }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get file record meta data by file record id.
+         * @param {string} fileRecordId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFileRecord: async (fileRecordId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'fileRecordId' is not null or undefined
+            assertParamExists('getFileRecord', 'fileRecordId', fileRecordId)
+            const localVarPath = `/file/{fileRecordId}`
+                .replace(`{${"fileRecordId"}}`, encodeURIComponent(String(fileRecordId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -319,7 +357,7 @@ export const FileApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Mark a single file for deletion. The files are permanently deleted after a certain time.
+         * @summary Mark a single file for deletion. The file is permanently deleted after a certain time.
          * @param {string} fileRecordId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -343,6 +381,19 @@ export const FileApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.download(fileRecordId, fileName, range, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FileApi.download']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Get file record meta data by file record id.
+         * @param {string} fileRecordId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getFileRecord(fileRecordId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileRecordResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFileRecord(fileRecordId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FileApi.getFileRecord']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -404,7 +455,7 @@ export const FileApiFactory = function (configuration?: Configuration, basePath?
         },
         /**
          * 
-         * @summary Mark a single file for deletion. The files are permanently deleted after a certain time.
+         * @summary Mark a single file for deletion. The file is permanently deleted after a certain time.
          * @param {string} fileRecordId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -423,6 +474,16 @@ export const FileApiFactory = function (configuration?: Configuration, basePath?
          */
         download(fileRecordId: string, fileName: string, range?: string, options?: any): AxiosPromise<File> {
             return localVarFp.download(fileRecordId, fileName, range, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get file record meta data by file record id.
+         * @param {string} fileRecordId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFileRecord(fileRecordId: string, options?: any): AxiosPromise<FileRecordResponse> {
+            return localVarFp.getFileRecord(fileRecordId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -476,7 +537,7 @@ export interface FileApiInterface {
 
     /**
      * 
-     * @summary Mark a single file for deletion. The files are permanently deleted after a certain time.
+     * @summary Mark a single file for deletion. The file is permanently deleted after a certain time.
      * @param {string} fileRecordId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -495,6 +556,16 @@ export interface FileApiInterface {
      * @memberof FileApiInterface
      */
     download(fileRecordId: string, fileName: string, range?: string, options?: RawAxiosRequestConfig): AxiosPromise<File>;
+
+    /**
+     * 
+     * @summary Get file record meta data by file record id.
+     * @param {string} fileRecordId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FileApiInterface
+     */
+    getFileRecord(fileRecordId: string, options?: RawAxiosRequestConfig): AxiosPromise<FileRecordResponse>;
 
     /**
      * 
@@ -550,7 +621,7 @@ export class FileApi extends BaseAPI implements FileApiInterface {
 
     /**
      * 
-     * @summary Mark a single file for deletion. The files are permanently deleted after a certain time.
+     * @summary Mark a single file for deletion. The file is permanently deleted after a certain time.
      * @param {string} fileRecordId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -572,6 +643,18 @@ export class FileApi extends BaseAPI implements FileApiInterface {
      */
     public download(fileRecordId: string, fileName: string, range?: string, options?: RawAxiosRequestConfig) {
         return FileApiFp(this.configuration).download(fileRecordId, fileName, range, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get file record meta data by file record id.
+     * @param {string} fileRecordId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FileApi
+     */
+    public getFileRecord(fileRecordId: string, options?: RawAxiosRequestConfig) {
+        return FileApiFp(this.configuration).getFileRecord(fileRecordId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

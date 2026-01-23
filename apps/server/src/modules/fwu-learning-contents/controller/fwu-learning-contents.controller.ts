@@ -1,3 +1,4 @@
+import { ErrorResponse } from '@core/error/dto/error.response';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { JwtAuthentication } from '@infra/auth-guard';
 import {
@@ -9,11 +10,16 @@ import {
 	Req,
 	Res,
 	StreamableFile,
+	UnauthorizedException,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiProduces, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
 import { Request, Response } from 'express';
+import { filesIndex } from '../fwu.filesIndex';
 import { FwuLearningContentsUc } from '../uc/fwu-learning-contents.uc';
 import { GetFwuLearningContentParams } from './dto/fwu-learning-contents.params';
+import { FwuListResponse } from './dto/fwu-list.response';
+import { FwuMapper } from './mapper/fwu.mapper';
 
 @ApiTags('fwu')
 @JwtAuthentication()
@@ -21,6 +27,15 @@ import { GetFwuLearningContentParams } from './dto/fwu-learning-contents.params'
 export class FwuLearningContentsController {
 	constructor(private readonly fwuLearningContentsUc: FwuLearningContentsUc) {}
 
+	@ApiOperation({ summary: 'Streamable download of a content file.' })
+	@ApiProduces('application/octet-stream')
+	@ApiResponse({
+		status: 200,
+		schema: { type: 'string', format: 'binary' },
+	})
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 401, type: UnauthorizedException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	@Get('*/:fwuLearningContent')
 	public async get(
 		@Req() req: Request,
@@ -52,5 +67,23 @@ export class FwuLearningContentsController {
 			disposition: `inline; filename="${encodeURI(params.fwuLearningContent)}"`,
 			length: response.contentLength,
 		});
+	}
+
+	@ApiOperation({ summary: 'Get a list of content items.' })
+	@ApiResponse({ status: 200, description: 'Returns a list of content items.', type: FwuListResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 401, type: UnauthorizedException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	@Get()
+	public async getList(): Promise<FwuListResponse> {
+		if (!Configuration.get('FEATURE_FWU_CONTENT_ENABLED')) {
+			throw new InternalServerErrorException('Feature FWU content is not enabled.');
+		}
+
+		const list = await this.fwuLearningContentsUc.getList(filesIndex);
+
+		const response = FwuMapper.mapToFwuListResponse(list);
+
+		return response;
 	}
 }
