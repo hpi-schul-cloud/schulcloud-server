@@ -10,7 +10,6 @@ import { ContextExternalTool, CopyContextExternalToolRejectData } from '@modules
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
-import { ToolConfig } from '@modules/tool/tool-config';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -21,11 +20,12 @@ import {
 	contextExternalToolFactory,
 	copyContextExternalToolRejectDataFactory,
 } from '../../tool/context-external-tool/testing';
+import { LearnroomConfig } from '../learnroom.config';
 import { LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import { boardFactory } from '../testing';
-import { LegacyBoardCopyService } from './legacy-board-copy.service';
 import { CourseCopyService } from './course-copy.service';
 import { CourseRoomsService } from './course-rooms.service';
+import { LegacyBoardCopyService } from './legacy-board-copy.service';
 
 describe('course copy service', () => {
 	let module: TestingModule;
@@ -38,7 +38,7 @@ describe('course copy service', () => {
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let userService: DeepMocked<UserService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
-	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
+	let configService: DeepMocked<ConfigService<LearnroomConfig, true>>;
 
 	afterAll(async () => {
 		await module.close();
@@ -87,7 +87,7 @@ describe('course copy service', () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<ToolConfig, true>>(),
+					useValue: createMock<ConfigService<LearnroomConfig, true>>(),
 				},
 			],
 		}).compile();

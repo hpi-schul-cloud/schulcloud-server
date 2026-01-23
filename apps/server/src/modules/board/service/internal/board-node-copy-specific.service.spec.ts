@@ -11,10 +11,9 @@ import {
 	contextExternalToolFactory,
 	copyContextExternalToolRejectDataFactory,
 } from '@modules/tool/context-external-tool/testing';
-import { ToolConfig } from '@modules/tool/tool-config';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
 import { copyFileDtoFactory } from '@modules/files-storage-client/testing';
 import {
 	Card,
@@ -57,17 +56,7 @@ import { BoardNodeCopyService } from './board-node-copy.service';
 describe(BoardNodeCopyService.name, () => {
 	let module: TestingModule;
 	let service: BoardNodeCopyService;
-	const config: ToolConfig = {
-		CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: 0,
-		CTL_TOOLS_BACKEND_URL: '',
-		FEATURE_CTL_TOOLS_COPY_ENABLED: false,
-		CTL_TOOLS_RELOAD_TIME_MS: 0,
-		CTL_TOOLS__PREFERRED_TOOLS_LIMIT: 10,
-		FEATURE_PREFERRED_CTL_TOOLS_ENABLED: false,
-		PUBLIC_BACKEND_URL: '',
-		FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: false,
-		FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: false,
-	};
+	let config: BoardConfig;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let h5pEditorProducer: DeepMocked<H5pEditorProducer>;
@@ -77,10 +66,8 @@ describe(BoardNodeCopyService.name, () => {
 			providers: [
 				BoardNodeCopyService,
 				{
-					provide: ConfigService,
-					useValue: {
-						get: jest.fn().mockImplementation((key: keyof ToolConfig) => config[key]),
-					},
+					provide: BOARD_CONFIG_TOKEN,
+					useValue: {},
 				},
 				{
 					provide: ContextExternalToolService,
@@ -101,6 +88,7 @@ describe(BoardNodeCopyService.name, () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		copyHelperService = module.get(CopyHelperService);
 		h5pEditorProducer = module.get(H5pEditorProducer);
+		config = module.get<BoardConfig>(BOARD_CONFIG_TOKEN);
 	});
 
 	beforeEach(() => {
@@ -538,7 +526,7 @@ describe(BoardNodeCopyService.name, () => {
 			const setupCopyEnabled = () => {
 				const { copyContext, externalToolElement } = setup();
 
-				config.FEATURE_CTL_TOOLS_COPY_ENABLED = true;
+				config.featureCtlToolsCopyEnabled = true;
 
 				return { copyContext, externalToolElement };
 			};
@@ -653,7 +641,7 @@ describe(BoardNodeCopyService.name, () => {
 			const setupCopyDisabled = () => {
 				const { copyContext, externalToolElement } = setup();
 
-				config.FEATURE_CTL_TOOLS_COPY_ENABLED = false;
+				config.featureCtlToolsCopyEnabled = false;
 
 				return { copyContext, externalToolElement };
 			};

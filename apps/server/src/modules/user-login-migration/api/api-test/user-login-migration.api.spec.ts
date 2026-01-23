@@ -1,5 +1,4 @@
 import { ErrorResponse } from '@core/error/dto';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { OauthTokenResponse } from '@modules/oauth-adapter';
@@ -48,8 +47,6 @@ describe('UserLoginMigrationController (API)', () => {
 	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
-		Configuration.set('PUBLIC_BACKEND_URL', 'http://localhost:3030/api');
-
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		}).compile();
