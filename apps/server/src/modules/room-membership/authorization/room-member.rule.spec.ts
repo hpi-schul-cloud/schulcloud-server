@@ -180,19 +180,22 @@ describe(RoomMemberRule.name, () => {
 	};
 
 	describe('hasPermission', () => {
-		it.each([['sameSchool_teacher_roomadmin', Permission.ROOM_ADD_MEMBERS, true]])(
-			'%s has permission %s  =  (%s)',
-			async (alias, permission, expected) => {
-				const { user, roomMemberAuthorizable } = await setup(alias, 'sameSchool_student_roomviewer');
-				const context: AuthorizationContext = new AuthorizationContext({
-					requiredPermissions: [permission],
-					action: Action.write,
-				});
-				const result = service.hasPermission(user, roomMemberAuthorizable, context);
+		it.each([
+			['sameSchool_teacher_roomadmin', Permission.ROOM_ADD_MEMBERS, true],
+			['sameSchool_teacher_none', Permission.ROOM_ADD_MEMBERS, false],
+			['sameSchool_administrator_none', Permission.ROOM_ADD_MEMBERS, false],
+			['otherSchool_teacher_none', Permission.ROOM_ADD_MEMBERS, false],
+			['otherSchool_administrator_none', Permission.ROOM_ADD_MEMBERS, false],
+		])('%s has permission %s  =  (%s)', async (alias, permission, expected) => {
+			const { user, roomMemberAuthorizable } = await setup(alias, 'sameSchool_student_roomviewer');
+			const context: AuthorizationContext = new AuthorizationContext({
+				requiredPermissions: [permission],
+				action: Action.write,
+			});
+			const result = service.hasPermission(user, roomMemberAuthorizable, context);
 
-				expect(result).toBe(expected);
-			}
-		);
+			expect(result).toBe(expected);
+		});
 	});
 
 	describe('canPassOwnershipTo', () => {
@@ -257,13 +260,30 @@ describe(RoomMemberRule.name, () => {
 					expect(result).toBe(expected);
 				});
 			});
+
+			describe('when user is from another school', () => {
+				it.each([
+					['otherSchool_teacher_roomadmin', 'sameSchool_teacher_roomeditor', false],
+					['otherSchool_teacher_roomadmin', 'sameSchool_student_roomeditor', false],
+					['otherSchool_teacher_roomeditor', 'sameSchool_teacher_roomadmin', false],
+					['otherSchool_teacher_roomviewer', 'sameSchool_teacher_roomadmin', false],
+					['otherSchool_teacher_none', 'sameSchool_teacher_roomadmin', false],
+				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
+					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
+
+					const result = service.canPassOwnershipTo(user, roomMemberAuthorizable);
+
+					expect(result).toBe(expected);
+				});
+			});
 		});
 
 		describe('when user is administrator', () => {
-			describe('same user cannot pass ownership to himself', () => {
+			describe('same user can pass ownership to himself', () => {
 				it.each([
-					['sameSchool_teacher_roomowner', 'sameSchool_teacher_roomowner', false],
-					['sameSchool_teacher_roomadmin', 'sameSchool_teacher_roomadmin', false],
+					['sameSchool_administrator_roomadmin', 'sameSchool_administrator_roomadmin', true],
+					['sameSchool_administrator_roomviewer', 'sameSchool_administrator_roomviewer', true],
+					['sameSchool_administrator_roomeditor', 'sameSchool_administrator_roomeditor', true],
 				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 
@@ -273,11 +293,12 @@ describe(RoomMemberRule.name, () => {
 				});
 			});
 
-			describe('room owner can pass ownership to non-owners in same school', () => {
+			describe('can pass ownership to non-owners of same school', () => {
 				it.each([
-					['sameSchool_teacher_roomowner', 'sameSchool_teacher_roomadmin', true],
-					['sameSchool_teacher_roomowner', 'sameSchool_teacher_roomeditor', true],
-					['sameSchool_teacher_roomowner', 'sameSchool_teacher_roomviewer', true],
+					['sameSchool_administrator_none', 'sameSchool_teacher_roomowner', false],
+					['sameSchool_administrator_none', 'sameSchool_teacher_roomadmin', true],
+					['sameSchool_administrator_none', 'sameSchool_teacher_roomeditor', true],
+					['sameSchool_administrator_none', 'sameSchool_teacher_roomviewer', true],
 				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 
@@ -289,11 +310,11 @@ describe(RoomMemberRule.name, () => {
 
 			describe('non-owners cannot pass ownership to others in same school', () => {
 				it.each([
-					['sameSchool_teacher_roomadmin', 'sameSchool_teacher_roomeditor', false],
-					['sameSchool_teacher_roomadmin', 'sameSchool_teacher_roomviewer', false],
-					['sameSchool_teacher_roomeditor', 'sameSchool_teacher_roomadmin', false],
-					['sameSchool_teacher_roomviewer', 'sameSchool_teacher_roomadmin', false],
-					['sameSchool_teacher_none', 'sameSchool_teacher_roomadmin', false],
+					['sameSchool_administrator_roomadmin', 'sameSchool_teacher_roomeditor', true],
+					['sameSchool_administrator_roomadmin', 'sameSchool_teacher_roomviewer', true],
+					['sameSchool_administrator_roomeditor', 'sameSchool_teacher_roomadmin', true],
+					['sameSchool_administrator_roomviewer', 'sameSchool_teacher_roomadmin', true],
+					['sameSchool_administrator_none', 'sameSchool_teacher_roomadmin', true],
 				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 

@@ -218,6 +218,33 @@ describe('Room Controller (API)', () => {
 					);
 				});
 			});
+
+			describe('when the target user is the current user himself', () => {
+				it('should return 200 OK and make him the new room owner', async () => {
+					const roomSetup = await setup();
+					const { room } = roomSetup;
+
+					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school: roomSetup.sameSchool });
+					await em.persist([adminAccount, adminUser]).flush();
+					em.clear();
+					const loggedInClient = await testApiClient.login(adminAccount);
+
+					const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
+						userId: adminUser.id,
+					});
+
+					expect(response.status).toBe(HttpStatus.OK);
+
+					const updatedRoomMembership = await loggedInClient.get(`/${room.id}/members-redacted`);
+					expect(updatedRoomMembership.status).toBe(HttpStatus.OK);
+					const body = updatedRoomMembership.body as RoomMemberListResponse;
+					expect(body.data).toEqual(
+						expect.arrayContaining([
+							expect.objectContaining({ userId: adminUser.id, roomRoleName: RoleName.ROOMOWNER }),
+						])
+					);
+				});
+			});
 		});
 
 		describe('when the user is a school admin from another school', () => {
