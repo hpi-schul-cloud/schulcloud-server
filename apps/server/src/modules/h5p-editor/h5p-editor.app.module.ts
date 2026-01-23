@@ -17,12 +17,22 @@ import { createConfigModuleOptions } from '@shared/common/config-module-options'
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { H5PEditorController } from './controller';
 import { H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig } from './h5p-cache.config';
-import { config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
+import { config } from './h5p-editor.config';
 import { ENTITIES } from './h5p-editor.entity.exports';
 import { H5PAjaxEndpointProvider, H5PCacheProvider, H5PEditorProvider, H5PPlayerProvider } from './provider';
 import { H5PContentRepo, LibraryRepo } from './repo';
 import { ContentStorage, H5pEditorContentService, LibraryStorage, TemporaryFileStorage } from './service';
 import { H5PEditorUc } from './uc';
+import {
+	H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN,
+	H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN,
+	H5PContentS3ClientConfig,
+} from './h5p-content-s3-client.config';
+import {
+	H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN,
+	H5P_LIBRARIES_S3_CLIENT_CONFIG_TOKEN,
+	H5PLibrariesS3ClientConfig,
+} from './h5p-libraries-s3-client.config';
 
 const imports = [
 	AuthorizationClientModule.register(AUTHORIZATION_CLIENT_CONFIG_TOKEN, AuthorizationClientConfig),
@@ -40,7 +50,16 @@ const imports = [
 		ensureIndexes: true,
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
-	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
+	S3ClientModule.register({
+		clientInjectionToken: H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN,
+		configInjectionToken: H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN,
+		configConstructor: H5PContentS3ClientConfig,
+	}),
+	S3ClientModule.register({
+		clientInjectionToken: H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN,
+		configInjectionToken: H5P_LIBRARIES_S3_CLIENT_CONFIG_TOKEN,
+		configConstructor: H5PLibrariesS3ClientConfig,
+	}),
 	AuthGuardModule.register([
 		{
 			option: AuthGuardOptions.JWT,

@@ -20,7 +20,7 @@ import {
 } from '@nestjs/common';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto/h5p-file.dto';
-import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
+import { H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN } from '../h5p-content-s3-client.config';
 import { H5PContent, H5PContentRepo } from '../repo';
 import { H5PCountUsageResult, LumiUserWithContentData } from '../types';
 
@@ -28,7 +28,7 @@ import { H5PCountUsageResult, LumiUserWithContentData } from '../types';
 export class ContentStorage implements IContentStorage {
 	constructor(
 		private readonly repo: H5PContentRepo,
-		@Inject(H5P_CONTENT_S3_CONNECTION) private readonly storageClient: S3ClientAdapter
+		@Inject(H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN) private readonly storageClient: S3ClientAdapter
 	) {}
 
 	private async createOrUpdateContent(
