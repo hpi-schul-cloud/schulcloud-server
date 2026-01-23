@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization-reference';
 import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
@@ -11,6 +10,7 @@ import { ForbiddenException, InternalServerErrorException } from '@nestjs/common
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../learnroom.config';
 import { CourseCopyService } from '../service';
 import { CourseCopyUC } from './course-copy.uc';
 
@@ -19,6 +19,7 @@ describe('course copy uc', () => {
 	let uc: CourseCopyUC;
 	let authorization: DeepMocked<AuthorizationReferenceService>;
 	let courseCopyService: DeepMocked<CourseCopyService>;
+	let config: LearnroomConfig;
 
 	beforeAll(async () => {
 		await setupEntities([User, CourseEntity, CourseGroupEntity]);
@@ -33,12 +34,17 @@ describe('course copy uc', () => {
 					provide: CourseCopyService,
 					useValue: createMock<CourseCopyService>(),
 				},
+				{
+					provide: LEARNROOM_CONFIG_TOKEN,
+					useValue: {},
+				},
 			],
 		}).compile();
 
 		uc = module.get(CourseCopyUC);
 		authorization = module.get(AuthorizationReferenceService);
 		courseCopyService = module.get(CourseCopyService);
+		config = module.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -50,7 +56,7 @@ describe('course copy uc', () => {
 	describe('copy course', () => {
 		describe('when authorization to course resolve with void and feature is deactivated', () => {
 			const setup = () => {
-				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
+				config.featureCopyServiceEnabled = false;
 				const user = userFactory.buildWithId();
 				const course = courseEntityFactory.buildWithId({ teachers: [user] });
 
@@ -71,7 +77,7 @@ describe('course copy uc', () => {
 
 		describe('when authorization to course resolve with void and feature is activated', () => {
 			const setup = () => {
-				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+				config.featureCopyServiceEnabled = true;
 				const user = userFactory.buildWithId();
 				const course = courseEntityFactory.buildWithId({ teachers: [user] });
 				const courseCopy = courseEntityFactory.buildWithId({ teachers: [user] });
@@ -126,7 +132,7 @@ describe('course copy uc', () => {
 
 		describe('when authorization to course throw a forbidden exception', () => {
 			const setupWithCourseForbidden = () => {
-				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+				config.featureCopyServiceEnabled = true;
 				const user = userFactory.buildWithId();
 				const course = courseEntityFactory.buildWithId();
 				authorization.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());

@@ -2,6 +2,7 @@ import { AlertPublicApiConfig } from '@modules/alert';
 import { BoardPublicApiConfig } from '@modules/board';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
 import { CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
+import { LearnroomPublicApiConfig } from '@modules/learnroom';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { RegistrationPublicApiConfig } from '@modules/registration';
@@ -281,7 +282,8 @@ export class ConfigResponse {
 			SharingPublicApiConfig &
 			CommonCartridgePublicApiConfig &
 			ToolPublicApiConfig &
-			TaskPublicApiConfig
+			TaskPublicApiConfig &
+			LearnroomPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -300,7 +302,7 @@ export class ConfigResponse {
 		this.TEACHER_STUDENT_VISIBILITY__IS_VISIBLE = config.TEACHER_STUDENT_VISIBILITY__IS_VISIBLE;
 		this.FEATURE_SCHOOL_POLICY_ENABLED_NEW = config.FEATURE_SCHOOL_POLICY_ENABLED_NEW;
 		this.FEATURE_SCHOOL_TERMS_OF_USE_ENABLED = config.FEATURE_SCHOOL_TERMS_OF_USE_ENABLED;
-		this.FEATURE_COLUMN_BOARD_ENABLED = config.FEATURE_COLUMN_BOARD_ENABLED;
+		this.FEATURE_COLUMN_BOARD_ENABLED = config.featureColumnBoardEnabled;
 		this.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED = config.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED;
 		this.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED =
 			config.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED;
