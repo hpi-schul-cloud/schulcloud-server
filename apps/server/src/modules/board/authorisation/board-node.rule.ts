@@ -78,6 +78,62 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return requiredPermissions.every((p) => permissions.includes(p));
 	}
 
+	public canFindBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		const canViewBoard = this.canViewBoard(user, authorizable);
+		const permissions = authorizable.getUserPermissions(user.id);
+
+		if (
+			authorizable.rootNode instanceof ColumnBoard &&
+			!authorizable.rootNode.isVisible &&
+			!permissions.includes(Permission.BOARD_EDIT)
+		) {
+			return false;
+		}
+
+		return canViewBoard;
+	}
+
+	public canCreateBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canManageBoard(user, authorizable);
+	}
+
+	public canCreateColumn(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
+	public canDeleteBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canManageBoard(user, authorizable);
+	}
+
+	public canUpdateBoardTitle(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
+	public canMoveColumn(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
+	public canCopyBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canManageBoard(user, authorizable);
+	}
+
+	public canUpdateBoardVisibility(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canManageBoard(user, authorizable);
+	}
+
+	public canUpdateReadersCanEditSetting(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		const permissions = authorizable.getUserPermissions(user.id);
+
+		const isBoard = authorizable.boardNode instanceof ColumnBoard;
+		const canManageReadersCanEdit = permissions.includes(Permission.BOARD_MANAGE_READERS_CAN_EDIT);
+
+		return isBoard && canManageReadersCanEdit;
+	}
+
+	public canUpdateLayout(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canManageBoard(user, authorizable);
+	}
+
 	private isBoardAdmin(userWithBoardRoles: UserWithBoardRoles): boolean {
 		return userWithBoardRoles.roles.includes(BoardRoles.ADMIN);
 	}
@@ -200,5 +256,29 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		}
 
 		return this.isBoardReader(userWithBoardRoles);
+	}
+
+	private canEditBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		const permissions = authorizable.getUserPermissions(user.id);
+
+		const isBoard = authorizable.boardNode instanceof ColumnBoard;
+		const canEditBoard = permissions.includes(Permission.BOARD_EDIT);
+		return isBoard && canEditBoard;
+	}
+
+	private canManageBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		const permissions = authorizable.getUserPermissions(user.id);
+
+		const isBoard = authorizable.boardNode instanceof ColumnBoard;
+		const canManageBoard = permissions.includes(Permission.BOARD_MANAGE);
+		return isBoard && canManageBoard;
+	}
+
+	private canViewBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		const permissions = authorizable.getUserPermissions(user.id);
+
+		const isBoard = authorizable.boardNode instanceof ColumnBoard;
+		const canEditBoard = permissions.includes(Permission.BOARD_EDIT);
+		return isBoard && canEditBoard;
 	}
 }

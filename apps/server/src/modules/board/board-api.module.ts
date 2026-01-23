@@ -1,10 +1,13 @@
 import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
+import { CopyHelperModule } from '@modules/copy-helper';
 import { CourseModule } from '@modules/course';
 import { RoomMembershipModule } from '@modules/room-membership';
+import { SagaModule } from '@modules/saga';
 import { forwardRef, Module } from '@nestjs/common';
 import { BoardContextApiHelperModule } from '../board-context';
 import { RoomModule } from '../room';
+import { BoardNodeRule } from './authorisation/board-node.rule';
 import { BoardModule } from './board.module';
 import {
 	BoardController,
@@ -14,11 +17,9 @@ import {
 	ColumnController,
 	ElementController,
 } from './controller';
-import { BoardNodePermissionService } from './service';
-import { BoardUc, BoardErrorReportUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
-import { SagaModule } from '@modules/saga';
 import { CopyRoomBoardsStep } from './saga';
-import { CopyHelperModule } from '@modules/copy-helper';
+import { BoardNodePermissionService } from './service';
+import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
 
 @Module({
 	imports: [
@@ -43,6 +44,7 @@ import { CopyHelperModule } from '@modules/copy-helper';
 	providers: [
 		BoardUc,
 		BoardNodePermissionService,
+		BoardNodeRule,
 		BoardErrorReportUc,
 		ColumnUc,
 		CardUc,
