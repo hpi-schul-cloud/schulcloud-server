@@ -10,9 +10,10 @@ import { createConfigModuleOptions } from '@shared/common/config-module-options'
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { config } from './fwu-learning-contents.config';
+import { FWU_S3_CLIENT_CONFIG_TOKEN, FwuS3ClientConfig } from './fwu-s3-client.config';
+import { FWU_S3_CLIENT_INJECTION_TOKEN } from './fwu.const';
 import { TEST_ENTITIES } from './fwu.entity.imports';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
-import { FWU_S3_CLIENT_INJECTION_TOKEN, FWU_S3_CLIENT_CONFIG_TOKEN, FwuS3ClientConfig } from './fwu-s3-client.config';
 
 const imports = [
 	MongoMemoryDatabaseModule.forRoot({

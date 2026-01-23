@@ -12,7 +12,7 @@ import {
 import { ReadStream } from 'fs';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto';
-import { H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN } from '../h5p-content-s3-client.config';
+import { H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN } from '../h5p-editor.const';
 
 @Injectable()
 export class TemporaryFileStorage implements ITemporaryFileStorage {

@@ -2,19 +2,19 @@ import { CoreModule } from '@core/core.module';
 import { Logger } from '@core/logger';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
+import {
+	H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN,
+	H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN,
+	H5P_LIBRARIES_S3_CLIENT_CONFIG_TOKEN,
+	H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN,
+	H5PContentS3ClientConfig,
+	H5PLibrariesS3ClientConfig,
+} from '@modules/h5p-editor';
 import { H5PEditorModule } from '@modules/h5p-editor/h5p-editor.app.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { H5PLibraryManagementService, h5PLibraryManagementConfig } from './service';
-import {
-	H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN,
-	H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN,
-	H5PContentS3ClientConfig,
-	H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN,
-	H5P_LIBRARIES_S3_CLIENT_CONFIG_TOKEN,
-	H5PLibrariesS3ClientConfig,
-} from '@modules/h5p-editor';
+import { h5PLibraryManagementConfig, H5PLibraryManagementService } from './service';
 
 const imports = [
 	ConfigModule.forRoot(createConfigModuleOptions(h5PLibraryManagementConfig)),

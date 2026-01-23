@@ -1,7 +1,7 @@
 import { LegacyLogger } from '@core/logger';
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
 import { Inject, Injectable } from '@nestjs/common';
-import { FWU_S3_CLIENT_INJECTION_TOKEN } from '../fwu-s3-client.config';
+import { FWU_S3_CLIENT_INJECTION_TOKEN } from '../fwu.const';
 
 @Injectable()
 export class FwuLearningContentsUc {

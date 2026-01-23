@@ -16,8 +16,8 @@ import path from 'node:path/posix';
 import pLimit from 'p-limit';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto';
+import { H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN } from '../h5p-editor.const';
 import { InstalledLibrary, LibraryRepo } from '../repo';
-import { H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN } from '../h5p-libraries-s3-client.config';
 
 enum LibraryDependencyType {
 	PreloadedDependencies = 'preloadedDependencies',

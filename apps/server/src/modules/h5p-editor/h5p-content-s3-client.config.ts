@@ -2,8 +2,6 @@ import { ConfigProperty, Configuration } from '@infra/configuration';
 import { S3Config } from '@infra/s3-client';
 import { IsString, IsUrl } from 'class-validator';
 
-export const H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN = 'H5P_CONTENT_S3_CONNECTION';
-
 export const H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN = 'H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN';
 
 @Configuration()
