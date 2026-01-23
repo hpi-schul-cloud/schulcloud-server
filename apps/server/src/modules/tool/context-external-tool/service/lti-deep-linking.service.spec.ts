@@ -1,29 +1,28 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ToolConfig } from '../../tool-config';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import { LtiDeepLinkingService } from './lti-deep-linking.service';
 
 describe(LtiDeepLinkingService.name, () => {
 	let module: TestingModule;
 	let service: LtiDeepLinkingService;
 
-	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
+	let config: ToolConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				LtiDeepLinkingService,
+
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: TOOL_CONFIG_TOKEN,
+					useValue: { publicBackendUrl: '' },
 				},
 			],
 		}).compile();
 
 		service = module.get(LtiDeepLinkingService);
-		configService = module.get(ConfigService);
+		config = module.get<ToolConfig>(TOOL_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -40,7 +39,7 @@ describe(LtiDeepLinkingService.name, () => {
 				const contextExternalToolId = new ObjectId().toHexString();
 				const publicBackendUrl = 'https://test.com/api';
 
-				configService.get.mockReturnValueOnce(publicBackendUrl);
+				config.publicBackendUrl = publicBackendUrl;
 
 				return {
 					contextExternalToolId,

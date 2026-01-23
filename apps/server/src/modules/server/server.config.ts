@@ -6,8 +6,6 @@ import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { ManagementSeedDataConfig } from '@modules/management';
-import type { ShdConfig } from '@modules/shd';
-import type { ToolConfig } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
 import type { UserImportConfig } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
@@ -31,12 +29,10 @@ export interface ServerConfig
 		IdentityManagementConfig,
 		MailConfig,
 		LearnroomConfig,
-		ToolConfig,
 		UserLoginMigrationConfig,
 		UserImportConfig,
 		SchulconnexClientConfig,
 		UserImportConfig,
-		ShdConfig,
 		ManagementSeedDataConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
@@ -84,13 +80,13 @@ export interface ServerConfig
 	FEATURE_AI_TUTOR_ENABLED: boolean;
 	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: boolean;
 	FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED: boolean;
-	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
 	ROOM_MEMBER_INFO_URL: string | null;
 	STUDENT_TEAM_CREATION: string;
 	ROCKET_CHAT_URI: string;
 	ROCKET_CHAT_ADMIN_ID: string;
 	ROCKET_CHAT_ADMIN_TOKEN: string;
+	FEATURE_CTL_TOOLS_COPY_ENABLED: boolean;
 }
 
 const config: ServerConfig = {
@@ -193,15 +189,8 @@ const config: ServerConfig = {
 	SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS'
 	) as number,
-	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
-	CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: Configuration.get(
-		'CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES'
-	) as number,
-	CTL_TOOLS_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
 	FEATURE_CTL_TOOLS_COPY_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') as boolean,
-	FEATURE_PREFERRED_CTL_TOOLS_ENABLED: Configuration.get('FEATURE_PREFERRED_CTL_TOOLS_ENABLED') as boolean,
-	CTL_TOOLS_RELOAD_TIME_MS: Configuration.get('CTL_TOOLS_RELOAD_TIME_MS') as number,
 	HOST: Configuration.get('HOST') as string,
 	FEATURE_USER_MIGRATION_ENABLED: Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean,
 	FEATURE_USER_MIGRATION_SYSTEM_ID: Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string,
@@ -216,9 +205,6 @@ const config: ServerConfig = {
 	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
 	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
-	CTL_TOOLS__PREFERRED_TOOLS_LIMIT: Configuration.get('CTL_TOOLS__PREFERRED_TOOLS_LIMIT') as number,
-	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
-	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: Configuration.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED') as boolean,
 	MEDIA_SOURCE_VIDIS_USERNAME: Configuration.has('MEDIA_SOURCE_VIDIS_USERNAME')
 		? (Configuration.get('MEDIA_SOURCE_VIDIS_USERNAME') as string)
 		: undefined,

@@ -389,12 +389,6 @@
 			"pattern": ".*(?<!/)$",
 			"description": "The server endpoint, for external calls like Antivirus service. When called from docker container, can be http://host.docker.internal:3030"
 		},
-		"PUBLIC_BACKEND_URL": {
-			"type": "string",
-			"format": "uri",
-			"pattern": ".*(?<!/)$",
-			"description": "The server api url that is accessible from the web (should end without a slash)."
-		},
 		"HYDRA_URI": {
 			"type": "string",
 			"format": "uri",
@@ -1081,27 +1075,6 @@
 			"default": false,
 			"description": "Enables the configuration of custom parameters for context external tools"
 		},
-		"FEATURE_PREFERRED_CTL_TOOLS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables preferred external tools on the column board"
-		},
-		"CTL_TOOLS": {
-			"type": "object",
-			"description": "CTL Tools properties",
-			"properties": {
-				"EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES": {
-					"type": "integer",
-					"default": 300000,
-					"description": "Maximum size of the logo of an external tool in bytes"
-				},
-				"PREFERRED_TOOLS_LIMIT": {
-					"type": "integer",
-					"default": 5,
-					"description": "Maximum number of preferred tools that can be set"
-				}
-			}
-		},
 		"FEATURE_GROUPS_IN_COURSE_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1116,11 +1089,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the copying of ctl tools when copying a course."
-		},
-		"CTL_TOOLS_RELOAD_TIME_MS": {
-			"type": "number",
-			"default": 299000,
-			"description": "Sets the time before launch request data is called again from server"
 		},
 		"FEATURE_SHOW_MIGRATION_WIZARD": {
 			"type": "boolean",
@@ -1241,11 +1209,6 @@
 			"default": false,
 			"description": "Enables the migration wizard to use the user login migration process"
 		},
-		"FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the storing and checking media license of users"
-		},
 		"PROVISIONING_SCHULCONNEX_EXCHANGE": {
 			"type": "string",
 			"default": "schulconnex-provisioning",
@@ -1280,11 +1243,6 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the external system logout feature"
-		},
-		"FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables VIDIS media activation synchronisation"
 		},
 		"ENABLE_SYNC_LEGACY_INDEXES_VIA_FEATHERS_SERVICE": {
 			"type": "boolean",

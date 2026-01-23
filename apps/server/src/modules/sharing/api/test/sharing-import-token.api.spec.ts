@@ -1,5 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType } from '@modules/board';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
 import { BoardNodeType } from '@modules/board/domain';
 import { BoardNodeEntity } from '@modules/board/repo';
 import {
@@ -12,7 +13,7 @@ import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-
 import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
+import { ServerConfig, serverConfig, ServerTestModule } from '@modules/server';
 import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '@modules/sharing/sharing.config';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
@@ -37,7 +38,8 @@ describe(`Share Token Import (API)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: SharingPublicApiConfig;
+	let sharingConfig: SharingPublicApiConfig;
+	let boardConfig: BoardConfig;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -48,7 +50,8 @@ describe(`Share Token Import (API)`, () => {
 		await app.init();
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'sharetoken');
-		config = module.get<SharingPublicApiConfig>(SHARING_PUBLIC_API_CONFIG_TOKEN);
+		sharingConfig = module.get<SharingPublicApiConfig>(SHARING_PUBLIC_API_CONFIG_TOKEN);
+		boardConfig = module.get<BoardConfig>(BOARD_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -62,8 +65,10 @@ describe(`Share Token Import (API)`, () => {
 	beforeEach(async () => {
 		await cleanupCollections(em);
 
-		config.featureCourseShare = true;
-		config.featureColumnBoardShare = true;
+		sharingConfig.featureCourseShare = true;
+		sharingConfig.featureColumnBoardShare = true;
+
+		boardConfig.featureCtlToolsCopyEnabled = true;
 
 		const serverConfiguration: ServerConfig = serverConfig();
 		serverConfiguration.FEATURE_CTL_TOOLS_COPY_ENABLED = true;
@@ -108,7 +113,7 @@ describe(`Share Token Import (API)`, () => {
 
 		describe('with the feature disabled', () => {
 			beforeEach(() => {
-				config.featureCourseShare = false;
+				sharingConfig.featureCourseShare = false;
 			});
 
 			it('should return a 403 error', async () => {

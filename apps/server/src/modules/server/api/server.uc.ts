@@ -8,11 +8,13 @@ import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } fro
 import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room';
 import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '@modules/roster';
 import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '@modules/sharing';
+import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '@modules/task';
 import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { Inject, Injectable } from '@nestjs/common';
 import { SERVER_CONFIG_TOKEN, ServerConfig } from '../server.config';
 import { ConfigResponse } from './dto';
 import { ConfigResponseMapper } from './mapper';
+import { TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig } from '@modules/tool';
 
 @Injectable()
 export class ServerUc {
@@ -29,7 +31,9 @@ export class ServerUc {
 		@Inject(ROOM_PUBLIC_API_CONFIG_TOKEN) private readonly roomConfig: RoomPublicApiConfig,
 		@Inject(SHARING_PUBLIC_API_CONFIG_TOKEN) private readonly sharingConfig: SharingPublicApiConfig,
 		@Inject(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN)
-		private readonly commonCartridgeConfig: CommonCartridgePublicApiConfig
+		private readonly commonCartridgeConfig: CommonCartridgePublicApiConfig,
+		@Inject(TOOL_PUBLIC_API_CONFIG_TOKEN) private readonly toolConfig: ToolPublicApiConfig,
+		@Inject(TASK_PUBLIC_API_CONFIG_TOKEN) private readonly taskConfig: TaskPublicApiConfig
 	) {}
 
 	public getConfig(): ConfigResponse {
@@ -45,7 +49,9 @@ export class ServerUc {
 			this.rosterConfig,
 			this.roomConfig,
 			this.sharingConfig,
-			this.commonCartridgeConfig
+			this.commonCartridgeConfig,
+			this.toolConfig,
+			this.taskConfig
 		);
 
 		return configDto;

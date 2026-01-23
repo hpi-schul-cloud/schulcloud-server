@@ -1,4 +1,5 @@
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
 import { AuthorizationModule } from '@modules/authorization';
 import { SchoolLicenseModule } from '@modules/school-license';
 import { UserModule } from '@modules/user';
@@ -7,6 +8,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolModule } from '../school-external-tool';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../tool-config';
 import { ContextExternalToolRule } from './authorisation/context-external-tool.rule';
 import { LTI_DEEP_LINK_TOKEN_REPO, LtiDeepLinkTokenMikroOrmRepo } from './repo';
 import {
@@ -29,6 +31,7 @@ import { ContextExternalToolValidationService } from './service/context-external
 		SchoolLicenseModule,
 		UserModule,
 		AuthorizationModule,
+		ConfigurationModule.register(TOOL_CONFIG_TOKEN, ToolConfig),
 	],
 	providers: [
 		ContextExternalToolService,

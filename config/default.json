@@ -13,7 +13,6 @@
 		"FALLBACK_LANGUAGE": "de"
 	},
 	"HOST": "http://localhost:3100",
-	"PUBLIC_BACKEND_URL": "http://localhost:3030/api",
 	"FORCE_SEND_EMAIL": false,
 	"BLOCK_DISPOSABLE_EMAIL_DOMAINS": true,
 	"STUDENT_TEAM_CREATION": "opt-out",
@@ -24,8 +23,5 @@
 		"HOST_ONLY": true,
 		"SECURE": true,
 		"EXPIRES_SECONDS": 2592000000
-	},
-	"CTL_TOOLS": {
-		"EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES": 300000
 	}
 }

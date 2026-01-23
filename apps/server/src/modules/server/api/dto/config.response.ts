@@ -5,9 +5,11 @@ import { CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { RegistrationPublicApiConfig } from '@modules/registration';
-import { RoomPublicApiConfig } from '@modules/room/room.config';
+import { RoomPublicApiConfig } from '@modules/room';
 import { RosterPublicApiConfig } from '@modules/roster';
 import { SharingPublicApiConfig } from '@modules/sharing';
+import { TaskPublicApiConfig } from '@modules/task';
+import { ToolPublicApiConfig } from '@modules/tool';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
@@ -277,7 +279,9 @@ export class ConfigResponse {
 			RosterPublicApiConfig &
 			RoomPublicApiConfig &
 			SharingPublicApiConfig &
-			CommonCartridgePublicApiConfig
+			CommonCartridgePublicApiConfig &
+			ToolPublicApiConfig &
+			TaskPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -312,7 +316,7 @@ export class ConfigResponse {
 		this.FEATURE_TASK_SHARE = config.featureTaskShare;
 		this.FEATURE_BOARD_LAYOUT_ENABLED = config.FEATURE_BOARD_LAYOUT_ENABLED;
 		this.FEATURE_USER_MIGRATION_ENABLED = config.FEATURE_USER_MIGRATION_ENABLED;
-		this.FEATURE_COPY_SERVICE_ENABLED = config.FEATURE_COPY_SERVICE_ENABLED;
+		this.FEATURE_COPY_SERVICE_ENABLED = config.featureCopyServiceEnabled;
 		this.FEATURE_CONSENT_NECESSARY = config.FEATURE_CONSENT_NECESSARY;
 		this.FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED = config.courseExportEnabled;
 		this.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED = config.courseImportEnabled;
@@ -334,9 +338,9 @@ export class ConfigResponse {
 		this.MIGRATION_END_GRACE_PERIOD_MS = config.MIGRATION_END_GRACE_PERIOD_MS;
 		this.FEATURE_SHOW_OUTDATED_USERS = config.FEATURE_SHOW_OUTDATED_USERS;
 		this.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION = config.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION;
-		this.CTL_TOOLS_RELOAD_TIME_MS = config.CTL_TOOLS_RELOAD_TIME_MS;
-		this.FEATURE_CTL_TOOLS_COPY_ENABLED = config.FEATURE_CTL_TOOLS_COPY_ENABLED;
-		this.FEATURE_PREFERRED_CTL_TOOLS_ENABLED = config.FEATURE_PREFERRED_CTL_TOOLS_ENABLED;
+		this.CTL_TOOLS_RELOAD_TIME_MS = config.ctlToolsReloadTimeMs;
+		this.FEATURE_CTL_TOOLS_COPY_ENABLED = config.featureCtlToolsCopyEnabled;
+		this.FEATURE_PREFERRED_CTL_TOOLS_ENABLED = config.featurePreferredCtlToolsEnabled;
 		this.FEATURE_SHOW_MIGRATION_WIZARD = config.FEATURE_SHOW_MIGRATION_WIZARD;
 		this.MIGRATION_WIZARD_DOCUMENTATION_LINK = config.MIGRATION_WIZARD_DOCUMENTATION_LINK;
 		this.FEATURE_TLDRAW_ENABLED = config.FEATURE_TLDRAW_ENABLED;
@@ -355,7 +359,7 @@ export class ConfigResponse {
 		this.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED;
 		this.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = config.featureRoomLinkInvitationExternalPersonsEnabled;
 		this.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = config.featureExternalSystemLogoutEnabled;
-		this.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED = config.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED;
+		this.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED = config.featureVidisMediaActivationsEnabled;
 		this.LICENSE_SUMMARY_URL = config.LICENSE_SUMMARY_URL;
 		this.ROOM_MEMBER_INFO_URL = config.ROOM_MEMBER_INFO_URL;
 		this.FEATURE_COLUMN_BOARD_H5P_ENABLED = config.FEATURE_COLUMN_BOARD_H5P_ENABLED;

@@ -2,16 +2,10 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ConsoleWriterConfig } from '@infra/console';
 import { RabbitMqConfig } from '@infra/rabbitmq';
 import { SchulconnexClientConfig } from '@infra/schulconnex-client';
-import { SynchronizationConfig } from '@modules/synchronization';
 import { UserConfig } from '@modules/user';
 import { LanguageType } from '@shared/domain/interface';
 
-export interface IdpConsoleConfig
-	extends ConsoleWriterConfig,
-		RabbitMqConfig,
-		UserConfig,
-		SynchronizationConfig,
-		SchulconnexClientConfig {
+export interface IdpConsoleConfig extends ConsoleWriterConfig, RabbitMqConfig, UserConfig, SchulconnexClientConfig {
 	SYNCHRONIZATION_CHUNK: number;
 	LOGIN_BLOCK_TIME: number; // @TODO temporary until removed from other configs
 }
