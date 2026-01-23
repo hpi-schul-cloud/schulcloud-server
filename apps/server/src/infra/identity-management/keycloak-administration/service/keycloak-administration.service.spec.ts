@@ -24,6 +24,7 @@ describe('KeycloakAdministrationService', () => {
 				{
 					provide: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 					useValue: {
+						identityManagementEnabled: true,
 						internalBaseUrl: 'http://localhost:8080',
 						externalBaseUrl: 'http://localhost:8080',
 						realmName: 'master',

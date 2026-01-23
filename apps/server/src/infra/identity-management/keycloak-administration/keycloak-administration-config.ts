@@ -1,10 +1,16 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { IsString, IsUrl } from 'class-validator';
+import { StringToBoolean } from '@shared/controller/transformer';
+import { IsBoolean, IsString, IsUrl } from 'class-validator';
 
 export const KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN = 'KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN';
 
 @Configuration()
 export class KeycloakAdministrationConfig {
+	@ConfigProperty('FEATURE_IDENTITY_MANAGEMENT_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public identityManagementEnabled = false;
+
 	@ConfigProperty('IDENTITY_MANAGEMENT__INTERNAL_URI')
 	@IsUrl({ require_tld: false })
 	public internalBaseUrl!: string;
