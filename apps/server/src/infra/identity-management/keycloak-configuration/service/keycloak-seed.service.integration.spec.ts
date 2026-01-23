@@ -57,11 +57,6 @@ describe('KeycloakSeedService Integration', () => {
 					isGlobal: true,
 					ignoreEnvFile: true,
 					ignoreEnvVars: true,
-					validate: () => {
-						return {
-							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-						};
-					},
 				}),
 			],
 			providers: [],
