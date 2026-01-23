@@ -46,7 +46,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 			throw new UserAccountDeactivatedLoggableException();
 		}
 
-		if (this.config.featureExternalSystemLogoutEnabled) {
+		if (this.config.externalSystemLogoutEnabled) {
 			const oauthSessionToken: OauthSessionToken = OauthSessionTokenFactory.build({
 				userId: user.id,
 				systemId,

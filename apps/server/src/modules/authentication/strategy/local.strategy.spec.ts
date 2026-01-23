@@ -41,7 +41,7 @@ describe('LocalStrategy', () => {
 		authenticationServiceMock.normalizeUsername.mockImplementation((username: string) => username);
 		authenticationServiceMock.normalizePassword.mockImplementation((password: string) => password);
 		userServiceMock.getUserEntityWithRoles.mockResolvedValue(mockUser);
-		config.featureIdentityManagementLoginEnabled = false;
+		config.identityManagementLoginEnabled = false;
 	});
 
 	afterEach(() => {
@@ -52,7 +52,7 @@ describe('LocalStrategy', () => {
 		describe('when idm feature is active', () => {
 			const setup = () => {
 				const jwt = 'mock-jwt';
-				config.featureIdentityManagementLoginEnabled = true;
+				config.identityManagementLoginEnabled = true;
 				idmOauthServiceMock.resourceOwnerPasswordGrant.mockResolvedValueOnce(jwt);
 				return jwt;
 			};

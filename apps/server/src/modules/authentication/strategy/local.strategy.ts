@@ -26,7 +26,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		({ username, password } = this.cleanupInput(username, password));
 		const account = await this.authenticationService.loadAccount(username);
 
-		if (this.config.featureIdentityManagementLoginEnabled) {
+		if (this.config.identityManagementLoginEnabled) {
 			const jwt = await this.idmOauthService.resourceOwnerPasswordGrant(username, password);
 			TypeGuard.checkNotNullOrUndefined(jwt, new UnauthorizedException());
 		} else {

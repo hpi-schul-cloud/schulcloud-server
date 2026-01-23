@@ -140,7 +140,7 @@ describe(LogoutUc.name, () => {
 			const setup = () => {
 				const currentUser = currentUserFactory.build({ isExternalUser: true });
 
-				configService.featureExternalSystemLogoutEnabled = false;
+				configService.externalSystemLogoutEnabled = false;
 
 				return {
 					currentUser,
@@ -163,7 +163,7 @@ describe(LogoutUc.name, () => {
 					const system = systemFactory.withOauthConfig().build();
 					const currentUser = currentUserFactory.build({ isExternalUser: true, systemId: system.id });
 
-					configService.featureExternalSystemLogoutEnabled = true;
+					configService.externalSystemLogoutEnabled = true;
 
 					return {
 						currentUser,

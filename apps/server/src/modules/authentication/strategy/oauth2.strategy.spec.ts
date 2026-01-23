@@ -84,7 +84,7 @@ describe(Oauth2Strategy.name, () => {
 				);
 				oauthService.provisionUser.mockResolvedValue(user);
 				accountService.findByUserId.mockResolvedValue(account);
-				configService.featureExternalSystemLogoutEnabled = true;
+				configService.externalSystemLogoutEnabled = true;
 
 				return {
 					systemId,
@@ -234,7 +234,7 @@ describe(Oauth2Strategy.name, () => {
 				);
 				oauthService.provisionUser.mockResolvedValue(user);
 				accountService.findByUserId.mockResolvedValue(account);
-				configService.featureExternalSystemLogoutEnabled = false;
+				configService.externalSystemLogoutEnabled = false;
 
 				return { systemId };
 			};
