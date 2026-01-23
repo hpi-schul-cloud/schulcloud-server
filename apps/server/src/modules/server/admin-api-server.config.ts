@@ -28,8 +28,6 @@ const config: AdminApiServerConfig = {
 	ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS: Configuration.get(
 		'ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS'
 	) as number,
-	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
-	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
 	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	GEOGEBRA_BASE_URL: Configuration.get('GEOGEBRA_BASE_URL') as string,
 	FEATURE_COLUMN_BOARD_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean,

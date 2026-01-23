@@ -1,3 +1,4 @@
+import { ConfigurationModule } from '@infra/configuration';
 import { AuthorizationModule } from '@modules/authorization';
 import { CopyHelperModule } from '@modules/copy-helper/copy-helper.module';
 import { CourseModule } from '@modules/course';
@@ -5,9 +6,17 @@ import { LessonModule } from '@modules/lesson';
 import { Module } from '@nestjs/common';
 import { SubmissionController, SubmissionUc, TaskController, TaskCopyUC, TaskUC } from './api';
 import { TaskRepo } from './repo';
+import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from './task.config';
 import { TaskModule } from './task.module';
 @Module({
-	imports: [AuthorizationModule, CopyHelperModule, TaskModule, LessonModule, CourseModule],
+	imports: [
+		AuthorizationModule,
+		CopyHelperModule,
+		TaskModule,
+		LessonModule,
+		CourseModule,
+		ConfigurationModule.register(TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig),
+	],
 	controllers: [TaskController, SubmissionController],
 	providers: [TaskUC, TaskRepo, TaskCopyUC, SubmissionUc],
 })

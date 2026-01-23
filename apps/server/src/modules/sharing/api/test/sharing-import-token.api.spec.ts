@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType } from '@modules/board';
 import { BoardNodeType } from '@modules/board/domain';
@@ -14,6 +13,7 @@ import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '@modules/sharing/sharing.config';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
@@ -37,6 +37,7 @@ describe(`Share Token Import (API)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let config: SharingPublicApiConfig;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -47,6 +48,7 @@ describe(`Share Token Import (API)`, () => {
 		await app.init();
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'sharetoken');
+		config = module.get<SharingPublicApiConfig>(SHARING_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -60,11 +62,11 @@ describe(`Share Token Import (API)`, () => {
 	beforeEach(async () => {
 		await cleanupCollections(em);
 
-		Configuration.set('FEATURE_COURSE_SHARE', true);
-		Configuration.set('FEATURE_COLUMN_BOARD_SHARE', true);
+		config.featureCourseShare = true;
+		config.featureColumnBoardShare = true;
 
-		const config: ServerConfig = serverConfig();
-		config.FEATURE_CTL_TOOLS_COPY_ENABLED = true;
+		const serverConfiguration: ServerConfig = serverConfig();
+		serverConfiguration.FEATURE_CTL_TOOLS_COPY_ENABLED = true;
 	});
 
 	const setupSchoolExclusiveImport = async () => {
@@ -106,7 +108,7 @@ describe(`Share Token Import (API)`, () => {
 
 		describe('with the feature disabled', () => {
 			beforeEach(() => {
-				Configuration.set('FEATURE_COURSE_SHARE', false);
+				config.featureCourseShare = false;
 			});
 
 			it('should return a 403 error', async () => {

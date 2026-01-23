@@ -4,6 +4,7 @@ import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
@@ -49,9 +50,11 @@ import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '@modules/
 import { RosterModule } from '@modules/roster/roster.module';
 import { RuntimeConfigApiModule, ServerRuntimeConfigModule } from '@modules/runtime-config-api';
 import { SchoolApiModule } from '@modules/school/school-api.module';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '@modules/sharing';
 import { SharingApiModule } from '@modules/sharing/sharing-api.module';
 import { ShdApiModule } from '@modules/shd/shd.api.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
+import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '@modules/task';
 import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamApiModule } from '@modules/team/team-api.module';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
@@ -73,7 +76,6 @@ import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.mod
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
-import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from '@infra/schulconnex-client';
 
 const serverModules = [
 	HelpdeskApiModule,
@@ -87,7 +89,9 @@ const serverModules = [
 	ConfigurationModule.register(REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig),
 	ConfigurationModule.register(ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig),
 	ConfigurationModule.register(ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig),
+	ConfigurationModule.register(SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig),
 	ConfigurationModule.register(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig),
+	ConfigurationModule.register(TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,
 	CoreModule,

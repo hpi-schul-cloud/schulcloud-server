@@ -7,9 +7,11 @@ import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { RegistrationPublicApiConfig } from '@modules/registration';
 import { RoomPublicApiConfig } from '@modules/room';
 import { RosterPublicApiConfig } from '@modules/roster';
+import { SharingPublicApiConfig } from '@modules/sharing';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ServerConfig } from '../../server.config';
 import { ConfigResponse } from '../dto';
+import { TaskPublicApiConfig } from '@modules/task';
 
 export class ConfigResponseMapper {
 	public static mapToResponse(
@@ -23,7 +25,9 @@ export class ConfigResponseMapper {
 		registrationConfig: RegistrationPublicApiConfig,
 		rosterConfig: RosterPublicApiConfig,
 		roomConfig: RoomPublicApiConfig,
-		commonCartridgeConfig: CommonCartridgePublicApiConfig
+		sharingConfig: SharingPublicApiConfig,
+		commonCartridgeConfig: CommonCartridgePublicApiConfig,
+		taskConfig: TaskPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,
@@ -36,7 +40,9 @@ export class ConfigResponseMapper {
 			...registrationConfig,
 			...rosterConfig,
 			...roomConfig,
+			...sharingConfig,
 			...commonCartridgeConfig,
+			...taskConfig,
 		});
 
 		return configResponse;
