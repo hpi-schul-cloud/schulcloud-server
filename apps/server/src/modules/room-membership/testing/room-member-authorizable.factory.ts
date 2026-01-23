@@ -20,19 +20,16 @@ export function buildRoomMemberAuthorizable(
 	user: MinimalUser
 ): RoomMemberAuthorizable {
 	const memberEntry = roomMembershipAuthorizable.members.find((m) => m.userId === user.id);
-	if (!memberEntry) {
-		throw new Error('User not found in room membership');
-	}
 
-	const primaryRole = memberEntry.roles[0];
+	const primaryRole = memberEntry?.roles[0];
 
 	const roomMember = new RoomMember({
-		userId: user.id,
+		userId: memberEntry?.userId ?? `(${user.id})`,
 		firstName: user.firstName ?? '',
 		lastName: user.lastName ?? '',
 		roomRoleId: primaryRole?.id ?? '',
-		roomRoleName: primaryRole?.name ?? RoleName.ROOMVIEWER,
-		schoolId: memberEntry.userSchoolId ?? roomMembershipAuthorizable.schoolId,
+		roomRoleName: primaryRole?.name ?? ('none' as unknown as RoleName),
+		schoolId: memberEntry?.userSchoolId ?? user.school.id,
 		schoolRoleNames: user.roles.getItems().map((r) => r.name),
 	});
 

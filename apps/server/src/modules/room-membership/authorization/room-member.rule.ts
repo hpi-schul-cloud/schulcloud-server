@@ -50,10 +50,8 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 			return false;
 		}
 
-		const isUserOfRoom = object.roomMembershipAuthorizable.members.some(
-			(member) => member.userId === object.member.userId
-		);
-		if (!isUserOfRoom) {
+		const isUserMemberOfRoom = object.roomMembershipAuthorizable.members.some((member) => member.userId === user.id);
+		if (!isUserMemberOfRoom) {
 			return false;
 		}
 

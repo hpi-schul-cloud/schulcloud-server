@@ -206,6 +206,7 @@ describe(RoomMemberRule.name, () => {
 					['sameSchool_teacher_roomowner', 'sameSchool_teacher_roomowner', false],
 					['sameSchool_teacher_roomadmin', 'sameSchool_teacher_roomadmin', false],
 					['otherSchool_teacher_roomadmin', 'sameSchool_teacher_roomadmin', false],
+					['otherSchool_teacher_none', 'sameSchool_teacher_none', false],
 				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 
