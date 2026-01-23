@@ -205,6 +205,7 @@ describe(RoomMemberRule.name, () => {
 				it.each([
 					['sameSchool_teacher_roomowner', 'sameSchool_teacher_roomowner', false],
 					['sameSchool_teacher_roomadmin', 'sameSchool_teacher_roomadmin', false],
+					['otherSchool_teacher_roomadmin', 'sameSchool_teacher_roomadmin', false],
 				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 
@@ -219,6 +220,8 @@ describe(RoomMemberRule.name, () => {
 					['sameSchool_teacher_roomowner', 'sameSchool_teacher_roomadmin', true],
 					['sameSchool_teacher_roomowner', 'sameSchool_teacher_roomeditor', true],
 					['sameSchool_teacher_roomowner', 'sameSchool_teacher_roomviewer', true],
+					['otherSchool_teacher_roomowner', 'sameSchool_teacher_roomviewer', true],
+					['otherSchool_teacher_roomowner', 'otherSchool_teacher_roomviewer', true],
 				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 
