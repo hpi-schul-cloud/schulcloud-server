@@ -3,7 +3,6 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
-import type { LearnroomConfig } from '@modules/learnroom';
 import type { ManagementSeedDataConfig } from '@modules/management';
 import type { UserConfig } from '@modules/user';
 import type { UserImportConfig } from '@modules/user-import';
@@ -27,7 +26,6 @@ export interface ServerConfig
 		FilesMetadataClientConfig,
 		IdentityManagementConfig,
 		MailConfig,
-		LearnroomConfig,
 		UserLoginMigrationConfig,
 		UserImportConfig,
 		UserImportConfig,
@@ -85,7 +83,6 @@ export interface ServerConfig
 	ROCKET_CHAT_URI: string;
 	ROCKET_CHAT_ADMIN_ID: string;
 	ROCKET_CHAT_ADMIN_TOKEN: string;
-	FEATURE_CTL_TOOLS_COPY_ENABLED: boolean;
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: number;
 }
 
@@ -103,7 +100,6 @@ const config: ServerConfig = {
 	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: Configuration.get(
 		'FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED'
 	) as boolean,
-	FEATURE_COLUMN_BOARD_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean,
 	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED') as boolean,
 	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED') as boolean,
 	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: Configuration.get(
@@ -114,7 +110,6 @@ const config: ServerConfig = {
 	FEATURE_COLUMN_BOARD_H5P_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_H5P_ENABLED') as boolean,
 	FEATURE_COLUMN_BOARD_COLLABORA_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_COLLABORA_ENABLED') as boolean,
 	FEATURE_BOARD_LAYOUT_ENABLED: Configuration.get('FEATURE_BOARD_LAYOUT_ENABLED') as boolean,
-	FEATURE_COPY_SERVICE_ENABLED: Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean,
 	FEATURE_CONSENT_NECESSARY: Configuration.get('FEATURE_CONSENT_NECESSARY') as boolean,
 	FEATURE_USER_LOGIN_MIGRATION_ENABLED: Configuration.get('FEATURE_USER_LOGIN_MIGRATION_ENABLED') as boolean,
 	TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT: Configuration.get(
@@ -145,7 +140,6 @@ const config: ServerConfig = {
 	TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: Configuration.get(
 		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
 	) as string,
-	GEOGEBRA_BASE_URL: Configuration.get('GEOGEBRA_BASE_URL') as string,
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
@@ -173,7 +167,6 @@ const config: ServerConfig = {
 		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
 	) as number,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
-	FEATURE_CTL_TOOLS_COPY_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') as boolean,
 	HOST: Configuration.get('HOST') as string,
 	FEATURE_USER_MIGRATION_ENABLED: Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean,
 	FEATURE_USER_MIGRATION_SYSTEM_ID: Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string,

@@ -2,6 +2,7 @@ import { ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig } from '@modules/alert';
 import { BOARD_PUBLIC_API_CONFIG_TOKEN, BoardPublicApiConfig } from '@modules/board';
 import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@modules/board-context';
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
+import { LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig } from '@modules/learnroom';
 import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig } from '@modules/oauth';
 import { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } from '@modules/registration';
@@ -9,12 +10,12 @@ import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room
 import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '@modules/roster';
 import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '@modules/sharing';
 import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '@modules/task';
+import { TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig } from '@modules/tool';
 import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { Inject, Injectable } from '@nestjs/common';
 import { SERVER_CONFIG_TOKEN, ServerConfig } from '../server.config';
 import { ConfigResponse } from './dto';
 import { ConfigResponseMapper } from './mapper';
-import { TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig } from '@modules/tool';
 
 @Injectable()
 export class ServerUc {
@@ -33,7 +34,8 @@ export class ServerUc {
 		@Inject(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN)
 		private readonly commonCartridgeConfig: CommonCartridgePublicApiConfig,
 		@Inject(TOOL_PUBLIC_API_CONFIG_TOKEN) private readonly toolConfig: ToolPublicApiConfig,
-		@Inject(TASK_PUBLIC_API_CONFIG_TOKEN) private readonly taskConfig: TaskPublicApiConfig
+		@Inject(TASK_PUBLIC_API_CONFIG_TOKEN) private readonly taskConfig: TaskPublicApiConfig,
+		@Inject(LEARNROOM_PUBLIC_API_CONFIG_TOKEN) private readonly learnroomConfig: LearnroomPublicApiConfig
 	) {}
 
 	public getConfig(): ConfigResponse {
@@ -51,7 +53,8 @@ export class ServerUc {
 			this.sharingConfig,
 			this.commonCartridgeConfig,
 			this.toolConfig,
-			this.taskConfig
+			this.taskConfig,
+			this.learnroomConfig
 		);
 
 		return configDto;

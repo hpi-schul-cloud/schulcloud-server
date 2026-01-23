@@ -9,7 +9,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Readable } from 'stream';
 import { FwuLearningContentsTestModule } from '../../fwu-learning-contents-test.module';
-import { FWU_CONTENT_S3_CONNECTION } from '../../fwu-learning-contents.config';
+import { FWU_S3_CLIENT_INJECTION_TOKEN } from '../../fwu.const';
 import { FwuItem } from '../../interface/fwu-item';
 import { FwuListResponse } from '../dto/fwu-list.response';
 
@@ -32,14 +32,14 @@ describe('FwuLearningContents Controller (api)', () => {
 				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
 			],
 		})
-			.overrideProvider(FWU_CONTENT_S3_CONNECTION)
+			.overrideProvider(FWU_S3_CLIENT_INJECTION_TOKEN)
 			.useValue(createMock<S3ClientAdapter>())
 			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
 		jwtConfig = module.get(TEST_JWT_CONFIG_TOKEN);
-		s3ClientAdapter = module.get(FWU_CONTENT_S3_CONNECTION);
+		s3ClientAdapter = module.get(FWU_S3_CLIENT_INJECTION_TOKEN);
 		testApiClient = new TestApiClient(app, 'fwu');
 	});
 
@@ -170,7 +170,7 @@ describe('FwuLearningContents Controller (api)', () => {
 				Configuration.set('FEATURE_FWU_CONTENT_ENABLED', false);
 
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 				return { loggedInClient };
 			};
@@ -197,7 +197,7 @@ describe('FwuLearningContents Controller (api)', () => {
 					Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
 
 					const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-					const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+					const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 					const htmlContent = `<html>
 						<body>
@@ -240,7 +240,7 @@ describe('FwuLearningContents Controller (api)', () => {
 						Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
 
 						const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-						const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+						const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 						const htmlContent = `<html>
 						<body>

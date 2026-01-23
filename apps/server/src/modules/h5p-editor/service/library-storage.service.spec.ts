@@ -6,9 +6,9 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import pLimit from 'p-limit';
 import { Readable } from 'stream';
-import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
 import { FileMetadata, InstalledLibrary, LibraryRepo } from '../repo';
 import { LibraryStorage } from './library-storage.service';
+import { H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN } from '../h5p-editor.const';
 
 async function readStream(stream: Readable): Promise<string> {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,12 +35,12 @@ describe('LibraryStorage', () => {
 					provide: LibraryRepo,
 					useValue: createMock<LibraryRepo>(),
 				},
-				{ provide: H5P_LIBRARIES_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
+				{ provide: H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN, useValue: createMock<S3ClientAdapter>() },
 			],
 		}).compile();
 
 		storage = module.get(LibraryStorage);
-		s3ClientAdapter = module.get(H5P_LIBRARIES_S3_CONNECTION);
+		s3ClientAdapter = module.get(H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN);
 		repo = module.get(LibraryRepo);
 	});
 

@@ -30,9 +30,10 @@ export class S3ClientAdapter {
 		private readonly client: S3Client,
 		private readonly config: S3Config,
 		private readonly logger: Logger,
-		private readonly errorHandler: DomainErrorHandler
+		private readonly errorHandler: DomainErrorHandler,
+		private readonly clientInjectionToken: string
 	) {
-		this.logger.setContext(`${S3ClientAdapter.name}:${config.connectionName}`);
+		this.logger.setContext(`${S3ClientAdapter.name}:${this.clientInjectionToken}`);
 	}
 
 	// is public but only used internally

@@ -11,8 +11,10 @@ import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 
+import { ConfigurationModule } from '@infra/configuration';
 import { SagaModule } from '@modules/saga';
 import { forwardRef, Module } from '@nestjs/common';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from './learnroom.config';
 import {
 	ColumnBoardNodeRepo,
 	DashboardElementRepo,
@@ -22,7 +24,7 @@ import {
 } from './repo';
 import { DASHBOARD_REPO } from './repo/mikro-orm/dashboard.repo';
 import { DeleteUserDashboardDataStep } from './saga';
-import { LegacyBoardCopyService, CourseCopyService, CourseRoomsService } from './service';
+import { CourseCopyService, CourseRoomsService, LegacyBoardCopyService } from './service';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future
@@ -43,6 +45,7 @@ import { LegacyBoardCopyService, CourseCopyService, CourseRoomsService } from '.
 		GroupModule,
 		RoleModule,
 		SagaModule,
+		ConfigurationModule.register(LEARNROOM_CONFIG_TOKEN, LearnroomConfig),
 	],
 	providers: [
 		{

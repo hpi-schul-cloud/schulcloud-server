@@ -16,22 +16,6 @@
 	"S3_KEY": "abcdefghijklmnop",
 	"AES_KEY": "thisisnotsecure12",
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "thisisnotsecure12",
-	"FWU_CONTENT": {
-		"S3_ENDPOINT": "http://localhost:4568",
-		"S3_REGION": "eu-central-1",
-		"S3_BUCKET": "fwu-content",
-		"S3_ACCESS_KEY": "S3RVER",
-		"S3_SECRET_KEY": "S3RVER"
-	},
-	"H5P_EDITOR": {
-		"S3_ENDPOINT": "http://localhost:5678",
-		"S3_REGION": "eu-central-1",
-		"S3_ACCESS_KEY_ID": "S3RVER",
-		"S3_SECRET_ACCESS_KEY": "S3RVER",
-		"S3_BUCKET_TEMP_FILES": "h5p-temp-files",
-		"S3_BUCKET_CONTENT": "h5p-content-bucket",
-		"S3_BUCKET_LIBRARIES": "h5p-content-library"
-	},
 	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
 	"IDENTITY_MANAGEMENT": {
 		"INTERNAL_URI": "http://localhost:8080",
@@ -48,7 +32,6 @@
 		"CLIENT_SECRET": "erwin-credentials-mock-client-secret"
 	},
 	"INCOMING_REQUEST_TIMEOUT_API": 60000,
-	"FEATURE_COPY_SERVICE_ENABLED": true,
 	"COOKIE": {
 		"SAME_SITE": "lax",
 		"HTTP_ONLY": false,
@@ -72,5 +55,9 @@
 	"FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED": true,
 	"FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED": true,
 	"CALENDAR_SERVICE_ENABLED": false,
-	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud"
+	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud",
+	"FWU_CONTENT": {
+		"INCOMING_REQUEST_TIMEOUT_MS": 2000
+	},
+	"FEATURE_FWU_CONTENT_ENABLED": false
 }

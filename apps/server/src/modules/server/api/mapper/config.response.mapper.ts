@@ -2,6 +2,7 @@ import { AlertPublicApiConfig } from '@modules/alert';
 import { BoardPublicApiConfig } from '@modules/board';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
 import { CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
+import { LearnroomPublicApiConfig } from '@modules/learnroom';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { RegistrationPublicApiConfig } from '@modules/registration';
@@ -29,7 +30,8 @@ export class ConfigResponseMapper {
 		sharingConfig: SharingPublicApiConfig,
 		commonCartridgeConfig: CommonCartridgePublicApiConfig,
 		toolConfig: ToolPublicApiConfig,
-		taskConfig: TaskPublicApiConfig
+		taskConfig: TaskPublicApiConfig,
+		learnroomConfig: LearnroomPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,
@@ -46,6 +48,7 @@ export class ConfigResponseMapper {
 			...commonCartridgeConfig,
 			...toolConfig,
 			...taskConfig,
+			...learnroomConfig,
 		});
 
 		return configResponse;
