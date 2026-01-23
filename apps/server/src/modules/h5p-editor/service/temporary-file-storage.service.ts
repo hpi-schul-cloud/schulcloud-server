@@ -12,11 +12,11 @@ import {
 import { ReadStream } from 'fs';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto';
-import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
+import { H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN } from '../h5p-editor.const';
 
 @Injectable()
 export class TemporaryFileStorage implements ITemporaryFileStorage {
-	constructor(@Inject(H5P_CONTENT_S3_CONNECTION) private readonly s3Client: S3ClientAdapter) {}
+	constructor(@Inject(H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN) private readonly s3Client: S3ClientAdapter) {}
 
 	private checkFilename(filename: string): void {
 		filename = filename.split('.').slice(0, -1).join('.');

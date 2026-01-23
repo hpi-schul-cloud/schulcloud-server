@@ -14,7 +14,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IEntity } from '@shared/domain/interface';
 import { Readable } from 'stream';
 import { GetH5PFileResponse } from '../controller/dto';
-import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
+import { H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN } from '../h5p-editor.const';
 import { H5PContent, H5PContentProperties, H5PContentRepo } from '../repo';
 import { h5pContentFactory } from '../testing';
 import { H5PContentParentParams, H5PContentParentType, LumiUserWithContentData } from '../types';
@@ -107,12 +107,12 @@ describe('ContentStorage', () => {
 			providers: [
 				ContentStorage,
 				{ provide: H5PContentRepo, useValue: createMock<H5PContentRepo>() },
-				{ provide: H5P_CONTENT_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
+				{ provide: H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN, useValue: createMock<S3ClientAdapter>() },
 			],
 		}).compile();
 
 		service = module.get(ContentStorage);
-		s3ClientAdapter = module.get(H5P_CONTENT_S3_CONNECTION);
+		s3ClientAdapter = module.get(H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN);
 		contentRepo = module.get(H5PContentRepo);
 	});
 
