@@ -1641,6 +1641,11 @@
 			"default": null,
 			"description": "The url for further information in room member administration."
 		},
+		"ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL": {
+			"type": "string",
+			"default": null,
+			"description": "The url for further information about the requirements for adding external persons to rooms."
+		},
 		"SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS": {
 			"type": "number",
 			"default": 864000,
