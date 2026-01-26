@@ -261,7 +261,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	private canEditBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		const permissions = authorizable.getUserPermissions(user.id);
 
-		const isBoard = authorizable.boardNode instanceof ColumnBoard;
+		const isBoard = authorizable.rootNode instanceof ColumnBoard;
 		const canEditBoard = permissions.includes(Permission.BOARD_EDIT);
 		return isBoard && canEditBoard;
 	}
@@ -269,7 +269,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	private canManageBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		const permissions = authorizable.getUserPermissions(user.id);
 
-		const isBoard = authorizable.boardNode instanceof ColumnBoard;
+		const isBoard = authorizable.rootNode instanceof ColumnBoard;
 		const canManageBoard = permissions.includes(Permission.BOARD_MANAGE);
 		return isBoard && canManageBoard;
 	}
@@ -277,8 +277,8 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	private canViewBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		const permissions = authorizable.getUserPermissions(user.id);
 
-		const isBoard = authorizable.boardNode instanceof ColumnBoard;
-		const canEditBoard = permissions.includes(Permission.BOARD_VIEW);
-		return isBoard && canEditBoard;
+		const isBoard = authorizable.rootNode instanceof ColumnBoard;
+		const canViewBoard = permissions.includes(Permission.BOARD_VIEW);
+		return isBoard && canViewBoard;
 	}
 }
