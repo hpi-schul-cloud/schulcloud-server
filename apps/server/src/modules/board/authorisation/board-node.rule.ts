@@ -278,7 +278,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		const permissions = authorizable.getUserPermissions(user.id);
 
 		const isBoard = authorizable.boardNode instanceof ColumnBoard;
-		const canEditBoard = permissions.includes(Permission.BOARD_EDIT);
+		const canEditBoard = permissions.includes(Permission.BOARD_VIEW);
 		return isBoard && canEditBoard;
 	}
 }
