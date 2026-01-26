@@ -93,10 +93,6 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return canViewBoard;
 	}
 
-	public canCreateBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
-		return this.canManageBoard(user, authorizable);
-	}
-
 	public canCreateColumn(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canEditBoard(user, authorizable);
 	}
