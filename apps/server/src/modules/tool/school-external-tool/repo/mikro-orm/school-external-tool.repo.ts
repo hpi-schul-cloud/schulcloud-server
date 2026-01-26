@@ -87,6 +87,15 @@ export class SchoolExternalToolRepo {
 		return dos;
 	}
 
+	public async saveMany(domainObjects: SchoolExternalTool[]): Promise<void> {
+		const entities = domainObjects.map((domainObject) => {
+			const entityProps = this.mapDomainObjectToEntityProps(domainObject);
+			return new SchoolExternalToolEntity(entityProps);
+		});
+
+		await this.em.upsertMany(SchoolExternalToolEntity, entities);
+	}
+
 	private buildScope(query: SchoolExternalToolQuery): SchoolExternalToolScope {
 		const scope: SchoolExternalToolScope = new SchoolExternalToolScope();
 

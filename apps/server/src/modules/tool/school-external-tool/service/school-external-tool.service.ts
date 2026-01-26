@@ -142,24 +142,21 @@ export class SchoolExternalToolService {
 		const existingSchoolExternalTools = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
 
 		existingSchoolExternalTools.forEach((tool) => tool.activate());
-		const updatePromises = existingSchoolExternalTools.map((tool) => this.schoolExternalToolRepo.save(tool));
-		await Promise.all(updatePromises);
+		await this.schoolExternalToolRepo.saveMany(existingSchoolExternalTools);
 
 		const schoolIdsWhereExisting = existingSchoolExternalTools.map((tool) => tool.schoolId);
 		const schoolIdsWhereNotExisting = allSchoolIds.filter((schoolId) => !schoolIdsWhereExisting.includes(schoolId));
-		const createPromises = schoolIdsWhereNotExisting.map((schoolId) => this.createSchoolExternalTool(toolId, schoolId));
-		await Promise.all(createPromises);
+		const toolsToAdd = schoolIdsWhereNotExisting.map((schoolId) => this.createSchoolExternalTool(toolId, schoolId));
+		await this.schoolExternalToolRepo.saveMany(toolsToAdd);
 	}
 
-	private createSchoolExternalTool(toolId: EntityId, schoolId: EntityId): Promise<SchoolExternalTool> {
-		const schoolExternalTool = new SchoolExternalTool({
+	private createSchoolExternalTool(toolId: EntityId, schoolId: EntityId): SchoolExternalTool {
+		return new SchoolExternalTool({
 			id: new ObjectId().toHexString(),
 			toolId,
 			schoolId,
 			parameters: [],
 			isDeactivated: false,
 		});
-
-		return this.schoolExternalToolRepo.save(schoolExternalTool);
 	}
 }
