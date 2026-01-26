@@ -135,6 +135,7 @@ export interface ServerConfig
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
 	ROOM_MEMBER_INFO_URL: string | null;
+	ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL: string | null;
 }
 
 const config: ServerConfig = {
@@ -362,6 +363,10 @@ const config: ServerConfig = {
 		Configuration.get('ROOM_MEMBER_INFO_URL') === null
 			? (Configuration.get('ROOM_MEMBER_INFO_URL') as null)
 			: (Configuration.get('ROOM_MEMBER_INFO_URL') as string),
+	ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL:
+		Configuration.get('ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL') === null
+			? (Configuration.get('ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL') as null)
+			: (Configuration.get('ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL') as string),
 	SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS: Configuration.get(
 		'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
 	) as number,
