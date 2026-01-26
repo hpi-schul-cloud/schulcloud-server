@@ -214,7 +214,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 				expect(response.status).toEqual(403);
 			});
 
-			it.only('should not change the board visibility', async () => {
+			it('should not change the board visibility', async () => {
 				const { accountWithViewRole, columnBoardNode } = await setup();
 
 				const loggedInClient = await testApiClient.login(accountWithViewRole);
