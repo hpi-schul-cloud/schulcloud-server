@@ -1,16 +1,23 @@
 import { LegacyLogger } from '@core/logger';
 import { StorageLocation } from '@infra/files-storage-client';
-import { AuthorizationContextBuilder } from '@modules/authorization';
-import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { AuthorizationService } from '@modules/authorization';
+import {
+	ForbiddenException,
+	Injectable,
+	InternalServerErrorException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { BoardNodeRule } from '../authorisation/board-node.rule';
 import { BoardNodeFactory, Card, Column, ColumnBoard, ContentElementType, isCard } from '../domain';
-import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
-import { Permission } from '@shared/domain/interface';
+import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '../service';
 
 @Injectable()
 export class ColumnUc {
 	constructor(
-		private readonly boardNodePermissionService: BoardNodePermissionService,
+		private readonly authorizationService: AuthorizationService,
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
+		private readonly boardNodeRule: BoardNodeRule,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly boardNodeFactory: BoardNodeFactory,
@@ -21,22 +28,24 @@ export class ColumnUc {
 	}
 
 	public async deleteColumn(userId: EntityId, columnId: EntityId): Promise<EntityId> {
-		this.logger.debug({ action: 'deleteColumn', userId, columnId });
-
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
-		const { rootId } = column;
-		await this.boardNodePermissionService.checkPermission(userId, column, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(column);
+
+		throwForbiddenIfFalse(this.boardNodeRule.canDeleteColumn(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.delete(column);
 
+		const { rootId } = column;
 		return rootId;
 	}
 
 	public async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise<Column> {
-		this.logger.debug({ action: 'updateColumnTitle', userId, columnId, title });
-
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
-		await this.boardNodePermissionService.checkPermission(userId, column, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(column);
+
+		throwForbiddenIfFalse(this.boardNodeRule.canUpdateColumnTitle(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateTitle(column, title);
 		return column;
@@ -47,10 +56,11 @@ export class ColumnUc {
 		columnId: EntityId,
 		requiredEmptyElements: ContentElementType[] = []
 	): Promise<Card> {
-		this.logger.debug({ action: 'createCard', userId, columnId });
-
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
-		await this.boardNodePermissionService.checkPermission(userId, column, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(column);
+
+		throwForbiddenIfFalse(this.boardNodeRule.canCreateCard(user, boardNodeAuthorizable));
 
 		const elements = requiredEmptyElements.map((type) => this.boardNodeFactory.buildContentElement(type));
 		const card = this.boardNodeFactory.buildCard(elements);
@@ -66,23 +76,23 @@ export class ColumnUc {
 		toColumnId: EntityId,
 		toPosition?: number
 	): Promise<{ card: Card; fromBoard: ColumnBoard; toBoard: ColumnBoard; fromColumn: Column; toColumn: Column }> {
-		this.logger.debug({ action: 'moveCard', userId, cardId, toColumnId, toPosition });
-
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		if (!card.parentId) {
 			throw new UnprocessableEntityException('Card has no parent column');
 		}
 		const fromColumn = await this.boardNodeService.findByClassAndId(Column, card.parentId, 1);
 		const toColumn = await this.boardNodeService.findByClassAndId(Column, toColumnId, 1);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(fromColumn);
+
 		const fromBoard = await this.columnBoardService.findById(card.rootId, 0);
 		const toBoard = await this.columnBoardService.findById(toColumn.rootId, 0);
 
-		const authorizationContext =
-			fromBoard.context.id === toBoard.context.id
-				? AuthorizationContextBuilder.write([])
-				: AuthorizationContextBuilder.write([Permission.BOARD_RELOCATE_CONTENT]);
-		await this.boardNodePermissionService.checkPermission(userId, fromBoard, authorizationContext);
-		await this.boardNodePermissionService.checkPermission(userId, toBoard, AuthorizationContextBuilder.write([]));
+		throwForbiddenIfFalse(this.boardNodeRule.canMoveCard(user, boardNodeAuthorizable));
+		const isNotBoardContent = fromBoard.context.id !== toBoard.context.id;
+		if (isNotBoardContent) {
+			throwForbiddenIfFalse(this.boardNodeRule.canRelocateContent(user, boardNodeAuthorizable));
+		}
 
 		await this.boardNodeService.move(card, toColumn, toPosition);
 
@@ -90,14 +100,14 @@ export class ColumnUc {
 	}
 
 	public async copyCard(userId: EntityId, cardId: EntityId, schoolId: EntityId): Promise<Card> {
-		this.logger.debug({ action: 'copyCard', userId, cardId, schoolId });
-
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		if (!card.parentId) {
 			throw new UnprocessableEntityException('Card has no parent column');
 		}
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
 
-		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
+		throwForbiddenIfFalse(this.boardNodeRule.canCopyCard(user, boardNodeAuthorizable));
 
 		const copyStatus = await this.columnBoardService.copyCard({
 			originalCardId: card.id,
@@ -114,3 +124,10 @@ export class ColumnUc {
 		return copyStatus.copyEntity;
 	}
 }
+
+// TODO: replace with shared utility function (after BC-11015 was merged)
+const throwForbiddenIfFalse = (condition: boolean): void => {
+	if (!condition) {
+		throw new ForbiddenException();
+	}
+};

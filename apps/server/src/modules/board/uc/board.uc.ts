@@ -47,8 +47,6 @@ export class BoardUc {
 	}
 
 	public async createBoard(userId: EntityId, params: CreateBoardBodyParams): Promise<ColumnBoard> {
-		this.logger.debug({ action: 'createBoard', userId, title: params.title });
-
 		await this.checkReferenceWritePermission(userId, { type: params.parentType, id: params.parentId });
 
 		const board = this.boardNodeFactory.buildColumnBoard({
@@ -66,8 +64,6 @@ export class BoardUc {
 		userId: EntityId,
 		boardId: EntityId
 	): Promise<{ board: ColumnBoard; features: BoardFeature[]; permissions: Permission[] }> {
-		this.logger.debug({ action: 'findBoard', userId, boardId });
-
 		// TODO set depth=2 to reduce data?
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
@@ -81,8 +77,6 @@ export class BoardUc {
 	}
 
 	public async findBoardContext(userId: EntityId, boardId: EntityId): Promise<BoardExternalReference> {
-		this.logger.debug({ action: 'findBoardContext', userId, boardId });
-
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -93,8 +87,6 @@ export class BoardUc {
 	}
 
 	public async deleteBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
-		this.logger.debug({ action: 'deleteBoard', userId, boardId });
-
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId); // TODO decide to refactor returned object vs return boardNodeId
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -106,8 +98,6 @@ export class BoardUc {
 	}
 
 	public async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise<ColumnBoard> {
-		this.logger.debug({ action: 'updateBoardTitle', userId, boardId, title });
-
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId); // TODO decide to refactor returned object vs return boardNodeId
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -119,8 +109,6 @@ export class BoardUc {
 	}
 
 	public async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
-		this.logger.debug({ action: 'createColumn', userId, boardId });
-
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId, 1);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -140,8 +128,6 @@ export class BoardUc {
 		targetBoardId: EntityId,
 		targetPosition: number
 	): Promise<Column> {
-		this.logger.debug({ action: 'moveColumn', userId, columnId, targetBoardId, targetPosition });
-
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
@@ -159,8 +145,6 @@ export class BoardUc {
 	}
 
 	public async copyBoard(userId: EntityId, boardId: EntityId, targetSchoolId: EntityId): Promise<CopyStatus> {
-		this.logger.debug({ action: 'copyBoard', userId, boardId });
-
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
@@ -270,7 +254,7 @@ export class BoardUc {
 }
 
 // TODO: replace with shared utility function (after BC-11015 was merged)
-export const throwForbiddenIfFalse = (condition: boolean): void => {
+const throwForbiddenIfFalse = (condition: boolean): void => {
 	if (!condition) {
 		throw new ForbiddenException();
 	}

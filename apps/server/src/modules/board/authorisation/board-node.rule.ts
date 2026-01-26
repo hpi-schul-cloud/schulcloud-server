@@ -93,6 +93,14 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return canViewBoard;
 	}
 
+	public canCopyCard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
+	public canCreateCard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
 	public canCreateColumn(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canEditBoard(user, authorizable);
 	}
@@ -101,7 +109,19 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return this.canManageBoard(user, authorizable);
 	}
 
+	public canDeleteColumn(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
 	public canUpdateBoardTitle(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
+	public canUpdateColumnTitle(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
+	public canMoveCard(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canEditBoard(user, authorizable);
 	}
 
@@ -128,6 +148,15 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 
 	public canUpdateBoardLayout(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canManageBoard(user, authorizable);
+	}
+
+	public canRelocateContent(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		const permissions = authorizable.getUserPermissions(user.id);
+
+		const isBoard = authorizable.rootNode instanceof ColumnBoard;
+		const canRelocateContent = permissions.includes(Permission.BOARD_RELOCATE_CONTENT);
+
+		return isBoard && canRelocateContent;
 	}
 
 	private isBoardAdmin(userWithBoardRoles: UserWithBoardRoles): boolean {
