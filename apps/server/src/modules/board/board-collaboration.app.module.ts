@@ -30,6 +30,18 @@ const createValkeyModuleOptions = (configService: ConfigService<BoardCollaborati
 	return config;
 };
 
+const createValkeyModuleOptions = (configService: ConfigService<BoardCollaborationConfig>): ValkeyConfig => {
+	const config = {
+		MODE: configService.getOrThrow('SESSION_VALKEY__MODE', { infer: true }),
+		URI: configService.get('SESSION_VALKEY__URI', { infer: true }),
+		SENTINEL_NAME: configService.get('SESSION_VALKEY__SENTINEL_NAME', { infer: true }),
+		SENTINEL_PASSWORD: configService.get('SESSION_VALKEY__SENTINEL_PASSWORD', { infer: true }),
+		SENTINEL_SERVICE_NAME: configService.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME', { infer: true }),
+	};
+
+	return config;
+};
+
 const imports = [
 	CoreModule,
 	RabbitMQWrapperModule,
