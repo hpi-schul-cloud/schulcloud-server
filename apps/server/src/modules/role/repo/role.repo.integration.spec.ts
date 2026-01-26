@@ -1,4 +1,4 @@
-import { NotFoundError, NullCacheAdapter, ValidationError } from '@mikro-orm/core';
+import { MemoryCacheAdapter, NotFoundError, ValidationError, wrap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -16,7 +16,7 @@ describe('role repo', () => {
 	beforeAll(async () => {
 		// em.clear do not clear the resultCache, it must be disabled for this test
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ resultCache: { adapter: NullCacheAdapter }, entities: [Role] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ resultCache: { adapter: MemoryCacheAdapter }, entities: [Role] })],
 			providers: [RoleRepo],
 		}).compile();
 		repo = module.get(RoleRepo);
@@ -31,6 +31,8 @@ describe('role repo', () => {
 		await em.nativeDelete(Role, {});
 		em.clear();
 		await cleanupCollections(em);
+		// Clear MikroORM memory cache
+		await em.config.getResultCacheAdapter().clear();
 	});
 
 	it('should be defined', () => {
@@ -67,6 +69,7 @@ describe('role repo', () => {
 			const roleA = roleFactory.build({ name: RoleName.STUDENT });
 
 			await em.persist([roleA]).flush();
+			em.clear();
 			const result = await repo.findByName(RoleName.STUDENT);
 			expect(Object.keys(result).sort()).toEqual(
 				['createdAt', 'updatedAt', 'permissions', 'roles', 'name', '_id'].sort()
@@ -78,9 +81,11 @@ describe('role repo', () => {
 			const roleB = roleFactory.build({ name: RoleName.TEACHER });
 
 			await em.persist([roleA, roleB]).flush();
+			em.clear();
 
 			const result = await repo.findByName(RoleName.STUDENT);
-			expect(result).toEqual(roleA);
+
+			expect(wrap(result).toObject()).toEqual(wrap(roleA).toObject());
 		});
 
 		it('should throw an error if roles by name doesnt exist', async () => {
@@ -89,8 +94,8 @@ describe('role repo', () => {
 	});
 
 	describe('findByNames', () => {
-		let roleA;
-		let roleB;
+		let roleA: Role;
+		let roleB: Role;
 
 		beforeEach(async () => {
 			roleA = roleFactory.build({ name: RoleName.STUDENT });
