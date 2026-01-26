@@ -1,6 +1,7 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { ACCOUNT_CONFIG_TOKEN } from './account-config';
 import { AccountModule } from './account.module';
 import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './domain';
 import { AccountService } from './domain/services/account.service';
@@ -26,6 +27,11 @@ describe('AccountModule', () => {
 		})
 			.overrideProvider(ACCOUNT_ENCRYPTION_CONFIG_TOKEN)
 			.useValue({ aesKey: encryptionKey })
+			.overrideProvider(ACCOUNT_CONFIG_TOKEN)
+			.useValue({
+				identityManagementStoreEnabled: false,
+				identityManagementLoginEnabled: false,
+			})
 			.compile();
 	});
 
@@ -50,16 +56,16 @@ describe('AccountModule', () => {
 						ignoreEnvFile: true,
 						ignoreEnvVars: true,
 						isGlobal: true,
-						validate: () => {
-							return {
-								FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: true,
-							};
-						},
 					}),
 				],
 			})
 				.overrideProvider(ACCOUNT_ENCRYPTION_CONFIG_TOKEN)
 				.useValue({ aesKey: encryptionKey })
+				.overrideProvider(ACCOUNT_CONFIG_TOKEN)
+				.useValue({
+					identityManagementStoreEnabled: false,
+					identityManagementLoginEnabled: true,
+				})
 				.compile();
 		});
 
@@ -85,16 +91,16 @@ describe('AccountModule', () => {
 						ignoreEnvFile: true,
 						ignoreEnvVars: true,
 						isGlobal: true,
-						validate: () => {
-							return {
-								FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: false,
-							};
-						},
 					}),
 				],
 			})
 				.overrideProvider(ACCOUNT_ENCRYPTION_CONFIG_TOKEN)
 				.useValue({ aesKey: encryptionKey })
+				.overrideProvider(ACCOUNT_CONFIG_TOKEN)
+				.useValue({
+					identityManagementStoreEnabled: false,
+					identityManagementLoginEnabled: false,
+				})
 				.compile();
 		});
 

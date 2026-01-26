@@ -1,6 +1,10 @@
 import { LoggerModule } from '@core/logger/logger.module';
 import { ConfigurationModule } from '@infra/configuration';
 import { IdentityManagementModule } from '@infra/identity-management';
+import {
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+	KeycloakAdministrationConfig,
+} from '@infra/identity-management/keycloak-administration/keycloak-administration-config';
 import { SagaModule } from '@modules/saga';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
@@ -23,7 +27,13 @@ function accountIdmToDtoMapperFactory(config: AccountConfig): AccountIdmToDoMapp
 
 @Module({
 	imports: [
-		IdentityManagementModule.register(AccountEncryptionConfig, ACCOUNT_ENCRYPTION_CONFIG_TOKEN),
+		IdentityManagementModule.register({
+			encryptionConfig: { Constructor: AccountEncryptionConfig, injectionToken: ACCOUNT_ENCRYPTION_CONFIG_TOKEN },
+			keycloakAdministrationConfig: {
+				Constructor: KeycloakAdministrationConfig,
+				injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+			},
+		}),
 		SystemModule,
 		LoggerModule,
 		UserModule,

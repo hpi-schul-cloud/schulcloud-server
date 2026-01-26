@@ -20,16 +20,6 @@
 	"SYNC_LOG_LEVEL": "info",
 	"SYNC_QUEUE_NAME": "test_ldap_queue",
 	"S3_KEY": "abcdefghijklmnop",
-	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
-	"IDENTITY_MANAGEMENT": {
-		"INTERNAL_URI": "http://localhost:8080",
-		"EXTERNAL_URI": "http://localhost:8080",
-		"TENANT": "dBildungscloud",
-		"CLIENTID": "dbc",
-		"ADMIN_CLIENTID": "admin-cli",
-		"ADMIN_USER": "dbildungscloud",
-		"ADMIN_PASSWORD": "dBildungscloud"
-	},
 	"LOG_LEVEL": "emerg",
 	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",

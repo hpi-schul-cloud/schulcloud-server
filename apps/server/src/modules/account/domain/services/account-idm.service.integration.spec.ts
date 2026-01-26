@@ -1,14 +1,17 @@
 import { LoggerModule } from '@core/logger';
-import { createMock } from '@golevelup/ts-jest';
 import { TestEncryptionConfig } from '@infra/encryption';
 import { IdentityManagementModule, IdentityManagementService } from '@infra/identity-management';
+import {
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+	KeycloakAdministrationConfig,
+} from '@infra/identity-management/keycloak-administration/keycloak-administration-config';
 import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '@modules/account/account-config';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v1 } from 'uuid';
+import { ACCOUNT_CONFIG_TOKEN } from '../../account-config';
 import { AccountSave, IdmAccount } from '../do';
 import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
@@ -49,14 +52,14 @@ describe('AccountIdmService Integration', () => {
 					isGlobal: true,
 					ignoreEnvFile: true,
 					ignoreEnvVars: true,
-					validate: () => {
-						return {
-							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-							FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: false,
-						};
+				}),
+				IdentityManagementModule.register({
+					encryptionConfig: { Constructor: TestEncryptionConfig, injectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN' },
+					keycloakAdministrationConfig: {
+						Constructor: KeycloakAdministrationConfig,
+						injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 					},
 				}),
-				IdentityManagementModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
 				LoggerModule,
 			],
 			providers: [
@@ -67,7 +70,10 @@ describe('AccountIdmService Integration', () => {
 				},
 				{
 					provide: ACCOUNT_CONFIG_TOKEN,
-					useValue: createMock<AccountConfig>(),
+					useValue: {
+						identityManagementStoreEnabled: true,
+						identityManagementLoginEnabled: false,
+					},
 				},
 			],
 		}).compile();

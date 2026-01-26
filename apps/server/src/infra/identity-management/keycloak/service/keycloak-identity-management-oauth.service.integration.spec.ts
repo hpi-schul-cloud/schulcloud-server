@@ -1,15 +1,23 @@
 import { LoggerModule } from '@core/logger';
 import { TestEncryptionConfig } from '@infra/encryption';
-import { KeycloakModule } from '@infra/identity-management/keycloak/keycloak.module';
 import { AccountEntity } from '@modules/account/repo';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
+import {
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+	KeycloakAdministrationConfig,
+} from '../../keycloak-administration/keycloak-administration-config';
 import { KeycloakAdministrationModule } from '../../keycloak-administration/keycloak-administration.module';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import {
+	KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
+	KeycloakConfigurationConfig,
+} from '../../keycloak-configuration/keycloak-configuration-config';
 import { KeycloakConfigurationModule } from '../../keycloak-configuration/keycloak-configuration.module';
 import { KeycloakConfigurationService } from '../../keycloak-configuration/service/keycloak-configuration.service';
+import { KeycloakModule } from '../keycloak.module';
 import { KeycloakIdentityManagementOauthService } from './keycloak-identity-management-oauth.service';
 
 describe('KeycloakIdentityManagementOauthService Integration', () => {
@@ -24,9 +32,25 @@ describe('KeycloakIdentityManagementOauthService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				KeycloakModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
-				KeycloakConfigurationModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
-				KeycloakAdministrationModule,
+				KeycloakModule.register({
+					encryptionConfig: { Constructor: TestEncryptionConfig, injectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN' },
+					keycloakAdministrationConfig: {
+						Constructor: KeycloakAdministrationConfig,
+						injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+					},
+				}),
+				KeycloakConfigurationModule.register({
+					encryptionConfig: { Constructor: TestEncryptionConfig, injectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN' },
+					keycloakAdministrationConfig: {
+						Constructor: KeycloakAdministrationConfig,
+						injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+					},
+					keycloakConfigurationConfig: {
+						Constructor: KeycloakConfigurationConfig,
+						injectionToken: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
+					},
+				}),
+				KeycloakAdministrationModule.register(KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN, KeycloakAdministrationConfig),
 				LoggerModule,
 				MongoMemoryDatabaseModule.forRoot({ allowGlobalContext: true, entities: [AccountEntity] }),
 				ConfigModule.forRoot({ isGlobal: true }),
