@@ -334,17 +334,17 @@ describe('AccountIdmService', () => {
 
 		// Note: Disabled test case as the current implementation of delete does not throw an error
 		//       because convertInternalToExternalId is never called with an ObjectId from delete.
-		// describe('when deleting non existing account', () => {
-		// 	const setup = () => {
-		// 		idmServiceMock.deleteAccountById.mockResolvedValue(mockIdmAccount.id);
-		// 		configServiceMock.get.mockReturnValueOnce(false);
-		// 	};
+		describe.skip('when deleting non existing account', () => {
+			const setup = () => {
+				idmServiceMock.deleteAccountById.mockResolvedValue(mockIdmAccount.id);
+				configServiceMock.get.mockReturnValueOnce(false);
+			};
 
-		// 	it('should throw account not found error', async () => {
-		// 		setup();
-		// 		await expect(accountIdmService.delete(mockIdmAccountRefId)).rejects.toThrow();
-		// 	});
-		// });
+			it('should throw account not found error', async () => {
+				setup();
+				await expect(accountIdmService.delete(mockIdmAccountRefId)).rejects.toThrow();
+			});
+		});
 	});
 
 	describe('deleteByUserId', () => {
