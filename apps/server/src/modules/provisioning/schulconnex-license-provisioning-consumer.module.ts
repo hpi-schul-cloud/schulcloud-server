@@ -1,4 +1,5 @@
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
@@ -8,6 +9,7 @@ import { ToolModule } from '@modules/tool/tool.module';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
 import { SchulconnexLicenseProvisioningConsumer } from './amqp';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from './provisioning.config';
 import {
 	SchulconnexLicenseProvisioningService,
 	SchulconnexToolProvisioningService,
@@ -23,6 +25,7 @@ import {
 		ToolModule,
 		MediumMetadataModule,
 		MediaSourceSyncModule,
+		ConfigurationModule.register(PROVISIONING_CONFIG_TOKEN, ProvisioningConfig),
 	],
 	providers: [
 		SchulconnexLicenseProvisioningConsumer,
