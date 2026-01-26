@@ -14,6 +14,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Submission, SubmissionRepo } from '../repo';
+import { EntityManager, RequestContext } from '@mikro-orm/mongodb';
 
 @Injectable()
 export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
@@ -22,6 +23,8 @@ export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
 	constructor(
 		private readonly sagaService: SagaService,
 		private readonly submissionRepo: SubmissionRepo,
+		private readonly em: EntityManager,
+
 		private readonly logger: Logger
 	) {
 		super('deleteUserData');
@@ -33,8 +36,8 @@ export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
 		const { userId } = params;
 
 		const [submissionsDeleted, submissionsModified] = await Promise.all([
-			this.deleteSingleSubmissionsOwnedByUser(userId),
-			this.removeUserReferencesFromSubmissions(userId),
+			RequestContext.create(this.em, async () => await this.deleteSingleSubmissionsOwnedByUser(userId)),
+			RequestContext.create(this.em, async () => await this.removeUserReferencesFromSubmissions(userId)),
 		]);
 
 		const result = StepReportBuilder.build(this.moduleName, [submissionsDeleted, submissionsModified]);
