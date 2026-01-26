@@ -139,13 +139,17 @@ export class SchoolExternalToolService {
 
 	public async addAndActivateToolForAllSchools(toolId: EntityId): Promise<void> {
 		const allSchoolIds = await this.schoolService.getAllSchoolIds();
+
+		const existingDeactivatedSchoolExternalTools = await this.schoolExternalToolRepo.find({
+			toolId,
+			isDeactivated: true,
+		});
+		existingDeactivatedSchoolExternalTools.forEach((tool) => tool.activate());
+		await this.schoolExternalToolRepo.saveMany(existingDeactivatedSchoolExternalTools);
+
 		const existingSchoolExternalTools = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
-
-		existingSchoolExternalTools.forEach((tool) => tool.activate());
-		await this.schoolExternalToolRepo.saveMany(existingSchoolExternalTools);
-
-		const schoolIdsWhereExisting = existingSchoolExternalTools.map((tool) => tool.schoolId);
-		const schoolIdsWhereNotExisting = allSchoolIds.filter((schoolId) => !schoolIdsWhereExisting.includes(schoolId));
+		const schoolIdsWhereExisting = new Set(existingSchoolExternalTools.map((tool) => tool.schoolId));
+		const schoolIdsWhereNotExisting = allSchoolIds.filter((schoolId) => !schoolIdsWhereExisting.has(schoolId));
 		const toolsToAdd = schoolIdsWhereNotExisting.map((schoolId) => this.createSchoolExternalTool(toolId, schoolId));
 		await this.schoolExternalToolRepo.saveMany(toolsToAdd);
 	}
