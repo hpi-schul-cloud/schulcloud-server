@@ -7,7 +7,6 @@ import { SagaModule } from '@modules/saga';
 import { forwardRef, Module } from '@nestjs/common';
 import { BoardContextApiHelperModule } from '../board-context';
 import { RoomModule } from '../room';
-import { BoardNodeRule } from './authorisation/board-node.rule';
 import { BoardModule } from './board.module';
 import {
 	BoardController,
@@ -44,7 +43,6 @@ import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc, SubmissionIte
 	providers: [
 		BoardUc,
 		BoardNodePermissionService,
-		BoardNodeRule,
 		BoardErrorReportUc,
 		ColumnUc,
 		CardUc,
