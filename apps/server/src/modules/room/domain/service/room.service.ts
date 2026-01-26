@@ -138,14 +138,14 @@ export class RoomService {
 				<p><a href="${roomLink}">${roomLink}</a></p>
 				<p>Best regards,<br />
 				${productName}-Team</p>`;
-		const htmlContent = `<div lang="de"><h1>${germanTitle}</h1>${germanHtml}</div>
+		const htmlContent = `<html><body><div lang="de"><h1>${germanTitle}</h1>${germanHtml}</div>
 				<hr />
-				<div lang="en"><h1>${englishTitle}</h1>${englishHtml}</div>`;
+				<div lang="en"><h1>${englishTitle}</h1>${englishHtml}</div></body></html>`;
 
 		const mailContent = {
 			subject: `${productName}: ${germanTitle}`,
 			plainTextContent: stripTags(htmlContent),
-			htmlContent: htmlContent,
+			htmlContent: '',
 		};
 
 		return mailContent;

@@ -272,7 +272,7 @@ describe('RoomService', () => {
 				mail: expect.objectContaining({
 					subject: `dBildungscloud: ${title}`,
 					plainTextContent: expect.stringContaining(roomName) as unknown,
-					htmlContent: expect.stringContaining(`${host}/rooms/${roomId}`) as unknown,
+					htmlContent: '',
 				}) as unknown,
 			});
 		});
