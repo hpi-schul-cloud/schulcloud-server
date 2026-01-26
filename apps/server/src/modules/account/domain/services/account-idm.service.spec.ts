@@ -19,9 +19,9 @@ describe('AccountIdmService', () => {
 	let idmOauthServiceMock: DeepMocked<IdentityManagementOauthService>;
 	let configServiceMock: DeepMocked<ConfigService>;
 
-	const mockIdmAccountRefId = 'dbcAccountId';
+	const mockIdmAccountRefId = '681873c59a3d4fba3187ae8a';
 	const mockIdmAccount: IdmAccount = {
-		id: 'id',
+		id: '681873c59a3d4fba3187ae8b',
 		username: 'username',
 		email: 'email',
 		firstName: 'firstName',
@@ -31,6 +31,7 @@ describe('AccountIdmService', () => {
 		attDbcUserId: 'attDbcUserId',
 		attDbcSystemId: 'attDbcSystemId',
 	};
+	const nonExistentId = '681873c59a3d4fba3187ae8c';
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -189,12 +190,12 @@ describe('AccountIdmService', () => {
 				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
 				configServiceMock.get.mockReturnValue(false);
 
-				const mockAccountSave = new AccountSave({
+				const mockAccountSave = {
+					id: mockIdmAccountRefId,
 					username: 'testUserName',
 					userId: 'userId',
 					systemId: 'systemId',
-					password: 'password',
-				});
+				} as AccountSave;
 
 				return { mockAccountDto: mockAccountSave };
 			};
@@ -327,14 +328,12 @@ describe('AccountIdmService', () => {
 
 			it('should delete account via idm', async () => {
 				setup();
-				await expect(accountIdmService.delete(mockIdmAccountRefId)).resolves.not.toThrow();
-				expect(idmServiceMock.deleteAccountById).toHaveBeenCalledWith(mockIdmAccountRefId);
+				await expect(accountIdmService.delete(mockIdmAccount.id)).resolves.not.toThrow();
+				expect(idmServiceMock.deleteAccountById).toHaveBeenCalledWith(mockIdmAccount.id);
 			});
 		});
 
-		// Note: Disabled test case as the current implementation of delete does not throw an error
-		//       because convertInternalToExternalId is never called with an ObjectId from delete.
-		describe.skip('when deleting non existing account', () => {
+		describe('when deleting non existing account', () => {
 			const setup = () => {
 				idmServiceMock.deleteAccountById.mockResolvedValue(mockIdmAccount.id);
 				configServiceMock.get.mockReturnValueOnce(false);
@@ -342,7 +341,7 @@ describe('AccountIdmService', () => {
 
 			it('should throw account not found error', async () => {
 				setup();
-				await expect(accountIdmService.delete(mockIdmAccountRefId)).rejects.toThrow();
+				await expect(accountIdmService.delete(nonExistentId)).rejects.toThrow();
 			});
 		});
 	});
