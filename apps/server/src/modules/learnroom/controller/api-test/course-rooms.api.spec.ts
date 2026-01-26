@@ -153,6 +153,41 @@ describe('Course Rooms Controller (API)', () => {
 
 				expect(updatedTask.isDraft()).toEqual(true);
 			});
+
+			describe('when element refers to a column board', () => {
+				const createColumnBoard = async (course: CourseEntity, isVisible: boolean) => {
+					const columnBoard = columnBoardEntityFactory.buildWithId({
+						context: { type: BoardExternalReferenceType.Course, id: course.id },
+						isVisible,
+					});
+					await em.persist(columnBoard).flush();
+					em.clear();
+
+					return columnBoard;
+				};
+
+				it('should make board element visible', async () => {
+					const { loggedInClient, course } = await setup();
+
+					const columnBoard = await createColumnBoard(course, false);
+
+					await loggedInClient.patch(`${course.id}/elements/${columnBoard.id}/visibility`).send({ visibility: true });
+					const updatedColumnBoard = await em.findOneOrFail(BoardNodeEntity, columnBoard.id);
+
+					expect(updatedColumnBoard.isVisible).toBe(false);
+				});
+
+				it('should make board element invisible', async () => {
+					const { loggedInClient, course } = await setup();
+
+					const columnBoard = await createColumnBoard(course, true);
+
+					await loggedInClient.patch(`${course.id}/elements/${columnBoard.id}/visibility`).send({ visibility: false });
+					const updatedColumnBoard = await em.findOneOrFail(BoardNodeEntity, columnBoard.id);
+
+					expect(updatedColumnBoard.isVisible).toBe(true);
+				});
+			});
 		});
 
 		describe('when user is not logged in', () => {
