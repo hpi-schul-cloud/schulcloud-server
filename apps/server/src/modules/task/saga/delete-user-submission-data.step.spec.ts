@@ -1,6 +1,6 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import {
@@ -42,10 +42,6 @@ describe(DeleteUserSubmissionDataStep.name, () => {
 					useValue: createMock<SubmissionRepo>(),
 				},
 				{
-					provide: EntityManager,
-					useValue: createMock<EntityManager>(),
-				},
-				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -63,12 +59,7 @@ describe(DeleteUserSubmissionDataStep.name, () => {
 	describe('step registration', () => {
 		it('should register the step with the saga service', () => {
 			const sagaService = createMock<SagaService>();
-			const step = new DeleteUserSubmissionDataStep(
-				sagaService,
-				createMock<SubmissionRepo>(),
-				createMock<EntityManager>(),
-				createMock<Logger>()
-			);
+			const step = new DeleteUserSubmissionDataStep(sagaService, createMock<SubmissionRepo>(), createMock<Logger>());
 
 			expect(sagaService.registerStep).toHaveBeenCalledWith(ModuleName.TASK_SUBMISSION, step);
 		});
