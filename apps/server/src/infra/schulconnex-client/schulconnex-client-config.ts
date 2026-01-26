@@ -2,10 +2,25 @@ import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToNumber } from '@shared/controller/transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
+export interface InternalSchulconnexClientConfig {
+	personInfoTimeoutInMs: number;
+	personenInfoTimeoutInMs: number;
+	policiesInfoTimeoutInMs: number;
+	apiUrl?: string;
+	tokenEndpoint?: string;
+	clientId?: string;
+	clientSecret?: string;
+}
+
 export const SCHULCONNEX_CLIENT_CONFIG_TOKEN = 'SCHULCONNEX_CLIENT_CONFIG_TOKEN';
 
+/**
+ * This is default Configuration for the SchulconnexClient.
+ * if you need to read values from different env variables, create your own config class
+ * implementing InternalSchulconnexClientConfig and provide it via the SchulconnexModule.register method.
+ */
 @Configuration()
-export class SchulconnexClientConfig {
+export class SchulconnexClientConfig implements InternalSchulconnexClientConfig {
 	@ConfigProperty('SCHULCONNEX_CLIENT__PERSON_INFO_TIMEOUT_IN_MS')
 	@StringToNumber()
 	@IsNumber()

@@ -10,7 +10,7 @@ import {
 	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
 } from './response';
-import { SchulconnexClientConfig } from './schulconnex-client-config';
+import { InternalSchulconnexClientConfig } from './schulconnex-client-config';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { schulconnexPoliciesInfoLicenseResponseFactory, schulconnexResponseFactory } from './testing';
 
@@ -20,7 +20,7 @@ describe(SchulconnexRestClient.name, () => {
 	let httpService: DeepMocked<HttpService>;
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 	let logger: DeepMocked<Logger>;
-	const config: SchulconnexClientConfig = {
+	const config: InternalSchulconnexClientConfig = {
 		apiUrl: 'https://schulconnex.url/api',
 		clientId: 'clientId',
 		clientSecret: 'clientSecret',
@@ -45,7 +45,7 @@ describe(SchulconnexRestClient.name, () => {
 	describe('constructor', () => {
 		describe('when configuration is missing', () => {
 			const setup = () => {
-				const badConfig: SchulconnexClientConfig = {
+				const badConfig: InternalSchulconnexClientConfig = {
 					apiUrl: '',
 					clientId: undefined,
 					clientSecret: undefined,

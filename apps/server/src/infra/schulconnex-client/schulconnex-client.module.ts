@@ -3,14 +3,14 @@ import { ConfigurationModule } from '@infra/configuration';
 import { OauthAdapterService } from '@modules/oauth-adapter';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
-import { SchulconnexClientConfig } from './schulconnex-client-config';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
+import { InternalSchulconnexClientConfig } from './schulconnex-client-config';
 
 @Module({})
 export class SchulconnexClientModule {
-	public static register<T extends SchulconnexClientConfig>(
+	public static register(
 		injectionToken: string,
-		Constructor: new () => T
+		Constructor: new () => InternalSchulconnexClientConfig
 	): DynamicModule {
 		return {
 			module: SchulconnexClientModule,
