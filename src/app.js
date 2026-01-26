@@ -95,6 +95,6 @@ const setupApp = async (orm) => {
 module.exports = async (orm, cacheManager) => {
 	if (feathersApp) return feathersApp;
 	feathersApp = await setupApp(orm);
-	await initializeRedisClient(cacheManager);
+	initializeRedisClient(cacheManager);
 	return feathersApp;
 };

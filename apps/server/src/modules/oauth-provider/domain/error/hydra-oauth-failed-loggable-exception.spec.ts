@@ -1,6 +1,7 @@
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { AxiosError } from 'axios';
 import { HydraOauthFailedLoggableException } from './hydra-oauth-failed-loggable-exception';
+import util from 'util';
 
 describe(HydraOauthFailedLoggableException.name, () => {
 	describe('getLogMessage', () => {
@@ -28,7 +29,7 @@ describe(HydraOauthFailedLoggableException.name, () => {
 				type: 'HYDRA_OAUTH_FAILED',
 				message: 'message: Bad Request code: 400',
 				stack: exception.stack,
-				data: JSON.stringify(error),
+				data: util.inspect(error),
 			});
 		});
 	});
