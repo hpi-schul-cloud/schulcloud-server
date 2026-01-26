@@ -152,7 +152,7 @@ export class BoardUc {
 		const targetBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, targetBoardId);
 		const boardNodeAuthorizableTargetBoard = await this.boardNodeAuthorizableService.getBoardAuthorizable(targetBoard);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canCreateColumn(user, boardNodeAuthorizableTargetBoard));
+		throwForbiddenIfFalse(this.boardNodeRule.canMoveColumn(user, boardNodeAuthorizableTargetBoard));
 
 		await this.boardNodeService.move(column, targetBoard, targetPosition);
 		return column;
