@@ -130,7 +130,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return isBoard && canManageReadersCanEdit;
 	}
 
-	public canUpdateLayout(user: User, authorizable: BoardNodeAuthorizable): boolean {
+	public canUpdateBoardLayout(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canManageBoard(user, authorizable);
 	}
 

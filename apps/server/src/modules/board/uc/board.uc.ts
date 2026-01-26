@@ -23,12 +23,7 @@ import {
 	Column,
 	ColumnBoard,
 } from '../domain';
-import {
-	BoardNodeAuthorizableService,
-	BoardNodePermissionService,
-	BoardNodeService,
-	ColumnBoardService,
-} from '../service';
+import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '../service';
 import { StorageLocationReference } from '../service/internal';
 
 @Injectable()
@@ -36,7 +31,6 @@ export class BoardUc {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService)) // TODO is this needed?
 		private readonly authorizationService: AuthorizationService,
-		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly columnBoardService: ColumnBoardService,
@@ -127,7 +121,7 @@ export class BoardUc {
 	public async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
 		this.logger.debug({ action: 'createColumn', userId, boardId });
 
-		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId); // TODO decide to refactor returned object vs return boardNodeId
+		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId, 1);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
@@ -226,7 +220,7 @@ export class BoardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateLayout(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.canUpdateBoardLayout(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateLayout(board, layout);
 		return board;
