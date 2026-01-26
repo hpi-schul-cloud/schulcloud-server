@@ -1,4 +1,4 @@
-import { columnBoardEntityFactory, columnBoardFactory } from '@modules/board/testing';
+import { columnBoardEntityFactory } from '@modules/board/testing';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonEntity, Material } from '@modules/lesson/repo';

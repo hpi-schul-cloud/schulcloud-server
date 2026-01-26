@@ -3,7 +3,6 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { columnBoardFactory } from '@modules/board/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ColumnBoardNodeRepo } from './column-board-node.repo';
-import { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
 
 describe('ColumnBoardNodeRepo', () => {
 	let module: TestingModule;
