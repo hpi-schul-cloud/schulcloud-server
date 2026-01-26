@@ -113,6 +113,7 @@ describe('Server Controller (API)', () => {
 				'LICENSE_SUMMARY_URL',
 				'FEATURE_COLUMN_BOARD_H5P_ENABLED',
 				'ROOM_MEMBER_INFO_URL',
+				'ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL',
 			];
 
 			expect(response.status).toEqual(HttpStatus.OK);
