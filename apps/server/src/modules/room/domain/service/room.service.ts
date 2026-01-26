@@ -145,7 +145,7 @@ export class RoomService {
 		const mailContent = {
 			subject: `${productName}: ${germanTitle}`,
 			plainTextContent: stripTags(htmlContent),
-			htmlContent,
+			htmlContent: '',
 		};
 
 		return mailContent;

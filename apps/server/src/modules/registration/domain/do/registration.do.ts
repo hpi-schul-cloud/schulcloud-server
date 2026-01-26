@@ -155,7 +155,7 @@ ${productName} team`;
 		const mailContent = {
 			subject,
 			plainTextContent: stripTags(htmlContent),
-			htmlContent,
+			htmlContent: '',
 		};
 		return mailContent;
 	}
