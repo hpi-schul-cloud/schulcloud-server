@@ -170,7 +170,7 @@ describe('Logout Controller (api)', () => {
 		describe('when the feature flag "FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED" is false', () => {
 			beforeAll(async () => {
 				await setupTestWithMocks();
-				config.featureExternalSystemLogoutEnabled = false;
+				config.externalSystemLogoutEnabled = false;
 			});
 
 			const setup = async () => {
@@ -209,7 +209,7 @@ describe('Logout Controller (api)', () => {
 		describe('when the feature flag "FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED" is true', () => {
 			beforeAll(async () => {
 				await setupTestWithMocks();
-				config.featureExternalSystemLogoutEnabled = true;
+				config.externalSystemLogoutEnabled = true;
 			});
 
 			describe('when the external system does not return an error', () => {

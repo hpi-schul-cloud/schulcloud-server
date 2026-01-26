@@ -7,9 +7,9 @@ import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
+import { AuthenticationConfig } from '../authentication-config';
 import { AuthenticationService } from '../services/authentication.service';
 import { LocalStrategy } from './local.strategy';
 
@@ -20,7 +20,7 @@ describe('LocalStrategy', () => {
 	let userServiceMock: DeepMocked<UserService>;
 	let authenticationServiceMock: DeepMocked<AuthenticationService>;
 	let idmOauthServiceMock: DeepMocked<IdentityManagementOauthService>;
-	let configServiceMock: DeepMocked<ConfigService>;
+	let config: AuthenticationConfig;
 
 	const mockPassword = 'mockPassword123&';
 	const mockPasswordHash = bcrypt.hashSync(mockPassword);
@@ -29,9 +29,9 @@ describe('LocalStrategy', () => {
 		await setupEntities([User]);
 		authenticationServiceMock = createMock<AuthenticationService>();
 		idmOauthServiceMock = createMock<IdentityManagementOauthService>();
-		configServiceMock = createMock<ConfigService>();
+		config = new AuthenticationConfig();
 		userServiceMock = createMock<UserService>();
-		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userServiceMock);
+		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, config, userServiceMock);
 		mockUser = userFactory.withRoleByName(RoleName.STUDENT).buildWithId();
 		mockAccount = accountDoFactory.build({ userId: mockUser.id, password: mockPasswordHash });
 	});
@@ -41,7 +41,7 @@ describe('LocalStrategy', () => {
 		authenticationServiceMock.normalizeUsername.mockImplementation((username: string) => username);
 		authenticationServiceMock.normalizePassword.mockImplementation((password: string) => password);
 		userServiceMock.getUserEntityWithRoles.mockResolvedValue(mockUser);
-		configServiceMock.get.mockReturnValue(false);
+		config.identityManagementLoginEnabled = false;
 	});
 
 	afterEach(() => {
@@ -52,7 +52,7 @@ describe('LocalStrategy', () => {
 		describe('when idm feature is active', () => {
 			const setup = () => {
 				const jwt = 'mock-jwt';
-				configServiceMock.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
 				idmOauthServiceMock.resourceOwnerPasswordGrant.mockResolvedValueOnce(jwt);
 				return jwt;
 			};

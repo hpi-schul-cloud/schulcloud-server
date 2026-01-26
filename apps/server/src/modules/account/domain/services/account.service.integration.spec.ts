@@ -2,17 +2,21 @@ import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { TestEncryptionConfig } from '@infra/encryption';
 import { IdentityManagementModule, IdentityManagementService } from '@infra/identity-management';
+import {
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+	KeycloakAdministrationConfig,
+} from '@infra/identity-management/keycloak-administration/keycloak-administration-config';
 import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementService } from '@infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '@modules/account/account-config';
 import { UserModule } from '@modules/user';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
+import { ACCOUNT_CONFIG_TOKEN } from '../../account-config';
 import { AccountEntity, AccountMikroOrmRepo } from '../../repo';
 import { accountFactory } from '../../testing';
 import { Account, AccountSave, IdmAccount } from '../do';
@@ -73,19 +77,19 @@ describe('AccountService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				IdentityManagementModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
+				IdentityManagementModule.register({
+					encryptionConfig: { Constructor: TestEncryptionConfig, injectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN' },
+					keycloakAdministrationConfig: {
+						Constructor: KeycloakAdministrationConfig,
+						injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+					},
+				}),
 				UserModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 				ConfigModule.forRoot({
 					isGlobal: true,
 					ignoreEnvFile: true,
 					ignoreEnvVars: true,
-					validate: () => {
-						return {
-							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-							FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: false,
-						};
-					},
 				}),
 			],
 			providers: [
@@ -110,10 +114,10 @@ describe('AccountService Integration', () => {
 				},
 				{
 					provide: ACCOUNT_CONFIG_TOKEN,
-					useValue: createMock<AccountConfig>({
+					useValue: {
 						identityManagementStoreEnabled: true,
 						identityManagementLoginEnabled: false,
-					}),
+					},
 				},
 			],
 		}).compile();

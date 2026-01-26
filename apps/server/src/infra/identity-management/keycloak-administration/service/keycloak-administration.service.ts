@@ -1,6 +1,7 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
+import { ConnectionConfig } from '@keycloak/keycloak-admin-client/lib/client';
 import { Inject, Injectable } from '@nestjs/common';
-import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
+import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN, KeycloakAdministrationConfig } from '../keycloak-administration-config';
 
 @Injectable()
 export class KeycloakAdministrationService {
@@ -10,12 +11,16 @@ export class KeycloakAdministrationService {
 
 	constructor(
 		private readonly kcAdminClient: KeycloakAdminClient,
-		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings
+		@Inject(KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN) private readonly config: KeycloakAdministrationConfig
 	) {
-		this.kcAdminClient.setConfig({
-			baseUrl: kcSettings.internalBaseUrl,
-			realmName: kcSettings.realmName,
-		});
+		let connectionConfig: ConnectionConfig = {};
+		if (this.config.identityManagementEnabled) {
+			connectionConfig = {
+				baseUrl: this.config.internalBaseUrl,
+				realmName: this.config.realmName,
+			};
+		}
+		this.kcAdminClient.setConfig(connectionConfig);
 	}
 
 	public async callKcAdminClient(): Promise<KeycloakAdminClient> {
@@ -25,7 +30,7 @@ export class KeycloakAdministrationService {
 
 	public async testKcConnection(): Promise<boolean> {
 		try {
-			await this.kcAdminClient.auth(this.kcSettings.credentials);
+			await this.kcAdminClient.auth(this.config.credentials);
 		} catch (err) {
 			return false;
 		}
@@ -33,20 +38,20 @@ export class KeycloakAdministrationService {
 	}
 
 	public getWellKnownUrl(): string {
-		return `${this.kcSettings.externalBaseUrl}/realms/${this.kcSettings.realmName}/.well-known/openid-configuration`;
+		return `${this.config.externalBaseUrl}/realms/${this.config.realmName}/.well-known/openid-configuration`;
 	}
 
 	public getAdminUser(): string {
-		return this.kcSettings.credentials.username;
+		return this.config.credentials.username;
 	}
 
 	public getClientId(): string {
-		return this.kcSettings.clientId;
+		return this.config.clientId;
 	}
 
 	public async getClientSecret(): Promise<string> {
 		const kc = await this.callKcAdminClient();
-		const clientInternalId = (await kc.clients.find({ clientId: this.kcSettings.clientId }))[0]?.id;
+		const clientInternalId = (await kc.clients.find({ clientId: this.config.clientId }))[0]?.id;
 		if (clientInternalId) {
 			const clientSecret = await kc.clients.getClientSecret({ id: clientInternalId });
 			return clientSecret.value ?? '';
@@ -56,7 +61,7 @@ export class KeycloakAdministrationService {
 
 	public async setPasswordPolicy() {
 		const kc = await this.callKcAdminClient();
-		await kc.realms.update({ realm: this.kcSettings.realmName }, { passwordPolicy: 'hashIterations(310000)' });
+		await kc.realms.update({ realm: this.config.realmName }, { passwordPolicy: 'hashIterations(310000)' });
 	}
 
 	public resetLastAuthorizationTime(): void {
@@ -66,7 +71,7 @@ export class KeycloakAdministrationService {
 	private async authorizeAccess() {
 		const elapsedTimeMilliseconds = new Date().getTime() - this.lastAuthorizationTime;
 		if (elapsedTimeMilliseconds > KeycloakAdministrationService.AUTHORIZATION_TIMEBOX_MS) {
-			await this.kcAdminClient.auth(this.kcSettings.credentials);
+			await this.kcAdminClient.auth(this.config.credentials);
 			this.lastAuthorizationTime = new Date().getTime();
 		}
 	}

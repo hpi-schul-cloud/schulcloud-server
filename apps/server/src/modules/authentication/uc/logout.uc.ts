@@ -37,7 +37,7 @@ export class LogoutUc {
 	}
 
 	public async externalSystemLogout(user: ICurrentUser): Promise<void> {
-		if (!this.config.featureExternalSystemLogoutEnabled) {
+		if (!this.config.externalSystemLogoutEnabled) {
 			throw new ExternalSystemLogoutIsDisabledLoggableException();
 		}
 
