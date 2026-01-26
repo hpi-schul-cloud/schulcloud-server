@@ -7,11 +7,11 @@ import { TeamEntity, TeamUserEntity } from './team.entity';
 
 @Injectable()
 export class TeamRepo extends BaseRepo<TeamEntity> {
-	get entityName() {
+	get entityName(): typeof TeamEntity {
 		return TeamEntity;
 	}
 
-	async findById(id: EntityId, populate = false): Promise<TeamEntity> {
+	public async findById(id: EntityId, populate = false): Promise<TeamEntity> {
 		const team = await this._em.findOneOrFail(TeamEntity, { id });
 
 		if (populate) {
@@ -32,14 +32,14 @@ export class TeamRepo extends BaseRepo<TeamEntity> {
 	 * @param userId
 	 * @return Array of teams
 	 */
-	async findByUserId(userId: EntityId): Promise<TeamEntity[]> {
+	public async findByUserId(userId: EntityId): Promise<TeamEntity[]> {
 		const teams: TeamEntity[] = await this._em.find<TeamEntity>(TeamEntity, {
 			userIds: { userId: new ObjectId(userId) },
 		});
 		return teams;
 	}
 
-	private async populateRoles(roles: Role[]): Promise<void[]> {
+	private populateRoles(roles: Role[]): Promise<void[]> {
 		return Promise.all<void>(
 			roles.map(async (role: Role): Promise<void> => {
 				if (!role.roles.isInitialized(true)) {

@@ -8,7 +8,7 @@ import { Task } from './task.entity';
 
 @Injectable()
 export class TaskRepo extends BaseRepo<Task> {
-	get entityName() {
+	get entityName(): typeof Task {
 		return Task;
 	}
 
@@ -23,11 +23,11 @@ export class TaskRepo extends BaseRepo<Task> {
 		]);
 	}
 
-	async createTask(task: Task): Promise<void> {
+	public createTask(task: Task): Promise<void> {
 		return this.save(this.create(task));
 	}
 
-	async findById(id: EntityId): Promise<Task> {
+	public async findById(id: EntityId): Promise<Task> {
 		const task = await super.findById(id);
 
 		await this.populate([task]);
@@ -35,7 +35,7 @@ export class TaskRepo extends BaseRepo<Task> {
 		return task;
 	}
 
-	async findAllFinishedByParentIds(
+	public async findAllFinishedByParentIds(
 		parentIds: {
 			creatorId: EntityId;
 			openCourseIds: EntityId[];
@@ -103,7 +103,7 @@ export class TaskRepo extends BaseRepo<Task> {
 	 * @param options pagination, sorting
 	 * @returns
 	 */
-	async findAllByParentIds(
+	public async findAllByParentIds(
 		parentIds: {
 			creatorId?: EntityId;
 			courseIds?: EntityId[];
@@ -161,7 +161,7 @@ export class TaskRepo extends BaseRepo<Task> {
 		return countedTaskList;
 	}
 
-	async findBySingleParent(
+	public async findBySingleParent(
 		creatorId: EntityId,
 		courseId: EntityId,
 		filters?: { draft?: boolean; noFutureAvailableDate?: boolean },
@@ -187,7 +187,7 @@ export class TaskRepo extends BaseRepo<Task> {
 		return countedTaskList;
 	}
 
-	async findByOnlyCreatorId(creatorId: EntityId): Promise<Counted<Task[]>> {
+	public async findByOnlyCreatorId(creatorId: EntityId): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
 		scope.byOnlyCreatorId(creatorId);
 
@@ -196,7 +196,7 @@ export class TaskRepo extends BaseRepo<Task> {
 		return countedTaskList;
 	}
 
-	async findByCreatorIdWithCourseAndLesson(creatorId: EntityId): Promise<Counted<Task[]>> {
+	public async findByCreatorIdWithCourseAndLesson(creatorId: EntityId): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
 		scope.byCreatorIdWithCourseAndLesson(creatorId);
 
@@ -205,7 +205,7 @@ export class TaskRepo extends BaseRepo<Task> {
 		return countedTaskList;
 	}
 
-	async findByUserIdInFinished(userId: EntityId): Promise<Counted<Task[]>> {
+	public async findByUserIdInFinished(userId: EntityId): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
 		scope.byFinished(userId, true);
 
@@ -214,7 +214,7 @@ export class TaskRepo extends BaseRepo<Task> {
 		return countedTaskList;
 	}
 
-	async deleteAllPrivateTasksByTeacherId(teacherId: EntityId): Promise<number> {
+	public async deleteAllPrivateTasksByTeacherId(teacherId: EntityId): Promise<number> {
 		const deleteResult = await this._em.nativeDelete(Task, {
 			creator: teacherId,
 			private: true,
