@@ -35,6 +35,7 @@ data:
   API_HOST: "{{ API_HOST }}"
   FILES_STORAGE__SERVICE_BASE_URL: "{{ FILES_STORAGE__SERVICE_BASE_URL }}"
   TSP_API_CLIENT_BASE_URL: "{{ TSP_API_CLIENT_BASE_URL }}"
+  TSP_API_CLIENT_TOKEN_LIFETIME_MS: "{{ TSP_API_CLIENT_TOKEN_LIFETIME_MS }}"
   PUBLIC_BACKEND_URL: "https://{{ DOMAIN }}/api"
 {% for name, data in configuration_all.items() %}
   {% if data.server is defined and data.server == true %}
