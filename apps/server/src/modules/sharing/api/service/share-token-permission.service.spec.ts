@@ -158,6 +158,7 @@ describe('ShareTokenPermissionService', () => {
 				{
 					roles: [roleDto],
 					userId: user.id,
+					userSchoolId: 'school-id',
 				},
 			];
 			const roomMembershipAuthorizable = new RoomMembershipAuthorizable('room-id', members, 'school-id');

@@ -51,6 +51,14 @@ describe('Room Controller (API)', () => {
 			});
 		});
 
+		describe('when the user does not have access to school', () => {
+			it('should return a 401 error', async () => {
+				await setupNestJs();
+				const response = await testApiClient.post();
+				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
 		describe('when the user has the required permissions', () => {
 			const setup = async (mockRoomMembershipService = false) => {
 				await setupNestJs(mockRoomMembershipService);

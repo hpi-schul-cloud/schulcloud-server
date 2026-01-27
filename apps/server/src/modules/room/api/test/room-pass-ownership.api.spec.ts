@@ -116,7 +116,7 @@ describe('Room Controller (API)', () => {
 			it.each([
 				['SameSchoolTeacher_roomadmin', HttpStatus.OK],
 				['OtherSchoolTeacher_roomeditor', HttpStatus.OK],
-				['SameSchoolStudent_roomviewer', HttpStatus.BAD_REQUEST],
+				['SameSchoolStudent_roomviewer', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacher_none', HttpStatus.FORBIDDEN],
 			] as [string, HttpStatus][])(
 				`when passing ownership to %s should return %d`,
@@ -165,7 +165,7 @@ describe('Room Controller (API)', () => {
 			it.each([
 				['SameSchoolTeacher_roomowner', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacher_roomadmin', HttpStatus.OK],
-				['SameSchoolStudent_roomviewer', HttpStatus.BAD_REQUEST],
+				['SameSchoolStudent_roomviewer', HttpStatus.FORBIDDEN],
 				['OtherSchoolTeacher_roomeditor', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacher_none', HttpStatus.FORBIDDEN],
 			] as [string, HttpStatus][])(
@@ -265,7 +265,7 @@ describe('Room Controller (API)', () => {
 			it.each([
 				['SameSchoolTeacherAdmin_roomowner', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacher_roomadmin', HttpStatus.OK],
-				['SameSchoolStudent_roomviewer', HttpStatus.BAD_REQUEST],
+				['SameSchoolStudent_roomviewer', HttpStatus.FORBIDDEN],
 				['OtherSchoolTeacher_roomeditor', HttpStatus.OK],
 				['SameSchoolTeacher_none', HttpStatus.FORBIDDEN],
 			] as [string, HttpStatus][])(
@@ -302,7 +302,7 @@ describe('Room Controller (API)', () => {
 			it.each([
 				['SameSchoolTeacher_roomowner', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacherAdmin_roomadmin', HttpStatus.OK],
-				['SameSchoolStudent_roomviewer', HttpStatus.BAD_REQUEST],
+				['SameSchoolStudent_roomviewer', HttpStatus.FORBIDDEN],
 				['OtherSchoolTeacher_roomeditor', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacher_none', HttpStatus.FORBIDDEN],
 			] as [string, HttpStatus][])(
@@ -339,7 +339,7 @@ describe('Room Controller (API)', () => {
 			it.each([
 				['OtherSchoolTeacher_roomowner', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacherAdmin_roomadmin', HttpStatus.OK],
-				['SameSchoolStudent_roomviewer', HttpStatus.BAD_REQUEST],
+				['SameSchoolStudent_roomviewer', HttpStatus.FORBIDDEN],
 				['OtherSchoolTeacher_roomeditor', HttpStatus.OK],
 				['SameSchoolTeacher_none', HttpStatus.FORBIDDEN],
 			] as [string, HttpStatus][])(

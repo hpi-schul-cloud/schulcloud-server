@@ -437,11 +437,6 @@
 			"default": false,
 			"description": "Defines if backend for the FWU content in the Learnstore is enabled."
 		},
-		"WOPI_MAX_FILE_SIZE": {
-			"type": "integer",
-			"default": 20971520,
-			"description": "The maximum file size in bytes that can be handled by the WOPI API. Download of larger files throws an error."
-		},
 		"FEATURE_IDENTITY_MANAGEMENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1645,6 +1640,11 @@
 			"type": "string",
 			"default": null,
 			"description": "The url for further information in room member administration."
+		},
+		"ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL": {
+			"type": "string",
+			"default": null,
+			"description": "The url for further information about the requirements for adding external persons to rooms."
 		},
 		"SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS": {
 			"type": "number",
