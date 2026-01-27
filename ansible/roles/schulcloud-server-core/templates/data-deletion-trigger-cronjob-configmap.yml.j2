@@ -12,4 +12,13 @@ data:
   SC_DOMAIN: "{{ DOMAIN }}"
   FEATURE_PROMETHEUS_METRICS_ENABLED: "true"
   ETHERPAD__PAD_URI: "https://{{ DOMAIN }}/etherpad/p"
-
+  # Identity Management Configuration - we need here some dummy values in order to let the app start
+  IDENTITY_MANAGEMENT__INTERNAL_URI: "http://localhost:8080"
+  IDENTITY_MANAGEMENT__EXTERNAL_URI: "http://localhost:8080"
+  IDENTITY_MANAGEMENT__TENANT: "dBildungscloud"
+  IDENTITY_MANAGEMENT__CLIENTID: "dbc"
+  IDENTITY_MANAGEMENT__ADMIN_CLIENTID: "admin-cli"
+  IDENTITY_MANAGEMENT__ADMIN_USER: "dbildungscloud"
+  IDENTITY_MANAGEMENT__ADMIN_PASSWORD: "dBildungscloud"
+  # Here also some dummy values to let the app start
+  AES_KEY: "randomStringWithAtLeast16Chars;"
