@@ -6,7 +6,7 @@ metadata:
   labels:
     app: schulconnex-license-provisioning
 data:
-  NODE_OPTIONS: "--max-old-space-size: 1536"
+  NODE_OPTIONS: "--max-old-space-size=1536"
   EXIT_ON_ERROR: "true"
   NEST_LOG_LEVEL: "{{ NEST_LOG_LEVEL }}"
   RABBITMQ_GLOBAL_PREFETCH_COUNT: "1"
