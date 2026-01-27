@@ -1,24 +1,31 @@
-import { Action } from '@modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { RoomMembershipService } from '@modules/room-membership';
+import { RoomMembershipRule } from '@modules/room-membership/authorization/room-membership.rule';
 import { SagaService } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
-import { Permission } from '@shared/domain/interface';
+import { ConfigService } from '@nestjs/config';
+import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
-import { RoomPermissionService } from './service/room-permission.service';
+import { RoomConfig } from '../room.config';
 
 @Injectable()
 export class RoomCopyUc {
 	constructor(
-		private readonly roomPermissionService: RoomPermissionService,
-		private readonly sagaService: SagaService
+		private readonly sagaService: SagaService,
+		private readonly roomMembershipRule: RoomMembershipRule,
+		private readonly roomMembershipService: RoomMembershipService,
+		private readonly authorizationService: AuthorizationService,
+		private readonly configService: ConfigService<RoomConfig, true>
 	) {}
 
 	public async copyRoom(userId: EntityId, roomId: EntityId): Promise<CopyStatus> {
-		this.roomPermissionService.checkFeatureRoomCopyEnabled();
+		this.checkFeatureRoomCopyEnabled();
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 
-		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write, [
-			Permission.ROOM_COPY_ROOM,
-		]);
+		throwForbiddenIfFalse(this.roomMembershipRule.canCopyRoom(user, roomMembershipAuthorizable));
 
 		const { roomCopied, boardsCopied } = await this.sagaService.executeSaga('roomCopy', { userId, roomId });
 
@@ -42,5 +49,11 @@ export class RoomCopyUc {
 		};
 
 		return copyStatus;
+	}
+
+	private checkFeatureRoomCopyEnabled(): void {
+		if (!this.configService.get('FEATURE_ROOM_COPY_ENABLED', { infer: true })) {
+			throw new FeatureDisabledLoggableException('FEATURE_ROOM_COPY_ENABLED');
+		}
 	}
 }

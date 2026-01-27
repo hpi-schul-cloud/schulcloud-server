@@ -72,17 +72,17 @@ describe('Room Controller (API)', () => {
 					endDate: new Date('2024-10-20'),
 					schoolId: school.id,
 				});
-				const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
+				const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const userGroup = groupEntityFactory.buildWithId({
-					users: [{ role: roomEditorRole, user: teacherUser }],
+					users: [{ role: roomOwnerRole, user: teacherUser }],
 				});
 				const roomMembership = roomMembershipEntityFactory.build({
 					roomId: room.id,
 					userGroupId: userGroup.id,
 					schoolId: school.id,
 				});
-				await em.persist([room, roomMembership, teacherAccount, teacherUser, userGroup, roomEditorRole]).flush();
+				await em.persist([room, roomMembership, teacherAccount, teacherUser, userGroup, roomOwnerRole]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

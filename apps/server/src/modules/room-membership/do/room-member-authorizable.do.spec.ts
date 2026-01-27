@@ -1,0 +1,26 @@
+import { RoleName } from '@modules/role';
+import { RoomMemberAuthorizable } from './room-member-authorizable.do';
+import { RoomMember } from './room-member.do';
+import { RoomMembershipAuthorizable } from './room-membership-authorizable.do';
+
+describe('RoomMemberAuthorizable', () => {
+	const setup = () => {
+		const roomMembershipAuthorizable = new RoomMembershipAuthorizable('roomId', [], 'schoolId');
+		const roomMember = new RoomMember({
+			userId: 'userId',
+			firstName: 'firstName',
+			lastName: 'lastName',
+			roomRoleId: 'roomRoleId',
+			roomRoleName: RoleName.STUDENT,
+			schoolId: 'otherSchoolId',
+			schoolRoleNames: [RoleName.STUDENT],
+		});
+		const roomMemberAuthorizable = new RoomMemberAuthorizable(roomMembershipAuthorizable, roomMember);
+		return { roomMemberAuthorizable };
+	};
+
+	it('should get schoolId', () => {
+		const { roomMemberAuthorizable } = setup();
+		expect(roomMemberAuthorizable.schoolId).toEqual('schoolId');
+	});
+});
