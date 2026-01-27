@@ -1,5 +1,5 @@
 import { Logger } from '@core/logger';
-import { AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -12,17 +12,20 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '../domain';
-import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
+import { BoardNodeAuthorizableService, BoardNodeService } from '../service';
+import { throwForbiddenIfFalse } from '@shared/common/utils';
+import { BoardNodeRule } from '../authorisation/board-node.rule';
 
 @Injectable()
 export class ElementUc {
 	constructor(
+		private readonly authorizationService: AuthorizationService,
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodeFactory: BoardNodeFactory,
-		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly boardContextApiHelperService: BoardContextApiHelperService,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly boardNodeRule: BoardNodeRule
 	) {
 		this.logger.setContext(ElementUc.name);
 	}
@@ -31,8 +34,12 @@ export class ElementUc {
 		userId: EntityId,
 		elementId: EntityId
 	): Promise<ContentElementWithParentHierarchy> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const element = await this.boardNodeService.findContentElementById(elementId);
-		await this.boardPermissionService.checkPermission(userId, element, AuthorizationContextBuilder.read([]));
+		const boardNode = await this.boardNodeService.findRoot(element);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
+
+		throwForbiddenIfFalse(this.boardNodeRule.canViewElement(user, boardNodeAuthorizable));
 
 		const parentHierarchy = await this.boardContextApiHelperService.getParentsOfElement(element.rootId);
 
@@ -44,8 +51,12 @@ export class ElementUc {
 		elementId: EntityId,
 		content: AnyElementContentBody
 	): Promise<AnyContentElement> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const element = await this.boardNodeService.findContentElementById(elementId);
-		await this.boardPermissionService.checkPermission(userId, element, AuthorizationContextBuilder.write([]));
+		const boardNode = await this.boardNodeService.findRoot(element);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
+
+		throwForbiddenIfFalse(this.boardNodeRule.canUpdateElement(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateContent(element, content);
 
@@ -53,17 +64,25 @@ export class ElementUc {
 	}
 
 	public async deleteElement(userId: EntityId, elementId: EntityId): Promise<EntityId> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const element = await this.boardNodeService.findContentElementById(elementId);
 		const { rootId } = element;
-		await this.boardPermissionService.checkPermission(userId, element, AuthorizationContextBuilder.write([]));
+		const boardNode = await this.boardNodeService.findRoot(element);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
+
+		throwForbiddenIfFalse(this.boardNodeRule.canDeleteElement(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.delete(element);
 		return rootId;
 	}
 
 	public async checkElementReadPermission(userId: EntityId, elementId: EntityId): Promise<void> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const element = await this.boardNodeService.findContentElementById(elementId);
-		await this.boardPermissionService.checkPermission(userId, element, AuthorizationContextBuilder.read([]));
+		const boardNode = await this.boardNodeService.findRoot(element);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
+
+		throwForbiddenIfFalse(this.boardNodeRule.canViewElement(user, boardNodeAuthorizable));
 	}
 
 	public async createSubmissionItem(
@@ -85,19 +104,13 @@ export class ElementUc {
 			);
 		}
 
-		await this.boardPermissionService.checkPermission(
-			userId,
-			submissionContainerElement,
-			AuthorizationContextBuilder.read([])
-		);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNode = await this.boardNodeService.findRoot(submissionContainerElement);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
 
-		// TODO move this in service
-		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(
-			submissionContainerElement
-		);
-		if (this.boardPermissionService.isUserBoardEditor(userId, boardNodeAuthorizable.users)) {
-			throw new ForbiddenException();
-		}
+		// TODO: EDIT implies VIEW is possible as well, do we need both checks?
+		throwForbiddenIfFalse(this.boardNodeRule.canViewElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.canCreateSubmissionItem(user, boardNodeAuthorizable));
 
 		const submissionItem = this.boardNodeFactory.buildSubmissionItem({ completed, userId });
 

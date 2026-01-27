@@ -105,6 +105,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return this.canEditBoard(user, authorizable);
 	}
 
+	public canCreateSubmissionItem(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
 	public canDeleteBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canManageBoard(user, authorizable);
 	}
@@ -113,11 +117,19 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return this.canEditBoard(user, authorizable);
 	}
 
+	public canDeleteElement(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
 	public canUpdateBoardTitle(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canEditBoard(user, authorizable);
 	}
 
 	public canUpdateColumnTitle(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
+	public canUpdateElement(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canEditBoard(user, authorizable);
 	}
 
@@ -148,6 +160,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 
 	public canUpdateBoardLayout(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canManageBoard(user, authorizable);
+	}
+
+	public canViewElement(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canViewBoard(user, authorizable);
 	}
 
 	public canRelocateContent(user: User, authorizable: BoardNodeAuthorizable): boolean {
