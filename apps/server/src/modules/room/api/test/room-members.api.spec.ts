@@ -1,4 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/repo';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { RoleName } from '@modules/role';
@@ -15,7 +16,6 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomMemberListResponse } from '../dto/response/room-member-list.response';
-import { AccountEntity } from '@modules/account/repo';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -56,6 +56,7 @@ describe('Room Controller (API)', () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const { externalPersonAccount, externalPersonUser } = UserAndAccountTestFactory.buildExternalPerson({ school });
 			const { roomEditorRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+			em.persist([roomEditorRole, roomOwnerRole, roomViewerRole]);
 			const teacherRole = teacherUser.roles[0];
 			const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
 			const students = userFactory.buildList(2, { school, roles: [studentRole] });
@@ -254,12 +255,12 @@ describe('Room Controller (API)', () => {
 		});
 
 		describe('when the user is external and has no right to access room members', () => {
-			it('should return unauthorized', async () => {
+			it('should return forbidden', async () => {
 				const { loggedInClient, room } = await setupRoomWithExternalMembers(RoleName.EXTERNALPERSON);
 
 				const response = await loggedInClient.get(`/${room.id}/members`);
 
-				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 

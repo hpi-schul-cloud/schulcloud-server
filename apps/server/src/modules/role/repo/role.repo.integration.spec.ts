@@ -3,10 +3,10 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { Role } from './role.entity';
-import { RoleRepo } from './role.repo';
 import { RoleName } from '../domain';
 import { roleFactory } from '../testing';
+import { Role } from './role.entity';
+import { RoleRepo } from './role.repo';
 
 describe('role repo', () => {
 	let module: TestingModule;
@@ -62,6 +62,19 @@ describe('role repo', () => {
 		});
 
 		it.todo('should fail if permission by creating is added, that not exist as enum.');
+	});
+
+	describe('findAll', () => {
+		it('should return all roles', async () => {
+			const roleA = roleFactory.build({ name: RoleName.STUDENT });
+			const roleB = roleFactory.build({ name: RoleName.TEACHER });
+
+			await em.persist([roleA, roleB]).flush();
+			const result: Role[] = await repo.findAll();
+
+			expect(result).toContainEqual(roleA);
+			expect(result).toContainEqual(roleB);
+		});
 	});
 
 	describe('findByName', () => {
