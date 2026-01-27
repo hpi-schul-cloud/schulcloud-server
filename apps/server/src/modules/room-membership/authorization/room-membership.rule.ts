@@ -1,4 +1,5 @@
 import { Action, AuthorizationContext, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import { RoleName } from '@modules/role';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
@@ -17,30 +18,139 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 	}
 
 	public hasPermission(user: User, object: RoomMembershipAuthorizable, context: AuthorizationContext): boolean {
-		// Copy and Share Room are allowed when user has permission but belongs to external school
-		if (
-			!context.requiredPermissions.includes(Permission.ROOM_SHARE_ROOM) &&
-			!context.requiredPermissions.includes(Permission.ROOM_COPY_ROOM)
-		) {
-			if (!this.hasAccessToSchool(user, object.schoolId)) {
+		const { action, requiredPermissions } = context;
+		const roomPermissions = this.resolveRoomPermissions(user, object);
+
+		if (!this.hasAccessToSchool(user, object.schoolId)) {
+			return false;
+		}
+
+		if (!this.hasRequiredRoomPermissions(roomPermissions, requiredPermissions)) {
+			return false;
+		}
+
+		if (action === Action.read) {
+			return roomPermissions.includes(Permission.ROOM_LIST_CONTENT);
+		}
+		return roomPermissions.includes(Permission.ROOM_EDIT_CONTENT);
+	}
+
+	public canCreateRoom(user: User): boolean {
+		const schoolPermissions = this.resolveSchoolPermissions(user);
+
+		const result = schoolPermissions.includes(Permission.SCHOOL_CREATE_ROOM);
+
+		return result;
+	}
+
+	public canCopyRoom(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_COPY_ROOM);
+
+		return hasRoomPermission;
+	}
+
+	public canAccessRoom(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { schoolPermissions, roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+		const hasAdminPermission = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
+
+		if (!hasAdminPermission) {
+			const hasRoomOwner = roomMembershipAuthorizable.members.some((member) =>
+				member.roles.some((role) => role.name === RoleName.ROOMOWNER)
+			);
+			if (!hasRoomOwner) {
 				return false;
 			}
 		}
 
-		if (!this.hasRequiredRoomPermissions(user, object, context.requiredPermissions)) {
-			return false;
+		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_LIST_CONTENT);
+		if (hasRoomPermission) {
+			return true;
 		}
 
-		const { action } = context;
-		const permissionsThisUserHas = object.members
-			.filter((member) => member.userId === user.id)
-			.flatMap((member) => member.roles)
-			.flatMap((role) => role.permissions ?? []);
-
-		if (action === Action.read) {
-			return permissionsThisUserHas.includes(Permission.ROOM_LIST_CONTENT);
+		const hasUsersFromAdminSchool =
+			hasAdminPermission && roomMembershipAuthorizable.members.some((member) => member.userSchoolId === user.school.id);
+		if (hasUsersFromAdminSchool) {
+			return true;
 		}
-		return permissionsThisUserHas.includes(Permission.ROOM_EDIT_CONTENT);
+
+		const isRoomFromAdminSchool = hasAdminPermission && roomMembershipAuthorizable.schoolId === user.school.id;
+		if (isRoomFromAdminSchool) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public canAddMembers(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { schoolPermissions, roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+		const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
+		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ADD_MEMBERS);
+
+		const isRoomOfAdminSchool = roomMembershipAuthorizable.schoolId === user.school.id;
+
+		const result = hasRoomPermission || (hasSchoolPermission && isRoomOfAdminSchool);
+
+		return result;
+	}
+
+	public canAddExternalPersonByEmail(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ADD_MEMBERS);
+
+		return hasRoomPermission;
+	}
+
+	public canChangeRolesOfMembers(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+
+		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_CHANGE_ROLES);
+
+		return hasRoomPermission;
+	}
+
+	public canLeaveRoom(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+
+		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_LEAVE_ROOM);
+
+		return hasRoomPermission;
+	}
+
+	public canUpdateRoom(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+
+		const result = roomPermissions.includes(Permission.ROOM_EDIT_ROOM);
+
+		return result;
+	}
+
+	public canDeleteRoom(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { schoolPermissions, roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_DELETE_ROOM);
+		const isOwnSchool = roomMembershipAuthorizable.schoolId === user.school.id;
+		const canAdministrateSchoolRooms = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
+
+		const result = hasRoomPermission || (isOwnSchool && canAdministrateSchoolRooms);
+
+		return result;
+	}
+
+	public canGetRoomMembers(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { schoolPermissions, roomPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+		const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_LIST_ROOM_MEMBERS);
+		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_LIST_CONTENT);
+
+		const result = hasSchoolPermission && hasRoomPermission;
+
+		return result;
+	}
+
+	public canGetRoomMembersRedacted(user: User, roomMembershipAuthorizable: RoomMembershipAuthorizable): boolean {
+		const { schoolPermissions } = this.resolveUserPermissions(user, roomMembershipAuthorizable);
+		const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
+
+		return hasSchoolPermission;
 	}
 
 	private hasAccessToSchool(user: User, schoolId: string): boolean {
@@ -54,21 +164,33 @@ export class RoomMembershipRule implements Rule<RoomMembershipAuthorizable> {
 		return includesSchool;
 	}
 
-	private hasRequiredRoomPermissions(
-		user: User,
-		object: RoomMembershipAuthorizable,
-		requiredPermissions: string[]
-	): boolean {
-		const roomPermissionsOfUser = this.resolveRoomPermissions(user, object);
+	private hasRequiredRoomPermissions(roomPermissionsOfUser: Permission[], requiredPermissions: Permission[]): boolean {
 		const missingPermissions = requiredPermissions.filter((permission) => !roomPermissionsOfUser.includes(permission));
 		return missingPermissions.length === 0;
 	}
 
-	private resolveRoomPermissions(user: User, object: RoomMembershipAuthorizable): string[] {
-		const member = object.members.find((m) => m.userId === user.id);
-		if (!member) {
-			return [];
-		}
-		return member.roles.flatMap((role) => role.permissions ?? []);
+	private resolveUserPermissions(
+		user: User,
+		object: RoomMembershipAuthorizable
+	): { schoolPermissions: Permission[]; roomPermissions: Permission[]; allPermissions: Permission[] } {
+		const schoolPermissions = this.resolveSchoolPermissions(user);
+		const roomPermissions = this.resolveRoomPermissions(user, object);
+		const allPermissions = [...schoolPermissions, ...roomPermissions];
+		return {
+			schoolPermissions,
+			roomPermissions,
+			allPermissions,
+		};
+	}
+
+	private resolveSchoolPermissions(user: User): Permission[] {
+		return [...user.roles].flatMap((role) => role.permissions ?? []);
+	}
+
+	private resolveRoomPermissions(user: User, object: RoomMembershipAuthorizable): Permission[] {
+		return object.members
+			.filter((member) => member.userId === user.id)
+			.flatMap((member) => member.roles)
+			.flatMap((role) => role.permissions ?? []);
 	}
 }

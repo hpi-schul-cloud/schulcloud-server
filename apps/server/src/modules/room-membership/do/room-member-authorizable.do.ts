@@ -1,7 +1,7 @@
 import { AuthorizableObject } from '@shared/domain/domain-object';
+import { EntityId } from '@shared/domain/types';
 import { RoomMember } from './room-member.do';
 import { RoomMembershipAuthorizable } from './room-membership-authorizable.do';
-import { EntityId } from '@shared/domain/types';
 
 export class RoomMemberAuthorizable implements AuthorizableObject {
 	public readonly id: EntityId = '';
@@ -13,5 +13,9 @@ export class RoomMemberAuthorizable implements AuthorizableObject {
 	constructor(roomMembershipAuthorizable: RoomMembershipAuthorizable, member: RoomMember) {
 		this.roomMembershipAuthorizable = roomMembershipAuthorizable;
 		this.member = member;
+	}
+
+	get schoolId(): EntityId {
+		return this.roomMembershipAuthorizable.schoolId;
 	}
 }

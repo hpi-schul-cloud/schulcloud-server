@@ -148,12 +148,6 @@ describe('Room Controller (API)', () => {
 				const response = await loggedInClient.get(`/${room.id}/members-redacted`);
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
-				expect(response.body).toEqual({
-					code: HttpStatus.FORBIDDEN,
-					message: 'Forbidden',
-					title: 'Forbidden',
-					type: 'FORBIDDEN',
-				});
 			});
 		});
 

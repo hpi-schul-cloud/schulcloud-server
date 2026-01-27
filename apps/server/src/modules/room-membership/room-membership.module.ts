@@ -13,6 +13,6 @@ import { RoomMembershipService } from './service/room-membership.service';
 @Module({
 	imports: [AuthorizationModule, CqrsModule, GroupModule, RoleModule, RoomModule, UserModule],
 	providers: [RoomMembershipService, RoomMembershipRepo, RoomMembershipRule, RoomMemberRule],
-	exports: [RoomMembershipService],
+	exports: [RoomMembershipService, RoomMembershipRule, RoomMemberRule],
 })
 export class RoomMembershipModule {}
