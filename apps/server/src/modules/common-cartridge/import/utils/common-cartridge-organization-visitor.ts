@@ -144,6 +144,11 @@ export class CommonCartridgeOrganizationVisitorNode {
 			.toArray()
 			.map((fileElement) => fileElement.attribs['href'] || null)
 			.filter((href) => href !== null);
+		const resourceHref = this.document(`manifest > resources > resource[identifier="${identifierRef}"]`).attr('href');
+
+		if (resourceHref && paths.indexOf(resourceHref) === -1) {
+			paths.unshift(resourceHref);
+		}
 
 		return paths;
 	}
