@@ -12,6 +12,11 @@ export class RoleRepo extends BaseRepo<Role> {
 
 	public readonly cacheExpiration = 60000;
 
+	public async findAll(): Promise<Role[]> {
+		const roles = await this._em.find(Role, {});
+		return roles;
+	}
+
 	public async findByName(name: RoleName): Promise<Role> {
 		const role = await this._em.findOneOrFail(
 			Role,
