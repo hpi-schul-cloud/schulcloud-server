@@ -1,10 +1,10 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
-import { NotificationServiceDto } from './dto/notification-service.dto';
+import { NotificationDto } from '../dto/notification.dto';
 
 @Entity({ tableName: 'cc-user-notification-message' })
-export class NotificationServiceEntity extends BaseEntityWithTimestamps {
-	constructor(notificationServiceDto: NotificationServiceDto) {
+export class NotificationEntity extends BaseEntityWithTimestamps {
+	constructor(notificationServiceDto: NotificationDto) {
 		super();
 		this.notificationType = notificationServiceDto.notificationType;
 		this.notifcationKey = notificationServiceDto.notificationKey;
