@@ -1,5 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import {
+	Action,
+	AUTHORIZATION_CONFIG_TOKEN,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@modules/authorization';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { roleFactory } from '@modules/role/testing';
 import { User } from '@modules/user/repo';
@@ -21,7 +26,12 @@ describe('LegacySchoolRule', () => {
 		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, LegacySchoolRule, AuthorizationInjectionService],
+			providers: [
+				AuthorizationHelper,
+				LegacySchoolRule,
+				AuthorizationInjectionService,
+				{ provide: AUTHORIZATION_CONFIG_TOKEN, useValue: {} },
+			],
 		}).compile();
 
 		service = await module.get(LegacySchoolRule);

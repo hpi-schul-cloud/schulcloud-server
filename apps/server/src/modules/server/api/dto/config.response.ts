@@ -11,6 +11,7 @@ import { RosterPublicApiConfig } from '@modules/roster';
 import { SharingPublicApiConfig } from '@modules/sharing';
 import { TaskPublicApiConfig } from '@modules/task';
 import { ToolPublicApiConfig } from '@modules/tool';
+import { UserPublicApiConfig } from '@modules/user';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
@@ -286,7 +287,8 @@ export class ConfigResponse {
 			CommonCartridgePublicApiConfig &
 			ToolPublicApiConfig &
 			TaskPublicApiConfig &
-			LearnroomPublicApiConfig
+			LearnroomPublicApiConfig &
+			UserPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -301,7 +303,7 @@ export class ConfigResponse {
 		this.FEATURE_FWU_CONTENT_ENABLED = config.FEATURE_FWU_CONTENT_ENABLED;
 		this.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED =
 			config.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED;
-		this.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE = config.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE;
+		this.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE = config.teacherStudentVisibilityIsConfigurable;
 		this.TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT = config.TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT;
 		this.TEACHER_STUDENT_VISIBILITY__IS_VISIBLE = config.TEACHER_STUDENT_VISIBILITY__IS_VISIBLE;
 		this.FEATURE_SCHOOL_POLICY_ENABLED_NEW = config.FEATURE_SCHOOL_POLICY_ENABLED_NEW;
@@ -330,7 +332,7 @@ export class ConfigResponse {
 		this.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED = config.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED;
 		this.GHOST_BASE_URL = config.GHOST_BASE_URL;
 		this.ROCKETCHAT_SERVICE_ENABLED = config.ROCKETCHAT_SERVICE_ENABLED;
-		this.I18N__AVAILABLE_LANGUAGES = config.I18N__AVAILABLE_LANGUAGES;
+		this.I18N__AVAILABLE_LANGUAGES = config.availableLanguages;
 		this.I18N__DEFAULT_LANGUAGE = config.I18N__DEFAULT_LANGUAGE;
 		this.I18N__FALLBACK_LANGUAGE = config.I18N__FALLBACK_LANGUAGE;
 		this.I18N__DEFAULT_TIMEZONE = config.I18N__DEFAULT_TIMEZONE;

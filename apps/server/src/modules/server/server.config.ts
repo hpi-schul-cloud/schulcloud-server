@@ -4,7 +4,6 @@ import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { ManagementSeedDataConfig } from '@modules/management';
-import type { UserConfig } from '@modules/user';
 import type { UserImportConfig } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
 import type { LanguageType } from '@shared/domain/interface';
@@ -22,7 +21,6 @@ export enum NodeEnvType {
 // Maye some of them must be outsourced to additional microservice config endpoints.
 export interface ServerConfig
 	extends CoreModuleConfig,
-		UserConfig,
 		FilesMetadataClientConfig,
 		MailConfig,
 		UserLoginMigrationConfig,
@@ -69,7 +67,6 @@ export interface ServerConfig
 	TRAINING_URL: string;
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
 	FEATURE_TLDRAW_ENABLED: boolean;
-	I18N__AVAILABLE_LANGUAGES: LanguageType[];
 	I18N__DEFAULT_LANGUAGE: LanguageType;
 	I18N__FALLBACK_LANGUAGE: LanguageType;
 	I18N__DEFAULT_TIMEZONE: Timezone;
@@ -131,14 +128,7 @@ const config: ServerConfig = {
 	TRAINING_URL: Configuration.get('TRAINING_URL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
-	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	NODE_ENV: Configuration.get('NODE_ENV') as NodeEnvType,
-	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
-		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
-	) as boolean,
-	TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: Configuration.get(
-		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
-	) as string,
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
 	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
@@ -152,7 +142,6 @@ const config: ServerConfig = {
 	MIGRATION_WIZARD_DOCUMENTATION_LINK: Configuration.has('MIGRATION_WIZARD_DOCUMENTATION_LINK')
 		? (Configuration.get('MIGRATION_WIZARD_DOCUMENTATION_LINK') as string)
 		: undefined,
-	I18N__AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,
 	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as Timezone,

@@ -1,14 +1,19 @@
-import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import {
+	Action,
+	AUTHORIZATION_CONFIG_TOKEN,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@modules/authorization';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { UserRule } from './user.rule';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
 
 describe('UserRule', () => {
 	let service: UserRule;
@@ -31,6 +36,7 @@ describe('UserRule', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
+				{ provide: AUTHORIZATION_CONFIG_TOKEN, useValue: {} },
 			],
 		}).compile();
 
