@@ -117,6 +117,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return this.canEditBoard(user, authorizable);
 	}
 
+	public canCreateSubmissionItemContent(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.isSubmissionItemOfUser(user, authorizable);
+	}
+
 	public canDeleteBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canManageBoard(user, authorizable);
 	}
@@ -131,6 +135,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 
 	public canDeleteElement(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canEditBoard(user, authorizable);
+	}
+
+	public canDeleteSubmissionItem(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.isSubmissionItemOfUser(user, authorizable);
 	}
 
 	public canUpdateBoardTitle(user: User, authorizable: BoardNodeAuthorizable): boolean {
@@ -180,6 +188,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 
 	public canUpdateBoardLayout(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canManageBoard(user, authorizable);
+	}
+
+	public canUpdateSubmissionItem(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.isSubmissionItemOfUser(user, authorizable);
 	}
 
 	public canViewElement(user: User, authorizable: BoardNodeAuthorizable): boolean {
@@ -341,5 +353,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		const isBoard = authorizable.rootNode instanceof ColumnBoard;
 		const canViewBoard = permissions.includes(Permission.BOARD_VIEW);
 		return isBoard && canViewBoard;
+	}
+
+	private isSubmissionItemOfUser(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		const { boardNode } = authorizable;
+		return boardNode instanceof SubmissionItem && boardNode.userId === user.id;
 	}
 }

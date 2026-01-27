@@ -2,7 +2,9 @@ import { Logger } from '@core/logger';
 import { AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
+import { BoardNodeRule } from '../authorisation/board-node.rule';
 import { AnyElementContentBody } from '../controller/dto';
 import {
 	AnyContentElement,
@@ -13,8 +15,6 @@ import {
 	SubmissionItem,
 } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodeService } from '../service';
-import { throwForbiddenIfFalse } from '@shared/common/utils';
-import { BoardNodeRule } from '../authorisation/board-node.rule';
 
 @Injectable()
 export class ElementUc {
@@ -108,9 +108,7 @@ export class ElementUc {
 		const boardNode = await this.boardNodeService.findRoot(submissionContainerElement);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
 
-		// TODO: EDIT implies VIEW is possible as well, do we need both checks?
 		throwForbiddenIfFalse(this.boardNodeRule.canViewElement(user, boardNodeAuthorizable));
-		throwForbiddenIfFalse(this.boardNodeRule.canCreateSubmissionItem(user, boardNodeAuthorizable));
 
 		const submissionItem = this.boardNodeFactory.buildSubmissionItem({ completed, userId });
 
