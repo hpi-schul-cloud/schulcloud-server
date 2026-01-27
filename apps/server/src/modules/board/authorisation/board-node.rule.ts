@@ -113,10 +113,6 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return this.canEditBoard(user, authorizable);
 	}
 
-	public canCreateSubmissionItem(user: User, authorizable: BoardNodeAuthorizable): boolean {
-		return this.canEditBoard(user, authorizable);
-	}
-
 	public canCreateSubmissionItemContent(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.isSubmissionItemOfUser(user, authorizable);
 	}
