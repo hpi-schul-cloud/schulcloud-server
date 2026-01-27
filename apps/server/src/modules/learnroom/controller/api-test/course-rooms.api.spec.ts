@@ -113,79 +113,94 @@ describe('Course Rooms Controller (API)', () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				const board = boardFactory.buildWithId({ course });
-				const task = taskFactory.draft().build({ course });
-				board.syncBoardElementReferences([task]);
+				const visibleTask = taskFactory.draft().build({ course });
+				const invisibleTask = taskFactory.build({ course });
+				const visibleColumnBoard = columnBoardEntityFactory.build({
+					context: { type: BoardExternalReferenceType.Course, id: course.id },
+					isVisible: true,
+				});
+				const invisibleColumnBoard = columnBoardEntityFactory.build({
+					context: { type: BoardExternalReferenceType.Course, id: course.id },
+					isVisible: false,
+				});
+				board.syncBoardElementReferences([visibleTask, visibleColumnBoard, invisibleTask, invisibleColumnBoard]);
 
-				await em.persist([course, board, task, teacherAccount, teacherUser]).flush();
+				await em
+					.persist([
+						course,
+						board,
+						visibleTask,
+						visibleColumnBoard,
+						invisibleTask,
+						invisibleColumnBoard,
+						teacherAccount,
+						teacherUser,
+					])
+					.flush();
 				em.clear();
-
-				const params = { visibility: true };
 
 				const loggedInClient = await apiClient.login(teacherAccount);
 
-				return { loggedInClient, course, task, params };
+				return { loggedInClient, course, visibleTask, visibleColumnBoard, invisibleTask, invisibleColumnBoard };
 			};
 
 			it('should return 200', async () => {
-				const { loggedInClient, course, task, params } = await setup();
+				const { loggedInClient, course, invisibleTask } = await setup();
 
-				const response = await loggedInClient.patch(`${course.id}/elements/${task.id}/visibility`).send(params);
+				const response = await loggedInClient
+					.patch(`${course.id}/elements/${invisibleTask.id}/visibility`)
+					.send({ visibility: true });
 
 				expect(response.status).toEqual(200);
 			});
 
 			it('should make task visible', async () => {
-				const { loggedInClient, course, task, params } = await setup();
+				const { loggedInClient, course, invisibleTask } = await setup();
 
-				await loggedInClient.patch(`${course.id}/elements/${task.id}/visibility`).send(params);
-				const updatedTask = await em.findOneOrFail(Task, task.id);
+				await em.nativeUpdate(Task, { id: invisibleTask.id }, { private: true });
 
-				expect(updatedTask.isDraft()).toEqual(false);
+				await loggedInClient.patch(`${course.id}/elements/${invisibleTask.id}/visibility`).send({ visibility: true });
+				const updatedTask = await em.findOneOrFail(Task, invisibleTask.id);
+
+				expect(updatedTask.isDraft()).toBe(false);
 			});
 
-			it('should make task invisibible', async () => {
-				const { loggedInClient, course, task } = await setup();
+			it('should make task invisible', async () => {
+				const { loggedInClient, course, visibleTask } = await setup();
 
-				const params = { visibility: false };
+				await loggedInClient
+					.patch(`/course-rooms/${course.id}/elements/${visibleTask.id}/visibility`)
+					.send({ visibility: false });
+				const updatedTask = await em.findOneOrFail(Task, visibleTask.id);
 
-				await loggedInClient.patch(`/course-rooms/${course.id}/elements/${task.id}/visibility`).send(params);
-				const updatedTask = await em.findOneOrFail(Task, task.id);
-
-				expect(updatedTask.isDraft()).toEqual(true);
+				expect(updatedTask.isDraft()).toBe(true);
 			});
 
 			describe('when element refers to a column board', () => {
-				const createColumnBoard = async (course: CourseEntity, isVisible: boolean) => {
-					const columnBoard = columnBoardEntityFactory.buildWithId({
-						context: { type: BoardExternalReferenceType.Course, id: course.id },
-						isVisible,
-					});
-					await em.persist(columnBoard).flush();
-					em.clear();
-
-					return columnBoard;
-				};
-
 				it('should make board element visible', async () => {
-					const { loggedInClient, course } = await setup();
+					const { loggedInClient, course, invisibleColumnBoard } = await setup();
 
-					const columnBoard = await createColumnBoard(course, false);
+					await em.nativeUpdate(BoardNodeEntity, { id: invisibleColumnBoard.id }, { isVisible: false });
 
-					await loggedInClient.patch(`${course.id}/elements/${columnBoard.id}/visibility`).send({ visibility: true });
-					const updatedColumnBoard = await em.findOneOrFail(BoardNodeEntity, columnBoard.id);
+					await loggedInClient
+						.patch(`${course.id}/elements/${invisibleColumnBoard.id}/visibility`)
+						.send({ visibility: true });
+					const updatedColumnBoard = await em.findOneOrFail(BoardNodeEntity, invisibleColumnBoard.id);
 
-					expect(updatedColumnBoard.isVisible).toBe(false);
+					expect(updatedColumnBoard.isVisible).toBe(true);
 				});
 
 				it('should make board element invisible', async () => {
-					const { loggedInClient, course } = await setup();
+					const { loggedInClient, course, visibleColumnBoard } = await setup();
 
-					const columnBoard = await createColumnBoard(course, true);
+					await em.nativeUpdate(BoardNodeEntity, { id: visibleColumnBoard.id }, { isVisible: true });
 
-					await loggedInClient.patch(`${course.id}/elements/${columnBoard.id}/visibility`).send({ visibility: false });
-					const updatedColumnBoard = await em.findOneOrFail(BoardNodeEntity, columnBoard.id);
+					await loggedInClient
+						.patch(`${course.id}/elements/${visibleColumnBoard.id}/visibility`)
+						.send({ visibility: false });
+					const updatedColumnBoard = await em.findOneOrFail(BoardNodeEntity, visibleColumnBoard.id);
 
-					expect(updatedColumnBoard.isVisible).toBe(true);
+					expect(updatedColumnBoard.isVisible).toBe(false);
 				});
 			});
 		});
