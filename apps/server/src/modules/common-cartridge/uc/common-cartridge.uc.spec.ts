@@ -44,6 +44,7 @@ describe('CommonCartridgeUc', () => {
 
 	describe('exportCourse', () => {
 		const setup = () => {
+			const jwt = faker.internet.jwt();
 			const courseId = faker.string.uuid();
 			const version = CommonCartridgeVersion.V_1_1_0;
 			const topics = [faker.lorem.sentence(), faker.lorem.sentence()];
@@ -56,14 +57,15 @@ describe('CommonCartridgeUc', () => {
 
 			commonCartridgeExportServiceMock.exportCourse.mockResolvedValue(expected);
 
-			return { courseId, version, topics, tasks, columnBoards, expected };
+			return { jwt, courseId, version, topics, tasks, columnBoards, expected };
 		};
 
 		it('should return a course export response with file IDs and metadata of a course', async () => {
-			const { courseId, expected, version, tasks, columnBoards, topics } = setup();
+			const { jwt, courseId, expected, version, tasks, columnBoards, topics } = setup();
 
-			expect(await sut.exportCourse(courseId, version, topics, tasks, columnBoards)).toEqual(expected);
+			expect(await sut.exportCourse(jwt, courseId, version, topics, tasks, columnBoards)).toEqual(expected);
 			expect(commonCartridgeExportServiceMock.exportCourse).toHaveBeenCalledWith(
+				jwt,
 				courseId,
 				version,
 				topics,

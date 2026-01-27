@@ -1,19 +1,10 @@
 import { faker } from '@faker-js/faker/.';
-import { createMock } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
-import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Request } from 'express';
 import { CardClientAdapter, CardClientConfig, CardClientModule } from '.';
 
 describe('CardClientModule', () => {
 	let module: TestingModule;
-
-	const requestMock = createMock<Request>({
-		headers: {
-			authorization: `Bearer ${faker.string.alphanumeric(42)}`,
-		},
-	});
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -30,10 +21,7 @@ describe('CardClientModule', () => {
 					],
 				}),
 			],
-		})
-			.overrideProvider(REQUEST)
-			.useValue(requestMock)
-			.compile();
+		}).compile();
 	});
 
 	afterAll(async () => {

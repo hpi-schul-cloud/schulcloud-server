@@ -1,15 +1,14 @@
 import { faker } from '@faker-js/faker';
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { ColumnClientAdapter } from './column-client.adapter';
 import { BoardColumnApi, CreateCardBodyParamsRequiredEmptyElements } from './generated';
-import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 
 describe(ColumnClientAdapter.name, () => {
 	let module: TestingModule;
 	let sut: ColumnClientAdapter;
-
-	const columnApiMock = createMock<BoardColumnApi>();
+	let columnApiMock: DeepMocked<BoardColumnApi>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -17,11 +16,12 @@ describe(ColumnClientAdapter.name, () => {
 				ColumnClientAdapter,
 				{
 					provide: BoardColumnApi,
-					useValue: columnApiMock,
+					useValue: createMock<BoardColumnApi>(),
 				},
 			],
 		}).compile();
 		sut = module.get(ColumnClientAdapter);
+		columnApiMock = module.get(BoardColumnApi);
 	});
 
 	afterAll(async () => {
@@ -46,19 +46,26 @@ describe(ColumnClientAdapter.name, () => {
 
 				columnApiMock.columnControllerCreateCard.mockResolvedValue(axiosResponseFactory.build({ data: columnId }));
 
+				const jwt = faker.internet.jwt();
+
 				return {
 					columnId,
 					cardParams,
+					jwt,
 				};
 			};
 
 			it('should call boardColumnApi.ColumnControllerCreateCard', async () => {
-				const { columnId, cardParams } = setup();
+				const { columnId, cardParams, jwt } = setup();
 
-				const response = await sut.createCard(columnId, cardParams);
+				const response = await sut.createCard(jwt, columnId, cardParams);
 
 				expect(response).toEqual(columnId);
-				expect(columnApiMock.columnControllerCreateCard).toHaveBeenCalledWith(columnId, cardParams);
+				expect(columnApiMock.columnControllerCreateCard).toHaveBeenCalledWith(columnId, cardParams, {
+					headers: {
+						Authorization: `Bearer ${jwt}`,
+					},
+				});
 			});
 		});
 	});
@@ -69,18 +76,29 @@ describe(ColumnClientAdapter.name, () => {
 				const columnId = faker.string.uuid();
 				const title = faker.lorem.words();
 
+				const jwt = faker.internet.jwt();
+
 				return {
 					columnId,
 					title,
+					jwt,
 				};
 			};
 
 			it('should call boardColumnApi.columnControllerUpdateColumnTitle', async () => {
-				const { columnId, title } = setup();
+				const { columnId, title, jwt } = setup();
 
-				await sut.updateBoardColumnTitle(columnId, { title });
+				await sut.updateBoardColumnTitle(jwt, columnId, { title });
 
-				expect(columnApiMock.columnControllerUpdateColumnTitle).toHaveBeenCalledWith(columnId, { title });
+				expect(columnApiMock.columnControllerUpdateColumnTitle).toHaveBeenCalledWith(
+					columnId,
+					{ title },
+					{
+						headers: {
+							Authorization: `Bearer ${jwt}`,
+						},
+					}
+				);
 			});
 		});
 	});

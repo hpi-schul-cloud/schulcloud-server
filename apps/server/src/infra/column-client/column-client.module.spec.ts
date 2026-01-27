@@ -1,21 +1,12 @@
 import { faker } from '@faker-js/faker/.';
-import { createMock } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
-import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Request } from 'express';
-import { ColumnClientModule } from './column-client.module';
-import { ColumnClientConfig } from './column-client.config';
 import { ColumnClientAdapter } from './column-client.adapter';
+import { ColumnClientConfig } from './column-client.config';
+import { ColumnClientModule } from './column-client.module';
 
 describe('ColumnClientModule', () => {
 	let module: TestingModule;
-
-	const requestMock = createMock<Request>({
-		headers: {
-			authorization: `Bearer ${faker.string.alphanumeric(42)}`,
-		},
-	});
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -32,10 +23,7 @@ describe('ColumnClientModule', () => {
 					],
 				}),
 			],
-		})
-			.overrideProvider(REQUEST)
-			.useValue(requestMock)
-			.compile();
+		}).compile();
 	});
 
 	afterAll(async () => {
