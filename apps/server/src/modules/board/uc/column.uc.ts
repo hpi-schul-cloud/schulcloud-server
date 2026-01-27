@@ -1,12 +1,8 @@
 import { LegacyLogger } from '@core/logger';
 import { StorageLocation } from '@infra/files-storage-client';
 import { AuthorizationService } from '@modules/authorization';
-import {
-	ForbiddenException,
-	Injectable,
-	InternalServerErrorException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
 import { BoardNodeRule } from '../authorisation/board-node.rule';
 import { BoardNodeFactory, Card, Column, ColumnBoard, ContentElementType, isCard } from '../domain';
@@ -124,10 +120,3 @@ export class ColumnUc {
 		return copyStatus.copyEntity;
 	}
 }
-
-// TODO: replace with shared utility function (after BC-11015 was merged)
-const throwForbiddenIfFalse = (condition: boolean): void => {
-	if (!condition) {
-		throw new ForbiddenException();
-	}
-};

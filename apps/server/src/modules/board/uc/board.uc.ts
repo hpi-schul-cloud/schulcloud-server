@@ -6,9 +6,10 @@ import { CopyStatus } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
-import { ForbiddenException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BoardNodeRule } from '../authorisation/board-node.rule';
@@ -252,10 +253,3 @@ export class BoardUc {
 		throw new Error(`Unsupported board reference type ${context.type as string}`);
 	}
 }
-
-// TODO: replace with shared utility function (after BC-11015 was merged)
-const throwForbiddenIfFalse = (condition: boolean): void => {
-	if (!condition) {
-		throw new ForbiddenException();
-	}
-};
