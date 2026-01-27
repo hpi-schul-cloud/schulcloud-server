@@ -492,7 +492,7 @@ describe(VideoConferenceService.name, () => {
 				roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,
-					members: [{ userId: user.id, roles: [roomAdminRole] }],
+					members: [{ userId: user.id, roles: [roomAdminRole], userSchoolId: user.school.id }],
 					schoolId: room.schoolId,
 				});
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
@@ -717,13 +717,13 @@ describe(VideoConferenceService.name, () => {
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
-						members: [{ userId: user.id, roles: [roomEditorRole] }],
+						members: [{ userId: user.id, roles: [roomEditorRole], userSchoolId: user.school.id }],
 						schoolId: room.schoolId,
 					})
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
-						members: [{ userId: user.id, roles: [roomEditorRole] }],
+						members: [{ userId: user.id, roles: [roomEditorRole], userSchoolId: user.school.id }],
 						schoolId: room.schoolId,
 					});
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
@@ -772,13 +772,13 @@ describe(VideoConferenceService.name, () => {
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
-						members: [{ userId: user.id, roles: [roomViewerRole] }],
+						members: [{ userId: user.id, roles: [roomViewerRole], userSchoolId: user.school.id }],
 						schoolId: room.schoolId,
 					})
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
-						members: [{ userId: user.id, roles: [roomViewerRole] }],
+						members: [{ userId: user.id, roles: [roomViewerRole], userSchoolId: user.school.id }],
 						schoolId: room.schoolId,
 					});
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
@@ -947,13 +947,13 @@ describe(VideoConferenceService.name, () => {
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
-						members: [{ userId: 'anotherUserId', roles: [] }],
+						members: [{ userId: 'anotherUserId', roles: [], userSchoolId: room.schoolId }],
 						schoolId: room.schoolId,
 					})
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
-						members: [{ userId: 'anotherUserId', roles: [] }],
+						members: [{ userId: 'anotherUserId', roles: [], userSchoolId: room.schoolId }],
 						schoolId: room.schoolId,
 					});
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
@@ -993,13 +993,13 @@ describe(VideoConferenceService.name, () => {
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
-						members: [{ userId: user.id, roles: [] }],
+						members: [{ userId: user.id, roles: [], userSchoolId: user.school.id }],
 						schoolId: room.schoolId,
 					})
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
-						members: [{ userId: user.id, roles: [] }],
+						members: [{ userId: user.id, roles: [], userSchoolId: user.school.id }],
 						schoolId: room.schoolId,
 					});
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
@@ -1258,13 +1258,13 @@ describe(VideoConferenceService.name, () => {
 				.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,
-					members: [{ userId: roomUser.id, roles: [roomEditorRole] }],
+					members: [{ userId: roomUser.id, roles: [roomEditorRole], userSchoolId: roomUser.school.id }],
 					schoolId: room.schoolId,
 				})
 				.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,
-					members: [{ userId: roomUser.id, roles: [roomEditorRole] }],
+					members: [{ userId: roomUser.id, roles: [roomEditorRole], userSchoolId: roomUser.school.id }],
 					schoolId: room.schoolId,
 				});
 
