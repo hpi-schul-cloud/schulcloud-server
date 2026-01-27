@@ -150,12 +150,12 @@ After registration, access to the room ${roomName} will be activated immediately
 Best regards,<br />
 ${productName} team`;
 
-		const htmlContent = `<div lang="de">${germanHtml}</div><hr /><div lang="en">${englishHtml}</div>`;
+		const htmlContent = `<html><body><div lang="de">${germanHtml}</div><hr /><div lang="en">${englishHtml}</div></body></html>`;
 
 		const mailContent = {
 			subject,
 			plainTextContent: stripTags(htmlContent),
-			htmlContent,
+			htmlContent: '',
 		};
 		return mailContent;
 	}
