@@ -130,6 +130,13 @@ export class SchoolService {
 		return schoolsForLdapLogin;
 	}
 
+	public async getAllSchoolIds(): Promise<EntityId[]> {
+		const schools = await this.schoolRepo.getSchools({});
+		const schoolIds = schools.map((school) => school.id);
+
+		return schoolIds;
+	}
+
 	public async updateSchool(school: School, body: SchoolUpdateBody): Promise<School> {
 		const fullSchoolObject = SchoolFactory.buildFromPartialBody(school, body);
 

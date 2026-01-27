@@ -1,7 +1,7 @@
 import { Logger } from '@core/logger';
 import { BoardResponse, BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
-import { FilesStorageClientAdapter } from '@infra/files-storage-client';
+import { FileRecordScanStatus, FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import archiver from 'archiver';
@@ -208,9 +208,22 @@ export class CommonCartridgeExportService {
 				taskOrganization.addResource(this.mapper.mapTaskToResource(task, version));
 
 				const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(task.id);
+				const fileRecords = await Promise.all(
+					filesMetadata.map((fileDto) => this.filesStorageClientAdapter.getFileRecord(jwt, fileDto.id))
+				);
 
 				await Promise.all(
-					filesMetadata.map(async (fileMetadata) => {
+					filesMetadata.map(async (fileMetadata, index) => {
+						if (fileRecords[index].securityCheckStatus === FileRecordScanStatus.BLOCKED) {
+							this.logger.info(
+								new CommonCartridgeExportMessageLoggable(
+									'A file was skipped because the securityCheckStatus is BLOCKED',
+									{ fileId: fileMetadata.id, taskId: task.id }
+								)
+							);
+							return;
+						}
+
 						const fileStream = await this.filesStorageClientAdapter.getStream(jwt, fileMetadata.id, fileMetadata.name);
 
 						if (fileStream) {
@@ -307,19 +320,41 @@ export class CommonCartridgeExportService {
 
 		if (element.type === ContentElementType.FILE || element.type === ContentElementType.FILE_FOLDER) {
 			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
+			const fileRecords = await Promise.all(
+				filesMetadata.map((fileDto) => this.filesStorageClientAdapter.getFileRecord(jwt, fileDto.id))
+			);
 
-			for (const fileMetadata of filesMetadata) {
+			const streamPromises = filesMetadata.map(async (fileMetadata, index) => {
+				if (fileRecords[index].securityCheckStatus === FileRecordScanStatus.BLOCKED) {
+					this.logger.info(
+						new CommonCartridgeExportMessageLoggable('A file was skipped because the securityCheckStatus is BLOCKED', {
+							fileId: fileMetadata.id,
+							elementId: element.id,
+						})
+					);
+					return;
+				}
+
 				const file = await this.filesStorageClientAdapter.getStream(jwt, fileMetadata.id, fileMetadata.name);
 
-				if (file) {
-					fileMetadataBufferArray.push({
-						name: fileMetadata.name,
-						file,
-						fileDto: fileMetadata,
-					});
+				if (!file) {
+					return undefined;
 				}
-			}
+
+				const fileMetadataAndStream: FileMetadataAndStream = {
+					name: fileMetadata.name,
+					file,
+					fileDto: fileMetadata,
+				};
+
+				return fileMetadataAndStream;
+			});
+
+			const streamsOrUndefined = await Promise.all(streamPromises);
+			const streams = streamsOrUndefined.filter((fileData) => !!fileData);
+			fileMetadataBufferArray.push(...streams);
 		}
+
 		return fileMetadataBufferArray;
 	}
 

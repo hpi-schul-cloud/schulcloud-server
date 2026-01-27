@@ -14,6 +14,7 @@ import { UUID } from 'bson';
 import { isDisposableEmail as _isDisposableEmail } from 'disposable-email-domains-js';
 import { RegistrationRepo } from '../../repo';
 import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
+import { RoomService } from '@modules/room';
 import { ResendingRegistrationMailLoggable } from '../error/resend-registration-mail.loggable';
 
 @Injectable()
@@ -26,6 +27,7 @@ export class RegistrationService {
 		private readonly schoolService: SchoolService,
 		private readonly mailService: MailService,
 		private readonly roomMembershipService: RoomMembershipService,
+		private readonly roomService: RoomService,
 		private readonly logger: Logger
 	) {}
 
@@ -47,7 +49,7 @@ export class RegistrationService {
 		const userDo = await this.createUser(registration, language);
 		const user = await this.userService.save(userDo);
 		const account = this.createAccount(user, password);
-		await this.accountService.save(account);
+		await this.accountService.saveWithValidation(account);
 
 		if (user.id === undefined) {
 			throw new InternalServerErrorException('User ID is undefined after saving user.');
@@ -98,7 +100,10 @@ export class RegistrationService {
 	}
 
 	public async sendRegistrationMail(registration: Registration): Promise<void> {
-		const registrationMail = registration.generateRegistrationMail();
+		const roomId = registration.roomIds[registration.roomIds.length - 1];
+		const room = await this.roomService.getSingleRoom(roomId);
+		const registrationMail = registration.generateRegistrationMail(room.name);
+
 		await this.mailService.send(registrationMail);
 	}
 

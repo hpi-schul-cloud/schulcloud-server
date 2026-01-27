@@ -18,6 +18,8 @@ import { registrationFactory } from '../../testing/registration.factory';
 import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
 import { ResendingRegistrationMailLoggable } from '../error/resend-registration-mail.loggable';
 import { RegistrationService } from './registration.service';
+import { RoomService } from '@modules/room';
+import { roomFactory } from '@modules/room/testing';
 
 describe('RegistrationService', () => {
 	let module: TestingModule;
@@ -29,6 +31,8 @@ describe('RegistrationService', () => {
 	let userService: DeepMocked<UserService>;
 	let mailService: DeepMocked<MailService>;
 	let logger: DeepMocked<Logger>;
+	let accountService: DeepMocked<AccountService>;
+	let roomService: DeepMocked<RoomService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -66,6 +70,10 @@ describe('RegistrationService', () => {
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
+				{
+					provide: RoomService,
+					useValue: createMock<RoomService>(),
+				},
 			],
 		}).compile();
 
@@ -77,6 +85,8 @@ describe('RegistrationService', () => {
 		schoolService = module.get(SchoolService);
 		mailService = module.get(MailService);
 		logger = module.get(Logger);
+		accountService = module.get(AccountService);
+		roomService = module.get(RoomService);
 	});
 
 	afterAll(async () => {
@@ -182,17 +192,59 @@ describe('RegistrationService', () => {
 			});
 
 			it('should call mail service to resend registration mail', async () => {
-				const registrationWithoutResentAt = registrationFactory.build({ resentAt: undefined });
+				const room = roomFactory.build({ name: 'A test room' });
+				const registrationData = {
+					firstName: 'John',
+					lastName: 'Doe',
+					roomIds: [room.id],
+				};
+				const registrationWithoutResentAt = registrationFactory.build({
+					...registrationData,
+					email: 'registrationWithoutResentAt@example.com',
+					resentAt: undefined,
+				});
 				const registrationWithResentAt = registrationFactory.build({
+					...registrationData,
+					email: 'registrationWithResentAt@example.com',
 					resentAt: new Date(Date.now() - 5 * 60 * 1000),
 				});
+				const registrationWithUnelapsedCooldown = registrationFactory.build({
+					...registrationData,
+					email: 'registrationWithUnelapsedCooldown@example.com',
+					resentAt: new Date(Date.now() - 60 * 1000),
+				});
+
 				registrationRepo.findById
 					.mockResolvedValueOnce(registrationWithoutResentAt)
-					.mockResolvedValueOnce(registrationWithResentAt);
+					.mockResolvedValueOnce(registrationWithResentAt)
+					.mockResolvedValueOnce(registrationWithUnelapsedCooldown);
+				roomService.getSingleRoom.mockResolvedValue(room);
 
-				await service.resendRegistrationMails([registrationWithoutResentAt.id, registrationWithResentAt.id]);
+				await service.resendRegistrationMails([
+					registrationWithoutResentAt.id,
+					registrationWithResentAt.id,
+					registrationWithUnelapsedCooldown.id,
+				]);
 
 				expect(mailService.send).toHaveBeenCalledTimes(2);
+				expect(mailService.send).toHaveBeenNthCalledWith(
+					1,
+					expect.objectContaining({
+						recipients: [registrationWithoutResentAt.email],
+					})
+				);
+				expect(mailService.send).toHaveBeenNthCalledWith(
+					2,
+					expect.objectContaining({
+						recipients: [registrationWithResentAt.email],
+					})
+				);
+				expect(mailService.send).not.toHaveBeenNthCalledWith(
+					3,
+					expect.objectContaining({
+						recipients: [registrationWithUnelapsedCooldown.email],
+					})
+				);
 			});
 		});
 
@@ -317,6 +369,11 @@ describe('RegistrationService', () => {
 			const registration = registrationFactory.build();
 			registrationRepo.findBySecret.mockResolvedValue(registration);
 
+			userService.save.mockImplementation((user) => {
+				user.id = new ObjectId().toHexString();
+				return Promise.resolve(user);
+			});
+
 			await service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!');
 
 			expect(userService.save).toHaveBeenCalledWith(
@@ -324,6 +381,13 @@ describe('RegistrationService', () => {
 					email: registration.email,
 					firstName: registration.firstName,
 					lastName: registration.lastName,
+				})
+			);
+
+			expect(accountService.saveWithValidation).toHaveBeenCalledWith(
+				expect.objectContaining({
+					username: registration.email,
+					password: 'SecurePassword123!',
 				})
 			);
 		});

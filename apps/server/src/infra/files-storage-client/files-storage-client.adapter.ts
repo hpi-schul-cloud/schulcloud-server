@@ -6,8 +6,10 @@ import { ConfigService } from '@nestjs/config';
 import { AxiosError } from 'axios';
 import { lastValueFrom } from 'rxjs';
 import { Stream } from 'stream';
+import util from 'util';
 import { FilesStorageClientConfig } from './files-storage-client.config';
 import { Configuration, FileApi, FileRecordParentType, FileRecordResponse, StorageLocation } from './generated';
+import { GenericFileStorageLoggable } from './loggables';
 
 @Injectable()
 export class FilesStorageClientAdapter {
@@ -19,6 +21,13 @@ export class FilesStorageClientAdapter {
 		private readonly configService: ConfigService<FilesStorageClientConfig, true>
 	) {
 		this.logger.setContext(FilesStorageClientAdapter.name);
+	}
+
+	public async getFileRecord(jwt: string, fileRecordId: string): Promise<FileRecordResponse> {
+		const response = await this.fileApi(jwt).getFileRecord(fileRecordId);
+		const { data } = response;
+
+		return data;
 	}
 
 	public async getStream(jwt: string, fileRecordId: string, fileName: string): Promise<Stream | null> {
@@ -47,7 +56,15 @@ export class FilesStorageClientAdapter {
 			const response = await lastValueFrom(observable);
 			return FilesStorageClientAdapter.isStream(response.data) ? response.data : null;
 		} catch (error: unknown) {
-			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.getStream'));
+			if (error instanceof AxiosError) {
+				this.errorLogger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.getStream'));
+			} else {
+				this.errorLogger.error(
+					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.getStream`, {
+						error: util.inspect(error),
+					})
+				);
+			}
 
 			return null;
 		}
@@ -93,7 +110,15 @@ export class FilesStorageClientAdapter {
 
 			return response.data as FileRecordResponse;
 		} catch (error: unknown) {
-			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.upload'));
+			if (error instanceof AxiosError) {
+				this.errorLogger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.upload'));
+			} else {
+				this.errorLogger.error(
+					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.upload`, {
+						error: util.inspect(error),
+					})
+				);
+			}
 
 			return null;
 		}
