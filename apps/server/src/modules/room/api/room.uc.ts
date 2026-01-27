@@ -2,6 +2,8 @@ import { AccountService } from '@modules/account';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { RoleName, RoomRole } from '@modules/role';
 import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { RoomMemberRule } from '@modules/room-membership/authorization/room-member.rule';
+import { RoomMembershipRule } from '@modules/room-membership/authorization/room-membership.rule';
 import { RoomMemberAuthorizable } from '@modules/room-membership/do/room-member-authorizable.do';
 import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
 import { School, SchoolService } from '@modules/school';
@@ -14,6 +16,7 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 } from '@nestjs/common';
+import { throwForbiddenIfFalse, throwUnauthorizedIfFalse } from '@shared/common/utils';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -23,14 +26,8 @@ import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomMemberResponse } from './dto/response/room-member.response';
 import { CantAssignRoomRoleToExternalPersonLoggableException } from './loggables/cant-assign-roomrole-to-external-person.error.loggable';
 import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-roomowners-role.error.loggable';
-import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pass-ownership-to-student.error.loggable';
-import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
-import { UserToAddToRoomNotFoundLoggableException } from './loggables/user-not-found.error.loggable';
 import { RoomBoardService, RoomPermissionService } from './service';
 import { RoomStats } from './type/room-stats.type';
-
-type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
-type OwnershipContext = BaseContext & { targetUser: UserDo };
 
 @Injectable()
 export class RoomUc {
@@ -42,7 +39,9 @@ export class RoomUc {
 		private readonly roomPermissionService: RoomPermissionService,
 		private readonly schoolService: SchoolService,
 		private readonly roomBoardService: RoomBoardService,
-		private readonly accountService: AccountService
+		private readonly accountService: AccountService,
+		private readonly roomMembershipRule: RoomMembershipRule,
+		private readonly roomMemberRule: RoomMemberRule
 	) {}
 
 	public async getRoomStats(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomStats>> {
@@ -84,7 +83,9 @@ export class RoomUc {
 
 	public async createRoom(userId: EntityId, props: CreateRoomBodyParams): Promise<Room> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_CREATE_ROOM]);
+
+		throwUnauthorizedIfFalse(this.roomMembershipRule.canCreateRoom(user));
+
 		const room = await this.roomService.createRoom({ ...props, schoolId: user.school.id });
 
 		try {
@@ -98,59 +99,14 @@ export class RoomUc {
 
 	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<{ room: Room; permissions: Permission[] }> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const room = await this.roomService.getSingleRoom(roomId);
-
-		await this.checkHasAccessToRoom(room, user);
-
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+
+		throwForbiddenIfFalse(this.roomMembershipRule.canAccessRoom(user, roomMembershipAuthorizable));
+
+		const room = await this.roomService.getSingleRoom(roomId);
 		const permissions = this.getPermissions(userId, roomMembershipAuthorizable);
 
 		return { room, permissions };
-	}
-
-	private async checkHasAccessToRoom(room: Room, user: User): Promise<void> {
-		const hasAdminPermission = this.authorizationService.hasAllPermissions(user, [
-			Permission.SCHOOL_ADMINISTRATE_ROOMS,
-		]);
-
-		if (!hasAdminPermission) {
-			await this.roomPermissionService.checkRoomIsUnlocked(room.id);
-		}
-
-		const hasRoomPermission = await this.hasRoomPermission(room, user);
-		if (hasRoomPermission) {
-			return;
-		}
-
-		const hasUsersFromAdminSchool = await this.hasUsersFromAdminSchool(room, user, hasAdminPermission);
-		if (hasUsersFromAdminSchool) {
-			return;
-		}
-
-		const isRoomFromAdminSchool = await this.isRoomFromAdminSchool(room, user, hasAdminPermission);
-		if (isRoomFromAdminSchool) {
-			return;
-		}
-
-		throw new ForbiddenException('You do not have permission to access this room');
-	}
-
-	private async isRoomFromAdminSchool(room: Room, user: User, hasAdminPermission: boolean): Promise<boolean> {
-		const roomSchool = await this.schoolService.getSchoolById(room.schoolId);
-		const userSchool = await this.schoolService.getSchoolById(user.school.id);
-		const isRoomFromAdminSchool = hasAdminPermission && roomSchool.id === userSchool.id;
-		return isRoomFromAdminSchool;
-	}
-
-	private async hasUsersFromAdminSchool(room: Room, user: User, hasAdminPermission: boolean): Promise<boolean> {
-		const members = hasAdminPermission ? await this.roomMembershipService.getRoomMembers(room.id) : [];
-		const hasUsersFromAdminSchool = hasAdminPermission && members.some((member) => member.schoolId === user.school.id);
-		return hasUsersFromAdminSchool;
-	}
-
-	private async hasRoomPermission(room: Room, user: User): Promise<boolean> {
-		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(user.id, room.id, Action.read);
-		return hasRoomPermission;
 	}
 
 	public async updateRoom(
@@ -158,63 +114,135 @@ export class RoomUc {
 		roomId: EntityId,
 		props: UpdateRoomBodyParams
 	): Promise<{ room: Room; permissions: Permission[] }> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+
+		throwForbiddenIfFalse(this.roomMembershipRule.canUpdateRoom(user, roomMembershipAuthorizable));
+
 		const room = await this.roomService.getSingleRoom(roomId);
-
-		const roomMembershipAuthorizable = await this.roomPermissionService.checkRoomAuthorizationByIds(
-			userId,
-			roomId,
-			Action.write
-		);
-
-		const permissions = this.getPermissions(userId, roomMembershipAuthorizable);
-
 		await this.roomService.updateRoom(room, props);
+		const permissions = this.getPermissions(userId, roomMembershipAuthorizable);
 
 		return { room, permissions };
 	}
 
 	public async deleteRoom(userId: EntityId, roomId: EntityId): Promise<void> {
-		const room = await this.roomService.getSingleRoom(roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
 
-		const isAllowed = await this.roomPermissionService.isAllowedToDeleteRoom(user, room);
-		if (!isAllowed) {
-			throw new ForbiddenException('You do not have permission to delete this room');
-		}
+		throwForbiddenIfFalse(this.roomMembershipRule.canDeleteRoom(user, roomMembershipAuthorizable));
 
+		const room = await this.roomService.getSingleRoom(roomId);
 		await this.roomService.deleteRoom(room);
 		await this.roomMembershipService.deleteRoomMembership(roomId);
 		await this.roomBoardService.deleteRoomContent(roomId);
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
 
-		this.authorizationService.checkAllPermissions(currentUser, [Permission.SCHOOL_LIST_ROOM_MEMBERS]);
-		this.authorizationService.checkPermission(currentUser, roomMembershipAuthorizable, {
-			action: Action.read,
-			requiredPermissions: [],
-		});
+		throwForbiddenIfFalse(this.roomMembershipRule.canGetRoomMembers(user, roomMembershipAuthorizable));
 
 		const membersResponse = await this.getRoomMembersResponse(roomMembershipAuthorizable);
 		return membersResponse;
 	}
 
 	public async getRoomMembersRedacted(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
-		const canAdministrateSchoolRooms = this.authorizationService.hasOneOfPermissions(currentUser, [
-			Permission.SCHOOL_ADMINISTRATE_ROOMS,
-		]);
-		if (!canAdministrateSchoolRooms) {
-			throw new ForbiddenException();
-		}
+
+		throwForbiddenIfFalse(this.roomMembershipRule.canGetRoomMembersRedacted(user, roomMembershipAuthorizable));
 
 		const membersResponse = await this.getRoomMembersResponse(roomMembershipAuthorizable);
-
-		const redactedMembersResponse = this.handleAnonymization(membersResponse, currentUser.school.id);
+		const redactedMembersResponse = this.handleAnonymization(membersResponse, user.school.id);
 		return redactedMembersResponse;
+	}
+
+	public async addMembersToRoom(userId: EntityId, roomId: EntityId, newUserIds: Array<EntityId>): Promise<RoomRole> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+
+		throwForbiddenIfFalse(this.roomMembershipRule.canAddMembers(user, roomMembershipAuthorizable));
+
+		await this.checkAreAllUsersAccessible(user, newUserIds);
+
+		const roleName = await this.roomMembershipService.addMembersToRoom(roomId, newUserIds);
+		return roleName;
+	}
+
+	public async addExternalPersonByEmailToRoom(userId: EntityId, roomId: EntityId, email: string): Promise<RoomRole> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+
+		throwForbiddenIfFalse(this.roomMembershipRule.canAddExternalPersonByEmail(user, roomMembershipAuthorizable));
+
+		const existingUser = await this.getUserByEmail(email);
+		this.checkUserIsExternalPerson(existingUser);
+		this.checkUserNotAlreadyMemberOfRoom(existingUser.id, roomMembershipAuthorizable);
+		const roleName = await this.roomMembershipService.addMembersToRoom(roomId, [existingUser.id]);
+		await this.roomService.sendRoomWelcomeMail(email, roomId);
+		return roleName;
+	}
+
+	public async changeRolesOfMembers(
+		currentUserId: EntityId,
+		roomId: EntityId,
+		userIds: Array<EntityId>,
+		roleName: RoomRole
+	): Promise<void> {
+		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+
+		throwForbiddenIfFalse(this.roomMembershipRule.canChangeRolesOfMembers(user, roomMembershipAuthorizable));
+
+		await this.checkRoomRolesForExternalPersons(userIds, roleName);
+		this.preventChangingOwnersRole(roomMembershipAuthorizable, userIds, currentUserId);
+
+		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, userIds, roleName);
+	}
+
+	public async passOwnership(currentUserId: EntityId, roomId: EntityId, targetUserId: EntityId): Promise<void> {
+		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const roomMemberAuthorizable = await this.getRoomMemberAuthorizable(roomMembershipAuthorizable, targetUserId);
+
+		throwForbiddenIfFalse(this.roomMemberRule.canPassOwnershipTo(user, roomMemberAuthorizable));
+
+		const currenRoomOwner = roomMembershipAuthorizable.members.find((member) =>
+			member.roles.some((role) => role.name === RoleName.ROOMOWNER)
+		);
+		if (currenRoomOwner) {
+			await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [currenRoomOwner.userId], RoleName.ROOMADMIN);
+		}
+		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [targetUserId], RoleName.ROOMOWNER);
+	}
+
+	public async leaveRoom(currentUserId: EntityId, roomId: EntityId): Promise<void> {
+		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+
+		throwForbiddenIfFalse(this.roomMembershipRule.canLeaveRoom(user, roomMembershipAuthorizable));
+
+		await this.roomMembershipService.removeMembersFromRoom(roomId, [currentUserId]);
+	}
+
+	public async removeMembersFromRoom(currentUserId: EntityId, roomId: EntityId, userIds: EntityId[]): Promise<void> {
+		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const roomMembers = await this.roomMembershipService.getRoomMembers(roomId);
+		const roomMembersToBeDeleted = roomMembers.filter((member) => userIds.includes(member.userId));
+
+		const roomMemberAuthorizables = await this.getRoomMemberAuthorizables(roomMembershipAuthorizable);
+		for (const member of roomMembersToBeDeleted) {
+			const roomMemberAuthorizable = roomMemberAuthorizables.find(
+				(authorizable) => authorizable.member.userId === member.userId
+			);
+			if (roomMemberAuthorizable) {
+				throwForbiddenIfFalse(this.roomMemberRule.canRemoveMember(user, roomMemberAuthorizable));
+			}
+		}
+		await this.roomMembershipService.removeMembersFromRoom(roomId, userIds);
 	}
 
 	private async getRoomMembersResponse(
@@ -227,173 +255,16 @@ export class RoomUc {
 		return membersResponse;
 	}
 
-	public async addMembersToRoom(
-		currentUserId: EntityId,
-		roomId: EntityId,
-		userIds: Array<EntityId>
-	): Promise<RoomRole> {
-		const currentUser = await this.authorizationService.getUserWithPermissions(currentUserId);
-		const users = await this.userService.findByIds(userIds);
-
-		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(currentUserId, roomId, Action.write, [
-			Permission.ROOM_ADD_MEMBERS,
-		]);
-		const hasAdminPermission = this.authorizationService.hasAllPermissions(currentUser, [
-			Permission.SCHOOL_ADMINISTRATE_ROOMS,
-		]);
-		const isAdminFromSameSchool = users.every((user) => user.schoolId === currentUser.school.id);
-		const isRoomOfAdminSchool = (await this.roomService.getSingleRoom(roomId)).schoolId === currentUser.school.id;
-		if (!hasRoomPermission && !(hasAdminPermission && isAdminFromSameSchool && isRoomOfAdminSchool)) {
-			throw new ForbiddenException('You do not have permission to access this room');
-		}
-
-		await this.checkUsersAccessible(currentUserId, userIds);
-		const roleName = await this.roomMembershipService.addMembersToRoom(roomId, userIds);
-		return roleName;
-	}
-
-	public async addExternalPersonByEmailToRoom(
-		currentUserId: EntityId,
-		roomId: EntityId,
-		email: string
-	): Promise<RoomRole> {
-		const hasRoomPermission = await this.roomPermissionService.hasRoomPermissions(currentUserId, roomId, Action.write, [
-			Permission.ROOM_ADD_MEMBERS,
-		]);
-		if (!hasRoomPermission) {
-			throw new ForbiddenException('You do not have permission to access this room');
-		}
-
-		const [existingAccounts, totalNumberOfFoundAccounts] = await this.accountService.searchByUsernameExactMatch(email);
-		if (totalNumberOfFoundAccounts > 1) {
-			throw new InternalServerErrorException('Invalid data found');
-		}
-		if (existingAccounts.length === 1 && existingAccounts[0].userId) {
-			const foundUserId = existingAccounts[0].userId;
-			const user = await this.userService.findById(foundUserId);
-			this.checkUserIsExternalPerson(user);
-			await this.checkUserNotAlreadyMemberOfRoom(roomId, foundUserId);
-			const roleName = await this.roomMembershipService.addMembersToRoom(roomId, [foundUserId]);
-			await this.roomService.sendRoomWelcomeMail(email, roomId);
-			return roleName;
-		}
-		throw new NotFoundException('No user found with the provided email');
-	}
-
-	public async changeRolesOfMembers(
-		currentUserId: EntityId,
-		roomId: EntityId,
-		userIds: Array<EntityId>,
-		roleName: RoomRole
-	): Promise<void> {
-		const roomAuthorizable = await this.roomPermissionService.checkRoomAuthorizationByIds(
-			currentUserId,
-			roomId,
-			Action.write,
-			[Permission.ROOM_CHANGE_ROLES]
-		);
-
-		await this.checkRoomRolesForExternalPersons(userIds, roleName);
-		this.preventChangingOwnersRole(roomAuthorizable, userIds, currentUserId);
-		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, userIds, roleName);
-	}
-
-	public async passOwnership(currentUserId: EntityId, roomId: EntityId, targetUserId: EntityId): Promise<void> {
-		const ownershipContext = await this.getPassOwnershipContext(roomId, currentUserId, targetUserId);
-		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
-
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		const roomMembers = await this.roomMembershipService.getRoomMembers(roomId);
-		const roomMember = roomMembers.find((member) => member.userId === targetUserId);
-		const roomOwner = roomMembers.find((member) => member.roomRoleName === RoleName.ROOMOWNER);
-		if (!roomMember) {
-			throw new CantPassOwnershipToUserNotInRoomLoggableException({
-				roomId,
-				currentUserId,
-				targetUserId,
-			});
-		}
-
-		const roomMemberAuthorizable = new RoomMemberAuthorizable(roomMembershipAuthorizable, roomMember);
-		this.authorizationService.checkPermission(user, roomMemberAuthorizable, {
-			action: Action.write,
-			requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
-		});
-		this.checkUserIsNotStudent(ownershipContext);
-		await this.checkRoomRolesForExternalPersons([targetUserId], RoleName.ROOMOWNER);
-
-		if (roomOwner) {
-			await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [roomOwner.userId], RoleName.ROOMADMIN);
-		}
-		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [targetUserId], RoleName.ROOMOWNER);
-	}
-
-	public async leaveRoom(currentUserId: EntityId, roomId: EntityId): Promise<void> {
-		await this.roomPermissionService.checkRoomAuthorizationByIds(currentUserId, roomId, Action.read, [
-			Permission.ROOM_LEAVE_ROOM,
-		]);
-		await this.roomMembershipService.removeMembersFromRoom(roomId, [currentUserId]);
-	}
-
-	public async removeMembersFromRoom(currentUserId: EntityId, roomId: EntityId, userIds: EntityId[]): Promise<void> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		const roomMembers = await this.roomMembershipService.getRoomMembers(roomId);
-		const roomMembersToBeDeleted = roomMembers.filter((member) => userIds.includes(member.userId));
-
-		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
-		for (const member of roomMembersToBeDeleted) {
-			const roomMemberAuthorizable = new RoomMemberAuthorizable(roomMembershipAuthorizable, member);
-			this.authorizationService.checkPermission(user, roomMemberAuthorizable, {
-				action: Action.write,
-				requiredPermissions: [Permission.ROOM_REMOVE_MEMBERS],
-			});
-		}
-		await this.roomMembershipService.removeMembersFromRoom(roomId, userIds);
-	}
-
-	private async getPassOwnershipContext(
-		roomId: EntityId,
-		currentUserId: EntityId,
-		targetUserId: EntityId
-	): Promise<OwnershipContext> {
-		const [roomContext, targetUser] = await Promise.all([
-			this.getRoomContext(roomId, currentUserId),
-			this.userService.findById(targetUserId),
-		]);
-		const context = { ...roomContext, targetUser };
-
-		return context;
-	}
-
-	private async getRoomContext(roomId: EntityId, currentUserId: EntityId): Promise<BaseContext> {
-		const [roomAuthorizable, currentUser] = await Promise.all([
-			this.roomMembershipService.getRoomMembershipAuthorizable(roomId),
-			this.authorizationService.getUserWithPermissions(currentUserId),
-		]);
-
-		const context = { roomAuthorizable, currentUser };
-
-		return context;
-	}
-
-	private checkUserIsNotStudent(context: OwnershipContext): void {
-		if (context.targetUser.roles.find((role) => role.name === RoleName.STUDENT)) {
-			throw new CantPassOwnershipToStudentLoggableException({
-				roomId: context.roomAuthorizable.roomId,
-				currentUserId: context.currentUser.id,
-				targetUserId: context.targetUser.id || 'undefined',
-			});
-		}
-	}
-
 	private checkUserIsExternalPerson(user: UserDo): void {
 		if (!user.roles.find((role) => role.name === RoleName.EXTERNALPERSON)) {
 			throw new BadRequestException('User is not an external person');
 		}
 	}
 
-	private async checkUserNotAlreadyMemberOfRoom(roomId: EntityId, userId: EntityId): Promise<void> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+	private checkUserNotAlreadyMemberOfRoom(
+		userId: EntityId,
+		roomMembershipAuthorizable: RoomMembershipAuthorizable
+	): void {
 		const isAlreadyMember = roomMembershipAuthorizable.members.some((member) => member.userId === userId);
 		if (isAlreadyMember) {
 			throw new BadRequestException('User is already a member of the room');
@@ -480,31 +351,58 @@ export class RoomUc {
 		return permissions;
 	}
 
-	private async checkUsersAccessible(currentUserId: EntityId, userIds: Array<EntityId>): Promise<void> {
-		const currentUser = await this.authorizationService.getUserWithPermissions(currentUserId);
-		const foundUsers = await this.userService.findByIds(userIds);
-
-		const isUserAccessibleFilter = this.createUserAccessibleFilter(currentUser);
-
-		const foundAndAccessibleIds = foundUsers.filter(isUserAccessibleFilter).map(this.userToId);
-		const notAccessibleUserIds = this.removeMatchingIds(userIds, foundAndAccessibleIds);
-
-		if (notAccessibleUserIds.length > 0) {
-			throw new UserToAddToRoomNotFoundLoggableException(notAccessibleUserIds);
+	private async checkAreAllUsersAccessible(currentUser: User, newUserIds: EntityId[]): Promise<void> {
+		const newUsers = await this.userService.findByIds(newUserIds);
+		if (newUsers.length !== newUserIds.length) {
+			throw new NotFoundException('One or more user IDs are invalid');
 		}
-	}
 
-	private removeMatchingIds(original: EntityId[], toRemove: EntityId[]): EntityId[] {
-		return original.filter((item) => !toRemove.includes(item));
-	}
-
-	private createUserAccessibleFilter =
-		(currentUser: User) =>
-		(user: UserDo): boolean =>
+		const areAllAccessible = newUsers.every((user) =>
 			this.authorizationService.hasPermission(currentUser, user, {
 				action: Action.read,
 				requiredPermissions: [],
-			});
+			})
+		);
+		if (areAllAccessible === false) {
+			throw new ForbiddenException();
+		}
+	}
 
-	private userToId = (user: UserDo): string => user.id || '';
+	private async getUserByEmail(email: string): Promise<UserDo & { id: EntityId }> {
+		const [existingAccounts, totalNumberOfFoundAccounts] = await this.accountService.searchByUsernameExactMatch(email);
+		if (existingAccounts.length === 0 || existingAccounts[0].userId === undefined) {
+			throw new NotFoundException('No user found with the provided email');
+		}
+		if (totalNumberOfFoundAccounts > 1) {
+			throw new InternalServerErrorException('Invalid data found');
+		}
+		const { userId } = existingAccounts[0];
+		const existingUser = await this.userService.findById(userId);
+		return { ...existingUser, id: userId };
+	}
+
+	private async getRoomMemberAuthorizable(
+		roomMembershipAuthorizable: RoomMembershipAuthorizable,
+		targetUserId: EntityId
+	): Promise<RoomMemberAuthorizable> {
+		const roomMemberAuthorizables = await this.getRoomMemberAuthorizables(roomMembershipAuthorizable);
+		const roomMemberAuthorizable = roomMemberAuthorizables.find(
+			(authorizable) => authorizable.member.userId === targetUserId
+		);
+
+		if (!roomMemberAuthorizable) {
+			throw new ForbiddenException();
+		}
+		return roomMemberAuthorizable;
+	}
+
+	private async getRoomMemberAuthorizables(
+		roomMembershipAuthorizable: RoomMembershipAuthorizable
+	): Promise<RoomMemberAuthorizable[]> {
+		const roomMembers = await this.roomMembershipService.getRoomMembers(roomMembershipAuthorizable.roomId);
+		const roomMemberAuthorizables = roomMembers.map(
+			(roomMember) => new RoomMemberAuthorizable(roomMembershipAuthorizable, roomMember)
+		);
+		return roomMemberAuthorizables;
+	}
 }

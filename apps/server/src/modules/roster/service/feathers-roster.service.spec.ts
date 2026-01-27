@@ -459,10 +459,11 @@ describe('FeathersRosterService', () => {
 					name: RoleName.ROOMOWNER,
 					permissions: [Permission.ROOM_EDIT_ROOM],
 				};
-				const members: UserWithRoomRoles[] = [
+				const members = [
 					{
 						roles: [roleDto],
 						userId: user.id,
+						userSchoolId: user.schoolId,
 					},
 				];
 				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(room.id, members, room.schoolId);
@@ -1252,6 +1253,7 @@ describe('FeathersRosterService', () => {
 								},
 							],
 							userId: student.id,
+							userSchoolId: student.schoolId,
 						},
 						{
 							roles: [
@@ -1262,6 +1264,7 @@ describe('FeathersRosterService', () => {
 								},
 							],
 							userId: teacher.id,
+							userSchoolId: teacher.schoolId,
 						},
 					];
 					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(room.id, members, student.schoolId);
