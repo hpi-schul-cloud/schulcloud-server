@@ -93,6 +93,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return canViewBoard;
 	}
 
+	public canFindCards(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canViewBoard(user, authorizable);
+	}
+
 	public canCopyCard(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canEditBoard(user, authorizable);
 	}
@@ -105,8 +109,16 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return this.canEditBoard(user, authorizable);
 	}
 
+	public canCreateElement(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
 	public canDeleteBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canManageBoard(user, authorizable);
+	}
+
+	public canDeleteCard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
 	}
 
 	public canDeleteColumn(user: User, authorizable: BoardNodeAuthorizable): boolean {
@@ -114,6 +126,14 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	public canUpdateBoardTitle(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
+	public canUpdateCardHeight(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
+	public canUpdateCardTitle(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canEditBoard(user, authorizable);
 	}
 
