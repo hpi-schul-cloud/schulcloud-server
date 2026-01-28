@@ -82,8 +82,12 @@ export class RoomMembershipService {
 		if (roomMembership === null) return;
 
 		const group = await this.groupService.findById(roomMembership.userGroupId);
+		const userIds = group.users.map((user) => user.userId);
+
 		await this.groupService.delete(group);
 		await this.roomMembershipRepo.delete(roomMembership);
+
+		await this.handleGuestRoleRemoval(userIds, roomMembership.schoolId);
 	}
 
 	public async addMembersToRoom(
@@ -306,6 +310,7 @@ export class RoomMembershipService {
 		return statsMap;
 	}
 
+	// apart from being part of a room are there other reasons to have a secondary school?
 	private async handleGuestRoleRemoval(userIds: EntityId[], schoolId: EntityId): Promise<void> {
 		const { data: groups } = await this.groupService.findGroups({ userIds, groupTypes: [GroupTypes.ROOM], schoolId });
 
