@@ -48,7 +48,6 @@ export class LegacyBoardCopyService {
 		const { originalBoard, user, originalCourse, destinationCourse } = params;
 
 		const boardElements: LegacyBoardElement[] = originalBoard.getElements();
-		// TODO populate element targets
 		const elements: CopyStatus[] = await this.copyBoardElements(boardElements, user, originalCourse, destinationCourse);
 
 		const references: LegacyBoardElement[] = await this.extractReferences(elements);

@@ -3,8 +3,7 @@ import { ToolConfigType } from '../../../../common/enum';
 
 @Embeddable({ abstract: true, discriminatorColumn: 'type' })
 export abstract class ExternalToolConfigEntity {
-	// have to reset items to undefined to avoid MikroORM validation errors
-	@Enum({ items: undefined })
+	@Enum(() => ToolConfigType)
 	type: ToolConfigType;
 
 	@Property()
