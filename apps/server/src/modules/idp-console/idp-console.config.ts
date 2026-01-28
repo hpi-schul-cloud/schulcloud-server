@@ -1,9 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ConsoleWriterConfig } from '@infra/console';
-import { RabbitMqConfig } from '@infra/rabbitmq';
 import { SchulconnexClientConfig } from '@infra/schulconnex-client';
 
-export interface IdpConsoleConfig extends ConsoleWriterConfig, RabbitMqConfig, SchulconnexClientConfig {
+export interface IdpConsoleConfig extends ConsoleWriterConfig, SchulconnexClientConfig {
 	SYNCHRONIZATION_CHUNK: number;
 	LOGIN_BLOCK_TIME: number; // @TODO temporary until removed from other configs
 }
@@ -20,7 +19,6 @@ const config: IdpConsoleConfig = {
 	SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS'
 	) as number,
-	RABBITMQ_URI: Configuration.get('RABBITMQ_URI') as string,
 };
 
 export const idpConsoleConfigConfig = () => config;

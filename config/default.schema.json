@@ -1115,11 +1115,6 @@
 			"default": false,
 			"description": "Enables the migration wizard to use the user login migration process"
 		},
-		"PROVISIONING_SCHULCONNEX_EXCHANGE": {
-			"type": "string",
-			"default": "schulconnex-provisioning",
-			"description": "rabbitmq exchange name for schulconnex provisioning"
-		},
 		"BOARD_COLLABORATION_URI": {
 			"type": "string",
 			"default": "ws://localhost:4450",

@@ -1,6 +1,5 @@
 import { CoreModule } from '@core/core.module';
 import { Logger } from '@core/logger';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
 import {
 	H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN,
@@ -20,7 +19,6 @@ const imports = [
 	ConfigModule.forRoot(createConfigModuleOptions(h5PLibraryManagementConfig)),
 	CoreModule,
 	H5PEditorModule,
-	RabbitMQWrapperModule,
 	S3ClientModule.register({
 		clientInjectionToken: H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN,
 		configInjectionToken: H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN,

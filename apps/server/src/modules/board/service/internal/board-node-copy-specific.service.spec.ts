@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { StorageLocation } from '@infra/files-storage-client';
-import { H5pEditorProducer } from '@infra/h5p-editor-client';
-import { CopyContentParams, CopyContentParentType } from '@infra/rabbitmq';
+import { CopyContentParams, CopyContentParentType, H5pEditorProducer } from '@infra/h5p-editor-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';

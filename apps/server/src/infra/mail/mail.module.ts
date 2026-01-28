@@ -1,38 +1,29 @@
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { ConfigurationModule } from '@infra/configuration';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq/rabbitmq.module';
 import { DynamicModule, Module } from '@nestjs/common';
+import { InternalMailConfig, MailModuleOptions } from './interfaces';
 import { MailService } from './mail.service';
 
-export interface InternalMailModuleConfig {
-	mailSendExchange: string;
-	mailSendRoutingKey: string;
-	blocklistOfEmailDomains: string[];
-}
 @Module({})
 export class MailModule {
-	public static register<T extends InternalMailModuleConfig>(
-		constructor: new () => T,
-		configInjectionToken: string
-	): DynamicModule {
+	public static register(options: MailModuleOptions): DynamicModule {
 		const providers = [
-			MailService,
 			{
-				provide: 'MAIL_SERVICE_OPTIONS',
-				useFactory: (
-					config: InternalMailModuleConfig
-				): { exchange: string; routingKey: string; domainBlacklist: string[] } => {
-					return {
-						exchange: config.mailSendExchange,
-						routingKey: config.mailSendRoutingKey,
-						domainBlacklist: config.blocklistOfEmailDomains,
-					};
+				provide: MailService,
+				useFactory(amqpConnection: AmqpConnection, config: InternalMailConfig): MailService {
+					return new MailService(amqpConnection, config);
 				},
-				inject: [configInjectionToken],
+				inject: [AmqpConnection, options.exchangeConfigInjectionToken],
 			},
 		];
 
 		return {
 			module: MailModule,
-			imports: [ConfigurationModule.register(configInjectionToken, constructor)],
+			imports: [
+				ConfigurationModule.register(options.exchangeConfigInjectionToken, options.exchangeConfigConstructor),
+				RabbitMQWrapperModule.register(options),
+			],
 			providers,
 			exports: [MailService],
 		};

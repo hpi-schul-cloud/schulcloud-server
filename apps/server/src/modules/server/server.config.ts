@@ -1,8 +1,6 @@
 import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
-import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { ManagementSeedDataConfig } from '@modules/management';
 import type { UserImportConfig } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
@@ -21,8 +19,6 @@ export enum NodeEnvType {
 // Maye some of them must be outsourced to additional microservice config endpoints.
 export interface ServerConfig
 	extends CoreModuleConfig,
-		FilesMetadataClientConfig,
-		MailConfig,
 		UserLoginMigrationConfig,
 		UserImportConfig,
 		SchulconnexClientConfig,
@@ -80,6 +76,7 @@ export interface ServerConfig
 	ROCKET_CHAT_URI: string;
 	ROCKET_CHAT_ADMIN_ID: string;
 	ROCKET_CHAT_ADMIN_TOKEN: string;
+	INCOMING_REQUEST_TIMEOUT_COPY_API: number;
 }
 
 const config: ServerConfig = {
@@ -130,10 +127,6 @@ const config: ServerConfig = {
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
 	NODE_ENV: Configuration.get('NODE_ENV') as NodeEnvType,
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
-	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
-	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
-		.split(',')
-		.map((domain) => domain.trim()),
 	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,
 	MIGRATION_END_GRACE_PERIOD_MS: Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number,
 	FEATURE_SHOW_OUTDATED_USERS: Configuration.get('FEATURE_SHOW_OUTDATED_USERS') as boolean,

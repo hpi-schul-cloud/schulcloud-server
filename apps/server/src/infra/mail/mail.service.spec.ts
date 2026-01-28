@@ -1,5 +1,6 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MAIL_CONFIG_TOKEN, MailConfig } from './mail.config';
 import { Mail } from './mail.interface';
 import { MailService } from './mail.service';
 
@@ -7,24 +8,26 @@ describe('MailService', () => {
 	let module: TestingModule;
 	let service: MailService;
 	let amqpConnection: AmqpConnection;
+	let config: MailConfig;
 
 	const mailServiceOptions = {
-		exchange: 'exchange',
-		routingKey: 'routingKey',
-		domainBlacklist: ['schul-cloud.org', 'example.com'],
+		exchangeName: 'exchange',
+		mailSendRoutingKey: 'routingKey',
+		blocklistOfEmailDomains: ['schul-cloud.org', 'example.com'],
 	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				MailService,
 				{ provide: AmqpConnection, useValue: { publish: () => {} } },
-				{ provide: 'MAIL_SERVICE_OPTIONS', useValue: mailServiceOptions },
+				{ provide: MAIL_CONFIG_TOKEN, useValue: mailServiceOptions },
 			],
 		}).compile();
 
-		service = module.get(MailService);
 		amqpConnection = module.get(AmqpConnection);
+		config = module.get(MAIL_CONFIG_TOKEN);
+
+		service = new MailService(amqpConnection, config);
 	});
 
 	afterAll(async () => {
@@ -69,7 +72,12 @@ describe('MailService', () => {
 				expect(data.bcc).toEqual(['test@example2.com']);
 				expect(data.replyTo).toEqual(['test@example3.com']);
 
-				const expectedParams = [mailServiceOptions.exchange, mailServiceOptions.routingKey, data, { persistent: true }];
+				const expectedParams = [
+					mailServiceOptions.exchangeName,
+					mailServiceOptions.mailSendRoutingKey,
+					data,
+					{ persistent: true },
+				];
 				expect(amqpConnectionSpy).toHaveBeenCalledWith(...expectedParams);
 			});
 		});
