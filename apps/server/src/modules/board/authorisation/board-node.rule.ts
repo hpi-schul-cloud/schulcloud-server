@@ -1,4 +1,9 @@
 import { Action, AuthorizationContext, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import { UserService } from '@modules/user';
+import { type User } from '@modules/user/repo';
+import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import {
 	BoardNodeAuthorizable,
 	BoardRoles,
@@ -6,15 +11,10 @@ import {
 	isDrawingElement,
 	isSubmissionItem,
 	isSubmissionItemContent,
+	isVideoConferenceElement,
 	SubmissionItem,
 	UserWithBoardRoles,
-} from '@modules/board';
-import { UserService } from '@modules/user';
-import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
-import { Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
-import { isVideoConferenceElement } from '../domain';
+} from '../domain';
 
 @Injectable()
 export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
