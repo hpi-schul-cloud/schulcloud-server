@@ -7,9 +7,9 @@ import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { SchoolFeature } from '@modules/school/domain';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerConfig } from '@modules/server';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { systemEntityFactory } from '@modules/system/testing';
+import { USER_IMPORT_CONFIG_TOKEN, UserImportConfig } from '@modules/user-import/user-import-config';
 import { userLoginMigrationFactory } from '@modules/user-login-migration/testing';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -25,6 +25,7 @@ describe('ImportUser Controller Populate (API)', () => {
 
 	let testApiClient: TestApiClient;
 	let axiosMock: MockAdapter;
+	let userImportConfig: UserImportConfig;
 
 	const authenticatedUser = async (
 		permissions: Permission[] = [],
@@ -48,10 +49,9 @@ describe('ImportUser Controller Populate (API)', () => {
 	};
 
 	const setConfig = (systemId?: string) => {
-		const config: ServerConfig = serverConfig();
-		config.FEATURE_USER_MIGRATION_ENABLED = true;
-		config.FEATURE_USER_MIGRATION_SYSTEM_ID = systemId || new ObjectId().toString();
-		config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = false;
+		userImportConfig.featureUserMigrationEnabled = true;
+		userImportConfig.featureUserMigrationSystemId = systemId || new ObjectId().toString();
+		userImportConfig.featureMigrationWizardWithUserLoginMigration = false;
 	};
 
 	beforeAll(async () => {
@@ -66,6 +66,7 @@ describe('ImportUser Controller Populate (API)', () => {
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'user/import');
 		axiosMock = new MockAdapter(axios);
+		userImportConfig = app.get<UserImportConfig>(USER_IMPORT_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -96,8 +97,7 @@ describe('ImportUser Controller Populate (API)', () => {
 				const { account } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE]);
 				const loggedInClient = await testApiClient.login(account);
 
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_USER_MIGRATION_ENABLED = false;
+				userImportConfig.featureUserMigrationEnabled = false;
 
 				return { loggedInClient };
 			};
@@ -121,8 +121,7 @@ describe('ImportUser Controller Populate (API)', () => {
 				const { account, school, system } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE], [], false);
 				school.externalId = undefined;
 
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_USER_MIGRATION_SYSTEM_ID = system.id;
+				userImportConfig.featureUserMigrationSystemId = system.id;
 
 				const userLoginMigration = userLoginMigrationFactory.buildWithId({ school });
 				await em.persist([userLoginMigration]).flush();
@@ -151,9 +150,8 @@ describe('ImportUser Controller Populate (API)', () => {
 				const { account, school, system } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE]);
 				const loggedInClient = await testApiClient.login(account);
 
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_USER_MIGRATION_ENABLED = true;
-				config.FEATURE_USER_MIGRATION_SYSTEM_ID = system.id;
+				userImportConfig.featureUserMigrationEnabled = true;
+				userImportConfig.featureUserMigrationSystemId = system.id;
 
 				const userLoginMigration = userLoginMigrationFactory.buildWithId({ school });
 				await em.persist([userLoginMigration]).flush();
