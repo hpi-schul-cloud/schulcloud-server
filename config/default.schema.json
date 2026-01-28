@@ -427,21 +427,18 @@
 			"type": "object",
 			"description": "Configuration regarding teachers' STUDENT_LIST permission.",
 			"properties": {
-				"IS_CONFIGURABLE": {
-					"type": "boolean",
-					"description": "Allows school admin to toggle teachers' STUDENT_LIST permission."
-				},
 				"IS_ENABLED_BY_DEFAULT": {
 					"type": "boolean",
+					"default": true,
 					"description": "Grants teachers STUDENT_LIST permission by default."
 				},
 				"IS_VISIBLE": {
 					"type": "boolean",
+					"default": true,
 					"description": "Defines whether feature toggle for visibility of students to teachers is visible."
 				}
 			},
 			"default": {
-				"IS_CONFIGURABLE": false,
 				"IS_ENABLED_BY_DEFAULT": true,
 				"IS_VISIBLE": true
 			}

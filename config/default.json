@@ -7,7 +7,6 @@
 		"hydra": "http://localhost:9001"
 	},
 	"I18N": {
-		"AVAILABLE_LANGUAGES": "de,en,es,uk",
 		"DEFAULT_LANGUAGE": "de",
 		"DEFAULT_TIMEZONE": "Europe/Berlin",
 		"FALLBACK_LANGUAGE": "de"

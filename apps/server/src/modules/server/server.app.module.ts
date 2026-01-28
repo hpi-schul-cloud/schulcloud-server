@@ -63,6 +63,7 @@ import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamApiModule } from '@modules/team/team-api.module';
 import { TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig } from '@modules/tool';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
+import { USER_PUBLIC_API_CONFIG_TOKEN, UserPublicApiConfig } from '@modules/user';
 import { ImportUserModule } from '@modules/user-import';
 import { UserLicenseModule } from '@modules/user-license';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
@@ -99,6 +100,7 @@ const serverModules = [
 	ConfigurationModule.register(TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig),
 	ConfigurationModule.register(TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig),
 	ConfigurationModule.register(LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig),
+	ConfigurationModule.register(USER_PUBLIC_API_CONFIG_TOKEN, UserPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,
 	CoreModule,

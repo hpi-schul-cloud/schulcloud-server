@@ -1,5 +1,10 @@
 import { DeepPartial } from '@mikro-orm/core';
-import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import {
+	Action,
+	AUTHORIZATION_CONFIG_TOKEN,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonEntity, Material } from '@modules/lesson/repo';
@@ -39,6 +44,7 @@ describe('TaskRule', () => {
 				LessonRule,
 				CourseGroupRule,
 				AuthorizationInjectionService,
+				{ provide: AUTHORIZATION_CONFIG_TOKEN, useValue: {} },
 			],
 		}).compile();
 
