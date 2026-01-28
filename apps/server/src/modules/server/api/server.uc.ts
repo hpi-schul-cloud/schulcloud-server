@@ -12,6 +12,7 @@ import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '@module
 import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '@modules/task';
 import { TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig } from '@modules/tool';
 import { USER_PUBLIC_API_CONFIG_TOKEN, UserPublicApiConfig } from '@modules/user';
+import { USER_IMPORT_PUBLIC_API_CONFIG_TOKEN, UserImportPublicApiConfig } from '@modules/user-import';
 import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { Inject, Injectable } from '@nestjs/common';
 import { SERVER_CONFIG_TOKEN, ServerConfig } from '../server.config';
@@ -37,7 +38,8 @@ export class ServerUc {
 		@Inject(TOOL_PUBLIC_API_CONFIG_TOKEN) private readonly toolConfig: ToolPublicApiConfig,
 		@Inject(TASK_PUBLIC_API_CONFIG_TOKEN) private readonly taskConfig: TaskPublicApiConfig,
 		@Inject(LEARNROOM_PUBLIC_API_CONFIG_TOKEN) private readonly learnroomConfig: LearnroomPublicApiConfig,
-		@Inject(USER_PUBLIC_API_CONFIG_TOKEN) private readonly userConfig: UserPublicApiConfig
+		@Inject(USER_PUBLIC_API_CONFIG_TOKEN) private readonly userConfig: UserPublicApiConfig,
+		@Inject(USER_IMPORT_PUBLIC_API_CONFIG_TOKEN) private readonly userImportConfig: UserImportPublicApiConfig
 	) {}
 
 	public getConfig(): ConfigResponse {
@@ -57,7 +59,8 @@ export class ServerUc {
 			this.toolConfig,
 			this.taskConfig,
 			this.learnroomConfig,
-			this.userConfig
+			this.userConfig,
+			this.userImportConfig
 		);
 
 		return configDto;
