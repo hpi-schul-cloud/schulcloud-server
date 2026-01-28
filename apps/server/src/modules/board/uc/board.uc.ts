@@ -48,7 +48,7 @@ export class BoardUc {
 	}
 
 	public async createBoard(userId: EntityId, params: CreateBoardBodyParams): Promise<ColumnBoard> {
-		await this.checkReferenceWritePermission(userId, { type: params.parentType, id: params.parentId });
+		await this.checkBoardCreatePermission(userId, { type: params.parentType, id: params.parentId });
 
 		const board = this.boardNodeFactory.buildColumnBoard({
 			context: { type: params.parentType, id: params.parentId },
@@ -211,11 +211,7 @@ export class BoardUc {
 		return board;
 	}
 
-	// ---- Move to shared service? (see apps/server/src/modules/sharing/uc/share-token.uc.ts)
-
-	// TODO: discuss - unneccessary double authorization check!?!?
-
-	private async checkReferenceWritePermission(userId: EntityId, context: BoardExternalReference): Promise<void> {
+	private async checkBoardCreatePermission(userId: EntityId, context: BoardExternalReference): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		if (context.type === BoardExternalReferenceType.Course) {
