@@ -8,13 +8,13 @@ import { v1 } from 'uuid';
 import {
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
-} from '../../keycloak-administration/keycloak-administration-config';
+} from '../../keycloak-administration/keycloak-administration.config';
 import { KeycloakAdministrationModule } from '../../keycloak-administration/keycloak-administration.module';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import {
 	KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
 	KeycloakConfigurationConfig,
-} from '../../keycloak-configuration/keycloak-configuration-config';
+} from '../../keycloak-configuration/keycloak-configuration.config';
 import { KeycloakConfigurationModule } from '../../keycloak-configuration/keycloak-configuration.module';
 import { KeycloakConfigurationService } from '../../keycloak-configuration/service/keycloak-configuration.service';
 import { KeycloakModule } from '../keycloak.module';

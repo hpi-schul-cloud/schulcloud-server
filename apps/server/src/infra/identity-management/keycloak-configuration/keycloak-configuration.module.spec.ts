@@ -6,9 +6,9 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import {
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
-} from '../keycloak-administration/keycloak-administration-config';
+} from '../keycloak-administration/keycloak-administration.config';
 import { KeycloakConsole } from './console/keycloak-configuration.console';
-import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from './keycloak-configuration-config';
+import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from './keycloak-configuration.config';
 import { KeycloakConfigurationModule } from './keycloak-configuration.module';
 import { KeycloakConfigurationService } from './service/keycloak-configuration.service';
 import { KeycloakSeedService } from './service/keycloak-seed.service';

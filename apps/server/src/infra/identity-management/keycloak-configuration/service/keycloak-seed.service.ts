@@ -5,7 +5,7 @@ import fs from 'node:fs/promises';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { JsonAccount } from '../interface/json-account.interface';
 import { JsonUser } from '../interface/json-user.interface';
-import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration-config';
+import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration.config';
 
 export class KeycloakSeedService {
 	constructor(
