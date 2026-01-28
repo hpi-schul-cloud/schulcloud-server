@@ -50,8 +50,11 @@ export class ClassGroupUc {
 		this.authorizationService.checkPermission(
 			user,
 			school,
-			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW, Permission.STUDENT_LIST])
+			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW])
 		);
+
+		// Check additional permission for student list (elevated rights)
+		this.authorizationService.hasPermission(user, school, AuthorizationContextBuilder.read([Permission.STUDENT_LIST]));
 
 		const groupVisibilityPermission: GroupVisibilityPermission = this.getGroupVisibilityPermission(user);
 		const page: Page<InternalClassDto<Group | Class>> = await this.findCombinedClassListPage(
@@ -172,6 +175,14 @@ export class ClassGroupUc {
 		const systems: System[] = await this.systemService.getSystems(Array.from(systemIdSet));
 
 		const studentRole: RoleDto = await this.roleService.findByName(RoleName.STUDENT);
+		const teacherRole: RoleDto = await this.roleService.findByName(RoleName.TEACHER);
+		const teacherIds = groups.data.flatMap((group: Group) =>
+			group.users
+				.filter((groupUser: GroupUser) => groupUser.roleId === teacherRole.id)
+				.map((groupUser: GroupUser) => groupUser.userId)
+		);
+		const uniqueTeacherIds = Array.from(new Set(teacherIds));
+		const teachers = (await this.userService.findByIds(uniqueTeacherIds)) ?? [];
 
 		const groupDtos: InternalClassDto<Group>[] = groups.data.map((group: Group): InternalClassDto<Group> => {
 			const studentCount: number = group.users.reduce(
@@ -182,12 +193,16 @@ export class ClassGroupUc {
 				? systems.find((system: System): boolean => system.id === group.externalSource?.systemId)?.displayName
 				: undefined;
 
+			const teacherNames: string[] = teachers
+				.filter((teacher) => group.users.map((user) => user.userId).includes(teacher.id ?? 'no-id-defined'))
+				.map((teacher) => `${teacher.firstName} ${teacher.lastName}`);
+
 			const mapped: InternalClassDto<Group> = new InternalClassDto({
 				id: group.id,
 				type: ClassRootType.GROUP,
 				name: group.name,
 				externalSourceName,
-				teacherNames: [],
+				teacherNames,
 				studentCount,
 				original: group,
 			});
@@ -216,7 +231,7 @@ export class ClassGroupUc {
 
 		const teacherIds = classes.flatMap((clazz: Class) => clazz.teacherIds || []);
 		const uniqueTeacherIds = Array.from(new Set(teacherIds));
-		const teachers = await this.userService.findByIds(uniqueTeacherIds);
+		const teachers = (await this.userService.findByIds(uniqueTeacherIds)) ?? [];
 
 		const classDtos: InternalClassDto<Class>[] = classes
 			.map((clazz: Class): InternalClassDto<Class> | null => {
@@ -232,8 +247,8 @@ export class ClassGroupUc {
 
 				const teacherNames = teachers
 					.filter((teacher) => clazz.teacherIds.includes(teacher.id ?? 'no-id-defined'))
-					.map((teacher) => teacher.firstName + ' ' + teacher.lastName);
-				console.log('teacherNames', teacherNames);
+					.map((teacher) => `${teacher.firstName} ${teacher.lastName}`);
+
 				const mapped: InternalClassDto<Class> = new InternalClassDto({
 					id: clazz.id,
 					type: ClassRootType.CLASS,
