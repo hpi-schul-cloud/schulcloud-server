@@ -6,17 +6,19 @@ import { IHubInfo, IUser as LumiIUser } from '@lumieducation/h5p-server/build/sr
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import * as fs from 'fs';
 import * as fsPromises from 'fs/promises';
-import { H5PEditorConfig } from '../h5p-editor.config';
+import { H5P_EDITOR_CONFIG_TOKEN } from '../h5p-editor.config';
+import * as GetLibraryWhiteList from '../helper/h5p-libraries.helper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PUploadFile } from '../types';
 import { H5PEditorUc } from './h5p.uc';
+
+jest.mock('../helper/h5p-libraries.helper');
 
 jest.mock('fs', (): unknown => {
 	return {
@@ -44,12 +46,6 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				H5PEditorUc,
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<H5PEditorConfig, true>>({
-						get: () => ['H5P.Accordion'],
-					}),
-				},
 				{
 					provide: H5PEditor,
 					useValue: createMock<H5PEditor>(),
@@ -82,12 +78,18 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: H5P_EDITOR_CONFIG_TOKEN,
+					useValue: {},
+				},
 			],
 		}).compile();
 
 		uc = module.get(H5PEditorUc);
 		ajaxEndpoint = module.get(H5PAjaxEndpoint);
 		userService = module.get(UserService);
+
+		jest.spyOn(GetLibraryWhiteList, 'getLibraryWhiteList').mockReturnValue(['H5P.Accordion']);
 	});
 
 	afterEach(() => {
