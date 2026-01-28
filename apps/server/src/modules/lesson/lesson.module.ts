@@ -19,7 +19,6 @@ import { DeleteUserLessonDataStep } from './saga';
 
 @Module({
 	imports: [
-		FilesStorageClientModule,
 		LoggerModule,
 		ConfigurationModule.register(LESSON_CONFIG_TOKEN, LessonConfig),
 		CopyHelperModule,
