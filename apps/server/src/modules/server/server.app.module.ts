@@ -3,7 +3,7 @@ import { LoggerModule } from '@core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
-import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMqConfig, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
@@ -21,9 +21,14 @@ import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { CourseApiModule } from '@modules/course/course-api.module';
-import { FilesStorageClientModule } from '@modules/files-storage-client';
+import {
+	FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+	FilesStorageClientConfig,
+	FilesStorageClientModule,
+} from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { HelpdeskApiModule } from '@modules/helpdesk';
+import { LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig } from '@modules/learnroom';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
 import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school.api-module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
@@ -76,7 +81,6 @@ import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.mod
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
-import { LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig } from '@modules/learnroom';
 
 const serverModules = [
 	HelpdeskApiModule,
@@ -120,7 +124,12 @@ const serverModules = [
 	SchulconnexClientModule.registerAsync(),
 	ImportUserModule,
 	LearnroomApiModule,
-	FilesStorageClientModule,
+	FilesStorageClientModule.register({
+		exchangeConstructor: FilesStorageClientConfig,
+		exchangeInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+		configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+		configConstructor: RabbitMqConfig,
+	}),
 	SystemApiModule,
 	ServerMailModule,
 	RocketChatModule,
@@ -161,7 +170,6 @@ const controllers = [ServerController, ServerConfigController];
  */
 @Module({
 	imports: [
-		RabbitMQWrapperModule,
 		...serverModules,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,

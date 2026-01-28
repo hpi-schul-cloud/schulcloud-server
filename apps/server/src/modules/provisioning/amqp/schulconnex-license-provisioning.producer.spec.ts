@@ -1,10 +1,10 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchulconnexProvisioningEvents, SchulconnexProvisioningExchange } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchulconnexLicenseProvisioningMessage } from '../domain';
 import { SchulconnexLicenseProvisioningProducer } from './schulconnex-license-provisioning.producer';
+import { SchulconnexProvisioningExchange, SchulconnexProvisioningEvents } from './schulconnex.exchange';
 
 describe(SchulconnexLicenseProvisioningProducer.name, () => {
 	let module: TestingModule;

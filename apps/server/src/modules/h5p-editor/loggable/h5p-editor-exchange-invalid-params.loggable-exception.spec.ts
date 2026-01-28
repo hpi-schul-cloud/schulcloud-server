@@ -1,6 +1,6 @@
 import { ErrorLogMessage } from '@core/logger';
+import { h5pEditorExchangeCopyContentParamsFactory } from '@infra/h5p-editor-client/testing';
 import { H5pEditorEvents } from '@infra/rabbitmq';
-import { h5pEditorExchangeCopyContentParamsFactory } from '@infra/rabbitmq/testing';
 import { H5pEditorExchangeInvalidParamsLoggableException } from './h5p-editor-exchange-invalid-params.loggable-exception';
 
 describe(H5pEditorExchangeInvalidParamsLoggableException.name, () => {

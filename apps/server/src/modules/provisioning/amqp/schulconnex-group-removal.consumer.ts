@@ -1,14 +1,20 @@
 import { Logger } from '@core/logger';
 import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { SchulconnexProvisioningEvents, SchulconnexProvisioningExchange } from '@infra/rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { type Group } from '@modules/group';
 import { Inject, Injectable } from '@nestjs/common';
 import { SchulconnexGroupRemovalMessage } from '../domain';
 import { GroupRemovalSuccessfulLoggable } from '../loggable';
+import {
+	InternalProvisioningExchangeConfig,
+	PROVISIONING_EXCHANGE_CONFIG_TOKEN,
+} from '../provisioning-exchange.config';
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../provisioning.config';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
+import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
 
+// Using a variable to hold the exchange name to avoid issues with decorator evaluation order
+let provisionedExchangeName: string;
 @Injectable()
 export class SchulconnexGroupRemovalConsumer {
 	constructor(
@@ -17,13 +23,15 @@ export class SchulconnexGroupRemovalConsumer {
 		private readonly schulconnexCourseSyncService: SchulconnexCourseSyncService,
 		@Inject(PROVISIONING_CONFIG_TOKEN)
 		private readonly config: ProvisioningConfig,
+		@Inject(PROVISIONING_EXCHANGE_CONFIG_TOKEN) private readonly exchangeConfig: InternalProvisioningExchangeConfig,
 		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(SchulconnexGroupRemovalConsumer.name);
+		provisionedExchangeName = this.exchangeConfig.exchangeName;
 	}
 
 	@RabbitSubscribe({
-		exchange: SchulconnexProvisioningExchange,
+		exchange: provisionedExchangeName,
 		routingKey: SchulconnexProvisioningEvents.GROUP_REMOVAL,
 		queue: SchulconnexProvisioningEvents.GROUP_REMOVAL,
 	})

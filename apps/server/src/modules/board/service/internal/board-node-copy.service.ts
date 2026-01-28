@@ -1,5 +1,4 @@
-import { H5pEditorProducer } from '@infra/h5p-editor-client';
-import { CopyContentParams, CopyContentParentType } from '@infra/rabbitmq';
+import { CopyContentParams, CopyContentParentType, H5pEditorProducer } from '@infra/h5p-editor-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
 import { CopyElementType, CopyHelperService, CopyMapper, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';

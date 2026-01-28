@@ -1,13 +1,22 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ConfigProperty, Configuration } from '@infra/configuration';
+import { StringToNumber } from '@shared/controller/transformer';
+import { IsNumber, IsUrl } from 'class-validator';
+import { InternalRabbitMqConfig } from './rabbitmq-module.options';
 
-// should be move to config interface and added reading on places that use the module
-export const FilesStorageExchange = 'files-storage';
-export const MailSendExchange = Configuration.get('MAIL_SEND_EXCHANGE') as string;
-export const SchulconnexProvisioningExchange = Configuration.get('PROVISIONING_SCHULCONNEX_EXCHANGE') as string;
-export const H5pEditorExchange = Configuration.get('H5P_EDITOR__EXCHANGE') as string;
-export const RabbitMqURI = Configuration.get('RABBITMQ_URI') as string;
-export const HeartBeatIntervalInSeconds = Configuration.get('RABBITMQ_HEARTBEAT_INTERVAL_IN_SECONDS') as number;
+export const RABBITMQ_CONFIG_TOKEN = 'RABBITMQ_CONFIG_TOKEN';
+@Configuration()
+export class RabbitMqConfig implements InternalRabbitMqConfig {
+	@ConfigProperty('RABBITMQ_GLOBAL_PREFETCH_COUNT')
+	@StringToNumber()
+	@IsNumber()
+	public prefetchCount!: number;
 
-export interface RabbitMqConfig {
-	RABBITMQ_URI: string;
+	@IsNumber()
+	@StringToNumber()
+	@ConfigProperty('RABBITMQ_HEARTBEAT_INTERVAL_IN_SECONDS')
+	public heartBeatIntervalInSeconds!: number;
+
+	@IsUrl({ require_tld: false, require_valid_protocol: false })
+	@ConfigProperty('RABBITMQ_URI')
+	public uri!: string;
 }

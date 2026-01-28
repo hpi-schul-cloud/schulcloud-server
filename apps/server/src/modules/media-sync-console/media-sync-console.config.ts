@@ -1,12 +1,8 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { ConsoleWriterConfig } from '@infra/console';
-import { RabbitMqConfig } from '@infra/rabbitmq';
 import { MediaSourceConfig } from '@modules/media-source';
 
-export interface MediaSyncConsoleConfig extends ConsoleWriterConfig, RabbitMqConfig, MediaSourceConfig {}
+export interface MediaSyncConsoleConfig extends ConsoleWriterConfig, MediaSourceConfig {}
 
-const config: MediaSyncConsoleConfig = {
-	RABBITMQ_URI: Configuration.get('RABBITMQ_URI') as string,
-};
+const config: MediaSyncConsoleConfig = {};
 
 export const mediaSyncConsoleConfig = (): MediaSyncConsoleConfig => config;

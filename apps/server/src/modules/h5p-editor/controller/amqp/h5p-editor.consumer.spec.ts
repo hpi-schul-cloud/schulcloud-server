@@ -1,7 +1,7 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { h5pEditorExchangeCopyContentParamsFactory } from '@infra/h5p-editor-client/testing';
 import { CopyContentParentType, H5pEditorEvents } from '@infra/rabbitmq';
-import { h5pEditorExchangeCopyContentParamsFactory } from '@infra/rabbitmq/testing';
 import { H5PEditor } from '@lumieducation/h5p-server';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';

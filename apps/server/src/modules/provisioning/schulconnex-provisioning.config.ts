@@ -1,6 +1,5 @@
 import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import type { RabbitMqConfig } from '@infra/rabbitmq';
 import type { CourseSynchronizationHistoryConfig } from '@modules/course-synchronization-history';
 import type { LegacySchoolConfig } from '@modules/legacy-school';
 import type { MediaSourceConfig } from '@modules/media-source';
@@ -9,8 +8,7 @@ import type { UserLicenseConfig } from '@modules/user-license';
 import type { LanguageType } from '@shared/domain/interface';
 
 export interface SchulconnexProvisioningConfig
-	extends RabbitMqConfig,
-		UserConfig,
+	extends UserConfig,
 		LegacySchoolConfig,
 		CoreModuleConfig,
 		UserLicenseConfig,
@@ -29,7 +27,6 @@ const config: SchulconnexProvisioningConfig = {
 		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
 	) as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
-	RABBITMQ_URI: Configuration.get('RABBITMQ_URI') as string,
 	CALENDAR_SERVICE_ENABLED: Configuration.get('CALENDAR_SERVICE_ENABLED') as boolean,
 };
 

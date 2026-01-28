@@ -1,6 +1,5 @@
 import { CoreModule } from '@core/core.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { HealthApiModule, HealthEntities } from '@modules/health';
 import { Module } from '@nestjs/common';
@@ -23,7 +22,6 @@ import { schulconnexProvisioningConfig } from './schulconnex-provisioning.config
 			user: DB_USERNAME,
 			entities: [...ENTITIES, ...HealthEntities],
 		}),
-		RabbitMQWrapperModule,
 		HealthApiModule,
 		SchulconnexGroupRemovalConsumerModule,
 	],

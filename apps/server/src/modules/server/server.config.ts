@@ -1,8 +1,6 @@
 import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
-import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { ManagementSeedDataConfig } from '@modules/management';
 import type { UserConfig } from '@modules/user';
 import type { UserImportConfig } from '@modules/user-import';
@@ -23,8 +21,6 @@ export enum NodeEnvType {
 export interface ServerConfig
 	extends CoreModuleConfig,
 		UserConfig,
-		FilesMetadataClientConfig,
-		MailConfig,
 		UserLoginMigrationConfig,
 		UserImportConfig,
 		SchulconnexClientConfig,
@@ -130,7 +126,6 @@ const config: ServerConfig = {
 	SC_SHORTNAME: Configuration.get('SC_SHORTNAME') as string,
 	TRAINING_URL: Configuration.get('TRAINING_URL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
-	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
 	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	NODE_ENV: Configuration.get('NODE_ENV') as NodeEnvType,
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
@@ -140,10 +135,6 @@ const config: ServerConfig = {
 		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
 	) as string,
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
-	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
-	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
-		.split(',')
-		.map((domain) => domain.trim()),
 	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,
 	MIGRATION_END_GRACE_PERIOD_MS: Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number,
 	FEATURE_SHOW_OUTDATED_USERS: Configuration.get('FEATURE_SHOW_OUTDATED_USERS') as boolean,
