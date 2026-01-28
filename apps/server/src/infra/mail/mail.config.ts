@@ -1,5 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { InternalRabbitMQExchange } from '@infra/rabbitmq';
+import { InternalRabbitMQExchangeConfig, RabbitMQExchangeType } from '@infra/rabbitmq';
 import { CommaSeparatedStringToArray } from '@shared/controller/transformer/comma-separated-string-to-array.transformer';
 import { IsArray, IsString } from 'class-validator';
 import { InternalMailConfig } from './interfaces';
@@ -8,14 +8,14 @@ export const MAIL_CONFIG_TOKEN = 'MAIL_CONFIG_TOKEN';
 export const MAIL_EXCHANGE_CONFIG_TOKEN = 'MAIL_EXCHANGE_CONFIG_TOKEN';
 
 @Configuration()
-export class MailExchange implements InternalRabbitMQExchange {
+export class MailExchange implements InternalRabbitMQExchangeConfig {
 	@ConfigProperty('MAIL_SEND_EXCHANGE')
 	@IsString()
 	public exchangeName = 'mail-drop';
 
 	@ConfigProperty('MAIL_SEND_EXCHANGE_TYPE')
 	@IsString()
-	public exchangeType = 'direct';
+	public exchangeType = RabbitMQExchangeType.DIRECT;
 }
 
 @Configuration()

@@ -13,7 +13,7 @@ export class H5pEditorClientModule {
 			module: H5pEditorClientModule,
 			imports: [
 				RabbitMQWrapperModule.register(options),
-				ConfigurationModule.register(options.exchangeInjectionToken, options.exchangeConstructor),
+				ConfigurationModule.register(options.exchangeConfigInjectionToken, options.exchangeConfigConstructor),
 			],
 			providers: [
 				{
@@ -21,7 +21,7 @@ export class H5pEditorClientModule {
 					useFactory(amqpConnection: AmqpConnection, config: H5pExchangeConfig): H5pEditorProducer {
 						return new H5pEditorProducer(amqpConnection, config);
 					},
-					inject: [AmqpConnection, options.exchangeInjectionToken],
+					inject: [AmqpConnection, options.exchangeConfigInjectionToken],
 				},
 			],
 			exports: [H5pEditorProducer],

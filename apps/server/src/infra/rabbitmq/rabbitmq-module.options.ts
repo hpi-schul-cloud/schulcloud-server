@@ -1,17 +1,23 @@
-export interface InternalRabbitMQExchange {
+export enum RabbitMQExchangeType {
+	DIRECT = 'direct',
+	FANOUT = 'fanout',
+	TOPIC = 'topic',
+	HEADERS = 'headers',
+}
+export interface InternalRabbitMQExchangeConfig {
 	exchangeName: string;
-	exchangeType: string;
+	exchangeType: RabbitMQExchangeType;
 }
 
-export interface InternalRabbitMqConfig {
+export interface InternalRabbitMQConfig {
 	prefetchCount: number;
 	heartBeatIntervalInSeconds: number;
 	uri: string;
 }
 
 export interface RabbitMQModuleOptions {
-	exchangeInjectionToken: string;
-	exchangeConstructor: new () => InternalRabbitMQExchange;
+	exchangeConfigInjectionToken: string;
+	exchangeConfigConstructor: new () => InternalRabbitMQExchangeConfig;
 	configInjectionToken: string;
-	configConstructor: new () => InternalRabbitMqConfig;
+	configConstructor: new () => InternalRabbitMQConfig;
 }

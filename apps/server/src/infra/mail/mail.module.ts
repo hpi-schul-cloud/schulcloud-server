@@ -14,14 +14,14 @@ export class MailModule {
 				useFactory(amqpConnection: AmqpConnection, config: InternalMailConfig): MailService {
 					return new MailService(amqpConnection, config);
 				},
-				inject: [AmqpConnection, options.exchangeInjectionToken],
+				inject: [AmqpConnection, options.exchangeConfigInjectionToken],
 			},
 		];
 
 		return {
 			module: MailModule,
 			imports: [
-				ConfigurationModule.register(options.exchangeInjectionToken, options.exchangeConstructor),
+				ConfigurationModule.register(options.exchangeConfigInjectionToken, options.exchangeConfigConstructor),
 				RabbitMQWrapperModule.register(options),
 			],
 			providers,

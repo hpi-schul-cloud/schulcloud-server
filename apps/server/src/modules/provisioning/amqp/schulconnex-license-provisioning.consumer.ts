@@ -15,7 +15,7 @@ import {
 import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
 
 // Using a variable here to access the exchange name in the decorator
-let provisionedExchangeName: string;
+let provisionedExchangeName: string | undefined;
 
 @Injectable()
 export class SchulconnexLicenseProvisioningConsumer {

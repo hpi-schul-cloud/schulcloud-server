@@ -1,4 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
+import { RabbitMQExchangeType } from '@infra/rabbitmq';
 import { CommaSeparatedStringToArray } from '@shared/controller/transformer/comma-separated-string-to-array.transformer';
 import { IsArray, IsString } from 'class-validator';
 import { InternalMailConfig } from '../interfaces';
@@ -13,7 +14,7 @@ export class TestMailConfig implements InternalMailConfig {
 
 	@ConfigProperty('MAIL_SEND_EXCHANGE_TYPE')
 	@IsString()
-	public exchangeType = 'direct';
+	public exchangeType = RabbitMQExchangeType.DIRECT;
 
 	@ConfigProperty('MAIL_SEND_ROUTING_KEY')
 	@IsString()

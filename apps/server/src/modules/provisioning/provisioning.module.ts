@@ -1,6 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
-import { RABBITMQ_CONFIG_TOKEN, RabbitMqConfig, RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig, RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { AccountModule } from '@modules/account';
 import { ClassModule } from '@modules/class';
@@ -64,10 +64,10 @@ import {
 		MediumMetadataModule,
 		MediaSourceSyncModule,
 		RabbitMQWrapperModule.register({
-			exchangeInjectionToken: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
-			exchangeConstructor: ProvisioningExchangeConfig,
+			exchangeConfigInjectionToken: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
+			exchangeConfigConstructor: ProvisioningExchangeConfig,
 			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
-			configConstructor: RabbitMqConfig,
+			configConstructor: RabbitMQConfig,
 		}),
 	],
 	providers: [

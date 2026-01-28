@@ -1,7 +1,7 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToNumber } from '@shared/controller/transformer';
 import { IsNumber, IsUrl } from 'class-validator';
-import { InternalRabbitMqConfig } from './rabbitmq-module.options';
+import { InternalRabbitMQConfig } from './rabbitmq-module.options';
 
 export const RABBITMQ_CONFIG_TOKEN = 'RABBITMQ_CONFIG_TOKEN';
 
@@ -11,7 +11,7 @@ export const RABBITMQ_CONFIG_TOKEN = 'RABBITMQ_CONFIG_TOKEN';
  * implementing InternalRabbitMqConfig and provide it via the RabbitMqModule.register method.
  */
 @Configuration()
-export class RabbitMqConfig implements InternalRabbitMqConfig {
+export class RabbitMQConfig implements InternalRabbitMQConfig {
 	// Please don't change the global prefetch count for the existing exchanges.
 	// If you need individual prefetch counts for each consumer, please create a separate Config of RabbitMqModule with channels for your deployment.
 	@ConfigProperty('RABBITMQ_GLOBAL_PREFETCH_COUNT')

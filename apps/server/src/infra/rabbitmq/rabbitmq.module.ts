@@ -1,8 +1,8 @@
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { ConfigurationModule } from '@infra/configuration';
 import { DynamicModule, Module } from '@nestjs/common';
-import { InternalRabbitMQExchange, RabbitMQModuleOptions } from './rabbitmq-module.options';
-import { RabbitMqConfig } from './rabbitmq.config';
+import { InternalRabbitMQExchangeConfig, RabbitMQModuleOptions } from './rabbitmq-module.options';
+import { RabbitMQConfig } from './rabbitmq.config';
 
 @Module({})
 export class RabbitMQWrapperModule {
@@ -11,7 +11,7 @@ export class RabbitMQWrapperModule {
 			module: RabbitMQWrapperModule,
 			imports: [
 				RabbitMQModule.forRootAsync(RabbitMQModule, {
-					useFactory: (config: RabbitMqConfig, exchange: InternalRabbitMQExchange) => {
+					useFactory: (config: RabbitMQConfig, exchange: InternalRabbitMQExchangeConfig) => {
 						return {
 							prefetchCount: config.prefetchCount,
 							exchanges: [
@@ -26,10 +26,10 @@ export class RabbitMQWrapperModule {
 							},
 						};
 					},
-					inject: [options.configInjectionToken, options.exchangeInjectionToken],
+					inject: [options.configInjectionToken, options.exchangeConfigInjectionToken],
 					imports: [
 						ConfigurationModule.register(options.configInjectionToken, options.configConstructor),
-						ConfigurationModule.register(options.exchangeInjectionToken, options.exchangeConstructor),
+						ConfigurationModule.register(options.exchangeConfigInjectionToken, options.exchangeConfigConstructor),
 					],
 				}),
 			],

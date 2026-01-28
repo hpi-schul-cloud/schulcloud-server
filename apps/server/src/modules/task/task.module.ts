@@ -1,4 +1,5 @@
 import { LoggerModule } from '@core/logger';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { CopyHelperModule } from '@modules/copy-helper';
 import {
 	FILES_STORAGE_CLIENT_CONFIG_TOKEN,
@@ -11,7 +12,6 @@ import { SubmissionService, TaskCopyService, TaskService } from './domain';
 import { SubmissionRepo, TaskRepo } from './repo';
 import { DeleteUserSubmissionDataStep, DeleteUserTaskDataStep } from './saga';
 import { UserChangedSchoolTaskHandlerService } from './service/user-changed-school-task-handler.service';
-import { RABBITMQ_CONFIG_TOKEN, RabbitMqConfig } from '@infra/rabbitmq';
 
 @Module({
 	imports: [
@@ -20,10 +20,10 @@ import { RABBITMQ_CONFIG_TOKEN, RabbitMqConfig } from '@infra/rabbitmq';
 		LoggerModule,
 		SagaModule,
 		FilesStorageClientModule.register({
-			exchangeConstructor: FilesStorageClientConfig,
-			exchangeInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+			exchangeConfigConstructor: FilesStorageClientConfig,
+			exchangeConfigInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
 			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
-			configConstructor: RabbitMqConfig,
+			configConstructor: RabbitMQConfig,
 		}),
 	],
 	providers: [

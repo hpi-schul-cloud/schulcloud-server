@@ -1,4 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
+import { RabbitMQExchangeType } from '@infra/rabbitmq';
 import { StringToNumber } from '@shared/controller/transformer';
 import { IsNumber, IsString } from 'class-validator';
 
@@ -17,5 +18,5 @@ export class FilesStorageClientConfig {
 
 	@ConfigProperty('FILES_STORAGE__EXCHANGE_TYPE')
 	@IsString()
-	public exchangeType = 'direct';
+	public exchangeType = RabbitMQExchangeType.DIRECT;
 }

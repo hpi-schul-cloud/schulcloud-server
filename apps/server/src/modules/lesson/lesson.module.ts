@@ -1,6 +1,7 @@
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { FeathersServiceProvider } from '@infra/feathers';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { AuthorizationModule } from '@modules/authorization';
 import { CopyHelperModule } from '@modules/copy-helper';
 import {
@@ -15,7 +16,6 @@ import { EtherpadService, LessonCopyService, LessonService } from './domain';
 import { LESSON_CONFIG_TOKEN, LessonConfig } from './lesson.config';
 import { LessonRepo } from './repo';
 import { DeleteUserLessonDataStep } from './saga';
-import { RABBITMQ_CONFIG_TOKEN, RabbitMqConfig } from '@infra/rabbitmq';
 
 @Module({
 	imports: [
@@ -27,10 +27,10 @@ import { RABBITMQ_CONFIG_TOKEN, RabbitMqConfig } from '@infra/rabbitmq';
 		AuthorizationModule,
 		SagaModule,
 		FilesStorageClientModule.register({
-			exchangeConstructor: FilesStorageClientConfig,
-			exchangeInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+			exchangeConfigConstructor: FilesStorageClientConfig,
+			exchangeConfigInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
 			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
-			configConstructor: RabbitMqConfig,
+			configConstructor: RabbitMQConfig,
 		}),
 	],
 	providers: [

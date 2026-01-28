@@ -3,7 +3,7 @@ import { LoggerModule } from '@core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
-import { RABBITMQ_CONFIG_TOKEN, RabbitMqConfig } from '@infra/rabbitmq';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
@@ -125,10 +125,10 @@ const serverModules = [
 	ImportUserModule,
 	LearnroomApiModule,
 	FilesStorageClientModule.register({
-		exchangeConstructor: FilesStorageClientConfig,
-		exchangeInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+		exchangeConfigConstructor: FilesStorageClientConfig,
+		exchangeConfigInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
 		configInjectionToken: RABBITMQ_CONFIG_TOKEN,
-		configConstructor: RabbitMqConfig,
+		configConstructor: RabbitMQConfig,
 	}),
 	SystemApiModule,
 	ServerMailModule,
