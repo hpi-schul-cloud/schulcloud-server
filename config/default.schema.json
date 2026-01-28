@@ -79,6 +79,11 @@
 					"type": "string",
 					"default": "de",
 					"description": "Value for the fallback language if translation key is not found"
+				},
+				"AVAILABLE_LANGUAGES": {
+					"type": "string",
+					"default": "de,en,es,ua",
+					"description": "Available languages"
 				}
 			}
 		},
