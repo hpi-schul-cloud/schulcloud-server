@@ -12,6 +12,7 @@ import { SharingPublicApiConfig } from '@modules/sharing';
 import { TaskPublicApiConfig } from '@modules/task';
 import { ToolPublicApiConfig } from '@modules/tool';
 import { UserPublicApiConfig } from '@modules/user';
+import { UserImportPublicApiConfig } from '@modules/user-import';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
@@ -291,7 +292,8 @@ export class ConfigResponse {
 			ToolPublicApiConfig &
 			TaskPublicApiConfig &
 			LearnroomPublicApiConfig &
-			UserPublicApiConfig
+			UserPublicApiConfig &
+			UserImportPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -326,7 +328,7 @@ export class ConfigResponse {
 		this.FEATURE_LESSON_SHARE = config.featureLessonShare;
 		this.FEATURE_TASK_SHARE = config.featureTaskShare;
 		this.FEATURE_BOARD_LAYOUT_ENABLED = config.FEATURE_BOARD_LAYOUT_ENABLED;
-		this.FEATURE_USER_MIGRATION_ENABLED = config.FEATURE_USER_MIGRATION_ENABLED;
+		this.FEATURE_USER_MIGRATION_ENABLED = config.featureUserMigrationEnabled;
 		this.FEATURE_COPY_SERVICE_ENABLED = config.featureCopyServiceEnabled;
 		this.FEATURE_CONSENT_NECESSARY = config.FEATURE_CONSENT_NECESSARY;
 		this.FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED = config.courseExportEnabled;
@@ -353,7 +355,7 @@ export class ConfigResponse {
 		this.FEATURE_CTL_TOOLS_COPY_ENABLED = config.featureCtlToolsCopyEnabled;
 		this.FEATURE_PREFERRED_CTL_TOOLS_ENABLED = config.featurePreferredCtlToolsEnabled;
 		this.FEATURE_SHOW_MIGRATION_WIZARD = config.FEATURE_SHOW_MIGRATION_WIZARD;
-		this.MIGRATION_WIZARD_DOCUMENTATION_LINK = config.MIGRATION_WIZARD_DOCUMENTATION_LINK;
+		this.MIGRATION_WIZARD_DOCUMENTATION_LINK = config.migrationWizardDocumentationLink;
 		this.FEATURE_TLDRAW_ENABLED = config.FEATURE_TLDRAW_ENABLED;
 		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.FEATURE_VIDEOCONFERENCE_ENABLED;
 		this.FEATURE_MEDIA_SHELF_ENABLED = config.featureMediaShelfEnabled;

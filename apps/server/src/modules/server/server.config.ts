@@ -1,7 +1,6 @@
 import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { ManagementSeedDataConfig } from '@modules/management';
-import type { UserImportConfig } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
 import type { LanguageType } from '@shared/domain/interface';
 import type { SchulcloudTheme } from '@shared/domain/types';
@@ -16,12 +15,7 @@ export enum NodeEnvType {
 
 // Environment keys should be added over configs from modules, directly adding is only allow for legacy stuff
 // Maye some of them must be outsourced to additional microservice config endpoints.
-export interface ServerConfig
-	extends CoreModuleConfig,
-		UserLoginMigrationConfig,
-		UserImportConfig,
-		UserImportConfig,
-		ManagementSeedDataConfig {
+export interface ServerConfig extends CoreModuleConfig, UserLoginMigrationConfig, ManagementSeedDataConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -76,6 +70,7 @@ export interface ServerConfig
 	ROCKET_CHAT_ADMIN_TOKEN: string;
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: number;
 	INCOMING_REQUEST_TIMEOUT_COPY_API: number;
+	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: number;
 }
 
 const config: ServerConfig = {
@@ -131,9 +126,6 @@ const config: ServerConfig = {
 	FEATURE_SHOW_OUTDATED_USERS: Configuration.get('FEATURE_SHOW_OUTDATED_USERS') as boolean,
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: Configuration.get('FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION') as boolean,
 	FEATURE_SHOW_MIGRATION_WIZARD: Configuration.get('FEATURE_SHOW_MIGRATION_WIZARD') as boolean,
-	MIGRATION_WIZARD_DOCUMENTATION_LINK: Configuration.has('MIGRATION_WIZARD_DOCUMENTATION_LINK')
-		? (Configuration.get('MIGRATION_WIZARD_DOCUMENTATION_LINK') as string)
-		: undefined,
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,
 	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as Timezone,
@@ -145,8 +137,6 @@ const config: ServerConfig = {
 	) as number,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
 	HOST: Configuration.get('HOST') as string,
-	FEATURE_USER_MIGRATION_ENABLED: Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean,
-	FEATURE_USER_MIGRATION_SYSTEM_ID: Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string,
 	FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: Configuration.get(
 		'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
 	) as boolean,

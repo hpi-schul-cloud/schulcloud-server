@@ -453,6 +453,10 @@
 					"default": true,
 					"description": "Defines whether feature toggle for visibility of students to teachers is visible."
 				}
+			},
+			"default": {
+				"IS_ENABLED_BY_DEFAULT": true,
+				"IS_VISIBLE": true
 			}
 		},
 		"FEATURE_SCHOOL_POLICY_ENABLED_NEW": {
@@ -846,16 +850,6 @@
 			"default": true,
 			"description": "Toggle for the column board layout feature."
 		},
-		"FEATURE_USER_MIGRATION_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enable user migration page for admin to bind ldap accounts to local accounts"
-		},
-		"FEATURE_USER_MIGRATION_SYSTEM_ID": {
-			"type": "string",
-			"default": "",
-			"description": "SystemId for migration of users from system. To use this please set FEATURE_USER_MIGRATION_CENTRAL_LDAP in the client"
-		},
 		"IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS": {
 			"type": "integer",
 			"description": "Timeout in milliseconds for saving all import user matches",
@@ -1000,10 +994,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the migration wizard on the school administration page in the migration section."
-		},
-		"MIGRATION_WIZARD_DOCUMENTATION_LINK": {
-			"type": "string",
-			"description": "The documentation page that gets rendered in the migration wizard tool."
 		},
 		"ADMIN_API_CLIENT": {
 			"type": "object",

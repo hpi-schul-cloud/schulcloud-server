@@ -11,10 +11,11 @@ import { RosterPublicApiConfig } from '@modules/roster';
 import { SharingPublicApiConfig } from '@modules/sharing';
 import { TaskPublicApiConfig } from '@modules/task';
 import { ToolPublicApiConfig } from '@modules/tool';
+import { UserPublicApiConfig } from '@modules/user';
+import { UserImportPublicApiConfig } from '@modules/user-import';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ServerConfig } from '../../server.config';
 import { ConfigResponse } from '../dto';
-import { UserPublicApiConfig } from '@modules/user';
 
 export class ConfigResponseMapper {
 	public static mapToResponse(
@@ -33,7 +34,8 @@ export class ConfigResponseMapper {
 		toolConfig: ToolPublicApiConfig,
 		taskConfig: TaskPublicApiConfig,
 		learnroomConfig: LearnroomPublicApiConfig,
-		userConfig: UserPublicApiConfig
+		userConfig: UserPublicApiConfig,
+		userImportConfig: UserImportPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,
@@ -52,6 +54,7 @@ export class ConfigResponseMapper {
 			...taskConfig,
 			...learnroomConfig,
 			...userConfig,
+			...userImportConfig,
 		});
 
 		return configResponse;

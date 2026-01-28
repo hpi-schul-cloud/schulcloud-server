@@ -1,4 +1,6 @@
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
+import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { AccountModule } from '@modules/account';
 import { AuthorizationModule } from '@modules/authorization';
@@ -13,7 +15,7 @@ import { ImportUserController } from './controller/import-user.controller';
 import { ImportUserRepo } from './repo';
 import { SchulconnexFetchImportUsersService, UserImportService } from './service';
 import { PopulateUserImportFetchUc, UserImportUc } from './uc';
-import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from '@infra/schulconnex-client';
+import { USER_IMPORT_CONFIG_TOKEN, UserImportConfig } from './user-import-config';
 
 @Module({
 	imports: [
@@ -28,6 +30,7 @@ import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from '@infra
 		UserLoginMigrationModule,
 		SystemModule,
 		UserModule,
+		ConfigurationModule.register(USER_IMPORT_CONFIG_TOKEN, UserImportConfig),
 	],
 	controllers: [ImportUserController],
 	providers: [
