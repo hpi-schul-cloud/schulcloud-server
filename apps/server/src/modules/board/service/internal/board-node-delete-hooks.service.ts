@@ -115,9 +115,8 @@ export class BoardNodeDeleteHooksService {
 	}
 
 	public async afterDeleteH5pElement(element: H5pElement): Promise<void> {
-		console.log('afterDeleteH5pElement called', element);
-		//if (element.contentId) {
-		await this.h5pEditorProducer.deleteContent({ contentId: 'element.contentId' });
-		//}
+		if (element.contentId) {
+			await this.h5pEditorProducer.deleteContent({ contentId: element.contentId });
+		}
 	}
 }
