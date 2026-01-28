@@ -1,6 +1,7 @@
 import { DeepPartial } from '@mikro-orm/core';
 import {
 	Action,
+	AUTHORIZATION_CONFIG_TOKEN,
 	AuthorizationContext,
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
@@ -39,7 +40,14 @@ describe('LessonRule', () => {
 		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, LessonEntity, Material, Submission]);
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, LessonRule, CourseRule, CourseGroupRule, AuthorizationInjectionService],
+			providers: [
+				AuthorizationHelper,
+				LessonRule,
+				CourseRule,
+				CourseGroupRule,
+				AuthorizationInjectionService,
+				{ provide: AUTHORIZATION_CONFIG_TOKEN, useValue: {} },
+			],
 		}).compile();
 
 		rule = await module.get(LessonRule);

@@ -14,6 +14,7 @@ import { ToolPublicApiConfig } from '@modules/tool';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ServerConfig } from '../../server.config';
 import { ConfigResponse } from '../dto';
+import { UserPublicApiConfig } from '@modules/user';
 
 export class ConfigResponseMapper {
 	public static mapToResponse(
@@ -31,7 +32,8 @@ export class ConfigResponseMapper {
 		commonCartridgeConfig: CommonCartridgePublicApiConfig,
 		toolConfig: ToolPublicApiConfig,
 		taskConfig: TaskPublicApiConfig,
-		learnroomConfig: LearnroomPublicApiConfig
+		learnroomConfig: LearnroomPublicApiConfig,
+		userConfig: UserPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,
@@ -49,6 +51,7 @@ export class ConfigResponseMapper {
 			...toolConfig,
 			...taskConfig,
 			...learnroomConfig,
+			...userConfig,
 		});
 
 		return configResponse;

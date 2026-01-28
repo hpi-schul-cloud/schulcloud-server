@@ -7,7 +7,6 @@ import type { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { type IFindOptions, LanguageType, Permission, SortOrder } from '@shared/domain/interface';
@@ -16,6 +15,7 @@ import { setupEntities } from '@testing/database';
 import { UserDto } from '../../api/dto';
 import { User, UserMikroOrmRepo } from '../../repo';
 import { userDoFactory, userFactory } from '../../testing';
+import { TeacherVisibilityForExternalTeamInvitation, USER_CONFIG_TOKEN, UserConfig } from '../../user.config';
 import { UserDo } from '../do';
 import { USER_DO_REPO, type UserDoRepo } from '../interface';
 import { UserDiscoverableQuery, type UserQuery } from '../query';
@@ -27,8 +27,8 @@ describe('UserService', () => {
 
 	let userRepo: DeepMocked<UserMikroOrmRepo>;
 	let userDoRepo: DeepMocked<UserDoRepo>;
-	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
+	let config: UserConfig;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
@@ -49,10 +49,6 @@ describe('UserService', () => {
 					useValue: createMock<UserDoRepo>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
-				},
-				{
 					provide: RoleService,
 					useValue: createMock<RoleService>(),
 				},
@@ -60,13 +56,17 @@ describe('UserService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: USER_CONFIG_TOKEN,
+					useValue: {},
+				},
 			],
 		}).compile();
 		service = module.get(UserService);
 
 		userRepo = module.get(UserMikroOrmRepo);
 		userDoRepo = module.get(USER_DO_REPO);
-		config = module.get(ConfigService);
+		config = module.get(USER_CONFIG_TOKEN);
 		roleService = module.get(RoleService);
 	});
 
@@ -278,7 +278,7 @@ describe('UserService', () => {
 		beforeEach(() => {
 			user = userFactory.buildWithId({ roles: [] });
 			userRepo.findById.mockResolvedValue(user);
-			config.get.mockReturnValue(['de']);
+			config.availableLanguages = [LanguageType.DE];
 		});
 
 		it('should patch language auf passed userId', async () => {
@@ -462,7 +462,7 @@ describe('UserService', () => {
 		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "enabled"', () => {
 			it('should query all teachers', async () => {
 				const { school, role } = setup();
-				config.get.mockReturnValue('enabled');
+				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.ENABLED;
 
 				await service.findPublicTeachersBySchool(school.id);
 
@@ -473,7 +473,7 @@ describe('UserService', () => {
 		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "opt-out"', () => {
 			it('should query teachers that did not specifically set discoverability to false', async () => {
 				const { school, role } = setup();
-				config.get.mockReturnValue('opt-out');
+				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_OUT;
 
 				await service.findPublicTeachersBySchool(school.id);
 
@@ -487,7 +487,7 @@ describe('UserService', () => {
 		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "opt-in"', () => {
 			it('should query only teachers that specifically set discoverability to true', async () => {
 				const { school, role } = setup();
-				config.get.mockReturnValue('opt-in');
+				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
 
 				await service.findPublicTeachersBySchool(school.id);
 
@@ -501,7 +501,7 @@ describe('UserService', () => {
 		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "disabled"', () => {
 			it('should return empty result', async () => {
 				const { school } = setup();
-				config.get.mockReturnValue('disabled');
+				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.DISABLED;
 
 				const result = await service.findPublicTeachersBySchool(school.id);
 
@@ -1011,6 +1011,42 @@ describe('UserService', () => {
 
 				expect(result).toEqual([]);
 			});
+		});
+	});
+
+	describe('resolvePermissions', () => {
+		const setup = () => {
+			const permission = Permission.ACCOUNT_CREATE;
+			const role = roleFactory.build({ permissions: [permission] });
+			const user = userFactory.buildWithId({ roles: [role] });
+
+			config.teacherStudentVisibilityIsConfigurable = true;
+			config.teacherStudentVisibilityIsEnabledByDefault = false;
+
+			return {
+				user,
+				permission,
+			};
+		};
+
+		it('should call user.resolvePermissions with config values', () => {
+			const { user, permission } = setup();
+			const userSpy = jest.spyOn(user, 'resolvePermissions').mockReturnValueOnce([permission]);
+
+			service.resolvePermissions(user);
+
+			expect(userSpy).toHaveBeenCalledWith(true, false);
+			userSpy.mockRestore();
+		});
+
+		it('should return the permissions from user.resolvePermissions', () => {
+			const { user, permission } = setup();
+			const userSpy = jest.spyOn(user, 'resolvePermissions').mockReturnValueOnce([permission]);
+
+			const result = service.resolvePermissions(user);
+
+			expect(result).toEqual([permission]);
+			userSpy.mockRestore();
 		});
 	});
 });
