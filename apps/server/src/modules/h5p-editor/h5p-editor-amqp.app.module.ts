@@ -7,7 +7,8 @@ import {
 	AuthorizationClientModule,
 } from '@infra/authorization-client';
 import { ConfigurationModule } from '@infra/configuration';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { H5P_EXCHANGE_CONFIG_TOKEN, H5pExchangeConfig } from '@infra/h5p-editor-client';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig, RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { HealthApiModule, HealthEntities } from '@modules/health';
@@ -43,7 +44,12 @@ const imports = [
 		entities: [...ENTITIES, ...HealthEntities],
 		ensureIndexes: true,
 	}),
-	RabbitMQWrapperModule,
+	RabbitMQWrapperModule.register({
+		exchangeConfigInjectionToken: H5P_EXCHANGE_CONFIG_TOKEN,
+		exchangeConfigConstructor: H5pExchangeConfig,
+		configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+		configConstructor: RabbitMQConfig,
+	}),
 	S3ClientModule.register({
 		clientInjectionToken: H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN,
 		configInjectionToken: H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN,
@@ -55,6 +61,7 @@ const imports = [
 		configConstructor: H5PLibrariesS3ClientConfig,
 	}),
 	ConfigurationModule.register(H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig),
+	ConfigurationModule.register(H5P_EXCHANGE_CONFIG_TOKEN, H5pExchangeConfig),
 	HealthApiModule,
 ];
 

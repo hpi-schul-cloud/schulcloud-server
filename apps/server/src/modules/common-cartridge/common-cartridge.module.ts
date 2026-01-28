@@ -8,7 +8,6 @@ import {
 	FilesStorageClientModule,
 	FileStorageClientConfig,
 } from '@infra/files-storage-client';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { FilesStorageClientModule as FilesMetadataClientModule } from '@modules/files-storage-client';
 import { Module } from '@nestjs/common';
 import { API_HOST_CONFIG_TOKEN, ApiHostConfig } from './api-client.config';
@@ -22,7 +21,6 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 
 @Module({
 	imports: [
-		RabbitMQWrapperModule,
 		FilesMetadataClientModule,
 		FilesStorageClientModule.register(FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig),
 		LoggerModule,

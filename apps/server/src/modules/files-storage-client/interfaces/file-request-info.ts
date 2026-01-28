@@ -1,6 +1,6 @@
-import { StorageLocation } from '@infra/files-storage-client';
-import { FileRecordParentType } from '@infra/rabbitmq';
 import { EntityId } from '@shared/domain/types';
+import { FileRecordParentType } from './files-storage';
+import { StorageLocation } from '@infra/files-storage-client';
 
 export interface FileRequestInfo {
 	storageLocationId: EntityId;

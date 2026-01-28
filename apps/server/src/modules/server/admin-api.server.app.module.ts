@@ -7,7 +7,6 @@ import {
 	X_API_KEY_AUTH_GUARD_CONFIG_TOKEN,
 	XApiKeyAuthGuardConfig,
 } from '@infra/auth-guard';
-import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -78,7 +77,6 @@ const serverModules = [
 
 @Module({
 	imports: [
-		RabbitMQWrapperModule,
 		...serverModules,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
@@ -99,7 +97,6 @@ export class AdminApiServerModule {}
 	imports: [
 		...serverModules,
 		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
-		RabbitMQWrapperTestModule,
 		LoggerModule,
 	],
 })

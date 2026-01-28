@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CalendarService } from '@infra/calendar';
-import { FileDO, FileRecordParentType, ScanStatus } from '@infra/rabbitmq';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { BoardExternalReferenceType } from '@modules/board';
@@ -9,6 +8,7 @@ import { mediaBoardEntityFactory } from '@modules/board/testing';
 import { classEntityFactory } from '@modules/class/entity/testing';
 import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
+import { FileDO, FileRecordParentType, ScanStatus } from '@modules/files-storage-client';
 import { FilesStorageProducer } from '@modules/files-storage-client/service';
 import { FileOwnerModel } from '@modules/files/domain';
 import { FileEntity } from '@modules/files/entity';

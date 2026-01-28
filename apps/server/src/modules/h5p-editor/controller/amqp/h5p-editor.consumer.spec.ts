@@ -1,7 +1,7 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CopyContentParentType, H5pEditorEvents } from '@infra/rabbitmq';
-import { h5pEditorExchangeCopyContentParamsFactory } from '@infra/rabbitmq/testing';
+import { CopyContentParentType, H5P_EXCHANGE_CONFIG_TOKEN, H5pEditorEvents } from '@infra/h5p-editor-client';
+import { h5pEditorExchangeCopyContentParamsFactory } from '@infra/h5p-editor-client/testing';
 import { H5PEditor } from '@lumieducation/h5p-server';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -45,6 +45,13 @@ describe(H5pEditorConsumer.name, () => {
 				{
 					provide: MikroORM,
 					useValue: await setupEntities(ENTITIES),
+				},
+				{
+					provide: H5P_EXCHANGE_CONFIG_TOKEN,
+					useValue: {
+						exchangeName: 'h5p-exchange',
+						exchangeType: 'direct',
+					},
 				},
 			],
 		}).compile();

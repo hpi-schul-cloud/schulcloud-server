@@ -2,17 +2,18 @@ import { LegacyLogger } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { StorageLocation } from '@infra/files-storage-client';
-import { ErrorMapper, FileRecordParentType, FilesStorageEvents, FilesStorageExchange } from '@infra/rabbitmq';
+import { ErrorMapper } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { FilesStorageClientConfig } from '../files-storage-client-config';
+import { FileRecordParentType, FilesStorageEvents } from '../interfaces';
 import { FilesStorageProducer } from './files-storage.producer';
 
 describe('FilesStorageProducer', () => {
 	let module: TestingModule;
 	let service: FilesStorageProducer;
 	let amqpConnection: DeepMocked<AmqpConnection>;
-
+	let config: FilesStorageClientConfig;
 	const timeout = 10000;
 
 	beforeAll(async () => {
@@ -28,21 +29,18 @@ describe('FilesStorageProducer', () => {
 					useValue: createMock<AmqpConnection>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>({
-						get: jest.fn().mockImplementation((key: string) => {
-							if (key === 'INCOMING_REQUEST_TIMEOUT_COPY_API') {
-								return timeout;
-							}
-							throw new Error('Config key not found');
-						}),
-					}),
+					provide: FilesStorageClientConfig,
+					useValue: {
+						exchangeName: 'files-storage-exchange',
+						incomingTimeoutCopyApi: timeout,
+					},
 				},
 			],
 		}).compile();
 
-		service = module.get(FilesStorageProducer);
 		amqpConnection = module.get(AmqpConnection);
+		config = module.get(FilesStorageClientConfig);
+		service = new FilesStorageProducer(amqpConnection, module.get(LegacyLogger), config);
 	});
 
 	afterAll(async () => {
@@ -113,7 +111,7 @@ describe('FilesStorageProducer', () => {
 				amqpConnection.request.mockResolvedValueOnce({ message });
 
 				const expectedParams = {
-					exchange: FilesStorageExchange,
+					exchange: config.exchangeName,
 					routingKey: FilesStorageEvents.COPY_FILES_OF_PARENT,
 					payload: params,
 					timeout,
@@ -166,7 +164,7 @@ describe('FilesStorageProducer', () => {
 				const parentId = new ObjectId().toHexString();
 
 				const expectedParams = {
-					exchange: FilesStorageExchange,
+					exchange: config.exchangeName,
 					routingKey: FilesStorageEvents.LIST_FILES_OF_PARENT,
 					payload: parentId,
 					timeout,
@@ -225,7 +223,7 @@ describe('FilesStorageProducer', () => {
 				amqpConnection.request.mockResolvedValue({ message });
 
 				const expectedParams = {
-					exchange: FilesStorageExchange,
+					exchange: config.exchangeName,
 					routingKey: FilesStorageEvents.DELETE_FILES_OF_PARENT,
 					payload: parentId,
 					timeout,
@@ -280,7 +278,7 @@ describe('FilesStorageProducer', () => {
 				amqpConnection.request.mockResolvedValue({ message });
 
 				const expectedParams = {
-					exchange: FilesStorageExchange,
+					exchange: config.exchangeName,
 					routingKey: FilesStorageEvents.DELETE_FILES,
 					payload: [recordId],
 					timeout,
@@ -334,7 +332,7 @@ describe('FilesStorageProducer', () => {
 				amqpConnection.request.mockResolvedValue({ message });
 
 				const expectedParams = {
-					exchange: FilesStorageExchange,
+					exchange: config.exchangeName,
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 					routingKey: FilesStorageEvents.REMOVE_CREATORID_OF_FILES,
 					payload: creatorId,
