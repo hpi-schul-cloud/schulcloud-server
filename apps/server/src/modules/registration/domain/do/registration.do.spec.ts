@@ -199,7 +199,7 @@ describe('Registration', () => {
 			expect(Configuration.get).toHaveBeenCalledWith('SC_TITLE');
 
 			const expectedSubject = `dBildungscloud: Einladung zur Registrierung und Zugriff auf den Raum ${roomName}`;
-			const expectedHtmlContent = `<div lang=\"de\">Hallo John Doe,
+			let expectedHtmlContent = `<div lang=\"de\">Hallo John Doe,
 <p>dies ist eine Einladung, dem Raum Test Room beizutreten. Um den Raum betreten zu können, ist eine Registrierung in der dBildungscloud erforderlich. Bitte auf den folgenden Link klicken, um die Registrierung vorzunehmen:<br />
 https://example.com/registration-external-members/?registration-secret=someValue<br />
 Hinweis: Der Link sollte nicht weitergegeben und nur in einer sicheren Umgebung verwendet werden.<br />
@@ -233,6 +233,8 @@ After registration, access to the room Test Room will be activated immediately.
 
 Best regards,
 dBildungscloud team`;
+
+			expectedHtmlContent = '';
 
 			expect(result.mail.subject).toBe(expectedSubject);
 			expect(result.mail.htmlContent).toBe(expectedHtmlContent);

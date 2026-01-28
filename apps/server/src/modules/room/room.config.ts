@@ -1,6 +1,6 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer';
-import { IsBoolean } from 'class-validator';
+import { IsBoolean, IsOptional, IsUrl } from 'class-validator';
 
 export const ROOM_PUBLIC_API_CONFIG_TOKEN = 'ROOM_PUBLIC_API_CONFIG_TOKEN';
 
@@ -20,4 +20,9 @@ export class RoomPublicApiConfig {
 	@IsBoolean()
 	@StringToBoolean()
 	public featureRoomLinkInvitationExternalPersonsEnabled = false;
+
+	@ConfigProperty('ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL')
+	@IsOptional()
+	@IsUrl({ require_tld: false })
+	public roomMemberAddExternalPersonRequirementsUrl: string | null = null;
 }

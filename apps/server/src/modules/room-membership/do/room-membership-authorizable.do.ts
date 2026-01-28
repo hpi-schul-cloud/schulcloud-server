@@ -1,10 +1,11 @@
+import { RoleDto } from '@modules/role';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { RoleDto } from '@modules/role';
 
 export type UserWithRoomRoles = {
 	roles: RoleDto[];
 	userId: EntityId;
+	userSchoolId: EntityId;
 };
 
 export class RoomMembershipAuthorizable implements AuthorizableObject {
