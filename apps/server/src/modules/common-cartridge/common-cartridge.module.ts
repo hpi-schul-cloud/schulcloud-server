@@ -8,7 +8,12 @@ import {
 	FilesStorageClientModule,
 	FileStorageClientConfig,
 } from '@infra/files-storage-client';
-import { FilesStorageClientModule as FilesMetadataClientModule } from '@modules/files-storage-client';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
+import {
+	FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+	FilesStorageClientModule as FilesMetadataClientModule,
+	FilesStorageClientConfig,
+} from '@modules/files-storage-client';
 import { Module } from '@nestjs/common';
 import { API_HOST_CONFIG_TOKEN, ApiHostConfig } from './api-client.config';
 import { CardClientModule as OldCardClientModule } from './common-cartridge-client/card-client/card-client.module';
@@ -21,7 +26,12 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 
 @Module({
 	imports: [
-		FilesMetadataClientModule,
+		FilesMetadataClientModule.register({
+			exchangeConfigConstructor: FilesStorageClientConfig,
+			exchangeConfigInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+			configConstructor: RabbitMQConfig,
+		}),
 		FilesStorageClientModule.register(FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig),
 		LoggerModule,
 		CoursesClientModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),

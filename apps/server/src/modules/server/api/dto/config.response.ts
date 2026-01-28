@@ -272,6 +272,9 @@ export class ConfigResponse {
 	@ApiProperty({ type: String, nullable: true })
 	ROOM_MEMBER_INFO_URL: string | null;
 
+	@ApiProperty({ type: String, nullable: true })
+	ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL: string | null;
+
 	constructor(
 		config: ServerConfig &
 			VideoConferencePublicApiConfig &
@@ -370,6 +373,7 @@ export class ConfigResponse {
 		this.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED = config.featureVidisMediaActivationsEnabled;
 		this.LICENSE_SUMMARY_URL = config.LICENSE_SUMMARY_URL;
 		this.ROOM_MEMBER_INFO_URL = config.ROOM_MEMBER_INFO_URL;
+		this.ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL = config.roomMemberAddExternalPersonRequirementsUrl;
 		this.FEATURE_COLUMN_BOARD_H5P_ENABLED = config.FEATURE_COLUMN_BOARD_H5P_ENABLED;
 		this.FEATURE_COLUMN_BOARD_COLLABORA_ENABLED = config.FEATURE_COLUMN_BOARD_COLLABORA_ENABLED;
 	}

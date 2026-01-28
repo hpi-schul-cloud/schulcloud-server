@@ -50,7 +50,6 @@ import { TLDRAW_CLIENT_CONFIG_TOKEN, TldrawClientConfig } from './tldraw-client.
 		CoreModule,
 		CourseModule,
 		CopyHelperModule,
-		FilesStorageClientModule,
 		LoggerModule,
 		UserModule,
 		ContextExternalToolModule,
