@@ -438,6 +438,7 @@ describe('RoomMembershipService', () => {
 				const roomMembership = roomMembershipFactory.build({ userGroupId: group.id });
 				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 				groupService.findById.mockResolvedValue(group);
+				groupService.findGroups.mockResolvedValue({ data: [], total: 0 });
 
 				return { roomMembership, group };
 			};
