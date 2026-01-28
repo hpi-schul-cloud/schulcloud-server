@@ -15,7 +15,6 @@ import { UserChangedSchoolTaskHandlerService } from './service/user-changed-scho
 
 @Module({
 	imports: [
-		FilesStorageClientModule,
 		CopyHelperModule,
 		LoggerModule,
 		SagaModule,
