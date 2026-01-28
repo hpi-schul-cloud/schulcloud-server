@@ -453,6 +453,10 @@
 					"default": true,
 					"description": "Defines whether feature toggle for visibility of students to teachers is visible."
 				}
+			},
+			"default": {
+				"IS_ENABLED_BY_DEFAULT": true,
+				"IS_VISIBLE": true
 			}
 		},
 		"FEATURE_SCHOOL_POLICY_ENABLED_NEW": {
