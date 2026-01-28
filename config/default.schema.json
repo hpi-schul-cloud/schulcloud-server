@@ -410,16 +410,6 @@
 			"default": "false",
 			"description": "Oauth Login Endpoints Enabled."
 		},
-		"FEATURE_USER_LOGIN_MIGRATION_ENABLED": {
-			"type": "boolean",
-			"default": "false",
-			"description": "Enables the oauth system migration feature."
-		},
-		"MIGRATION_END_GRACE_PERIOD_MS": {
-			"type": "number",
-			"default": "604800000",
-			"description": "Grace period before school admin cannot restart oauth migration anymore. Value is given in ms and default is 7 days"
-		},
 		"SC_TITLE": {
 			"type": "string",
 			"default": "dBildungscloud",
@@ -965,11 +955,6 @@
 			},
 			"default": {}
 		},
-		"FEATURE_SHOW_OUTDATED_USERS": {
-			"type": "boolean",
-			"default": false,
-			"description": "This feature flag controls whether the outdated user accounts are displayed or not. After a migration, all user accounts which were not migrated will be marked as outdated."
-		},
 		"FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION": {
 			"type": "boolean",
 			"default": false,
@@ -989,11 +974,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the calculation of the outdated status of an external tool without the usage of the db attribute version"
-		},
-		"FEATURE_SHOW_MIGRATION_WIZARD": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the migration wizard on the school administration page in the migration section."
 		},
 		"ADMIN_API_CLIENT": {
 			"type": "object",
@@ -1099,11 +1079,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the media shelf feature"
-		},
-		"FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the migration wizard to use the user login migration process"
 		},
 		"BOARD_COLLABORATION_URI": {
 			"type": "string",
