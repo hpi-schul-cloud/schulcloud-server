@@ -22,12 +22,9 @@ export class ConfigurationFactory {
 
 	private initializeAndLoadConfig<T>(Constructor: new () => T): T {
 		let configInstance = new Constructor() as T & WithConfigurationDecorator;
-		console.log('Loading configuration for', configInstance);
 
 		if (!configInstance.getConfigKeys || typeof configInstance.getConfigKeys !== 'function') {
-			throw new Error(
-				`The class ${configInstance.constructor as unknown as string} is not decorated with @Configuration()`
-			);
+			throw new Error(`The class ${Constructor.name} is not decorated with @Configuration()`);
 		}
 
 		const configKeys = configInstance.getConfigKeys();
@@ -47,10 +44,9 @@ export class ConfigurationFactory {
 
 	private validate<T extends object>(validatedConfig: T): T {
 		const errors = validateSync(validatedConfig, { skipMissingProperties: false });
-		console.log('Validation errors:', errors, validatedConfig);
 
 		if (errors.length > 0) {
-			throw new Error(`Config validation error`, { cause: errors });
+			throw new Error(errors.toString());
 		}
 
 		return validatedConfig;
