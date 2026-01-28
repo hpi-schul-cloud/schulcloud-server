@@ -1,10 +1,15 @@
 import { Logger } from '@core/logger';
 import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { CopyContentParams, DeleteContentParams, H5pEditorEvents } from '@infra/h5p-editor-client';
+import {
+	CopyContentParams,
+	DeleteContentParams,
+	H5P_EXCHANGE_CONFIG_TOKEN,
+	H5pEditorEvents,
+	H5pExchangeConfig,
+} from '@infra/h5p-editor-client';
 import { H5PEditor, IUser as LumiIUser } from '@lumieducation/h5p-server';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Inject, Injectable } from '@nestjs/common';
-import { H5P_EXCHANGE_CONFIG_TOKEN, H5pExchangeConfig } from '../../../../infra/h5p-editor-client/h5p-exchange.config';
 import {
 	H5pEditorContentCopySuccessfulLoggable,
 	H5pEditorContentDeletionSuccessfulLoggable,
@@ -13,6 +18,7 @@ import {
 import { H5pEditorContentService } from '../../service';
 import { H5PContentParentType } from '../../types';
 
+// Using a variable here to access the exchange name in the decorator
 let h5pExchange: string;
 @Injectable()
 export class H5pEditorConsumer {
@@ -40,7 +46,7 @@ export class H5pEditorConsumer {
 			name: '',
 			type: '',
 		};
-		console.log('Deleting H5P content with ID:', payload.contentId, h5pExchange);
+
 		await this.h5pEditor.deleteContent(payload.contentId, user);
 
 		this.logger.info(new H5pEditorContentDeletionSuccessfulLoggable(payload.contentId));

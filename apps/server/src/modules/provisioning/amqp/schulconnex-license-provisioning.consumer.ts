@@ -14,7 +14,7 @@ import {
 } from '../strategy/schulconnex/service';
 import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
 
-// Using a variable to hold the exchange name to avoid issues with decorator evaluation order
+// Using a variable here to access the exchange name in the decorator
 let provisionedExchangeName: string;
 
 @Injectable()
