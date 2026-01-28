@@ -1,10 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import {
-	Action,
-	AuthorizationContext,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@modules/authorization';
+import { Action, AuthorizationContext, AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { classFactory } from '@modules/class/domain/testing/factory/class.factory';
@@ -256,7 +251,7 @@ describe('ClassGroupUc', () => {
 					school,
 					{
 						action: Action.read,
-						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW],
+						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW, Permission.STUDENT_LIST],
 					}
 				);
 			});
@@ -591,7 +586,7 @@ describe('ClassGroupUc', () => {
 					school,
 					{
 						action: Action.read,
-						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW],
+						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW, Permission.STUDENT_LIST],
 					}
 				);
 			});
@@ -840,20 +835,8 @@ describe('ClassGroupUc', () => {
 					school,
 					{
 						action: Action.read,
-						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW],
+						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW, Permission.STUDENT_LIST],
 					}
-				);
-			});
-
-			it('should check the access to the full list', async () => {
-				const { teacherUser, school } = setup();
-
-				await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
-
-				expect(authorizationService.hasPermission).toHaveBeenCalledWith<[User, School, AuthorizationContext]>(
-					teacherUser,
-					school,
-					AuthorizationContextBuilder.read([Permission.STUDENT_LIST])
 				);
 			});
 		});

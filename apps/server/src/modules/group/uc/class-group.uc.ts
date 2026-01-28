@@ -50,11 +50,8 @@ export class ClassGroupUc {
 		this.authorizationService.checkPermission(
 			user,
 			school,
-			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW])
+			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW, Permission.STUDENT_LIST])
 		);
-
-		// Check additional permission for student list (elevated rights)
-		this.authorizationService.hasPermission(user, school, AuthorizationContextBuilder.read([Permission.STUDENT_LIST]));
 
 		const groupVisibilityPermission: GroupVisibilityPermission = this.getGroupVisibilityPermission(user);
 		const page: Page<InternalClassDto<Group | Class>> = await this.findCombinedClassListPage(
