@@ -335,7 +335,7 @@ describe(`share token creation (api)`, () => {
 				await em.persist([school, teacherAccount, teacherUser, room, group, roomMembership, roomOwnerRole]).flush();
 				em.clear();
 
-				config.featureCourseShare = true;
+				config.featureRoomShare = true;
 
 				const loggedInClient = await apiClient.login(teacherAccount);
 
