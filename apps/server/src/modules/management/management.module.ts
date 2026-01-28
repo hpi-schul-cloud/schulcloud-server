@@ -6,11 +6,11 @@ import { FileSystemModule } from '@infra/file-system';
 import {
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
-} from '@infra/identity-management/keycloak-administration/keycloak-administration-config';
+} from '@infra/identity-management/keycloak-administration/keycloak-administration.config';
 import {
 	KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
 	KeycloakConfigurationConfig,
-} from '@infra/identity-management/keycloak-configuration/keycloak-configuration-config';
+} from '@infra/identity-management/keycloak-configuration/keycloak-configuration.config';
 import { KeycloakConfigurationModule } from '@infra/identity-management/keycloak-configuration/keycloak-configuration.module';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';

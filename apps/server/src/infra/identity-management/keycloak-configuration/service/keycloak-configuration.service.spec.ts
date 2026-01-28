@@ -15,9 +15,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { v1 } from 'uuid';
-import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN } from '../../keycloak-administration/keycloak-administration-config';
+import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN } from '../../keycloak-administration/keycloak-administration.config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
-import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration-config';
+import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration.config';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakConfigurationService } from './keycloak-configuration.service';
 

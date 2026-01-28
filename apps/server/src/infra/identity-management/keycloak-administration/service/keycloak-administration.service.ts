@@ -1,6 +1,6 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { Inject, Injectable } from '@nestjs/common';
-import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN, KeycloakAdministrationConfig } from '../keycloak-administration-config';
+import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN, KeycloakAdministrationConfig } from '../keycloak-administration.config';
 
 @Injectable()
 export class KeycloakAdministrationService {

@@ -10,7 +10,7 @@ import {
 	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
 } from './response';
-import { InternalSchulconnexClientConfig } from './schulconnex-client-config';
+import { InternalSchulconnexClientConfig } from './schulconnex-client.config';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { schulconnexPoliciesInfoLicenseResponseFactory, schulconnexResponseFactory } from './testing';
 

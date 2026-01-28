@@ -19,7 +19,7 @@ import {
 	SchulconnexResponse,
 } from './response';
 import { SchulconnexApiInterface } from './schulconnex-api.interface';
-import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from './schulconnex-client-config';
+import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from './schulconnex-client.config';
 
 export class SchulconnexRestClient implements SchulconnexApiInterface {
 	private readonly SCHULCONNEX_API_BASE_URL: string;

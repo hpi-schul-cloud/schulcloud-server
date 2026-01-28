@@ -11,7 +11,7 @@ import { IdentityManagementService } from '../../identity-management.service';
 import {
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
-} from '../../keycloak-administration/keycloak-administration-config';
+} from '../../keycloak-administration/keycloak-administration.config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakModule } from '../keycloak.module';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';

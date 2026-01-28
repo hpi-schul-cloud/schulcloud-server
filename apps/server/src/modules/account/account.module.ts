@@ -4,7 +4,7 @@ import { IdentityManagementModule } from '@infra/identity-management';
 import {
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
-} from '@infra/identity-management/keycloak-administration/keycloak-administration-config';
+} from '@infra/identity-management/keycloak-administration/keycloak-administration.config';
 import { SagaModule } from '@modules/saga';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
