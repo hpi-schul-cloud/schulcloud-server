@@ -5,8 +5,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import axios, { AxiosError } from 'axios';
 import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { TspAccessTokenLoggableError } from './loggable/tsp-access-token.loggable-error';
-import { TSP_CLIENT_CONFIG_TOKEN } from './tsp-client-config';
 import { TspClientFactory } from './tsp-client-factory';
+import { TSP_CLIENT_CONFIG_TOKEN } from './tsp-client.config';
 
 describe('TspClientFactory', () => {
 	let module: TestingModule;

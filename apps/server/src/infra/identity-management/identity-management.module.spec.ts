@@ -6,7 +6,7 @@ import { IdentityManagementService } from './identity-management.service';
 import {
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
-} from './keycloak-administration/keycloak-administration-config';
+} from './keycloak-administration/keycloak-administration.config';
 
 describe('IdentityManagementModule', () => {
 	let module: TestingModule;

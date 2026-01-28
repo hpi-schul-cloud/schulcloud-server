@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN, KeycloakAdministrationConfig } from './keycloak-administration-config';
+import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN, KeycloakAdministrationConfig } from './keycloak-administration.config';
 import { KeycloakAdministrationModule } from './keycloak-administration.module';
 import { KeycloakAdministrationService } from './service/keycloak-administration.service';
 

@@ -9,11 +9,11 @@ import { v1 } from 'uuid';
 import {
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
-} from '../../keycloak-administration/keycloak-administration-config';
+} from '../../keycloak-administration/keycloak-administration.config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { JsonAccount } from '../interface/json-account.interface';
 import { JsonUser } from '../interface/json-user.interface';
-import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN } from '../keycloak-configuration-config';
+import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN } from '../keycloak-configuration.config';
 import { KeycloakSeedService } from './keycloak-seed.service';
 
 const accountsFile = 'accounts.json';

@@ -5,7 +5,7 @@ import { SystemService } from '@modules/system/domain';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
-import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration-config';
+import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration.config';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakConfigurationService } from '../service/keycloak-configuration.service';
 import { KeycloakMigrationService } from '../service/keycloak-migration.service';

@@ -7,7 +7,7 @@ import util from 'util';
 import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { Configuration, ExportApiFactory, ExportApiInterface } from './generated';
 import { TspAccessTokenLoggableError } from './loggable/tsp-access-token.loggable-error';
-import { TSP_CLIENT_CONFIG_TOKEN, TspClientConfig } from './tsp-client-config';
+import { TSP_CLIENT_CONFIG_TOKEN, TspClientConfig } from './tsp-client.config';
 
 type FactoryParams = {
 	clientId: string;

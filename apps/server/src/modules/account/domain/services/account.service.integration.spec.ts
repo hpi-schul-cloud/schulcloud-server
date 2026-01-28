@@ -5,7 +5,7 @@ import { IdentityManagementModule, IdentityManagementService } from '@infra/iden
 import {
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
-} from '@infra/identity-management/keycloak-administration/keycloak-administration-config';
+} from '@infra/identity-management/keycloak-administration/keycloak-administration.config';
 import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementService } from '@infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';

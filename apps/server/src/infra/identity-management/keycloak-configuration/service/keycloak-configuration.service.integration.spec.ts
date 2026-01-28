@@ -13,9 +13,9 @@ import { v1 } from 'uuid';
 import {
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
-} from '../../keycloak-administration/keycloak-administration-config';
+} from '../../keycloak-administration/keycloak-administration.config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
-import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration-config';
+import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration.config';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
 import { KeycloakConfigurationService } from './keycloak-configuration.service';
 
