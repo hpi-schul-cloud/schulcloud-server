@@ -22,7 +22,6 @@ export class CardUc {
 		this.logger.setContext(CardUc.name);
 	}
 
-	// TODO reactor: No reason to check permission f this is only cards from same board
 	public async findCards(userId: EntityId, cardIds: EntityId[]): Promise<Card[]> {
 		const cards = await this.boardNodeService.findByClassAndIds(Card, cardIds);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
