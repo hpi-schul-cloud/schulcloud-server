@@ -1,34 +1,24 @@
-import { CoreModuleConfig } from '@core/core.config';
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { ConfigProperty, Configuration } from '@infra/configuration';
+import { StringToNumber } from '@shared/controller/transformer';
+import { CommaSeparatedStringToArray } from '@shared/controller/transformer/comma-separated-string-to-array.transformer';
 import { LanguageType } from '@shared/domain/interface';
-import { getLibraryWhiteList } from './helper';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
 
-export interface H5PEditorCoreConfig extends CoreModuleConfig {
-	INCOMING_REQUEST_TIMEOUT: number;
+export const H5P_EDITOR_CONFIG_TOKEN = 'H5P_EDITOR_CONFIG_TOKEN';
+
+@Configuration()
+export class H5PEditorConfig {
+	@ConfigProperty('H5P_EDITOR__LIBRARY_LIST_PATH')
+	@IsString()
+	public libraryListPath = 'config/h5p-libraries.yaml';
+
+	@ConfigProperty('H5P_EDITOR__INSTALL_LIBRARY_LOCK_MAX_OCCUPATION_TIME')
+	@StringToNumber()
+	@IsNumber()
+	public installLibraryLockMaxOccupationTime = 600000;
+
+	@ConfigProperty('I18N__AVAILABLE_LANGUAGES')
+	@CommaSeparatedStringToArray()
+	@IsEnum(LanguageType, { each: true })
+	public availableLanguages!: LanguageType[];
 }
-
-export interface H5PEditorConfig extends H5PEditorCoreConfig {
-	H5P_EDITOR__LIBRARY_WHITE_LIST: string[];
-}
-
-const h5pEditorCoreConfig: H5PEditorCoreConfig = {
-	INCOMING_REQUEST_TIMEOUT: Configuration.get('H5P_EDITOR__INCOMING_REQUEST_TIMEOUT') as number,
-};
-
-// Lazy-load the full config to avoid eager evaluation of JWT values
-const getH5pEditorConfig = (): H5PEditorConfig => {
-	const filePath = Configuration.get('H5P_EDITOR__LIBRARY_LIST_PATH') as string;
-	const libraryWhiteList = getLibraryWhiteList(filePath);
-
-	return {
-		...h5pEditorCoreConfig,
-		H5P_EDITOR__LIBRARY_WHITE_LIST: libraryWhiteList,
-	};
-};
-
-export const translatorConfig = {
-	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
-};
-
-export const config = (): H5PEditorConfig => getH5pEditorConfig();
-export const coreConfig = (): H5PEditorCoreConfig => h5pEditorCoreConfig;

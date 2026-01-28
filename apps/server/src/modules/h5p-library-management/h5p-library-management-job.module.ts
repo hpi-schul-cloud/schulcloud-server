@@ -1,45 +1,14 @@
-import { CoreModule } from '@core/core.module';
-import { Logger } from '@core/logger';
-import { S3ClientModule } from '@infra/s3-client';
-
-import {
-	H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN,
-	H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN,
-	H5P_LIBRARIES_S3_CLIENT_CONFIG_TOKEN,
-	H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN,
-	H5PContentS3ClientConfig,
-	H5pEditorJobModule,
-	H5PLibrariesS3ClientConfig,
-} from '@modules/h5p-editor';
+import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
+import { H5PEditorModule } from '@modules/h5p-editor/h5p-editor.app.module';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { h5PLibraryManagementConfig, H5PLibraryManagementService } from './service';
-
-const imports = [
-	ConfigModule.forRoot(createConfigModuleOptions(h5PLibraryManagementConfig)),
-	CoreModule,
-	H5pEditorJobModule,
-	S3ClientModule.register({
-		clientInjectionToken: H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN,
-		configInjectionToken: H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN,
-		configConstructor: H5PContentS3ClientConfig,
-	}),
-	S3ClientModule.register({
-		clientInjectionToken: H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN,
-		configInjectionToken: H5P_LIBRARIES_S3_CLIENT_CONFIG_TOKEN,
-		configConstructor: H5PLibrariesS3ClientConfig,
-	}),
-];
-
-const controllers = [];
-
-const providers = [Logger, H5PLibraryManagementService];
+import { H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig } from '../h5p-editor/h5p-editor.config';
+import { H5PLibraryManagementService } from './service';
 
 @Module({
-	imports,
-	controllers,
-	providers,
-	exports: [],
+	imports: [ConfigurationModule.register(H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig), LoggerModule, H5PEditorModule],
+	controllers: [],
+	providers: [H5PLibraryManagementService],
+	exports: [H5PLibraryManagementService],
 })
 export class H5pLibraryManagementJobModule {}

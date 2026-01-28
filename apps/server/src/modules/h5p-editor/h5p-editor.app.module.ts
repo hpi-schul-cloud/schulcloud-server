@@ -18,7 +18,8 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { H5PEditorController } from './controller';
 import { H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig } from './h5p-cache.config';
 import { H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN, H5PContentS3ClientConfig } from './h5p-content-s3-client.config';
-import { config } from './h5p-editor.config';
+import { coreConfig } from './h5p-editor-timeout.config';
+import { H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig } from './h5p-editor.config';
 import { H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN, H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN } from './h5p-editor.const';
 import { ENTITIES } from './h5p-editor.entity.exports';
 import { H5P_LIBRARIES_S3_CLIENT_CONFIG_TOKEN, H5PLibrariesS3ClientConfig } from './h5p-libraries-s3-client.config';
@@ -42,7 +43,7 @@ const imports = [
 		entities: ENTITIES,
 		ensureIndexes: true,
 	}),
-	ConfigModule.forRoot(createConfigModuleOptions(config)),
+	ConfigModule.forRoot(createConfigModuleOptions(coreConfig)),
 	S3ClientModule.register({
 		clientInjectionToken: H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN,
 		configInjectionToken: H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN,
@@ -61,6 +62,7 @@ const imports = [
 		},
 	]),
 	ConfigurationModule.register(H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig),
+	ConfigurationModule.register(H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig),
 	LoggerModule,
 ];
 
