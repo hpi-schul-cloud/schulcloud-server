@@ -12,7 +12,6 @@ export class MailModule {
 			{
 				provide: MailService,
 				useFactory(amqpConnection: AmqpConnection, config: InternalMailConfig): MailService {
-					console.log('MailModule: Creating MailService with config', config);
 					return new MailService(amqpConnection, config);
 				},
 				inject: [AmqpConnection, options.exchangeInjectionToken],

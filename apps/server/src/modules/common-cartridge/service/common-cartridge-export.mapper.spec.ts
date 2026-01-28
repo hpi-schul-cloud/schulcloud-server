@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { FileRecordParentType } from '@infra/rabbitmq';
-import { FileDto } from '@modules/files-storage-client';
+import { FileDto, FileRecordParentType } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Readable } from 'stream';
 import {

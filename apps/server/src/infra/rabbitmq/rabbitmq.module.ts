@@ -1,6 +1,6 @@
-import { AmqpConnectionManager, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { ConfigurationModule } from '@infra/configuration';
-import { DynamicModule, Global, Module, OnModuleDestroy } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { InternalRabbitMQExchange, RabbitMQModuleOptions } from './rabbitmq-module.options';
 import { RabbitMqConfig } from './rabbitmq.config';
 
@@ -35,21 +35,5 @@ export class RabbitMQWrapperModule {
 			],
 			exports: [RabbitMQModule],
 		};
-	}
-}
-
-@Global()
-@Module({
-	imports: [RabbitMQWrapperModule],
-	exports: [RabbitMQModule],
-})
-export class RabbitMQWrapperTestModule implements OnModuleDestroy {
-	constructor(private readonly amqpConnectionManager: AmqpConnectionManager) {}
-
-	// In tests, we need to close connections when the module is destroyed.
-	public async onModuleDestroy(): Promise<void> {
-		await Promise.all(
-			this.amqpConnectionManager.getConnections().map((connection) => connection.managedConnection.close())
-		);
 	}
 }

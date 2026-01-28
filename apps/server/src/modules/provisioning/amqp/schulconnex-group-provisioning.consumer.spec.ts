@@ -7,6 +7,7 @@ import { groupFactory } from '@modules/group/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { GroupProvisioningSuccessfulLoggable } from '../loggable';
+import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../provisioning.config';
 import { ENTITIES } from '../schulconnex-group-provisioning.entity.imports';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
@@ -52,6 +53,13 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 				{
 					provide: MikroORM,
 					useValue: await setupEntities(ENTITIES),
+				},
+				{
+					provide: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
+					useValue: {
+						exchangeName: 'provisioning-exchange',
+						exchangeType: 'direct',
+					},
 				},
 			],
 		}).compile();

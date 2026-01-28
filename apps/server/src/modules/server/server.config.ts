@@ -79,6 +79,7 @@ export interface ServerConfig
 	ROCKET_CHAT_URI: string;
 	ROCKET_CHAT_ADMIN_ID: string;
 	ROCKET_CHAT_ADMIN_TOKEN: string;
+	INCOMING_REQUEST_TIMEOUT_COPY_API: number;
 }
 
 const config: ServerConfig = {
@@ -126,6 +127,7 @@ const config: ServerConfig = {
 	SC_SHORTNAME: Configuration.get('SC_SHORTNAME') as string,
 	TRAINING_URL: Configuration.get('TRAINING_URL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
+	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
 	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	NODE_ENV: Configuration.get('NODE_ENV') as NodeEnvType,
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(

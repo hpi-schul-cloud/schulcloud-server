@@ -1,8 +1,9 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { ConfigurationModule } from '@infra/configuration';
-import { InternalRabbitMQExchange, RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { DynamicModule, Module } from '@nestjs/common';
 import { H5pClientModuleOptions } from './h5p-client-module.options';
+import type { H5pExchangeConfig } from './h5p-exchange.config';
 import { H5pEditorProducer } from './service';
 
 @Module({})
@@ -17,7 +18,7 @@ export class H5pEditorClientModule {
 			providers: [
 				{
 					provide: H5pEditorProducer,
-					useFactory(amqpConnection: AmqpConnection, config: InternalRabbitMQExchange): H5pEditorProducer {
+					useFactory(amqpConnection: AmqpConnection, config: H5pExchangeConfig): H5pEditorProducer {
 						return new H5pEditorProducer(amqpConnection, config);
 					},
 					inject: [AmqpConnection, options.exchangeInjectionToken],

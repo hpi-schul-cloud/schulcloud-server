@@ -1,14 +1,11 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { InternalRabbitMQExchange } from '@infra/rabbitmq';
 import { Injectable } from '@nestjs/common';
-import { DeleteContentParams, H5pEditorEvents, CopyContentParams } from '../h5p-editor.interface';
+import { CopyContentParams, DeleteContentParams, H5pEditorEvents } from '../h5p-editor.interface';
+import type { H5pExchangeConfig } from '../h5p-exchange.config';
 
 @Injectable()
 export class H5pEditorProducer {
-	constructor(
-		private readonly amqpConnection: AmqpConnection,
-		private readonly h5pExchangeConfig: InternalRabbitMQExchange
-	) {}
+	constructor(private readonly amqpConnection: AmqpConnection, private readonly h5pExchangeConfig: H5pExchangeConfig) {}
 
 	public async deleteContent(message: DeleteContentParams): Promise<void> {
 		await this.amqpConnection.publish(this.h5pExchangeConfig.exchangeName, H5pEditorEvents.DELETE_CONTENT, message);

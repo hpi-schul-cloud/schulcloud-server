@@ -3,7 +3,7 @@ import { LoggerModule } from '@core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
-import { RABBITMQ_CONFIG_TOKEN, RabbitMqConfig, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMqConfig } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
@@ -201,7 +201,6 @@ export class ServerModule {}
 	imports: [
 		...serverModules,
 		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
-		RabbitMQWrapperTestModule,
 		LoggerModule,
 	],
 	providers,
