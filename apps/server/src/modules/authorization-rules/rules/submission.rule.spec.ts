@@ -1,5 +1,6 @@
 import {
 	Action,
+	AUTHORIZATION_CONFIG_TOKEN,
 	AuthorizationContext,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
@@ -45,6 +46,7 @@ describe('SubmissionRule', () => {
 				LessonRule,
 				CourseGroupRule,
 				AuthorizationInjectionService,
+				{ provide: AUTHORIZATION_CONFIG_TOKEN, useValue: {} },
 			],
 		}).compile();
 

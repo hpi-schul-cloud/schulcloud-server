@@ -2,7 +2,6 @@ import { ErrorModule } from '@core/error';
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { ConsoleWriterModule } from '@infra/console';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { TSP_CLIENT_CONFIG_TOKEN, TspClientConfig } from '@infra/tsp-client';
 import { TspClientModule } from '@infra/tsp-client/tsp-client.module';
 import { AccountModule } from '@modules/account';
@@ -41,7 +40,6 @@ import { SyncUc } from './uc/sync.uc';
 		SystemModule,
 		SchoolModule,
 		LegacySchoolModule,
-		RabbitMQWrapperModule,
 		ProvisioningModule,
 		UserModule,
 		AccountModule,

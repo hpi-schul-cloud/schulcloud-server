@@ -1,7 +1,6 @@
 import { CoreModule } from '@core/core.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import {
 	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
 	ValkeyClientModule,
@@ -22,7 +21,6 @@ import { BoardModule } from './board.module';
 
 const imports = [
 	CoreModule,
-	RabbitMQWrapperModule,
 	BoardModule,
 	AuthorizationModule,
 	BoardWsApiModule,

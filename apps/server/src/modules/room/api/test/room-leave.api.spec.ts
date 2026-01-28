@@ -124,8 +124,6 @@ describe('Room Controller (API)', () => {
 				it('should return OK', async () => {
 					const { room, teacherAccount } = await setupRoomWithMembers();
 					const loggedInClient = await testApiClient.login(teacherAccount);
-					console.log('teacherAccount', teacherAccount);
-					console.log('loggedInClient', loggedInClient);
 					const response = await loggedInClient.patch(`/${room.id}/leave`);
 
 					expect(response.status).toBe(HttpStatus.OK);

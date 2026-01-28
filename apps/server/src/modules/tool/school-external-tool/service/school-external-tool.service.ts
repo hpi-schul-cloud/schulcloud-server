@@ -138,27 +138,28 @@ export class SchoolExternalToolService {
 
 	public async addAndActivateToolForAllSchools(toolId: EntityId): Promise<void> {
 		const allSchoolIds = await this.schoolService.getAllSchoolIds();
+
+		const existingDeactivatedSchoolExternalTools = await this.schoolExternalToolRepo.find({
+			toolId,
+			isDeactivated: true,
+		});
+		existingDeactivatedSchoolExternalTools.forEach((tool) => tool.activate());
+		await this.schoolExternalToolRepo.saveMany(existingDeactivatedSchoolExternalTools);
+
 		const existingSchoolExternalTools = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
-
-		existingSchoolExternalTools.forEach((tool) => tool.activate());
-		const updatePromises = existingSchoolExternalTools.map((tool) => this.schoolExternalToolRepo.save(tool));
-		await Promise.all(updatePromises);
-
-		const schoolIdsWhereExisting = existingSchoolExternalTools.map((tool) => tool.schoolId);
-		const schoolIdsWhereNotExisting = allSchoolIds.filter((schoolId) => !schoolIdsWhereExisting.includes(schoolId));
-		const createPromises = schoolIdsWhereNotExisting.map((schoolId) => this.createSchoolExternalTool(toolId, schoolId));
-		await Promise.all(createPromises);
+		const schoolIdsWhereExisting = new Set(existingSchoolExternalTools.map((tool) => tool.schoolId));
+		const schoolIdsWhereNotExisting = allSchoolIds.filter((schoolId) => !schoolIdsWhereExisting.has(schoolId));
+		const toolsToAdd = schoolIdsWhereNotExisting.map((schoolId) => this.createSchoolExternalTool(toolId, schoolId));
+		await this.schoolExternalToolRepo.saveMany(toolsToAdd);
 	}
 
-	private createSchoolExternalTool(toolId: EntityId, schoolId: EntityId): Promise<SchoolExternalTool> {
-		const schoolExternalTool = new SchoolExternalTool({
+	private createSchoolExternalTool(toolId: EntityId, schoolId: EntityId): SchoolExternalTool {
+		return new SchoolExternalTool({
 			id: new ObjectId().toHexString(),
 			toolId,
 			schoolId,
 			parameters: [],
 			isDeactivated: false,
 		});
-
-		return this.schoolExternalToolRepo.save(schoolExternalTool);
 	}
 }

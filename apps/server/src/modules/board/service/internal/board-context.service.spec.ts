@@ -6,6 +6,7 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { roleFactory } from '@modules/role/testing';
+import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
@@ -17,7 +18,6 @@ import { setupEntities } from '@testing/database';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
 import { columnBoardFactory, columnFactory } from '../../testing';
 import { BoardContextService } from './board-context.service';
-import { RoomService } from '@modules/room';
 
 describe(BoardContextService.name, () => {
 	let module: TestingModule;
@@ -254,7 +254,7 @@ describe(BoardContextService.name, () => {
 					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
 						id: 'foo',
 						roomId: columnBoard.context.id,
-						members: [{ userId: user.id, roles: [role] }],
+						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
 						schoolId: user.school.id,
 					});
 
@@ -293,7 +293,7 @@ describe(BoardContextService.name, () => {
 					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
 						id: 'foo',
 						roomId: columnBoard.context.id,
-						members: [{ userId: user.id, roles: [role] }],
+						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
 						schoolId: user.school.id,
 					});
 
@@ -332,7 +332,7 @@ describe(BoardContextService.name, () => {
 					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
 						id: 'foo',
 						roomId: columnBoard.context.id,
-						members: [{ userId: user.id, roles: [role] }],
+						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
 						schoolId: user.school.id,
 					});
 
@@ -371,7 +371,7 @@ describe(BoardContextService.name, () => {
 					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
 						id: 'foo',
 						roomId: columnBoard.context.id,
-						members: [{ userId: user.id, roles: [role] }],
+						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
 						schoolId: user.school.id,
 					});
 
@@ -407,7 +407,7 @@ describe(BoardContextService.name, () => {
 					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
 						id: 'foo',
 						roomId: columnBoard.context.id,
-						members: [{ userId: user.id, roles: [role] }],
+						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
 						schoolId: user.school.id,
 					});
 

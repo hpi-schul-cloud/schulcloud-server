@@ -1,26 +1,19 @@
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import {
-	CopyFileDO,
-	CopyFilesOfParentParams,
-	FileDO,
-	FilesStorageEvents,
-	FilesStorageExchange,
-	RpcMessageProducer,
-} from '@infra/rabbitmq';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@core/logger';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { RpcMessageProducer } from '@infra/rabbitmq';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { FilesStorageClientConfig } from '../files-storage-client-config';
+import { CopyFileDO, CopyFilesOfParentParams, FileDO, FilesStorageEvents } from '../interfaces';
 
 @Injectable()
 export class FilesStorageProducer extends RpcMessageProducer {
 	constructor(
 		protected readonly amqpConnection: AmqpConnection,
 		private readonly logger: LegacyLogger,
-		protected readonly configService: ConfigService<FilesStorageClientConfig, true>
+		protected readonly config: FilesStorageClientConfig
 	) {
-		super(amqpConnection, FilesStorageExchange, configService.get('INCOMING_REQUEST_TIMEOUT_COPY_API'));
+		super(amqpConnection, config.exchangeName, config.incomingTimeoutCopyApi);
 		this.logger.setContext(FilesStorageProducer.name);
 	}
 

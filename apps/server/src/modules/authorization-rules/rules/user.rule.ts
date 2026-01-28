@@ -1,4 +1,5 @@
 import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import { RoleName } from '@modules/role';
 import { UserDo } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
@@ -22,32 +23,38 @@ export class UserRule implements Rule<UserDo> {
 
 	public hasPermission(user: User, entity: UserDo, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-
-		const isHimself = user.id === entity.id;
-		const isUsersSchool = user.school.id === entity.schoolId;
-		const isDiscoverable = this.determineDiscoverability(entity);
-
-		const isVisible = isHimself || isUsersSchool || isDiscoverable;
-
-		return hasPermission && isVisible;
-	}
-
-	private determineDiscoverability(entity: UserDo): boolean {
-		const discoverabilitySetting = this.configService.get<string>('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
-		if (discoverabilitySetting === 'disabled') {
+		if (!hasPermission) {
 			return false;
 		}
-		if (discoverabilitySetting === 'enabled') {
+
+		const isHimself = user.id === entity.id;
+		if (isHimself) {
 			return true;
 		}
 
-		if (discoverabilitySetting === 'opt-in') {
-			return entity.discoverable ?? false;
-		}
-		if (discoverabilitySetting === 'opt-out') {
-			return entity.discoverable ?? true;
+		const isUsersSchool = user.school.id === entity.schoolId;
+		const isDiscoverable = this.authorizationHelper.determineDiscoverability(entity);
+		const isVisible = isUsersSchool || isDiscoverable;
+
+		const hasLimitingRole = this.hasLimitingRole(user, entity);
+
+		return isVisible && !hasLimitingRole;
+	}
+
+	private hasLimitingRole(user: User, entity: UserDo): boolean {
+		const userRoles = user.roles.getItems().map((role) => role.name);
+		const isUserPartlyTeacher = userRoles.includes(RoleName.TEACHER);
+		if (isUserPartlyTeacher) {
+			return false;
 		}
 
-		throw new Error('Invalid discoverability setting');
+		const isUserAdmin = userRoles.includes(RoleName.ADMINISTRATOR);
+		const entityRoles = entity.roles.map((role) => role.name);
+		const isEntityTeacher = entityRoles.includes(RoleName.TEACHER);
+		if (isUserAdmin && !isEntityTeacher) {
+			return true;
+		}
+
+		return false;
 	}
 }

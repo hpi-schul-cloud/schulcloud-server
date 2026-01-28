@@ -1,9 +1,16 @@
-import { MailModule } from '@infra/mail';
+import { MAIL_CONFIG_TOKEN, MailConfig, MailModule } from '@infra/mail';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { Module } from '@nestjs/common';
-import { MailConfig, SERVER_MAIL_CONFIG_TOKEN } from './server-mail.config';
 
 @Module({
-	imports: [MailModule.register(MailConfig, SERVER_MAIL_CONFIG_TOKEN)],
+	imports: [
+		MailModule.register({
+			exchangeConfigConstructor: MailConfig,
+			exchangeConfigInjectionToken: MAIL_CONFIG_TOKEN,
+			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+			configConstructor: RabbitMQConfig,
+		}),
+	],
 	exports: [MailModule],
 })
 export class ServerMailModule {}

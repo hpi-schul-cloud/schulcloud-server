@@ -3,7 +3,7 @@ import { LoggerModule } from '@core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
-import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
@@ -22,7 +22,11 @@ import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { CourseApiModule } from '@modules/course/course-api.module';
-import { FilesStorageClientModule } from '@modules/files-storage-client';
+import {
+	FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+	FilesStorageClientConfig,
+	FilesStorageClientModule,
+} from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { HelpdeskApiModule } from '@modules/helpdesk';
 import { LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig } from '@modules/learnroom';
@@ -60,6 +64,7 @@ import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamApiModule } from '@modules/team/team-api.module';
 import { TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig } from '@modules/tool';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
+import { USER_PUBLIC_API_CONFIG_TOKEN, UserPublicApiConfig } from '@modules/user';
 import { ImportUserModule } from '@modules/user-import';
 import { UserLicenseModule } from '@modules/user-license';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
@@ -96,6 +101,7 @@ const serverModules = [
 	ConfigurationModule.register(TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig),
 	ConfigurationModule.register(TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig),
 	ConfigurationModule.register(LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig),
+	ConfigurationModule.register(USER_PUBLIC_API_CONFIG_TOKEN, UserPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,
 	CoreModule,
@@ -121,7 +127,12 @@ const serverModules = [
 	SchulconnexClientModule.register(SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig),
 	ImportUserModule,
 	LearnroomApiModule,
-	FilesStorageClientModule,
+	FilesStorageClientModule.register({
+		exchangeConfigConstructor: FilesStorageClientConfig,
+		exchangeConfigInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+		configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+		configConstructor: RabbitMQConfig,
+	}),
 	SystemApiModule,
 	ServerMailModule,
 	RocketChatModule,
@@ -162,7 +173,6 @@ const controllers = [ServerController, ServerConfigController];
  */
 @Module({
 	imports: [
-		RabbitMQWrapperModule,
 		...serverModules,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
@@ -194,7 +204,6 @@ export class ServerModule {}
 	imports: [
 		...serverModules,
 		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
-		RabbitMQWrapperTestModule,
 		LoggerModule,
 	],
 	providers,

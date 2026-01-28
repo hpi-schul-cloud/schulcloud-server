@@ -1,5 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig, RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { AccountModule } from '@modules/account';
@@ -21,6 +22,7 @@ import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
 import { MediumMetadataModule } from '../medium-metadata';
 import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from './amqp';
+import { PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig } from './provisioning-exchange.config';
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from './provisioning.config';
 import { ProvisioningService } from './service/provisioning.service';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
@@ -52,6 +54,7 @@ import {
 		SchulconnexClientModule.register(SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig),
 		UserLicenseModule,
 		ConfigurationModule.register(PROVISIONING_CONFIG_TOKEN, ProvisioningConfig),
+		ConfigurationModule.register(PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig),
 		SchoolLicenseModule,
 		MediaSourceModule,
 		ExternalToolModule,
@@ -61,6 +64,12 @@ import {
 		CourseSynchronizationHistoryModule,
 		MediumMetadataModule,
 		MediaSourceSyncModule,
+		RabbitMQWrapperModule.register({
+			exchangeConfigInjectionToken: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
+			exchangeConfigConstructor: ProvisioningExchangeConfig,
+			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+			configConstructor: RabbitMQConfig,
+		}),
 	],
 	providers: [
 		ProvisioningService,
