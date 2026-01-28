@@ -1,5 +1,10 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import {
+	Action,
+	AUTHORIZATION_CONFIG_TOKEN,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@modules/authorization';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -29,6 +34,7 @@ describe('SchoolExternalToolRule', () => {
 					provide: AuthorizationInjectionService,
 					useValue: createMock<AuthorizationInjectionService>(),
 				},
+				{ provide: AUTHORIZATION_CONFIG_TOKEN, useValue: {} },
 			],
 		}).compile();
 
