@@ -7,6 +7,7 @@ import { ProvisioningConfig } from '@modules/provisioning';
 import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { School, SchoolService, SchoolYear, SchoolYearService } from '@modules/school/domain';
 import { System, SystemService } from '@modules/system';
+import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -31,7 +32,8 @@ export class ClassGroupUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolYearService: SchoolYearService,
 		private readonly courseService: CourseDoService,
-		private readonly configService: ConfigService<ProvisioningConfig, true>
+		private readonly configService: ConfigService<ProvisioningConfig, true>,
+		private readonly userService: UserService
 	) {}
 
 	public async findAllClasses(
@@ -48,11 +50,10 @@ export class ClassGroupUc {
 		this.authorizationService.checkPermission(
 			user,
 			school,
-			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW])
+			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW, Permission.STUDENT_LIST])
 		);
 
-		const groupVisibilityPermission: GroupVisibilityPermission = this.getGroupVisibilityPermission(user, school);
-
+		const groupVisibilityPermission: GroupVisibilityPermission = this.getGroupVisibilityPermission(user);
 		const page: Page<InternalClassDto<Group | Class>> = await this.findCombinedClassListPage(
 			user,
 			school,
@@ -72,7 +73,6 @@ export class ClassGroupUc {
 		const classInfoDtoPromises: Promise<ClassInfoDto>[] = classDtoPage.data.map(
 			async (dto: InternalClassDto<Group | Class>): Promise<ClassInfoDto> => {
 				let synchronizedCourses: Course[] | undefined;
-				const teacherNames: string[] = [];
 
 				if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') && dto.isGroup()) {
 					synchronizedCourses = await this.courseService.findBySyncedGroup(dto.original);
@@ -80,7 +80,6 @@ export class ClassGroupUc {
 
 				return new ClassInfoDto({
 					...dto,
-					teacherNames,
 					synchronizedCourses,
 				});
 			}
@@ -93,14 +92,11 @@ export class ClassGroupUc {
 		return finalPage;
 	}
 
-	private getGroupVisibilityPermission(user: User, school: School): GroupVisibilityPermission {
-		const canSeeAllSchoolGroups =
-			this.authorizationService.hasAllPermissions(user, [Permission.CLASS_FULL_ADMIN, Permission.GROUP_FULL_ADMIN]) ||
-			this.authorizationService.hasPermission(
-				user,
-				school,
-				AuthorizationContextBuilder.read([Permission.STUDENT_LIST])
-			);
+	private getGroupVisibilityPermission(user: User): GroupVisibilityPermission {
+		const canSeeAllSchoolGroups = this.authorizationService.hasAllPermissions(user, [
+			Permission.CLASS_FULL_ADMIN,
+			Permission.GROUP_FULL_ADMIN,
+		]);
 
 		if (canSeeAllSchoolGroups) {
 			return GroupVisibilityPermission.ALL_SCHOOL_GROUPS;
@@ -191,6 +187,7 @@ export class ClassGroupUc {
 				type: ClassRootType.GROUP,
 				name: group.name,
 				externalSourceName,
+				teacherNames: [],
 				studentCount,
 				original: group,
 			});
@@ -217,6 +214,10 @@ export class ClassGroupUc {
 
 		const classes: Class[] = await this.classService.find(classScope);
 
+		const teacherIds = classes.flatMap((clazz: Class) => clazz.teacherIds || []);
+		const uniqueTeacherIds = Array.from(new Set(teacherIds));
+		const teachers = await this.userService.findByIds(uniqueTeacherIds);
+
 		const classDtos: InternalClassDto<Class>[] = classes
 			.map((clazz: Class): InternalClassDto<Class> | null => {
 				const name: string = clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name;
@@ -229,11 +230,16 @@ export class ClassGroupUc {
 					return null;
 				}
 
+				const teacherNames = teachers
+					.filter((teacher) => clazz.teacherIds.includes(teacher.id ?? 'no-id-defined'))
+					.map((teacher) => teacher.firstName + ' ' + teacher.lastName);
+				console.log('teacherNames', teacherNames);
 				const mapped: InternalClassDto<Class> = new InternalClassDto({
 					id: clazz.id,
 					type: ClassRootType.CLASS,
 					name,
 					externalSourceName: clazz.source,
+					teacherNames,
 					schoolYear: schoolYear?.name,
 					isUpgradable,
 					studentCount: clazz.userIds.length,
