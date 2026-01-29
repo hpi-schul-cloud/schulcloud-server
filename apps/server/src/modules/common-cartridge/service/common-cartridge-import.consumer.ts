@@ -20,6 +20,7 @@ import {
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
+import { Channel, ConsumeMessage } from 'amqplib';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;
@@ -32,6 +33,10 @@ interface ColumnResource {
 	column: CommonCartridgeOrganizationProps;
 	isResourceColumn: boolean;
 }
+
+const errorHandler = (channel: Channel, msg: ConsumeMessage, error: any) => {
+	console.log(`Error in RabbitMQ`, error);
+};
 
 @Injectable()
 export class CommonCartridgeImportConsumer {
@@ -51,6 +56,7 @@ export class CommonCartridgeImportConsumer {
 		exchange: CommonCartridgeExchange,
 		routingKey: CommonCartridgeEvents.IMPORT_COURSE,
 		queue: CommonCartridgeEvents.IMPORT_COURSE,
+		errorHandler: errorHandler,
 	})
 	public async importFile(@RabbitPayload() payload: ImportCourseParams): Promise<void> {
 		try {
@@ -67,6 +73,7 @@ export class CommonCartridgeImportConsumer {
 				this.fileClient.deleteFile(payload.jwt, payload.fileRecordId),
 			]);
 		} catch (e: unknown) {
+			console.log(`Error in Import:`, e);
 			this.errorHandler.exec(e);
 		}
 	}
