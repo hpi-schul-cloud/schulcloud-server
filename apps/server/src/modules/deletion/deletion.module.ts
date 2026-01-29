@@ -1,7 +1,8 @@
-import { XApiKeyAuthGuardConfig } from '@infra/auth-guard';
+import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
 import { SagaModule } from '@modules/saga';
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { DELETION_CONFIG_TOKEN, DeletionConfig } from './deletion.config';
 import {
 	DeletionBatchService,
 	DeletionExecutionService,
@@ -9,16 +10,14 @@ import {
 	DeletionRequestService,
 } from './domain/service';
 import { DeletionBatchRepo, DeletionBatchUsersRepo, DeletionLogRepo, DeletionRequestRepo } from './repo';
-import { LoggerModule } from '@core/logger';
 
 @Module({
-	imports: [SagaModule, LoggerModule],
+	imports: [SagaModule, LoggerModule, ConfigurationModule.register(DELETION_CONFIG_TOKEN, DeletionConfig)],
 	providers: [
 		DeletionRequestRepo,
 		DeletionLogRepo,
 		DeletionBatchRepo,
 		DeletionBatchUsersRepo,
-		ConfigService<XApiKeyAuthGuardConfig, true>,
 		DeletionLogService,
 		DeletionRequestService,
 		DeletionBatchService,
