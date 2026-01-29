@@ -1,3 +1,4 @@
+export { CommaSeparatedStringToArray } from './comma-separated-string-to-array.transformer';
 export * from './decode-html-entities.transformer';
 export { NullToUndefined } from './null-to-undefined.transformer';
 export { PolymorphicArrayTransform } from './polymorphic-array.transformer';

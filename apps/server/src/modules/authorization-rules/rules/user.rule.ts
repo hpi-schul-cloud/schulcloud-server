@@ -3,13 +3,11 @@ import { RoleName } from '@modules/role';
 import { UserDo } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserRule implements Rule<UserDo> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
-		private readonly configService: ConfigService,
 		authorisationInjectionService: AuthorizationInjectionService
 	) {
 		authorisationInjectionService.injectAuthorizationRule(this);

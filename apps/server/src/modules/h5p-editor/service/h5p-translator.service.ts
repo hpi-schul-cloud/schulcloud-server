@@ -1,11 +1,11 @@
 import { ITranslationFunction } from '@lumieducation/h5p-server';
+import { LanguageType } from '@shared/domain/interface';
 import i18next from 'i18next';
 import i18nextFsBackend from 'i18next-fs-backend';
 import path from 'path';
-import { translatorConfig } from '../h5p-editor.config';
 
 export const Translator = {
-	async translate() {
+	async translate(availableLanguages: LanguageType[]): Promise<ITranslationFunction> {
 		const lumiPackagePath = path.dirname(require.resolve('@lumieducation/h5p-server/package.json'));
 		const pathBackend = path.join(lumiPackagePath, 'build/assets/translations/{{ns}}/{{lng}}.json');
 
@@ -24,7 +24,7 @@ export const Translator = {
 				'server',
 				'storage-file-implementations',
 			],
-			preload: translatorConfig.AVAILABLE_LANGUAGES,
+			preload: availableLanguages,
 		});
 
 		const translate: ITranslationFunction = (key, language) => translationFunction(key, { lng: language });

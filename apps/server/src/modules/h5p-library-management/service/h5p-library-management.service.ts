@@ -18,9 +18,8 @@ import {
 	ILibraryMetadata,
 	ILibraryName,
 } from '@lumieducation/h5p-server/build/src/types';
-import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ContentStorage, H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig, LibraryStorage } from '@modules/h5p-editor';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { readFileSync } from 'fs';
 import { Readable } from 'stream';
@@ -33,7 +32,6 @@ import {
 	H5PLibraryManagementLoggable,
 	H5PLibraryManagementMetricsLoggable,
 } from '../loggable';
-import { IH5PLibraryManagementConfig } from './h5p-library-management.config';
 import LibraryManagementPermissionSystem from './library-management-permission-system';
 
 interface LibrariesContentType {
@@ -71,12 +69,10 @@ export class H5PLibraryManagementService {
 	constructor(
 		private readonly libraryStorage: LibraryStorage,
 		private readonly contentStorage: ContentStorage,
-		private readonly configService: ConfigService<IH5PLibraryManagementConfig, true>,
+		@Inject(H5P_EDITOR_CONFIG_TOKEN) private readonly config: H5PEditorConfig,
 		private readonly logger: Logger
 	) {
-		const installLibraryLockMaxOccupationTime = this.configService.get<number>(
-			'H5P_EDITOR__INSTALL_LIBRARY_LOCK_MAX_OCCUPATION_TIME'
-		);
+		const { installLibraryLockMaxOccupationTime } = this.config;
 		const h5pConfig = new H5PConfig(undefined, {
 			baseUrl: '/api/v3/h5p-editor',
 			contentUserStateSaveInterval: false,
@@ -103,9 +99,9 @@ export class H5PLibraryManagementService {
 		);
 		const contentManager = new ContentManager(this.contentStorage, permissionSystem);
 		this.libraryAdministration = new LibraryAdministration(this.libraryManager, contentManager);
-		const filePath = this.configService.get<string>('H5P_EDITOR__LIBRARY_LIST_PATH');
+		const { libraryListPath } = this.config;
 
-		const librariesYamlContent = readFileSync(filePath, { encoding: 'utf-8' });
+		const librariesYamlContent = readFileSync(libraryListPath, { encoding: 'utf-8' });
 		const librariesContentType = castToLibrariesContentType(parse(librariesYamlContent));
 		this.libraryWishList = librariesContentType.h5p_libraries;
 

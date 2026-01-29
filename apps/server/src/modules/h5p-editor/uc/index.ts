@@ -1,1 +1,1 @@
-export * from './h5p.uc';
+export * from './h5p-editor.uc';
