@@ -39,7 +39,6 @@ describe('Alert Controller api', () => {
 		app = module.createNestApplication();
 		await app.init();
 		httpService = module.get(HttpService);
-		jest.useFakeTimers();
 	});
 
 	afterAll(async () => {

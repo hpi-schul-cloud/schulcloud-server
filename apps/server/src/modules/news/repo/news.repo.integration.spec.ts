@@ -18,6 +18,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { NewsTargetModel } from '../domain';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
 import { NewsRepo } from './news.repo';
+import { courseEntityFactory } from '@modules/course/testing';
 
 describe('NewsRepo', () => {
 	let repo: NewsRepo;
@@ -202,7 +203,10 @@ describe('NewsRepo', () => {
 		});
 
 		it('should return news in requested order', async () => {
-			const newsList = courseNewsFactory.buildList(5);
+			const course = courseEntityFactory.build();
+			await em.persist(course).flush();
+
+			const newsList = courseNewsFactory.buildList(5, { target: course.id });
 			await em.persist(newsList).flush();
 			em.clear();
 
@@ -273,8 +277,11 @@ describe('NewsRepo', () => {
 		});
 
 		it('should return unpublished news in requested order', async () => {
-			const creator = userFactory.build();
-			const newsList = courseUnpublishedNewsFactory.buildList(5, { creator });
+			const creator = userFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
+			await em.persist([creator, course]).flush();
+
+			const newsList = courseUnpublishedNewsFactory.buildListWithId(5, { creator, target: course.id });
 			await em.persist(newsList).flush();
 			em.clear();
 

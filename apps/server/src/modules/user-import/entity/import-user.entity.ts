@@ -1,9 +1,9 @@
-import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
+import { Entity, Enum, Ref, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
 import { RoleName } from '@modules/role';
 import { SchoolEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { User } from '@modules/user/repo';
-import { BaseEntityReference, BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 
 export type ImportUserRoleName = RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT;
 
@@ -55,11 +55,11 @@ export class ImportUser extends BaseEntityWithTimestamps {
 			this.externalRoleNames = props.externalRoleNames;
 	}
 
-	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId', wrappedReference: true, eager: true })
-	school: IdentifiedReference<SchoolEntity>;
+	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId', ref: true, eager: true })
+	school: Ref<SchoolEntity>;
 
-	@ManyToOne(() => SystemEntity, { wrappedReference: true })
-	system: IdentifiedReference<SystemEntity, BaseEntityReference>;
+	@ManyToOne(() => SystemEntity, { ref: true })
+	system: Ref<SystemEntity>;
 
 	@Property()
 	ldapDn: string;

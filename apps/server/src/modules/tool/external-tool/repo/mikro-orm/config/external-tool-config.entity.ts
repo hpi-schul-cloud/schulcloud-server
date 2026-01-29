@@ -3,7 +3,7 @@ import { ToolConfigType } from '../../../../common/enum';
 
 @Embeddable({ abstract: true, discriminatorColumn: 'type' })
 export abstract class ExternalToolConfigEntity {
-	@Enum()
+	@Enum(() => ToolConfigType)
 	type: ToolConfigType;
 
 	@Property()

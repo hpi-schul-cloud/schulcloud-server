@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserContextProps } from '../interface';
 import { UserContext } from './user-context.vo';
 

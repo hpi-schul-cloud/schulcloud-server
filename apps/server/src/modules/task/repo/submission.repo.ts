@@ -11,18 +11,18 @@ import { getFieldName } from '@shared/repo/utils/repo-helper';
 
 @Injectable()
 export class SubmissionRepo extends BaseRepo<Submission> {
-	get entityName() {
+	get entityName(): typeof Submission {
 		return Submission;
 	}
 
-	async findById(id: string): Promise<Submission> {
+	public async findById(id: string): Promise<Submission> {
 		const submission = await super.findById(id);
 		await this.populateReferences([submission]);
 
 		return submission;
 	}
 
-	async findAllByTaskIds(taskIds: EntityId[]): Promise<Counted<Submission[]>> {
+	public async findAllByTaskIds(taskIds: EntityId[]): Promise<Counted<Submission[]>> {
 		const [submissions, count] = await this._em.findAndCount(this.entityName, {
 			task: { $in: taskIds },
 		});
@@ -32,7 +32,7 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 		return [submissions, count];
 	}
 
-	async findAllByUserId(userId: EntityId): Promise<Counted<Submission[]>> {
+	public async findAllByUserId(userId: EntityId): Promise<Counted<Submission[]>> {
 		const result = await this._em.findAndCount(this.entityName, await this.byUserIdQuery(userId));
 		return result;
 	}

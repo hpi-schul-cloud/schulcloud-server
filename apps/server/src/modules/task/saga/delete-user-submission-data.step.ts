@@ -22,6 +22,7 @@ export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
 	constructor(
 		private readonly sagaService: SagaService,
 		private readonly submissionRepo: SubmissionRepo,
+
 		private readonly logger: Logger
 	) {
 		super('deleteUserData');
@@ -32,10 +33,8 @@ export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
 	public async execute(params: { userId: EntityId }): Promise<StepReport> {
 		const { userId } = params;
 
-		const [submissionsDeleted, submissionsModified] = await Promise.all([
-			this.deleteSingleSubmissionsOwnedByUser(userId),
-			this.removeUserReferencesFromSubmissions(userId),
-		]);
+		const submissionsDeleted = await this.deleteSingleSubmissionsOwnedByUser(userId);
+		const submissionsModified = await this.removeUserReferencesFromSubmissions(userId);
 
 		const result = StepReportBuilder.build(this.moduleName, [submissionsDeleted, submissionsModified]);
 

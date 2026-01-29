@@ -17,6 +17,7 @@ import { H5PAjaxEndpointProvider, H5PCacheProvider, H5PEditorProvider, H5PPlayer
 import { H5PContentRepo, LibraryRepo } from './repo';
 import { ContentStorage, H5pEditorContentService, LibraryStorage, TemporaryFileStorage } from './service';
 import { H5PEditorUc } from './uc';
+import { MongoDriver } from '@mikro-orm/mongodb';
 
 /**
  * H5P Editor module for cronjob usage - excludes RabbitMQ dependencies and consumer
@@ -33,7 +34,7 @@ const imports = [
 	UserModule,
 	MikroOrmModule.forRoot({
 		...defaultMikroOrmOptions,
-		type: 'mongo',
+		driver: MongoDriver,
 		// TODO add mongoose options as mongo options (see database.js)
 		clientUrl: DB_URL,
 		password: DB_PASSWORD,

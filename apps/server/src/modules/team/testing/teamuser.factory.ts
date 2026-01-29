@@ -5,11 +5,12 @@ import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
 import { TeamUserEntity } from '../repo';
+import { TeamUserProperties } from '../repo/team.entity';
 
-class TeamUserFactory extends BaseFactory<TeamUserEntity, TeamUserEntity> {
-	withRoleAndUserId(role: Role, userId: string): this {
+class TeamUserFactory extends BaseFactory<TeamUserEntity, TeamUserProperties> {
+	public withRoleAndUserId(role: Role, userId: string): this {
 		const school = schoolEntityFactory.build();
-		const params: DeepPartial<TeamUserEntity> = {
+		const params: DeepPartial<TeamUserProperties> = {
 			user: userFactory.buildWithId({ school, roles: [roleFactory.build({ roles: [role] })] }, userId),
 			school,
 			role,
@@ -17,9 +18,9 @@ class TeamUserFactory extends BaseFactory<TeamUserEntity, TeamUserEntity> {
 		return this.params(params);
 	}
 
-	withUserId(userId: string): this {
+	public withUserId(userId: string): this {
 		const school = schoolEntityFactory.build();
-		const params: DeepPartial<TeamUserEntity> = {
+		const params: DeepPartial<TeamUserProperties> = {
 			user: userFactory.buildWithId({ school }, userId),
 			school,
 		};
@@ -32,9 +33,9 @@ export const teamUserFactory = TeamUserFactory.define(TeamUserEntity, () => {
 	const school = schoolEntityFactory.buildWithId();
 	const user = userFactory.buildWithId({ roles: [role] });
 
-	return new TeamUserEntity({
+	return {
 		user,
 		school,
 		role,
-	});
+	};
 });

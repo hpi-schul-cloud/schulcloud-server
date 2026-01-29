@@ -8,7 +8,7 @@ import { synchronizationFactory } from '@modules/synchronization/domain/testing'
 import { UserService } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { IdpConsoleConfig } from '../idp-console.config';
 import {
 	FailedUpdateLastSyncedAtLoggableException,

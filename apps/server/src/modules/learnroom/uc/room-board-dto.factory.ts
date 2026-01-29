@@ -7,15 +7,10 @@ import { Task, TaskWithStatusVo } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
-import {
-	ColumnBoardBoardElement,
-	ColumnBoardNode,
-	LegacyBoard,
-	LegacyBoardElement,
-	LegacyBoardElementType,
-} from '../repo';
+import { ColumnBoardBoardElement, LegacyBoard, LegacyBoardElement, LegacyBoardElementType } from '../repo';
 import {
 	ColumnBoardMetaData,
+	ColumnBoardNode,
 	LessonMetaData,
 	RoomBoardDTO,
 	RoomBoardElementDTO,
@@ -24,15 +19,15 @@ import {
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 
 class DtoCreator {
-	room: CourseEntity;
+	public room: CourseEntity;
 
-	board: LegacyBoard;
+	public board: LegacyBoard;
 
-	user: User;
+	public user: User;
 
-	authorisationService: AuthorizationService;
+	public authorisationService: AuthorizationService;
 
-	roomsAuthorisationService: CourseRoomsAuthorisationService;
+	public roomsAuthorisationService: CourseRoomsAuthorisationService;
 
 	constructor({
 		room,
@@ -54,7 +49,7 @@ class DtoCreator {
 		this.roomsAuthorisationService = roomsAuthorisationService;
 	}
 
-	manufacture(): RoomBoardDTO {
+	public manufacture(): RoomBoardDTO {
 		const elements = this.board.getElements();
 		const filtered = this.filterByPermission(elements);
 
@@ -63,7 +58,7 @@ class DtoCreator {
 		return dto;
 	}
 
-	private filterByPermission(elements: LegacyBoardElement[]) {
+	private filterByPermission(elements: LegacyBoardElement[]): LegacyBoardElement[] {
 		const filtered = elements.filter((element) => {
 			let result = false;
 			if (element.boardElementType === LegacyBoardElementType.Task) {
@@ -85,7 +80,7 @@ class DtoCreator {
 		return filtered;
 	}
 
-	private isColumnBoardFeatureFlagActive() {
+	private isColumnBoardFeatureFlagActive(): boolean {
 		const isActive = (Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean) === true;
 
 		return isActive;
@@ -98,7 +93,7 @@ class DtoCreator {
 		return false;
 	}
 
-	private mapToElementDTOs(elements: LegacyBoardElement[]) {
+	private mapToElementDTOs(elements: LegacyBoardElement[]): RoomBoardElementDTO[] {
 		const results: RoomBoardElementDTO[] = [];
 		elements.forEach((element) => {
 			if (element.boardElementType === LegacyBoardElementType.Task) {
@@ -190,7 +185,7 @@ export class RoomBoardDTOFactory {
 		private readonly roomsAuthorisationService: CourseRoomsAuthorisationService
 	) {}
 
-	createDTO({ room, board, user }: { room: CourseEntity; board: LegacyBoard; user: User }): RoomBoardDTO {
+	public createDTO({ room, board, user }: { room: CourseEntity; board: LegacyBoard; user: User }): RoomBoardDTO {
 		const worker = new DtoCreator({
 			room,
 			board,

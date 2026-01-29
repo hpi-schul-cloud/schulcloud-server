@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserSearchQuery } from '../..';
 import { createMultiDocumentAggregation } from './aggregation-helper';
 

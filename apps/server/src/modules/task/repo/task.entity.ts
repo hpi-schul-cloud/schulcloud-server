@@ -77,7 +77,7 @@ export class Task extends BaseEntityWithTimestamps {
 	teamSubmissions?: boolean;
 
 	@Index()
-	@ManyToOne('User', { fieldName: 'teacherId', nullable: true })
+	@ManyToOne(() => User, { fieldName: 'teacherId', nullable: true })
 	creator?: User;
 
 	@Index()
@@ -89,14 +89,14 @@ export class Task extends BaseEntityWithTimestamps {
 	school: SchoolEntity;
 
 	@Index()
-	@ManyToOne('LessonEntity', { fieldName: 'lessonId', nullable: true })
+	@ManyToOne(() => LessonEntity, { fieldName: 'lessonId', nullable: true })
 	lesson?: LessonEntity; // In database exist also null, but it can not set.
 
-	@OneToMany('Submission', 'task')
+	@OneToMany(() => Submission, 'task')
 	submissions = new Collection<Submission>(this);
 
 	@Index()
-	@ManyToMany('User', undefined, { fieldName: 'archived' })
+	@ManyToMany(() => User, undefined, { fieldName: 'archived' })
 	finished = new Collection<User>(this);
 
 	constructor(props: TaskProperties) {

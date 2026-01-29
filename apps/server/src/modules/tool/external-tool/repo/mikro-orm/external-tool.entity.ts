@@ -90,6 +90,9 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	iconName?: string;
 
+	@Property({ hidden: true, nullable: true })
+	config_clientId?: string;
+
 	constructor(props: ExternalToolEntityProps) {
 		super();
 		if (props.id) {

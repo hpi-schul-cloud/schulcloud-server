@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { NoUsersToSynchronizationLoggableException } from './no-users-to-synchronization.loggable-exception';
 
 describe(NoUsersToSynchronizationLoggableException.name, () => {
