@@ -58,6 +58,7 @@ export class HelpdeskService {
 				attachments,
 			},
 			replyTo: [replyTo],
+			from: this.config.fromEmailAddress,
 		};
 
 		if (this.config.shouldSendEmail) {
