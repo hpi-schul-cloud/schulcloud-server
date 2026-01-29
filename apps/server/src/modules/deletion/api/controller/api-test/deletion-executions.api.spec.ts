@@ -30,7 +30,6 @@ import { RoomArrangementEntity } from '@modules/room';
 import { roomArrangementEntityFactory } from '@modules/room/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { Submission, Task } from '@modules/task/repo';
 import { submissionFactory, taskFactory } from '@modules/task/testing';
@@ -57,9 +56,6 @@ describe(`deletionExecution (api)`, () => {
 	let dashboardRepo: IDashboardRepo;
 
 	beforeAll(async () => {
-		const config = adminApiServerConfig();
-		config.CALENDAR_SERVICE_ENABLED = true;
-
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		})
