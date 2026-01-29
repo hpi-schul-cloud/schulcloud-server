@@ -1,6 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { StringToNumber } from '@shared/controller/transformer';
-import { CommaSeparatedStringToArray } from '@shared/controller/transformer/comma-separated-string-to-array.transformer';
+import { CommaSeparatedStringToArray, StringToNumber } from '@shared/controller/transformer';
 import { LanguageType } from '@shared/domain/interface';
 import { IsEnum, IsNumber, IsString } from 'class-validator';
 

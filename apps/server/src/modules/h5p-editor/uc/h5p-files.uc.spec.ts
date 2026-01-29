@@ -12,13 +12,13 @@ import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import { Readable } from 'stream';
+import { H5P_EDITOR_CONFIG_TOKEN } from '../h5p-editor.config';
 import { H5P_CACHE_PROVIDER_TOKEN, H5PEditorProvider, H5PPlayerProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { ContentStorage, LibraryStorage } from '../service';
 import { TemporaryFileStorage } from '../service/temporary-file-storage.service';
 import { h5pContentFactory } from '../testing';
-import { H5PEditorUc } from './h5p.uc';
-import { H5P_EDITOR_CONFIG_TOKEN } from '../h5p-editor.config';
+import { H5PEditorUc } from './h5p-editor.uc';
 
 const createParams = () => {
 	const content = h5pContentFactory.build();

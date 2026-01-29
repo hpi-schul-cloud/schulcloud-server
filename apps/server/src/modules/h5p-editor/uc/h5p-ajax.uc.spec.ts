@@ -16,7 +16,7 @@ import * as GetLibraryWhiteList from '../helper/h5p-libraries.helper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PUploadFile } from '../types';
-import { H5PEditorUc } from './h5p.uc';
+import { H5PEditorUc } from './h5p-editor.uc';
 
 jest.mock('../helper/h5p-libraries.helper');
 

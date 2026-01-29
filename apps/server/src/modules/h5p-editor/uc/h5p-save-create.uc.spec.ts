@@ -11,13 +11,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { H5P_EDITOR_CONFIG_TOKEN } from '../h5p-editor.config';
 import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { h5pContentFactory } from '../testing';
 import { H5PContentParentType, LumiUserWithContentData } from '../types';
-import { H5PEditorUc } from './h5p.uc';
-import { H5P_EDITOR_CONFIG_TOKEN } from '../h5p-editor.config';
+import { H5PEditorUc } from './h5p-editor.uc';
 
 const createParams = () => {
 	const { content: parameters, metadata } = h5pContentFactory.build();

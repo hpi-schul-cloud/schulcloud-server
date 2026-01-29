@@ -1,4 +1,3 @@
-// eslint-disable-next-line filename-rules/match
 import { Logger } from '@core/logger';
 import {
 	AuthorizationBodyParamsReferenceType,
