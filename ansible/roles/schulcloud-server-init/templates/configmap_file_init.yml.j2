@@ -338,7 +338,7 @@ data:
     if [[ $SC_THEME == "brb" ]]; then
       echo "Adding FWU tool to external-tools collection"
 
-      mongosh $DB_URL --quiet --eval 'db.external-tools.insertOne(
+      mongosh $DB_URL --quiet --eval 'db.getCollection("external-tools").insertOne(
           {
             "_id" : ObjectId("6973657acd71a04085864fca"),
             "name" : "FWU Medien",
@@ -357,7 +357,7 @@ data:
 
       echo "Adding FWU tool to school-external-tools collection"
 
-      mongosh $DB_URL --quiet --eval 'db.school-external-tools.insertOne(
+      mongosh $DB_URL --quiet --eval 'db.getCollection("school-external-tools").insertOne(
           {
             "_id" : ObjectId("697a1271edc7d941b031bfda"),
             "tool" : ObjectId("6973657acd71a04085864fca"),
