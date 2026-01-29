@@ -22,7 +22,6 @@ export interface ServerConfig extends CoreModuleConfig, ManagementSeedDataConfig
 	SC_CONTACT_EMAIL: string;
 	SC_CONTACT_EMAIL_SUBJECT: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
-	CALENDAR_SERVICE_ENABLED: boolean;
 	FEATURE_ES_COLLECTIONS_ENABLED: boolean;
 	FEATURE_EXTENSIONS_ENABLED: boolean;
 	FEATURE_TEAMS_ENABLED: boolean;
@@ -77,7 +76,6 @@ const config: ServerConfig = {
 	SC_CONTACT_EMAIL: Configuration.get('SC_CONTACT_EMAIL') as string,
 	SC_CONTACT_EMAIL_SUBJECT: Configuration.get('SC_CONTACT_EMAIL_SUBJECT') as string,
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN') as boolean,
-	CALENDAR_SERVICE_ENABLED: Configuration.get('CALENDAR_SERVICE_ENABLED') as boolean,
 	FEATURE_ES_COLLECTIONS_ENABLED: Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') as boolean,
 	FEATURE_EXTENSIONS_ENABLED: Configuration.get('FEATURE_EXTENSIONS_ENABLED') as boolean,
 	FEATURE_TEAMS_ENABLED: Configuration.get('FEATURE_TEAMS_ENABLED') as boolean,

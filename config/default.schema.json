@@ -1059,11 +1059,6 @@
 			"default": false,
 			"description": "Enables the AI Tutor"
 		},
-		"CALENDAR_SERVICE_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables calender service"
-		},
 		"FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED": {
 			"type": "boolean",
 			"default": false,
