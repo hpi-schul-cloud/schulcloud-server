@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
 import { groupEntityFactory } from '@modules/group/testing';
@@ -13,6 +12,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenParentType } from '../../domainobject/share-token.do';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '../../sharing.config';
 import { ShareTokenResponse } from '../dto';
 
 const baseRouteName = '/sharetoken';
@@ -21,6 +21,7 @@ describe(`share token creation (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let apiClient: TestApiClient;
+	let config: SharingPublicApiConfig;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -32,6 +33,7 @@ describe(`share token creation (api)`, () => {
 		em = module.get(EntityManager);
 
 		apiClient = new TestApiClient(app, baseRouteName);
+		config = module.get<SharingPublicApiConfig>(SHARING_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -48,7 +50,7 @@ describe(`share token creation (api)`, () => {
 			await em.persist([teacherAccount, teacherUser, course]).flush();
 			em.clear();
 
-			Configuration.set('FEATURE_COURSE_SHARE', false);
+			config.featureCourseShare = false;
 
 			const loggedInClient = await apiClient.login(teacherAccount);
 
@@ -77,7 +79,7 @@ describe(`share token creation (api)`, () => {
 			await em.persist([teacherAccount, teacherUser, course]).flush();
 			em.clear();
 
-			Configuration.set('FEATURE_COURSE_SHARE', true);
+			config.featureCourseShare = true;
 
 			const loggedInClient = await apiClient.login(teacherAccount);
 
@@ -176,7 +178,7 @@ describe(`share token creation (api)`, () => {
 				await em.persist([teacherAccount, teacherUser, course]).flush();
 				em.clear();
 
-				Configuration.set('FEATURE_COURSE_SHARE', true);
+				config.featureCourseShare = true;
 
 				const loggedInClient = await apiClient.login(teacherAccount);
 
@@ -290,7 +292,7 @@ describe(`share token creation (api)`, () => {
 				await em.persist([teacherAccount, teacherUser, course]).flush();
 				em.clear();
 
-				Configuration.set('FEATURE_COURSE_SHARE', true);
+				config.featureCourseShare = true;
 
 				return { course };
 			};
@@ -333,7 +335,7 @@ describe(`share token creation (api)`, () => {
 				await em.persist([school, teacherAccount, teacherUser, room, group, roomMembership, roomOwnerRole]).flush();
 				em.clear();
 
-				Configuration.set('FEATURE_COURSE_SHARE', true);
+				config.featureRoomShare = true;
 
 				const loggedInClient = await apiClient.login(teacherAccount);
 

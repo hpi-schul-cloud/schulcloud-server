@@ -1,20 +1,20 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig } from '@modules/oauth/oauth.config';
 import { oauthSessionTokenEntityFactory } from '@modules/oauth/testing';
-import { ServerConfig, serverConfig, ServerTestModule } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { TestConfigHelper } from '@testing/test-config.helper';
 import { UUID } from 'bson';
 
 describe('OAuth Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let testConfigHelper: TestConfigHelper<ServerConfig>;
+	let config: OauthPublicApiConfig;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -27,13 +27,12 @@ describe('OAuth Controller (API)', () => {
 
 		testApiClient = new TestApiClient(app, 'oauth');
 
-		const config = serverConfig();
-		testConfigHelper = new TestConfigHelper(config);
+		config = module.get(OAUTH_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		testConfigHelper.set('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED', true);
+		config.featureExternalSystemLogoutEnabled = true;
 	});
 
 	afterAll(async () => {
@@ -63,7 +62,7 @@ describe('OAuth Controller (API)', () => {
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
-				testConfigHelper.set('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED', false);
+				config.featureExternalSystemLogoutEnabled = false;
 
 				return {
 					loggedInClient,

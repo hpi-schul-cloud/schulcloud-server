@@ -1,4 +1,5 @@
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
 import { AccountModule } from '@modules/account/account.module';
 import { AuthorizationModule } from '@modules/authorization';
 import { CopyHelperModule } from '@modules/copy-helper';
@@ -21,6 +22,7 @@ import {
 	RoomBoardService,
 	RoomPermissionService,
 } from './api/service';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from './room.config';
 import { RoomModule } from './room.module';
 
 @Module({
@@ -35,6 +37,7 @@ import { RoomModule } from './room.module';
 		SchoolModule,
 		CopyHelperModule,
 		SagaModule,
+		ConfigurationModule.register(ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig),
 	],
 	controllers: [RoomController, RoomInvitationLinkController],
 	providers: [

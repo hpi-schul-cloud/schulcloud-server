@@ -1,12 +1,16 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationInjectionService } from '@modules/authorization';
 import { BoardRoles } from '@modules/board';
 import { roleFactory } from '@modules/role/testing';
+import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
+import { studentPermissions, userPermissions } from '@testing/user-role-permissions';
+import { BoardContextSettings } from '../domain';
 import {
 	boardNodeAuthorizableFactory,
 	columnBoardFactory,
@@ -16,21 +20,26 @@ import {
 	videoConferenceElementFactory,
 } from '../testing';
 import { BoardNodeRule } from './board-node.rule';
-import { BoardContextSettings } from '../domain';
 
 describe(BoardNodeRule.name, () => {
 	let service: BoardNodeRule;
 	let injectionService: AuthorizationInjectionService;
+	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [BoardNodeRule, AuthorizationInjectionService],
+			providers: [
+				BoardNodeRule,
+				AuthorizationInjectionService,
+				{ provide: UserService, useValue: createMock<UserService>() },
+			],
 		}).compile();
 
 		service = await module.get(BoardNodeRule);
 		injectionService = await module.get(AuthorizationInjectionService);
+		userService = await module.get(UserService);
 	});
 
 	describe('injection', () => {
@@ -666,6 +675,7 @@ describe(BoardNodeRule.name, () => {
 							rootNode: columnBoard,
 							boardContextSettings: {},
 						});
+						userService.resolvePermissions.mockReturnValueOnce([...userPermissions, ...studentPermissions]);
 
 						return { user, boardNodeAuthorizable };
 					};
@@ -712,6 +722,7 @@ describe(BoardNodeRule.name, () => {
 							rootNode: columnBoard,
 							boardContextSettings: {},
 						});
+						userService.resolvePermissions.mockReturnValueOnce([...userPermissions, ...studentPermissions]);
 
 						return { user, boardNodeAuthorizable };
 					};

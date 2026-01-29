@@ -1,6 +1,6 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType } from '@modules/board';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
 import { BoardNodeType } from '@modules/board/domain';
 import { BoardNodeEntity } from '@modules/board/repo';
 import {
@@ -12,8 +12,10 @@ import {
 import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '@modules/learnroom';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '@modules/sharing/sharing.config';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
@@ -37,6 +39,9 @@ describe(`Share Token Import (API)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let sharingConfig: SharingPublicApiConfig;
+	let boardConfig: BoardConfig;
+	let learnroomConfig: LearnroomConfig;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -47,6 +52,9 @@ describe(`Share Token Import (API)`, () => {
 		await app.init();
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'sharetoken');
+		sharingConfig = module.get<SharingPublicApiConfig>(SHARING_PUBLIC_API_CONFIG_TOKEN);
+		boardConfig = module.get<BoardConfig>(BOARD_CONFIG_TOKEN);
+		learnroomConfig = module.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -60,11 +68,11 @@ describe(`Share Token Import (API)`, () => {
 	beforeEach(async () => {
 		await cleanupCollections(em);
 
-		Configuration.set('FEATURE_COURSE_SHARE', true);
-		Configuration.set('FEATURE_COLUMN_BOARD_SHARE', true);
+		sharingConfig.featureCourseShare = true;
+		sharingConfig.featureColumnBoardShare = true;
 
-		const config: ServerConfig = serverConfig();
-		config.FEATURE_CTL_TOOLS_COPY_ENABLED = true;
+		boardConfig.featureCtlToolsCopyEnabled = true;
+		learnroomConfig.featureCtlToolsCopyEnabled = true;
 	});
 
 	const setupSchoolExclusiveImport = async () => {
@@ -106,7 +114,7 @@ describe(`Share Token Import (API)`, () => {
 
 		describe('with the feature disabled', () => {
 			beforeEach(() => {
-				Configuration.set('FEATURE_COURSE_SHARE', false);
+				sharingConfig.featureCourseShare = false;
 			});
 
 			it('should return a 403 error', async () => {

@@ -7,8 +7,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ReadStream } from 'fs';
 import { Readable } from 'node:stream';
 import { GetH5PFileResponse } from '../controller/dto';
-import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { TemporaryFileStorage } from './temporary-file-storage.service';
+import { H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN } from '../h5p-editor.const';
 
 const helpers = {
 	createUser() {
@@ -30,11 +30,11 @@ describe('TemporaryFileStorage', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				TemporaryFileStorage,
-				{ provide: H5P_CONTENT_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
+				{ provide: H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN, useValue: createMock<S3ClientAdapter>() },
 			],
 		}).compile();
 		storage = module.get(TemporaryFileStorage);
-		s3clientAdapter = module.get(H5P_CONTENT_S3_CONNECTION);
+		s3clientAdapter = module.get(H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN);
 	});
 
 	afterAll(async () => {

@@ -1,45 +1,57 @@
-import { Module, Scope } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigurationModule } from '@infra/configuration';
+import { DynamicModule, Module, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { JwtExtractor } from '@shared/common/utils';
 import { Request } from 'express';
-import { CardClientAdapter, CardClientConfig } from '.';
+import { CardClientAdapter } from './card-client.adapter';
+import { InternalCardClientConfig } from './card-client.config';
 import { BoardCardApi, BoardElementApi, Configuration } from './generated';
 
-@Module({
-	providers: [
-		CardClientAdapter,
-		{
-			provide: BoardCardApi,
-			scope: Scope.REQUEST,
-			useFactory: (configService: ConfigService<CardClientConfig, true>, request: Request): BoardCardApi => {
-				const basePath = configService.getOrThrow<string>('API_HOST');
-				const accessToken = JwtExtractor.extractJwtFromRequestOrFail(request);
-				const configuration = new Configuration({
-					basePath: `${basePath}/v3`,
-					accessToken,
-				});
+@Module({})
+export class CardClientModule {
+	public static register(
+		configInjectionToken: string,
+		configConstructor: new () => InternalCardClientConfig
+	): DynamicModule {
+		const providers = [
+			CardClientAdapter,
+			{
+				provide: BoardCardApi,
+				scope: Scope.REQUEST,
+				useFactory: (config: InternalCardClientConfig, request: Request): BoardCardApi => {
+					const { basePath } = config;
+					const accessToken = JwtExtractor.extractJwtFromRequestOrFail(request);
+					const configuration = new Configuration({
+						basePath: `${basePath}/v3`,
+						accessToken,
+					});
 
-				return new BoardCardApi(configuration);
+					return new BoardCardApi(configuration);
+				},
+				inject: [configInjectionToken, REQUEST],
 			},
-			inject: [ConfigService, REQUEST],
-		},
-		{
-			provide: BoardElementApi,
-			scope: Scope.REQUEST,
-			useFactory: (configService: ConfigService<CardClientConfig, true>, request: Request): BoardElementApi => {
-				const basePath = configService.getOrThrow<string>('API_HOST');
-				const accessToken = JwtExtractor.extractJwtFromRequestOrFail(request);
-				const configuration = new Configuration({
-					basePath: `${basePath}/v3`,
-					accessToken,
-				});
+			{
+				provide: BoardElementApi,
+				scope: Scope.REQUEST,
+				useFactory: (config: InternalCardClientConfig, request: Request): BoardElementApi => {
+					const { basePath } = config;
+					const accessToken = JwtExtractor.extractJwtFromRequestOrFail(request);
+					const configuration = new Configuration({
+						basePath: `${basePath}/v3`,
+						accessToken,
+					});
 
-				return new BoardElementApi(configuration);
+					return new BoardElementApi(configuration);
+				},
+				inject: [configInjectionToken, REQUEST],
 			},
-			inject: [ConfigService, REQUEST],
-		},
-	],
-	exports: [CardClientAdapter],
-})
-export class CardClientModule {}
+		];
+
+		return {
+			module: CardClientModule,
+			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
+			exports: [CardClientAdapter],
+			providers,
+		};
+	}
+}

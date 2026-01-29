@@ -6,19 +6,20 @@ import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { RoomMembershipEntity } from '@modules/room-membership';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room/room.config';
 import { roomEntityFactory } from '@modules/room/testing';
 import { roomInvitationLinkEntityFactory } from '@modules/room/testing/room-invitation-link-entity.factory';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerTestModule, type ServerConfig } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ObjectId } from 'mongodb';
-import { RoomInvitationLinkValidationError } from '../type/room-invitation-link-validation-error.enum';
 import { RoomInvitationLinkError } from '../dto/response/room-invitation-link.error';
+import { RoomInvitationLinkValidationError } from '../type/room-invitation-link-validation-error.enum';
 
 type RoomInvitationLinkConfig = {
 	requiresConfirmation?: boolean;
@@ -56,7 +57,7 @@ describe('Room Invitation Link Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
+	let config: RoomPublicApiConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -68,12 +69,12 @@ describe('Room Invitation Link Controller (API)', () => {
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'room-invitation-links');
 
-		config = serverConfig();
+		config = moduleFixture.get<RoomPublicApiConfig>(ROOM_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = true;
+		config.featureRoomLinkInvitationExternalPersonsEnabled = true;
 		em.clear();
 		await em.clearCache('roles-cache-byname-roomviewer');
 		await em.clearCache('roles-cache-bynames-roomviewer');
@@ -217,7 +218,7 @@ describe('Room Invitation Link Controller (API)', () => {
 
 		describe('when external person link feature is disabled', () => {
 			beforeEach(() => {
-				config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = false;
+				config.featureRoomLinkInvitationExternalPersonsEnabled = false;
 			});
 
 			describe('when the user is an external person', () => {

@@ -16,7 +16,7 @@ export class TaskController {
 	constructor(private readonly taskUc: TaskUC, private readonly taskCopyUc: TaskCopyUC) {}
 
 	@Get()
-	async findAll(
+	public async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<TaskListResponse> {
@@ -24,7 +24,7 @@ export class TaskController {
 	}
 
 	@Get('finished')
-	async findAllFinished(
+	public async findAllFinished(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<TaskListResponse> {
@@ -48,7 +48,10 @@ export class TaskController {
 	}
 
 	@Patch(':taskId/finish')
-	async finish(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
+	public async finish(
+		@Param() urlParams: TaskUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<TaskResponse> {
 		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, urlParams.taskId, true);
 
 		const response = TaskMapper.mapToResponse(task);
@@ -57,7 +60,10 @@ export class TaskController {
 	}
 
 	@Patch(':taskId/restore')
-	async restore(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
+	public async restore(
+		@Param() urlParams: TaskUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<TaskResponse> {
 		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, urlParams.taskId, false);
 
 		const response = TaskMapper.mapToResponse(task);
@@ -66,7 +72,7 @@ export class TaskController {
 	}
 
 	@Patch(':taskId/revertPublished')
-	async revertPublished(
+	public async revertPublished(
 		@Param() urlParams: TaskUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<TaskResponse> {
@@ -79,7 +85,7 @@ export class TaskController {
 
 	@Post(':taskId/copy')
 	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
-	async copyTask(
+	public async copyTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: TaskUrlParams,
 		@Body() params: TaskCopyApiParams
@@ -90,11 +96,12 @@ export class TaskController {
 			CopyMapper.mapTaskCopyToDomain(params, currentUser.userId)
 		);
 		const dto = CopyMapper.mapToResponse(copyStatus);
+
 		return dto;
 	}
 
 	@Delete(':taskId')
-	async delete(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
+	public async delete(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
 		const result = await this.taskUc.delete(currentUser.userId, urlParams.taskId);
 
 		return result;

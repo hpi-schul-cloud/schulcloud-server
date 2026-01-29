@@ -5,17 +5,17 @@ import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import { BoardExternalReferenceType } from '../../domain';
 import { columnBoardEntityFactory } from '../../testing';
 import { BoardResponse } from '../dto';
-import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerConfig } from '@modules/server';
 
 const baseRouteName = '/boards';
 
@@ -23,7 +23,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
+	let config: BoardConfig;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -34,7 +34,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 		await app.init();
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, baseRouteName);
-		config = serverConfig();
+		config = module.get<BoardConfig>(BOARD_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -43,7 +43,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = true;
+		config.featureBoardReadersCanEditToggle = true;
 	});
 
 	const setup = async () => {
@@ -140,7 +140,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 		describe('with feature flag disabled', () => {
 			it('should return status 403', async () => {
 				const { accountWithAdminRole, columnBoardNode } = await setup();
-				config.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = false;
+				config.featureBoardReadersCanEditToggle = false;
 
 				const loggedInClient = await testApiClient.login(accountWithAdminRole);
 
@@ -153,7 +153,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 
 			it('should not change the board visibility', async () => {
 				const { accountWithAdminRole, columnBoardNode } = await setup();
-				config.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = false;
+				config.featureBoardReadersCanEditToggle = false;
 
 				const loggedInClient = await testApiClient.login(accountWithAdminRole);
 

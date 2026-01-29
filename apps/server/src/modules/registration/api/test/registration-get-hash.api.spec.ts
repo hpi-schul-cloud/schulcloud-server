@@ -1,16 +1,17 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
+import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } from '../../registration.config';
 import { registrationEntityFactory } from '../../testing/registration-entity.factory';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
+	let config: RegistrationPublicApiConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -22,12 +23,12 @@ describe('Room Controller (API)', () => {
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'registrations');
 
-		config = serverConfig();
+		config = moduleFixture.get<RegistrationPublicApiConfig>(REGISTRATION_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = true;
+		config.featureExternalPersonRegistrationEnabled = true;
 	});
 
 	afterAll(async () => {
@@ -55,7 +56,7 @@ describe('Room Controller (API)', () => {
 
 		describe('when the feature is disabled', () => {
 			it('should return a 403 error', async () => {
-				config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = false;
+				config.featureExternalPersonRegistrationEnabled = false;
 				const { registration } = await setup();
 
 				const response = await testApiClient.get(`/by-secret/${registration.registrationSecret}`);

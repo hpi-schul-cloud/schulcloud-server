@@ -6,6 +6,7 @@ import { INestApplication } from '@nestjs/common';
 import type { Server } from 'node:net';
 import supertest, { Response } from 'supertest';
 import { JwtAuthenticationFactory } from './factory/jwt-authentication.factory';
+import { TestJwtModuleConfig } from './test-jwt-module.config';
 
 interface AuthenticationResponse {
 	accessToken: string;
@@ -130,15 +131,18 @@ export class TestApiClient {
 		);
 	}
 
-	public loginByUser(account: AccountEntity, user: User): this {
-		const jwt = JwtAuthenticationFactory.createJwt({
-			accountId: account.id,
-			userId: user.id,
-			schoolId: user.school.id,
-			roles: [user.roles[0].id],
-			support: false,
-			isExternalUser: false,
-		});
+	public loginByUser(account: AccountEntity, user: User, jwtConfig: TestJwtModuleConfig): this {
+		const jwt = JwtAuthenticationFactory.createJwt(
+			{
+				accountId: account.id,
+				userId: user.id,
+				schoolId: user.school.id,
+				roles: [user.roles[0].id],
+				support: false,
+				isExternalUser: false,
+			},
+			jwtConfig
+		);
 
 		return new (this.constructor as new (app: INestApplication, baseRoute: string, authValue: string) => this)(
 			this.app,

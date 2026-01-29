@@ -1,12 +1,13 @@
 import { LegacyLogger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { ConfigurationModule } from '@infra/configuration';
 import { HttpStatus, StreamableFile } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { Request, Response } from 'express';
 import { Readable } from 'stream';
+import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../common-cartridge.config';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
@@ -22,16 +23,7 @@ describe('CommonCartridgeController', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				ConfigModule.forRoot({
-					isGlobal: true,
-					load: [
-						() => {
-							return { FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: 10_000 };
-						},
-					],
-				}),
-			],
+			imports: [ConfigurationModule.register(COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig)],
 			controllers: [CommonCartridgeController],
 			providers: [
 				{

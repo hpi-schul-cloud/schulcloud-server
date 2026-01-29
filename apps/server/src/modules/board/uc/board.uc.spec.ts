@@ -14,6 +14,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../board.config';
 import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, BoardRoles, Column, ColumnBoard } from '../domain';
 import {
 	BoardNodeAuthorizableService,
@@ -23,7 +24,6 @@ import {
 } from '../service';
 import { boardNodeAuthorizableFactory, columnBoardFactory, columnFactory } from '../testing';
 import { BoardUc } from './board.uc';
-import { ConfigService } from '@nestjs/config';
 
 describe(BoardUc.name, () => {
 	let module: TestingModule;
@@ -86,8 +86,8 @@ describe(BoardUc.name, () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: BOARD_CONFIG_TOKEN,
+					useValue: new BoardConfig(),
 				},
 			],
 		}).compile();

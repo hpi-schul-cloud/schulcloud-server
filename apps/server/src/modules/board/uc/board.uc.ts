@@ -27,9 +27,9 @@ import {
 	ColumnBoardService,
 } from '../service';
 import { StorageLocationReference } from '../service/internal';
-import { ConfigService } from '@nestjs/config';
-import { BoardConfig } from '../board.config';
+
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../board.config';
 
 @Injectable()
 export class BoardUc {
@@ -46,7 +46,7 @@ export class BoardUc {
 		private readonly boardNodeFactory: BoardNodeFactory,
 		private readonly boardContextApiHelperService: BoardContextApiHelperService,
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
-		private readonly configService: ConfigService<BoardConfig, true>
+		@Inject(BOARD_CONFIG_TOKEN) private readonly config: BoardConfig
 	) {
 		this.logger.setContext(BoardUc.name);
 	}
@@ -186,7 +186,7 @@ export class BoardUc {
 		boardId: EntityId,
 		readersCanEdit: boolean
 	): Promise<ColumnBoard> {
-		if (!this.configService.get('FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE', { infer: true })) {
+		if (!this.config.featureBoardReadersCanEditToggle) {
 			throw new FeatureDisabledLoggableException('FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE');
 		}
 

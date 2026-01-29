@@ -8,8 +8,7 @@ import { UserService } from '@modules/user';
 import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
 import { User } from '@modules/user/repo';
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
@@ -28,7 +27,7 @@ import {
 } from '../loggable';
 import { ImportUserRepo } from '../repo';
 import { UserImportService } from '../service';
-import { UserImportConfig } from '../user-import-config';
+import { USER_IMPORT_CONFIG_TOKEN, UserImportConfig } from '../user-import-config';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -43,7 +42,7 @@ export type UserImportPermissions =
 @Injectable()
 export class UserImportUc {
 	constructor(
-		private readonly configService: ConfigService<UserImportConfig, true>,
+		@Inject(USER_IMPORT_CONFIG_TOKEN) private readonly config: UserImportConfig,
 		private readonly accountService: AccountService,
 		private readonly importUserRepo: ImportUserRepo,
 		private readonly authorizationService: AuthorizationService,
@@ -232,9 +231,7 @@ export class UserImportUc {
 	}
 
 	public async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
-		const FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = this.configService.get<boolean>(
-			'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
-		);
+		const FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = this.config.featureMigrationWizardWithUserLoginMigration;
 
 		if (FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION) {
 			useCentralLdap = false;
@@ -308,9 +305,7 @@ export class UserImportUc {
 
 		school.inMaintenanceSince = undefined;
 
-		const isMigrationRestartable: boolean = this.configService.get(
-			'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
-		);
+		const isMigrationRestartable: boolean = this.config.featureMigrationWizardWithUserLoginMigration;
 		if (isMigrationRestartable) {
 			school.inUserMigration = undefined;
 		}
@@ -353,9 +348,7 @@ export class UserImportUc {
 	}
 
 	private async updateUserAndAccount(importUser: ImportUser, school: LegacySchoolDo): Promise<void> {
-		const FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = this.configService.get<boolean>(
-			'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
-		);
+		const FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = this.config.featureMigrationWizardWithUserLoginMigration;
 
 		if (FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION) {
 			await this.updateUserAndAccountWithUserLoginMigration(importUser);

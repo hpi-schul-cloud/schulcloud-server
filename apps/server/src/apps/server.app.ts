@@ -6,7 +6,7 @@ import { LegacyLogger, Logger } from '@core/logger';
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
 import { AccountUc } from '@modules/account/api/account.uc';
-import { SESSION_VALKEY_CLIENT } from '@modules/authentication/authentication-config';
+import { SESSION_VALKEY_CLIENT } from '@modules/authentication';
 import { SystemRule } from '@modules/authorization-rules';
 import { ColumnBoardService } from '@modules/board';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';

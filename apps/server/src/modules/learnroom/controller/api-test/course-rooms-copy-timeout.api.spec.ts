@@ -11,10 +11,10 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 // config must be set outside before the server module is importat, otherwise the configuration is already set
 const configBefore = Configuration.toObject({ plainSecrets: true });
-Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
 // eslint-disable-next-line import/first
 import { ServerTestModule } from '@modules/server';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../../learnroom.config';
 
 // This needs to be in a separate test file because of the above configuration.
 // When we find a way to mock the config, it should be moved alongside the other API tests.
@@ -22,6 +22,7 @@ describe('Course Rooms copy (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let apiClient: TestApiClient;
+	let config: LearnroomConfig;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -36,6 +37,8 @@ describe('Course Rooms copy (API)', () => {
 		em = app.get(EntityManager);
 
 		apiClient = new TestApiClient(app, '/course-rooms');
+		config = app.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
+		config.featureCopyServiceEnabled = true;
 	});
 
 	afterAll(async () => {

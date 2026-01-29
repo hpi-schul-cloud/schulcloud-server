@@ -1,5 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { CalendarModule } from '@infra/calendar';
+import { ConfigurationModule } from '@infra/configuration';
 import { AuthorizationModule } from '@modules/authorization';
 import { RegistrationPinModule } from '@modules/registration-pin';
 import { RoleModule } from '@modules/role';
@@ -9,8 +10,9 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { USER_DO_REPO, UserService } from './domain';
 import { UserAuthorizableService } from './domain/service/user-authorizable.service';
 import { UserDoMikroOrmRepo, UserMikroOrmRepo } from './repo';
-import { DeleteUserCalendarDataStep, DeleteUserRegistrationPinDataStep, DeleteUserStep } from './saga';
 import { UserEventSubscriber } from './repo/user-event-subscriber';
+import { DeleteUserCalendarDataStep, DeleteUserRegistrationPinDataStep, DeleteUserStep } from './saga';
+import { USER_CONFIG_TOKEN, UserConfig } from './user.config';
 
 @Module({
 	imports: [
@@ -21,6 +23,7 @@ import { UserEventSubscriber } from './repo/user-event-subscriber';
 		CalendarModule,
 		AuthorizationModule,
 		SagaModule,
+		ConfigurationModule.register(USER_CONFIG_TOKEN, UserConfig),
 	],
 	providers: [
 		UserMikroOrmRepo,

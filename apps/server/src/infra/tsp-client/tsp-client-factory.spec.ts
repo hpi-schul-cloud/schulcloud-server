@@ -1,18 +1,16 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { OauthAdapterService } from '@modules/oauth-adapter';
-import { ServerConfig } from '@modules/server';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import axios, { AxiosError } from 'axios';
 import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { TspAccessTokenLoggableError } from './loggable/tsp-access-token.loggable-error';
 import { TspClientFactory } from './tsp-client-factory';
+import { TSP_CLIENT_CONFIG_TOKEN } from './tsp-client.config';
 
 describe('TspClientFactory', () => {
 	let module: TestingModule;
 	let sut: TspClientFactory;
-	let configServiceMock: DeepMocked<ConfigService<ServerConfig, true>>;
 	let oauthAdapterServiceMock: DeepMocked<OauthAdapterService>;
 	let encryptionService: DeepMocked<EncryptionService>;
 
@@ -25,19 +23,11 @@ describe('TspClientFactory', () => {
 					useValue: createMock<OauthAdapterService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<ServerConfig, true>>({
-						getOrThrow: (key: string) => {
-							switch (key) {
-								case 'TSP_API_CLIENT_BASE_URL':
-									return faker.internet.url();
-								case 'TSP_API_CLIENT_TOKEN_LIFETIME_MS':
-									return faker.number.int();
-								default:
-									throw new Error(`Unknown key: ${key}`);
-							}
-						},
-					}),
+					provide: TSP_CLIENT_CONFIG_TOKEN,
+					useValue: {
+						baseUrl: faker.internet.url(),
+						tokenLifetimeMs: faker.number.int(),
+					},
 				},
 				{
 					provide: DefaultEncryptionService,
@@ -47,7 +37,6 @@ describe('TspClientFactory', () => {
 		}).compile();
 
 		sut = module.get(TspClientFactory);
-		configServiceMock = module.get(ConfigService);
 		oauthAdapterServiceMock = module.get(OauthAdapterService);
 		encryptionService = module.get(DefaultEncryptionService);
 	});
@@ -74,7 +63,6 @@ describe('TspClientFactory', () => {
 				});
 
 				expect(result).toBeDefined();
-				expect(configServiceMock.getOrThrow).toHaveBeenCalledTimes(0);
 			});
 		});
 	});
@@ -105,7 +93,6 @@ describe('TspClientFactory', () => {
 				const response = await sut.getAccessToken(params);
 
 				expect(response).toBeDefined();
-				expect(configServiceMock.getOrThrow).toHaveBeenCalledTimes(0);
 				expect(encryptionService.decrypt).toHaveBeenCalled();
 			});
 		});
@@ -134,7 +121,6 @@ describe('TspClientFactory', () => {
 				const result = await sut.getAccessToken({ clientId, clientSecret, tokenEndpoint });
 
 				expect(result).toBe(cached);
-				expect(configServiceMock.getOrThrow).toHaveBeenCalledTimes(0);
 			});
 		});
 

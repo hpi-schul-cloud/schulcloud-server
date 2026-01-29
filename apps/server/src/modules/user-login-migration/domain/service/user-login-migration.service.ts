@@ -1,13 +1,16 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { SchoolFeature } from '@modules/school/domain';
 import { System, SystemService } from '@modules/system';
 import { SystemType } from '@modules/system/domain';
 import { UserService } from '@modules/user';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '../../repo';
+import {
+	USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN,
+	UserLoginMigrationPublicApiConfig,
+} from '../../user-login-migration.config';
 import { UserLoginMigrationDO } from '../do';
 import {
 	IdenticalUserLoginMigrationSystemLoggableException,
@@ -22,7 +25,9 @@ export class UserLoginMigrationService {
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo,
 		private readonly schoolService: LegacySchoolService,
-		private readonly systemService: SystemService
+		private readonly systemService: SystemService,
+		@Inject(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN)
+		private readonly config: UserLoginMigrationPublicApiConfig
 	) {}
 
 	public async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {
@@ -87,7 +92,7 @@ export class UserLoginMigrationService {
 		);
 
 		const now = new Date();
-		const gracePeriodDuration: number = Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number;
+		const gracePeriodDuration: number = this.config.migrationEndGracePeriodMs;
 
 		userLoginMigration.closedAt = now;
 		userLoginMigration.finishedAt = new Date(now.getTime() + gracePeriodDuration);

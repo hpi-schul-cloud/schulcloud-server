@@ -1,9 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { type ServerConfig, serverConfig, ServerTestModule } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../../board.config';
 import { BoardExternalReferenceType, MediaBoardColors } from '../../../domain';
 import { BoardNodeEntity } from '../../../repo';
 import { mediaBoardEntityFactory, mediaLineEntityFactory } from '../../../testing';
@@ -16,6 +17,7 @@ describe('Media Line (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let config: BoardConfig;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -26,6 +28,7 @@ describe('Media Line (API)', () => {
 		await app.init();
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, baseRouteName);
+		config = module.get<BoardConfig>(BOARD_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -35,8 +38,7 @@ describe('Media Line (API)', () => {
 	describe('[POST] /media-lines/:lineId/position', () => {
 		describe('when a valid user moves a line on their media board', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -84,8 +86,7 @@ describe('Media Line (API)', () => {
 
 		describe('when the media board feature is disabled', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = false;
+				config.featureMediaShelfEnabled = false;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -131,8 +132,7 @@ describe('Media Line (API)', () => {
 
 		describe('when the user is invalid', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 
 				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
@@ -175,8 +175,7 @@ describe('Media Line (API)', () => {
 	describe('[PATCH] /media-lines/:lineId/title', () => {
 		describe('when a valid user renames a line on their media board', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -217,8 +216,7 @@ describe('Media Line (API)', () => {
 
 		describe('when the media board feature is disabled', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = false;
+				config.featureMediaShelfEnabled = false;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -262,8 +260,7 @@ describe('Media Line (API)', () => {
 
 		describe('when the user is invalid', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 
 				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
@@ -304,8 +301,7 @@ describe('Media Line (API)', () => {
 	describe('[PATCH] /media-lines/:lineId/color', () => {
 		describe('when a user changes the background color of a line on their media board', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -344,8 +340,7 @@ describe('Media Line (API)', () => {
 
 		describe('when the media board feature is disabled', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = false;
+				config.featureMediaShelfEnabled = false;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -389,8 +384,7 @@ describe('Media Line (API)', () => {
 
 		describe('when the user is invalid', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 
 				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
@@ -431,8 +425,7 @@ describe('Media Line (API)', () => {
 	describe('[PATCH] /media-lines/:lineId/collapse', () => {
 		describe('when a valid user collapse a line on their media board', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -471,8 +464,7 @@ describe('Media Line (API)', () => {
 
 		describe('when the media board feature is disabled', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = false;
+				config.featureMediaShelfEnabled = false;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -514,8 +506,7 @@ describe('Media Line (API)', () => {
 
 		describe('when the user is invalid', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 
 				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
@@ -556,8 +547,7 @@ describe('Media Line (API)', () => {
 	describe('[DELETE] /media-lines/:lineId', () => {
 		describe('when a valid user deletes a line on their media board', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -594,8 +584,7 @@ describe('Media Line (API)', () => {
 
 		describe('when the media board feature is disabled', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = false;
+				config.featureMediaShelfEnabled = false;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -635,8 +624,7 @@ describe('Media Line (API)', () => {
 
 		describe('when the user is invalid', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 
 				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {

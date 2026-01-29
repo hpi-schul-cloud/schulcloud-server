@@ -1,5 +1,0 @@
-export interface UserConfig {
-	AVAILABLE_LANGUAGES: string[];
-	TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: string;
-	CALENDAR_SERVICE_ENABLED: boolean;
-}

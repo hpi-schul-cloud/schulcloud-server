@@ -33,31 +33,12 @@ export class UserRule implements Rule<UserDo> {
 		}
 
 		const isUsersSchool = user.school.id === entity.schoolId;
-		const isDiscoverable = this.determineDiscoverability(entity);
+		const isDiscoverable = this.authorizationHelper.determineDiscoverability(entity);
 		const isVisible = isUsersSchool || isDiscoverable;
 
 		const hasLimitingRole = this.hasLimitingRole(user, entity);
 
 		return isVisible && !hasLimitingRole;
-	}
-
-	private determineDiscoverability(entity: UserDo): boolean {
-		const discoverabilitySetting = this.configService.get<string>('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
-		if (discoverabilitySetting === 'disabled') {
-			return false;
-		}
-		if (discoverabilitySetting === 'enabled') {
-			return true;
-		}
-
-		if (discoverabilitySetting === 'opt-in') {
-			return entity.discoverable ?? false;
-		}
-		if (discoverabilitySetting === 'opt-out') {
-			return entity.discoverable ?? true;
-		}
-
-		throw new Error('Invalid discoverability setting');
 	}
 
 	private hasLimitingRole(user: User, entity: UserDo): boolean {

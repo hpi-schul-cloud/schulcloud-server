@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ToolConfig } from '../../tool-config';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import { LtiDeepLinkToken } from '../domain';
 import { LTI_DEEP_LINK_TOKEN_REPO, LtiDeepLinkTokenRepo } from '../repo';
 import { ltiDeepLinkTokenFactory } from '../testing';
@@ -12,7 +11,7 @@ describe(LtiDeepLinkTokenService.name, () => {
 	let service: LtiDeepLinkTokenService;
 
 	let ltiDeepLinkTokenRepo: DeepMocked<LtiDeepLinkTokenRepo>;
-	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
+	let config: ToolConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -23,15 +22,17 @@ describe(LtiDeepLinkTokenService.name, () => {
 					useValue: createMock<LtiDeepLinkTokenRepo>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: TOOL_CONFIG_TOKEN,
+					useValue: {
+						ctlToolsReloadTimeMs: 2000,
+					},
 				},
 			],
 		}).compile();
 
 		service = module.get(LtiDeepLinkTokenService);
 		ltiDeepLinkTokenRepo = module.get(LTI_DEEP_LINK_TOKEN_REPO);
-		configService = module.get(ConfigService);
+		config = module.get<ToolConfig>(TOOL_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -46,13 +47,12 @@ describe(LtiDeepLinkTokenService.name, () => {
 		describe('when generating a token', () => {
 			const setup = () => {
 				jest.useFakeTimers().setSystemTime(new Date('2024-01-01'));
-				const tokenDuration = 2000;
+				const tokenDuration = config.ctlToolsReloadTimeMs;
 
 				const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build({
 					expiresAt: new Date(Date.now() + tokenDuration),
 				});
 
-				configService.get.mockReturnValueOnce(tokenDuration);
 				ltiDeepLinkTokenRepo.save.mockResolvedValueOnce(ltiDeepLinkToken);
 
 				return {

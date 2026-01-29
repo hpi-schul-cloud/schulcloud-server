@@ -1,23 +1,15 @@
-import { HttpService } from '@nestjs/axios';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { firstValueFrom } from 'rxjs';
 import { ErrorUtils } from '@core/error/utils';
-import { ConfigService } from '@nestjs/config';
-import { AlertConfig } from '../alert.config';
-import { Importance } from './enum';
-import { ComponentResponse, IncidentDto, IncidentsResponse, MessagesDto } from './dto';
+import { HttpService } from '@nestjs/axios';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
+import { ALERT_CONFIG, AlertConfig } from '../alert.config';
 import { MessageMapper } from '../controller/mapper';
+import { ComponentResponse, IncidentDto, IncidentsResponse, MessagesDto } from './dto';
+import { Importance } from './enum';
 
 @Injectable()
 export class StatusAdapter {
-	private readonly url: string;
-
-	constructor(
-		private readonly httpService: HttpService,
-		private readonly configService: ConfigService<AlertConfig, true>
-	) {
-		this.url = configService.get('ALERT_STATUS_URL');
-	}
+	constructor(private readonly httpService: HttpService, @Inject(ALERT_CONFIG) private readonly config: AlertConfig) {}
 
 	public async getMessage(instance: string): Promise<MessagesDto> {
 		const rawData = await this.getIncidentsData(instance);
@@ -25,7 +17,7 @@ export class StatusAdapter {
 
 		if (rawData) {
 			rawData.forEach((element) => {
-				const message = MessageMapper.mapToMessage(element, this.url);
+				const message = MessageMapper.mapToMessage(element, this.config.alertStatusUrl);
 				data.messages.push(message);
 			});
 			data.success = true;
@@ -93,7 +85,9 @@ export class StatusAdapter {
 
 	private async getComponent(componentId: number): Promise<ComponentResponse> {
 		try {
-			const request = this.httpService.get<ComponentResponse>(`${this.url}/api/v1/components/${componentId}`);
+			const request = this.httpService.get<ComponentResponse>(
+				`${this.config.alertStatusUrl}/api/v1/components/${componentId}`
+			);
 
 			const resp = await firstValueFrom(request);
 
@@ -112,7 +106,7 @@ export class StatusAdapter {
 
 	private async getIncidents(): Promise<IncidentsResponse> {
 		try {
-			const request = this.httpService.get<IncidentsResponse>(`${this.url}/api/v1/incidents`, {
+			const request = this.httpService.get<IncidentsResponse>(`${this.config.alertStatusUrl}/api/v1/incidents`, {
 				params: { sort: 'id' },
 			});
 

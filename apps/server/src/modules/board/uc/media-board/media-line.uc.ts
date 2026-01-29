@@ -1,20 +1,19 @@
 import { AuthorizationContextBuilder } from '@modules/authorization';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import type { EntityId } from '@shared/domain/types';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import { MediaBoard, MediaLine } from '../../domain';
-import type { MediaBoardConfig } from '../../media-board.config';
+import { MediaBoardColors } from '../../domain/media-board/types';
 import { BoardNodePermissionService, BoardNodeService } from '../../service';
 import { MediaBoardService } from '../../service/media-board';
-import { MediaBoardColors } from '../../domain/media-board/types';
 
 @Injectable()
 export class MediaLineUc {
 	constructor(
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodePermissionService: BoardNodePermissionService,
-		private readonly configService: ConfigService<MediaBoardConfig, true>,
+		@Inject(BOARD_CONFIG_TOKEN) private readonly config: BoardConfig,
 		private readonly mediaBoardService: MediaBoardService
 	) {}
 
@@ -74,8 +73,8 @@ export class MediaLineUc {
 		await this.boardNodeService.delete(line);
 	}
 
-	private checkFeatureEnabled() {
-		if (!this.configService.get('FEATURE_MEDIA_SHELF_ENABLED')) {
+	private checkFeatureEnabled(): void {
+		if (!this.config.featureMediaShelfEnabled) {
 			throw new FeatureDisabledLoggableException('FEATURE_MEDIA_SHELF_ENABLED');
 		}
 	}

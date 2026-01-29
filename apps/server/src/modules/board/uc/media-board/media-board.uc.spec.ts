@@ -1,17 +1,16 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@testing/database';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import { BoardLayout, MediaBoardNodeFactory } from '../../domain';
-import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
 import { mediaBoardFactory, mediaLineFactory } from '../../testing';
 import { MediaBoardUc } from './media-board.uc';
-import { UserService } from '@modules/user';
 
 describe(MediaBoardUc.name, () => {
 	let module: TestingModule;
@@ -22,7 +21,7 @@ describe(MediaBoardUc.name, () => {
 	let mediaBoardService: DeepMocked<MediaBoardService>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let boardNodePermissionService: DeepMocked<BoardNodePermissionService>;
-	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
+	let config: BoardConfig;
 	let mediaBoardNodeFactory: DeepMocked<MediaBoardNodeFactory>;
 
 	beforeAll(async () => {
@@ -52,8 +51,8 @@ describe(MediaBoardUc.name, () => {
 					useValue: createMock<BoardNodePermissionService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: BOARD_CONFIG_TOKEN,
+					useValue: new BoardConfig(),
 				},
 				{
 					provide: MediaBoardNodeFactory,
@@ -68,7 +67,7 @@ describe(MediaBoardUc.name, () => {
 		mediaBoardService = module.get(MediaBoardService);
 		boardNodeService = module.get(BoardNodeService);
 		boardNodePermissionService = module.get(BoardNodePermissionService);
-		configService = module.get(ConfigService);
+		config = module.get(BOARD_CONFIG_TOKEN);
 		mediaBoardNodeFactory = module.get(MediaBoardNodeFactory);
 	});
 
@@ -87,7 +86,7 @@ describe(MediaBoardUc.name, () => {
 				const userDo = userDoFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 				userService.findById.mockResolvedValueOnce(userDo);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				mediaBoardService.findByExternalReference.mockResolvedValueOnce([]);
@@ -127,7 +126,7 @@ describe(MediaBoardUc.name, () => {
 				const userDo = userDoFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 				userService.findById.mockResolvedValueOnce(userDo);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				mediaBoardService.findByExternalReference.mockResolvedValueOnce([mediaBoard]);
@@ -164,7 +163,7 @@ describe(MediaBoardUc.name, () => {
 			const setup = () => {
 				const user = userFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,
@@ -186,7 +185,7 @@ describe(MediaBoardUc.name, () => {
 				const mediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaBoard);
 				mediaBoardNodeFactory.buildMediaLine.mockReturnValueOnce(mediaLine);
@@ -224,7 +223,7 @@ describe(MediaBoardUc.name, () => {
 				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,
@@ -248,7 +247,7 @@ describe(MediaBoardUc.name, () => {
 					layout: BoardLayout.LIST,
 				});
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaBoard);
 
 				return {
@@ -283,7 +282,7 @@ describe(MediaBoardUc.name, () => {
 				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,

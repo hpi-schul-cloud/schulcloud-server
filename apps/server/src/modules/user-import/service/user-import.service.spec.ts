@@ -14,9 +14,9 @@ import { userLoginMigrationDOFactory } from '@modules/user-login-migration/testi
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { UserAlreadyAssignedToImportUserError } from '../domain/error';
 import { ImportUser, MatchCreator } from '../entity';
 import {
 	SchoolIdDoesNotMatchWithUserSchoolId,
@@ -25,32 +25,25 @@ import {
 } from '../loggable';
 import { ImportUserRepo } from '../repo';
 import { importUserFactory } from '../testing';
-import { UserImportConfig } from '../user-import-config';
+import { USER_IMPORT_CONFIG_TOKEN, UserImportConfig } from '../user-import-config';
 import { UserImportService } from './user-import.service';
-import { UserAlreadyAssignedToImportUserError } from '../domain/error';
 
 describe(UserImportService.name, () => {
 	let module: TestingModule;
 	let service: UserImportService;
 
-	let configService: DeepMocked<ConfigService>;
+	let userImportConfig: UserImportConfig;
 	let importUserRepo: DeepMocked<ImportUserRepo>;
 	let systemService: DeepMocked<SystemService>;
 	let userService: DeepMocked<UserService>;
 	let logger: DeepMocked<Logger>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 
-	let config: UserImportConfig;
-
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
 			providers: [
 				UserImportService,
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
-				},
 				{
 					provide: ImportUserRepo,
 					useValue: createMock<ImportUserRepo>(),
@@ -71,11 +64,15 @@ describe(UserImportService.name, () => {
 					provide: LegacySchoolService,
 					useValue: createMock<LegacySchoolService>(),
 				},
+				{
+					provide: USER_IMPORT_CONFIG_TOKEN,
+					useValue: {},
+				},
 			],
 		}).compile();
 
 		service = module.get(UserImportService);
-		configService = module.get(ConfigService);
+		userImportConfig = module.get(USER_IMPORT_CONFIG_TOKEN);
 		importUserRepo = module.get(ImportUserRepo);
 		systemService = module.get(SystemService);
 		userService = module.get(UserService);
@@ -84,14 +81,9 @@ describe(UserImportService.name, () => {
 	});
 
 	beforeEach(() => {
-		config = {
-			FEATURE_USER_MIGRATION_SYSTEM_ID: new ObjectId().toHexString(),
-			FEATURE_USER_MIGRATION_ENABLED: true,
-			FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: true,
-			IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: 8000,
-		};
-
-		configService.get.mockImplementation((key: keyof UserImportConfig) => config[key]);
+		userImportConfig.featureUserMigrationSystemId = new ObjectId().toHexString();
+		userImportConfig.featureUserMigrationEnabled = true;
+		userImportConfig.featureMigrationWizardWithUserLoginMigration = true;
 	});
 
 	afterEach(() => {
@@ -148,7 +140,7 @@ describe(UserImportService.name, () => {
 	describe('checkFeatureEnabledAndIsLdapPilotSchool', () => {
 		describe('when the global feature is enabled', () => {
 			const setup = () => {
-				config.FEATURE_USER_MIGRATION_ENABLED = true;
+				userImportConfig.featureUserMigrationEnabled = true;
 
 				const school = legacySchoolDoFactory.buildWithId({ features: undefined });
 
@@ -166,7 +158,7 @@ describe(UserImportService.name, () => {
 
 		describe('when the school feature is enabled', () => {
 			const setup = () => {
-				config.FEATURE_USER_MIGRATION_ENABLED = false;
+				userImportConfig.featureUserMigrationEnabled = false;
 
 				const school = legacySchoolDoFactory.buildWithId({
 					features: [SchoolFeature.LDAP_UNIVENTION_MIGRATION],
@@ -186,7 +178,7 @@ describe(UserImportService.name, () => {
 
 		describe('when the config are disabled', () => {
 			const setup = () => {
-				config.FEATURE_USER_MIGRATION_ENABLED = false;
+				userImportConfig.featureUserMigrationEnabled = false;
 
 				const school = legacySchoolDoFactory.buildWithId({
 					features: [],

@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
@@ -17,6 +16,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { TaskCopyService } from '../domain';
 import { Submission, Task, TaskRepo } from '../repo';
+import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '../task.config';
 import { taskFactory } from '../testing';
 import { TaskCopyParentParams } from './dto';
 import { TaskCopyUC } from './task-copy.uc';
@@ -30,6 +30,7 @@ describe('task copy uc', () => {
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let module: TestingModule;
+	let config: TaskPublicApiConfig;
 
 	beforeAll(async () => {
 		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
@@ -65,6 +66,12 @@ describe('task copy uc', () => {
 					provide: FilesStorageClientAdapterService,
 					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
+				{
+					provide: TASK_PUBLIC_API_CONFIG_TOKEN,
+					useValue: {
+						featureCopyServiceEnabled: true,
+					},
+				},
 			],
 		}).compile();
 
@@ -75,6 +82,7 @@ describe('task copy uc', () => {
 		lessonService = module.get(LessonService);
 		taskCopyService = module.get(TaskCopyService);
 		copyHelperService = module.get(CopyHelperService);
+		config = module.get<TaskPublicApiConfig>(TASK_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -87,7 +95,7 @@ describe('task copy uc', () => {
 
 	describe('copy task', () => {
 		const setup = () => {
-			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+			config.featureCopyServiceEnabled = true;
 
 			const user = userFactory.buildWithId();
 			const course = courseEntityFactory.buildWithId({ teachers: [user] });
@@ -131,7 +139,7 @@ describe('task copy uc', () => {
 		describe('feature is deactivated', () => {
 			it('should throw InternalServerErrorException', async () => {
 				const { course, user, task, userId } = setup();
-				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
+				config.featureCopyServiceEnabled = false;
 
 				await expect(uc.copyTask(user.id, task.id, { courseId: course.id, userId })).rejects.toThrowError(
 					InternalServerErrorException
@@ -256,7 +264,7 @@ describe('task copy uc', () => {
 
 			describe('when access to task is forbidden', () => {
 				const setupWithTaskForbidden = () => {
-					Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+					config.featureCopyServiceEnabled = true;
 
 					const user = userFactory.buildWithId();
 					const course = courseEntityFactory.buildWithId();
@@ -286,7 +294,7 @@ describe('task copy uc', () => {
 
 			describe('when access to course is forbidden', () => {
 				const setupWithCourseForbidden = () => {
-					Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+					config.featureCopyServiceEnabled = true;
 
 					const user = userFactory.buildWithId();
 					const course = courseEntityFactory.buildWithId();
@@ -356,7 +364,7 @@ describe('task copy uc', () => {
 
 		describe('when access to lesson is forbidden', () => {
 			const setupWithLessonForbidden = () => {
-				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+				config.featureCopyServiceEnabled = true;
 
 				const user = userFactory.buildWithId();
 				const course = courseEntityFactory.buildWithId();

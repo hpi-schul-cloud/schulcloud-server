@@ -8,15 +8,14 @@ import {
 	CopyContextExternalToolRejectData,
 } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { ToolConfig } from '@modules/tool/tool-config';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../learnroom.config';
 import { LegacyBoardRepo } from '../repo';
-import { LegacyBoardCopyService } from './legacy-board-copy.service';
 import { CourseRoomsService } from './course-rooms.service';
+import { LegacyBoardCopyService } from './legacy-board-copy.service';
 
 type CourseCopyParams = {
 	originalCourse: CourseEntity;
@@ -27,14 +26,15 @@ type CourseCopyParams = {
 @Injectable()
 export class CourseCopyService {
 	constructor(
-		private readonly configService: ConfigService<ToolConfig, true>,
 		private readonly courseService: CourseService,
 		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly roomsService: CourseRoomsService,
 		private readonly boardCopyService: LegacyBoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
 		private readonly userService: UserService,
-		private readonly contextExternalToolService: ContextExternalToolService
+		private readonly contextExternalToolService: ContextExternalToolService,
+		@Inject(LEARNROOM_CONFIG_TOKEN)
+		private readonly learnroomConfig: LearnroomConfig
 	) {}
 
 	public async copyCourse({
@@ -62,7 +62,7 @@ export class CourseCopyService {
 		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
 
 		let courseToolsCopyStatus: CopyStatus | null = null;
-		if (this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED')) {
+		if (this.learnroomConfig.featureCtlToolsCopyEnabled) {
 			const contextRef: ContextRef = { id: courseId, type: ToolContextType.COURSE };
 			const contextExternalToolsInContext: ContextExternalTool[] =
 				await this.contextExternalToolService.findAllByContext(contextRef);

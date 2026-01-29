@@ -1,14 +1,13 @@
 import { createMock } from '@golevelup/ts-jest';
-import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { StorageLocation } from '@infra/files-storage-client';
+import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
-import { ToolConfig } from '@modules/tool/tool-config';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BOARD_CONFIG_TOKEN } from '../../board.config';
 import {
 	cardFactory,
 	collaborativeTextEditorFactory,
@@ -40,10 +39,7 @@ describe(BoardNodeCopyService.name, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BoardNodeCopyService,
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<ToolConfig, true>>(),
-				},
+
 				{
 					provide: ContextExternalToolService,
 					useValue: createMock<ContextExternalToolService>(),
@@ -59,6 +55,10 @@ describe(BoardNodeCopyService.name, () => {
 				{
 					provide: H5pEditorProducer,
 					useValue: createMock<H5pEditorProducer>(),
+				},
+				{
+					provide: BOARD_CONFIG_TOKEN,
+					useValue: {},
 				},
 			],
 		}).compile();
