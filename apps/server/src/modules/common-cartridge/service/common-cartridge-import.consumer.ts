@@ -1,3 +1,4 @@
+import { DomainErrorHandler } from '@core/error';
 import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { JwtPayload } from '@infra/auth-guard';
 import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
@@ -42,7 +43,8 @@ export class CommonCartridgeImportConsumer {
 		private readonly columnClient: ColumnClientAdapter,
 		private readonly cardClient: CardClientAdapter,
 		private readonly fileClient: FilesStorageClientAdapter,
-		private readonly commonCartridgeImportMapper: CommonCartridgeImportMapper
+		private readonly commonCartridgeImportMapper: CommonCartridgeImportMapper,
+		private readonly errorHandler: DomainErrorHandler
 	) {}
 
 	@RabbitSubscribe({
@@ -51,18 +53,22 @@ export class CommonCartridgeImportConsumer {
 		queue: CommonCartridgeEvents.IMPORT_COURSE,
 	})
 	public async importFile(@RabbitPayload() payload: ImportCourseParams): Promise<void> {
-		const file = await this.fetchFile(payload);
+		try {
+			const file = await this.fetchFile(payload);
 
-		if (!file) {
-			return;
+			if (!file) {
+				return;
+			}
+
+			const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
+
+			await Promise.allSettled([
+				this.createCourse(parser, payload),
+				this.fileClient.deleteFile(payload.jwt, payload.fileRecordId),
+			]);
+		} catch (e: unknown) {
+			this.errorHandler.exec(e);
 		}
-
-		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
-
-		await Promise.allSettled([
-			this.createCourse(parser, payload),
-			this.fileClient.deleteFile(payload.jwt, payload.fileRecordId),
-		]);
 	}
 
 	private async fetchFile(payload: ImportCourseParams): Promise<Buffer | null> {
