@@ -13,6 +13,10 @@ import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '@modules/task
 import { TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig } from '@modules/tool';
 import { USER_PUBLIC_API_CONFIG_TOKEN, UserPublicApiConfig } from '@modules/user';
 import { USER_IMPORT_PUBLIC_API_CONFIG_TOKEN, UserImportPublicApiConfig } from '@modules/user-import';
+import {
+	USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN,
+	UserLoginMigrationPublicApiConfig,
+} from '@modules/user-login-migration';
 import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { Inject, Injectable } from '@nestjs/common';
 import { SERVER_CONFIG_TOKEN, ServerConfig } from '../server.config';
@@ -39,7 +43,9 @@ export class ServerUc {
 		@Inject(TASK_PUBLIC_API_CONFIG_TOKEN) private readonly taskConfig: TaskPublicApiConfig,
 		@Inject(LEARNROOM_PUBLIC_API_CONFIG_TOKEN) private readonly learnroomConfig: LearnroomPublicApiConfig,
 		@Inject(USER_PUBLIC_API_CONFIG_TOKEN) private readonly userConfig: UserPublicApiConfig,
-		@Inject(USER_IMPORT_PUBLIC_API_CONFIG_TOKEN) private readonly userImportConfig: UserImportPublicApiConfig
+		@Inject(USER_IMPORT_PUBLIC_API_CONFIG_TOKEN) private readonly userImportConfig: UserImportPublicApiConfig,
+		@Inject(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN)
+		private readonly userLoginMigrationConfig: UserLoginMigrationPublicApiConfig
 	) {}
 
 	public getConfig(): ConfigResponse {
@@ -60,7 +66,8 @@ export class ServerUc {
 			this.taskConfig,
 			this.learnroomConfig,
 			this.userConfig,
-			this.userImportConfig
+			this.userImportConfig,
+			this.userLoginMigrationConfig
 		);
 
 		return configDto;

@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
@@ -12,6 +11,10 @@ import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationRepo } from '../../repo';
 import { userLoginMigrationDOFactory } from '../../testing';
+import {
+	USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN,
+	UserLoginMigrationPublicApiConfig,
+} from '../../user-login-migration.config';
 import { UserLoginMigrationDO } from '../do';
 import {
 	IdenticalUserLoginMigrationSystemLoggableException,
@@ -29,11 +32,10 @@ describe(UserLoginMigrationService.name, () => {
 	let schoolService: DeepMocked<LegacySchoolService>;
 	let systemService: DeepMocked<SystemService>;
 	let userLoginMigrationRepo: DeepMocked<UserLoginMigrationRepo>;
+	let config: UserLoginMigrationPublicApiConfig;
 
 	const mockedDate: Date = new Date('2023-05-02');
-	const finishDate: Date = new Date(
-		mockedDate.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number)
-	);
+	let finishDate: Date;
 
 	beforeAll(async () => {
 		jest.useFakeTimers();
@@ -58,6 +60,10 @@ describe(UserLoginMigrationService.name, () => {
 					provide: UserLoginMigrationRepo,
 					useValue: createMock<UserLoginMigrationRepo>(),
 				},
+				{
+					provide: USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN,
+					useValue: new UserLoginMigrationPublicApiConfig(),
+				},
 			],
 		}).compile();
 
@@ -66,6 +72,8 @@ describe(UserLoginMigrationService.name, () => {
 		schoolService = module.get(LegacySchoolService);
 		systemService = module.get(SystemService);
 		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
+		config = module.get(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN);
+		finishDate = new Date(mockedDate.getTime() + config?.migrationEndGracePeriodMs);
 	});
 
 	afterAll(async () => {
