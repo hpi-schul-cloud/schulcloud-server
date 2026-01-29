@@ -9,7 +9,7 @@ import { ToolModule } from '@modules/tool/tool.module';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
 import { SchulconnexLicenseProvisioningConsumer } from './amqp';
-import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from './provisioning.config';
+import { PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig } from './provisioning-exchange.config';
 import {
 	SchulconnexLicenseProvisioningService,
 	SchulconnexToolProvisioningService,
@@ -25,7 +25,7 @@ import {
 		ToolModule,
 		MediumMetadataModule,
 		MediaSourceSyncModule,
-		ConfigurationModule.register(PROVISIONING_CONFIG_TOKEN, ProvisioningConfig),
+		ConfigurationModule.register(PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig),
 	],
 	providers: [
 		SchulconnexLicenseProvisioningConsumer,
