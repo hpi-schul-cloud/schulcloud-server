@@ -106,7 +106,6 @@ export abstract class News extends BaseEntityWithTimestamps {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			news = new SchoolNews(props);
 		}
-		news.id = new ObjectId().toHexString();
 
 		return news;
 	}
