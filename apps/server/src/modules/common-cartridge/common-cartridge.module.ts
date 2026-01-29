@@ -1,4 +1,3 @@
-import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { BoardsClientModule } from '@infra/boards-client';
 import { CardClientModule } from '@infra/cards-client';
@@ -16,13 +15,14 @@ import { CommonCartridgeExportService, CommonCartridgeImportConsumer, CommonCart
 import { CommonCartridgeExportMapper } from './service/common-cartridge-export.mapper';
 import { CommonCartridgeImportMapper } from './service/common-cartridge-import.mapper';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
+import { CoreModule } from '@core/core.module';
 
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
 		FilesMetadataClientModule,
 		FilesStorageClientModule,
-		LoggerModule,
+		CoreModule,
 		CoursesClientModule,
 		BoardsClientModule,
 		CourseRoomsModule.register({
