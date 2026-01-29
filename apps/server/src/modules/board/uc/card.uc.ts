@@ -1,15 +1,12 @@
-import {
-	Action,
-	AuthorizationContext,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@modules/authorization';
+import { LegacyLogger } from '@core/logger';
+import { AuthorizationService } from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@core/logger';
 
+import { throwForbiddenIfFalse } from '@shared/common/utils';
+import { BoardNodeRule } from '../authorisation/board-node.rule';
 import { AnyBoardNode, AnyContentElement, BoardNodeFactory, Card, ContentElementType } from '../domain';
-import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
+import { BoardNodeAuthorizableService, BoardNodeService } from '../service';
 
 @Injectable()
 export class CardUc {
@@ -17,27 +14,21 @@ export class CardUc {
 		@Inject(forwardRef(() => AuthorizationService))
 		private readonly authorizationService: AuthorizationService,
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
-		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodeFactory: BoardNodeFactory,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
+		private readonly boardNodeRule: BoardNodeRule
 	) {
 		this.logger.setContext(CardUc.name);
 	}
 
-	// TODO reactor: No reason to check permission for all cards; this is only cards from same board
 	public async findCards(userId: EntityId, cardIds: EntityId[]): Promise<Card[]> {
-		this.logger.debug({ action: 'findCards', userId, cardIds });
-
 		const cards = await this.boardNodeService.findByClassAndIds(Card, cardIds);
-
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-
-		const context: AuthorizationContext = { action: Action.read, requiredPermissions: [] };
 		const boardAuthorizables = await this.boardNodeAuthorizableService.getBoardAuthorizables(cards);
 
 		const allowedCards = boardAuthorizables.reduce((allowedNodes: AnyBoardNode[], boardNodeAuthorizable) => {
-			if (this.authorizationService.hasPermission(user, boardNodeAuthorizable, context)) {
+			if (this.boardNodeRule.canFindCards(user, boardNodeAuthorizable)) {
 				allowedNodes.push(boardNodeAuthorizable.boardNode);
 			}
 			return allowedNodes;
@@ -47,33 +38,37 @@ export class CardUc {
 	}
 
 	public async updateCardHeight(userId: EntityId, cardId: EntityId, height: number): Promise<Card> {
-		this.logger.debug({ action: 'updateCardHeight', userId, cardId, height });
-
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
-		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
+
+		throwForbiddenIfFalse(this.boardNodeRule.canUpdateCardHeight(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateHeight(card, height);
 		return card;
 	}
 
 	public async updateCardTitle(userId: EntityId, cardId: EntityId, title: string): Promise<Card> {
-		this.logger.debug({ action: 'updateCardTitle', userId, cardId, title });
-
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
-		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
+
+		throwForbiddenIfFalse(this.boardNodeRule.canUpdateCardTitle(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateTitle(card, title);
 		return card;
 	}
 
 	public async deleteCard(userId: EntityId, cardId: EntityId): Promise<EntityId> {
-		this.logger.debug({ action: 'deleteCard', userId, cardId });
-
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
-		const { rootId } = card;
-		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
 
+		throwForbiddenIfFalse(this.boardNodeRule.canDeleteCard(user, boardNodeAuthorizable));
+
+		const { rootId } = card; // needs to be captured before deletion
 		await this.boardNodeService.delete(card);
+
 		return rootId;
 	}
 
@@ -85,10 +80,11 @@ export class CardUc {
 		type: ContentElementType,
 		toPosition?: number
 	): Promise<AnyContentElement> {
-		this.logger.debug({ action: 'createElement', userId, cardId, type });
-
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
-		await this.boardNodePermissionService.checkPermission(userId, card, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
+
+		throwForbiddenIfFalse(this.boardNodeRule.canCreateElement(user, boardNodeAuthorizable));
 
 		const element = this.boardNodeFactory.buildContentElement(type);
 
@@ -103,13 +99,12 @@ export class CardUc {
 		targetCardId: EntityId,
 		targetPosition: number
 	): Promise<AnyContentElement> {
-		this.logger.debug({ action: 'moveElement', userId, elementId, targetCardId, targetPosition });
-
 		const element = await this.boardNodeService.findContentElementById(elementId);
 		const targetCard = await this.boardNodeService.findByClassAndId(Card, targetCardId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(targetCard);
 
-		await this.boardNodePermissionService.checkPermission(userId, element, AuthorizationContextBuilder.write([]));
-		await this.boardNodePermissionService.checkPermission(userId, targetCard, AuthorizationContextBuilder.write([]));
+		throwForbiddenIfFalse(this.boardNodeRule.canCreateElement(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.move(element, targetCard, targetPosition);
 

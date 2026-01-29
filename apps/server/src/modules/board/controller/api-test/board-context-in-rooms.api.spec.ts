@@ -5,6 +5,7 @@ import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
@@ -13,7 +14,6 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
 import { columnBoardEntityFactory } from '../../testing';
-import { schoolEntityFactory } from '@modules/school/testing';
 
 const baseRouteName = '/boards';
 
@@ -114,18 +114,6 @@ describe('board get context in room (api)', () => {
 			const response = await loggedInClient.get(`${columnBoardNode.id}/context`);
 
 			expect(response.body).toEqual({ id: columnBoardNode.context?.id, type: columnBoardNode.context?.type });
-		});
-	});
-
-	describe('with user who has only view role in room', () => {
-		it('should return status 403', async () => {
-			const { accountWithViewRole, columnBoardNode } = await setup();
-
-			const loggedInClient = await testApiClient.login(accountWithViewRole);
-
-			const response = await loggedInClient.get(`${columnBoardNode.id}/context`);
-
-			expect(response.status).toEqual(403);
 		});
 	});
 

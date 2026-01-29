@@ -1,6 +1,8 @@
-import { AuthorizationContextBuilder } from '@modules/authorization';
-import { BadRequestException, ForbiddenException, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { AuthorizationService } from '@modules/authorization';
+import { BadRequestException, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
+import { BoardNodeRule } from '../authorisation/board-node.rule';
 import {
 	BoardNodeFactory,
 	BoardRoles,
@@ -14,15 +16,16 @@ import {
 	SubmissionItem,
 	UserWithBoardRoles,
 } from '../domain';
-import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
+import { BoardNodeAuthorizableService, BoardNodeService } from '../service';
 
 @Injectable()
 export class SubmissionItemUc {
 	constructor(
+		private readonly authorizationService: AuthorizationService,
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly boardNodeService: BoardNodeService,
-		private readonly boardPermissionService: BoardNodePermissionService,
-		private readonly boardNodeFactory: BoardNodeFactory
+		private readonly boardNodeFactory: BoardNodeFactory,
+		private readonly boardNodeRule: BoardNodeRule
 	) {}
 
 	public async findSubmissionItems(
@@ -33,29 +36,26 @@ export class SubmissionItemUc {
 			SubmissionContainerElement,
 			submissionContainerId
 		);
-
-		await this.boardPermissionService.checkPermission(
-			userId,
-			submissionContainerElement,
-			AuthorizationContextBuilder.read([])
-		);
-
-		let submissionItems = submissionContainerElement.children.filter(isSubmissionItem);
-
-		const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(
 			submissionContainerElement
 		);
 
-		// only board readers can create submission items
-		let users = boardDoAuthorizable.users.filter((user) => user.roles.includes(BoardRoles.READER));
+		throwForbiddenIfFalse(this.boardNodeRule.canViewElement(user, boardNodeAuthorizable));
 
-		// board readers can only see their own submission item
-		if (this.boardPermissionService.isUserBoardReader(userId, boardDoAuthorizable.users)) {
-			submissionItems = submissionItems.filter((item) => item.userId === userId);
-			users = [];
+		const submissionItems = submissionContainerElement.children.filter(isSubmissionItem);
+
+		const boardReaders = boardNodeAuthorizable.users.filter((user) => user.roles.includes(BoardRoles.READER));
+
+		const isUserBoardReader = boardReaders.some((u) => u.userId === userId);
+		if (isUserBoardReader) {
+			// board readers can only see their own submission item
+			const ownSubmissionItems = submissionItems.filter((item) => item.userId === userId);
+			return { submissionItems: ownSubmissionItems, users: [] };
+		} else {
+			// return all submission items to board editors and the users
+			return { submissionItems, users: boardReaders };
 		}
-
-		return { submissionItems, users };
 	}
 
 	public async updateSubmissionItem(
@@ -64,8 +64,10 @@ export class SubmissionItemUc {
 		completed: boolean
 	): Promise<SubmissionItem> {
 		const submissionItem = await this.boardNodeService.findByClassAndId(SubmissionItem, submissionItemId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(submissionItem);
 
-		await this.boardPermissionService.checkPermission(userId, submissionItem, AuthorizationContextBuilder.write([]));
+		throwForbiddenIfFalse(this.boardNodeRule.canUpdateSubmissionItem(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateCompleted(submissionItem, completed);
 
@@ -74,7 +76,10 @@ export class SubmissionItemUc {
 
 	public async deleteSubmissionItem(userId: EntityId, submissionItemId: EntityId): Promise<void> {
 		const submissionItem = await this.boardNodeService.findByClassAndId(SubmissionItem, submissionItemId);
-		await this.boardPermissionService.checkPermission(userId, submissionItem, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(submissionItem);
+
+		throwForbiddenIfFalse(this.boardNodeRule.canDeleteSubmissionItem(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.delete(submissionItem);
 	}
@@ -89,17 +94,12 @@ export class SubmissionItemUc {
 		}
 
 		const submissionItem = await this.boardNodeService.findByClassAndId(SubmissionItem, submissionItemId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(submissionItem);
 
-		const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(submissionItem);
-
-		if (!this.boardPermissionService.isUserBoardReader(userId, boardDoAuthorizable.users)) {
-			throw new ForbiddenException();
-		}
-
-		await this.boardPermissionService.checkPermission(userId, submissionItem, AuthorizationContextBuilder.write([]));
+		throwForbiddenIfFalse(this.boardNodeRule.canCreateSubmissionItemContent(user, boardNodeAuthorizable));
 
 		const element = this.boardNodeFactory.buildContentElement(type);
-		// TODO this is already taken care in add to parent, but TS complains without this type guard
 		if (!(isFileElement(element) || isRichTextElement(element))) {
 			throw new UnprocessableEntityException();
 		}

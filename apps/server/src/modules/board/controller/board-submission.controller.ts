@@ -13,8 +13,6 @@ import {
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
-import { CardUc } from '../uc';
-import { ElementUc } from '../uc/element.uc';
 import { SubmissionItemUc } from '../uc/submission-item.uc';
 import {
 	CreateContentElementBodyParams,
@@ -31,18 +29,14 @@ import { ContentElementResponseFactory, SubmissionItemResponseMapper } from './m
 @JwtAuthentication()
 @Controller('board-submissions')
 export class BoardSubmissionController {
-	constructor(
-		private readonly cardUc: CardUc,
-		private readonly elementUc: ElementUc,
-		private readonly submissionItemUc: SubmissionItemUc
-	) {}
+	constructor(private readonly submissionItemUc: SubmissionItemUc) {}
 
 	@ApiOperation({ summary: 'Get a list of submission items by their parent container.' })
 	@ApiResponse({ status: 200, type: SubmissionsResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Get(':submissionContainerId')
-	async getSubmissionItems(
+	public async getSubmissionItems(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: SubmissionContainerUrlParams
 	): Promise<SubmissionsResponse> {
@@ -63,11 +57,11 @@ export class BoardSubmissionController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Patch(':submissionItemId')
-	async updateSubmissionItem(
+	public async updateSubmissionItem(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: SubmissionItemUrlParams,
 		@Body() bodyParams: UpdateSubmissionItemBodyParams
-	) {
+	): Promise<void> {
 		await this.submissionItemUc.updateSubmissionItem(
 			currentUser.userId,
 			urlParams.submissionItemId,
@@ -82,7 +76,10 @@ export class BoardSubmissionController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Delete(':submissionItemId')
-	async deleteSubmissionItem(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: SubmissionItemUrlParams) {
+	public async deleteSubmissionItem(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: SubmissionItemUrlParams
+	): Promise<void> {
 		await this.submissionItemUc.deleteSubmissionItem(currentUser.userId, urlParams.submissionItemId);
 	}
 
@@ -98,7 +95,7 @@ export class BoardSubmissionController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':submissionItemId/elements')
-	async createElement(
+	public async createElement(
 		@Param() urlParams: SubmissionItemUrlParams,
 		@Body() bodyParams: CreateContentElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
