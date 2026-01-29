@@ -30,6 +30,11 @@ export class UserPublicApiConfig {
 	@IsBoolean()
 	@StringToBoolean()
 	public teacherStudentVisibilityIsEnabledByDefault = true;
+
+	@ConfigProperty('CALENDAR_SERVICE_ENABLED')
+	@IsBoolean()
+	@StringToBoolean()
+	public calendarServiceEnabled = true;
 }
 
 @Configuration()
@@ -37,9 +42,4 @@ export class UserConfig extends UserPublicApiConfig {
 	@ConfigProperty('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')
 	@IsEnum(TeacherVisibilityForExternalTeamInvitation)
 	public teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.DISABLED;
-
-	@ConfigProperty('CALENDAR_SERVICE_ENABLED')
-	@IsBoolean()
-	@StringToBoolean()
-	public calendarServiceEnabled = true;
 }
