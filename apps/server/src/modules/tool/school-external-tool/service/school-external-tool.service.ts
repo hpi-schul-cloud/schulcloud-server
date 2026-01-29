@@ -147,9 +147,9 @@ export class SchoolExternalToolService {
 		existingDeactivatedSchoolExternalTools.forEach((tool) => tool.activate());
 		await this.schoolExternalToolRepo.saveMany(existingDeactivatedSchoolExternalTools);
 
-		const existingSchoolExternalTools = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
-		const schoolIdsWhereExisting = new Set(existingSchoolExternalTools.map((tool) => tool.schoolId));
-		const schoolIdsWhereNotExisting = allSchoolIds.filter((schoolId) => !schoolIdsWhereExisting.has(schoolId));
+		const schoolIdsWhereExisting = await this.schoolExternalToolRepo.findSchoolIdsForToolId(toolId);
+		const setOfSchoolIdsWhereExisting = new Set(schoolIdsWhereExisting);
+		const schoolIdsWhereNotExisting = allSchoolIds.filter((schoolId) => !setOfSchoolIdsWhereExisting.has(schoolId));
 		const toolsToAdd = schoolIdsWhereNotExisting.map((schoolId) => this.createSchoolExternalTool(toolId, schoolId));
 		await this.schoolExternalToolRepo.saveMany(toolsToAdd);
 	}
