@@ -7,9 +7,8 @@ import {
 	ILibraryName,
 } from '@lumieducation/h5p-server/build/src/types';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ContentStorage, H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig, LibraryStorage } from '@modules/h5p-editor';
+import { ContentStorage, H5P_EDITOR_CONFIG_TOKEN, LibraryStorage } from '@modules/h5p-editor';
 import { InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { H5pConsistencyError, H5pTimeoutError } from '../interface';
 import { ILibraryAdministrationOverviewItemTestFactory, ILibraryInstallResultTestFactory } from '../testing';
@@ -36,11 +35,7 @@ describe('H5PLibraryManagementService', () => {
 					useValue: {
 						installLibraryLockMaxOccupationTime: 5000,
 						libraryListPath: 'config/h5p-libraries.yaml',
-					} as H5PEditorConfig,
-				},
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					},
 				},
 				{
 					provide: Logger,

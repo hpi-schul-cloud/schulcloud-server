@@ -19,5 +19,5 @@ export class H5PEditorConfig {
 	@ConfigProperty('I18N__AVAILABLE_LANGUAGES')
 	@CommaSeparatedStringToArray()
 	@IsEnum(LanguageType, { each: true })
-	public availableLanguages!: LanguageType[];
+	public availableLanguages = [LanguageType.DE, LanguageType.EN, LanguageType.ES, LanguageType.UK];
 }
