@@ -251,7 +251,7 @@ describe('ClassGroupUc', () => {
 					school,
 					{
 						action: Action.read,
-						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW, Permission.STUDENT_LIST],
+						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW],
 					}
 				);
 			});
@@ -586,7 +586,7 @@ describe('ClassGroupUc', () => {
 					school,
 					{
 						action: Action.read,
-						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW, Permission.STUDENT_LIST],
+						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW],
 					}
 				);
 			});
@@ -835,7 +835,7 @@ describe('ClassGroupUc', () => {
 					school,
 					{
 						action: Action.read,
-						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW, Permission.STUDENT_LIST],
+						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW],
 					}
 				);
 			});

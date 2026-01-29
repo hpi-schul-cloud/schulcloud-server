@@ -50,7 +50,7 @@ export class ClassGroupUc {
 		this.authorizationService.checkPermission(
 			user,
 			school,
-			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW, Permission.STUDENT_LIST])
+			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW])
 		);
 
 		const groupVisibilityPermission: GroupVisibilityPermission = this.getGroupVisibilityPermission(user);
