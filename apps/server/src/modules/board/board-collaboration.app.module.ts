@@ -1,17 +1,15 @@
 import { CoreModule } from '@core/core.module';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
+import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import {
 	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
 	ValkeyClientModule,
 	ValkeyClientSessionConfig,
 } from '@infra/valkey-client';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { SESSION_VALKEY_CLIENT } from '@modules/authentication';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { AuthorizationModule } from '../authorization';
 import { serverConfig } from '../server';
@@ -42,12 +40,9 @@ const imports = [
 	imports: [
 		...imports,
 		ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
-		MikroOrmModule.forRoot({
-			...defaultMikroOrmOptions,
-			type: 'mongo',
-			clientUrl: DB_URL, // TODO: check if this needs to be different
-			password: DB_PASSWORD,
-			user: DB_USERNAME,
+		DatabaseModule.register({
+			configInjectionToken: DATABASE_CONFIG_TOKEN,
+			configConstructor: DatabaseConfig,
 			entities: ENTITIES,
 		}),
 	],
@@ -65,7 +60,6 @@ const testConfig = () => {
 		...imports,
 		ConfigModule.forRoot(createConfigModuleOptions(testConfig)),
 		MongoMemoryDatabaseModule.forRoot({
-			...defaultMikroOrmOptions,
 			entities: TEST_ENTITIES,
 		}),
 	],

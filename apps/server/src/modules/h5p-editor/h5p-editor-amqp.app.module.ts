@@ -1,22 +1,20 @@
 import { CoreModule } from '@core/core.module';
 import { Logger } from '@core/logger';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import {
 	AUTHORIZATION_CLIENT_CONFIG_TOKEN,
 	AuthorizationClientConfig,
 	AuthorizationClientModule,
 } from '@infra/authorization-client';
 import { ConfigurationModule } from '@infra/configuration';
+import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { H5P_EXCHANGE_CONFIG_TOKEN, H5pExchangeConfig } from '@infra/h5p-editor-client';
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig, RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { HealthApiModule, HealthEntities } from '@modules/health';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { H5pEditorConsumer } from './controller';
 import { H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig } from './h5p-cache.config';
 import { H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN, H5PContentS3ClientConfig } from './h5p-content-s3-client.config';
@@ -34,15 +32,10 @@ const imports = [
 	CoreModule,
 	AuthorizationClientModule.register(AUTHORIZATION_CLIENT_CONFIG_TOKEN, AuthorizationClientConfig),
 	UserModule,
-	MikroOrmModule.forRoot({
-		...defaultMikroOrmOptions,
-		type: 'mongo',
-		clientUrl: DB_URL,
-		password: DB_PASSWORD,
-		user: DB_USERNAME,
-		allowGlobalContext: true,
+	DatabaseModule.register({
+		configInjectionToken: DATABASE_CONFIG_TOKEN,
+		configConstructor: DatabaseConfig,
 		entities: [...ENTITIES, ...HealthEntities],
-		ensureIndexes: true,
 	}),
 	RabbitMQWrapperModule.register({
 		exchangeConfigInjectionToken: H5P_EXCHANGE_CONFIG_TOKEN,
