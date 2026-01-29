@@ -12,6 +12,7 @@ export interface AdminApiServerConfig
 	ROCKET_CHAT_URI: string;
 	ROCKET_CHAT_ADMIN_ID: string;
 	ROCKET_CHAT_ADMIN_TOKEN: string;
+	CALENDAR_SERVICE_ENABLED: boolean;
 }
 
 const config: AdminApiServerConfig = {

@@ -1,5 +1,5 @@
 import { LoggerModule } from '@core/logger';
-import { CalendarModule } from '@infra/calendar';
+import { CALENDAR_CONFIG_TOKEN, CalendarConfig, CalendarModule } from '@infra/calendar';
 import { ConfigurationModule } from '@infra/configuration';
 import { AuthorizationModule } from '@modules/authorization';
 import { RegistrationPinModule } from '@modules/registration-pin';
@@ -20,7 +20,7 @@ import { USER_CONFIG_TOKEN, UserConfig } from './user.config';
 		LoggerModule,
 		CqrsModule,
 		RegistrationPinModule,
-		CalendarModule,
+		CalendarModule.register(CALENDAR_CONFIG_TOKEN, CalendarConfig),
 		AuthorizationModule,
 		SagaModule,
 		ConfigurationModule.register(USER_CONFIG_TOKEN, UserConfig),

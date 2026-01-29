@@ -21,7 +21,6 @@
 	"SYNC_QUEUE_NAME": "test_ldap_queue",
 	"S3_KEY": "abcdefghijklmnop",
 	"LOG_LEVEL": "emerg",
-	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",
 	"SESSION": {
 		"SAME_SITE": "lax",
