@@ -1,4 +1,4 @@
-import { DomainErrorHandler } from '@core/error';
+import { Logger } from '@core/logger';
 import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { JwtPayload } from '@infra/auth-guard';
 import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
@@ -20,10 +20,6 @@ import {
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
-import { Channel, ConsumeMessage } from 'amqplib';
-import { ErrorLogger, Logger } from '@core/logger';
-import { CommonCartridgeExportMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
-import { ErrorLoggable } from '@core/error/loggable';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;
@@ -37,10 +33,6 @@ interface ColumnResource {
 	isResourceColumn: boolean;
 }
 
-const errorHandler = (channel: Channel, msg: ConsumeMessage, error: any) => {
-	console.log(`Error in RabbitMQ`, error);
-};
-
 @Injectable()
 export class CommonCartridgeImportConsumer {
 	constructor(
@@ -52,9 +44,7 @@ export class CommonCartridgeImportConsumer {
 		private readonly cardClient: CardClientAdapter,
 		private readonly fileClient: FilesStorageClientAdapter,
 		private readonly commonCartridgeImportMapper: CommonCartridgeImportMapper,
-		private readonly errorHandler: DomainErrorHandler,
-		private readonly logger: Logger,
-		private readonly errorLogger: ErrorLogger
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(CommonCartridgeImportConsumer.name);
 	}
@@ -63,30 +53,20 @@ export class CommonCartridgeImportConsumer {
 		exchange: CommonCartridgeExchange,
 		routingKey: CommonCartridgeEvents.IMPORT_COURSE,
 		queue: CommonCartridgeEvents.IMPORT_COURSE,
-		errorHandler: errorHandler,
 	})
 	public async importFile(@RabbitPayload() payload: ImportCourseParams): Promise<void> {
-		console.log(`Start of import method`);
-		this.logger.info(new CommonCartridgeExportMessageLoggable('Start of import method'));
-		this.errorLogger.error(new CommonCartridgeExportMessageLoggable('Start of import method'));
-		try {
-			const file = await this.fetchFile(payload);
+		const file = await this.fetchFile(payload);
 
-			if (!file) {
-				return;
-			}
-
-			const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
-
-			await Promise.allSettled([
-				this.createCourse(parser, payload),
-				this.fileClient.deleteFile(payload.jwt, payload.fileRecordId),
-			]);
-		} catch (e: unknown) {
-			console.log(`Error in Import:`, e);
-			this.errorLogger.error(new ErrorLoggable(e));
-			this.errorHandler.exec(e);
+		if (!file) {
+			return;
 		}
+
+		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
+
+		await Promise.allSettled([
+			this.createCourse(parser, payload),
+			this.fileClient.deleteFile(payload.jwt, payload.fileRecordId),
+		]);
 	}
 
 	private async fetchFile(payload: ImportCourseParams): Promise<Buffer | null> {
