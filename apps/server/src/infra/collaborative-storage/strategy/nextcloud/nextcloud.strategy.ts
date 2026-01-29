@@ -155,11 +155,11 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 
 	private async findNextcloudTool(): Promise<ExternalTool> {
 		const tool: ExternalTool | null = await this.externalToolService.findExternalToolByName(
-			this.client.oidcInternalName
+			this.client.adapterConfig.oidcInternalName
 		);
 
 		if (!tool) {
-			throw new NotFoundLoggableException(ExternalTool.name, { name: this.client.oidcInternalName });
+			throw new NotFoundLoggableException(ExternalTool.name, { name: this.client.adapterConfig.oidcInternalName });
 		}
 
 		return tool;

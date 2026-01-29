@@ -533,16 +533,6 @@
 			"type": "string",
 			"description": "Client secret for Nextcloud"
 		},
-		"NEXTCLOUD_ADMIN_USER": {
-			"type": "string",
-			"default": "admin",
-			"description": "Admin-user for Nextcloud-API"
-		},
-		"NEXTCLOUD_ADMIN_PASS": {
-			"type:": "string",
-			"default": "admin",
-			"description": "Admin-password for Nextcloud-API"
-		},
 		"NEXTCLOUD_SCOPES": {
 			"type:": "string",
 			"default": "openid offline profile email groups",

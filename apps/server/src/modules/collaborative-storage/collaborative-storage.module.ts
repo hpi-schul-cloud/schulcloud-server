@@ -1,5 +1,9 @@
 import { LoggerModule } from '@core/logger';
-import { CollaborativeStorageAdapterModule } from '@infra/collaborative-storage';
+import {
+	COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN,
+	CollaborativeStorageAdapterConfig,
+	CollaborativeStorageAdapterModule,
+} from '@infra/collaborative-storage';
 import { AuthorizationModule } from '@modules/authorization';
 import { RoleModule } from '@modules/role';
 import { TeamRepo } from '@modules/team/repo';
@@ -10,7 +14,15 @@ import { CollaborativeStorageService } from './services';
 import { CollaborativeStorageUc } from './uc';
 
 @Module({
-	imports: [CollaborativeStorageAdapterModule, AuthorizationModule, LoggerModule, RoleModule],
+	imports: [
+		CollaborativeStorageAdapterModule.register(
+			COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN,
+			CollaborativeStorageAdapterConfig
+		),
+		AuthorizationModule,
+		LoggerModule,
+		RoleModule,
+	],
 	providers: [TeamRepo, CollaborativeStorageUc, CollaborativeStorageService, TeamPermissionsMapper, TeamMapper],
 	controllers: [CollaborativeStorageController],
 	exports: [CollaborativeStorageUc],

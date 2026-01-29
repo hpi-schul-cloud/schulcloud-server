@@ -1,9 +1,10 @@
+import { LegacyLogger } from '@core/logger';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN } from '@infra/collaborative-storage/collaborative-storage-adapter.config';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@core/logger';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
 import { Observable, of } from 'rxjs';
@@ -80,8 +81,10 @@ describe('NextCloud Adapter Strategy', () => {
 			providers: [
 				NextcloudClientSpec,
 				{
-					provide: 'oidcInternalName',
-					useValue: prefix,
+					provide: COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN,
+					useValue: {
+						oidcInternalName: prefix,
+					},
 				},
 				{
 					provide: HttpService,

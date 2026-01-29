@@ -1,5 +1,6 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN } from '@infra/collaborative-storage/collaborative-storage-adapter.config';
 import { TeamDto, TeamUserDto } from '@modules/collaborative-storage/services/dto/team.dto';
 import { PseudonymService } from '@modules/pseudonym';
 import { Pseudonym } from '@modules/pseudonym/repo';
@@ -53,7 +54,7 @@ describe('NextCloudStrategy', () => {
 				NextcloudStrategySpec,
 				{
 					provide: NextcloudClient,
-					useValue: createMock<NextcloudClient>({ oidcInternalName: toolName }),
+					useValue: createMock<NextcloudClient>(),
 				},
 				{
 					provide: PseudonymService,
@@ -70,6 +71,10 @@ describe('NextCloudStrategy', () => {
 				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
+				},
+				{
+					provide: COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN,
+					useValue: {},
 				},
 			],
 		}).compile();

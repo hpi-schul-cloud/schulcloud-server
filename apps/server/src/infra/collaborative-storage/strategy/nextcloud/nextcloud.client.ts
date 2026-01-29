@@ -1,12 +1,5 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { HttpService } from '@nestjs/axios';
-import {
-	Inject,
-	Injectable,
-	NotFoundException,
-	NotImplementedException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { ErrorUtils } from '@core/error/utils';
+import { LegacyLogger } from '@core/logger';
 import {
 	GroupUsers,
 	GroupfoldersCreated,
@@ -16,28 +9,39 @@ import {
 	OcsResponse,
 	SuccessfulRes,
 } from '@infra/collaborative-storage/strategy/nextcloud/nextcloud.interface';
-import { ErrorUtils } from '@core/error/utils';
-import { LegacyLogger } from '@core/logger';
+import { HttpService } from '@nestjs/axios';
+import {
+	Inject,
+	Injectable,
+	NotFoundException,
+	NotImplementedException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { parseInt } from 'lodash';
 import { Observable, firstValueFrom } from 'rxjs';
+import {
+	COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN,
+	InternalCollaborativeStorageAdapterConfig,
+} from '../../collaborative-storage-adapter.config';
 
 @Injectable()
 export class NextcloudClient {
 	private readonly baseURL: string;
 
-	config: AxiosRequestConfig;
+	private readonly config: AxiosRequestConfig;
 
 	constructor(
 		private readonly logger: LegacyLogger,
 		private readonly httpService: HttpService,
-		@Inject('oidcInternalName') readonly oidcInternalName: string
+		@Inject(COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN)
+		public readonly adapterConfig: InternalCollaborativeStorageAdapterConfig
 	) {
-		this.baseURL = Configuration.get('NEXTCLOUD_BASE_URL') as string;
+		this.baseURL = this.adapterConfig.nextcloudBaseUrl;
 		this.config = {
 			auth: {
-				username: Configuration.get('NEXTCLOUD_ADMIN_USER') as string,
-				password: Configuration.get('NEXTCLOUD_ADMIN_PASS') as string,
+				username: this.adapterConfig.nextcloudAdminUsername,
+				password: this.adapterConfig.nextcloudAdminPassword,
 			},
 			headers: { 'OCS-APIRequest': true, Accept: 'Application/json' },
 		};
@@ -416,7 +420,7 @@ export class NextcloudClient {
 	 * @returns String of format: prefix-value
 	 */
 	public getNameWithPrefix(value: string): string {
-		return `${this.oidcInternalName}-${value}`;
+		return `${this.adapterConfig.oidcInternalName}-${value}`;
 	}
 
 	/**
