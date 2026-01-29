@@ -6,7 +6,6 @@ import type { User } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { NewsTarget, NewsTargetModel } from '../domain/type';
-import { ObjectId } from '@mikro-orm/mongodb';
 
 export interface NewsProperties {
 	title: string;
