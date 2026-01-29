@@ -2,4 +2,3 @@ export { AnyUserLicense, MediaUserLicense, MediaUserLicenseProps } from './domai
 export { UserLicenseType } from './enum/user-license-type';
 export { MediaUserLicenseService } from './service';
 export { UserLicenseModule } from './user-license.module';
-export { UserLicenseConfig } from './user-license.config';

@@ -3,12 +3,10 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import type { CourseSynchronizationHistoryConfig } from '@modules/course-synchronization-history';
 import type { LegacySchoolConfig } from '@modules/legacy-school';
 import type { MediaSourceConfig } from '@modules/media-source';
-import type { UserLicenseConfig } from '@modules/user-license';
 
 export interface SchulconnexProvisioningConfig
 	extends LegacySchoolConfig,
 		CoreModuleConfig,
-		UserLicenseConfig,
 		MediaSourceConfig,
 		CourseSynchronizationHistoryConfig {
 	LOGIN_BLOCK_TIME: number; // @TODO temporary until removed from other configs
