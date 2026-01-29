@@ -2,7 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { defineConfig } from '@mikro-orm/mongodb';
 import { MikroOrmModule, MikroOrmModuleAsyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import _ from 'lodash';
 import { MongoDatabaseModuleOptions } from './types';
 
@@ -32,7 +32,7 @@ export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 	public static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: MongoMemoryDatabaseModule,
-			imports: [createMikroOrmModule({ ...options, ...defaultMikroOrmOptions })],
+			imports: [createMikroOrmModule({ ...options, ...findOneOrFailHandler })],
 			exports: [MikroOrmModule],
 		};
 	}

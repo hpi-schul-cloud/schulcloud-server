@@ -2,9 +2,9 @@ import { ConfigurationModule } from '@infra/configuration';
 import { defineConfig } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { DynamicModule, Module } from '@nestjs/common';
+import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { DatabaseModuleOptions } from './database-module.options';
 import { DatabaseConfig } from './database.config';
-import { findOneOrFailHandler } from './database.not-found.error';
 
 @Module({})
 export class DatabaseModule {
