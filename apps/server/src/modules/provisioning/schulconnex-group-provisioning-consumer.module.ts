@@ -9,6 +9,7 @@ import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { SchulconnexGroupProvisioningConsumer } from './amqp';
+import { PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig } from './provisioning-exchange.config';
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from './provisioning.config';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from './strategy/schulconnex/service';
 
@@ -23,6 +24,7 @@ import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } fro
 		CourseModule,
 		CourseSynchronizationHistoryModule,
 		ConfigurationModule.register(PROVISIONING_CONFIG_TOKEN, ProvisioningConfig),
+		ConfigurationModule.register(PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig),
 	],
 	providers: [SchulconnexGroupProvisioningConsumer, SchulconnexGroupProvisioningService, SchulconnexCourseSyncService],
 })

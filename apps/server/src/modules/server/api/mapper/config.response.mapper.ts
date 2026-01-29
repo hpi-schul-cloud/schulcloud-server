@@ -13,6 +13,7 @@ import { TaskPublicApiConfig } from '@modules/task';
 import { ToolPublicApiConfig } from '@modules/tool';
 import { UserPublicApiConfig } from '@modules/user';
 import { UserImportPublicApiConfig } from '@modules/user-import';
+import { UserLoginMigrationPublicApiConfig } from '@modules/user-login-migration';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ServerConfig } from '../../server.config';
 import { ConfigResponse } from '../dto';
@@ -35,7 +36,8 @@ export class ConfigResponseMapper {
 		taskConfig: TaskPublicApiConfig,
 		learnroomConfig: LearnroomPublicApiConfig,
 		userConfig: UserPublicApiConfig,
-		userImportConfig: UserImportPublicApiConfig
+		userImportConfig: UserImportPublicApiConfig,
+		userLoginMigrationConfig: UserLoginMigrationPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,
@@ -55,6 +57,7 @@ export class ConfigResponseMapper {
 			...learnroomConfig,
 			...userConfig,
 			...userImportConfig,
+			...userLoginMigrationConfig,
 		});
 
 		return configResponse;
