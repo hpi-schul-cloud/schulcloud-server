@@ -66,8 +66,9 @@ export class CardUc {
 
 		throwForbiddenIfFalse(this.boardNodeRule.canDeleteCard(user, boardNodeAuthorizable));
 
+		const { rootId } = card; // needs to be captured before deletion
 		await this.boardNodeService.delete(card);
-		const { rootId } = card;
+
 		return rootId;
 	}
 

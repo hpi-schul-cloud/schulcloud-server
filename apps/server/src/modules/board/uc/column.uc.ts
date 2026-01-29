@@ -30,9 +30,9 @@ export class ColumnUc {
 
 		throwForbiddenIfFalse(this.boardNodeRule.canDeleteColumn(user, boardNodeAuthorizable));
 
+		const { rootId } = column; // needs to be captured before deletion
 		await this.boardNodeService.delete(column);
 
-		const { rootId } = column;
 		return rootId;
 	}
 

@@ -66,13 +66,14 @@ export class ElementUc {
 	public async deleteElement(userId: EntityId, elementId: EntityId): Promise<EntityId> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const element = await this.boardNodeService.findContentElementById(elementId);
-		const { rootId } = element;
 		const boardNode = await this.boardNodeService.findRoot(element);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
 
 		throwForbiddenIfFalse(this.boardNodeRule.canDeleteElement(user, boardNodeAuthorizable));
 
+		const { rootId } = element; // needs to be captured before deletion
 		await this.boardNodeService.delete(element);
+
 		return rootId;
 	}
 
