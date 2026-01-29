@@ -25,6 +25,7 @@ export class ColumnUc {
 
 	public async deleteColumn(userId: EntityId, columnId: EntityId): Promise<EntityId> {
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
+		const { rootId } = column; // needs to be captured before deletion
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(column);
 
@@ -32,7 +33,6 @@ export class ColumnUc {
 
 		await this.boardNodeService.delete(column);
 
-		const { rootId } = column;
 		return rootId;
 	}
 

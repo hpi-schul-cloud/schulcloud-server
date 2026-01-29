@@ -61,13 +61,13 @@ export class CardUc {
 
 	public async deleteCard(userId: EntityId, cardId: EntityId): Promise<EntityId> {
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
+		const { rootId } = card; // needs to be captured before deletion
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
 
 		throwForbiddenIfFalse(this.boardNodeRule.canDeleteCard(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.delete(card);
-		const { rootId } = card;
 		return rootId;
 	}
 
