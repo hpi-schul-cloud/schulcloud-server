@@ -5,11 +5,12 @@ describe(Notification.name, () => {
 		describe('When constructor is called with required properties', () => {
 			const setup = () => {
 				const props = {
+                    id: 'notification-id1',
 					type: 'common-cartridge',
 					key: 'IMPORT_COMPLETED',
 					arguments: ['course-123', 'success'],
 					userId: 'user-123',
-				} as any;
+				};
 
 				const domainObject = new Notification(props);
 
@@ -31,7 +32,7 @@ describe(Notification.name, () => {
 					key: 'IMPORT_FAILED',
 					arguments: ['course-456', 'error'],
 					userId: 'user-456',
-				} as any;
+				};
 
 				const notificationDo = new Notification(props);
 
@@ -55,7 +56,7 @@ describe(Notification.name, () => {
 					key: 'IMPORT_IN_PROGRESS',
 					arguments: ['course-789', 'progress'],
 					userId: 'user-789',
-				} as any;
+				};
 
 				const notificationDo = new Notification(props);
 
