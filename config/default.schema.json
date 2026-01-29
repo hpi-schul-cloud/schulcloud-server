@@ -915,26 +915,6 @@
 					"type": "number",
 					"default": 4030,
 					"description": "Port of the exposed Admin API server."
-				},
-				"DELETION_DELETE_AFTER_MINUTES": {
-					"type": "number",
-					"default": 43200,
-					"description": "threshold in minutes, after which a deletion request can be processed"
-				},
-				"DELETION_MODIFICATION_THRESHOLD_MS": {
-					"type": "number",
-					"default": 300000,
-					"description": "threshold in milliseconds to try again to process a hanging Pending or Failed deletion requests"
-				},
-				"DELETION_CONSIDER_FAILED_AFTER_MS": {
-					"type": "number",
-					"default": 360000000,
-					"description": "threshold in milliseconds to stop trying to process Pending or Failed deletion requests"
-				},
-				"DELETION_EXECUTION_BATCH_NUMBER": {
-					"type": "number",
-					"default": 20,
-					"description": "max amount of deletion requests to be executed in one batch"
 				}
 			},
 			"default": {}
