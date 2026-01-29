@@ -41,7 +41,10 @@ describe(BoardCollaborationGateway.name, () => {
 		jwtConfig = app.get<TestJwtModuleConfig>(TEST_JWT_CONFIG_TOKEN);
 
 		const mongoIoAdapter = new MongoIoAdapter(app);
-		await mongoIoAdapter.connectToMongoDb();
+		// @ts-expect-error test
+		await mongoIoAdapter.connectToMongoDb({
+			dbUrl: 'mongodb://localhost:27017/board-collaboration-test',
+		});
 		app.useWebSocketAdapter(mongoIoAdapter);
 		await app.init();
 
