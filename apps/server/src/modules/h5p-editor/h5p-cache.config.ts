@@ -7,7 +7,7 @@ export const H5P_CACHE_CONFIG_TOKEN = 'H5P_CACHE_CONFIG_TOKEN';
 export class H5PCacheConfig {
 	@IsString()
 	@ConfigProperty('DB_URL')
-	public DB_URL = 'mongodb://127.0.0.1:27017/schulcloud';
+	public DB_URL!: string;
 
 	@IsString()
 	@IsOptional()

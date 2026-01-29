@@ -1,9 +1,9 @@
 import { MikroORM } from '@mikro-orm/core';
+import { defineConfig } from '@mikro-orm/mongodb';
 import { MikroOrmModule, MikroOrmModuleAsyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import _ from 'lodash';
-
-import { defineConfig } from '@mikro-orm/mongodb';
 import { MongoDatabaseModuleOptions } from './types';
 
 const dbName = (): string => _.times(20, () => _.random(35).toString(36)).join('');
@@ -32,7 +32,7 @@ export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 	public static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: MongoMemoryDatabaseModule,
-			imports: [createMikroOrmModule({ ...options })],
+			imports: [createMikroOrmModule({ ...options, ...defaultMikroOrmOptions })],
 			exports: [MikroOrmModule],
 		};
 	}

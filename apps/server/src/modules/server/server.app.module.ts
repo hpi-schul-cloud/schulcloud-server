@@ -1,12 +1,11 @@
 import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
+import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
 import { ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig } from '@modules/alert';
 import { AlertModule } from '@modules/alert/alert.module';
@@ -75,7 +74,6 @@ import { VideoConferenceApiModule } from '@modules/video-conference/video-confer
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { MediaSourceApiModule } from '../media-source/media-source-api.module';
 import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
@@ -175,16 +173,10 @@ const controllers = [ServerController, ServerConfigController];
 @Module({
 	imports: [
 		...serverModules,
-		MikroOrmModule.forRoot({
-			...defaultMikroOrmOptions,
-			type: 'mongo',
-			// TODO add mongoose options as mongo options (see database.js)
-			clientUrl: DB_URL,
-			password: DB_PASSWORD,
-			user: DB_USERNAME,
+		DatabaseModule.register({
+			configInjectionToken: DATABASE_CONFIG_TOKEN,
+			configConstructor: DatabaseConfig,
 			entities: ENTITIES,
-
-			// debug: true, // use it for locally debugging of queries
 		}),
 		LoggerModule,
 	],
@@ -202,11 +194,7 @@ export class ServerModule {}
  * // TODO use instead of ServerModule when NODE_ENV=test
  */
 @Module({
-	imports: [
-		...serverModules,
-		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
-		LoggerModule,
-	],
+	imports: [...serverModules, MongoMemoryDatabaseModule.forRoot({ entities: TEST_ENTITIES }), LoggerModule],
 	providers,
 	controllers,
 })

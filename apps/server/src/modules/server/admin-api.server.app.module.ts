@@ -1,18 +1,15 @@
 import { LoggerModule } from '@core/logger';
 import { ValidationModule } from '@core/validation';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import {
 	AuthGuardModule,
 	AuthGuardOptions,
 	X_API_KEY_AUTH_GUARD_CONFIG_TOKEN,
 	XApiKeyAuthGuardConfig,
 } from '@infra/auth-guard';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 
 import { LegacySchoolAdminApiModule } from '@modules/legacy-school/legacy-school-admin.api-module';
@@ -37,6 +34,7 @@ import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamApiModule } from '@modules/team/team-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 
+import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { adminApiServerConfig } from './admin-api-server.config';
@@ -78,14 +76,10 @@ const serverModules = [
 @Module({
 	imports: [
 		...serverModules,
-		MikroOrmModule.forRoot({
-			...defaultMikroOrmOptions,
-			type: 'mongo',
-			clientUrl: DB_URL,
-			password: DB_PASSWORD,
-			user: DB_USERNAME,
+		DatabaseModule.register({
+			configInjectionToken: DATABASE_CONFIG_TOKEN,
+			configConstructor: DatabaseConfig,
 			entities: ENTITIES,
-			// debug: true, // use it for locally debugging of queries
 		}),
 		CqrsModule,
 		LoggerModule,
@@ -94,10 +88,6 @@ const serverModules = [
 export class AdminApiServerModule {}
 
 @Module({
-	imports: [
-		...serverModules,
-		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
-		LoggerModule,
-	],
+	imports: [...serverModules, MongoMemoryDatabaseModule.forRoot({ entities: TEST_ENTITIES }), LoggerModule],
 })
 export class AdminApiServerTestModule {}
