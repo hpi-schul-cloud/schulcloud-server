@@ -21,6 +21,8 @@ import {
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 import { Channel, ConsumeMessage } from 'amqplib';
+import { ErrorLogger, Logger } from '@core/logger';
+import { CommonCartridgeExportMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;
@@ -49,8 +51,12 @@ export class CommonCartridgeImportConsumer {
 		private readonly cardClient: CardClientAdapter,
 		private readonly fileClient: FilesStorageClientAdapter,
 		private readonly commonCartridgeImportMapper: CommonCartridgeImportMapper,
-		private readonly errorHandler: DomainErrorHandler
-	) {}
+		private readonly errorHandler: DomainErrorHandler,
+		private readonly logger: Logger,
+		private readonly errorLogger: ErrorLogger
+	) {
+		this.logger.setContext(CommonCartridgeImportConsumer.name);
+	}
 
 	@RabbitSubscribe({
 		exchange: CommonCartridgeExchange,
@@ -59,6 +65,9 @@ export class CommonCartridgeImportConsumer {
 		errorHandler: errorHandler,
 	})
 	public async importFile(@RabbitPayload() payload: ImportCourseParams): Promise<void> {
+		console.log(`Start of import method`);
+		this.logger.info(new CommonCartridgeExportMessageLoggable('Start of import method'));
+		this.errorLogger.error(new CommonCartridgeExportMessageLoggable('Start of import method'));
 		try {
 			const file = await this.fetchFile(payload);
 
