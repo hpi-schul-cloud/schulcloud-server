@@ -17,7 +17,7 @@ export abstract class CommonCartridgeBase {
 	}
 
 	get title(): string | undefined {
-		return this.baseProps.title;
+		return this.baseProps.title ?? '-';
 	}
 
 	public abstract getSupportedVersion(): CommonCartridgeVersion;

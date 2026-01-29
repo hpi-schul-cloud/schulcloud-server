@@ -51,18 +51,18 @@ describe('CommonCartridgeMetadataElementV110', () => {
 				expect(result).toStrictEqual({
 					schema: 'IMS Common Cartridge',
 					schemaversion: '1.1.0',
-					'mnf:lom': {
-						'mnf:general': {
-							'mnf:title': {
-								'mnf:string': props.title,
+					'lomimscc:lom': {
+						'lomimscc:general': {
+							'lomimscc:title': {
+								'lomimscc:string': props.title,
 							},
 						},
-						'mnf:rights': {
-							'mnf:copyrightAndOtherRestrictions': {
-								'mnf:value': 'yes',
+						'lomimscc:rights': {
+							'lomimscc:copyrightAndOtherRestrictions': {
+								'lomimscc:value': 'yes',
 							},
-							'mnf:description': {
-								'mnf:string': `${props.creationDate.getFullYear()} ${props.copyrightOwners.join(', ')}`,
+							'lomimscc:description': {
+								'lomimscc:string': `${props.creationDate.getFullYear()} ${props.copyrightOwners.join(', ')}`,
 							},
 						},
 					},
