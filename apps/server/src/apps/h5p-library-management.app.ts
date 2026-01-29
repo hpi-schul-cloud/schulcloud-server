@@ -1,8 +1,7 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
 import { LegacyLogger } from '@core/logger';
-import { H5PLibraryManagementService } from '@modules/h5p-library-management';
-import { H5pLibraryManagementJobModule } from '@modules/h5p-library-management/h5p-library-management-job.module';
+import { H5pLibraryManagementJobModule, H5PLibraryManagementService } from '@modules/h5p-editor';
 import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
 

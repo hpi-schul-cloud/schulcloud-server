@@ -18,13 +18,13 @@ import {
 	ILibraryMetadata,
 	ILibraryName,
 } from '@lumieducation/h5p-server/build/src/types';
-import { ContentStorage, H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig, LibraryStorage } from '@modules/h5p-editor';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { readFileSync } from 'fs';
 import { Readable } from 'stream';
 import { parse } from 'yaml';
 import { H5pDefaultUserFactory } from '../factory';
+import { H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig } from '../h5p-editor.config';
 import { H5pConsistencyError, H5pTimeoutError } from '../interface';
 import {
 	H5PLibraryManagementErrorLoggable,
@@ -32,7 +32,9 @@ import {
 	H5PLibraryManagementLoggable,
 	H5PLibraryManagementMetricsLoggable,
 } from '../loggable';
+import { ContentStorage } from './content-storage.service';
 import LibraryManagementPermissionSystem from './library-management-permission-system';
+import { LibraryStorage } from './library-storage.service';
 
 interface LibrariesContentType {
 	h5p_libraries: string[];

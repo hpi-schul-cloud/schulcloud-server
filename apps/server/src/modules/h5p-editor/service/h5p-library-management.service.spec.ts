@@ -7,13 +7,14 @@ import {
 	ILibraryName,
 } from '@lumieducation/h5p-server/build/src/types';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ContentStorage, H5P_EDITOR_CONFIG_TOKEN, LibraryStorage } from '@modules/h5p-editor';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { H5P_EDITOR_CONFIG_TOKEN } from '../h5p-editor.config';
 import { H5pConsistencyError, H5pTimeoutError } from '../interface';
+import { ContentStorage } from './content-storage.service';
+import { H5PLibraryManagementService, castToLibrariesContentType } from './h5p-library-management.service';
+import { LibraryStorage } from './library-storage.service';
 import { ILibraryAdministrationOverviewItemTestFactory, ILibraryInstallResultTestFactory } from '../testing';
-import { castToLibrariesContentType, H5PLibraryManagementService } from './h5p-library-management.service';
-
 describe('H5PLibraryManagementService', () => {
 	let module: TestingModule;
 	let libraryStorage: jest.Mocked<LibraryStorage>;

@@ -4,4 +4,6 @@ export { H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig } from './h5p-editor.config';
 export { H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN, H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN } from './h5p-editor.const';
 export { H5PEditorModule } from './h5p-editor.module';
 export { H5P_LIBRARIES_S3_CLIENT_CONFIG_TOKEN, H5PLibrariesS3ClientConfig } from './h5p-libraries-s3-client.config';
+export { H5pLibraryManagementJobModule } from './h5p-library-management-job.module';
 export { ContentStorage, LibraryStorage } from './service';
+export { H5PLibraryManagementService } from './service/h5p-library-management.service';
