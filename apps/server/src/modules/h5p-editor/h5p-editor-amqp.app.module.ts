@@ -1,87 +1,28 @@
-import { CoreModule } from '@core/core.module';
-import { Logger } from '@core/logger';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
-import {
-	AUTHORIZATION_CLIENT_CONFIG_TOKEN,
-	AuthorizationClientConfig,
-	AuthorizationClientModule,
-} from '@infra/authorization-client';
+import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { H5P_EXCHANGE_CONFIG_TOKEN, H5pExchangeConfig } from '@infra/h5p-editor-client';
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig, RabbitMQWrapperModule } from '@infra/rabbitmq';
-import { S3ClientModule } from '@infra/s3-client';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { HealthApiModule, HealthEntities } from '@modules/health';
-import { UserModule } from '@modules/user';
+import { HealthApiModule } from '@modules/health';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { H5pEditorConsumer } from './controller';
-import { H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig } from './h5p-cache.config';
-import { H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN, H5PContentS3ClientConfig } from './h5p-content-s3-client.config';
-import { coreConfig } from './h5p-editor-timeout.config';
-import { H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN, H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN } from './h5p-editor.const';
-import { ENTITIES } from './h5p-editor.entity.exports';
-import { H5P_LIBRARIES_S3_CLIENT_CONFIG_TOKEN, H5PLibrariesS3ClientConfig } from './h5p-libraries-s3-client.config';
-import { H5PAjaxEndpointProvider, H5PCacheProvider, H5PEditorProvider, H5PPlayerProvider } from './provider';
-import { H5PContentRepo, LibraryRepo } from './repo';
-import { ContentStorage, H5pEditorContentService, LibraryStorage, TemporaryFileStorage } from './service';
-import { H5PEditorUc } from './uc';
+import { H5PEditorModule } from './h5p-editor.module';
 
 const imports = [
-	ConfigModule.forRoot(createConfigModuleOptions(coreConfig)),
-	CoreModule,
-	AuthorizationClientModule.register(AUTHORIZATION_CLIENT_CONFIG_TOKEN, AuthorizationClientConfig),
-	UserModule,
-	MikroOrmModule.forRoot({
-		...defaultMikroOrmOptions,
-		type: 'mongo',
-		clientUrl: DB_URL,
-		password: DB_PASSWORD,
-		user: DB_USERNAME,
-		allowGlobalContext: true,
-		entities: [...ENTITIES, ...HealthEntities],
-		ensureIndexes: true,
-	}),
+	H5PEditorModule,
 	RabbitMQWrapperModule.register({
 		exchangeConfigInjectionToken: H5P_EXCHANGE_CONFIG_TOKEN,
 		exchangeConfigConstructor: H5pExchangeConfig,
 		configInjectionToken: RABBITMQ_CONFIG_TOKEN,
 		configConstructor: RabbitMQConfig,
 	}),
-	S3ClientModule.register({
-		clientInjectionToken: H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN,
-		configInjectionToken: H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN,
-		configConstructor: H5PContentS3ClientConfig,
-	}),
-	S3ClientModule.register({
-		clientInjectionToken: H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN,
-		configInjectionToken: H5P_LIBRARIES_S3_CLIENT_CONFIG_TOKEN,
-		configConstructor: H5PLibrariesS3ClientConfig,
-	}),
-	ConfigurationModule.register(H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig),
 	ConfigurationModule.register(H5P_EXCHANGE_CONFIG_TOKEN, H5pExchangeConfig),
 	HealthApiModule,
+	LoggerModule,
 ];
 
 const controllers = [];
 
-const providers = [
-	Logger,
-	H5PEditorUc,
-	H5PContentRepo,
-	LibraryRepo,
-	H5PCacheProvider,
-	H5PEditorProvider,
-	H5PPlayerProvider,
-	H5PAjaxEndpointProvider,
-	ContentStorage,
-	LibraryStorage,
-	TemporaryFileStorage,
-	H5pEditorConsumer,
-	H5pEditorContentService,
-];
+const providers = [H5pEditorConsumer];
 
 @Module({
 	imports,
