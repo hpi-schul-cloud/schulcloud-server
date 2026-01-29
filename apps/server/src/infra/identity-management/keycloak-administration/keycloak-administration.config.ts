@@ -1,6 +1,6 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer';
-import { IsBoolean, IsString, IsUrl } from 'class-validator';
+import { IsBoolean, IsString, IsUrl, ValidateIf } from 'class-validator';
 
 export const KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN = 'KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN';
 
@@ -13,18 +13,22 @@ export class KeycloakAdministrationConfig {
 
 	@ConfigProperty('IDENTITY_MANAGEMENT__INTERNAL_URI')
 	@IsUrl({ require_tld: false })
+	@ValidateIf((o: KeycloakAdministrationConfig) => o.identityManagementEnabled)
 	public internalBaseUrl!: string;
 
 	@ConfigProperty('IDENTITY_MANAGEMENT__EXTERNAL_URI')
 	@IsUrl({ require_tld: false })
+	@ValidateIf((o: KeycloakAdministrationConfig) => o.identityManagementEnabled)
 	public externalBaseUrl!: string;
 
 	@ConfigProperty('IDENTITY_MANAGEMENT__TENANT')
 	@IsString()
+	@ValidateIf((o: KeycloakAdministrationConfig) => o.identityManagementEnabled)
 	public realmName!: string;
 
 	@ConfigProperty('IDENTITY_MANAGEMENT__CLIENTID')
 	@IsString()
+	@ValidateIf((o: KeycloakAdministrationConfig) => o.identityManagementEnabled)
 	public clientId!: string;
 
 	public get credentials(): {
@@ -43,13 +47,16 @@ export class KeycloakAdministrationConfig {
 
 	@ConfigProperty('IDENTITY_MANAGEMENT__ADMIN_USER')
 	@IsString()
+	@ValidateIf((o: KeycloakAdministrationConfig) => o.identityManagementEnabled)
 	private adminUsername!: string;
 
 	@ConfigProperty('IDENTITY_MANAGEMENT__ADMIN_PASSWORD')
 	@IsString()
+	@ValidateIf((o: KeycloakAdministrationConfig) => o.identityManagementEnabled)
 	private adminPassword!: string;
 
 	@ConfigProperty('IDENTITY_MANAGEMENT__ADMIN_CLIENTID')
 	@IsString()
+	@ValidateIf((o: KeycloakAdministrationConfig) => o.identityManagementEnabled)
 	private adminClientId!: string;
 }

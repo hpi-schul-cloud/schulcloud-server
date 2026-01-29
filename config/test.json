@@ -34,12 +34,6 @@
 	"FEATURE_VIDEOCONFERENCE_ENABLED": true,
 	"VIDEOCONFERENCE_HOST": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
 	"VIDEOCONFERENCE_SALT": "ThisIsNOTaRealSaltThisIsNOTaRealSaltThisIsNOTaRealSalt1234567890",
-	"SCHULCONNEX_CLIENT": {
-		"API_URL": "http://localhost:8888/v1/",
-		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token",
-		"CLIENT_ID": "schulcloud",
-		"CLIENT_SECRET": "secret"
-	},
 	"ADMIN_API": {
 		"MODIFICATION_THRESHOLD_MS": 60000,
 		"DELETION_DELAY_MILLISECONDS": 10000

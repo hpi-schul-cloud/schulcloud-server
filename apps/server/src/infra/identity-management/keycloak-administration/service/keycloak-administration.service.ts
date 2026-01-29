@@ -1,7 +1,6 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
-import { ConnectionConfig } from '@keycloak/keycloak-admin-client/lib/client';
 import { Inject, Injectable } from '@nestjs/common';
-import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN, KeycloakAdministrationConfig } from '../keycloak-administration-config';
+import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN, KeycloakAdministrationConfig } from '../keycloak-administration.config';
 
 @Injectable()
 export class KeycloakAdministrationService {
@@ -13,14 +12,10 @@ export class KeycloakAdministrationService {
 		private readonly kcAdminClient: KeycloakAdminClient,
 		@Inject(KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN) private readonly config: KeycloakAdministrationConfig
 	) {
-		let connectionConfig: ConnectionConfig = {};
-		if (this.config.identityManagementEnabled) {
-			connectionConfig = {
-				baseUrl: this.config.internalBaseUrl,
-				realmName: this.config.realmName,
-			};
-		}
-		this.kcAdminClient.setConfig(connectionConfig);
+		this.kcAdminClient.setConfig({
+			baseUrl: this.config.internalBaseUrl,
+			realmName: this.config.realmName,
+		});
 	}
 
 	public async callKcAdminClient(): Promise<KeycloakAdminClient> {

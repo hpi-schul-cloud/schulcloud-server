@@ -1,5 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { AccountModule } from '@modules/account';
 import { AuthorizationModule } from '@modules/authorization';
@@ -25,7 +26,7 @@ import { USER_IMPORT_CONFIG_TOKEN, UserImportConfig } from './user-import-config
 		HttpModule,
 		UserModule,
 		OauthModule,
-		SchulconnexClientModule.registerAsync(),
+		SchulconnexClientModule.register(SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig),
 		UserLoginMigrationModule,
 		SystemModule,
 		UserModule,

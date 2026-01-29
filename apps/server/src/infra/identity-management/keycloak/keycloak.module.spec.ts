@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
-} from '../keycloak-administration/keycloak-administration-config';
+} from '../keycloak-administration/keycloak-administration.config';
 import { KeycloakModule } from './keycloak.module';
 import { KeycloakIdentityManagementOauthService } from './service/keycloak-identity-management-oauth.service';
 import { KeycloakIdentityManagementService } from './service/keycloak-identity-management.service';

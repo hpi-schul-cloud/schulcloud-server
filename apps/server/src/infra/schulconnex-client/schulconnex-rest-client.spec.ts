@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { OAuthTokenDto, OauthAdapterService } from '@modules/oauth-adapter';
-import { HttpService } from '@nestjs/axios';
 import { Logger } from '@core/logger';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth-adapter';
+import { HttpService } from '@nestjs/axios';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { of } from 'rxjs';
 import { SchulconnexConfigurationMissingLoggable } from './loggable';
@@ -10,8 +10,8 @@ import {
 	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
 } from './response';
+import { InternalSchulconnexClientConfig } from './schulconnex-client.config';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
-import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 import { schulconnexPoliciesInfoLicenseResponseFactory, schulconnexResponseFactory } from './testing';
 
 describe(SchulconnexRestClient.name, () => {
@@ -20,7 +20,7 @@ describe(SchulconnexRestClient.name, () => {
 	let httpService: DeepMocked<HttpService>;
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 	let logger: DeepMocked<Logger>;
-	const options: SchulconnexRestClientOptions = {
+	const config: InternalSchulconnexClientConfig = {
 		apiUrl: 'https://schulconnex.url/api',
 		clientId: 'clientId',
 		clientSecret: 'clientSecret',
@@ -35,7 +35,7 @@ describe(SchulconnexRestClient.name, () => {
 		oauthAdapterService = createMock<OauthAdapterService>();
 		logger = createMock<Logger>();
 
-		client = new SchulconnexRestClient(options, httpService, oauthAdapterService, logger);
+		client = new SchulconnexRestClient(config, httpService, oauthAdapterService, logger);
 	});
 
 	afterEach(() => {
@@ -45,30 +45,33 @@ describe(SchulconnexRestClient.name, () => {
 	describe('constructor', () => {
 		describe('when configuration is missing', () => {
 			const setup = () => {
-				const badOptions: SchulconnexRestClientOptions = {
+				const badConfig: InternalSchulconnexClientConfig = {
 					apiUrl: '',
 					clientId: undefined,
 					clientSecret: undefined,
 					tokenEndpoint: '',
+					personInfoTimeoutInMs: 3000,
+					personenInfoTimeoutInMs: 120000,
+					policiesInfoTimeoutInMs: 4000,
 				};
 				return {
-					badOptions,
+					badConfig,
 				};
 			};
 
 			it('should log a message', () => {
-				const { badOptions } = setup();
+				const { badConfig } = setup();
 
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				const badOptionsClient = new SchulconnexRestClient(badOptions, httpService, oauthAdapterService, logger);
+				const badOptionsClient = new SchulconnexRestClient(badConfig, httpService, oauthAdapterService, logger);
 
 				expect(logger.debug).toHaveBeenCalledWith(new SchulconnexConfigurationMissingLoggable());
 			});
 
 			it('should reject promise if configuration is missing', async () => {
-				const { badOptions } = setup();
+				const { badConfig } = setup();
 
-				const badOptionsClient = new SchulconnexRestClient(badOptions, httpService, oauthAdapterService, logger);
+				const badOptionsClient = new SchulconnexRestClient(badConfig, httpService, oauthAdapterService, logger);
 
 				await expect(badOptionsClient.getPersonenInfo({})).rejects.toThrow(
 					'Missing configuration for SchulconnexRestClient'
@@ -96,12 +99,12 @@ describe(SchulconnexRestClient.name, () => {
 
 				await client.getPersonInfo(accessToken);
 
-				expect(httpService.get).toHaveBeenCalledWith(`${options.apiUrl ?? ''}/person-info`, {
+				expect(httpService.get).toHaveBeenCalledWith(`${config.apiUrl ?? ''}/person-info`, {
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
 						'Accept-Encoding': 'gzip',
 					},
-					timeout: options.personInfoTimeoutInMs,
+					timeout: config.personInfoTimeoutInMs,
 				});
 			});
 
@@ -166,13 +169,13 @@ describe(SchulconnexRestClient.name, () => {
 				});
 
 				expect(httpService.get).toHaveBeenCalledWith(
-					`${options.apiUrl ?? ''}/personen-info?organisation.id=1234&vollstaendig=personen%2Corganisationen`,
+					`${config.apiUrl ?? ''}/personen-info?organisation.id=1234&vollstaendig=personen%2Corganisationen`,
 					{
 						headers: {
 							Authorization: `Bearer ${tokens.accessToken}`,
 							'Accept-Encoding': 'gzip',
 						},
-						timeout: options.personenInfoTimeoutInMs,
+						timeout: config.personenInfoTimeoutInMs,
 					}
 				);
 			});
@@ -206,12 +209,12 @@ describe(SchulconnexRestClient.name, () => {
 
 				await client.getPoliciesInfo(accessToken);
 
-				expect(httpService.get).toHaveBeenCalledWith(`${options.apiUrl ?? ''}/policies-info`, {
+				expect(httpService.get).toHaveBeenCalledWith(`${config.apiUrl ?? ''}/policies-info`, {
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
 						'Accept-Encoding': 'gzip',
 					},
-					timeout: options.policiesInfoTimeoutInMs,
+					timeout: config.policiesInfoTimeoutInMs,
 				});
 			});
 

@@ -1,7 +1,7 @@
 import { ServerTestModule } from '@modules/server';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TSP_CLIENT_CONFIG_TOKEN } from './tsp-client-config';
 import { TspClientFactory } from './tsp-client-factory';
+import { TSP_CLIENT_CONFIG_TOKEN } from './tsp-client.config';
 import { TspClientModule } from './tsp-client.module';
 
 // NOTE: This test is skipped because it requires a valid client id, secret and token endpoint.

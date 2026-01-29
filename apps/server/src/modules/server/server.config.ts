@@ -1,6 +1,5 @@
 import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { ManagementSeedDataConfig } from '@modules/management';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
 import type { LanguageType } from '@shared/domain/interface';
@@ -16,11 +15,7 @@ export enum NodeEnvType {
 
 // Environment keys should be added over configs from modules, directly adding is only allow for legacy stuff
 // Maye some of them must be outsourced to additional microservice config endpoints.
-export interface ServerConfig
-	extends CoreModuleConfig,
-		UserLoginMigrationConfig,
-		SchulconnexClientConfig,
-		ManagementSeedDataConfig {
+export interface ServerConfig extends CoreModuleConfig, UserLoginMigrationConfig, ManagementSeedDataConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -73,6 +68,7 @@ export interface ServerConfig
 	ROCKET_CHAT_URI: string;
 	ROCKET_CHAT_ADMIN_ID: string;
 	ROCKET_CHAT_ADMIN_TOKEN: string;
+	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: number;
 	INCOMING_REQUEST_TIMEOUT_COPY_API: number;
 	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: number;
 }
@@ -136,26 +132,8 @@ const config: ServerConfig = {
 	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: Configuration.get(
 		'IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS'
 	) as number,
-	SCHULCONNEX_CLIENT__API_URL: Configuration.has('SCHULCONNEX_CLIENT__API_URL')
-		? (Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string)
-		: undefined,
-	SCHULCONNEX_CLIENT__TOKEN_ENDPOINT: Configuration.has('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT')
-		? (Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string)
-		: undefined,
-	SCHULCONNEX_CLIENT__CLIENT_ID: Configuration.has('SCHULCONNEX_CLIENT__CLIENT_ID')
-		? (Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string)
-		: undefined,
-	SCHULCONNEX_CLIENT__CLIENT_SECRET: Configuration.has('SCHULCONNEX_CLIENT__CLIENT_SECRET')
-		? (Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string)
-		: undefined,
-	SCHULCONNEX_CLIENT__PERSON_INFO_TIMEOUT_IN_MS: Configuration.get(
-		'SCHULCONNEX_CLIENT__PERSON_INFO_TIMEOUT_IN_MS'
-	) as number,
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
-	) as number,
-	SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS: Configuration.get(
-		'SCHULCONNEX_CLIENT__POLICIES_INFO_TIMEOUT_IN_MS'
 	) as number,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
 	HOST: Configuration.get('HOST') as string,

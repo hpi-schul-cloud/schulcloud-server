@@ -2,7 +2,7 @@ import { ConsoleWriterModule } from '@infra/console/console-writer/console-write
 import {
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 	KeycloakAdministrationConfig,
-} from '@infra/identity-management/keycloak-administration/keycloak-administration-config';
+} from '@infra/identity-management/keycloak-administration/keycloak-administration.config';
 import { KeycloakModule } from '@infra/identity-management/keycloak/keycloak.module';
 import { SyncModule } from '@infra/sync/sync.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
