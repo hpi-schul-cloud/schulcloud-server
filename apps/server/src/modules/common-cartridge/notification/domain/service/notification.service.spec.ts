@@ -2,12 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotificationService } from './notification.service';
-import { NotificationRepo } from '../repo/notification.repo';
-import { NotificationDto } from '../dto/notification.dto';
-import { NotificationType } from '../dto/notification-type.enum';
-import { NotificationEntity } from '../entities/notification.entity';
+import { NotificationRepo } from '../../repo/notification.repo';
+import { NotificationType } from '../../types/notification-type.enum';
+import { NotificationEntity } from '../../repo/entities/notification.entity';
 import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker/.';
+import { Notification, NotificationProps } from '../do';
+import { NotificationMapper } from '../../repo/mapper/notification.mapper';
 
 describe(NotificationService.name, () => {
 	let module: TestingModule;
@@ -41,18 +42,19 @@ describe(NotificationService.name, () => {
 		const args: string[] = [faker.string.alphanumeric(), faker.string.alphanumeric()];
 		const userid: string = faker.string.alphanumeric();
 
-		const dto: NotificationDto = {
-			notificationType: NotificationType.ERROR,
-			notificationKey: 'ERROR_KEY',
-			notificationArguments: ['arg1'],
+		const notification = new Notification({
+			id: 'testid',
+			type: NotificationType.ERROR,
+			key: 'ERROR_KEY',
+			arguments: ['arg1'],
 			userId: 'user-id',
-		};
+		});
 
 		const mappedEntity: NotificationEntity = {
-			notificationType: dto.notificationType,
-			notifcationKey: dto.notificationKey,
-			notificationArguments: dto.notificationArguments,
-			userId: dto.userId,
+			notificationType: notification.type,
+			notifcationKey: notification.key,
+			notificationArguments: notification.arguments,
+			userId: notification.userId,
 			_id: new ObjectId(),
 			id: '',
 			createdAt: new Date(),
@@ -60,9 +62,9 @@ describe(NotificationService.name, () => {
 		} as unknown as NotificationEntity;
 
 		// mock answer of repo
-		notificationRepoMock.createAndSaveNotification.mockResolvedValue(mappedEntity);
-		
-		return { type, key, args, userid, dto, mappedEntity};
+		notificationRepoMock.createNotification.mockResolvedValue(mappedEntity);
+
+		return { type, key, args, userid, dto: notification, mappedEntity };
 	};
 
 	afterEach(async () => {
@@ -77,32 +79,33 @@ describe(NotificationService.name, () => {
 	describe('create', () => {
 		describe('when notification type is ERROR', () => {
 			it('should create a notification and log a warning', async () => {
-				const dto: NotificationDto = {
-					notificationType: NotificationType.ERROR,
-					notificationKey: 'ERROR_KEY',
-					notificationArguments: ['arg1'],
+				const notification = new Notification({
+					id: 'testid',
+					type: NotificationType.ERROR,
+					key: 'ERROR_KEY',
+					arguments: ['arg1'],
 					userId: 'user-id',
-				};
+				});
 
 				const mappedEntity: NotificationEntity = {
-					notificationType: dto.notificationType,
-					notifcationKey: dto.notificationKey,
-					notificationArguments: dto.notificationArguments,
-					userId: dto.userId,
+					notificationType: notification.type,
+					notifcationKey: notification.key,
+					notificationArguments: notification.arguments,
+					userId: notification.userId,
 					_id: new ObjectId(),
 					id: '',
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				} as unknown as NotificationEntity;
 
-				const mapSpy = jest.spyOn(NotificationRepo, 'mapDtoToEntity').mockReturnValue(mappedEntity);
+				const mapSpy = jest.spyOn(NotificationMapper, 'mapToEntity').mockReturnValue(mappedEntity);
 
-				notificationRepoMock.createAndSaveNotification.mockResolvedValue(mappedEntity);
+				notificationRepoMock.createNotification.mockResolvedValue(mappedEntity);
 
-				const result = await sut.create(dto);
+				const result = await sut.create(notification);
 
-				expect(mapSpy).toHaveBeenCalledWith(dto);
-				expect(notificationRepoMock.createAndSaveNotification).toHaveBeenCalledWith(mappedEntity);
+				expect(mapSpy).toHaveBeenCalledWith(notification);
+				expect(notificationRepoMock.createNotification).toHaveBeenCalledWith(mappedEntity);
 				expect(loggerMock.warning).toHaveBeenCalledTimes(1);
 				expect(loggerMock.info).not.toHaveBeenCalled();
 				expect(result).toBe(mappedEntity);
@@ -111,32 +114,33 @@ describe(NotificationService.name, () => {
 
 		describe('when notification type is NOTE', () => {
 			it('should create a notification and log info', async () => {
-				const dto: NotificationDto = {
-					notificationType: NotificationType.NOTE,
-					notificationKey: 'INFO_KEY',
-					notificationArguments: ['arg1'],
+				const notification = new Notification({
+					id: 'testid',
+					type: NotificationType.NOTE,
+					key: 'INFO_KEY',
+					arguments: ['arg1'],
 					userId: 'user-id',
-				};
+				});
 
 				const mappedEntity: NotificationEntity = {
-					notificationType: dto.notificationType,
-					notifcationKey: dto.notificationKey,
-					notificationArguments: dto.notificationArguments,
-					userId: dto.userId,
+					notificationType: notification.type,
+					notifcationKey: notification.key,
+					notificationArguments: notification.arguments,
+					userId: notification.userId,
 					_id: new ObjectId(),
 					id: '',
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				} as unknown as NotificationEntity;
 
-				const mapSpy = jest.spyOn(NotificationRepo, 'mapDtoToEntity').mockReturnValue(mappedEntity);
+				const mapSpy = jest.spyOn(NotificationMapper, 'mapToEntity').mockReturnValue(mappedEntity);
 
-				notificationRepoMock.createAndSaveNotification.mockResolvedValue(mappedEntity);
+				notificationRepoMock.createNotification.mockResolvedValue(mappedEntity);
 
-				const result = await sut.create(dto);
+				const result = await sut.create(notification);
 
-				expect(mapSpy).toHaveBeenCalledWith(dto);
-				expect(notificationRepoMock.createAndSaveNotification).toHaveBeenCalledWith(mappedEntity);
+				expect(mapSpy).toHaveBeenCalledWith(notification);
+				expect(notificationRepoMock.createNotification).toHaveBeenCalledWith(mappedEntity);
 				expect(loggerMock.info).toHaveBeenCalledTimes(1);
 				expect(loggerMock.warning).not.toHaveBeenCalled();
 				expect(result).toBe(mappedEntity);
@@ -147,7 +151,7 @@ describe(NotificationService.name, () => {
 	describe('findAll', () => {
 		describe('when called without parameters', () => {
 			it('should return the expected message', () => {
-				expect(sut.findAll()).toBe('This action returns all notification');
+				expect(sut.findAll()).toBe('This action returns all notifications');
 			});
 		});
 	});

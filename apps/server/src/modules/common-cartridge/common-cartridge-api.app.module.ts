@@ -12,6 +12,9 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { authorizationClientConfig, config } from './common-cartridge.config';
 import { CommonCartridgeModule } from './common-cartridge.module';
 import { CommonCartridgeController } from './controller/common-cartridge.controller';
+import { NotificationController } from './notification/notification.controller';
+import { NotificationModule } from './notification/notification.module';
+import { NotificationService } from './notification/domain/service';
 
 @Module({
 	imports: [
@@ -21,6 +24,8 @@ import { CommonCartridgeController } from './controller/common-cartridge.control
 		AuthGuardModule.register([AuthGuardOptions.JWT]),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 		CommonCartridgeModule,
+		NotificationModule,
+		// NotificationService,
 		// Will remove this in the BC-8925
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
@@ -31,6 +36,6 @@ import { CommonCartridgeController } from './controller/common-cartridge.control
 			entities: [User],
 		}),
 	],
-	controllers: [CommonCartridgeController],
+	controllers: [CommonCartridgeController, NotificationController],
 })
 export class CommonCartridgeApiModule {}

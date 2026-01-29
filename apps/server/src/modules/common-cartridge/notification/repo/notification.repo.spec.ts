@@ -2,9 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotificationRepo } from '../repo/notification.repo';
-import { NotificationDto } from '../dto/notification.dto';
-import { NotificationType } from '../dto/notification-type.enum';
-import { NotificationEntity } from '../entities/notification.entity';
+import { NotificationType } from '../types/notification-type.enum';
+import { NotificationEntity } from './entities/notification.entity';
+import { Notification } from '../domain/do/notification.do';
+import { NotificationMapper } from './mapper/notification.mapper';
 
 describe(NotificationRepo.name, () => {
 	// let repo: NotificationRepo;
@@ -37,7 +38,7 @@ describe(NotificationRepo.name, () => {
 	// 	expect(() => (repo as any).entityName).toThrowError('Method not implemented.');
 	// });
 
-	describe('createAndSaveNotification', () => {
+	describe('createNotification', () => {
 		describe('when called with a valid notification entity', () => {
 			it('should create and save the notification and return the entity', async () => {
 				const entity: NotificationEntity = {
@@ -51,9 +52,9 @@ describe(NotificationRepo.name, () => {
 					updatedAt: new Date(),
 				} as unknown as NotificationEntity;
 
-				repo.createAndSaveNotification.mockResolvedValue(entity);
-				const result = await repo.createAndSaveNotification(entity);
-				
+				repo.createNotification.mockResolvedValue(entity);
+				const result = await repo.createNotification(entity);
+
 				// expect((repo as any).create).toHaveBeenCalledWith(entity);
 				// expect((repo as any).save).toHaveBeenCalledWith(entity);
 				expect(result).toBe(entity);
@@ -61,25 +62,29 @@ describe(NotificationRepo.name, () => {
 		});
 	});
 
-	// describe('mapDtoToEntity', () => {
-	// 	it('should map dto to entity with generated fields', () => {
-	// 		const dto: NotificationDto = {
-	// 			notificationType: NotificationType.ERROR,
-	// 			notificationKey: 'KEY',
-	// 			notificationArguments: ['arg1', 'arg2'],
-	// 			userId: 'user-id',
-	// 		};
+	describe('mapDtoToEntity', () => {
+		describe('when called with a valid DTO', () => {
+			it('should map dto to entity with generated fields', () => {
 
-	// 		const result = NotificationRepo.mapDtoToEntity(dto);
+				const notification = new Notification({
+					id: 'testid',
+					type: NotificationType.ERROR,
+					key: 'KEY',
+					arguments: ['arg1', 'arg2'],
+					userId: 'user-id',
+				});
 
-	// 		expect(result.notificationType).toBe(dto.notificationType);
-	// 		expect(result.notifcationKey).toBe(dto.notificationKey);
-	// 		expect(result.notificationArguments).toEqual(dto.notificationArguments);
-	// 		expect(result.userId).toBe(dto.userId);
-	// 		expect(result._id).toBeInstanceOf(ObjectId);
-	// 		expect(result.id).toBeDefined();
-	// 		expect(result.createdAt).toBeInstanceOf(Date);
-	// 		expect(result.updatedAt).toBeInstanceOf(Date);
-	// 	});
-	// });
+				const result = NotificationMapper.mapToEntity(notification);
+
+				expect(result.type).toBe(notification.type);
+				expect(result.key).toBe(notification.key);
+				expect(result.arguments).toEqual(notification.arguments);
+				expect(result.userId).toBe(notification.userId);
+				expect(result._id).toBeInstanceOf(ObjectId);
+				expect(result.id).toBeDefined();
+				expect(result.createdAt).toBeInstanceOf(Date);
+				expect(result.updatedAt).toBeInstanceOf(Date);
+			});
+		});
+	});
 });

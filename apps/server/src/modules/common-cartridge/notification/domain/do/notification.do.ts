@@ -7,7 +7,7 @@ export interface NotificationProps extends AuthorizableObject {
     userId: string;
 }
 
-export class NotificationDo extends DomainObject<NotificationProps> {
+export class Notification extends DomainObject<NotificationProps> {
 	public get type(): string {
 		return this.props.type;
 	}
