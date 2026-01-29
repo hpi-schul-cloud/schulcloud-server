@@ -13,6 +13,7 @@ import { TaskPublicApiConfig } from '@modules/task';
 import { ToolPublicApiConfig } from '@modules/tool';
 import { UserPublicApiConfig } from '@modules/user';
 import { UserImportPublicApiConfig } from '@modules/user-import';
+import { UserLoginMigrationPublicApiConfig } from '@modules/user-login-migration';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
@@ -293,7 +294,8 @@ export class ConfigResponse {
 			TaskPublicApiConfig &
 			LearnroomPublicApiConfig &
 			UserPublicApiConfig &
-			UserImportPublicApiConfig
+			UserImportPublicApiConfig &
+			UserLoginMigrationPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -333,7 +335,7 @@ export class ConfigResponse {
 		this.FEATURE_CONSENT_NECESSARY = config.FEATURE_CONSENT_NECESSARY;
 		this.FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED = config.courseExportEnabled;
 		this.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED = config.courseImportEnabled;
-		this.FEATURE_USER_LOGIN_MIGRATION_ENABLED = config.FEATURE_USER_LOGIN_MIGRATION_ENABLED;
+		this.FEATURE_USER_LOGIN_MIGRATION_ENABLED = config.featureUserLoginMigrationEnabled;
 		this.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED = config.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED;
 		this.GHOST_BASE_URL = config.GHOST_BASE_URL;
 		this.ROCKETCHAT_SERVICE_ENABLED = config.ROCKETCHAT_SERVICE_ENABLED;
@@ -348,13 +350,13 @@ export class ConfigResponse {
 		this.SC_THEME = config.SC_THEME;
 		this.SC_TITLE = config.SC_TITLE;
 		this.TRAINING_URL = config.TRAINING_URL;
-		this.MIGRATION_END_GRACE_PERIOD_MS = config.MIGRATION_END_GRACE_PERIOD_MS;
-		this.FEATURE_SHOW_OUTDATED_USERS = config.FEATURE_SHOW_OUTDATED_USERS;
+		this.MIGRATION_END_GRACE_PERIOD_MS = config.migrationEndGracePeriodMs;
+		this.FEATURE_SHOW_OUTDATED_USERS = config.featureShowOutdatedUsers;
 		this.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION = config.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION;
 		this.CTL_TOOLS_RELOAD_TIME_MS = config.ctlToolsReloadTimeMs;
 		this.FEATURE_CTL_TOOLS_COPY_ENABLED = config.featureCtlToolsCopyEnabled;
 		this.FEATURE_PREFERRED_CTL_TOOLS_ENABLED = config.featurePreferredCtlToolsEnabled;
-		this.FEATURE_SHOW_MIGRATION_WIZARD = config.FEATURE_SHOW_MIGRATION_WIZARD;
+		this.FEATURE_SHOW_MIGRATION_WIZARD = config.featureShowMigrationWizard;
 		this.MIGRATION_WIZARD_DOCUMENTATION_LINK = config.migrationWizardDocumentationLink;
 		this.FEATURE_TLDRAW_ENABLED = config.FEATURE_TLDRAW_ENABLED;
 		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.FEATURE_VIDEOCONFERENCE_ENABLED;
