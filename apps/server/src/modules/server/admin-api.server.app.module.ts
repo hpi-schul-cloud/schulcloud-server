@@ -37,6 +37,7 @@ import { UserApiModule } from '@modules/user/user-api.module';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { RoomApiModule } from '@modules/room/room-api.module';
+import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { adminApiServerConfig } from './admin-api-server.config';
 import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
 
@@ -88,6 +89,10 @@ const serverModules = [
 export class AdminApiServerModule {}
 
 @Module({
-	imports: [...serverModules, MongoMemoryDatabaseModule.forRoot({ entities: TEST_ENTITIES }), LoggerModule],
+	imports: [
+		...serverModules,
+		MongoMemoryDatabaseModule.forRoot({ findOneOrFailHandler, entities: TEST_ENTITIES }),
+		LoggerModule,
+	],
 })
 export class AdminApiServerTestModule {}

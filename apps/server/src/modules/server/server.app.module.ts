@@ -78,6 +78,7 @@ import { VideoConferenceApiModule } from '@modules/video-conference/video-confer
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
+import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { MediaSourceApiModule } from '../media-source/media-source-api.module';
 import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
@@ -199,7 +200,11 @@ export class ServerModule {}
  * // TODO use instead of ServerModule when NODE_ENV=test
  */
 @Module({
-	imports: [...serverModules, MongoMemoryDatabaseModule.forRoot({ entities: TEST_ENTITIES }), LoggerModule],
+	imports: [
+		...serverModules,
+		MongoMemoryDatabaseModule.forRoot({ findOneOrFailHandler, entities: TEST_ENTITIES }),
+		LoggerModule,
+	],
 	providers,
 	controllers,
 })
