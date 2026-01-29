@@ -1,7 +1,6 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AccountService } from '@modules/account';
-import { DeletionRequestEntity } from '@modules/deletion/repo/entity';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
@@ -12,6 +11,7 @@ import { DomainDeletionReport } from '../../domain/interface';
 import { DeletionExecutionService, DeletionLogService, DeletionRequestService } from '../../domain/service';
 import { deletionLogFactory, deletionRequestFactory } from '../../domain/testing';
 import { DomainName, StatusModel } from '../../domain/types';
+import { DeletionRequestEntity } from '../../repo/entity';
 import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyParams } from '../controller/dto';
 import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder } from '../controller/dto/builder';
