@@ -5,7 +5,7 @@ describe(Notification.name, () => {
 		describe('When constructor is called with required properties', () => {
 			const setup = () => {
 				const props = {
-                    id: 'notification-id1',
+					id: 'notification-id1',
 					type: 'common-cartridge',
 					key: 'IMPORT_COMPLETED',
 					arguments: ['course-123', 'success'],
