@@ -1,12 +1,5 @@
 import { AnyEntity, EntityClass, MigrationsOptions } from '@mikro-orm/core';
-
-export interface InternalDatabaseConfig {
-	dbUrl: string;
-	dbUsername?: string;
-	dbPassword?: string;
-	dbEnsureIndexes: boolean;
-	dbDebug: boolean;
-}
+import { InternalDatabaseConfig } from './internal-database.config';
 
 export interface DatabaseModuleOptions {
 	entities: EntityClass<AnyEntity>[];

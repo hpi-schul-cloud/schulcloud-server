@@ -15,7 +15,7 @@ import { createConfigModuleOptions } from '@shared/common/config-module-options'
 import { ConsoleModule } from 'nestjs-console';
 import { MANAGMENT_ENCRYPTION_CONFIG_TOKEN, ManagmentEncryptionConfig } from './encryption.config';
 import { ENTITIES } from './management.entity.imports';
-import migrationOptions from './mikro-orm-cli.config';
+import migrationOptions from './migrations-options';
 
 @Module({
 	imports: [

@@ -1,14 +1,14 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer';
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
-import { InternalDatabaseConfig } from './database-module.options';
+import { IsBoolean, IsOptional, IsString, IsUrl } from 'class-validator';
+import { InternalDatabaseConfig } from './interfaces';
 
 export const DATABASE_CONFIG_TOKEN = 'DATABASE_CONFIG_TOKEN';
 
 @Configuration()
 export class DatabaseConfig implements InternalDatabaseConfig {
 	@ConfigProperty('DB_URL')
-	@IsString()
+	@IsUrl({ require_tld: false, require_protocol: false, protocols: ['mongodb'] })
 	public dbUrl!: string;
 
 	@ConfigProperty('DB_USERNAME')

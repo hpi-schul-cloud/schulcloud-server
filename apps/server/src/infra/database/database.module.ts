@@ -3,8 +3,8 @@ import { defineConfig } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { DynamicModule, Module } from '@nestjs/common';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
-import { DatabaseModuleOptions } from './database-module.options';
 import { DatabaseConfig } from './database.config';
+import { DatabaseModuleOptions } from './interfaces/database-module.options';
 
 @Module({})
 export class DatabaseModule {
