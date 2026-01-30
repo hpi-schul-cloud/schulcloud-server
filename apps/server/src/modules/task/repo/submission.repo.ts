@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FilterQuery } from '@mikro-orm/core';
+import { EntityName, FilterQuery } from '@mikro-orm/core';
 import { CourseGroupEntity } from '@modules/course/repo';
 import { Injectable } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain/types';
@@ -11,7 +11,7 @@ import { getFieldName } from '@shared/repo/utils/repo-helper';
 
 @Injectable()
 export class SubmissionRepo extends BaseRepo<Submission> {
-	get entityName(): typeof Submission {
+	get entityName(): EntityName<Submission> {
 		return Submission;
 	}
 

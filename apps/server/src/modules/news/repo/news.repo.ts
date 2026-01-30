@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
@@ -13,7 +13,7 @@ import { getFieldName } from '@shared/repo/utils/repo-helper';
 export class NewsRepo extends BaseRepo<News> {
 	private readonly propertiesToPopulate = ['school', 'target', 'creator', 'updater'];
 
-	get entityName(): typeof News {
+	get entityName(): EntityName<News> {
 		return News;
 	}
 

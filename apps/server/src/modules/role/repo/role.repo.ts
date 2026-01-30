@@ -3,10 +3,11 @@ import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { RoleName } from '../domain';
 import { Role } from './role.entity';
+import { EntityName } from '@mikro-orm/core';
 
 @Injectable()
 export class RoleRepo extends BaseRepo<Role> {
-	get entityName(): typeof Role {
+	get entityName(): EntityName<Role> {
 		return Role;
 	}
 

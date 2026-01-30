@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, EntityName } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Synchronization } from '../domain/do';
@@ -9,7 +9,7 @@ import { SynchronizationMapper } from './mapper';
 export class SynchronizationRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	get entityName(): typeof SynchronizationEntity {
+	get entityName(): EntityName<SynchronizationEntity> {
 		return SynchronizationEntity;
 	}
 

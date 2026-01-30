@@ -1,4 +1,4 @@
-import { FilterQuery } from '@mikro-orm/core';
+import { EntityName, FilterQuery } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
@@ -8,7 +8,7 @@ import { Task } from './task.entity';
 
 @Injectable()
 export class TaskRepo extends BaseRepo<Task> {
-	get entityName(): typeof Task {
+	get entityName(): EntityName<Task> {
 		return Task;
 	}
 

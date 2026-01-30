@@ -2,14 +2,14 @@ import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { EntityName, ObjectId } from '@mikro-orm/mongodb';
 import { UsersSearchQueryParams } from '../controller/dto';
 import { UserSearchQuery } from '../interfaces';
 import { createMultiDocumentAggregation, SearchQueryHelper } from './helper';
 
 @Injectable()
 export class UsersAdminRepo extends BaseRepo<User> {
-	get entityName(): typeof User {
+	get entityName(): EntityName<User> {
 		return User;
 	}
 

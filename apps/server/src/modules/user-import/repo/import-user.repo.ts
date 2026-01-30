@@ -1,4 +1,4 @@
-import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -13,7 +13,7 @@ import { ImportUserScope } from './import-user.scope';
 
 @Injectable()
 export class ImportUserRepo extends BaseRepo<ImportUser> {
-	get entityName(): typeof ImportUser {
+	get entityName(): EntityName<ImportUser> {
 		return ImportUser;
 	}
 

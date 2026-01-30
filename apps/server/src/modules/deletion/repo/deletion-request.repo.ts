@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, EntityName } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -12,7 +12,7 @@ import { StatusModel } from '../domain/types';
 export class DeletionRequestRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	get entityName(): typeof DeletionRequestEntity {
+	get entityName(): EntityName<DeletionRequestEntity> {
 		return DeletionRequestEntity;
 	}
 
