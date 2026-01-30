@@ -5,6 +5,8 @@ import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { serverConfig, ServerConfig } from '@modules/server';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
@@ -14,8 +16,6 @@ import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
 import { columnBoardEntityFactory } from '../../testing';
 import { BoardResponse } from '../dto';
-import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerConfig } from '@modules/server';
 
 const baseRouteName = '/boards';
 
@@ -74,7 +74,11 @@ describe(`board readersCanEdit setting (api)`, () => {
 
 		const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
-		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+		const roomMembership = roomMembershipEntityFactory.build({
+			roomId: room.id,
+			userGroupId: userGroup.id,
+			schoolId: school.id,
+		});
 
 		await em
 			.persist([
