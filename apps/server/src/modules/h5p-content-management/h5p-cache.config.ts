@@ -6,7 +6,7 @@ export const H5P_CACHE_CONFIG_TOKEN = 'H5P_CACHE_CONFIG_TOKEN';
 @Configuration()
 export class H5PCacheConfig {
 	@ConfigProperty('DB_URL')
-	@IsUrl({ require_tld: false, require_protocol: false, protocols: ['mongodb'] })
+	@IsUrl({ require_tld: false, require_protocol: false, protocols: ['mongodb', 'mongodb+srv'] })
 	public dbUrl!: string;
 
 	@IsString()
