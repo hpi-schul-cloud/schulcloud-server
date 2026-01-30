@@ -10,20 +10,11 @@ import {
 	SuccessfulRes,
 } from '@infra/collaborative-storage/strategy/nextcloud/nextcloud.interface';
 import { HttpService } from '@nestjs/axios';
-import {
-	Inject,
-	Injectable,
-	NotFoundException,
-	NotImplementedException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { parseInt } from 'lodash';
 import { Observable, firstValueFrom } from 'rxjs';
-import {
-	COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN,
-	InternalCollaborativeStorageAdapterConfig,
-} from '../../collaborative-storage-adapter.config';
+import { InternalCollaborativeStorageAdapterConfig } from '../../collaborative-storage-adapter.config';
 
 @Injectable()
 export class NextcloudClient {
@@ -34,7 +25,6 @@ export class NextcloudClient {
 	constructor(
 		private readonly logger: LegacyLogger,
 		private readonly httpService: HttpService,
-		@Inject(COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN)
 		private readonly config: InternalCollaborativeStorageAdapterConfig
 	) {
 		this.baseURL = this.config.nextcloudBaseUrl;

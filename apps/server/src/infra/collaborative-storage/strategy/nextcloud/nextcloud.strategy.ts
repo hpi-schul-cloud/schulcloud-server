@@ -5,12 +5,9 @@ import { Pseudonym } from '@modules/pseudonym/repo';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { UserDo, UserService } from '@modules/user';
-import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import {
-	COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN,
-	InternalCollaborativeStorageAdapterConfig,
-} from '../../collaborative-storage-adapter.config';
+import { InternalCollaborativeStorageAdapterConfig } from '../../collaborative-storage-adapter.config';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { CollaborativeStorageStrategy } from '../base.interface.strategy';
 import { NextcloudClient } from './nextcloud.client';
@@ -28,7 +25,6 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 		private readonly pseudonymService: PseudonymService,
 		private readonly externalToolService: ExternalToolService,
 		private readonly userService: UserService,
-		@Inject(COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN)
 		private readonly config: InternalCollaborativeStorageAdapterConfig
 	) {
 		this.logger.setContext(NextcloudStrategy.name);

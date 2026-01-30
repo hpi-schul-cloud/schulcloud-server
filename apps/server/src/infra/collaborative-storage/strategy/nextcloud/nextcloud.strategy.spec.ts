@@ -1,5 +1,6 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { COLLABORATIVE_STORAGE_CONFIG_TOKEN } from '@modules/collaborative-storage';
 import { TeamDto, TeamUserDto } from '@modules/collaborative-storage/services/dto/team.dto';
 import { PseudonymService } from '@modules/pseudonym';
 import { Pseudonym } from '@modules/pseudonym/repo';
@@ -14,7 +15,7 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@testing/database';
-import { COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN } from '../../collaborative-storage-adapter.config';
+import { InternalCollaborativeStorageAdapterConfig } from '../../collaborative-storage-adapter.config';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { NextcloudClient } from './nextcloud.client';
 import { NextcloudStrategy } from './nextcloud.strategy';
@@ -37,10 +38,12 @@ describe('NextCloudStrategy', () => {
 	let module: TestingModule;
 	let strategy: NextcloudStrategySpec;
 
+	let logger: DeepMocked<LegacyLogger>;
 	let client: DeepMocked<NextcloudClient>;
 	let pseudonymService: DeepMocked<PseudonymService>;
 	let userService: DeepMocked<UserService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
+	let config: InternalCollaborativeStorageAdapterConfig;
 
 	const toolName = 'SchulcloudNextcloud';
 
@@ -51,7 +54,10 @@ describe('NextCloudStrategy', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				NextcloudStrategySpec,
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
+				},
 				{
 					provide: NextcloudClient,
 					useValue: createMock<NextcloudClient>(),
@@ -60,10 +66,7 @@ describe('NextCloudStrategy', () => {
 					provide: PseudonymService,
 					useValue: createMock<PseudonymService>(),
 				},
-				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
-				},
+
 				{
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
@@ -73,17 +76,20 @@ describe('NextCloudStrategy', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN,
+					provide: COLLABORATIVE_STORAGE_CONFIG_TOKEN,
 					useValue: {},
 				},
 			],
 		}).compile();
 
-		strategy = module.get(NextcloudStrategySpec);
+		logger = module.get(LegacyLogger);
 		client = module.get(NextcloudClient);
 		pseudonymService = module.get(PseudonymService);
 		userService = module.get(UserService);
 		externalToolService = module.get(ExternalToolService);
+		config = module.get(COLLABORATIVE_STORAGE_CONFIG_TOKEN);
+
+		strategy = new NextcloudStrategySpec(logger, client, pseudonymService, externalToolService, userService, config);
 
 		await setupEntities([User]);
 	});
