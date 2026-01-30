@@ -1,11 +1,15 @@
 import { LegacyLogger } from '@core/logger';
+import {
+	COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN,
+	InternalCollaborativeStorageAdapterConfig,
+} from '@infra/collaborative-storage/collaborative-storage-adapter.config';
 import { TeamDto, TeamUserDto } from '@modules/collaborative-storage';
 import { PseudonymService } from '@modules/pseudonym';
 import { Pseudonym } from '@modules/pseudonym/repo';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { UserDo, UserService } from '@modules/user';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { CollaborativeStorageStrategy } from '../base.interface.strategy';
@@ -23,7 +27,9 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 		private readonly client: NextcloudClient,
 		private readonly pseudonymService: PseudonymService,
 		private readonly externalToolService: ExternalToolService,
-		private readonly userService: UserService
+		private readonly userService: UserService,
+		@Inject(COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN)
+		private readonly config: InternalCollaborativeStorageAdapterConfig
 	) {
 		this.logger.setContext(NextcloudStrategy.name);
 	}
@@ -155,11 +161,11 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 
 	private async findNextcloudTool(): Promise<ExternalTool> {
 		const tool: ExternalTool | null = await this.externalToolService.findExternalToolByName(
-			this.client.adapterConfig.oidcInternalName
+			this.config.oidcInternalName
 		);
 
 		if (!tool) {
-			throw new NotFoundLoggableException(ExternalTool.name, { name: this.client.adapterConfig.oidcInternalName });
+			throw new NotFoundLoggableException(ExternalTool.name, { name: this.config.oidcInternalName });
 		}
 
 		return tool;

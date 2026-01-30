@@ -29,19 +29,19 @@ import {
 export class NextcloudClient {
 	private readonly baseURL: string;
 
-	private readonly config: AxiosRequestConfig;
+	private readonly axiosConfig: AxiosRequestConfig;
 
 	constructor(
 		private readonly logger: LegacyLogger,
 		private readonly httpService: HttpService,
 		@Inject(COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN)
-		public readonly adapterConfig: InternalCollaborativeStorageAdapterConfig
+		private readonly config: InternalCollaborativeStorageAdapterConfig
 	) {
-		this.baseURL = this.adapterConfig.nextcloudBaseUrl;
-		this.config = {
+		this.baseURL = this.config.nextcloudBaseUrl;
+		this.axiosConfig = {
 			auth: {
-				username: this.adapterConfig.nextcloudAdminUsername,
-				password: this.adapterConfig.nextcloudAdminPassword,
+				username: this.config.nextcloudAdminUsername,
+				password: this.config.nextcloudAdminPassword,
 			},
 			headers: { 'OCS-APIRequest': true, Accept: 'Application/json' },
 		};
@@ -387,19 +387,19 @@ export class NextcloudClient {
 	}
 
 	private get<T = unknown>(apiPath: string): Observable<AxiosResponse<T>> {
-		return this.httpService.get<T>(`${this.baseURL}${apiPath}`, this.config);
+		return this.httpService.get<T>(`${this.baseURL}${apiPath}`, this.axiosConfig);
 	}
 
 	private post<T = unknown>(apiPath: string, data: unknown): Observable<AxiosResponse<T>> {
-		return this.httpService.post<T>(`${this.baseURL}${apiPath}`, data, this.config);
+		return this.httpService.post<T>(`${this.baseURL}${apiPath}`, data, this.axiosConfig);
 	}
 
 	private put<T = unknown>(apiPath: string, data: unknown): Observable<AxiosResponse<T>> {
-		return this.httpService.put<T>(`${this.baseURL}${apiPath}`, data, this.config);
+		return this.httpService.put<T>(`${this.baseURL}${apiPath}`, data, this.axiosConfig);
 	}
 
 	private delete<T = unknown>(apiPath: string): Observable<AxiosResponse<T>> {
-		return this.httpService.delete<T>(`${this.baseURL}${apiPath}`, this.config);
+		return this.httpService.delete<T>(`${this.baseURL}${apiPath}`, this.axiosConfig);
 	}
 
 	/**
@@ -420,7 +420,7 @@ export class NextcloudClient {
 	 * @returns String of format: prefix-value
 	 */
 	public getNameWithPrefix(value: string): string {
-		return `${this.adapterConfig.oidcInternalName}-${value}`;
+		return `${this.config.oidcInternalName}-${value}`;
 	}
 
 	/**
