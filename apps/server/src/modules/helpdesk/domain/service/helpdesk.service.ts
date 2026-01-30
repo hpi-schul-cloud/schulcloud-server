@@ -23,7 +23,7 @@ export class HelpdeskService {
 		files?: Express.Multer.File[]
 	): Promise<void> {
 		const plainTextContent = TextFormatter.createProblemText(problem, userContext, userDevice);
-		await this.sendEmail(
+		await this.userSendEmailToSupport(
 			[this.config.problemEmailAddress],
 			problem.replyEmail,
 			problem.subject,
@@ -39,10 +39,16 @@ export class HelpdeskService {
 		files?: Express.Multer.File[]
 	): Promise<void> {
 		const plainTextContent = TextFormatter.createWishText(wish, userContext, userDevice);
-		await this.sendEmail([this.config.wishEmailAddress], wish.replyEmail, wish.subject, plainTextContent, files);
+		await this.userSendEmailToSupport(
+			[this.config.wishEmailAddress],
+			wish.replyEmail,
+			wish.subject,
+			plainTextContent,
+			files
+		);
 	}
 
-	private async sendEmail(
+	private async userSendEmailToSupport(
 		recipients: string[],
 		replyTo: string,
 		subject: string,
@@ -58,6 +64,7 @@ export class HelpdeskService {
 				attachments,
 			},
 			replyTo: [replyTo],
+			from: this.config.fromEmailAddress,
 		};
 
 		if (this.config.shouldSendEmail) {

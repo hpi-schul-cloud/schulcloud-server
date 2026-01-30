@@ -74,7 +74,11 @@ describe(`board readersCanEdit setting (api)`, () => {
 
 		const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
-		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+		const roomMembership = roomMembershipEntityFactory.build({
+			roomId: room.id,
+			userGroupId: userGroup.id,
+			schoolId: school.id,
+		});
 
 		await em
 			.persist([
