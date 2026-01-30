@@ -22,14 +22,13 @@ import { LdapService } from './services/ldap.service';
 import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
-import type { StringValue } from 'ms';
 
 const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) => {
 	const algorithm = configService.getOrThrow<Algorithm>('JWT_SIGNING_ALGORITHM');
 
 	const signOptions: SignOptions = {
 		algorithm,
-		expiresIn: configService.getOrThrow<StringValue>('JWT_LIFETIME'),
+		expiresIn: configService.getOrThrow<string>('JWT_LIFETIME'),
 		issuer: configService.getOrThrow<string>('SC_DOMAIN'),
 		audience: configService.getOrThrow<string>('SC_DOMAIN'),
 		header: { typ: 'JWT', alg: algorithm },
