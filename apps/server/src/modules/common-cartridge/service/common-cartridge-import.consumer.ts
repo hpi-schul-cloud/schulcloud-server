@@ -133,34 +133,38 @@ export class CommonCartridgeImportConsumer {
 
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
-		for await (const board of boards) {
+		const createdBoardIds = new Map<string, string>();
+		for (const board of boards) {
 			const response = await this.boardsClient.createBoard(payload.jwt, {
 				title: board.title,
 				layout: 'columns',
 				parentId,
 				parentType: 'course',
 			});
+			createdBoardIds.set(board.identifier, response.id);
 
 			this.logger.debug(
 				new CommonCartridgeMessageLoggable(`Created board ${board.title}`, {
 					fileRecordId: payload.fileRecordId,
 				})
 			);
+		}
 
-			await this.createColumns(response.id, board, parser, payload);
+		for (const [boardIdentifier, boardId] of createdBoardIds) {
+			await this.createColumns(boardId, boardIdentifier, parser, payload);
 		}
 	}
 
 	private async createColumns(
 		boardId: string,
-		board: CommonCartridgeOrganizationProps,
+		boardIdentifier: string,
 		parser: CommonCartridgeFileParser,
 		payload: ImportCourseParams
 	): Promise<void> {
 		const columns: ColumnResource[] = parser
 			.getOrganizations()
 			.filter(
-				(organization) => organization.pathDepth === DEPTH_COLUMN && organization.path.startsWith(board.identifier)
+				(organization) => organization.pathDepth === DEPTH_COLUMN && organization.path.startsWith(boardIdentifier)
 			)
 			.map((column) => {
 				return {
