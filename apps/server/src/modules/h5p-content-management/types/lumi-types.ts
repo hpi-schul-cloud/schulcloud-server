@@ -1,6 +1,6 @@
 import { IUser } from '@lumieducation/h5p-server';
 import { EntityId } from '@shared/domain/types';
-import { H5PContentParentType } from '../types';
+import { H5PContentParentType } from '.';
 
 export interface H5PContentParentParams {
 	schoolId: EntityId;
