@@ -12,11 +12,13 @@ import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 import { AuthorizationModule } from '../authorization';
 import { RoomMembershipModule } from '../room-membership';
 import { BoardNodeRule } from './authorisation/board-node.rule';
 import { BoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
+import { BoardNodeEventSubscriber } from './repo/board-node-event-subscriber';
 import {
 	BoardCommonToolService,
 	BoardNodeAuthorizableService,
@@ -35,8 +37,6 @@ import {
 	ColumnBoardTitleService,
 	ContentElementUpdateService,
 } from './service/internal';
-import { BoardNodeEventSubscriber } from './repo/board-node-event-subscriber';
-import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
 	imports: [
@@ -61,10 +61,10 @@ import { CqrsModule } from '@nestjs/cqrs';
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
-		BoardNodeRule,
 		BoardContextService,
 		BoardNodeAuthorizableService,
 		BoardNodeRepo,
+		BoardNodeRule,
 		BoardNodeService,
 		BoardNodeFactory,
 		BoardNodeCopyService,
@@ -84,6 +84,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 	exports: [
 		BoardNodeAuthorizableService,
 		BoardNodeFactory,
+		BoardNodeRule,
 		BoardNodeService,
 		BoardCommonToolService,
 		ColumnBoardService,
