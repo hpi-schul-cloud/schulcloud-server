@@ -16,6 +16,8 @@ import { coreConfig } from './h5p-editor-timeout.config';
 import { H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig } from './h5p-editor.config';
 import { H5PEditorModule } from './h5p-editor.module';
 import { H5PEditorUc } from './uc';
+import { DatabaseModule, DATABASE_CONFIG_TOKEN, DatabaseConfig } from '@infra/database';
+import { ENTITIES } from './h5p-editor.entity.exports';
 
 @Module({
 	imports: [
@@ -29,6 +31,11 @@ import { H5PEditorUc } from './uc';
 				configConstructor: JwtAuthGuardConfig,
 			},
 		]),
+		DatabaseModule.register({
+			configInjectionToken: DATABASE_CONFIG_TOKEN,
+			configConstructor: DatabaseConfig,
+			entities: ENTITIES,
+		}),
 		ConfigurationModule.register(H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig),
 		LoggerModule,
 		H5PEditorModule,
