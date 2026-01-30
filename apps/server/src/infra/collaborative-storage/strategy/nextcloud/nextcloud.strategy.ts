@@ -1,8 +1,4 @@
 import { LegacyLogger } from '@core/logger';
-import {
-	COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN,
-	InternalCollaborativeStorageAdapterConfig,
-} from '@infra/collaborative-storage/collaborative-storage-adapter.config';
 import { TeamDto, TeamUserDto } from '@modules/collaborative-storage';
 import { PseudonymService } from '@modules/pseudonym';
 import { Pseudonym } from '@modules/pseudonym/repo';
@@ -11,6 +7,10 @@ import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { UserDo, UserService } from '@modules/user';
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import {
+	COLLABORATIVE_STORAGE_ADAPTER_CONFIG_TOKEN,
+	InternalCollaborativeStorageAdapterConfig,
+} from '../../collaborative-storage-adapter.config';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { CollaborativeStorageStrategy } from '../base.interface.strategy';
 import { NextcloudClient } from './nextcloud.client';
