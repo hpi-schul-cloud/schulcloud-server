@@ -1,5 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -16,9 +17,9 @@ import {
 	submissionItemEntityFactory,
 } from '../../testing';
 import { SubmissionItemResponse } from '../dto';
-import { schoolEntityFactory } from '@modules/school/testing';
 
 const baseRouteName = '/board-submissions';
+
 describe('submission item delete (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;

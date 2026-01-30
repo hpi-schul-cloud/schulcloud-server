@@ -47,6 +47,7 @@ describe('MailService', () => {
 				const data: Mail = {
 					mail: { plainTextContent: 'content', subject: 'Test' },
 					recipients: ['test@schul-cloud.org'],
+					from: 'noreply@dbildungscloud.de',
 				};
 
 				const amqpConnectionSpy = jest.spyOn(amqpConnection, 'publish');
@@ -64,6 +65,7 @@ describe('MailService', () => {
 					cc: ['test@example.com', 'test5@schul-cloud.org', 'test6@schul-cloud.org'],
 					bcc: ['test7@schul-cloud.org', 'test@example2.com', 'test8@schul-cloud.org'],
 					replyTo: ['test@example3.com', 'test9@schul-cloud.org', 'test10@schul-cloud.org'],
+					from: 'noreply@dbildungscloud.de',
 				};
 
 				const amqpConnectionSpy = jest.spyOn(amqpConnection, 'publish');
