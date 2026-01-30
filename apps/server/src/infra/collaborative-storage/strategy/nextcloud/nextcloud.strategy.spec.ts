@@ -1,6 +1,5 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { COLLABORATIVE_STORAGE_CONFIG_TOKEN } from '@modules/collaborative-storage';
 import { TeamDto, TeamUserDto } from '@modules/collaborative-storage/services/dto/team.dto';
 import { PseudonymService } from '@modules/pseudonym';
 import { Pseudonym } from '@modules/pseudonym/repo';
@@ -43,7 +42,6 @@ describe('NextCloudStrategy', () => {
 	let pseudonymService: DeepMocked<PseudonymService>;
 	let userService: DeepMocked<UserService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
-	let config: InternalCollaborativeStorageAdapterConfig;
 
 	const toolName = 'SchulcloudNextcloud';
 
@@ -75,10 +73,6 @@ describe('NextCloudStrategy', () => {
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
-				{
-					provide: COLLABORATIVE_STORAGE_CONFIG_TOKEN,
-					useValue: {},
-				},
 			],
 		}).compile();
 
@@ -87,7 +81,7 @@ describe('NextCloudStrategy', () => {
 		pseudonymService = module.get(PseudonymService);
 		userService = module.get(UserService);
 		externalToolService = module.get(ExternalToolService);
-		config = module.get(COLLABORATIVE_STORAGE_CONFIG_TOKEN);
+		const config = {} as InternalCollaborativeStorageAdapterConfig;
 
 		strategy = new NextcloudStrategySpec(logger, client, pseudonymService, externalToolService, userService, config);
 
