@@ -1,14 +1,13 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { ConsoleWriterConfig } from '@infra/console';
+import { ConfigProperty, Configuration } from '@infra/configuration';
+import { StringToNumber } from '@shared/controller/transformer';
+import { IsNumber } from 'class-validator';
 
-export interface IdpConsoleConfig extends ConsoleWriterConfig {
-	SYNCHRONIZATION_CHUNK: number;
-	LOGIN_BLOCK_TIME: number; // @TODO temporary until removed from other configs
+export const IDP_CONSOLE_CONFIG_TOKEN = 'IDP_CONSOLE_CONFIG_TOKEN';
+
+@Configuration()
+export class IdpConsoleConfig {
+	@ConfigProperty('SYNCHRONIZATION_CHUNK')
+	@StringToNumber()
+	@IsNumber()
+	public synchronizationChunk = 10000;
 }
-
-const config: IdpConsoleConfig = {
-	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
-	LOGIN_BLOCK_TIME: Configuration.get('LOGIN_BLOCK_TIME') as number,
-};
-
-export const idpConsoleConfigConfig = () => config;

@@ -50,11 +50,6 @@
 			"default": 16,
 			"description": "Second gate for consent. Starting at this age parent consent is not required"
 		},
-		"LOGIN_BLOCK_TIME": {
-			"type": "integer",
-			"default": 15,
-			"description": "Time difference for the brute force check in seconds"
-		},
 		"FORCE_SEND_EMAIL": {
 			"type": "boolean",
 			"default": false,
@@ -992,11 +987,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle that, when enabled, excludes MongoDB from the health checks."
-		},
-		"SYNCHRONIZATION_CHUNK": {
-			"type": "number",
-			"default": 10000,
-			"description": "Size of chunk for synchronization"
 		},
 		"FEATURE_MEDIA_SHELF_ENABLED": {
 			"type": "boolean",
