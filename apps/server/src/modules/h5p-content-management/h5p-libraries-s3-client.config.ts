@@ -12,7 +12,7 @@ export class H5PLibrariesS3ClientConfig implements S3Config {
 
 	@ConfigProperty('H5P_EDITOR__S3_REGION')
 	@IsString()
-	public region = 'eu-central-1';
+	public region!: string;
 
 	@ConfigProperty('H5P_EDITOR__S3_BUCKET_LIBRARIES')
 	@IsString()
