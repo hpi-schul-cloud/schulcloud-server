@@ -6,7 +6,6 @@ import { DeletionRequestRepo } from '../../repo';
 import { DeletionRequest } from '../do';
 import { DomainName, StatusModel } from '../types';
 import { DeletionConfig } from '../../deletion.config';
-import { DeletionRequestResponse } from '@modules/deletion/api/controller/dto';
 
 @Injectable()
 export class DeletionRequestService {
