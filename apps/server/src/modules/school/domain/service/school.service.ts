@@ -131,8 +131,7 @@ export class SchoolService {
 	}
 
 	public async getAllSchoolIds(): Promise<EntityId[]> {
-		const schools = await this.schoolRepo.getSchools({});
-		const schoolIds = schools.map((school) => school.id);
+		const schoolIds = await this.schoolRepo.getAllSchoolIds();
 
 		return schoolIds;
 	}

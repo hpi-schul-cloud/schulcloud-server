@@ -101,6 +101,13 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		return schools;
 	}
 
+	public async getAllSchoolIds(): Promise<EntityId[]> {
+		const entities = await this.em.find(SchoolEntity, {}, { fields: ['_id'] });
+		const ids = entities.map((entity) => entity.id);
+
+		return ids;
+	}
+
 	public async hasLdapSystem(schoolId: EntityId): Promise<boolean> {
 		const entity: SchoolEntity | null = await this.em.findOne(
 			SchoolEntity,

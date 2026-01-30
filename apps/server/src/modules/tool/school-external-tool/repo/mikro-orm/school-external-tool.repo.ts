@@ -87,6 +87,13 @@ export class SchoolExternalToolRepo {
 		return dos;
 	}
 
+	public async findSchoolIdsForToolId(toolId: string): Promise<EntityId[]> {
+		const entities = await this.em.find(this.entityName, { tool: toolId }, { fields: ['school'] });
+		const ids = entities.map((entity) => entity.school.id);
+
+		return ids;
+	}
+
 	public async saveMany(domainObjects: SchoolExternalTool[]): Promise<void> {
 		const entities = domainObjects.map((domainObject) => {
 			const entityProps = this.mapDomainObjectToEntityProps(domainObject);
