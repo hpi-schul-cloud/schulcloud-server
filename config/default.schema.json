@@ -50,11 +50,6 @@
 			"default": 16,
 			"description": "Second gate for consent. Starting at this age parent consent is not required"
 		},
-		"LOGIN_BLOCK_TIME": {
-			"type": "integer",
-			"default": 15,
-			"description": "Time difference for the brute force check in seconds"
-		},
 		"FORCE_SEND_EMAIL": {
 			"type": "boolean",
 			"default": false,
