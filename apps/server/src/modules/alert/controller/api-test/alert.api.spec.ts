@@ -11,7 +11,6 @@ import { serverConfig, ServerTestModule } from '../../../server';
 import { ComponentDto, ComponentResponse, IncidentsResponse } from '../../adapter/dto';
 import { createComponent, createIncident } from '../../testing';
 import { AlertResponse } from '../dto';
-import { after } from 'lodash';
 
 describe('Alert Controller api', () => {
 	const alertPath = '/alert';
