@@ -17,10 +17,16 @@ import { FileApi, FileRecordParentType, StorageLocation } from './generated';
 import { GenericFileStorageLoggable } from './loggables';
 import { fileRecordResponseFactory } from './testing';
 
+const fileApiMock = createMock<FileApi>();
+jest.mock('./generated/api/file-api', () => {
+	return {
+		FileApi: jest.fn().mockImplementation(() => fileApiMock),
+	};
+});
+
 describe(FilesStorageClientAdapter.name, () => {
 	let module: TestingModule;
 	let sut: FilesStorageClientAdapter;
-	let fileApiMock: DeepMocked<FileApi>;
 	let httpServiceMock: DeepMocked<HttpService>;
 	let errorLoggerMock: DeepMocked<ErrorLogger>;
 	let configServiceMock: DeepMocked<ConfigService>;
@@ -29,10 +35,6 @@ describe(FilesStorageClientAdapter.name, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageClientAdapter,
-				{
-					provide: FileApi,
-					useValue: createMock<FileApi>(),
-				},
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
@@ -61,7 +63,6 @@ describe(FilesStorageClientAdapter.name, () => {
 		}).compile();
 
 		sut = module.get(FilesStorageClientAdapter);
-		fileApiMock = module.get(FileApi);
 		httpServiceMock = module.get(HttpService);
 		errorLoggerMock = module.get(ErrorLogger);
 		configServiceMock = module.get(ConfigService);
@@ -82,18 +83,20 @@ describe(FilesStorageClientAdapter.name, () => {
 	describe('getFileRecord', () => {
 		describe('when fetching file records', () => {
 			const setup = () => {
+				const jwt = faker.internet.jwt();
 				const fileRecordId = faker.string.uuid();
 				const fileRecord = fileRecordResponseFactory.build();
 
+				configServiceMock.getOrThrow.mockReturnValueOnce(faker.internet.url());
 				fileApiMock.getFileRecord.mockResolvedValueOnce(axiosResponseFactory.build({ data: fileRecord }));
 
-				return { fileRecordId, fileRecord };
+				return { jwt, fileRecordId, fileRecord };
 			};
 
 			it('should delegate to fileApi', async () => {
-				const { fileRecordId, fileRecord } = setup();
+				const { jwt, fileRecordId, fileRecord } = setup();
 
-				const result = await sut.getFileRecord(fileRecordId);
+				const result = await sut.getFileRecord(jwt, fileRecordId);
 
 				expect(fileApiMock.getFileRecord).toHaveBeenCalledWith(fileRecordId);
 				expect(result).toStrictEqual(fileRecord);
@@ -107,6 +110,7 @@ describe(FilesStorageClientAdapter.name, () => {
 				const fileRecordId = faker.string.uuid();
 				const fileName = faker.system.fileName();
 				const observable = from([axiosResponseFactory.build({ data: Readable.from('') })]);
+				const jwt = faker.internet.jwt();
 
 				httpServiceMock.get.mockReturnValue(observable);
 				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
@@ -114,13 +118,14 @@ describe(FilesStorageClientAdapter.name, () => {
 				return {
 					fileRecordId,
 					fileName,
+					jwt,
 				};
 			};
 
 			it('should return the response stream', async () => {
-				const { fileRecordId, fileName } = setup();
+				const { fileRecordId, fileName, jwt } = setup();
 
-				const result = await sut.getStream(fileRecordId, fileName);
+				const result = await sut.getStream(jwt, fileRecordId, fileName);
 
 				expect(result).toBeDefined();
 				expect(httpServiceMock.get).toBeCalledWith(expect.any(String), {
@@ -136,6 +141,7 @@ describe(FilesStorageClientAdapter.name, () => {
 			const setup = () => {
 				const fileRecordId = faker.string.uuid();
 				const fileName = faker.system.fileName();
+				const jwt = faker.internet.jwt();
 				const observable = throwError(() => new AxiosError());
 
 				httpServiceMock.get.mockReturnValue(observable);
@@ -143,13 +149,14 @@ describe(FilesStorageClientAdapter.name, () => {
 				return {
 					fileRecordId,
 					fileName,
+					jwt,
 				};
 			};
 
 			it('should return null and log AxiosErrorLoggable', async () => {
-				const { fileRecordId, fileName } = setup();
+				const { fileRecordId, fileName, jwt } = setup();
 
-				const result = await sut.getStream(fileRecordId, fileName);
+				const result = await sut.getStream(jwt, fileRecordId, fileName);
 
 				expect(result).toBeNull();
 				expect(errorLoggerMock.error).toBeCalledWith(
@@ -163,6 +170,7 @@ describe(FilesStorageClientAdapter.name, () => {
 				const fileRecordId = faker.string.uuid();
 				const fileName = faker.system.fileName();
 				const error = new Error('error');
+				const jwt = faker.internet.jwt();
 				const observable = throwError(() => error);
 
 				httpServiceMock.get.mockReturnValue(observable);
@@ -171,13 +179,14 @@ describe(FilesStorageClientAdapter.name, () => {
 					fileRecordId,
 					fileName,
 					error,
+					jwt,
 				};
 			};
 
 			it('should return null and log GenericFileStorageLoggable', async () => {
-				const { fileRecordId, fileName, error } = setup();
+				const { fileRecordId, fileName, error, jwt } = setup();
 
-				const result = await sut.getStream(fileRecordId, fileName);
+				const result = await sut.getStream(jwt, fileRecordId, fileName);
 
 				expect(result).toBeNull();
 				expect(errorLoggerMock.error).toBeCalledWith(
@@ -193,6 +202,7 @@ describe(FilesStorageClientAdapter.name, () => {
 				const fileRecordId = faker.string.uuid();
 				const fileName = faker.system.fileName();
 				const observable = from([axiosResponseFactory.build({ data: Buffer.from('') })]);
+				const jwt = faker.internet.jwt();
 
 				httpServiceMock.get.mockReturnValue(observable);
 				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
@@ -200,13 +210,14 @@ describe(FilesStorageClientAdapter.name, () => {
 				return {
 					fileRecordId,
 					fileName,
+					jwt,
 				};
 			};
 
 			it('should return null', async () => {
-				const { fileRecordId, fileName } = setup();
+				const { fileRecordId, fileName, jwt } = setup();
 
-				const result = await sut.getStream(fileRecordId, fileName);
+				const result = await sut.getStream(jwt, fileRecordId, fileName);
 
 				expect(result).toBeNull();
 				expect(errorLoggerMock.error).not.toBeCalled();
@@ -222,6 +233,7 @@ describe(FilesStorageClientAdapter.name, () => {
 				const parentId = faker.string.uuid();
 				const parentType = FileRecordParentType.BOARDNODES;
 				const file = new File([], faker.system.fileName());
+				const jwt = faker.internet.jwt();
 
 				httpServiceMock.post.mockReturnValue(from([axiosResponseFactory.build({ data: { id: faker.string.uuid() } })]));
 				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
@@ -232,13 +244,14 @@ describe(FilesStorageClientAdapter.name, () => {
 					parentId,
 					parentType,
 					file,
+					jwt,
 				};
 			};
 
 			it('should return the response data', async () => {
-				const { storageLocationId, storageLocation, parentId, parentType, file } = setup();
+				const { storageLocationId, storageLocation, parentId, parentType, file, jwt } = setup();
 
-				const result = await sut.upload(storageLocationId, storageLocation, parentId, parentType, file);
+				const result = await sut.upload(jwt, storageLocationId, storageLocation, parentId, parentType, file);
 
 				expect(result).toEqual({ id: expect.any(String) });
 			});
@@ -251,6 +264,7 @@ describe(FilesStorageClientAdapter.name, () => {
 				const parentId = faker.string.uuid();
 				const parentType = FileRecordParentType.BOARDNODES;
 				const file = new File([], faker.system.fileName());
+				const jwt = faker.internet.jwt();
 				const observable = throwError(() => new AxiosError());
 
 				httpServiceMock.post.mockReturnValue(observable);
@@ -261,13 +275,14 @@ describe(FilesStorageClientAdapter.name, () => {
 					parentId,
 					parentType,
 					file,
+					jwt,
 				};
 			};
 
 			it('should return null and log AxiosErrorLoggable', async () => {
-				const { storageLocationId, storageLocation, parentId, parentType, file } = setup();
+				const { storageLocationId, storageLocation, parentId, parentType, file, jwt } = setup();
 
-				const result = await sut.upload(storageLocationId, storageLocation, parentId, parentType, file);
+				const result = await sut.upload(jwt, storageLocationId, storageLocation, parentId, parentType, file);
 
 				expect(result).toBeNull();
 				expect(errorLoggerMock.error).toBeCalledWith(
@@ -285,6 +300,7 @@ describe(FilesStorageClientAdapter.name, () => {
 				const file = new File([], faker.system.fileName());
 				const error = new Error('error');
 				const observable = throwError(() => error);
+				const jwt = faker.internet.jwt();
 
 				httpServiceMock.post.mockReturnValue(observable);
 
@@ -295,13 +311,14 @@ describe(FilesStorageClientAdapter.name, () => {
 					parentType,
 					file,
 					error,
+					jwt,
 				};
 			};
 
 			it('should return null and log GenericFileStorageLoggable', async () => {
-				const { storageLocationId, storageLocation, parentId, parentType, file, error } = setup();
+				const { storageLocationId, storageLocation, parentId, parentType, file, error, jwt } = setup();
 
-				const result = await sut.upload(storageLocationId, storageLocation, parentId, parentType, file);
+				const result = await sut.upload(jwt, storageLocationId, storageLocation, parentId, parentType, file);
 
 				expect(result).toBeNull();
 				expect(errorLoggerMock.error).toBeCalledWith(
@@ -309,6 +326,29 @@ describe(FilesStorageClientAdapter.name, () => {
 						error: util.inspect(error),
 					})
 				);
+			});
+		});
+	});
+
+	describe('deleteFile', () => {
+		describe('when deleting a file', () => {
+			const setup = () => {
+				const fileRecordId = faker.string.uuid();
+				const jwt = faker.internet.jwt();
+
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
+
+				return {
+					fileRecordId,
+					jwt,
+				};
+			};
+
+			it('should delegate to FileApi', async () => {
+				const { fileRecordId, jwt } = setup();
+
+				await expect(sut.deleteFile(jwt, fileRecordId)).resolves.not.toThrow();
+				expect(fileApiMock.deleteFile).toBeCalledWith(fileRecordId);
 			});
 		});
 	});
