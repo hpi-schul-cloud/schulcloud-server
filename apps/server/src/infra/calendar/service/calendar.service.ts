@@ -1,12 +1,12 @@
 import { ErrorUtils } from '@core/error/utils';
 import { Logger } from '@core/logger';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { firstValueFrom, Observable } from 'rxjs';
 import { URL, URLSearchParams } from 'url';
+import { CALENDAR_CONFIG_TOKEN, CalendarConfig } from '../calendar.config';
 import { CalendarEventDto } from '../dto/calendar-event.dto';
 import { CalendarEventId } from '../interface/calendar-event-id.interface';
 import { CalendarEvent } from '../interface/calendar-event.interface';
@@ -14,18 +14,13 @@ import { CalendarMapper } from '../mapper/calendar.mapper';
 
 @Injectable()
 export class CalendarService {
-	private readonly baseURL: string;
-
-	private readonly timeoutMs: number;
-
 	constructor(
 		private readonly httpService: HttpService,
 		private readonly calendarMapper: CalendarMapper,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		@Inject(CALENDAR_CONFIG_TOKEN) private readonly config: CalendarConfig
 	) {
 		this.logger.setContext(CalendarService.name);
-		this.baseURL = Configuration.get('CALENDAR_URI') as string;
-		this.timeoutMs = Configuration.get('REQUEST_OPTION__TIMEOUT_MS') as number;
 	}
 
 	public async findEvent(userId: EntityId, eventId: EntityId): Promise<CalendarEventDto> {
@@ -38,7 +33,7 @@ export class CalendarService {
 						Authorization: userId,
 						Accept: 'Application/json',
 					},
-					timeout: this.timeoutMs,
+					timeout: this.config.timeoutMs,
 				})
 			);
 			return this.calendarMapper.mapToDto(resp.data);
@@ -62,7 +57,7 @@ export class CalendarService {
 						Authorization: userId,
 						Accept: 'Application/json',
 					},
-					timeout: this.timeoutMs,
+					timeout: this.config.timeoutMs,
 				})
 			);
 			return this.calendarMapper.mapEventsToId(resp.data);
@@ -81,7 +76,7 @@ export class CalendarService {
 					Authorization: scopeId,
 					Accept: 'Application/json',
 				},
-				timeout: this.timeoutMs,
+				timeout: this.config.timeoutMs,
 			});
 
 			const resp = await firstValueFrom(request);
@@ -98,14 +93,14 @@ export class CalendarService {
 	}
 
 	private get<T>(path: string, queryParams: URLSearchParams, config: AxiosRequestConfig): Observable<AxiosResponse<T>> {
-		const url: URL = new URL(this.baseURL);
+		const url: URL = new URL(this.config.calendarUri);
 		url.pathname = path;
 		url.search = queryParams.toString();
 		return this.httpService.get(url.toString(), config);
 	}
 
 	private delete(path: string, config: AxiosRequestConfig): Observable<AxiosResponse<void>> {
-		const url: URL = new URL(this.baseURL);
+		const url: URL = new URL(this.config.calendarUri);
 		url.pathname = path;
 		return this.httpService.delete(url.toString(), config);
 	}

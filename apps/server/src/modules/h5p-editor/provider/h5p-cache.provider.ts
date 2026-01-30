@@ -10,10 +10,10 @@ export const H5PCacheProvider = {
 	inject: [H5P_CACHE_CONFIG_TOKEN],
 	useFactory(configuration: H5PCacheConfig): Cache {
 		const keyv = new Keyv<KeyvMongo>(
-			new KeyvMongo(configuration.DB_URL, {
-				collection: configuration.DB_COLLECTION_NAME,
-				username: configuration.DB_USERNAME,
-				password: configuration.DB_PASSWORD,
+			new KeyvMongo(configuration.dbUrl, {
+				collection: configuration.dbCollectionName,
+				username: configuration.dbUsername,
+				password: configuration.dbPassword,
 			})
 		);
 		const cacheAdapter = createCache({
