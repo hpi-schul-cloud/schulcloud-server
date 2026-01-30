@@ -19,6 +19,7 @@ import {
 	CommonCartridgeOrganizationProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from '../import/common-cartridge-import.types';
+import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 
 const DEPTH_BOARD = 0;
@@ -67,9 +68,22 @@ export class CommonCartridgeImportConsumer {
 			this.createCourse(parser, payload),
 			this.fileClient.deleteFile(payload.jwt, payload.fileRecordId),
 		]);
+
+		this.logger.debug(
+			new CommonCartridgeMessageLoggable('Import finished', {
+				fileRecordId: payload.fileRecordId,
+			})
+		);
 	}
 
 	private async fetchFile(payload: ImportCourseParams): Promise<Buffer | null> {
+		this.logger.debug(
+			new CommonCartridgeMessageLoggable('Fetching file for import', {
+				fileRecordId: payload.fileRecordId,
+				fileUrl: payload.fileUrl,
+			})
+		);
+
 		const baseUrl = this.configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL');
 		const fullFileUrl = new URL(payload.fileUrl, baseUrl).toString();
 
@@ -82,6 +96,14 @@ export class CommonCartridgeImportConsumer {
 		const response = await lastValueFrom(getRequestObservable);
 		const data = Buffer.isBuffer(response.data) ? response.data : null;
 
+		this.logger.debug(
+			new CommonCartridgeMessageLoggable('Fetched file for import', {
+				fileRecordId: payload.fileRecordId,
+				fileUrl: payload.fileUrl,
+				length: data?.length,
+			})
+		);
+
 		return data;
 	}
 
@@ -92,6 +114,12 @@ export class CommonCartridgeImportConsumer {
 			name: courseName,
 			color: DEFAULT_NEW_COURSE_COLOR,
 		});
+
+		this.logger.debug(
+			new CommonCartridgeMessageLoggable('Created course', {
+				fileRecordId: payload.fileRecordId,
+			})
+		);
 
 		await this.createBoards(course.courseId, parser, payload);
 	}
@@ -112,6 +140,12 @@ export class CommonCartridgeImportConsumer {
 				parentId,
 				parentType: 'course',
 			});
+
+			this.logger.debug(
+				new CommonCartridgeMessageLoggable(`Created board ${board.title}`, {
+					fileRecordId: payload.fileRecordId,
+				})
+			);
 
 			await this.createColumns(response.id, board, parser, payload);
 		}
@@ -153,6 +187,12 @@ export class CommonCartridgeImportConsumer {
 		const columnResponse = await this.boardsClient.createBoardColumn(payload.jwt, boardId);
 		await this.columnClient.updateBoardColumnTitle(payload.jwt, columnResponse.id, { title: columnProps.title });
 
+		this.logger.debug(
+			new CommonCartridgeMessageLoggable(`Created column ${columnProps.identifier}`, {
+				fileRecordId: payload.fileRecordId,
+			})
+		);
+
 		await this.createCardElementWithResource(parser, columnResponse, columnProps, payload);
 	}
 
@@ -164,6 +204,12 @@ export class CommonCartridgeImportConsumer {
 	): Promise<void> {
 		const columnResponse = await this.boardsClient.createBoardColumn(payload.jwt, boardId);
 		await this.columnClient.updateBoardColumnTitle(payload.jwt, columnResponse.id, { title: columnProps.title });
+
+		this.logger.debug(
+			new CommonCartridgeMessageLoggable(`Created column ${columnProps.identifier}`, {
+				fileRecordId: payload.fileRecordId,
+			})
+		);
 
 		const cards = parser
 			.getOrganizations()
@@ -186,6 +232,12 @@ export class CommonCartridgeImportConsumer {
 	): Promise<void> {
 		const card = await this.columnClient.createCard(payload.jwt, columnResponse.id, {});
 
+		this.logger.debug(
+			new CommonCartridgeMessageLoggable(`Created card ${cardProps.identifier}`, {
+				fileRecordId: payload.fileRecordId,
+			})
+		);
+
 		await this.createCardElement(parser, card.id, cardProps, payload);
 	}
 
@@ -199,6 +251,12 @@ export class CommonCartridgeImportConsumer {
 		await this.cardClient.updateCardTitle(payload.jwt, card.id, {
 			title: cardProps.title,
 		});
+
+		this.logger.debug(
+			new CommonCartridgeMessageLoggable(`Created card ${cardProps.identifier}`, {
+				fileRecordId: payload.fileRecordId,
+			})
+		);
 
 		const organizations = parser.getOrganizations();
 		const cardElements = organizations.filter(
@@ -237,13 +295,31 @@ export class CommonCartridgeImportConsumer {
 			type: contentElementType,
 		});
 
+		this.logger.debug(
+			new CommonCartridgeMessageLoggable(`Created card element ${cardElementProps.identifier}`, {
+				fileRecordId: payload.fileRecordId,
+			})
+		);
+
 		if (resource.type === 'file' || resource.type === 'fileFolder') {
 			await this.uploadFiles(payload, resource, contentElement);
 		}
 
+		this.logger.debug(
+			new CommonCartridgeMessageLoggable(`Uploaded files for card element ${cardElementProps.identifier}`, {
+				fileRecordId: payload.fileRecordId,
+			})
+		);
+
 		await this.cardClient.updateCardElement(payload.jwt, contentElement.id, {
 			data: resourceBody,
 		});
+
+		this.logger.debug(
+			new CommonCartridgeMessageLoggable(`Updated card element ${cardElementProps.identifier}`, {
+				fileRecordId: payload.fileRecordId,
+			})
+		);
 	}
 
 	private async uploadFiles(

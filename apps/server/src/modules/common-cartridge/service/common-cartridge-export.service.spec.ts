@@ -27,7 +27,7 @@ import {
 	RoomBoardDto,
 } from '../common-cartridge-client/room-client/dto';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { CommonCartridgeExportMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
+import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
 import {
 	boardColumnFactory,
 	boardLessonFactory,
@@ -484,7 +484,7 @@ describe('CommonCartridgeExportService', () => {
 				archive.emit('warning', {} as unknown as ArchiverError);
 
 				expect(logger.warning).toHaveBeenCalledWith(
-					new CommonCartridgeExportMessageLoggable('Warning while creating archive', {
+					new CommonCartridgeMessageLoggable('Warning while creating archive', {
 						courseId,
 						cause: JSON.stringify({}),
 					})
@@ -509,7 +509,7 @@ describe('CommonCartridgeExportService', () => {
 				} as ProgressData);
 
 				expect(logger.debug).toHaveBeenCalledWith(
-					new CommonCartridgeExportMessageLoggable('Progress for CC export: 1 of 2 total processed.', {
+					new CommonCartridgeMessageLoggable('Progress for CC export: 1 of 2 total processed.', {
 						courseId,
 						entries: {
 							total: 2,

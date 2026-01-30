@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker/.';
-import { CommonCartridgeExportMessageLoggable } from './common-cartridge-export-message.loggable';
+import { CommonCartridgeMessageLoggable } from './common-cartridge-export-message.loggable';
 
-describe(CommonCartridgeExportMessageLoggable.name, () => {
+describe(CommonCartridgeMessageLoggable.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const message = faker.string.alphanumeric();
-			const loggable = new CommonCartridgeExportMessageLoggable(message);
+			const loggable = new CommonCartridgeMessageLoggable(message);
 
 			return { loggable, message };
 		};

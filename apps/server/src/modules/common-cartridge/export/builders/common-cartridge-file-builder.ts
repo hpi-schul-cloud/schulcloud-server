@@ -18,7 +18,7 @@ import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-res
 
 import { Logger } from '@core/logger';
 import archiver from 'archiver';
-import { CommonCartridgeExportMessageLoggable } from '../../loggable/common-cartridge-export-message.loggable';
+import { CommonCartridgeMessageLoggable } from '../../loggable/common-cartridge-export-message.loggable';
 import { ResourceFileContent } from '../interfaces/common-cartridge-resource.interface';
 
 export type CommonCartridgeFileBuilderProps = {
@@ -66,13 +66,13 @@ export class CommonCartridgeFileBuilder {
 			throw new MissingMetadataLoggableException();
 		}
 
-		this.logger.debug(new CommonCartridgeExportMessageLoggable('Building archive'));
+		this.logger.debug(new CommonCartridgeMessageLoggable('Building archive'));
 
 		const organizations = this.organizationsRoot.map((organization) => organization.build());
-		this.logger.debug(new CommonCartridgeExportMessageLoggable('Built organizations of archive'));
+		this.logger.debug(new CommonCartridgeMessageLoggable('Built organizations of archive'));
 
 		const resources = this.resourcesBuilder.build();
-		this.logger.debug(new CommonCartridgeExportMessageLoggable('Built resources of archive'));
+		this.logger.debug(new CommonCartridgeMessageLoggable('Built resources of archive'));
 
 		const manifest = CommonCartridgeResourceFactory.createResource({
 			type: CommonCartridgeResourceType.MANIFEST,
@@ -85,17 +85,17 @@ export class CommonCartridgeFileBuilder {
 
 		this.writeFileContents(manifest.getFileContent());
 
-		this.logger.debug(new CommonCartridgeExportMessageLoggable('Adding resources'));
+		this.logger.debug(new CommonCartridgeMessageLoggable('Adding resources'));
 		resources.forEach((resource) => {
 			const fileContent = resource.getFileContent();
 			this.writeFileContents(fileContent);
 		});
 
-		this.logger.debug(new CommonCartridgeExportMessageLoggable('Finalizing archive'));
+		this.logger.debug(new CommonCartridgeMessageLoggable('Finalizing archive'));
 		// DO NOT AWAIT THE PROMISE OR THIS DOESN'T WORK
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		this.archive.finalize();
-		this.logger.debug(new CommonCartridgeExportMessageLoggable('Built archive'));
+		this.logger.debug(new CommonCartridgeMessageLoggable('Built archive'));
 	}
 
 	private writeFileContents(fileContent: ResourceFileContent | ResourceFileContent[]): void {
@@ -107,10 +107,10 @@ export class CommonCartridgeFileBuilder {
 	}
 
 	private writeFileContent(fileContent: ResourceFileContent): void {
-		this.logger.debug(new CommonCartridgeExportMessageLoggable(`Appending file: ${fileContent.path}`));
+		this.logger.debug(new CommonCartridgeMessageLoggable(`Appending file: ${fileContent.path}`));
 
 		this.archive.append(fileContent.content, { name: fileContent.path });
 
-		this.logger.debug(new CommonCartridgeExportMessageLoggable(`Appended: ${fileContent.path}`));
+		this.logger.debug(new CommonCartridgeMessageLoggable(`Appended: ${fileContent.path}`));
 	}
 }
