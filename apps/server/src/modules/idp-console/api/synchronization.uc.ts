@@ -6,7 +6,7 @@ import { Synchronization, SynchronizationService, SynchronizationStatusModel } f
 import { UserService } from '@modules/user';
 import { Inject, Injectable } from '@nestjs/common';
 import util from 'util';
-import { IDP_CONSOLE_CONFIG_TOKEN, InternalIdpConsoleConfig } from '../idp-console.config';
+import { IDP_CONSOLE_CONFIG_TOKEN, IdpConsoleConfig } from '../idp-console.config';
 import {
 	ProgressSynchronizationLoggable,
 	StartSynchronizationLoggable,
@@ -21,7 +21,7 @@ import {
 @Injectable()
 export class SynchronizationUc {
 	constructor(
-		@Inject(IDP_CONSOLE_CONFIG_TOKEN) private readonly config: InternalIdpConsoleConfig,
+		@Inject(IDP_CONSOLE_CONFIG_TOKEN) private readonly config: IdpConsoleConfig,
 		private readonly schulconnexRestClient: SchulconnexRestClient,
 		private readonly synchronizationService: SynchronizationService,
 		private readonly userService: UserService,
