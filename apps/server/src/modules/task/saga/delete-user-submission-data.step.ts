@@ -22,7 +22,6 @@ export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
 	constructor(
 		private readonly sagaService: SagaService,
 		private readonly submissionRepo: SubmissionRepo,
-
 		private readonly logger: Logger
 	) {
 		super('deleteUserData');

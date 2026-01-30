@@ -1,31 +1,31 @@
 import { createMock } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import { EntityManager, FilterQuery, ObjectId } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.app.module';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { cleanupCollections } from '@testing/cleanup-collections';
-import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
-import { CopyApiResponse } from '@modules/copy-helper';
-import { CourseEntity } from '@modules/course/repo/course.entity';
-import { courseEntityFactory } from '@modules/course/testing';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { lessonFactory } from '@modules/lesson/testing';
-import { Task } from '@modules/task/repo/task.entity';
-import { taskFactory } from '@modules/task/testing';
+import { EntityManager, FilterQuery, ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReference, BoardExternalReferenceType, BoardNodeType } from '@modules/board';
+import { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
 	columnEntityFactory,
 	linkElementEntityFactory,
 } from '@modules/board/testing';
-import { SingleColumnBoardResponse } from '../dto';
+import { CopyApiResponse } from '@modules/copy-helper';
+import { CourseEntity } from '@modules/course/repo/course.entity';
+import { courseEntityFactory } from '@modules/course/testing';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { LessonEntity } from '@modules/lesson/repo/lesson.entity';
+import { lessonFactory } from '@modules/lesson/testing';
+import { ServerTestModule } from '@modules/server/server.app.module';
+import { Task } from '@modules/task/repo/task.entity';
+import { taskFactory } from '@modules/task/testing';
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { LegacyBoard } from '../../repo';
 import { boardFactory } from '../../testing';
-import { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
-import { LessonEntity } from '@modules/lesson/repo/lesson.entity';
+import { SingleColumnBoardResponse } from '../dto';
 
 describe('Course Rooms Controller (API)', () => {
 	let app: INestApplication;

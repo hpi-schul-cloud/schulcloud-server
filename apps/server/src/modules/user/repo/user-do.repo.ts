@@ -1,4 +1,5 @@
 import type { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
@@ -16,7 +17,6 @@ import { ParentConsentEntity } from './parent-consent.entity';
 import { UserScope } from './scope/user.scope';
 import { UserConsentEntity } from './user-consent.entity';
 import { User, UserSchoolEmbeddable } from './user.entity';
-import { ObjectId } from '@mikro-orm/mongodb';
 
 @Injectable()
 export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements UserDoRepo {
