@@ -17,30 +17,24 @@ import { H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig } from './h5p-editor.config';
 import { H5PEditorModule } from './h5p-editor.module';
 import { H5PEditorUc } from './uc';
 
-const imports = [
-	AuthorizationClientModule.register(AUTHORIZATION_CLIENT_CONFIG_TOKEN, AuthorizationClientConfig),
-	CoreModule,
-	ConfigModule.forRoot(createConfigModuleOptions(coreConfig)),
-	AuthGuardModule.register([
-		{
-			option: AuthGuardOptions.JWT,
-			configInjectionToken: JWT_AUTH_GUARD_CONFIG_TOKEN,
-			configConstructor: JwtAuthGuardConfig,
-		},
-	]),
-	ConfigurationModule.register(H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig),
-	LoggerModule,
-	H5PEditorModule,
-	UserModule,
-];
-
-const controllers = [H5PEditorController];
-
-const providers = [H5PEditorUc];
-
 @Module({
-	imports,
-	controllers,
-	providers,
+	imports: [
+		AuthorizationClientModule.register(AUTHORIZATION_CLIENT_CONFIG_TOKEN, AuthorizationClientConfig),
+		CoreModule,
+		ConfigModule.forRoot(createConfigModuleOptions(coreConfig)),
+		AuthGuardModule.register([
+			{
+				option: AuthGuardOptions.JWT,
+				configInjectionToken: JWT_AUTH_GUARD_CONFIG_TOKEN,
+				configConstructor: JwtAuthGuardConfig,
+			},
+		]),
+		ConfigurationModule.register(H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig),
+		LoggerModule,
+		H5PEditorModule,
+		UserModule,
+	],
+	controllers: [H5PEditorController],
+	providers: [H5PEditorUc],
 })
 export class H5PEditorAppModule {}

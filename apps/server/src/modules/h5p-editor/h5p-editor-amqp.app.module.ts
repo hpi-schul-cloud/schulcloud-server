@@ -7,26 +7,19 @@ import { Module } from '@nestjs/common';
 import { H5pEditorConsumer } from './controller';
 import { H5PEditorModule } from './h5p-editor.module';
 
-const imports = [
-	H5PEditorModule,
-	RabbitMQWrapperModule.register({
-		exchangeConfigInjectionToken: H5P_EXCHANGE_CONFIG_TOKEN,
-		exchangeConfigConstructor: H5pExchangeConfig,
-		configInjectionToken: RABBITMQ_CONFIG_TOKEN,
-		configConstructor: RabbitMQConfig,
-	}),
-	ConfigurationModule.register(H5P_EXCHANGE_CONFIG_TOKEN, H5pExchangeConfig),
-	HealthApiModule,
-	LoggerModule,
-];
-
-const controllers = [];
-
-const providers = [H5pEditorConsumer];
-
 @Module({
-	imports,
-	controllers,
-	providers,
+	imports: [
+		H5PEditorModule,
+		RabbitMQWrapperModule.register({
+			exchangeConfigInjectionToken: H5P_EXCHANGE_CONFIG_TOKEN,
+			exchangeConfigConstructor: H5pExchangeConfig,
+			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+			configConstructor: RabbitMQConfig,
+		}),
+		ConfigurationModule.register(H5P_EXCHANGE_CONFIG_TOKEN, H5pExchangeConfig),
+		HealthApiModule,
+		LoggerModule,
+	],
+	providers: [H5pEditorConsumer],
 })
 export class H5PEditorAMQPModule {}

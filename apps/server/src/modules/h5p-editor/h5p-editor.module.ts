@@ -16,61 +16,45 @@ import { H5PAjaxEndpointProvider, H5PCacheProvider, H5PEditorProvider, H5PPlayer
 import { H5PContentRepo, LibraryRepo } from './repo';
 import { ContentStorage, H5pEditorContentService, LibraryStorage, TemporaryFileStorage } from './service';
 
-/**
- * H5P Editor module for cronjob usage - excludes RabbitMQ dependencies and consumer
- * This module provides the same functionality as H5PEditorModule but without RabbitMQ
- * message queue integration, making it suitable for cronjob and standalone script usage.
- *
- * It also uses coreConfig instead of the full config to exclude JWT authentication requirements.
- * Controllers are excluded since cronjobs don't serve HTTP endpoints.
- */
-
-const imports = [
-	MikroOrmModule.forRoot({
-		...defaultMikroOrmOptions,
-		type: 'mongo',
-		// TODO add mongoose options as mongo options (see database.js)
-		clientUrl: DB_URL,
-		password: DB_PASSWORD,
-		user: DB_USERNAME,
-		allowGlobalContext: true,
-		entities: ENTITIES,
-		ensureIndexes: true,
-	}),
-	S3ClientModule.register({
-		clientInjectionToken: H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN,
-		configInjectionToken: H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN,
-		configConstructor: H5PContentS3ClientConfig,
-	}),
-	S3ClientModule.register({
-		clientInjectionToken: H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN,
-		configInjectionToken: H5P_LIBRARIES_S3_CLIENT_CONFIG_TOKEN,
-		configConstructor: H5PLibrariesS3ClientConfig,
-	}),
-	ConfigurationModule.register(H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig),
-	ConfigurationModule.register(H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig),
-	LoggerModule,
-];
-
-const controllers = [];
-
-const providers = [
-	H5PContentRepo,
-	LibraryRepo,
-	H5PCacheProvider,
-	H5PEditorProvider,
-	H5PPlayerProvider,
-	H5PAjaxEndpointProvider,
-	ContentStorage,
-	LibraryStorage,
-	TemporaryFileStorage,
-	H5pEditorContentService,
-];
-
 @Module({
-	imports,
-	controllers,
-	providers,
+	imports: [
+		MikroOrmModule.forRoot({
+			...defaultMikroOrmOptions,
+			type: 'mongo',
+			// TODO add mongoose options as mongo options (see database.js)
+			clientUrl: DB_URL,
+			password: DB_PASSWORD,
+			user: DB_USERNAME,
+			allowGlobalContext: true,
+			entities: ENTITIES,
+			ensureIndexes: true,
+		}),
+		S3ClientModule.register({
+			clientInjectionToken: H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN,
+			configInjectionToken: H5P_CONTENT_S3_CLIENT_CONFIG_TOKEN,
+			configConstructor: H5PContentS3ClientConfig,
+		}),
+		S3ClientModule.register({
+			clientInjectionToken: H5P_LIBRARIES_S3_CLIENT_INJECTION_TOKEN,
+			configInjectionToken: H5P_LIBRARIES_S3_CLIENT_CONFIG_TOKEN,
+			configConstructor: H5PLibrariesS3ClientConfig,
+		}),
+		ConfigurationModule.register(H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig),
+		ConfigurationModule.register(H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig),
+		LoggerModule,
+	],
+	providers: [
+		H5PContentRepo,
+		LibraryRepo,
+		H5PCacheProvider,
+		H5PEditorProvider,
+		H5PPlayerProvider,
+		H5PAjaxEndpointProvider,
+		ContentStorage,
+		LibraryStorage,
+		TemporaryFileStorage,
+		H5pEditorContentService,
+	],
 	exports: [
 		ContentStorage,
 		LibraryStorage,
