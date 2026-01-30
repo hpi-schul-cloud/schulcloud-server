@@ -333,3 +333,42 @@ data:
       echo "Successfully added TSP system"
     fi
     # ========== End of TSP system creation
+
+    # ========== Start of FWU tool creation
+    if [[ $SC_THEME == "brb" ]]; then
+      echo "Adding FWU tool to external-tools collection"
+
+      mongosh $DB_URL --quiet --eval 'db.getCollection("external-tools").insertOne(
+          {
+            "_id" : ObjectId("6973657acd71a04085864fca"),
+            "name" : "FWU Medien",
+            "url" : "https://main.brb.dbildungscloud.dev/media-shelf/fwu-media",
+            "config_type" : "basic",
+            "config_baseUrl" : "https://main.brb.dbildungscloud.dev/media-shelf/fwu-media",
+            "parameters" : [ ],
+            "isHidden" : false,
+            "isDeactivated" : false,
+            "openNewTab" : true,
+            "restrictToContexts" : [ "board-element", "media-board" ],
+            "isPreferred" : true,
+            "iconName" : "FWU"
+          }
+      );'
+
+      echo "Adding FWU tool to school-external-tools collection"
+
+      mongosh $DB_URL --quiet --eval 'db.getCollection("school-external-tools").insertOne(
+          {
+            "_id" : ObjectId("697a1271edc7d941b031bfda"),
+            "tool" : ObjectId("6973657acd71a04085864fca"),
+            "school" : ObjectId("5f2987e020834114b8efd6f8"),
+            "schoolParameters" : [ ],
+            "isDeactivated" : false
+          }
+      );'
+
+      echo "Successfully added FWU tool"
+    fi
+    # ========== End of FWU tool creation
+
+
