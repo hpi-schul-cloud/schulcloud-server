@@ -1,4 +1,4 @@
-import { ObjectId } from '@mikro-orm/mongodb';
+import { EntityName, ObjectId } from '@mikro-orm/mongodb';
 import type { Role } from '@modules/role/repo';
 import type { SchoolEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
@@ -11,7 +11,7 @@ import { User } from './user.entity';
 
 @Injectable()
 export class UserMikroOrmRepo extends BaseRepo<User> {
-	get entityName(): typeof User {
+	get entityName(): EntityName<User> {
 		return User;
 	}
 

@@ -2,6 +2,7 @@ import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import path from 'path';
 import { ENTITIES } from './management.entity.imports';
+import { MongoDriver } from '@mikro-orm/mongodb';
 
 const migrationsDistPath = path.resolve(__dirname, '..', '..', 'migrations', 'mikro-orm');
 const migrationsSourcePath = path.resolve(
@@ -19,7 +20,7 @@ const migrationsSourcePath = path.resolve(
 );
 
 const mikroOrmCliConfig: MikroOrmModuleSyncOptions = {
-	type: 'mongo',
+	driver: MongoDriver,
 	clientUrl: DB_URL,
 	password: DB_PASSWORD,
 	user: DB_USERNAME,

@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionRequestRepo } from '../../repo';
 import { DeletionRequestEntity } from '../../repo/entity';
 import { deletionRequestFactory, deletionTestConfig } from '../testing';

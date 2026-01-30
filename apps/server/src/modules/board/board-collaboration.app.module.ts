@@ -16,6 +16,7 @@ import { BoardCollaborationConfig, config } from './board-collaboration.config';
 import { BoardWsApiModule } from './board-ws-api.module';
 import { ENTITIES, TEST_ENTITIES } from './board.entity.imports';
 import { BoardModule } from './board.module';
+import { MongoDriver } from '@mikro-orm/mongodb';
 
 const createValkeyModuleOptions = (configService: ConfigService<BoardCollaborationConfig>): ValkeyConfig => {
 	const config = {
@@ -49,7 +50,7 @@ const imports = [
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
-			type: 'mongo',
+			driver: MongoDriver,
 			clientUrl: DB_URL, // TODO: check if this needs to be different
 			password: DB_PASSWORD,
 			user: DB_USERNAME,

@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { InstalledLibrary } from './entity';
+import { EntityName } from '@mikro-orm/core';
 
 @Injectable()
 export class LibraryRepo extends BaseRepo<InstalledLibrary> {
-	get entityName(): typeof InstalledLibrary {
+	get entityName(): EntityName<InstalledLibrary> {
 		return InstalledLibrary;
 	}
 

@@ -1,4 +1,5 @@
 import type { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
@@ -8,7 +9,6 @@ import { type IFindOptions, type Pagination, SortOrder, type SortOrderMap } from
 import type { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { Scope } from '@shared/repo/scope';
-import { ObjectId } from 'bson';
 import { Consent, MultipleUsersFoundLoggableException, ParentConsent, UserConsent, type UserDoRepo } from '../domain';
 import { SecondarySchoolReference, UserDo } from '../domain/do/user.do';
 import { UserQuery } from '../domain/query/user-query';

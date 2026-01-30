@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, EntityName } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Synchronization } from '../domain/do';
@@ -9,11 +9,11 @@ import { SynchronizationMapper } from './mapper';
 export class SynchronizationRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	get entityName() {
+	get entityName(): EntityName<SynchronizationEntity> {
 		return SynchronizationEntity;
 	}
 
-	async findById(id: EntityId): Promise<Synchronization> {
+	public async findById(id: EntityId): Promise<Synchronization> {
 		const synchronizations: SynchronizationEntity = await this.em.findOneOrFail(SynchronizationEntity, {
 			id,
 		});
@@ -23,13 +23,13 @@ export class SynchronizationRepo {
 		return mapped;
 	}
 
-	async create(synchronizations: Synchronization): Promise<void> {
+	public async create(synchronizations: Synchronization): Promise<void> {
 		const synchronizationsEntity: SynchronizationEntity = SynchronizationMapper.mapToEntity(synchronizations);
 
 		await this.em.persist(synchronizationsEntity).flush();
 	}
 
-	async update(synchronization: Synchronization): Promise<void> {
+	public async update(synchronization: Synchronization): Promise<void> {
 		const referencedEntity = this.em.getReference(SynchronizationEntity, synchronization.id);
 
 		referencedEntity.status = synchronization.status;

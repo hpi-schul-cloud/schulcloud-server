@@ -14,13 +14,14 @@ import { MediaSyncConsole } from './api/media-sync-console';
 import { mediaSyncConsoleConfig } from './media-sync-console.config';
 import { ENTITIES } from './media-sync-console.entity.imports';
 import { MediaSourceSyncUc } from './uc';
+import { MongoDriver } from '@mikro-orm/mongodb';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot(createConfigModuleOptions(mediaSyncConsoleConfig)),
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
-			type: 'mongo',
+			driver: MongoDriver,
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,

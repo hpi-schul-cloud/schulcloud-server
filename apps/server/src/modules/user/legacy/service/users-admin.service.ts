@@ -11,7 +11,7 @@ export class UsersAdminService {
 		this.logger.setContext(UsersAdminService.name);
 	}
 
-	async getUsersWithNestedData(
+	public async getUsersWithNestedData(
 		roleId: string | undefined,
 		schoolId: EntityId,
 		schoolYearId: EntityId | undefined,
@@ -26,7 +26,7 @@ export class UsersAdminService {
 		return new UserListResponse(usersResponse[0]);
 	}
 
-	async getUserWithNestedData(
+	public async getUserWithNestedData(
 		roleId: string | undefined,
 		schoolId: EntityId,
 		schoolYearId: EntityId | undefined,

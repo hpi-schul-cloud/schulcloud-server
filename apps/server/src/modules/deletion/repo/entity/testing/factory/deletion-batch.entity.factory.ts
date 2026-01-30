@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityFactory } from '@testing/factory/entity.factory';
 
 import { DeletionBatchEntity } from '../../index';

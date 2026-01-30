@@ -93,7 +93,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 		this.sourceDescription = props.sourceDescription;
 	}
 
-	static createInstance(targetModel: NewsTargetModel, props: NewsProperties): News {
+	public static createInstance(targetModel: NewsTargetModel, props: NewsProperties): News {
 		let news: News;
 		if (targetModel === NewsTargetModel.Course) {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -105,6 +105,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			news = new SchoolNews(props);
 		}
+
 		return news;
 	}
 }
@@ -122,10 +123,7 @@ export class SchoolNews extends News {
 
 @Entity({ discriminatorValue: NewsTargetModel.Course })
 export class CourseNews extends News {
-	// FIXME Due to a weird behaviour in the mikro-orm validation we have to
-	// disable the validation by setting the reference nullable.
-	// Remove when fixed in mikro-orm.
-	@ManyToOne(() => CourseEntity, { nullable: true })
+	@ManyToOne(() => CourseEntity)
 	target!: CourseEntity;
 
 	constructor(props: NewsProperties) {

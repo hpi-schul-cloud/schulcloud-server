@@ -42,6 +42,10 @@ describe('Alert Controller api', () => {
 		jest.useFakeTimers();
 	});
 
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
 	afterAll(async () => {
 		await app.close();
 	});

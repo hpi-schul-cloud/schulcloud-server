@@ -2,7 +2,7 @@ import { Logger } from '@core/logger';
 import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { CopyContentParams, DeleteContentParams, H5pEditorEvents, H5pEditorExchange } from '@infra/rabbitmq';
 import { H5PEditor, IUser as LumiIUser } from '@lumieducation/h5p-server';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { MikroORM, EnsureRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import {
 	H5pEditorContentCopySuccessfulLoggable,
@@ -28,7 +28,7 @@ export class H5pEditorConsumer {
 		routingKey: H5pEditorEvents.DELETE_CONTENT,
 		queue: H5pEditorEvents.DELETE_CONTENT,
 	})
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async deleteContent(@RabbitPayload() payload: DeleteContentParams): Promise<void> {
 		const user: LumiIUser = {
 			email: '',
@@ -47,7 +47,7 @@ export class H5pEditorConsumer {
 		routingKey: H5pEditorEvents.COPY_CONTENT,
 		queue: H5pEditorEvents.COPY_CONTENT,
 	})
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async copyContent(@RabbitPayload() payload: CopyContentParams): Promise<void> {
 		const parentType: H5PContentParentType | undefined = Object.values(H5PContentParentType).find(
 			(type: H5PContentParentType) => type === payload.parentType?.valueOf()

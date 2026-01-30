@@ -8,25 +8,25 @@ import { Task, TaskProperties } from '../repo';
 const yesterday = new Date(Date.now() - 86400000);
 
 class TaskFactory extends BaseFactory<Task, TaskProperties> {
-	draft(): this {
+	public draft(): this {
 		const params: DeepPartial<TaskProperties> = { private: true };
 
 		return this.params(params);
 	}
 
-	isPlanned(): this {
+	public isPlanned(): this {
 		const params: DeepPartial<TaskProperties> = { private: false, availableDate: new Date(Date.now() + 10000) };
 
 		return this.params(params);
 	}
 
-	isPublished(): this {
+	public isPublished(): this {
 		const params: DeepPartial<TaskProperties> = { private: false, availableDate: new Date(Date.now() - 10000) };
 
 		return this.params(params);
 	}
 
-	finished(user: User): this {
+	public finished(user: User): this {
 		const params: DeepPartial<TaskProperties> = { finished: [user] };
 		return this.params(params);
 	}

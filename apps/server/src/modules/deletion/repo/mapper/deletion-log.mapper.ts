@@ -1,9 +1,9 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionLog } from '../../domain/do';
 import { DeletionLogEntity } from '../entity';
 
 export class DeletionLogMapper {
-	static mapToDO(entity: DeletionLogEntity): DeletionLog {
+	public static mapToDO(entity: DeletionLogEntity): DeletionLog {
 		return new DeletionLog({
 			id: entity.id,
 			createdAt: entity.createdAt,
@@ -16,7 +16,7 @@ export class DeletionLogMapper {
 		});
 	}
 
-	static mapToEntity(domainObject: DeletionLog): DeletionLogEntity {
+	public static mapToEntity(domainObject: DeletionLog): DeletionLogEntity {
 		return new DeletionLogEntity({
 			id: domainObject.id,
 			createdAt: domainObject.createdAt,
@@ -29,11 +29,11 @@ export class DeletionLogMapper {
 		});
 	}
 
-	static mapToDOs(entities: DeletionLogEntity[]): DeletionLog[] {
+	public static mapToDOs(entities: DeletionLogEntity[]): DeletionLog[] {
 		return entities.map((entity) => this.mapToDO(entity));
 	}
 
-	static mapToEntities(domainObjects: DeletionLog[]): DeletionLogEntity[] {
+	public static mapToEntities(domainObjects: DeletionLog[]): DeletionLogEntity[] {
 		return domainObjects.map((domainObject) => this.mapToEntity(domainObject));
 	}
 }

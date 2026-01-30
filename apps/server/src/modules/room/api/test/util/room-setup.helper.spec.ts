@@ -5,7 +5,7 @@ import { Role } from '@modules/role/repo';
 import { User } from '@modules/user/repo';
 import { Account } from '@modules/account';
 import { TestApiClient } from '@testing/test-api-client';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 jest.mock('@modules/role/testing', () => {
 	return {
