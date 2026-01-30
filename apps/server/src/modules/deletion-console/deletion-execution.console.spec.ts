@@ -4,6 +4,7 @@ import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { DeletionExecutionTriggerResultBuilder, TriggerDeletionExecutionOptionsBuilder } from './builder';
 import { DeletionConsoleModule } from './deletion-console.app.module';
+import { DELETION_CONSOLE_CONFIG_TOKEN } from './deletion-console.config';
 import { TEST_ENTITIES } from './deletion-console.entity.imports';
 import { DeletionExecutionConsole } from './deletion-execution.console';
 import { TriggerDeletionExecutionOptions } from './interface';
@@ -20,7 +21,13 @@ describe(DeletionExecutionConsole.name, () => {
 				DeletionConsoleModule,
 				MongoMemoryDatabaseModule.forRoot({ ...findOneOrFailHandler, entities: TEST_ENTITIES }),
 			],
-		}).compile();
+		})
+			.overrideProvider(DELETION_CONSOLE_CONFIG_TOKEN)
+			.useValue({
+				adminApiClientBaseUrl: 'http://api-admin:4030',
+				adminApiClientApiKey: '652559c2-93da-42ad-94e1-640e3afbaca0',
+			})
+			.compile();
 
 		console = module.get(DeletionExecutionConsole);
 		deletionExecutionUc = module.get(DeletionExecutionUc);
@@ -45,17 +52,17 @@ describe(DeletionExecutionConsole.name, () => {
 
 				const options = TriggerDeletionExecutionOptionsBuilder.build(1000, false);
 
+				jest.spyOn(deletionExecutionUc, 'triggerDeletionExecution').mockResolvedValueOnce(undefined);
+
 				return { limit, options };
 			};
 
 			it(`should call ${DeletionExecutionUc.name} with proper arguments`, async () => {
 				const { limit, options } = setup();
 
-				const spy = jest.spyOn(deletionExecutionUc, 'triggerDeletionExecution');
-
 				await console.triggerDeletionExecution(options);
 
-				expect(spy).toBeCalledWith(limit, false);
+				expect(deletionExecutionUc.triggerDeletionExecution).toBeCalledWith(limit, false);
 			});
 		});
 
