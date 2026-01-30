@@ -1,26 +1,30 @@
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { ConfigurationModule } from '@infra/configuration';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq/rabbitmq.module';
 import { DynamicModule, Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { MailConfig } from './interfaces/mail-config';
+import { InternalMailConfig, MailModuleOptions } from './interfaces';
 import { MailService } from './mail.service';
-
-interface MailModuleOptions {
-	exchange: string;
-	routingKey: string;
-}
 
 @Module({})
 export class MailModule {
-	static forRoot(options: MailModuleOptions): DynamicModule {
+	public static register(options: MailModuleOptions): DynamicModule {
+		const providers = [
+			{
+				provide: MailService,
+				useFactory(amqpConnection: AmqpConnection, config: InternalMailConfig): MailService {
+					return new MailService(amqpConnection, config);
+				},
+				inject: [AmqpConnection, options.exchangeConfigInjectionToken],
+			},
+		];
+
 		return {
 			module: MailModule,
-			providers: [
-				MailService,
-				{
-					provide: 'MAIL_SERVICE_OPTIONS',
-					useValue: { exchange: options.exchange, routingKey: options.routingKey },
-				},
-				ConfigService<MailConfig, true>,
+			imports: [
+				ConfigurationModule.register(options.exchangeConfigInjectionToken, options.exchangeConfigConstructor),
+				RabbitMQWrapperModule.register(options),
 			],
+			providers,
 			exports: [MailService],
 		};
 	}

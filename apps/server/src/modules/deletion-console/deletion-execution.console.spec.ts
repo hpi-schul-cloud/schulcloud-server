@@ -1,6 +1,6 @@
 import { DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { DeletionExecutionTriggerResultBuilder, TriggerDeletionExecutionOptionsBuilder } from './builder';
 import { DeletionConsoleModule } from './deletion-console.app.module';
@@ -18,7 +18,7 @@ describe(DeletionExecutionConsole.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				DeletionConsoleModule,
-				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
+				MongoMemoryDatabaseModule.forRoot({ ...findOneOrFailHandler, entities: TEST_ENTITIES }),
 			],
 		}).compile();
 

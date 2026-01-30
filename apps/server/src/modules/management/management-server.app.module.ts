@@ -1,21 +1,15 @@
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ENTITIES, TEST_ENTITIES } from './management.entity.imports';
 import { ManagementModule } from './management.module';
+import { DatabaseModule, DATABASE_CONFIG_TOKEN, DatabaseConfig } from '@infra/database';
 
 @Module({
 	imports: [
 		ManagementModule,
-		MikroOrmModule.forRoot({
-			...defaultMikroOrmOptions,
-			// TODO repeats server module definitions
-			type: 'mongo',
-			clientUrl: DB_URL,
-			password: DB_PASSWORD,
-			user: DB_USERNAME,
+		DatabaseModule.register({
+			configInjectionToken: DATABASE_CONFIG_TOKEN,
+			configConstructor: DatabaseConfig,
 			entities: ENTITIES,
 		}),
 	],
@@ -23,9 +17,6 @@ import { ManagementModule } from './management.module';
 export class ManagementServerModule {}
 
 @Module({
-	imports: [
-		ManagementModule,
-		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
-	],
+	imports: [ManagementModule, MongoMemoryDatabaseModule.forRoot({ entities: TEST_ENTITIES })],
 })
 export class ManagementServerTestModule {}

@@ -7,6 +7,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { LegacyLogger, Logger } from '@core/logger';
+import { DATABASE_CONFIG_TOKEN, InternalDatabaseConfig } from '@infra/database';
 import { MongoIoAdapter } from '@infra/socketio';
 import { SESSION_VALKEY_CLIENT } from '@modules/authentication/authentication-config';
 import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
@@ -32,7 +33,10 @@ async function bootstrap(): Promise<void> {
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
 	const ioAdapter = new MongoIoAdapter(nestApp);
-	await ioAdapter.connectToMongoDb();
+	const dbConfig = await nestApp.resolve<InternalDatabaseConfig>(DATABASE_CONFIG_TOKEN);
+
+	await ioAdapter.connectToMongoDb(dbConfig);
+
 	nestApp.useWebSocketAdapter(ioAdapter);
 	legacyLogger.log('Using MongoDB as Socket.IO adapter');
 

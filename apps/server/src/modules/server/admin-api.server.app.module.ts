@@ -1,16 +1,15 @@
 import { LoggerModule } from '@core/logger';
 import { ValidationModule } from '@core/validation';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
-import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
-import { EtherpadClientModule } from '@infra/etherpad-client';
-import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
+import {
+	AuthGuardModule,
+	AuthGuardOptions,
+	X_API_KEY_AUTH_GUARD_CONFIG_TOKEN,
+	XApiKeyAuthGuardConfig,
+} from '@infra/auth-guard';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 
 import { LegacySchoolAdminApiModule } from '@modules/legacy-school/legacy-school-admin.api-module';
@@ -35,8 +34,10 @@ import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamApiModule } from '@modules/team/team-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 
+import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { RoomApiModule } from '@modules/room/room-api.module';
+import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { adminApiServerConfig } from './admin-api-server.config';
 import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
 
@@ -48,11 +49,13 @@ const serverModules = [
 	UserAdminApiModule,
 	AdminApiRegistrationPinModule,
 	ToolAdminApiModule,
-	EtherpadClientModule.register({
-		apiKey: Configuration.has('ETHERPAD__API_KEY') ? (Configuration.get('ETHERPAD__API_KEY') as string) : undefined,
-		basePath: Configuration.has('ETHERPAD__URI') ? (Configuration.get('ETHERPAD__URI') as string) : undefined,
-	}),
-	AuthGuardModule.register([AuthGuardOptions.X_API_KEY]),
+	AuthGuardModule.register([
+		{
+			option: AuthGuardOptions.X_API_KEY,
+			configInjectionToken: X_API_KEY_AUTH_GUARD_CONFIG_TOKEN,
+			configConstructor: XApiKeyAuthGuardConfig,
+		},
+	]),
 	AccountApiModule,
 	MediaBoardApiModule,
 	ClassModule,
@@ -73,16 +76,11 @@ const serverModules = [
 
 @Module({
 	imports: [
-		RabbitMQWrapperModule,
 		...serverModules,
-		MikroOrmModule.forRoot({
-			...defaultMikroOrmOptions,
-			type: 'mongo',
-			clientUrl: DB_URL,
-			password: DB_PASSWORD,
-			user: DB_USERNAME,
+		DatabaseModule.register({
+			configInjectionToken: DATABASE_CONFIG_TOKEN,
+			configConstructor: DatabaseConfig,
 			entities: ENTITIES,
-			// debug: true, // use it for locally debugging of queries
 		}),
 		CqrsModule,
 		LoggerModule,
@@ -93,8 +91,7 @@ export class AdminApiServerModule {}
 @Module({
 	imports: [
 		...serverModules,
-		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
-		RabbitMQWrapperTestModule,
+		MongoMemoryDatabaseModule.forRoot({ findOneOrFailHandler, entities: TEST_ENTITIES }),
 		LoggerModule,
 	],
 })

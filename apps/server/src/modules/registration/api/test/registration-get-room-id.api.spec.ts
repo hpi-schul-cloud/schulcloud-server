@@ -5,12 +5,13 @@ import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } from '../../registration.config';
 import { registrationEntityFactory } from '../../testing/registration-entity.factory';
 import { RegistrationListResponse } from '../dto/response/registration-list.response';
 
@@ -18,7 +19,7 @@ describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
+	let config: RegistrationPublicApiConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -30,12 +31,12 @@ describe('Room Controller (API)', () => {
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'registrations');
 
-		config = serverConfig();
+		config = moduleFixture.get<RegistrationPublicApiConfig>(REGISTRATION_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = true;
+		config.featureExternalPersonRegistrationEnabled = true;
 	});
 
 	afterAll(async () => {
@@ -126,7 +127,7 @@ describe('Room Controller (API)', () => {
 
 		describe('when the feature is disabled', () => {
 			it('should return a 403 error', async () => {
-				config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = false;
+				config.featureExternalPersonRegistrationEnabled = false;
 				const { roomOne, teacherAccount } = await setup();
 				const loggedInClient = await testApiClient.login(teacherAccount);
 

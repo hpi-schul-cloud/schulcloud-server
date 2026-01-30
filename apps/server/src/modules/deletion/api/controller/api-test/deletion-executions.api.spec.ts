@@ -1,48 +1,47 @@
-import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
-import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient } from '@testing/test-api-client';
-import { cleanupCollections } from '@testing/cleanup-collections';
-import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CalendarService } from '@infra/calendar';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { schoolEntityFactory } from '@modules/school/testing';
-import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { classEntityFactory } from '@modules/class/entity/testing';
-import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
-import { schoolNewsFactory } from '@modules/news/testing';
-import { ComponentProperties, ComponentType, LessonEntity } from '@modules/lesson/repo';
-import { lessonFactory } from '@modules/lesson/testing';
-import { externalToolPseudonymEntityFactory } from '@modules/pseudonym/testing';
-import { SchoolEntity } from '@modules/school/repo';
-import { CourseEntity } from '@modules/course/repo';
-import { mediaBoardEntityFactory } from '@modules/board/testing';
+import { AccountEntity } from '@modules/account/repo';
 import { BoardExternalReferenceType } from '@modules/board';
 import { BoardNodeEntity } from '@modules/board/repo';
-import { submissionFactory, taskFactory } from '@modules/task/testing';
-import { Submission, Task } from '@modules/task/repo';
-import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
-import { AccountEntity } from '@modules/account/repo';
-import { User } from '@modules/user/repo';
-import { registrationPinEntityFactory } from '@modules/registration-pin/entity/testing';
-import { fileEntityFactory } from '@modules/files/entity/testing';
-import { FileOwnerModel } from '@modules/files/domain';
-import { RegistrationPinEntity } from '@modules/registration-pin/entity';
-import { FileEntity } from '@modules/files/entity';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { mediaBoardEntityFactory } from '@modules/board/testing';
+import { classEntityFactory } from '@modules/class/entity/testing';
+import { CourseEntity } from '@modules/course/repo';
+import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
+import { FileDO, FileRecordParentType, ScanStatus } from '@modules/files-storage-client';
 import { FilesStorageProducer } from '@modules/files-storage-client/service';
-import { CalendarService } from '@infra/calendar';
-import { RocketChatService } from '@modules/rocketchat/rocket-chat.service';
-import { FileDO, FileRecordParentType, ScanStatus } from '@infra/rabbitmq';
-import { rocketChatUserEntityFactory } from '@modules/rocketchat-user/entity/testing';
-import { DASHBOARD_REPO, IDashboardRepo } from '@modules/learnroom/repo/mikro-orm/dashboard.repo';
-import { DashboardEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
-import { teamFactory, teamUserFactory } from '@modules/team/testing';
-import { TeamEntity } from '@modules/team/repo';
-import { groupEntityFactory } from '@modules/group/testing';
+import { FileOwnerModel } from '@modules/files/domain';
+import { FileEntity } from '@modules/files/entity';
+import { fileEntityFactory } from '@modules/files/entity/testing';
 import { GroupEntity } from '@modules/group/entity';
-import { roomArrangementEntityFactory } from '@modules/room/testing';
+import { groupEntityFactory } from '@modules/group/testing';
+import { DashboardEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
+import { DASHBOARD_REPO, IDashboardRepo } from '@modules/learnroom/repo/mikro-orm/dashboard.repo';
+import { ComponentProperties, ComponentType, LessonEntity } from '@modules/lesson/repo';
+import { lessonFactory } from '@modules/lesson/testing';
+import { schoolNewsFactory } from '@modules/news/testing';
+import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
+import { externalToolPseudonymEntityFactory } from '@modules/pseudonym/testing';
+import { RegistrationPinEntity } from '@modules/registration-pin/entity';
+import { registrationPinEntityFactory } from '@modules/registration-pin/entity/testing';
+import { rocketChatUserEntityFactory } from '@modules/rocketchat-user/entity/testing';
+import { RocketChatService } from '@modules/rocketchat/rocket-chat.service';
 import { RoomArrangementEntity } from '@modules/room';
+import { roomArrangementEntityFactory } from '@modules/room/testing';
+import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
+import { Submission, Task } from '@modules/task/repo';
+import { submissionFactory, taskFactory } from '@modules/task/testing';
+import { TeamEntity } from '@modules/team/repo';
+import { teamFactory, teamUserFactory } from '@modules/team/testing';
+import { User } from '@modules/user/repo';
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
+import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
 
 const baseRouteName = '/deletionExecutions';
 
@@ -57,10 +56,6 @@ describe(`deletionExecution (api)`, () => {
 	let dashboardRepo: IDashboardRepo;
 
 	beforeAll(async () => {
-		const config = adminApiServerConfig();
-		config.ADMIN_API__ALLOWED_API_KEYS = [API_KEY];
-		config.CALENDAR_SERVICE_ENABLED = true;
-
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		})

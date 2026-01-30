@@ -1,12 +1,12 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { CourseEntity } from '@modules/course/repo';
 import { LessonEntity } from '@modules/lesson/repo';
 import { TaskStatus } from '@modules/task';
 import { Task, TaskWithStatusVo } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../learnroom.config';
 import {
 	ColumnBoardBoardElement,
 	ColumnBoardNode,
@@ -34,24 +34,29 @@ class DtoCreator {
 
 	roomsAuthorisationService: CourseRoomsAuthorisationService;
 
+	private learnroomConfig: LearnroomConfig;
+
 	constructor({
 		room,
 		board,
 		user,
 		authorisationService,
 		roomsAuthorisationService,
+		config,
 	}: {
 		room: CourseEntity;
 		board: LegacyBoard;
 		user: User;
 		authorisationService: AuthorizationService;
 		roomsAuthorisationService: CourseRoomsAuthorisationService;
+		config: LearnroomConfig;
 	}) {
 		this.room = room;
 		this.board = board;
 		this.user = user;
 		this.authorisationService = authorisationService;
 		this.roomsAuthorisationService = roomsAuthorisationService;
+		this.learnroomConfig = config;
 	}
 
 	manufacture(): RoomBoardDTO {
@@ -86,7 +91,7 @@ class DtoCreator {
 	}
 
 	private isColumnBoardFeatureFlagActive() {
-		const isActive = (Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean) === true;
+		const isActive = this.learnroomConfig.featureColumnBoardEnabled === true;
 
 		return isActive;
 	}
@@ -187,16 +192,18 @@ class DtoCreator {
 export class RoomBoardDTOFactory {
 	constructor(
 		private readonly authorisationService: AuthorizationService,
-		private readonly roomsAuthorisationService: CourseRoomsAuthorisationService
+		private readonly roomsAuthorisationService: CourseRoomsAuthorisationService,
+		@Inject(LEARNROOM_CONFIG_TOKEN) private readonly learnroomConfig: LearnroomConfig
 	) {}
 
-	createDTO({ room, board, user }: { room: CourseEntity; board: LegacyBoard; user: User }): RoomBoardDTO {
+	public createDTO({ room, board, user }: { room: CourseEntity; board: LegacyBoard; user: User }): RoomBoardDTO {
 		const worker = new DtoCreator({
 			room,
 			board,
 			user,
 			authorisationService: this.authorisationService,
 			roomsAuthorisationService: this.roomsAuthorisationService,
+			config: this.learnroomConfig,
 		});
 		const result = worker.manufacture();
 		return result;

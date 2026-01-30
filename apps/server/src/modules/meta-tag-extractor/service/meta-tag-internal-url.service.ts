@@ -1,6 +1,6 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import type { UrlHandler } from '../interface/url-handler';
+import { META_TAG_EXTRACTOR_CONFIG_TOKEN, MetaTagExtractorConfig } from '../meta-tag-extractor.config';
 import { MetaData, MetaDataEntityType } from '../types';
 import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } from './url-handler';
 
@@ -12,7 +12,8 @@ export class MetaTagInternalUrlService {
 		private readonly taskUrlHandler: TaskUrlHandler,
 		private readonly lessonUrlHandler: LessonUrlHandler,
 		private readonly courseUrlHandler: CourseUrlHandler,
-		private readonly boardUrlHandler: BoardUrlHandler
+		private readonly boardUrlHandler: BoardUrlHandler,
+		@Inject(META_TAG_EXTRACTOR_CONFIG_TOKEN) private readonly config: MetaTagExtractorConfig
 	) {
 		this.handlers = [this.taskUrlHandler, this.lessonUrlHandler, this.courseUrlHandler, this.boardUrlHandler];
 	}
@@ -25,9 +26,10 @@ export class MetaTagInternalUrlService {
 	}
 
 	public isInternalUrl(url: URL): boolean {
-		let domain = Configuration.get('SC_DOMAIN') as string;
+		let domain = this.config.scDomain;
 		domain = domain === '' ? 'nothing-configured-for-internal-url.de' : domain;
 		const isInternal = url.hostname.toLowerCase() === domain.toLowerCase();
+
 		return isInternal;
 	}
 

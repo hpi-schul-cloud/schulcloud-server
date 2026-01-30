@@ -9,9 +9,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '../../task.config';
 import { taskFactory } from '../../testing';
 // config must be set outside before the server module is imported, otherwise the configuration is already set
-Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
 
 // eslint-disable-next-line import/first
@@ -24,6 +24,7 @@ describe('Task copy (API)', () => {
 	let em: EntityManager;
 	let configBefore: IConfig;
 	let apiClient: TestApiClient;
+	let config: TaskPublicApiConfig;
 
 	beforeAll(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
@@ -38,6 +39,8 @@ describe('Task copy (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		apiClient = new TestApiClient(app, '/tasks');
+		config = app.get<TaskPublicApiConfig>(TASK_PUBLIC_API_CONFIG_TOKEN);
+		config.featureCopyServiceEnabled = true;
 	});
 
 	afterAll(async () => {

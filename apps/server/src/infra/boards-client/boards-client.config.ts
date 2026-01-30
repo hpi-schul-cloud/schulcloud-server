@@ -1,3 +1,5 @@
-export interface BoardsClientConfig {
-	API_HOST: string;
+import { ConfigurationParameters } from './generated';
+
+export interface InternalBoardsClientConfig extends ConfigurationParameters {
+	basePath: string;
 }

@@ -1,10 +1,14 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { ACCOUNT_CONFIG_TOKEN } from './account-config';
 import { AccountModule } from './account.module';
 import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './domain';
 import { AccountService } from './domain/services/account.service';
+import { ACCOUNT_ENCRYPTION_CONFIG_TOKEN } from './encryption.config';
 import { AccountEntity } from './repo';
+
+const encryptionKey = 'test-aes-key-1234';
 
 describe('AccountModule', () => {
 	let module: TestingModule;
@@ -20,7 +24,15 @@ describe('AccountModule', () => {
 					isGlobal: true,
 				}),
 			],
-		}).compile();
+		})
+			.overrideProvider(ACCOUNT_ENCRYPTION_CONFIG_TOKEN)
+			.useValue({ aesKey: encryptionKey })
+			.overrideProvider(ACCOUNT_CONFIG_TOKEN)
+			.useValue({
+				identityManagementStoreEnabled: false,
+				identityManagementLoginEnabled: false,
+			})
+			.compile();
 	});
 
 	afterAll(async () => {
@@ -44,14 +56,17 @@ describe('AccountModule', () => {
 						ignoreEnvFile: true,
 						ignoreEnvVars: true,
 						isGlobal: true,
-						validate: () => {
-							return {
-								FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: true,
-							};
-						},
 					}),
 				],
-			}).compile();
+			})
+				.overrideProvider(ACCOUNT_ENCRYPTION_CONFIG_TOKEN)
+				.useValue({ aesKey: encryptionKey })
+				.overrideProvider(ACCOUNT_CONFIG_TOKEN)
+				.useValue({
+					identityManagementStoreEnabled: false,
+					identityManagementLoginEnabled: true,
+				})
+				.compile();
 		});
 
 		afterAll(async () => {
@@ -76,14 +91,17 @@ describe('AccountModule', () => {
 						ignoreEnvFile: true,
 						ignoreEnvVars: true,
 						isGlobal: true,
-						validate: () => {
-							return {
-								FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: false,
-							};
-						},
 					}),
 				],
-			}).compile();
+			})
+				.overrideProvider(ACCOUNT_ENCRYPTION_CONFIG_TOKEN)
+				.useValue({ aesKey: encryptionKey })
+				.overrideProvider(ACCOUNT_CONFIG_TOKEN)
+				.useValue({
+					identityManagementStoreEnabled: false,
+					identityManagementLoginEnabled: false,
+				})
+				.compile();
 		});
 
 		afterAll(async () => {

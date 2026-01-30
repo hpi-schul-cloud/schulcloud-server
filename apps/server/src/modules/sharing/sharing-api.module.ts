@@ -1,4 +1,5 @@
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
 import { AuthorizationModule } from '@modules/authorization';
 import { BoardModule } from '@modules/board';
 import { CourseModule } from '@modules/course';
@@ -6,14 +7,13 @@ import { LearnroomModule } from '@modules/learnroom';
 import { LessonModule } from '@modules/lesson';
 import { RoomModule } from '@modules/room';
 import { RoomMembershipModule } from '@modules/room-membership';
+import { SagaModule } from '@modules/saga';
 import { SchoolModule } from '@modules/school';
 import { TaskModule } from '@modules/task';
 import { Module } from '@nestjs/common';
-import { ShareTokenController } from './api/share-token.controller';
+import { ImportTokenUC, ShareTokenController, ShareTokenPermissionService, ShareTokenUC } from './api';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from './sharing.config';
 import { SharingModule } from './sharing.module';
-import { ShareTokenUC, ImportTokenUC } from './api';
-import { ShareTokenPermissionService } from './api/service';
-import { SagaModule } from '@modules/saga';
 
 @Module({
 	imports: [
@@ -29,6 +29,7 @@ import { SagaModule } from '@modules/saga';
 		SchoolModule,
 		LoggerModule,
 		SagaModule,
+		ConfigurationModule.register(SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig),
 	],
 	controllers: [ShareTokenController],
 	providers: [ShareTokenUC, ImportTokenUC, ShareTokenPermissionService],

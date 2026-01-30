@@ -3,20 +3,20 @@ import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { ClassScope } from '@modules/class/repo';
 import { Course, CourseDoService } from '@modules/course';
-import { ProvisioningConfig } from '@modules/provisioning';
 import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { School, SchoolService, SchoolYear, SchoolYearService } from '@modules/school/domain';
 import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { SortHelper } from '@shared/common/utils';
 import { Page } from '@shared/domain/domainobject';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { GroupConfig } from '..';
 import { ClassSortQueryType, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupAggregateScope, GroupTypes, GroupUser, GroupVisibilityPermission } from '../domain';
+import { GROUP_CONFIG_TOKEN } from '../group.config';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { ClassInfoDto, ClassRootType, InternalClassDto } from './dto';
@@ -32,7 +32,8 @@ export class ClassGroupUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolYearService: SchoolYearService,
 		private readonly courseService: CourseDoService,
-		private readonly configService: ConfigService<ProvisioningConfig, true>,
+		@Inject(GROUP_CONFIG_TOKEN)
+		private readonly config: GroupConfig,
 		private readonly userService: UserService
 	) {}
 
@@ -74,7 +75,7 @@ export class ClassGroupUc {
 			async (dto: InternalClassDto<Group | Class>): Promise<ClassInfoDto> => {
 				let synchronizedCourses: Course[] | undefined;
 
-				if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') && dto.isGroup()) {
+				if (this.config.featureSchulconnexCourseSyncEnabled && dto.isGroup()) {
 					synchronizedCourses = await this.courseService.findBySyncedGroup(dto.original);
 				}
 

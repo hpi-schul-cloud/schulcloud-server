@@ -5,7 +5,7 @@ import QueryString from 'qs';
 import { firstValueFrom, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { URL } from 'url';
-import { IOauthProviderFeatures, OauthProviderFeatures } from '../../oauth-provider-config';
+import { OAUTH_PROVIDER_CONFIG_TOKEN, OauthProviderConfig } from '../../oauth-provider-config';
 import { HydraOauthFailedLoggableException } from '../error';
 import {
 	AcceptConsentRequestBody,
@@ -24,7 +24,7 @@ import { OauthProviderService } from './oauth-provider.service';
 export class HydraAdapter extends OauthProviderService {
 	constructor(
 		private readonly httpService: HttpService,
-		@Inject(OauthProviderFeatures) private readonly oauthProviderFeatures: IOauthProviderFeatures
+		@Inject(OAUTH_PROVIDER_CONFIG_TOKEN) private readonly oauthProviderConfig: OauthProviderConfig
 	) {
 		super();
 	}
@@ -75,7 +75,7 @@ export class HydraAdapter extends OauthProviderService {
 	public async introspectOAuth2Token(token: string, scope: string): Promise<IntrospectResponse> {
 		const response: IntrospectResponse = await this.request<IntrospectResponse>(
 			'POST',
-			`${this.oauthProviderFeatures.hydraUri}/oauth2/introspect`,
+			`${this.oauthProviderConfig.hydraUri}/oauth2/introspect`,
 			`token=${token}&scope=${scope}`,
 			{ 'Content-Type': 'application/x-www-form-urlencoded' }
 		);
@@ -84,7 +84,7 @@ export class HydraAdapter extends OauthProviderService {
 	}
 
 	public async isInstanceAlive(): Promise<boolean> {
-		const response: boolean = await this.request<boolean>('GET', `${this.oauthProviderFeatures.hydraUri}/health/alive`);
+		const response: boolean = await this.request<boolean>('GET', `${this.oauthProviderConfig.hydraUri}/health/alive`);
 
 		return response;
 	}
@@ -92,7 +92,7 @@ export class HydraAdapter extends OauthProviderService {
 	public async listConsentSessions(user: string): Promise<ProviderConsentSessionResponse[]> {
 		const response: ProviderConsentSessionResponse[] = await this.request<ProviderConsentSessionResponse[]>(
 			'GET',
-			`${this.oauthProviderFeatures.hydraUri}/oauth2/auth/sessions/consent?subject=${user}`
+			`${this.oauthProviderConfig.hydraUri}/oauth2/auth/sessions/consent?subject=${user}`
 		);
 
 		return response;
@@ -123,7 +123,7 @@ export class HydraAdapter extends OauthProviderService {
 	public async revokeConsentSession(user: string, client: string): Promise<void> {
 		await this.request<void>(
 			'DELETE',
-			`${this.oauthProviderFeatures.hydraUri}/oauth2/auth/sessions/consent?subject=${user}&client=${client}`
+			`${this.oauthProviderConfig.hydraUri}/oauth2/auth/sessions/consent?subject=${user}&client=${client}`
 		);
 	}
 
@@ -133,7 +133,7 @@ export class HydraAdapter extends OauthProviderService {
 		client_name?: string,
 		owner?: string
 	): Promise<ProviderOauthClient[]> {
-		const url: URL = new URL(`${this.oauthProviderFeatures.hydraUri}/clients`);
+		const url: URL = new URL(`${this.oauthProviderConfig.hydraUri}/clients`);
 		url.search = QueryString.stringify({
 			limit,
 			offset,
@@ -149,7 +149,7 @@ export class HydraAdapter extends OauthProviderService {
 	public async getOAuth2Client(id: string): Promise<ProviderOauthClient> {
 		const response: ProviderOauthClient = await this.request<ProviderOauthClient>(
 			'GET',
-			`${this.oauthProviderFeatures.hydraUri}/clients/${id}`
+			`${this.oauthProviderConfig.hydraUri}/clients/${id}`
 		);
 
 		return response;
@@ -158,7 +158,7 @@ export class HydraAdapter extends OauthProviderService {
 	public async createOAuth2Client(data: Partial<ProviderOauthClient>): Promise<ProviderOauthClient> {
 		const response: ProviderOauthClient = await this.request<ProviderOauthClient>(
 			'POST',
-			`${this.oauthProviderFeatures.hydraUri}/clients`,
+			`${this.oauthProviderConfig.hydraUri}/clients`,
 			data
 		);
 
@@ -168,7 +168,7 @@ export class HydraAdapter extends OauthProviderService {
 	public async updateOAuth2Client(id: string, data: Partial<ProviderOauthClient>): Promise<ProviderOauthClient> {
 		const response: ProviderOauthClient = await this.request<ProviderOauthClient>(
 			'PUT',
-			`${this.oauthProviderFeatures.hydraUri}/clients/${id}`,
+			`${this.oauthProviderConfig.hydraUri}/clients/${id}`,
 			data
 		);
 
@@ -176,7 +176,7 @@ export class HydraAdapter extends OauthProviderService {
 	}
 
 	public async deleteOAuth2Client(id: string): Promise<void> {
-		await this.request<void>('DELETE', `${this.oauthProviderFeatures.hydraUri}/clients/${id}`);
+		await this.request<void>('DELETE', `${this.oauthProviderConfig.hydraUri}/clients/${id}`);
 	}
 
 	private async put<T>(
@@ -187,7 +187,7 @@ export class HydraAdapter extends OauthProviderService {
 	): Promise<T> {
 		const putResponse: T = await this.request<T>(
 			'PUT',
-			`${this.oauthProviderFeatures.hydraUri}/oauth2/auth/requests/${flow}/${action}?${flow}_challenge=${challenge}`,
+			`${this.oauthProviderConfig.hydraUri}/oauth2/auth/requests/${flow}/${action}?${flow}_challenge=${challenge}`,
 			body
 		);
 
@@ -197,7 +197,7 @@ export class HydraAdapter extends OauthProviderService {
 	private async get<T>(flow: string, challenge: string): Promise<T> {
 		const getResponse: T = await this.request<T>(
 			'GET',
-			`${this.oauthProviderFeatures.hydraUri}/oauth2/auth/requests/${flow}?${flow}_challenge=${challenge}`
+			`${this.oauthProviderConfig.hydraUri}/oauth2/auth/requests/${flow}?${flow}_challenge=${challenge}`
 		);
 
 		return getResponse;

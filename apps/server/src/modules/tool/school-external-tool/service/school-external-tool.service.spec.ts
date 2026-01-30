@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MediaSourceLicenseType, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { SchoolService } from '@modules/school';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
 import { ToolContextType } from '../../common/enum';
@@ -11,6 +10,7 @@ import { ExternalToolService } from '../../external-tool';
 import { type ExternalTool } from '../../external-tool/domain';
 import { ExternalToolMediumStatus } from '../../external-tool/enum';
 import { externalToolFactory } from '../../external-tool/testing';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import { SchoolExternalTool, SchoolExternalToolConfigurationStatus, SchoolExternalToolMedium } from '../domain';
 import { SchoolExternalToolRepo } from '../repo';
 import { schoolExternalToolFactory } from '../testing';
@@ -26,7 +26,7 @@ describe(SchoolExternalToolService.name, () => {
 	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
 	let commonToolDeleteService: DeepMocked<CommonToolDeleteService>;
 	let mediaSourceService: DeepMocked<MediaSourceService>;
-	let configService: DeepMocked<ConfigService>;
+	let config: ToolConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -53,8 +53,8 @@ describe(SchoolExternalToolService.name, () => {
 					useValue: createMock<MediaSourceService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: TOOL_CONFIG_TOKEN,
+					useValue: {},
 				},
 				{
 					provide: SchoolService,
@@ -69,7 +69,7 @@ describe(SchoolExternalToolService.name, () => {
 		commonToolValidationService = module.get(CommonToolValidationService);
 		commonToolDeleteService = module.get(CommonToolDeleteService);
 		mediaSourceService = module.get(MediaSourceService);
-		configService = module.get(ConfigService);
+		config = module.get(TOOL_CONFIG_TOKEN);
 	});
 
 	describe('findById', () => {
@@ -86,7 +86,7 @@ describe(SchoolExternalToolService.name, () => {
 				schoolExternalToolRepo.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexMediaLicenseEnabled = true;
 
 				return {
 					schoolExternalTool,
@@ -142,7 +142,7 @@ describe(SchoolExternalToolService.name, () => {
 				schoolExternalToolRepo.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexMediaLicenseEnabled = true;
 				mediaSourceService.findBySourceId.mockResolvedValueOnce(mediaSource);
 
 				return {
@@ -204,7 +204,7 @@ describe(SchoolExternalToolService.name, () => {
 				schoolExternalToolRepo.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexMediaLicenseEnabled = true;
 				mediaSourceService.findBySourceId.mockResolvedValueOnce(mediaSource);
 
 				return {
@@ -264,7 +264,7 @@ describe(SchoolExternalToolService.name, () => {
 				schoolExternalToolRepo.find.mockResolvedValueOnce([schoolExternalTool]);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
 				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
-				configService.get.mockReturnValueOnce(false);
+				config.featureSchulconnexMediaLicenseEnabled = false;
 
 				return {
 					externalTool,
@@ -337,7 +337,7 @@ describe(SchoolExternalToolService.name, () => {
 				schoolExternalToolRepo.save.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
-				configService.get.mockReturnValueOnce(false);
+				config.featureSchulconnexMediaLicenseEnabled = false;
 
 				return {
 					schoolExternalTool,

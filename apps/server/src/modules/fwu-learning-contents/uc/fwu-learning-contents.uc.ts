@@ -3,20 +3,21 @@ import { GetFile, S3ClientAdapter } from '@infra/s3-client';
 import { Inject, Injectable } from '@nestjs/common';
 import * as cheerio from 'cheerio';
 import { Readable } from 'stream';
-import { FWU_CONTENT_S3_CONNECTION } from '../fwu-learning-contents.config';
+import { FWU_S3_CLIENT_INJECTION_TOKEN } from '../fwu.const';
 import { FwuItem } from '../interface/fwu-item';
 
 @Injectable()
 export class FwuLearningContentsUc {
 	constructor(
 		private logger: LegacyLogger,
-		@Inject(FWU_CONTENT_S3_CONNECTION) private readonly storageClient: S3ClientAdapter
+		@Inject(FWU_S3_CLIENT_INJECTION_TOKEN) private readonly storageClient: S3ClientAdapter
 	) {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 
 	public async get(path: string, bytesRange?: string): Promise<GetFile> {
 		const response = await this.storageClient.get(path, bytesRange);
+
 		return response;
 	}
 

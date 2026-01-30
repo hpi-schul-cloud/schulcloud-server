@@ -1,27 +1,30 @@
+import { ConfigurationModule } from '@infra/configuration';
 import { DynamicModule, Module } from '@nestjs/common';
-import { AuthorizationApi, Configuration, ConfigurationParameters } from './authorization-api-client';
+import { AuthorizationApi, Configuration } from './authorization-api-client';
 import { AuthorizationClientAdapter } from './authorization-client.adapter';
-
-export interface AuthorizationClientConfig extends ConfigurationParameters {
-	basePath: string;
-}
+import { InternalAuthorizationClientConfig } from './authorization-client.config';
 
 @Module({})
 export class AuthorizationClientModule {
-	static register(config: AuthorizationClientConfig): DynamicModule {
+	public static register(
+		configInjectionToken: string,
+		config: new () => InternalAuthorizationClientConfig
+	): DynamicModule {
 		const providers = [
 			AuthorizationClientAdapter,
 			{
 				provide: AuthorizationApi,
-				useFactory: () => {
-					const configuration = new Configuration(config);
+				useFactory: (configInstance: InternalAuthorizationClientConfig): AuthorizationApi => {
+					const configuration = new Configuration(configInstance);
 					return new AuthorizationApi(configuration);
 				},
+				inject: [configInjectionToken],
 			},
 		];
 
 		return {
 			module: AuthorizationClientModule,
+			imports: [ConfigurationModule.register(configInjectionToken, config)],
 			providers,
 			exports: [AuthorizationClientAdapter],
 		};

@@ -1,6 +1,5 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
@@ -56,8 +55,6 @@ describe('OAuthService', () => {
 
 	let testSystem: System;
 	let testOauthConfig: OauthConfigEntity;
-
-	const hostUri = 'https://mock.de';
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -117,16 +114,6 @@ describe('OAuthService', () => {
 	});
 
 	beforeEach(() => {
-		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
-			switch (key) {
-				case 'HOST':
-				case 'PUBLIC_BACKEND_URL':
-					return hostUri;
-				default:
-					throw new Error(`No mock for key '${key}'`);
-			}
-		});
-
 		testSystem = systemFactory.withOauthConfig().build();
 		testOauthConfig = testSystem.oauthConfig as OauthConfigEntity;
 	});

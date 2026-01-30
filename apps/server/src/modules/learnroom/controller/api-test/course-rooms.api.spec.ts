@@ -1,19 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.app.module';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { cleanupCollections } from '@testing/cleanup-collections';
-import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
-import { CopyApiResponse } from '@modules/copy-helper';
-import { CourseEntity } from '@modules/course/repo';
-import { courseEntityFactory } from '@modules/course/testing';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { lessonFactory } from '@modules/lesson/testing';
-import { Task } from '@modules/task/repo';
-import { taskFactory } from '@modules/task/testing';
 import { BoardExternalReferenceType, BoardNodeType } from '@modules/board';
 import {
 	cardEntityFactory,
@@ -21,20 +7,31 @@ import {
 	columnEntityFactory,
 	linkElementEntityFactory,
 } from '@modules/board/testing';
-import { SingleColumnBoardResponse } from '../dto';
-import { ColumnBoardNode, LegacyBoard } from '../../repo';
-import { boardFactory } from '../../testing';
+import { CopyApiResponse } from '@modules/copy-helper';
+import { CourseEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '@modules/learnroom/learnroom.config';
+import { lessonFactory } from '@modules/lesson/testing';
+import { ServerTestModule } from '@modules/server/server.app.module';
+import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { BoardNodeEntity } from '../../../board/repo';
 import { LessonEntity } from '../../../lesson/repo';
+import { ColumnBoardNode, LegacyBoard } from '../../repo';
+import { boardFactory } from '../../testing';
+import { SingleColumnBoardResponse } from '../dto';
 
 describe('Course Rooms Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let apiClient: TestApiClient;
-
-	const setConfig = () => {
-		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
-	};
+	let config: LearnroomConfig;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -47,9 +44,10 @@ describe('Course Rooms Controller (API)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		setConfig();
 
 		apiClient = new TestApiClient(app, '/course-rooms');
+		config = app.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
+		config.featureCopyServiceEnabled = true;
 	});
 
 	afterAll(async () => {

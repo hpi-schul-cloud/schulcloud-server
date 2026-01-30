@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ObjectId } from 'bson';
 import fs from 'fs';
@@ -19,7 +19,7 @@ describe(DeletionQueueConsole.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				DeletionConsoleModule,
-				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
+				MongoMemoryDatabaseModule.forRoot({ ...findOneOrFailHandler, entities: TEST_ENTITIES }),
 			],
 		}).compile();
 

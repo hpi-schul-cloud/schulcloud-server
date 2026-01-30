@@ -11,6 +11,7 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { CourseRoomsController } from './controller/course-rooms.controller';
 import { DashboardController } from './controller/dashboard.controller';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from './learnroom.config';
 import { LearnroomModule } from './learnroom.module';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 import { DashboardModelMapper, DashboardRepo, LegacyBoardRepo } from './repo';
@@ -23,6 +24,7 @@ import {
 	LessonCopyUC,
 	RoomBoardDTOFactory,
 } from './uc';
+import { ConfigurationModule } from '@infra/configuration';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future
@@ -41,6 +43,7 @@ import {
 		UserModule,
 		ClassModule,
 		CourseModule,
+		ConfigurationModule.register(LEARNROOM_CONFIG_TOKEN, LearnroomConfig),
 	],
 	controllers: [DashboardController, CourseRoomsController],
 	providers: [

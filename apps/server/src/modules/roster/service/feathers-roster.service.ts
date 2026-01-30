@@ -13,14 +13,13 @@ import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { UserDo, UserService } from '@modules/user';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '../../board';
 import { ExternalToolElement } from '../../board/domain';
-import { RosterConfig } from '../roster.config';
+import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '../roster.config';
 
 interface UserMetadata {
 	data: {
@@ -73,7 +72,7 @@ export class FeathersRosterService {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly roomService: RoomService,
 		private readonly roomMembershipService: RoomMembershipService,
-		private readonly configService: ConfigService<RosterConfig, true>
+		@Inject(ROSTER_PUBLIC_API_CONFIG_TOKEN) private readonly config: RosterPublicApiConfig
 	) {}
 
 	public async getUsersMetadata(pseudonym: string): Promise<UserMetadata> {
@@ -349,7 +348,7 @@ export class FeathersRosterService {
 			}
 		}
 
-		if (this.configService.get<boolean>('FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED')) {
+		if (this.config.featureColumnBoardExternalToolsEnabled) {
 			const columnBoards: ColumnBoard[] = await this.columnBoardService.findByExternalReference({
 				type: context instanceof CourseEntity ? BoardExternalReferenceType.Course : BoardExternalReferenceType.Room,
 				id: context.id,

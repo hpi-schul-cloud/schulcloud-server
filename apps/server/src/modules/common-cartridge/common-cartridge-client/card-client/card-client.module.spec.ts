@@ -1,17 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CardClientModule } from './card-client.module';
+import { API_HOST_CONFIG_TOKEN, ApiHostConfig } from '../../api-client.config';
 import { CardClientAdapter } from './card-client.adapter';
+import { CardClientModule } from './card-client.module';
 
 describe('CardClientModule', () => {
 	let module: TestingModule;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				CardClientModule.register({
-					basePath: 'http://localhost:3030/api/v3',
-				}),
-			],
+			imports: [CardClientModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig)],
 		}).compile();
 	});
 

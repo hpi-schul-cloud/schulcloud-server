@@ -1,28 +1,31 @@
 import { Logger } from '@core/logger';
 import { EtherpadClientAdapter } from '@infra/etherpad-client';
-import { ServerConfig } from '@modules/server';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { GetCollaborativeTextEditorForParentParams } from '../api/dto/get-collaborative-text-editor-for-parent.params';
+import {
+	COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN,
+	CollaborativeTextEditorConfig,
+} from '../collaborative-text-editor.config';
 import { CollaborativeTextEditor } from '../domain/do/collaborative-text-editor';
 
 @Injectable()
 export class CollaborativeTextEditorService {
 	constructor(
 		private readonly collaborativeTextEditorAdapter: EtherpadClientAdapter,
-		private readonly configService: ConfigService<ServerConfig, true>,
+		@Inject(COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN)
+		private readonly config: CollaborativeTextEditorConfig,
 		private logger: Logger
 	) {
 		this.logger.setContext(CollaborativeTextEditorService.name);
 	}
 
-	async getOrCreateCollaborativeTextEditor(
+	public async getOrCreateCollaborativeTextEditor(
 		userId: string,
 		userName: string,
 		params: GetCollaborativeTextEditorForParentParams
 	): Promise<CollaborativeTextEditor> {
 		const sessionExpiryDate = this.buildSessionExpiryDate();
-		const durationThreshold = Number(this.configService.get('ETHERPAD__COOKIE_RELEASE_THRESHOLD'));
+		const durationThreshold = this.config.cookieReleaseThreshold;
 		const { parentId } = params;
 
 		const groupId = await this.collaborativeTextEditorAdapter.getOrCreateGroupId(parentId);
@@ -46,13 +49,13 @@ export class CollaborativeTextEditorService {
 		};
 	}
 
-	async deleteCollaborativeTextEditorByParentId(parentId: string): Promise<void> {
+	public async deleteCollaborativeTextEditorByParentId(parentId: string): Promise<void> {
 		const groupId = await this.collaborativeTextEditorAdapter.getOrCreateGroupId(parentId);
 
 		await this.collaborativeTextEditorAdapter.deleteGroup(groupId);
 	}
 
-	async deleteSessionsByUser(userId: string): Promise<void> {
+	public async deleteSessionsByUser(userId: string): Promise<void> {
 		const authorId = await this.collaborativeTextEditorAdapter.getOrCreateAuthorId(userId);
 		const sessionIds = await this.collaborativeTextEditorAdapter.listSessionIdsOfAuthor(authorId);
 
@@ -62,14 +65,14 @@ export class CollaborativeTextEditorService {
 	}
 
 	private buildSessionExpiryDate(): Date {
-		const cookieExpiresMilliseconds = Number(this.configService.get('ETHERPAD__COOKIE_EXPIRES_SECONDS')) * 1000;
+		const cookieExpiresMilliseconds = this.config.cookieExpiresInSeconds * 1000;
 		const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds);
 
 		return sessionCookieExpiryDate;
 	}
 
 	private buildPath(editorId: string): URL {
-		const basePath = this.configService.get<string>('ETHERPAD__PAD_URI');
+		const basePath = this.config.padUri;
 		const url = new URL(`${basePath}/${editorId}`);
 
 		return url;

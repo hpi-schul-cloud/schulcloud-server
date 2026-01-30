@@ -1,4 +1,5 @@
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
 import { AuthorizationModule } from '@modules/authorization';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { CourseModule } from '@modules/course';
@@ -7,6 +8,7 @@ import { SagaModule } from '@modules/saga';
 import { forwardRef, Module } from '@nestjs/common';
 import { BoardContextApiHelperModule } from '../board-context';
 import { RoomModule } from '../room';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from './board.config';
 import { BoardModule } from './board.module';
 import {
 	BoardController,
@@ -22,6 +24,7 @@ import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc, SubmissionIte
 
 @Module({
 	imports: [
+		ConfigurationModule.register(BOARD_CONFIG_TOKEN, BoardConfig),
 		CopyHelperModule,
 		CourseModule,
 		BoardModule,

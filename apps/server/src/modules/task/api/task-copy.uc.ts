@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
@@ -6,10 +5,17 @@ import { CourseEntity } from '@modules/course/repo';
 import { LessonService } from '@modules/lesson';
 import { LessonEntity } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
-import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+	ForbiddenException,
+	Inject,
+	Injectable,
+	InternalServerErrorException,
+	NotFoundException,
+} from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { TaskCopyService } from '../domain';
 import { Task, TaskRepo } from '../repo';
+import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '../task.config';
 import { TaskCopyParentParams } from './dto';
 
 @Injectable()
@@ -20,10 +26,12 @@ export class TaskCopyUC {
 		private readonly authorisation: AuthorizationService,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly taskRepo: TaskRepo,
-		private readonly copyHelperService: CopyHelperService
+		private readonly copyHelperService: CopyHelperService,
+		@Inject(TASK_PUBLIC_API_CONFIG_TOKEN)
+		private readonly config: TaskPublicApiConfig
 	) {}
 
-	async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise<CopyStatus> {
+	public async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise<CopyStatus> {
 		this.checkFeatureEnabled();
 
 		// i put it to promise all, it do not look like any more information can be expose over errors if it is called between the authorizations
@@ -84,7 +92,7 @@ export class TaskCopyUC {
 		}
 	}
 
-	private async getCopyName(originalTaskName: string, parentCourseId: EntityId | undefined) {
+	private async getCopyName(originalTaskName: string, parentCourseId: EntityId | undefined): Promise<string> {
 		let existingNames: string[] = [];
 		if (parentCourseId) {
 			// It should really get an task where the creatorId === '' ?
@@ -115,9 +123,9 @@ export class TaskCopyUC {
 		return destinationLesson;
 	}
 
-	private checkFeatureEnabled() {
-		// This is the deprecated way to read envirement variables
-		const enabled = Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean;
+	private checkFeatureEnabled(): void {
+		const enabled = this.config.featureCopyServiceEnabled;
+
 		if (!enabled) {
 			throw new InternalServerErrorException('Copy Feature not enabled');
 		}

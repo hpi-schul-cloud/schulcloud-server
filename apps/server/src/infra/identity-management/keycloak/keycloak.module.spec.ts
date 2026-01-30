@@ -1,5 +1,10 @@
+import { TestEncryptionConfig } from '@infra/encryption';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import {
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+	KeycloakAdministrationConfig,
+} from '../keycloak-administration/keycloak-administration.config';
 import { KeycloakModule } from './keycloak.module';
 import { KeycloakIdentityManagementOauthService } from './service/keycloak-identity-management-oauth.service';
 import { KeycloakIdentityManagementService } from './service/keycloak-identity-management.service';
@@ -9,7 +14,16 @@ describe('KeycloakModule', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [KeycloakModule, ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true })],
+			imports: [
+				KeycloakModule.register({
+					encryptionConfig: { Constructor: TestEncryptionConfig, injectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN' },
+					keycloakAdministrationConfig: {
+						Constructor: KeycloakAdministrationConfig,
+						injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+					},
+				}),
+				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
+			],
 		}).compile();
 	});
 

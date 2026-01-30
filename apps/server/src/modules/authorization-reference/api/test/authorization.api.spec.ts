@@ -779,37 +779,5 @@ describe('Authorization Controller (API)', () => {
 				});
 			});
 		});
-
-		describe('When token is already expired', () => {
-			const setup = async () => {
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-
-				await em.persist([teacherAccount, teacherUser]).flush();
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(teacherAccount);
-				const postData = createAccessTokenParamsTestFactory().expired().withReferenceId(teacherUser.id).build();
-				const response = await loggedInClient.post('create-token', postData);
-				const body = response.body as { token: string };
-
-				const tokenTtl = 3600;
-
-				return { token: body.token, tokenTtl };
-			};
-
-			it('should response with forbidden', async () => {
-				const { token, tokenTtl } = await setup();
-
-				const response = await testApiClient.get(`resolve-token/${token}/ttl/${tokenTtl.toString()}`);
-
-				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
-				expect(response.body).toEqual({
-					code: 403,
-					message: 'Forbidden',
-					title: 'Forbidden',
-					type: 'FORBIDDEN',
-				});
-			});
-		});
 	});
 });

@@ -12,8 +12,8 @@ import { createListObjectsV2CommandOutput } from './testing';
 
 const createParameter = () => {
 	const bucket = 'test-bucket';
-	const config = {
-		connectionName: 'test-connection',
+	const clientConnectionName = 'TEST_CONNECTION';
+	const config: S3Config = {
 		endpoint: '',
 		region: '',
 		bucket,
@@ -24,7 +24,7 @@ const createParameter = () => {
 	const pathToFile = `${directory}/text.txt`;
 	const bytesRange = 'bytes=0-1';
 
-	return { config, pathToFile, bytesRange, bucket, directory };
+	return { config, pathToFile, bytesRange, bucket, directory, clientConnectionName };
 };
 
 describe(S3ClientAdapter.name, () => {
@@ -33,7 +33,7 @@ describe(S3ClientAdapter.name, () => {
 	let errorHandler: DeepMocked<DomainErrorHandler>;
 
 	beforeAll(() => {
-		const { config } = createParameter();
+		const { config, clientConnectionName } = createParameter();
 
 		const logger = createMock<Logger>();
 		const configuration = createMock<S3Config>(config);
@@ -45,7 +45,7 @@ describe(S3ClientAdapter.name, () => {
 				},
 			},
 		});
-		service = new S3ClientAdapter(client, configuration, logger, errorHandler);
+		service = new S3ClientAdapter(client, configuration, logger, errorHandler, clientConnectionName);
 	});
 
 	afterEach(() => {
