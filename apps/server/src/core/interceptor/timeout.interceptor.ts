@@ -1,11 +1,13 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
-import { TypeGuard } from '../guards';
-import { RequestTimeoutLoggableException } from '../loggable-exception';
-import { InterceptorConfig } from './interfaces';
+import { RequestTimeoutLoggableException } from '../../shared/common/loggable-exception';
+import {
+	TIMEOUT_INTERCEPTOR_CONFIG_TOKEN,
+	TimeoutConfig,
+	TimeoutInterceptorConfig,
+} from './timeout-interceptor-config';
 
 /**
  * This interceptor leaves the request execution after a given timeout in ms.
@@ -13,20 +15,20 @@ import { InterceptorConfig } from './interfaces';
  */
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
-	defaultConfigKey: keyof InterceptorConfig = 'INCOMING_REQUEST_TIMEOUT';
+	constructor(
+		private readonly moduleSpecificTimeoutConfig: TimeoutConfig,
+		@Inject(TIMEOUT_INTERCEPTOR_CONFIG_TOKEN) private readonly defaultTimeoutConfig: TimeoutInterceptorConfig
+	) {}
 
-	constructor(private readonly configService: ConfigService) {}
-
-	intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+	public intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
 		const reflector = new Reflector();
 		const requestTimeoutEnvironmentName =
 			reflector.get<string>('requestTimeoutEnvironmentName', context.getHandler()) ||
 			reflector.get<string>('requestTimeoutEnvironmentName', context.getClass());
 
-		// type of requestTimeoutEnvironmentName is always invalid and can be different
-		const timeoutMS = this.configService.getOrThrow<number>(requestTimeoutEnvironmentName || this.defaultConfigKey);
-
-		TypeGuard.checkNumber(timeoutMS);
+		const timeoutMS =
+			this.moduleSpecificTimeoutConfig[requestTimeoutEnvironmentName] ??
+			this.defaultTimeoutConfig.incomingRequestTimeout;
 
 		const { url } = context.switchToHttp().getRequest<Request>();
 

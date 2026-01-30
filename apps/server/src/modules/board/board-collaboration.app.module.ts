@@ -13,12 +13,13 @@ import { createConfigModuleOptions } from '@shared/common/config-module-options'
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { AuthorizationModule } from '../authorization';
 import { serverConfig } from '../server';
+import { BOARD_TIMEOUT_CONFIG_TOKEN, BoardTimeoutConfig } from './board-timeout.config';
 import { BoardWsApiModule } from './board-ws-api.module';
 import { ENTITIES, TEST_ENTITIES } from './board.entity.imports';
 import { BoardModule } from './board.module';
 
 const imports = [
-	CoreModule,
+	CoreModule.register(BOARD_TIMEOUT_CONFIG_TOKEN, BoardTimeoutConfig),
 	BoardModule,
 	AuthorizationModule,
 	BoardWsApiModule,
