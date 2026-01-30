@@ -7,6 +7,7 @@ import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { UserDo, UserService } from '@modules/user';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { InternalCollaborativeStorageAdapterConfig } from '../../collaborative-storage-adapter.config';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { CollaborativeStorageStrategy } from '../base.interface.strategy';
 import { NextcloudClient } from './nextcloud.client';
@@ -23,7 +24,8 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 		private readonly client: NextcloudClient,
 		private readonly pseudonymService: PseudonymService,
 		private readonly externalToolService: ExternalToolService,
-		private readonly userService: UserService
+		private readonly userService: UserService,
+		private readonly config: InternalCollaborativeStorageAdapterConfig
 	) {
 		this.logger.setContext(NextcloudStrategy.name);
 	}
@@ -155,11 +157,11 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 
 	private async findNextcloudTool(): Promise<ExternalTool> {
 		const tool: ExternalTool | null = await this.externalToolService.findExternalToolByName(
-			this.client.oidcInternalName
+			this.config.oidcInternalName
 		);
 
 		if (!tool) {
-			throw new NotFoundLoggableException(ExternalTool.name, { name: this.client.oidcInternalName });
+			throw new NotFoundLoggableException(ExternalTool.name, { name: this.config.oidcInternalName });
 		}
 
 		return tool;
