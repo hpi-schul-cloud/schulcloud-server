@@ -39,6 +39,7 @@ import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { adminApiServerConfig } from './admin-api-server.config';
 import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
+import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(adminApiServerConfig)),
@@ -52,7 +53,8 @@ const serverModules = [
 		apiKey: Configuration.has('ETHERPAD__API_KEY') ? (Configuration.get('ETHERPAD__API_KEY') as string) : undefined,
 		basePath: Configuration.has('ETHERPAD__URI') ? (Configuration.get('ETHERPAD__URI') as string) : undefined,
 	}),
-	AuthGuardModule.register([AuthGuardOptions.X_API_KEY]),
+	AuthenticationApiModule,
+	AuthGuardModule.register([AuthGuardOptions.X_API_KEY, AuthGuardOptions.JWT]),
 	AccountApiModule,
 	MediaBoardApiModule,
 	ClassModule,
