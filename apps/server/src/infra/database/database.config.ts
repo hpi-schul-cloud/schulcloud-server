@@ -8,7 +8,7 @@ export const DATABASE_CONFIG_TOKEN = 'DATABASE_CONFIG_TOKEN';
 @Configuration()
 export class DatabaseConfig implements InternalDatabaseConfig {
 	@ConfigProperty('DB_URL')
-	@IsUrl({ require_tld: false, require_protocol: false, protocols: ['mongodb'] })
+	@IsUrl({ require_tld: false, require_protocol: false, protocols: ['mongodb', 'mongodb+srv'] })
 	public dbUrl!: string;
 
 	@ConfigProperty('DB_USERNAME')
