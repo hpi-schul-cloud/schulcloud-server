@@ -6,6 +6,7 @@ import {
 	isDrawingElement,
 	isSubmissionItem,
 	isSubmissionItemContent,
+	MediaBoard,
 	SubmissionItem,
 	UserWithBoardRoles,
 } from '@modules/board';
@@ -114,6 +115,14 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	public canCreateMediaBoardLine(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
+	public canDeleteMediaBoardLine(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
+	public canUpdateMediaBoardLine(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canEditBoard(user, authorizable);
 	}
 
@@ -354,7 +363,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	private canEditBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		const permissions = authorizable.getUserPermissions(user.id);
 
-		const isBoard = authorizable.rootNode instanceof ColumnBoard;
+		const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
 		const canEditBoard = permissions.includes(Permission.BOARD_EDIT);
 		return isBoard && canEditBoard;
 	}
@@ -362,7 +371,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	private canManageBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		const permissions = authorizable.getUserPermissions(user.id);
 
-		const isBoard = authorizable.rootNode instanceof ColumnBoard;
+		const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
 		const canManageBoard = permissions.includes(Permission.BOARD_MANAGE);
 		return isBoard && canManageBoard;
 	}
@@ -370,7 +379,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	private canViewBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		const permissions = authorizable.getUserPermissions(user.id);
 
-		const isBoard = authorizable.rootNode instanceof ColumnBoard;
+		const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
 		const canViewBoard = permissions.includes(Permission.BOARD_VIEW);
 		return isBoard && canViewBoard;
 	}

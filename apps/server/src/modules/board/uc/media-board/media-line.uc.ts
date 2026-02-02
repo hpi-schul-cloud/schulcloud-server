@@ -47,7 +47,7 @@ export class MediaLineUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(line);
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.canUpdateMediaBoardLine(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateTitle(line, title);
 	}
@@ -59,7 +59,7 @@ export class MediaLineUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(line);
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.canUpdateMediaBoardLine(user, boardNodeAuthorizable));
 
 		await this.mediaBoardService.updateBackgroundColor(line, color);
 	}
@@ -71,7 +71,7 @@ export class MediaLineUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(line);
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.canUpdateMediaBoardLine(user, boardNodeAuthorizable));
 
 		await this.mediaBoardService.updateCollapsed(line, collapsed);
 	}
@@ -83,7 +83,7 @@ export class MediaLineUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(line);
-		throwForbiddenIfFalse(this.boardNodeRule.canDeleteElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.canDeleteMediaBoardLine(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.delete(line);
 	}
