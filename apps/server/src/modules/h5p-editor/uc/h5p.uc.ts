@@ -1,3 +1,4 @@
+/* eslint-disable filename-rules/match */
 import { Logger } from '@core/logger';
 import {
 	AuthorizationBodyParamsReferenceType,
@@ -16,6 +17,7 @@ import {
 	IUser as LumiIUser,
 } from '@lumieducation/h5p-server';
 import {
+	ContentParameters,
 	IAjaxResponse,
 	IHubInfo,
 	ILibraryDetailedDataForClient,
@@ -89,7 +91,7 @@ export class H5PEditorUc {
 	 * Returns a callback that parses the request range.
 	 */
 	private getRange(req: Request) {
-		return (filesize: number) => {
+		return (filesize: number): { start: number; end: number } | undefined => {
 			const range = req.range(filesize);
 
 			if (range) {
@@ -105,7 +107,9 @@ export class H5PEditorUc {
 					throw new BadRequestException('multipart ranges are unsupported');
 				}
 
-				return range[0];
+				const requestedRange = range[0];
+
+				return requestedRange;
 			}
 
 			return undefined;
@@ -343,7 +347,7 @@ export class H5PEditorUc {
 		return playerModel;
 	}
 
-	public async getEmptyH5pEditor(userId: EntityId, language: LanguageType) {
+	public async getEmptyH5pEditor(userId: EntityId, language: LanguageType): Promise<IEditorModel> {
 		const user = this.changeUserType(userId);
 		const fakeUndefinedString = this.fakeUndefinedAsString();
 
@@ -357,7 +361,21 @@ export class H5PEditorUc {
 		return createdH5PEditor;
 	}
 
-	public async getH5pEditor(userId: EntityId, contentId: string, language: LanguageType) {
+	public async getH5pEditor(
+		userId: EntityId,
+		contentId: string,
+		language: LanguageType
+	): Promise<{
+		editorModel: IEditorModel;
+		content: {
+			h5p: IContentMetadata;
+			library: string;
+			params: {
+				metadata: IContentMetadata;
+				params: ContentParameters;
+			};
+		};
+	}> {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
 		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.write([]));
 
