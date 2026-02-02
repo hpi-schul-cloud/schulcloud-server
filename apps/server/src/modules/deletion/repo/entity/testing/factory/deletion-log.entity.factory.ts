@@ -1,7 +1,7 @@
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@modules/deletion/domain/builder';
 import { DomainName, OperationType } from '@modules/deletion/domain/types';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionLogEntity, DeletionLogEntityProps } from '../../deletion-log.entity';
 
 export const deletionLogEntityFactory = BaseFactory.define<DeletionLogEntity, DeletionLogEntityProps>(

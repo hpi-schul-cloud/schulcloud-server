@@ -12,6 +12,7 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { authorizationClientConfig, config } from './common-cartridge.config';
 import { CommonCartridgeModule } from './common-cartridge.module';
 import { CommonCartridgeController } from './controller/common-cartridge.controller';
+import { MongoDriver } from '@mikro-orm/mongodb';
 
 @Module({
 	imports: [
@@ -24,7 +25,7 @@ import { CommonCartridgeController } from './controller/common-cartridge.control
 		// Will remove this in the BC-8925
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
-			type: 'mongo',
+			driver: MongoDriver,
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,

@@ -49,7 +49,7 @@ export class CommonCartridgeManifestResourceV110 extends CommonCartridgeResource
 				$: {
 					identifier: this.props.identifier,
 					xmlns: 'http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1',
-					'xmlns:mnf': 'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest',
+					'xmlns:lomimscc': 'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest',
 					'xmlns:res': 'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource',
 					'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
 					'xsi:schemaLocation':
