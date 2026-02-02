@@ -8,12 +8,9 @@ export interface SchulconnexProvisioningConfig
 	extends LegacySchoolConfig,
 		CoreModuleConfig,
 		MediaSourceConfig,
-		CourseSynchronizationHistoryConfig {
-	LOGIN_BLOCK_TIME: number; // @TODO temporary until removed from other configs
-}
+		CourseSynchronizationHistoryConfig {}
 
 const config: SchulconnexProvisioningConfig = {
-	LOGIN_BLOCK_TIME: Configuration.get('LOGIN_BLOCK_TIME') as number,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 };
 
