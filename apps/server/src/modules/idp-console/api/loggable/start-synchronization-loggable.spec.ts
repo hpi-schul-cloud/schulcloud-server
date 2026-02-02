@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { StartSynchronizationLoggable } from './start-synchronization-loggable';
 
 describe(StartSynchronizationLoggable.name, () => {

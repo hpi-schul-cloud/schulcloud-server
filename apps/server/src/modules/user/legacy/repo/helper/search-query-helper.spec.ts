@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SearchQueryHelper } from '.';
 import { RangeDate, UsersSearchQueryParams } from '../../controller/dto';
 import { UserSearchQuery } from '../../interfaces';

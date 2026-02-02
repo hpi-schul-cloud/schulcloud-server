@@ -8,7 +8,7 @@ import { DeepPartial } from 'fishery';
 import { v4 as uuidv4 } from 'uuid';
 
 class ImportUserFactory extends BaseFactory<ImportUser, ImportUserProperties> {
-	matched(matchedBy: MatchCreator, user: User): this {
+	public matched(matchedBy: MatchCreator, user: User): this {
 		const params: DeepPartial<ImportUserProperties> = { matchedBy, user };
 
 		return this.params(params);

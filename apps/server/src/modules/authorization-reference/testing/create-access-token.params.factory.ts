@@ -1,5 +1,5 @@
 import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CreateAccessTokenParams } from '../api/dto';
 
 class CreateAccessTokenParamsTestBuilder {

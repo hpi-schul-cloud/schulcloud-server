@@ -64,6 +64,7 @@ import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.mod
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
+import { MongoDriver } from '@mikro-orm/mongodb';
 
 const serverModules = [
 	HelpdeskApiModule,
@@ -142,7 +143,7 @@ const controllers = [ServerController, ServerConfigController];
 		...serverModules,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
-			type: 'mongo',
+			driver: MongoDriver,
 			// TODO add mongoose options as mongo options (see database.js)
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,

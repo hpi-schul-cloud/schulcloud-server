@@ -6,7 +6,7 @@ import { LessonEntity, Material } from '@modules/lesson/repo';
 import { Submission, Task } from '@modules/task/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { MetaDataEntityType } from '../../types';
 import { CourseUrlHandler } from './course-url-handler';
 

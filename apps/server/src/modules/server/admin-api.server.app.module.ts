@@ -39,6 +39,7 @@ import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { adminApiServerConfig } from './admin-api-server.config';
 import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
+import { MongoDriver } from '@mikro-orm/mongodb';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(adminApiServerConfig)),
@@ -77,7 +78,7 @@ const serverModules = [
 		...serverModules,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
-			type: 'mongo',
+			driver: MongoDriver,
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,

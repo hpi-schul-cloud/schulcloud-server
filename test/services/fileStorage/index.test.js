@@ -58,7 +58,6 @@ describe('fileStorage services', () => {
 			schoolModel.create(fixtures.schools),
 			FileModel.create(fixtures.files),
 			userModel.create(fixtures.users),
-			RoleModel.create(fixtures.roles),
 			courseModel.create(fixtures.courses),
 		];
 
@@ -260,7 +259,8 @@ describe('fileStorage services', () => {
 				.catch(({ code }) => {
 					expect(code).to.be.equal(403);
 					return done();
-				});
+				})
+				.finally(() => done());
 		});
 
 		it('should move file to a new directory', (done) => {
