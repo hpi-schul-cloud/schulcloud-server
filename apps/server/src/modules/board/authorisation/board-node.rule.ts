@@ -113,6 +113,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return this.canEditBoard(user, authorizable);
 	}
 
+	public canCreateMediaBoardLine(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
 	public canCreateSubmissionItemContent(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.isSubmissionItemOfUser(user, authorizable);
 	}
@@ -165,6 +169,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return this.canEditBoard(user, authorizable);
 	}
 
+	public canMoveElement(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
 	public canCopyBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canManageBoard(user, authorizable);
 	}
@@ -182,6 +190,18 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return isBoard && canManageReadersCanEdit;
 	}
 
+	public canUpdateMediaBoardColor(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
+	public canUpdateMediaBoardLayout(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
+	public canCollapseMediaBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canEditBoard(user, authorizable);
+	}
+
 	public canUpdateBoardLayout(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canManageBoard(user, authorizable);
 	}
@@ -191,6 +211,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	public canViewElement(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		return this.canViewBoard(user, authorizable);
+	}
+
+	public canViewMediaBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		return this.canViewBoard(user, authorizable);
 	}
 
