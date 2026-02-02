@@ -1,6 +1,6 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer';
-import { IsBoolean } from 'class-validator';
+import { IsBoolean, IsString, IsUrl } from 'class-validator';
 
 export const BOARD_CONFIG_TOKEN = 'BOARD_CONFIG_TOKEN';
 export const BOARD_PUBLIC_API_CONFIG_TOKEN = 'BOARD_PUBLIC_API_CONFIG_TOKEN';
@@ -34,4 +34,12 @@ export class BoardConfig extends BoardPublicApiConfig {
 	@StringToBoolean()
 	@IsBoolean()
 	public featureCtlToolsCopyEnabled = false;
+
+	@IsUrl({ require_tld: false })
+	@ConfigProperty('HOST')
+	public hostUrl!: string;
+
+	@ConfigProperty('BOARD_WS_BASE_PATH')
+	@IsString()
+	public basePath = '/board-collaboration';
 }
