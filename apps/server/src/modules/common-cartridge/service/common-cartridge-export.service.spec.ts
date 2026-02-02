@@ -239,7 +239,7 @@ describe('CommonCartridgeExportService', () => {
 				const { archive, courseMetadata } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
-					createXmlString('mnf:string', courseMetadata.title)
+					createXmlString('lomimscc:string', courseMetadata.title)
 				);
 			});
 
@@ -317,7 +317,7 @@ describe('CommonCartridgeExportService', () => {
 				const { archive, courseMetadata } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
-					createXmlString('mnf:string', courseMetadata.title)
+					createXmlString('lomimscc:string', courseMetadata.title)
 				);
 			});
 

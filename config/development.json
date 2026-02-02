@@ -16,11 +16,6 @@
 	"S3_KEY": "abcdefghijklmnop",
 	"AES_KEY": "thisisnotsecure12",
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "thisisnotsecure12",
-	"OIDCMOCK": {
-		"BASE_URL": "http://127.0.0.1:4011",
-		"CLIENT_ID": "erwin-credentials-mock-client",
-		"CLIENT_SECRET": "erwin-credentials-mock-client-secret"
-	},
 	"INCOMING_REQUEST_TIMEOUT_API": 60000,
 	"COOKIE": {
 		"SAME_SITE": "lax",

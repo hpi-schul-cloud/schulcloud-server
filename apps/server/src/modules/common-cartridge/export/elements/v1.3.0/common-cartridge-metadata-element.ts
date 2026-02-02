@@ -32,18 +32,18 @@ export class CommonCartridgeMetadataElementV130 extends CommonCartridgeElement {
 		return {
 			schema: 'IMS Common Cartridge',
 			schemaversion: '1.3.0',
-			'mnf:lom': {
-				'mnf:general': {
-					'mnf:title': {
-						'mnf:string': this.props.title,
+			'lomimscc:lom': {
+				'lomimscc:general': {
+					'lomimscc:title': {
+						'lomimscc:string': this.props.title,
 					},
 				},
-				'mnf:rights': {
-					'mnf:copyrightAndOtherRestrictions': {
-						'mnf:value': 'yes',
+				'lomimscc:rights': {
+					'lomimscc:copyrightAndOtherRestrictions': {
+						'lomimscc:value': 'yes',
 					},
-					'mnf:description': {
-						'mnf:string': `${this.props.creationDate.getFullYear()} ${this.props.copyrightOwners.join(', ')}`,
+					'lomimscc:description': {
+						'lomimscc:string': `${this.props.creationDate.getFullYear()} ${this.props.copyrightOwners.join(', ')}`,
 					},
 				},
 			},

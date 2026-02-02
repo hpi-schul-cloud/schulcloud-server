@@ -1,16 +1,15 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DefaultEncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity, StorageProviderEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BsonConverter } from '../converter/bson.converter';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 import { generateSeedData } from '../seed-data/generate-seed-data';
 import {
 	ExternalToolsSeedDataService,
@@ -27,7 +26,7 @@ describe('DatabaseManagementService', () => {
 
 	let fileSystemAdapter: DeepMocked<FileSystemAdapter>;
 	let dbService: DeepMocked<DatabaseManagementService>;
-	let configService: DeepMocked<ConfigService>;
+	let config: ManagementSeedDataConfig;
 	let logger: DeepMocked<LegacyLogger>;
 	let defaultEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
 	let mediaSourcesSeedDataService: DeepMocked<MediaSourcesSeedDataService>;
@@ -36,8 +35,6 @@ describe('DatabaseManagementService', () => {
 	let instancesSeedDataService: DeepMocked<InstancesSeedDataService>;
 
 	let bsonConverter: BsonConverter;
-	const configGetSpy = jest.spyOn(Configuration, 'get');
-	const configHasSpy = jest.spyOn(Configuration, 'has');
 	const systemsCollectionName = 'systems';
 	const storageprovidersCollectionName = 'storageproviders';
 	const collectionNames = ['collectionName1', 'collectionName2', systemsCollectionName, storageprovidersCollectionName];
@@ -80,9 +77,11 @@ describe('DatabaseManagementService', () => {
 		alias: 'oidc',
 		oidcConfig: {
 			// eslint-disable-next-line no-template-curly-in-string
-			clientId: '${OIDC_CLIENT_ID}',
+			clientId: '${OIDCMOCK__CLIENT_ID}',
 			// eslint-disable-next-line no-template-curly-in-string
-			clientSecret: '${OIDC_CLIENT_SECRET}',
+			clientSecret: '${OIDCMOCK__CLIENT_SECRET}',
+			// eslint-disable-next-line no-template-curly-in-string
+			authorizationUrl: '${OIDCMOCK__BASE_URL}/connect/authorize',
 		},
 	};
 
@@ -163,7 +162,7 @@ describe('DatabaseManagementService', () => {
 				DatabaseManagementUc,
 				BsonConverter,
 				{ provide: DefaultEncryptionService, useValue: createMock<SymmetricKeyEncryptionService>() },
-				{ provide: ConfigService, useValue: createMock<ConfigService>() },
+				{ provide: MANAGEMENT_SEED_DATA_CONFIG_TOKEN, useValue: {} },
 				{ provide: LegacyLogger, useValue: createMock<LegacyLogger>() },
 				{ provide: EntityManager, useValue: createMock<EntityManager>() },
 				{ provide: MediaSourcesSeedDataService, useValue: createMock<MediaSourcesSeedDataService>() },
@@ -240,7 +239,7 @@ describe('DatabaseManagementService', () => {
 		fileSystemAdapter = module.get(FileSystemAdapter);
 		dbService = module.get(DatabaseManagementService);
 		bsonConverter = module.get(BsonConverter);
-		configService = module.get(ConfigService);
+		config = module.get(MANAGEMENT_SEED_DATA_CONFIG_TOKEN);
 		logger = module.get(LegacyLogger);
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		mediaSourcesSeedDataService = module.get(MediaSourcesSeedDataService);
@@ -264,8 +263,6 @@ describe('DatabaseManagementService', () => {
 		dbService.createCollection.mockClear();
 		dbService.clearCollection.mockClear();
 		dbService.importCollection.mockClear();
-		configGetSpy.mockClear();
-		configHasSpy.mockClear();
 	});
 
 	it('should be defined', () => {
@@ -416,14 +413,10 @@ describe('DatabaseManagementService', () => {
 
 	describe('When import some collections from filesystem', () => {
 		beforeAll(() => {
-			configService.get.mockReturnValue(undefined);
 			mediaSourcesSeedDataService.import.mockResolvedValue(1);
 			systemsSeedDataService.import.mockResolvedValue(1);
 			externalToolsSeedDataService.import.mockResolvedValue(1);
 			instancesSeedDataService.import.mockResolvedValue(1);
-		});
-		afterAll(() => {
-			configService.get.mockReset();
 		});
 
 		it('should seed all collections from filesystem and return collectionnames with document counts', async () => {
@@ -493,100 +486,39 @@ describe('DatabaseManagementService', () => {
 			});
 			describe('when importing systems', () => {
 				it('should replace placeholders', async () => {
-					// return the placeholder name per default, but handle AES_KEY as undefined placeholder
-					configGetSpy.mockImplementation((data) => (data === 'AES_KEY' ? null : data));
-					configHasSpy.mockImplementation((data) => data !== 'AES_KEY');
-					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
-
-					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-
-					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
-						clientId: 'SCHULCONNEX_CLIENT_ID',
-						clientSecret: 'SCHULCONNEX_CLIENT_SECRET',
-					});
-					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
-						clientId: 'OIDC_CLIENT_ID',
-						clientSecret: 'OIDC_CLIENT_SECRET',
-					});
-				});
-				it('should replace placeholder with environmental variable value, if configuration key does not exists', async () => {
-					configGetSpy.mockReturnValue(undefined);
-					configHasSpy.mockReturnValue(false);
-					configService.get.mockImplementation((data: string) => `${data}_env`);
+					config.oidcMockBaseUrl = 'https://oidcmock-base-url';
+					config.oidcMockClientId = 'oidcmock-client-id';
+					config.oidcMockClientSecret = 'oidcmock-client-secret';
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
-						clientId: 'SCHULCONNEX_CLIENT_ID_env',
-						clientSecret: 'SCHULCONNEX_CLIENT_SECRET_env',
-					});
 					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
-						clientId: 'OIDC_CLIENT_ID_env',
-						clientSecret: 'OIDC_CLIENT_SECRET_env',
-					});
-				});
-				it('should replace placeholder with empty value, if neither configuration key nor environmental variable exists', async () => {
-					configGetSpy.mockReturnValue(undefined);
-					configHasSpy.mockReturnValue(false);
-					configService.get.mockReturnValue(undefined);
-					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
-					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
-						clientId: '',
-						clientSecret: '',
-					});
-					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
-						clientId: '',
-						clientSecret: '',
+						clientId: 'oidcmock-client-id',
+						clientSecret: 'oidcmock-client-secret',
+						authorizationUrl: 'https://oidcmock-base-url/connect/authorize',
 					});
 				});
 				it('should warn if non resolvable placeholder encountered', async () => {
-					configGetSpy.mockReturnValue(undefined);
-					configHasSpy.mockReturnValue(false);
-					configService.get.mockReturnValue(undefined);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SCHULCONNEX_CLIENT_ID'));
 					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SCHULCONNEX_CLIENT_SECRET'));
-					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('OIDC_CLIENT_ID'));
-					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('OIDC_CLIENT_SECRET'));
-				});
-				it('should favor configuration key before environmental variable', async () => {
-					const configurationCompareValue = 'CONFIGURATION';
-					const environmentCompareValue = 'ENVIRONMENT';
-					configGetSpy.mockReturnValue(configurationCompareValue);
-					configHasSpy.mockReturnValue(true);
-					configService.get.mockReturnValue(environmentCompareValue);
-					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
-					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-					expect(dbService.collectionExists).toBeCalledTimes(1);
-					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
-					expect(dbService.clearCollection).not.toBeCalled();
-					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
-						clientId: configurationCompareValue,
-						clientSecret: configurationCompareValue,
-					});
 				});
 				it('should keep escaped placeholder', async () => {
-					configGetSpy.mockImplementation((data) => data);
-					configHasSpy.mockReturnValue(true);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([storageprovidersCollectionName]);
 					expect(dbService.importCollection).toBeCalledWith(
 						expect.anything(),
 						expect.arrayContaining([
 							expect.objectContaining({
-								region: storageProviderParsed[0].region,
+								region: ' ${Ignore}',
 							}),
 						])
 					);
 				});
 				it('should encrypt secrets if secret is configured in env var', async () => {
-					configGetSpy.mockImplementation((data) => data);
-					configHasSpy.mockReturnValue(true);
+					config.oidcMockClientId = 'oidcmock-client-id';
+					config.oidcMockClientSecret = 'oidcmock-client-secret';
 					defaultEncryptionService.encrypt.mockImplementation((data) => `${data}_encrypted`);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
@@ -594,13 +526,9 @@ describe('DatabaseManagementService', () => {
 					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
 					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
-						clientId: 'SCHULCONNEX_CLIENT_ID',
-						clientSecret: 'SCHULCONNEX_CLIENT_SECRET_encrypted',
-					});
 					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
-						clientId: 'OIDC_CLIENT_ID',
-						clientSecret: 'OIDC_CLIENT_SECRET_encrypted',
+						clientId: 'oidcmock-client-id',
+						clientSecret: 'oidcmock-client-secret_encrypted',
 					});
 				});
 			});
