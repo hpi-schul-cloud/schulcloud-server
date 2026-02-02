@@ -7,13 +7,9 @@ import { ToolConfig } from '@modules/tool';
 import { UserConfig } from '@modules/user';
 import { LanguageType } from '@shared/domain/interface';
 import type { CoreModuleConfig } from '@core/core.config';
-import type { Algorithm } from 'jsonwebtoken';
-import { AuthenticationConfig } from '@modules/authentication';
-import { ValkeyMode } from '@infra/valkey-client';
 
 export interface AdminApiServerConfig
 	extends CoreModuleConfig,
-		AuthenticationConfig,
 		DeletionConfig,
 		LegacySchoolConfig,
 		UserConfig,
@@ -22,8 +18,6 @@ export interface AdminApiServerConfig
 		XApiKeyAuthGuardConfig {
 	ETHERPAD__API_KEY?: string;
 	ETHERPAD__URI?: string;
-	JWT_SHOW_TIMEOUT_WARNING_SECONDS: number;
-	JWT_TIMEOUT_SECONDS: number;
 }
 
 const config: AdminApiServerConfig = {
@@ -57,20 +51,6 @@ const config: AdminApiServerConfig = {
 	FEATURE_CTL_TOOLS_COPY_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') as boolean,
 	CTL_TOOLS_RELOAD_TIME_MS: Configuration.get('CTL_TOOLS_RELOAD_TIME_MS') as number,
 	FILES_STORAGE__SERVICE_BASE_URL: Configuration.get('FILES_STORAGE__SERVICE_BASE_URL') as string,
-	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
-	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: Configuration.get('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED') as boolean,
-	SESSION_VALKEY__MODE: Configuration.get('SESSION_VALKEY__MODE') as ValkeyMode,
-	FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED: Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') as boolean,
-	JWT_LIFETIME: Configuration.get('JWT_LIFETIME') as string,
-	JWT_SHOW_TIMEOUT_WARNING_SECONDS: Configuration.get('JWT_SHOW_TIMEOUT_WARNING_SECONDS') as number,
-	JWT_TIMEOUT_SECONDS: Configuration.get('JWT_TIMEOUT_SECONDS') as number,
-	JWT_LIFETIME_SUPPORT_SECONDS: Configuration.get('JWT_LIFETIME_SUPPORT_SECONDS') as number,
-	JWT_EXTENDED_TIMEOUT_SECONDS: Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS') as number,
-	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
-	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node
-	JWT_PRIVATE_KEY: (Configuration.get('JWT_PRIVATE_KEY') as string).replace(/\\n/g, '\n'),
-	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
-	JWT_SIGNING_ALGORITHM: Configuration.get('JWT_SIGNING_ALGORITHM') as Algorithm,
 	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
 	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
