@@ -2,6 +2,7 @@ import { ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig } from '@modules/alert';
 import { BOARD_PUBLIC_API_CONFIG_TOKEN, BoardPublicApiConfig } from '@modules/board';
 import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@modules/board-context';
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
+import { FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig } from '@modules/fwu-learning-contents';
 import { LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig } from '@modules/learnroom';
 import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig } from '@modules/oauth';
 import { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from '@modules/provisioning';
@@ -45,7 +46,8 @@ export class ServerUc {
 		@Inject(USER_PUBLIC_API_CONFIG_TOKEN) private readonly userConfig: UserPublicApiConfig,
 		@Inject(USER_IMPORT_PUBLIC_API_CONFIG_TOKEN) private readonly userImportConfig: UserImportPublicApiConfig,
 		@Inject(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN)
-		private readonly userLoginMigrationConfig: UserLoginMigrationPublicApiConfig
+		private readonly userLoginMigrationConfig: UserLoginMigrationPublicApiConfig,
+		@Inject(FWU_PUBLIC_API_CONFIG_TOKEN) private readonly fwuConfig: FwuPublicApiConfig
 	) {}
 
 	public getConfig(): ConfigResponse {
@@ -67,7 +69,8 @@ export class ServerUc {
 			this.learnroomConfig,
 			this.userConfig,
 			this.userImportConfig,
-			this.userLoginMigrationConfig
+			this.userLoginMigrationConfig,
+			this.fwuConfig
 		);
 
 		return configDto;
