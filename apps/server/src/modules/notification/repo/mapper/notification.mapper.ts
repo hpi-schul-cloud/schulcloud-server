@@ -5,10 +5,10 @@ export class NotificationMapper {
 	public static mapToDO(entity: NotificationEntity): Notification {
 		return new Notification({
 			id: entity.id,
-			type: entity.type,
-			key: entity.key,
-			arguments: entity.arguments,
-			userId: entity.userId,
+			type: entity.type ?? '',
+			key: entity.key ?? '',
+			arguments: entity.arguments ?? [],
+			userId: entity.userId ?? '',
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
 		});

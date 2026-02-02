@@ -4,8 +4,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { NotificationRepo } from '../repo/notification.repo';
 import { NotificationType } from '../types/notification-type.enum';
 import { NotificationEntity } from './entities/notification.entity';
-import { Notification } from '../domain/do/notification.do';
-import { NotificationMapper } from './mapper/notification.mapper';
 
 describe(NotificationRepo.name, () => {
 	// let repo: NotificationRepo;
@@ -58,31 +56,6 @@ describe(NotificationRepo.name, () => {
 				// expect((repo as any).create).toHaveBeenCalledWith(entity);
 				// expect((repo as any).save).toHaveBeenCalledWith(entity);
 				expect(result).toBe(entity);
-			});
-		});
-	});
-
-	describe('mapDtoToEntity', () => {
-		describe('when called with a valid DTO', () => {
-			it('should map dto to entity with generated fields', () => {
-				const notification = new Notification({
-					id: 'testid',
-					type: NotificationType.ERROR,
-					key: 'KEY',
-					arguments: ['arg1', 'arg2'],
-					userId: 'user-id',
-				});
-
-				const result = NotificationMapper.mapToEntity(notification);
-
-				expect(result.type).toBe(notification.type);
-				expect(result.key).toBe(notification.key);
-				expect(result.arguments).toEqual(notification.arguments);
-				expect(result.userId).toBe(notification.userId);
-				expect(result._id).toBeInstanceOf(ObjectId);
-				expect(result.id).toBeDefined();
-				expect(result.createdAt).toBeInstanceOf(Date);
-				expect(result.updatedAt).toBeInstanceOf(Date);
 			});
 		});
 	});

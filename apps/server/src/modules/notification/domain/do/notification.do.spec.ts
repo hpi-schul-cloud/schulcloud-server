@@ -10,6 +10,8 @@ describe(Notification.name, () => {
 					key: 'IMPORT_COMPLETED',
 					arguments: ['course-123', 'success'],
 					userId: 'user-123',
+					createdAt: new Date(),
+					updatedAt: new Date(),
 				};
 
 				const domainObject = new Notification(props);
@@ -32,6 +34,8 @@ describe(Notification.name, () => {
 					key: 'IMPORT_FAILED',
 					arguments: ['course-456', 'error'],
 					userId: 'user-456',
+					createdAt: new Date(),
+					updatedAt: new Date(),
 				};
 
 				const notificationDo = new Notification(props);
@@ -56,6 +60,8 @@ describe(Notification.name, () => {
 					key: 'IMPORT_IN_PROGRESS',
 					arguments: ['course-789', 'progress'],
 					userId: 'user-789',
+					createdAt: new Date(),
+					updatedAt: new Date(),
 				};
 
 				const notificationDo = new Notification(props);

@@ -7,7 +7,7 @@ import { NotificationType } from '../../types/notification-type.enum';
 import { NotificationEntity } from '../../repo/entities/notification.entity';
 import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker/.';
-import { Notification, NotificationProps } from '../do';
+import { Notification } from '../do';
 import { NotificationMapper } from '../../repo/mapper/notification.mapper';
 
 describe(NotificationService.name, () => {
@@ -36,37 +36,6 @@ describe(NotificationService.name, () => {
 		notificationRepoMock = module.get(NotificationRepo);
 	});
 
-	const setup = () => {
-		const type: NotificationType = NotificationType.ERROR;
-		const key: string = faker.string.alphanumeric();
-		const args: string[] = [faker.string.alphanumeric(), faker.string.alphanumeric()];
-		const userid: string = faker.string.alphanumeric();
-
-		const notification = new Notification({
-			id: 'testid',
-			type: NotificationType.ERROR,
-			key: 'ERROR_KEY',
-			arguments: ['arg1'],
-			userId: 'user-id',
-		});
-
-		const mappedEntity: NotificationEntity = {
-			notificationType: notification.type,
-			notifcationKey: notification.key,
-			notificationArguments: notification.arguments,
-			userId: notification.userId,
-			_id: new ObjectId(),
-			id: '',
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		} as unknown as NotificationEntity;
-
-		// mock answer of repo
-		notificationRepoMock.createNotification.mockResolvedValue(mappedEntity);
-
-		return { type, key, args, userid, dto: notification, mappedEntity };
-	};
-
 	afterEach(async () => {
 		await module.close();
 		jest.clearAllMocks();
@@ -78,25 +47,40 @@ describe(NotificationService.name, () => {
 
 	describe('create', () => {
 		describe('when notification type is ERROR', () => {
-			it('should create a notification and log a warning', async () => {
+			const setup = () => {
+				const type: NotificationType = NotificationType.ERROR;
+				const key: string = faker.string.alphanumeric();
+				const args: string[] = [faker.string.alphanumeric(), faker.string.alphanumeric()];
+				const userid: string = faker.string.alphanumeric();
+
 				const notification = new Notification({
 					id: 'testid',
 					type: NotificationType.ERROR,
 					key: 'ERROR_KEY',
 					arguments: ['arg1'],
 					userId: 'user-id',
+					createdAt: new Date(),
+					updatedAt: new Date(),
 				});
 
 				const mappedEntity: NotificationEntity = {
-					notificationType: notification.type,
-					notifcationKey: notification.key,
-					notificationArguments: notification.arguments,
+					type: notification.type,
+					key: notification.key,
+					arguments: notification.arguments,
 					userId: notification.userId,
 					_id: new ObjectId(),
 					id: '',
 					createdAt: new Date(),
 					updatedAt: new Date(),
-				} as unknown as NotificationEntity;
+				} as NotificationEntity;
+
+				// mock answer of repo
+				notificationRepoMock.createNotification.mockResolvedValue(mappedEntity);
+
+				return { type, key, args, userid, notification, mappedEntity };
+			};
+			it('should create a notification and log a warning', async () => {
+				const { notification, mappedEntity } = setup();
 
 				const mapSpy = jest.spyOn(NotificationMapper, 'mapToEntity').mockReturnValue(mappedEntity);
 
@@ -113,30 +97,34 @@ describe(NotificationService.name, () => {
 		});
 
 		describe('when notification type is NOTE', () => {
-			it('should create a notification and log info', async () => {
+			const setup = () => {
 				const notification = new Notification({
 					id: 'testid',
 					type: NotificationType.NOTE,
 					key: 'INFO_KEY',
 					arguments: ['arg1'],
 					userId: 'user-id',
+					createdAt: new Date(),
+					updatedAt: new Date(),
 				});
 
 				const mappedEntity: NotificationEntity = {
-					notificationType: notification.type,
-					notifcationKey: notification.key,
-					notificationArguments: notification.arguments,
+					type: notification.type,
+					key: notification.key,
+					arguments: notification.arguments,
 					userId: notification.userId,
 					_id: new ObjectId(),
 					id: '',
 					createdAt: new Date(),
 					updatedAt: new Date(),
-				} as unknown as NotificationEntity;
+				} as NotificationEntity;
+				notificationRepoMock.createNotification.mockResolvedValue(mappedEntity);
+				return { notification, mappedEntity };
+			};
+			it('should create a notification and log info', async () => {
+				const { notification, mappedEntity } = setup();
 
 				const mapSpy = jest.spyOn(NotificationMapper, 'mapToEntity').mockReturnValue(mappedEntity);
-
-				notificationRepoMock.createNotification.mockResolvedValue(mappedEntity);
-
 				const result = await sut.create(notification);
 
 				expect(mapSpy).toHaveBeenCalledWith(notification);

@@ -12,9 +12,8 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { authorizationClientConfig, config } from './common-cartridge.config';
 import { CommonCartridgeModule } from './common-cartridge.module';
 import { CommonCartridgeController } from './controller/common-cartridge.controller';
-import { NotificationController } from './notification/notification.controller';
-import { NotificationModule } from './notification/notification.module';
-import { NotificationService } from './notification/domain/service';
+import { NotificationController } from '../notification/notification.controller';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
 	imports: [

@@ -12,6 +12,8 @@ describe(NotificationMapper.name, () => {
 					key: 'NOTIFICATION_KEY',
 					arguments: ['arg1', 'arg2'],
 					userId: 'user-id',
+					createdAt: new Date(),
+					updatedAt: new Date(),
 				} as unknown as NotificationEntity;
 
 				const expectedDomainObject = new Notification({
@@ -20,6 +22,8 @@ describe(NotificationMapper.name, () => {
 					key: entity.key as string,
 					arguments: entity.arguments as string[],
 					userId: entity.userId as string,
+					createdAt: new Date(),
+					updatedAt: new Date(),
 				});
 
 				return { entity, expectedDomainObject };
@@ -53,6 +57,8 @@ describe(NotificationMapper.name, () => {
 						key: 'NOTIFICATION_KEY_1',
 						arguments: ['arg1'],
 						userId: 'user-id-1',
+						createdAt: new Date(),
+						updatedAt: new Date(),
 					} as unknown as NotificationEntity,
 					{
 						id: 'notification-id-2',
@@ -60,6 +66,8 @@ describe(NotificationMapper.name, () => {
 						key: 'NOTIFICATION_KEY_2',
 						arguments: ['arg2a', 'arg2b'],
 						userId: 'user-id-2',
+						createdAt: new Date(),
+						updatedAt: new Date(),
 					} as unknown as NotificationEntity,
 				];
 
@@ -71,6 +79,8 @@ describe(NotificationMapper.name, () => {
 							key: entity.key as string,
 							arguments: entity.arguments as string[],
 							userId: entity.userId as string,
+							createdAt: new Date(),
+							updatedAt: new Date(),
 						})
 				);
 
@@ -107,6 +117,8 @@ describe(NotificationMapper.name, () => {
 					key: 'NOTIFICATION_KEY',
 					arguments: ['arg1', 'arg2'],
 					userId: 'user-id',
+					createdAt: new Date(),
+					updatedAt: new Date(),
 				});
 
 				const expectedEntity = new NotificationEntity({
@@ -162,6 +174,8 @@ describe(NotificationMapper.name, () => {
 						key: 'NOTIFICATION_KEY_1',
 						arguments: ['arg1'],
 						userId: 'user-id-1',
+						createdAt: new Date(),
+						updatedAt: new Date(),
 					}),
 					new Notification({
 						id: 'notification-id-2',
@@ -169,6 +183,8 @@ describe(NotificationMapper.name, () => {
 						key: 'NOTIFICATION_KEY_2',
 						arguments: ['arg2a', 'arg2b'],
 						userId: 'user-id-2',
+						createdAt: new Date(),
+						updatedAt: new Date(),
 					}),
 				];
 

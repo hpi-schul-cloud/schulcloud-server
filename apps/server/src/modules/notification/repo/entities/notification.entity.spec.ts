@@ -1,4 +1,3 @@
-import { ObjectId } from 'bson';
 import { NotificationEntity, NotificationEntityProps } from './notification.entity';
 
 describe(NotificationEntity.name, () => {
@@ -25,7 +24,7 @@ describe(NotificationEntity.name, () => {
 		describe('When constructor is called with all optional properties', () => {
 			const setup = () => {
 				const props: NotificationEntityProps = {
-					id: 'some-id' as any,
+					id: 'some-id',
 					type: 'INFO',
 					key: 'SOME_NOTIFICATION_KEY',
 					arguments: ['arg1', 'arg2'],

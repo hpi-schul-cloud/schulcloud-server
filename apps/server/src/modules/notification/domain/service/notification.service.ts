@@ -16,8 +16,9 @@ export class NotificationService {
 	public async create(notification: Notification): Promise<NotificationEntity> {
 		const entity = NotificationMapper.mapToEntity(notification);
 		await this.notificationRepo.createNotification(entity);
-		if ((entity.type = NotificationType.ERROR)) {
-			this.logger.warning(new NotificationLoggable('An error occurred during the import process:' + entity.arguments));
+		if (entity.type == NotificationType.ERROR) {
+			const argsText = entity.arguments ? entity.arguments.join(', ') : '';
+			this.logger.warning(new NotificationLoggable(`An error occurred during the import process: ${argsText}`));
 		} else {
 			this.logger.info(new NotificationLoggable('The import was successful.'));
 		}

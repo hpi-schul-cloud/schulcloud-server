@@ -1,17 +1,12 @@
-import { Controller, Injectable, Post, Param, Body, HttpCode } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode } from '@nestjs/common';
 import { NotificationService } from './domain/service/notification.service';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { not } from 'cheerio/dist/commonjs/api/traversing';
-import { NotificationType } from './types/notification-type.enum';
-import { Notification, NotificationProps } from './domain/do';
-import { ObjectId } from 'bson';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { NotificationProps, Notification } from './domain/do';
+import { ObjectId } from 'bson';
 
 @ApiTags('Notification')
 @JwtAuthentication()
-// @Controller({
-//     path: 'notification',
-// })
 @Controller('notification')
 export class NotificationController {
 	constructor(private readonly notificationService: NotificationService) {}
@@ -19,34 +14,36 @@ export class NotificationController {
 	@Post()
 	@HttpCode(202)
 	@ApiOperation({
-		summary: '"Queueing" a deletion request',
+		summary: '"Creating" a deletion request',
 	})
 	@ApiResponse({
 		status: 202,
 		type: 'test',
-		description: 'Returns identifier of the deletion request and when deletion is planned at',
+		description: 'Returns identifier of the create request and when create is planned at',
 	})
 	@HttpCode(404)
 	@ApiResponse({
 		status: 404,
 		type: 'test',
 	})
-	public createNotification(
+	public async createNotification(
 		@Body('type') type: string,
-		@Body('key') key: string
-		// @Body('arguments') args: string[],
-		// @CurrentUser() user: ICurrentUser
-	): string {
-		// const notificationProps: NotificationProps = {
-		//     id: new ObjectId().toHexString(),
-		//     type,
-		//     key,
-		//     arguments: args,
-		//     userId: user.userId,
-		// };
+		@Body('key') key: string,
+		@Body('arguments') args: string[],
+		@CurrentUser() user: ICurrentUser
+	): Promise<string> {
+		const notificationProps: NotificationProps = {
+			id: new ObjectId().toHexString(),
+			type,
+			key,
+			arguments: args,
+			userId: user.userId,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
 
-		// const notification = new Notification(notificationProps);
-		// await this.notificationService.create(notification);
+		const notification = new Notification(notificationProps);
+		await this.notificationService.create(notification);
 		return 'test'; //console.log("test");
 	}
 
