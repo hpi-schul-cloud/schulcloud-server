@@ -8,15 +8,15 @@ import {
 	MediaSourceService,
 	MediaSourceVidisConfig,
 } from '@modules/media-source';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 import { MediaSourcesSeedDataService } from './media-sources-seed-data.service';
 
 describe(MediaSourcesSeedDataService.name, () => {
 	let module: TestingModule;
 	let service: MediaSourcesSeedDataService;
 
-	let configService: DeepMocked<ConfigService>;
+	let config: ManagementSeedDataConfig;
 	let mediaSourceService: DeepMocked<MediaSourceService>;
 	let encryptionService: DeepMocked<EncryptionService>;
 
@@ -25,8 +25,8 @@ describe(MediaSourcesSeedDataService.name, () => {
 			providers: [
 				MediaSourcesSeedDataService,
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: MANAGEMENT_SEED_DATA_CONFIG_TOKEN,
+					useValue: {},
 				},
 				{
 					provide: MediaSourceService,
@@ -40,7 +40,7 @@ describe(MediaSourcesSeedDataService.name, () => {
 		}).compile();
 
 		service = module.get(MediaSourcesSeedDataService);
-		configService = module.get(ConfigService);
+		config = module.get(MANAGEMENT_SEED_DATA_CONFIG_TOKEN);
 		mediaSourceService = module.get(MediaSourceService);
 		encryptionService = module.get(DefaultEncryptionService);
 	});
@@ -56,8 +56,8 @@ describe(MediaSourcesSeedDataService.name, () => {
 	describe('import', () => {
 		describe('when the vidis secrets are defined', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce('test-username');
-				configService.get.mockReturnValueOnce('test-password');
+				config.mediaSourceVidisUsername = 'test-username';
+				config.mediaSourceVidisPassword = 'test-password';
 				encryptionService.encrypt.mockReturnValueOnce('encrypted-test-username');
 				encryptionService.encrypt.mockReturnValueOnce('encrypted-test-password');
 			};
@@ -104,8 +104,8 @@ describe(MediaSourcesSeedDataService.name, () => {
 
 		describe('when the vidis secrets are not defined', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(undefined);
-				configService.get.mockReturnValueOnce(undefined);
+				config.mediaSourceVidisUsername = undefined;
+				config.mediaSourceVidisPassword = undefined;
 			};
 
 			it('should not import vidis', async () => {
@@ -130,16 +130,8 @@ describe(MediaSourcesSeedDataService.name, () => {
 				const biloClientId = 'test-client-id';
 				const biloClientSecret = 'test-client-secret';
 
-				configService.get.mockImplementation((key: string) => {
-					switch (key) {
-						case 'MEDIA_SOURCE_BILO_CLIENT_ID':
-							return biloClientId;
-						case 'MEDIA_SOURCE_BILO_CLIENT_SECRET':
-							return biloClientSecret;
-						default:
-							return undefined;
-					}
-				});
+				config.mediaSourceBiloClientId = biloClientId;
+				config.mediaSourceBiloClientSecret = biloClientSecret;
 
 				const encryptedClientSecret = 'encrypted-test-client-secret';
 				encryptionService.encrypt.mockReturnValueOnce(encryptedClientSecret);
@@ -188,14 +180,8 @@ describe(MediaSourcesSeedDataService.name, () => {
 
 		describe('when the bilo secrets are not defined', () => {
 			const setup = () => {
-				configService.get.mockImplementation((key: string) => {
-					switch (key) {
-						case 'MEDIA_SOURCE_BILO_CLIENT_ID':
-						case 'MEDIA_SOURCE_BILO_CLIENT_SECRET':
-						default:
-							return undefined;
-					}
-				});
+				config.mediaSourceBiloClientId = undefined;
+				config.mediaSourceBiloClientSecret = undefined;
 			};
 
 			it('should not import bilo media source', async () => {
@@ -217,20 +203,10 @@ describe(MediaSourcesSeedDataService.name, () => {
 
 		describe('when more than one secrets are defined', () => {
 			const setup = () => {
-				configService.get.mockImplementation((key: string) => {
-					switch (key) {
-						case 'MEDIA_SOURCE_VIDIS_USERNAME':
-							return 'test-vidis-username';
-						case 'MEDIA_SOURCE_VIDIS_PASSWORD':
-							return 'test-vidis-password';
-						case 'MEDIA_SOURCE_BILO_CLIENT_ID':
-							return 'test-bilo-client-id';
-						case 'MEDIA_SOURCE_BILO_CLIENT_SECRET':
-							return 'test-bilo-client-secret';
-						default:
-							return undefined;
-					}
-				});
+				config.mediaSourceVidisUsername = 'test-vidis-username';
+				config.mediaSourceVidisPassword = 'test-vidis-password';
+				config.mediaSourceBiloClientId = 'test-bilo-client-id';
+				config.mediaSourceBiloClientSecret = 'test-bilo-client-secret';
 			};
 
 			it('should return the number of media source imported', async () => {

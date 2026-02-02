@@ -1,4 +1,5 @@
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
 import { ConsoleWriterService } from '@infra/console';
 import { EncryptionModule } from '@infra/encryption';
 import { FeathersModule } from '@infra/feathers';
@@ -25,6 +26,7 @@ import { DatabaseManagementConsole } from './console/database-management.console
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';
 import { MANAGMENT_ENCRYPTION_CONFIG_TOKEN, ManagmentEncryptionConfig } from './encryption.config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from './management-seed-data.config';
 import {
 	ExternalToolsSeedDataService,
 	InstancesSeedDataService,
@@ -38,6 +40,7 @@ const imports = [
 	FileSystemModule,
 	LoggerModule,
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
+	ConfigurationModule.register(MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig),
 	EncryptionModule.register(ManagmentEncryptionConfig, MANAGMENT_ENCRYPTION_CONFIG_TOKEN),
 	FeathersModule,
 	MediaSourceModule,
