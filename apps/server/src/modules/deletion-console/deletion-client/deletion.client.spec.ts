@@ -9,7 +9,7 @@ import { DeletionRequestInputBuilder, DeletionRequestOutputBuilder } from '.';
 import { DeletionConsoleConfig } from '../deletion.config';
 import { DeletionClient } from './deletion.client';
 import { DeletionRequestOutput } from './interface';
-import { ObjectID } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 describe(DeletionClient.name, () => {
 	let module: TestingModule;
@@ -186,7 +186,7 @@ describe(DeletionClient.name, () => {
 		const mockGetRequestIds = () => {
 			const getResponse1: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
 				status: 200,
-				data: [new ObjectID().toHexString()],
+				data: [new ObjectId().toHexString()],
 			});
 			const getResponse2: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
 				status: 200,

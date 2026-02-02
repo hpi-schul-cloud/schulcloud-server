@@ -1,4 +1,5 @@
 import { ILibraryName } from '@lumieducation/h5p-server';
+import { EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
@@ -7,7 +8,7 @@ import { H5PContent } from './entity';
 
 @Injectable()
 export class H5PContentRepo extends BaseRepo<H5PContent> {
-	get entityName(): typeof H5PContent {
+	get entityName(): EntityName<H5PContent> {
 		return H5PContent;
 	}
 
