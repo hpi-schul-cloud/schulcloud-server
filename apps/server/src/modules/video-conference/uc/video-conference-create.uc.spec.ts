@@ -43,7 +43,7 @@ describe('VideoConferenceCreateUc', () => {
 				{
 					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
 					useValue: {
-						host: 'http://test-host',
+						scHostUrl: 'http://test-host',
 					},
 				},
 			],

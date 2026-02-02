@@ -137,7 +137,7 @@ describe('VideoConferenceUc', () => {
 				{
 					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
 					useValue: {
-						host: hostUrl,
+						scHostUrl: hostUrl,
 						featureVideoConferenceEnabled: true,
 					},
 				},

@@ -1,5 +1,5 @@
 import { UserService } from '@modules/user';
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BBBJoinConfigBuilder, BBBRole, BBBService } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
@@ -7,7 +7,6 @@ import { PermissionMapping } from '../mapper/video-conference.mapper';
 import { VideoConferenceService } from '../service';
 import { ScopeRef, VideoConferenceJoin, VideoConferenceState } from './dto';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
-import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 
 @Injectable()
 export class VideoConferenceJoinUc {
@@ -15,8 +14,7 @@ export class VideoConferenceJoinUc {
 		private readonly bbbService: BBBService,
 		private readonly userService: UserService,
 		private readonly videoConferenceService: VideoConferenceService,
-		private readonly videoConferenceFeatureService: VideoConferenceFeatureService,
-		@Inject(VIDEO_CONFERENCE_CONFIG_TOKEN) private readonly config: VideoConferenceConfig
+		private readonly videoConferenceFeatureService: VideoConferenceFeatureService
 	) {}
 
 	public async join(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConferenceJoin> {
