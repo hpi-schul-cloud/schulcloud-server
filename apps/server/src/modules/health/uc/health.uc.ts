@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
-import { Logger } from '@core/logger';
 import { ErrorLoggable } from '@core/error/loggable';
+import { Logger } from '@core/logger';
+import { HealthStatus, HealthStatusCheck, HealthStatuses } from '../domain';
+import { HEALTH_CONFIG_TOKEN, HealthConfig } from '../health.config';
 import { HealthService } from '../service';
-import { HealthConfig } from '../health.config';
-import { HealthStatuses, HealthStatusCheck, HealthStatus } from '../domain';
 
 const selfOnlyHealthDescription = 'Service health status (self-only)';
 
@@ -29,11 +29,15 @@ function hasMessage(error: unknown): error is { message: string } {
 
 @Injectable()
 export class HealthUC {
-	constructor(private readonly healthService: HealthService, private readonly logger: Logger) {
+	constructor(
+		private readonly healthService: HealthService,
+		private readonly logger: Logger,
+		@Inject(HEALTH_CONFIG_TOKEN) private readonly healthConfig: HealthConfig
+	) {
 		this.logger.setContext(HealthUC.name);
 	}
 
-	checkSelfHealth(): HealthStatus {
+	public checkSelfHealth(): HealthStatus {
 		// This health check verifies just the correct module setup and doesn't include
 		// any additional check on any of the internal or external 3rd party services.
 		// It can be used to verify if application is just alive, but it doesn't provide
@@ -44,7 +48,7 @@ export class HealthUC {
 		});
 	}
 
-	async checkOverallHealth(): Promise<HealthStatus> {
+	public async checkOverallHealth(): Promise<HealthStatus> {
 		// The below check allows for turning off the MongoDB dependency on the health check -
 		// it shouldn't be typically used, but if this health check will be used e.g. in the k8s
 		// liveliness or readiness probes and, for any reason, there would be a need to stop
@@ -53,7 +57,7 @@ export class HealthUC {
 		// MongoDB check is included in the overall API health checks, the whole health check will
 		// not perform any additional checks on any of the 3rd party services and thus will behave
 		// like the self-only API health check.
-		if (HealthConfig.instance.excludeMongoDB) {
+		if (this.healthConfig.excludeMongoDB) {
 			return new HealthStatus({
 				status: HealthStatuses.STATUS_PASS,
 				description: overallHealthDescription,
@@ -68,8 +72,8 @@ export class HealthUC {
 
 			// If hostname is available in the health module
 			// config, append it to the health check ID.
-			if (HealthConfig.instance.hostname !== '') {
-				healthCheckID += `-${HealthConfig.instance.hostname}`;
+			if (this.healthConfig.hostname !== '') {
+				healthCheckID += `-${this.healthConfig.hostname}`;
 			}
 
 			await this.healthService.upsertHealthCheckById(healthCheckID);

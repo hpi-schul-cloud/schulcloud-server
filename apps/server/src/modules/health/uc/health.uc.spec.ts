@@ -1,22 +1,19 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 
-import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { Logger } from '@core/logger';
-import { HealthUC } from './health.uc';
-import { HealthService } from '../service';
 import { HealthStatuses } from '../domain';
-import { HealthConfig } from '../health.config';
+import { HEALTH_CONFIG_TOKEN, HealthConfig } from '../health.config';
+import { HealthService } from '../service';
+import { HealthUC } from './health.uc';
 
 describe(HealthUC.name, () => {
-	let configBefore: IConfig;
 	let module: TestingModule;
 	let uc: HealthUC;
 	let service: DeepMocked<HealthService>;
+	let healthConfig: HealthConfig;
 
 	beforeAll(async () => {
-		configBefore = Configuration.toObject({ plainSecrets: true });
 		module = await Test.createTestingModule({
 			providers: [
 				HealthUC,
@@ -28,18 +25,21 @@ describe(HealthUC.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: HEALTH_CONFIG_TOKEN,
+					useValue: {
+						hostname: 'localhost',
+						excludeMongoDB: false,
+					},
+				},
 			],
 		}).compile();
 		uc = module.get(HealthUC);
 		service = module.get(HealthService);
-	});
-
-	beforeEach(() => {
-		Configuration.reset(configBefore);
+		healthConfig = module.get<HealthConfig>(HEALTH_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
-		Configuration.reset(configBefore);
 		await module.close();
 	});
 
@@ -55,8 +55,7 @@ describe(HealthUC.name, () => {
 		describe('should return', () => {
 			describe(`'${HealthStatuses.STATUS_PASS}' health status if MongoDB`, () => {
 				it('has been excluded from the checks', async () => {
-					Configuration.set('HEALTH_CHECKS_EXCLUDE_MONGODB', true);
-					HealthConfig.reload();
+					healthConfig.excludeMongoDB = true;
 
 					const healthStatus = await uc.checkOverallHealth();
 
@@ -65,9 +64,8 @@ describe(HealthUC.name, () => {
 				});
 
 				it("hasn't been excluded from the checks and health service did not return any error", async () => {
-					Configuration.set('HOSTNAME', 'test-hostname');
-					Configuration.set('HEALTH_CHECKS_EXCLUDE_MONGODB', false);
-					HealthConfig.reload();
+					healthConfig.hostname = 'test-hostname';
+					healthConfig.excludeMongoDB = false;
 
 					const healthStatus = await uc.checkOverallHealth();
 
@@ -80,9 +78,8 @@ describe(HealthUC.name, () => {
 				it('contains a message', async () => {
 					service.upsertHealthCheckById.mockRejectedValueOnce(new Error('some test error message...'));
 
-					Configuration.set('HOSTNAME', 'test-hostname');
-					Configuration.set('HEALTH_CHECKS_EXCLUDE_MONGODB', false);
-					HealthConfig.reload();
+					healthConfig.hostname = 'test-hostname';
+					healthConfig.excludeMongoDB = false;
 
 					const healthStatus = await uc.checkOverallHealth();
 
@@ -93,9 +90,8 @@ describe(HealthUC.name, () => {
 				it("doesn't contain a message", async () => {
 					service.upsertHealthCheckById.mockRejectedValueOnce('just some plain string...');
 
-					Configuration.set('HOSTNAME', 'test-hostname');
-					Configuration.set('HEALTH_CHECKS_EXCLUDE_MONGODB', false);
-					HealthConfig.reload();
+					healthConfig.hostname = 'test-hostname';
+					healthConfig.excludeMongoDB = false;
 
 					const healthStatus = await uc.checkOverallHealth();
 
