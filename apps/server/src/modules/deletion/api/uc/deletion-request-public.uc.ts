@@ -48,8 +48,7 @@ export class DeletionRequestPublicUc {
 			throw new ForbiddenException('Cannot request deletion for user from different school');
 		}
 
-		const minutes =
-			deletionRequest.deleteAfterMinutes ?? this.configService.get<number>('ADMIN_API__DELETION_DELETE_AFTER_MINUTES');
+		const minutes = deletionRequest.deleteAfterMinutes ?? 0;
 		const deleteAfter = new Date();
 		deleteAfter.setMinutes(deleteAfter.getMinutes() + minutes);
 
