@@ -1,4 +1,3 @@
-/* eslint-disable filename-rules/match */
 import { Logger } from '@core/logger';
 import { ICurrentUser } from '@infra/auth-guard';
 import {

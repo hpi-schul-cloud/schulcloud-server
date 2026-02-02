@@ -117,6 +117,13 @@ module.exports = {
 			},
 			overrides: [
 				{
+					files: ['apps/server/src/modules/h5p-editor/**/*.ts'],
+					rules: {
+						// Allow 'h5p' prefix in filenames for h5p-editor module
+						'filename-rules/match': [1, /^(h5p-|[a-z0-9]+-)*[a-z0-9]+(?:\..*)?$/],
+					},
+				},
+				{
 					files: ['**/*spec.ts'],
 					plugins: ['jest'],
 					env: {
