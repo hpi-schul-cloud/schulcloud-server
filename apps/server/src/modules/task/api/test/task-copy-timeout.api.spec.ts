@@ -11,20 +11,19 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '../../task.config';
 import { taskFactory } from '../../testing';
-// config must be set outside before the server module is imported, otherwise the configuration is already set
-Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
 
 // eslint-disable-next-line import/first
+import { MERGED_TIMEOUT_CONFIG_TOKEN } from '@core/interceptor';
 import { ServerTestModule } from '@modules/server/server.app.module';
+import { TaskTimeoutConfig } from '../../timeout.config';
 
-// This needs to be in a separate test file because of the above configuration.
-// When we find a way to mock the config, it should be moved alongside the other API tests.
 describe('Task copy (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let configBefore: IConfig;
 	let apiClient: TestApiClient;
 	let config: TaskPublicApiConfig;
+	let timeoutConfig: TaskTimeoutConfig;
 
 	beforeAll(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
@@ -41,6 +40,7 @@ describe('Task copy (API)', () => {
 		apiClient = new TestApiClient(app, '/tasks');
 		config = app.get<TaskPublicApiConfig>(TASK_PUBLIC_API_CONFIG_TOKEN);
 		config.featureCopyServiceEnabled = true;
+		timeoutConfig = app.get(MERGED_TIMEOUT_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -58,6 +58,8 @@ describe('Task copy (API)', () => {
 		em.clear();
 
 		const loggedInClient = await apiClient.login(teacherAccount);
+
+		timeoutConfig.incomingRequestTimeout = 1;
 
 		return { loggedInClient, task };
 	};

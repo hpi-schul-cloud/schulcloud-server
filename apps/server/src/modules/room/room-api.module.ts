@@ -1,3 +1,4 @@
+import { RegisterTimeoutConfig } from '@core/interceptor/register-timeout-config.decorator';
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { AccountModule } from '@modules/account/account.module';
@@ -24,6 +25,7 @@ import {
 } from './api/service';
 import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from './room.config';
 import { RoomModule } from './room.module';
+import { ROOM_TIMEOUT_CONFIG_TOKEN, RoomTimeoutConfig } from './timeout.config';
 
 @Module({
 	imports: [
@@ -55,4 +57,5 @@ import { RoomModule } from './room.module';
 		RoomBoardService,
 	],
 })
+@RegisterTimeoutConfig(ROOM_TIMEOUT_CONFIG_TOKEN, RoomTimeoutConfig)
 export class RoomApiModule {}

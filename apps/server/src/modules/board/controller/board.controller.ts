@@ -15,6 +15,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
+import { INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 import { BoardUc } from '../uc';
 import {
 	BoardResponse,
@@ -29,7 +30,6 @@ import {
 import { BoardContextResponse } from './dto/board/board-context.reponse';
 import { ReadersCanEditBodyParams } from './dto/board/readers-can-edit.body.params';
 import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from './mapper';
-import { INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../board-timeout.config';
 
 @ApiTags('Board')
 @JwtAuthentication()

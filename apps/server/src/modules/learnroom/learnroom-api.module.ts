@@ -1,3 +1,5 @@
+import { RegisterTimeoutConfig } from '@core/interceptor/register-timeout-config.decorator';
+import { ConfigurationModule } from '@infra/configuration';
 import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization-reference';
 import { ClassModule } from '@modules/class';
@@ -16,6 +18,7 @@ import { LearnroomModule } from './learnroom.module';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 import { DashboardModelMapper, DashboardRepo, LegacyBoardRepo } from './repo';
 import { DASHBOARD_REPO } from './repo/mikro-orm/dashboard.repo';
+import { LEARNROOM_TIMEOUT_CONFIG_TOKEN, LearnroomTimeoutConfig } from './timeout.config';
 import {
 	CourseCopyUC,
 	CourseRoomsAuthorisationService,
@@ -24,7 +27,6 @@ import {
 	LessonCopyUC,
 	RoomBoardDTOFactory,
 } from './uc';
-import { ConfigurationModule } from '@infra/configuration';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future
@@ -63,4 +65,5 @@ import { ConfigurationModule } from '@infra/configuration';
 		LegacyBoardRepo,
 	],
 })
+@RegisterTimeoutConfig(LEARNROOM_TIMEOUT_CONFIG_TOKEN, LearnroomTimeoutConfig)
 export class LearnroomApiModule {}

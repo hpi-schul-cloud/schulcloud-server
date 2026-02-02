@@ -14,6 +14,8 @@ import { Module } from '@nestjs/common';
 import { ImportTokenUC, ShareTokenController, ShareTokenPermissionService, ShareTokenUC } from './api';
 import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from './sharing.config';
 import { SharingModule } from './sharing.module';
+import { RegisterTimeoutConfig } from '@core/interceptor/register-timeout-config.decorator';
+import { SHARING_TIMEOUT_CONFIG_TOKEN, SharingTimeoutConfig } from './timeout.config';
 
 @Module({
 	imports: [
@@ -34,4 +36,5 @@ import { SharingModule } from './sharing.module';
 	controllers: [ShareTokenController],
 	providers: [ShareTokenUC, ImportTokenUC, ShareTokenPermissionService],
 })
+@RegisterTimeoutConfig(SHARING_TIMEOUT_CONFIG_TOKEN, SharingTimeoutConfig)
 export class SharingApiModule {}

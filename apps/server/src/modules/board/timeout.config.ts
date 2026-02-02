@@ -1,4 +1,4 @@
-import { TimeoutConfig } from '@core/interceptor/timeout-interceptor-config';
+import { TimeoutConfig } from '@core/interceptor';
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToNumber } from '@shared/controller/transformer';
 import { IsNumber } from 'class-validator';
@@ -12,9 +12,4 @@ export class BoardTimeoutConfig extends TimeoutConfig {
 	@IsNumber()
 	@StringToNumber()
 	public [INCOMING_REQUEST_TIMEOUT_COPY_API_KEY]!: number;
-
-	@ConfigProperty('INCOMING_REQUEST_TIMEOUT_API')
-	@IsNumber()
-	@StringToNumber()
-	public incomingRequestTimeout = 8000;
 }

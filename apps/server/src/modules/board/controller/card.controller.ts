@@ -16,7 +16,7 @@ import {
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
-import { INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../board-timeout.config';
+import { INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 import { CardUc, ColumnUc } from '../uc';
 import {
 	AnyContentElementResponse,

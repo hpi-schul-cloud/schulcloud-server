@@ -1,4 +1,3 @@
-import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { ManagementSeedDataConfig } from '@modules/management';
 import type { LanguageType } from '@shared/domain/interface';
@@ -14,7 +13,7 @@ export enum NodeEnvType {
 
 // Environment keys should be added over configs from modules, directly adding is only allow for legacy stuff
 // Maye some of them must be outsourced to additional microservice config endpoints.
-export interface ServerConfig extends CoreModuleConfig, ManagementSeedDataConfig {
+export interface ServerConfig extends ManagementSeedDataConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -113,7 +112,6 @@ const config: ServerConfig = {
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	SC_SHORTNAME: Configuration.get('SC_SHORTNAME') as string,
 	TRAINING_URL: Configuration.get('TRAINING_URL') as string,
-	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
 	NODE_ENV: Configuration.get('NODE_ENV') as NodeEnvType,
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,

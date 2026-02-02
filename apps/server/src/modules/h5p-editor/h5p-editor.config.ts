@@ -1,9 +1,8 @@
-import { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { LanguageType } from '@shared/domain/interface';
 import { getLibraryWhiteList } from './helper';
 
-export interface H5PEditorCoreConfig extends CoreModuleConfig {
+export interface H5PEditorCoreConfig {
 	INCOMING_REQUEST_TIMEOUT: number;
 }
 

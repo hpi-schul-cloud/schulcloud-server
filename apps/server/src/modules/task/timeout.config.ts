@@ -12,9 +12,4 @@ export class TaskTimeoutConfig extends TimeoutConfig {
 	@IsNumber()
 	@StringToNumber()
 	public [INCOMING_REQUEST_TIMEOUT_COPY_API_KEY]!: number;
-
-	@ConfigProperty('INCOMING_REQUEST_TIMEOUT_API')
-	@IsNumber()
-	@StringToNumber()
-	public incomingRequestTimeout = 8000;
 }

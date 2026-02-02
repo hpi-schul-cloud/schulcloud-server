@@ -1,5 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '@modules/board/board-timeout.config';
+import { INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '@modules/board/timeout.config';
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
