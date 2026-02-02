@@ -7,7 +7,7 @@ export const COLLABORATIVE_STORAGE_CONFIG_TOKEN = 'COLLABORATIVE_STORAGE_CONFIG_
 @Configuration()
 export class CollaborativeStorageConfig implements InternalCollaborativeStorageAdapterConfig {
 	@ConfigProperty('NEXTCLOUD_BASE_URL')
-	@IsUrl()
+	@IsUrl({ require_tld: false })
 	public nextcloudBaseUrl = 'http://nextcloud.localhost:9090';
 
 	@ConfigProperty('NEXTCLOUD_ADMIN_USERNAME')
