@@ -379,11 +379,6 @@
 			"default": "default",
 			"description": "The used theming."
 		},
-		"SC_SHORTNAME": {
-			"type": "string",
-			"default": "dbc",
-			"description": "The sort name of the instance (dbc, nbc, brb, thr)."
-		},
 		"FEATURE_OAUTH_LOGIN": {
 			"type": "boolean",
 			"default": "false",
@@ -498,45 +493,6 @@
 					"description": "If Session Valid time is smaller than this, a new session is created on request."
 				}
 			}
-		},
-		"NEXTCLOUD_BASE_URL": {
-			"type": "string",
-			"default": "http://nextcloud.localhost:9090",
-			"description": "API URI for Nextcloud"
-		},
-		"NEXTCLOUD_CLIENT_ID": {
-			"type": "string",
-			"description": "Client id for Nextcloud"
-		},
-		"NEXTCLOUD_CLIENT_SECRET": {
-			"type": "string",
-			"description": "Client secret for Nextcloud"
-		},
-		"NEXTCLOUD_SCOPES": {
-			"type:": "string",
-			"default": "openid offline profile email groups",
-			"description": "ClientId for Nextcloud Oauth2 Login"
-		},
-		"NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME": {
-			"type:": "string",
-			"default": "SchulcloudNextcloud",
-			"description": "Internal name of schulcloud oidc provider of nextcloud's social login app"
-		},
-		"MEDIA_SOURCE_VIDIS_USERNAME": {
-			"type:": "string",
-			"description": "Username for VIDIS api"
-		},
-		"MEDIA_SOURCE_VIDIS_PASSWORD": {
-			"type:": "string",
-			"description": "Password for VIDIS api"
-		},
-		"MEDIA_SOURCE_BILO_CLIENT_ID": {
-			"type:": "string",
-			"description": "Client id for Bildungslogin api"
-		},
-		"MEDIA_SOURCE_BILO_CLIENT_SECRET": {
-			"type:": "string",
-			"description": "Client secret for Bildungslogin api"
 		},
 		"HYDRA_PUBLIC_URI": {
 			"type:": "string",
