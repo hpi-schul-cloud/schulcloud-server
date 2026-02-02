@@ -102,8 +102,8 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 	}
 
 	public async getAllSchoolIds(): Promise<EntityId[]> {
-		const entities = await this.em.find(SchoolEntity, {}, { fields: ['_id'] });
-		const ids = entities.map((entity) => entity.id);
+		const objectIds = await this.em.getCollection(SchoolEntity).distinct('_id');
+		const ids = objectIds.map((objectId) => objectId.toString());
 
 		return ids;
 	}
