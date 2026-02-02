@@ -1,5 +1,6 @@
 /* eslint-disable filename-rules/match */
 import { Logger } from '@core/logger';
+import { ICurrentUser } from '@infra/auth-guard';
 import {
 	AuthorizationBodyParamsReferenceType,
 	AuthorizationClientAdapter,
@@ -81,6 +82,14 @@ export class H5PEditorUc {
 		await this.authorizationClientAdapter.checkPermissionsByReference(allowedType, parentId, context);
 	}
 
+	private async checkUserIsAuthenticatedAndEnrolled(currentUser: ICurrentUser): Promise<void> {
+		await this.authorizationClientAdapter.checkPermissionsByReference(
+			AuthorizationBodyParamsReferenceType.SCHOOLS,
+			currentUser.schoolId,
+			AuthorizationContextBuilder.read([])
+		);
+	}
+
 	private fakeUndefinedAsString = (): string => {
 		const value = undefined as unknown as string;
 
@@ -118,10 +127,12 @@ export class H5PEditorUc {
 
 	public async getAjax(
 		query: AjaxGetQueryParams,
-		userId: EntityId
+		currentUser: ICurrentUser
 	): Promise<IHubInfo | ILibraryDetailedDataForClient | IAjaxResponse | undefined> {
-		const user = this.changeUserType(userId);
-		const language = await this.getUserLanguage(userId);
+		await this.checkUserIsAuthenticatedAndEnrolled(currentUser);
+
+		const user = this.changeUserType(currentUser.userId);
+		const language = await this.getUserLanguage(currentUser.userId);
 
 		const result = await this.h5pAjaxEndpoint.getAjax(
 			query.action,
@@ -147,7 +158,7 @@ export class H5PEditorUc {
 	}
 
 	public async postAjax(
-		userId: EntityId,
+		currentUser: ICurrentUser,
 		query: AjaxPostQueryParams,
 		body: AjaxPostBodyParams,
 		contentFile?: Express.Multer.File,
@@ -163,10 +174,12 @@ export class H5PEditorUc {
 		| ILibraryOverviewForClient[]
 		| undefined
 	> {
+		await this.checkUserIsAuthenticatedAndEnrolled(currentUser);
+
 		let contentUploadFile: H5PUploadFile | undefined;
 		try {
-			const user = this.changeUserType(userId);
-			const language = await this.getUserLanguage(userId);
+			const user = this.changeUserType(currentUser.userId);
+			const language = await this.getUserLanguage(currentUser.userId);
 			contentUploadFile = await this.createContentUploadFile(contentFile);
 			const libraryUploadFile = this.createLibraryUploadFile(h5pFile);
 
@@ -303,7 +316,8 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async getLibraryFile(ubername: string, file: string): Promise<GetLibraryFile> {
+	public async getLibraryFile(ubername: string, file: string, currentUser: ICurrentUser): Promise<GetLibraryFile> {
+		await this.checkUserIsAuthenticatedAndEnrolled(currentUser);
 		try {
 			const { mimetype, size, stream } = await this.libraryService.getLibraryFile(ubername, file);
 
@@ -317,8 +331,9 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async getTemporaryFile(file: string, req: Request, userId: EntityId): Promise<GetLibraryFile> {
-		const user = this.changeUserType(userId);
+	public async getTemporaryFile(file: string, req: Request, currentUser: ICurrentUser): Promise<GetLibraryFile> {
+		await this.checkUserIsAuthenticatedAndEnrolled(currentUser);
+		const user = this.changeUserType(currentUser.userId);
 
 		try {
 			const rangeCallback = this.getRange(req);
@@ -347,8 +362,9 @@ export class H5PEditorUc {
 		return playerModel;
 	}
 
-	public async getEmptyH5pEditor(userId: EntityId, language: LanguageType): Promise<IEditorModel> {
-		const user = this.changeUserType(userId);
+	public async getEmptyH5pEditor(currentUser: ICurrentUser, language: LanguageType): Promise<IEditorModel> {
+		await this.checkUserIsAuthenticatedAndEnrolled(currentUser);
+		const user = this.changeUserType(currentUser.userId);
 		const fakeUndefinedString = this.fakeUndefinedAsString();
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
