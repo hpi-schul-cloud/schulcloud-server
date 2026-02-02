@@ -215,7 +215,7 @@
 		"disposable-email-domains-js": "^1.19.1",
 		"dompurify": "^3.2.6",
 		"es6-promisify": "^7.0.0",
-		"express": "^4.21.2",
+		"express": "^4.22.0",
 		"express-openapi-validator": "^5.5.6",
 		"feathers-hooks-common": "^8.2.1",
 		"feathers-swagger": "^3.0.0",
