@@ -15,14 +15,14 @@ import {
 	ToolContextType,
 } from '@modules/tool/common/enum';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MANAGEMENT_CONFIG_TOKEN, ManagementConfig } from '../management.config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 import { ExternalToolsSeedDataService } from './external-tools-seed-data.service';
 
 describe(ExternalToolsSeedDataService.name, () => {
 	let module: TestingModule;
 	let service: ExternalToolsSeedDataService;
 
-	let config: ManagementConfig;
+	let config: ManagementSeedDataConfig;
 	let encryptionService: DeepMocked<EncryptionService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let oauthProviderService: DeepMocked<OauthProviderService>;
@@ -33,7 +33,7 @@ describe(ExternalToolsSeedDataService.name, () => {
 			providers: [
 				ExternalToolsSeedDataService,
 				{
-					provide: MANAGEMENT_CONFIG_TOKEN,
+					provide: MANAGEMENT_SEED_DATA_CONFIG_TOKEN,
 					useValue: {},
 				},
 				{
@@ -56,7 +56,7 @@ describe(ExternalToolsSeedDataService.name, () => {
 		}).compile();
 
 		service = module.get(ExternalToolsSeedDataService);
-		config = module.get(MANAGEMENT_CONFIG_TOKEN);
+		config = module.get(MANAGEMENT_SEED_DATA_CONFIG_TOKEN);
 		encryptionService = module.get(DefaultEncryptionService);
 		externalToolService = module.get(ExternalToolService);
 		oauthProviderService = module.get(OauthProviderService);

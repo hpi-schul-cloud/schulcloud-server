@@ -2,12 +2,12 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { MediaSource, MediaSourceService } from '@modules/media-source';
 import { MediaSourceAuthMethod, MediaSourceDataFormat } from '@modules/media-source/enum';
 import { Inject, Injectable } from '@nestjs/common';
-import { MANAGEMENT_CONFIG_TOKEN, ManagementConfig } from '../management.config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 
 @Injectable()
 export class MediaSourcesSeedDataService {
 	constructor(
-		@Inject(MANAGEMENT_CONFIG_TOKEN) private readonly config: ManagementConfig,
+		@Inject(MANAGEMENT_SEED_DATA_CONFIG_TOKEN) private readonly config: ManagementSeedDataConfig,
 		private readonly mediaSourceService: MediaSourceService,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService
 	) {}

@@ -14,12 +14,12 @@ import {
 	ToolContextType,
 } from '@modules/tool/common/enum';
 import { Inject, Injectable } from '@nestjs/common';
-import { MANAGEMENT_CONFIG_TOKEN, ManagementConfig } from '../management.config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 
 @Injectable()
 export class ExternalToolsSeedDataService {
 	constructor(
-		@Inject(MANAGEMENT_CONFIG_TOKEN) private readonly config: ManagementConfig,
+		@Inject(MANAGEMENT_SEED_DATA_CONFIG_TOKEN) private readonly config: ManagementSeedDataConfig,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
 		private readonly externalToolService: ExternalToolService,
 		private readonly oauthProviderService: OauthProviderService,

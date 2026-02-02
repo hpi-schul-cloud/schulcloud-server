@@ -1,14 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Instance, InstanceService } from '@modules/instance';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MANAGEMENT_CONFIG_TOKEN, ManagementConfig } from '../management.config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 import { InstancesSeedDataService } from './instances-seed-data.service';
 
 describe(InstancesSeedDataService.name, () => {
 	let module: TestingModule;
 	let service: InstancesSeedDataService;
 
-	let config: ManagementConfig;
+	let config: ManagementSeedDataConfig;
 	let instanceService: DeepMocked<InstanceService>;
 
 	beforeAll(async () => {
@@ -16,7 +16,7 @@ describe(InstancesSeedDataService.name, () => {
 			providers: [
 				InstancesSeedDataService,
 				{
-					provide: MANAGEMENT_CONFIG_TOKEN,
+					provide: MANAGEMENT_SEED_DATA_CONFIG_TOKEN,
 					useValue: {},
 				},
 				{
@@ -27,7 +27,7 @@ describe(InstancesSeedDataService.name, () => {
 		}).compile();
 
 		service = module.get(InstancesSeedDataService);
-		config = module.get(MANAGEMENT_CONFIG_TOKEN);
+		config = module.get(MANAGEMENT_SEED_DATA_CONFIG_TOKEN);
 		instanceService = module.get(InstanceService);
 	});
 

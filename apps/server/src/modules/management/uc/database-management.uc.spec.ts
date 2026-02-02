@@ -9,7 +9,7 @@ import { SystemEntity } from '@modules/system/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BsonConverter } from '../converter/bson.converter';
-import { MANAGEMENT_CONFIG_TOKEN, ManagementConfig } from '../management.config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 import { generateSeedData } from '../seed-data/generate-seed-data';
 import {
 	ExternalToolsSeedDataService,
@@ -26,7 +26,7 @@ describe('DatabaseManagementService', () => {
 
 	let fileSystemAdapter: DeepMocked<FileSystemAdapter>;
 	let dbService: DeepMocked<DatabaseManagementService>;
-	let config: ManagementConfig;
+	let config: ManagementSeedDataConfig;
 	let logger: DeepMocked<LegacyLogger>;
 	let defaultEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
 	let mediaSourcesSeedDataService: DeepMocked<MediaSourcesSeedDataService>;
@@ -162,7 +162,7 @@ describe('DatabaseManagementService', () => {
 				DatabaseManagementUc,
 				BsonConverter,
 				{ provide: DefaultEncryptionService, useValue: createMock<SymmetricKeyEncryptionService>() },
-				{ provide: MANAGEMENT_CONFIG_TOKEN, useValue: {} },
+				{ provide: MANAGEMENT_SEED_DATA_CONFIG_TOKEN, useValue: {} },
 				{ provide: LegacyLogger, useValue: createMock<LegacyLogger>() },
 				{ provide: EntityManager, useValue: createMock<EntityManager>() },
 				{ provide: MediaSourcesSeedDataService, useValue: createMock<MediaSourcesSeedDataService>() },
@@ -239,7 +239,7 @@ describe('DatabaseManagementService', () => {
 		fileSystemAdapter = module.get(FileSystemAdapter);
 		dbService = module.get(DatabaseManagementService);
 		bsonConverter = module.get(BsonConverter);
-		config = module.get(MANAGEMENT_CONFIG_TOKEN);
+		config = module.get(MANAGEMENT_SEED_DATA_CONFIG_TOKEN);
 		logger = module.get(LegacyLogger);
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		mediaSourcesSeedDataService = module.get(MediaSourcesSeedDataService);

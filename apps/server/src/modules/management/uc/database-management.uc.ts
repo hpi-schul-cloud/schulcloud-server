@@ -9,7 +9,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AesEncryptionHelper } from '@shared/common/utils';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
-import { MANAGEMENT_CONFIG_TOKEN, ManagementConfig } from '../management.config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 import { generateSeedData } from '../seed-data/generate-seed-data';
 import {
 	ExternalToolsSeedDataService,
@@ -40,7 +40,7 @@ export class DatabaseManagementUc {
 		private fileSystemAdapter: FileSystemAdapter,
 		private databaseManagementService: DatabaseManagementService,
 		private bsonConverter: BsonConverter,
-		@Inject(MANAGEMENT_CONFIG_TOKEN) private readonly config: ManagementConfig,
+		@Inject(MANAGEMENT_SEED_DATA_CONFIG_TOKEN) private readonly config: ManagementSeedDataConfig,
 		private readonly logger: LegacyLogger,
 		private em: EntityManager,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService,

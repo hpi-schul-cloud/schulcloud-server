@@ -9,14 +9,14 @@ import {
 	MediaSourceVidisConfig,
 } from '@modules/media-source';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MANAGEMENT_CONFIG_TOKEN, ManagementConfig } from '../management.config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 import { MediaSourcesSeedDataService } from './media-sources-seed-data.service';
 
 describe(MediaSourcesSeedDataService.name, () => {
 	let module: TestingModule;
 	let service: MediaSourcesSeedDataService;
 
-	let config: ManagementConfig;
+	let config: ManagementSeedDataConfig;
 	let mediaSourceService: DeepMocked<MediaSourceService>;
 	let encryptionService: DeepMocked<EncryptionService>;
 
@@ -25,7 +25,7 @@ describe(MediaSourcesSeedDataService.name, () => {
 			providers: [
 				MediaSourcesSeedDataService,
 				{
-					provide: MANAGEMENT_CONFIG_TOKEN,
+					provide: MANAGEMENT_SEED_DATA_CONFIG_TOKEN,
 					useValue: {},
 				},
 				{
@@ -40,7 +40,7 @@ describe(MediaSourcesSeedDataService.name, () => {
 		}).compile();
 
 		service = module.get(MediaSourcesSeedDataService);
-		config = module.get(MANAGEMENT_CONFIG_TOKEN);
+		config = module.get(MANAGEMENT_SEED_DATA_CONFIG_TOKEN);
 		mediaSourceService = module.get(MediaSourceService);
 		encryptionService = module.get(DefaultEncryptionService);
 	});

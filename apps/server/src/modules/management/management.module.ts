@@ -26,7 +26,7 @@ import { DatabaseManagementConsole } from './console/database-management.console
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';
 import { MANAGMENT_ENCRYPTION_CONFIG_TOKEN, ManagmentEncryptionConfig } from './encryption.config';
-import { MANAGEMENT_CONFIG_TOKEN, ManagementConfig } from './management.config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from './management-seed-data.config';
 import {
 	ExternalToolsSeedDataService,
 	InstancesSeedDataService,
@@ -40,7 +40,7 @@ const imports = [
 	FileSystemModule,
 	LoggerModule,
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
-	ConfigurationModule.register(MANAGEMENT_CONFIG_TOKEN, ManagementConfig),
+	ConfigurationModule.register(MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig),
 	EncryptionModule.register(ManagmentEncryptionConfig, MANAGMENT_ENCRYPTION_CONFIG_TOKEN),
 	FeathersModule,
 	MediaSourceModule,

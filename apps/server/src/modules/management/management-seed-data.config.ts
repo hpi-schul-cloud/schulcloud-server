@@ -1,10 +1,10 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { IsOptional, IsString, IsUrl } from 'class-validator';
 
-export const MANAGEMENT_CONFIG_TOKEN = 'MANAGEMENT_CONFIG_TOKEN';
+export const MANAGEMENT_SEED_DATA_CONFIG_TOKEN = 'MANAGEMENT_SEED_DATA_CONFIG_TOKEN';
 
 @Configuration()
-export class ManagementConfig {
+export class ManagementSeedDataConfig {
 	@ConfigProperty('SC_THEME')
 	@IsString()
 	public scTheme = 'default';

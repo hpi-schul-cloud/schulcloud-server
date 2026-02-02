@@ -2,12 +2,12 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { OauthConfig, System, SystemService } from '@modules/system';
 import { Inject, Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { MANAGEMENT_CONFIG_TOKEN, ManagementConfig } from '../management.config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 
 @Injectable()
 export class SystemsSeedDataService {
 	constructor(
-		@Inject(MANAGEMENT_CONFIG_TOKEN) private readonly config: ManagementConfig,
+		@Inject(MANAGEMENT_SEED_DATA_CONFIG_TOKEN) private readonly config: ManagementSeedDataConfig,
 		private readonly systemService: SystemService,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService
 	) {}

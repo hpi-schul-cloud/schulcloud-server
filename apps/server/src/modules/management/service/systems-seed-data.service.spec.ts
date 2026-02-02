@@ -3,14 +3,14 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { OauthConfig, System, SystemService } from '@modules/system';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { MANAGEMENT_CONFIG_TOKEN, ManagementConfig } from '../management.config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 import { SystemsSeedDataService } from './systems-seed-data.service';
 
 describe(SystemsSeedDataService.name, () => {
 	let module: TestingModule;
 	let service: SystemsSeedDataService;
 
-	let config: ManagementConfig;
+	let config: ManagementSeedDataConfig;
 	let systemService: DeepMocked<SystemService>;
 	let encryptionService: DeepMocked<EncryptionService>;
 
@@ -19,7 +19,7 @@ describe(SystemsSeedDataService.name, () => {
 			providers: [
 				SystemsSeedDataService,
 				{
-					provide: MANAGEMENT_CONFIG_TOKEN,
+					provide: MANAGEMENT_SEED_DATA_CONFIG_TOKEN,
 					useValue: {},
 				},
 				{
@@ -34,7 +34,7 @@ describe(SystemsSeedDataService.name, () => {
 		}).compile();
 
 		service = module.get(SystemsSeedDataService);
-		config = module.get(MANAGEMENT_CONFIG_TOKEN);
+		config = module.get(MANAGEMENT_SEED_DATA_CONFIG_TOKEN);
 		systemService = module.get(SystemService);
 		encryptionService = module.get(DefaultEncryptionService);
 	});
