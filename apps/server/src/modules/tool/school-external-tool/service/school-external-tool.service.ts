@@ -138,6 +138,8 @@ export class SchoolExternalToolService {
 	}
 
 	public async addAndActivateToolForAllSchools(toolId: EntityId): Promise<void> {
+		// This function will run into an OOM if there are too many schools.
+		// It was tested though for 20.000 schools which is far more than we have on production (max ~2.500).
 		const allSchoolIds = await this.schoolService.getAllSchoolIds();
 
 		const existingDeactivatedSchoolExternalTools = await this.schoolExternalToolRepo.find({
