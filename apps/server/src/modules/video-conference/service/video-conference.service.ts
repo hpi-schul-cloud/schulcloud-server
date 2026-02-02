@@ -42,7 +42,7 @@ export class VideoConferenceService {
 	) {}
 
 	get hostUrl(): string {
-		return this.config.HOST;
+		return this.config.scHostUrl;
 	}
 
 	public canGuestJoin(isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean): boolean {

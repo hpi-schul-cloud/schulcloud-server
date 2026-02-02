@@ -135,7 +135,7 @@ describe(BBBService.name, () => {
 	});
 
 	beforeEach(() => {
-		configService.VIDEOCONFERENCE_HOST = 'https://mocked';
+		configService.videoConferenceHost = 'https://mocked';
 	});
 
 	afterEach(() => {
@@ -158,7 +158,7 @@ describe(BBBService.name, () => {
 			};
 
 			it('should not send config header if VIDEOCONFERENCE_DEFAULT_PRESENTATION is empty', async () => {
-				configService.VIDEOCONFERENCE_DEFAULT_PRESENTATION = '';
+				configService.videoConferenceDefaultPresentation = '';
 				const { param } = setup();
 
 				await service.create(param);
