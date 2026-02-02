@@ -3,14 +3,14 @@ import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AxiosResponse, HttpStatusCode } from 'axios';
 import { firstValueFrom } from 'rxjs';
-import { DELETION_CONSOLE_CONFIG_TOKEN, InternalDeletionConsoleConfig } from '../deletion-console.config';
+import { DELETION_CONSOLE_CONFIG_TOKEN, DeletionConsoleConfig } from '../deletion-console.config';
 import { DeletionRequestInput, DeletionRequestOutput } from './interface';
 
 @Injectable()
 export class DeletionClient {
 	constructor(
 		private readonly httpService: HttpService,
-		@Inject(DELETION_CONSOLE_CONFIG_TOKEN) private readonly config: InternalDeletionConsoleConfig
+		@Inject(DELETION_CONSOLE_CONFIG_TOKEN) private readonly config: DeletionConsoleConfig
 	) {}
 
 	public async queueDeletionRequest(input: DeletionRequestInput): Promise<DeletionRequestOutput> {
