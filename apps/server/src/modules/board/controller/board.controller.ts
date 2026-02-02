@@ -27,8 +27,9 @@ import {
 	VisibilityBodyParams,
 } from './dto';
 import { BoardContextResponse } from './dto/board/board-context.reponse';
-import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from './mapper';
 import { ReadersCanEditBodyParams } from './dto/board/readers-can-edit.body.params';
+import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from './mapper';
+import { INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../board-timeout.config';
 
 @ApiTags('Board')
 @JwtAuthentication()
@@ -139,7 +140,7 @@ export class BoardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':boardId/copy')
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async copyBoard(
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser

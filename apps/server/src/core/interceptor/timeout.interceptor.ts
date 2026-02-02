@@ -1,13 +1,9 @@
-import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
 import { RequestTimeoutLoggableException } from '../../shared/common/loggable-exception';
-import {
-	TIMEOUT_INTERCEPTOR_CONFIG_TOKEN,
-	TimeoutConfig,
-	TimeoutInterceptorConfig,
-} from './timeout-interceptor-config';
+import { TimeoutConfig } from './timeout-interceptor-config';
 
 /**
  * This interceptor leaves the request execution after a given timeout in ms.
@@ -15,10 +11,7 @@ import {
  */
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
-	constructor(
-		private readonly moduleSpecificTimeoutConfig: TimeoutConfig,
-		@Inject(TIMEOUT_INTERCEPTOR_CONFIG_TOKEN) private readonly defaultTimeoutConfig: TimeoutInterceptorConfig
-	) {}
+	constructor(private readonly config: TimeoutConfig) {}
 
 	public intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
 		const reflector = new Reflector();
@@ -26,9 +19,7 @@ export class TimeoutInterceptor implements NestInterceptor {
 			reflector.get<string>('requestTimeoutEnvironmentName', context.getHandler()) ||
 			reflector.get<string>('requestTimeoutEnvironmentName', context.getClass());
 
-		const timeoutMS =
-			this.moduleSpecificTimeoutConfig[requestTimeoutEnvironmentName] ??
-			this.defaultTimeoutConfig.incomingRequestTimeout;
+		const timeoutMS = this.config[requestTimeoutEnvironmentName] ?? this.config.incomingRequestTimeout;
 
 		const { url } = context.switchToHttp().getRequest<Request>();
 

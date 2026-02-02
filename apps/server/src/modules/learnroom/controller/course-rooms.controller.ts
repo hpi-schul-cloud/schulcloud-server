@@ -1,4 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '@modules/board/board-timeout.config';
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -65,7 +66,7 @@ export class CourseRoomsController {
 	}
 
 	@Post(':roomId/copy')
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CourseRoomUrlParams
@@ -76,7 +77,7 @@ export class CourseRoomsController {
 	}
 
 	@Post('lessons/:lessonId/copy')
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async copyLesson(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: LessonUrlParams,

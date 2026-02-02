@@ -47,6 +47,7 @@ import { RoomContentUc } from './room-content.uc';
 import { RoomCopyUc } from './room-copy.uc';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
 import { RoomUc } from './room.uc';
+import { INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -396,7 +397,7 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async copyRoom(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams

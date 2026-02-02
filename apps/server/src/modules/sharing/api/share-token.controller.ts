@@ -24,6 +24,7 @@ import {
 } from './dto';
 import { ImportTokenUC } from './import-token.uc';
 import { ShareTokenUC } from './share-token.uc';
+import { INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 
 @ApiTags('ShareToken')
 @JwtAuthentication()
@@ -82,7 +83,7 @@ export class ShareTokenController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiResponse({ status: 501, type: NotImplementedException })
 	@Post(':token/import')
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async importShareToken(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: ShareTokenUrlParams,

@@ -8,6 +8,7 @@ import { TaskCopyApiParams, TaskListResponse, TaskResponse, TaskUrlParams } from
 import { TaskMapper } from './mapper';
 import { TaskCopyUC } from './task-copy.uc';
 import { TaskUC } from './task.uc';
+import { INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 
 @ApiTags('Task')
 @JwtAuthentication()
@@ -84,7 +85,7 @@ export class TaskController {
 	}
 
 	@Post(':taskId/copy')
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async copyTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: TaskUrlParams,
