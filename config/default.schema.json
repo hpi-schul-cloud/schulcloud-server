@@ -227,28 +227,6 @@
 			"default": false,
 			"description": "Defines if backend for the FWU content in the Learnstore is enabled."
 		},
-		"OIDCMOCK": {
-			"type": "object",
-			"description": "OpenID Connect Identity Provider mock server for develop and testing purpose (set these values for local seeding purpose).",
-			"required": [],
-			"properties": {
-				"BASE_URL": {
-					"type": "string",
-					"default": null,
-					"description": "The mock server base path."
-				},
-				"CLIENT_ID": {
-					"type": "string",
-					"default": null,
-					"description": "The mock server accepted client id."
-				},
-				"CLIENT_SECRET": {
-					"type": "string",
-					"default": null,
-					"description": "The mock server accepted client's secret."
-				}
-			}
-		},
 		"CLAMAV": {
 			"type": "object",
 			"description": "Properties of the ClamAV server",

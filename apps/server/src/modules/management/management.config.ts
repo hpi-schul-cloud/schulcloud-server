@@ -79,4 +79,16 @@ export class ManagementConfig {
 	@IsString()
 	@IsOptional()
 	public ctlSeedSecretMerlin?: string;
+
+	@ConfigProperty('OIDCMOCK__BASE_URL')
+	@IsUrl({ require_tld: false })
+	public oidcMockBaseUrl = 'http://127.0.0.1:4011';
+
+	@ConfigProperty('OIDCMOCK__CLIENT_ID')
+	@IsString()
+	public oidcMockClientId = 'erwin-credentials-mock-client';
+
+	@ConfigProperty('OIDCMOCK__CLIENT_SECRET')
+	@IsString()
+	public oidcMockClientSecret = 'erwin-credentials-mock-client-secret';
 }
