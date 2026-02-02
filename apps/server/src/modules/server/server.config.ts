@@ -43,7 +43,6 @@ export interface ServerConfig extends CoreModuleConfig, ManagementSeedDataConfig
 	FEATURE_CONSENT_NECESSARY: boolean;
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: boolean;
 	GHOST_BASE_URL: string;
-	ROCKETCHAT_SERVICE_ENABLED: boolean;
 	JWT_SHOW_TIMEOUT_WARNING_SECONDS: number;
 	JWT_TIMEOUT_SECONDS: number;
 	NOT_AUTHENTICATED_REDIRECT_URL: string;
@@ -63,9 +62,6 @@ export interface ServerConfig extends CoreModuleConfig, ManagementSeedDataConfig
 	LICENSE_SUMMARY_URL: string | undefined;
 	ROOM_MEMBER_INFO_URL: string | null;
 	STUDENT_TEAM_CREATION: string;
-	ROCKET_CHAT_URI: string;
-	ROCKET_CHAT_ADMIN_ID: string;
-	ROCKET_CHAT_ADMIN_TOKEN: string;
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: number;
 	INCOMING_REQUEST_TIMEOUT_COPY_API: number;
 	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: number;
@@ -103,7 +99,6 @@ const config: ServerConfig = {
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: Configuration.get('FEATURE_SCHOOL_TERMS_OF_USE_ENABLED') as boolean,
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: Configuration.get('FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED') as boolean,
 	GHOST_BASE_URL: Configuration.get('GHOST_BASE_URL') as string,
-	ROCKETCHAT_SERVICE_ENABLED: Configuration.get('ROCKETCHAT_SERVICE_ENABLED') as boolean,
 	JWT_SHOW_TIMEOUT_WARNING_SECONDS: Configuration.get('JWT_SHOW_TIMEOUT_WARNING_SECONDS') as number,
 	JWT_TIMEOUT_SECONDS: Configuration.get('JWT_TIMEOUT_SECONDS') as number,
 	NOT_AUTHENTICATED_REDIRECT_URL: Configuration.get('NOT_AUTHENTICATED_REDIRECT_URL') as string,
@@ -135,9 +130,6 @@ const config: ServerConfig = {
 	FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED: Configuration.get(
 		'FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED'
 	) as boolean,
-	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
-	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
-	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
 	MEDIA_SOURCE_VIDIS_USERNAME: Configuration.has('MEDIA_SOURCE_VIDIS_USERNAME')
 		? (Configuration.get('MEDIA_SOURCE_VIDIS_USERNAME') as string)
 		: undefined,
