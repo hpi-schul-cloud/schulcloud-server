@@ -17,24 +17,22 @@ export class NotificationService {
 		const entity = NotificationMapper.mapToEntity(notification);
 		await this.notificationRepo.createNotification(entity);
 		if ((entity.type = NotificationType.ERROR)) {
-			this.logger.warning(
-				new NotificationLoggable('An error occurred during the import process:' + entity.arguments)
-			);
+			this.logger.warning(new NotificationLoggable('An error occurred during the import process:' + entity.arguments));
 		} else {
 			this.logger.info(new NotificationLoggable('The import was successful.'));
 		}
 		return entity;
 	}
 
-	findAll() {
+	public findAll(): string {
 		return `This action returns all notifications`;
 	}
 
-	findOne(id: number) {
+	public findOne(id: number): string {
 		return `This action returns a #${id} notification`;
 	}
 
-	remove(id: number) {
+	public remove(id: number): string {
 		return `This action removes a #${id} notification`;
 	}
 }

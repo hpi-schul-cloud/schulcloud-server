@@ -3,7 +3,7 @@ import { NotificationModule } from './notification.module';
 import { NotificationController } from './notification.controller';
 
 @Module({
-    imports: [NotificationModule],
-    controllers: [NotificationController]
+	imports: [NotificationModule],
+	controllers: [NotificationController],
 })
 export class NotificationApiModule {}

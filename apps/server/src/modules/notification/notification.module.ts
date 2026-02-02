@@ -6,8 +6,8 @@ import { Logger } from '@core/logger';
 import { NotificationRepo } from './repo/notification.repo';
 
 @Module({
-  providers: [NotificationService, Logger, NotificationRepo],
-  controllers: [NotificationController],
-  exports: [NotificationService]
+	providers: [NotificationService, Logger, NotificationRepo],
+	controllers: [NotificationController],
+	exports: [NotificationService],
 })
 export class NotificationModule {}

@@ -65,7 +65,6 @@ describe(NotificationRepo.name, () => {
 	describe('mapDtoToEntity', () => {
 		describe('when called with a valid DTO', () => {
 			it('should map dto to entity with generated fields', () => {
-
 				const notification = new Notification({
 					id: 'testid',
 					type: NotificationType.ERROR,

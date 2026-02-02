@@ -14,7 +14,6 @@ export interface NotificationEntityProps {
 
 @Entity({ tableName: 'cc-user-notification-message' })
 export class NotificationEntity extends BaseEntityWithTimestamps {
-
 	@Property({ nullable: true })
 	type?: string;
 
@@ -45,7 +44,7 @@ export class NotificationEntity extends BaseEntityWithTimestamps {
 		if (props.arguments !== undefined) {
 			this.arguments = props.arguments;
 		}
-		
+
 		if (props.userId !== undefined) {
 			this.userId = props.userId;
 		}
