@@ -30,7 +30,6 @@ describe('filePermissionHelper', () => {
 			const promises = [
 				FileModel.create(fixtures.files),
 				userModel.create(fixtures.users),
-				// RoleModel.create(fixtures.roles),
 				courseModel.create(fixtures.courses),
 			];
 
