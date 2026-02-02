@@ -17,4 +17,8 @@ export class HelpdeskConfig {
 	@StringToBoolean()
 	@IsBoolean()
 	public shouldSendEmail = false;
+
+	@ConfigProperty('SMTP_SENDER')
+	@IsEmail()
+	public fromEmailAddress = 'noreply@dbildungscloud.de';
 }

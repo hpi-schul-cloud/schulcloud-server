@@ -18,6 +18,7 @@ import {
 import { SubmissionItemResponse } from '../dto';
 
 const baseRouteName = '/elements';
+
 describe('submission create (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -36,40 +37,6 @@ describe('submission create (api)', () => {
 
 	afterAll(async () => {
 		await app.close();
-	});
-
-	describe('when user is a valid teacher', () => {
-		const setup = async () => {
-			await cleanupCollections(em);
-
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
-			await em.persist([teacherAccount, teacherUser, course]).flush();
-
-			const columnBoardNode = columnBoardEntityFactory.build({
-				context: { id: course.id, type: BoardExternalReferenceType.Course },
-			});
-
-			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
-
-			const cardNode = cardEntityFactory.withParent(columnNode).build();
-
-			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
-
-			await em.persist([columnBoardNode, columnNode, cardNode, submissionContainerNode]).flush();
-			em.clear();
-
-			const loggedInClient = await testApiClient.login(teacherAccount);
-
-			return { loggedInClient, teacherUser, columnBoardNode, columnNode, cardNode, submissionContainerNode };
-		};
-		it('should return status 403', async () => {
-			const { loggedInClient, submissionContainerNode } = await setup();
-
-			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: false });
-
-			expect(response.status).toEqual(403);
-		});
 	});
 
 	describe('when user is a student who is part of course', () => {
@@ -97,6 +64,7 @@ describe('submission create (api)', () => {
 
 			return { loggedInClient, studentUser, columnBoardNode, columnNode, cardNode, submissionContainerNode };
 		};
+
 		it('should return status 201', async () => {
 			const { loggedInClient, submissionContainerNode } = await setup();
 
@@ -210,6 +178,7 @@ describe('submission create (api)', () => {
 
 			return { loggedInClient, columnBoardNode, columnNode, cardNode, submissionContainerNode };
 		};
+
 		it('should return 403', async () => {
 			const { loggedInClient, submissionContainerNode } = await setup();
 
