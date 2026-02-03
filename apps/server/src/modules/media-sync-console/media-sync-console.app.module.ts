@@ -1,6 +1,7 @@
 import { ErrorModule } from '@core/error';
 import { LoggerModule } from '@core/logger';
 import { ConsoleWriterModule } from '@infra/console';
+import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -10,7 +11,6 @@ import { MediaSyncConsole } from './api/media-sync-console';
 import { mediaSyncConsoleConfig } from './media-sync-console.config';
 import { ENTITIES } from './media-sync-console.entity.imports';
 import { MediaSourceSyncUc } from './uc';
-import { DatabaseModule, DATABASE_CONFIG_TOKEN, DatabaseConfig } from '@infra/database';
 
 @Module({
 	imports: [

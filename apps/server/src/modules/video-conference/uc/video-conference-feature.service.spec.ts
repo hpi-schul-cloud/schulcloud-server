@@ -15,7 +15,7 @@ describe(VideoConferenceFeatureService.name, () => {
 	let boardContextApiHelperService: DeepMocked<BoardContextApiHelperService>;
 	let userService: DeepMocked<UserService>;
 	let legacySchoolService: DeepMocked<LegacySchoolService>;
-	let config: DeepMocked<VideoConferenceConfig>;
+	let config: VideoConferenceConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -35,9 +35,9 @@ describe(VideoConferenceFeatureService.name, () => {
 				},
 				{
 					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
-					useValue: createMock<VideoConferenceConfig>({
-						FEATURE_VIDEOCONFERENCE_ENABLED: false,
-					}),
+					useValue: {
+						featureVideoConferenceEnabled: false,
+					},
 				},
 			],
 		}).compile();
@@ -115,7 +115,7 @@ describe(VideoConferenceFeatureService.name, () => {
 				const { userId, scope } = setup();
 
 				legacySchoolService.hasFeature.mockResolvedValueOnce(true);
-				config.FEATURE_VIDEOCONFERENCE_ENABLED = false;
+				config.featureVideoConferenceEnabled = false;
 
 				await expect(service.checkVideoConferenceFeatureEnabled(userId, scope)).rejects.toThrow(ForbiddenException);
 			});
@@ -126,9 +126,9 @@ describe(VideoConferenceFeatureService.name, () => {
 				const { userId, scope } = setup();
 
 				legacySchoolService.hasFeature.mockResolvedValueOnce(true);
-				config.FEATURE_VIDEOCONFERENCE_ENABLED = true;
+				config.featureVideoConferenceEnabled = true;
 
-				await expect(service.checkVideoConferenceFeatureEnabled(userId, scope)).rejects.toThrow(ForbiddenException);
+				await expect(service.checkVideoConferenceFeatureEnabled(userId, scope)).resolves.toBeUndefined();
 			});
 		});
 	});

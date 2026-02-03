@@ -1,5 +1,6 @@
 import { ConfigurationModule } from '@infra/configuration';
 import { defineConfig } from '@mikro-orm/core';
+import { MongoDriver } from '@mikro-orm/mongodb';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { DynamicModule, Module } from '@nestjs/common';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
@@ -16,7 +17,7 @@ export class DatabaseModule {
 					useFactory: (config: DatabaseConfig) =>
 						defineConfig({
 							findOneOrFailHandler,
-							type: 'mongo',
+							driver: MongoDriver,
 							clientUrl: config.dbUrl,
 							password: config.dbPassword,
 							user: config.dbUsername,

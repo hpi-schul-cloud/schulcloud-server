@@ -3,9 +3,10 @@ import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { ConfigurationModule } from '@infra/configuration';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { AjaxErrorResponse, H5PAjaxEndpoint, H5pError } from '@lumieducation/h5p-server';
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
@@ -42,8 +43,9 @@ describe('H5PEditor Controller (api)', () => {
 		jwtConfig = module.get(TEST_JWT_CONFIG_TOKEN);
 	});
 
-	afterEach(() => {
+	afterEach(async () => {
 		jest.resetAllMocks();
+		await cleanupCollections(em);
 	});
 
 	afterAll(async () => {
