@@ -1,5 +1,5 @@
 import { TIMEOUT_CONFIG_REGISTRY as OriginalRegistry } from './timeout-config.registry';
-import { TimeoutConfig } from './timeout-interceptor-config';
+import { TimeoutConfig } from './timeout-interceptor-config.interface';
 
 // We need to test the class directly, not the singleton instance
 // Import the module to get access to the registry class behavior

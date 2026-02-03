@@ -1,5 +1,5 @@
 import { MergedTimeoutConfig } from './config-merger';
-import { TimeoutConfig } from './timeout-interceptor-config';
+import { TimeoutConfig } from './timeout-interceptor-config.interface';
 
 describe('MergedTimeoutConfig', () => {
 	describe('constructor', () => {

@@ -3,7 +3,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { RequestTimeout } from '@shared/common/decorators';
 import { TestApiClient } from '@testing/test-api-client';
-import { TimeoutConfig } from './timeout-interceptor-config';
+import { TimeoutConfig } from './timeout-interceptor-config.interface';
 import { TimeoutInterceptor } from './timeout.interceptor';
 
 const delay = (ms: number) =>

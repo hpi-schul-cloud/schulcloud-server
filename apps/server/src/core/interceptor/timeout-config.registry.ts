@@ -1,4 +1,4 @@
-import { TimeoutConfig } from './timeout-interceptor-config';
+import { TimeoutConfig } from './timeout-interceptor-config.interface';
 
 interface TimeoutConfigRegistration {
 	token: string;

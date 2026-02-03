@@ -4,7 +4,7 @@ import { DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 import { TIMEOUT_CONFIG_REGISTRY } from './timeout-config.registry';
 import { TimeoutConfigValidator } from './timeout-config.validator';
-import { TimeoutConfig } from './timeout-interceptor-config';
+import { TimeoutConfig } from './timeout-interceptor-config.interface';
 
 describe('TimeoutConfigValidator', () => {
 	let validator: TimeoutConfigValidator;

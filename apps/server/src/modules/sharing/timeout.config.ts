@@ -1,4 +1,4 @@
-import { TimeoutConfig } from '@core/interceptor/timeout-interceptor-config';
+import { TimeoutConfig } from '@core/interceptor/timeout-interceptor-config.interface';
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToNumber } from '@shared/controller/transformer';
 import { IsNumber } from 'class-validator';

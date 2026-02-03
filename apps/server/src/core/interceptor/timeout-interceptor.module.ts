@@ -1,4 +1,4 @@
-import { TimeoutConfig } from '@core/interceptor/timeout-interceptor-config';
+import { TimeoutConfig } from '@core/interceptor/timeout-interceptor-config.interface';
 import { ConfigurationModule } from '@infra/configuration';
 import { ClassSerializerInterceptor, DynamicModule, Module } from '@nestjs/common';
 import { APP_INTERCEPTOR, DiscoveryModule } from '@nestjs/core';

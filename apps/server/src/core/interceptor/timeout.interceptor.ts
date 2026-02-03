@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
 import { RequestTimeoutLoggableException } from '../../shared/common/loggable-exception';
-import { TimeoutConfig } from './timeout-interceptor-config';
+import { TimeoutConfig } from './timeout-interceptor-config.interface';
 
 /**
  * This interceptor leaves the request execution after a given timeout in ms.

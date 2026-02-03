@@ -1,6 +1,6 @@
 import { RegisterTimeoutConfig } from './register-timeout-config.decorator';
 import { TIMEOUT_CONFIG_REGISTRY } from './timeout-config.registry';
-import { TimeoutConfig } from './timeout-interceptor-config';
+import { TimeoutConfig } from './timeout-interceptor-config.interface';
 
 describe('RegisterTimeoutConfig', () => {
 	class MockTimeoutConfig extends TimeoutConfig {
