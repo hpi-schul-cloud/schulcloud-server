@@ -8,7 +8,7 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { RoomAuthorizable } from '../do/room-membership-authorizable.do';
+import { RoomAuthorizable } from '../do/room-authorizable.do';
 import { RoomMembershipRule } from './room-membership.rule';
 
 describe(RoomMembershipRule.name, () => {

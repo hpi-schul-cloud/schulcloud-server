@@ -1,7 +1,7 @@
 import { RoleName } from '@modules/role';
+import { RoomAuthorizable } from './room-authorizable.do';
 import { RoomMemberAuthorizable } from './room-member-authorizable.do';
 import { RoomMember } from './room-member.do';
-import { RoomAuthorizable } from './room-membership-authorizable.do';
 
 describe('RoomMemberAuthorizable', () => {
 	const setup = () => {

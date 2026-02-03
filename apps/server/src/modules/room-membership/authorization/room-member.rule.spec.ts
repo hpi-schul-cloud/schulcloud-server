@@ -14,7 +14,7 @@ import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomSetup } from '../../room/api/test/util/room-setup.helper';
-import { RoomAuthorizable } from '../do/room-membership-authorizable.do';
+import { RoomAuthorizable } from '../do/room-authorizable.do';
 import { buildRoomMemberAuthorizable } from '../testing';
 import { RoomMemberRule } from './room-member.rule';
 import { RoomMembershipRule } from './room-membership.rule';
