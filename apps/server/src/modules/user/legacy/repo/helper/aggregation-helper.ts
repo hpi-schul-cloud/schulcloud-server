@@ -1,6 +1,6 @@
 /* eslint-disable */
 // The code in this file is copied from the legacy part of the server. As it does not meet our ESLint rules, ESLint is disabled for the whole file.
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserSearchQuery } from '../../interfaces';
 
 const convertToIn = (value) => {

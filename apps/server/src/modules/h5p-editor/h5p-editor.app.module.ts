@@ -14,27 +14,18 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { H5PEditorController } from './controller';
 import { H5P_CACHE_CONFIG_TOKEN, H5PCacheConfig } from './h5p-cache.config';
 import { authorizationClientConfig, config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
-import { ENTITIES } from './h5p-editor.entity.exports';
+import { ENTITIES, TEST_ENTITIES } from './h5p-editor.entity.exports';
 import { H5PAjaxEndpointProvider, H5PCacheProvider, H5PEditorProvider, H5PPlayerProvider } from './provider';
 import { H5PContentRepo, LibraryRepo } from './repo';
 import { ContentStorage, H5pEditorContentService, LibraryStorage, TemporaryFileStorage } from './service';
 import { H5PEditorUc } from './uc';
+import { MongoDriver } from '@mikro-orm/mongodb';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 
-const imports = [
+const serverModules = [
 	AuthorizationClientModule.register(authorizationClientConfig),
 	CoreModule,
 	UserModule,
-	MikroOrmModule.forRoot({
-		...defaultMikroOrmOptions,
-		type: 'mongo',
-		// TODO add mongoose options as mongo options (see database.js)
-		clientUrl: DB_URL,
-		password: DB_PASSWORD,
-		user: DB_USERNAME,
-		allowGlobalContext: true,
-		entities: ENTITIES,
-		ensureIndexes: true,
-	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
 	AuthGuardModule.register([AuthGuardOptions.JWT]),
@@ -59,9 +50,33 @@ const providers = [
 ];
 
 @Module({
-	imports,
+	imports: [
+		...serverModules,
+		MikroOrmModule.forRoot({
+			...defaultMikroOrmOptions,
+			driver: MongoDriver,
+			// TODO add mongoose options as mongo options (see database.js)
+			clientUrl: DB_URL,
+			password: DB_PASSWORD,
+			user: DB_USERNAME,
+			allowGlobalContext: true,
+			entities: ENTITIES,
+			ensureIndexes: true,
+		}),
+	],
 	controllers,
 	providers,
 	exports: [ContentStorage, LibraryStorage],
 })
 export class H5PEditorModule {}
+
+@Module({
+	imports: [
+		...serverModules,
+		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
+	],
+	controllers,
+	providers,
+	exports: [ContentStorage, LibraryStorage],
+})
+export class H5PEditorTestModule {}

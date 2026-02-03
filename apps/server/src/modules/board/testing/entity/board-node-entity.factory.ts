@@ -14,10 +14,10 @@ export type PropsWithType<T extends AnyBoardNodeProps> = T & { type: BoardNodeTy
  * @template C The class of the factory object being created.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T> {
-	protected readonly propsFactory: Factory<T, I, C>;
+export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T, P = DeepPartial<T>> {
+	protected readonly propsFactory: Factory<T, I, C, P>;
 
-	constructor(propsFactory: Factory<T, I, C>) {
+	constructor(propsFactory: Factory<T, I, C, P>) {
 		this.propsFactory = propsFactory;
 	}
 
@@ -31,17 +31,20 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T>
 	 * @returns
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static define<T extends AnyBoardNodeProps, I = any, C = BoardNodeEntity, F = BoardNodeEntityFactory<T, I, C>>(
-		this: new (propsFactory: Factory<T, I, C>) => F,
-		generator: GeneratorFn<T, I, C>
-	): F {
-		const propsFactory = Factory.define<T, I, C>(generator);
+	public static define<
+		T extends AnyBoardNodeProps,
+		I = any,
+		C = BoardNodeEntity,
+		P = DeepPartial<T>,
+		F = BoardNodeEntityFactory<T, I, C, P>
+	>(this: new (propsFactory: Factory<T, I, C, P>) => F, generator: GeneratorFn<T, I, C, P>): F {
+		const propsFactory = Factory.define<T, I, C, P>(generator);
 		const factory = new this(propsFactory);
 		return factory;
 	}
 
-	withParent(parent: BoardNodeEntity) {
-		return this.params({ path: pathOfChildren(parent), level: parent.level + 1 } as DeepPartial<T>);
+	public withParent(parent: BoardNodeEntity): BoardNodeEntityFactory<T, I, C, P> {
+		return this.params({ path: pathOfChildren(parent), level: parent.level + 1 } as P);
 	}
 
 	/**
@@ -49,7 +52,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T>
 	 * @param params
 	 * @returns an entity
 	 */
-	build(params?: DeepPartial<T>, options: BuildOptions<T, I> = {}): BoardNodeEntity {
+	public build(params?: P, options: BuildOptions<T, I> = {}): BoardNodeEntity {
 		const props = this.propsFactory.build(params, options);
 		const entity = new BoardNodeEntity();
 		Object.assign(entity, props);
@@ -63,7 +66,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T>
 	 * @param id
 	 * @returns an entity
 	 */
-	buildWithId(params?: DeepPartial<T>, id?: string, options: BuildOptions<T, I> = {}): BoardNodeEntity {
+	public buildWithId(params?: P, id?: string, options: BuildOptions<T, I> = {}): BoardNodeEntity {
 		const entity = this.build(params, options);
 		if (id) {
 			entity.id = id;
@@ -78,7 +81,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T>
 	 * @param params
 	 * @returns a list of entities
 	 */
-	buildList(number: number, params?: DeepPartial<T>, options: BuildOptions<T, I> = {}): BoardNodeEntity[] {
+	public buildList(number: number, params?: P, options: BuildOptions<T, I> = {}): BoardNodeEntity[] {
 		const list: BoardNodeEntity[] = [];
 		for (let i = 0; i < number; i += 1) {
 			list.push(this.build(params, options));
@@ -87,7 +90,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T>
 		return list;
 	}
 
-	buildListWithId(number: number, params?: DeepPartial<T>, options: BuildOptions<T, I> = {}): BoardNodeEntity[] {
+	public buildListWithId(number: number, params?: P, options: BuildOptions<T, I> = {}): BoardNodeEntity[] {
 		const list: BoardNodeEntity[] = [];
 		for (let i = 0; i < number; i += 1) {
 			list.push(this.buildWithId(params, undefined, options));
@@ -101,7 +104,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T>
 	 * @param afterBuildFn - the function to call. It accepts your object of type T. The value this function returns gets returned from "build"
 	 * @returns a new factory
 	 */
-	afterBuild(afterBuildFn: HookFn<T>): this {
+	public afterBuild(afterBuildFn: HookFn<T>): this {
 		const newPropsFactory = this.propsFactory.afterBuild(afterBuildFn);
 		const newFactory = this.clone(newPropsFactory);
 
@@ -113,7 +116,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T>
 	 * @param associations
 	 * @returns a new factory
 	 */
-	associations(associations: Partial<T>): this {
+	public associations(associations: Partial<T>): this {
 		const newPropsFactory = this.propsFactory.associations(associations);
 		const newFactory = this.clone(newPropsFactory);
 
@@ -125,7 +128,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T>
 	 * @param params
 	 * @returns a new factory
 	 */
-	params(params: DeepPartial<T>): this {
+	public params(params: P): this {
 		const newPropsFactory = this.propsFactory.params(params);
 		const newFactory = this.clone(newPropsFactory);
 
@@ -137,7 +140,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T>
 	 * @param transient - transient params
 	 * @returns a new factory
 	 */
-	transient(transient: Partial<I>): this {
+	public transient(transient: Partial<I>): this {
 		const newPropsFactory = this.propsFactory.transient(transient);
 		const newFactory = this.clone(newPropsFactory);
 
@@ -147,13 +150,13 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T>
 	/**
 	 * Set sequence back to its default value
 	 */
-	rewindSequence(): void {
+	public rewindSequence(): void {
 		this.propsFactory.rewindSequence();
 	}
 
-	protected clone<F extends BoardNodeEntityFactory<T, I, C>>(this: F, propsFactory: Factory<T, I, C>): F {
+	protected clone<F extends BoardNodeEntityFactory<T, I, C, P>>(this: F, propsFactory: Factory<T, I, C, P>): F {
 		const copy = new (this.constructor as {
-			new (propsOfFactory: Factory<T, I, C>): F;
+			new (propsOfFactory: Factory<T, I, C, P>): F;
 		})(propsFactory);
 
 		return copy;
@@ -164,7 +167,6 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T>
 	 * @returns the next sequence value
 	 */
 	protected sequence(): number {
-		// eslint-disable-next-line @typescript-eslint/dot-notation
 		return this.propsFactory['sequence']();
 	}
 }

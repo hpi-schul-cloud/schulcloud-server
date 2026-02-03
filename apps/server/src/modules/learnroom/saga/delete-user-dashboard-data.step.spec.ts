@@ -14,7 +14,7 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Dashboard, GridElement } from '../domain/do/dashboard';
 import { DashboardElementRepo } from '../repo';
 import { DASHBOARD_REPO, DashboardRepo, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';

@@ -16,7 +16,7 @@ export class AdminApiExternalToolController {
 
 	@Post()
 	@ApiOperation({ summary: 'Creates an ExternalTool' })
-	async createExternalTool(@Body() externalToolParams: ExternalToolCreateParams): Promise<ExternalToolResponse> {
+	public async createExternalTool(@Body() externalToolParams: ExternalToolCreateParams): Promise<ExternalToolResponse> {
 		const externalToolCreateParams = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 		const externalTool = await this.adminApiExternalToolUc.createExternalTool(externalToolCreateParams);
 
