@@ -11,12 +11,12 @@ import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { RoomAuthorizable } from '../do/room-authorizable.do';
 import { RoomMemberAuthorizable } from '../do/room-member-authorizable.do';
-import { RoomMembershipRule } from './room-membership.rule';
+import { RoomRule } from './room.rule';
 
 @Injectable()
 export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 	constructor(
-		private readonly roomMembershipRule: RoomMembershipRule,
+		private readonly roomRule: RoomRule,
 		private readonly authorizationHelper: AuthorizationHelper,
 		private readonly authorisationInjectionService: AuthorizationInjectionService
 	) {
@@ -57,7 +57,7 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 			return true;
 		}
 
-		const hasPermission = this.roomMembershipRule.hasPermission(user, object.roomAuthorizable, {
+		const hasPermission = this.roomRule.hasPermission(user, object.roomAuthorizable, {
 			action: Action.write,
 			requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
 		});

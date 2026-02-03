@@ -3,7 +3,7 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { RoleName, RoomRole } from '@modules/role';
 import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { RoomMemberRule } from '@modules/room-membership/authorization/room-member.rule';
-import { RoomMembershipRule } from '@modules/room-membership/authorization/room-membership.rule';
+import { RoomRule } from '@modules/room-membership/authorization/room.rule';
 import { RoomMemberAuthorizable } from '@modules/room-membership/do/room-member-authorizable.do';
 import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
 import { School, SchoolService } from '@modules/school';
@@ -40,7 +40,7 @@ export class RoomUc {
 		private readonly schoolService: SchoolService,
 		private readonly roomBoardService: RoomBoardService,
 		private readonly accountService: AccountService,
-		private readonly roomMembershipRule: RoomMembershipRule,
+		private readonly roomRule: RoomRule,
 		private readonly roomMemberRule: RoomMemberRule
 	) {}
 
@@ -84,7 +84,7 @@ export class RoomUc {
 	public async createRoom(userId: EntityId, props: CreateRoomBodyParams): Promise<Room> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		throwUnauthorizedIfFalse(this.roomMembershipRule.canCreateRoom(user));
+		throwUnauthorizedIfFalse(this.roomRule.canCreateRoom(user));
 
 		const room = await this.roomService.createRoom({ ...props, schoolId: user.school.id });
 
@@ -101,7 +101,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomMembershipRule.canAccessRoom(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.canAccessRoom(user, roomAuthorizable));
 
 		const room = await this.roomService.getSingleRoom(roomId);
 		const permissions = this.getPermissions(userId, roomAuthorizable);
@@ -117,7 +117,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomMembershipRule.canUpdateRoom(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.canUpdateRoom(user, roomAuthorizable));
 
 		const room = await this.roomService.getSingleRoom(roomId);
 		await this.roomService.updateRoom(room, props);
@@ -130,7 +130,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomMembershipRule.canDeleteRoom(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.canDeleteRoom(user, roomAuthorizable));
 
 		const room = await this.roomService.getSingleRoom(roomId);
 		await this.roomService.deleteRoom(room);
@@ -142,7 +142,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomMembershipRule.canGetRoomMembers(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.canGetRoomMembers(user, roomAuthorizable));
 
 		const membersResponse = await this.getRoomMembersResponse(roomAuthorizable);
 		return membersResponse;
@@ -152,7 +152,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomMembershipRule.canGetRoomMembersRedacted(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.canGetRoomMembersRedacted(user, roomAuthorizable));
 
 		const membersResponse = await this.getRoomMembersResponse(roomAuthorizable);
 		const redactedMembersResponse = this.handleAnonymization(membersResponse, user.school.id);
@@ -163,7 +163,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomMembershipRule.canAddMembers(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.canAddMembers(user, roomAuthorizable));
 
 		await this.checkAreAllUsersAccessible(user, newUserIds);
 
@@ -175,7 +175,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomMembershipRule.canAddExternalPersonByEmail(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.canAddExternalPersonByEmail(user, roomAuthorizable));
 
 		const existingUser = await this.getUserByEmail(email);
 		this.checkUserIsExternalPerson(existingUser);
@@ -194,7 +194,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomMembershipRule.canChangeRolesOfMembers(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.canChangeRolesOfMembers(user, roomAuthorizable));
 
 		await this.checkRoomRolesForExternalPersons(userIds, roleName);
 		this.preventChangingOwnersRole(roomAuthorizable, userIds, currentUserId);
@@ -222,7 +222,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomMembershipRule.canLeaveRoom(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.canLeaveRoom(user, roomAuthorizable));
 
 		await this.roomMembershipService.removeMembersFromRoom(roomId, [currentUserId]);
 	}

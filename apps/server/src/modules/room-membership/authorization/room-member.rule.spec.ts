@@ -17,21 +17,21 @@ import { RoomSetup } from '../../room/api/test/util/room-setup.helper';
 import { RoomAuthorizable } from '../do/room-authorizable.do';
 import { buildRoomMemberAuthorizable } from '../testing';
 import { RoomMemberRule } from './room-member.rule';
-import { RoomMembershipRule } from './room-membership.rule';
+import { RoomRule } from './room.rule';
 
 describe(RoomMemberRule.name, () => {
 	let service: RoomMemberRule;
-	// let roomMembershipRule: RoomMembershipRule;
+	// let roomRule: RoomRule;
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [RoomMemberRule, RoomMembershipRule, AuthorizationHelper, AuthorizationInjectionService],
+			providers: [RoomMemberRule, RoomRule, AuthorizationHelper, AuthorizationInjectionService],
 		}).compile();
 
-		module.get(RoomMembershipRule);
+		module.get(RoomRule);
 		injectionService = await module.get(AuthorizationInjectionService);
 		service = await module.get(RoomMemberRule);
 	});

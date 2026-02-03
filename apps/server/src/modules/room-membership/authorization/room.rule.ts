@@ -6,7 +6,7 @@ import { Permission } from '@shared/domain/interface';
 import { RoomAuthorizable } from '../do/room-authorizable.do';
 
 @Injectable()
-export class RoomMembershipRule implements Rule<RoomAuthorizable> {
+export class RoomRule implements Rule<RoomAuthorizable> {
 	constructor(private readonly authorisationInjectionService: AuthorizationInjectionService) {
 		this.authorisationInjectionService.injectAuthorizationRule(this);
 	}

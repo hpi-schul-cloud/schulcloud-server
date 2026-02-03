@@ -9,20 +9,20 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { RoomAuthorizable } from '../do/room-authorizable.do';
-import { RoomMembershipRule } from './room-membership.rule';
+import { RoomRule } from './room.rule';
 
-describe(RoomMembershipRule.name, () => {
-	let service: RoomMembershipRule;
+describe(RoomRule.name, () => {
+	let service: RoomRule;
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [RoomMembershipRule, AuthorizationHelper, AuthorizationInjectionService],
+			providers: [RoomRule, AuthorizationHelper, AuthorizationInjectionService],
 		}).compile();
 
-		service = await module.get(RoomMembershipRule);
+		service = await module.get(RoomRule);
 		injectionService = await module.get(AuthorizationInjectionService);
 	});
 
