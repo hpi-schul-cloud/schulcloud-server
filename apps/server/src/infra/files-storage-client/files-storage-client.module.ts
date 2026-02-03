@@ -1,5 +1,4 @@
 import { LoggerModule } from '@core/logger';
-import { SagaModule } from '@modules/saga';
 import { HttpModule } from '@nestjs/axios';
 import { Module, Scope } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -11,7 +10,7 @@ import { FilesStorageClientConfig } from './files-storage-client.config';
 import { Configuration, FileApi } from './generated';
 
 @Module({
-	imports: [LoggerModule, HttpModule, SagaModule],
+	imports: [LoggerModule, HttpModule],
 	providers: [
 		FilesStorageClientAdapter,
 		{

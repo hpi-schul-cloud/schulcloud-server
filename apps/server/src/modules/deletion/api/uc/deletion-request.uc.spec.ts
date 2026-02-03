@@ -4,7 +4,7 @@ import { DeletionRequestEntity } from '@modules/deletion/repo/entity';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
 import { DeletionConfig } from '../../deletion.config';
