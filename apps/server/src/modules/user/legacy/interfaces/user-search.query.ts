@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserSortQuery } from './user-sort.query';
 
 type DateRangeQuery = Record<string, Date>;

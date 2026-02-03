@@ -1,5 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
@@ -18,7 +19,6 @@ import {
 	submissionItemEntityFactory,
 } from '../../testing';
 import { SubmissionsResponse } from '../dto';
-import { schoolEntityFactory } from '@modules/school/testing';
 
 const baseRouteName = '/board-submissions';
 describe('submission item lookup (api)', () => {
@@ -118,6 +118,7 @@ describe('submission item lookup (api)', () => {
 				studentUser2,
 			};
 		};
+
 		it('should return status 200', async () => {
 			const { loggedInClient, submissionContainerNode1 } = await setup();
 
@@ -201,6 +202,7 @@ describe('submission item lookup (api)', () => {
 				item2,
 			};
 		};
+
 		it('should return status 200', async () => {
 			const { loggedInClient, submissionContainerNode } = await setup();
 
@@ -349,6 +351,7 @@ describe('submission item lookup (api)', () => {
 					fileElement,
 				};
 			};
+
 			it('should return all FILE child elements', async () => {
 				const { loggedInClient, submissionContainer, fileElement } = await setup();
 

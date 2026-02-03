@@ -76,10 +76,10 @@ import { TLDRAW_CLIENT_CONFIG_TOKEN, TldrawClientConfig } from './tldraw-client.
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
-		BoardNodeRule,
 		BoardContextService,
 		BoardNodeAuthorizableService,
 		BoardNodeRepo,
+		BoardNodeRule,
 		BoardNodeService,
 		BoardNodeFactory,
 		BoardNodeCopyService,
@@ -99,6 +99,7 @@ import { TLDRAW_CLIENT_CONFIG_TOKEN, TldrawClientConfig } from './tldraw-client.
 	exports: [
 		BoardNodeAuthorizableService,
 		BoardNodeFactory,
+		BoardNodeRule,
 		BoardNodeService,
 		BoardCommonToolService,
 		ColumnBoardService,

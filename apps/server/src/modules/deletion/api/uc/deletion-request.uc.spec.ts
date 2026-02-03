@@ -1,10 +1,10 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from 'bson';
 import { DELETION_CONFIG_TOKEN, DeletionConfig } from '../../deletion.config';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DomainDeletionReport } from '../../domain/interface';

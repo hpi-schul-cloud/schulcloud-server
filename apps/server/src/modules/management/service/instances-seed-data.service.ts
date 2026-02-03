@@ -1,17 +1,16 @@
 import { Instance, InstanceService } from '@modules/instance';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ManagementSeedDataConfig } from '../config';
+import { Inject, Injectable } from '@nestjs/common';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 
 @Injectable()
 export class InstancesSeedDataService {
 	constructor(
-		private readonly configService: ConfigService<ManagementSeedDataConfig, true>,
+		@Inject(MANAGEMENT_SEED_DATA_CONFIG_TOKEN) private readonly config: ManagementSeedDataConfig,
 		private readonly instanceService: InstanceService
 	) {}
 
 	public async import(): Promise<number> {
-		const instanceName: string = this.configService.getOrThrow<string>('SC_SHORTNAME');
+		const instanceName: string = this.config.scShortName;
 		const instance: Instance = new Instance({ id: '666076ad83d1e69b5c692efd', name: instanceName });
 
 		await this.instanceService.save(instance);

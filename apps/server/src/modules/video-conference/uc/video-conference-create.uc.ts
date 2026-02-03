@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import {
 	BBBBaseMeetingConfig,
@@ -9,19 +9,21 @@ import {
 	BBBService,
 	GuestPolicy,
 } from '../bbb';
+import { VideoConferenceDO, VideoConferenceScope } from '../domain';
 import { ErrorStatus } from '../error/error-status.enum';
 import { VideoConferenceOptions } from '../interface';
 import { VideoConferenceService } from '../service';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 import { ScopeInfo, ScopeRef } from './dto';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
-import { VideoConferenceDO, VideoConferenceScope } from '../domain';
 
 @Injectable()
 export class VideoConferenceCreateUc {
 	constructor(
 		private readonly bbbService: BBBService,
 		private readonly videoConferenceService: VideoConferenceService,
-		private readonly videoConferenceFeatureService: VideoConferenceFeatureService
+		private readonly videoConferenceFeatureService: VideoConferenceFeatureService,
+		@Inject(VIDEO_CONFERENCE_CONFIG_TOKEN) private readonly config: VideoConferenceConfig
 	) {}
 
 	public async createIfNotRunning(
@@ -90,7 +92,7 @@ export class VideoConferenceCreateUc {
 			videoConference.salt
 		);
 
-		await this.bbbService.create(configBuilder.build());
+		await this.bbbService.create(configBuilder.withScDomain(this.config.scHostUrl).build());
 	}
 
 	private prepareBBBCreateConfigBuilder(

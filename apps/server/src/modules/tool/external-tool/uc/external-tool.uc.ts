@@ -2,14 +2,15 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import {
 	BasicToolConfig,
 	ExternalTool,
@@ -39,7 +40,8 @@ export class ExternalToolUc {
 		private readonly externalToolLogoService: ExternalToolLogoService,
 		private readonly datasheetPdfService: DatasheetPdfService,
 		private readonly externalToolImageService: ExternalToolImageService,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
+		@Inject(TOOL_CONFIG_TOKEN) private readonly config: ToolConfig
 	) {}
 
 	public async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
@@ -235,6 +237,7 @@ export class ExternalToolUc {
 				externalTool,
 				user.firstName,
 				user.lastName,
+				this.config.scTitle,
 				schoolExternalTool,
 				schoolName
 			);

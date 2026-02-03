@@ -1,6 +1,6 @@
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Entity, Property, Index, Unique } from '@mikro-orm/core';
 import { DomainOperationReport, DomainDeletionReport } from '../../domain/interface';
 import { DomainName } from '../../domain/types';

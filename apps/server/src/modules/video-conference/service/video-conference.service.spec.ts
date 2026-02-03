@@ -129,7 +129,7 @@ describe(VideoConferenceService.name, () => {
 
 	describe('canGuestJoin', () => {
 		const setup = (isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean) => {
-			configService.HOST = 'https://api.example.com';
+			configService.scHostUrl = 'https://api.example.com';
 			return {
 				isGuest,
 				state,
@@ -179,7 +179,7 @@ describe(VideoConferenceService.name, () => {
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				configService.HOST = 'https://api.example.com';
+				configService.scHostUrl = 'https://api.example.com';
 				userService.findById.mockResolvedValue(user);
 
 				return {
@@ -215,7 +215,7 @@ describe(VideoConferenceService.name, () => {
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				configService.HOST = 'https://api.example.com';
+				configService.scHostUrl = 'https://api.example.com';
 				userService.findById.mockResolvedValueOnce(user);
 
 				return {
@@ -251,7 +251,7 @@ describe(VideoConferenceService.name, () => {
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				configService.HOST = 'https://api.example.com';
+				configService.scHostUrl = 'https://api.example.com';
 				userService.findById.mockResolvedValueOnce(user);
 
 				return {
@@ -1115,7 +1115,7 @@ describe(VideoConferenceService.name, () => {
 
 			const scopeId = new ObjectId().toHexString();
 
-			configService.HOST = 'https://api.example.com';
+			configService.scHostUrl = 'https://api.example.com';
 
 			return {
 				userId,
@@ -1282,7 +1282,7 @@ describe(VideoConferenceService.name, () => {
 
 			const course = courseEntityFactory.buildWithId();
 			courseService.findById.mockResolvedValue(course);
-			configService.HOST = 'https://api.example.com';
+			configService.scHostUrl = 'https://api.example.com';
 
 			return {
 				user,

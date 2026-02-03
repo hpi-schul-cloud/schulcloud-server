@@ -8,7 +8,6 @@ import { GroupEntity } from '@modules/group/entity';
 import { InstanceEntity } from '@modules/instance';
 import {
 	ColumnBoardBoardElement,
-	ColumnBoardNode,
 	DashboardEntity,
 	DashboardGridElementEntity,
 	LegacyBoard,
@@ -58,7 +57,6 @@ export const ENTITIES = [
 	BoardNodeEntity,
 	ClassEntity,
 	ColumnBoardBoardElement,
-	ColumnBoardNode,
 	DeletionRequestEntity,
 	DeletionLogEntity,
 	DeletionBatchEntity,

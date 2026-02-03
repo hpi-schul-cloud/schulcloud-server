@@ -50,11 +50,6 @@
 			"default": 16,
 			"description": "Second gate for consent. Starting at this age parent consent is not required"
 		},
-		"LOGIN_BLOCK_TIME": {
-			"type": "integer",
-			"default": 15,
-			"description": "Time difference for the brute force check in seconds"
-		},
 		"FORCE_SEND_EMAIL": {
 			"type": "boolean",
 			"default": false,
@@ -219,27 +214,11 @@
 			"description": "Properties of the H5P server microservice and library management job",
 			"default": {},
 			"properties": {
-				"EXCHANGE": {
-					"type": "string",
-					"default": "h5p-editor",
-					"description": "rabbitmq exchange name for h5p editor"
-				},
 				"INCOMING_REQUEST_TIMEOUT": {
 					"type": "integer",
 					"minimum": 0,
 					"default": 600000,
 					"description": "Timeout for incoming requests (including file uploads) to the h5p editor in milliseconds."
-				},
-				"INSTALL_LIBRARY_LOCK_MAX_OCCUPATION_TIME": {
-					"type": "integer",
-					"minimum": 0,
-					"default": 600000,
-					"description": "The number of milliseconds that code has until a single library is installed. If this time is exceeded the lock will be freed and the library installation has failed."
-				},
-				"LIBRARY_LIST_PATH": {
-					"type": "string",
-					"default": "config/h5p-libraries.yaml",
-					"description": "Path to yaml file with list of h5p content type libraries which should be installed"
 				}
 			}
 		},
@@ -247,28 +226,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Defines if backend for the FWU content in the Learnstore is enabled."
-		},
-		"OIDCMOCK": {
-			"type": "object",
-			"description": "OpenID Connect Identity Provider mock server for develop and testing purpose (set these values for local seeding purpose).",
-			"required": [],
-			"properties": {
-				"BASE_URL": {
-					"type": "string",
-					"default": null,
-					"description": "The mock server base path."
-				},
-				"CLIENT_ID": {
-					"type": "string",
-					"default": null,
-					"description": "The mock server accepted client id."
-				},
-				"CLIENT_SECRET": {
-					"type": "string",
-					"default": null,
-					"description": "The mock server accepted client's secret."
-				}
-			}
 		},
 		"CLAMAV": {
 			"type": "object",
@@ -400,11 +357,6 @@
 			"default": "default",
 			"description": "The used theming."
 		},
-		"SC_SHORTNAME": {
-			"type": "string",
-			"default": "dbc",
-			"description": "The sort name of the instance (dbc, nbc, brb, thr)."
-		},
 		"FEATURE_OAUTH_LOGIN": {
 			"type": "boolean",
 			"default": "false",
@@ -520,55 +472,6 @@
 				}
 			}
 		},
-		"NEXTCLOUD_BASE_URL": {
-			"type": "string",
-			"default": "http://nextcloud.localhost:9090",
-			"description": "API URI for Nextcloud"
-		},
-		"NEXTCLOUD_CLIENT_ID": {
-			"type": "string",
-			"description": "Client id for Nextcloud"
-		},
-		"NEXTCLOUD_CLIENT_SECRET": {
-			"type": "string",
-			"description": "Client secret for Nextcloud"
-		},
-		"NEXTCLOUD_ADMIN_USER": {
-			"type": "string",
-			"default": "admin",
-			"description": "Admin-user for Nextcloud-API"
-		},
-		"NEXTCLOUD_ADMIN_PASS": {
-			"type:": "string",
-			"default": "admin",
-			"description": "Admin-password for Nextcloud-API"
-		},
-		"NEXTCLOUD_SCOPES": {
-			"type:": "string",
-			"default": "openid offline profile email groups",
-			"description": "ClientId for Nextcloud Oauth2 Login"
-		},
-		"NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME": {
-			"type:": "string",
-			"default": "SchulcloudNextcloud",
-			"description": "Internal name of schulcloud oidc provider of nextcloud's social login app"
-		},
-		"MEDIA_SOURCE_VIDIS_USERNAME": {
-			"type:": "string",
-			"description": "Username for VIDIS api"
-		},
-		"MEDIA_SOURCE_VIDIS_PASSWORD": {
-			"type:": "string",
-			"description": "Password for VIDIS api"
-		},
-		"MEDIA_SOURCE_BILO_CLIENT_ID": {
-			"type:": "string",
-			"description": "Client id for Bildungslogin api"
-		},
-		"MEDIA_SOURCE_BILO_CLIENT_SECRET": {
-			"type:": "string",
-			"description": "Client secret for Bildungslogin api"
-		},
 		"HYDRA_PUBLIC_URI": {
 			"type:": "string",
 			"default": "http://hydra.localhost:9000",
@@ -644,31 +547,6 @@
 			"type": "string",
 			"description": "when set, this is interpreted as a regex to extend the ignorelist for the API validation with any routes matching the regex.",
 			"examples": [".*/courses/[0-9a-f]{24}($|/$)"]
-		},
-		"FEATURE_PROMETHEUS_METRICS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Feature flag for collecting and exporting Prometheus metrics."
-		},
-		"PROMETHEUS_METRICS_ROUTE": {
-			"type": "string",
-			"default": "/metrics",
-			"description": "Route at which Prometheus metrics are exported (if enabled by the feature flag)."
-		},
-		"PROMETHEUS_METRICS_PORT": {
-			"type": "number",
-			"default": 9090,
-			"description": "Port number on which the additional server (that exports Prometheus metrics) is listening on (if enabled by the feature flag). Please remember that it must be different than the main app listening port as the Prometheus app server will run on a different port and you can't run two servers on the same port."
-		},
-		"PROMETHEUS_METRICS_COLLECT_DEFAULT_METRICS": {
-			"type": "boolean",
-			"default": true,
-			"description": "Toggle that enables/disables collecting default Prometheus client metrics (e.g. NodeJS or OS-related ones)."
-		},
-		"PROMETHEUS_METRICS_COLLECT_METRICS_ROUTE_METRICS": {
-			"type": "boolean",
-			"default": true,
-			"description": "Toggle that enables/disables collecting metrics of the metrics route itself (like metrics route calls count or response time)."
 		},
 		"FEATURE_MONGOOSE_LOGGING_ENABLED": {
 			"type": "boolean",
@@ -1009,20 +887,6 @@
 			"default": {
 				"PERSONEN_INFO_TIMEOUT_IN_MS": 120000
 			}
-		},
-		"HOSTNAME": {
-			"type": "string",
-			"description": "Hostname. Should usually not be defined as it's expected to be taken from the process env."
-		},
-		"HEALTH_CHECKS_EXCLUDE_MONGODB": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle that, when enabled, excludes MongoDB from the health checks."
-		},
-		"SYNCHRONIZATION_CHUNK": {
-			"type": "number",
-			"default": 10000,
-			"description": "Size of chunk for synchronization"
 		},
 		"FEATURE_MEDIA_SHELF_ENABLED": {
 			"type": "boolean",

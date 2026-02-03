@@ -5,8 +5,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
@@ -18,7 +16,10 @@ import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { CustomParameter } from '../../common/domain';
 import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
+import { TOOL_CONFIG_TOKEN } from '../../tool-config';
 import {
 	ExternalTool,
 	ExternalToolDatasheetTemplateData,
@@ -102,6 +103,12 @@ describe(ExternalToolUc.name, () => {
 				{
 					provide: DefaultEncryptionService,
 					useValue: createMock<EncryptionService>(),
+				},
+				{
+					provide: TOOL_CONFIG_TOKEN,
+					useValue: {
+						scTitle: 'dBildungscloud',
+					},
 				},
 			],
 		}).compile();
