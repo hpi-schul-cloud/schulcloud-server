@@ -34,7 +34,7 @@ describe('News Scope', () => {
 						targetModel: NewsTargetModel.Course,
 					},
 					{
-						'target:in': [courseTargetId],
+						target: { $in: [courseTargetId] },
 					},
 				],
 			} as FilterQuery<News>;
@@ -63,7 +63,7 @@ describe('News Scope', () => {
 								targetModel: NewsTargetModel.Course,
 							},
 							{
-								'target:in': [courseTargetId],
+								target: { $in: [courseTargetId] },
 							},
 						],
 					},
@@ -73,7 +73,7 @@ describe('News Scope', () => {
 								targetModel: NewsTargetModel.Team,
 							},
 							{
-								'target:in': [teamTargetId],
+								target: { $in: [teamTargetId] },
 							},
 						],
 					},

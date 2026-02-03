@@ -1,5 +1,5 @@
 import { BaseFactory } from '@testing/factory/base.factory';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { InstalledLibrary } from '../repo';
 
 type InstalledLibraryProperties = InstalledLibrary;

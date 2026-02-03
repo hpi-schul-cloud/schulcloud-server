@@ -1,11 +1,11 @@
 import { Entity, Enum } from '@mikro-orm/core';
+import { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
 import { LessonEntity } from '@modules/lesson/repo';
 import { Task } from '@modules/task/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { ColumnBoardNode } from './column-board-node.entity';
 
-export type LegacyBoardElementReference = Task | LessonEntity | ColumnBoardNode;
+export type LegacyBoardElementReference = Task | LessonEntity | BoardNodeEntity;
 
 export enum LegacyBoardElementType {
 	'Task' = 'task',

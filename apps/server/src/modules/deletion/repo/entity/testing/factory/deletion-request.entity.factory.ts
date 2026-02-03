@@ -1,5 +1,5 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { ObjectId } from 'bson';
 import { DomainName, StatusModel } from '../../../../domain/types';
 import { DeletionRequestEntity, DeletionRequestEntityProps } from '../../deletion-request.entity';
 
