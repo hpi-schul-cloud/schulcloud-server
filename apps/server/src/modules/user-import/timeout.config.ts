@@ -5,7 +5,7 @@ import { IsNumber } from 'class-validator';
 
 export const USER_IMPORT_TIMEOUT_CONFIG_TOKEN = 'USER_IMPORT_TIMEOUT_CONFIG_TOKEN';
 export const IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS_KEY = 'importUserSaveAllMatchesRequestTimeoutMs';
-export const SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS_KEY = 'schulconnexClientPersonenInfoTimeoutInMs';
+export const SCHULCONNEX_CLIENT_PERSONEN_INFO_TIMEOUT_IN_MS_KEY = 'schulconnexClientPersonenInfoTimeoutInMs';
 @Configuration()
 export class UserImportTimeoutConfig extends TimeoutConfig {
 	@ConfigProperty('IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS')
@@ -16,5 +16,5 @@ export class UserImportTimeoutConfig extends TimeoutConfig {
 	@ConfigProperty('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS')
 	@IsNumber()
 	@StringToNumber()
-	public [SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS_KEY]!: number;
+	public [SCHULCONNEX_CLIENT_PERSONEN_INFO_TIMEOUT_IN_MS_KEY]!: number;
 }

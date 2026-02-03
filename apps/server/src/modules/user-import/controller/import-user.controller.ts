@@ -17,7 +17,7 @@ import { ImportUser } from '../entity';
 import { ImportUserMapper, UserMatchMapper } from '../mapper';
 import {
 	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS_KEY,
-	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS_KEY,
+	SCHULCONNEX_CLIENT_PERSONEN_INFO_TIMEOUT_IN_MS_KEY,
 } from '../timeout.config';
 import { PopulateUserImportFetchUc, UserImportUc } from '../uc';
 import {
@@ -129,7 +129,7 @@ export class ImportUserController {
 		await this.userImportUc.endSchoolInMaintenance(currentUser.userId);
 	}
 
-	@RequestTimeout(SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS_KEY)
+	@RequestTimeout(SCHULCONNEX_CLIENT_PERSONEN_INFO_TIMEOUT_IN_MS_KEY)
 	@Post('populate-import-users')
 	@ApiOperation({
 		summary: 'Populates import users',
