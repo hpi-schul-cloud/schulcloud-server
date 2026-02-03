@@ -1,7 +1,7 @@
 import { ICurrentUser, WsJwtAuthentication } from '@infra/auth-guard';
 import { Socket, WsValidationPipe } from '@infra/socketio';
-import { MikroORM, EnsureRequestContext } from '@mikro-orm/core';
-import { UsePipes } from '@nestjs/common';
+import { EnsureRequestContext, MikroORM } from '@mikro-orm/core';
+import { Inject, UsePipes } from '@nestjs/common';
 import {
 	OnGatewayConnection,
 	OnGatewayDisconnect,
@@ -12,6 +12,7 @@ import {
 } from '@nestjs/websockets';
 import { EntityId } from '@shared/domain/types';
 import { Server } from 'socket.io';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../board.config';
 import { AnyContentElementResponse } from '../controller/dto';
 import {
 	BoardResponseMapper,
@@ -19,6 +20,7 @@ import {
 	ColumnResponseMapper,
 	ContentElementResponseFactory,
 } from '../controller/mapper';
+import { MoveCardResponseMapper } from '../controller/mapper/move-card-response.mapper';
 import { AnyBoardNode, ColumnBoard } from '../domain';
 import { MetricsService } from '../metrics/metrics.service';
 import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
@@ -46,12 +48,21 @@ import {
 	UpdateColumnTitleMessageParams,
 	UpdateContentElementMessageParams,
 } from './dto';
-import BoardCollaborationConfiguration from './dto/board-collaboration-config';
 import { UpdateReadersCanEditMessageParams } from './dto/update-users-can-edit.message.param';
-import { MoveCardResponseMapper } from '../controller/mapper/move-card-response.mapper';
 
+// Using a variable here to access the exchange name in the decorator
+const websocketOptions = {
+	path: '',
+	cors: {
+		origin: '',
+		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+		preflightContinue: false,
+		optionsSuccessStatus: 204,
+		credentials: true,
+	},
+};
 @UsePipes(new WsValidationPipe())
-@WebSocketGateway(BoardCollaborationConfiguration.websocket)
+@WebSocketGateway(websocketOptions)
 @WsJwtAuthentication()
 export class BoardCollaborationGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
@@ -64,8 +75,12 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		private readonly columnUc: ColumnUc,
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
-		private readonly metricsService: MetricsService
-	) {}
+		private readonly metricsService: MetricsService,
+		@Inject(BOARD_CONFIG_TOKEN) private readonly boardConfig: BoardConfig
+	) {
+		websocketOptions.cors.origin = this.boardConfig.hostUrl;
+		websocketOptions.path = this.boardConfig.basePath;
+	}
 
 	public trackExecutionTime(methodName: string, executionTimeMs: number): void {
 		if (this.metricsService) {

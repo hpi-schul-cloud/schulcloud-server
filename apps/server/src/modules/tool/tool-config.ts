@@ -56,4 +56,8 @@ export class ToolConfig extends ToolPublicApiConfig {
 	@ConfigProperty('PUBLIC_BACKEND_URL')
 	@IsUrl({ require_tld: false })
 	public publicBackendUrl!: string;
+
+	@ConfigProperty('SC_TITLE')
+	@IsUrl({ require_tld: false })
+	public scTitle = 'dBildungscloud';
 }

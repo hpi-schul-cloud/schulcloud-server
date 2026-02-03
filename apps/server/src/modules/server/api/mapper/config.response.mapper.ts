@@ -6,6 +6,7 @@ import { LearnroomPublicApiConfig } from '@modules/learnroom';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { RegistrationPublicApiConfig } from '@modules/registration';
+import { RocketChatPublicApiConfig } from '@modules/rocketchat';
 import { RoomPublicApiConfig } from '@modules/room';
 import { RosterPublicApiConfig } from '@modules/roster';
 import { SharingPublicApiConfig } from '@modules/sharing';
@@ -37,7 +38,8 @@ export class ConfigResponseMapper {
 		learnroomConfig: LearnroomPublicApiConfig,
 		userConfig: UserPublicApiConfig,
 		userImportConfig: UserImportPublicApiConfig,
-		userLoginMigrationConfig: UserLoginMigrationPublicApiConfig
+		userLoginMigrationConfig: UserLoginMigrationPublicApiConfig,
+		rocketChatConfig: RocketChatPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,
@@ -58,6 +60,7 @@ export class ConfigResponseMapper {
 			...userConfig,
 			...userImportConfig,
 			...userLoginMigrationConfig,
+			...rocketChatConfig,
 		});
 
 		return configResponse;
