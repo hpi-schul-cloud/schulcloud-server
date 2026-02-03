@@ -119,7 +119,7 @@ describe('get H5P editor', () => {
 			it('should call service with correct params', async () => {
 				const { mockCurrentUser, language } = setup();
 
-				await uc.getEmptyH5pEditor(mockCurrentUser.userId, language);
+				await uc.getEmptyH5pEditor(mockCurrentUser, language);
 
 				expect(h5pEditor.render).toHaveBeenCalledWith(
 					undefined,
@@ -133,7 +133,7 @@ describe('get H5P editor', () => {
 			it('should return results of service', async () => {
 				const { mockCurrentUser, language, editorResponseMock } = setup();
 
-				const result = await uc.getEmptyH5pEditor(mockCurrentUser.userId, language);
+				const result = await uc.getEmptyH5pEditor(mockCurrentUser, language);
 
 				expect(result).toEqual(editorResponseMock);
 			});
@@ -153,7 +153,7 @@ describe('get H5P editor', () => {
 			it('should return error of service', async () => {
 				const { error, mockCurrentUser, language } = setup();
 
-				const getEmptyEditorPromise = uc.getEmptyH5pEditor(mockCurrentUser.userId, language);
+				const getEmptyEditorPromise = uc.getEmptyH5pEditor(mockCurrentUser, language);
 
 				await expect(getEmptyEditorPromise).rejects.toThrow(error);
 			});
