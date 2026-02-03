@@ -13,7 +13,7 @@ import { taskFactory } from '../../testing';
 // eslint-disable-next-line import/first
 import { ServerTestModule } from '@modules/server/server.app.module';
 import {
-	INCOMING_REQUEST_TIMEOUT_COPY_API_KEY,
+	TASK_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY,
 	TASK_TIMEOUT_CONFIG_TOKEN,
 	TaskTimeoutConfig,
 } from '@modules/task/timeout.config';
@@ -48,7 +48,7 @@ describe('Task copy (API)', () => {
 	});
 
 	const setup = async () => {
-		timeoutConfig[INCOMING_REQUEST_TIMEOUT_COPY_API_KEY] = 1;
+		timeoutConfig[TASK_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY] = 1;
 
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 		const course = courseEntityFactory.build({ name: 'course #1', teachers: [teacherUser] });
