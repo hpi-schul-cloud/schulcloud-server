@@ -4,7 +4,7 @@ export interface ToolConfig {
 
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean, StringToNumber } from '@shared/controller/transformer';
-import { IsBoolean, IsNumber, IsUrl } from 'class-validator';
+import { IsBoolean, IsNumber, IsString, IsUrl } from 'class-validator';
 
 export const TOOL_PUBLIC_API_CONFIG_TOKEN = 'TOOL_PUBLIC_API_CONFIG_TOKEN';
 export const TOOL_CONFIG_TOKEN = 'TOOL_CONFIG_TOKEN';
@@ -58,6 +58,6 @@ export class ToolConfig extends ToolPublicApiConfig {
 	public publicBackendUrl!: string;
 
 	@ConfigProperty('SC_TITLE')
-	@IsUrl({ require_tld: false })
+	@IsString()
 	public scTitle = 'dBildungscloud';
 }
