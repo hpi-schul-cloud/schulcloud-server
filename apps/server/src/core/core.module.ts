@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ErrorModule } from './error';
-import { InterceptorModule } from './interceptor';
+import { TimeoutInterceptorModule } from './interceptor';
 import { LoggerModule } from './logger';
 import { ValidationModule } from './validation';
 
@@ -9,7 +9,7 @@ import { ValidationModule } from './validation';
  * Overrides/Configures global APP_INTERCEPTOR, APP_PIPE, APP_GUARD, APP_FILTER
  */
 @Module({
-	imports: [LoggerModule, ErrorModule, ValidationModule, InterceptorModule],
+	imports: [LoggerModule, ErrorModule, ValidationModule, TimeoutInterceptorModule.forRoot()],
 	exports: [LoggerModule, ErrorModule],
 })
 export class CoreModule {}

@@ -7,23 +7,19 @@ import {
 	AuthorizationClientModule,
 } from '@infra/authorization-client';
 import { ConfigurationModule } from '@infra/configuration';
+import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { H5PEditorController } from './controller';
-import { coreConfig } from './h5p-editor-timeout.config';
 import { H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig } from './h5p-editor.config';
+import { ENTITIES } from './h5p-editor.entity.exports';
 import { H5PEditorModule } from './h5p-editor.module';
 import { H5PEditorUc } from './uc';
-import { DatabaseModule, DATABASE_CONFIG_TOKEN, DatabaseConfig } from '@infra/database';
-import { ENTITIES } from './h5p-editor.entity.exports';
 
 @Module({
 	imports: [
 		AuthorizationClientModule.register(AUTHORIZATION_CLIENT_CONFIG_TOKEN, AuthorizationClientConfig),
 		CoreModule,
-		ConfigModule.forRoot(createConfigModuleOptions(coreConfig)),
 		AuthGuardModule.register([
 			{
 				option: AuthGuardOptions.JWT,
