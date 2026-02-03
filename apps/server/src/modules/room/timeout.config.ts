@@ -11,5 +11,5 @@ export class RoomTimeoutConfig extends TimeoutConfig {
 	@ConfigProperty('INCOMING_REQUEST_TIMEOUT_COPY_API')
 	@IsNumber()
 	@StringToNumber()
-	public [ROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY]!: number;
+	public [ROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY] = 60000;
 }

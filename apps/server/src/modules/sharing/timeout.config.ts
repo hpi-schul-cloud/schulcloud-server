@@ -11,5 +11,5 @@ export class SharingTimeoutConfig extends TimeoutConfig {
 	@ConfigProperty('INCOMING_REQUEST_TIMEOUT_COPY_API')
 	@IsNumber()
 	@StringToNumber()
-	public [SHARING_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY]!: number;
+	public [SHARING_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY] = 60000;
 }

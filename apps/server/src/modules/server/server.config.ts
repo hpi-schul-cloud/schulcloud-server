@@ -60,7 +60,6 @@ export interface ServerConfig {
 	ROOM_MEMBER_INFO_URL: string | null;
 	STUDENT_TEAM_CREATION: string;
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: number;
-	INCOMING_REQUEST_TIMEOUT_COPY_API: number;
 	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: number;
 }
 
@@ -103,7 +102,6 @@ const config: ServerConfig = {
 	SC_TITLE: Configuration.get('SC_TITLE') as string,
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	TRAINING_URL: Configuration.get('TRAINING_URL') as string,
-	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
 	NODE_ENV: Configuration.get('NODE_ENV') as NodeEnvType,
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
 	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,

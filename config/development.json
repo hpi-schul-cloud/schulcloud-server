@@ -16,7 +16,6 @@
 	"S3_KEY": "abcdefghijklmnop",
 	"AES_KEY": "thisisnotsecure12",
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "thisisnotsecure12",
-	"INCOMING_REQUEST_TIMEOUT_API": 60000,
 	"COOKIE": {
 		"SAME_SITE": "lax",
 		"HTTP_ONLY": false,
