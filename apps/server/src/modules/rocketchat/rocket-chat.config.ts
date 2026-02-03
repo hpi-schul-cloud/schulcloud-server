@@ -22,12 +22,12 @@ export class RocketChatConfig extends RocketChatPublicApiConfig {
 
 	@ConfigProperty('ROCKET_CHAT_ADMIN_ID')
 	@IsString()
-	@ValidateIf((config: RocketChatConfig) => config.rocketChatServiceEnabled)
+	@IsOptional()
 	public adminId!: string;
 
 	@ConfigProperty('ROCKET_CHAT_ADMIN_TOKEN')
 	@IsString()
-	@ValidateIf((config: RocketChatConfig) => config.rocketChatServiceEnabled)
+	@IsOptional()
 	public adminToken!: string;
 
 	@ConfigProperty('ROCKET_CHAT_ADMIN_USER')
