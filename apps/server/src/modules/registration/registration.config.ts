@@ -1,6 +1,6 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer';
-import { IsBoolean, IsEmail, IsUrl } from 'class-validator';
+import { IsBoolean, IsEmail, IsString, IsUrl } from 'class-validator';
 
 export const REGISTRATION_PUBLIC_API_CONFIG_TOKEN = 'REGISTRATION_PUBLIC_API_CONFIG_TOKEN';
 export const REGISTRATION_CONFIG_TOKEN = 'REGISTRATION_CONFIG_TOKEN';
@@ -24,6 +24,6 @@ export class RegistrationConfig extends RegistrationPublicApiConfig {
 	public fromEmailAddress = 'noreply@dbildungscloud.de';
 
 	@ConfigProperty('SC_TITLE')
-	@IsUrl({ require_tld: false })
+	@IsString()
 	public scTitle = 'dBildungscloud';
 }
