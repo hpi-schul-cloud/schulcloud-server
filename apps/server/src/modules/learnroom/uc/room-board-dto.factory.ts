@@ -7,15 +7,10 @@ import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../learnroom.config';
-import {
-	ColumnBoardBoardElement,
-	ColumnBoardNode,
-	LegacyBoard,
-	LegacyBoardElement,
-	LegacyBoardElementType,
-} from '../repo';
+import { ColumnBoardBoardElement, LegacyBoard, LegacyBoardElement, LegacyBoardElementType } from '../repo';
 import {
 	ColumnBoardMetaData,
+	ColumnBoardNode,
 	LessonMetaData,
 	RoomBoardDTO,
 	RoomBoardElementDTO,
@@ -24,15 +19,15 @@ import {
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 
 class DtoCreator {
-	room: CourseEntity;
+	public room: CourseEntity;
 
-	board: LegacyBoard;
+	public board: LegacyBoard;
 
-	user: User;
+	public user: User;
 
-	authorisationService: AuthorizationService;
+	public authorisationService: AuthorizationService;
 
-	roomsAuthorisationService: CourseRoomsAuthorisationService;
+	public roomsAuthorisationService: CourseRoomsAuthorisationService;
 
 	private learnroomConfig: LearnroomConfig;
 
@@ -59,7 +54,7 @@ class DtoCreator {
 		this.learnroomConfig = config;
 	}
 
-	manufacture(): RoomBoardDTO {
+	public manufacture(): RoomBoardDTO {
 		const elements = this.board.getElements();
 		const filtered = this.filterByPermission(elements);
 
@@ -68,7 +63,7 @@ class DtoCreator {
 		return dto;
 	}
 
-	private filterByPermission(elements: LegacyBoardElement[]) {
+	private filterByPermission(elements: LegacyBoardElement[]): LegacyBoardElement[] {
 		const filtered = elements.filter((element) => {
 			let result = false;
 			if (element.boardElementType === LegacyBoardElementType.Task) {
@@ -90,7 +85,7 @@ class DtoCreator {
 		return filtered;
 	}
 
-	private isColumnBoardFeatureFlagActive() {
+	private isColumnBoardFeatureFlagActive(): boolean {
 		const isActive = this.learnroomConfig.featureColumnBoardEnabled === true;
 
 		return isActive;
@@ -103,7 +98,7 @@ class DtoCreator {
 		return false;
 	}
 
-	private mapToElementDTOs(elements: LegacyBoardElement[]) {
+	private mapToElementDTOs(elements: LegacyBoardElement[]): RoomBoardElementDTO[] {
 		const results: RoomBoardElementDTO[] = [];
 		elements.forEach((element) => {
 			if (element.boardElementType === LegacyBoardElementType.Task) {

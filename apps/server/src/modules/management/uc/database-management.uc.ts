@@ -18,6 +18,7 @@ import {
 	SystemsSeedDataService,
 } from '../service';
 import { DatabaseManagementService } from '../service/database-management.service';
+import { Document } from 'mongodb';
 
 export interface CollectionFilePath {
 	filePath: string;
@@ -238,7 +239,7 @@ export class DatabaseManagementUc {
 				// import backup data into database collection
 				const importedDocumentsAmount = await this.databaseManagementService.importCollection(
 					collectionName,
-					jsonDocuments
+					jsonDocuments as Document[]
 				);
 				// keep collection name and number of imported documents
 				seededCollectionsWithAmount.set(collectionName, importedDocumentsAmount);

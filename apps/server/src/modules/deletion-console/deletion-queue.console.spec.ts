@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import fs from 'fs';
 import { PushDeleteRequestsOptionsBuilder } from './builder';
 import { UnsyncedEntitiesOptionsBuilder } from './builder/unsynced-entities-options.builder';

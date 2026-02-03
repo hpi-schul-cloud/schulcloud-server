@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from 'bson';
 import { DELETION_CONFIG_TOKEN, DeletionConfig } from '../../deletion.config';
 import { DeletionRequestRepo } from '../../repo';
 import { DeletionRequestEntity } from '../../repo/entity';

@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
-import { ObjectID } from 'bson';
 import { of, throwError } from 'rxjs';
 import { DeletionRequestInputBuilder, DeletionRequestOutputBuilder } from '.';
 import { DELETION_CONSOLE_CONFIG_TOKEN } from '../deletion-console.config';
@@ -168,7 +168,7 @@ describe(DeletionClient.name, () => {
 		const mockGetRequestIds = () => {
 			const getResponse1: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
 				status: 200,
-				data: [new ObjectID().toHexString()],
+				data: [new ObjectId().toHexString()],
 			});
 			const getResponse2: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
 				status: 200,

@@ -4,7 +4,7 @@ import { AccountService } from '@modules/account';
 import { UserDo, UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CreateDeletionBatchParams, DeletionBatchService } from '../../domain/service';
 import { deletionBatchFactory } from '../../domain/testing';
 import { BatchStatus, DomainName } from '../../domain/types';

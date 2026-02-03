@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionRequest } from '../domain/do';
 import { deletionRequestFactory } from '../domain/testing';
 import { StatusModel } from '../domain/types';
