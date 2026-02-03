@@ -10,6 +10,7 @@ import { Dashboard, GridElement } from '../../../domain/do/dashboard';
 import { LearnroomMetadata, LearnroomTypes } from '../../../types';
 import { DashboardEntity, DashboardGridElementEntity } from '../dashboard.entity';
 import { DashboardModelMapper } from './dashboard.entity.mapper';
+import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 
 describe('dashboard model mapper', () => {
 	let mapper: DashboardModelMapper;
@@ -60,6 +61,13 @@ describe('dashboard model mapper', () => {
 			expect(result.getId()).toEqual(dashboard.id);
 			const resultElement = result.getElement({ x: 1, y: 2 });
 			expect(resultElement.getContent().title).toEqual('German');
+		});
+
+		it('should throw if reference is not populated', async () => {
+			const fakeId = new ObjectId().toHexString();
+			const fakeCourse = em.getReference(CourseEntity, fakeId);
+
+			await expect(mapper.mapReferenceToEntity(fakeCourse)).rejects.toThrow(ReferenceNotPopulatedLoggableException);
 		});
 	});
 

@@ -35,6 +35,8 @@ export class Migration20251126094351 extends Migration {
 		const roleUpdate = await this.getCollection('roles').updateOne(
 			{ name: roleName },
 			{
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore // MongoDB types are wrong here
 				$pull: {
 					permissions: {
 						$in: permissions,

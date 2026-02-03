@@ -1,5 +1,5 @@
 import { FindOptions } from '@mikro-orm/core';
-import { AutoPath, EntityData, EntityName } from '@mikro-orm/core/typings';
+import { EntityData, EntityName, Populate } from '@mikro-orm/core/typings';
 import type { SystemEntity } from '@modules/system/repo';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
@@ -135,7 +135,7 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 
 	private mapToMikroOrmOptions<P extends string = never>(
 		options?: IFindOptions<SchoolProps>,
-		populate?: AutoPath<SchoolEntity, P>[]
+		populate?: Populate<SchoolEntity, P>
 	): FindOptions<SchoolEntity, P> {
 		const findOptions: FindOptions<SchoolEntity, P> = {
 			offset: options?.pagination?.skip,

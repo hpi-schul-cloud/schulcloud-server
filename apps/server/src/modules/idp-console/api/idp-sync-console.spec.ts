@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { ConsoleWriterService } from '@infra/console';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UsersSyncOptionsBuilder } from '../testing';
 import { IdpSyncConsole } from './idp-sync-console';
 import { SystemType } from './interface';

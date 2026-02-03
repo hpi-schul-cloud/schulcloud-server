@@ -240,7 +240,7 @@ describe('AccountMikroOrmRepo', () => {
 
 		describe('When not existing user ids are given', () => {
 			it('should return empty list', async () => {
-				const accounts = await repo.findMultipleByUserId(['123456789012', '098765432101']);
+				const accounts = await repo.findMultipleByUserId(['0000d213816abba584714caa', '0000d213816abba584714cab']);
 				expect(accounts).toHaveLength(0);
 			});
 		});
@@ -264,7 +264,7 @@ describe('AccountMikroOrmRepo', () => {
 
 		describe('When id does not exist', () => {
 			it('should throw not found error', async () => {
-				await expect(repo.findByUserIdOrFail('123456789012')).rejects.toThrow(NotFoundError);
+				await expect(repo.findByUserIdOrFail('0000d213816abba584714cac')).rejects.toThrow(NotFoundError);
 			});
 		});
 	});

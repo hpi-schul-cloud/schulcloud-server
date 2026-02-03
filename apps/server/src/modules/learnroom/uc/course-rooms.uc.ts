@@ -5,7 +5,7 @@ import { EntityId } from '@shared/domain/types';
 import { LockedCourseLoggableException } from '../loggable';
 import { LegacyBoardRepo } from '../repo';
 import { CourseRoomsService } from '../service/course-rooms.service';
-import { RoomBoardDTO } from '../types';
+import { isColumnBoard, RoomBoardDTO } from '../types';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 
@@ -53,10 +53,15 @@ export class CourseRoomsUc {
 		}
 		const legacyBoard = await this.legacyBoardRepo.findByCourseId(course.id);
 		const element = legacyBoard.getByTargetId(elementId);
-		if (visibility) {
-			element.publish();
+
+		if (isColumnBoard(element)) {
+			(element as { isVisible: boolean }).isVisible = visibility;
 		} else {
-			element.unpublish();
+			if (visibility) {
+				element.publish();
+			} else {
+				element.unpublish();
+			}
 		}
 
 		await this.legacyBoardRepo.save(legacyBoard);
