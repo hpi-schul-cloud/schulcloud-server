@@ -1,8 +1,13 @@
-import { LegacySchoolConfig } from '@modules/legacy-school';
-import { RegistrationPinConfig } from '@modules/registration-pin';
+import { ConfigProperty, Configuration } from '@infra/configuration';
+import { StringToNumber } from '@shared/controller/transformer';
+import { IsNumber } from 'class-validator';
 
-export interface AdminApiServerConfig extends LegacySchoolConfig, RegistrationPinConfig {}
+export const ADMIN_API_SERVER_CONFIG_TOKEN = 'ADMIN_API_SERVER_CONFIG_TOKEN';
 
-const config: AdminApiServerConfig = {};
-
-export const adminApiServerConfig = () => config;
+@Configuration()
+export class AdminApiServerConfig {
+	@ConfigProperty('ADMIN_API__PORT')
+	@StringToNumber()
+	@IsNumber()
+	public port = 4030;
+}

@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import { LegacyLogger, Logger } from '@core/logger';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ADMIN_API_SERVER_CONFIG_TOKEN, AdminApiServerConfig } from '@modules/server';
 import { AdminApiServerModule } from '@modules/server/admin-api.server.app.module';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
@@ -36,7 +36,9 @@ async function bootstrap(): Promise<void> {
 
 	await nestAdminServerApp.init();
 
-	const adminApiServerPort = Configuration.get('ADMIN_API__PORT') as number;
+	const adminApiServerConfig = await nestAdminServerApp.resolve<AdminApiServerConfig>(ADMIN_API_SERVER_CONFIG_TOKEN);
+
+	const adminApiServerPort = adminApiServerConfig.port;
 
 	nestAdminServerExpress.listen(adminApiServerPort, () => {
 		logger.info(

@@ -746,23 +746,6 @@
 			"default": false,
 			"description": "Enables feature that allows the insecure LDAP URL (with ldap:// protocol)."
 		},
-		"ADMIN_API": {
-			"type": "object",
-			"description": "Configuration of the schulcloud-server's admin API.",
-			"properties": {
-				"ENABLED": {
-					"type": "boolean",
-					"default": true,
-					"description": "Flag to turn on/off the Admin API."
-				},
-				"PORT": {
-					"type": "number",
-					"default": 4030,
-					"description": "Port of the exposed Admin API server."
-				}
-			},
-			"default": {}
-		},
 		"FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION": {
 			"type": "boolean",
 			"default": false,
