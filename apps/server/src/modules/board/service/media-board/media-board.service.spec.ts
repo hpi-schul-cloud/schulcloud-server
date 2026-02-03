@@ -171,4 +171,25 @@ describe('MediaBoardService', () => {
 			expect(boardNodeRepo.save).toHaveBeenCalledWith(mediaBoard);
 		});
 	});
+
+	describe('getOrCreatePersonalMediaBoardOfUser', () => {
+		it('should create a new MediaBoard if none exists', async () => {
+			boardNodeRepo.findByExternalReference.mockResolvedValueOnce([]);
+
+			await service.getOrCreatePersonalMediaBoardOfUser('user-id');
+
+			expect(boardNodeRepo.save).toHaveBeenCalled();
+		});
+
+		it('should return existing MediaBoard if one exists', async () => {
+			const mediaBoard = mediaBoardFactory.build();
+			boardNodeRepo.save.mockResolvedValue();
+			boardNodeRepo.findByExternalReference.mockResolvedValueOnce([mediaBoard]);
+
+			const result = await service.getOrCreatePersonalMediaBoardOfUser('user-id');
+
+			expect(boardNodeRepo.save).not.toHaveBeenCalled();
+			expect(result).toBe(mediaBoard);
+		});
+	});
 });
