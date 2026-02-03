@@ -25,6 +25,7 @@ export class DatabaseModule {
 							ensureIndexes: config.dbEnsureIndexes,
 							allowGlobalContext: config.dbAllowGlobalContext,
 							debug: config.dbDebug,
+							migrations: options.migrationOptions,
 						}),
 					inject: [options.configInjectionToken],
 					imports: [ConfigurationModule.register(options.configInjectionToken, options.configConstructor)],
