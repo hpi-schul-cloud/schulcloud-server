@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ENTITIES, TEST_ENTITIES } from './management.entity.imports';
 import { ManagementModule } from './management.module';
+import migrationOptions from './migrations-options';
 
 @Module({
 	imports: [
@@ -11,6 +12,7 @@ import { ManagementModule } from './management.module';
 			configInjectionToken: DATABASE_CONFIG_TOKEN,
 			configConstructor: DatabaseConfig,
 			entities: ENTITIES,
+			migrationOptions: migrationOptions,
 		}),
 	],
 })
