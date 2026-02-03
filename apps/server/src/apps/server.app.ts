@@ -24,8 +24,13 @@ import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
-import { AppStartLoggable, createRequestLoggerMiddleware, enableOpenApiDocs } from './helpers';
-import { createMetricsServer } from './helpers/metrics.server';
+import {
+	addPrometheusMetricsMiddlewaresIfEnabled,
+	AppStartLoggable,
+	createAndStartPrometheusMetricsAppIfEnabled,
+	createRequestLoggerMiddleware,
+	enableOpenApiDocs,
+} from './helpers';
 import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap(): Promise<void> {
@@ -60,8 +65,6 @@ async function bootstrap(): Promise<void> {
 	// customize nest app settings
 	nestApp.enableCors();
 	enableOpenApiDocs(nestApp, 'docs');
-
-	await createMetricsServer(nestApp, 'Schulcloud Server App');
 
 	await nestApp.init();
 
@@ -105,6 +108,8 @@ async function bootstrap(): Promise<void> {
 	// mount instances
 	const rootExpress = express();
 
+	addPrometheusMetricsMiddlewaresIfEnabled(logger, rootExpress);
+
 	// exposed alias mounts
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/api/v1', feathersExpress);
@@ -136,6 +141,8 @@ async function bootstrap(): Promise<void> {
 				mountsDescription: '/, /api, /api/v1 --> FeathersJS, /api/v3 --> NestJS',
 			})
 		);
+
+		createAndStartPrometheusMetricsAppIfEnabled(logger);
 	});
 
 	console.log('#################################');

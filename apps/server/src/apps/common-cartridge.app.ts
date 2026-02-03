@@ -6,9 +6,13 @@ import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
-import { AppStartLoggable, enableOpenApiDocs } from './helpers';
+import {
+	addPrometheusMetricsMiddlewaresIfEnabled,
+	AppStartLoggable,
+	createAndStartPrometheusMetricsAppIfEnabled,
+	enableOpenApiDocs,
+} from './helpers';
 import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
-import { createMetricsServer } from './helpers/metrics.server';
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
@@ -20,14 +24,13 @@ async function bootstrap(): Promise<void> {
 
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
-
-	await createMetricsServer(nestApp, 'Board Collaboration Server App');
-
 	await nestApp.init();
 
 	const rootExpress = express();
 	const logger = await nestApp.resolve(Logger);
 	nestApp.use(createRequestLoggerMiddleware());
+
+	addPrometheusMetricsMiddlewaresIfEnabled(logger, rootExpress);
 
 	const basePath = '/api/v3';
 	const port = 3350;
@@ -40,6 +43,7 @@ async function bootstrap(): Promise<void> {
 				port,
 			})
 		);
+		createAndStartPrometheusMetricsAppIfEnabled(logger);
 	});
 }
 void bootstrap();

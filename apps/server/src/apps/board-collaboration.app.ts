@@ -6,7 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { LegacyLogger } from '@core/logger';
+import { LegacyLogger, Logger } from '@core/logger';
 import { DATABASE_CONFIG_TOKEN, InternalDatabaseConfig } from '@infra/database';
 import { MongoIoAdapter } from '@infra/socketio';
 import { SESSION_VALKEY_CLIENT } from '@modules/authentication/authentication-config';
@@ -15,8 +15,11 @@ import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import express from 'express';
-import { enableOpenApiDocs } from './helpers';
-import { createMetricsServer } from './helpers/metrics.server';
+import {
+	addPrometheusMetricsMiddlewaresIfEnabled,
+	createAndStartPrometheusMetricsAppIfEnabled,
+	enableOpenApiDocs,
+} from './helpers';
 import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import legacyRedisUtils = require('../../../../src/utils/redis');
 
@@ -42,6 +45,7 @@ async function bootstrap(): Promise<void> {
 		operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
 	};
 	enableOpenApiDocs(nestApp, 'docs', options);
+	const logger = await nestApp.resolve(Logger);
 	nestApp.use(createRequestLoggerMiddleware());
 
 	// The redisClient must be initialized in the legacy part for the session handling (whitelisting of JWTs) to work.
@@ -50,17 +54,18 @@ async function bootstrap(): Promise<void> {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	legacyRedisUtils.initializeRedisClient(sessionValkeyClient);
 
-	await createMetricsServer(nestApp, 'Board Collaboration Server App');
-
 	await nestApp.init();
 
+	addPrometheusMetricsMiddlewaresIfEnabled(logger, nestExpress);
 	const boardConfig = await nestApp.resolve<BoardConfig>(BOARD_CONFIG_TOKEN);
 	const { basePath } = boardConfig;
 
 	const port = 4450;
 
 	nestApp.setGlobalPrefix(basePath);
-	await nestApp.listen(port, () => {});
+	await nestApp.listen(port, () => {
+		createAndStartPrometheusMetricsAppIfEnabled(logger);
+	});
 
 	console.log('##########################################');
 	console.log(`### Start Board Collaboration Server   ###`);

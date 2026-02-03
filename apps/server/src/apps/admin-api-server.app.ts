@@ -6,8 +6,12 @@ import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
-import { AppStartLoggable, enableOpenApiDocs } from './helpers';
-import { createMetricsServer } from './helpers/metrics.server';
+import {
+	addPrometheusMetricsMiddlewaresIfEnabled,
+	AppStartLoggable,
+	createAndStartPrometheusMetricsAppIfEnabled,
+	enableOpenApiDocs,
+} from './helpers';
 import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 
 async function bootstrap(): Promise<void> {
@@ -29,10 +33,10 @@ async function bootstrap(): Promise<void> {
 	nestAdminServerApp.enableCors();
 	nestAdminServerApp.useBodyParser('json', { limit: '4mb' });
 
+	addPrometheusMetricsMiddlewaresIfEnabled(logger, nestAdminServerExpress);
+
 	enableOpenApiDocs(nestAdminServerApp, 'docs');
 	nestAdminServerApp.setGlobalPrefix('/admin/api/v1');
-
-	await createMetricsServer(nestAdminServerApp, 'Admin API Server App');
 
 	await nestAdminServerApp.init();
 
@@ -46,6 +50,8 @@ async function bootstrap(): Promise<void> {
 				mountsDescription: `/admin/api/v1 --> Admin API Server`,
 			})
 		);
+
+		createAndStartPrometheusMetricsAppIfEnabled(logger);
 	});
 }
 

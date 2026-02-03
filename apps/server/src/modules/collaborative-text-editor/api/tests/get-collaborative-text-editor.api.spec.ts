@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EtherpadClientAdapter } from '@infra/etherpad-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType } from '@modules/board';
@@ -15,17 +16,12 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import {
-	COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN,
-	CollaborativeTextEditorConfig,
-} from '../../collaborative-text-editor.config';
 
 describe('Collaborative Text Editor Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
 	let etherpadClientAdapter: DeepMocked<EtherpadClientAdapter>;
-	let collaborativeTextEditorConfig: CollaborativeTextEditorConfig;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -40,8 +36,6 @@ describe('Collaborative Text Editor Controller (API)', () => {
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'collaborative-text-editor');
 		etherpadClientAdapter = module.get(EtherpadClientAdapter);
-		collaborativeTextEditorConfig = module.get(COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN);
-		collaborativeTextEditorConfig.cookieExpiresInSeconds;
 	});
 
 	beforeEach(async () => {
@@ -140,7 +134,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const basePath = 'http://localhost:9001/p';
 					const expectedPath = `${basePath}/${editorId}`;
 
-					const cookieExpiresMilliseconds = collaborativeTextEditorConfig.cookieExpiresInSeconds * 1000;
+					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD__COOKIE_EXPIRES_SECONDS')) * 1000;
 					// Remove the last 8 characters from the string to prevent conflict between time of test and code execution
 					const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds).toUTCString().slice(0, -8);
 
@@ -207,7 +201,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const basePath = 'http://localhost:9001/p';
 					const expectedPath = `${basePath}/${editorId}`;
 
-					const cookieExpiresMilliseconds = collaborativeTextEditorConfig.cookieExpiresInSeconds * 1000;
+					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD__COOKIE_EXPIRES_SECONDS')) * 1000;
 					// Remove the last 8 characters from the string to prevent conflict between time of test and code execution
 					const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds).toUTCString().slice(0, -8);
 
@@ -274,7 +268,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const basePath = 'http://localhost:9001/p';
 					const expectedPath = `${basePath}/${editorId}`;
 
-					const cookieExpiresMilliseconds = collaborativeTextEditorConfig.cookieExpiresInSeconds * 1000;
+					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD__COOKIE_EXPIRES_SECONDS')) * 1000;
 					// Remove the last 8 characters from the string to prevent conflict between time of test and code execution
 					const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds).toUTCString().slice(0, -8);
 
