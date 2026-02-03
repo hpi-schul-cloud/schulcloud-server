@@ -7,6 +7,8 @@ import {
 	AuthorizationClientModule,
 } from '@infra/authorization-client';
 import { ConfigurationModule } from '@infra/configuration';
+import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
+import { User } from '@modules/user/repo/user.entity';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -33,6 +35,11 @@ const config = {
 		ConfigModule.forRoot(createConfigModuleOptions(() => config)),
 		ConfigurationModule.register(COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig),
 		CommonCartridgeModule,
+		DatabaseModule.register({
+			configInjectionToken: DATABASE_CONFIG_TOKEN,
+			configConstructor: DatabaseConfig,
+			entities: [User],
+		}),
 	],
 	controllers: [CommonCartridgeController],
 })
