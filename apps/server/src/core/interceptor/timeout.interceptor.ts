@@ -1,4 +1,4 @@
-import { CallHandler, ExecutionContext, Inject, Injectable, Logger, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
 import { Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
@@ -14,7 +14,6 @@ import { TimeoutConfig } from './timeout-interceptor-config.interface';
  */
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
-	private readonly logger = new Logger(TimeoutInterceptor.name);
 	private mergedConfig?: TimeoutConfig;
 
 	constructor(

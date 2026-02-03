@@ -1,6 +1,6 @@
 import { ConfigurationModule } from '@infra/configuration';
 import { ClassSerializerInterceptor, DynamicModule, Module } from '@nestjs/common';
-import { APP_INTERCEPTOR, DiscoveryModule } from '@nestjs/core';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { DEFAULT_TIMEOUT_CONFIG_TOKEN, DefaultTimeoutConfig } from './default-timeout.config';
 import { TimeoutInterceptor } from './timeout.interceptor';
 
@@ -17,7 +17,7 @@ export class TimeoutInterceptorModule {
 	public static forRoot(): DynamicModule {
 		return {
 			module: TimeoutInterceptorModule,
-			imports: [ConfigurationModule.register(DEFAULT_TIMEOUT_CONFIG_TOKEN, DefaultTimeoutConfig), DiscoveryModule],
+			imports: [ConfigurationModule.register(DEFAULT_TIMEOUT_CONFIG_TOKEN, DefaultTimeoutConfig)],
 			providers: [
 				{
 					provide: APP_INTERCEPTOR,
