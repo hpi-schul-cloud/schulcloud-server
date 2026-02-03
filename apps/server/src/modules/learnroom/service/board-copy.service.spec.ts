@@ -4,7 +4,7 @@ import { StorageLocation } from '@infra/files-storage-client';
 import { ColumnBoardService } from '@modules/board';
 import { BoardExternalReferenceType } from '@modules/board/domain';
 import { CopyColumnBoardParams } from '@modules/board/service/internal';
-import { columnBoardFactory } from '@modules/board/testing';
+import { columnBoardEntityFactory, columnBoardFactory } from '@modules/board/testing';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
@@ -22,7 +22,6 @@ import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo }
 import {
 	boardFactory,
 	columnboardBoardElementFactory,
-	columnBoardNodeFactory,
 	lessonBoardElementFactory,
 	taskBoardElementFactory,
 } from '../testing';
@@ -322,7 +321,7 @@ describe('board copy service', () => {
 		describe('when board contains column board', () => {
 			const setup = () => {
 				const originalColumnBoard = columnBoardFactory.build();
-				const columnBoardTarget = columnBoardNodeFactory.build({
+				const columnBoardTarget = columnBoardEntityFactory.build({
 					title: originalColumnBoard.title,
 				});
 				const columBoardElement = columnboardBoardElementFactory.build({ target: columnBoardTarget });

@@ -1,4 +1,4 @@
-import { ObjectID } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Class, ClassProps } from './class.do';
 
 export class ClassFactory {
@@ -11,7 +11,7 @@ export class ClassFactory {
 
 	private static getBaseProps(): ClassProps {
 		return {
-			id: new ObjectID().toHexString(),
+			id: new ObjectId().toHexString(),
 			name: '',
 			schoolId: '',
 			createdAt: new Date(),
