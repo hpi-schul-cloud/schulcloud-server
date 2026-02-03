@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DomainName, StatusModel, OperationType } from '../../../../domain/types';
 import { DomainOperationReportBuilder } from '../../../../domain/builder';
 import { DeletionTargetRefBuilder, DeletionLogStatisticBuilder } from '../builder';

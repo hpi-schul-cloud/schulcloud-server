@@ -1,6 +1,6 @@
 import { Logger } from '@core/logger';
 import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { EnsureRequestContext, MikroORM } from '@mikro-orm/core';
 import { type Group, GroupService } from '@modules/group';
 import { Inject, Injectable } from '@nestjs/common';
 import { SchulconnexGroupProvisioningMessage } from '../domain';
@@ -36,7 +36,7 @@ export class SchulconnexGroupProvisioningConsumer {
 		routingKey: SchulconnexProvisioningEvents.GROUP_PROVISIONING,
 		queue: SchulconnexProvisioningEvents.GROUP_PROVISIONING,
 	})
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async provisionGroups(
 		@RabbitPayload()
 		payload: SchulconnexGroupProvisioningMessage

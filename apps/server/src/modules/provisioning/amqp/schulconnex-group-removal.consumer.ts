@@ -1,6 +1,6 @@
 import { Logger } from '@core/logger';
 import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { EnsureRequestContext, MikroORM } from '@mikro-orm/core';
 import { type Group } from '@modules/group';
 import { Inject, Injectable } from '@nestjs/common';
 import { SchulconnexGroupRemovalMessage } from '../domain';
@@ -35,7 +35,7 @@ export class SchulconnexGroupRemovalConsumer {
 		routingKey: SchulconnexProvisioningEvents.GROUP_REMOVAL,
 		queue: SchulconnexProvisioningEvents.GROUP_REMOVAL,
 	})
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async removeUserFromGroup(
 		@RabbitPayload()
 		payload: SchulconnexGroupRemovalMessage

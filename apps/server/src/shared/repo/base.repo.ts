@@ -14,19 +14,19 @@ export abstract class BaseRepo<T extends BaseEntity> {
 
 	abstract get entityName(): EntityName<T>;
 
-	create(entity: T): T {
+	public create(entity: T): T {
 		return this._em.create(this.entityName, entity);
 	}
 
-	async save(entities: T | T[]): Promise<void> {
+	public async save(entities: T | T[]): Promise<void> {
 		await this._em.persist(entities).flush();
 	}
 
-	async delete(entities: T | T[]): Promise<void> {
+	public async delete(entities: T | T[]): Promise<void> {
 		await this._em.remove(entities).flush();
 	}
 
-	async findById(id: EntityId | ObjectId): Promise<T> {
+	public findById(id: EntityId | ObjectId): Promise<T> {
 		const promise: Promise<T> = this._em.findOneOrFail(this.entityName, id as FilterQuery<T>);
 		return promise;
 	}

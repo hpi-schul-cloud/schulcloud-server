@@ -1,6 +1,5 @@
 import { ErrorLogger, Logger, LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
-import { SagaModule } from '@modules/saga';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { DynamicModule, Module, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
@@ -18,12 +17,7 @@ export class FilesStorageClientModule {
 	): DynamicModule {
 		return {
 			module: FilesStorageClientModule,
-			imports: [
-				LoggerModule,
-				HttpModule,
-				SagaModule,
-				ConfigurationModule.register(configInjectionToken, configConstructor),
-			],
+			imports: [LoggerModule, HttpModule, ConfigurationModule.register(configInjectionToken, configConstructor)],
 			providers: [
 				{
 					provide: FileApi,

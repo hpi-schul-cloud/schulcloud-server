@@ -361,7 +361,7 @@ export class ConfigResponse {
 		this.FEATURE_SHOW_MIGRATION_WIZARD = config.featureShowMigrationWizard;
 		this.MIGRATION_WIZARD_DOCUMENTATION_LINK = config.migrationWizardDocumentationLink;
 		this.FEATURE_TLDRAW_ENABLED = config.FEATURE_TLDRAW_ENABLED;
-		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.FEATURE_VIDEOCONFERENCE_ENABLED;
+		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.featureVideoConferenceEnabled;
 		this.FEATURE_MEDIA_SHELF_ENABLED = config.featureMediaShelfEnabled;
 		this.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = config.featureSchulconnexCourseSyncEnabled;
 		this.BOARD_COLLABORATION_URI = config.BOARD_COLLABORATION_URI;

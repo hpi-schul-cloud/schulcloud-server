@@ -1,8 +1,8 @@
+import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { Module } from '@nestjs/common';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ENTITIES, TEST_ENTITIES } from './management.entity.imports';
 import { ManagementModule } from './management.module';
-import { DatabaseModule, DATABASE_CONFIG_TOKEN, DatabaseConfig } from '@infra/database';
 
 @Module({
 	imports: [

@@ -6,7 +6,7 @@ import { SchoolFeature, SchoolPermissions } from '@modules/school/domain/type';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@modules/school/repo';
 import { System } from '@modules/system';
 import { Injectable } from '@nestjs/common';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 @Injectable()
 export class TspSchoolService {
