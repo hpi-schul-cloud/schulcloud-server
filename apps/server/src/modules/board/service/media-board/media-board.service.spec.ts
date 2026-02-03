@@ -3,7 +3,13 @@ import { ContextExternalToolService } from '@modules/tool/context-external-tool/
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReference, BoardExternalReferenceType, BoardLayout, MediaBoardColors } from '../../domain';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	BoardLayout,
+	MediaBoardColors,
+	MediaBoardNodeFactory,
+} from '../../domain';
 import { BoardNodeRepo } from '../../repo';
 import { mediaBoardFactory, mediaExternalToolElementFactory, mediaLineFactory } from '../../testing';
 import { MediaBoardService } from './media-board.service';
@@ -25,6 +31,10 @@ describe('MediaBoardService', () => {
 				{
 					provide: ContextExternalToolService,
 					useValue: createMock<ContextExternalToolService>(),
+				},
+				{
+					provide: MediaBoardNodeFactory,
+					useValue: createMock<MediaBoardNodeFactory>(),
 				},
 			],
 		}).compile();
