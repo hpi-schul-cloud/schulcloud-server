@@ -1,9 +1,9 @@
-import { Controller, Get, HttpStatus, INestApplication } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
+import { APP_INTERCEPTOR, ModuleRef } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { RequestTimeout } from '@shared/common/decorators';
 import { TestApiClient } from '@testing/test-api-client';
-import { TimeoutConfig } from './timeout-interceptor-config.interface';
+import { DEFAULT_TIMEOUT_CONFIG_TOKEN, DefaultTimeoutConfig } from './default-timeout.config';
 import { TimeoutInterceptor } from './timeout.interceptor';
 
 const delay = (ms: number) =>
@@ -29,102 +29,103 @@ class TestController {
 
 		return { message: 'MyMessage' };
 	}
+
+	@Get('undefined-key')
+	@RequestTimeout('UNDEFINED_CONFIG_KEY')
+	async testUndefinedKey(): Promise<{ message: string }> {
+		await delay(100);
+
+		return { message: 'MyMessage' };
+	}
 }
 
 describe('TimeoutInterceptor', () => {
-	let app: INestApplication;
-	let testApiClient: TestApiClient;
-	let config: TimeoutConfig;
-
-	const CONFIG_TOKEN = 'TIMEOUT_CONFIG_TOKEN';
-
-	beforeAll(async () => {
+	const createApp = async (defaultTimeoutMS: number, customTimeoutMS: number) => {
 		const moduleFixture = await Test.createTestingModule({
 			providers: [
 				{
 					provide: APP_INTERCEPTOR,
-					useFactory: (config: TimeoutConfig) => new TimeoutInterceptor(config),
-					inject: [CONFIG_TOKEN],
+					useFactory: (config: DefaultTimeoutConfig, moduleRef: ModuleRef) => new TimeoutInterceptor(config, moduleRef),
+					inject: [DEFAULT_TIMEOUT_CONFIG_TOKEN, ModuleRef],
 				},
 				{
-					provide: CONFIG_TOKEN,
+					provide: DEFAULT_TIMEOUT_CONFIG_TOKEN,
 					useValue: {
-						[CUSTOM_TIMEOUT_CONFIG_KEY]: 500,
-						incomingRequestTimeout: 200,
+						incomingRequestTimeout: defaultTimeoutMS,
+						[CUSTOM_TIMEOUT_CONFIG_KEY]: customTimeoutMS,
 					},
 				},
 			],
 			controllers: [TestController],
 		}).compile();
 
-		app = moduleFixture.createNestApplication();
+		const app = moduleFixture.createNestApplication();
 		await app.init();
 
-		testApiClient = new TestApiClient(app, '');
-		config = app.get(CONFIG_TOKEN);
-	});
+		const testApiClient = new TestApiClient(app, '');
 
-	afterEach(async () => {
-		await app.close();
-	});
+		return { app, testApiClient };
+	};
 
 	describe('when response is faster then the request timeout', () => {
-		const setup = () => {
-			config.incomingRequestTimeout = 1000;
-		};
-
 		it('should respond with status code 200', async () => {
-			setup();
+			const { testApiClient, app } = await createApp(1000, 500);
 
 			const response = await testApiClient.get();
 
 			expect(response.status).toEqual(HttpStatus.OK);
 			expect(response.body).toEqual({ message: 'MyMessage' });
+
+			await app.close();
 		});
 	});
 
 	describe('when response is slower then the request timeout', () => {
-		const setup = () => {
-			config.incomingRequestTimeout = 1;
-		};
-
 		it('should respond with status request timeout', async () => {
-			setup();
+			const { testApiClient, app } = await createApp(1, 500);
 
 			const response = await testApiClient.get();
 
 			expect(response.status).toEqual(HttpStatus.REQUEST_TIMEOUT);
+
+			await app.close();
 		});
 	});
 
 	describe('when override the default timeout ', () => {
-		const setup = () => {
-			config.incomingRequestTimeout = 1;
-			config[CUSTOM_TIMEOUT_CONFIG_KEY] = 1000;
-		};
-
 		it('should respond with status code 200', async () => {
-			setup();
+			const { testApiClient, app } = await createApp(1, 1000);
 
 			const response = await testApiClient.get('overriden');
 
 			expect(response.status).toEqual(HttpStatus.OK);
 			expect(response.body).toEqual({ message: 'MyMessage' });
+
+			await app.close();
 		});
 	});
 
 	describe('when override the default timeout', () => {
-		const setup = () => {
-			config.incomingRequestTimeout = 1000;
-			config[CUSTOM_TIMEOUT_CONFIG_KEY] = 1;
-		};
-
 		it('should respond with status request timeout', async () => {
-			setup();
+			const { testApiClient, app } = await createApp(1000, 1);
 
 			const response = await testApiClient.get('overriden');
 
 			expect(response.status).toEqual(HttpStatus.REQUEST_TIMEOUT);
+
+			await app.close();
+		});
+	});
+
+	describe('when config key is not registered', () => {
+		it('should throw an error during request', async () => {
+			const { testApiClient, app } = await createApp(1000, 1000);
+
+			const response = await testApiClient.get('undefined-key');
+
+			expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+
+			await app.close();
 		});
 	});
 });
