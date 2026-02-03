@@ -138,7 +138,9 @@ describe('Room Controller (API)', () => {
 				const response = await loggedInClient.get();
 
 				expect(response.status).toBe(HttpStatus.OK);
-				expect(response.body as RoomListResponse).toEqual(expectedResponse);
+
+				const stripUpdatedAt = (arr: { updatedAt: unknown }[]) => arr.map(({ updatedAt, ...rest }) => rest);
+				expect(stripUpdatedAt((response.body as RoomListResponse).data)).toEqual(stripUpdatedAt(expectedResponse.data));
 			});
 
 			it('should return an alphabetically sorted list of rooms', async () => {

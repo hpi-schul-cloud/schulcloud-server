@@ -3,45 +3,46 @@ import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { RoleName } from '../domain';
 import { Role } from './role.entity';
+import { EntityName } from '@mikro-orm/core';
 
 @Injectable()
 export class RoleRepo extends BaseRepo<Role> {
-	get entityName() {
+	get entityName(): EntityName<Role> {
 		return Role;
 	}
 
 	private cacheExpiration = 60000;
 
 	public async findAll(): Promise<Role[]> {
-		const promise = await this._em.find(Role, {});
-		return promise;
+		const roles = await this._em.find(Role, {});
+		return roles;
 	}
 
 	public async findByName(name: RoleName): Promise<Role> {
-		const promise = await this._em.findOneOrFail(
+		const role = await this._em.findOneOrFail(
 			Role,
 			{ name },
 			{ cache: [`roles-cache-byname-${name}`, this.cacheExpiration] }
 		);
-		return promise;
+		return role;
 	}
 
 	public async findById(id: EntityId): Promise<Role> {
-		const promise = await this._em.findOneOrFail(Role, { id }, { cache: this.cacheExpiration });
-		return promise;
+		const role = await this._em.findOneOrFail(Role, { id }, { cache: this.cacheExpiration });
+		return role;
 	}
 
 	public async findByNames(names: RoleName[]): Promise<Role[]> {
-		const promise = await this._em.find(
+		const roles = await this._em.find(
 			Role,
 			{ name: { $in: names } },
 			{ cache: [`roles-cache-bynames-${names.join('-')}`, this.cacheExpiration] }
 		);
-		return promise;
+		return roles;
 	}
 
 	public async findByIds(ids: string[]): Promise<Role[]> {
-		const promise = await this._em.find(Role, { id: { $in: ids } }, { cache: this.cacheExpiration });
-		return promise;
+		const roles = await this._em.find(Role, { id: { $in: ids } }, { cache: this.cacheExpiration });
+		return roles;
 	}
 }

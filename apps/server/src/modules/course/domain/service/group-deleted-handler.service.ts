@@ -1,5 +1,5 @@
 import { Logger } from '@core/logger';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { MikroORM, EnsureRequestContext } from '@mikro-orm/core';
 import { Group, GroupDeletedEvent } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
@@ -16,7 +16,7 @@ export class GroupDeletedHandlerService implements IEventHandler<GroupDeletedEve
 		private readonly orm: MikroORM
 	) {}
 
-	@UseRequestContext()
+	@EnsureRequestContext()
 	public async handle(event: GroupDeletedEvent): Promise<void> {
 		await this.removeCourseSyncReference(event.target);
 	}

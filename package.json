@@ -148,9 +148,6 @@
 		"gm": {
 			"cross-spawn": "6.0.6"
 		},
-		"@mikro-orm/migrations-mongodb": {
-			"mongodb": "^4.17.0"
-		},
 		"validator": "^13.15.23"
 	},
 	"dependencies": {
@@ -172,10 +169,10 @@
 		"@keyv/mongo": "^3.0.5",
 		"@lumieducation/h5p-server": "^10.0.4",
 		"@lumieducation/h5p-svg-sanitizer": "^10.0.4",
-		"@mikro-orm/core": "5.6.16",
-		"@mikro-orm/migrations-mongodb": "5.6.16",
-		"@mikro-orm/mongodb": "5.6.16",
-		"@mikro-orm/nestjs": "5.2.1",
+		"@mikro-orm/core": "6.6.2",
+		"@mikro-orm/migrations-mongodb": "6.6.2",
+		"@mikro-orm/mongodb": "6.6.2",
+		"@mikro-orm/nestjs": "^6.1.1",
 		"@nestjs/axios": "^3.1.3",
 		"@nestjs/cache-manager": "^3.1.0",
 		"@nestjs/common": "^10.4.17",
@@ -202,7 +199,7 @@
 		"axios": "^1.12.2",
 		"bcryptjs": "*",
 		"body-parser": "^2.2.1",
-		"bson": "^4.7.2",
+		"bson": "^6.10.4",
 		"cache-manager": "^7.2.4",
 		"cacheable": "^2.3.1",
 		"cheerio": "^1.1.2",
@@ -219,7 +216,7 @@
 		"express-openapi-validator": "^5.5.6",
 		"feathers-hooks-common": "^8.2.1",
 		"feathers-swagger": "^3.0.0",
-		"fishery": "^2.2.3",
+		"fishery": "^2.4.0",
 		"html-entities": "^2.6.0",
 		"i18next": "^24.2.3",
 		"i18next-fs-backend": "^2.6.0",

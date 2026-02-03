@@ -5,7 +5,7 @@ const { ConfigModule } = require('@nestjs/config');
 
 // run 'npm run nest:build' for the following imports to work,
 // this is a workaround to make TypeScript modules available in JavaScript
-const { defineConfig } = require('@mikro-orm/mongodb');
+const { defineConfig, MongoDriver } = require('@mikro-orm/mongodb');
 const { AccountApiModule } = require('../../dist/apps/server/modules/account/account-api.module');
 const { AccountUc } = require('../../dist/apps/server/modules/account/api/account.uc');
 const { AccountService } = require('../../dist/apps/server/modules/account/domain/services/account.service');
@@ -27,7 +27,7 @@ const setupNestServices = async (app) => {
 			RabbitMQWrapperTestModule,
 			MikroOrmModule.forRoot(
 				defineConfig({
-					type: 'mongo',
+					driver: MongoDriver,
 					clientUrl: DB_URL,
 					password: DB_PASSWORD,
 					user: DB_USERNAME,

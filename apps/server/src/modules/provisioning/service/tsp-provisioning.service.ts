@@ -8,7 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference } from '@shared/domain/domainobject';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
 import { BadDataLoggableException } from '../loggable';
 import { Logger } from '@core/logger';

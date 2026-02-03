@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SucessSynchronizationLoggable } from './sucess-synchronization-loggable';
 
 describe(SucessSynchronizationLoggable.name, () => {

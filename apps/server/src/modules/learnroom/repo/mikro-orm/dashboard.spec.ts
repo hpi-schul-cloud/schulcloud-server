@@ -2,7 +2,7 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Dashboard, GridElement } from '../../domain/do/dashboard';
 
 describe('dashboard entity', () => {

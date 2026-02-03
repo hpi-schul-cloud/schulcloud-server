@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { ICurrentUser } from '@infra/auth-guard';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from './base.factory';
 
 class CurrentUser implements ICurrentUser {
