@@ -6,7 +6,7 @@ export class MergedTimeoutConfig extends TimeoutConfig {
 		// Merge all configs into one object
 		configs.forEach((config) => {
 			Object.keys(config).forEach((key) => {
-				if (key !== 'incomingRequestTimeout' && key in this) {
+				if (key in this) {
 					throw new Error(
 						`Duplicate timeout configuration key detected: '${key}'. Each timeout key must be unique across all configurations.`
 					);

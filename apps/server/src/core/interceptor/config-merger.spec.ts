@@ -20,35 +20,21 @@ describe('MergedTimeoutConfig', () => {
 			expect(merged.incomingRequestTimeout).toBe(30000);
 		});
 
-		it('should merge multiple configs', () => {
+		it('should merge multiple configs with unique keys', () => {
 			const config1: TimeoutConfig = {
 				incomingRequestTimeout: 30000,
 				customTimeout1: 10000,
 			};
 
-			const config2: TimeoutConfig = {
-				incomingRequestTimeout: 60000,
+			const config2 = {
 				customTimeout2: 20000,
-			};
+			} as unknown as TimeoutConfig;
 
 			const merged = new MergedTimeoutConfig([config1, config2]);
 
+			expect(merged.incomingRequestTimeout).toBe(30000);
 			expect(merged.customTimeout1).toBe(10000);
 			expect(merged.customTimeout2).toBe(20000);
-		});
-
-		it('should override earlier config values with later ones', () => {
-			const config1: TimeoutConfig = {
-				incomingRequestTimeout: 30000,
-			};
-
-			const config2: TimeoutConfig = {
-				incomingRequestTimeout: 60000,
-			};
-
-			const merged = new MergedTimeoutConfig([config1, config2]);
-
-			expect(merged.incomingRequestTimeout).toBe(60000);
 		});
 
 		it('should preserve all unique keys from all configs', () => {
@@ -57,18 +43,17 @@ describe('MergedTimeoutConfig', () => {
 				timeoutA: 1000,
 			};
 
-			const config2: TimeoutConfig = {
-				incomingRequestTimeout: 30000,
+			const config2 = {
 				timeoutB: 2000,
-			};
+			} as unknown as TimeoutConfig;
 
-			const config3: TimeoutConfig = {
-				incomingRequestTimeout: 30000,
+			const config3 = {
 				timeoutC: 3000,
-			};
+			} as unknown as TimeoutConfig;
 
 			const merged = new MergedTimeoutConfig([config1, config2, config3]);
 
+			expect(merged.incomingRequestTimeout).toBe(30000);
 			expect(merged.timeoutA).toBe(1000);
 			expect(merged.timeoutB).toBe(2000);
 			expect(merged.timeoutC).toBe(3000);
@@ -94,29 +79,13 @@ describe('MergedTimeoutConfig', () => {
 				duplicateKey: 10000,
 			};
 
-			const config2: TimeoutConfig = {
-				incomingRequestTimeout: 60000,
+			const config2 = {
 				duplicateKey: 20000,
-			};
+			} as unknown as TimeoutConfig;
 
 			expect(() => new MergedTimeoutConfig([config1, config2])).toThrow(
 				"Duplicate timeout configuration key detected: 'duplicateKey'. Each timeout key must be unique across all configurations."
 			);
-		});
-
-		it('should allow incomingRequestTimeout to be present in multiple configs', () => {
-			const config1: TimeoutConfig = {
-				incomingRequestTimeout: 30000,
-			};
-
-			const config2: TimeoutConfig = {
-				incomingRequestTimeout: 60000,
-			};
-
-			const merged = new MergedTimeoutConfig([config1, config2]);
-
-			// incomingRequestTimeout is allowed to be overwritten as it's the base class property
-			expect(merged.incomingRequestTimeout).toBe(60000);
 		});
 	});
 });
