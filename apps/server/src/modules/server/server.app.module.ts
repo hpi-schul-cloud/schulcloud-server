@@ -26,6 +26,7 @@ import {
 	FilesStorageClientConfig,
 	FilesStorageClientModule,
 } from '@modules/files-storage-client';
+import { FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig } from '@modules/fwu-learning-contents';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { HelpdeskApiModule } from '@modules/helpdesk';
 import { LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig } from '@modules/learnroom';
@@ -107,6 +108,7 @@ const serverModules = [
 	ConfigurationModule.register(USER_PUBLIC_API_CONFIG_TOKEN, UserPublicApiConfig),
 	ConfigurationModule.register(USER_IMPORT_PUBLIC_API_CONFIG_TOKEN, UserImportPublicApiConfig),
 	ConfigurationModule.register(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN, UserLoginMigrationPublicApiConfig),
+	ConfigurationModule.register(FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig),
 	ConfigurationModule.register(ROCKET_CHAT_API_PUBLIC_CONFIG_TOKEN, RocketChatPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,

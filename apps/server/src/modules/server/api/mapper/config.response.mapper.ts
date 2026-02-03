@@ -2,6 +2,7 @@ import { AlertPublicApiConfig } from '@modules/alert';
 import { BoardPublicApiConfig } from '@modules/board';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
 import { CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
+import { FwuPublicApiConfig } from '@modules/fwu-learning-contents';
 import { LearnroomPublicApiConfig } from '@modules/learnroom';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
@@ -39,6 +40,7 @@ export class ConfigResponseMapper {
 		userConfig: UserPublicApiConfig,
 		userImportConfig: UserImportPublicApiConfig,
 		userLoginMigrationConfig: UserLoginMigrationPublicApiConfig,
+		fwuConfig: FwuPublicApiConfig,
 		rocketChatConfig: RocketChatPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
@@ -60,6 +62,7 @@ export class ConfigResponseMapper {
 			...userConfig,
 			...userImportConfig,
 			...userLoginMigrationConfig,
+			...fwuConfig,
 			...rocketChatConfig,
 		});
 

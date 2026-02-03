@@ -2,6 +2,7 @@ import { AlertPublicApiConfig } from '@modules/alert';
 import { BoardPublicApiConfig } from '@modules/board';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
 import { CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
+import { FwuPublicApiConfig } from '@modules/fwu-learning-contents';
 import { LearnroomPublicApiConfig } from '@modules/learnroom';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
@@ -297,6 +298,7 @@ export class ConfigResponse {
 			UserPublicApiConfig &
 			UserImportPublicApiConfig &
 			UserLoginMigrationPublicApiConfig &
+			FwuPublicApiConfig &
 			RocketChatPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
@@ -309,7 +311,7 @@ export class ConfigResponse {
 		this.FEATURE_EXTENSIONS_ENABLED = config.FEATURE_EXTENSIONS_ENABLED;
 		this.FEATURE_TEAMS_ENABLED = config.FEATURE_TEAMS_ENABLED;
 		this.FEATURE_LERNSTORE_ENABLED = config.FEATURE_LERNSTORE_ENABLED;
-		this.FEATURE_FWU_CONTENT_ENABLED = config.FEATURE_FWU_CONTENT_ENABLED;
+		this.FEATURE_FWU_CONTENT_ENABLED = config.fwuContentEnabled;
 		this.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED =
 			config.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED;
 		this.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE = config.teacherStudentVisibilityIsConfigurable;
