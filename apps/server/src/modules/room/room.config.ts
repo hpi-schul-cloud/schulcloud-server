@@ -1,6 +1,6 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer';
-import { IsBoolean, IsEmail, IsOptional, IsUrl } from 'class-validator';
+import { IsBoolean, IsEmail, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export const ROOM_PUBLIC_API_CONFIG_TOKEN = 'ROOM_PUBLIC_API_CONFIG_TOKEN';
 export const ROOM_CONFIG_TOKEN = 'ROOM_CONFIG_TOKEN';
@@ -38,6 +38,6 @@ export class RoomConfig extends RoomPublicApiConfig {
 	public fromEmailAddress = 'noreply@dbildungscloud.de';
 
 	@ConfigProperty('SC_TITLE')
-	@IsUrl({ require_tld: false })
+	@IsString()
 	public productName = 'dBildungscloud';
 }
