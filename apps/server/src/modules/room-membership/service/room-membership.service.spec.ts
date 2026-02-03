@@ -481,7 +481,7 @@ describe('RoomMembershipService', () => {
 		});
 	});
 
-	describe('getRoomMembershipAuthorizable', () => {
+	describe('getRoomAuthorizable', () => {
 		const setup = () => {
 			const roomId = 'room123';
 			const userId = 'user456';
@@ -501,7 +501,7 @@ describe('RoomMembershipService', () => {
 			return { roomId, userId, groupId, roleId, roomMembership, group, role };
 		};
 
-		it('should return RoomMembershipAuthorizable when roomMembership exists', async () => {
+		it('should return RoomAuthorizable when roomMembership exists', async () => {
 			const { roomId, userId, roleId } = setup();
 
 			const result = await service.getRoomAuthorizable(roomId);
@@ -514,7 +514,7 @@ describe('RoomMembershipService', () => {
 			expect(result.members[0].userSchoolId).toBeDefined();
 		});
 
-		it('should return empty RoomMembershipAuthorizable when roomMembership not exists', async () => {
+		it('should return empty RoomAuthorizable when roomMembership not exists', async () => {
 			const roomId = 'nonexistent';
 			roomMembershipRepo.findByRoomId.mockResolvedValue(null);
 			roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId }));
@@ -630,7 +630,7 @@ describe('RoomMembershipService', () => {
 		});
 	});
 
-	describe('getRoomMembershipAuthorizablesByUserId', () => {
+	describe('getRoomAuthorizablesByUserId', () => {
 		const setup = () => {
 			const userId = 'user123';
 			const groupId1 = 'group456';
@@ -659,7 +659,7 @@ describe('RoomMembershipService', () => {
 			return { userId, roomMemberships, roles };
 		};
 
-		it('should return RoomMembershipAuthorizables for user', async () => {
+		it('should return RoomAuthorizables for user', async () => {
 			const { userId, roomMemberships, roles } = setup();
 
 			const result = await service.getRoomAuthorizablesByUserId(userId);

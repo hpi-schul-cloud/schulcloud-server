@@ -5,7 +5,7 @@ import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { RoleDto, RoleName } from '@modules/role';
-import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
+import { RoomAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolFactory } from '@modules/school/testing';
@@ -161,13 +161,13 @@ describe('ShareTokenPermissionService', () => {
 					userSchoolId: 'school-id',
 				},
 			];
-			const roomMembershipAuthorizable = new RoomMembershipAuthorizable('room-id', members, 'school-id');
-			roomMembershipService.getRoomAuthorizable.mockResolvedValueOnce(roomMembershipAuthorizable);
+			const roomAuthorizable = new RoomAuthorizable('room-id', members, 'school-id');
+			roomMembershipService.getRoomAuthorizable.mockResolvedValueOnce(roomAuthorizable);
 
-			return { user, roomMembershipAuthorizable, permissions };
+			return { user, roomAuthorizable, permissions };
 		};
 
-		it('should call roomMembershipService.getRoomMembershipAuthorizable', async () => {
+		it('should call roomMembershipService.getRoomAuthorizable', async () => {
 			const { user, permissions } = setup();
 
 			await service.checkRoomWritePermission(user, 'room-id', permissions);
@@ -176,16 +176,12 @@ describe('ShareTokenPermissionService', () => {
 		});
 
 		it('should check permission', async () => {
-			const { user, roomMembershipAuthorizable, permissions } = setup();
+			const { user, roomAuthorizable, permissions } = setup();
 
 			await service.checkRoomWritePermission(user, 'room-id', permissions);
 
 			const authorizationContext = AuthorizationContextBuilder.write(permissions);
-			expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-				user,
-				roomMembershipAuthorizable,
-				authorizationContext
-			);
+			expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, roomAuthorizable, authorizationContext);
 		});
 	});
 

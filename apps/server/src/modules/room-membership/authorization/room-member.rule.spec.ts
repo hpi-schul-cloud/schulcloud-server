@@ -48,8 +48,8 @@ describe(RoomMemberRule.name, () => {
 				const room = roomEntityFactory.buildWithId();
 				const user = userFactory.buildWithId();
 				const members = [{ userId: user.id, roles: [], userSchoolId: user.school.id }];
-				const roomMembershipAuthorizable = new RoomAuthorizable(room.id, members, user.school.id);
-				const roomMemberAuthorizable = buildRoomMemberAuthorizable(roomMembershipAuthorizable, user);
+				const roomAuthorizable = new RoomAuthorizable(room.id, members, user.school.id);
+				const roomMemberAuthorizable = buildRoomMemberAuthorizable(roomAuthorizable, user);
 
 				return { user, roomMemberAuthorizable };
 			};
@@ -172,8 +172,8 @@ describe(RoomMemberRule.name, () => {
 				};
 			}
 		);
-		const roomMembershipAuthorizable = new RoomAuthorizable(room.id, members, roomSetup.sameSchool.id);
-		const roomMemberAuthorizable = buildRoomMemberAuthorizable(roomMembershipAuthorizable, targetUser);
+		const roomAuthorizable = new RoomAuthorizable(room.id, members, roomSetup.sameSchool.id);
+		const roomMemberAuthorizable = buildRoomMemberAuthorizable(roomAuthorizable, targetUser);
 
 		// return roomSetup;
 		return { user, roomMemberAuthorizable };
