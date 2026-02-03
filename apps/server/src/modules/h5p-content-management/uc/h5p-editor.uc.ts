@@ -1,4 +1,5 @@
 import { Logger } from '@core/logger';
+import { ICurrentUser } from '@infra/auth-guard';
 import {
 	AuthorizationBodyParamsReferenceType,
 	AuthorizationClientAdapter,
@@ -16,6 +17,7 @@ import {
 	IUser as LumiIUser,
 } from '@lumieducation/h5p-server';
 import {
+	ContentParameters,
 	IAjaxResponse,
 	IHubInfo,
 	ILibraryDetailedDataForClient,
@@ -80,6 +82,14 @@ export class H5PEditorUc {
 		await this.authorizationClientAdapter.checkPermissionsByReference(allowedType, parentId, context);
 	}
 
+	private async checkUserIsAuthenticatedAndEnrolled(currentUser: ICurrentUser): Promise<void> {
+		await this.authorizationClientAdapter.checkPermissionsByReference(
+			AuthorizationBodyParamsReferenceType.SCHOOLS,
+			currentUser.schoolId,
+			AuthorizationContextBuilder.read([])
+		);
+	}
+
 	private fakeUndefinedAsString = (): string => {
 		const value = undefined as unknown as string;
 
@@ -90,7 +100,7 @@ export class H5PEditorUc {
 	 * Returns a callback that parses the request range.
 	 */
 	private getRange(req: Request) {
-		return (filesize: number) => {
+		return (filesize: number): { start: number; end: number } | undefined => {
 			const range = req.range(filesize);
 
 			if (range) {
@@ -106,7 +116,9 @@ export class H5PEditorUc {
 					throw new BadRequestException('multipart ranges are unsupported');
 				}
 
-				return range[0];
+				const requestedRange = range[0];
+
+				return requestedRange;
 			}
 
 			return undefined;
@@ -115,10 +127,12 @@ export class H5PEditorUc {
 
 	public async getAjax(
 		query: AjaxGetQueryParams,
-		userId: EntityId
+		currentUser: ICurrentUser
 	): Promise<IHubInfo | ILibraryDetailedDataForClient | IAjaxResponse | undefined> {
-		const user = this.changeUserType(userId);
-		const language = await this.getUserLanguage(userId);
+		await this.checkUserIsAuthenticatedAndEnrolled(currentUser);
+
+		const user = this.changeUserType(currentUser.userId);
+		const language = await this.getUserLanguage(currentUser.userId);
 
 		const result = await this.h5pAjaxEndpoint.getAjax(
 			query.action,
@@ -144,7 +158,7 @@ export class H5PEditorUc {
 	}
 
 	public async postAjax(
-		userId: EntityId,
+		currentUser: ICurrentUser,
 		query: AjaxPostQueryParams,
 		body: AjaxPostBodyParams,
 		contentFile?: Express.Multer.File,
@@ -160,10 +174,12 @@ export class H5PEditorUc {
 		| ILibraryOverviewForClient[]
 		| undefined
 	> {
+		await this.checkUserIsAuthenticatedAndEnrolled(currentUser);
+
 		let contentUploadFile: H5PUploadFile | undefined;
 		try {
-			const user = this.changeUserType(userId);
-			const language = await this.getUserLanguage(userId);
+			const user = this.changeUserType(currentUser.userId);
+			const language = await this.getUserLanguage(currentUser.userId);
 			contentUploadFile = await this.createContentUploadFile(contentFile);
 			const libraryUploadFile = this.createLibraryUploadFile(h5pFile);
 
@@ -300,7 +316,8 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async getLibraryFile(ubername: string, file: string): Promise<GetLibraryFile> {
+	public async getLibraryFile(ubername: string, file: string, currentUser: ICurrentUser): Promise<GetLibraryFile> {
+		await this.checkUserIsAuthenticatedAndEnrolled(currentUser);
 		try {
 			const { mimetype, size, stream } = await this.libraryService.getLibraryFile(ubername, file);
 
@@ -314,8 +331,9 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async getTemporaryFile(file: string, req: Request, userId: EntityId): Promise<GetLibraryFile> {
-		const user = this.changeUserType(userId);
+	public async getTemporaryFile(file: string, req: Request, currentUser: ICurrentUser): Promise<GetLibraryFile> {
+		await this.checkUserIsAuthenticatedAndEnrolled(currentUser);
+		const user = this.changeUserType(currentUser.userId);
 
 		try {
 			const rangeCallback = this.getRange(req);
@@ -344,8 +362,9 @@ export class H5PEditorUc {
 		return playerModel;
 	}
 
-	public async getEmptyH5pEditor(userId: EntityId, language: LanguageType) {
-		const user = this.changeUserType(userId);
+	public async getEmptyH5pEditor(currentUser: ICurrentUser, language: LanguageType): Promise<IEditorModel> {
+		await this.checkUserIsAuthenticatedAndEnrolled(currentUser);
+		const user = this.changeUserType(currentUser.userId);
 		const fakeUndefinedString = this.fakeUndefinedAsString();
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -358,7 +377,21 @@ export class H5PEditorUc {
 		return createdH5PEditor;
 	}
 
-	public async getH5pEditor(userId: EntityId, contentId: string, language: LanguageType) {
+	public async getH5pEditor(
+		userId: EntityId,
+		contentId: string,
+		language: LanguageType
+	): Promise<{
+		editorModel: IEditorModel;
+		content: {
+			h5p: IContentMetadata;
+			library: string;
+			params: {
+				metadata: IContentMetadata;
+				params: ContentParameters;
+			};
+		};
+	}> {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
 		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.write([]));
 
