@@ -467,11 +467,9 @@ describe('FeathersRosterService', () => {
 					},
 				];
 				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(room.id, members, room.schoolId);
-				roomMembershipService.getRoomMembershipAuthorizablesByUserId.mockResolvedValueOnce([
-					roomMembershipAuthorizable,
-				]);
+				roomMembershipService.getRoomAuthorizablesByUserId.mockResolvedValueOnce([roomMembershipAuthorizable]);
 
-				roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValueOnce(roomMembershipAuthorizable);
+				roomMembershipService.getRoomAuthorizable.mockResolvedValueOnce(roomMembershipAuthorizable);
 				roomService.getRoomsByIds.mockResolvedValueOnce([room]);
 				userService.findById.mockResolvedValueOnce(user);
 
@@ -496,7 +494,7 @@ describe('FeathersRosterService', () => {
 
 				await service.getUserGroups(pseudonym.pseudonym, clientId);
 
-				expect(roomMembershipService.getRoomMembershipAuthorizablesByUserId).toHaveBeenCalledWith(pseudonym.userId);
+				expect(roomMembershipService.getRoomAuthorizablesByUserId).toHaveBeenCalledWith(pseudonym.userId);
 			});
 
 			it('should call roomService to get all the rooms', async () => {
@@ -1165,7 +1163,7 @@ describe('FeathersRosterService', () => {
 					roomService.roomExists.mockResolvedValueOnce(true);
 					roomService.getSingleRoom.mockResolvedValueOnce(room);
 
-					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValueOnce(
+					roomMembershipService.getRoomAuthorizable.mockResolvedValueOnce(
 						new RoomMembershipAuthorizable(room.id, [], room.schoolId)
 					);
 
@@ -1268,11 +1266,9 @@ describe('FeathersRosterService', () => {
 						},
 					];
 					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(room.id, members, student.schoolId);
-					roomMembershipService.getRoomMembershipAuthorizablesByUserId.mockResolvedValueOnce([
-						roomMembershipAuthorizable,
-					]);
+					roomMembershipService.getRoomAuthorizablesByUserId.mockResolvedValueOnce([roomMembershipAuthorizable]);
 
-					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValueOnce(roomMembershipAuthorizable);
+					roomMembershipService.getRoomAuthorizable.mockResolvedValueOnce(roomMembershipAuthorizable);
 
 					const pseudonymStudent = pseudonymFactory.build({ userId: student.id });
 					const pseudonymTeacher = pseudonymFactory.build({ userId: teacher.id });

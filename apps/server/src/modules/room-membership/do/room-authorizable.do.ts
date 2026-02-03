@@ -8,7 +8,7 @@ export type UserWithRoomRoles = {
 	userSchoolId: EntityId;
 };
 
-export class RoomMembershipAuthorizable implements AuthorizableObject {
+export class RoomAuthorizable implements AuthorizableObject {
 	public readonly id: EntityId = '';
 
 	public readonly roomId: EntityId;

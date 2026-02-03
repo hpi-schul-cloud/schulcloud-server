@@ -489,7 +489,7 @@ describe(VideoConferenceService.name, () => {
 				const conferenceScope = VideoConferenceScope.ROOM;
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValueOnce({
+				roomMembershipService.getRoomAuthorizable.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,
 					members: [{ userId: user.id, roles: [roomAdminRole], userSchoolId: user.school.id }],
@@ -511,7 +511,7 @@ describe(VideoConferenceService.name, () => {
 
 				await service.determineBbbRole(userId, roomId, conferenceScope);
 
-				expect(roomMembershipService.getRoomMembershipAuthorizable).toHaveBeenCalledWith(roomId);
+				expect(roomMembershipService.getRoomAuthorizable).toHaveBeenCalledWith(roomId);
 			});
 
 			it('should return BBBRole.MODERATOR', async () => {
@@ -713,7 +713,7 @@ describe(VideoConferenceService.name, () => {
 				const conferenceScope = VideoConferenceScope.ROOM;
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				roomMembershipService.getRoomMembershipAuthorizable
+				roomMembershipService.getRoomAuthorizable
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
@@ -742,7 +742,7 @@ describe(VideoConferenceService.name, () => {
 
 				await service.determineBbbRole(userId, roomId, conferenceScope);
 
-				expect(roomMembershipService.getRoomMembershipAuthorizable).toHaveBeenCalledWith(roomId);
+				expect(roomMembershipService.getRoomAuthorizable).toHaveBeenCalledWith(roomId);
 			});
 
 			it('should return BBBRole.VIEWER', async () => {
@@ -768,7 +768,7 @@ describe(VideoConferenceService.name, () => {
 				const conferenceScope = VideoConferenceScope.ROOM;
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				roomMembershipService.getRoomMembershipAuthorizable
+				roomMembershipService.getRoomAuthorizable
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
@@ -797,7 +797,7 @@ describe(VideoConferenceService.name, () => {
 
 				await service.determineBbbRole(userId, roomId, conferenceScope);
 
-				expect(roomMembershipService.getRoomMembershipAuthorizable).toHaveBeenCalledWith(roomId);
+				expect(roomMembershipService.getRoomAuthorizable).toHaveBeenCalledWith(roomId);
 			});
 
 			it('should return BBBRole.VIEWER', async () => {
@@ -943,7 +943,7 @@ describe(VideoConferenceService.name, () => {
 				const conferenceScope = VideoConferenceScope.ROOM;
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				roomMembershipService.getRoomMembershipAuthorizable
+				roomMembershipService.getRoomAuthorizable
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
@@ -989,7 +989,7 @@ describe(VideoConferenceService.name, () => {
 				const conferenceScope = VideoConferenceScope.ROOM;
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				roomMembershipService.getRoomMembershipAuthorizable
+				roomMembershipService.getRoomAuthorizable
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
@@ -1254,7 +1254,7 @@ describe(VideoConferenceService.name, () => {
 			});
 			const room = roomFactory.build();
 			roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
-			roomMembershipService.getRoomMembershipAuthorizable
+			roomMembershipService.getRoomAuthorizable
 				.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,

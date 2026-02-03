@@ -8,7 +8,7 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
+import { RoomAuthorizable } from '../do/room-membership-authorizable.do';
 import { RoomMembershipRule } from './room-membership.rule';
 
 describe(RoomMembershipRule.name, () => {
@@ -36,7 +36,7 @@ describe(RoomMembershipRule.name, () => {
 		describe('when entity is applicable', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable('', [], user.school.id);
+				const roomMembershipAuthorizable = new RoomAuthorizable('', [], user.school.id);
 
 				return { user, roomMembershipAuthorizable };
 			};
@@ -70,7 +70,7 @@ describe(RoomMembershipRule.name, () => {
 			describe('when user is not member of the room', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable('', [], user.school.id);
+					const roomMembershipAuthorizable = new RoomAuthorizable('', [], user.school.id);
 
 					return { user, roomMembershipAuthorizable };
 				};
@@ -91,7 +91,7 @@ describe(RoomMembershipRule.name, () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
 					const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+					const roomMembershipAuthorizable = new RoomAuthorizable(
 						'',
 						[{ roles: [roleDto], userId: user.id, userSchoolId: user.school.id }],
 						user.school.id
@@ -137,7 +137,7 @@ describe(RoomMembershipRule.name, () => {
 			describe('when user is not member of room', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable('', [], user.school.id);
+					const roomMembershipAuthorizable = new RoomAuthorizable('', [], user.school.id);
 
 					return { user, roomMembershipAuthorizable };
 				};
@@ -176,7 +176,7 @@ describe(RoomMembershipRule.name, () => {
 					});
 					const room = roomFactory.build({ schoolId: otherSchool.id });
 					const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+					const roomMembershipAuthorizable = new RoomAuthorizable(
 						room.id,
 						[{ roles: [roleDto], userId: user.id, userSchoolId: otherSchool.id }],
 						otherSchool.id
@@ -213,7 +213,7 @@ describe(RoomMembershipRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const otherSchool = schoolEntityFactory.buildWithId();
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable('', [], otherSchool.id);
+				const roomMembershipAuthorizable = new RoomAuthorizable('', [], otherSchool.id);
 
 				return { user, roomMembershipAuthorizable };
 			};
@@ -281,13 +281,13 @@ describe(RoomMembershipRule.name, () => {
 			const roleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_COPY_ROOM] });
 			const roleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
 
-			const roomMembershipAuthorizableWithPermission = new RoomMembershipAuthorizable(
+			const roomMembershipAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
 				[{ roles: [roleDtoWithPermission], userId: userWithPermission.id, userSchoolId: userWithPermission.school.id }],
 				userWithPermission.school.id
 			);
 
-			const roomMembershipAuthorizableWithoutPermission = new RoomMembershipAuthorizable(
+			const roomMembershipAuthorizableWithoutPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -335,7 +335,7 @@ describe(RoomMembershipRule.name, () => {
 					const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS] });
 					const user = userFactory.buildWithId({ roles: [schoolRole] });
 					const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+					const roomMembershipAuthorizable = new RoomAuthorizable(
 						'roomId',
 						[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 						user.school.id
@@ -359,7 +359,7 @@ describe(RoomMembershipRule.name, () => {
 					const user = userFactory.buildWithId({ roles: [schoolRole] });
 					const otherSchool = schoolEntityFactory.buildWithId();
 					const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+					const roomMembershipAuthorizable = new RoomAuthorizable(
 						'roomId',
 						[{ roles: [roomRoleDto], userId: 'otherId', userSchoolId: user.school.id }],
 						otherSchool.id
@@ -382,7 +382,7 @@ describe(RoomMembershipRule.name, () => {
 					const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS] });
 					const user = userFactory.buildWithId({ roles: [schoolRole] });
 					const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+					const roomMembershipAuthorizable = new RoomAuthorizable(
 						'roomId',
 						[{ roles: [roomRoleDto], userId: 'otherId', userSchoolId: 'otherSchoolId' }],
 						user.school.id
@@ -409,7 +409,7 @@ describe(RoomMembershipRule.name, () => {
 						name: RoleName.ROOMOWNER,
 						permissions: [Permission.ROOM_LIST_CONTENT],
 					});
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+					const roomMembershipAuthorizable = new RoomAuthorizable(
 						'roomId',
 						[{ roles: [roomOwnerRoleDto], userId: user.id, userSchoolId: user.school.id }],
 						user.school.id
@@ -431,7 +431,7 @@ describe(RoomMembershipRule.name, () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
 					const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+					const roomMembershipAuthorizable = new RoomAuthorizable(
 						'roomId',
 						[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 						user.school.id
@@ -456,7 +456,7 @@ describe(RoomMembershipRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_ADD_MEMBERS] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomMembershipAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
@@ -479,7 +479,7 @@ describe(RoomMembershipRule.name, () => {
 				const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS] });
 				const user = userFactory.buildWithId({ roles: [schoolRole] });
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomMembershipAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
@@ -503,7 +503,7 @@ describe(RoomMembershipRule.name, () => {
 				const user = userFactory.buildWithId({ roles: [schoolRole] });
 				const otherSchool = schoolEntityFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomMembershipAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					otherSchool.id
@@ -525,7 +525,7 @@ describe(RoomMembershipRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomMembershipAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
@@ -552,7 +552,7 @@ describe(RoomMembershipRule.name, () => {
 			const roomRoleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_ADD_MEMBERS] });
 			const roomRoleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
 
-			const roomMembershipAuthorizableWithPermission = new RoomMembershipAuthorizable(
+			const roomMembershipAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -564,7 +564,7 @@ describe(RoomMembershipRule.name, () => {
 				userWithPermission.school.id
 			);
 
-			const roomMembershipAuthorizableWithoutPermission = new RoomMembershipAuthorizable(
+			const roomMembershipAuthorizableWithoutPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -619,7 +619,7 @@ describe(RoomMembershipRule.name, () => {
 			const roomRoleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_CHANGE_ROLES] });
 			const roomRoleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
 
-			const roomMembershipAuthorizableWithPermission = new RoomMembershipAuthorizable(
+			const roomMembershipAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -631,7 +631,7 @@ describe(RoomMembershipRule.name, () => {
 				userWithPermission.school.id
 			);
 
-			const roomMembershipAuthorizableWithoutPermission = new RoomMembershipAuthorizable(
+			const roomMembershipAuthorizableWithoutPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -683,7 +683,7 @@ describe(RoomMembershipRule.name, () => {
 			const roomRoleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_LEAVE_ROOM] });
 			const roomRoleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
 
-			const roomMembershipAuthorizableWithPermission = new RoomMembershipAuthorizable(
+			const roomMembershipAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -695,7 +695,7 @@ describe(RoomMembershipRule.name, () => {
 				userWithPermission.school.id
 			);
 
-			const roomMembershipAuthorizableWithoutPermission = new RoomMembershipAuthorizable(
+			const roomMembershipAuthorizableWithoutPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -744,7 +744,7 @@ describe(RoomMembershipRule.name, () => {
 			const roomRoleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_EDIT_ROOM] });
 			const roomRoleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
 
-			const roomMembershipAuthorizableWithPermission = new RoomMembershipAuthorizable(
+			const roomMembershipAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -756,7 +756,7 @@ describe(RoomMembershipRule.name, () => {
 				userWithPermission.school.id
 			);
 
-			const roomMembershipAuthorizableWithoutPermission = new RoomMembershipAuthorizable(
+			const roomMembershipAuthorizableWithoutPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -802,7 +802,7 @@ describe(RoomMembershipRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_DELETE_ROOM] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomMembershipAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
@@ -825,7 +825,7 @@ describe(RoomMembershipRule.name, () => {
 				const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS] });
 				const user = userFactory.buildWithId({ roles: [schoolRole] });
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomMembershipAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
@@ -849,7 +849,7 @@ describe(RoomMembershipRule.name, () => {
 				const user = userFactory.buildWithId({ roles: [schoolRole] });
 				const otherSchool = schoolEntityFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomMembershipAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					otherSchool.id
@@ -871,7 +871,7 @@ describe(RoomMembershipRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomMembershipAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
@@ -896,7 +896,7 @@ describe(RoomMembershipRule.name, () => {
 				const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS] });
 				const user = userFactory.buildWithId({ roles: [schoolRole] });
 				const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomMembershipAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
@@ -919,7 +919,7 @@ describe(RoomMembershipRule.name, () => {
 				const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS] });
 				const user = userFactory.buildWithId({ roles: [schoolRole] });
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomMembershipAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
@@ -941,7 +941,7 @@ describe(RoomMembershipRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomMembershipAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
@@ -963,7 +963,7 @@ describe(RoomMembershipRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomMembershipAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
@@ -990,7 +990,7 @@ describe(RoomMembershipRule.name, () => {
 
 			const roomRoleDto = roleDtoFactory.build({ permissions: [] });
 
-			const roomMembershipAuthorizableWithPermission = new RoomMembershipAuthorizable(
+			const roomMembershipAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -1002,7 +1002,7 @@ describe(RoomMembershipRule.name, () => {
 				userWithPermission.school.id
 			);
 
-			const roomMembershipAuthorizableWithoutPermission = new RoomMembershipAuthorizable(
+			const roomMembershipAuthorizableWithoutPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{

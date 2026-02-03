@@ -23,9 +23,9 @@ export class RoomCopyUc {
 	public async copyRoom(userId: EntityId, roomId: EntityId): Promise<CopyStatus> {
 		this.checkFeatureRoomCopyEnabled();
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomMembershipRule.canCopyRoom(user, roomMembershipAuthorizable));
+		throwForbiddenIfFalse(this.roomMembershipRule.canCopyRoom(user, roomAuthorizable));
 
 		const { roomCopied, boardsCopied } = await this.sagaService.executeSaga('roomCopy', { userId, roomId });
 

@@ -1,23 +1,23 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { RoleDto, RoleName } from '@modules/role';
 import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
-import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { NotImplementedException } from '@nestjs/common';
-import { Permission } from '@shared/domain/interface';
-import { userFactory } from '@modules/user/testing';
-import { courseEntityFactory } from '@modules/course/testing';
-import { schoolFactory } from '@modules/school/testing';
-import { RoleDto, RoleName } from '@modules/role';
-import { ShareTokenPermissionService } from './share-token-permission.service';
-import { ShareTokenContext, ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
-import { setupEntities } from '@testing/database';
-import { User } from '@modules/user/repo';
-import { CourseEntity } from '@modules/course/repo';
 import { SchoolEntity } from '@modules/school/repo';
+import { schoolFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
+import { ShareTokenContext, ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
+import { ShareTokenPermissionService } from './share-token-permission.service';
 
 describe('ShareTokenPermissionService', () => {
 	let service: ShareTokenPermissionService;
@@ -162,7 +162,7 @@ describe('ShareTokenPermissionService', () => {
 				},
 			];
 			const roomMembershipAuthorizable = new RoomMembershipAuthorizable('room-id', members, 'school-id');
-			roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValueOnce(roomMembershipAuthorizable);
+			roomMembershipService.getRoomAuthorizable.mockResolvedValueOnce(roomMembershipAuthorizable);
 
 			return { user, roomMembershipAuthorizable, permissions };
 		};
@@ -172,7 +172,7 @@ describe('ShareTokenPermissionService', () => {
 
 			await service.checkRoomWritePermission(user, 'room-id', permissions);
 
-			expect(roomMembershipService.getRoomMembershipAuthorizable).toHaveBeenCalledWith('room-id');
+			expect(roomMembershipService.getRoomAuthorizable).toHaveBeenCalledWith('room-id');
 		});
 
 		it('should check permission', async () => {

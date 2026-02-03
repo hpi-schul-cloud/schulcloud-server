@@ -79,10 +79,10 @@ export class RegistrationUc {
 		this.registrationFeatureService.checkFeatureRegistrationEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 		this.authorizationService.checkPermission(
 			user,
-			roomMembershipAuthorizable,
+			roomAuthorizable,
 			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
 		);
 
@@ -93,10 +93,10 @@ export class RegistrationUc {
 
 	private async checkPermissions(userId: EntityId, roomId: EntityId): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 		const hasRoomPermission = this.authorizationService.hasPermission(
 			user,
-			roomMembershipAuthorizable,
+			roomAuthorizable,
 			AuthorizationContextBuilder.write([Permission.ROOM_ADD_MEMBERS])
 		);
 		const hasRegistrationManagementPersmission = this.authorizationService.hasAllPermissions(user, [

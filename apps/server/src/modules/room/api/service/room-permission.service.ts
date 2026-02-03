@@ -1,6 +1,6 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { RoleName } from '@modules/role';
-import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -24,12 +24,12 @@ export class RoomPermissionService {
 		roomId: EntityId,
 		action: Action,
 		requiredPermissions: Permission[] = []
-	): Promise<RoomMembershipAuthorizable> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+	): Promise<RoomAuthorizable> {
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, { action, requiredPermissions });
+		this.authorizationService.checkPermission(user, roomAuthorizable, { action, requiredPermissions });
 
-		return roomMembershipAuthorizable;
+		return roomAuthorizable;
 	}
 
 	public async hasRoomPermissions(
@@ -38,9 +38,9 @@ export class RoomPermissionService {
 		action: Action,
 		requiredPermissions: Permission[] = []
 	): Promise<boolean> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const hasRoomPermissions = this.authorizationService.hasPermission(user, roomMembershipAuthorizable, {
+		const hasRoomPermissions = this.authorizationService.hasPermission(user, roomAuthorizable, {
 			action,
 			requiredPermissions,
 		});
@@ -61,9 +61,9 @@ export class RoomPermissionService {
 	}
 
 	public async checkRoomIsUnlocked(roomId: EntityId): Promise<void> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		const hasOwner = roomMembershipAuthorizable.members.some((member) =>
+		const hasOwner = roomAuthorizable.members.some((member) =>
 			member.roles.some((role) => role.name === RoleName.ROOMOWNER)
 		);
 

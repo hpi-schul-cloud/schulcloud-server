@@ -251,7 +251,7 @@ describe(BoardContextService.name, () => {
 				it('should return their information + admin & editor role', async () => {
 					const { columnBoard, role, user } = setup();
 
-					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
+					roomMembershipService.getRoomAuthorizable.mockResolvedValue({
 						id: 'foo',
 						roomId: columnBoard.context.id,
 						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
@@ -290,7 +290,7 @@ describe(BoardContextService.name, () => {
 				it('should return their information + admin & editor role', async () => {
 					const { columnBoard, role, user } = setup();
 
-					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
+					roomMembershipService.getRoomAuthorizable.mockResolvedValue({
 						id: 'foo',
 						roomId: columnBoard.context.id,
 						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
@@ -329,7 +329,7 @@ describe(BoardContextService.name, () => {
 				it('should return their information + editor role', async () => {
 					const { columnBoard, role, user } = setup();
 
-					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
+					roomMembershipService.getRoomAuthorizable.mockResolvedValue({
 						id: 'foo',
 						roomId: columnBoard.context.id,
 						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
@@ -368,7 +368,7 @@ describe(BoardContextService.name, () => {
 				it('should return their information + reader role', async () => {
 					const { columnBoard, role, user } = setup();
 
-					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
+					roomMembershipService.getRoomAuthorizable.mockResolvedValue({
 						id: 'foo',
 						roomId: columnBoard.context.id,
 						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
@@ -404,7 +404,7 @@ describe(BoardContextService.name, () => {
 				it('should return their information + no role', async () => {
 					const { columnBoard, role, user } = setup();
 
-					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
+					roomMembershipService.getRoomAuthorizable.mockResolvedValue({
 						id: 'foo',
 						roomId: columnBoard.context.id,
 						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
