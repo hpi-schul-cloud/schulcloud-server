@@ -87,5 +87,36 @@ describe('MergedTimeoutConfig', () => {
 			expect(merged.zeroTimeout).toBe(0);
 			expect(merged.largeTimeout).toBe(999999999);
 		});
+
+		it('should throw an error when duplicate keys are found across configs', () => {
+			const config1: TimeoutConfig = {
+				incomingRequestTimeout: 30000,
+				duplicateKey: 10000,
+			};
+
+			const config2: TimeoutConfig = {
+				incomingRequestTimeout: 60000,
+				duplicateKey: 20000,
+			};
+
+			expect(() => new MergedTimeoutConfig([config1, config2])).toThrow(
+				"Duplicate timeout configuration key detected: 'duplicateKey'. Each timeout key must be unique across all configurations."
+			);
+		});
+
+		it('should allow incomingRequestTimeout to be present in multiple configs', () => {
+			const config1: TimeoutConfig = {
+				incomingRequestTimeout: 30000,
+			};
+
+			const config2: TimeoutConfig = {
+				incomingRequestTimeout: 60000,
+			};
+
+			const merged = new MergedTimeoutConfig([config1, config2]);
+
+			// incomingRequestTimeout is allowed to be overwritten as it's the base class property
+			expect(merged.incomingRequestTimeout).toBe(60000);
+		});
 	});
 });
