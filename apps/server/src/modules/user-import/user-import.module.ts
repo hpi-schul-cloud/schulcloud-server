@@ -33,6 +33,7 @@ import { USER_IMPORT_CONFIG_TOKEN, UserImportConfig } from './user-import-config
 		SystemModule,
 		UserModule,
 		ConfigurationModule.register(USER_IMPORT_CONFIG_TOKEN, UserImportConfig),
+		ConfigurationModule.register(USER_IMPORT_TIMEOUT_CONFIG_TOKEN, UserImportTimeoutConfig),
 	],
 	controllers: [ImportUserController],
 	providers: [
@@ -44,7 +45,7 @@ import { USER_IMPORT_CONFIG_TOKEN, UserImportConfig } from './user-import-config
 	],
 	exports: [UserImportService],
 })
-@RegisterTimeoutConfig(USER_IMPORT_TIMEOUT_CONFIG_TOKEN, UserImportTimeoutConfig)
+@RegisterTimeoutConfig(USER_IMPORT_TIMEOUT_CONFIG_TOKEN)
 /**
  * Module to provide user migration,
  * to link existing users with ldap references to enable

@@ -40,6 +40,7 @@ import { ROOM_TIMEOUT_CONFIG_TOKEN, RoomTimeoutConfig } from './timeout.config';
 		CopyHelperModule,
 		SagaModule,
 		ConfigurationModule.register(ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig),
+		ConfigurationModule.register(ROOM_TIMEOUT_CONFIG_TOKEN, RoomTimeoutConfig),
 	],
 	controllers: [RoomController, RoomInvitationLinkController],
 	providers: [
@@ -57,5 +58,5 @@ import { ROOM_TIMEOUT_CONFIG_TOKEN, RoomTimeoutConfig } from './timeout.config';
 		RoomBoardService,
 	],
 })
-@RegisterTimeoutConfig(ROOM_TIMEOUT_CONFIG_TOKEN, RoomTimeoutConfig)
+@RegisterTimeoutConfig(ROOM_TIMEOUT_CONFIG_TOKEN)
 export class RoomApiModule {}

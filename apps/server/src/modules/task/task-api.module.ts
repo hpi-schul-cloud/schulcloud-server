@@ -18,9 +18,10 @@ import { TASK_TIMEOUT_CONFIG_TOKEN, TaskTimeoutConfig } from './timeout.config';
 		LessonModule,
 		CourseModule,
 		ConfigurationModule.register(TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig),
+		ConfigurationModule.register(TASK_TIMEOUT_CONFIG_TOKEN, TaskTimeoutConfig),
 	],
 	controllers: [TaskController, SubmissionController],
 	providers: [TaskUC, TaskRepo, TaskCopyUC, SubmissionUc],
 })
-@RegisterTimeoutConfig(TASK_TIMEOUT_CONFIG_TOKEN, TaskTimeoutConfig)
+@RegisterTimeoutConfig(TASK_TIMEOUT_CONFIG_TOKEN)
 export class TaskApiModule {}

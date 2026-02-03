@@ -46,6 +46,7 @@ import {
 		ClassModule,
 		CourseModule,
 		ConfigurationModule.register(LEARNROOM_CONFIG_TOKEN, LearnroomConfig),
+		ConfigurationModule.register(LEARNROOM_TIMEOUT_CONFIG_TOKEN, LearnroomTimeoutConfig),
 	],
 	controllers: [DashboardController, CourseRoomsController],
 	providers: [
@@ -65,5 +66,5 @@ import {
 		LegacyBoardRepo,
 	],
 })
-@RegisterTimeoutConfig(LEARNROOM_TIMEOUT_CONFIG_TOKEN, LearnroomTimeoutConfig)
+@RegisterTimeoutConfig(LEARNROOM_TIMEOUT_CONFIG_TOKEN)
 export class LearnroomApiModule {}

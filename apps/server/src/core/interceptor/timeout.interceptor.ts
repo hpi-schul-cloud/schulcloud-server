@@ -1,8 +1,11 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import { CallHandler, ExecutionContext, Inject, Injectable, Logger, NestInterceptor } from '@nestjs/common';
+import { ModuleRef, Reflector } from '@nestjs/core';
 import { Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
 import { RequestTimeoutLoggableException } from '../../shared/common/loggable-exception';
+import { MergedTimeoutConfig } from './config-merger';
+import { DEFAULT_TIMEOUT_CONFIG_TOKEN } from './default-timeout.config';
+import { TIMEOUT_CONFIG_REGISTRY } from './timeout-config.registry';
 import { TimeoutConfig } from './timeout-interceptor-config.interface';
 
 /**
@@ -11,13 +14,23 @@ import { TimeoutConfig } from './timeout-interceptor-config.interface';
  */
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
-	constructor(private readonly config: TimeoutConfig) {}
+	private readonly logger = new Logger(TimeoutInterceptor.name);
+	private mergedConfig?: TimeoutConfig;
+
+	constructor(
+		@Inject(DEFAULT_TIMEOUT_CONFIG_TOKEN) private readonly defaultConfig: TimeoutConfig,
+		private readonly moduleRef: ModuleRef
+	) {}
 
 	public intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-		const configKey = this.getConfigKey(context);
-		const timeoutMS = configKey ? this.config[configKey] : this.config.incomingRequestTimeout;
+		if (!this.mergedConfig) {
+			this.mergedConfig = this.mergeConfigs();
+		}
 
-		if (timeoutMS === undefined) this.throwError(configKey);
+		const configKey = this.getConfigKey(context);
+		const timeoutMS = configKey ? this.mergedConfig[configKey] : this.mergedConfig.incomingRequestTimeout;
+
+		if (timeoutMS === undefined) this.throwMissingKeyError(configKey);
 
 		const { url } = context.switchToHttp().getRequest<Request>();
 
@@ -38,7 +51,7 @@ export class TimeoutInterceptor implements NestInterceptor {
 		return throwError(() => err);
 	}
 
-	private throwError(key?: string): void {
+	private throwMissingKeyError(key?: string): void {
 		const resolvedKey = key ?? 'MISSING_KEY';
 
 		throw new Error(
@@ -54,5 +67,19 @@ export class TimeoutInterceptor implements NestInterceptor {
 			reflector.get<string>('requestTimeoutEnvironmentName', context.getClass());
 
 		return configKey;
+	}
+
+	private mergeConfigs(): TimeoutConfig {
+		const tokens = TIMEOUT_CONFIG_REGISTRY.getTokens();
+		const configs: TimeoutConfig[] = [this.defaultConfig];
+
+		for (const token of tokens) {
+			const config = this.moduleRef.get<TimeoutConfig>(token, { strict: false });
+			configs.push(config);
+		}
+
+		const merged = new MergedTimeoutConfig(configs);
+
+		return merged;
 	}
 }

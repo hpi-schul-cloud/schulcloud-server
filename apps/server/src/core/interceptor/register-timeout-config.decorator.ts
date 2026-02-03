@@ -1,9 +1,8 @@
 import { TIMEOUT_CONFIG_REGISTRY } from './timeout-config.registry';
-import { TimeoutConfig } from './timeout-interceptor-config.interface';
 
-export function RegisterTimeoutConfig(token: string, configConstructor: new () => TimeoutConfig) {
+export function RegisterTimeoutConfig(token: string) {
 	return function <T extends { new (...args: unknown[]): object }>(constructor: T): T {
-		TIMEOUT_CONFIG_REGISTRY.register(token, configConstructor);
+		TIMEOUT_CONFIG_REGISTRY.register(token);
 
 		return constructor;
 	};

@@ -1,28 +1,19 @@
 import { RegisterTimeoutConfig } from './register-timeout-config.decorator';
 import { TIMEOUT_CONFIG_REGISTRY } from './timeout-config.registry';
-import { TimeoutConfig } from './timeout-interceptor-config.interface';
 
 describe('RegisterTimeoutConfig', () => {
-	class MockTimeoutConfig extends TimeoutConfig {
-		public incomingRequestTimeout = 30000;
-	}
-
 	describe('when decorator is applied to a class', () => {
 		it('should register the config with the registry', () => {
 			const token = 'TEST_DECORATOR_TOKEN';
-			const initialLength = TIMEOUT_CONFIG_REGISTRY.getRegistrations().length;
+			const initialLength = TIMEOUT_CONFIG_REGISTRY.getTokens().length;
 
-			@RegisterTimeoutConfig(token, MockTimeoutConfig)
+			@RegisterTimeoutConfig(token)
 			class DecoratedClass {}
 
-			const registrations = TIMEOUT_CONFIG_REGISTRY.getRegistrations();
-			expect(registrations).toHaveLength(initialLength + 1);
-			expect(registrations).toContainEqual({
-				token,
-				configConstructor: MockTimeoutConfig,
-			});
+			const tokens = TIMEOUT_CONFIG_REGISTRY.getTokens();
+			expect(tokens).toHaveLength(initialLength + 1);
+			expect(tokens).toContain(token);
 
-			// Verify the class is defined
 			expect(DecoratedClass).toBeDefined();
 		});
 
@@ -37,7 +28,7 @@ describe('RegisterTimeoutConfig', () => {
 				}
 			}
 
-			const DecoratedClass = RegisterTimeoutConfig(token, MockTimeoutConfig)(OriginalClass);
+			const DecoratedClass = RegisterTimeoutConfig(token)(OriginalClass);
 
 			expect(DecoratedClass).toBe(OriginalClass);
 		});
@@ -45,7 +36,7 @@ describe('RegisterTimeoutConfig', () => {
 		it('should allow instantiation of decorated class', () => {
 			const token = 'INSTANTIATION_TOKEN';
 
-			@RegisterTimeoutConfig(token, MockTimeoutConfig)
+			@RegisterTimeoutConfig(token)
 			class InstantiableClass {
 				public name = 'default';
 
@@ -64,7 +55,7 @@ describe('RegisterTimeoutConfig', () => {
 		it('should preserve class methods and properties', () => {
 			const token = 'PRESERVATION_TOKEN';
 
-			@RegisterTimeoutConfig(token, MockTimeoutConfig)
+			@RegisterTimeoutConfig(token)
 			class ClassWithMethods {
 				private counter = 0;
 
@@ -88,7 +79,7 @@ describe('RegisterTimeoutConfig', () => {
 		it('should work with classes that have static members', () => {
 			const token = 'STATIC_MEMBERS_TOKEN';
 
-			@RegisterTimeoutConfig(token, MockTimeoutConfig)
+			@RegisterTimeoutConfig(token)
 			class ClassWithStatics {
 				public static staticValue = 42;
 
@@ -104,29 +95,19 @@ describe('RegisterTimeoutConfig', () => {
 		it('should register different configs for different classes', () => {
 			const token1 = 'FIRST_CLASS_TOKEN';
 			const token2 = 'SECOND_CLASS_TOKEN';
-			const initialLength = TIMEOUT_CONFIG_REGISTRY.getRegistrations().length;
+			const initialLength = TIMEOUT_CONFIG_REGISTRY.getTokens().length;
 
-			class AnotherTimeoutConfig extends TimeoutConfig {
-				public incomingRequestTimeout = 60000;
-			}
-
-			@RegisterTimeoutConfig(token1, MockTimeoutConfig)
+			@RegisterTimeoutConfig(token1)
 			class FirstClass {}
 
-			@RegisterTimeoutConfig(token2, AnotherTimeoutConfig)
+			@RegisterTimeoutConfig(token2)
 			class SecondClass {}
 
-			const registrations = TIMEOUT_CONFIG_REGISTRY.getRegistrations();
+			const tokens = TIMEOUT_CONFIG_REGISTRY.getTokens();
 
-			expect(registrations).toHaveLength(initialLength + 2);
-			expect(registrations).toContainEqual({
-				token: token1,
-				configConstructor: MockTimeoutConfig,
-			});
-			expect(registrations).toContainEqual({
-				token: token2,
-				configConstructor: AnotherTimeoutConfig,
-			});
+			expect(tokens).toHaveLength(initialLength + 2);
+			expect(tokens).toContain(token1);
+			expect(tokens).toContain(token2);
 
 			// Verify both classes are defined
 			expect(FirstClass).toBeDefined();
@@ -136,16 +117,16 @@ describe('RegisterTimeoutConfig', () => {
 		it('should not register duplicate tokens', () => {
 			const token = 'DUPLICATE_DECORATOR_TOKEN';
 
-			@RegisterTimeoutConfig(token, MockTimeoutConfig)
+			@RegisterTimeoutConfig(token)
 			class FirstDecoratedClass {}
 
-			@RegisterTimeoutConfig(token, MockTimeoutConfig)
+			@RegisterTimeoutConfig(token)
 			class SecondDecoratedClass {}
 
-			const registrations = TIMEOUT_CONFIG_REGISTRY.getRegistrations();
-			const matchingRegistrations = registrations.filter((reg) => reg.token === token);
+			const tokens = TIMEOUT_CONFIG_REGISTRY.getTokens();
+			const matchingTokens = tokens.filter((t) => t === token);
 
-			expect(matchingRegistrations).toHaveLength(1);
+			expect(matchingTokens).toHaveLength(1);
 
 			// Verify both classes are defined
 			expect(FirstDecoratedClass).toBeDefined();

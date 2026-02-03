@@ -1,6 +1,4 @@
 import { createMock } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
@@ -13,20 +11,21 @@ import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '../../task.co
 import { taskFactory } from '../../testing';
 
 // eslint-disable-next-line import/first
-import { MERGED_TIMEOUT_CONFIG_TOKEN } from '@core/interceptor';
 import { ServerTestModule } from '@modules/server/server.app.module';
-import { TaskTimeoutConfig } from '../../timeout.config';
+import {
+	INCOMING_REQUEST_TIMEOUT_COPY_API_KEY,
+	TASK_TIMEOUT_CONFIG_TOKEN,
+	TaskTimeoutConfig,
+} from '@modules/task/timeout.config';
 
 describe('Task copy (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let configBefore: IConfig;
 	let apiClient: TestApiClient;
 	let config: TaskPublicApiConfig;
 	let timeoutConfig: TaskTimeoutConfig;
 
 	beforeAll(async () => {
-		configBefore = Configuration.toObject({ plainSecrets: true });
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
@@ -40,16 +39,17 @@ describe('Task copy (API)', () => {
 		apiClient = new TestApiClient(app, '/tasks');
 		config = app.get<TaskPublicApiConfig>(TASK_PUBLIC_API_CONFIG_TOKEN);
 		config.featureCopyServiceEnabled = true;
-		timeoutConfig = app.get(MERGED_TIMEOUT_CONFIG_TOKEN);
+		timeoutConfig = app.get(TASK_TIMEOUT_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
 		await cleanupCollections(em);
 		await app.close();
-		Configuration.reset(configBefore);
 	});
 
 	const setup = async () => {
+		timeoutConfig[INCOMING_REQUEST_TIMEOUT_COPY_API_KEY] = 1;
+
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 		const course = courseEntityFactory.build({ name: 'course #1', teachers: [teacherUser] });
 		const task = taskFactory.build({ name: 'task #1', course });
@@ -58,8 +58,6 @@ describe('Task copy (API)', () => {
 		em.clear();
 
 		const loggedInClient = await apiClient.login(teacherAccount);
-
-		timeoutConfig.incomingRequestTimeout = 1;
 
 		return { loggedInClient, task };
 	};

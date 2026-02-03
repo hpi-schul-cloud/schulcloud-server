@@ -1,3 +1,4 @@
+import { RegisterTimeoutConfig } from '@core/interceptor/register-timeout-config.decorator';
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { AuthorizationModule } from '@modules/authorization';
@@ -14,7 +15,6 @@ import { Module } from '@nestjs/common';
 import { ImportTokenUC, ShareTokenController, ShareTokenPermissionService, ShareTokenUC } from './api';
 import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from './sharing.config';
 import { SharingModule } from './sharing.module';
-import { RegisterTimeoutConfig } from '@core/interceptor/register-timeout-config.decorator';
 import { SHARING_TIMEOUT_CONFIG_TOKEN, SharingTimeoutConfig } from './timeout.config';
 
 @Module({
@@ -32,9 +32,10 @@ import { SHARING_TIMEOUT_CONFIG_TOKEN, SharingTimeoutConfig } from './timeout.co
 		LoggerModule,
 		SagaModule,
 		ConfigurationModule.register(SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig),
+		ConfigurationModule.register(SHARING_TIMEOUT_CONFIG_TOKEN, SharingTimeoutConfig),
 	],
 	controllers: [ShareTokenController],
 	providers: [ShareTokenUC, ImportTokenUC, ShareTokenPermissionService],
 })
-@RegisterTimeoutConfig(SHARING_TIMEOUT_CONFIG_TOKEN, SharingTimeoutConfig)
+@RegisterTimeoutConfig(SHARING_TIMEOUT_CONFIG_TOKEN)
 export class SharingApiModule {}

@@ -27,6 +27,7 @@ import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc, SubmissionIte
 @Module({
 	imports: [
 		ConfigurationModule.register(BOARD_CONFIG_TOKEN, BoardConfig),
+		ConfigurationModule.register(BOARD_TIMEOUT_CONFIG_TOKEN, BoardTimeoutConfig),
 		CopyHelperModule,
 		CourseModule,
 		BoardModule,
@@ -56,5 +57,5 @@ import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc, SubmissionIte
 		CopyRoomBoardsStep,
 	],
 })
-@RegisterTimeoutConfig(BOARD_TIMEOUT_CONFIG_TOKEN, BoardTimeoutConfig)
+@RegisterTimeoutConfig(BOARD_TIMEOUT_CONFIG_TOKEN)
 export class BoardApiModule {}
