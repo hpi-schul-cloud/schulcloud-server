@@ -4,11 +4,11 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { PaginationParams } from '@shared/controller/dto';
+import { TASK_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 import { TaskCopyApiParams, TaskListResponse, TaskResponse, TaskUrlParams } from './dto';
 import { TaskMapper } from './mapper';
 import { TaskCopyUC } from './task-copy.uc';
 import { TaskUC } from './task.uc';
-import { INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 
 @ApiTags('Task')
 @JwtAuthentication()
@@ -85,7 +85,7 @@ export class TaskController {
 	}
 
 	@Post(':taskId/copy')
-	@RequestTimeout(INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
+	@RequestTimeout(TASK_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async copyTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: TaskUrlParams,
