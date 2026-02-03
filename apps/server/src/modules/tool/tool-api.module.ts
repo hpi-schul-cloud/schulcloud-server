@@ -1,4 +1,5 @@
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
 import { AuthorizationModule } from '@modules/authorization';
 import { BoardModule } from '@modules/board';
@@ -22,6 +23,7 @@ import { ExternalToolConfigurationService } from './external-tool/service';
 import { ExternalToolConfigurationUc, ExternalToolUc } from './external-tool/uc';
 import { ToolSchoolController } from './school-external-tool/controller';
 import { SchoolExternalToolUc } from './school-external-tool/uc';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from './tool-config';
 import { ToolLaunchController } from './tool-launch/controller/tool-launch.controller';
 import { ToolLaunchUc } from './tool-launch/uc';
 import { ExternalToolUtilizationUc, SchoolExternalToolUtilizationUc } from './tool-utilization';
@@ -44,6 +46,7 @@ import { ToolModule } from './tool.module';
 		SchoolLicenseModule,
 		EncryptionModule.register(ToolEncryptionConfig, TOOL_ENCRYPTION_CONFIG_TOKEN),
 		ExternalToolUtilizationModule,
+		ConfigurationModule.register(TOOL_CONFIG_TOKEN, ToolConfig),
 	],
 	controllers: [
 		ToolLaunchController,

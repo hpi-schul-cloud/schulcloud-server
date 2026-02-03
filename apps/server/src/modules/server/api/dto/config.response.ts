@@ -7,6 +7,7 @@ import { LearnroomPublicApiConfig } from '@modules/learnroom';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { RegistrationPublicApiConfig } from '@modules/registration';
+import { RocketChatPublicApiConfig } from '@modules/rocketchat';
 import { RoomPublicApiConfig } from '@modules/room';
 import { RosterPublicApiConfig } from '@modules/roster';
 import { SharingPublicApiConfig } from '@modules/sharing';
@@ -297,7 +298,8 @@ export class ConfigResponse {
 			UserPublicApiConfig &
 			UserImportPublicApiConfig &
 			UserLoginMigrationPublicApiConfig &
-			FwuPublicApiConfig
+			FwuPublicApiConfig &
+			RocketChatPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -340,7 +342,7 @@ export class ConfigResponse {
 		this.FEATURE_USER_LOGIN_MIGRATION_ENABLED = config.featureUserLoginMigrationEnabled;
 		this.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED = config.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED;
 		this.GHOST_BASE_URL = config.GHOST_BASE_URL;
-		this.ROCKETCHAT_SERVICE_ENABLED = config.ROCKETCHAT_SERVICE_ENABLED;
+		this.ROCKETCHAT_SERVICE_ENABLED = config.rocketChatServiceEnabled;
 		this.I18N__AVAILABLE_LANGUAGES = config.availableLanguages;
 		this.I18N__DEFAULT_LANGUAGE = config.I18N__DEFAULT_LANGUAGE;
 		this.I18N__FALLBACK_LANGUAGE = config.I18N__FALLBACK_LANGUAGE;

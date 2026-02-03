@@ -1,11 +1,11 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Mail, MailService, PlainTextMailContent } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { ValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { RoomRepo } from '../../repo';
+import { ROOM_CONFIG_TOKEN, RoomConfig } from '../../room.config';
 import { Room, RoomCreateProps, RoomProps, RoomUpdateProps } from '../do';
 import { RoomDeletedEvent } from '../events/room-deleted.event';
 import { RoomFeatures } from '../type';
@@ -15,7 +15,8 @@ export class RoomService {
 	constructor(
 		private readonly roomRepo: RoomRepo,
 		private readonly eventBus: EventBus,
-		private readonly mailService: MailService
+		private readonly mailService: MailService,
+		@Inject(ROOM_CONFIG_TOKEN) private readonly config: RoomConfig
 	) {}
 
 	public async getRoomsByIds(roomIds: EntityId[]): Promise<Room[]> {
@@ -102,17 +103,16 @@ export class RoomService {
 		const roomLink = this.generateRoomLink(roomId);
 		const roomName = await this.getRoomName(roomId);
 		const mailContent = this.generateRoomWelcomeMailContent(roomName, roomLink);
-		const senderAddress = Configuration.get('SMTP_SENDER') as string;
 		const completeMail: Mail = {
 			mail: mailContent,
 			recipients: [email],
-			from: senderAddress,
+			from: this.config.fromEmailAddress,
 		};
 		return completeMail;
 	}
 
 	private generateRoomLink(roomId: string): string {
-		const hostUrl = Configuration.get('HOST') as string;
+		const { hostUrl } = this.config;
 		const baseRoomUrl = `${hostUrl}/rooms/`;
 		const roomLink = baseRoomUrl + roomId;
 
@@ -120,7 +120,7 @@ export class RoomService {
 	}
 
 	private generateRoomWelcomeMailContent(roomName: string, roomLink: string): PlainTextMailContent {
-		const productName = Configuration.get('SC_TITLE') as string;
+		const { productName } = this.config;
 		const stripTags = (html: string): string =>
 			html
 				.replace(/<(\/p>|<br\s*\/)>/gim, '\n')

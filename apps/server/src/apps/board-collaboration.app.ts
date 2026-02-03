@@ -11,6 +11,7 @@ import { DATABASE_CONFIG_TOKEN, InternalDatabaseConfig } from '@infra/database';
 import { MongoIoAdapter } from '@infra/socketio';
 import { SESSION_VALKEY_CLIENT } from '@modules/authentication/authentication-config';
 import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import express from 'express';
@@ -56,8 +57,10 @@ async function bootstrap(): Promise<void> {
 	await nestApp.init();
 
 	addPrometheusMetricsMiddlewaresIfEnabled(logger, nestExpress);
+	const boardConfig = await nestApp.resolve<BoardConfig>(BOARD_CONFIG_TOKEN);
+	const { basePath } = boardConfig;
+
 	const port = 4450;
-	const basePath = '/board-collaboration';
 
 	nestApp.setGlobalPrefix(basePath);
 	await nestApp.listen(port, () => {

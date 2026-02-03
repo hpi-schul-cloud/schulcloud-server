@@ -48,7 +48,7 @@ import {
 	RegistrationModule,
 	RegistrationPublicApiConfig,
 } from '@modules/registration';
-import { RocketChatModule } from '@modules/rocketchat';
+import { ROCKET_CHAT_API_PUBLIC_CONFIG_TOKEN, RocketChatModule, RocketChatPublicApiConfig } from '@modules/rocketchat';
 import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '@modules/roster';
@@ -109,6 +109,7 @@ const serverModules = [
 	ConfigurationModule.register(USER_IMPORT_PUBLIC_API_CONFIG_TOKEN, UserImportPublicApiConfig),
 	ConfigurationModule.register(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN, UserLoginMigrationPublicApiConfig),
 	ConfigurationModule.register(FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig),
+	ConfigurationModule.register(ROCKET_CHAT_API_PUBLIC_CONFIG_TOKEN, RocketChatPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,
 	CoreModule,

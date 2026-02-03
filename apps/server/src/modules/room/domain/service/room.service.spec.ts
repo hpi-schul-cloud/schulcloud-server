@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ROOM_CONFIG_TOKEN } from '@modules/room/room.config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
@@ -35,6 +35,14 @@ describe('RoomService', () => {
 				{
 					provide: MailService,
 					useValue: createMock<MailService>(),
+				},
+				{
+					provide: ROOM_CONFIG_TOKEN,
+					useValue: {
+						hostUrl: 'http://localhost:3000',
+						fromEmailAddress: 'example@sender.com',
+						productName: 'dBildungscloud',
+					},
 				},
 			],
 		}).compile();
@@ -234,23 +242,9 @@ describe('RoomService', () => {
 
 	describe('sendRoomWelcomeMail', () => {
 		const smtpSender = 'example@sender.com';
-		const host = 'https://example.com';
 		const roomName = 'My Test Room';
 
 		beforeEach(() => {
-			jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
-				if (config === 'SMTP_SENDER') {
-					return smtpSender;
-				}
-				if (config === 'HOST') {
-					return host;
-				}
-				if (config === 'SC_TITLE') {
-					return 'dBildungscloud';
-				}
-				return null;
-			});
-
 			const mockRoom = {
 				getRoomName: () => roomName,
 			} as Room;

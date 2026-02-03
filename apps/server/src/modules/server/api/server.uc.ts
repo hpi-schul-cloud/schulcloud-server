@@ -7,6 +7,7 @@ import { LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig } from '@mo
 import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig } from '@modules/oauth';
 import { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } from '@modules/registration';
+import { ROCKET_CHAT_API_PUBLIC_CONFIG_TOKEN, RocketChatPublicApiConfig } from '@modules/rocketchat';
 import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room';
 import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '@modules/roster';
 import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '@modules/sharing';
@@ -47,7 +48,8 @@ export class ServerUc {
 		@Inject(USER_IMPORT_PUBLIC_API_CONFIG_TOKEN) private readonly userImportConfig: UserImportPublicApiConfig,
 		@Inject(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN)
 		private readonly userLoginMigrationConfig: UserLoginMigrationPublicApiConfig,
-		@Inject(FWU_PUBLIC_API_CONFIG_TOKEN) private readonly fwuConfig: FwuPublicApiConfig
+		@Inject(FWU_PUBLIC_API_CONFIG_TOKEN) private readonly fwuConfig: FwuPublicApiConfig,
+		@Inject(ROCKET_CHAT_API_PUBLIC_CONFIG_TOKEN) private readonly rocketChatConfig: RocketChatPublicApiConfig
 	) {}
 
 	public getConfig(): ConfigResponse {
@@ -70,7 +72,8 @@ export class ServerUc {
 			this.userConfig,
 			this.userImportConfig,
 			this.userLoginMigrationConfig,
-			this.fwuConfig
+			this.fwuConfig,
+			this.rocketChatConfig
 		);
 
 		return configDto;
