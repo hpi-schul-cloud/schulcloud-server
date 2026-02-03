@@ -5,7 +5,6 @@ import { APP_INTERCEPTOR, DiscoveryModule } from '@nestjs/core';
 import { MergedTimeoutConfig } from './config-merger';
 import { DEFAULT_TIMEOUT_CONFIG_TOKEN, DefaultTimeoutConfig } from './default-timeout.config';
 import { TIMEOUT_CONFIG_REGISTRY } from './timeout-config.registry';
-import { TimeoutConfigValidator } from './timeout-config.validator';
 import { TimeoutInterceptor } from './timeout.interceptor';
 
 /** *********************************************
@@ -45,7 +44,6 @@ export class TimeoutInterceptorModule {
 					useFactory: (mergedConfig: TimeoutConfig): TimeoutInterceptor => new TimeoutInterceptor(mergedConfig),
 					inject: [MERGED_TIMEOUT_CONFIG_TOKEN],
 				},
-				TimeoutConfigValidator,
 			],
 		};
 	}
