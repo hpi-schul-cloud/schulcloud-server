@@ -14,23 +14,45 @@ export class TimeoutInterceptor implements NestInterceptor {
 	constructor(private readonly config: TimeoutConfig) {}
 
 	public intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-		const reflector = new Reflector();
-		const requestTimeoutEnvironmentName =
-			reflector.get<string>('requestTimeoutEnvironmentName', context.getHandler()) ||
-			reflector.get<string>('requestTimeoutEnvironmentName', context.getClass());
+		const configKey = this.getConfigKey(context);
+		const timeoutMS = configKey ? this.config[configKey] : this.config.incomingRequestTimeout;
 
-		const timeoutMS = this.config[requestTimeoutEnvironmentName] ?? this.config.incomingRequestTimeout;
+		if (timeoutMS === undefined) this.throwError(configKey);
 
 		const { url } = context.switchToHttp().getRequest<Request>();
 
+		return this.handleTimeout(next, timeoutMS, url);
+	}
+
+	private handleTimeout(next: CallHandler, timeoutMS: number, url: string): Observable<unknown> {
 		return next.handle().pipe(
 			timeout(timeoutMS),
-			catchError((err: Error) => {
-				if (err instanceof TimeoutError) {
-					return throwError(() => new RequestTimeoutLoggableException(url));
-				}
-				return throwError(() => err);
-			})
+			catchError((err: Error) => this.handleTimeoutError(err, url))
 		);
+	}
+
+	private handleTimeoutError(err: Error, url: string): Observable<never> {
+		if (err instanceof TimeoutError) {
+			return throwError(() => new RequestTimeoutLoggableException(url));
+		}
+		return throwError(() => err);
+	}
+
+	private throwError(key?: string): void {
+		const resolvedKey = key ?? 'MISSING_KEY';
+
+		throw new Error(
+			`Timeout configuration key "${resolvedKey}" is not registered in any TimeoutConfig. ` +
+				`Please ensure the key is defined as a property in a TimeoutConfig class and the config is registered with @RegisterTimeoutConfig.`
+		);
+	}
+
+	private getConfigKey(context: ExecutionContext): string | undefined {
+		const reflector = new Reflector();
+		const configKey =
+			reflector.get<string>('requestTimeoutEnvironmentName', context.getHandler()) ||
+			reflector.get<string>('requestTimeoutEnvironmentName', context.getClass());
+
+		return configKey;
 	}
 }
