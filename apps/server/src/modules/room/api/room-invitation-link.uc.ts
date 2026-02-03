@@ -107,7 +107,8 @@ export class RoomInvitationLinkUc {
 	}
 
 	private async ensureUserIsInRoom(roomInvitationLink: RoomInvitationLink, userId: EntityId): Promise<RoleName> {
-		const currentRoleName = await this.getCurrentRole(roomInvitationLink.roomId, userId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomInvitationLink.roomId);
+		const currentRoleName = roomAuthorizable.getRoleOfUser(userId)?.name;
 
 		if (!currentRoleName) {
 			await this.roomMembershipService.addMembersToRoom(
@@ -122,14 +123,6 @@ export class RoomInvitationLinkUc {
 			return roomInvitationLink.startingRole;
 		}
 		return currentRoleName;
-	}
-
-	private async getCurrentRole(roomId: EntityId, userId: EntityId): Promise<RoleName | undefined> {
-		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
-		const member = roomAuthorizable.members.find((member) => member.userId === userId);
-
-		const roleName = member?.roles[0].name;
-		return roleName;
 	}
 
 	private async changeRoleTo(roomId: EntityId, userId: EntityId, roleName: RoleName): Promise<void> {
