@@ -22,6 +22,7 @@ import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
 import { IFindOptions } from '@shared/domain/interface';
 import { Room } from '../domain';
+import { ROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 import { AddByEmailBodyParams } from './dto/request/add-by-email.body.params';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
 import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
@@ -396,7 +397,7 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(ROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async copyRoom(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams

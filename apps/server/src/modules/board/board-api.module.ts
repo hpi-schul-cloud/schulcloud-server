@@ -1,3 +1,4 @@
+import { RegisterTimeoutConfig } from '@core/interceptor/register-timeout-config.decorator';
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { AuthorizationModule } from '@modules/authorization';
@@ -20,11 +21,13 @@ import {
 } from './controller';
 import { CopyRoomBoardsStep } from './saga';
 import { BoardNodePermissionService } from './service';
+import { BOARD_TIMEOUT_CONFIG_TOKEN, BoardTimeoutConfig } from './timeout.config';
 import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
 
 @Module({
 	imports: [
 		ConfigurationModule.register(BOARD_CONFIG_TOKEN, BoardConfig),
+		ConfigurationModule.register(BOARD_TIMEOUT_CONFIG_TOKEN, BoardTimeoutConfig),
 		CopyHelperModule,
 		CourseModule,
 		BoardModule,
@@ -54,4 +57,5 @@ import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc, SubmissionIte
 		CopyRoomBoardsStep,
 	],
 })
+@RegisterTimeoutConfig(BOARD_TIMEOUT_CONFIG_TOKEN)
 export class BoardApiModule {}

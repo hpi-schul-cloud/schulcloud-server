@@ -1,19 +1,19 @@
 import { createMock } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import {
+	LEARNROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY,
+	LEARNROOM_TIMEOUT_CONFIG_TOKEN,
+	LearnroomTimeoutConfig,
+} from '@modules/learnroom/timeout.config';
 import { lessonFactory } from '@modules/lesson/testing';
+import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-// config must be set outside before the server module is importat, otherwise the configuration is already set
-const configBefore = Configuration.toObject({ plainSecrets: true });
-Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
-// eslint-disable-next-line import/first
-import { ServerTestModule } from '@modules/server';
 import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../../learnroom.config';
 
 // This needs to be in a separate test file because of the above configuration.
@@ -23,6 +23,7 @@ describe('Course Rooms copy (API)', () => {
 	let em: EntityManager;
 	let apiClient: TestApiClient;
 	let config: LearnroomConfig;
+	let timeoutConfig: LearnroomTimeoutConfig;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -39,12 +40,13 @@ describe('Course Rooms copy (API)', () => {
 		apiClient = new TestApiClient(app, '/course-rooms');
 		config = app.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
 		config.featureCopyServiceEnabled = true;
+		timeoutConfig = app.get(LEARNROOM_TIMEOUT_CONFIG_TOKEN);
+		timeoutConfig[LEARNROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY] = 1;
 	});
 
 	afterAll(async () => {
 		await cleanupCollections(em);
 		await app.close();
-		Configuration.reset(configBefore);
 	});
 
 	describe('when copying course', () => {

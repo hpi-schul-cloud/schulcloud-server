@@ -15,6 +15,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from '../mapper';
+import { SHARING_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 import {
 	ShareTokenBodyParams,
 	ShareTokenImportBodyParams,
@@ -82,7 +83,7 @@ export class ShareTokenController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiResponse({ status: 501, type: NotImplementedException })
 	@Post(':token/import')
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(SHARING_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async importShareToken(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: ShareTokenUrlParams,
