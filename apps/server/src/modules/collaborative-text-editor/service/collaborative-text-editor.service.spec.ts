@@ -1,7 +1,6 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EtherpadClientAdapter } from '@infra/etherpad-client';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CollaborativeTextEditorParentType } from '../api/dto/get-collaborative-text-editor-for-parent.params';
 import { COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN } from '../collaborative-text-editor.config';
@@ -17,10 +16,6 @@ describe('CollaborativeTextEditorService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				CollaborativeTextEditorService,
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
-				},
 				{
 					provide: EtherpadClientAdapter,
 					useValue: createMock<EtherpadClientAdapter>(),

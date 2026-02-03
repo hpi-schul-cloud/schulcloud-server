@@ -30,7 +30,7 @@ describe(AuthenticationService.name, () => {
 	let jwtWhitelistAdapter: DeepMocked<JwtWhitelistAdapter>;
 	let accountService: DeepMocked<AccountService>;
 	let jwtService: DeepMocked<JwtService>;
-	let configService: AuthenticationConfig;
+	let config: AuthenticationConfig;
 
 	const mockAccount: Account = new Account({
 		id: 'mockAccountId',
@@ -59,7 +59,7 @@ describe(AuthenticationService.name, () => {
 				},
 				{
 					provide: AUTHENTICATION_CONFIG_TOKEN,
-					useValue: new AuthenticationConfig(),
+					useValue: AuthenticationConfig,
 				},
 				{
 					provide: Logger,
@@ -84,7 +84,7 @@ describe(AuthenticationService.name, () => {
 		authenticationService = module.get(AuthenticationService);
 		accountService = module.get(AccountService);
 		jwtService = module.get(JwtService);
-		configService = module.get(AUTHENTICATION_CONFIG_TOKEN);
+		config = module.get(AUTHENTICATION_CONFIG_TOKEN);
 	});
 
 	afterEach(() => {
@@ -155,7 +155,7 @@ describe(AuthenticationService.name, () => {
 					targetUserAccount.systemId
 				);
 				const expiresIn = 150;
-				configService.jwtLifetimeSupportSeconds = expiresIn;
+				config.jwtLifetimeSupportSeconds = expiresIn;
 
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(targetUserAccount);
 				jwtService.sign.mockReturnValueOnce('jwt');
@@ -261,7 +261,7 @@ describe(AuthenticationService.name, () => {
 	describe('checkBrutForce', () => {
 		describe('when user tries multiple logins', () => {
 			const setup = (elapsedSeconds: number) => {
-				configService.loginBlockTime = 15;
+				config.loginBlockTime = 15;
 
 				const lasttriedFailedLogin = new Date();
 				lasttriedFailedLogin.setSeconds(lasttriedFailedLogin.getSeconds() - elapsedSeconds);
