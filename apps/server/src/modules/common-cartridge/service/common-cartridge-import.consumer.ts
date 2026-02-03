@@ -21,6 +21,8 @@ import {
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
+import axios from 'axios';
+import util from 'util';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;
@@ -56,6 +58,50 @@ export class CommonCartridgeImportConsumer {
 		queue: CommonCartridgeEvents.IMPORT_COURSE,
 	})
 	public async importFile(@RabbitPayload() payload: ImportCourseParams): Promise<void> {
+		const interceptorReq = axios.interceptors.request.use(
+			(req) => {
+				this.logger.info(
+					new CommonCartridgeMessageLoggable('Starting Request', {
+						fileRecordId: payload.fileRecordId,
+						req: util.inspect(req),
+					})
+				);
+				return req;
+			},
+			(err) => {
+				this.logger.info(
+					new CommonCartridgeMessageLoggable('Request error', {
+						fileRecordId: payload.fileRecordId,
+						req: util.inspect(err),
+					})
+				);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				return err;
+			}
+		);
+
+		const interceptorRes = axios.interceptors.response.use(
+			(res) => {
+				this.logger.info(
+					new CommonCartridgeMessageLoggable('Response', {
+						fileRecordId: payload.fileRecordId,
+						req: util.inspect(res),
+					})
+				);
+				return res;
+			},
+			(err) => {
+				this.logger.info(
+					new CommonCartridgeMessageLoggable('Request error', {
+						fileRecordId: payload.fileRecordId,
+						req: util.inspect(err),
+					})
+				);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				return err;
+			}
+		);
+
 		const file = await this.fetchFile(payload);
 
 		if (!file) {
@@ -74,6 +120,9 @@ export class CommonCartridgeImportConsumer {
 				fileRecordId: payload.fileRecordId,
 			})
 		);
+
+		axios.interceptors.request.eject(interceptorReq);
+		axios.interceptors.response.eject(interceptorRes);
 	}
 
 	private async fetchFile(payload: ImportCourseParams): Promise<Buffer | null> {
