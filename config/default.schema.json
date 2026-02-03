@@ -184,44 +184,6 @@
 			"type": "string",
 			"description": "The value is used to disable logging color in terminal and is set in production always to true. It is not connected to the loggers it self."
 		},
-		"COMMON_CARTRIDGE": {
-			"type": "object",
-			"description": "Common cartridge properties, required always to be defined",
-			"properties": {
-				"INCOMING_REQUEST_TIMEOUT_MS": {
-					"type": "integer",
-					"minimum": 0,
-					"default": 600000,
-					"description": "Timeout for incoming requests to the common cartridge service in milliseconds."
-				}
-			},
-			"default": {}
-		},
-		"FWU_CONTENT": {
-			"type": "object",
-			"description": "Properties of the S3 storage containing FWU content",
-			"properties": {
-				"INCOMING_REQUEST_TIMEOUT_MS": {
-					"type": "integer",
-					"minimum": 0,
-					"default": 600000,
-					"description": "Timeout for incoming requests to the fwu-learning-contents in milliseconds."
-				}
-			}
-		},
-		"H5P_EDITOR": {
-			"type": "object",
-			"description": "Properties of the H5P server microservice and library management job",
-			"default": {},
-			"properties": {
-				"INCOMING_REQUEST_TIMEOUT": {
-					"type": "integer",
-					"minimum": 0,
-					"default": 600000,
-					"description": "Timeout for incoming requests (including file uploads) to the h5p editor in milliseconds."
-				}
-			}
-		},
 		"FEATURE_FWU_CONTENT_ENABLED": {
 			"type": "boolean",
 			"default": false,

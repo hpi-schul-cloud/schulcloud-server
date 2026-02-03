@@ -1,5 +1,4 @@
 import { CoreModule } from '@core/core.module';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import {
 	AUTHORIZATION_CLIENT_CONFIG_TOKEN,
@@ -9,15 +8,10 @@ import {
 import { ConfigurationModule } from '@infra/configuration';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from './common-cartridge.config';
 import { CommonCartridgeModule } from './common-cartridge.module';
 import { CommonCartridgeController } from './controller/common-cartridge.controller';
 
-const config = {
-	INCOMING_REQUEST_TIMEOUT: Configuration.get('COMMON_CARTRIDGE__INCOMING_REQUEST_TIMEOUT_MS') as number,
-};
 @Module({
 	imports: [
 		CoreModule,
@@ -30,7 +24,6 @@ const config = {
 				configConstructor: JwtAuthGuardConfig,
 			},
 		]),
-		ConfigModule.forRoot(createConfigModuleOptions(() => config)),
 		ConfigurationModule.register(COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig),
 		CommonCartridgeModule,
 	],
