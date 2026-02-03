@@ -11,7 +11,6 @@ import { CopyApiResponse } from '@modules/copy-helper';
 import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '@modules/learnroom/learnroom.config';
 import { lessonFactory } from '@modules/lesson/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { Task } from '@modules/task/repo';
@@ -23,6 +22,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardNodeEntity } from '../../../board/repo';
 import { LessonEntity } from '../../../lesson/repo';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../../learnroom.config';
 import { LegacyBoard } from '../../repo';
 import { boardFactory } from '../../testing';
 import { SingleColumnBoardResponse } from '../dto';
