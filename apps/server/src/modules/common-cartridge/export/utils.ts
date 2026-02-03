@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Builder } from 'xml2js';
 
 export type OmitVersion<T> = Omit<T, 'version'>;

@@ -2,13 +2,14 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { AjaxErrorResponse, H5PAjaxEndpoint, H5pError } from '@lumieducation/h5p-server';
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
-import { H5PEditorTestModule } from '../../h5p-editor-test.module';
+import { H5PEditorTestModule } from '../../h5p-editor.app.module';
+import { cleanupCollections } from '@testing/cleanup-collections';
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
@@ -38,8 +39,9 @@ describe('H5PEditor Controller (api)', () => {
 		testApiClient = new TestApiClient(app, 'h5p-editor');
 	});
 
-	afterEach(() => {
+	afterEach(async () => {
 		jest.resetAllMocks();
+		await cleanupCollections(em);
 	});
 
 	afterAll(async () => {
