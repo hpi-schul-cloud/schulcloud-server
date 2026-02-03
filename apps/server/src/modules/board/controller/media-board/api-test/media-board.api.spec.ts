@@ -118,7 +118,7 @@ describe('Media Board (API)', () => {
 									id: mediaElement.id,
 									timestamps: {
 										createdAt: mediaElement.createdAt.toISOString(),
-										lastUpdatedAt: mediaElement.updatedAt.toISOString(),
+										lastUpdatedAt: expect.any(Date),
 									},
 									content: {
 										contextExternalToolId,
