@@ -10,6 +10,7 @@ import { H5PAjaxEndpoint, H5PEditor, IPlayerModel } from '@lumieducation/h5p-ser
 import { UserService } from '@modules/user';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { Request } from 'express';
 import { Readable } from 'stream';
 import { H5P_EDITOR_CONFIG_TOKEN } from '../h5p-editor.config';
@@ -432,6 +433,7 @@ describe('H5P Files', () => {
 	describe('getLibraryFile is called', () => {
 		describe('WHEN service executes successfully', () => {
 			const setup = () => {
+				const user = currentUserFactory.build();
 				const fileResponseMock = createMock<Awaited<ReturnType<LibraryStorage['getLibraryFile']>>>();
 
 				libraryStorage.getLibraryFile.mockResolvedValueOnce(fileResponseMock);
@@ -439,21 +441,21 @@ describe('H5P Files', () => {
 				const ubername = 'H5P.Test-1.0';
 				const filename = 'test/file.txt';
 
-				return { ubername, filename, fileResponseMock };
+				return { ubername, filename, fileResponseMock, user };
 			};
 
 			it('should call service with correct params', async () => {
-				const { ubername, filename } = setup();
+				const { ubername, filename, user } = setup();
 
-				await uc.getLibraryFile(ubername, filename);
+				await uc.getLibraryFile(ubername, filename, user);
 
 				expect(libraryStorage.getLibraryFile).toHaveBeenCalledWith(ubername, filename);
 			});
 
 			it('should return results of service', async () => {
-				const { ubername, filename, fileResponseMock } = setup();
+				const { ubername, filename, fileResponseMock, user } = setup();
 
-				const result = await uc.getLibraryFile(ubername, filename);
+				const result = await uc.getLibraryFile(ubername, filename, user);
 
 				expect(result).toEqual({
 					data: fileResponseMock.stream,
@@ -465,18 +467,19 @@ describe('H5P Files', () => {
 
 		describe('WHEN service throws error', () => {
 			const setup = () => {
+				const user = currentUserFactory.build();
 				libraryStorage.getLibraryFile.mockRejectedValueOnce(new Error('test'));
 
 				const ubername = 'H5P.Test-1.0';
 				const filename = 'test/file.txt';
 
-				return { ubername, filename };
+				return { ubername, filename, user };
 			};
 
 			it('should return NotFoundException', async () => {
-				const { ubername, filename } = setup();
+				const { ubername, filename, user } = setup();
 
-				const getLibraryFilePromise = uc.getLibraryFile(ubername, filename);
+				const getLibraryFilePromise = uc.getLibraryFile(ubername, filename, user);
 
 				await expect(getLibraryFilePromise).rejects.toThrow(NotFoundException);
 			});
@@ -501,7 +504,7 @@ describe('H5P Files', () => {
 			it('should call service with correct params', async () => {
 				const { mockCurrentUser, filename, requestMock } = setup();
 
-				await uc.getTemporaryFile(filename, requestMock, mockCurrentUser.userId);
+				await uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
 
 				expect(ajaxEndpointService.getTemporaryFile).toHaveBeenCalledWith(
 					filename,
@@ -515,7 +518,7 @@ describe('H5P Files', () => {
 			it('should return results of service', async () => {
 				const { mockCurrentUser, fileResponseMock, filename, requestMock } = setup();
 
-				const result = await uc.getTemporaryFile(filename, requestMock, mockCurrentUser.userId);
+				const result = await uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
 
 				expect(result).toEqual({
 					data: fileResponseMock.stream,
@@ -550,7 +553,7 @@ describe('H5P Files', () => {
 				it('should throw NotFoundException', async () => {
 					const { mockCurrentUser, filename, requestMock } = setup(-2);
 
-					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser.userId);
+					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
 
 					await expect(getTemporaryFilePromise).rejects.toThrow(NotFoundException);
 				});
@@ -560,7 +563,7 @@ describe('H5P Files', () => {
 				it('should throw NotFoundException', async () => {
 					const { mockCurrentUser, filename, requestMock } = setup(-1);
 
-					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser.userId);
+					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
 
 					await expect(getTemporaryFilePromise).rejects.toThrow(NotFoundException);
 				});
@@ -573,7 +576,7 @@ describe('H5P Files', () => {
 						{ start: 2, end: 3 },
 					]);
 
-					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser.userId);
+					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
 
 					await expect(getTemporaryFilePromise).rejects.toThrow(NotFoundException);
 				});
@@ -596,7 +599,7 @@ describe('H5P Files', () => {
 			it('should return error of service', async () => {
 				const { mockCurrentUser, filename, requestMock } = setup();
 
-				const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser.userId);
+				const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
 
 				await expect(getTemporaryFilePromise).rejects.toThrow(NotFoundException);
 			});
