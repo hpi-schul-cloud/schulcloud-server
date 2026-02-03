@@ -59,7 +59,6 @@ export interface ServerConfig {
 	LICENSE_SUMMARY_URL: string | undefined;
 	ROOM_MEMBER_INFO_URL: string | null;
 	STUDENT_TEAM_CREATION: string;
-	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: number;
 	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: number;
 }
 
@@ -111,9 +110,6 @@ const config: ServerConfig = {
 	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as Timezone,
 	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: Configuration.get(
 		'IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS'
-	) as number,
-	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
-		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
 	) as number,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
 	HOST: Configuration.get('HOST') as string,
