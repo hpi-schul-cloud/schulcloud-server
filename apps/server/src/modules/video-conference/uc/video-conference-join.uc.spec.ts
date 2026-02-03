@@ -11,6 +11,7 @@ import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
 import { BBBService, VideoConferenceService } from '../service';
 import { videoConferenceDOFactory } from '../testing';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN } from '../video-conference-config';
 import { VideoConferenceJoin, VideoConferenceState } from './dto';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
 import { VideoConferenceJoinUc } from './video-conference-join.uc';
@@ -42,6 +43,13 @@ describe('VideoConferenceJoinUc', () => {
 				{
 					provide: VideoConferenceFeatureService,
 					useValue: createMock<VideoConferenceFeatureService>(),
+				},
+				{
+					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
+					useValue: {
+						host: 'http://localhost',
+						featureVideoConferenceEnabled: true,
+					},
 				},
 			],
 		}).compile();

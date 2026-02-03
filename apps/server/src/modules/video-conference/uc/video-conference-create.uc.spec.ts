@@ -13,6 +13,7 @@ import {
 } from '../bbb';
 import { VideoConferenceDO, VideoConferenceScope } from '../domain';
 import { BBBService, VideoConferenceService } from '../service';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN } from '../video-conference-config';
 import { VideoConferenceCreateUc } from './video-conference-create.uc';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
 
@@ -38,6 +39,12 @@ describe('VideoConferenceCreateUc', () => {
 				{
 					provide: VideoConferenceFeatureService,
 					useValue: createMock<VideoConferenceFeatureService>(),
+				},
+				{
+					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
+					useValue: {
+						scHostUrl: 'http://test-host',
+					},
 				},
 			],
 		}).compile();
