@@ -6,11 +6,8 @@ import { S3ClientModule } from '@infra/s3-client';
 import { AuthorizationModule } from '@modules/authorization';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
-import { config } from './fwu-learning-contents.config';
 import { FWU_S3_CLIENT_CONFIG_TOKEN, FwuS3ClientConfig } from './fwu-s3-client.config';
 import { FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig } from './fwu.config';
 import { FWU_S3_CLIENT_INJECTION_TOKEN } from './fwu.const';
@@ -23,7 +20,6 @@ const imports = [
 	}),
 	AuthorizationModule,
 	ConfigurationModule.register(FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig),
-	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	HttpModule,
 	CoreModule,
 	LoggerModule,
