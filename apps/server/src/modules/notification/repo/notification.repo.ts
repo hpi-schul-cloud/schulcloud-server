@@ -1,17 +1,42 @@
 import { Injectable } from '@nestjs/common';
 import { NotificationEntity } from './entities/notification.entity';
-import { EntityName } from '@mikro-orm/core';
-import { BaseRepo } from '@shared/repo/base.repo';
+import { EntityName, Utils } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { NotificationMapper } from './mapper';
+import { Notification } from '../domain/do/notification.do';
+import { EntityId } from '@shared/domain/types';
 
 @Injectable()
-export class NotificationRepo extends BaseRepo<NotificationEntity> {
+export class NotificationRepo {
+	constructor(private readonly em: EntityManager) {}
 	get entityName(): EntityName<NotificationEntity> {
-		throw new Error('Method not implemented.');
+		return NotificationEntity;
 	}
 
-	public async createNotification(notificationEntity: NotificationEntity): Promise<NotificationEntity> {
-		await this.save(this.create(notificationEntity));
+	public async findById(notificationId: EntityId): Promise<Notification> {
+		const notification: NotificationEntity = await this.em.findOneOrFail(NotificationEntity, {
+			id: notificationId,
+		});
 
-		return notificationEntity;
+		const mapped: Notification = NotificationMapper.mapToDO(notification);
+
+		return mapped;
 	}
+
+	public async create(notification: Notification | Notification[]): Promise<void> {
+		const notifications = Utils.asArray(notification);
+
+		notifications.forEach((domainObject) => {
+			const notificationEntity: NotificationEntity = NotificationMapper.mapToEntity(domainObject);
+			this.em.persist(notificationEntity);
+		});
+
+		await this.em.flush();
+	}
+
+	// public async createNotification(notificationEntity: NotificationEntity): Promise<NotificationEntity> {
+	// 	await this.save(this.create(notificationEntity));
+
+	// 	return notificationEntity;
+	// }
 }

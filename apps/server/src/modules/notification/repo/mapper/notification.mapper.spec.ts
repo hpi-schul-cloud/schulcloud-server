@@ -14,7 +14,7 @@ describe(NotificationMapper.name, () => {
 					userId: 'user-id',
 					createdAt: new Date(),
 					updatedAt: new Date(),
-				} as unknown as NotificationEntity;
+				} as NotificationEntity;
 
 				const expectedDomainObject = new Notification({
 					id: entity.id,
@@ -22,6 +22,35 @@ describe(NotificationMapper.name, () => {
 					key: entity.key as string,
 					arguments: entity.arguments as string[],
 					userId: entity.userId as string,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				});
+
+				return { entity, expectedDomainObject };
+			};
+
+			it('should properly map all notification properties from entity to domain object', () => {
+				const { entity, expectedDomainObject } = setup();
+
+				const domainObject = NotificationMapper.mapToDO(entity);
+
+				expect(domainObject).toEqual(expectedDomainObject);
+			});
+		});
+		describe('When a notification entity is mapped to an empty domain object', () => {
+			const setup = () => {
+				const entity = {
+					id: 'notification-id',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				} as NotificationEntity;
+
+				const expectedDomainObject = new Notification({
+					id: entity.id,
+					type: '',
+					key: '',
+					arguments: [],
+					userId: '',
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				});
@@ -59,7 +88,7 @@ describe(NotificationMapper.name, () => {
 						userId: 'user-id-1',
 						createdAt: new Date(),
 						updatedAt: new Date(),
-					} as unknown as NotificationEntity,
+					} as NotificationEntity,
 					{
 						id: 'notification-id-2',
 						type: 'NOTIFICATION_TYPE_2',
@@ -68,7 +97,7 @@ describe(NotificationMapper.name, () => {
 						userId: 'user-id-2',
 						createdAt: new Date(),
 						updatedAt: new Date(),
-					} as unknown as NotificationEntity,
+					} as NotificationEntity,
 				];
 
 				const expectedDomainObjects = entities.map(
@@ -79,8 +108,8 @@ describe(NotificationMapper.name, () => {
 							key: entity.key as string,
 							arguments: entity.arguments as string[],
 							userId: entity.userId as string,
-							createdAt: new Date(),
-							updatedAt: new Date(),
+							createdAt: entity.createdAt,
+							updatedAt: entity.updatedAt,
 						})
 				);
 

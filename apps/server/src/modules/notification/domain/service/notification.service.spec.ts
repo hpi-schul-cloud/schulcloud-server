@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { NotificationService } from './notification.service';
 import { NotificationRepo } from '../../repo/notification.repo';
 import { NotificationType } from '../../types/notification-type.enum';
@@ -8,7 +7,6 @@ import { NotificationEntity } from '../../repo/entities/notification.entity';
 import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker/.';
 import { Notification } from '../do';
-import { NotificationMapper } from '../../repo/mapper/notification.mapper';
 
 describe(NotificationService.name, () => {
 	let module: TestingModule;
@@ -46,7 +44,7 @@ describe(NotificationService.name, () => {
 	});
 
 	describe('create', () => {
-		describe('when notification type is ERROR', () => {
+		describe('when notification type is created', () => {
 			const setup = () => {
 				const type: NotificationType = NotificationType.ERROR;
 				const key: string = faker.string.alphanumeric();
@@ -64,100 +62,24 @@ describe(NotificationService.name, () => {
 				});
 
 				const mappedEntity: NotificationEntity = {
+					id: notification.id,
 					type: notification.type,
 					key: notification.key,
 					arguments: notification.arguments,
 					userId: notification.userId,
-					_id: new ObjectId(),
-					id: '',
-					createdAt: new Date(),
-					updatedAt: new Date(),
+					createdAt: notification.createdAt,
+					updatedAt: notification.updatedAt,
 				} as NotificationEntity;
-
-				// mock answer of repo
-				notificationRepoMock.createNotification.mockResolvedValue(mappedEntity);
 
 				return { type, key, args, userid, notification, mappedEntity };
 			};
 			it('should create a notification and log a warning', async () => {
-				const { notification, mappedEntity } = setup();
+				const { notification } = setup();
 
-				const mapSpy = jest.spyOn(NotificationMapper, 'mapToEntity').mockReturnValue(mappedEntity);
+				await sut.create(notification);
 
-				notificationRepoMock.createNotification.mockResolvedValue(mappedEntity);
-
-				const result = await sut.create(notification);
-
-				expect(mapSpy).toHaveBeenCalledWith(notification);
-				expect(notificationRepoMock.createNotification).toHaveBeenCalledWith(mappedEntity);
-				expect(loggerMock.warning).toHaveBeenCalledTimes(1);
-				expect(loggerMock.info).not.toHaveBeenCalled();
-				expect(result).toBe(mappedEntity);
-			});
-		});
-
-		describe('when notification type is NOTE', () => {
-			const setup = () => {
-				const notification = new Notification({
-					id: 'testid',
-					type: NotificationType.NOTE,
-					key: 'INFO_KEY',
-					arguments: ['arg1'],
-					userId: 'user-id',
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				});
-
-				const mappedEntity: NotificationEntity = {
-					type: notification.type,
-					key: notification.key,
-					arguments: notification.arguments,
-					userId: notification.userId,
-					_id: new ObjectId(),
-					id: '',
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				} as NotificationEntity;
-				notificationRepoMock.createNotification.mockResolvedValue(mappedEntity);
-				return { notification, mappedEntity };
-			};
-			it('should create a notification and log info', async () => {
-				const { notification, mappedEntity } = setup();
-
-				const mapSpy = jest.spyOn(NotificationMapper, 'mapToEntity').mockReturnValue(mappedEntity);
-				const result = await sut.create(notification);
-
-				expect(mapSpy).toHaveBeenCalledWith(notification);
-				expect(notificationRepoMock.createNotification).toHaveBeenCalledWith(mappedEntity);
+				expect(notificationRepoMock.create).toHaveBeenCalledWith(notification);
 				expect(loggerMock.info).toHaveBeenCalledTimes(1);
-				expect(loggerMock.warning).not.toHaveBeenCalled();
-				expect(result).toBe(mappedEntity);
-			});
-		});
-	});
-
-	describe('findAll', () => {
-		describe('when called without parameters', () => {
-			it('should return the expected message', () => {
-				expect(sut.findAll()).toBe('This action returns all notifications');
-			});
-		});
-	});
-
-	describe('findOne', () => {
-		describe('when called with an id', () => {
-			it('should return the expected message with id', () => {
-				const id = 42;
-				expect(sut.findOne(id)).toBe(`This action returns a #${id} notification`);
-			});
-		});
-	});
-
-	describe('remove', () => {
-		describe('when called with an id', () => {
-			it('should return the expected message with id', () => {
-				const id = 7;
-				expect(sut.remove(id)).toBe(`This action removes a #${id} notification`);
 			});
 		});
 	});

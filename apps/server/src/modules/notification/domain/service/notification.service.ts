@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NotificationRepo } from '../../repo/notification.repo';
 import { Logger } from '@core/logger';
-import { NotificationLoggable } from './notification-loggable';
-import { NotificationType } from '../../types/notification-type.enum';
+import { NotificationLoggable } from '../loggable/notification-loggable';
 import { NotificationEntity } from '../../repo/entities/notification.entity';
 import { NotificationMapper } from '../../repo/mapper/notification.mapper';
 import { Notification } from '../../domain/do/notification.do';
@@ -15,25 +14,9 @@ export class NotificationService {
 
 	public async create(notification: Notification): Promise<NotificationEntity> {
 		const entity = NotificationMapper.mapToEntity(notification);
-		await this.notificationRepo.createNotification(entity);
-		if (entity.type == NotificationType.ERROR) {
-			const argsText = entity.arguments ? entity.arguments.join(', ') : '';
-			this.logger.warning(new NotificationLoggable(`An error occurred during the import process: ${argsText}`));
-		} else {
-			this.logger.info(new NotificationLoggable('The import was successful.'));
-		}
+		await this.notificationRepo.create(notification);
+		// just log that a notification was created.
+		this.logger.info(new NotificationLoggable('A notification entry was created.'));
 		return entity;
-	}
-
-	public findAll(): string {
-		return `This action returns all notifications`;
-	}
-
-	public findOne(id: number): string {
-		return `This action returns a #${id} notification`;
-	}
-
-	public remove(id: number): string {
-		return `This action removes a #${id} notification`;
 	}
 }

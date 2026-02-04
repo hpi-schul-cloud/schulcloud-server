@@ -12,8 +12,9 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { authorizationClientConfig, config } from './common-cartridge.config';
 import { CommonCartridgeModule } from './common-cartridge.module';
 import { CommonCartridgeController } from './controller/common-cartridge.controller';
-import { NotificationController } from '../notification/notification.controller';
+import { NotificationController } from '../notification/api/controller/notification.controller';
 import { NotificationModule } from '../notification/notification.module';
+import { NotificationEntity } from '@modules/notification/repo/entities';
 
 @Module({
 	imports: [
@@ -32,7 +33,7 @@ import { NotificationModule } from '../notification/notification.module';
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [User],
+			entities: [User, NotificationEntity],
 		}),
 	],
 	controllers: [CommonCartridgeController, NotificationController],

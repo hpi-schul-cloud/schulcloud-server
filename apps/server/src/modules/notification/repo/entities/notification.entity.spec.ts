@@ -10,18 +10,7 @@ describe(NotificationEntity.name, () => {
 			});
 		});
 
-		describe('When constructor is called with only required properties', () => {
-			const setup = () => {
-				const props: NotificationEntityProps = {
-					id: 'testsid',
-					type: 'test',
-				};
-
-				return { props };
-			};
-		});
-
-		describe('When constructor is called with all optional properties', () => {
+		describe('When constructor is called with all properties', () => {
 			const setup = () => {
 				const props: NotificationEntityProps = {
 					id: 'some-id',
