@@ -668,11 +668,6 @@
 			"default": true,
 			"description": "Toggle for the column board layout feature."
 		},
-		"IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS": {
-			"type": "integer",
-			"description": "Timeout in milliseconds for saving all import user matches",
-			"default": 60000
-		},
 		"GHOST_BASE_URL": {
 			"type": "string",
 			"format": "uri",
@@ -745,23 +740,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables feature that allows the insecure LDAP URL (with ldap:// protocol)."
-		},
-		"ADMIN_API": {
-			"type": "object",
-			"description": "Configuration of the schulcloud-server's admin API.",
-			"properties": {
-				"ENABLED": {
-					"type": "boolean",
-					"default": true,
-					"description": "Flag to turn on/off the Admin API."
-				},
-				"PORT": {
-					"type": "number",
-					"default": 4030,
-					"description": "Port of the exposed Admin API server."
-				}
-			},
-			"default": {}
 		},
 		"FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION": {
 			"type": "boolean",

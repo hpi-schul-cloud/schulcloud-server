@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
@@ -62,8 +61,6 @@ describe(ExternalToolUc.name, () => {
 
 	beforeAll(async () => {
 		await setupEntities([User]);
-
-		Configuration.set('SC_THEME', 'default');
 
 		module = await Test.createTestingModule({
 			providers: [

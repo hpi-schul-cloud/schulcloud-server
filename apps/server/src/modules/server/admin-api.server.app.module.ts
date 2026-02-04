@@ -32,13 +32,16 @@ import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamApiModule } from '@modules/team/team-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 
+import { ConfigurationModule } from '@infra/configuration';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
+import { ADMIN_API_SERVER_CONFIG_TOKEN, AdminApiServerConfig } from './admin-api-server.config';
 import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
 
 const serverModules = [
+	ConfigurationModule.register(ADMIN_API_SERVER_CONFIG_TOKEN, AdminApiServerConfig),
 	ValidationModule,
 	DeletionApiModule,
 	LegacySchoolAdminApiModule,
