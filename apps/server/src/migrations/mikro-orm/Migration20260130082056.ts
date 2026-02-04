@@ -7,9 +7,10 @@ import { ObjectId } from 'mongodb';
 
 type UserWithSecondarySchools = {
 	_id: ObjectId;
-	secondarySchools: ObjectId[];
-	activeSecondarySchools: ObjectId[];
-	schoolsToRemove: ObjectId[];
+	secondarySchoolIds: ObjectId[];
+	activeSecondarySchoolIds: ObjectId[];
+	schoolsIdsToRemove: ObjectId[];
+	ownSchoolId: ObjectId;
 };
 
 export class Migration20260130082056 extends Migration {
@@ -18,16 +19,22 @@ export class Migration20260130082056 extends Migration {
 			.aggregate<UserWithSecondarySchools>([
 				{
 					$match: {
-						secondarySchools: { $exists: true, $ne: [] },
+						secondarySchools: {
+							$exists: true,
+							$ne: [],
+						},
 					},
 				},
 				{
 					$lookup: {
 						from: 'groups',
-						let: { userId: '$_id' },
+						let: {
+							userId: '$_id',
+						},
 						pipeline: [
 							{
 								$match: {
+									type: 'room',
 									$expr: {
 										$in: ['$$userId', '$users.user'],
 									},
@@ -47,27 +54,43 @@ export class Migration20260130082056 extends Migration {
 				},
 				{
 					$addFields: {
-						activeSecondarySchools: '$roomMemberships.school',
+						secondarySchoolIds: {
+							$map: {
+								input: '$secondarySchools',
+								as: 'school',
+								in: '$$school.school',
+							},
+						},
 					},
 				},
 				{
 					$addFields: {
-						schoolsToRemove: {
-							$setDifference: ['$secondarySchools', '$activeSecondarySchools'],
+						activeSecondarySchoolIds: {
+							$setDifference: ['$roomMemberships.school', ['$schoolId']],
+						},
+					},
+				},
+				{
+					$addFields: {
+						secondarySchoolIdsToRemove: {
+							$setDifference: ['$secondarySchoolIds', '$activeSecondarySchoolIds'],
 						},
 					},
 				},
 				{
 					$match: {
-						'schoolsToRemove.0': { $exists: true },
+						'schoolIdsToRemove.0': {
+							$exists: true,
+						},
 					},
 				},
 				{
 					$project: {
 						_id: 1,
-						secondarySchools: 1,
-						activeSecondarySchools: 1,
-						schoolsToRemove: 1,
+						secondarySchoolIds: 1,
+						activeSecondarySchoolIds: 1,
+						secondarySchoolIdsToRemove: 1,
+						ownSchoolId: '$schoolId',
 					},
 				},
 			])
@@ -77,15 +100,20 @@ export class Migration20260130082056 extends Migration {
 			`Found ${usersToUpdate.length} users with secondary schools despite not being members of any rooms in those schools.`
 		);
 
+		if (usersToUpdate.length === 0) {
+			console.log('No action required. Exiting migration.');
+			return;
+		}
+
 		for (const user of usersToUpdate) {
-			const newSecondarySchools: ObjectId[] = user.activeSecondarySchools || [];
+			const newSecondarySchoolIds: ObjectId[] = user.activeSecondarySchoolIds || [];
 
-			console.log(`Updating user ${user._id.toString()}`);
+			console.log(`Updating user ${user._id.toString()} (school ${user.ownSchoolId.toString()})`);
 
-			if (newSecondarySchools.length > 0) {
+			if (newSecondarySchoolIds.length > 0) {
 				await this.getCollection('users').updateOne(
 					{ _id: user._id },
-					{ $set: { secondarySchools: newSecondarySchools } }
+					{ $set: { secondarySchools: newSecondarySchoolIds } }
 				);
 			} else {
 				await this.getCollection('users').updateOne({ _id: user._id }, { $unset: { secondarySchools: '' } });
