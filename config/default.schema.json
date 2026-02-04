@@ -668,11 +668,6 @@
 			"default": true,
 			"description": "Toggle for the column board layout feature."
 		},
-		"IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS": {
-			"type": "integer",
-			"description": "Timeout in milliseconds for saving all import user matches",
-			"default": 60000
-		},
 		"GHOST_BASE_URL": {
 			"type": "string",
 			"format": "uri",
