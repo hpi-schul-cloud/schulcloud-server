@@ -4,7 +4,6 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -70,11 +69,6 @@ describe('KeycloakConfigurationService Integration', () => {
 				}),
 				LoggerModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
-				ConfigModule.forRoot({
-					isGlobal: true,
-					ignoreEnvFile: true,
-					ignoreEnvVars: true,
-				}),
 			],
 			providers: [],
 		}).compile();

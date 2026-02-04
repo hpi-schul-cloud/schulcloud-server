@@ -11,7 +11,6 @@ import { KeycloakIdentityManagementService } from '@infra/identity-management/ke
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { UserModule } from '@modules/user';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -86,11 +85,6 @@ describe('AccountService Integration', () => {
 				}),
 				UserModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
-				ConfigModule.forRoot({
-					isGlobal: true,
-					ignoreEnvFile: true,
-					ignoreEnvVars: true,
-				}),
 			],
 			providers: [
 				AccountService,

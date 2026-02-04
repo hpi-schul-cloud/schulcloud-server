@@ -1,5 +1,4 @@
 import { TestEncryptionConfig } from '@infra/encryption';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdentityManagementModule } from './identity-management.module';
 import { IdentityManagementService } from './identity-management.service';
@@ -22,7 +21,6 @@ describe('IdentityManagementModule', () => {
 						injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 					},
 				}),
-				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
 			],
 		}).compile();
 		idm = module.get(IdentityManagementService);

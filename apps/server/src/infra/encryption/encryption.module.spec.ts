@@ -1,4 +1,3 @@
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DefaultEncryptionService, EncryptionService } from './encryption.interface';
 import { EncryptionModule } from './encryption.module';
@@ -10,10 +9,7 @@ describe('EncryptionModule', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				EncryptionModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN'),
-				ConfigModule.forRoot({ isGlobal: true }),
-			],
+			imports: [EncryptionModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN')],
 		}).compile();
 		defaultService = module.get(DefaultEncryptionService);
 	});

@@ -8,7 +8,6 @@ import {
 import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v1 } from 'uuid';
 import { ACCOUNT_CONFIG_TOKEN } from '../../account-config';
@@ -48,11 +47,6 @@ describe('AccountIdmService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				ConfigModule.forRoot({
-					isGlobal: true,
-					ignoreEnvFile: true,
-					ignoreEnvVars: true,
-				}),
 				IdentityManagementModule.register({
 					encryptionConfig: { Constructor: TestEncryptionConfig, injectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN' },
 					keycloakAdministrationConfig: {
