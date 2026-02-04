@@ -38,7 +38,7 @@ describe(`deletionRequest public create (api)`, () => {
 		const setup = async () => {
 			const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-			const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin();
+			const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school: studentUser.school });
 
 			await em.persist([studentUser, studentAccount, adminAccount, adminUser]).flush();
 			em.clear();
@@ -104,7 +104,7 @@ describe(`deletionRequest public create (api)`, () => {
 			const { studentUser, loggedInClient, queryString } = await setup();
 
 			let additionalQueryString = '';
-			for (let i = 0; i < 10; i++) {
+			for (let i = 0; i < 11; i++) {
 				additionalQueryString += `&ids[]=${new ObjectId().toString()}`;
 			}
 
@@ -112,7 +112,48 @@ describe(`deletionRequest public create (api)`, () => {
 
 			expect(response.status).toEqual(400);
 			const deletionRequest = await em.findOne('DeletionRequestEntity', { targetRefId: new ObjectId(studentUser.id) });
-			expect(deletionRequest).toBeDefined();
+			expect(deletionRequest).toBeNull();
+		});
+	});
+
+	describe('when user is from a different school', () => {
+		const setup = async () => {
+			const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
+
+			const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin();
+
+			await em.persist([studentUser, studentAccount, adminAccount, adminUser]).flush();
+			em.clear();
+
+			const deletionRequestToCreate: DeletionRequestParams = {
+				ids: [studentUser.id],
+			};
+			const queryString = deletionRequestToCreate.ids.map((id) => `ids[]=${id}`).join('&');
+			const nonexistentId = new ObjectId().toString();
+			const loggedInClient = await testApiClient.login(adminAccount);
+
+			return {
+				nonexistentId,
+				studentUser,
+				queryString,
+				loggedInClient,
+			};
+		};
+
+		it('should return status 400', async () => {
+			const { queryString, loggedInClient } = await setup();
+
+			const response = await loggedInClient.delete(`?${queryString}`);
+			expect(response.status).toEqual(400);
+		});
+
+		it('should not create a deletion request', async () => {
+			const { studentUser, queryString, loggedInClient } = await setup();
+
+			await loggedInClient.delete(`?${queryString}`);
+
+			const deletionRequest = await em.findOne('DeletionRequestEntity', { targetRefId: new ObjectId(studentUser.id) });
+			expect(deletionRequest).toBeNull();
 		});
 	});
 });
