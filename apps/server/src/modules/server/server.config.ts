@@ -7,15 +7,7 @@ import { Timezone } from './types/timezone.enum';
 
 export const SERVER_PUBLIC_API_CONFIG_TOKEN = 'SERVER_PUBLIC_API_CONFIG_TOKEN';
 
-export enum NodeEnvType {
-	TEST = 'test',
-	DEVELOPMENT = 'development',
-	PRODUCTION = 'production',
-	MIGRATION = 'migration',
-}
-
-// Environment keys should be added over configs from modules, directly adding is only allow for legacy stuff
-// Maybe some of them must be outsourced to additional microservice config endpoints.
+// Environment keys should be added over configs from modules, directly adding is only allowed for general server configs
 @Configuration()
 export class ServerPublicApiConfig {
 	@ConfigProperty('ACCESSIBILITY_REPORT_EMAIL')
