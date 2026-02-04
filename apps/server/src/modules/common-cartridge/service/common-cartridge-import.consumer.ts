@@ -1,3 +1,4 @@
+import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
 import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { JwtPayload } from '@infra/auth-guard';
@@ -10,6 +11,7 @@ import { CommonCartridgeEvents, CommonCartridgeExchange, ImportCourseParams } fr
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import { lastValueFrom } from 'rxjs';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
@@ -21,7 +23,6 @@ import {
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
-import axios from 'axios';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;
@@ -46,7 +47,8 @@ export class CommonCartridgeImportConsumer {
 		private readonly cardClient: CardClientAdapter,
 		private readonly fileClient: FilesStorageClientAdapter,
 		private readonly commonCartridgeImportMapper: CommonCartridgeImportMapper,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly errorHandler: DomainErrorHandler
 	) {
 		this.logger.setContext(CommonCartridgeImportConsumer.name);
 	}
@@ -60,14 +62,20 @@ export class CommonCartridgeImportConsumer {
 		const interceptorReq = axios.interceptors.request.use(
 			(req) => req,
 			(err) => {
-				throw err;
+				this.errorHandler.exec(err);
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				return err;
 			}
 		);
 
 		const interceptorRes = axios.interceptors.response.use(
 			(req) => req,
 			(err) => {
-				throw err;
+				this.errorHandler.exec(err);
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				return err;
 			}
 		);
 
