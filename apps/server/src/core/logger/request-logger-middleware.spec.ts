@@ -73,7 +73,7 @@ describe('RequestLoggerMiddleware', () => {
 
 	it('should handle errors during logging', () => {
 		// @ts-expect-error testing private property
-		jest.spyOn(mockResponse, 'on').mockImplementation((event: string, callback: Function) => {
+		jest.spyOn(mockResponse, 'on').mockImplementation((_event: string, callback: Function) => {
 			callback();
 		});
 

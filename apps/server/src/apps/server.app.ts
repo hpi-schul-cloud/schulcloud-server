@@ -2,7 +2,7 @@
 import { Mail, MailService } from '@infra/mail';
 // application imports
 /* eslint-disable no-console */
-import { createRequestLoggerMiddleware, LegacyLogger, Logger, LoggerConfig } from '@core/logger';
+import { createRequestLoggerMiddleware, LegacyLogger, Logger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@core/logger';
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
 import { AccountUc } from '@modules/account/api/account.uc';
@@ -23,7 +23,6 @@ import express from 'express';
 import { join } from 'path';
 
 // register source-map-support for debugging
-import { LOGGER_CONFIG_TOKEN } from '@core/logger/logger.config';
 import { install as sourceMapInstall } from 'source-map-support';
 import { AppStartLoggable, enableOpenApiDocs } from './helpers';
 import { createMetricsServer } from './helpers/metrics.server';

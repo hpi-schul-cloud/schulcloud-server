@@ -1,7 +1,6 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
-import { createRequestLoggerMiddleware, LegacyLogger, Logger, LoggerConfig } from '@core/logger';
-import { LOGGER_CONFIG_TOKEN } from '@core/logger/logger.config';
+import { createRequestLoggerMiddleware, LegacyLogger, Logger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@core/logger';
 import { CommonCartridgeApiModule } from '@modules/common-cartridge/common-cartridge-api.app.module';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';

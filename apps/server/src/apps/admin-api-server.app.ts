@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { createRequestLoggerMiddleware, LegacyLogger, Logger, LoggerConfig } from '@core/logger';
+import { createRequestLoggerMiddleware, LegacyLogger, Logger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@core/logger';
 import { ADMIN_API_SERVER_CONFIG_TOKEN, AdminApiServerConfig } from '@modules/server';
 import { AdminApiServerModule } from '@modules/server/admin-api.server.app.module';
 import { NestFactory } from '@nestjs/core';
@@ -8,7 +8,6 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 import { AppStartLoggable, enableOpenApiDocs } from './helpers';
 import { createMetricsServer } from './helpers/metrics.server';
-import { LOGGER_CONFIG_TOKEN } from '@core/logger/logger.config';
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
