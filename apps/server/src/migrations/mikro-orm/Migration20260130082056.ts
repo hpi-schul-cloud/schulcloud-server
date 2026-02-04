@@ -7,6 +7,10 @@ import { ObjectId } from 'mongodb';
 
 type UserWithSecondarySchools = {
 	_id: ObjectId;
+	secondarySchools: Array<{
+		school: ObjectId;
+		role: ObjectId;
+	}>;
 	secondarySchoolIds: ObjectId[];
 	activeSecondarySchoolIds: ObjectId[];
 	schoolsIdsToRemove: ObjectId[];
@@ -88,6 +92,7 @@ export class Migration20260130082056 extends Migration {
 					$project: {
 						_id: 1,
 						secondarySchoolIds: 1,
+						secondarySchools: 1,
 						activeSecondarySchoolIds: 1,
 						secondarySchoolIdsToRemove: 1,
 						ownSchoolId: '$schoolId',
@@ -106,15 +111,15 @@ export class Migration20260130082056 extends Migration {
 		}
 
 		for (const user of usersToUpdate) {
-			const newSecondarySchoolIds: ObjectId[] = user.activeSecondarySchoolIds || [];
+			const { activeSecondarySchoolIds } = user;
+			const schoolsToKeep = (user.secondarySchools ?? []).filter((school) =>
+				activeSecondarySchoolIds.includes(school.school)
+			);
 
 			console.log(`Updating user ${user._id.toString()} (school ${user.ownSchoolId.toString()})`);
 
-			if (newSecondarySchoolIds.length > 0) {
-				await this.getCollection('users').updateOne(
-					{ _id: user._id },
-					{ $set: { secondarySchools: newSecondarySchoolIds } }
-				);
+			if (schoolsToKeep.length > 0) {
+				await this.getCollection('users').updateOne({ _id: user._id }, { $set: { secondarySchools: schoolsToKeep } });
 			} else {
 				await this.getCollection('users').updateOne({ _id: user._id }, { $unset: { secondarySchools: '' } });
 			}
