@@ -1,21 +1,19 @@
 import { LegacyLogger } from '@core/logger';
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AccountService } from '@modules/account';
-import { UserService } from '@modules/user';
-
-import { DeletionConfig } from '../../deletion.config';
-import { DeletionRequestService } from '../../domain/service';
-import { DeletionRequestBodyParams, DeletionRequestResponse } from '../controller/dto';
-import { DomainName } from '../../domain/types';
 import { ICurrentUser } from '@infra/auth-guard';
-import { Permission } from '@shared/domain/interface';
+import { AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
+import { UserService } from '@modules/user';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
+import { DeletionRequestService } from '../../domain/service';
+import { DeletionRequestResponse } from '../controller/dto';
+import { DomainName } from '../../domain/types';
 
 @Injectable()
 export class DeletionRequestPublicUc {
 	constructor(
-		private readonly configService: ConfigService<DeletionConfig, true>,
 		private readonly deletionRequestService: DeletionRequestService,
 		private readonly logger: LegacyLogger,
 		private readonly accountService: AccountService,
@@ -25,40 +23,56 @@ export class DeletionRequestPublicUc {
 		this.logger.setContext(DeletionRequestPublicUc.name);
 	}
 
-	public async createUserDeletionRequest(
-		currentUser: ICurrentUser,
-		deletionRequest: DeletionRequestBodyParams
-	): Promise<DeletionRequestResponse> {
-		this.logger.debug({ action: 'createDeletionRequestAsUser', deletionRequest, userId: currentUser.userId });
-		const user = await this.authService.getUserWithPermissions(currentUser.userId);
+	public async createUserListDeletionRequest(currentUser: ICurrentUser, ids: EntityId[]): Promise<Error[]> {
+		this.logger.debug({ action: 'createDeletionRequestAsUser', ids, userId: currentUser.userId });
 
+		const user = await this.authService.getUserWithPermissions(currentUser.userId);
 		this.authService.checkAllPermissions(user, [Permission.STUDENT_DELETE, Permission.TEACHER_DELETE]);
 
-		if (deletionRequest.targetRef.domain !== DomainName.USER) {
-			throw new BadRequestException('Can only request deletion for users');
-		}
+		const deleteAfter = new Date();
 
-		const targetUser = await this.userService.findById(deletionRequest.targetRef.id);
+		const results = await Promise.allSettled(
+			ids.map((targetUserId) => this.createSingleUserDeletionRequest(targetUserId, deleteAfter, currentUser.schoolId))
+		);
+
+		const errors: Error[] = results
+			.filter((result): result is PromiseRejectedResult => result.status === 'rejected')
+			.map((result, index) => {
+				const error = result.reason as Error;
+				this.logger.error({
+					action: 'createSingleUserDeletionRequest',
+					userId: currentUser.userId,
+					targetUserId: ids[index],
+					error: error.message,
+				});
+				return error;
+			});
+
+		return errors;
+	}
+
+	private async createSingleUserDeletionRequest(
+		targetRefId: EntityId,
+		deleteAfter: Date,
+		schoolId: EntityId
+	): Promise<DeletionRequestResponse> {
+		const targetUser = await this.userService.findById(targetRefId);
 
 		if (!targetUser) {
 			throw new NotFoundException('Target user not found');
 		}
 
-		if (targetUser.schoolId !== user.school.id) {
+		if (targetUser.schoolId !== schoolId) {
 			throw new ForbiddenException('Cannot request deletion for user from different school');
 		}
 
-		const minutes = deletionRequest.deleteAfterMinutes ?? 0;
-		const deleteAfter = new Date();
-		deleteAfter.setMinutes(deleteAfter.getMinutes() + minutes);
-
 		const result: DeletionRequestResponse = await this.deletionRequestService.createDeletionRequest(
-			deletionRequest.targetRef.id,
-			deletionRequest.targetRef.domain,
+			targetRefId,
+			DomainName.USER,
 			deleteAfter
 		);
 
-		await this.accountService.deactivateAccount(deletionRequest.targetRef.id, new Date());
+		await this.accountService.deactivateAccount(targetRefId, new Date());
 
 		return result;
 	}

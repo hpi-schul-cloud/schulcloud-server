@@ -1,8 +1,8 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { BadRequestException, Controller, Delete, HttpCode, HttpException, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeletionRequestPublicUc } from '../uc';
-import { DeletionRequestBodyParams, DeletionRequestResponse } from './dto';
+import { DeletionRequestParams } from './dto';
 
 @ApiTags('DeletionRequest')
 @JwtAuthentication()
@@ -10,20 +10,39 @@ import { DeletionRequestBodyParams, DeletionRequestResponse } from './dto';
 export class DeletionRequestPublicController {
 	constructor(private readonly deletionRequestPublicUc: DeletionRequestPublicUc) {}
 
-	@Post('')
-	@HttpCode(202)
+	@Delete('')
+	@HttpCode(204)
 	@ApiOperation({
 		summary: '"Queueing" a deletion request',
 	})
 	@ApiResponse({
-		status: 202,
-		type: DeletionRequestResponse,
-		description: 'Returns identifier of the deletion request and when deletion is planned at',
+		status: 201,
+		description: 'Users deletion requests created successfully',
 	})
-	public createDeletionRequestPublic(
+	@ApiResponse({
+		status: 207,
+		description: 'Partial success - Some deletion requests could not be processed',
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Bad Request - All deletion requests failed',
+	})
+	public async createDeletionRequestPublic(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() deletionRequestBody: DeletionRequestBodyParams
-	): Promise<DeletionRequestResponse> {
-		return this.deletionRequestPublicUc.createUserDeletionRequest(currentUser, deletionRequestBody);
+		@Query() params: DeletionRequestParams
+	): Promise<void> {
+		const errors = await this.deletionRequestPublicUc.createUserListDeletionRequest(currentUser, params.ids);
+
+		if (errors.length === params.ids.length) {
+			throw new BadRequestException();
+		} else if (errors.length > 0) {
+			throw new HttpException(
+				{
+					status: 207,
+					message: 'Partial success: Some deletion requests could not be processed.',
+				},
+				207
+			);
+		}
 	}
 }
