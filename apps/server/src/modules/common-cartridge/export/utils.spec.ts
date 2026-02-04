@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { buildXmlString, createIdentifier } from './utils';
 
 describe('CommonCartridgeUtils', () => {
