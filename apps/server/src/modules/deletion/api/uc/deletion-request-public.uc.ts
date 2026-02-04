@@ -57,9 +57,6 @@ export class DeletionRequestPublicUc {
 		schoolId: EntityId
 	): Promise<DeletionRequestResponse> {
 		const targetUser = await this.userService.findById(targetRefId);
-		if (!targetUser) {
-			throw new NotFoundException('Target user not found');
-		}
 
 		if (targetUser.roles.every((role) => role.name !== RoleName.STUDENT && role.name !== RoleName.TEACHER)) {
 			throw new ForbiddenException('Cannot request deletion for user with invalid role');
