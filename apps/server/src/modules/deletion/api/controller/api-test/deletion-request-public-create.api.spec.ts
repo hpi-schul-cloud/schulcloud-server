@@ -100,11 +100,11 @@ describe(`deletionRequest public create (api)`, () => {
 			expect(response.status).toEqual(207);
 		});
 
-		it('should not allow more than 10 deletion requests to be created', async () => {
+		it('should not allow more than 100 deletion requests to be created', async () => {
 			const { studentUser, loggedInClient, queryString } = await setup();
 
 			let additionalQueryString = '';
-			for (let i = 0; i < 11; i++) {
+			for (let i = 0; i <= 100; i++) {
 				additionalQueryString += `&ids[]=${new ObjectId().toString()}`;
 			}
 
