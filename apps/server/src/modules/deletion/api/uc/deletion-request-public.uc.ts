@@ -1,5 +1,5 @@
 import { LegacyLogger } from '@core/logger';
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ICurrentUser } from '@infra/auth-guard';
 import { AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
