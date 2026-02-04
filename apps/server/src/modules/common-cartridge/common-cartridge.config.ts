@@ -1,9 +1,6 @@
-import { LoggerConfig } from '@core/logger';
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer/string-to-boolean.transformer';
 import { IsBoolean } from 'class-validator';
-
-export interface InternalCommonCartridgeConfig extends LoggerConfig {}
 
 export const COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN = 'COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN';
 export const COMMON_CARTRIDGE_CONFIG_TOKEN = 'COMMON_CARTRIDGE_CONFIG_TOKEN';

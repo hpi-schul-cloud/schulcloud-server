@@ -7,9 +7,7 @@ import {
 	XApiKeyAuthGuardConfig,
 } from '@infra/auth-guard';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 
 import { LegacySchoolAdminApiModule } from '@modules/legacy-school/legacy-school-admin.api-module';
@@ -38,11 +36,9 @@ import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/da
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
-import { adminApiServerConfig } from './admin-api-server.config';
 import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
 
 const serverModules = [
-	ConfigModule.forRoot(createConfigModuleOptions(adminApiServerConfig)),
 	ValidationModule,
 	DeletionApiModule,
 	LegacySchoolAdminApiModule,
