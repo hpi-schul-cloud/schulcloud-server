@@ -59,7 +59,6 @@ export interface ServerConfig {
 	LICENSE_SUMMARY_URL: string | undefined;
 	ROOM_MEMBER_INFO_URL: string | null;
 	STUDENT_TEAM_CREATION: string;
-	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: number;
 }
 
 const config: ServerConfig = {
@@ -108,9 +107,6 @@ const config: ServerConfig = {
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,
 	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as Timezone,
-	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: Configuration.get(
-		'IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS'
-	) as number,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
 	HOST: Configuration.get('HOST') as string,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
