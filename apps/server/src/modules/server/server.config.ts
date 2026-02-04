@@ -42,7 +42,6 @@ export interface ServerConfig {
 	I18N__DEFAULT_TIMEZONE: Timezone;
 	FEATURE_AI_TUTOR_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
-	STUDENT_TEAM_CREATION: string;
 }
 
 const config: ServerConfig = {
@@ -71,7 +70,6 @@ const config: ServerConfig = {
 	SC_THEME: Configuration.get('SC_THEME') as SchulcloudTheme,
 	SC_TITLE: Configuration.get('SC_TITLE') as string,
 	TRAINING_URL: Configuration.get('TRAINING_URL') as string,
-	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: Configuration.get('FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION') as boolean,
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,
