@@ -77,8 +77,16 @@ export class H5PEditorController {
 	// - static files for editor	(e.g. GET `/editor/*`)
 
 	@Get('libraries/:ubername/:file(*)')
-	public async getLibraryFile(@Param() params: LibraryFileUrlParams, @Req() req: Request): Promise<StreamableFile> {
-		const { data, contentType, contentLength } = await this.h5pEditorUc.getLibraryFile(params.ubername, params.file);
+	public async getLibraryFile(
+		@Param() params: LibraryFileUrlParams,
+		@Req() req: Request,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<StreamableFile> {
+		const { data, contentType, contentLength } = await this.h5pEditorUc.getLibraryFile(
+			params.ubername,
+			params.file,
+			currentUser
+		);
 
 		req.on('close', () => data.destroy());
 
@@ -126,7 +134,7 @@ export class H5PEditorController {
 		const { data, contentType, contentLength, contentRange } = await this.h5pEditorUc.getTemporaryFile(
 			file,
 			req,
-			currentUser.userId
+			currentUser
 		);
 
 		H5PEditorController.setRangeResponseHeaders(res, contentLength, contentRange);
@@ -142,7 +150,7 @@ export class H5PEditorController {
 		@Query() query: AjaxGetQueryParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<IHubInfo | ILibraryDetailedDataForClient | IAjaxResponse | undefined> {
-		const response = await this.h5pEditorUc.getAjax(query, currentUser.userId);
+		const response = await this.h5pEditorUc.getAjax(query, currentUser);
 
 		return response;
 	}
@@ -174,7 +182,7 @@ export class H5PEditorController {
 		const contentFile = files?.file?.[0];
 		const h5pFile = files?.h5p?.[0];
 
-		const result = await this.h5pEditorUc.postAjax(currentUser.userId, query, body, contentFile, h5pFile);
+		const result = await this.h5pEditorUc.postAjax(currentUser, query, body, contentFile, h5pFile);
 
 		return result;
 	}
@@ -195,7 +203,7 @@ export class H5PEditorController {
 		@Param() params: GetH5PEditorParamsCreate,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<H5PEditorModelResponse> {
-		const editorModel: IEditorModel = await this.h5pEditorUc.getEmptyH5pEditor(currentUser.userId, params.language);
+		const editorModel: IEditorModel = await this.h5pEditorUc.getEmptyH5pEditor(currentUser, params.language);
 
 		return new H5PEditorModelResponse(editorModel);
 	}
