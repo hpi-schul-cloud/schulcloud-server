@@ -1,7 +1,8 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { EtherpadClientConfig as InternalEtherpadClientConfig } from '@infra/etherpad-client';
+import { InternalEtherpadClientConfig } from '@infra/etherpad-client';
 import { IsString, IsUrl } from 'class-validator';
 
+export const ETHERPAD_CLIENT_CONFIG_TOKEN = 'ETHERPAD_CLIENT_CONFIG_TOKEN';
 @Configuration()
 export class EtherpadClientConfig implements InternalEtherpadClientConfig {
 	/**
