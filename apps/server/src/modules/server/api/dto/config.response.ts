@@ -20,7 +20,7 @@ import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
-import type { ServerConfig } from '../..';
+import type { ServerPublicApiConfig } from '../..';
 import { Timezone } from '../../types/timezone.enum';
 
 export class ConfigResponse {
@@ -280,7 +280,7 @@ export class ConfigResponse {
 	ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL: string | null;
 
 	constructor(
-		config: ServerConfig &
+		config: ServerPublicApiConfig &
 			VideoConferencePublicApiConfig &
 			BoardContextPublicApiConfig &
 			AlertPublicApiConfig &
@@ -301,24 +301,23 @@ export class ConfigResponse {
 			FwuPublicApiConfig &
 			RocketChatPublicApiConfig
 	) {
-		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
-		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
-		this.SC_CONTACT_EMAIL_SUBJECT = config.SC_CONTACT_EMAIL_SUBJECT;
-		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN;
+		this.ACCESSIBILITY_REPORT_EMAIL = config.accessibilityReportEmail;
+		this.SC_CONTACT_EMAIL = config.scContactEmail;
+		this.SC_CONTACT_EMAIL_SUBJECT = config.scContactEmailSubject;
+		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.adminTablesDisplayConsentColumn;
 		this.ALERT_STATUS_URL = config.alertStatusUrl;
 		this.CALENDAR_SERVICE_ENABLED = config.calendarServiceEnabled;
-		this.FEATURE_ES_COLLECTIONS_ENABLED = config.FEATURE_ES_COLLECTIONS_ENABLED;
-		this.FEATURE_EXTENSIONS_ENABLED = config.FEATURE_EXTENSIONS_ENABLED;
-		this.FEATURE_TEAMS_ENABLED = config.FEATURE_TEAMS_ENABLED;
-		this.FEATURE_LERNSTORE_ENABLED = config.FEATURE_LERNSTORE_ENABLED;
+		this.FEATURE_ES_COLLECTIONS_ENABLED = config.featureEsCollectionsEnabled;
+		this.FEATURE_EXTENSIONS_ENABLED = config.featureExtensionsEnabled;
+		this.FEATURE_TEAMS_ENABLED = config.featureTeamsEnabled;
+		this.FEATURE_LERNSTORE_ENABLED = config.featureLernstoreEnabled;
 		this.FEATURE_FWU_CONTENT_ENABLED = config.fwuContentEnabled;
-		this.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED =
-			config.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED;
+		this.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED = config.featureAdminToggleStudentLernstoreViewEnabled;
 		this.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE = config.teacherStudentVisibilityIsConfigurable;
 		this.TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT = config.teacherStudentVisibilityIsEnabledByDefault;
-		this.TEACHER_STUDENT_VISIBILITY__IS_VISIBLE = config.TEACHER_STUDENT_VISIBILITY__IS_VISIBLE;
-		this.FEATURE_SCHOOL_POLICY_ENABLED_NEW = config.FEATURE_SCHOOL_POLICY_ENABLED_NEW;
-		this.FEATURE_SCHOOL_TERMS_OF_USE_ENABLED = config.FEATURE_SCHOOL_TERMS_OF_USE_ENABLED;
+		this.TEACHER_STUDENT_VISIBILITY__IS_VISIBLE = config.teacherStudentVisibilityIsVisible;
+		this.FEATURE_SCHOOL_POLICY_ENABLED_NEW = config.featureSchoolPolicyEnabledNew;
+		this.FEATURE_SCHOOL_TERMS_OF_USE_ENABLED = config.featureSchoolTermsOfUseEnabled;
 		this.FEATURE_COLUMN_BOARD_ENABLED = config.featureColumnBoardEnabled;
 		this.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED = config.featureColumnBoardSubmissionsEnabled;
 		this.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED =
@@ -333,30 +332,30 @@ export class ConfigResponse {
 		this.FEATURE_LOGIN_LINK_ENABLED = config.featureLoginLinkEnabled;
 		this.FEATURE_LESSON_SHARE = config.featureLessonShare;
 		this.FEATURE_TASK_SHARE = config.featureTaskShare;
-		this.FEATURE_BOARD_LAYOUT_ENABLED = config.FEATURE_BOARD_LAYOUT_ENABLED;
+		this.FEATURE_BOARD_LAYOUT_ENABLED = config.featureBoardLayoutEnabled;
 		this.FEATURE_USER_MIGRATION_ENABLED = config.featureUserMigrationEnabled;
 		this.FEATURE_COPY_SERVICE_ENABLED = config.featureCopyServiceEnabled;
-		this.FEATURE_CONSENT_NECESSARY = config.FEATURE_CONSENT_NECESSARY;
+		this.FEATURE_CONSENT_NECESSARY = config.featureConsentNecessary;
 		this.FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED = config.courseExportEnabled;
 		this.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED = config.courseImportEnabled;
 		this.FEATURE_USER_LOGIN_MIGRATION_ENABLED = config.featureUserLoginMigrationEnabled;
-		this.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED = config.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED;
-		this.GHOST_BASE_URL = config.GHOST_BASE_URL;
+		this.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED = config.featureAllowInsecureLdapUrlEnabled;
+		this.GHOST_BASE_URL = config.ghostBaseUrl;
 		this.ROCKETCHAT_SERVICE_ENABLED = config.rocketChatServiceEnabled;
 		this.I18N__AVAILABLE_LANGUAGES = config.availableLanguages;
-		this.I18N__DEFAULT_LANGUAGE = config.I18N__DEFAULT_LANGUAGE;
-		this.I18N__FALLBACK_LANGUAGE = config.I18N__FALLBACK_LANGUAGE;
-		this.I18N__DEFAULT_TIMEZONE = config.I18N__DEFAULT_TIMEZONE;
-		this.JWT_SHOW_TIMEOUT_WARNING_SECONDS = config.JWT_SHOW_TIMEOUT_WARNING_SECONDS;
-		this.JWT_TIMEOUT_SECONDS = config.JWT_TIMEOUT_SECONDS;
-		this.NOT_AUTHENTICATED_REDIRECT_URL = config.NOT_AUTHENTICATED_REDIRECT_URL;
-		this.DOCUMENT_BASE_DIR = config.DOCUMENT_BASE_DIR;
-		this.SC_THEME = config.SC_THEME;
-		this.SC_TITLE = config.SC_TITLE;
-		this.TRAINING_URL = config.TRAINING_URL;
+		this.I18N__DEFAULT_LANGUAGE = config.i18nDefaultLanguage;
+		this.I18N__FALLBACK_LANGUAGE = config.i18nFallbackLanguage;
+		this.I18N__DEFAULT_TIMEZONE = config.i18nDefaultTimezone;
+		this.JWT_SHOW_TIMEOUT_WARNING_SECONDS = config.jwtShowTimeoutWarningSeconds;
+		this.JWT_TIMEOUT_SECONDS = config.jwtTimeoutSeconds;
+		this.NOT_AUTHENTICATED_REDIRECT_URL = config.notAuthenticatedRedirectUrl;
+		this.DOCUMENT_BASE_DIR = config.documentBaseDir;
+		this.SC_THEME = config.scTheme;
+		this.SC_TITLE = config.scTitle;
+		this.TRAINING_URL = config.trainingUrl;
 		this.MIGRATION_END_GRACE_PERIOD_MS = config.migrationEndGracePeriodMs;
 		this.FEATURE_SHOW_OUTDATED_USERS = config.featureShowOutdatedUsers;
-		this.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION = config.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION;
+		this.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION = config.featureEnableLdapSyncDuringMigration;
 		this.CTL_TOOLS_RELOAD_TIME_MS = config.ctlToolsReloadTimeMs;
 		this.FEATURE_CTL_TOOLS_COPY_ENABLED = config.featureCtlToolsCopyEnabled;
 		this.FEATURE_PREFERRED_CTL_TOOLS_ENABLED = config.featurePreferredCtlToolsEnabled;
@@ -368,7 +367,7 @@ export class ConfigResponse {
 		this.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = config.featureSchulconnexCourseSyncEnabled;
 		this.BOARD_COLLABORATION_URI = config.boardCollaborationUri;
 		this.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = config.featureSchulconnexMediaLicenseEnabled;
-		this.FEATURE_AI_TUTOR_ENABLED = config.FEATURE_AI_TUTOR_ENABLED;
+		this.FEATURE_AI_TUTOR_ENABLED = config.featureAiTutorEnabled;
 		this.FEATURE_ADMINISTRATE_ROOMS_ENABLED = config.featureAdministrateRoomsEnabled;
 		this.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = config.featureBoardReadersCanEditToggle;
 		this.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = config.featureExternalPersonRegistrationEnabled;
@@ -379,7 +378,7 @@ export class ConfigResponse {
 		this.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = config.featureRoomLinkInvitationExternalPersonsEnabled;
 		this.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = config.featureExternalSystemLogoutEnabled;
 		this.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED = config.featureVidisMediaActivationsEnabled;
-		this.LICENSE_SUMMARY_URL = config.LICENSE_SUMMARY_URL;
+		this.LICENSE_SUMMARY_URL = config.licenseSummaryUrl;
 		this.ROOM_MEMBER_INFO_URL = config.roomMemberInfoUrl;
 		this.ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL = config.roomMemberAddExternalPersonRequirementsUrl;
 		this.FEATURE_COLUMN_BOARD_H5P_ENABLED = config.featureColumnBoardH5pEnabled;

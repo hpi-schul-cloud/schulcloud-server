@@ -1,7 +1,11 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
-import type { LanguageType } from '@shared/domain/interface';
-import type { SchulcloudTheme } from '@shared/domain/types';
-import type { Timezone } from './types/timezone.enum';
+import { ConfigProperty, Configuration } from '@infra/configuration';
+import { StringToBoolean } from '@shared/controller/transformer';
+import { LanguageType } from '@shared/domain/interface';
+import { SchulcloudTheme } from '@shared/domain/types';
+import { IsBoolean, IsEmail, IsEnum, IsNumber, IsString, IsUrl } from 'class-validator';
+import { Timezone } from './types/timezone.enum';
+
+export const SERVER_PUBLIC_API_CONFIG_TOKEN = 'SERVER_PUBLIC_API_CONFIG_TOKEN';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -11,74 +15,136 @@ export enum NodeEnvType {
 }
 
 // Environment keys should be added over configs from modules, directly adding is only allow for legacy stuff
-// Maye some of them must be outsourced to additional microservice config endpoints.
-export interface ServerConfig {
-	ACCESSIBILITY_REPORT_EMAIL: string;
-	SC_CONTACT_EMAIL: string;
-	SC_CONTACT_EMAIL_SUBJECT: string;
-	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
-	FEATURE_ES_COLLECTIONS_ENABLED: boolean;
-	FEATURE_EXTENSIONS_ENABLED: boolean;
-	FEATURE_TEAMS_ENABLED: boolean;
-	FEATURE_LERNSTORE_ENABLED: boolean;
-	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: boolean;
-	TEACHER_STUDENT_VISIBILITY__IS_VISIBLE: boolean;
-	FEATURE_SCHOOL_POLICY_ENABLED_NEW: boolean;
-	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: boolean;
-	FEATURE_BOARD_LAYOUT_ENABLED: boolean;
-	FEATURE_CONSENT_NECESSARY: boolean;
-	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: boolean;
-	GHOST_BASE_URL: string;
-	JWT_SHOW_TIMEOUT_WARNING_SECONDS: number;
-	JWT_TIMEOUT_SECONDS: number;
-	NOT_AUTHENTICATED_REDIRECT_URL: string;
-	DOCUMENT_BASE_DIR: string;
-	SC_THEME: SchulcloudTheme;
-	SC_TITLE: string;
-	TRAINING_URL: string;
-	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
-	I18N__DEFAULT_LANGUAGE: LanguageType;
-	I18N__FALLBACK_LANGUAGE: LanguageType;
-	I18N__DEFAULT_TIMEZONE: Timezone;
-	FEATURE_AI_TUTOR_ENABLED: boolean;
-	LICENSE_SUMMARY_URL: string | undefined;
+// Maybe some of them must be outsourced to additional microservice config endpoints.
+@Configuration()
+export class ServerPublicApiConfig {
+	@ConfigProperty('ACCESSIBILITY_REPORT_EMAIL')
+	@IsEmail()
+	public accessibilityReportEmail = 'dbildungscloud@dataport.de';
+
+	@ConfigProperty('SC_CONTACT_EMAIL')
+	@IsEmail()
+	public scContactEmail = 'ticketsystem@dbildungscloud.de';
+
+	@ConfigProperty('SC_CONTACT_EMAIL_SUBJECT')
+	@IsString()
+	public scContactEmailSubject = 'Bildungscloud Anfrage';
+
+	@ConfigProperty('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN')
+	@StringToBoolean()
+	@IsBoolean()
+	public adminTablesDisplayConsentColumn = true;
+
+	@ConfigProperty('FEATURE_ES_COLLECTIONS_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureEsCollectionsEnabled = false;
+
+	@ConfigProperty('FEATURE_EXTENSIONS_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureExtensionsEnabled = true;
+
+	@ConfigProperty('FEATURE_TEAMS_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureTeamsEnabled = true;
+
+	@ConfigProperty('FEATURE_LERNSTORE_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureLernstoreEnabled = true;
+
+	@ConfigProperty('FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureAdminToggleStudentLernstoreViewEnabled = true;
+
+	@ConfigProperty('TEACHER_STUDENT_VISIBILITY__IS_VISIBLE')
+	@StringToBoolean()
+	@IsBoolean()
+	public teacherStudentVisibilityIsVisible = true;
+
+	@ConfigProperty('FEATURE_SCHOOL_POLICY_ENABLED_NEW')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureSchoolPolicyEnabledNew = false;
+
+	@ConfigProperty('FEATURE_SCHOOL_TERMS_OF_USE_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureSchoolTermsOfUseEnabled = false;
+
+	@ConfigProperty('FEATURE_BOARD_LAYOUT_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureBoardLayoutEnabled = true;
+
+	@ConfigProperty('FEATURE_CONSENT_NECESSARY')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureConsentNecessary = true;
+
+	@ConfigProperty('FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureAllowInsecureLdapUrlEnabled = false;
+
+	@ConfigProperty('GHOST_BASE_URL')
+	@IsUrl({ require_tld: false })
+	public ghostBaseUrl = 'https://blog.dbildungscloud.de';
+
+	@ConfigProperty('JWT_SHOW_TIMEOUT_WARNING_SECONDS')
+	@IsNumber()
+	public jwtShowTimeoutWarningSeconds = 3600;
+
+	@ConfigProperty('JWT_TIMEOUT_SECONDS')
+	@IsNumber()
+	public jwtTimeoutSeconds = 7200;
+
+	@ConfigProperty('NOT_AUTHENTICATED_REDIRECT_URL')
+	@IsString()
+	public notAuthenticatedRedirectUrl = '/login';
+
+	@ConfigProperty('DOCUMENT_BASE_DIR')
+	@IsString()
+	public documentBaseDir = 'https://s3.hidrive.strato.com/cloud-instances/';
+
+	@ConfigProperty('SC_THEME')
+	@IsEnum(SchulcloudTheme)
+	public scTheme = SchulcloudTheme.DEFAULT;
+
+	@ConfigProperty('SC_TITLE')
+	@IsString()
+	public scTitle = 'dBildungscloud';
+
+	@ConfigProperty('TRAINING_URL')
+	@IsUrl({ require_tld: false })
+	public trainingUrl = 'https://lernen.dbildungscloud.de';
+
+	@ConfigProperty('FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureEnableLdapSyncDuringMigration = false;
+
+	@ConfigProperty('I18N__DEFAULT_LANGUAGE')
+	@IsEnum(LanguageType)
+	public i18nDefaultLanguage = LanguageType.DE;
+
+	@ConfigProperty('I18N__FALLBACK_LANGUAGE')
+	@IsEnum(LanguageType)
+	public i18nFallbackLanguage = LanguageType.DE;
+
+	@ConfigProperty('I18N__DEFAULT_TIMEZONE')
+	@IsEnum(Timezone)
+	public i18nDefaultTimezone = Timezone.EUROPE_BERLIN;
+
+	@ConfigProperty('FEATURE_AI_TUTOR_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureAiTutorEnabled = false;
+
+	@ConfigProperty('LICENSE_SUMMARY_URL')
+	@IsUrl({ require_tld: false })
+	public licenseSummaryUrl?: string;
 }
-
-const config: ServerConfig = {
-	ACCESSIBILITY_REPORT_EMAIL: Configuration.get('ACCESSIBILITY_REPORT_EMAIL') as string,
-	SC_CONTACT_EMAIL: Configuration.get('SC_CONTACT_EMAIL') as string,
-	SC_CONTACT_EMAIL_SUBJECT: Configuration.get('SC_CONTACT_EMAIL_SUBJECT') as string,
-	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN') as boolean,
-	FEATURE_ES_COLLECTIONS_ENABLED: Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') as boolean,
-	FEATURE_EXTENSIONS_ENABLED: Configuration.get('FEATURE_EXTENSIONS_ENABLED') as boolean,
-	FEATURE_TEAMS_ENABLED: Configuration.get('FEATURE_TEAMS_ENABLED') as boolean,
-	FEATURE_LERNSTORE_ENABLED: Configuration.get('FEATURE_LERNSTORE_ENABLED') as boolean,
-	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: Configuration.get(
-		'FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED'
-	) as boolean,
-	FEATURE_BOARD_LAYOUT_ENABLED: Configuration.get('FEATURE_BOARD_LAYOUT_ENABLED') as boolean,
-	FEATURE_CONSENT_NECESSARY: Configuration.get('FEATURE_CONSENT_NECESSARY') as boolean,
-	TEACHER_STUDENT_VISIBILITY__IS_VISIBLE: Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_VISIBLE') as boolean,
-	FEATURE_SCHOOL_POLICY_ENABLED_NEW: Configuration.get('FEATURE_SCHOOL_POLICY_ENABLED_NEW') as boolean,
-	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: Configuration.get('FEATURE_SCHOOL_TERMS_OF_USE_ENABLED') as boolean,
-	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: Configuration.get('FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED') as boolean,
-	GHOST_BASE_URL: Configuration.get('GHOST_BASE_URL') as string,
-	JWT_SHOW_TIMEOUT_WARNING_SECONDS: Configuration.get('JWT_SHOW_TIMEOUT_WARNING_SECONDS') as number,
-	JWT_TIMEOUT_SECONDS: Configuration.get('JWT_TIMEOUT_SECONDS') as number,
-	NOT_AUTHENTICATED_REDIRECT_URL: Configuration.get('NOT_AUTHENTICATED_REDIRECT_URL') as string,
-	DOCUMENT_BASE_DIR: Configuration.get('DOCUMENT_BASE_DIR') as string,
-	SC_THEME: Configuration.get('SC_THEME') as SchulcloudTheme,
-	SC_TITLE: Configuration.get('SC_TITLE') as string,
-	TRAINING_URL: Configuration.get('TRAINING_URL') as string,
-	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: Configuration.get('FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION') as boolean,
-	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
-	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,
-	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as Timezone,
-	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
-	LICENSE_SUMMARY_URL: Configuration.has('LICENSE_SUMMARY_URL')
-		? (Configuration.get('LICENSE_SUMMARY_URL') as string)
-		: undefined,
-};
-
-export const serverConfig = (): ServerConfig => config;
-export const SERVER_CONFIG_TOKEN = 'SERVER_CONFIG_TOKEN';

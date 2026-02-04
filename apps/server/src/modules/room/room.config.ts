@@ -38,7 +38,6 @@ export class RoomPublicApiConfig {
 	public featureRoomRegisterExternalPersonsEnabled = false;
 
 	@ConfigProperty('ROOM_MEMBER_INFO_URL')
-	@IsOptional()
 	@IsUrl({ require_tld: false })
 	public roomMemberInfoUrl!: string;
 }

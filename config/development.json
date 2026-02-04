@@ -11,7 +11,6 @@
 	"SYNC_LOG_LEVEL": "debug",
 	"REQUEST_LOGGING_ENABLED": true,
 	"FEATURE_MONGOOSE_LOGGING_ENABLED": true,
-	"FEATURE_LERNSTORE_ENABLED": false,
 	"FEATURE_S3_BUCKET_CORS": false,
 	"S3_KEY": "abcdefghijklmnop",
 	"AES_KEY": "thisisnotsecure12",
@@ -32,7 +31,6 @@
 		"API_KEY": "thisisasupersecureapikeythatisabsolutelysave",
 		"BASE_URL": "http://localhost:4030"
 	},
-	"TRAINING_URL": "https://lernen.dbildungscloud.de",
 	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud",
 	"FEATURE_FWU_CONTENT_ENABLED": false
 }
