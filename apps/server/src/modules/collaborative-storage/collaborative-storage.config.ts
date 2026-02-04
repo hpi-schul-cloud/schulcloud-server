@@ -15,20 +15,20 @@ export class CollaborativeStorageConfig implements InternalCollaborativeStorageA
 	@ConfigProperty('NEXTCLOUD_BASE_URL')
 	@IsUrl({ require_tld: false })
 	@ValidateIf((config: CollaborativeStorageConfig) => config.featureNextcloudTeamFilesEnabled)
-	public nextcloudBaseUrl = 'http://nextcloud.localhost:9090';
+	public nextcloudBaseUrl!: string;
 
 	@ConfigProperty('NEXTCLOUD_ADMIN_USERNAME')
 	@IsString()
 	@ValidateIf((config: CollaborativeStorageConfig) => config.featureNextcloudTeamFilesEnabled)
-	public nextcloudAdminUsername = 'admin';
+	public nextcloudAdminUsername!: string;
 
 	@ConfigProperty('NEXTCLOUD_ADMIN_PASSWORD')
 	@IsString()
 	@ValidateIf((config: CollaborativeStorageConfig) => config.featureNextcloudTeamFilesEnabled)
-	public nextcloudAdminPassword = 'admin';
+	public nextcloudAdminPassword!: string;
 
 	@ConfigProperty('NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME')
 	@IsString()
 	@ValidateIf((config: CollaborativeStorageConfig) => config.featureNextcloudTeamFilesEnabled)
-	public oidcInternalName = 'SchulcloudNextcloud';
+	public oidcInternalName!: string;
 }
