@@ -22,8 +22,8 @@ export class FilesStorageClientModule {
 				{
 					provide: FileApi,
 					scope: Scope.REQUEST,
-					useFactory: (configService: InternalFilesStorageClientConfig, request: Request): FileApi => {
-						const { basePath } = configService;
+					useFactory: (internalConfig: InternalFilesStorageClientConfig, request: Request): FileApi => {
+						const { basePath } = internalConfig;
 
 						const config = new Configuration({
 							accessToken: JwtExtractor.extractJwtFromRequestOrFail(request),
@@ -42,10 +42,10 @@ export class FilesStorageClientModule {
 						logger: Logger,
 						errorLogger: ErrorLogger,
 						httpService: HttpService,
-						config: InternalFilesStorageClientConfig,
+						internalConfig: InternalFilesStorageClientConfig,
 						req: Request
 					): FilesStorageClientAdapter =>
-						new FilesStorageClientAdapter(api, logger, errorLogger, httpService, config, req),
+						new FilesStorageClientAdapter(api, logger, errorLogger, httpService, internalConfig, req),
 					inject: [FileApi, Logger, ErrorLogger, HttpService, configInjectionToken, REQUEST],
 				},
 			],

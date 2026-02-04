@@ -26,14 +26,12 @@ import { SchoolExternalToolService } from '@modules/tool/school-external-tool/se
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { UserDo, UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { FeathersRosterService } from './feathers-roster.service';
 
-import { ServerConfig } from '@modules/server';
 import { Permission } from '@shared/domain/interface';
 import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '../roster.config';
 
@@ -50,7 +48,6 @@ describe('FeathersRosterService', () => {
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let roomService: DeepMocked<RoomService>;
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
-	let configService: DeepMocked<ConfigService<ServerConfig, true>>;
 	let config: RosterPublicApiConfig;
 
 	beforeAll(async () => {
@@ -94,10 +91,6 @@ describe('FeathersRosterService', () => {
 					useValue: createMock<RoomMembershipService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
-				},
-				{
 					provide: ROSTER_PUBLIC_API_CONFIG_TOKEN,
 					useValue: new RosterPublicApiConfig(),
 				},
@@ -114,8 +107,7 @@ describe('FeathersRosterService', () => {
 		columnBoardService = module.get(ColumnBoardService);
 		roomService = module.get(RoomService);
 		roomMembershipService = module.get(RoomMembershipService);
-		configService = module.get(ConfigService);
-		config = module.get<RosterPublicApiConfig>(ROSTER_PUBLIC_API_CONFIG_TOKEN);
+		config = module.get(ROSTER_PUBLIC_API_CONFIG_TOKEN);
 
 		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
@@ -267,15 +259,12 @@ describe('FeathersRosterService', () => {
 				courseService.findAllByUserId.mockResolvedValue([courses, courses.length]);
 				// Course A
 				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([contextExternalTool]);
-				configService.get.mockReturnValueOnce(true);
 				columnBoardService.findByExternalReference.mockResolvedValueOnce([]);
 				// Course B
 				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]);
-				configService.get.mockReturnValueOnce(true);
 				columnBoardService.findByExternalReference.mockResolvedValueOnce([]);
 				// Course C
 				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]);
-				configService.get.mockReturnValueOnce(false);
 
 				return {
 					pseudonym,
@@ -369,17 +358,14 @@ describe('FeathersRosterService', () => {
 				courseService.findAllByUserId.mockResolvedValue([courses, courses.length]);
 				// Course A
 				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]);
-				configService.get.mockReturnValueOnce(true);
 				columnBoardService.findByExternalReference.mockResolvedValueOnce([columnBoard]);
 				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
 				contextExternalToolService.findById.mockResolvedValueOnce(otherContextExternalTool);
 				// Course B
 				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]);
-				configService.get.mockReturnValueOnce(true);
 				columnBoardService.findByExternalReference.mockResolvedValueOnce([]);
 				// Course C
 				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]);
-				configService.get.mockReturnValueOnce(false);
 				columnBoardService.findByExternalReference.mockResolvedValueOnce([]);
 
 				config.featureColumnBoardExternalToolsEnabled = true;
@@ -492,8 +478,6 @@ describe('FeathersRosterService', () => {
 				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]); // TODO?
 				columnBoardService.findByExternalReference.mockResolvedValue([]).mockResolvedValue([columnBoard]);
 				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
-
-				configService.get.mockReturnValue(true);
 
 				return {
 					pseudonym,
@@ -708,7 +692,6 @@ describe('FeathersRosterService', () => {
 					externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
 					schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
 					contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([contextExternalTool]);
-					configService.get.mockReturnValueOnce(false);
 
 					userService.findById.mockResolvedValueOnce(student1);
 					pseudonymService.findOrCreatePseudonym.mockResolvedValueOnce(student1Pseudonym);
@@ -970,7 +953,6 @@ describe('FeathersRosterService', () => {
 					externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
 					schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
 					contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]);
-					configService.get.mockReturnValueOnce(true);
 					columnBoardService.findByExternalReference.mockResolvedValueOnce([columnBoard]);
 					contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
 					contextExternalToolService.findById.mockResolvedValueOnce(otherContextExternalTool);
@@ -1191,8 +1173,6 @@ describe('FeathersRosterService', () => {
 						new RoomMembershipAuthorizable(room.id, [], room.schoolId)
 					);
 
-					configService.get.mockReturnValue(true);
-
 					const clientId = 'testClientId';
 
 					return {
@@ -1226,8 +1206,6 @@ describe('FeathersRosterService', () => {
 					const room = roomFactory.build({ schoolId: student.schoolId });
 					roomService.roomExists.mockResolvedValueOnce(true);
 					roomService.getSingleRoom.mockResolvedValue(room);
-
-					configService.get.mockReturnValue(true);
 
 					const clientId = 'testClientId';
 

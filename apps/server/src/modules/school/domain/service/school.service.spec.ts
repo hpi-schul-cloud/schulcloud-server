@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { SCHOOL_CONFIG_TOKEN, SchoolConfig, StudentTeamCreationOption } from '../../school.config';
@@ -31,10 +30,6 @@ describe('SchoolService', () => {
 				{
 					provide: 'SCHOOL_REPO',
 					useValue: createMock<SchoolRepo>(),
-				},
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
 				},
 				{
 					provide: SystemService,

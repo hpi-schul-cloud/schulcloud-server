@@ -19,7 +19,7 @@ describe(LogoutUc.name, () => {
 	let authenticationService: DeepMocked<AuthenticationService>;
 	let logoutService: DeepMocked<LogoutService>;
 	let logger: DeepMocked<Logger>;
-	let configService: AuthenticationConfig;
+	let config: AuthenticationConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -39,7 +39,7 @@ describe(LogoutUc.name, () => {
 				},
 				{
 					provide: AUTHENTICATION_CONFIG_TOKEN,
-					useValue: new AuthenticationConfig(),
+					useValue: AuthenticationConfig,
 				},
 			],
 		}).compile();
@@ -48,7 +48,7 @@ describe(LogoutUc.name, () => {
 		authenticationService = await module.get(AuthenticationService);
 		logoutService = await module.get(LogoutService);
 		logger = await module.get(Logger);
-		configService = await module.get(AUTHENTICATION_CONFIG_TOKEN);
+		config = await module.get(AUTHENTICATION_CONFIG_TOKEN);
 	});
 
 	afterEach(() => {
@@ -140,7 +140,7 @@ describe(LogoutUc.name, () => {
 			const setup = () => {
 				const currentUser = currentUserFactory.build({ isExternalUser: true });
 
-				configService.externalSystemLogoutEnabled = false;
+				config.externalSystemLogoutEnabled = false;
 
 				return {
 					currentUser,
@@ -163,7 +163,7 @@ describe(LogoutUc.name, () => {
 					const system = systemFactory.withOauthConfig().build();
 					const currentUser = currentUserFactory.build({ isExternalUser: true, systemId: system.id });
 
-					configService.externalSystemLogoutEnabled = true;
+					config.externalSystemLogoutEnabled = true;
 
 					return {
 						currentUser,

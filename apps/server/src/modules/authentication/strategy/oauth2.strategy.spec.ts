@@ -25,7 +25,7 @@ describe(Oauth2Strategy.name, () => {
 	let accountService: DeepMocked<AccountService>;
 	let oauthService: DeepMocked<OAuthService>;
 	let oauthSessionTokenService: DeepMocked<OauthSessionTokenService>;
-	let configService: AuthenticationConfig;
+	let config: AuthenticationConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -45,7 +45,7 @@ describe(Oauth2Strategy.name, () => {
 				},
 				{
 					provide: AUTHENTICATION_CONFIG_TOKEN,
-					useValue: new AuthenticationConfig(),
+					useValue: AuthenticationConfig,
 				},
 			],
 		}).compile();
@@ -54,7 +54,7 @@ describe(Oauth2Strategy.name, () => {
 		accountService = module.get(AccountService);
 		oauthService = module.get(OAuthService);
 		oauthSessionTokenService = module.get(OauthSessionTokenService);
-		configService = module.get(AUTHENTICATION_CONFIG_TOKEN);
+		config = module.get(AUTHENTICATION_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -84,7 +84,7 @@ describe(Oauth2Strategy.name, () => {
 				);
 				oauthService.provisionUser.mockResolvedValue(user);
 				accountService.findByUserId.mockResolvedValue(account);
-				configService.externalSystemLogoutEnabled = true;
+				config.externalSystemLogoutEnabled = true;
 
 				return {
 					systemId,
@@ -234,7 +234,7 @@ describe(Oauth2Strategy.name, () => {
 				);
 				oauthService.provisionUser.mockResolvedValue(user);
 				accountService.findByUserId.mockResolvedValue(account);
-				configService.externalSystemLogoutEnabled = false;
+				config.externalSystemLogoutEnabled = false;
 
 				return { systemId };
 			};

@@ -2,7 +2,6 @@ import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AccountService } from '@modules/account';
 import { SystemService } from '@modules/system/domain';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration.config';
@@ -51,10 +50,6 @@ describe('KeycloakConfigurationUc', () => {
 				{
 					provide: SystemService,
 					useValue: createMock<SystemService>(),
-				},
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
 				},
 				{
 					provide: OidcIdentityProviderMapper,

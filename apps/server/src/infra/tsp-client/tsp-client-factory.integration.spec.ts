@@ -6,8 +6,6 @@ import { TspClientModule } from './tsp-client.module';
 
 // NOTE: This test is skipped because it requires a valid client id, secret and token endpoint.
 //       It is meant to be used for manual testing only.
-// This test expects that configService.getOrThrow is only used for the specified keys. This is not a reasonable expectation.
-// In fact getOrThrow is used now at another place and the test is broken.
 describe.skip('TspClientFactory Integration', () => {
 	let module: TestingModule;
 	let sut: TspClientFactory;

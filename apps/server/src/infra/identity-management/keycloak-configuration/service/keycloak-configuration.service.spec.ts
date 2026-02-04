@@ -10,7 +10,6 @@ import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
 import { SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
@@ -114,12 +113,6 @@ describe('KeycloakConfigurationService Unit', () => {
 				{
 					provide: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
 					useValue: KeycloakConfigurationConfig,
-				},
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>({
-						get: (key: string) => `${key}-value`,
-					}),
 				},
 				{
 					provide: OidcIdentityProviderMapper,

@@ -54,7 +54,7 @@ describe(VideoConferenceService.name, () => {
 	let teamRepo: DeepMocked<TeamRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
-	let configService: DeepMocked<VideoConferenceConfig>;
+	let config: VideoConferenceConfig;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -70,7 +70,7 @@ describe(VideoConferenceService.name, () => {
 				},
 				{
 					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
-					useValue: createMock<VideoConferenceConfig>(),
+					useValue: VideoConferenceConfig,
 				},
 				{
 					provide: CourseService,
@@ -122,14 +122,14 @@ describe(VideoConferenceService.name, () => {
 		teamRepo = module.get(TeamRepo);
 		userService = module.get(UserService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
-		configService = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
+		config = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
 
 		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('canGuestJoin', () => {
 		const setup = (isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean) => {
-			configService.scHostUrl = 'https://api.example.com';
+			config.scHostUrl = 'https://api.example.com';
 			return {
 				isGuest,
 				state,
@@ -179,7 +179,7 @@ describe(VideoConferenceService.name, () => {
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				configService.scHostUrl = 'https://api.example.com';
+				config.scHostUrl = 'https://api.example.com';
 				userService.findById.mockResolvedValue(user);
 
 				return {
@@ -215,7 +215,7 @@ describe(VideoConferenceService.name, () => {
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				configService.scHostUrl = 'https://api.example.com';
+				config.scHostUrl = 'https://api.example.com';
 				userService.findById.mockResolvedValueOnce(user);
 
 				return {
@@ -251,7 +251,7 @@ describe(VideoConferenceService.name, () => {
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				configService.scHostUrl = 'https://api.example.com';
+				config.scHostUrl = 'https://api.example.com';
 				userService.findById.mockResolvedValueOnce(user);
 
 				return {
@@ -1115,7 +1115,7 @@ describe(VideoConferenceService.name, () => {
 
 			const scopeId = new ObjectId().toHexString();
 
-			configService.scHostUrl = 'https://api.example.com';
+			config.scHostUrl = 'https://api.example.com';
 
 			return {
 				userId,
@@ -1282,7 +1282,7 @@ describe(VideoConferenceService.name, () => {
 
 			const course = courseEntityFactory.buildWithId();
 			courseService.findById.mockResolvedValue(course);
-			configService.scHostUrl = 'https://api.example.com';
+			config.scHostUrl = 'https://api.example.com';
 
 			return {
 				user,
