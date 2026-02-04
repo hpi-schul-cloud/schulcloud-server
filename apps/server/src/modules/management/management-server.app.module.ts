@@ -5,6 +5,7 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ENTITIES, TEST_ENTITIES } from './management.entity.imports';
 import { ManagementModule } from './management.module';
+import { MongoDriver } from '@mikro-orm/mongodb';
 
 @Module({
 	imports: [
@@ -12,7 +13,7 @@ import { ManagementModule } from './management.module';
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			// TODO repeats server module definitions
-			type: 'mongo',
+			driver: MongoDriver,
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,

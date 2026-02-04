@@ -8,7 +8,7 @@ import { LanguageType, SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { FileStorageType, SCHOOL_REPO, SchoolFeature, SchoolPurpose } from '../domain';
-import { countyFactory, federalStateDoFactory, schoolEntityFactory, schoolFactory } from '../testing';
+import { countyFactory, schoolEntityFactory, schoolFactory } from '../testing';
 import { FederalStateEntityMapper, SchoolEntityMapper, SchoolYearEntityMapper } from './mapper';
 import { SchoolEntity } from './school.entity';
 import { SchoolMikroOrmRepo } from './school.repo';
@@ -59,7 +59,7 @@ describe('SchoolMikroOrmRepo', () => {
 
 		describe('when query is given', () => {
 			const setup = async () => {
-				const federalState = federalStateDoFactory.build();
+				const federalState = federalStateEntityFactory.build();
 				const externalId = faker.string.uuid();
 				const systems = systemEntityFactory.buildList(1);
 				const entity1 = schoolEntityFactory.build({ federalState, externalId, systems });

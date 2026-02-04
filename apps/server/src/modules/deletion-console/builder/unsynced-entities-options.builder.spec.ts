@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UnsyncedEntitiesOptions } from '../interface';
 import { UnsyncedEntitiesOptionsBuilder } from './unsynced-entities-options.builder';
 

@@ -1,21 +1,27 @@
+import { EntityManager } from '@mikro-orm/mongodb';
+import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { SagaRegistryService, SagaStepRegistryService } from '../service';
 import { ModuleName, StepOperationType, StepReport } from '../type';
-import { UserDeletionSaga } from './user-deletion.saga';
-import { UserDeletionSagaExecutionOrder } from './user-deletion.saga';
+import { UserDeletionSaga, UserDeletionSagaExecutionOrder } from './user-deletion.saga';
+
 describe(UserDeletionSaga.name, () => {
 	let saga: UserDeletionSaga;
 	let stepRegistry: SagaStepRegistryService;
 	let sagaRegistry: SagaRegistryService;
+	let em: EntityManager;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
 			providers: [UserDeletionSaga, SagaStepRegistryService, SagaRegistryService],
 		}).compile();
 
 		saga = module.get(UserDeletionSaga);
 		stepRegistry = module.get(SagaStepRegistryService);
 		sagaRegistry = module.get(SagaRegistryService);
+		em = module.get(EntityManager);
 	});
 
 	beforeEach(() => {
@@ -26,7 +32,7 @@ describe(UserDeletionSaga.name, () => {
 		it('should register the saga', () => {
 			const registerSagaSpy = jest.spyOn(sagaRegistry, 'registerSaga');
 
-			new UserDeletionSaga(stepRegistry, sagaRegistry);
+			new UserDeletionSaga(stepRegistry, sagaRegistry, em);
 
 			expect(registerSagaSpy).toHaveBeenCalledWith(saga);
 		});

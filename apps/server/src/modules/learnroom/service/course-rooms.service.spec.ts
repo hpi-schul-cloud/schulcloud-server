@@ -14,8 +14,10 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
-import { boardFactory, columnBoardNodeFactory } from '../testing';
+import { boardFactory } from '../testing';
 import { CourseRoomsService } from './course-rooms.service';
+import { columnBoardEntityFactory } from '@modules/board/testing/entity/column-board-entity.factory';
+import { BoardExternalReferenceType } from '@modules/board';
 
 describe('rooms service', () => {
 	let module: TestingModule;
@@ -85,7 +87,9 @@ describe('rooms service', () => {
 				const lessons = lessonFactory.buildList(3, { course: room });
 				const legacyBoard = boardFactory.buildWithId({ course: room });
 
-				const columnBoardNode = columnBoardNodeFactory.build();
+				const columnBoardNode = columnBoardEntityFactory.build({
+					context: { type: BoardExternalReferenceType.Course, id: room.id },
+				});
 
 				// TODO what is this doing here?
 				legacyBoard.syncBoardElementReferences([...tasks, ...lessons, columnBoardNode]);

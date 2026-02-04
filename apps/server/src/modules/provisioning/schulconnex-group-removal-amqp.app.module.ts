@@ -10,6 +10,7 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { SchulconnexGroupRemovalConsumerModule } from './schulconnex-group-removal-consumer.module';
 import { ENTITIES } from './schulconnex-group-removal.entity.imports';
 import { schulconnexProvisioningConfig } from './schulconnex-provisioning.config';
+import { MongoDriver } from '@mikro-orm/mongodb';
 
 @Module({
 	imports: [
@@ -17,7 +18,7 @@ import { schulconnexProvisioningConfig } from './schulconnex-provisioning.config
 		CoreModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
-			type: 'mongo',
+			driver: MongoDriver,
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,

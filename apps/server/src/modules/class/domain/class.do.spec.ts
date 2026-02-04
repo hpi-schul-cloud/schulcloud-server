@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ClassFactory } from './class.factory';
 
 describe('Class', () => {
