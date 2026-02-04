@@ -53,10 +53,10 @@ describe('BoardContextApiHelperService', () => {
 				},
 				{
 					provide: BOARD_CONTEXT_PUBLIC_API_CONFIG,
-					useValue: createMock<BoardContextPublicApiConfig>({
+					useValue: {
 						FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED: false,
 						FEATURE_VIDEOCONFERENCE_ENABLED: false,
-					}),
+					},
 				},
 			],
 		}).compile();
