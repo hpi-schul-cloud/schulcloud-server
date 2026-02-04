@@ -908,7 +908,7 @@
 		},
 		"FEATURE_LERNSTORE_ENABLED": {
 			"type": "boolean",
-			"default": true,
+			"default": false,
 			"description": "Defines if backend for the Lern-Store Edu-Sharing is enabled."
 		},
 		"ES_DOMAIN": {
