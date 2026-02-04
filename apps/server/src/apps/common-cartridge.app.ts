@@ -1,13 +1,13 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
-import { LegacyLogger, Logger } from '@core/logger';
+import { createRequestLoggerMiddleware, LegacyLogger, Logger, LoggerConfig } from '@core/logger';
+import { LOGGER_CONFIG_TOKEN } from '@core/logger/logger.config';
 import { CommonCartridgeApiModule } from '@modules/common-cartridge/common-cartridge-api.app.module';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 import { AppStartLoggable, enableOpenApiDocs } from './helpers';
-import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import { createMetricsServer } from './helpers/metrics.server';
 
 async function bootstrap(): Promise<void> {
@@ -27,8 +27,8 @@ async function bootstrap(): Promise<void> {
 
 	const rootExpress = express();
 	const logger = await nestApp.resolve(Logger);
-	nestApp.use(createRequestLoggerMiddleware());
-
+	const loggerConfig = await nestApp.resolve<LoggerConfig>(LOGGER_CONFIG_TOKEN);
+	nestApp.use(createRequestLoggerMiddleware(loggerConfig));
 	const basePath = '/api/v3';
 	const port = 3350;
 

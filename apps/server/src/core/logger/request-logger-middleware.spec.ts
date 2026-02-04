@@ -1,15 +1,8 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+/* eslint-disable @typescript-eslint/ban-types */
 import { Logger } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import { LoggerConfig } from './logger.config';
 import { createRequestLoggerMiddleware } from './request-logger-middleware';
-
-jest.mock('@hpi-schul-cloud/commons/lib', () => {
-	return {
-		Configuration: {
-			get: jest.fn(),
-		},
-	};
-});
 
 describe('RequestLoggerMiddleware', () => {
 	let mockRequest: Partial<Request>;
@@ -17,6 +10,7 @@ describe('RequestLoggerMiddleware', () => {
 	let nextFunction: NextFunction;
 	let loggerSpy: jest.SpyInstance;
 	let errorLoggerSpy: jest.SpyInstance;
+	let loggerConfig: LoggerConfig;
 
 	beforeEach(() => {
 		mockRequest = {
@@ -34,6 +28,7 @@ describe('RequestLoggerMiddleware', () => {
 
 		loggerSpy = jest.spyOn(Logger.prototype, 'log');
 		errorLoggerSpy = jest.spyOn(Logger.prototype, 'error');
+		loggerConfig = new LoggerConfig();
 	});
 
 	afterEach(() => {
@@ -41,9 +36,9 @@ describe('RequestLoggerMiddleware', () => {
 	});
 
 	it('should call next() when logging is disabled', () => {
-		jest.spyOn(Configuration, 'get').mockReturnValue(false);
+		loggerConfig.requestLogEnabled = false;
 
-		const middleware = createRequestLoggerMiddleware();
+		const middleware = createRequestLoggerMiddleware(loggerConfig);
 		middleware(mockRequest as Request, mockResponse as Response, nextFunction);
 
 		expect(nextFunction).toHaveBeenCalled();
@@ -51,19 +46,16 @@ describe('RequestLoggerMiddleware', () => {
 	});
 
 	it('should log request details when logging is enabled', () => {
-		jest.spyOn(Configuration, 'get').mockReturnValue(true);
-
 		jest.spyOn(process, 'hrtime').mockReturnValueOnce([0, 0]);
 		jest.spyOn(mockResponse, 'get').mockImplementation().mockReturnValue('100');
 
-		// eslint-disable-next-line @typescript-eslint/ban-types
 		let finishCallback: Function | undefined;
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		mockResponse.on = jest.fn().mockImplementation((event: string, callback: Function) => {
+		// @ts-expect-error testing private property
+		jest.spyOn(mockResponse, 'on').mockImplementation((_event: string, callback: Function) => {
 			finishCallback = callback;
 		});
-
-		const middleware = createRequestLoggerMiddleware();
+		loggerConfig.requestLogEnabled = true;
+		const middleware = createRequestLoggerMiddleware(loggerConfig);
 		middleware(mockRequest as Request, mockResponse as Response, nextFunction);
 
 		expect(nextFunction).toHaveBeenCalled();
@@ -80,18 +72,18 @@ describe('RequestLoggerMiddleware', () => {
 	});
 
 	it('should handle errors during logging', () => {
-		jest.spyOn(Configuration, 'get').mockReturnValue(true);
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		mockResponse.on = jest.fn().mockImplementation((event: string, callback: Function) => {
+		// @ts-expect-error testing private property
+		jest.spyOn(mockResponse, 'on').mockImplementation((event: string, callback: Function) => {
 			callback();
 		});
 
 		// Force an error by making response.get throw
-		mockResponse.get = jest.fn().mockImplementation(() => {
+		jest.spyOn(mockResponse, 'get').mockImplementation(() => {
 			throw new Error('Test error');
 		});
+		loggerConfig.requestLogEnabled = true;
 
-		const middleware = createRequestLoggerMiddleware();
+		const middleware = createRequestLoggerMiddleware(loggerConfig);
 		middleware(mockRequest as Request, mockResponse as Response, nextFunction);
 
 		expect(errorLoggerSpy).toHaveBeenCalledWith('unable to write accesslog', Error('Test error'));
