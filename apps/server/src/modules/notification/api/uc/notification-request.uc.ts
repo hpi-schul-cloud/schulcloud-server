@@ -11,7 +11,7 @@ export class NotificationRequestUc {
 		notificationRequest: Notification
 		// ): Promise<NotificationRequestResponse> {
 	): Promise<string> {
-		const result = await this.notificationService.create(notificationRequest);
+		await this.notificationService.create(notificationRequest);
 
 		return 'result';
 	}
