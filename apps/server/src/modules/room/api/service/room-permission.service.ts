@@ -48,18 +48,6 @@ export class RoomPermissionService {
 		return hasRoomPermissions;
 	}
 
-	public checkFeatureAdministrateRoomsEnabled(): void {
-		if (!this.configService.get('FEATURE_ADMINISTRATE_ROOMS_ENABLED', { infer: true })) {
-			throw new FeatureDisabledLoggableException('FEATURE_ADMINISTRATE_ROOMS_ENABLED');
-		}
-	}
-
-	public checkFeatureRoomCopyEnabled(): void {
-		if (!this.configService.get('FEATURE_ROOM_COPY_ENABLED', { infer: true })) {
-			throw new FeatureDisabledLoggableException('FEATURE_ROOM_COPY_ENABLED');
-		}
-	}
-
 	public async checkRoomIsUnlocked(roomId: EntityId): Promise<void> {
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
@@ -70,6 +58,18 @@ export class RoomPermissionService {
 		if (!hasOwner) {
 			const room = await this.roomService.getSingleRoom(roomId);
 			throw new LockedRoomLoggableException(room.name, room.id);
+		}
+	}
+
+	public checkFeatureAdministrateRoomsEnabled(): void {
+		if (!this.configService.get('FEATURE_ADMINISTRATE_ROOMS_ENABLED', { infer: true })) {
+			throw new FeatureDisabledLoggableException('FEATURE_ADMINISTRATE_ROOMS_ENABLED');
+		}
+	}
+
+	public checkFeatureRoomCopyEnabled(): void {
+		if (!this.configService.get('FEATURE_ROOM_COPY_ENABLED', { infer: true })) {
+			throw new FeatureDisabledLoggableException('FEATURE_ROOM_COPY_ENABLED');
 		}
 	}
 }
