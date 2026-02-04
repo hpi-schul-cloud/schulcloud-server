@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
 
@@ -29,7 +28,6 @@ describe('AccountUc', () => {
 
 	let accountService: DeepMocked<AccountService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let configService: DeepMocked<ConfigService>;
 
 	const defaultPassword = 'DummyPasswd!1';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
@@ -49,10 +47,6 @@ describe('AccountUc', () => {
 					useValue: createMock<AccountService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
-				},
-				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
@@ -62,7 +56,6 @@ describe('AccountUc', () => {
 		accountUc = module.get(AccountUc);
 		accountService = module.get(AccountService);
 		authorizationService = module.get(AuthorizationService);
-		configService = module.get(ConfigService);
 		await setupEntities([AccountEntity, Role, SchoolEntity, User]);
 	});
 
@@ -581,7 +574,6 @@ describe('AccountUc', () => {
 						],
 					});
 
-					configService.get.mockReturnValue(false);
 					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockAdminUser)
 						.mockResolvedValueOnce(mockTeacherUser);
@@ -624,7 +616,6 @@ describe('AccountUc', () => {
 						roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 					});
 
-					configService.get.mockReturnValue(false);
 					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockAdminUser)
 						.mockResolvedValueOnce(mockStudentUser);
@@ -663,7 +654,6 @@ describe('AccountUc', () => {
 						],
 					});
 
-					configService.get.mockReturnValue(false);
 					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockAdminUser)
 						.mockResolvedValueOnce(mockAdminUser);
@@ -720,7 +710,6 @@ describe('AccountUc', () => {
 						roles: [...mockAdminUser.roles],
 					});
 
-					configService.get.mockReturnValue(false);
 					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockDifferentSchoolAdminUser)
 						.mockResolvedValueOnce(mockTeacherUser);
@@ -765,7 +754,6 @@ describe('AccountUc', () => {
 						],
 					});
 
-					configService.get.mockReturnValue(false);
 					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockTeacherUser)
 						.mockResolvedValueOnce(mockOtherTeacherUser);
@@ -802,7 +790,6 @@ describe('AccountUc', () => {
 						roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 					});
 
-					configService.get.mockReturnValue(false);
 					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockTeacherUser)
 						.mockResolvedValueOnce(mockStudentUser);
@@ -850,7 +837,6 @@ describe('AccountUc', () => {
 						],
 					});
 
-					configService.get.mockReturnValue(false);
 					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockTeacherUser)
 						.mockResolvedValueOnce(mockAdminUser);
@@ -888,7 +874,6 @@ describe('AccountUc', () => {
 						roles: [...mockTeacherUser.roles],
 					});
 
-					configService.get.mockReturnValue(false);
 					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockDifferentSchoolTeacherUser)
 						.mockResolvedValueOnce(mockTeacherUser);
@@ -933,7 +918,6 @@ describe('AccountUc', () => {
 						roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 					});
 
-					configService.get.mockReturnValue(true);
 					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockTeacherNoUserPermissionUser)
 						.mockResolvedValueOnce(mockStudentSchoolPermissionUser);
@@ -970,7 +954,6 @@ describe('AccountUc', () => {
 						roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 					});
 
-					configService.get.mockReturnValue(false);
 					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockTeacherNoUserNoSchoolPermissionUser)
 						.mockResolvedValueOnce(mockStudentUser);
@@ -979,7 +962,6 @@ describe('AccountUc', () => {
 				};
 				it('should not be able to access student of the same school if school has no global permission', async () => {
 					const { mockTeacherNoUserNoSchoolPermissionUser, mockStudentUser } = setup();
-					configService.get.mockReturnValue(true);
 					const currentUser = currentUserFactory.build({ userId: mockTeacherNoUserNoSchoolPermissionUser.id });
 					const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(UnauthorizedException);
@@ -1005,7 +987,6 @@ describe('AccountUc', () => {
 						roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 					});
 
-					configService.get.mockReturnValue(false);
 					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockStudentSchoolPermissionUser)
 						.mockResolvedValueOnce(mockOtherStudentSchoolPermissionUser);
@@ -1014,7 +995,6 @@ describe('AccountUc', () => {
 				};
 				it('should not be able to access student of the same school if school has global permission', async () => {
 					const { mockStudentSchoolPermissionUser, mockOtherStudentSchoolPermissionUser } = setup();
-					configService.get.mockReturnValue(true);
 					const currentUser = currentUserFactory.build({ userId: mockStudentSchoolPermissionUser.id });
 					const params = {
 						type: AccountSearchType.USER_ID,
@@ -1060,7 +1040,6 @@ describe('AccountUc', () => {
 						roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 					});
 
-					configService.get.mockReturnValue(false);
 					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockStudentUser)
 						.mockResolvedValueOnce(mockAdminUser);
@@ -1172,7 +1151,6 @@ describe('AccountUc', () => {
 						password: defaultPasswordHash,
 					});
 
-					configService.get.mockReturnValue(false);
 					authorizationService.getUserWithPermissions.mockResolvedValue(mockSuperheroUser);
 					accountService.searchByUsernamePartialMatch.mockResolvedValue([[], 0]);
 

@@ -6,7 +6,7 @@ import { XApiKeyStrategy } from './x-api-key.strategy';
 describe('XApiKeyStrategy', () => {
 	let module: TestingModule;
 	let strategy: XApiKeyStrategy;
-	let configService: XApiKeyAuthGuardConfig;
+	let config: XApiKeyAuthGuardConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -21,8 +21,8 @@ describe('XApiKeyStrategy', () => {
 			],
 		}).compile();
 
-		configService = module.get(X_API_KEY_AUTH_GUARD_CONFIG_TOKEN);
-		strategy = new XApiKeyStrategy(configService);
+		config = module.get(X_API_KEY_AUTH_GUARD_CONFIG_TOKEN);
+		strategy = new XApiKeyStrategy(config);
 	});
 
 	afterAll(async () => {
@@ -65,7 +65,7 @@ describe('XApiKeyStrategy', () => {
 
 	describe('constructor', () => {
 		it('should create strategy', () => {
-			const ApiKeyStrategy = new XApiKeyStrategy(configService);
+			const ApiKeyStrategy = new XApiKeyStrategy(config);
 			expect(ApiKeyStrategy).toBeDefined();
 			expect(ApiKeyStrategy).toBeInstanceOf(XApiKeyStrategy);
 		});
