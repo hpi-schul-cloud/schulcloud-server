@@ -1,7 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { TestEncryptionConfig } from '@infra/encryption';
 import { AccountEntity } from '@modules/account/repo';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
@@ -53,7 +52,6 @@ describe('KeycloakIdentityManagementOauthService Integration', () => {
 				KeycloakAdministrationModule.register(KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN, KeycloakAdministrationConfig),
 				LoggerModule,
 				MongoMemoryDatabaseModule.forRoot({ allowGlobalContext: true, entities: [AccountEntity] }),
-				ConfigModule.forRoot({ isGlobal: true }),
 			],
 		}).compile();
 		kcIdmOauthService = module.get(KeycloakIdentityManagementOauthService);

@@ -1,5 +1,4 @@
 import { TestEncryptionConfig } from '@infra/encryption';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
@@ -22,7 +21,6 @@ describe('KeycloakModule', () => {
 						injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 					},
 				}),
-				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
 			],
 		}).compile();
 	});

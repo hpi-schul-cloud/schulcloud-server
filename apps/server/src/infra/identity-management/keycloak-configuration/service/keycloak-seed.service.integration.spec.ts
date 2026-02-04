@@ -3,7 +3,6 @@ import { faker } from '@faker-js/faker';
 import { TestEncryptionConfig } from '@infra/encryption';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { AccountEntity } from '@modules/account/repo';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
@@ -53,11 +52,6 @@ describe('KeycloakSeedService Integration', () => {
 				}),
 				LoggerModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
-				ConfigModule.forRoot({
-					isGlobal: true,
-					ignoreEnvFile: true,
-					ignoreEnvVars: true,
-				}),
 			],
 			providers: [],
 		}).compile();

@@ -15,12 +15,9 @@ import {
 import { KeycloakConfigurationModule } from '@infra/identity-management/keycloak-configuration/keycloak-configuration.module';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
-import { serverConfig } from '@modules/server';
 import { SystemModule } from '@modules/system';
 import { ExternalToolModule } from '@modules/tool';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { InstanceModule } from '../instance';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';
@@ -39,7 +36,6 @@ import { DatabaseManagementUc } from './uc/database-management.uc';
 const imports = [
 	FileSystemModule,
 	LoggerModule,
-	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	ConfigurationModule.register(MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig),
 	EncryptionModule.register(ManagmentEncryptionConfig, MANAGMENT_ENCRYPTION_CONFIG_TOKEN),
 	FeathersModule,

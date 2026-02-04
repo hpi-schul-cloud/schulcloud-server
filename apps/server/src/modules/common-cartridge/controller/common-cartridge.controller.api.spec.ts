@@ -2,7 +2,6 @@ import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock } from '@golevelup/ts-jest';
 import { INestApplication } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import archiver from 'archiver';
 import type { Server } from 'node:net';
@@ -19,12 +18,7 @@ describe.skip('CommonCartridgeController (API)', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				CommonCartridgeApiModule,
-				ConfigModule.forRoot({
-					isGlobal: true,
-				}),
-			],
+			imports: [CommonCartridgeApiModule],
 		}).compile();
 		app = module.createNestApplication();
 

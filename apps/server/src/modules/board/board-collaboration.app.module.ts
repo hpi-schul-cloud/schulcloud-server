@@ -8,11 +8,8 @@ import {
 } from '@infra/valkey-client';
 import { SESSION_VALKEY_CLIENT } from '@modules/authentication';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { AuthorizationModule } from '../authorization';
-import { serverConfig } from '../server';
 import { BoardWsApiModule } from './board-ws-api.module';
 import { ENTITIES, TEST_ENTITIES } from './board.entity.imports';
 import { BoardModule } from './board.module';
@@ -39,7 +36,6 @@ const imports = [
 @Module({
 	imports: [
 		...imports,
-		ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 		DatabaseModule.register({
 			configInjectionToken: DATABASE_CONFIG_TOKEN,
 			configConstructor: DatabaseConfig,
@@ -51,14 +47,9 @@ const imports = [
 })
 export class BoardCollaborationModule {}
 
-const testConfig = () => {
-	return { ...serverConfig() };
-};
-
 @Module({
 	imports: [
 		...imports,
-		ConfigModule.forRoot(createConfigModuleOptions(testConfig)),
 		MongoMemoryDatabaseModule.forRoot({
 			entities: TEST_ENTITIES,
 		}),

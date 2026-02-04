@@ -1,4 +1,3 @@
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ACCOUNT_CONFIG_TOKEN } from './account-config';
@@ -15,15 +14,7 @@ describe('AccountModule', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				AccountModule,
-				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
-				ConfigModule.forRoot({
-					ignoreEnvFile: true,
-					ignoreEnvVars: true,
-					isGlobal: true,
-				}),
-			],
+			imports: [AccountModule, MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] })],
 		})
 			.overrideProvider(ACCOUNT_ENCRYPTION_CONFIG_TOKEN)
 			.useValue({ aesKey: encryptionKey })
@@ -49,15 +40,7 @@ describe('AccountModule', () => {
 
 		beforeAll(async () => {
 			moduleFeatureEnabled = await Test.createTestingModule({
-				imports: [
-					AccountModule,
-					MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
-					ConfigModule.forRoot({
-						ignoreEnvFile: true,
-						ignoreEnvVars: true,
-						isGlobal: true,
-					}),
-				],
+				imports: [AccountModule, MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] })],
 			})
 				.overrideProvider(ACCOUNT_ENCRYPTION_CONFIG_TOKEN)
 				.useValue({ aesKey: encryptionKey })
@@ -84,15 +67,7 @@ describe('AccountModule', () => {
 
 		beforeAll(async () => {
 			moduleFeatureDisabled = await Test.createTestingModule({
-				imports: [
-					AccountModule,
-					MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
-					ConfigModule.forRoot({
-						ignoreEnvFile: true,
-						ignoreEnvVars: true,
-						isGlobal: true,
-					}),
-				],
+				imports: [AccountModule, MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] })],
 			})
 				.overrideProvider(ACCOUNT_ENCRYPTION_CONFIG_TOKEN)
 				.useValue({ aesKey: encryptionKey })

@@ -1,6 +1,5 @@
 import { TestEncryptionConfig } from '@infra/encryption';
 import { SystemEntity } from '@modules/system/repo';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import {
@@ -30,7 +29,6 @@ describe('KeycloakConfigurationModule', () => {
 					},
 				}),
 				MongoMemoryDatabaseModule.forRoot({ entities: [SystemEntity] }),
-				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
 			],
 		}).compile();
 	});

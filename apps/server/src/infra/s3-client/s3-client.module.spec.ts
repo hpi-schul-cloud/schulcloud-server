@@ -1,7 +1,6 @@
 import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { Inject } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { S3ClientAdapter } from './s3-client.adapter';
 import { S3ClientModule } from './s3-client.module';
@@ -41,7 +40,6 @@ describe('S3ClientModule', () => {
 					configInjectionToken: TEST_S3_CLIENT_TWO_CONFIG_TOKEN,
 					configConstructor: TestS3ClientConfigTwo,
 				}),
-				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
 			],
 			providers: [
 				{
