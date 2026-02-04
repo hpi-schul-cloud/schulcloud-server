@@ -16,8 +16,12 @@ import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-impor
 import { commonCartridgeOrganizationPropsFactory as organizationFactory } from '../testing/common-cartridge-organization-props.factory';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 import { CommonCartridgeImportConsumer } from './common-cartridge-import.consumer';
+import { DomainErrorHandler } from '@core/error';
+import { Logger } from '@core/logger';
+import axios, { InternalAxiosRequestConfig } from 'axios';
 
 jest.mock('../import/common-cartridge-file-parser');
+jest.mock('axios');
 
 describe(CommonCartridgeImportConsumer.name, () => {
 	let module: TestingModule;
@@ -29,6 +33,7 @@ describe(CommonCartridgeImportConsumer.name, () => {
 	let filesStorageClientAdapterMock: DeepMocked<FilesStorageClientAdapter>;
 	let commonCartridgeFileParser: DeepMocked<CommonCartridgeFileParser>;
 	let httpServiceMock: DeepMocked<HttpService>;
+	let domainErrorHandler: DeepMocked<DomainErrorHandler>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -66,6 +71,14 @@ describe(CommonCartridgeImportConsumer.name, () => {
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+				{
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
+				},
 			],
 			imports: [
 				ConfigModule.forRoot({
@@ -88,6 +101,7 @@ describe(CommonCartridgeImportConsumer.name, () => {
 		cardClientAdapterMock = module.get(CardClientAdapter);
 		filesStorageClientAdapterMock = module.get(FilesStorageClientAdapter);
 		httpServiceMock = module.get(HttpService);
+		domainErrorHandler = module.get(DomainErrorHandler);
 
 		commonCartridgeFileParser = createMock<CommonCartridgeFileParser>();
 		(CommonCartridgeFileParser as jest.Mock).mockImplementation(() => commonCartridgeFileParser);
@@ -347,6 +361,117 @@ describe(CommonCartridgeImportConsumer.name, () => {
 				await sut.importFile(payload);
 
 				expect(coursesClientAdapterMock.createCourse).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when axios interceptors are registered', () => {
+			const setup = () => {
+				const setupData = setupBase();
+
+				const useSpyRequest = jest.spyOn(axios.interceptors.request, 'use');
+				const useSpyResponse = jest.spyOn(axios.interceptors.response, 'use');
+				const ejectSpyRequest = jest.spyOn(axios.interceptors.request, 'eject');
+				const ejectSpyResponse = jest.spyOn(axios.interceptors.response, 'eject');
+
+				// [useSpyRequest, useSpyResponse, ejectSpyRequest, ejectSpyResponse].forEach((mock) => mock.mockClear());
+
+				return { ...setupData, useSpyRequest, useSpyResponse, ejectSpyRequest, ejectSpyResponse };
+			};
+
+			it(`should create request and response handlers`, async () => {
+				const { payload, useSpyRequest, useSpyResponse } = setup();
+
+				await sut.importFile(payload);
+
+				expect(useSpyRequest).toHaveBeenCalled();
+				expect(useSpyResponse).toHaveBeenCalled();
+			});
+
+			it(`should eject request and response handlers`, async () => {
+				const { payload, ejectSpyRequest, ejectSpyResponse } = setup();
+
+				await sut.importFile(payload);
+
+				expect(ejectSpyRequest).toHaveBeenCalled();
+				expect(ejectSpyResponse).toHaveBeenCalled();
+			});
+
+			it(`should passthrough request config`, async () => {
+				const { payload, useSpyRequest } = setup();
+
+				await sut.importFile(payload);
+
+				const configInterceptor = useSpyRequest.mock.calls[0][0];
+
+				if (!configInterceptor) {
+					fail(`Can't find config interceptor`);
+				}
+
+				const config = {
+					headers: {
+						'Content-Type': 'test',
+					},
+				} as InternalAxiosRequestConfig;
+
+				const result = configInterceptor(config);
+				expect(result).toStrictEqual(config);
+			});
+
+			it(`should passthrough response`, async () => {
+				const { payload, useSpyResponse } = setup();
+
+				await sut.importFile(payload);
+
+				const responseInterceptor = useSpyResponse.mock.calls[1][0];
+
+				if (!responseInterceptor) {
+					fail(`Can't find response interceptor`);
+				}
+
+				const response = axiosResponseFactory.build();
+
+				const result = responseInterceptor(response);
+				expect(result).toStrictEqual(response);
+			});
+
+			it(`should passthrough request error and call domainErrorHandler`, async () => {
+				const { payload, useSpyRequest } = setup();
+
+				await sut.importFile(payload);
+
+				const errorInterceptor = useSpyRequest.mock.calls[0][1];
+
+				if (!errorInterceptor) {
+					fail(`Can't find error interceptor`);
+				}
+
+				const err = new Error('Test');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const result = errorInterceptor(err);
+				expect(result).toStrictEqual(err);
+
+				expect(domainErrorHandler.exec).toHaveBeenCalledWith(err);
+			});
+
+			it(`should passthrough response error and call domainErrorHandler`, async () => {
+				const { payload, useSpyResponse } = setup();
+
+				await sut.importFile(payload);
+
+				const errorInterceptor = useSpyResponse.mock.calls[1][1];
+
+				if (!errorInterceptor) {
+					fail(`Can't find error interceptor`);
+				}
+
+				const err = new Error('Test');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const result = errorInterceptor(err);
+				expect(result).toStrictEqual(err);
+
+				expect(domainErrorHandler.exec).toHaveBeenCalledWith(err);
 			});
 		});
 	});
