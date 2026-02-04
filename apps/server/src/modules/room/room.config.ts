@@ -26,6 +26,21 @@ export class RoomPublicApiConfig {
 	@IsOptional()
 	@IsUrl({ require_tld: false })
 	public roomMemberAddExternalPersonRequirementsUrl: string | null = null;
+
+	@ConfigProperty('FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED')
+	@IsBoolean()
+	@StringToBoolean()
+	public featureRoomAddExternalPersonsEnabled = false;
+
+	@ConfigProperty('FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED')
+	@IsBoolean()
+	@StringToBoolean()
+	public featureRoomRegisterExternalPersonsEnabled = false;
+
+	@ConfigProperty('ROOM_MEMBER_INFO_URL')
+	@IsOptional()
+	@IsUrl({ require_tld: false })
+	public roomMemberInfoUrl!: string;
 }
 
 export class RoomConfig extends RoomPublicApiConfig {

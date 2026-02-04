@@ -13,9 +13,6 @@ export enum NodeEnvType {
 // Environment keys should be added over configs from modules, directly adding is only allow for legacy stuff
 // Maye some of them must be outsourced to additional microservice config endpoints.
 export interface ServerConfig {
-	NODE_ENV: NodeEnvType;
-	SC_DOMAIN: string;
-	HOST: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
 	SC_CONTACT_EMAIL: string;
 	SC_CONTACT_EMAIL_SUBJECT: string;
@@ -25,17 +22,9 @@ export interface ServerConfig {
 	FEATURE_TEAMS_ENABLED: boolean;
 	FEATURE_LERNSTORE_ENABLED: boolean;
 	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: boolean;
-	TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT: boolean;
 	TEACHER_STUDENT_VISIBILITY__IS_VISIBLE: boolean;
 	FEATURE_SCHOOL_POLICY_ENABLED_NEW: boolean;
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: boolean;
-	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: boolean;
-	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: boolean;
-	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: boolean;
-	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
-	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: boolean;
-	FEATURE_COLUMN_BOARD_H5P_ENABLED: boolean;
-	FEATURE_COLUMN_BOARD_COLLABORA_ENABLED: boolean;
 	FEATURE_BOARD_LAYOUT_ENABLED: boolean;
 	FEATURE_CONSENT_NECESSARY: boolean;
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: boolean;
@@ -48,16 +37,11 @@ export interface ServerConfig {
 	SC_TITLE: string;
 	TRAINING_URL: string;
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
-	FEATURE_TLDRAW_ENABLED: boolean;
 	I18N__DEFAULT_LANGUAGE: LanguageType;
 	I18N__FALLBACK_LANGUAGE: LanguageType;
 	I18N__DEFAULT_TIMEZONE: Timezone;
-	BOARD_COLLABORATION_URI: string;
 	FEATURE_AI_TUTOR_ENABLED: boolean;
-	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: boolean;
-	FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
-	ROOM_MEMBER_INFO_URL: string | null;
 	STUDENT_TEAM_CREATION: string;
 }
 
@@ -73,20 +57,8 @@ const config: ServerConfig = {
 	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: Configuration.get(
 		'FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED'
 	) as boolean,
-	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED') as boolean,
-	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED') as boolean,
-	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: Configuration.get(
-		'FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED'
-	) as boolean,
-	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_SOCKET_ENABLED') as boolean,
-	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED') as boolean,
-	FEATURE_COLUMN_BOARD_H5P_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_H5P_ENABLED') as boolean,
-	FEATURE_COLUMN_BOARD_COLLABORA_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_COLLABORA_ENABLED') as boolean,
 	FEATURE_BOARD_LAYOUT_ENABLED: Configuration.get('FEATURE_BOARD_LAYOUT_ENABLED') as boolean,
 	FEATURE_CONSENT_NECESSARY: Configuration.get('FEATURE_CONSENT_NECESSARY') as boolean,
-	TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT: Configuration.get(
-		'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT'
-	) as boolean,
 	TEACHER_STUDENT_VISIBILITY__IS_VISIBLE: Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_VISIBLE') as boolean,
 	FEATURE_SCHOOL_POLICY_ENABLED_NEW: Configuration.get('FEATURE_SCHOOL_POLICY_ENABLED_NEW') as boolean,
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: Configuration.get('FEATURE_SCHOOL_TERMS_OF_USE_ENABLED') as boolean,
@@ -98,29 +70,16 @@ const config: ServerConfig = {
 	DOCUMENT_BASE_DIR: Configuration.get('DOCUMENT_BASE_DIR') as string,
 	SC_THEME: Configuration.get('SC_THEME') as SchulcloudTheme,
 	SC_TITLE: Configuration.get('SC_TITLE') as string,
-	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	TRAINING_URL: Configuration.get('TRAINING_URL') as string,
-	NODE_ENV: Configuration.get('NODE_ENV') as NodeEnvType,
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
-	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: Configuration.get('FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION') as boolean,
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,
 	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as Timezone,
-	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
-	HOST: Configuration.get('HOST') as string,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
-	FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED: Configuration.get('FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED') as boolean,
-	FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED: Configuration.get(
-		'FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED'
-	) as boolean,
 	LICENSE_SUMMARY_URL: Configuration.has('LICENSE_SUMMARY_URL')
 		? (Configuration.get('LICENSE_SUMMARY_URL') as string)
 		: undefined,
-	ROOM_MEMBER_INFO_URL:
-		Configuration.get('ROOM_MEMBER_INFO_URL') === null
-			? (Configuration.get('ROOM_MEMBER_INFO_URL') as null)
-			: (Configuration.get('ROOM_MEMBER_INFO_URL') as string),
 };
 
 export const serverConfig = (): ServerConfig => config;

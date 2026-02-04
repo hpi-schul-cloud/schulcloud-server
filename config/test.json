@@ -29,8 +29,6 @@
 		"EXPIRES_SECONDS": 2592000000,
 		"SECRET": "testSecret"
 	},
-	"FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED": true,
-	"FEATURE_VIDEOCONFERENCE_ENABLED": true,
 	"VIDEOCONFERENCE_HOST": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
 	"VIDEOCONFERENCE_SALT": "ThisIsNOTaRealSaltThisIsNOTaRealSaltThisIsNOTaRealSalt1234567890",
 	"ADMIN_API": {

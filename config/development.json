@@ -24,20 +24,15 @@
 		"EXPIRES_SECONDS": 2592000000
 	},
 	"HYDRA_URI": "http://localhost:9001",
-	"FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED": true,
-	"FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED": true,
 	"ETHERPAD": {
 		"PAD_URI": "http://localhost:9001/p",
 		"URI": "http://localhost:9001/api/1.2.14"
 	},
-	"BOARD_COLLABORATION_URI": "ws://localhost:4450",
 	"ADMIN_API_CLIENT": {
 		"API_KEY": "thisisasupersecureapikeythatisabsolutelysave",
 		"BASE_URL": "http://localhost:4030"
 	},
 	"TRAINING_URL": "https://lernen.dbildungscloud.de",
-	"FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED": true,
-	"FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED": true,
 	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud",
 	"FEATURE_FWU_CONTENT_ENABLED": false
 }

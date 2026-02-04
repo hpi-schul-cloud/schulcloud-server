@@ -320,15 +320,15 @@ export class ConfigResponse {
 		this.FEATURE_SCHOOL_POLICY_ENABLED_NEW = config.FEATURE_SCHOOL_POLICY_ENABLED_NEW;
 		this.FEATURE_SCHOOL_TERMS_OF_USE_ENABLED = config.FEATURE_SCHOOL_TERMS_OF_USE_ENABLED;
 		this.FEATURE_COLUMN_BOARD_ENABLED = config.featureColumnBoardEnabled;
-		this.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED = config.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED;
+		this.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED = config.featureColumnBoardSubmissionsEnabled;
 		this.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED =
-			config.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED;
-		this.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED = config.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED;
+			config.featureColumnBoardCollaborativeTextEditorEnabled;
+		this.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED = config.featureColumnBoardLinkElementEnabled;
 		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED = config.featureColumnBoardExternalToolsEnabled;
 		this.FEATURE_COLUMN_BOARD_SHARE = config.featureColumnBoardShare;
-		this.FEATURE_COLUMN_BOARD_SOCKET_ENABLED = config.FEATURE_COLUMN_BOARD_SOCKET_ENABLED;
-		this.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = config.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED;
-		this.FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED = config.FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED;
+		this.FEATURE_COLUMN_BOARD_SOCKET_ENABLED = config.featureColumnBoardSocketEnabled;
+		this.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = config.featureColumnBoardVideoconferenceEnabled;
+		this.FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED = config.featureColumnBoardFileFolderEnabled;
 		this.FEATURE_COURSE_SHARE = config.featureCourseShare;
 		this.FEATURE_LOGIN_LINK_ENABLED = config.featureLoginLinkEnabled;
 		this.FEATURE_LESSON_SHARE = config.featureLessonShare;
@@ -362,11 +362,11 @@ export class ConfigResponse {
 		this.FEATURE_PREFERRED_CTL_TOOLS_ENABLED = config.featurePreferredCtlToolsEnabled;
 		this.FEATURE_SHOW_MIGRATION_WIZARD = config.featureShowMigrationWizard;
 		this.MIGRATION_WIZARD_DOCUMENTATION_LINK = config.migrationWizardDocumentationLink;
-		this.FEATURE_TLDRAW_ENABLED = config.FEATURE_TLDRAW_ENABLED;
+		this.FEATURE_TLDRAW_ENABLED = config.featureTldrawEnabled;
 		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.featureVideoConferenceEnabled;
 		this.FEATURE_MEDIA_SHELF_ENABLED = config.featureMediaShelfEnabled;
 		this.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = config.featureSchulconnexCourseSyncEnabled;
-		this.BOARD_COLLABORATION_URI = config.BOARD_COLLABORATION_URI;
+		this.BOARD_COLLABORATION_URI = config.boardCollaborationUri;
 		this.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = config.featureSchulconnexMediaLicenseEnabled;
 		this.FEATURE_AI_TUTOR_ENABLED = config.FEATURE_AI_TUTOR_ENABLED;
 		this.FEATURE_ADMINISTRATE_ROOMS_ENABLED = config.featureAdministrateRoomsEnabled;
@@ -374,15 +374,15 @@ export class ConfigResponse {
 		this.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = config.featureExternalPersonRegistrationEnabled;
 		this.FEATURE_ROOM_COPY_ENABLED = config.featureRoomCopyEnabled;
 		this.FEATURE_ROOM_SHARE = config.featureRoomShare;
-		this.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED;
-		this.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED;
+		this.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED = config.featureRoomAddExternalPersonsEnabled;
+		this.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED = config.featureRoomRegisterExternalPersonsEnabled;
 		this.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = config.featureRoomLinkInvitationExternalPersonsEnabled;
 		this.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = config.featureExternalSystemLogoutEnabled;
 		this.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED = config.featureVidisMediaActivationsEnabled;
 		this.LICENSE_SUMMARY_URL = config.LICENSE_SUMMARY_URL;
-		this.ROOM_MEMBER_INFO_URL = config.ROOM_MEMBER_INFO_URL;
+		this.ROOM_MEMBER_INFO_URL = config.roomMemberInfoUrl;
 		this.ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL = config.roomMemberAddExternalPersonRequirementsUrl;
-		this.FEATURE_COLUMN_BOARD_H5P_ENABLED = config.FEATURE_COLUMN_BOARD_H5P_ENABLED;
-		this.FEATURE_COLUMN_BOARD_COLLABORA_ENABLED = config.FEATURE_COLUMN_BOARD_COLLABORA_ENABLED;
+		this.FEATURE_COLUMN_BOARD_H5P_ENABLED = config.featureColumnBoardH5pEnabled;
+		this.FEATURE_COLUMN_BOARD_COLLABORA_ENABLED = config.featureColumnBoardCollaboraEnabled;
 	}
 }
