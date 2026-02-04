@@ -9,6 +9,7 @@ import { EntityId } from '@shared/domain/types';
 import { DeletionRequestService } from '../../domain/service';
 import { DeletionRequestResponse } from '../controller/dto';
 import { DomainName } from '../../domain/types';
+import { RoleName } from '@modules/role';
 
 @Injectable()
 export class DeletionRequestPublicUc {
@@ -56,9 +57,12 @@ export class DeletionRequestPublicUc {
 		schoolId: EntityId
 	): Promise<DeletionRequestResponse> {
 		const targetUser = await this.userService.findById(targetRefId);
-
 		if (!targetUser) {
 			throw new NotFoundException('Target user not found');
+		}
+
+		if (targetUser.roles.every((role) => role.name !== RoleName.STUDENT && role.name !== RoleName.TEACHER)) {
+			throw new ForbiddenException('Cannot request deletion for user with invalid role');
 		}
 
 		if (targetUser.schoolId !== schoolId) {

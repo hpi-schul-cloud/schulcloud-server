@@ -156,4 +156,43 @@ describe(`deletionRequest public create (api)`, () => {
 			expect(deletionRequest).toBeNull();
 		});
 	});
+
+	describe('when user has invalid role', () => {
+		const setup = async () => {
+			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
+			const { adminUser: targetUser, adminAccount: targetAccount } = UserAndAccountTestFactory.buildAdmin();
+
+			await em.persist([adminUser, adminAccount, targetUser, targetAccount]).flush();
+			em.clear();
+
+			const deletionRequestToCreate: DeletionRequestParams = {
+				ids: [targetUser.id],
+			};
+			const queryString = deletionRequestToCreate.ids.map((id) => `ids[]=${id}`).join('&');
+			const loggedInClient = await testApiClient.login(adminAccount);
+
+			return {
+				targetUser,
+				queryString,
+				loggedInClient,
+			};
+		};
+
+		it('should return status 400', async () => {
+			const { queryString, loggedInClient } = await setup();
+
+			const response = await loggedInClient.delete(`?${queryString}`);
+
+			expect(response.status).toEqual(400);
+		});
+
+		it('should not create a deletion request', async () => {
+			const { targetUser, queryString, loggedInClient } = await setup();
+
+			await loggedInClient.delete(`?${queryString}`);
+
+			const deletionRequest = await em.findOne('DeletionRequestEntity', { targetRefId: new ObjectId(targetUser.id) });
+			expect(deletionRequest).toBeNull();
+		});
+	});
 });
