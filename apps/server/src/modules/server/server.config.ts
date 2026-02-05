@@ -1,5 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { StringToBoolean } from '@shared/controller/transformer';
+import { StringToBoolean, StringToNumber } from '@shared/controller/transformer';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
 import { IsBoolean, IsEmail, IsEnum, IsNumber, IsString, IsUrl } from 'class-validator';
@@ -88,10 +88,12 @@ export class ServerPublicApiConfig {
 
 	@ConfigProperty('JWT_SHOW_TIMEOUT_WARNING_SECONDS')
 	@IsNumber()
+	@StringToNumber()
 	public jwtShowTimeoutWarningSeconds = 3600;
 
 	@ConfigProperty('JWT_TIMEOUT_SECONDS')
 	@IsNumber()
+	@StringToNumber()
 	public jwtTimeoutSeconds = 7200;
 
 	@ConfigProperty('NOT_AUTHENTICATED_REDIRECT_URL')
