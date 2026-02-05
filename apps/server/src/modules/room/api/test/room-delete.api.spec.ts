@@ -4,6 +4,8 @@ import { BoardNodeEntity } from '@modules/board/repo';
 import { columnBoardEntityFactory } from '@modules/board/testing';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
 import { RoomMembershipEntity } from '@modules/room-membership';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
@@ -18,8 +20,6 @@ import { TestApiClient } from '@testing/test-api-client';
 import { RoomEntity } from '../../repo';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { waitForEventBus } from './util/wait-for-event-bus';
-import { RoleName } from '@modules/role';
-import { roleFactory } from '@modules/role/testing';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -223,6 +223,8 @@ describe('Room Controller (API)', () => {
 							const response = await loggedInClient.delete(room.id);
 							expect(response.status).toBe(HttpStatus.NO_CONTENT);
 
+							em.clear();
+
 							const guestTeacherAfter = await em.findOneOrFail(User, guestTeacherUser.id);
 							expect(guestTeacherAfter.secondarySchools).toHaveLength(0);
 						});
@@ -310,6 +312,8 @@ describe('Room Controller (API)', () => {
 
 								const response = await loggedInClient.delete(roomOne.id);
 								expect(response.status).toBe(HttpStatus.NO_CONTENT);
+
+								em.clear();
 
 								const guestTeacherAfter = await em.findOneOrFail(User, guestTeacherUser.id);
 								expect(guestTeacherAfter.secondarySchools).toHaveLength(1);
@@ -409,6 +413,8 @@ describe('Room Controller (API)', () => {
 
 								const response = await loggedInClient.delete(roomInSchoolA.id);
 								expect(response.status).toBe(HttpStatus.NO_CONTENT);
+
+								em.clear();
 
 								const guestTeacherAfter = await em.findOneOrFail(User, guestTeacherUser.id);
 								expect(guestTeacherAfter.secondarySchools).toHaveLength(1);
