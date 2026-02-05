@@ -1,3 +1,4 @@
+import { Logger, LoggerModule } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { ConfigurationModule } from '@infra/configuration';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq/rabbitmq.module';
@@ -11,10 +12,10 @@ export class MailModule {
 		const providers = [
 			{
 				provide: MailService,
-				useFactory(amqpConnection: AmqpConnection, config: InternalMailConfig): MailService {
-					return new MailService(amqpConnection, config);
+				useFactory(amqpConnection: AmqpConnection, config: InternalMailConfig, logger: Logger): MailService {
+					return new MailService(amqpConnection, config, logger);
 				},
-				inject: [AmqpConnection, options.exchangeConfigInjectionToken],
+				inject: [AmqpConnection, options.exchangeConfigInjectionToken, Logger],
 			},
 		];
 
@@ -23,6 +24,7 @@ export class MailModule {
 			imports: [
 				ConfigurationModule.register(options.exchangeConfigInjectionToken, options.exchangeConfigConstructor),
 				RabbitMQWrapperModule.register(options),
+				LoggerModule,
 			],
 			providers,
 			exports: [MailService],
