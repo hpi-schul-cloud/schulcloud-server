@@ -1,5 +1,6 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { RabbitMQExchangeType } from '@infra/rabbitmq';
+import { StringToBoolean } from '@shared/controller/transformer';
 import { CommaSeparatedStringToArray } from '@shared/controller/transformer/comma-separated-string-to-array.transformer';
 import { IsArray, IsBoolean, IsString } from 'class-validator';
 import { InternalMailConfig } from '../interfaces';
@@ -26,6 +27,7 @@ export class TestMailConfig implements InternalMailConfig {
 	public blocklistOfEmailDomains: string[] = [];
 
 	@ConfigProperty('SHOULD_SEND_EMAIL')
+	@StringToBoolean()
 	@IsBoolean()
 	public shouldSendEmail = false;
 }
