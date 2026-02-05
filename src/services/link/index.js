@@ -153,7 +153,7 @@ module.exports = function setup() {
 				// build final link and remove possible double-slashes in url except the protocol ones
 				if (expertSchoolId && linkInfo.hash) {
 					// expert registration link for new users
-					linkInfo.link = `/registration/${expertSchoolId}/byexpert/?importHash=${linkInfo.hash}`;
+					linkInfo.link = `/registration/${expertSchoolId}/byexternalPerson/?importHash=${linkInfo.hash}`;
 				} else if (teamId) {
 					/** @replaced logic is inside team services now * */
 					// team accept link for existing users
