@@ -543,16 +543,6 @@
 			"default": false,
 			"description": "Enabled that every request is logged with the information route and method"
 		},
-		"SUPPORT_PROBLEM_EMAIL_ADDRESS": {
-			"type": "string",
-			"default": "ticketsystem@dbildungscloud.de",
-			"description": "Email address used for reporting a problem"
-		},
-		"SUPPORT_WISH_EMAIL_ADDRESS": {
-			"type": "string",
-			"default": "ticketsystem@dbildungscloud.de",
-			"description": "Email addresses used for reporting a wish"
-		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",

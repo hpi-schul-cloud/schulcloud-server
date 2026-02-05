@@ -7,10 +7,7 @@ import { BiloMediaClientAdapter } from './bilo-media-client.adapter';
 
 @Module({})
 export class BiloClientModule {
-	public static register<T extends EncryptionConfig>(
-		constructor: new () => T,
-		configInjectionToken: string
-	): DynamicModule {
+	public static register(constructor: new () => EncryptionConfig, configInjectionToken: string): DynamicModule {
 		return {
 			module: BiloClientModule,
 			imports: [

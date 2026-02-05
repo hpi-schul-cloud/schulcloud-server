@@ -4,10 +4,7 @@ import { VidisClientAdapter } from './vidis-client.adapter';
 
 @Module({})
 export class VidisClientModule {
-	public static register<T extends EncryptionConfig>(
-		constructor: new () => T,
-		configInjectionToken: string
-	): DynamicModule {
+	public static register(constructor: new () => EncryptionConfig, configInjectionToken: string): DynamicModule {
 		return {
 			module: VidisClientModule,
 			imports: [EncryptionModule.register(constructor, configInjectionToken)],

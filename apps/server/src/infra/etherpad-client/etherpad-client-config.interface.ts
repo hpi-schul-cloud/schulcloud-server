@@ -1,6 +1,6 @@
-import { ConfigurationParameters } from '@infra/vidis-client';
+import { ConfigurationParameters } from './etherpad-api-client';
 
-export interface EtherpadClientConfig extends ConfigurationParameters {
-	apiKey?: string;
-	basePath?: string;
+export interface InternalEtherpadClientConfig extends ConfigurationParameters {
+	apiKey: string;
+	basePath: string;
 }

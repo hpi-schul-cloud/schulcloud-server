@@ -7,10 +7,7 @@ import { SymmetricKeyEncryptionService } from './encryption.service';
 
 @Module({})
 export class EncryptionModule {
-	public static register<T extends EncryptionConfig>(
-		constructor: new () => T,
-		configInjectionToken: string
-	): DynamicModule {
+	public static register(constructor: new () => EncryptionConfig, configInjectionToken: string): DynamicModule {
 		const providers = [
 			{
 				provide: DefaultEncryptionService,
