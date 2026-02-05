@@ -3,4 +3,5 @@ export interface InternalMailConfig {
 	exchangeType: string;
 	mailSendRoutingKey: string;
 	blocklistOfEmailDomains: string[];
+	shouldSendEmail: boolean;
 }

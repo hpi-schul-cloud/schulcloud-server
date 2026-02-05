@@ -1,13 +1,21 @@
+import { Logger } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
 import { InternalMailConfig } from './interfaces';
+import { SendEmailLoggable } from './loggable';
+import { RecipientAddressesEmptyLoggable } from './loggable/recipient-addresses-empty.loggable';
 import { Mail } from './mail.interface';
 
 @Injectable()
 export class MailService {
-	constructor(private readonly amqpConnection: AmqpConnection, private readonly config: InternalMailConfig) {}
+	constructor(
+		private readonly amqpConnection: AmqpConnection,
+		private readonly config: InternalMailConfig,
+		private readonly logger: Logger
+	) {}
 
 	public async send(data: Mail): Promise<void> {
+		const { recipients: originalRecipients } = data;
 		if (this.config.blocklistOfEmailDomains.length > 0) {
 			data.recipients = this.filterEmailAdresses(data.recipients) as string[];
 			data.cc = this.filterEmailAdresses(data.cc);
@@ -16,12 +24,25 @@ export class MailService {
 		}
 
 		if (data.recipients.length === 0) {
+			this.logger.warning(new RecipientAddressesEmptyLoggable(originalRecipients));
 			return;
 		}
 
-		await this.amqpConnection.publish(this.config.exchangeName, this.config.mailSendRoutingKey, data, {
-			persistent: true,
-		});
+		if (this.config.shouldSendEmail) {
+			await this.amqpConnection.publish(this.config.exchangeName, this.config.mailSendRoutingKey, data, {
+				persistent: true,
+			});
+		} else {
+			this.logger.debug(
+				new SendEmailLoggable(
+					data.recipients,
+					(data.replyTo || []).join(', '),
+					data.mail.subject,
+					data.mail.plainTextContent || data.mail.htmlContent || '',
+					!!data.mail.attachments
+				)
+			);
+		}
 	}
 
 	private filterEmailAdresses(mails: string[] | undefined): string[] | undefined {

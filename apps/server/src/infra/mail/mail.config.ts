@@ -1,8 +1,9 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { InternalRabbitMQExchangeConfig, RabbitMQExchangeType } from '@infra/rabbitmq';
 import { CommaSeparatedStringToArray } from '@shared/controller/transformer/comma-separated-string-to-array.transformer';
-import { IsArray, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsString } from 'class-validator';
 import { InternalMailConfig } from './interfaces';
+import { StringToBoolean } from '@shared/controller/transformer';
 
 export const MAIL_CONFIG_TOKEN = 'MAIL_CONFIG_TOKEN';
 export const MAIL_EXCHANGE_CONFIG_TOKEN = 'MAIL_EXCHANGE_CONFIG_TOKEN';
@@ -28,4 +29,9 @@ export class MailConfig extends MailExchange implements InternalMailConfig {
 	@CommaSeparatedStringToArray()
 	@IsArray()
 	public blocklistOfEmailDomains: string[] = [];
+
+	@ConfigProperty('FORCE_SEND_EMAIL')
+	@StringToBoolean()
+	@IsBoolean()
+	public shouldSendEmail = false;
 }
