@@ -1,3 +1,4 @@
+/* Istanbul ignore file */
 import { Loggable, LogMessage } from '@core/logger';
 
 export class RecipientAddressesEmptyLoggable implements Loggable {
