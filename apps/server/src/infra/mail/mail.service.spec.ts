@@ -1,4 +1,6 @@
+import { Logger } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MAIL_CONFIG_TOKEN, MailConfig } from './mail.config';
 import { Mail } from './mail.interface';
@@ -9,11 +11,13 @@ describe('MailService', () => {
 	let service: MailService;
 	let amqpConnection: AmqpConnection;
 	let config: MailConfig;
+	let logger: DeepMocked<Logger>;
 
 	const mailServiceOptions = {
 		exchangeName: 'exchange',
 		mailSendRoutingKey: 'routingKey',
 		blocklistOfEmailDomains: ['schul-cloud.org', 'example.com'],
+		shouldSendEmail: false,
 	};
 
 	beforeAll(async () => {
@@ -21,13 +25,15 @@ describe('MailService', () => {
 			providers: [
 				{ provide: AmqpConnection, useValue: { publish: () => {} } },
 				{ provide: MAIL_CONFIG_TOKEN, useValue: mailServiceOptions },
+				{ provide: Logger, useValue: createMock<Logger>() },
 			],
 		}).compile();
 
 		amqpConnection = module.get(AmqpConnection);
 		config = module.get(MAIL_CONFIG_TOKEN);
+		logger = module.get(Logger);
 
-		service = new MailService(amqpConnection, config);
+		service = new MailService(amqpConnection, config, logger);
 	});
 
 	afterAll(async () => {
@@ -54,8 +60,10 @@ describe('MailService', () => {
 				expect(amqpConnectionSpy).toHaveBeenCalledTimes(0);
 			});
 		});
+
 		describe('when sending email', () => {
 			it('should remove email address that have blacklisted domain and send given data to queue', async () => {
+				config.shouldSendEmail = true;
 				const data: Mail = {
 					mail: { plainTextContent: 'content', subject: 'Test' },
 					recipients: ['test@schul-cloud.org', 'test@example1.com', 'test2@schul-cloud.org', 'test3@schul-cloud.org'],
@@ -81,6 +89,30 @@ describe('MailService', () => {
 					{ persistent: true },
 				];
 				expect(amqpConnectionSpy).toHaveBeenCalledWith(...expectedParams);
+			});
+		});
+
+		describe('when sending email is disabled', () => {
+			it('should log email data instead of sending it', async () => {
+				config.shouldSendEmail = false;
+				const data: Mail = {
+					mail: { plainTextContent: 'content', subject: 'Test' },
+					recipients: ['test@test.org'],
+					from: 'noreply@dbildungscloud.de',
+				};
+
+				const expectedParams = {
+					attachments: false,
+					plainTextContent: 'content',
+					recipients: ['test@test.org'],
+					replyTo: '',
+					subject: 'Test',
+				};
+
+				await service.send(data);
+
+				expect(logger.debug).toHaveBeenCalledTimes(1);
+				expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining(expectedParams));
 			});
 		});
 	});

@@ -10,7 +10,6 @@ import {
 	userContextPropsFactory,
 	userDevicePropsFactory,
 } from '../../testing';
-import { SendEmailLoggable } from '../loggable';
 import { HelpdeskService } from './helpdesk.service';
 import { TextFormatter } from './text-formatter.helper';
 
@@ -213,73 +212,6 @@ describe('HelpdeskService', () => {
 				});
 			});
 		});
-
-		describe('when shouldSendEmails is false', () => {
-			const setup = () => {
-				config.shouldSendEmail = false;
-
-				const problem = helpdeskProblemPropsFactory.create();
-
-				const userContext = userContextPropsFactory.create();
-
-				return { problem, userContext };
-			};
-
-			it('should not call emailService.send', async () => {
-				const { problem, userContext } = setup();
-
-				await service.createProblem(problem, userContext);
-
-				expect(mailService.send).not.toHaveBeenCalled();
-			});
-
-			it('should call logger.debug', async () => {
-				const { problem, userContext } = setup();
-
-				await service.createProblem(problem, userContext);
-
-				expect(logger.debug).toHaveBeenCalledWith(expect.any(SendEmailLoggable));
-			});
-
-			it('should log with correct parameters', async () => {
-				const { problem, userContext } = setup();
-
-				await service.createProblem(problem, userContext);
-
-				expect(logger.debug).toHaveBeenCalledWith(
-					expect.objectContaining({
-						recipients: [config.problemEmailAddress],
-						replyTo: problem.replyEmail,
-						subject: problem.subject,
-						attachments: false,
-					})
-				);
-			});
-		});
-
-		describe('when shouldSendEmails is false and files are provided', () => {
-			const setup = () => {
-				config.shouldSendEmail = false;
-
-				const problem = helpdeskProblemPropsFactory.create();
-				const userContext = userContextPropsFactory.create();
-				const files: Express.Multer.File[] = [multerFileFactory.create()];
-
-				return { problem, userContext, files };
-			};
-
-			it('should log with attachments flag set to true', async () => {
-				const { problem, userContext, files } = setup();
-
-				await service.createProblem(problem, userContext, undefined, files);
-
-				expect(logger.debug).toHaveBeenCalledWith(
-					expect.objectContaining({
-						attachments: true,
-					})
-				);
-			});
-		});
 	});
 
 	describe('createWish', () => {
@@ -412,48 +344,6 @@ describe('HelpdeskService', () => {
 					name: 'mockup.png',
 					contentDisposition: 'ATTACHMENT',
 				});
-			});
-		});
-
-		describe('when shouldSendEmails is false', () => {
-			const setup = () => {
-				config.shouldSendEmail = false;
-
-				const wish = helpdeskWishPropsFactory.create();
-				const userContext = userContextPropsFactory.create();
-
-				return { wish, userContext };
-			};
-
-			it('should not call emailService.send', async () => {
-				const { wish, userContext } = setup();
-
-				await service.createWish(wish, userContext);
-
-				expect(mailService.send).not.toHaveBeenCalled();
-			});
-
-			it('should call logger.debug', async () => {
-				const { wish, userContext } = setup();
-
-				await service.createWish(wish, userContext);
-
-				expect(logger.debug).toHaveBeenCalledWith(expect.any(SendEmailLoggable));
-			});
-
-			it('should log with correct parameters', async () => {
-				const { wish, userContext } = setup();
-
-				await service.createWish(wish, userContext);
-
-				expect(logger.debug).toHaveBeenCalledWith(
-					expect.objectContaining({
-						recipients: [config.wishEmailAddress],
-						replyTo: wish.replyEmail,
-						subject: wish.subject,
-						attachments: false,
-					})
-				);
 			});
 		});
 
