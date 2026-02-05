@@ -1,8 +1,9 @@
 import { EntityName } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityId } from '@shared/domain/types';
+import { Condition } from 'mongodb';
 import { ExternalToolEntity, ExternalToolRepoMapper } from '../../../external-tool/repo';
 import { SchoolExternalTool } from '../../domain';
 import { SchoolExternalToolQuery } from '../../uc/dto/school-external-tool.types';
@@ -85,6 +86,16 @@ export class SchoolExternalToolRepo {
 			this.mapEntityToDomainObject(entity)
 		);
 		return dos;
+	}
+
+	public async findSchoolIdsForToolId(toolId: string): Promise<EntityId[]> {
+		// Since we don't need any of the EntityManager's features here, we load the ids with a Mongo query to be more efficient.
+		const objectIds = await this.em
+			.getCollection(this.entityName)
+			.distinct('school', { tool: new ObjectId(toolId) } as Condition<SchoolExternalToolEntity>);
+		const ids = objectIds.map((id) => id.toString());
+
+		return ids;
 	}
 
 	public async saveMany(domainObjects: SchoolExternalTool[]): Promise<void> {
