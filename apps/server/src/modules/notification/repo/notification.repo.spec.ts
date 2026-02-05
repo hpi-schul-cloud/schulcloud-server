@@ -62,23 +62,11 @@ describe(NotificationRepo.name, () => {
 			it('should persist the notification and return the same instance', async () => {
 				const { notification, notificationId } = setup();
 
-				// const notificationEntity = {} as NotificationEntity;
-
-				// const createdEntity = { ...notificationEntity } as NotificationEntity;
-				// const createSpy = jest.spyOn(repo, 'create').mockReturnValue(createdEntity);
-				// const saveSpy = jest.spyOn(repo, 'save').mockResolvedValue();
-
 				await repo.create(notification);
 				const result = await repo.findById(notificationId);
 
 				// if the test is too slow, this will fail
 				expect(result).toEqual(expect.objectContaining(notification));
-
-				// expect(createSpy).toHaveBeenCalledTimes(1);
-				// expect(createSpy).toHaveBeenCalledWith(notificationEntity);
-				// expect(saveSpy).toHaveBeenCalledTimes(1);
-				// expect(saveSpy).toHaveBeenCalledWith(createdEntity);
-				// expect(entity).toBe(expectedDomainObject);
 			});
 		});
 	});

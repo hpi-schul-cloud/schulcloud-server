@@ -33,10 +33,4 @@ export class NotificationRepo {
 
 		await this.em.flush();
 	}
-
-	// public async createNotification(notificationEntity: NotificationEntity): Promise<NotificationEntity> {
-	// 	await this.save(this.create(notificationEntity));
-
-	// 	return notificationEntity;
-	// }
 }
