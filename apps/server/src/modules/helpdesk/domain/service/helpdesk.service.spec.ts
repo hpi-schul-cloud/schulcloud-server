@@ -59,8 +59,6 @@ describe('HelpdeskService', () => {
 	describe('createProblem', () => {
 		describe('when creating a problem without files and device info', () => {
 			const setup = () => {
-				config.shouldSendEmail = true;
-
 				const problem = helpdeskProblemPropsFactory.create();
 				const userContext = userContextPropsFactory.create();
 				const plainTextContent = TextFormatter.createProblemText(problem, userContext);
@@ -95,8 +93,6 @@ describe('HelpdeskService', () => {
 
 		describe('when creating a problem with device info', () => {
 			const setup = () => {
-				config.shouldSendEmail = true;
-
 				const problem = helpdeskProblemPropsFactory.create();
 				const userContext = userContextPropsFactory.create();
 				const userDevice = userDevicePropsFactory.create();
@@ -124,8 +120,6 @@ describe('HelpdeskService', () => {
 
 		describe('when creating a problem with files', () => {
 			const setup = () => {
-				config.shouldSendEmail = true;
-
 				const problem = helpdeskProblemPropsFactory.create();
 				const userContext = userContextPropsFactory.create();
 				const files: Express.Multer.File[] = [
@@ -159,8 +153,6 @@ describe('HelpdeskService', () => {
 
 		describe('when creating a problem with multiple files', () => {
 			const setup = () => {
-				config.shouldSendEmail = true;
-
 				const problem = helpdeskProblemPropsFactory.create();
 				const userContext = userContextPropsFactory.create();
 
@@ -217,8 +209,6 @@ describe('HelpdeskService', () => {
 	describe('createWish', () => {
 		describe('when creating a wish without files and device info', () => {
 			const setup = () => {
-				config.shouldSendEmail = true;
-
 				const wish = helpdeskWishPropsFactory.create({
 					acceptanceCriteria: undefined,
 				});
@@ -255,8 +245,6 @@ describe('HelpdeskService', () => {
 
 		describe('when creating a wish with acceptance criteria', () => {
 			const setup = () => {
-				config.shouldSendEmail = true;
-
 				const wish = helpdeskWishPropsFactory.create({
 					acceptanceCriteria: 'Should export to PDF and Excel',
 				});
@@ -285,8 +273,6 @@ describe('HelpdeskService', () => {
 
 		describe('when creating a wish with device info', () => {
 			const setup = () => {
-				config.shouldSendEmail = true;
-
 				const wish = helpdeskWishPropsFactory.create();
 				const userContext = userContextPropsFactory.create();
 				const userDevice = userDevicePropsFactory.create();
@@ -314,8 +300,6 @@ describe('HelpdeskService', () => {
 
 		describe('when creating a wish with files', () => {
 			const setup = () => {
-				config.shouldSendEmail = true;
-
 				const wish = helpdeskWishPropsFactory.create();
 				const userContext = userContextPropsFactory.create();
 				const files: Express.Multer.File[] = [
@@ -349,8 +333,6 @@ describe('HelpdeskService', () => {
 
 		describe('when creating a wish with multiple problem areas', () => {
 			const setup = () => {
-				config.shouldSendEmail = true;
-
 				const wish = helpdeskWishPropsFactory.create({
 					problemArea: ['UI', 'Performance', 'Accessibility'],
 				});
