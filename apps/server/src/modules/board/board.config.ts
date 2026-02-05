@@ -16,6 +16,50 @@ export class BoardPublicApiConfig {
 	@StringToBoolean()
 	@IsBoolean()
 	public featureBoardReadersCanEditToggle = true;
+
+	@ConfigProperty('FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureColumnBoardSubmissionsEnabled = false;
+
+	@ConfigProperty('FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureColumnBoardLinkElementEnabled = true;
+
+	@ConfigProperty('FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureColumnBoardCollaborativeTextEditorEnabled = true;
+
+	@ConfigProperty('FEATURE_COLUMN_BOARD_SOCKET_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureColumnBoardSocketEnabled = false;
+
+	@ConfigProperty('FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureColumnBoardFileFolderEnabled = true;
+
+	@ConfigProperty('FEATURE_COLUMN_BOARD_H5P_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureColumnBoardH5pEnabled = true;
+
+	@ConfigProperty('FEATURE_COLUMN_BOARD_COLLABORA_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureColumnBoardCollaboraEnabled = true;
+
+	@ConfigProperty('FEATURE_TLDRAW_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureTldrawEnabled = true;
+
+	@ConfigProperty('BOARD_COLLABORATION_URI')
+	@IsUrl({ require_tld: false, require_valid_protocol: false })
+	public boardCollaborationUri = 'ws://localhost:4450';
 }
 
 @Configuration()

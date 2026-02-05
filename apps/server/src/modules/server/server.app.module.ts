@@ -77,20 +77,18 @@ import { UserApiModule } from '@modules/user/user-api.module';
 import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { MediaSourceApiModule } from '../media-source/media-source-api.module';
 import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
 import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
-import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
+import { SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 
 const serverModules = [
 	HelpdeskApiModule,
-	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
+	ConfigurationModule.register(SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig),
 	ConfigurationModule.register(VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig),
 	ConfigurationModule.register(BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig),
 	ConfigurationModule.register(ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig),
@@ -173,7 +171,7 @@ const serverModules = [
 	MoinSchuleClassModule,
 ];
 
-const providers = [ServerUc, { provide: SERVER_CONFIG_TOKEN, useValue: serverConfig() }];
+const providers = [ServerUc];
 const controllers = [ServerController, ServerConfigController];
 
 /**

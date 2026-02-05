@@ -158,11 +158,6 @@
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
-		"FEATURE_VIDEOCONFERENCE_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "If enabled, adds video conferences to teams and courses."
-		},
 		"VIDEOCONFERENCE_DEFAULT_PRESENTATION": {
 			"type": "string",
 			"default": "",
@@ -333,16 +328,6 @@
 			"type": "string",
 			"description": "The Schulcloud domain."
 		},
-		"TRAINING_URL": {
-			"type": "string",
-			"default": "https://lernen.dbildungscloud.de",
-			"description": "URL for the platform training material"
-		},
-		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Allows school admin to toggle student's LERNSTORE_VIEW permission."
-		},
 		"TEACHER_STUDENT_VISIBILITY": {
 			"type": "object",
 			"description": "Configuration regarding teachers' STUDENT_LIST permission.",
@@ -362,16 +347,6 @@
 				"IS_ENABLED_BY_DEFAULT": true,
 				"IS_VISIBLE": true
 			}
-		},
-		"FEATURE_SCHOOL_POLICY_ENABLED_NEW": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables uploading of school specific Privacy Policy on new admin page."
-		},
-		"FEATURE_SCHOOL_TERMS_OF_USE_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables uploading of school specific Terms of Use on new admin page."
 		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
 			"type": "boolean",
@@ -568,107 +543,10 @@
 			"default": false,
 			"description": "Enabled that every request is logged with the information route and method"
 		},
-		"ADMIN_TABLES_DISPLAY_CONSENT_COLUMN": {
-			"type": "boolean",
-			"default": true,
-			"description": "Display/Hide admin tables consent column"
-		},
-		"JWT_SHOW_TIMEOUT_WARNING_SECONDS": {
-			"type": "integer",
-			"default": 3600,
-			"description": "Determines the time in seconds to show the timeout warning in the client"
-		},
-		"FEATURE_EXTENSIONS_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables user's use of extensions in the client"
-		},
-		"FEATURE_TEAMS_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables user's use of the teams feature in the client"
-		},
-		"NOT_AUTHENTICATED_REDIRECT_URL": {
-			"type": "string",
-			"default": "/login",
-			"description": "Determines the url to be redirected to when the user is not authenticated"
-		},
-		"SC_CONTACT_EMAIL": {
-			"type": "string",
-			"default": "ticketsystem@dbildungscloud.de",
-			"description": "Email address used for contacting"
-		},
-		"SC_CONTACT_EMAIL_SUBJECT": {
-			"type": "string",
-			"default": "Bildungscloud Anfrage",
-			"description": "Email subject used for contacting"
-		},
-		"ACCESSIBILITY_REPORT_EMAIL": {
-			"type": "string",
-			"default": "dbildungscloud@dataport.de",
-			"description": "Email to report accessibility issue"
-		},
-		"FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enable file folder elements in column board."
-		},
-		"FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enable submissions in column board."
-		},
-		"FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enable collaborative text editor in column board."
-		},
-		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enable link elements in column board."
-		},
-		"FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enable video conference elements in column board."
-		},
-		"FEATURE_COLUMN_BOARD_H5P_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables h5p on the column board"
-		},
-		"FEATURE_COLUMN_BOARD_COLLABORA_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables edit of office documents on the column board"
-		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
 			"description": "link to userfacing documentation of the column board feature"
-		},
-		"FEATURE_COLUMN_BOARD_SOCKET_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the column board web socket feature."
-		},
-		"FEATURE_BOARD_LAYOUT_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Toggle for the column board layout feature."
-		},
-		"GHOST_BASE_URL": {
-			"type": "string",
-			"format": "uri",
-			"default": "https://blog.dbildungscloud.de",
-			"pattern": ".*(?<!/)$",
-			"description": "Base URL of ghost blog (should end without a slash)"
-		},
-		"FEATURE_CONSENT_NECESSARY": {
-			"type": "boolean",
-			"default": true,
-			"description": "Determines if consent is necessary during registration."
 		},
 		"COOKIE": {
 			"type": "object",
@@ -726,16 +604,6 @@
 				}
 			}
 		},
-		"FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables feature that allows the insecure LDAP URL (with ldap:// protocol)."
-		},
-		"FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION": {
-			"type": "boolean",
-			"default": false,
-			"description": "Displays the school-feature switch ENABLE_LDAP_SYNC_DURING_MIGRATION on the school-settings page."
-		},
 		"FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -768,11 +636,6 @@
 				"BASE_URL": "http://localhost:4030",
 				"API_KEY": ""
 			}
-		},
-		"FEATURE_TLDRAW_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables tldraw feature"
 		},
 		"TLDRAW_ADMIN_API_CLIENT": {
 			"type": "object",
@@ -811,26 +674,6 @@
 			"default": false,
 			"description": "Enables the media shelf feature"
 		},
-		"BOARD_COLLABORATION_URI": {
-			"type": "string",
-			"default": "ws://localhost:4450",
-			"description": "URL for connecting to the WebSocketServer"
-		},
-		"FEATURE_AI_TUTOR_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the AI Tutor"
-		},
-		"FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables adding external persons to a room."
-		},
-		"FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the registration of external persons in a room."
-		},
 		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
 			"type": "boolean",
 			"default": "false",
@@ -840,16 +683,6 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "if calling sync legacy indexes is allowed, only management module should have access to this, this should not exist in the long term when all entites and their indexes have been migrated"
-		},
-		"LICENSE_SUMMARY_URL": {
-			"type": "string",
-			"default": "",
-			"description": "URL for SBOM summary for SVS"
-		},
-		"ROOM_MEMBER_INFO_URL": {
-			"type": "string",
-			"default": null,
-			"description": "The url for further information in room member administration."
 		},
 		"RELEASE_NOTES_REPO_URL": {
 			"type": "string",

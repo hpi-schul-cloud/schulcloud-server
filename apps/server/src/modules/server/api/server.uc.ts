@@ -21,14 +21,14 @@ import {
 } from '@modules/user-login-migration';
 import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { Inject, Injectable } from '@nestjs/common';
-import { SERVER_CONFIG_TOKEN, ServerConfig } from '../server.config';
+import { SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig } from '../server.config';
 import { ConfigResponse } from './dto';
 import { ConfigResponseMapper } from './mapper';
 
 @Injectable()
 export class ServerUc {
 	constructor(
-		@Inject(SERVER_CONFIG_TOKEN) private readonly config: ServerConfig,
+		@Inject(SERVER_PUBLIC_API_CONFIG_TOKEN) private readonly config: ServerPublicApiConfig,
 		@Inject(BOARD_CONTEXT_PUBLIC_API_CONFIG) private readonly boardContextConfig: BoardContextPublicApiConfig,
 		@Inject(VIDEO_CONFERENCE_PUBLIC_API_CONFIG) private readonly videoConferenceConfig: VideoConferencePublicApiConfig,
 		@Inject(ALERT_PUBLIC_API_CONFIG) private readonly alertConfig: AlertPublicApiConfig,

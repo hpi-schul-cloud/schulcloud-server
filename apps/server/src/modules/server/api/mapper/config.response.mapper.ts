@@ -17,12 +17,12 @@ import { UserPublicApiConfig } from '@modules/user';
 import { UserImportPublicApiConfig } from '@modules/user-import';
 import { UserLoginMigrationPublicApiConfig } from '@modules/user-login-migration';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
-import { ServerConfig } from '../../server.config';
+import { ServerPublicApiConfig } from '../../server.config';
 import { ConfigResponse } from '../dto';
 
 export class ConfigResponseMapper {
 	public static mapToResponse(
-		serverConfig: ServerConfig,
+		serverConfig: ServerPublicApiConfig,
 		videoConferenceConfig: VideoConferencePublicApiConfig,
 		boardContextConfig: BoardContextPublicApiConfig,
 		alertConfig: AlertPublicApiConfig,

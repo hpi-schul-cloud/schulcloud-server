@@ -19,6 +19,7 @@ import { Response } from 'supertest';
 import { VideoConferenceScope } from '../../domain';
 import { VideoConferenceEntity, VideoConferenceTargetModels } from '../../repo';
 import { videoConferenceFactory } from '../../testing';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../../video-conference-config';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 
 describe('VideoConferenceController (API)', () => {
@@ -26,6 +27,7 @@ describe('VideoConferenceController (API)', () => {
 	let em: EntityManager;
 	let axiosMock: MockAdapter;
 	let testApiClient: TestApiClient;
+	let videoConverenceConfig: VideoConferenceConfig;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -37,6 +39,8 @@ describe('VideoConferenceController (API)', () => {
 		em = app.get(EntityManager);
 		axiosMock = new MockAdapter(axios);
 		testApiClient = new TestApiClient(app, 'videoconference2');
+		videoConverenceConfig = app.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
+		videoConverenceConfig.featureVideoConferenceEnabled = true;
 	});
 
 	afterAll(async () => {
