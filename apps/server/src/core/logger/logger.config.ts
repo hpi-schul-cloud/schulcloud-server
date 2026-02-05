@@ -29,4 +29,9 @@ export class LoggerConfig {
 	@StringToBoolean()
 	@IsBoolean()
 	public exitOnError = true;
+
+	@ConfigProperty('REQUEST_LOG_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public requestLogEnabled = false;
 }
