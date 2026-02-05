@@ -138,6 +138,8 @@ export class SchoolExternalToolService {
 	}
 
 	public async addAndActivateToolForAllSchools(toolId: EntityId): Promise<void> {
+		// This function will run into an OOM if there are too many schools.
+		// It was tested though for 20.000 schools which is far more than we have on production (max ~2.500).
 		const allSchoolIds = await this.schoolService.getAllSchoolIds();
 
 		const existingDeactivatedSchoolExternalTools = await this.schoolExternalToolRepo.find({
@@ -147,9 +149,9 @@ export class SchoolExternalToolService {
 		existingDeactivatedSchoolExternalTools.forEach((tool) => tool.activate());
 		await this.schoolExternalToolRepo.saveMany(existingDeactivatedSchoolExternalTools);
 
-		const existingSchoolExternalTools = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
-		const schoolIdsWhereExisting = new Set(existingSchoolExternalTools.map((tool) => tool.schoolId));
-		const schoolIdsWhereNotExisting = allSchoolIds.filter((schoolId) => !schoolIdsWhereExisting.has(schoolId));
+		const schoolIdsWhereExisting = await this.schoolExternalToolRepo.findSchoolIdsForToolId(toolId);
+		const setOfSchoolIdsWhereExisting = new Set(schoolIdsWhereExisting);
+		const schoolIdsWhereNotExisting = allSchoolIds.filter((schoolId) => !setOfSchoolIdsWhereExisting.has(schoolId));
 		const toolsToAdd = schoolIdsWhereNotExisting.map((schoolId) => this.createSchoolExternalTool(toolId, schoolId));
 		await this.schoolExternalToolRepo.saveMany(toolsToAdd);
 	}

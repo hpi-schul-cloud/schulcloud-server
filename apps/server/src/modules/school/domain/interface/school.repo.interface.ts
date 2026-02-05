@@ -19,6 +19,8 @@ export interface SchoolRepo {
 
 	getSchoolsBySystemIds(systemIds: EntityId[]): Promise<School[]>;
 
+	getAllSchoolIds(): Promise<EntityId[]>;
+
 	hasLdapSystem(schoolId: EntityId): Promise<boolean>;
 
 	save(domainObject: School): Promise<School>;
