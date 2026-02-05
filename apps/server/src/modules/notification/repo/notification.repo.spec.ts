@@ -44,15 +44,15 @@ describe(NotificationRepo.name, () => {
 	describe('createNotification', () => {
 		describe('when a notification entity is provided', () => {
 			const setup = () => {
-				// set fixed date
+				const fixedDate = new Date();
 				const notification = new Notification({
 					id: new ObjectId().toHexString(),
 					type: NotificationType.NOTE,
 					key: 'INFO_KEY',
 					arguments: ['arg1'],
 					userId: 'user-id',
-					createdAt: new Date(),
-					updatedAt: new Date(),
+					createdAt: fixedDate,
+					updatedAt: fixedDate,
 				});
 
 				const notificationId = notification.id;
