@@ -19,6 +19,11 @@ jobs:
     permissions:
       contents: read
     timeout-minutes: 5
+    services:
+      rabbitmq:
+        image: rabbitmq:4
+        ports:
+          - 5672:5672
     steps:
       - uses: actions/checkout@v5
       - name: setup environment file
