@@ -52,6 +52,7 @@ describe(`deletionRequest public create (api)`, () => {
 
 			return {
 				nonexistentId,
+				studentAccount,
 				studentUser,
 				queryString,
 				loggedInClient,
@@ -82,6 +83,20 @@ describe(`deletionRequest public create (api)`, () => {
 
 			const account = await em.findOne(AccountEntity, { userId: new ObjectId(studentUser.id) });
 			expect(account?.deactivatedAt).toBeDefined();
+		});
+
+		it('should not fail if the target user has no account', async () => {
+			const { studentUser, loggedInClient } = await setup();
+			const { studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent({ school: studentUser.school });
+
+			await em.persist([studentUser2]).flush();
+			em.clear();
+
+			const response = await loggedInClient.delete(`?ids[]=${studentUser2.id}`);
+
+			expect(response.status).toEqual(204);
+			const deletionRequest = await em.findOne('DeletionRequestEntity', { targetRefId: new ObjectId(studentUser2.id) });
+			expect(deletionRequest).toBeDefined();
 		});
 
 		it('should return status 400 when all deletion requests fail', async () => {
