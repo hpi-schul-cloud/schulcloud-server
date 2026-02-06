@@ -83,7 +83,7 @@ export class Migration20260130082056 extends Migration {
 				},
 				{
 					$match: {
-						'schoolIdsToRemove.0': {
+						'secondarySchoolIdsToRemove.0': {
 							$exists: true,
 						},
 					},
@@ -112,8 +112,8 @@ export class Migration20260130082056 extends Migration {
 
 		for (const user of usersToUpdate) {
 			const { activeSecondarySchoolIds } = user;
-			const schoolsToKeep = (user.secondarySchools ?? []).filter((school) =>
-				activeSecondarySchoolIds.includes(school.school)
+			const schoolsToKeep = (user.secondarySchools ?? []).filter((entry) =>
+				activeSecondarySchoolIds.includes(entry.school)
 			);
 
 			console.log(`Updating user ${user._id.toString()} (school ${user.ownSchoolId.toString()})`);
