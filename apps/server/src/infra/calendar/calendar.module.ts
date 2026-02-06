@@ -9,10 +9,15 @@ import { CalendarService } from './service/calendar.service';
 
 @Module({})
 export class CalendarModule {
-	public static register(injectionToken: string, Constructor: new () => CalendarConfig): DynamicModule {
+	public static register(configInjectionToken: string, configConstructor: new () => CalendarConfig): DynamicModule {
 		return {
 			module: CalendarModule,
-			imports: [HttpModule, CqrsModule, LoggerModule, ConfigurationModule.register(injectionToken, Constructor)],
+			imports: [
+				HttpModule,
+				CqrsModule,
+				LoggerModule,
+				ConfigurationModule.register(configInjectionToken, configConstructor),
+			],
 			providers: [CalendarMapper, CalendarService],
 			exports: [CalendarService],
 		};

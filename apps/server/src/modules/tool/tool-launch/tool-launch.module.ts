@@ -35,7 +35,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		CourseModule,
 		BoardModule,
 		GroupModule,
-		EncryptionModule.register(ToolEncryptionConfig, TOOL_ENCRYPTION_CONFIG_TOKEN),
+		EncryptionModule.register(TOOL_ENCRYPTION_CONFIG_TOKEN, ToolEncryptionConfig),
 	],
 	providers: [
 		ToolLaunchService,

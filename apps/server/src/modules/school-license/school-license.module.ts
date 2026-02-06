@@ -13,7 +13,7 @@ import { MediaSchoolLicenseService } from './service';
 		MediaSourceModule,
 		SchoolModule,
 		LoggerModule,
-		VidisClientModule.register(SchoolLicenseEncryptionConfig, SCHOOL_LICENSE_ENCRYPTION_CONFIG_TOKEN),
+		VidisClientModule.register(SCHOOL_LICENSE_ENCRYPTION_CONFIG_TOKEN, SchoolLicenseEncryptionConfig),
 	],
 	providers: [
 		{ provide: MEDIA_SCHOOL_LICENSE_REPO, useClass: MediaSchoolLicenseMikroOrmRepo },

@@ -8,7 +8,7 @@ import { InternalAuthorizationClientConfig } from './authorization-client.config
 export class AuthorizationClientModule {
 	public static register(
 		configInjectionToken: string,
-		config: new () => InternalAuthorizationClientConfig
+		configConstructor: new () => InternalAuthorizationClientConfig
 	): DynamicModule {
 		const providers = [
 			AuthorizationClientAdapter,
@@ -24,7 +24,7 @@ export class AuthorizationClientModule {
 
 		return {
 			module: AuthorizationClientModule,
-			imports: [ConfigurationModule.register(configInjectionToken, config)],
+			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
 			providers,
 			exports: [AuthorizationClientAdapter],
 		};

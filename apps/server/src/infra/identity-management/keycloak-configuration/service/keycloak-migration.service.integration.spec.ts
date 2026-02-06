@@ -57,14 +57,17 @@ describe('KeycloakConfigurationService Integration', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				KeycloakConfigurationModule.register({
-					encryptionConfig: { Constructor: TestEncryptionConfig, injectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN' },
+					encryptionConfig: {
+						configConstructor: TestEncryptionConfig,
+						configInjectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN',
+					},
 					keycloakAdministrationConfig: {
-						Constructor: KeycloakAdministrationConfig,
-						injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+						configConstructor: KeycloakAdministrationConfig,
+						configInjectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 					},
 					keycloakConfigurationConfig: {
-						Constructor: KeycloakConfigurationConfig,
-						injectionToken: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
+						configConstructor: KeycloakConfigurationConfig,
+						configInjectionToken: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
 					},
 				}),
 				LoggerModule,

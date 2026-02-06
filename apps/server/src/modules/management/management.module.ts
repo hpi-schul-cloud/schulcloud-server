@@ -37,7 +37,7 @@ const imports = [
 	FileSystemModule,
 	LoggerModule,
 	ConfigurationModule.register(MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig),
-	EncryptionModule.register(ManagmentEncryptionConfig, MANAGMENT_ENCRYPTION_CONFIG_TOKEN),
+	EncryptionModule.register(MANAGMENT_ENCRYPTION_CONFIG_TOKEN, ManagmentEncryptionConfig),
 	FeathersModule,
 	MediaSourceModule,
 	SystemModule,
@@ -45,14 +45,17 @@ const imports = [
 	OauthProviderServiceModule,
 	InstanceModule,
 	KeycloakConfigurationModule.register({
-		encryptionConfig: { injectionToken: MANAGMENT_ENCRYPTION_CONFIG_TOKEN, Constructor: ManagmentEncryptionConfig },
+		encryptionConfig: {
+			configInjectionToken: MANAGMENT_ENCRYPTION_CONFIG_TOKEN,
+			configConstructor: ManagmentEncryptionConfig,
+		},
 		keycloakAdministrationConfig: {
-			injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
-			Constructor: KeycloakAdministrationConfig,
+			configInjectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+			configConstructor: KeycloakAdministrationConfig,
 		},
 		keycloakConfigurationConfig: {
-			injectionToken: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
-			Constructor: KeycloakConfigurationConfig,
+			configInjectionToken: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
+			configConstructor: KeycloakConfigurationConfig,
 		},
 	}),
 ];

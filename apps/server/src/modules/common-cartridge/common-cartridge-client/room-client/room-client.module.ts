@@ -8,7 +8,7 @@ import { CourseRoomsClientAdapter } from './room-client.adapter';
 export class CourseRoomsModule {
 	public static register(
 		configInjectionToken: string,
-		config: new () => InternalCourseRoomsClientConfig
+		configConstructor: new () => InternalCourseRoomsClientConfig
 	): DynamicModule {
 		const providers = [
 			CourseRoomsClientAdapter,
@@ -28,7 +28,7 @@ export class CourseRoomsModule {
 
 		return {
 			module: CourseRoomsModule,
-			imports: [ConfigurationModule.register(configInjectionToken, config)],
+			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
 			providers,
 			exports: [CourseRoomsClientAdapter],
 		};

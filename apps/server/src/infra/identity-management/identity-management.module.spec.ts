@@ -15,10 +15,13 @@ describe('IdentityManagementModule', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				IdentityManagementModule.register({
-					encryptionConfig: { Constructor: TestEncryptionConfig, injectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN' },
+					encryptionConfig: {
+						configConstructor: TestEncryptionConfig,
+						configInjectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN',
+					},
 					keycloakAdministrationConfig: {
-						Constructor: KeycloakAdministrationConfig,
-						injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+						configConstructor: KeycloakAdministrationConfig,
+						configInjectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 					},
 				}),
 			],
