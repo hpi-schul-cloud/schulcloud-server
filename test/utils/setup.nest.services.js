@@ -23,22 +23,18 @@ const { RosterModule } = require('../../dist/apps/server/modules/roster/roster.m
 const { FeathersRosterService } = require('../../dist/apps/server/modules/roster/service/feathers-roster.service');
 const { RabbitMQWrapperModule } = require('../../dist/apps/server/infra/rabbitmq/rabbitmq.module');
 const { ConfigurationModule } = require('../../dist/apps/server/infra/configuration/configuration.module');
+const { DatabaseModule } = require('../../dist/apps/server/infra/database/database.module');
+const { DATABASE_CONFIG_TOKEN, DatabaseConfig } = require('../../dist/apps/server/infra/database/database.config');
 
 const setupNestServices = async (app) => {
 	const module = await Test.createTestingModule({
 		imports: [
 			RabbitMQWrapperModule,
-			MikroOrmModule.forRoot(
-				defineConfig({
-					driver: MongoDriver,
-					clientUrl: DB_URL,
-					password: DB_PASSWORD,
-					user: DB_USERNAME,
-					entities: TEST_ENTITIES,
-					allowGlobalContext: true,
-					// debug: true, // use it for locally debugging of querys
-				})
-			),
+			DatabaseModule.register({
+				configInjectionToken: DATABASE_CONFIG_TOKEN,
+				configConstructor: DatabaseConfig,
+				entities: TEST_ENTITIES,
+			}),
 			ConfigurationModule.register(SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig),
 			AccountApiModule,
 			TeamApiModule,
