@@ -13,8 +13,6 @@ on:
 env:
   MONGODB_VERSION: 7.0
   NODE_VERSION: "22"
-  AES_KEY: ${{ secrets.AES_KEY }}
-  HYDRA_URI: "http://localhost:4445"
 jobs:
   migration:
     runs-on: ubuntu-latest
@@ -23,6 +21,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
+      - name: setup environment file
+        run: cp .env.default .env
       - name: mongodb setup
         uses: supercharge/mongodb-github-action@1.12.0
       - name: setup
