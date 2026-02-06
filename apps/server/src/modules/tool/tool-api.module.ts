@@ -44,7 +44,7 @@ import { ToolModule } from './tool.module';
 		SchoolModule,
 		UserLicenseModule,
 		SchoolLicenseModule,
-		EncryptionModule.register(ToolEncryptionConfig, TOOL_ENCRYPTION_CONFIG_TOKEN),
+		EncryptionModule.register(TOOL_ENCRYPTION_CONFIG_TOKEN, ToolEncryptionConfig),
 		ExternalToolUtilizationModule,
 		ConfigurationModule.register(TOOL_CONFIG_TOKEN, ToolConfig),
 	],

@@ -11,10 +11,13 @@ import { SystemMikroOrmRepo } from './repo/mikro-orm/system.repo';
 @Module({
 	imports: [
 		IdentityManagementModule.register({
-			encryptionConfig: { Constructor: SystemEncryptionConfig, injectionToken: SYSTEM_ENCRYPTION_CONFIG_TOKEN },
+			encryptionConfig: {
+				configConstructor: SystemEncryptionConfig,
+				configInjectionToken: SYSTEM_ENCRYPTION_CONFIG_TOKEN,
+			},
 			keycloakAdministrationConfig: {
-				Constructor: KeycloakAdministrationConfig,
-				injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+				configConstructor: KeycloakAdministrationConfig,
+				configInjectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 			},
 		}),
 	],

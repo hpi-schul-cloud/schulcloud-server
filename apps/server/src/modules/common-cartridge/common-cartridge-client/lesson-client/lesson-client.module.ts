@@ -6,7 +6,7 @@ import { Configuration, LessonApi } from './lessons-api-client';
 
 @Module({})
 export class LessonClientModule {
-	public static register(configInjectionToken: string, config: new () => LessonClientConfig): DynamicModule {
+	public static register(configInjectionToken: string, configConstructor: new () => LessonClientConfig): DynamicModule {
 		const providers = [
 			LessonClientAdapter,
 			{
@@ -25,7 +25,7 @@ export class LessonClientModule {
 
 		return {
 			module: LessonClientModule,
-			imports: [ConfigurationModule.register(configInjectionToken, config)],
+			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
 			providers,
 			exports: [LessonClientAdapter],
 		};

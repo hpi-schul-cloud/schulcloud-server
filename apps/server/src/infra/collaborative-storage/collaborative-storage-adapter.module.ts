@@ -19,8 +19,8 @@ const storageStrategy: Provider = {
 @Module({})
 export class CollaborativeStorageAdapterModule {
 	public static register(
-		injectionToken: string,
-		Constructor: new () => InternalCollaborativeStorageAdapterConfig
+		configInjectionToken: string,
+		configConstructor: new () => InternalCollaborativeStorageAdapterConfig
 	): DynamicModule {
 		return {
 			module: CollaborativeStorageAdapterModule,
@@ -30,7 +30,7 @@ export class CollaborativeStorageAdapterModule {
 				ToolModule,
 				PseudonymModule,
 				UserModule,
-				ConfigurationModule.register(injectionToken, Constructor),
+				ConfigurationModule.register(configInjectionToken, configConstructor),
 			],
 			providers: [
 				CollaborativeStorageAdapter,
@@ -46,7 +46,14 @@ export class CollaborativeStorageAdapterModule {
 						config: InternalCollaborativeStorageAdapterConfig
 					): NextcloudStrategy =>
 						new NextcloudStrategy(logger, client, pseudonymService, externalToolService, userService, config),
-					inject: [LegacyLogger, NextcloudClient, PseudonymService, ExternalToolService, UserService, injectionToken],
+					inject: [
+						LegacyLogger,
+						NextcloudClient,
+						PseudonymService,
+						ExternalToolService,
+						UserService,
+						configInjectionToken,
+					],
 				},
 				{
 					provide: NextcloudClient,
@@ -55,7 +62,7 @@ export class CollaborativeStorageAdapterModule {
 						httpService: HttpService,
 						config: InternalCollaborativeStorageAdapterConfig
 					): NextcloudClient => new NextcloudClient(logger, httpService, config),
-					inject: [LegacyLogger, HttpService, injectionToken],
+					inject: [LegacyLogger, HttpService, configInjectionToken],
 				},
 				storageStrategy,
 			],

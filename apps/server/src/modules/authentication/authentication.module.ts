@@ -69,12 +69,12 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		RoleModule,
 		IdentityManagementModule.register({
 			encryptionConfig: {
-				Constructor: AuthenticationEncryptionConfig,
-				injectionToken: AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN,
+				configConstructor: AuthenticationEncryptionConfig,
+				configInjectionToken: AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN,
 			},
 			keycloakAdministrationConfig: {
-				Constructor: KeycloakAdministrationConfig,
-				injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+				configConstructor: KeycloakAdministrationConfig,
+				configInjectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 			},
 		}),
 		ValkeyClientModule.register({
@@ -84,7 +84,7 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		}),
 		UserModule,
 		HttpModule,
-		EncryptionModule.register(AuthenticationEncryptionConfig, AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN),
+		EncryptionModule.register(AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN, AuthenticationEncryptionConfig),
 	],
 	providers: [
 		LegacySchoolRepo,

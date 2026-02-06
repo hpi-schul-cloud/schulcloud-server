@@ -22,11 +22,11 @@ export class IdentityManagementModule {
 					keycloakAdministrationConfig,
 				}),
 				KeycloakAdministrationModule.register(
-					keycloakAdministrationConfig.injectionToken,
-					keycloakAdministrationConfig.Constructor
+					keycloakAdministrationConfig.configInjectionToken,
+					keycloakAdministrationConfig.configConstructor
 				),
 				HttpModule,
-				EncryptionModule.register(encryptionConfig.Constructor, encryptionConfig.injectionToken),
+				EncryptionModule.register(encryptionConfig.configInjectionToken, encryptionConfig.configConstructor),
 				LoggerModule,
 			],
 			providers: [
