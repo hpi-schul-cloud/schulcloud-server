@@ -13,8 +13,7 @@ on:
 env:
   MONGODB_VERSION: 7.0
   NODE_VERSION: "22"
-  AES_KEY: "test-ascii-key-12345678901234567890123456789012"
-  NODE_ENV: "production"
+  AES_KEY: ${{ secrets.AES_KEY }}
 jobs:
   migration:
     runs-on: ubuntu-latest
