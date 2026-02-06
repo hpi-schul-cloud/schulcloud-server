@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import { Loggable } from '@core/logger';
 import { Logger } from '@core/logger/logger';
 import { LogMessage } from '@core/logger/types/logging.types';

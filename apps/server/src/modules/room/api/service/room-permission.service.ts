@@ -31,31 +31,9 @@ export class RoomPermissionService {
 		return roomMembershipAuthorizable;
 	}
 
-	public async hasRoomPermissions(
-		userId: EntityId,
-		roomId: EntityId,
-		action: Action,
-		requiredPermissions: Permission[] = []
-	): Promise<boolean> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const hasRoomPermissions = this.authorizationService.hasPermission(user, roomMembershipAuthorizable, {
-			action,
-			requiredPermissions,
-		});
-
-		return hasRoomPermissions;
-	}
-
 	public checkFeatureAdministrateRoomsEnabled(): void {
 		if (!this.config.featureAdministrateRoomsEnabled) {
 			throw new FeatureDisabledLoggableException('FEATURE_ADMINISTRATE_ROOMS_ENABLED');
-		}
-	}
-
-	public checkFeatureRoomCopyEnabled(): void {
-		if (!this.config.featureRoomCopyEnabled) {
-			throw new FeatureDisabledLoggableException('FEATURE_ROOM_COPY_ENABLED');
 		}
 	}
 
