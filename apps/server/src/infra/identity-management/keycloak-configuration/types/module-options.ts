@@ -3,7 +3,13 @@ import { KeycloakAdministrationConfig } from '../../keycloak-administration/keyc
 import { KeycloakConfigurationConfig } from '../keycloak-configuration.config';
 
 export interface KeycloakConfigurationModuleOptions {
-	encryptionConfig: { injectionToken: string; Constructor: new () => EncryptionConfig };
-	keycloakAdministrationConfig: { injectionToken: string; Constructor: new () => KeycloakAdministrationConfig };
-	keycloakConfigurationConfig: { injectionToken: string; Constructor: new () => KeycloakConfigurationConfig };
+	encryptionConfig: { configInjectionToken: string; configConstructor: new () => EncryptionConfig };
+	keycloakAdministrationConfig: {
+		configInjectionToken: string;
+		configConstructor: new () => KeycloakAdministrationConfig;
+	};
+	keycloakConfigurationConfig: {
+		configInjectionToken: string;
+		configConstructor: new () => KeycloakConfigurationConfig;
+	};
 }

@@ -8,9 +8,9 @@ import { BiloStrategy, VidisStrategy } from './strategy';
 
 @Module({
 	imports: [
-		BiloClientModule.register(MediumMetadataEncryptionConfig, MEDIUM_METADATA_ENCRYPTION_CONFIG_TOKEN),
+		BiloClientModule.register(MEDIUM_METADATA_ENCRYPTION_CONFIG_TOKEN, MediumMetadataEncryptionConfig),
 		MediaSourceModule,
-		VidisClientModule.register(MediumMetadataEncryptionConfig, MEDIUM_METADATA_ENCRYPTION_CONFIG_TOKEN),
+		VidisClientModule.register(MEDIUM_METADATA_ENCRYPTION_CONFIG_TOKEN, MediumMetadataEncryptionConfig),
 	],
 	providers: [BiloStrategy, VidisStrategy, MediumMetadataService],
 	exports: [MediumMetadataService],

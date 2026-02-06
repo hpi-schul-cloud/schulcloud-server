@@ -22,12 +22,12 @@ import migrationOptions from './migrations-options';
 		FilesModule,
 		KeycloakModule.register({
 			encryptionConfig: {
-				Constructor: ManagmentEncryptionConfig,
-				injectionToken: MANAGMENT_ENCRYPTION_CONFIG_TOKEN,
+				configConstructor: ManagmentEncryptionConfig,
+				configInjectionToken: MANAGMENT_ENCRYPTION_CONFIG_TOKEN,
 			},
 			keycloakAdministrationConfig: {
-				Constructor: KeycloakAdministrationConfig,
-				injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+				configConstructor: KeycloakAdministrationConfig,
+				configInjectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 			}, // TODO: Was macht das KeycloakModule hier?
 		}),
 		DatabaseModule.register({

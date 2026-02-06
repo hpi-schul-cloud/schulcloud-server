@@ -9,12 +9,12 @@ import { SchulconnexRestClient } from './schulconnex-rest-client';
 @Module({})
 export class SchulconnexClientModule {
 	public static register(
-		injectionToken: string,
-		Constructor: new () => InternalSchulconnexClientConfig
+		configInjectionToken: string,
+		configConstructor: new () => InternalSchulconnexClientConfig
 	): DynamicModule {
 		return {
 			module: SchulconnexClientModule,
-			imports: [HttpModule, LoggerModule, ConfigurationModule.register(injectionToken, Constructor)],
+			imports: [HttpModule, LoggerModule, ConfigurationModule.register(configInjectionToken, configConstructor)],
 			providers: [OauthAdapterService, SchulconnexRestClient],
 			exports: [SchulconnexRestClient],
 		};

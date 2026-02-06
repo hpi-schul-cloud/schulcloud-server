@@ -28,10 +28,13 @@ function accountIdmToDtoMapperFactory(config: AccountConfig): AccountIdmToDoMapp
 @Module({
 	imports: [
 		IdentityManagementModule.register({
-			encryptionConfig: { Constructor: AccountEncryptionConfig, injectionToken: ACCOUNT_ENCRYPTION_CONFIG_TOKEN },
+			encryptionConfig: {
+				configConstructor: AccountEncryptionConfig,
+				configInjectionToken: ACCOUNT_ENCRYPTION_CONFIG_TOKEN,
+			},
 			keycloakAdministrationConfig: {
-				Constructor: KeycloakAdministrationConfig,
-				injectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+				configConstructor: KeycloakAdministrationConfig,
+				configInjectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 			},
 		}),
 		SystemModule,

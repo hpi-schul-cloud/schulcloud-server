@@ -6,10 +6,13 @@ import { KeycloakAdministrationService } from './service/keycloak-administration
 
 @Module({})
 export class KeycloakAdministrationModule {
-	public static register(injectionToken: string, Constructor: new () => KeycloakAdministrationConfig): DynamicModule {
+	public static register(
+		configInjectionToken: string,
+		configConstructor: new () => KeycloakAdministrationConfig
+	): DynamicModule {
 		return {
 			module: KeycloakAdministrationModule,
-			imports: [ConfigurationModule.register(injectionToken, Constructor)],
+			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
 			controllers: [],
 			providers: [KeycloakAdminClient, KeycloakAdministrationService],
 			exports: [KeycloakAdministrationService],

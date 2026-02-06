@@ -24,15 +24,15 @@ export class KeycloakConfigurationModule {
 			module: KeycloakConfigurationModule,
 			imports: [
 				ConfigurationModule.register(
-					keycloakConfigurationConfig.injectionToken,
-					keycloakConfigurationConfig.Constructor
+					keycloakConfigurationConfig.configInjectionToken,
+					keycloakConfigurationConfig.configConstructor
 				),
 				KeycloakAdministrationModule.register(
-					keycloakAdministrationConfig.injectionToken,
-					keycloakAdministrationConfig.Constructor
+					keycloakAdministrationConfig.configInjectionToken,
+					keycloakAdministrationConfig.configConstructor
 				),
 				LoggerModule,
-				EncryptionModule.register(encryptionConfig.Constructor, encryptionConfig.injectionToken),
+				EncryptionModule.register(encryptionConfig.configInjectionToken, encryptionConfig.configConstructor),
 				ConsoleWriterModule,
 				SystemModule,
 				AccountModule,

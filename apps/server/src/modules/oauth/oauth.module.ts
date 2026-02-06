@@ -20,7 +20,7 @@ import { OAuthService, OauthSessionTokenService } from './service';
 		LoggerModule,
 		AuthorizationModule,
 		HttpModule,
-		EncryptionModule.register(OauthEncryptionConfig, OAUTH_ENCRYPTION_CONFIG_TOKEN),
+		EncryptionModule.register(OAUTH_ENCRYPTION_CONFIG_TOKEN, OauthEncryptionConfig),
 		UserModule,
 		ProvisioningModule,
 		SystemModule,

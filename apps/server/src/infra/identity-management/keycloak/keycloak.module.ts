@@ -16,11 +16,11 @@ export class KeycloakModule {
 			module: KeycloakModule,
 			imports: [
 				LoggerModule,
-				EncryptionModule.register(encryptionConfig.Constructor, encryptionConfig.injectionToken),
+				EncryptionModule.register(encryptionConfig.configInjectionToken, encryptionConfig.configConstructor),
 				HttpModule,
 				KeycloakAdministrationModule.register(
-					keycloakAdministrationConfig.injectionToken,
-					keycloakAdministrationConfig.Constructor
+					keycloakAdministrationConfig.configInjectionToken,
+					keycloakAdministrationConfig.configConstructor
 				),
 			],
 			providers: [KeycloakIdentityManagementService, KeycloakIdentityManagementOauthService],

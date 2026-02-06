@@ -6,7 +6,7 @@ import { BoardCardApi, Configuration } from './cards-api-client';
 
 @Module({})
 export class CardClientModule {
-	public static register(configInjectionToken: string, config: new () => CardClientConfig): DynamicModule {
+	public static register(configInjectionToken: string, configConstructor: new () => CardClientConfig): DynamicModule {
 		const providers = [
 			CardClientAdapter,
 			{
@@ -24,7 +24,7 @@ export class CardClientModule {
 		];
 		return {
 			module: CardClientModule,
-			imports: [ConfigurationModule.register(configInjectionToken, config)],
+			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
 			providers,
 			exports: [CardClientAdapter],
 		};

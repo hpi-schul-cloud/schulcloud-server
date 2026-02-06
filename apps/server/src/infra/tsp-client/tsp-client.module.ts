@@ -15,7 +15,7 @@ export class TspClientModule {
 			imports: [
 				LoggerModule,
 				OauthAdapterModule,
-				EncryptionModule.register(encryptionConfig.configConstructor, encryptionConfig.configInjectionToken),
+				EncryptionModule.register(encryptionConfig.configInjectionToken, encryptionConfig.configConstructor),
 				ConfigurationModule.register(tspClientConfig.configInjectionToken, tspClientConfig.configConstructor),
 			],
 			providers: [TspClientFactory],

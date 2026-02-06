@@ -35,7 +35,7 @@ import {
 		CommonToolModule,
 		LoggerModule,
 		OauthProviderServiceModule,
-		EncryptionModule.register(ToolEncryptionConfig, TOOL_ENCRYPTION_CONFIG_TOKEN),
+		EncryptionModule.register(TOOL_ENCRYPTION_CONFIG_TOKEN, ToolEncryptionConfig),
 		HttpModule,
 		InstanceModule,
 		AuthorizationModule,
