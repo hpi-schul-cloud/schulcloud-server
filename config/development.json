@@ -12,7 +12,6 @@
 	"SYNC_LOG_LEVEL": "debug",
 	"REQUEST_LOGGING_ENABLED": true,
 	"FEATURE_MONGOOSE_LOGGING_ENABLED": true,
-	"FEATURE_LERNSTORE_ENABLED": false,
 	"FEATURE_S3_BUCKET_CORS": false,
 	"S3_KEY": "abcdefghijklmnop",
 	"AES_KEY": "thisisnotsecure12",
