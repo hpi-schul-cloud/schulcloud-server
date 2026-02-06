@@ -44,7 +44,7 @@ describe('CourseExternalToolScope', () => {
 
 				scope.bySchoolToolId(schoolExternalToolEntity.id);
 
-				expect(scope.query).toEqual({ schoolTool: schoolExternalToolEntity.id });
+				expect(scope.query).toEqual({ schoolTool: new ObjectId(schoolExternalToolEntity.id) });
 			});
 		});
 	});

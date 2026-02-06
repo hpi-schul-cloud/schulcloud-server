@@ -15,7 +15,7 @@ export class ContextExternalToolScope extends Scope<ContextExternalToolEntity> {
 
 	public bySchoolToolId(schoolToolId: EntityId | undefined): ContextExternalToolScope {
 		if (schoolToolId !== undefined) {
-			this.addQuery({ schoolTool: schoolToolId });
+			this.addQuery({ schoolTool: new ObjectId(schoolToolId) });
 		}
 		return this;
 	}
