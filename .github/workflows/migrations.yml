@@ -14,7 +14,7 @@ env:
   MONGODB_VERSION: 7.0
   NODE_VERSION: "22"
   AES_KEY: ${{ secrets.AES_KEY }}
-  HYDRA_URL: "http://localhost:4445"
+  HYDRA_URI: "http://localhost:4445"
 jobs:
   migration:
     runs-on: ubuntu-latest
