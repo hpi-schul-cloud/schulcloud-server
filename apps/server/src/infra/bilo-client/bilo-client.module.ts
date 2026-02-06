@@ -12,7 +12,7 @@ export class BiloClientModule {
 			module: BiloClientModule,
 			imports: [
 				HttpModule,
-				EncryptionModule.register(configConstructor, configInjectionToken),
+				EncryptionModule.register(configInjectionToken, configConstructor),
 				LoggerModule,
 				OauthAdapterModule,
 			],

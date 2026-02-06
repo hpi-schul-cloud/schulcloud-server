@@ -9,7 +9,7 @@ describe('EncryptionModule', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [EncryptionModule.register(TestEncryptionConfig, 'TEST_ENCRYPTION_CONFIG_TOKEN')],
+			imports: [EncryptionModule.register('TEST_ENCRYPTION_CONFIG_TOKEN', TestEncryptionConfig)],
 		}).compile();
 		defaultService = module.get(DefaultEncryptionService);
 	});

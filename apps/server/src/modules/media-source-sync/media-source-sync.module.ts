@@ -17,7 +17,7 @@ import { BiloMetadataSyncStrategy, VidisActivationSyncStrategy, VidisMetadataSyn
 		ExternalToolModule,
 		MediumMetadataModule,
 		SchoolLicenseModule,
-		VidisClientModule.register(MediaSourceSyncEncryptionConfig, MEDIA_SOURCE_SYNC_ENCRYPTION_CONFIG_TOKEN),
+		VidisClientModule.register(MEDIA_SOURCE_SYNC_ENCRYPTION_CONFIG_TOKEN, MediaSourceSyncEncryptionConfig),
 		SchoolModule,
 	],
 	providers: [
