@@ -261,7 +261,7 @@ export class User extends BaseEntityWithTimestamps {
 		}
 
 		if (roles.some((role) => role.name === RoleName.STUDENT)) {
-			setOfPermissions = this.resolveSchoolPermissionsForStudent(setOfPermissions, schoolPermissions);
+			setOfPermissions = this.resolveSchoolPermissionsForStudent(setOfPermissions);
 		}
 
 		return setOfPermissions;
@@ -289,16 +289,7 @@ export class User extends BaseEntityWithTimestamps {
 		return setOfPermissions;
 	}
 
-	private resolveSchoolPermissionsForStudent(
-		setOfPermissions: Set<Permission>,
-		schoolPermissions?: SchoolRoles
-	): Set<Permission> {
-		if (schoolPermissions?.student?.LERNSTORE_VIEW === true) {
-			setOfPermissions.add(Permission.LERNSTORE_VIEW);
-		} else if (schoolPermissions?.student?.LERNSTORE_VIEW === false) {
-			setOfPermissions.delete(Permission.LERNSTORE_VIEW);
-		}
-
+	private resolveSchoolPermissionsForStudent(setOfPermissions: Set<Permission>): Set<Permission> {
 		return setOfPermissions;
 	}
 

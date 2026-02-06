@@ -36,7 +36,6 @@ export const userPermissions = [
 	Permission.HOMEWORK_EDIT,
 	Permission.HOMEWORK_VIEW,
 	Permission.INSTANCE_VIEW,
-	Permission.LERNSTORE_VIEW,
 	Permission.LINK_CREATE,
 	Permission.NEWS_VIEW,
 	Permission.NOTIFICATION_CREATE,

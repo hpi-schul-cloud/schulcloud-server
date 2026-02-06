@@ -242,10 +242,6 @@ describe('School Controller (API)', () => {
 											errors: ['STUDENT_LIST must be a boolean value'],
 											field: ['permissions', 'teacher', 'STUDENT_LIST'],
 										},
-										{
-											errors: ['LERNSTORE_VIEW must be a boolean value'],
-											field: ['permissions', 'student', 'LERNSTORE_VIEW'],
-										},
 									],
 								})
 							);

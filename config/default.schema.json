@@ -714,11 +714,6 @@
 			"default": "https://lernen.dbildungscloud.de",
 			"description": "URL for the platform training material"
 		},
-		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Allows school admin to toggle student's LERNSTORE_VIEW permission."
-		},
 		"TEACHER_STUDENT_VISIBILITY": {
 			"type": "object",
 			"description": "Configuration regarding teachers' STUDENT_LIST permission.",
@@ -905,16 +900,6 @@
 			"type": "string",
 			"default": null,
 			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
-		},
-		"FEATURE_ES_SEARCHABLE_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "When enabled, only content having searchable flag will be returned by Lern-Store"
-		},
-		"FEATURE_ES_COLLECTIONS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "When enabled, collections will be searchable in Lern-Store"
 		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",
