@@ -9,6 +9,7 @@ import { roleFactory } from '@modules/role/testing';
 import { RoomMembershipEntity } from '@modules/room-membership';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { createRoomWithUserGroup } from '@modules/room/testing/room-with-membership.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { User } from '@modules/user/repo';
@@ -574,6 +575,102 @@ describe('Room Controller (API)', () => {
 					const response = await loggedInClient.delete(someId);
 
 					expect(response.status).toBe(HttpStatus.NOT_FOUND);
+				});
+			});
+		});
+
+		describe('when having two rooms from the same school', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const otherSchool = schoolEntityFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const guestTeacherRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
+				const { teacherUser: guestTeacher } = UserAndAccountTestFactory.buildTeacher({
+					school: otherSchool,
+					secondarySchools: [{ school, role: guestTeacherRole }],
+				});
+				const { roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+				const {
+					roomEntity: room1,
+					userGroup: group1,
+					roomMembership: roomMembership1,
+				} = createRoomWithUserGroup(school, [
+					{ role: roomOwnerRole, user: teacherUser },
+					{ role: roomViewerRole, user: guestTeacher },
+				]);
+				const {
+					roomEntity: room2,
+					userGroup: group2,
+					roomMembership: roomMembership2,
+				} = createRoomWithUserGroup(school, [
+					{ role: roomOwnerRole, user: teacherUser },
+					{ role: roomViewerRole, user: guestTeacher },
+				]);
+
+				await em
+					.persist([
+						school,
+						otherSchool,
+						teacherAccount,
+						teacherUser,
+						guestTeacher,
+						guestTeacherRole,
+						room1,
+						room2,
+						group1,
+						group2,
+						roomMembership1,
+						roomMembership2,
+					])
+					.flush();
+				em.clear();
+
+				return { teacherAccount, guestTeacher, guestTeacherRole, room1, room2 };
+			};
+
+			describe('when having a guest teacher in both rooms', () => {
+				describe('when deleting both rooms', () => {
+					it('should remove the secondarySchool attribute from the guest teacher', async () => {
+						const { teacherAccount, guestTeacher, room1, room2 } = await setup();
+						const loggedInClient = await testApiClient.login(teacherAccount);
+
+						const guestTeacherBefore = await em.findOneOrFail(User, guestTeacher.id);
+						expect(guestTeacherBefore.secondarySchools).toHaveLength(1);
+
+						em.clear();
+
+						const response1 = await loggedInClient.delete(room1.id);
+						expect(response1.status).toBe(HttpStatus.NO_CONTENT);
+						const response2 = await loggedInClient.delete(room2.id);
+						expect(response2.status).toBe(HttpStatus.NO_CONTENT);
+
+						em.clear();
+
+						const guestTeacherAfter = await em.findOneOrFail(User, guestTeacher.id);
+						expect(guestTeacherAfter.secondarySchools).toHaveLength(0);
+					});
+				});
+
+				describe('when deleting one of the rooms', () => {
+					it('should not remove the secondarySchool attribute from the guest teacher', async () => {
+						const { teacherAccount, guestTeacher, guestTeacherRole, room1 } = await setup();
+						const loggedInClient = await testApiClient.login(teacherAccount);
+
+						const guestTeacherBefore = await em.findOneOrFail(User, guestTeacher.id);
+						expect(guestTeacherBefore.secondarySchools).toHaveLength(1);
+
+						em.clear();
+
+						const response = await loggedInClient.delete(room1.id);
+						expect(response.status).toBe(HttpStatus.NO_CONTENT);
+
+						em.clear();
+
+						const guestTeacherAfter = await em.findOneOrFail(User, guestTeacher.id);
+						expect(guestTeacherAfter.secondarySchools).toHaveLength(1);
+						expect(guestTeacherAfter.secondarySchools[0].school.id).toBe(room1.schoolId);
+						expect(guestTeacherAfter.secondarySchools[0].role.id).toBe(guestTeacherRole.id);
+					});
 				});
 			});
 		});
