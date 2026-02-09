@@ -40,7 +40,7 @@ Betriebssystem: Test OS
 Gerät: Desktop [auto-detection: Test User Agent]
 Problembereich: General \n
 
-User meldet folgendes:
+User meldet folgendes: Test Problem Subject \n
 Problem Kurzbeschreibung: Test problem description
 `;
 
@@ -82,7 +82,7 @@ Betriebssystem: Test OS
 Gerät:  [auto-detection: Test User Agent]
 Problembereich: General \n
 
-User meldet folgendes:
+User meldet folgendes: Test Problem Subject \n
 Problem Kurzbeschreibung: Test problem description
 `;
 
@@ -124,7 +124,7 @@ Betriebssystem: Test OS
 Gerät: Desktop [auto-detection: Test User Agent]
 Problembereich: General \n
 
-User meldet folgendes:
+User meldet folgendes: Test Problem Subject \n
 Problem Kurzbeschreibung: Test problem description
 `;
 
@@ -163,7 +163,7 @@ Betriebssystem:
 Gerät: Desktop [auto-detection: ]
 Problembereich: General \n
 
-User meldet folgendes:
+User meldet folgendes: Test Problem Subject \n
 Problem Kurzbeschreibung: Test problem description
 `;
 
@@ -205,7 +205,7 @@ Betriebssystem: Test OS
 Gerät:  [auto-detection: Test User Agent]
 Problembereich: General \n
 
-User schrieb folgendes:
+User schrieb folgendes: Test Wish Subject \n
 Als As a user
 möchte ich I want to test,
 um So I can verify functionality.
@@ -250,7 +250,7 @@ Betriebssystem: Test OS
 Gerät:  [auto-detection: Test User Agent]
 Problembereich: General \n
 
-User schrieb folgendes:
+User schrieb folgendes: Test Wish Subject \n
 Als As a user
 möchte ich I want to test,
 um So I can verify functionality.
@@ -295,7 +295,7 @@ Betriebssystem: Test OS
 Gerät:  [auto-detection: Test User Agent]
 Problembereich: General \n
 
-User schrieb folgendes:
+User schrieb folgendes: Test Wish Subject \n
 Als As a user
 möchte ich I want to test,
 um So I can verify functionality.
@@ -337,7 +337,7 @@ Betriebssystem:
 Gerät:  [auto-detection: ]
 Problembereich: General \n
 
-User schrieb folgendes:
+User schrieb folgendes: Test Wish Subject \n
 Als As a user
 möchte ich I want to test,
 um So I can verify functionality.
@@ -384,7 +384,7 @@ Betriebssystem:
 Gerät:  [auto-detection: ]
 Problembereich: General \n
 
-User schrieb folgendes:
+User schrieb folgendes: Test Wish Subject \n
 Als As a user
 möchte ich I want to test,
 um So I can verify functionality.

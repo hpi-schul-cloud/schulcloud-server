@@ -24,7 +24,7 @@ Betriebssystem: ${userDevice?.os || ''}
 Gerät: ${problem.device || ''} [auto-detection: ${userDevice?.deviceUserAgent || ''}]
 Problembereich: ${problem.problemArea.join(', ')} \n
 
-User meldet folgendes:
+User meldet folgendes: ${problem.subject} \n
 Problem Kurzbeschreibung: ${problem.problemDescription}
 `;
 
@@ -54,7 +54,7 @@ Betriebssystem: ${userDevice?.os || ''}
 Gerät: ${wish.device || ''} [auto-detection: ${userDevice?.deviceUserAgent || ''}]
 Problembereich: ${wish.problemArea.join(', ')} \n
 
-User schrieb folgendes:
+User schrieb folgendes: ${wish.subject} \n
 Als ${wish.role}
 möchte ich ${wish.desire},
 um ${wish.benefit}.
