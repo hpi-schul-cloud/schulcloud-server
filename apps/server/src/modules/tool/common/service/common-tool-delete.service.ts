@@ -64,15 +64,15 @@ export class CommonToolDeleteService {
 			schoolToolRef: { schoolToolId: schoolExternalTool.id },
 		});
 
-		// we have to wait with deleting the school external tool until the context external tools are populated,
-		// otherwise the context external tools won't be found due to the missing reference
-		await this.schoolExternalToolRepo.deleteById(schoolExternalTool.id);
-
 		const promises: Promise<void>[] = contextExternalTools.map(async (contextExternalTool) => {
 			await this.deleteContextExternalToolInternal(externalTool, contextExternalTool);
 		});
 
 		await Promise.all(promises);
+
+		// we have to wait with deleting the school external tool until the context external tools are populated,
+		// otherwise the context external tools won't be found due to the missing reference
+		await this.schoolExternalToolRepo.deleteById(schoolExternalTool.id);
 	}
 
 	private async deleteContextExternalToolInternal(
