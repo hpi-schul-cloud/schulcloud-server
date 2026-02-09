@@ -17,7 +17,6 @@ import {
 	ElementController,
 } from './controller';
 import { CopyRoomBoardsStep } from './saga';
-import { BoardNodePermissionService } from './service';
 import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
 
 @Module({
@@ -40,15 +39,6 @@ import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc, SubmissionIte
 		BoardSubmissionController,
 		BoardErrorReportController,
 	],
-	providers: [
-		BoardUc,
-		BoardNodePermissionService,
-		BoardErrorReportUc,
-		ColumnUc,
-		CardUc,
-		ElementUc,
-		SubmissionItemUc,
-		CopyRoomBoardsStep,
-	],
+	providers: [BoardUc, BoardErrorReportUc, ColumnUc, CardUc, ElementUc, SubmissionItemUc, CopyRoomBoardsStep],
 })
 export class BoardApiModule {}
