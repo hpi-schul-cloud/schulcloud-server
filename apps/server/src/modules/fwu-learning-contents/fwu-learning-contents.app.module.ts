@@ -12,6 +12,12 @@ import { FWU_S3_CLIENT_CONFIG_TOKEN, FwuS3ClientConfig } from './fwu-s3-client.c
 import { FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig } from './fwu.config';
 import { FWU_S3_CLIENT_INJECTION_TOKEN } from './fwu.const';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
+import {
+	ValkeyClientModule,
+	ValkeyClientSessionConfig,
+	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
+} from '@infra/valkey-client';
+import { SESSION_VALKEY_CLIENT } from '@modules/authentication';
 
 @Module({
 	imports: [
@@ -34,6 +40,11 @@ import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
 				configConstructor: JwtAuthGuardConfig,
 			},
 		]),
+		ValkeyClientModule.register({
+			clientInjectionToken: SESSION_VALKEY_CLIENT,
+			configConstructor: ValkeyClientSessionConfig,
+			configInjectionToken: SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
+		}),
 	],
 	controllers: [FwuLearningContentsController],
 	providers: [
