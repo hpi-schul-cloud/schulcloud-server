@@ -228,9 +228,6 @@ describe('School Controller (API)', () => {
 									teacher: {
 										invalid: 'invalid',
 									},
-									student: {
-										invalid: 'invalid',
-									},
 								},
 							});
 
