@@ -68,6 +68,7 @@ export class HelpdeskUc {
 			userRoles: user.roles?.getItems()?.map((role) => role.name),
 			schoolId: school.id,
 			schoolName: school.getProps().name,
+			instanceName: '',
 		});
 
 		return userContext;
