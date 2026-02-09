@@ -1,6 +1,5 @@
 import { Logger } from '@core/logger';
 import { AppendedAttachment, Mail, MailService } from '@infra/mail';
-import { AccountService } from '@modules/account';
 import { Inject, Injectable } from '@nestjs/common';
 import { HELPDESK_CONFIG_TOKEN, HelpdeskConfig } from '../../helpdesk-config';
 import { HelpdeskProblemProps, HelpdeskWishProps, UserContextProps, UserDeviceProps } from '../interface';
@@ -12,7 +11,6 @@ export class HelpdeskService {
 	constructor(
 		private readonly emailService: MailService,
 		@Inject(HELPDESK_CONFIG_TOKEN) private readonly config: HelpdeskConfig,
-		private readonly accountService: AccountService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(HelpdeskService.name);
@@ -24,8 +22,7 @@ export class HelpdeskService {
 		userDevice?: UserDeviceProps,
 		files?: Express.Multer.File[]
 	): Promise<void> {
-		const account = await this.accountService.findByUserIdOrFail(userContext.userId);
-		const plainTextContent = TextFormatter.createProblemText(problem, userContext, account, userDevice);
+		const plainTextContent = TextFormatter.createProblemText(problem, userContext, userDevice);
 		await this.userSendEmailToSupport(
 			[this.config.problemEmailAddress],
 			problem.replyEmail,
@@ -41,8 +38,7 @@ export class HelpdeskService {
 		userDevice?: UserDeviceProps,
 		files?: Express.Multer.File[]
 	): Promise<void> {
-		const account = await this.accountService.findByUserIdOrFail(userContext.userId);
-		const plainTextContent = TextFormatter.createWishText(wish, userContext, account, userDevice);
+		const plainTextContent = TextFormatter.createWishText(wish, userContext, userDevice);
 		await this.userSendEmailToSupport(
 			[this.config.wishEmailAddress],
 			wish.replyEmail,

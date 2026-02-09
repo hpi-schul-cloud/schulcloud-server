@@ -24,7 +24,7 @@ describe('TextFormatter', () => {
 
 				const expected = `
 SystemInformation:
-User login: testuser@example.com
+User login: Test User
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -40,8 +40,9 @@ Betriebssystem: Test OS
 Gerät: Desktop [auto-detection: Test User Agent]
 Problembereich: General \n
 
-User meldet folgendes: Test Problem Subject \n
-Problem Kurzbeschreibung: Test problem description
+User meldet folgendes:
+Problem Kurzbeschreibung: Test Problem Subject
+Problembeschreibung: Test problem description
 `;
 
 				expect(result).toBe(expected);
@@ -66,7 +67,7 @@ Problem Kurzbeschreibung: Test problem description
 
 				const expected = `
 SystemInformation:
-User login: testuser@example.com
+User login: Test User
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -82,8 +83,9 @@ Betriebssystem: Test OS
 Gerät:  [auto-detection: Test User Agent]
 Problembereich: General \n
 
-User meldet folgendes: Test Problem Subject \n
-Problem Kurzbeschreibung: Test problem description
+User meldet folgendes:
+Problem Kurzbeschreibung: Test Problem Subject
+Problembeschreibung: Test problem description
 `;
 
 				expect(result).toBe(expected);
@@ -108,7 +110,7 @@ Problem Kurzbeschreibung: Test problem description
 
 				const expected = `
 SystemInformation:
-User login: testuser@example.com
+User login: Test User
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -124,8 +126,9 @@ Betriebssystem: Test OS
 Gerät: Desktop [auto-detection: Test User Agent]
 Problembereich: General \n
 
-User meldet folgendes: Test Problem Subject \n
-Problem Kurzbeschreibung: Test problem description
+User meldet folgendes:
+Problem Kurzbeschreibung: Test Problem Subject
+Problembeschreibung: Test problem description
 `;
 
 				expect(result).toBe(expected);
@@ -147,7 +150,7 @@ Problem Kurzbeschreibung: Test problem description
 
 				const expected = `
 SystemInformation:
-User login: testuser@example.com
+User login: Test User
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -163,8 +166,9 @@ Betriebssystem:
 Gerät: Desktop [auto-detection: ]
 Problembereich: General \n
 
-User meldet folgendes: Test Problem Subject \n
-Problem Kurzbeschreibung: Test problem description
+User meldet folgendes:
+Problem Kurzbeschreibung: Test Problem Subject
+Problembeschreibung: Test problem description
 `;
 
 				expect(result).toBe(expected);
@@ -189,7 +193,7 @@ Problem Kurzbeschreibung: Test problem description
 
 				const expected = `
 SystemInformation:
-User login: testuser@example.com
+User login: Test User
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -234,7 +238,7 @@ Akzeptanzkriterien: Feature works as expected
 
 				const expected = `
 SystemInformation:
-User login: testuser@example.com
+User login: Test User
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -279,7 +283,7 @@ Akzeptanzkriterien:
 
 				const expected = `
 SystemInformation:
-User login: testuser@example.com
+User login: Test User
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -321,7 +325,7 @@ Akzeptanzkriterien: Feature works as expected
 
 				const expected = `
 SystemInformation:
-User login: testuser@example.com
+User login: Test User
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -368,7 +372,7 @@ Akzeptanzkriterien: Feature works as expected
 
 				const expected = `
 SystemInformation:
-User login: testuser@example.com
+User login: Test User
 User role(s): student
 User registrated email: testuser@example.com \n
 

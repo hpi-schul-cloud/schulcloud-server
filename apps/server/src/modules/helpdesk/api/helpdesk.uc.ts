@@ -1,3 +1,4 @@
+import { Account, AccountService } from '@modules/account';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
 import { User } from '@modules/user/repo';
@@ -15,6 +16,7 @@ export class HelpdeskUc {
 		private readonly helpdeskProblemService: HelpdeskService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: SchoolService,
+		private readonly accountService: AccountService,
 		@Inject(HELPDESK_CONFIG_TOKEN) private readonly config: HelpdeskConfig
 	) {}
 
@@ -26,7 +28,8 @@ export class HelpdeskUc {
 	): Promise<void> {
 		const { user, school } = await this.authorizeUserForSchool(userId);
 
-		const userContext = this.createUserContext(user, school);
+		const account = await this.accountService.findByUserIdOrFail(userId);
+		const userContext = this.createUserContext(user, school, account);
 		const userDevice = this.createUserDevice(userAgent);
 
 		await this.helpdeskProblemService.createProblem(params, userContext, userDevice, files);
@@ -40,7 +43,8 @@ export class HelpdeskUc {
 	): Promise<void> {
 		const { user, school } = await this.authorizeUserForSchool(userId);
 
-		const userContext = this.createUserContext(user, school);
+		const account = await this.accountService.findByUserIdOrFail(userId);
+		const userContext = this.createUserContext(user, school, account);
 		const userDevice = this.createUserDevice(userAgent);
 
 		await this.helpdeskProblemService.createWish(params, userContext, userDevice, files);
@@ -62,10 +66,10 @@ export class HelpdeskUc {
 		};
 	}
 
-	private createUserContext(user: User, school: School): UserContext {
+	private createUserContext(user: User, school: School, account: Account): UserContext {
 		const userContext = new UserContext({
 			userId: user.id,
-			userName: `${user.firstName} ${user.lastName}`,
+			userName: account.username,
 			userEmail: user.email,
 			userRoles: user.roles?.getItems()?.map((role) => role.name),
 			schoolId: school.id,
