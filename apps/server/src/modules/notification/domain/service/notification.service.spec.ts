@@ -73,6 +73,7 @@ describe(NotificationService.name, () => {
 
 				return { type, key, args, userid, notification, mappedEntity };
 			};
+
 			it('should create a notification and log a warning', async () => {
 				const { notification } = setup();
 

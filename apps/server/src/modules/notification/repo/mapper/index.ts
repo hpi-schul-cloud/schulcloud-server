@@ -1,1 +1,1 @@
-export * from './notification.mapper';
+export { NotificationMapper } from './notification.mapper';

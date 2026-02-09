@@ -41,7 +41,7 @@ describe(NotificationRepo.name, () => {
 		});
 	});
 
-	describe('createNotification', () => {
+	describe('create', () => {
 		describe('when a notification entity is provided', () => {
 			const setup = () => {
 				const fixedDate = new Date();
@@ -59,6 +59,7 @@ describe(NotificationRepo.name, () => {
 
 				return { notification, notificationId };
 			};
+
 			it('should persist the notification and return the same instance', async () => {
 				const { notification, notificationId } = setup();
 

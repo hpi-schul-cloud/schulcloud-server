@@ -37,6 +37,7 @@ describe(NotificationMapper.name, () => {
 				expect(domainObject).toEqual(expectedDomainObject);
 			});
 		});
+
 		describe('When a notification entity is mapped to an empty domain object', () => {
 			const setup = () => {
 				const entity = {

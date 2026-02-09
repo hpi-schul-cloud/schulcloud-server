@@ -29,24 +29,9 @@ export class NotificationEntity extends BaseEntityWithTimestamps {
 	constructor(props: NotificationEntityProps) {
 		super();
 
-		if (props.id !== undefined) {
-			this.id = props.id;
-		}
-
-		if (props.type !== undefined) {
-			this.type = props.type;
-		}
-
-		if (props.key !== undefined) {
-			this.key = props.key;
-		}
-
-		if (props.arguments !== undefined) {
-			this.arguments = props.arguments;
-		}
-
-		if (props.userId !== undefined) {
-			this.userId = props.userId;
-		}
+		this.type = props.type;
+		this.key = props.key;
+		this.arguments = props.arguments;
+		this.userId = props.userId;
 	}
 }

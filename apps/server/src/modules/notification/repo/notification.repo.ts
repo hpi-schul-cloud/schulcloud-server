@@ -9,6 +9,7 @@ import { EntityId } from '@shared/domain/types';
 @Injectable()
 export class NotificationRepo {
 	constructor(private readonly em: EntityManager) {}
+
 	get entityName(): EntityName<NotificationEntity> {
 		return NotificationEntity;
 	}

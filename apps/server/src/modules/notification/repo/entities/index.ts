@@ -1,1 +1,1 @@
-export * from './notification.entity';
+export { NotificationEntity } from './notification.entity';

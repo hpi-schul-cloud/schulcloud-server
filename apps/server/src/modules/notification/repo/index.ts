@@ -1,1 +1,1 @@
-export * from './notification.repo';
+export { NotificationRepo } from './notification.repo';
