@@ -5,9 +5,9 @@ import { EntityId } from '@shared/domain/types';
 export interface NotificationEntityProps {
 	id?: EntityId;
 	type: string;
-	key?: string;
-	arguments?: string[];
-	userId?: string;
+	key: string;
+	arguments: string[];
+	userId: string;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -15,16 +15,16 @@ export interface NotificationEntityProps {
 @Entity({ tableName: 'cc-user-notification-message' })
 export class NotificationEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
-	type?: string;
+	type: string;
 
 	@Property({ nullable: true })
-	key?: string;
+	key: string;
 
 	@Property({ nullable: true })
-	arguments?: string[];
+	arguments: string[];
 
 	@Property({ nullable: true })
-	userId?: string;
+	userId: string;
 
 	constructor(props: NotificationEntityProps) {
 		super();

@@ -18,10 +18,10 @@ describe(NotificationMapper.name, () => {
 
 				const expectedDomainObject = new Notification({
 					id: entity.id,
-					type: entity.type as string,
-					key: entity.key as string,
-					arguments: entity.arguments as string[],
-					userId: entity.userId as string,
+					type: entity.type,
+					key: entity.key,
+					arguments: entity.arguments,
+					userId: entity.userId,
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				});
@@ -105,10 +105,10 @@ describe(NotificationMapper.name, () => {
 					(entity) =>
 						new Notification({
 							id: entity.id,
-							type: entity.type as string,
-							key: entity.key as string,
-							arguments: entity.arguments as string[],
-							userId: entity.userId as string,
+							type: entity.type,
+							key: entity.key,
+							arguments: entity.arguments,
+							userId: entity.userId,
 							createdAt: entity.createdAt,
 							updatedAt: entity.updatedAt,
 						})

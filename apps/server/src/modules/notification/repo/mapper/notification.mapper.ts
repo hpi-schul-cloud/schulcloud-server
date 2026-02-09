@@ -16,10 +16,10 @@ export class NotificationMapper {
 
 	public static mapToEntity(domainObject: Notification): NotificationEntity {
 		return new NotificationEntity({
-			type: domainObject.type,
-			key: domainObject.key,
-			arguments: domainObject.arguments,
-			userId: domainObject.userId,
+			type: domainObject.type ?? '',
+			key: domainObject.key ?? '',
+			arguments: domainObject.arguments ?? [],
+			userId: domainObject.userId ?? '',
 			id: domainObject.id,
 			createdAt: domainObject.createdAt,
 			updatedAt: domainObject.updatedAt,
