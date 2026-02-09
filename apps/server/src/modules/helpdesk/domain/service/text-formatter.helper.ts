@@ -1,19 +1,21 @@
+import { Account } from '@modules/account';
 import { HelpdeskProblemProps, HelpdeskWishProps, UserContextProps, UserDeviceProps } from '../interface';
 
 export class TextFormatter {
 	public static createProblemText(
 		problem: HelpdeskProblemProps,
 		userContext: UserContextProps,
+		account: Account,
 		userDevice?: UserDeviceProps
 	): string {
 		const text = `
 SystemInformation:
-User login: ${userContext.userEmail}
+User login: ${account.username}
 User role(s): ${userContext.userRoles?.join(', ') || ''}
 User registrated email: ${userContext.userEmail} \n
 
 ReplyEmail: ${problem.replyEmail}
-User: ${userContext.userName}
+User: ${account.username || 'nouser'}
 User-ID: ${userContext.userId}
 Schule: ${userContext.schoolName}
 Schule-ID: ${userContext.schoolId}
@@ -24,8 +26,9 @@ Betriebssystem: ${userDevice?.os || ''}
 Gerät: ${problem.device || ''} [auto-detection: ${userDevice?.deviceUserAgent || ''}]
 Problembereich: ${problem.problemArea.join(', ')} \n
 
-User meldet folgendes: ${problem.subject} \n
-Problem Kurzbeschreibung: ${problem.problemDescription}
+User meldet folgendes:
+Problem Kurzbeschreibung: ${problem.subject}
+Problembeschreibung: ${problem.problemDescription}
 `;
 
 		return text;
@@ -34,16 +37,17 @@ Problem Kurzbeschreibung: ${problem.problemDescription}
 	public static createWishText(
 		wish: HelpdeskWishProps,
 		userContext: UserContextProps,
+		account: Account,
 		userDevice?: UserDeviceProps
 	): string {
 		const text = `
 SystemInformation:
-User login: ${userContext.userEmail}
+User login: ${account.username}
 User role(s): ${userContext.userRoles?.join(', ') || ''}
 User registrated email: ${userContext.userEmail} \n
 
 ReplyEmail: ${wish.replyEmail}
-User: ${userContext.userName}
+User: ${account.username || 'nouser'}
 User-ID: ${userContext.userId}
 Schule: ${userContext.schoolName}
 Schule-ID: ${userContext.schoolId}
