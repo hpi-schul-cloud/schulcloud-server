@@ -1,3 +1,4 @@
+export * from './request/deletion-request.params';
 export * from './request/deletion-request.body.params';
 export * from './request/deletion-execution.params';
 export * from './request/deletion-items.params';
