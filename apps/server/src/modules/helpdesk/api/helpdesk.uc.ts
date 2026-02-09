@@ -1,11 +1,12 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { IResult } from 'ua-parser-js';
 import { HelpdeskService, UserContext, UserDevice } from '../domain';
+import { HELPDESK_CONFIG_TOKEN, HelpdeskConfig } from '../helpdesk-config';
 import { HelpdeskProblemCreateParams, HelpdeskWishCreateParams } from './dto';
 
 @Injectable()
@@ -13,7 +14,8 @@ export class HelpdeskUc {
 	constructor(
 		private readonly helpdeskProblemService: HelpdeskService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: SchoolService,
+		@Inject(HELPDESK_CONFIG_TOKEN) private readonly config: HelpdeskConfig
 	) {}
 
 	public async createHelpdeskProblem(
@@ -68,7 +70,7 @@ export class HelpdeskUc {
 			userRoles: user.roles?.getItems()?.map((role) => role.name),
 			schoolId: school.id,
 			schoolName: school.getProps().name,
-			instanceName: '',
+			instanceName: this.config.instanceName,
 		});
 
 		return userContext;

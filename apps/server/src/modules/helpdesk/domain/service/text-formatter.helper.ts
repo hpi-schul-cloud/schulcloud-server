@@ -17,7 +17,7 @@ User: ${userContext.userName}
 User-ID: ${userContext.userId}
 Schule: ${userContext.schoolName}
 Schule-ID: ${userContext.schoolId}
-Instanz: ${userContext.instanceName || ''}
+Instanz: ${userContext.instanceName}
 Browser: ${userDevice?.browserName || ''}
 Browser Version: ${userDevice?.browserVersion || ''}
 Betriebssystem: ${userDevice?.os || ''}
@@ -38,7 +38,7 @@ Problem Kurzbeschreibung: ${problem.problemDescription}
 	): string {
 		const text = `
 SystemInformation:
-User login: dasch@eag-berlin.de
+User login: ${userContext.userEmail}
 User role(s): ${userContext.userRoles?.join(', ') || ''}
 User registrated email: ${userContext.userEmail} \n
 
@@ -47,7 +47,7 @@ User: ${userContext.userName}
 User-ID: ${userContext.userId}
 Schule: ${userContext.schoolName}
 Schule-ID: ${userContext.schoolId}
-Instanz: ${userContext.instanceName || ''}
+Instanz: ${userContext.instanceName}
 Browser: ${userDevice?.browserName || ''}
 Browser Version: ${userDevice?.browserVersion || ''}
 Betriebssystem: ${userDevice?.os || ''}

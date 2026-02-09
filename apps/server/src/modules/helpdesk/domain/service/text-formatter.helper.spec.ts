@@ -24,7 +24,7 @@ describe('TextFormatter', () => {
 
 				const expected = `
 SystemInformation:
-User login: isBPewdJBQ+pewjtzNvVmavBmIyQn2iAJ1BnhNE3P9I=
+User login: testuser@example.com
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -66,7 +66,7 @@ Problem Kurzbeschreibung: Test problem description
 
 				const expected = `
 SystemInformation:
-User login: isBPewdJBQ+pewjtzNvVmavBmIyQn2iAJ1BnhNE3P9I=
+User login: testuser@example.com
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -108,7 +108,7 @@ Problem Kurzbeschreibung: Test problem description
 
 				const expected = `
 SystemInformation:
-User login: isBPewdJBQ+pewjtzNvVmavBmIyQn2iAJ1BnhNE3P9I=
+User login: testuser@example.com
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -147,7 +147,7 @@ Problem Kurzbeschreibung: Test problem description
 
 				const expected = `
 SystemInformation:
-User login: isBPewdJBQ+pewjtzNvVmavBmIyQn2iAJ1BnhNE3P9I=
+User login: testuser@example.com
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -189,7 +189,7 @@ Problem Kurzbeschreibung: Test problem description
 
 				const expected = `
 SystemInformation:
-User login: dasch@eag-berlin.de
+User login: testuser@example.com
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -234,7 +234,7 @@ Akzeptanzkriterien: Feature works as expected
 
 				const expected = `
 SystemInformation:
-User login: dasch@eag-berlin.de
+User login: testuser@example.com
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -279,7 +279,7 @@ Akzeptanzkriterien:
 
 				const expected = `
 SystemInformation:
-User login: dasch@eag-berlin.de
+User login: testuser@example.com
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -321,7 +321,7 @@ Akzeptanzkriterien: Feature works as expected
 
 				const expected = `
 SystemInformation:
-User login: dasch@eag-berlin.de
+User login: testuser@example.com
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -368,7 +368,7 @@ Akzeptanzkriterien: Feature works as expected
 
 				const expected = `
 SystemInformation:
-User login: dasch@eag-berlin.de
+User login: testuser@example.com
 User role(s): student
 User registrated email: testuser@example.com \n
 
@@ -390,7 +390,6 @@ möchte ich I want to test,
 um So I can verify functionality.
 Akzeptanzkriterien: Feature works as expected
 `;
-				console.log(result);
 
 				expect(result).toBe(expected);
 			});
