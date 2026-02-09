@@ -222,9 +222,9 @@ export class BoardUc {
 				requiredPermissions: [Permission.COURSE_EDIT],
 			});
 		} else if (context.type === BoardExternalReferenceType.Room) {
-			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(context.id);
+			const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(context.id);
 
-			this.authorizationService.checkPermission(user, roomMembershipAuthorizable, {
+			this.authorizationService.checkPermission(user, roomAuthorizable, {
 				action: Action.write,
 				requiredPermissions: [Permission.ROOM_EDIT_CONTENT],
 			});
