@@ -82,8 +82,12 @@ export class RoomMembershipService {
 		if (roomMembership === null) return;
 
 		const group = await this.groupService.findById(roomMembership.userGroupId);
+		const userIds = group.users.map((user) => user.userId);
+
 		await this.groupService.delete(group);
 		await this.roomMembershipRepo.delete(roomMembership);
+
+		await this.handleGuestRoleRemoval(userIds, roomMembership.schoolId);
 	}
 
 	public async addMembersToRoom(
