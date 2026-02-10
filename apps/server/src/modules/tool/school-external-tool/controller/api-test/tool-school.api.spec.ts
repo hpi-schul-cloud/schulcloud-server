@@ -184,6 +184,12 @@ describe('ToolSchoolController (API)', () => {
 				school,
 			});
 
+			const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+				schoolTool: schoolExternalToolEntity,
+				contextType: ContextExternalToolType.BOARD_ELEMENT,
+				contextId: new ObjectId().toHexString(),
+			});
+
 			em.persist([
 				school,
 				adminUser,
@@ -192,6 +198,7 @@ describe('ToolSchoolController (API)', () => {
 				accountWithMissingPermission,
 				externalToolEntity,
 				schoolExternalToolEntity,
+				contextExternalToolEntity,
 			]);
 			await em.flush();
 			em.clear();
@@ -201,7 +208,12 @@ describe('ToolSchoolController (API)', () => {
 				accountWithMissingPermission
 			);
 
-			return { loggedInClientWithMissingPermission, loggedInClient, schoolExternalToolEntity };
+			return {
+				loggedInClientWithMissingPermission,
+				loggedInClient,
+				schoolExternalToolEntity,
+				contextExternalToolEntity,
+			};
 		};
 
 		it('should return forbidden when user is not authorized', async () => {
@@ -212,8 +224,8 @@ describe('ToolSchoolController (API)', () => {
 			expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 		});
 
-		it('should create a school external tool', async () => {
-			const { loggedInClient, schoolExternalToolEntity } = await setup();
+		it('should delete the school external tool and associated context external tool', async () => {
+			const { loggedInClient, schoolExternalToolEntity, contextExternalToolEntity } = await setup();
 
 			const response = await loggedInClient.delete(`${schoolExternalToolEntity.id}`);
 
@@ -223,6 +235,10 @@ describe('ToolSchoolController (API)', () => {
 				id: schoolExternalToolEntity.id,
 			});
 			expect(deleted).toBeNull();
+
+			await expect(
+				em.findOneOrFail('ContextExternalToolEntity', { id: contextExternalToolEntity.id })
+			).rejects.toThrow();
 		});
 	});
 
