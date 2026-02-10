@@ -27,7 +27,7 @@ export class HelpdeskController {
 		@UploadedFiles(new HelpdeskFileValidationPipe())
 		files?: Express.Multer.File[]
 	): Promise<void> {
-		const userAgent: IResult = this.parseUserAgent(userAgentHeader);
+		const userAgent = this.parseUserAgent(userAgentHeader, body.consent);
 
 		await this.helpdeskUc.createHelpdeskProblem(currentUser.userId, body, files, userAgent);
 	}
@@ -45,12 +45,15 @@ export class HelpdeskController {
 		@UploadedFiles(new HelpdeskFileValidationPipe())
 		files?: Express.Multer.File[]
 	): Promise<void> {
-		const userAgent: IResult = this.parseUserAgent(userAgentHeader);
+		const userAgent = this.parseUserAgent(userAgentHeader, body.consent);
 
 		await this.helpdeskUc.createHelpdeskWish(currentUser.userId, body, files, userAgent);
 	}
 
-	private parseUserAgent(userAgentHeader: string): IResult {
+	private parseUserAgent(userAgentHeader: string, consent?: boolean): IResult | undefined {
+		if (!consent) {
+			return undefined;
+		}
 		const ua = new UAParser(userAgentHeader);
 
 		return ua.getResult();

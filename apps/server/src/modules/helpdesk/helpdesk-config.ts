@@ -1,5 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { IsEmail } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
 
 export const HELPDESK_CONFIG_TOKEN = 'HELPDESK_CONFIG_TOKEN';
 @Configuration()
@@ -15,4 +15,8 @@ export class HelpdeskConfig {
 	@ConfigProperty('SMTP_SENDER')
 	@IsEmail()
 	public fromEmailAddress = 'noreply@dbildungscloud.de';
+
+	@ConfigProperty('SC_TITLE')
+	@IsString()
+	public instanceName = 'Default Instance';
 }
