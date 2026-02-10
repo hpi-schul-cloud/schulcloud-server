@@ -47,7 +47,13 @@ export class DeletionRequestUc {
 		);
 
 		if (deletionRequest.targetRef.domain === DomainName.USER) {
-			await this.accountService.deactivateAccount(deletionRequest.targetRef.id, new Date());
+			const deleteAt = new Date();
+			await this.userService.flagAsDeleted(deletionRequest.targetRef.id, deleteAt);
+			try {
+				await this.accountService.deactivateAccount(deletionRequest.targetRef.id, deleteAt);
+			} catch (error) {
+				this.logger.warn({ action: 'createDeletionRequest', 'Account not deactivated. Probably not found.' });
+			}
 		}
 
 		return result;

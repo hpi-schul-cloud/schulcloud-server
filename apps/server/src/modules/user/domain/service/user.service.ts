@@ -209,6 +209,10 @@ export class UserService {
 		return userDeleted;
 	}
 
+	public async flagAsDeleted(userId: EntityId, deletedAt?: Date): Promise<void> {
+		await this.userRepo.flagAsDeleted(userId, deletedAt);
+	}
+
 	public async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
 		const parentEmails = await this.userRepo.getParentEmailsFromUser(userId);
 
