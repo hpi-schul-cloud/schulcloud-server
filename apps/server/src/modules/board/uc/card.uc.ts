@@ -104,7 +104,7 @@ export class CardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(targetCard);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canCreateElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.canMoveElement(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.move(element, targetCard, targetPosition);
 

@@ -19,6 +19,7 @@ import { MoinSchuleClassModule } from '@modules/class-moin-schule/moin-schule-cl
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
 import { CourseApiModule } from '@modules/course/course-api.module';
+import { DeletionPublicApiModule } from '@modules/deletion/deletion-public-api.module';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { HelpdeskApiModule } from '@modules/helpdesk';
@@ -127,6 +128,7 @@ const serverModules = [
 	ShdApiModule,
 	OAuthApiModule,
 	MoinSchuleClassModule,
+	DeletionPublicApiModule,
 ];
 
 const providers = [ServerUc, { provide: SERVER_CONFIG_TOKEN, useValue: serverConfig() }];
