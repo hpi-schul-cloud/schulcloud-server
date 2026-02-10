@@ -260,10 +260,6 @@ export class User extends BaseEntityWithTimestamps {
 			setOfPermissions = this.resolveSchoolPermissionsForTeacher(setOfPermissions, schoolPermissions);
 		}
 
-		if (roles.some((role) => role.name === RoleName.STUDENT)) {
-			setOfPermissions = this.resolveSchoolPermissionsForStudent(setOfPermissions);
-		}
-
 		return setOfPermissions;
 	}
 
@@ -286,10 +282,6 @@ export class User extends BaseEntityWithTimestamps {
 			setOfPermissions.delete(Permission.STUDENT_LIST);
 		}
 
-		return setOfPermissions;
-	}
-
-	private resolveSchoolPermissionsForStudent(setOfPermissions: Set<Permission>): Set<Permission> {
 		return setOfPermissions;
 	}
 
