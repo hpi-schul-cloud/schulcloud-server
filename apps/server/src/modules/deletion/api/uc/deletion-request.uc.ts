@@ -1,5 +1,5 @@
 import { LegacyLogger } from '@core/logger';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
 import { AccountService } from '@modules/account';
@@ -52,7 +52,13 @@ export class DeletionRequestUc {
 			try {
 				await this.accountService.deactivateAccount(deletionRequest.targetRef.id, deleteAt);
 			} catch (error) {
-				this.logger.warn({ action: 'createDeletionRequest', 'Account not deactivated. Probably not found.' });
+				if (error instanceof NotFoundException) {
+					this.logger.warn({
+						action: 'createDeletionRequest',
+						message: error.message,
+						deletionRequest,
+					});
+				}
 			}
 		}
 
