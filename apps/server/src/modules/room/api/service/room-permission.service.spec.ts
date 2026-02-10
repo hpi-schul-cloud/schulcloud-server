@@ -3,11 +3,10 @@ import { RoleName } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import type { User } from '@modules/user/repo';
-import { ConfigService } from '@nestjs/config';
 import { Permission } from '@shared/domain/interface';
 import type { Room } from '../../domain/do';
 import { RoomService } from '../../domain/service/room.service';
-import { RoomConfig } from '../../room.config';
+import { RoomPublicApiConfig } from '../../room.config';
 import { LockedRoomLoggableException } from '../loggables/locked-room-loggable-exception';
 import { RoomPermissionService } from './room-permission.service';
 
@@ -49,11 +48,10 @@ describe('RoomPermissionService', () => {
 			hasPermission,
 			requiredPermissions = [Permission.ROOM_EDIT_ROOM],
 			action = Action.read,
-			configValue,
 			roomServiceRoom,
 		} = opts;
 
-		const configService = { get: jest.fn() } as unknown as jest.Mocked<ConfigService<RoomConfig, true>>;
+		const config = new RoomPublicApiConfig();
 		const roomMembershipService = { getRoomAuthorizable: jest.fn() } as unknown as jest.Mocked<RoomMembershipService>;
 		const authorizationService = {
 			getUserWithPermissions: jest.fn(),
@@ -62,7 +60,7 @@ describe('RoomPermissionService', () => {
 		} as unknown as jest.Mocked<AuthorizationService>;
 		const roomService = { getSingleRoom: jest.fn() } as unknown as jest.Mocked<RoomService>;
 
-		const service = new RoomPermissionService(configService, roomMembershipService, authorizationService, roomService);
+		const service = new RoomPermissionService(config, roomMembershipService, authorizationService, roomService);
 
 		const roomAuthorizable = buildRoomAuthorizable(hasOwner);
 		roomMembershipService.getRoomAuthorizable.mockResolvedValue(roomAuthorizable);
@@ -74,17 +72,13 @@ describe('RoomPermissionService', () => {
 			authorizationService.hasPermission.mockReturnValue(hasPermission);
 		}
 
-		if (configValue !== undefined) {
-			configService.get.mockReturnValue(configValue);
-		}
-
 		if (roomServiceRoom) {
 			roomService.getSingleRoom.mockResolvedValue(roomServiceRoom as unknown as Room);
 		}
 
 		return {
 			service,
-			configService,
+			config,
 			roomMembershipService,
 			authorizationService,
 			roomService,
@@ -157,13 +151,15 @@ describe('RoomPermissionService', () => {
 
 	describe('checkFeatureAdministrateRoomsEnabled', () => {
 		it('checkFeatureAdministrateRoomsEnabled: throws when feature flag disabled', () => {
-			const { service } = setup({ configValue: false });
+			const { service, config } = setup();
+			config.featureAdministrateRoomsEnabled = false;
 
 			expect(() => service.checkFeatureAdministrateRoomsEnabled()).toThrowError();
 		});
 
 		it('checkFeatureAdministrateRoomsEnabled: does nothing when enabled', () => {
-			const { service } = setup({ configValue: true });
+			const { service, config } = setup();
+			config.featureAdministrateRoomsEnabled = true;
 
 			expect(() => service.checkFeatureAdministrateRoomsEnabled()).not.toThrow();
 		});
@@ -171,13 +167,15 @@ describe('RoomPermissionService', () => {
 
 	describe('checkFeatureRoomCopyEnabled', () => {
 		it('checkFeatureRoomCopyEnabled: throws when feature flag disabled', () => {
-			const { service } = setup({ configValue: false });
+			const { service, config } = setup();
+			config.featureRoomCopyEnabled = false;
 
 			expect(() => service.checkFeatureRoomCopyEnabled()).toThrowError();
 		});
 
 		it('checkFeatureRoomCopyEnabled: does nothing when enabled', () => {
-			const { service } = setup({ configValue: true });
+			const { service, config } = setup();
+			config.featureRoomCopyEnabled = true;
 
 			expect(() => service.checkFeatureRoomCopyEnabled()).not.toThrow();
 		});
