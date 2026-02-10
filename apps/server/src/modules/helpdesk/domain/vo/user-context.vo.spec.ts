@@ -12,6 +12,7 @@ describe('UserContext', () => {
 				userRoles: ['admin', 'user'],
 				schoolId: new ObjectId().toHexString(),
 				schoolName: 'Test School',
+				instanceName: 'Test Instance',
 			};
 			return { props };
 		};

@@ -1,11 +1,13 @@
+import { Account, AccountService } from '@modules/account';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { IResult } from 'ua-parser-js';
 import { HelpdeskService, UserContext, UserDevice } from '../domain';
+import { HELPDESK_CONFIG_TOKEN, HelpdeskConfig } from '../helpdesk-config';
 import { HelpdeskProblemCreateParams, HelpdeskWishCreateParams } from './dto';
 
 @Injectable()
@@ -13,7 +15,9 @@ export class HelpdeskUc {
 	constructor(
 		private readonly helpdeskProblemService: HelpdeskService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: SchoolService,
+		private readonly accountService: AccountService,
+		@Inject(HELPDESK_CONFIG_TOKEN) private readonly config: HelpdeskConfig
 	) {}
 
 	public async createHelpdeskProblem(
@@ -24,7 +28,8 @@ export class HelpdeskUc {
 	): Promise<void> {
 		const { user, school } = await this.authorizeUserForSchool(userId);
 
-		const userContext = this.createUserContext(user, school);
+		const account = await this.accountService.findByUserIdOrFail(userId);
+		const userContext = this.createUserContext(user, school, account);
 		const userDevice = this.createUserDevice(userAgent);
 
 		await this.helpdeskProblemService.createProblem(params, userContext, userDevice, files);
@@ -38,7 +43,8 @@ export class HelpdeskUc {
 	): Promise<void> {
 		const { user, school } = await this.authorizeUserForSchool(userId);
 
-		const userContext = this.createUserContext(user, school);
+		const account = await this.accountService.findByUserIdOrFail(userId);
+		const userContext = this.createUserContext(user, school, account);
 		const userDevice = this.createUserDevice(userAgent);
 
 		await this.helpdeskProblemService.createWish(params, userContext, userDevice, files);
@@ -60,14 +66,15 @@ export class HelpdeskUc {
 		};
 	}
 
-	private createUserContext(user: User, school: School): UserContext {
+	private createUserContext(user: User, school: School, account: Account): UserContext {
 		const userContext = new UserContext({
 			userId: user.id,
-			userName: `${user.firstName} ${user.lastName}`,
+			userName: account.username,
 			userEmail: user.email,
 			userRoles: user.roles?.getItems()?.map((role) => role.name),
 			schoolId: school.id,
 			schoolName: school.getProps().name,
+			instanceName: this.config.instanceName,
 		});
 
 		return userContext;
