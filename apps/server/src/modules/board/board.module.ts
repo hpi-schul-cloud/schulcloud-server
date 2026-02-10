@@ -16,7 +16,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { AuthorizationModule } from '../authorization';
 import { RoomMembershipModule } from '../room-membership';
 import { BoardNodeRule } from './authorisation/board-node.rule';
-import { BoardNodeFactory } from './domain';
+import { BoardNodeFactory, MediaBoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
 import { BoardNodeEventSubscriber } from './repo/board-node-event-subscriber';
 import {
@@ -78,6 +78,7 @@ import {
 		ColumnBoardTitleService,
 		ContextExternalToolDeletedEventHandlerService,
 		// TODO replace by import of MediaBoardModule (fix dependency cycle)
+		MediaBoardNodeFactory,
 		MediaBoardService,
 		BoardNodeEventSubscriber,
 	],

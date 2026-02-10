@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
@@ -15,7 +15,9 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@testing/database';
+import { BoardNodeRule } from '../../authorisation/board-node.rule';
 import {
+	BoardNodeAuthorizable,
 	MediaAvailableLine,
 	MediaAvailableLineElement,
 	MediaBoard,
@@ -24,7 +26,7 @@ import {
 } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import {
-	BoardNodePermissionService,
+	BoardNodeAuthorizableService,
 	BoardNodeService,
 	MediaAvailableLineService,
 	MediaBoardService,
@@ -42,7 +44,8 @@ describe(MediaAvailableLineUc.name, () => {
 	let uc: MediaAvailableLineUc;
 
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let boardNodePermissionService: DeepMocked<BoardNodePermissionService>;
+	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
+	let boardNodeRule: DeepMocked<BoardNodeRule>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let mediaAvailableLineService: DeepMocked<MediaAvailableLineService>;
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
@@ -61,8 +64,12 @@ describe(MediaAvailableLineUc.name, () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: BoardNodePermissionService,
-					useValue: createMock<BoardNodePermissionService>(),
+					provide: BoardNodeAuthorizableService,
+					useValue: createMock<BoardNodeAuthorizableService>(),
+				},
+				{
+					provide: BoardNodeRule,
+					useValue: createMock<BoardNodeRule>(),
 				},
 				{
 					provide: BoardNodeService,
@@ -93,7 +100,8 @@ describe(MediaAvailableLineUc.name, () => {
 
 		uc = module.get(MediaAvailableLineUc);
 		authorizationService = module.get(AuthorizationService);
-		boardNodePermissionService = module.get(BoardNodePermissionService);
+		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
+		boardNodeRule = module.get(BoardNodeRule);
 		boardNodeService = module.get(BoardNodeService);
 		mediaAvailableLineService = module.get(MediaAvailableLineService);
 		configService = module.get(ConfigService);
@@ -173,14 +181,13 @@ describe(MediaAvailableLineUc.name, () => {
 
 			it('should check the permissions', async () => {
 				const { user, mediaBoard } = setup();
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					mediaBoard as unknown as BoardNodeAuthorizable
+				);
 
 				await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
-					user.id,
-					mediaBoard,
-					AuthorizationContextBuilder.read([])
-				);
+				expect(boardNodeRule.canViewMediaBoard).toHaveBeenCalledWith(user, mediaBoard);
 			});
 
 			it('should get the user from authrorization service', async () => {
@@ -669,14 +676,13 @@ describe(MediaAvailableLineUc.name, () => {
 
 			it('should check the permission', async () => {
 				const { user, mediaBoard } = setup();
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					mediaBoard as unknown as BoardNodeAuthorizable
+				);
 
 				await uc.updateAvailableLineColor(user.id, mediaBoard.id, MediaBoardColors.RED);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
-					user.id,
-					mediaBoard,
-					AuthorizationContextBuilder.write([])
-				);
+				expect(boardNodeRule.canUpdateMediaBoardColor).toHaveBeenCalledWith(user, mediaBoard);
 			});
 
 			it('should collapse the line', async () => {
@@ -729,13 +735,13 @@ describe(MediaAvailableLineUc.name, () => {
 			it('should check the authorization', async () => {
 				const { user, mediaBoard } = setup();
 
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					mediaBoard as unknown as BoardNodeAuthorizable
+				);
+
 				await uc.collapseAvailableLine(user.id, mediaBoard.id, true);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(
-					user.id,
-					mediaBoard,
-					AuthorizationContextBuilder.write([])
-				);
+				expect(boardNodeRule.canCollapseMediaBoard).toHaveBeenCalledWith(user, mediaBoard);
 			});
 
 			it('should collapse the line', async () => {
