@@ -68,7 +68,7 @@ export class CopyRoomStep extends SagaStep<'copyRoom'> {
 
 	private async getAuthorizedRoomIds(userId: EntityId, action: Action): Promise<EntityId[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
+		const roomAuthorizables = await this.roomMembershipService.getRoomAuthorizablesByUserId(userId);
 
 		const authorizedRoomIds = roomAuthorizables.filter((item) =>
 			this.authorizationService.hasPermission(user, item, { action, requiredPermissions: [] })

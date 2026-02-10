@@ -21,6 +21,7 @@ import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { CourseApiModule } from '@modules/course/course-api.module';
+import { DeletionPublicApiModule } from '@modules/deletion/deletion-public-api.module';
 import {
 	FILES_STORAGE_CLIENT_CONFIG_TOKEN,
 	FilesStorageClientConfig,
@@ -169,6 +170,7 @@ const serverModules = [
 	ShdApiModule,
 	OAuthApiModule,
 	MoinSchuleClassModule,
+	DeletionPublicApiModule,
 ];
 
 const providers = [ServerUc];

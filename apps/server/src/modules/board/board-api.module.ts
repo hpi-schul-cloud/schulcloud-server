@@ -20,7 +20,6 @@ import {
 	ElementController,
 } from './controller';
 import { CopyRoomBoardsStep } from './saga';
-import { BoardNodePermissionService } from './service';
 import { BOARD_TIMEOUT_CONFIG_TOKEN, BoardTimeoutConfig } from './timeout.config';
 import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
 
@@ -46,16 +45,7 @@ import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc, SubmissionIte
 		BoardSubmissionController,
 		BoardErrorReportController,
 	],
-	providers: [
-		BoardUc,
-		BoardNodePermissionService,
-		BoardErrorReportUc,
-		ColumnUc,
-		CardUc,
-		ElementUc,
-		SubmissionItemUc,
-		CopyRoomBoardsStep,
-	],
+	providers: [BoardUc, BoardErrorReportUc, ColumnUc, CardUc, ElementUc, SubmissionItemUc, CopyRoomBoardsStep],
 })
 @RegisterTimeoutConfig(BOARD_TIMEOUT_CONFIG_TOKEN)
 export class BoardApiModule {}

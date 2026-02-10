@@ -1,6 +1,6 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { RoleName } from '@modules/role';
-import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
 import { User } from '@modules/user/repo';
 import { HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
@@ -26,8 +26,8 @@ export class RoomInvitationLinkUc {
 
 	public async createLink(userId: EntityId, props: CreateRoomInvitationLinkBodyParams): Promise<RoomInvitationLink> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(props.roomId);
-		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, {
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(props.roomId);
+		this.authorizationService.checkPermission(user, roomAuthorizable, {
 			action: Action.write,
 			requiredPermissions: [Permission.ROOM_ADD_MEMBERS],
 		});
@@ -106,7 +106,8 @@ export class RoomInvitationLinkUc {
 	}
 
 	private async ensureUserIsInRoom(roomInvitationLink: RoomInvitationLink, userId: EntityId): Promise<RoleName> {
-		const currentRoleName = await this.getCurrentRole(roomInvitationLink.roomId, userId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomInvitationLink.roomId);
+		const currentRoleName = roomAuthorizable.getRoleOfUser(userId)?.name;
 
 		if (!currentRoleName) {
 			await this.roomMembershipService.addMembersToRoom(
@@ -121,14 +122,6 @@ export class RoomInvitationLinkUc {
 			return roomInvitationLink.startingRole;
 		}
 		return currentRoleName;
-	}
-
-	private async getCurrentRole(roomId: EntityId, userId: EntityId): Promise<RoleName | undefined> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		const member = roomMembershipAuthorizable.members.find((member) => member.userId === userId);
-
-		const roleName = member?.roles[0].name;
-		return roleName;
 	}
 
 	private async changeRoleTo(roomId: EntityId, userId: EntityId, roleName: RoleName): Promise<void> {
@@ -209,18 +202,16 @@ export class RoomInvitationLinkUc {
 		roomIds: EntityId[],
 		action: Action,
 		requiredPermissions: Permission[] = []
-	): Promise<RoomMembershipAuthorizable[]> {
+	): Promise<RoomAuthorizable[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const authorizablePromises = roomIds.map((roomId) =>
-			this.roomMembershipService.getRoomMembershipAuthorizable(roomId)
-		);
-		const roomMembershipAuthorizables = await Promise.all(authorizablePromises);
+		const authorizablePromises = roomIds.map((roomId) => this.roomMembershipService.getRoomAuthorizable(roomId));
+		const RoomAuthorizables = await Promise.all(authorizablePromises);
 
-		for (const roomMembershipAuthorizable of roomMembershipAuthorizables) {
-			this.authorizationService.checkPermission(user, roomMembershipAuthorizable, { action, requiredPermissions });
+		for (const roomAuthorizable of RoomAuthorizables) {
+			this.authorizationService.checkPermission(user, roomAuthorizable, { action, requiredPermissions });
 		}
 
-		return roomMembershipAuthorizables;
+		return RoomAuthorizables;
 	}
 
 	private checkFeatureLinkInvitationExternalPersonsEnabled(): void {
