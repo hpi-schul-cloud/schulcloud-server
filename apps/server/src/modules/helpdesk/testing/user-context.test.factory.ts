@@ -9,6 +9,7 @@ export const userContextPropsFactory = {
 			userRoles: ['student'],
 			schoolId: 'test-school-id',
 			schoolName: 'Test School',
+			instanceName: 'Test Instance',
 			...props,
 		};
 	},
