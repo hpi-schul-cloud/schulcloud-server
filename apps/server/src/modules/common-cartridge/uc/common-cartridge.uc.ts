@@ -3,6 +3,7 @@ import { EntityId } from '@shared/domain/types';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeExportService, CommonCartridgeProducer } from '../service';
 import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
+import { Request } from 'express';
 
 @Injectable()
 export class CommonCartridgeUc {
@@ -24,9 +25,8 @@ export class CommonCartridgeUc {
 		return exportedCourse;
 	}
 
-	public async startCourseImport(jwt: string, fileRecordId: string, fileName: string, fileUrl: string): Promise<void> {
-		await this.commonCartridgeProducer.importCourse({
-			jwt,
+	public async startCourseImport(req: Request, fileRecordId: string, fileName: string, fileUrl: string): Promise<void> {
+		await this.commonCartridgeProducer.importCourse(req, {
 			fileRecordId,
 			fileName,
 			fileUrl,

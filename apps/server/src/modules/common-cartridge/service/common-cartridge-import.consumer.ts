@@ -9,7 +9,7 @@ import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter, FilesStorageClientConfig } from '@infra/files-storage-client';
 import { CommonCartridgeEvents, CommonCartridgeExchange, ImportCourseParams } from '@infra/rabbitmq';
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
@@ -23,6 +23,8 @@ import {
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
+import { JwtExtractor } from '@shared/common/utils';
+import { ConsumeMessage } from 'amqplib';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;
@@ -35,6 +37,8 @@ interface ColumnResource {
 	column: CommonCartridgeOrganizationProps;
 	isResourceColumn: boolean;
 }
+
+type Payload = ImportCourseParams & { jwt: string };
 
 @Injectable()
 export class CommonCartridgeImportConsumer {
@@ -58,7 +62,13 @@ export class CommonCartridgeImportConsumer {
 		routingKey: CommonCartridgeEvents.IMPORT_COURSE,
 		queue: CommonCartridgeEvents.IMPORT_COURSE,
 	})
-	public async importFile(@RabbitPayload() payload: ImportCourseParams): Promise<void> {
+	public async importFile(@RabbitPayload() payload: ImportCourseParams, msg: ConsumeMessage): Promise<void> {
+		const jwt = JwtExtractor.extractJwtFromRequest(msg.properties);
+
+		if (!jwt) {
+			throw new UnauthorizedException();
+		}
+
 		const interceptorReq = axios.interceptors.request.use(
 			(req) => req,
 			(err) => {
@@ -79,7 +89,7 @@ export class CommonCartridgeImportConsumer {
 			}
 		);
 
-		const file = await this.fetchFile(payload);
+		const file = await this.fetchFile({ ...payload, jwt });
 
 		if (!file) {
 			return;
@@ -88,8 +98,8 @@ export class CommonCartridgeImportConsumer {
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
 
 		await Promise.allSettled([
-			this.createCourse(parser, payload),
-			this.fileClient.deleteFile(payload.jwt, payload.fileRecordId),
+			this.createCourse(parser, { ...payload, jwt }),
+			this.fileClient.deleteFile(jwt, payload.fileRecordId),
 		]);
 
 		this.logger.debug(
@@ -102,7 +112,7 @@ export class CommonCartridgeImportConsumer {
 		axios.interceptors.response.eject(interceptorRes);
 	}
 
-	private async fetchFile(payload: ImportCourseParams): Promise<Buffer | null> {
+	private async fetchFile(payload: Payload): Promise<Buffer | null> {
 		this.logger.debug(
 			new CommonCartridgeMessageLoggable('Fetching file for import', {
 				fileRecordId: payload.fileRecordId,
@@ -133,7 +143,7 @@ export class CommonCartridgeImportConsumer {
 		return data;
 	}
 
-	private async createCourse(parser: CommonCartridgeFileParser, payload: ImportCourseParams): Promise<void> {
+	private async createCourse(parser: CommonCartridgeFileParser, payload: Payload): Promise<void> {
 		const courseName = parser.getTitle() ?? 'Untitled Course';
 
 		const course = await this.coursesClient.createCourse(payload.jwt, {
@@ -150,11 +160,7 @@ export class CommonCartridgeImportConsumer {
 		await this.createBoards(course.courseId, parser, payload);
 	}
 
-	private async createBoards(
-		parentId: string,
-		parser: CommonCartridgeFileParser,
-		payload: ImportCourseParams
-	): Promise<void> {
+	private async createBoards(parentId: string, parser: CommonCartridgeFileParser, payload: Payload): Promise<void> {
 		const boards = parser.getOrganizations().filter((organization) => organization.pathDepth === DEPTH_BOARD);
 
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
@@ -185,7 +191,7 @@ export class CommonCartridgeImportConsumer {
 		boardId: string,
 		boardIdentifier: string,
 		parser: CommonCartridgeFileParser,
-		payload: ImportCourseParams
+		payload: Payload
 	): Promise<void> {
 		const columns: ColumnResource[] = parser
 			.getOrganizations()
@@ -212,7 +218,7 @@ export class CommonCartridgeImportConsumer {
 		parser: CommonCartridgeFileParser,
 		boardId: string,
 		columnProps: CommonCartridgeOrganizationProps,
-		payload: ImportCourseParams
+		payload: Payload
 	): Promise<void> {
 		const columnResponse = await this.boardsClient.createBoardColumn(payload.jwt, boardId);
 		await this.columnClient.updateBoardColumnTitle(payload.jwt, columnResponse.id, { title: columnProps.title });
@@ -230,7 +236,7 @@ export class CommonCartridgeImportConsumer {
 		parser: CommonCartridgeFileParser,
 		boardId: string,
 		columnProps: CommonCartridgeOrganizationProps,
-		payload: ImportCourseParams
+		payload: Payload
 	): Promise<void> {
 		const columnResponse = await this.boardsClient.createBoardColumn(payload.jwt, boardId);
 		await this.columnClient.updateBoardColumnTitle(payload.jwt, columnResponse.id, { title: columnProps.title });
@@ -258,7 +264,7 @@ export class CommonCartridgeImportConsumer {
 		parser: CommonCartridgeFileParser,
 		columnResponse: ColumnResponse,
 		cardProps: CommonCartridgeOrganizationProps,
-		payload: ImportCourseParams
+		payload: Payload
 	): Promise<void> {
 		const card = await this.columnClient.createCard(payload.jwt, columnResponse.id, {});
 
@@ -275,7 +281,7 @@ export class CommonCartridgeImportConsumer {
 		parser: CommonCartridgeFileParser,
 		column: ColumnResponse,
 		cardProps: CommonCartridgeOrganizationProps,
-		payload: ImportCourseParams
+		payload: Payload
 	): Promise<void> {
 		const card = await this.columnClient.createCard(payload.jwt, column.id, {});
 		await this.cardClient.updateCardTitle(payload.jwt, card.id, {
@@ -302,7 +308,7 @@ export class CommonCartridgeImportConsumer {
 		parser: CommonCartridgeFileParser,
 		cardId: string,
 		cardElementProps: CommonCartridgeOrganizationProps,
-		payload: ImportCourseParams
+		payload: Payload
 	): Promise<void> {
 		if (!cardElementProps.isResource) return;
 
@@ -353,7 +359,7 @@ export class CommonCartridgeImportConsumer {
 	}
 
 	private async uploadFiles(
-		payload: ImportCourseParams,
+		payload: Payload,
 		resource: CommonCartridgeFileResourceProps | CommonCartridgeFileFolderResourceProps,
 		cardElement: CardControllerCreateElement201Response
 	): Promise<void> {

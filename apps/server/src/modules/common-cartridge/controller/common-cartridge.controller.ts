@@ -82,13 +82,8 @@ export class CommonCartridgeController {
 		@Req() req: Request,
 		@Body() startImportParams: CommonCartridgeStartImportBodyParams
 	): Promise<void> {
-		const jwt = JwtExtractor.extractJwtFromRequest(req);
-		if (!jwt) {
-			throw new UnauthorizedException();
-		}
-
 		await this.commonCartridgeUC.startCourseImport(
-			jwt,
+			req,
 			startImportParams.fileRecordId,
 			startImportParams.fileName,
 			startImportParams.fileUrl
