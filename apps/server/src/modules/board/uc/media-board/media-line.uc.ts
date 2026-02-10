@@ -1,19 +1,23 @@
-import { AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { throwForbiddenIfFalse } from '@shared/common/utils';
 import type { EntityId } from '@shared/domain/types';
+import { BoardNodeRule } from '../../authorisation/board-node.rule';
 import { MediaBoard, MediaLine } from '../../domain';
-import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardNodePermissionService, BoardNodeService } from '../../service';
-import { MediaBoardService } from '../../service/media-board';
 import { MediaBoardColors } from '../../domain/media-board/types';
+import type { MediaBoardConfig } from '../../media-board.config';
+import { BoardNodeAuthorizableService, BoardNodeService } from '../../service';
+import { MediaBoardService } from '../../service/media-board';
 
 @Injectable()
 export class MediaLineUc {
 	constructor(
+		private readonly authorizationService: AuthorizationService,
 		private readonly boardNodeService: BoardNodeService,
-		private readonly boardNodePermissionService: BoardNodePermissionService,
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
+		private readonly boardNodeRule: BoardNodeRule,
 		private readonly configService: ConfigService<MediaBoardConfig, true>,
 		private readonly mediaBoardService: MediaBoardService
 	) {}
@@ -29,7 +33,9 @@ export class MediaLineUc {
 		const line = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 		const targetBoard = await this.boardNodeService.findByClassAndId(MediaBoard, targetBoardId);
 
-		await this.boardNodePermissionService.checkPermission(userId, targetBoard, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(targetBoard);
+		throwForbiddenIfFalse(this.boardNodeRule.canCreateMediaBoardLine(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.move(line, targetBoard, targetPosition);
 	}
@@ -39,7 +45,9 @@ export class MediaLineUc {
 
 		const line: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 
-		await this.boardNodePermissionService.checkPermission(userId, line, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(line);
+		throwForbiddenIfFalse(this.boardNodeRule.canUpdateMediaBoardLine(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateTitle(line, title);
 	}
@@ -49,7 +57,9 @@ export class MediaLineUc {
 
 		const line: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 
-		await this.boardNodePermissionService.checkPermission(userId, line, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(line);
+		throwForbiddenIfFalse(this.boardNodeRule.canUpdateMediaBoardLine(user, boardNodeAuthorizable));
 
 		await this.mediaBoardService.updateBackgroundColor(line, color);
 	}
@@ -59,7 +69,9 @@ export class MediaLineUc {
 
 		const line: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 
-		await this.boardNodePermissionService.checkPermission(userId, line, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(line);
+		throwForbiddenIfFalse(this.boardNodeRule.canUpdateMediaBoardLine(user, boardNodeAuthorizable));
 
 		await this.mediaBoardService.updateCollapsed(line, collapsed);
 	}
@@ -69,7 +81,9 @@ export class MediaLineUc {
 
 		const line = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 
-		await this.boardNodePermissionService.checkPermission(userId, line, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(line);
+		throwForbiddenIfFalse(this.boardNodeRule.canDeleteMediaBoardLine(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.delete(line);
 	}

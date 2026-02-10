@@ -23,6 +23,9 @@ export class UserContext implements UserContextProps {
 	@IsString()
 	public readonly schoolName: string;
 
+	@IsString()
+	public readonly instanceName: string;
+
 	constructor(props: UserContextProps) {
 		this.userId = props.userId;
 		this.userName = props.userName;
@@ -30,5 +33,6 @@ export class UserContext implements UserContextProps {
 		this.userRoles = props.userRoles;
 		this.schoolId = props.schoolId;
 		this.schoolName = props.schoolName;
+		this.instanceName = props.instanceName;
 	}
 }

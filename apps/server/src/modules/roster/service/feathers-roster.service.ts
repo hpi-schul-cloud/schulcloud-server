@@ -4,7 +4,7 @@ import { Pseudonym } from '@modules/pseudonym/repo';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { RoleName } from '@modules/role';
 import { Room, RoomService } from '@modules/room';
-import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
@@ -118,12 +118,12 @@ export class FeathersRosterService {
 		if (roomExists) {
 			const room = await this.roomService.getSingleRoom(id);
 
-			const roomMembers = await this.roomMembershipService.getRoomMembershipAuthorizable(room.id);
+			const roomMembers = await this.roomMembershipService.getRoomAuthorizable(room.id);
 			const hasOwner = roomMembers.members.some((member) =>
 				member.roles.some((role) => role.name === RoleName.ROOMOWNER)
 			);
 			if (!hasOwner) {
-				throw new NotFoundLoggableException(RoomMembershipAuthorizable.name, { roomId: room.id });
+				throw new NotFoundLoggableException(RoomAuthorizable.name, { roomId: room.id });
 			}
 
 			const externalTool = await this.validateContextExternalTools(room, room.schoolId, oauth2ClientId);
@@ -167,7 +167,7 @@ export class FeathersRosterService {
 
 		const roomUserGroups = await Promise.all(
 			rooms.map(async (room: Room) => {
-				const roomMembership = await this.roomMembershipService.getRoomMembershipAuthorizable(room.id);
+				const roomMembership = await this.roomMembershipService.getRoomAuthorizable(room.id);
 				const { students } = await this.mapRoomUsers(roomMembership, 'userRoles');
 
 				const userGroup: UserGroup = {
@@ -183,7 +183,7 @@ export class FeathersRosterService {
 	}
 
 	private async getRoomsForUser(userId: EntityId): Promise<Room[]> {
-		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
+		const roomAuthorizables = await this.roomMembershipService.getRoomAuthorizablesByUserId(userId);
 		if (!roomAuthorizables) return [];
 		const roomIds = roomAuthorizables.map((item) => item.roomId);
 
@@ -217,7 +217,7 @@ export class FeathersRosterService {
 		return validItems;
 	}
 
-	private async getRoomGroup(roomMembers: RoomMembershipAuthorizable, externalTool: ExternalTool): Promise<Group> {
+	private async getRoomGroup(roomMembers: RoomAuthorizable, externalTool: ExternalTool): Promise<Group> {
 		const { students, teachers } = await this.mapRoomUsers(roomMembers, 'userRoles');
 
 		const [studentPseudonyms, teacherPseudonyms] = await Promise.all([
@@ -236,7 +236,7 @@ export class FeathersRosterService {
 	}
 
 	private async mapRoomUsers(
-		roomMembers: RoomMembershipAuthorizable,
+		roomMembers: RoomAuthorizable,
 		mappingType: RoomUserMappingType
 	): Promise<{ students: UserDo[]; teachers: UserDo[] }> {
 		let students: UserDo[] = [];

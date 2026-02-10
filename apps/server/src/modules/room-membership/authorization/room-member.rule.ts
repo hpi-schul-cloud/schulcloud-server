@@ -9,14 +9,14 @@ import { RoleName } from '@modules/role';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
+import { RoomAuthorizable } from '../do/room-authorizable.do';
 import { RoomMemberAuthorizable } from '../do/room-member-authorizable.do';
-import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
-import { RoomMembershipRule } from './room-membership.rule';
+import { RoomRule } from './room.rule';
 
 @Injectable()
 export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 	constructor(
-		private readonly roomMembershipRule: RoomMembershipRule,
+		private readonly roomRule: RoomRule,
 		private readonly authorizationHelper: AuthorizationHelper,
 		private readonly authorisationInjectionService: AuthorizationInjectionService
 	) {
@@ -39,7 +39,7 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 	}
 
 	private hasAllPermissions(user: User, object: RoomMemberAuthorizable, requiredPermissions: Permission[]): boolean {
-		const { allPermissions } = this.resolveUserPermissions(user, object.roomMembershipAuthorizable);
+		const { allPermissions } = this.resolveUserPermissions(user, object.roomAuthorizable);
 		const missingPermissions = requiredPermissions.filter((permission) => !allPermissions.includes(permission));
 		return missingPermissions.length === 0;
 	}
@@ -57,7 +57,7 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 			return true;
 		}
 
-		const hasPermission = this.roomMembershipRule.hasPermission(user, object.roomMembershipAuthorizable, {
+		const hasPermission = this.roomRule.hasPermission(user, object.roomAuthorizable, {
 			action: Action.write,
 			requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
 		});
@@ -67,7 +67,7 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 	}
 
 	public canRemoveMember(user: User, object: RoomMemberAuthorizable): boolean {
-		const { roomPermissions } = this.resolveUserPermissions(user, object.roomMembershipAuthorizable);
+		const { roomPermissions } = this.resolveUserPermissions(user, object.roomAuthorizable);
 
 		const isRemoveRoomOwner = object.member.roomRoleName === RoleName.ROOMOWNER;
 		if (isRemoveRoomOwner) {
@@ -110,7 +110,7 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 
 	private resolveUserPermissions(
 		user: User,
-		object: RoomMembershipAuthorizable
+		object: RoomAuthorizable
 	): { schoolPermissions: Permission[]; roomPermissions: Permission[]; allPermissions: Permission[] } {
 		const schoolPermissions = this.resolveSchoolPermissions(user);
 		const roomPermissions = this.resolveRoomPermissions(user, object);
@@ -126,7 +126,7 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 		return [...user.roles].flatMap((role) => role.permissions ?? []);
 	}
 
-	private resolveRoomPermissions(user: User, object: RoomMembershipAuthorizable): Permission[] {
+	private resolveRoomPermissions(user: User, object: RoomAuthorizable): Permission[] {
 		return object.members
 			.filter((member) => member.userId === user.id)
 			.flatMap((member) => member.roles)
