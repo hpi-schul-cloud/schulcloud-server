@@ -72,10 +72,10 @@ export class DeletionRequestPublicUc {
 			deleteAfter
 		);
 
+		const deleteAt = new Date();
+		await this.userService.flagAsDeleted(targetRefId, deleteAt);
 		try {
-			const deleteAt = new Date();
 			await this.accountService.deactivateAccount(targetRefId, deleteAt);
-			await this.userService.flagAsDeleted(targetRefId, deleteAt);
 		} catch (error) {
 			// it can be the user has no account (either deleted or never finished the registration process)
 			this.logger.error({
