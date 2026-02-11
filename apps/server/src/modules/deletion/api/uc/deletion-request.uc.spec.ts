@@ -1,4 +1,5 @@
 import { LegacyLogger } from '@core/logger';
+import { NotFoundException } from '@nestjs/common';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DeletionRequestEntity } from '@modules/deletion/repo/entity';
 import { ConfigService } from '@nestjs/config';
@@ -23,6 +24,7 @@ describe(DeletionRequestUc.name, () => {
 	let uc: DeletionRequestUc;
 	let deletionRequestService: DeepMocked<DeletionRequestService>;
 	let deletionLogService: DeepMocked<DeletionLogService>;
+	let legacyLogger: DeepMocked<LegacyLogger>;
 	let configService: DeepMocked<ConfigService<DeletionConfig, true>>;
 	let deletionExecutionService: DeepMocked<DeletionExecutionService>;
 	let accountService: DeepMocked<AccountService>;
@@ -68,6 +70,7 @@ describe(DeletionRequestUc.name, () => {
 		uc = module.get(DeletionRequestUc);
 		deletionRequestService = module.get(DeletionRequestService);
 		deletionLogService = module.get(DeletionLogService);
+		legacyLogger = module.get(LegacyLogger);
 		configService = module.get(ConfigService);
 		deletionExecutionService = module.get(DeletionExecutionService);
 		accountService = module.get(AccountService);
@@ -140,6 +143,14 @@ describe(DeletionRequestUc.name, () => {
 				});
 			});
 
+			it('should call userService.flagAsDeleted if domain is DomainName.User', async () => {
+				const { deletionRequestToCreate } = setup();
+
+				await uc.createDeletionRequest(deletionRequestToCreate);
+
+				expect(userService.flagAsDeleted).toHaveBeenCalledWith(deletionRequestToCreate.targetRef.id, expect.any(Date));
+			});
+
 			it('should call accountService.deactivateAccount if domain is DomainName.User', async () => {
 				const { deletionRequestToCreate } = setup();
 
@@ -149,6 +160,15 @@ describe(DeletionRequestUc.name, () => {
 					deletionRequestToCreate.targetRef.id,
 					expect.any(Date)
 				);
+			});
+
+			it('should log a warning if account is not found', async () => {
+				const { deletionRequestToCreate } = setup();
+				accountService.deactivateAccount.mockRejectedValueOnce(new NotFoundException());
+
+				await uc.createDeletionRequest(deletionRequestToCreate);
+
+				expect(legacyLogger.warn).toHaveBeenCalled();
 			});
 		});
 	});
