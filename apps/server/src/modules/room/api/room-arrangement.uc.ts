@@ -1,6 +1,6 @@
 import { Action } from '@modules/authorization';
 import { RoleName } from '@modules/role';
-import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -18,7 +18,7 @@ export class RoomArrangementUc {
 	) {}
 
 	public async getRoomsByUserArrangement(userId: EntityId): Promise<RoomWithPermissionsAndLockedStatus[]> {
-		const accessibleRoomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
+		const accessibleRoomAuthorizables = await this.roomMembershipService.getRoomAuthorizablesByUserId(userId);
 		const roomIds = accessibleRoomAuthorizables.map((item) => item.roomId);
 
 		const rooms = await this.roomService.getRoomsByIds(roomIds);
@@ -52,8 +52,8 @@ export class RoomArrangementUc {
 		await this.roomArrangementService.moveRoom(userId, roomId, toPosition);
 	}
 
-	private getPermissions(userId: EntityId, roomMembershipAuthorizable: RoomMembershipAuthorizable): Permission[] {
-		const permissions = roomMembershipAuthorizable.members
+	private getPermissions(userId: EntityId, roomAuthorizable: RoomAuthorizable): Permission[] {
+		const permissions = roomAuthorizable.members
 			.filter((member) => member.userId === userId)
 			.flatMap((member) => member.roles)
 			.flatMap((role) => role.permissions ?? []);

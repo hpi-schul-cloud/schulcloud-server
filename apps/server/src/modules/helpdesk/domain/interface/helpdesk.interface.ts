@@ -34,4 +34,5 @@ export interface UserContextProps {
 	userRoles: string[];
 	schoolId: EntityId;
 	schoolName: string;
+	instanceName: string;
 }
