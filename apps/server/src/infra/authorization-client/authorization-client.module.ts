@@ -15,7 +15,10 @@ export class AuthorizationClientModule {
 			{
 				provide: AuthorizationApi,
 				useFactory: (configInstance: InternalAuthorizationClientConfig): AuthorizationApi => {
-					const configuration = new Configuration(configInstance);
+					const { basePath } = configInstance;
+					const configuration = new Configuration({
+						basePath: `${basePath}/v3`,
+					});
 					return new AuthorizationApi(configuration);
 				},
 				inject: [configInjectionToken],
