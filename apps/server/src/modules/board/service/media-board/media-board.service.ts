@@ -9,8 +9,12 @@ import { EntityId } from '@shared/domain/types';
 import {
 	AnyMediaBoardNode,
 	BoardExternalReference,
+	BoardExternalReferenceType,
+	BoardLayout,
 	isMediaBoard,
 	MediaBoard,
+	MediaBoardColors,
+	MediaBoardNodeFactory,
 	MediaExternalToolElement,
 } from '../../domain';
 import { BoardNodeRepo } from '../../repo';
@@ -23,10 +27,11 @@ type WithBackgroundColor<T> = Extract<T, { backgroundColor: unknown }>;
 export class MediaBoardService {
 	constructor(
 		private readonly boardNodeRepo: BoardNodeRepo,
-		private readonly contextExternalToolService: ContextExternalToolService
+		private readonly contextExternalToolService: ContextExternalToolService,
+		private readonly mediaBoardNodeFactory: MediaBoardNodeFactory
 	) {}
 
-	async findByExternalReference(reference: BoardExternalReference): Promise<MediaBoard[]> {
+	public async findByExternalReference(reference: BoardExternalReference): Promise<MediaBoard[]> {
 		const boardNodes = await this.boardNodeRepo.findByExternalReference(reference);
 
 		const boards = boardNodes.filter((bn): bn is MediaBoard => isMediaBoard(bn));
@@ -49,6 +54,30 @@ export class MediaBoardService {
 		);
 
 		return contextExternalTool;
+	}
+
+	public async getOrCreatePersonalMediaBoardOfUser(userId: EntityId): Promise<MediaBoard> {
+		const context: BoardExternalReference = {
+			type: BoardExternalReferenceType.User,
+			id: userId,
+		};
+
+		const existingBoards: MediaBoard[] = await this.findByExternalReference(context);
+
+		let board: MediaBoard;
+		if (!existingBoards.length) {
+			board = this.mediaBoardNodeFactory.buildMediaBoard({
+				context,
+				layout: BoardLayout.LIST,
+				backgroundColor: MediaBoardColors.TRANSPARENT,
+				collapsed: false,
+			});
+			await this.boardNodeRepo.save(board);
+		} else {
+			board = existingBoards[0];
+		}
+
+		return board;
 	}
 
 	public async checkElementExists(mediaBoard: MediaBoard, schoolExternalTool: SchoolExternalTool): Promise<boolean> {

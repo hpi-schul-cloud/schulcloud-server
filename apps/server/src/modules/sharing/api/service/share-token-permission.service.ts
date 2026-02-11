@@ -72,13 +72,9 @@ export class ShareTokenPermissionService {
 	}
 
 	public async checkRoomWritePermission(user: User, roomId: EntityId, permissions: Permission[] = []): Promise<void> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		this.authorizationService.checkPermission(
-			user,
-			roomMembershipAuthorizable,
-			AuthorizationContextBuilder.write(permissions)
-		);
+		this.authorizationService.checkPermission(user, roomAuthorizable, AuthorizationContextBuilder.write(permissions));
 	}
 
 	public async checkContextReadPermission(userId: EntityId, context: ShareTokenContext): Promise<void> {

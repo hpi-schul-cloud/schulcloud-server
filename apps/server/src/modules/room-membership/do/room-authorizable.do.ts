@@ -8,7 +8,7 @@ export type UserWithRoomRoles = {
 	userSchoolId: EntityId;
 };
 
-export class RoomMembershipAuthorizable implements AuthorizableObject {
+export class RoomAuthorizable implements AuthorizableObject {
 	public readonly id: EntityId = '';
 
 	public readonly roomId: EntityId;
@@ -21,5 +21,15 @@ export class RoomMembershipAuthorizable implements AuthorizableObject {
 		this.members = members;
 		this.roomId = roomId;
 		this.schoolId = schoolId;
+	}
+
+	public getRoleOfUser(userId: EntityId): RoleDto | null {
+		const member = this.members.find((member) => member.userId === userId);
+		return member ? member.roles[0] : null;
+	}
+
+	public getRoleNameOfUser(userId: EntityId): string | null {
+		const role = this.getRoleOfUser(userId);
+		return role ? role.name : null;
 	}
 }

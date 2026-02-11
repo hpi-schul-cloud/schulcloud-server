@@ -14,24 +14,24 @@ import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomSetup } from '../../room/api/test/util/room-setup.helper';
-import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
+import { RoomAuthorizable } from '../do/room-authorizable.do';
 import { buildRoomMemberAuthorizable } from '../testing';
 import { RoomMemberRule } from './room-member.rule';
-import { RoomMembershipRule } from './room-membership.rule';
+import { RoomRule } from './room.rule';
 
 describe(RoomMemberRule.name, () => {
 	let service: RoomMemberRule;
-	// let roomMembershipRule: RoomMembershipRule;
+	// let roomRule: RoomRule;
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [RoomMemberRule, RoomMembershipRule, AuthorizationHelper, AuthorizationInjectionService],
+			providers: [RoomMemberRule, RoomRule, AuthorizationHelper, AuthorizationInjectionService],
 		}).compile();
 
-		module.get(RoomMembershipRule);
+		module.get(RoomRule);
 		injectionService = await module.get(AuthorizationInjectionService);
 		service = await module.get(RoomMemberRule);
 	});
@@ -48,8 +48,8 @@ describe(RoomMemberRule.name, () => {
 				const room = roomEntityFactory.buildWithId();
 				const user = userFactory.buildWithId();
 				const members = [{ userId: user.id, roles: [], userSchoolId: user.school.id }];
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(room.id, members, user.school.id);
-				const roomMemberAuthorizable = buildRoomMemberAuthorizable(roomMembershipAuthorizable, user);
+				const roomAuthorizable = new RoomAuthorizable(room.id, members, user.school.id);
+				const roomMemberAuthorizable = buildRoomMemberAuthorizable(roomAuthorizable, user);
 
 				return { user, roomMemberAuthorizable };
 			};
@@ -172,8 +172,8 @@ describe(RoomMemberRule.name, () => {
 				};
 			}
 		);
-		const roomMembershipAuthorizable = new RoomMembershipAuthorizable(room.id, members, roomSetup.sameSchool.id);
-		const roomMemberAuthorizable = buildRoomMemberAuthorizable(roomMembershipAuthorizable, targetUser);
+		const roomAuthorizable = new RoomAuthorizable(room.id, members, roomSetup.sameSchool.id);
+		const roomMemberAuthorizable = buildRoomMemberAuthorizable(roomAuthorizable, targetUser);
 
 		// return roomSetup;
 		return { user, roomMemberAuthorizable };

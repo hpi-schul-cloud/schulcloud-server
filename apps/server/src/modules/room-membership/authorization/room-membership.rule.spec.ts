@@ -8,21 +8,21 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
-import { RoomMembershipRule } from './room-membership.rule';
+import { RoomAuthorizable } from '../do/room-authorizable.do';
+import { RoomRule } from './room.rule';
 
-describe(RoomMembershipRule.name, () => {
-	let service: RoomMembershipRule;
+describe(RoomRule.name, () => {
+	let service: RoomRule;
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [RoomMembershipRule, AuthorizationHelper, AuthorizationInjectionService],
+			providers: [RoomRule, AuthorizationHelper, AuthorizationInjectionService],
 		}).compile();
 
-		service = await module.get(RoomMembershipRule);
+		service = await module.get(RoomRule);
 		injectionService = await module.get(AuthorizationInjectionService);
 	});
 
@@ -36,14 +36,14 @@ describe(RoomMembershipRule.name, () => {
 		describe('when entity is applicable', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable('', [], user.school.id);
+				const roomAuthorizable = new RoomAuthorizable('', [], user.school.id);
 
-				return { user, roomMembershipAuthorizable };
+				return { user, roomAuthorizable };
 			};
 
 			it('should return true', () => {
-				const { user, roomMembershipAuthorizable } = setup();
-				const result = service.isApplicable(user, roomMembershipAuthorizable);
+				const { user, roomAuthorizable } = setup();
+				const result = service.isApplicable(user, roomAuthorizable);
 
 				expect(result).toStrictEqual(true);
 			});
@@ -70,15 +70,15 @@ describe(RoomMembershipRule.name, () => {
 			describe('when user is not member of the room', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable('', [], user.school.id);
+					const roomAuthorizable = new RoomAuthorizable('', [], user.school.id);
 
-					return { user, roomMembershipAuthorizable };
+					return { user, roomAuthorizable };
 				};
 
 				it('should return "false" for read action', () => {
-					const { user, roomMembershipAuthorizable } = setup();
+					const { user, roomAuthorizable } = setup();
 
-					const res = service.hasPermission(user, roomMembershipAuthorizable, {
+					const res = service.hasPermission(user, roomAuthorizable, {
 						action: Action.read,
 						requiredPermissions: [],
 					});
@@ -91,19 +91,19 @@ describe(RoomMembershipRule.name, () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
 					const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+					const roomAuthorizable = new RoomAuthorizable(
 						'',
 						[{ roles: [roleDto], userId: user.id, userSchoolId: user.school.id }],
 						user.school.id
 					);
 
-					return { user, roomMembershipAuthorizable };
+					return { user, roomAuthorizable };
 				};
 
 				it('should return "true" for read action', () => {
-					const { user, roomMembershipAuthorizable } = setup();
+					const { user, roomAuthorizable } = setup();
 
-					const res = service.hasPermission(user, roomMembershipAuthorizable, {
+					const res = service.hasPermission(user, roomAuthorizable, {
 						action: Action.read,
 						requiredPermissions: [],
 					});
@@ -112,9 +112,9 @@ describe(RoomMembershipRule.name, () => {
 				});
 
 				it('should return "false" for write action', () => {
-					const { user, roomMembershipAuthorizable } = setup();
+					const { user, roomAuthorizable } = setup();
 
-					const res = service.hasPermission(user, roomMembershipAuthorizable, {
+					const res = service.hasPermission(user, roomAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
 					});
@@ -123,9 +123,9 @@ describe(RoomMembershipRule.name, () => {
 				});
 
 				it('should return false for change owner action', () => {
-					const { user, roomMembershipAuthorizable } = setup();
+					const { user, roomAuthorizable } = setup();
 
-					const res = service.hasPermission(user, roomMembershipAuthorizable, {
+					const res = service.hasPermission(user, roomAuthorizable, {
 						action: Action.read,
 						requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
 					});
@@ -137,15 +137,15 @@ describe(RoomMembershipRule.name, () => {
 			describe('when user is not member of room', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable('', [], user.school.id);
+					const roomAuthorizable = new RoomAuthorizable('', [], user.school.id);
 
-					return { user, roomMembershipAuthorizable };
+					return { user, roomAuthorizable };
 				};
 
 				it('should return "false" for read action', () => {
-					const { user, roomMembershipAuthorizable } = setup();
+					const { user, roomAuthorizable } = setup();
 
-					const res = service.hasPermission(user, roomMembershipAuthorizable, {
+					const res = service.hasPermission(user, roomAuthorizable, {
 						action: Action.read,
 						requiredPermissions: [],
 					});
@@ -154,9 +154,9 @@ describe(RoomMembershipRule.name, () => {
 				});
 
 				it('should return "false" for write action', () => {
-					const { user, roomMembershipAuthorizable } = setup();
+					const { user, roomAuthorizable } = setup();
 
-					const res = service.hasPermission(user, roomMembershipAuthorizable, {
+					const res = service.hasPermission(user, roomAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
 					});
@@ -176,19 +176,19 @@ describe(RoomMembershipRule.name, () => {
 					});
 					const room = roomFactory.build({ schoolId: otherSchool.id });
 					const roleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+					const roomAuthorizable = new RoomAuthorizable(
 						room.id,
 						[{ roles: [roleDto], userId: user.id, userSchoolId: otherSchool.id }],
 						otherSchool.id
 					);
 
-					return { user, roomMembershipAuthorizable };
+					return { user, roomAuthorizable };
 				};
 
 				it('should return "true" for read action', () => {
-					const { user, roomMembershipAuthorizable } = setup();
+					const { user, roomAuthorizable } = setup();
 
-					const res = service.hasPermission(user, roomMembershipAuthorizable, {
+					const res = service.hasPermission(user, roomAuthorizable, {
 						action: Action.read,
 						requiredPermissions: [],
 					});
@@ -197,9 +197,9 @@ describe(RoomMembershipRule.name, () => {
 				});
 
 				it('should return "false" for write action', () => {
-					const { user, roomMembershipAuthorizable } = setup();
+					const { user, roomAuthorizable } = setup();
 
-					const res = service.hasPermission(user, roomMembershipAuthorizable, {
+					const res = service.hasPermission(user, roomAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
 					});
@@ -213,15 +213,15 @@ describe(RoomMembershipRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const otherSchool = schoolEntityFactory.buildWithId();
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable('', [], otherSchool.id);
+				const roomAuthorizable = new RoomAuthorizable('', [], otherSchool.id);
 
-				return { user, roomMembershipAuthorizable };
+				return { user, roomAuthorizable };
 			};
 
 			it('should return "false" for read action', () => {
-				const { user, roomMembershipAuthorizable } = setup();
+				const { user, roomAuthorizable } = setup();
 
-				const res = service.hasPermission(user, roomMembershipAuthorizable, {
+				const res = service.hasPermission(user, roomAuthorizable, {
 					action: Action.read,
 					requiredPermissions: [],
 				});
@@ -230,9 +230,9 @@ describe(RoomMembershipRule.name, () => {
 			});
 
 			it('should return "false" for write action', () => {
-				const { user, roomMembershipAuthorizable } = setup();
+				const { user, roomAuthorizable } = setup();
 
-				const res = service.hasPermission(user, roomMembershipAuthorizable, {
+				const res = service.hasPermission(user, roomAuthorizable, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -281,13 +281,13 @@ describe(RoomMembershipRule.name, () => {
 			const roleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_COPY_ROOM] });
 			const roleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
 
-			const roomMembershipAuthorizableWithPermission = new RoomMembershipAuthorizable(
+			const roomAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
 				[{ roles: [roleDtoWithPermission], userId: userWithPermission.id, userSchoolId: userWithPermission.school.id }],
 				userWithPermission.school.id
 			);
 
-			const roomMembershipAuthorizableWithoutPermission = new RoomMembershipAuthorizable(
+			const roomAuthorizableWithoutPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -302,16 +302,16 @@ describe(RoomMembershipRule.name, () => {
 			return {
 				userWithPermission,
 				userWithoutPermission,
-				roomMembershipAuthorizableWithPermission,
-				roomMembershipAuthorizableWithoutPermission,
+				roomAuthorizableWithPermission,
+				roomAuthorizableWithoutPermission,
 			};
 		};
 
 		describe('when user has room copy permission', () => {
 			it('should return true', () => {
-				const { userWithPermission, roomMembershipAuthorizableWithPermission } = setup();
+				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canCopyRoom(userWithPermission, roomMembershipAuthorizableWithPermission);
+				const result = service.canCopyRoom(userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -319,9 +319,9 @@ describe(RoomMembershipRule.name, () => {
 
 		describe('when user does not have room copy permission', () => {
 			it('should return false', () => {
-				const { userWithoutPermission, roomMembershipAuthorizableWithoutPermission } = setup();
+				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canCopyRoom(userWithoutPermission, roomMembershipAuthorizableWithoutPermission);
+				const result = service.canCopyRoom(userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});
@@ -335,19 +335,19 @@ describe(RoomMembershipRule.name, () => {
 					const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS] });
 					const user = userFactory.buildWithId({ roles: [schoolRole] });
 					const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+					const roomAuthorizable = new RoomAuthorizable(
 						'roomId',
 						[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 						user.school.id
 					);
 
-					return { user, roomMembershipAuthorizable };
+					return { user, roomAuthorizable };
 				};
 
 				it('should return true', () => {
-					const { user, roomMembershipAuthorizable } = setup();
+					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomMembershipAuthorizable);
+					const result = service.canAccessRoom(user, roomAuthorizable);
 
 					expect(result).toBe(true);
 				});
@@ -359,19 +359,19 @@ describe(RoomMembershipRule.name, () => {
 					const user = userFactory.buildWithId({ roles: [schoolRole] });
 					const otherSchool = schoolEntityFactory.buildWithId();
 					const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+					const roomAuthorizable = new RoomAuthorizable(
 						'roomId',
 						[{ roles: [roomRoleDto], userId: 'otherId', userSchoolId: user.school.id }],
 						otherSchool.id
 					);
 
-					return { user, roomMembershipAuthorizable };
+					return { user, roomAuthorizable };
 				};
 
 				it('should return true', () => {
-					const { user, roomMembershipAuthorizable } = setup();
+					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomMembershipAuthorizable);
+					const result = service.canAccessRoom(user, roomAuthorizable);
 
 					expect(result).toBe(true);
 				});
@@ -382,19 +382,19 @@ describe(RoomMembershipRule.name, () => {
 					const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS] });
 					const user = userFactory.buildWithId({ roles: [schoolRole] });
 					const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+					const roomAuthorizable = new RoomAuthorizable(
 						'roomId',
 						[{ roles: [roomRoleDto], userId: 'otherId', userSchoolId: 'otherSchoolId' }],
 						user.school.id
 					);
 
-					return { user, roomMembershipAuthorizable };
+					return { user, roomAuthorizable };
 				};
 
 				it('should return true', () => {
-					const { user, roomMembershipAuthorizable } = setup();
+					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomMembershipAuthorizable);
+					const result = service.canAccessRoom(user, roomAuthorizable);
 
 					expect(result).toBe(true);
 				});
@@ -409,19 +409,19 @@ describe(RoomMembershipRule.name, () => {
 						name: RoleName.ROOMOWNER,
 						permissions: [Permission.ROOM_LIST_CONTENT],
 					});
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+					const roomAuthorizable = new RoomAuthorizable(
 						'roomId',
 						[{ roles: [roomOwnerRoleDto], userId: user.id, userSchoolId: user.school.id }],
 						user.school.id
 					);
 
-					return { user, roomMembershipAuthorizable };
+					return { user, roomAuthorizable };
 				};
 
 				it('should return true', () => {
-					const { user, roomMembershipAuthorizable } = setup();
+					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomMembershipAuthorizable);
+					const result = service.canAccessRoom(user, roomAuthorizable);
 
 					expect(result).toBe(true);
 				});
@@ -431,19 +431,19 @@ describe(RoomMembershipRule.name, () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
 					const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
-					const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+					const roomAuthorizable = new RoomAuthorizable(
 						'roomId',
 						[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 						user.school.id
 					);
 
-					return { user, roomMembershipAuthorizable };
+					return { user, roomAuthorizable };
 				};
 
 				it('should return false', () => {
-					const { user, roomMembershipAuthorizable } = setup();
+					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomMembershipAuthorizable);
+					const result = service.canAccessRoom(user, roomAuthorizable);
 
 					expect(result).toBe(false);
 				});
@@ -456,19 +456,19 @@ describe(RoomMembershipRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_ADD_MEMBERS] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
 				);
 
-				return { user, roomMembershipAuthorizable };
+				return { user, roomAuthorizable };
 			};
 
 			it('should return true', () => {
-				const { user, roomMembershipAuthorizable } = setup();
+				const { user, roomAuthorizable } = setup();
 
-				const result = service.canAddMembers(user, roomMembershipAuthorizable);
+				const result = service.canAddMembers(user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -479,19 +479,19 @@ describe(RoomMembershipRule.name, () => {
 				const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS] });
 				const user = userFactory.buildWithId({ roles: [schoolRole] });
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
 				);
 
-				return { user, roomMembershipAuthorizable };
+				return { user, roomAuthorizable };
 			};
 
 			it('should return true', () => {
-				const { user, roomMembershipAuthorizable } = setup();
+				const { user, roomAuthorizable } = setup();
 
-				const result = service.canAddMembers(user, roomMembershipAuthorizable);
+				const result = service.canAddMembers(user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -503,19 +503,19 @@ describe(RoomMembershipRule.name, () => {
 				const user = userFactory.buildWithId({ roles: [schoolRole] });
 				const otherSchool = schoolEntityFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					otherSchool.id
 				);
 
-				return { user, roomMembershipAuthorizable };
+				return { user, roomAuthorizable };
 			};
 
 			it('should return false', () => {
-				const { user, roomMembershipAuthorizable } = setup();
+				const { user, roomAuthorizable } = setup();
 
-				const result = service.canAddMembers(user, roomMembershipAuthorizable);
+				const result = service.canAddMembers(user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -525,19 +525,19 @@ describe(RoomMembershipRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
 				);
 
-				return { user, roomMembershipAuthorizable };
+				return { user, roomAuthorizable };
 			};
 
 			it('should return false', () => {
-				const { user, roomMembershipAuthorizable } = setup();
+				const { user, roomAuthorizable } = setup();
 
-				const result = service.canAddMembers(user, roomMembershipAuthorizable);
+				const result = service.canAddMembers(user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -552,7 +552,7 @@ describe(RoomMembershipRule.name, () => {
 			const roomRoleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_ADD_MEMBERS] });
 			const roomRoleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
 
-			const roomMembershipAuthorizableWithPermission = new RoomMembershipAuthorizable(
+			const roomAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -564,7 +564,7 @@ describe(RoomMembershipRule.name, () => {
 				userWithPermission.school.id
 			);
 
-			const roomMembershipAuthorizableWithoutPermission = new RoomMembershipAuthorizable(
+			const roomAuthorizableWithoutPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -579,19 +579,16 @@ describe(RoomMembershipRule.name, () => {
 			return {
 				userWithPermission,
 				userWithoutPermission,
-				roomMembershipAuthorizableWithPermission,
-				roomMembershipAuthorizableWithoutPermission,
+				roomAuthorizableWithPermission,
+				roomAuthorizableWithoutPermission,
 			};
 		};
 
 		describe('when user has room add members permission', () => {
 			it('should return true', () => {
-				const { userWithPermission, roomMembershipAuthorizableWithPermission } = setup();
+				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canAddExternalPersonByEmail(
-					userWithPermission,
-					roomMembershipAuthorizableWithPermission
-				);
+				const result = service.canAddExternalPersonByEmail(userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -599,12 +596,9 @@ describe(RoomMembershipRule.name, () => {
 
 		describe('when user does not have room add members permission', () => {
 			it('should return false', () => {
-				const { userWithoutPermission, roomMembershipAuthorizableWithoutPermission } = setup();
+				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canAddExternalPersonByEmail(
-					userWithoutPermission,
-					roomMembershipAuthorizableWithoutPermission
-				);
+				const result = service.canAddExternalPersonByEmail(userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});
@@ -619,7 +613,7 @@ describe(RoomMembershipRule.name, () => {
 			const roomRoleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_CHANGE_ROLES] });
 			const roomRoleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
 
-			const roomMembershipAuthorizableWithPermission = new RoomMembershipAuthorizable(
+			const roomAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -631,7 +625,7 @@ describe(RoomMembershipRule.name, () => {
 				userWithPermission.school.id
 			);
 
-			const roomMembershipAuthorizableWithoutPermission = new RoomMembershipAuthorizable(
+			const roomAuthorizableWithoutPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -646,16 +640,16 @@ describe(RoomMembershipRule.name, () => {
 			return {
 				userWithPermission,
 				userWithoutPermission,
-				roomMembershipAuthorizableWithPermission,
-				roomMembershipAuthorizableWithoutPermission,
+				roomAuthorizableWithPermission,
+				roomAuthorizableWithoutPermission,
 			};
 		};
 
 		describe('when user has room change roles permission', () => {
 			it('should return true', () => {
-				const { userWithPermission, roomMembershipAuthorizableWithPermission } = setup();
+				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canChangeRolesOfMembers(userWithPermission, roomMembershipAuthorizableWithPermission);
+				const result = service.canChangeRolesOfMembers(userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -663,12 +657,9 @@ describe(RoomMembershipRule.name, () => {
 
 		describe('when user does not have room change roles permission', () => {
 			it('should return false', () => {
-				const { userWithoutPermission, roomMembershipAuthorizableWithoutPermission } = setup();
+				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canChangeRolesOfMembers(
-					userWithoutPermission,
-					roomMembershipAuthorizableWithoutPermission
-				);
+				const result = service.canChangeRolesOfMembers(userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});
@@ -683,7 +674,7 @@ describe(RoomMembershipRule.name, () => {
 			const roomRoleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_LEAVE_ROOM] });
 			const roomRoleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
 
-			const roomMembershipAuthorizableWithPermission = new RoomMembershipAuthorizable(
+			const roomAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -695,7 +686,7 @@ describe(RoomMembershipRule.name, () => {
 				userWithPermission.school.id
 			);
 
-			const roomMembershipAuthorizableWithoutPermission = new RoomMembershipAuthorizable(
+			const roomAuthorizableWithoutPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -710,16 +701,16 @@ describe(RoomMembershipRule.name, () => {
 			return {
 				userWithPermission,
 				userWithoutPermission,
-				roomMembershipAuthorizableWithPermission,
-				roomMembershipAuthorizableWithoutPermission,
+				roomAuthorizableWithPermission,
+				roomAuthorizableWithoutPermission,
 			};
 		};
 
 		describe('when user has room leave permission', () => {
 			it('should return true', () => {
-				const { userWithPermission, roomMembershipAuthorizableWithPermission } = setup();
+				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canLeaveRoom(userWithPermission, roomMembershipAuthorizableWithPermission);
+				const result = service.canLeaveRoom(userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -727,9 +718,9 @@ describe(RoomMembershipRule.name, () => {
 
 		describe('when user does not have room leave permission', () => {
 			it('should return false', () => {
-				const { userWithoutPermission, roomMembershipAuthorizableWithoutPermission } = setup();
+				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canLeaveRoom(userWithoutPermission, roomMembershipAuthorizableWithoutPermission);
+				const result = service.canLeaveRoom(userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});
@@ -744,7 +735,7 @@ describe(RoomMembershipRule.name, () => {
 			const roomRoleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_EDIT_ROOM] });
 			const roomRoleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
 
-			const roomMembershipAuthorizableWithPermission = new RoomMembershipAuthorizable(
+			const roomAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -756,7 +747,7 @@ describe(RoomMembershipRule.name, () => {
 				userWithPermission.school.id
 			);
 
-			const roomMembershipAuthorizableWithoutPermission = new RoomMembershipAuthorizable(
+			const roomAuthorizableWithoutPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -771,16 +762,16 @@ describe(RoomMembershipRule.name, () => {
 			return {
 				userWithPermission,
 				userWithoutPermission,
-				roomMembershipAuthorizableWithPermission,
-				roomMembershipAuthorizableWithoutPermission,
+				roomAuthorizableWithPermission,
+				roomAuthorizableWithoutPermission,
 			};
 		};
 
 		describe('when user has room edit permission', () => {
 			it('should return true', () => {
-				const { userWithPermission, roomMembershipAuthorizableWithPermission } = setup();
+				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canUpdateRoom(userWithPermission, roomMembershipAuthorizableWithPermission);
+				const result = service.canUpdateRoom(userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -788,9 +779,9 @@ describe(RoomMembershipRule.name, () => {
 
 		describe('when user does not have room edit permission', () => {
 			it('should return false', () => {
-				const { userWithoutPermission, roomMembershipAuthorizableWithoutPermission } = setup();
+				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canUpdateRoom(userWithoutPermission, roomMembershipAuthorizableWithoutPermission);
+				const result = service.canUpdateRoom(userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});
@@ -802,19 +793,19 @@ describe(RoomMembershipRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_DELETE_ROOM] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
 				);
 
-				return { user, roomMembershipAuthorizable };
+				return { user, roomAuthorizable };
 			};
 
 			it('should return true', () => {
-				const { user, roomMembershipAuthorizable } = setup();
+				const { user, roomAuthorizable } = setup();
 
-				const result = service.canDeleteRoom(user, roomMembershipAuthorizable);
+				const result = service.canDeleteRoom(user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -825,19 +816,19 @@ describe(RoomMembershipRule.name, () => {
 				const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS] });
 				const user = userFactory.buildWithId({ roles: [schoolRole] });
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
 				);
 
-				return { user, roomMembershipAuthorizable };
+				return { user, roomAuthorizable };
 			};
 
 			it('should return true', () => {
-				const { user, roomMembershipAuthorizable } = setup();
+				const { user, roomAuthorizable } = setup();
 
-				const result = service.canDeleteRoom(user, roomMembershipAuthorizable);
+				const result = service.canDeleteRoom(user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -849,19 +840,19 @@ describe(RoomMembershipRule.name, () => {
 				const user = userFactory.buildWithId({ roles: [schoolRole] });
 				const otherSchool = schoolEntityFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					otherSchool.id
 				);
 
-				return { user, roomMembershipAuthorizable };
+				return { user, roomAuthorizable };
 			};
 
 			it('should return false', () => {
-				const { user, roomMembershipAuthorizable } = setup();
+				const { user, roomAuthorizable } = setup();
 
-				const result = service.canDeleteRoom(user, roomMembershipAuthorizable);
+				const result = service.canDeleteRoom(user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -871,19 +862,19 @@ describe(RoomMembershipRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
 				);
 
-				return { user, roomMembershipAuthorizable };
+				return { user, roomAuthorizable };
 			};
 
 			it('should return false', () => {
-				const { user, roomMembershipAuthorizable } = setup();
+				const { user, roomAuthorizable } = setup();
 
-				const result = service.canDeleteRoom(user, roomMembershipAuthorizable);
+				const result = service.canDeleteRoom(user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -896,19 +887,19 @@ describe(RoomMembershipRule.name, () => {
 				const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS] });
 				const user = userFactory.buildWithId({ roles: [schoolRole] });
 				const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
 				);
 
-				return { user, roomMembershipAuthorizable };
+				return { user, roomAuthorizable };
 			};
 
 			it('should return true', () => {
-				const { user, roomMembershipAuthorizable } = setup();
+				const { user, roomAuthorizable } = setup();
 
-				const result = service.canGetRoomMembers(user, roomMembershipAuthorizable);
+				const result = service.canGetRoomMembers(user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -919,19 +910,19 @@ describe(RoomMembershipRule.name, () => {
 				const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS] });
 				const user = userFactory.buildWithId({ roles: [schoolRole] });
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
 				);
 
-				return { user, roomMembershipAuthorizable };
+				return { user, roomAuthorizable };
 			};
 
 			it('should return false', () => {
-				const { user, roomMembershipAuthorizable } = setup();
+				const { user, roomAuthorizable } = setup();
 
-				const result = service.canGetRoomMembers(user, roomMembershipAuthorizable);
+				const result = service.canGetRoomMembers(user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -941,19 +932,19 @@ describe(RoomMembershipRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
 				);
 
-				return { user, roomMembershipAuthorizable };
+				return { user, roomAuthorizable };
 			};
 
 			it('should return false', () => {
-				const { user, roomMembershipAuthorizable } = setup();
+				const { user, roomAuthorizable } = setup();
 
-				const result = service.canGetRoomMembers(user, roomMembershipAuthorizable);
+				const result = service.canGetRoomMembers(user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -963,19 +954,19 @@ describe(RoomMembershipRule.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
-				const roomMembershipAuthorizable = new RoomMembershipAuthorizable(
+				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
 					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
 					user.school.id
 				);
 
-				return { user, roomMembershipAuthorizable };
+				return { user, roomAuthorizable };
 			};
 
 			it('should return false', () => {
-				const { user, roomMembershipAuthorizable } = setup();
+				const { user, roomAuthorizable } = setup();
 
-				const result = service.canGetRoomMembers(user, roomMembershipAuthorizable);
+				const result = service.canGetRoomMembers(user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -990,7 +981,7 @@ describe(RoomMembershipRule.name, () => {
 
 			const roomRoleDto = roleDtoFactory.build({ permissions: [] });
 
-			const roomMembershipAuthorizableWithPermission = new RoomMembershipAuthorizable(
+			const roomAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -1002,7 +993,7 @@ describe(RoomMembershipRule.name, () => {
 				userWithPermission.school.id
 			);
 
-			const roomMembershipAuthorizableWithoutPermission = new RoomMembershipAuthorizable(
+			const roomAuthorizableWithoutPermission = new RoomAuthorizable(
 				'roomId',
 				[
 					{
@@ -1017,16 +1008,16 @@ describe(RoomMembershipRule.name, () => {
 			return {
 				userWithPermission,
 				userWithoutPermission,
-				roomMembershipAuthorizableWithPermission,
-				roomMembershipAuthorizableWithoutPermission,
+				roomAuthorizableWithPermission,
+				roomAuthorizableWithoutPermission,
 			};
 		};
 
 		describe('when user has school administrate rooms permission', () => {
 			it('should return true', () => {
-				const { userWithPermission, roomMembershipAuthorizableWithPermission } = setup();
+				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canGetRoomMembersRedacted(userWithPermission, roomMembershipAuthorizableWithPermission);
+				const result = service.canGetRoomMembersRedacted(userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -1034,12 +1025,9 @@ describe(RoomMembershipRule.name, () => {
 
 		describe('when user does not have school administrate rooms permission', () => {
 			it('should return false', () => {
-				const { userWithoutPermission, roomMembershipAuthorizableWithoutPermission } = setup();
+				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canGetRoomMembersRedacted(
-					userWithoutPermission,
-					roomMembershipAuthorizableWithoutPermission
-				);
+				const result = service.canGetRoomMembersRedacted(userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});

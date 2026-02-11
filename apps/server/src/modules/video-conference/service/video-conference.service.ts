@@ -120,8 +120,8 @@ export class VideoConferenceService {
 
 	private async hasStartMeetingAndCanRead(authorizableUser: User, entity: ConferenceResource): Promise<boolean> {
 		if (entity instanceof Room) {
-			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
-			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
+			const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(entity.id);
+			const roomMember = roomAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
 				return roomMember.roles.some((role) => role.name === RoleName.ROOMADMIN);
@@ -151,8 +151,8 @@ export class VideoConferenceService {
 
 	private async hasJoinMeetingAndCanRead(authorizableUser: User, entity: ConferenceResource): Promise<boolean> {
 		if (entity instanceof Room) {
-			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
-			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
+			const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(entity.id);
+			const roomMember = roomAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
 				return (
