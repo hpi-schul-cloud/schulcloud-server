@@ -1,6 +1,7 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { ImportCourseParams, CommonCartridgeEvents, CommonCartridgeExchange } from '@infra/rabbitmq';
 import { Injectable } from '@nestjs/common';
+import { JwtExtractor } from '@shared/common/utils';
 import { Options } from 'amqplib';
 import { Request } from 'express';
 
@@ -19,7 +20,7 @@ export class CommonCartridgeProducer {
 
 	private getPublishOptions(req: Request): Options.Publish {
 		const options: Options.Publish = {
-			headers: { Authorization: req.headers.authorization },
+			headers: { Authorization: `Bearer ${JwtExtractor.extractJwtFromRequest(req) ?? ''}` },
 		};
 
 		return options;
