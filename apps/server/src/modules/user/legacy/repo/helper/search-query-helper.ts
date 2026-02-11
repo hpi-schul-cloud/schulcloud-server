@@ -23,6 +23,6 @@ export class SearchQueryHelper {
 	}
 
 	public static deletedFilter(query: UserSearchQuery, deletionDate?: Date): void {
-		query['$or'] = [{ deletedAt: { $exists: false } }, { deletedAt: { $gte: deletionDate } }];
+		query['$or'] = [{ deletedAt: { $exists: false } }, { deletedAt: null }, { deletedAt: { $gte: deletionDate } }];
 	}
 }
