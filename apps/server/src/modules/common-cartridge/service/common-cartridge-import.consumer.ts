@@ -1,6 +1,6 @@
 import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
-import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { RabbitHeader, RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { JwtPayload } from '@infra/auth-guard';
 import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { CardClientAdapter, CardControllerCreateElement201Response } from '@infra/cards-client';
@@ -23,8 +23,6 @@ import {
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
-import { JwtExtractor } from '@shared/common/utils';
-import { ConsumeMessage } from 'amqplib';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;
@@ -62,12 +60,11 @@ export class CommonCartridgeImportConsumer {
 		routingKey: CommonCartridgeEvents.IMPORT_COURSE,
 		queue: CommonCartridgeEvents.IMPORT_COURSE,
 	})
-	public async importFile(@RabbitPayload() payload: ImportCourseParams, msg: ConsumeMessage): Promise<void> {
-		const jwt = JwtExtractor.extractJwtFromRequest(msg.properties);
-
-		if (!jwt) {
-			throw new UnauthorizedException();
-		}
+	public async importFile(
+		@RabbitPayload() payload: ImportCourseParams,
+		@RabbitHeader() headers: Record<string, unknown>
+	): Promise<void> {
+		const jwt = this.getJWT(headers);
 
 		const interceptorReq = axios.interceptors.request.use(
 			(req) => req,
@@ -110,6 +107,22 @@ export class CommonCartridgeImportConsumer {
 
 		axios.interceptors.request.eject(interceptorReq);
 		axios.interceptors.response.eject(interceptorRes);
+	}
+
+	private getJWT(headers: Record<string, unknown>): string {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const authHeader = headers['authorization'] || headers['Authorization'];
+		let jwt: string | undefined;
+
+		if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+			jwt = authHeader.slice(7);
+		}
+
+		if (!jwt) {
+			throw new UnauthorizedException();
+		}
+
+		return jwt;
 	}
 
 	private async fetchFile(payload: Payload): Promise<Buffer | null> {
