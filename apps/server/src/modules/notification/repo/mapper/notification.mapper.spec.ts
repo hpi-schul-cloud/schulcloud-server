@@ -173,6 +173,48 @@ describe(NotificationMapper.name, () => {
 				expect(entity).toEqual(expectedEntity);
 			});
 		});
+
+		describe('When a notification domain object is mapped to an empty entity', () => {
+			const fixedDate = new Date('2023-01-01T00:00:00.000Z');
+
+			beforeAll(() => {
+				jest.useFakeTimers();
+				jest.setSystemTime(fixedDate);
+			});
+
+			afterAll(() => {
+				jest.useRealTimers();
+			});
+
+			const setup = () => {
+				const domainObject = {
+					id: 'testid',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				} as Notification;
+
+				const expectedEntity = new NotificationEntity({
+					type: '',
+					key: '',
+					arguments: [],
+					userId: '',
+					id: domainObject.id,
+					createdAt: fixedDate,
+					updatedAt: fixedDate,
+				});
+
+				return { domainObject, expectedEntity };
+			};
+
+			it('should properly map all empty notification properties from domain object to entity and set timestamps', () => {
+				const { domainObject, expectedEntity } = setup();
+
+				const entity = NotificationMapper.mapToEntity(domainObject);
+
+				expect(entity).toBeInstanceOf(NotificationEntity);
+				expect(entity).toEqual(expectedEntity);
+			});
+		});
 	});
 
 	describe('mapToEntities', () => {
