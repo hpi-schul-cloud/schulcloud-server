@@ -62,9 +62,11 @@ export class CommonCartridgeImportConsumer {
 	})
 	public async importFile(
 		@RabbitPayload() payload: ImportCourseParams,
-		@RabbitHeader() headers: Record<string, unknown>
+		@RabbitHeader('x-jwt') jwt?: string
 	): Promise<void> {
-		const jwt = this.getJWT(headers);
+		if (!jwt) {
+			throw new UnauthorizedException();
+		}
 
 		const interceptorReq = axios.interceptors.request.use(
 			(req) => req,
@@ -107,22 +109,6 @@ export class CommonCartridgeImportConsumer {
 
 		axios.interceptors.request.eject(interceptorReq);
 		axios.interceptors.response.eject(interceptorRes);
-	}
-
-	private getJWT(headers: Record<string, unknown>): string {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const authHeader = headers['authorization'] || headers['Authorization'];
-		let jwt: string | undefined;
-
-		if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
-			jwt = authHeader.slice(7);
-		}
-
-		if (!jwt) {
-			throw new UnauthorizedException();
-		}
-
-		return jwt;
 	}
 
 	private async fetchFile(payload: Payload): Promise<Buffer | null> {

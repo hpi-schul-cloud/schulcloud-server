@@ -20,7 +20,7 @@ export class CommonCartridgeProducer {
 
 	private getPublishOptions(req: Request): Options.Publish {
 		const options: Options.Publish = {
-			headers: { Authorization: `Bearer ${JwtExtractor.extractJwtFromRequest(req) ?? ''}` },
+			headers: { 'x-jwt': JwtExtractor.extractJwtFromRequest(req) },
 		};
 
 		return options;
