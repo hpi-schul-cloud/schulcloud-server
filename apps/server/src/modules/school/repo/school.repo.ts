@@ -101,6 +101,14 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		return schools;
 	}
 
+	public async getAllSchoolIds(): Promise<EntityId[]> {
+		// Since we don't need any of the EntityManager's features here, we load the ids with a Mongo query to be more efficient.
+		const objectIds = await this.em.getCollection(this.entityName).distinct('_id');
+		const ids = objectIds.map((objectId) => objectId.toString());
+
+		return ids;
+	}
+
 	public async hasLdapSystem(schoolId: EntityId): Promise<boolean> {
 		const entity: SchoolEntity | null = await this.em.findOne(
 			SchoolEntity,

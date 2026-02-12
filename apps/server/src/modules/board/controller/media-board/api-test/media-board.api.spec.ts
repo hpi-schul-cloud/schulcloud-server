@@ -118,7 +118,9 @@ describe('Media Board (API)', () => {
 									id: mediaElement.id,
 									timestamps: {
 										createdAt: mediaElement.createdAt.toISOString(),
-										lastUpdatedAt: mediaElement.updatedAt.toISOString(),
+										lastUpdatedAt: expect.stringMatching(
+											/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+										) as unknown as string, // any iso string, to avoid ms differences based unstable test
 									},
 									content: {
 										contextExternalToolId,

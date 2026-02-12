@@ -9,15 +9,15 @@ import {
 import { H5PEditor, H5PPlayer, IEditorModel } from '@lumieducation/h5p-server';
 import { UserService } from '@modules/user';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
+import { H5PEditorConfig } from '../h5p-editor.config';
 import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { h5pContentFactory } from '../testing';
 import { H5PEditorUc } from './h5p.uc';
-import { ConfigService } from '@nestjs/config';
-import { H5PEditorConfig } from '../h5p-editor.config';
 
 const createParams = () => {
 	const content = h5pContentFactory.build();
@@ -122,7 +122,7 @@ describe('get H5P editor', () => {
 			it('should call service with correct params', async () => {
 				const { mockCurrentUser, language } = setup();
 
-				await uc.getEmptyH5pEditor(mockCurrentUser.userId, language);
+				await uc.getEmptyH5pEditor(mockCurrentUser, language);
 
 				expect(h5pEditor.render).toHaveBeenCalledWith(
 					undefined,
@@ -136,7 +136,7 @@ describe('get H5P editor', () => {
 			it('should return results of service', async () => {
 				const { mockCurrentUser, language, editorResponseMock } = setup();
 
-				const result = await uc.getEmptyH5pEditor(mockCurrentUser.userId, language);
+				const result = await uc.getEmptyH5pEditor(mockCurrentUser, language);
 
 				expect(result).toEqual(editorResponseMock);
 			});
@@ -156,7 +156,7 @@ describe('get H5P editor', () => {
 			it('should return error of service', async () => {
 				const { error, mockCurrentUser, language } = setup();
 
-				const getEmptyEditorPromise = uc.getEmptyH5pEditor(mockCurrentUser.userId, language);
+				const getEmptyEditorPromise = uc.getEmptyH5pEditor(mockCurrentUser, language);
 
 				await expect(getEmptyEditorPromise).rejects.toThrow(error);
 			});

@@ -1,6 +1,6 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { RoleName } from '@modules/role';
-import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -24,12 +24,12 @@ export class RoomPermissionService {
 		roomId: EntityId,
 		action: Action,
 		requiredPermissions: Permission[] = []
-	): Promise<RoomMembershipAuthorizable> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+	): Promise<RoomAuthorizable> {
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, { action, requiredPermissions });
+		this.authorizationService.checkPermission(user, roomAuthorizable, { action, requiredPermissions });
 
-		return roomMembershipAuthorizable;
+		return roomAuthorizable;
 	}
 
 	public async hasRoomPermissions(
@@ -38,14 +38,27 @@ export class RoomPermissionService {
 		action: Action,
 		requiredPermissions: Permission[] = []
 	): Promise<boolean> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const hasRoomPermissions = this.authorizationService.hasPermission(user, roomMembershipAuthorizable, {
+		const hasRoomPermissions = this.authorizationService.hasPermission(user, roomAuthorizable, {
 			action,
 			requiredPermissions,
 		});
 
 		return hasRoomPermissions;
+	}
+
+	public async checkRoomIsUnlocked(roomId: EntityId): Promise<void> {
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+
+		const hasOwner = roomAuthorizable.members.some((member) =>
+			member.roles.some((role) => role.name === RoleName.ROOMOWNER)
+		);
+
+		if (!hasOwner) {
+			const room = await this.roomService.getSingleRoom(roomId);
+			throw new LockedRoomLoggableException(room.name, room.id);
+		}
 	}
 
 	public checkFeatureAdministrateRoomsEnabled(): void {
@@ -57,19 +70,6 @@ export class RoomPermissionService {
 	public checkFeatureRoomCopyEnabled(): void {
 		if (!this.configService.get('FEATURE_ROOM_COPY_ENABLED', { infer: true })) {
 			throw new FeatureDisabledLoggableException('FEATURE_ROOM_COPY_ENABLED');
-		}
-	}
-
-	public async checkRoomIsUnlocked(roomId: EntityId): Promise<void> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-
-		const hasOwner = roomMembershipAuthorizable.members.some((member) =>
-			member.roles.some((role) => role.name === RoleName.ROOMOWNER)
-		);
-
-		if (!hasOwner) {
-			const room = await this.roomService.getSingleRoom(roomId);
-			throw new LockedRoomLoggableException(room.name, room.id);
 		}
 	}
 }

@@ -167,7 +167,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 		it('should call H5PAjaxEndpoint.getAjax, filter out unwanted library and return the result', async () => {
 			const { user, language, expectedResponse } = setup();
 
-			const result = await uc.getAjax({ action: 'content-type-cache' }, user.userId);
+			const result = await uc.getAjax({ action: 'content-type-cache' }, user);
 
 			expect(result).toStrictEqual(expectedResponse);
 			expect(ajaxEndpoint.getAjax).toHaveBeenCalledWith(
@@ -224,7 +224,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			const { user, language, mockedLumiUser, mockedResponse } = setup();
 
 			const result = await uc.postAjax(
-				user.userId,
+				user,
 				{ action: 'libraries' },
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
 			);
@@ -246,7 +246,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 			const { user, language, mockedLumiUser, mockedResponse } = setup();
 
 			const result = await uc.postAjax(
-				user.userId,
+				user,
 				{ action: 'libraries' },
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
 				{
@@ -367,7 +367,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 				} = setup();
 
 				const result = await uc.postAjax(
-					user.userId,
+					user,
 					{ action: 'files' },
 					{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
 					{
@@ -442,7 +442,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 					} = setup();
 
 					const result = await uc.postAjax(
-						user.userId,
+						user,
 						{ action: 'files' },
 						{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
 						{
@@ -518,7 +518,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 					} = setup();
 
 					const result = await uc.postAjax(
-						user.userId,
+						user,
 						{ action: 'files' },
 						{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
 						{
@@ -580,7 +580,7 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 
 					await expect(
 						uc.postAjax(
-							user.userId,
+							user,
 							{ action: 'files' },
 							{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
 							{

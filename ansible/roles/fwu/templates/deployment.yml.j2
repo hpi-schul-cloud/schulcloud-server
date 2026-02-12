@@ -65,6 +65,8 @@ spec:
             name: api-fwu-configmap
         - secretRef:
             name: api-fwu-secret
+        - secretRef:
+            name: session-valkey-password
         command: ['npm', 'run', 'nest:start:fwu-learning-contents:prod']
         readinessProbe:
           httpGet:

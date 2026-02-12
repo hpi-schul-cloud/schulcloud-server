@@ -1,22 +1,25 @@
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { throwForbiddenIfFalse } from '@shared/common/utils';
 import type { EntityId } from '@shared/domain/types';
+import { BoardNodeRule } from '../../authorisation/board-node.rule';
 import { MediaBoard, MediaBoardNodeFactory, MediaExternalToolElement, MediaLine } from '../../domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
+import { BoardNodeAuthorizableService, BoardNodeService, MediaBoardService } from '../../service';
 
 @Injectable()
 export class MediaElementUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly boardNodeService: BoardNodeService,
-		private readonly boardNodePermissionService: BoardNodePermissionService,
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
+		private readonly boardNodeRule: BoardNodeRule,
 		private readonly configService: ConfigService<MediaBoardConfig, true>,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly mediaBoardNodeFactory: MediaBoardNodeFactory,
@@ -34,7 +37,10 @@ export class MediaElementUc {
 		const element = await this.boardNodeService.findAnyMediaElementById(elementId);
 		const targetLine = await this.boardNodeService.findByClassAndId(MediaLine, targetLineId);
 
-		await this.boardNodePermissionService.checkPermission(userId, targetLine, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(targetLine);
+
+		throwForbiddenIfFalse(this.boardNodeRule.canMoveElement(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.move(element, targetLine, targetPosition);
 	}
@@ -49,15 +55,15 @@ export class MediaElementUc {
 
 		const line = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 
-		await this.boardNodePermissionService.checkPermission(userId, line, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(line);
+		throwForbiddenIfFalse(this.boardNodeRule.canCreateElement(user, boardNodeAuthorizable));
 
 		const mediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, line.rootId);
 
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
 
 		await this.checkElementExistsAlreadyOnBoardAndThrow(mediaBoard, schoolExternalTool);
-
-		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const createdContextExternalTool: ContextExternalTool =
 			await this.mediaBoardService.createContextExternalToolForMediaBoard(
 				user.school.id,
@@ -78,7 +84,9 @@ export class MediaElementUc {
 
 		const element = await this.boardNodeService.findAnyMediaElementById(elementId);
 
-		await this.boardNodePermissionService.checkPermission(userId, element, AuthorizationContextBuilder.write([]));
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(element);
+		throwForbiddenIfFalse(this.boardNodeRule.canDeleteElement(user, boardNodeAuthorizable));
 
 		await this.boardNodeService.delete(element);
 	}

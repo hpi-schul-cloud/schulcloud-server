@@ -7,7 +7,7 @@ import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { roleFactory } from '@modules/role/testing';
 import { RoomService } from '@modules/room';
-import { RoomMembershipService } from '@modules/room-membership';
+import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
@@ -250,13 +250,13 @@ describe(BoardContextService.name, () => {
 
 				it('should return their information + admin & editor role', async () => {
 					const { columnBoard, role, user } = setup();
-
-					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
-						id: 'foo',
-						roomId: columnBoard.context.id,
-						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
-						schoolId: user.school.id,
-					});
+					roomMembershipService.getRoomAuthorizable.mockResolvedValue(
+						new RoomAuthorizable(
+							'foo',
+							[{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
+							user.school.id
+						)
+					);
 
 					const result = await service.getUsersWithBoardRoles(columnBoard);
 					const expected: UserWithBoardRoles[] = [
@@ -290,12 +290,13 @@ describe(BoardContextService.name, () => {
 				it('should return their information + admin & editor role', async () => {
 					const { columnBoard, role, user } = setup();
 
-					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
-						id: 'foo',
-						roomId: columnBoard.context.id,
-						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
-						schoolId: user.school.id,
-					});
+					roomMembershipService.getRoomAuthorizable.mockResolvedValue(
+						new RoomAuthorizable(
+							'foo',
+							[{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
+							user.school.id
+						)
+					);
 
 					const result = await service.getUsersWithBoardRoles(columnBoard);
 					const expected: UserWithBoardRoles[] = [
@@ -329,12 +330,13 @@ describe(BoardContextService.name, () => {
 				it('should return their information + editor role', async () => {
 					const { columnBoard, role, user } = setup();
 
-					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
-						id: 'foo',
-						roomId: columnBoard.context.id,
-						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
-						schoolId: user.school.id,
-					});
+					roomMembershipService.getRoomAuthorizable.mockResolvedValue(
+						new RoomAuthorizable(
+							'foo',
+							[{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
+							user.school.id
+						)
+					);
 
 					const result = await service.getUsersWithBoardRoles(columnBoard);
 					const expected: UserWithBoardRoles[] = [
@@ -368,12 +370,13 @@ describe(BoardContextService.name, () => {
 				it('should return their information + reader role', async () => {
 					const { columnBoard, role, user } = setup();
 
-					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
-						id: 'foo',
-						roomId: columnBoard.context.id,
-						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
-						schoolId: user.school.id,
-					});
+					roomMembershipService.getRoomAuthorizable.mockResolvedValue(
+						new RoomAuthorizable(
+							'foo',
+							[{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
+							user.school.id
+						)
+					);
 
 					const result = await service.getUsersWithBoardRoles(columnBoard);
 					const expected: UserWithBoardRoles[] = [
@@ -404,12 +407,13 @@ describe(BoardContextService.name, () => {
 				it('should return their information + no role', async () => {
 					const { columnBoard, role, user } = setup();
 
-					roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValue({
-						id: 'foo',
-						roomId: columnBoard.context.id,
-						members: [{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
-						schoolId: user.school.id,
-					});
+					roomMembershipService.getRoomAuthorizable.mockResolvedValue(
+						new RoomAuthorizable(
+							'foo',
+							[{ userId: user.id, roles: [role], userSchoolId: user.school.id }],
+							user.school.id
+						)
+					);
 
 					const result = await service.getUsersWithBoardRoles(columnBoard);
 					const expected: UserWithBoardRoles[] = [
