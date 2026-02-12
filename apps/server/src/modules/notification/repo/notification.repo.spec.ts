@@ -1,12 +1,13 @@
 import { NotificationRepo } from './notification.repo';
 import { NotificationEntity } from './entities/notification.entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { NotificationType } from '../types/notification-type.enum';
 import { Notification } from '../domain/do/notification.do';
+import { notificationFactory } from '../domain/testing/factory/notification.factory';
+import { notificationEntityFactory } from './entities/testing/notation.entity.factory';
 
 describe(NotificationRepo.name, () => {
 	let module: TestingModule;
@@ -42,31 +43,78 @@ describe(NotificationRepo.name, () => {
 	});
 
 	describe('create', () => {
-		describe('when a notification entity is provided', () => {
+		describe('when a notification is new', () => {
 			const setup = () => {
-				const fixedDate = new Date();
-				const notification = new Notification({
-					id: new ObjectId().toHexString(),
-					type: NotificationType.NOTE,
-					key: 'INFO_KEY',
-					arguments: ['arg1'],
-					userId: 'user-id',
-					createdAt: fixedDate,
-					updatedAt: fixedDate,
-				});
+				const domainObject: Notification = notificationFactory.build();
+				const notificationId = domainObject.id;
 
-				const notificationId = notification.id;
+				const expectedDomainObject = {
+					id: domainObject.id,
+					type: domainObject.type,
+					key: domainObject.key,
+					arguments: domainObject.arguments,
+					userId: domainObject.userId,
+					createdAt: domainObject.createdAt,
+					updatedAt: domainObject.updatedAt,
+				};
 
-				return { notification, notificationId };
+				return {
+					domainObject,
+					expectedDomainObject,
+					notificationId,
+				};
 			};
 
-			it('should persist the notification and return the same instance', async () => {
-				const { notification, notificationId } = setup();
+			describe('when a single Notification is given', () => {
+				it('should create a new Notification', async () => {
+					const { domainObject, notificationId, expectedDomainObject } = setup();
+					await repo.create(domainObject);
 
-				await repo.create(notification);
-				const result = await repo.findById(notificationId);
+					const result = await repo.findById(notificationId);
 
-				// if the test is too slow, this will fail
+					expect(result).toEqual(expect.objectContaining(expectedDomainObject));
+				});
+			});
+
+			describe('when an array of Notification is given', () => {
+				it('should create a new Notification', async () => {
+					const { domainObject, notificationId, expectedDomainObject } = setup();
+					await repo.create([domainObject]);
+
+					const result = await repo.findById(notificationId);
+
+					expect(result).toEqual(expect.objectContaining(expectedDomainObject));
+				});
+			});
+		});
+	});
+
+	describe('findById', () => {
+		describe('when searching by Id', () => {
+			const setup = async () => {
+				const entity: NotificationEntity = notificationEntityFactory.buildWithId();
+				await em.persist(entity).flush();
+
+				const notification = new Notification({
+					id: entity.id,
+					type: entity.type,
+					key: entity.key,
+					arguments: entity.arguments,
+					userId: entity.userId,
+					createdAt: entity.createdAt,
+					updatedAt: entity.updatedAt,
+				});
+
+				return {
+					notification,
+				};
+			};
+
+			it('should find the Notification', async () => {
+				const { notification } = await setup();
+
+				const result: Notification = await repo.findById(notification.id);
+
 				expect(result).toEqual(expect.objectContaining(notification));
 			});
 		});
