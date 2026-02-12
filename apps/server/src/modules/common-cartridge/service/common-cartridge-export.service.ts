@@ -297,9 +297,13 @@ export class CommonCartridgeExportService {
 			identifier: createIdentifier(card.id),
 		});
 
-		await Promise.all(
+		/* 		await Promise.all(
 			card.elements.map((element) => this.addCardElementToOrganization(element, version, cardOrganization))
-		);
+		); */
+
+		for await (const cardElement of card.elements) {
+			await this.addCardElementToOrganization(cardElement, version, cardOrganization);
+		}
 	}
 
 	private async openStreamsToFiles(element: CardResponseElementsInnerDto): Promise<FileMetadataAndStream[]> {
