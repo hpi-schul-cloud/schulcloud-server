@@ -1089,11 +1089,6 @@
 			"default": 3600,
 			"description": "Determines the time in seconds to show the timeout warning in the client"
 		},
-		"FEATURE_EXTENSIONS_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables user's use of extensions in the client"
-		},
 		"FEATURE_TEAMS_ENABLED": {
 			"type": "boolean",
 			"default": true,

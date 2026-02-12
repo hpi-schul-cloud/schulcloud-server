@@ -85,7 +85,6 @@ export interface ServerConfig
 	ALERT_STATUS_URL: string | null;
 	CALENDAR_SERVICE_ENABLED: boolean;
 	FEATURE_ES_COLLECTIONS_ENABLED: boolean;
-	FEATURE_EXTENSIONS_ENABLED: boolean;
 	FEATURE_TEAMS_ENABLED: boolean;
 	FEATURE_LERNSTORE_ENABLED: boolean;
 	FEATURE_FWU_CONTENT_ENABLED: boolean;
@@ -149,7 +148,6 @@ const config: ServerConfig = {
 			: (Configuration.get('ALERT_STATUS_URL') as string),
 	CALENDAR_SERVICE_ENABLED: Configuration.get('CALENDAR_SERVICE_ENABLED') as boolean,
 	FEATURE_ES_COLLECTIONS_ENABLED: Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') as boolean,
-	FEATURE_EXTENSIONS_ENABLED: Configuration.get('FEATURE_EXTENSIONS_ENABLED') as boolean,
 	FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED: Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') as boolean,
 	FEATURE_TEAMS_ENABLED: Configuration.get('FEATURE_TEAMS_ENABLED') as boolean,
 	FEATURE_LERNSTORE_ENABLED: Configuration.get('FEATURE_LERNSTORE_ENABLED') as boolean,
