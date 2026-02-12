@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ICurrentUser } from '@infra/auth-guard';
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { AuthorizationService } from '@modules/authorization';
@@ -37,6 +36,7 @@ import { VideoConferenceDO, VideoConferenceScope } from '../domain';
 import { ErrorStatus } from '../error';
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
 import { VideoConferenceRepo } from '../repo';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 import { ScopeInfo, VideoConference, VideoConferenceState } from './dto';
 import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 
@@ -70,6 +70,7 @@ describe('VideoConferenceUc', () => {
 	let userService: DeepMocked<UserService>;
 	let calendarService: DeepMocked<CalendarService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
+	let config: VideoConferenceConfig;
 
 	const hostUrl = 'https://localhost:4000';
 	const course: CourseEntity = { id: 'courseId', name: 'courseName' } as CourseEntity;
@@ -78,7 +79,6 @@ describe('VideoConferenceUc', () => {
 		title: 'eventTitle',
 		teamId: 'teamId',
 	});
-	let featureEnabled = false;
 	let defaultCurrentUser: ICurrentUser;
 	let defaultOptions: VideoConferenceOptions;
 	const userPermissions: Map<Permission, Promise<boolean>> = new Map<Permission, Promise<boolean>>();
@@ -97,17 +97,6 @@ describe('VideoConferenceUc', () => {
 	};
 
 	beforeAll(async () => {
-		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => {
-			switch (key) {
-				case 'HOST':
-					return hostUrl;
-				case 'FEATURE_VIDEOCONFERENCE_ENABLED':
-					return featureEnabled;
-				default:
-					return null;
-			}
-		});
-
 		await setupEntities([User, Role]);
 
 		module = await Test.createTestingModule({
@@ -145,6 +134,13 @@ describe('VideoConferenceUc', () => {
 					provide: LegacySchoolService,
 					useValue: createMock<LegacySchoolService>(),
 				},
+				{
+					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
+					useValue: {
+						scHostUrl: hostUrl,
+						featureVideoConferenceEnabled: true,
+					},
+				},
 			],
 		}).compile();
 		useCase = module.get(VideoConferenceDeprecatedUcSpec);
@@ -156,6 +152,7 @@ describe('VideoConferenceUc', () => {
 		userService = module.get(UserService);
 		teamRepo = module.get(TeamRepo);
 		bbbService = module.get(BBBService);
+		config = module.get<VideoConferenceConfig>(VIDEO_CONFERENCE_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -164,7 +161,7 @@ describe('VideoConferenceUc', () => {
 	});
 
 	beforeEach(() => {
-		featureEnabled = true;
+		config.featureVideoConferenceEnabled = true;
 		defaultCurrentUser = {
 			userId: '0123456789abcdef01234567',
 			roles: [],
@@ -281,7 +278,7 @@ describe('VideoConferenceUc', () => {
 
 		it('should throw on global environment variable is not set', async () => {
 			// Arrange
-			featureEnabled = false;
+			config.featureVideoConferenceEnabled = false;
 
 			// Act & Assert
 			await expect(useCase.throwOnFeaturesDisabledSpec('schoolId')).rejects.toThrow(
@@ -350,7 +347,7 @@ describe('VideoConferenceUc', () => {
 						salt: expect.any(String),
 					})
 				);
-				expect(bbbService.create).toHaveBeenCalledWith(builder.build());
+				expect(bbbService.create).toHaveBeenCalledWith(builder.withScDomain(hostUrl).build());
 
 				expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
 				expect(result.permission).toEqual(Permission.START_MEETING);
@@ -373,7 +370,7 @@ describe('VideoConferenceUc', () => {
 				// Assert
 				expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalled();
 				expect(videoConferenceRepo.save).toHaveBeenCalled();
-				expect(bbbService.create).toHaveBeenCalledWith(builder.build());
+				expect(bbbService.create).toHaveBeenCalledWith(builder.withScDomain(hostUrl).build());
 
 				expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
 				expect(result.permission).toEqual(Permission.START_MEETING);
@@ -419,7 +416,7 @@ describe('VideoConferenceUc', () => {
 				// Assert
 				expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalled();
 				expect(videoConferenceRepo.save).toHaveBeenCalled();
-				expect(bbbService.create).toHaveBeenCalledWith(builder.build());
+				expect(bbbService.create).toHaveBeenCalledWith(builder.withScDomain(hostUrl).build());
 
 				expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
 				expect(result.permission).toEqual(Permission.START_MEETING);

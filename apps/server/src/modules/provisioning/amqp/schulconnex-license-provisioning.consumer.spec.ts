@@ -12,6 +12,7 @@ import {
 	SchulconnexToolProvisioningService,
 } from '../strategy/schulconnex/service';
 import { SchulconnexLicenseProvisioningConsumer } from './schulconnex-license-provisioning.consumer';
+import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
 
 describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 	let module: TestingModule;
@@ -40,6 +41,13 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 				{
 					provide: MikroORM,
 					useValue: await setupEntities(ENTITIES),
+				},
+				{
+					provide: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
+					useValue: {
+						exchangeName: 'provisioning-exchange',
+						exchangeType: 'direct',
+					},
 				},
 			],
 		}).compile();

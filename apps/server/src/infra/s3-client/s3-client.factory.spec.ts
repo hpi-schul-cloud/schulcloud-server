@@ -12,8 +12,8 @@ jest.mock('./s3-client.adapter');
 
 const setup = () => {
 	const bucket = 'test-bucket';
-	const config = {
-		connectionName: 'test-connection',
+	const clientInjectionToken = 'TEST_CONNECTION';
+	const config: S3Config = {
 		endpoint: '',
 		region: '',
 		bucket,
@@ -21,33 +21,17 @@ const setup = () => {
 		secretAccessKey: '',
 	};
 	const logger = createMock<Logger>();
-	const configuration = createMock<S3Config>();
 	const errorHandler = createMock<DomainErrorHandler>();
 	const client = createMock<S3Client>();
 
-	return { config, bucket, logger, configuration, errorHandler, client };
+	return { config, bucket, logger, errorHandler, client, clientInjectionToken };
 };
 
 describe(S3ClientFactory.name, () => {
-	let service: S3ClientFactory;
-
-	beforeAll(() => {
-		service = new S3ClientFactory();
-	});
-
-	afterEach(() => {
-		jest.resetAllMocks();
-		jest.restoreAllMocks();
-	});
-
-	it('should be defined', () => {
-		expect(service).toBeDefined();
-	});
-
 	describe('build', () => {
 		it('should create S3Client with correctly config', () => {
-			const { config, logger, errorHandler } = setup();
-			service.build(config, logger, errorHandler);
+			const { config, logger, errorHandler, clientInjectionToken } = setup();
+			S3ClientFactory.build(config, logger, errorHandler, clientInjectionToken);
 
 			expect(S3Client).toHaveBeenCalledWith({
 				region: config.region,
@@ -64,15 +48,15 @@ describe(S3ClientFactory.name, () => {
 		});
 
 		it('should create S3ClientAdapter with correctly config', () => {
-			const { config, logger, errorHandler, client } = setup();
-			service.build(config, logger, errorHandler);
+			const { config, logger, errorHandler, client, clientInjectionToken } = setup();
+			S3ClientFactory.build(config, logger, errorHandler, clientInjectionToken);
 
-			expect(S3ClientAdapter).toHaveBeenCalledWith(client, config, logger, errorHandler);
+			expect(S3ClientAdapter).toHaveBeenCalledWith(client, config, logger, errorHandler, clientInjectionToken);
 		});
 
 		it('should return an instance of S3ClientAdapter', () => {
-			const { config, logger, errorHandler } = setup();
-			const result = service.build(config, logger, errorHandler);
+			const { config, logger, errorHandler, clientInjectionToken } = setup();
+			const result = S3ClientFactory.build(config, logger, errorHandler, clientInjectionToken);
 
 			expect(result).toBeInstanceOf(S3ClientAdapter);
 		});

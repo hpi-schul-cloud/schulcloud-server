@@ -3,14 +3,13 @@ import { RoleName } from '@modules/role';
 import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
 import { User } from '@modules/user/repo';
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception/feature-disabled.loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { RoomInvitationLink, RoomInvitationLinkUpdateProps } from '../domain/do/room-invitation-link.do';
 import { RoomInvitationLinkService } from '../domain/service/room-invitation-link.service';
-import { RoomConfig } from '../room.config';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '../room.config';
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
 import { RoomInvitationLinkError } from './dto/response/room-invitation-link.error';
 import { RoomInvitationLinkValidationError } from './type/room-invitation-link-validation-error.enum';
@@ -18,7 +17,7 @@ import { RoomInvitationLinkValidationError } from './type/room-invitation-link-v
 @Injectable()
 export class RoomInvitationLinkUc {
 	constructor(
-		private readonly configService: ConfigService<RoomConfig, true>,
+		@Inject(ROOM_PUBLIC_API_CONFIG_TOKEN) private readonly config: RoomPublicApiConfig,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly roomInvitationLinkService: RoomInvitationLinkService,
 		private readonly authorizationService: AuthorizationService,
@@ -216,7 +215,7 @@ export class RoomInvitationLinkUc {
 	}
 
 	private checkFeatureLinkInvitationExternalPersonsEnabled(): void {
-		if (!this.configService.get('FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED', { infer: true })) {
+		if (!this.config.featureRoomLinkInvitationExternalPersonsEnabled) {
 			throw new FeatureDisabledLoggableException('FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED');
 		}
 	}

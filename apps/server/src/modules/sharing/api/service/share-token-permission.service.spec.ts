@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
@@ -17,6 +16,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { ShareTokenContext, ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '../../sharing.config';
 import { ShareTokenPermissionService } from './share-token-permission.service';
 
 describe('ShareTokenPermissionService', () => {
@@ -25,6 +25,7 @@ describe('ShareTokenPermissionService', () => {
 	let courseService: DeepMocked<CourseService>;
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
 	let schoolService: DeepMocked<SchoolService>;
+	let config: SharingPublicApiConfig;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -34,6 +35,16 @@ describe('ShareTokenPermissionService', () => {
 				{ provide: CourseService, useValue: createMock<CourseService>() },
 				{ provide: RoomMembershipService, useValue: createMock<RoomMembershipService>() },
 				{ provide: SchoolService, useValue: createMock<SchoolService>() },
+				{
+					provide: SHARING_PUBLIC_API_CONFIG_TOKEN,
+					useValue: {
+						featureCourseShare: false,
+						featureLessonShare: false,
+						featureTaskShare: false,
+						featureColumnBoardShare: false,
+						featureRoomShare: false,
+					},
+				},
 			],
 		}).compile();
 
@@ -42,6 +53,7 @@ describe('ShareTokenPermissionService', () => {
 		courseService = module.get(CourseService);
 		roomMembershipService = module.get(RoomMembershipService);
 		schoolService = module.get(SchoolService);
+		config = module.get<SharingPublicApiConfig>(SHARING_PUBLIC_API_CONFIG_TOKEN);
 
 		await setupEntities([User, CourseEntity, SchoolEntity]);
 	});
@@ -51,50 +63,38 @@ describe('ShareTokenPermissionService', () => {
 	});
 
 	describe('checkFeatureEnabled', () => {
-		const setup = () => {
-			jest.spyOn(Configuration, 'get').mockImplementation((key) => {
-				if (key === 'FEATURE_COURSE_SHARE') return false;
-				if (key === 'FEATURE_LESSON_SHARE') return false;
-				if (key === 'FEATURE_TASK_SHARE') return false;
-				if (key === 'FEATURE_COLUMN_BOARD_SHARE') return false;
-				if (key === 'FEATURE_ROOM_SHARE') return false;
-				return true;
-			});
-		};
 		it('should throw FeatureDisabledLoggableException if feature is disabled for Course', () => {
-			setup();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Course)).toThrow(FeatureDisabledLoggableException);
 		});
 
 		it('should throw FeatureDisabledLoggableException if feature is disabled for Lesson', () => {
-			setup();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Lesson)).toThrow(FeatureDisabledLoggableException);
 		});
 
 		it('should throw FeatureDisabledLoggableException if feature is disabled for Task', () => {
-			setup();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Task)).toThrow(FeatureDisabledLoggableException);
 		});
 
 		it('should throw FeatureDisabledLoggableException if feature is disabled for ColumnBoard', () => {
-			setup();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.ColumnBoard)).toThrow(
 				FeatureDisabledLoggableException
 			);
 		});
 
 		it('should throw FeatureDisabledLoggableException if feature is disabled for Card', () => {
-			setup();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Card)).toThrow(FeatureDisabledLoggableException);
 		});
 
 		it('should throw FeatureDisabledLoggableException if feature is disabled for Room', () => {
-			setup();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Room)).toThrow(FeatureDisabledLoggableException);
 		});
 
 		it('should not throw if feature is enabled', () => {
-			jest.spyOn(Configuration, 'get').mockReturnValue(true);
+			config.featureCourseShare = true;
+			config.featureLessonShare = true;
+			config.featureTaskShare = true;
+			config.featureColumnBoardShare = true;
+			config.featureRoomShare = true;
 
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Course)).not.toThrow();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Lesson)).not.toThrow();

@@ -14,29 +14,28 @@ const { TeamService } = require('../../dist/apps/server/modules/team/domain/serv
 const { TeamApiModule } = require('../../dist/apps/server/modules/team/team-api.module');
 const { AuthorizationModule } = require('../../dist/apps/server/modules/authorization');
 const { SystemRule, AuthorizationRulesModule } = require('../../dist/apps/server/modules/authorization-rules');
-const { createConfigModuleOptions } = require('../../dist/apps/server/shared/common/config-module-options');
-const { serverConfig } = require('../../dist/apps/server/modules/server/server.config');
+const {
+	SERVER_PUBLIC_API_CONFIG_TOKEN,
+	ServerPublicApiConfig,
+} = require('../../dist/apps/server/modules/server/server.config');
 const { TEST_ENTITIES } = require('../../dist/apps/server/modules/server/server.entity.imports');
 const { RosterModule } = require('../../dist/apps/server/modules/roster/roster.module');
 const { FeathersRosterService } = require('../../dist/apps/server/modules/roster/service/feathers-roster.service');
-const { RabbitMQWrapperTestModule } = require('../../dist/apps/server/infra/rabbitmq/rabbitmq.module');
+const { RabbitMQWrapperModule } = require('../../dist/apps/server/infra/rabbitmq/rabbitmq.module');
+const { ConfigurationModule } = require('../../dist/apps/server/infra/configuration/configuration.module');
+const { DatabaseModule } = require('../../dist/apps/server/infra/database/database.module');
+const { DATABASE_CONFIG_TOKEN, DatabaseConfig } = require('../../dist/apps/server/infra/database/database.config');
 
 const setupNestServices = async (app) => {
 	const module = await Test.createTestingModule({
 		imports: [
-			RabbitMQWrapperTestModule,
-			MikroOrmModule.forRoot(
-				defineConfig({
-					driver: MongoDriver,
-					clientUrl: DB_URL,
-					password: DB_PASSWORD,
-					user: DB_USERNAME,
-					entities: TEST_ENTITIES,
-					allowGlobalContext: true,
-					// debug: true, // use it for locally debugging of querys
-				})
-			),
-			ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
+			RabbitMQWrapperModule,
+			DatabaseModule.register({
+				configInjectionToken: DATABASE_CONFIG_TOKEN,
+				configConstructor: DatabaseConfig,
+				entities: TEST_ENTITIES,
+			}),
+			ConfigurationModule.register(SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig),
 			AccountApiModule,
 			TeamApiModule,
 			AuthorizationModule,

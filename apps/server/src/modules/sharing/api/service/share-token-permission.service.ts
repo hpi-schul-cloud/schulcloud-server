@@ -1,15 +1,15 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { RoomMembershipService } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
 import { User } from '@modules/user/repo';
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ShareTokenContext, ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '../../sharing.config';
 
 @Injectable()
 export class ShareTokenPermissionService {
@@ -17,39 +17,40 @@ export class ShareTokenPermissionService {
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseService: CourseService,
 		private readonly roomMembershipService: RoomMembershipService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: SchoolService,
+		@Inject(SHARING_PUBLIC_API_CONFIG_TOKEN)
+		private readonly config: SharingPublicApiConfig
 	) {}
 
 	public checkFeatureEnabled(parentType: ShareTokenParentType): void {
-		// TODO Configuration.get is the deprecated way to read envirment variables
 		switch (parentType) {
 			case ShareTokenParentType.Course:
-				if (!(Configuration.get('FEATURE_COURSE_SHARE') as boolean)) {
+				if (!this.config.featureCourseShare) {
 					throw new FeatureDisabledLoggableException('FEATURE_COURSE_SHARE');
 				}
 				break;
 			case ShareTokenParentType.Lesson:
-				if (!(Configuration.get('FEATURE_LESSON_SHARE') as boolean)) {
+				if (!this.config.featureLessonShare) {
 					throw new FeatureDisabledLoggableException('FEATURE_LESSON_SHARE');
 				}
 				break;
 			case ShareTokenParentType.Task:
-				if (!(Configuration.get('FEATURE_TASK_SHARE') as boolean)) {
+				if (!this.config.featureTaskShare) {
 					throw new FeatureDisabledLoggableException('FEATURE_TASK_SHARE');
 				}
 				break;
 			case ShareTokenParentType.ColumnBoard:
-				if (!(Configuration.get('FEATURE_COLUMN_BOARD_SHARE') as boolean)) {
+				if (!this.config.featureColumnBoardShare) {
 					throw new FeatureDisabledLoggableException('FEATURE_COLUMN_BOARD_SHARE');
 				}
 				break;
 			case ShareTokenParentType.Room:
-				if (!(Configuration.get('FEATURE_ROOM_SHARE') as boolean)) {
+				if (!this.config.featureRoomShare) {
 					throw new FeatureDisabledLoggableException('FEATURE_ROOM_SHARE');
 				}
 				break;
 			case ShareTokenParentType.Card:
-				if (!(Configuration.get('FEATURE_COLUMN_BOARD_SHARE') as boolean)) {
+				if (!this.config.featureColumnBoardShare) {
 					throw new FeatureDisabledLoggableException('FEATURE_COLUMN_BOARD_SHARE');
 				}
 				break;

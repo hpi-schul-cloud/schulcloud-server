@@ -1,10 +1,11 @@
-import { LoggerModule } from '@core/logger';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { PseudonymModule } from '@modules/pseudonym';
-import { ToolModule } from '@modules/tool';
-import { UserModule } from '@modules/user';
-import { HttpModule } from '@nestjs/axios';
-import { Module, Provider } from '@nestjs/common';
+import { LegacyLogger, LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
+import { PseudonymModule, PseudonymService } from '@modules/pseudonym';
+import { ExternalToolService, ToolModule } from '@modules/tool';
+import { UserModule, UserService } from '@modules/user';
+import { HttpModule, HttpService } from '@nestjs/axios';
+import { DynamicModule, Module, Provider } from '@nestjs/common';
+import { InternalCollaborativeStorageAdapterConfig } from './collaborative-storage-adapter.config';
 import { CollaborativeStorageAdapter } from './collaborative-storage.adapter';
 import { CollaborativeStorageAdapterMapper } from './mapper';
 import { NextcloudClient } from './strategy/nextcloud/nextcloud.client';
@@ -15,19 +16,57 @@ const storageStrategy: Provider = {
 	useExisting: NextcloudStrategy,
 };
 
-@Module({
-	imports: [HttpModule, LoggerModule, ToolModule, PseudonymModule, UserModule],
-	providers: [
-		CollaborativeStorageAdapter,
-		CollaborativeStorageAdapterMapper,
-		NextcloudStrategy,
-		NextcloudClient,
-		storageStrategy,
-		{
-			provide: 'oidcInternalName',
-			useValue: Configuration.get('NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME') as string,
-		},
-	],
-	exports: [CollaborativeStorageAdapter],
-})
-export class CollaborativeStorageAdapterModule {}
+@Module({})
+export class CollaborativeStorageAdapterModule {
+	public static register(
+		configInjectionToken: string,
+		configConstructor: new () => InternalCollaborativeStorageAdapterConfig
+	): DynamicModule {
+		return {
+			module: CollaborativeStorageAdapterModule,
+			imports: [
+				HttpModule,
+				LoggerModule,
+				ToolModule,
+				PseudonymModule,
+				UserModule,
+				ConfigurationModule.register(configInjectionToken, configConstructor),
+			],
+			providers: [
+				CollaborativeStorageAdapter,
+				CollaborativeStorageAdapterMapper,
+				{
+					provide: NextcloudStrategy,
+					useFactory: (
+						logger: LegacyLogger,
+						client: NextcloudClient,
+						pseudonymService: PseudonymService,
+						externalToolService: ExternalToolService,
+						userService: UserService,
+						config: InternalCollaborativeStorageAdapterConfig
+					): NextcloudStrategy =>
+						new NextcloudStrategy(logger, client, pseudonymService, externalToolService, userService, config),
+					inject: [
+						LegacyLogger,
+						NextcloudClient,
+						PseudonymService,
+						ExternalToolService,
+						UserService,
+						configInjectionToken,
+					],
+				},
+				{
+					provide: NextcloudClient,
+					useFactory: (
+						logger: LegacyLogger,
+						httpService: HttpService,
+						config: InternalCollaborativeStorageAdapterConfig
+					): NextcloudClient => new NextcloudClient(logger, httpService, config),
+					inject: [LegacyLogger, HttpService, configInjectionToken],
+				},
+				storageStrategy,
+			],
+			exports: [CollaborativeStorageAdapter],
+		};
+	}
+}

@@ -1,34 +1,55 @@
-import { LoggerModule } from '@core/logger';
-import { HttpModule } from '@nestjs/axios';
-import { Module, Scope } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ErrorLogger, Logger, LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
+import { HttpModule, HttpService } from '@nestjs/axios';
+import { DynamicModule, Module, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { JwtExtractor } from '@shared/common/utils/jwt';
+import { JwtExtractor } from '@shared/common/utils';
 import { Request } from 'express';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
-import { FilesStorageClientConfig } from './files-storage-client.config';
+import { InternalFilesStorageClientConfig } from './files-storage-client.config';
 import { Configuration, FileApi } from './generated';
 
-@Module({
-	imports: [LoggerModule, HttpModule],
-	providers: [
-		FilesStorageClientAdapter,
-		{
-			provide: FileApi,
-			scope: Scope.REQUEST,
-			useFactory: (configService: ConfigService<FilesStorageClientConfig, true>, request: Request): FileApi => {
-				const basePath = configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL');
+@Module({})
+export class FilesStorageClientModule {
+	public static register(
+		configInjectionToken: string,
+		configConstructor: new () => InternalFilesStorageClientConfig
+	): DynamicModule {
+		return {
+			module: FilesStorageClientModule,
+			imports: [LoggerModule, HttpModule, ConfigurationModule.register(configInjectionToken, configConstructor)],
+			providers: [
+				{
+					provide: FileApi,
+					scope: Scope.REQUEST,
+					useFactory: (internalConfig: InternalFilesStorageClientConfig, request: Request): FileApi => {
+						const { basePath } = internalConfig;
 
-				const config = new Configuration({
-					accessToken: JwtExtractor.extractJwtFromRequestOrFail(request),
-					basePath: `${basePath}/api/v3`,
-				});
+						const config = new Configuration({
+							accessToken: JwtExtractor.extractJwtFromRequestOrFail(request),
+							basePath: `${basePath}/api/v3`,
+						});
 
-				return new FileApi(config);
-			},
-			inject: [ConfigService, REQUEST],
-		},
-	],
-	exports: [FilesStorageClientAdapter, FileApi],
-})
-export class FilesStorageClientModule {}
+						return new FileApi(config);
+					},
+					inject: [configInjectionToken, REQUEST],
+				},
+				{
+					provide: FilesStorageClientAdapter,
+					scope: Scope.REQUEST,
+					useFactory: (
+						api: FileApi,
+						logger: Logger,
+						errorLogger: ErrorLogger,
+						httpService: HttpService,
+						internalConfig: InternalFilesStorageClientConfig,
+						req: Request
+					): FilesStorageClientAdapter =>
+						new FilesStorageClientAdapter(api, logger, errorLogger, httpService, internalConfig, req),
+					inject: [FileApi, Logger, ErrorLogger, HttpService, configInjectionToken, REQUEST],
+				},
+			],
+			exports: [FilesStorageClientAdapter, FileApi],
+		};
+	}
+}

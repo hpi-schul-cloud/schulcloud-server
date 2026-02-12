@@ -1,12 +1,11 @@
 /* eslint-disable filename-rules/match */
 import type { ICurrentUser } from '@infra/auth-guard';
 import { AccountService } from '@modules/account';
-import type { AuthenticationConfig } from '@modules/authentication';
 import { OAuthService, OauthSessionToken, OauthSessionTokenFactory, OauthSessionTokenService } from '@modules/oauth';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-custom';
+import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
 import { StrategyType } from '../interface';
 import {
@@ -22,7 +21,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 		private readonly oauthService: OAuthService,
 		private readonly accountService: AccountService,
 		private readonly oauthSessionTokenService: OauthSessionTokenService,
-		private readonly configService: ConfigService<AuthenticationConfig, true>
+		@Inject(AUTHENTICATION_CONFIG_TOKEN) private readonly config: AuthenticationConfig
 	) {
 		super();
 	}
@@ -47,7 +46,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 			throw new UserAccountDeactivatedLoggableException();
 		}
 
-		if (this.configService.getOrThrow<boolean>('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED')) {
+		if (this.config.externalSystemLogoutEnabled) {
 			const oauthSessionToken: OauthSessionToken = OauthSessionTokenFactory.build({
 				userId: user.id,
 				systemId,
