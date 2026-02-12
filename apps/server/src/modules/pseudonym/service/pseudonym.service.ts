@@ -1,18 +1,22 @@
 import { Logger } from '@core/logger';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { UserDo } from '@modules/user';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
+import { PSEUDONYM_CONFIG_TOKEN, PseudonymConfig } from '../pseudonym.config';
 import { ExternalToolPseudonymRepo, Pseudonym } from '../repo';
 
 @Injectable()
 export class PseudonymService {
-	constructor(private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo, private readonly logger: Logger) {
+	constructor(
+		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo,
+		private readonly logger: Logger,
+		@Inject(PSEUDONYM_CONFIG_TOKEN) private readonly config: PseudonymConfig
+	) {
 		this.logger.setContext(PseudonymService.name);
 	}
 
@@ -71,9 +75,7 @@ export class PseudonymService {
 	}
 
 	public getIframeSubject(pseudonym: string): string {
-		const iFrameSubject = `<iframe src="${
-			Configuration.get('HOST') as string
-		}/oauth2/username/${pseudonym}" title="username" style="height: 26px; width: 180px; border: none;"></iframe>`;
+		const iFrameSubject = `<iframe src="${this.config.hostUrl}/oauth2/username/${pseudonym}" title="username" style="height: 26px; width: 180px; border: none;"></iframe>`;
 
 		return iFrameSubject;
 	}

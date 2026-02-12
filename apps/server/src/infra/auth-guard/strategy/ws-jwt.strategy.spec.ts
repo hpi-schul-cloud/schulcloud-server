@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { WsException } from '@nestjs/websockets';
 import { JwtValidationAdapter } from '../adapter';
-import { WsJwtStrategy } from './ws-jwt.strategy';
+import { JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '../config';
 import { jwtPayloadFactory } from '../testing';
+import { WsJwtStrategy } from './ws-jwt.strategy';
 
 describe('jwt strategy', () => {
 	let validationAdapter: DeepMocked<JwtValidationAdapter>;
@@ -14,20 +14,24 @@ describe('jwt strategy', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				WsJwtStrategy,
 				{
 					provide: JwtValidationAdapter,
 					useValue: createMock<JwtValidationAdapter>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: JWT_AUTH_GUARD_CONFIG_TOKEN,
+					useValue: {
+						jwtPublicKey: 'testKey',
+						jwtSigningAlgorithm: 'RS256',
+						scDomain: 'test.domain',
+					},
 				},
 			],
 		}).compile();
 
-		strategy = module.get(WsJwtStrategy);
 		validationAdapter = module.get(JwtValidationAdapter);
+		const config = module.get<JwtAuthGuardConfig>(JWT_AUTH_GUARD_CONFIG_TOKEN);
+		strategy = new WsJwtStrategy(validationAdapter, config);
 	});
 
 	afterAll(async () => {

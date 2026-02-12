@@ -2,13 +2,12 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { MediaSource, MediaSourceService } from '@modules/media-source';
 import { MediaSourceAuthMethod, MediaSourceDataFormat } from '@modules/media-source/enum';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ManagementSeedDataConfig } from '../config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 
 @Injectable()
 export class MediaSourcesSeedDataService {
 	constructor(
-		private readonly configService: ConfigService<ManagementSeedDataConfig, true>,
+		@Inject(MANAGEMENT_SEED_DATA_CONFIG_TOKEN) private readonly config: ManagementSeedDataConfig,
 		private readonly mediaSourceService: MediaSourceService,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService
 	) {}
@@ -16,8 +15,12 @@ export class MediaSourcesSeedDataService {
 	public async import(): Promise<number> {
 		const mediaSources: MediaSource[] = [];
 
-		const vidisUserName: string | undefined = this.configService.get<string>('MEDIA_SOURCE_VIDIS_USERNAME');
-		const vidisPassword: string | undefined = this.configService.get<string>('MEDIA_SOURCE_VIDIS_PASSWORD');
+		const {
+			mediaSourceBiloClientId: biloClientId,
+			mediaSourceBiloClientSecret: biloClientSecret,
+			mediaSourceVidisUsername: vidisUserName,
+			mediaSourceVidisPassword: vidisPassword,
+		} = this.config;
 		if (vidisUserName && vidisPassword) {
 			const encryptedVidisUserName: string = this.defaultEncryptionService.encrypt(vidisUserName);
 			const encryptedVidisPassword: string = this.defaultEncryptionService.encrypt(vidisPassword);
@@ -39,8 +42,6 @@ export class MediaSourcesSeedDataService {
 			);
 		}
 
-		const biloClientId: string | undefined = this.configService.get<string>('MEDIA_SOURCE_BILO_CLIENT_ID');
-		const biloClientSecret: string | undefined = this.configService.get<string>('MEDIA_SOURCE_BILO_CLIENT_SECRET');
 		if (biloClientId && biloClientSecret) {
 			const encryptedBiloClientSecret: string = this.defaultEncryptionService.encrypt(biloClientSecret);
 

@@ -1,18 +1,17 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DeletionRequestEntity } from '@modules/deletion/repo/entity';
-import { ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/database';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
-import { DeletionConfig } from '../../deletion.config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@testing/database';
+import { DELETION_CONFIG_TOKEN, DeletionConfig } from '../../deletion.config';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DomainDeletionReport } from '../../domain/interface';
 import { DeletionExecutionService, DeletionLogService, DeletionRequestService } from '../../domain/service';
-import { deletionLogFactory, deletionRequestFactory, deletionTestConfig } from '../../domain/testing';
+import { deletionLogFactory, deletionRequestFactory } from '../../domain/testing';
 import { DomainName, StatusModel } from '../../domain/types';
+import { DeletionRequestEntity } from '../../repo/entity';
 import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyParams } from '../controller/dto';
 import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder } from '../controller/dto/builder';
@@ -23,7 +22,7 @@ describe(DeletionRequestUc.name, () => {
 	let uc: DeletionRequestUc;
 	let deletionRequestService: DeepMocked<DeletionRequestService>;
 	let deletionLogService: DeepMocked<DeletionLogService>;
-	let configService: DeepMocked<ConfigService<DeletionConfig, true>>;
+	let config: DeletionConfig;
 	let deletionExecutionService: DeepMocked<DeletionExecutionService>;
 	let accountService: DeepMocked<AccountService>;
 	let userService: DeepMocked<UserService>;
@@ -47,8 +46,8 @@ describe(DeletionRequestUc.name, () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: DELETION_CONFIG_TOKEN,
+					useValue: {},
 				},
 				{
 					provide: DeletionExecutionService,
@@ -68,7 +67,7 @@ describe(DeletionRequestUc.name, () => {
 		uc = module.get(DeletionRequestUc);
 		deletionRequestService = module.get(DeletionRequestService);
 		deletionLogService = module.get(DeletionLogService);
-		configService = module.get(ConfigService);
+		config = module.get(DELETION_CONFIG_TOKEN);
 		deletionExecutionService = module.get(DeletionExecutionService);
 		accountService = module.get(AccountService);
 		userService = module.get(UserService);
@@ -156,21 +155,10 @@ describe(DeletionRequestUc.name, () => {
 	describe('executeDeletionRequests', () => {
 		describe('when deletionRequests to execute exists', () => {
 			const setup = () => {
-				configService.get.mockImplementation((key) => {
-					if (key === 'ADMIN_API__DELETION_DELETE_AFTER_MINUTES') {
-						return 1;
-					}
-					if (key === 'ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS') {
-						return 100;
-					}
-					if (key === 'ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS') {
-						return 1000;
-					}
-					if (key === 'ADMIN_API__DELETION_EXECUTION_BATCH_NUMBER') {
-						return 2;
-					}
-					return deletionTestConfig()[key];
-				});
+				config.adminApiDeletionDeleteAfterMinutes = 1;
+				config.adminApiDeletionModificationThresholdMs = 100;
+				config.adminApiDeletionConsiderFailedAfterMs = 1000;
+				config.adminApiDeletionExecutionBatchNumber = 2;
 
 				const deletionRequest = deletionRequestFactory.buildWithId({ deleteAfter: new Date('2023-01-01') });
 				deletionRequestService.findByIds.mockResolvedValueOnce([deletionRequest]);

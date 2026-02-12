@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
+import { BoardExternalReferenceType } from '@modules/board';
+import { columnBoardEntityFactory } from '@modules/board/testing/entity/column-board-entity.factory';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
@@ -16,8 +16,6 @@ import { setupEntities } from '@testing/database';
 import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import { boardFactory } from '../testing';
 import { CourseRoomsService } from './course-rooms.service';
-import { columnBoardEntityFactory } from '@modules/board/testing/entity/column-board-entity.factory';
-import { BoardExternalReferenceType } from '@modules/board';
 
 describe('rooms service', () => {
 	let module: TestingModule;
@@ -26,14 +24,12 @@ describe('rooms service', () => {
 	let taskService: DeepMocked<TaskService>;
 	let legacyBoardRepo: DeepMocked<LegacyBoardRepo>;
 	let columnBoardNodeRepo: DeepMocked<ColumnBoardNodeRepo>;
-	let configBefore: IConfig;
 
 	afterAll(async () => {
 		await module.close();
 	});
 
 	beforeAll(async () => {
-		configBefore = Configuration.toObject({ plainSecrets: true });
 		await setupEntities([
 			User,
 			CourseEntity,
@@ -75,7 +71,6 @@ describe('rooms service', () => {
 
 	afterEach(() => {
 		jest.clearAllMocks();
-		Configuration.reset(configBefore);
 	});
 
 	describe('updateLegacyBoard', () => {

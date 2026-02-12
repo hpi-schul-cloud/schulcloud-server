@@ -1,28 +1,27 @@
-import util from 'util';
+import { AxiosErrorLoggable } from '@core/error/loggable';
+import { Logger } from '@core/logger';
 import { SchulconnexRestClient } from '@infra/schulconnex-client';
+import { AccountService } from '@modules/account';
 import { Synchronization, SynchronizationService, SynchronizationStatusModel } from '@modules/synchronization';
 import { UserService } from '@modules/user';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Logger } from '@core/logger';
-import { AccountService } from '@modules/account';
+import { Inject, Injectable } from '@nestjs/common';
+import util from 'util';
+import { IDP_CONSOLE_CONFIG_TOKEN, IdpConsoleConfig } from '../idp-console.config';
 import {
+	ProgressSynchronizationLoggable,
 	StartSynchronizationLoggable,
 	SucessSynchronizationLoggable,
-	ProgressSynchronizationLoggable,
 } from './loggable';
 import {
 	FailedUpdateLastSyncedAtLoggableException,
 	NoUsersToSynchronizationLoggableException,
 	SynchronizationUnknownErrorLoggableException,
 } from './loggable-exception';
-import { IdpConsoleConfig } from '../idp-console.config';
-import { AxiosErrorLoggable } from '@core/error/loggable';
 
 @Injectable()
 export class SynchronizationUc {
 	constructor(
-		private readonly configService: ConfigService<IdpConsoleConfig, true>,
+		@Inject(IDP_CONSOLE_CONFIG_TOKEN) private readonly config: IdpConsoleConfig,
 		private readonly schulconnexRestClient: SchulconnexRestClient,
 		private readonly synchronizationService: SynchronizationService,
 		private readonly userService: UserService,
@@ -39,8 +38,7 @@ export class SynchronizationUc {
 
 		try {
 			const usersToCheck = await this.findUsersToSynchronize(systemId);
-			const chunkSize = this.configService.get('SYNCHRONIZATION_CHUNK', { infer: true });
-			const chunks = this.chunkArray(usersToCheck, chunkSize);
+			const chunks = this.chunkArray(usersToCheck, this.config.synchronizationChunk);
 			const promises = chunks.map((chunk, index) => this.updateLastSyncedAt(index, chunk, systemId));
 			const results = await Promise.all(promises);
 			const userSyncCount = results.reduce((acc, curr) => +acc + +curr, 0);

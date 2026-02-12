@@ -16,14 +16,14 @@ export class ValkeyFactory {
 	): Promise<StorageClient> {
 		let storageClient: StorageClient;
 
-		if (valkeyConfig.MODE === ValkeyMode.CLUSTER) {
+		if (valkeyConfig.mode === ValkeyMode.CLUSTER) {
 			storageClient = await ValkeyFactory.createValkeySentinelInstance(valkeyConfig, logger);
-		} else if (valkeyConfig.MODE === ValkeyMode.SINGLE) {
-			storageClient = ValkeyFactory.createNewValkeyInstance(valkeyConfig.URI);
-		} else if (valkeyConfig.MODE === ValkeyMode.IN_MEMORY) {
+		} else if (valkeyConfig.mode === ValkeyMode.SINGLE) {
+			storageClient = ValkeyFactory.createNewValkeyInstance(valkeyConfig.uri);
+		} else if (valkeyConfig.mode === ValkeyMode.IN_MEMORY) {
 			storageClient = ValkeyFactory.createInMemoryInstance(logger);
 		} else {
-			throw new Error(`Undefined valkey mode ${JSON.stringify(valkeyConfig.MODE)}`);
+			throw new Error(`Undefined valkey mode ${JSON.stringify(valkeyConfig.mode)}`);
 		}
 
 		storageClient.on('error', (error) => {
@@ -61,9 +61,9 @@ export class ValkeyFactory {
 	}
 
 	private static async createValkeySentinelInstance(config: ValkeyConfig, logger: Logger): Promise<ValkeyClient> {
-		const { sentinelName, sentinelPassword, sentinalServiceName } = ValkeyFactory.checkSentinelConfig(config);
+		const { sentinelName, sentinelPassword, sentinelServiceName } = ValkeyFactory.checkSentinelConfig(config);
 		try {
-			const sentinels = await ValkeyFactory.discoverSentinelHosts(sentinalServiceName);
+			const sentinels = await ValkeyFactory.discoverSentinelHosts(sentinelServiceName);
 			logger.info(new DiscoveredSentinalHostsLoggable(sentinels));
 
 			const sentinelsConfig = {
@@ -78,13 +78,13 @@ export class ValkeyFactory {
 
 			return valkeyClientInstance;
 		} catch (err) {
-			throw new Error('Can not create valkey "sentinal" instance.', { cause: err });
+			throw new Error('Can not create valkey "sentinel" instance.', { cause: err });
 		}
 	}
 
-	private static async discoverSentinelHosts(sentinalServiceName: string): Promise<SentinalHost[]> {
+	private static async discoverSentinelHosts(sentinelServiceName: string): Promise<SentinalHost[]> {
 		const resolveSrv = util.promisify(dns.resolveSrv);
-		const records = await resolveSrv(sentinalServiceName);
+		const records = await resolveSrv(sentinelServiceName);
 
 		const hosts = records.map((record) => {
 			return {
@@ -99,25 +99,23 @@ export class ValkeyFactory {
 	private static checkSentinelConfig(config: ValkeyConfig): {
 		sentinelName: string;
 		sentinelPassword: string;
-		sentinalServiceName: string;
+		sentinelServiceName: string;
 	} {
-		const sentinelName = config.SENTINEL_NAME;
-		const sentinelPassword = config.SENTINEL_PASSWORD;
-		const sentinalServiceName = config.SENTINEL_SERVICE_NAME;
+		const { sentinelName, sentinelPassword, sentinelServiceName } = config;
 
 		if (!sentinelName) {
-			throw new Error('SENTINEL_NAME is required for creating a Valkey Sentinel instance');
+			throw new Error('sentinelName is required for creating a Valkey Sentinel instance');
 		}
 
 		if (!sentinelPassword) {
-			throw new Error('SENTINEL_PASSWORD is required for creating a Valkey Sentinel instance');
+			throw new Error('sentinelPassword is required for creating a Valkey Sentinel instance');
 		}
 
-		if (!sentinalServiceName) {
-			throw new Error('SENTINEL_SERVICE_NAME is required for service discovery');
+		if (!sentinelServiceName) {
+			throw new Error('sentinelServiceName is required for service discovery');
 		}
 
-		return { sentinelName, sentinelPassword, sentinalServiceName };
+		return { sentinelName, sentinelPassword, sentinelServiceName };
 	}
 
 	private static checkRedisURI(redisUri?: string): string {
@@ -125,6 +123,6 @@ export class ValkeyFactory {
 		if (redisUri && redisUriExpValidation.test(redisUri)) {
 			return redisUri;
 		}
-		throw new Error('URI is not valid');
+		throw new Error('uri is not valid');
 	}
 }

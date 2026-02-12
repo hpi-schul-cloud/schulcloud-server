@@ -12,10 +12,9 @@ import {
 	StepStatus,
 	UserDeletionStepOperationLoggable,
 } from '@modules/saga';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { UserConfig } from '../';
+import { USER_CONFIG_TOKEN, UserConfig } from '../user.config';
 
 @Injectable()
 export class DeleteUserCalendarDataStep extends SagaStep<'deleteUserData'> {
@@ -23,7 +22,7 @@ export class DeleteUserCalendarDataStep extends SagaStep<'deleteUserData'> {
 
 	constructor(
 		private readonly sagaService: SagaService,
-		private readonly configService: ConfigService<UserConfig, true>,
+		@Inject(USER_CONFIG_TOKEN) private readonly userConfig: UserConfig,
 		private readonly calendarService: CalendarService,
 		private readonly logger: Logger
 	) {
@@ -37,7 +36,7 @@ export class DeleteUserCalendarDataStep extends SagaStep<'deleteUserData'> {
 
 		const operations: StepOperationReport[] = [];
 
-		if (this.configService.get('CALENDAR_SERVICE_ENABLED')) {
+		if (this.userConfig.calendarServiceEnabled) {
 			const calendarEventsDeleted = await this.deleteCalendarEvents(userId);
 			operations.push(calendarEventsDeleted);
 		}

@@ -1,6 +1,5 @@
 import { ErrorResponse } from '@core/error/dto';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { SchulconnexPoliciesInfoResponse, SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
+import { SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { SchoolEntity } from '@modules/school/repo';
@@ -13,7 +12,6 @@ import { importUserFactory } from '@modules/user-import/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -47,11 +45,8 @@ describe('UserLoginMigrationController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let configService: ConfigService;
 
 	beforeAll(async () => {
-		Configuration.set('PUBLIC_BACKEND_URL', 'http://localhost:3030/api');
-
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		}).compile();
@@ -60,7 +55,6 @@ describe('UserLoginMigrationController (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, '/user-login-migrations');
-		configService = app.get(ConfigService);
 	});
 
 	afterAll(async () => {
@@ -464,9 +458,7 @@ describe('UserLoginMigrationController (API)', () => {
 							},
 						},
 					],
-				})
-				.onGet(configService.get('PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL'))
-				.replyOnce<SchulconnexPoliciesInfoResponse[]>(200, []);
+				});
 		};
 
 		describe('when providing a code and being eligible to migrate', () => {

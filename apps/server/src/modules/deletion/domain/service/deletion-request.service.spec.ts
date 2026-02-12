@@ -1,12 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { setupEntities } from '@testing/database';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@testing/database';
+import { DELETION_CONFIG_TOKEN, DeletionConfig } from '../../deletion.config';
 import { DeletionRequestRepo } from '../../repo';
 import { DeletionRequestEntity } from '../../repo/entity';
-import { deletionRequestFactory, deletionTestConfig } from '../testing';
+import { deletionRequestFactory } from '../testing';
 import { DomainName, StatusModel } from '../types';
 import { DeletionRequestService } from './deletion-request.service';
 
@@ -14,23 +13,23 @@ describe(DeletionRequestService.name, () => {
 	let module: TestingModule;
 	let service: DeletionRequestService;
 	let deletionRequestRepo: DeepMocked<DeletionRequestRepo>;
-	let configService: DeepMocked<ConfigService>;
+	let config: DeletionConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [ConfigModule.forRoot(createConfigModuleOptions(deletionTestConfig))],
 			providers: [
 				DeletionRequestService,
 				{
 					provide: DeletionRequestRepo,
 					useValue: createMock<DeletionRequestRepo>(),
 				},
+				{ provide: DELETION_CONFIG_TOKEN, useValue: {} },
 			],
 		}).compile();
 
 		service = module.get(DeletionRequestService);
 		deletionRequestRepo = module.get(DeletionRequestRepo);
-		configService = module.get(ConfigService);
+		config = module.get(DELETION_CONFIG_TOKEN);
 
 		await setupEntities([DeletionRequestEntity]);
 
@@ -149,8 +148,8 @@ describe(DeletionRequestService.name, () => {
 				const dateInPast = new Date();
 				dateInPast.setDate(dateInPast.getDate() - 1);
 
-				const thresholdOlderMs = configService.get<number>('ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS') ?? 100;
-				const thresholdNewerMs = configService.get<number>('ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS') ?? 1000;
+				const thresholdOlderMs = config.adminApiDeletionModificationThresholdMs;
+				const thresholdNewerMs = config.adminApiDeletionConsiderFailedAfterMs;
 
 				const olderThan = new Date(Date.now() - thresholdOlderMs);
 				const newerThan = new Date(Date.now() - thresholdNewerMs);

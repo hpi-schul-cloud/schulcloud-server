@@ -1,14 +1,13 @@
 import { AxiosErrorLoggable } from '@core/error/loggable';
 import { ClientCredentialsGrantTokenRequest, OauthAdapterService, OAuthGrantType } from '@modules/oauth-adapter';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { AxiosError } from 'axios';
 import * as jwt from 'jsonwebtoken';
 import util from 'util';
 import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { Configuration, ExportApiFactory, ExportApiInterface } from './generated';
 import { TspAccessTokenLoggableError } from './loggable/tsp-access-token.loggable-error';
-import { TspClientConfig } from './tsp-client-config';
+import { TSP_CLIENT_CONFIG_TOKEN, TspClientConfig } from './tsp-client.config';
 
 type FactoryParams = {
 	clientId: string;
@@ -28,11 +27,11 @@ export class TspClientFactory {
 
 	constructor(
 		private readonly oauthAdapterService: OauthAdapterService,
-		configService: ConfigService<TspClientConfig, true>,
+		@Inject(TSP_CLIENT_CONFIG_TOKEN) config: TspClientConfig,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {
-		this.baseUrl = configService.getOrThrow<string>('TSP_API_CLIENT_BASE_URL');
-		this.tokenLifetime = configService.getOrThrow<number>('TSP_API_CLIENT_TOKEN_LIFETIME_MS');
+		this.baseUrl = config.baseUrl;
+		this.tokenLifetime = config.tokenLifetimeMs;
 	}
 
 	public createExportClient(params: FactoryParams): ExportApiInterface {

@@ -1,31 +1,42 @@
-import { Module, Scope } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigurationModule } from '@infra/configuration';
+import { DynamicModule, Module, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 import { JwtExtractor } from '@shared/common/utils';
+import { Request } from 'express';
 import { BoardsClientAdapter } from './boards-client.adapter';
-import { BoardsClientConfig } from './boards-client.config';
-import { Configuration, BoardApi } from './generated';
+import { InternalBoardsClientConfig } from './boards-client.config';
+import { BoardApi, Configuration } from './generated';
 
-@Module({
-	providers: [
-		BoardsClientAdapter,
-		{
-			provide: BoardApi,
-			scope: Scope.REQUEST,
-			useFactory: (configService: ConfigService<BoardsClientConfig, true>, request: Request): BoardApi => {
-				const basePath = configService.getOrThrow<string>('API_HOST');
-				const accessToken = JwtExtractor.extractJwtFromRequestOrFail(request);
-				const configuration = new Configuration({
-					basePath: `${basePath}/v3`,
-					accessToken,
-				});
+@Module({})
+export class BoardsClientModule {
+	public static register(
+		configInjectionToken: string,
+		configConstructor: new () => InternalBoardsClientConfig
+	): DynamicModule {
+		const providers = [
+			BoardsClientAdapter,
+			{
+				provide: BoardApi,
+				scope: Scope.REQUEST,
+				useFactory: (config: InternalBoardsClientConfig, request: Request): BoardApi => {
+					const { basePath } = config;
+					const accessToken = JwtExtractor.extractJwtFromRequestOrFail(request);
+					const configuration = new Configuration({
+						basePath: `${basePath}/v3`,
+						accessToken,
+					});
 
-				return new BoardApi(configuration);
+					return new BoardApi(configuration);
+				},
+				inject: [configInjectionToken, REQUEST],
 			},
-			inject: [ConfigService, REQUEST],
-		},
-	],
-	exports: [BoardsClientAdapter],
-})
-export class BoardsClientModule {}
+		];
+
+		return {
+			module: BoardsClientModule,
+			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
+			providers,
+			exports: [BoardsClientAdapter],
+		};
+	}
+}

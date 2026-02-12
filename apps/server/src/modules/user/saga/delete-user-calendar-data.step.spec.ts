@@ -1,7 +1,5 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@core/logger';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigService } from '@nestjs/config';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CalendarService } from '@infra/calendar';
 import {
 	ModuleName,
@@ -10,13 +8,14 @@ import {
 	StepOperationType,
 	StepReportBuilder,
 } from '@modules/saga';
-import { UserConfig } from '..';
+import { Test, TestingModule } from '@nestjs/testing';
+import { USER_CONFIG_TOKEN, UserConfig } from '../user.config';
 import { DeleteUserCalendarDataStep } from './delete-user-calendar-data.step';
 
 describe(DeleteUserCalendarDataStep.name, () => {
 	let module: TestingModule;
 	let step: DeleteUserCalendarDataStep;
-	let config: DeepMocked<ConfigService>;
+	let config: UserConfig;
 	let calendarService: DeepMocked<CalendarService>;
 
 	beforeEach(async () => {
@@ -28,10 +27,6 @@ describe(DeleteUserCalendarDataStep.name, () => {
 					useValue: createMock<SagaService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<UserConfig, true>>(),
-				},
-				{
 					provide: CalendarService,
 					useValue: createMock<CalendarService>(),
 				},
@@ -39,12 +34,13 @@ describe(DeleteUserCalendarDataStep.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{ provide: USER_CONFIG_TOKEN, useValue: {} },
 			],
 		}).compile();
 
 		step = module.get(DeleteUserCalendarDataStep);
 
-		config = module.get(ConfigService);
+		config = module.get(USER_CONFIG_TOKEN);
 		calendarService = module.get(CalendarService);
 	});
 
@@ -67,18 +63,8 @@ describe(DeleteUserCalendarDataStep.name, () => {
 	describe('execute', () => {
 		describe('when CALENDAR_SERVICE_ENABLED is false', () => {
 			const setup = () => {
-				config.get.mockImplementationOnce((key) => {
-					if (key === 'CALENDAR_SERVICE_ENABLED') {
-						return false;
-					}
-				});
+				config.calendarServiceEnabled = false;
 			};
-
-			it('should call config to check flag CALENDAR_SERVICE_ENABLED', async () => {
-				await step.execute({ userId: 'test-user-id' });
-
-				expect(config.get).toHaveBeenCalledWith('CALENDAR_SERVICE_ENABLED');
-			});
 
 			it('should return an empty StepReport', async () => {
 				setup();
@@ -92,12 +78,7 @@ describe(DeleteUserCalendarDataStep.name, () => {
 
 		describe('when CALENDAR_SERVICE_ENABLED is true', () => {
 			const setup = () => {
-				config.get.mockImplementationOnce((key) => {
-					if (key === 'CALENDAR_SERVICE_ENABLED') {
-						return true;
-					}
-					return true;
-				});
+				config.calendarServiceEnabled = true;
 				const eventIds = ['event1', 'event2'];
 				calendarService.getAllEvents.mockResolvedValueOnce(eventIds);
 			};

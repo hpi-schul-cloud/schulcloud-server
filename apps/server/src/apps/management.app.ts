@@ -4,11 +4,11 @@ import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import express from 'express';
 
-import { LegacyLogger } from '@core/logger';
+import { createRequestLoggerMiddleware, LegacyLogger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@core/logger';
 import { MikroORM } from '@mikro-orm/core';
 import { ManagementServerModule } from '@modules/management/management-server.app.module';
 import { install as sourceMapInstall } from 'source-map-support';
-import { createRequestLoggerMiddleware, enableOpenApiDocs } from './helpers';
+import { enableOpenApiDocs } from './helpers';
 import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap(): Promise<void> {
@@ -23,7 +23,8 @@ async function bootstrap(): Promise<void> {
 
 	nestApp.useBodyParser('text');
 
-	nestApp.use(createRequestLoggerMiddleware());
+	const loggerConfig = await nestApp.resolve<LoggerConfig>(LOGGER_CONFIG_TOKEN);
+	nestApp.use(createRequestLoggerMiddleware(loggerConfig));
 
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
