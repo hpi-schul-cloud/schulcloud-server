@@ -6,7 +6,7 @@ import { TestingModule } from '@nestjs/testing/testing-module';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { Notification } from '../domain/do/notification.do';
-import { notificationFactory } from '../domain/testing/factory/notification.factory';
+import { notificationFactory } from '../domain/testing/notification.factory';
 import { notificationEntityFactory } from './entities/testing/notification.entity.factory';
 
 describe(NotificationRepo.name, () => {

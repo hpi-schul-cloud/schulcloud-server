@@ -1,1 +1,1 @@
-export { notificationFactory } from '../../../domain/testing/factory/notification.factory';
+export { notificationFactory } from '../../../domain/testing/notification.factory';
