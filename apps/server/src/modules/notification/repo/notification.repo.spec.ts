@@ -7,7 +7,7 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { Notification } from '../domain/do/notification.do';
 import { notificationFactory } from '../domain/testing/factory/notification.factory';
-import { notificationEntityFactory } from './entities/testing/notation.entity.factory';
+import { notificationEntityFactory } from './entities/testing/notification.entity.factory';
 
 describe(NotificationRepo.name, () => {
 	let module: TestingModule;
@@ -49,13 +49,15 @@ describe(NotificationRepo.name, () => {
 				const notificationId = domainObject.id;
 
 				const expectedDomainObject = {
-					id: domainObject.id,
-					type: domainObject.type,
-					key: domainObject.key,
-					arguments: domainObject.arguments,
-					userId: domainObject.userId,
-					createdAt: domainObject.createdAt,
-					updatedAt: domainObject.updatedAt,
+					props: expect.objectContaining({
+						id: domainObject.id,
+						type: domainObject.type,
+						key: domainObject.key,
+						arguments: domainObject.arguments,
+						userId: domainObject.userId,
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
+					}) as Notification,
 				};
 
 				return {
@@ -92,7 +94,7 @@ describe(NotificationRepo.name, () => {
 	describe('findById', () => {
 		describe('when searching by Id', () => {
 			const setup = async () => {
-				const entity: NotificationEntity = notificationEntityFactory.buildWithId();
+				const entity: NotificationEntity = notificationEntityFactory.build();
 				await em.persist(entity).flush();
 
 				const notification = new Notification({

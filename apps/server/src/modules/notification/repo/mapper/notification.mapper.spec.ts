@@ -3,6 +3,17 @@ import { NotificationEntity } from '../entities';
 import { NotificationMapper } from './notification.mapper';
 
 describe(NotificationMapper.name, () => {
+	const fixedDate = new Date('2023-01-01T00:00:00.000Z');
+
+	beforeAll(() => {
+		jest.useFakeTimers();
+		jest.setSystemTime(fixedDate);
+	});
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
+
 	describe('mapToDO', () => {
 		describe('When a notification entity is mapped to a domain object', () => {
 			const setup = () => {
@@ -22,8 +33,8 @@ describe(NotificationMapper.name, () => {
 					key: entity.key,
 					arguments: entity.arguments,
 					userId: entity.userId,
-					createdAt: new Date(),
-					updatedAt: new Date(),
+					createdAt: fixedDate,
+					updatedAt: fixedDate,
 				});
 
 				return { entity, expectedDomainObject };
@@ -129,17 +140,6 @@ describe(NotificationMapper.name, () => {
 
 	describe('mapToEntity', () => {
 		describe('When a notification domain object is mapped to an entity', () => {
-			const fixedDate = new Date('2023-01-01T00:00:00.000Z');
-
-			beforeAll(() => {
-				jest.useFakeTimers();
-				jest.setSystemTime(fixedDate);
-			});
-
-			afterAll(() => {
-				jest.useRealTimers();
-			});
-
 			const setup = () => {
 				const domainObject = new Notification({
 					id: 'notification-id',
@@ -157,8 +157,8 @@ describe(NotificationMapper.name, () => {
 					arguments: domainObject.arguments,
 					userId: domainObject.userId,
 					id: domainObject.id,
-					createdAt: fixedDate,
-					updatedAt: fixedDate,
+					createdAt: new Date(),
+					updatedAt: new Date(),
 				});
 
 				return { domainObject, expectedEntity };
@@ -175,17 +175,6 @@ describe(NotificationMapper.name, () => {
 		});
 
 		describe('When a notification domain object is mapped to an empty entity', () => {
-			const fixedDate = new Date('2023-01-01T00:00:00.000Z');
-
-			beforeAll(() => {
-				jest.useFakeTimers();
-				jest.setSystemTime(fixedDate);
-			});
-
-			afterAll(() => {
-				jest.useRealTimers();
-			});
-
 			const setup = () => {
 				const domainObject = {
 					id: 'testid',
@@ -199,8 +188,8 @@ describe(NotificationMapper.name, () => {
 					arguments: [],
 					userId: '',
 					id: domainObject.id,
-					createdAt: fixedDate,
-					updatedAt: fixedDate,
+					createdAt: new Date(),
+					updatedAt: new Date(),
 				});
 
 				return { domainObject, expectedEntity };
@@ -227,17 +216,6 @@ describe(NotificationMapper.name, () => {
 		});
 
 		describe('When multiple notification domain objects are mapped to entities', () => {
-			const fixedDate = new Date('2023-01-01T00:00:00.000Z');
-
-			beforeAll(() => {
-				jest.useFakeTimers();
-				jest.setSystemTime(fixedDate);
-			});
-
-			afterAll(() => {
-				jest.useRealTimers();
-			});
-
 			const setup = () => {
 				const domainObjects = [
 					new Notification({
