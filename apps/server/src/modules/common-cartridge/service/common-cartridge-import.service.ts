@@ -1,7 +1,9 @@
+import { ICurrentUser } from '@infra/auth-guard';
 import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { CardClientAdapter, CardControllerCreateElement201Response } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
+import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import {
@@ -11,8 +13,6 @@ import {
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
-import { FilesStorageClientAdapter } from '@infra/files-storage-client';
-import { ICurrentUser } from '@infra/auth-guard';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;
@@ -20,6 +20,22 @@ const DEPTH_CARD = 2;
 const DEPTH_CARD_ELEMENTS = 3;
 
 const DEFAULT_NEW_COURSE_COLOR = '#455B6A';
+
+// Retry-Wrapper
+async function retry<T>(fn: () => Promise<T>, retries = 5, delayMs = 500): Promise<T> {
+	let lastError: unknown;
+	for (let attempt = 0; attempt < retries; attempt++) {
+		try {
+			return await fn();
+		} catch (err) {
+			lastError = err;
+			// Optional: Log für Debugging
+			// console.warn(`Retry attempt ${attempt + 1} failed:`, err);
+			await new Promise((resolve) => setTimeout(resolve, delayMs * (attempt + 1)));
+		}
+	}
+	throw lastError;
+}
 
 interface ColumnResource {
 	column: CommonCartridgeOrganizationProps;
@@ -60,6 +76,7 @@ export class CommonCartridgeImportService {
 
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
+		const createdBoardIds = new Map<string, string>();
 		for await (const board of boards) {
 			const response = await this.boardsClient.createBoard({
 				title: board.title,
@@ -68,7 +85,15 @@ export class CommonCartridgeImportService {
 				parentType: 'course',
 			});
 
-			await this.createColumns(response.id, board, parser, currentUser);
+			createdBoardIds.set(board.identifier, response.id);
+		}
+
+		for await (const board of boards) {
+			const responseId = createdBoardIds.get(board.identifier);
+
+			if (!responseId) continue;
+
+			await this.createColumns(responseId, board, parser, currentUser);
 		}
 	}
 
@@ -105,7 +130,7 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
+		const columnResponse = await retry(() => this.boardsClient.createBoardColumn(boardId));
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
 		await this.createCardElementWithResource(parser, columnResponse, columnProps, currentUser);
@@ -117,7 +142,7 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
+		const columnResponse = await retry(() => this.boardsClient.createBoardColumn(boardId));
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
 		const cards = parser
@@ -139,7 +164,7 @@ export class CommonCartridgeImportService {
 		cardProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const card = await this.columnClient.createCard(columnResponse.id, {});
+		const card = await retry(() => this.columnClient.createCard(columnResponse.id, {}));
 
 		await this.createCardElement(parser, card.id, cardProps, currentUser);
 	}
@@ -150,7 +175,7 @@ export class CommonCartridgeImportService {
 		cardProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const card = await this.columnClient.createCard(column.id, {});
+		const card = await retry(() => this.columnClient.createCard(column.id, {}));
 		await this.cardClient.updateCardTitle(card.id, {
 			title: cardProps.title,
 		});
@@ -188,9 +213,11 @@ export class CommonCartridgeImportService {
 
 		if (!resourceBody) return;
 
-		const contentElement = await this.cardClient.createCardElement(cardId, {
-			type: contentElementType,
-		});
+		const contentElement = await retry(() =>
+			this.cardClient.createCardElement(cardId, {
+				type: contentElementType,
+			})
+		);
 
 		if (resource.type === 'file' || resource.type === 'fileFolder') {
 			await this.uploadFiles(currentUser, resource, contentElement);
