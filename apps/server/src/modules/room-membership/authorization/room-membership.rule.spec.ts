@@ -1,4 +1,9 @@
-import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import {
+	Action,
+	AUTHORIZATION_CONFIG_TOKEN,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@modules/authorization';
 import { RoleName } from '@modules/role';
 import { roleDtoFactory, roleFactory } from '@modules/role/testing';
 import { roomFactory } from '@modules/room/testing';
@@ -19,7 +24,12 @@ describe(RoomRule.name, () => {
 		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [RoomRule, AuthorizationHelper, AuthorizationInjectionService],
+			providers: [
+				RoomRule,
+				AuthorizationHelper,
+				AuthorizationInjectionService,
+				{ provide: AUTHORIZATION_CONFIG_TOKEN, useValue: {} },
+			],
 		}).compile();
 
 		service = await module.get(RoomRule);

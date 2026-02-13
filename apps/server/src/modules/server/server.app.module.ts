@@ -1,28 +1,36 @@
 import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
-import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
+import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
-import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
+import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
+import { ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig } from '@modules/alert';
 import { AlertModule } from '@modules/alert/alert.module';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { AuthorizationReferenceApiModule } from '@modules/authorization-reference/authorization-reference.api.module';
 import { AuthorizationRulesModule } from '@modules/authorization-rules';
+import { BOARD_PUBLIC_API_CONFIG_TOKEN, BoardPublicApiConfig } from '@modules/board';
 import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@modules/board-context';
 import { BoardApiModule } from '@modules/board/board-api.module';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { MoinSchuleClassModule } from '@modules/class-moin-schule/moin-schule-class.module';
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
+import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { CourseApiModule } from '@modules/course/course-api.module';
 import { DeletionPublicApiModule } from '@modules/deletion/deletion-public-api.module';
-import { FilesStorageClientModule } from '@modules/files-storage-client';
+import {
+	FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+	FilesStorageClientConfig,
+	FilesStorageClientModule,
+} from '@modules/files-storage-client';
+import { FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig } from '@modules/fwu-learning-contents';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { HelpdeskApiModule } from '@modules/helpdesk';
+import { LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig } from '@modules/learnroom';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
 import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school.api-module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
@@ -30,53 +38,89 @@ import { MeApiModule } from '@modules/me/me-api.module';
 import { MediumMetadataApiModule } from '@modules/medium-metadata';
 import { MetaTagExtractorApiModule, MetaTagExtractorModule } from '@modules/meta-tag-extractor';
 import { NewsModule } from '@modules/news';
+import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig } from '@modules/oauth';
 import { OauthProviderApiModule } from '@modules/oauth-provider/oauth-provider-api.module';
 import { OAuthApiModule } from '@modules/oauth/oauth-api.module';
+import { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
-import { RegistrationModule } from '@modules/registration';
-import { RegistrationApiModule } from '@modules/registration/registration-api.module';
-import { RocketChatModule } from '@modules/rocketchat';
+import {
+	REGISTRATION_PUBLIC_API_CONFIG_TOKEN,
+	RegistrationApiModule,
+	RegistrationModule,
+	RegistrationPublicApiConfig,
+} from '@modules/registration';
+import { ROCKET_CHAT_API_PUBLIC_CONFIG_TOKEN, RocketChatModule, RocketChatPublicApiConfig } from '@modules/rocketchat';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room';
 import { RoomApiModule } from '@modules/room/room-api.module';
+import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '@modules/roster';
 import { RosterModule } from '@modules/roster/roster.module';
 import { RuntimeConfigApiModule, ServerRuntimeConfigModule } from '@modules/runtime-config-api';
 import { SchoolApiModule } from '@modules/school/school-api.module';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '@modules/sharing';
 import { SharingApiModule } from '@modules/sharing/sharing-api.module';
 import { ShdApiModule } from '@modules/shd/shd.api.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
+import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '@modules/task';
 import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamApiModule } from '@modules/team/team-api.module';
+import { TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig } from '@modules/tool';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
-import { ImportUserModule } from '@modules/user-import';
+import { USER_PUBLIC_API_CONFIG_TOKEN, UserPublicApiConfig } from '@modules/user';
+import { ImportUserModule, USER_IMPORT_PUBLIC_API_CONFIG_TOKEN, UserImportPublicApiConfig } from '@modules/user-import';
 import { UserLicenseModule } from '@modules/user-license';
+import {
+	USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN,
+	UserLoginMigrationPublicApiConfig,
+} from '@modules/user-login-migration';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
 import { UsersAdminApiModule } from '@modules/user/legacy/users-admin-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { MediaSourceApiModule } from '../media-source/media-source-api.module';
 import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
 import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
-import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
+import { SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
-import { MongoDriver } from '@mikro-orm/mongodb';
 
 const serverModules = [
 	HelpdeskApiModule,
-	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
+	ConfigurationModule.register(SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig),
 	ConfigurationModule.register(VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig),
 	ConfigurationModule.register(BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig),
+	ConfigurationModule.register(ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig),
+	ConfigurationModule.register(OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig),
+	ConfigurationModule.register(BOARD_PUBLIC_API_CONFIG_TOKEN, BoardPublicApiConfig),
+	ConfigurationModule.register(PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig),
+	ConfigurationModule.register(REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig),
+	ConfigurationModule.register(ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig),
+	ConfigurationModule.register(ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig),
+	ConfigurationModule.register(SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig),
+	ConfigurationModule.register(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig),
+	ConfigurationModule.register(TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig),
+	ConfigurationModule.register(TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig),
+	ConfigurationModule.register(LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig),
+	ConfigurationModule.register(USER_PUBLIC_API_CONFIG_TOKEN, UserPublicApiConfig),
+	ConfigurationModule.register(USER_IMPORT_PUBLIC_API_CONFIG_TOKEN, UserImportPublicApiConfig),
+	ConfigurationModule.register(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN, UserLoginMigrationPublicApiConfig),
+	ConfigurationModule.register(FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig),
+	ConfigurationModule.register(ROCKET_CHAT_API_PUBLIC_CONFIG_TOKEN, RocketChatPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,
 	CoreModule,
 	CourseApiModule,
 	AuthenticationApiModule,
-	AuthGuardModule.register([AuthGuardOptions.JWT]),
+	AuthGuardModule.register([
+		{
+			option: AuthGuardOptions.JWT,
+			configInjectionToken: JWT_AUTH_GUARD_CONFIG_TOKEN,
+			configConstructor: JwtAuthGuardConfig,
+		},
+	]),
 	AuthorizationReferenceApiModule,
 	AuthorizationRulesModule,
 	AccountApiModule,
@@ -87,20 +131,18 @@ const serverModules = [
 	NewsModule,
 	UserApiModule,
 	UsersAdminApiModule,
-	SchulconnexClientModule.registerAsync(),
+	SchulconnexClientModule.register(SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig),
 	ImportUserModule,
 	LearnroomApiModule,
-	FilesStorageClientModule,
+	FilesStorageClientModule.register({
+		exchangeConfigConstructor: FilesStorageClientConfig,
+		exchangeConfigInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+		configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+		configConstructor: RabbitMQConfig,
+	}),
 	SystemApiModule,
 	ServerMailModule,
-	RocketChatModule.forRoot({
-		uri: Configuration.get('ROCKET_CHAT_URI') as string,
-		adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
-		adminToken: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
-		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
-		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
-		rocketchatClientTimeoutInMs: Configuration.get('ROCKET_CHAT_CLIENT_TIMEOUT_MS') as number,
-	}),
+	RocketChatModule,
 	VideoConferenceApiModule,
 	OauthProviderApiModule,
 	SharingApiModule,
@@ -131,7 +173,7 @@ const serverModules = [
 	DeletionPublicApiModule,
 ];
 
-const providers = [ServerUc, { provide: SERVER_CONFIG_TOKEN, useValue: serverConfig() }];
+const providers = [ServerUc];
 const controllers = [ServerController, ServerConfigController];
 
 /**
@@ -139,18 +181,11 @@ const controllers = [ServerController, ServerConfigController];
  */
 @Module({
 	imports: [
-		RabbitMQWrapperModule,
 		...serverModules,
-		MikroOrmModule.forRoot({
-			...defaultMikroOrmOptions,
-			driver: MongoDriver,
-			// TODO add mongoose options as mongo options (see database.js)
-			clientUrl: DB_URL,
-			password: DB_PASSWORD,
-			user: DB_USERNAME,
+		DatabaseModule.register({
+			configInjectionToken: DATABASE_CONFIG_TOKEN,
+			configConstructor: DatabaseConfig,
 			entities: ENTITIES,
-
-			// debug: true, // use it for locally debugging of queries
 		}),
 		LoggerModule,
 	],
@@ -170,8 +205,7 @@ export class ServerModule {}
 @Module({
 	imports: [
 		...serverModules,
-		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
-		RabbitMQWrapperTestModule,
+		MongoMemoryDatabaseModule.forRoot({ findOneOrFailHandler, entities: TEST_ENTITIES }),
 		LoggerModule,
 	],
 	providers,

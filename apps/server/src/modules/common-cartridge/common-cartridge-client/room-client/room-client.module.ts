@@ -1,24 +1,34 @@
+import { ConfigurationModule } from '@infra/configuration';
 import { DynamicModule, Module } from '@nestjs/common';
-import { CourseRoomsClientAdapter } from './room-client.adapter';
+import { InternalCourseRoomsClientConfig } from './courses-room-client.config';
 import { Configuration, CourseRoomsApi } from './room-api-client';
-import { CourseRoomsClientConfig } from './courses-room-client.config';
+import { CourseRoomsClientAdapter } from './room-client.adapter';
 
 @Module({})
 export class CourseRoomsModule {
-	static register(config: CourseRoomsClientConfig): DynamicModule {
+	public static register(
+		configInjectionToken: string,
+		configConstructor: new () => InternalCourseRoomsClientConfig
+	): DynamicModule {
 		const providers = [
 			CourseRoomsClientAdapter,
 			{
 				provide: CourseRoomsApi,
-				useFactory: () => {
-					const configuration = new Configuration(config);
+				useFactory: (config: InternalCourseRoomsClientConfig): CourseRoomsApi => {
+					const { basePath } = config;
+					const configuration = new Configuration({
+						basePath: `${basePath}/v3`,
+					});
+
 					return new CourseRoomsApi(configuration);
 				},
+				inject: [configInjectionToken],
 			},
 		];
 
 		return {
 			module: CourseRoomsModule,
+			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
 			providers,
 			exports: [CourseRoomsClientAdapter],
 		};

@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType, ToolConfigType, ToolContextType } from '../../common/enum';
@@ -14,13 +13,14 @@ export class ExternalToolDatasheetMapper {
 		externalTool: ExternalTool,
 		firstName: string,
 		lastname: string,
+		instanceName: string,
 		schoolExternalTool?: SchoolExternalTool,
 		schoolName?: string
 	): ExternalToolDatasheetTemplateData {
 		const externalToolData: ExternalToolDatasheetTemplateData = new ExternalToolDatasheetTemplateData({
 			createdAt: new Date().toLocaleDateString('de-DE'),
 			creatorName: `${firstName} ${lastname}`,
-			instance: ExternalToolDatasheetMapper.getInstanceName(),
+			instance: instanceName,
 			schoolName,
 			toolName: externalTool.name,
 			toolUrl: externalTool.config.baseUrl,
@@ -45,12 +45,6 @@ export class ExternalToolDatasheetMapper {
 		}
 
 		return externalToolData;
-	}
-
-	private static getInstanceName(): string {
-		const instanceName: string = Configuration.get('SC_TITLE') as string;
-
-		return instanceName;
 	}
 
 	private static mapToIsDeactivated(

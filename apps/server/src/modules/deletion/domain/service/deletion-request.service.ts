@@ -1,25 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+import { DELETION_CONFIG_TOKEN, DeletionConfig } from '../../deletion.config';
 import { DeletionRequestRepo } from '../../repo';
 import { DeletionRequest } from '../do';
 import { DomainName, StatusModel } from '../types';
-import { DeletionConfig } from '../../deletion.config';
 
 @Injectable()
 export class DeletionRequestService {
-	private thresholdOlder: number;
-
-	private thresholdNewer: number;
-
 	constructor(
 		private readonly deletionRequestRepo: DeletionRequestRepo,
-		private readonly configService: ConfigService<DeletionConfig, true>
-	) {
-		this.thresholdOlder = this.configService.get<number>('ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS');
-		this.thresholdNewer = this.configService.get<number>('ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS');
-	}
+		@Inject(DELETION_CONFIG_TOKEN)
+		private readonly config: DeletionConfig
+	) {}
 
 	public async createDeletionRequestBatch(
 		targetRefIds: EntityId[],
@@ -71,8 +64,9 @@ export class DeletionRequestService {
 	}
 
 	public async findAllItemsToExecute(limit: number, getFailed = false): Promise<DeletionRequest[]> {
-		const newerThan = new Date(Date.now() - this.thresholdNewer);
-		const olderThan = new Date(Date.now() - this.thresholdOlder);
+		const { adminApiDeletionModificationThresholdMs, adminApiDeletionConsiderFailedAfterMs } = this.config;
+		const newerThan = new Date(Date.now() - adminApiDeletionConsiderFailedAfterMs);
+		const olderThan = new Date(Date.now() - adminApiDeletionModificationThresholdMs);
 		const deletionRequests = getFailed
 			? await this.deletionRequestRepo.findAllFailedItems(limit, olderThan, newerThan)
 			: await this.deletionRequestRepo.findAllItems(limit);

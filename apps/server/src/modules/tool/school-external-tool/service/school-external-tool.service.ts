@@ -1,14 +1,13 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaSource, MediaSourceDataFormat, MediaSourceLicenseType, MediaSourceService } from '@modules/media-source';
 import { SchoolService } from '@modules/school';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { CommonToolDeleteService, CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
-import { ToolConfig } from '../../tool-config';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import { SchoolExternalTool, SchoolExternalToolConfigurationStatus, SchoolExternalToolMedium } from '../domain';
 import { SchoolExternalToolRepo } from '../repo';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
@@ -21,7 +20,7 @@ export class SchoolExternalToolService {
 		private readonly commonToolValidationService: CommonToolValidationService,
 		private readonly commonToolDeleteService: CommonToolDeleteService,
 		private readonly mediaSourceService: MediaSourceService,
-		private readonly configService: ConfigService<ToolConfig, true>,
+		@Inject(TOOL_CONFIG_TOKEN) private readonly config: ToolConfig,
 		private readonly schoolService: SchoolService
 	) {}
 
@@ -60,7 +59,7 @@ export class SchoolExternalToolService {
 		const status: SchoolExternalToolConfigurationStatus = this.determineSchoolToolStatus(tool, externalTool);
 
 		let medium: SchoolExternalToolMedium | undefined;
-		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
+		if (this.config.featureSchulconnexMediaLicenseEnabled) {
 			medium = await this.determineMedium(externalTool);
 		}
 

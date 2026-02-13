@@ -2,19 +2,20 @@ import { Logger } from '@core/logger';
 import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountSave, AccountService } from '@modules/account';
+import { REGISTRATION_CONFIG_TOKEN, RegistrationConfig } from '@modules/registration/registration.config';
 import { RoleName, RoleService } from '@modules/role';
+import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
 import { SchoolPurpose } from '@modules/school/domain';
 import { Consent, UserConsent, UserDo, UserService } from '@modules/user';
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { RoleReference } from '@shared/domain/domainobject';
 import { LanguageType } from '@shared/domain/interface';
 import { UUID } from 'bson';
 import { isDisposableEmail as _isDisposableEmail } from 'disposable-email-domains-js';
 import { RegistrationRepo } from '../../repo';
 import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
-import { RoomService } from '@modules/room';
 import { ResendingRegistrationMailLoggable } from '../error/resend-registration-mail.loggable';
 
 @Injectable()
@@ -28,7 +29,8 @@ export class RegistrationService {
 		private readonly mailService: MailService,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly roomService: RoomService,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		@Inject(REGISTRATION_CONFIG_TOKEN) private readonly config: RegistrationConfig
 	) {}
 
 	public async createOrUpdateRegistration(props: RegistrationCreateProps): Promise<Registration> {
@@ -102,7 +104,7 @@ export class RegistrationService {
 	public async sendRegistrationMail(registration: Registration): Promise<void> {
 		const roomId = registration.roomIds[registration.roomIds.length - 1];
 		const room = await this.roomService.getSingleRoom(roomId);
-		const registrationMail = registration.generateRegistrationMail(room.name);
+		const registrationMail = registration.generateRegistrationMail(room.name, this.config);
 
 		await this.mailService.send(registrationMail);
 	}

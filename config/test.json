@@ -5,7 +5,6 @@
 	"host": "localhost",
 	"port": 3030,
 	"SC_DOMAIN": "localhost",
-	"PUBLIC_BACKEND_URL": "http://localhost:3030/api",
 	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud-test",
 	"public": "./public/",
 	"FORCE_SEND_EMAIL": true,
@@ -18,25 +17,8 @@
 	"SYNC_LOG_LEVEL": "info",
 	"SYNC_QUEUE_NAME": "test_ldap_queue",
 	"S3_KEY": "abcdefghijklmnop",
-	"FILES_STORAGE": {
-		"SERVICE_BASE_URL": "http://localhost:4444"
-	},
-	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
-	"IDENTITY_MANAGEMENT": {
-		"INTERNAL_URI": "http://localhost:8080",
-		"EXTERNAL_URI": "http://localhost:8080",
-		"TENANT": "dBildungscloud",
-		"CLIENTID": "dbc",
-		"ADMIN_CLIENTID": "admin-cli",
-		"ADMIN_USER": "dbildungscloud",
-		"ADMIN_PASSWORD": "dBildungscloud"
-	},
-	"LOG_LEVEL" : "emerg",
-	"NEST_LOG_LEVEL": "error",
-	"CALENDAR_URI": "https://schul.tech:3000",
+	"LOG_LEVEL": "emerg",
 	"HYDRA_URI": "http://hydra:9000",
-	"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": true,
-	"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": true,
 	"SESSION": {
 		"SAME_SITE": "lax",
 		"SECURE": false,
@@ -44,29 +26,12 @@
 		"EXPIRES_SECONDS": 2592000000,
 		"SECRET": "testSecret"
 	},
-	"FWU_CONTENT": {
-		"S3_ENDPOINT": "http://localhost:4568",
-		"S3_REGION": "eu-central-1",
-		"S3_BUCKET": "fwu-content",
-		"S3_ACCESS_KEY": "S3RVER",
-		"S3_SECRET_KEY": "S3RVER"
-	},
-	"FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED": true,
-	"FEATURE_VIDEOCONFERENCE_ENABLED": true,
 	"VIDEOCONFERENCE_HOST": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
 	"VIDEOCONFERENCE_SALT": "ThisIsNOTaRealSaltThisIsNOTaRealSaltThisIsNOTaRealSalt1234567890",
-	"SCHULCONNEX_CLIENT": {
-		"API_URL": "http://localhost:8888/v1/",
-		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token",
-		"CLIENT_ID": "schulcloud",
-		"CLIENT_SECRET": "secret"
-	},
 	"ADMIN_API": {
-		"ALLOWED_API_KEYS": "onlyusedintests:thisistheadminapitokeninthetestconfig,someotherkey",
 		"MODIFICATION_THRESHOLD_MS": 60000,
 		"DELETION_DELAY_MILLISECONDS": 10000
 	},
-	"EXIT_ON_ERROR": false,
 	"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": "opt-in",
 	"TEACHER_STUDENT_VISIBILITY": {
 		"IS_CONFIGURABLE": false,
@@ -78,7 +43,7 @@
 		"PAD_URI": "http://localhost:9001/p",
 		"API_KEY": "381d67e6347d235ac9446"
 	},
-	"SESSION_VALKEY": {
-		"MODE": "in-memory"
+	"FWU_CONTENT": {
+		"INCOMING_REQUEST_TIMEOUT_MS": 2000
 	}
 }

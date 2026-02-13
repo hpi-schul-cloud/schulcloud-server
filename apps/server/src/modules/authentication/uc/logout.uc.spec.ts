@@ -4,10 +4,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { accountDoFactory } from '@modules/account/testing';
 import { systemFactory } from '@modules/system/testing';
 import { BadRequestException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
+import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { ExternalSystemLogoutIsDisabledLoggableException } from '../errors';
 import { AuthenticationService, LogoutService } from '../services';
 import { LogoutUc } from './logout.uc';
@@ -19,7 +19,7 @@ describe(LogoutUc.name, () => {
 	let authenticationService: DeepMocked<AuthenticationService>;
 	let logoutService: DeepMocked<LogoutService>;
 	let logger: DeepMocked<Logger>;
-	let configService: DeepMocked<ConfigService>;
+	let config: AuthenticationConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -38,8 +38,8 @@ describe(LogoutUc.name, () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>({ get: () => true }),
+					provide: AUTHENTICATION_CONFIG_TOKEN,
+					useValue: AuthenticationConfig,
 				},
 			],
 		}).compile();
@@ -48,7 +48,7 @@ describe(LogoutUc.name, () => {
 		authenticationService = await module.get(AuthenticationService);
 		logoutService = await module.get(LogoutService);
 		logger = await module.get(Logger);
-		configService = await module.get(ConfigService);
+		config = await module.get(AUTHENTICATION_CONFIG_TOKEN);
 	});
 
 	afterEach(() => {
@@ -140,7 +140,7 @@ describe(LogoutUc.name, () => {
 			const setup = () => {
 				const currentUser = currentUserFactory.build({ isExternalUser: true });
 
-				configService.get.mockReturnValueOnce(false);
+				config.externalSystemLogoutEnabled = false;
 
 				return {
 					currentUser,
@@ -163,7 +163,7 @@ describe(LogoutUc.name, () => {
 					const system = systemFactory.withOauthConfig().build();
 					const currentUser = currentUserFactory.build({ isExternalUser: true, systemId: system.id });
 
-					configService.get.mockReturnValueOnce(true);
+					config.externalSystemLogoutEnabled = true;
 
 					return {
 						currentUser,

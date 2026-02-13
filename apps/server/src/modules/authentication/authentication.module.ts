@@ -1,7 +1,16 @@
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
 import { IdentityManagementModule } from '@infra/identity-management';
-import { ValkeyClientModule, ValkeyConfig } from '@infra/valkey-client';
+import {
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+	KeycloakAdministrationConfig,
+} from '@infra/identity-management/keycloak-administration/keycloak-administration.config';
+import {
+	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
+	ValkeyClientModule,
+	ValkeyClientSessionConfig,
+} from '@infra/valkey-client';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { OauthModule } from '@modules/oauth/oauth.module';
@@ -10,12 +19,13 @@ import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { Algorithm, SignOptions } from 'jsonwebtoken';
-import { AuthenticationConfig, SESSION_VALKEY_CLIENT } from './authentication-config';
+import { SignOptions } from 'jsonwebtoken';
+import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig, SESSION_VALKEY_CLIENT } from './authentication-config';
+import { AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN, AuthenticationEncryptionConfig } from './encryption.config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
+import { JWT_STRATEGY_CONFIG_TOKEN, JwtModuleConfig } from './jwt-module.config';
 import { LogoutService } from './services';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
@@ -23,19 +33,15 @@ import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
 
-const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) => {
-	const algorithm = configService.getOrThrow<Algorithm>('JWT_SIGNING_ALGORITHM');
-
+const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
+	const { algorithm, expiresIn, scDomain, privateKey, publicKey } = config;
 	const signOptions: SignOptions = {
 		algorithm,
-		expiresIn: configService.getOrThrow<string>('JWT_LIFETIME'),
-		issuer: configService.getOrThrow<string>('SC_DOMAIN'),
-		audience: configService.getOrThrow<string>('SC_DOMAIN'),
+		expiresIn,
+		issuer: scDomain,
+		audience: scDomain,
 		header: { typ: 'JWT', alg: algorithm },
 	};
-
-	const privateKey = configService.getOrThrow<string>('JWT_PRIVATE_KEY');
-	const publicKey = configService.getOrThrow<string>('JWT_PUBLIC_KEY');
 
 	const options = {
 		privateKey,
@@ -47,39 +53,38 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 	return options;
 };
 
-const createValkeyModuleOptions = (configService: ConfigService<AuthenticationConfig>): ValkeyConfig => {
-	const config = {
-		MODE: configService.getOrThrow('SESSION_VALKEY__MODE', { infer: true }),
-		URI: configService.get('SESSION_VALKEY__URI', { infer: true }),
-		SENTINEL_NAME: configService.get('SESSION_VALKEY__SENTINEL_NAME', { infer: true }),
-		SENTINEL_PASSWORD: configService.get('SESSION_VALKEY__SENTINEL_PASSWORD', { infer: true }),
-		SENTINEL_SERVICE_NAME: configService.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME', { infer: true }),
-	};
-
-	return config;
-};
-
 @Module({
 	imports: [
 		LoggerModule,
+		ConfigurationModule.register(AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig),
 		PassportModule,
 		JwtModule.registerAsync({
 			useFactory: createJwtOptions,
-			inject: [ConfigService],
+			inject: [JWT_STRATEGY_CONFIG_TOKEN],
+			imports: [ConfigurationModule.register(JWT_STRATEGY_CONFIG_TOKEN, JwtModuleConfig)],
 		}),
 		AccountModule,
 		SystemModule,
 		OauthModule,
 		RoleModule,
-		IdentityManagementModule,
-		ValkeyClientModule.registerAsync({
-			injectionToken: SESSION_VALKEY_CLIENT,
-			useFactory: createValkeyModuleOptions,
-			inject: [ConfigService],
+		IdentityManagementModule.register({
+			encryptionConfig: {
+				configConstructor: AuthenticationEncryptionConfig,
+				configInjectionToken: AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN,
+			},
+			keycloakAdministrationConfig: {
+				configConstructor: KeycloakAdministrationConfig,
+				configInjectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+			},
+		}),
+		ValkeyClientModule.register({
+			clientInjectionToken: SESSION_VALKEY_CLIENT,
+			configConstructor: ValkeyClientSessionConfig,
+			configInjectionToken: SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
 		}),
 		UserModule,
 		HttpModule,
-		EncryptionModule,
+		EncryptionModule.register(AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN, AuthenticationEncryptionConfig),
 	],
 	providers: [
 		LegacySchoolRepo,

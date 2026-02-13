@@ -1,8 +1,8 @@
+import { Logger } from '@core/logger';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { OauthConfig } from '@modules/system/domain';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
-import { Logger } from '@core/logger';
 import qs from 'qs';
 import { lastValueFrom } from 'rxjs';
 import { IdentityManagementOauthService } from '../../identity-management-oauth.service';
