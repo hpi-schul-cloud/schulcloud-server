@@ -29,7 +29,7 @@ jobs:
       - name: setup environment file
         run: cp .env.default .env
       - name: mongodb setup
-        uses: supercharge/mongodb-github-action@1.12.0
+        uses: supercharge/mongodb-github-action@1.12.1
       - name: setup
         uses: actions/setup-node@v5
         with:
