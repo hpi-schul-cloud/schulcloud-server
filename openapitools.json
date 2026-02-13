@@ -102,7 +102,7 @@
 			},
 			"files-storage-api": {
 				"generatorName": "typescript-axios",
-				"inputSpec": "http://localhost:4444/api/v3/docs-json",
+				"inputSpec": "http://localhost:4444/api/v3/file/docs-json",
 				"output": "./apps/server/src/infra/files-storage-client/generated",
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
