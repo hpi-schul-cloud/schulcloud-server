@@ -171,7 +171,7 @@
 			},
 			"tldraw-api": {
 				"generatorName": "typescript-axios",
-				"inputSpec": "http://localhost:3349/docs-json",
+				"inputSpec": "http://localhost:3349/api/tldraw/docs-json",
 				"output": "./apps/server/src/infra/tldraw-client/generated",
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
