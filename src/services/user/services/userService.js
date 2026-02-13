@@ -92,6 +92,13 @@ const populateWhitelist = {
 	schoolId: ['_id', 'name'],
 };
 
+const notDeletedFilter = (context) => {
+	context.params.query.$and = context.params.query.$and || [];
+	context.params.query.$and.push({
+		$or: [{ deletedAt: { $exists: false } }, { deletedAt: null }, { deletedAt: { $gte: new Date() } }]
+	});
+}
+
 const userHooks = {
 	before: {
 		all: [],
@@ -103,6 +110,7 @@ const userHooks = {
 			iff(isProvider('external'), restrictToCurrentSchool),
 			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
 			mapRoleFilterQuery,
+			notDeletedFilter,
 			addCollation,
 			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
