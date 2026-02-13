@@ -5,7 +5,7 @@ import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosRequestConfig } from 'axios';
 import { of, throwError } from 'rxjs';
-import { OauthProviderFeatures } from '../../oauth-provider-config';
+import { OAUTH_PROVIDER_CONFIG_TOKEN } from '../../oauth-provider-config';
 import {
 	acceptConsentRequestBodyFactory,
 	acceptLoginRequestBodyFactory,
@@ -47,7 +47,7 @@ describe('HydraService', () => {
 					useValue: createMock<HttpService>(),
 				},
 				{
-					provide: OauthProviderFeatures,
+					provide: OAUTH_PROVIDER_CONFIG_TOKEN,
 					useValue: {
 						hydraUri,
 					},

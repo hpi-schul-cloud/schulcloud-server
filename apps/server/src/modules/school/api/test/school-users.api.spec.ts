@@ -1,12 +1,14 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { AUTHORIZATION_CONFIG_TOKEN, AuthorizationConfig } from '@modules/authorization';
 import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
+import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
+import { roleFactory } from '@modules/role/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -14,16 +16,13 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { TestConfigHelper } from '@testing/test-config.helper';
 import { SchoolUserListResponse } from '../dto';
-import { roleFactory } from '@modules/role/testing';
-import { RoleName } from '@modules/role';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let testConfigHelper: TestConfigHelper<ServerConfig>;
+	let authorizationConfig: AuthorizationConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -34,9 +33,7 @@ describe('School Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'school');
-
-		const config = serverConfig();
-		testConfigHelper = new TestConfigHelper(config);
+		authorizationConfig = moduleFixture.get<AuthorizationConfig>(AUTHORIZATION_CONFIG_TOKEN);
 	});
 
 	beforeEach(async () => {
@@ -49,10 +46,6 @@ describe('School Controller (API)', () => {
 
 	afterAll(async () => {
 		await app.close();
-	});
-
-	afterEach(() => {
-		testConfigHelper.reset();
 	});
 
 	const mapUsersWithSchoolName = (users: User[], schoolName: string) => {
@@ -145,7 +138,6 @@ describe('School Controller (API)', () => {
 
 			it('should return only public teachers', async () => {
 				const { loggedInClient, school, publicTeachersOfSchool } = await setup();
-				testConfigHelper.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'opt-in');
 
 				const response = await loggedInClient.get(`${school.id}/teachers`);
 				const body = response.body as SchoolUserListResponse;
@@ -306,11 +298,11 @@ describe('School Controller (API)', () => {
 
 		describe('when user has no permission to view all students', () => {
 			beforeEach(() => {
-				Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', false);
+				authorizationConfig.teacherStudentVisibilityIsEnabledByDefault = false;
 			});
 
 			afterEach(() => {
-				Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', true);
+				authorizationConfig.teacherStudentVisibilityIsEnabledByDefault = true;
 			});
 
 			const setup = async (userRole: 'teacher' | 'student', config: { sameSchool?: boolean }) => {
@@ -583,6 +575,7 @@ describe('School Controller (API)', () => {
 
 		describe('when user has permission to view students and is in the correct school', () => {
 			const setup = async () => {
+				authorizationConfig.teacherStudentVisibilityIsEnabledByDefault = true;
 				const school = schoolEntityFactory.build();
 				const otherSchool = schoolEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });

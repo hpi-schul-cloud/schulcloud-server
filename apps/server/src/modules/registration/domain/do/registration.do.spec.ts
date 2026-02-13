@@ -1,6 +1,6 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
+import { RegistrationConfig } from '../../registration.config';
 import { registrationFactory } from '../../testing';
 import { Registration, RegistrationProps } from './registration.do';
 
@@ -173,30 +173,17 @@ describe('Registration', () => {
 	});
 
 	describe('generateRegistrationMail', () => {
-		beforeEach(() => {
-			jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
-				if (config === 'SMTP_SENDER') {
-					return 'example@sender.com';
-				}
-				if (config === 'HOST') {
-					return 'https://example.com';
-				}
-				if (config === 'SC_TITLE') {
-					return 'dBildungscloud';
-				}
-				return null;
-			});
-		});
-
 		it('should generate registration mail with correct structure', () => {
 			const { registration } = setup();
 			const roomName = 'Test Room';
+			const config: RegistrationConfig = {
+				featureExternalPersonRegistrationEnabled: true,
+				fromEmailAddress: 'example@sender.com',
+				hostUrl: 'https://example.com',
+				scTitle: 'dBildungscloud',
+			};
 
-			const result = registration.generateRegistrationMail(roomName);
-
-			expect(Configuration.get).toHaveBeenCalledWith('SMTP_SENDER');
-			expect(Configuration.get).toHaveBeenCalledWith('HOST');
-			expect(Configuration.get).toHaveBeenCalledWith('SC_TITLE');
+			const result = registration.generateRegistrationMail(roomName, config);
 
 			const expectedSubject = `dBildungscloud: Einladung zur Registrierung und Zugriff auf den Raum ${roomName}`;
 			let expectedHtmlContent = `<div lang=\"de\">Hallo John Doe,

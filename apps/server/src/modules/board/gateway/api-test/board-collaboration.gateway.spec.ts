@@ -1,3 +1,4 @@
+import { ConfigurationModule } from '@infra/configuration';
 import { MongoIoAdapter } from '@infra/socketio';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
@@ -8,6 +9,7 @@ import { InputFormat } from '@shared/domain/types/input-format.types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';
 import { BoardExternalReferenceType, BoardLayout, CardProps, ContentElementType } from '../../domain';
@@ -27,17 +29,22 @@ describe(BoardCollaborationGateway.name, () => {
 	let ioClient: Socket;
 	let unauthorizedIoClient: Socket;
 	let em: EntityManager;
+	let jwtConfig: TestJwtModuleConfig;
 
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
-			imports: [BoardCollaborationTestModule],
+			imports: [BoardCollaborationTestModule, ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig)],
 		}).compile();
 		app = testingModule.createNestApplication();
 
 		em = app.get(EntityManager);
+		jwtConfig = app.get<TestJwtModuleConfig>(TEST_JWT_CONFIG_TOKEN);
 
 		const mongoIoAdapter = new MongoIoAdapter(app);
-		await mongoIoAdapter.connectToMongoDb();
+		// @ts-expect-error test
+		await mongoIoAdapter.connectToMongoDb({
+			dbUrl: 'mongodb://localhost:27017/board-collaboration-test',
+		});
 		app.useWebSocketAdapter(mongoIoAdapter);
 		await app.init();
 
@@ -55,25 +62,31 @@ describe(BoardCollaborationGateway.name, () => {
 		const school = schoolEntityFactory.build();
 		const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
 
-		const teacherAuthJwt = JwtAuthenticationFactory.createJwt({
-			accountId: teacherAccount.id,
-			userId: teacherUser.id,
-			schoolId: teacherUser.school.id,
-			roles: [teacherUser.roles[0].id],
-			support: false,
-			isExternalUser: false,
-		});
+		const teacherAuthJwt = JwtAuthenticationFactory.createJwt(
+			{
+				accountId: teacherAccount.id,
+				userId: teacherUser.id,
+				schoolId: teacherUser.school.id,
+				roles: [teacherUser.roles[0].id],
+				support: false,
+				isExternalUser: false,
+			},
+			jwtConfig
+		);
 
 		const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
 
-		const studentAuthJwt = JwtAuthenticationFactory.createJwt({
-			accountId: studentAccount.id,
-			userId: studentUser.id,
-			schoolId: studentUser.school.id,
-			roles: [studentUser.roles[0].id],
-			support: false,
-			isExternalUser: false,
-		});
+		const studentAuthJwt = JwtAuthenticationFactory.createJwt(
+			{
+				accountId: studentAccount.id,
+				userId: studentUser.id,
+				schoolId: studentUser.school.id,
+				roles: [studentUser.roles[0].id],
+				support: false,
+				isExternalUser: false,
+			},
+			jwtConfig
+		);
 
 		const course = courseEntityFactory.build({ school: school, teachers: [teacherUser] });
 		await em.persist([teacherUser, teacherAccount, studentUser, studentAccount, course]).flush();

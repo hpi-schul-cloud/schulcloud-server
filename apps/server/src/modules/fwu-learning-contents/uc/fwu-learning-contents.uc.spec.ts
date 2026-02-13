@@ -1,9 +1,9 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { LegacyLogger } from '@core/logger';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { S3ClientAdapter } from '@infra/s3-client';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Readable } from 'stream';
-import { FWU_CONTENT_S3_CONNECTION } from '../fwu-learning-contents.config';
+import { FWU_S3_CLIENT_INJECTION_TOKEN } from '../fwu.const';
 import { FwuLearningContentsUc } from './fwu-learning-contents.uc';
 
 describe('FwuLearningContentsUC', () => {
@@ -27,7 +27,7 @@ describe('FwuLearningContentsUC', () => {
 			providers: [
 				FwuLearningContentsUc,
 				{
-					provide: FWU_CONTENT_S3_CONNECTION,
+					provide: FWU_S3_CLIENT_INJECTION_TOKEN,
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
@@ -38,7 +38,7 @@ describe('FwuLearningContentsUC', () => {
 		}).compile();
 
 		fwuLearningContentsUc = module.get(FwuLearningContentsUc);
-		s3client = module.get(FWU_CONTENT_S3_CONNECTION);
+		s3client = module.get(FWU_S3_CLIENT_INJECTION_TOKEN);
 	});
 
 	beforeEach(() => {

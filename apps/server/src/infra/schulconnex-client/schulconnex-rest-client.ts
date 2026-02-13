@@ -1,11 +1,12 @@
+import { Logger } from '@core/logger';
 import {
-	OAuthTokenDto,
+	ClientCredentialsGrantTokenRequest,
 	OauthAdapterService,
 	OAuthGrantType,
-	ClientCredentialsGrantTokenRequest,
+	OAuthTokenDto,
 } from '@modules/oauth-adapter';
 import { HttpService } from '@nestjs/axios';
-import { Logger } from '@core/logger';
+import { Inject } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
@@ -18,19 +19,19 @@ import {
 	SchulconnexResponse,
 } from './response';
 import { SchulconnexApiInterface } from './schulconnex-api.interface';
-import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
+import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from './schulconnex-client.config';
 
 export class SchulconnexRestClient implements SchulconnexApiInterface {
 	private readonly SCHULCONNEX_API_BASE_URL: string;
 
 	constructor(
-		private readonly options: SchulconnexRestClientOptions,
+		@Inject(SCHULCONNEX_CLIENT_CONFIG_TOKEN) private readonly config: SchulconnexClientConfig,
 		private readonly httpService: HttpService,
 		private readonly oauthAdapterService: OauthAdapterService,
 		private readonly logger: Logger
 	) {
 		this.checkOptions();
-		this.SCHULCONNEX_API_BASE_URL = options.apiUrl || '';
+		this.SCHULCONNEX_API_BASE_URL = config.apiUrl || '';
 	}
 
 	public getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SchulconnexResponse> {
@@ -39,7 +40,7 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		const response: Promise<SchulconnexResponse> = this.getRequest<SchulconnexResponse>(
 			url,
 			accessToken,
-			this.options.personInfoTimeoutInMs
+			this.config.personInfoTimeoutInMs
 		);
 
 		return response;
@@ -54,7 +55,7 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		const response: Promise<SchulconnexResponse[]> = this.getRequest<SchulconnexResponse[]>(
 			url,
 			token.accessToken,
-			this.options.personenInfoTimeoutInMs
+			this.config.personenInfoTimeoutInMs
 		);
 
 		return response;
@@ -70,7 +71,7 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 			await this.getRequest<(SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[]>(
 				url,
 				accessToken,
-				this.options.policiesInfoTimeoutInMs
+				this.config.policiesInfoTimeoutInMs
 			);
 
 		const responseObject: SchulconnexPoliciesInfoResponse = { data: response };
@@ -79,7 +80,7 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 	}
 
 	private checkOptions(): boolean {
-		if (!this.options.apiUrl || !this.options.clientId || !this.options.clientSecret || !this.options.tokenEndpoint) {
+		if (!this.config.apiUrl || !this.config.clientId || !this.config.clientSecret || !this.config.tokenEndpoint) {
 			this.logger.debug(new SchulconnexConfigurationMissingLoggable());
 			return false;
 		}
@@ -101,7 +102,7 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 	}
 
 	private async requestClientCredentialToken(): Promise<OAuthTokenDto> {
-		const { tokenEndpoint, clientId, clientSecret } = this.options;
+		const { tokenEndpoint, clientId, clientSecret } = this.config;
 
 		if (!this.checkOptions()) {
 			return Promise.reject(new Error('Missing configuration for SchulconnexRestClient'));

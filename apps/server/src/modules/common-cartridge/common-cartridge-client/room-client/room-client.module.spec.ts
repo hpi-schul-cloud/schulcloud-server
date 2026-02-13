@@ -1,17 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseRoomsModule } from './room-client.module';
+import { API_HOST_CONFIG_TOKEN, ApiHostConfig } from '../../api-client.config';
 import { CourseRoomsClientAdapter } from './room-client.adapter';
+import { CourseRoomsModule } from './room-client.module';
 
 describe(CourseRoomsModule.name, () => {
 	let module: TestingModule;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				CourseRoomsModule.register({
-					basePath: 'http://localhost:3000',
-				}),
-			],
+			imports: [CourseRoomsModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig)],
 		}).compile();
 	});
 

@@ -2,14 +2,13 @@ import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
 import { Synchronization, SynchronizationService, SynchronizationStatusModel } from '@modules/synchronization';
 import { synchronizationFactory } from '@modules/synchronization/domain/testing';
 import { UserService } from '@modules/user';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { IdpConsoleConfig } from '../idp-console.config';
+import { IDP_CONSOLE_CONFIG_TOKEN } from '../idp-console.config';
 import {
 	FailedUpdateLastSyncedAtLoggableException,
 	NoUsersToSynchronizationLoggableException,
@@ -23,12 +22,17 @@ describe(SynchronizationUc.name, () => {
 	let accountService: DeepMocked<AccountService>;
 	let synchronizationService: DeepMocked<SynchronizationService>;
 	let schulconnexRestClient: DeepMocked<SchulconnexRestClient>;
-	let configService: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				SynchronizationUc,
+				{
+					provide: IDP_CONSOLE_CONFIG_TOKEN,
+					useValue: {
+						synchronizationChunk: 1,
+					},
+				},
 				{
 					provide: SynchronizationService,
 					useValue: createMock<SynchronizationService>(),
@@ -49,10 +53,6 @@ describe(SynchronizationUc.name, () => {
 					provide: SchulconnexRestClient,
 					useValue: createMock<SchulconnexRestClient>(),
 				},
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<IdpConsoleConfig, true>>(),
-				},
 			],
 		}).compile();
 
@@ -61,7 +61,6 @@ describe(SynchronizationUc.name, () => {
 		userService = module.get(UserService);
 		accountService = module.get(AccountService);
 		schulconnexRestClient = module.get(SchulconnexRestClient);
-		configService = module.get(ConfigService);
 	});
 
 	beforeEach(() => {
@@ -77,7 +76,6 @@ describe(SynchronizationUc.name, () => {
 				const userSyncCount = 1;
 				const status = SynchronizationStatusModel.SUCCESS;
 
-				configService.get.mockReturnValueOnce(1); // SYNCHRONIZATION_CHUNK=1
 				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
 				jest.spyOn(uc, 'findUsersToSynchronize').mockResolvedValueOnce(usersToCheck);
 				const spyUpdateLastSyncedAt = jest.spyOn(uc, 'updateLastSyncedAt');
@@ -165,7 +163,6 @@ describe(SynchronizationUc.name, () => {
 
 				const error = new Error('testError');
 
-				configService.get.mockReturnValueOnce(1); // SYNCHRONIZATION_CHUNK=1
 				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
 				jest.spyOn(uc, 'findUsersToSynchronize').mockResolvedValueOnce(usersToCheck);
 				userService.updateLastSyncedAt.mockRejectedValueOnce(error);

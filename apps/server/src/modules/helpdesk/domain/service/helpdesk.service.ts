@@ -3,7 +3,6 @@ import { AppendedAttachment, Mail, MailService } from '@infra/mail';
 import { Inject, Injectable } from '@nestjs/common';
 import { HELPDESK_CONFIG_TOKEN, HelpdeskConfig } from '../../helpdesk-config';
 import { HelpdeskProblemProps, HelpdeskWishProps, UserContextProps, UserDeviceProps } from '../interface';
-import { SendEmailLoggable } from '../loggable';
 import { TextFormatter } from './text-formatter.helper';
 
 @Injectable()
@@ -67,11 +66,7 @@ export class HelpdeskService {
 			from: this.config.fromEmailAddress,
 		};
 
-		if (this.config.shouldSendEmail) {
-			await this.emailService.send(email);
-		} else {
-			this.logger.debug(new SendEmailLoggable(recipients, replyTo, subject, plainTextContent, !!attachments));
-		}
+		await this.emailService.send(email);
 	}
 
 	private getAttachments(files: Express.Multer.File[]): AppendedAttachment[] {

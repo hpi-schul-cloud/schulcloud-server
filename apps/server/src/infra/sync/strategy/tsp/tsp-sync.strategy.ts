@@ -5,12 +5,12 @@ import { BadDataLoggableException } from '@modules/provisioning/loggable';
 import { TspProvisioningService } from '@modules/provisioning/service/tsp-provisioning.service';
 import { School } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import pLimit from 'p-limit';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
+import { SYNC_CONFIG_TOKEN, SyncConfig } from '../../sync.config';
 import { SyncStrategy } from '../sync-strategy';
 import {
 	TspClassSyncBatchLoggable,
@@ -28,7 +28,6 @@ import { TspSyncingUsersLoggable } from './loggable/tsp-syncing-users.loggable';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspOauthDataMapper, TspUserInfo } from './tsp-oauth-data.mapper';
 import { TspSchoolService } from './tsp-school.service';
-import { TspSyncConfig } from './tsp-sync.config';
 
 type TspSchoolData = {
 	tspTeachers: RobjExportLehrer[];
@@ -53,7 +52,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		private readonly tspSchoolService: TspSchoolService,
 		private readonly tspFetchService: TspFetchService,
 		private readonly tspOauthDataMapper: TspOauthDataMapper,
-		private readonly configService: ConfigService<TspSyncConfig, true>,
+		@Inject(SYNC_CONFIG_TOKEN) private readonly config: SyncConfig,
 		private readonly systemService: SystemService,
 		private readonly provisioningService: TspProvisioningService
 	) {
@@ -75,7 +74,7 @@ export class TspSyncStrategy extends SyncStrategy {
 	}
 
 	private async syncTspSchools(system: System): Promise<void> {
-		const schoolDaysToFetch = this.configService.getOrThrow('TSP_SYNC_SCHOOL_DAYS_TO_FETCH', { infer: true });
+		const { schoolDaysToFetch } = this.config;
 		const tspSchools = await this.tspFetchService.fetchTspSchools(system, schoolDaysToFetch);
 		this.logger.info(new TspSchoolsFetchedLoggable(tspSchools.length, schoolDaysToFetch));
 
@@ -101,7 +100,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		tspSchools: RobjExportSchuleWithNummer[],
 		system: System
 	): Promise<SchoolSyncResult[]> {
-		const schoolLimit = this.configService.getOrThrow('TSP_SYNC_SCHOOL_LIMIT', { infer: true });
+		const { schoolLimit } = this.config;
 		const promiseLimiter = pLimit(schoolLimit);
 
 		const schoolPromises = tspSchools.map((tspSchool) =>
@@ -161,10 +160,10 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		this.logger.info(new TspSyncingUsersLoggable(oauthDataDtos.length));
 
-		const batchSize = this.configService.getOrThrow<number>('TSP_SYNC_DATA_LIMIT');
-		const userBatches = this.createBatches(batchSize, oauthDataDtos);
+		const { dataLimit } = this.config;
+		const userBatches = this.createBatches(dataLimit, oauthDataDtos);
 
-		const totalUsers = await this.runSyncOfOauthDataBatches(batchSize, userBatches, schoolsByExternalId);
+		const totalUsers = await this.runSyncOfOauthDataBatches(dataLimit, userBatches, schoolsByExternalId);
 		this.logger.info(new TspSyncedUsersLoggable(totalUsers));
 
 		const classesForSchools = this.groupClassesBySchool(oauthDataDtos);
@@ -201,7 +200,7 @@ export class TspSyncStrategy extends SyncStrategy {
 	): Promise<void> {
 		let totalClassCreationCount = 0;
 		let totalClassUpdateCount = 0;
-		const fullSync = this.configService.getOrThrow('TSP_SYNC_DATA_DAYS_TO_FETCH', { infer: true }) === -1;
+		const fullSync = this.config.dataDaysToFetch === -1;
 
 		// Each batch should be processed after another
 		for await (const [schoolExternalId, classes] of classesForSchools.entries()) {
@@ -259,14 +258,14 @@ export class TspSyncStrategy extends SyncStrategy {
 	}
 
 	private async fetchSchoolData(system: System): Promise<TspSchoolData> {
-		const schoolDataDaysToFetch = this.configService.getOrThrow('TSP_SYNC_DATA_DAYS_TO_FETCH', { infer: true });
+		const { dataDaysToFetch } = this.config;
 		const [tspTeachers, tspStudents, tspClasses] = await Promise.all([
-			this.tspFetchService.fetchTspTeachers(system, schoolDataDaysToFetch),
-			this.tspFetchService.fetchTspStudents(system, schoolDataDaysToFetch),
-			this.tspFetchService.fetchTspClasses(system, schoolDataDaysToFetch),
+			this.tspFetchService.fetchTspTeachers(system, dataDaysToFetch),
+			this.tspFetchService.fetchTspStudents(system, dataDaysToFetch),
+			this.tspFetchService.fetchTspClasses(system, dataDaysToFetch),
 		]);
 		this.logger.info(
-			new TspDataFetchedLoggable(tspTeachers.length, tspStudents.length, tspClasses.length, schoolDataDaysToFetch)
+			new TspDataFetchedLoggable(tspTeachers.length, tspStudents.length, tspClasses.length, dataDaysToFetch)
 		);
 
 		return { tspTeachers, tspStudents, tspClasses };

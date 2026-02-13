@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
 import { Page } from '@shared/domain/domainobject';
-import { ToolConfig } from '../../tool-config';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import { ExternalTool, ExternalToolMedium } from '../domain';
 import { ExternalToolMediumStatus } from '../enum';
 import { ExternalToolLogoService } from './external-tool-logo.service';
@@ -15,7 +14,7 @@ export class ExternalToolValidationService {
 		private readonly externalToolService: ExternalToolService,
 		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly configService: ConfigService<ToolConfig, true>
+		@Inject(TOOL_CONFIG_TOKEN) private readonly config: ToolConfig
 	) {}
 
 	public async validateCreate(externalTool: ExternalTool): Promise<void> {
@@ -143,7 +142,7 @@ export class ExternalToolValidationService {
 			return;
 		}
 
-		if (preferredTools.total >= this.configService.get<number>('CTL_TOOLS__PREFERRED_TOOLS_LIMIT')) {
+		if (preferredTools.total >= this.config.ctlToolsPreferredToolsLimit) {
 			throw new ValidationError(
 				`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
 			);

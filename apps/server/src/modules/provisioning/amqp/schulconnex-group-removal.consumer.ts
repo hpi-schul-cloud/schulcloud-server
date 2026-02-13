@@ -1,29 +1,37 @@
 import { Logger } from '@core/logger';
 import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { SchulconnexProvisioningEvents, SchulconnexProvisioningExchange } from '@infra/rabbitmq';
-import { MikroORM, EnsureRequestContext } from '@mikro-orm/core';
+import { EnsureRequestContext, MikroORM } from '@mikro-orm/core';
 import { type Group } from '@modules/group';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { SchulconnexGroupRemovalMessage } from '../domain';
 import { GroupRemovalSuccessfulLoggable } from '../loggable';
-import { ProvisioningConfig } from '../provisioning.config';
+import {
+	InternalProvisioningExchangeConfig,
+	PROVISIONING_EXCHANGE_CONFIG_TOKEN,
+} from '../provisioning-exchange.config';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../provisioning.config';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
+import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
 
+// Using a variable here to access the exchange name in the decorator
+let provisionedExchangeName: string | undefined;
 @Injectable()
 export class SchulconnexGroupRemovalConsumer {
 	constructor(
 		private readonly logger: Logger,
 		private readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
 		private readonly schulconnexCourseSyncService: SchulconnexCourseSyncService,
-		private readonly configService: ConfigService<ProvisioningConfig, true>,
+		@Inject(PROVISIONING_CONFIG_TOKEN)
+		private readonly config: ProvisioningConfig,
+		@Inject(PROVISIONING_EXCHANGE_CONFIG_TOKEN) private readonly exchangeConfig: InternalProvisioningExchangeConfig,
 		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(SchulconnexGroupRemovalConsumer.name);
+		provisionedExchangeName = this.exchangeConfig.exchangeName;
 	}
 
 	@RabbitSubscribe({
-		exchange: SchulconnexProvisioningExchange,
+		exchange: provisionedExchangeName,
 		routingKey: SchulconnexProvisioningEvents.GROUP_REMOVAL,
 		queue: SchulconnexProvisioningEvents.GROUP_REMOVAL,
 	})
@@ -37,7 +45,7 @@ export class SchulconnexGroupRemovalConsumer {
 			payload.groupId
 		);
 
-		if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') && removedFromGroup) {
+		if (this.config.featureSchulconnexCourseSyncEnabled && removedFromGroup) {
 			await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(removedFromGroup, removedFromGroup);
 		}
 

@@ -1,5 +1,4 @@
-export { BoardConfig } from './board.config';
-export { MediaBoardConfig } from './media-board.config';
+export { BOARD_PUBLIC_API_CONFIG_TOKEN, BoardPublicApiConfig } from './board.config';
 export { BoardModule } from './board.module';
 export { AnyElementContentBody, LinkContentBody, RichTextContentBody } from './controller/dto';
 export {
@@ -17,11 +16,6 @@ export {
 	Column,
 	ColumnBoard,
 	ContentElementType,
-	// @modules/tool/tool-launch/service/auto-parameter-strategy/auto-context-name.strategy.ts
-	MediaBoard,
-	MediaBoardColors,
-	SubmissionItem,
-	UserWithBoardRoles,
 	isCard,
 	isColumn,
 	isColumnBoard,
@@ -30,6 +24,11 @@ export {
 	isRichTextElement,
 	isSubmissionItem,
 	isSubmissionItemContent,
+	// @modules/tool/tool-launch/service/auto-parameter-strategy/auto-context-name.strategy.ts
+	MediaBoard,
+	MediaBoardColors,
+	SubmissionItem,
+	UserWithBoardRoles,
 } from './domain';
 
 export {

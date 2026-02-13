@@ -3,10 +3,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { groupFactory } from '@modules/group/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { GroupRemovalSuccessfulLoggable } from '../loggable';
+import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../provisioning.config';
 import { ENTITIES } from '../schulconnex-group-removal.entity.imports';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
 import { SchulconnexGroupRemovalConsumer } from './schulconnex-group-removal.consumer';
@@ -18,7 +19,7 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 	let logger: DeepMocked<Logger>;
 	let schulconnexGroupProvisioningService: DeepMocked<SchulconnexGroupProvisioningService>;
 	let schulconnexCourseSyncService: DeepMocked<SchulconnexCourseSyncService>;
-	let configService: DeepMocked<ConfigService>;
+	let config: ProvisioningConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -37,12 +38,21 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 					useValue: createMock<SchulconnexCourseSyncService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: PROVISIONING_CONFIG_TOKEN,
+					useValue: {
+						featureSchulconnexCourseSyncEnabled: true,
+					},
 				},
 				{
 					provide: MikroORM,
 					useValue: await setupEntities(ENTITIES),
+				},
+				{
+					provide: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
+					useValue: {
+						exchangeName: 'provisioning-exchange',
+						exchangeType: 'direct',
+					},
 				},
 			],
 		}).compile();
@@ -51,7 +61,7 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 		logger = module.get(Logger);
 		schulconnexGroupProvisioningService = module.get(SchulconnexGroupProvisioningService);
 		schulconnexCourseSyncService = module.get(SchulconnexCourseSyncService);
-		configService = module.get(ConfigService);
+		config = module.get(PROVISIONING_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -69,7 +79,7 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 				const removedGroup = groupFactory.build();
 
 				schulconnexGroupProvisioningService.removeUserFromGroup.mockResolvedValueOnce(removedGroup);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexCourseSyncEnabled = true;
 
 				return {
 					userId,
@@ -120,7 +130,7 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 				const removedGroup = groupFactory.build();
 
 				schulconnexGroupProvisioningService.removeUserFromGroup.mockResolvedValueOnce(null);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexCourseSyncEnabled = true;
 
 				return {
 					userId,
@@ -168,7 +178,7 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 				const removedGroup = groupFactory.build();
 
 				schulconnexGroupProvisioningService.removeUserFromGroup.mockResolvedValueOnce(removedGroup);
-				configService.get.mockReturnValueOnce(false);
+				config.featureSchulconnexCourseSyncEnabled = false;
 
 				return {
 					userId,

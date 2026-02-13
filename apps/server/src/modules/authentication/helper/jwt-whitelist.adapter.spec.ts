@@ -1,10 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { StorageClient } from '@infra/valkey-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { JwtWhitelistAdapter } from './jwt-whitelist.adapter';
 import { SESSION_VALKEY_CLIENT } from '../authentication-config';
+import { JwtWhitelistAdapter } from './jwt-whitelist.adapter';
 
 describe(JwtWhitelistAdapter.name, () => {
 	let module: TestingModule;
@@ -40,7 +39,7 @@ describe(JwtWhitelistAdapter.name, () => {
 			const setup = () => {
 				const accountId = new ObjectId().toHexString();
 				const jti = new ObjectId().toHexString();
-				const expirationInSeconds = Configuration.get('JWT_TIMEOUT_SECONDS') as number;
+				const expirationInSeconds = 7200;
 
 				return {
 					accountId,

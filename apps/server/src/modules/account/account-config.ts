@@ -1,9 +1,18 @@
-import { LoggerConfig } from '@core/logger';
-import { SystemConfig } from '@modules/system';
+import { ConfigProperty, Configuration } from '@infra/configuration';
+import { StringToBoolean } from '@shared/controller/transformer';
+import { IsBoolean } from 'class-validator';
 
-export interface AccountConfig extends LoggerConfig, SystemConfig {
-	LOGIN_BLOCK_TIME: number;
-	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: boolean;
-	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: boolean;
-	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: boolean;
+export const ACCOUNT_CONFIG_TOKEN = 'ACCOUNT_CONFIG_TOKEN';
+
+@Configuration()
+export class AccountConfig {
+	@ConfigProperty('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public identityManagementLoginEnabled = false;
+
+	@ConfigProperty('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public identityManagementStoreEnabled = false;
 }

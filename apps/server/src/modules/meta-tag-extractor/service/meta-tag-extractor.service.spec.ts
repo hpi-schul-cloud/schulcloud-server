@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MetaDataEntityType } from '../types';
 import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
 import { MetaTagExtractorService } from './meta-tag-extractor.service';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
+import { META_TAG_EXTRACTOR_CONFIG_TOKEN } from '../meta-tag-extractor.config';
 
 describe(MetaTagExtractorService.name, () => {
 	let module: TestingModule;
@@ -24,6 +24,12 @@ describe(MetaTagExtractorService.name, () => {
 					provide: MetaTagExternalUrlService,
 					useValue: createMock<MetaTagInternalUrlService>(),
 				},
+				{
+					provide: META_TAG_EXTRACTOR_CONFIG_TOKEN,
+					useValue: {
+						scDomain: 'localhost',
+					},
+				},
 			],
 		}).compile();
 
@@ -37,7 +43,6 @@ describe(MetaTagExtractorService.name, () => {
 	});
 
 	beforeEach(() => {
-		Configuration.set('SC_DOMAIN', 'localhost');
 		metaTagInternalUrlService.tryInternalLinkMetaTags.mockResolvedValue(undefined);
 		metaTagExternalUrlService.tryExtractMetaTags.mockResolvedValue(undefined);
 	});

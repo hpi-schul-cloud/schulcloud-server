@@ -1,12 +1,14 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@core/logger';
-import { AccountService, Account } from '@modules/account';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
-import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import { KeycloakMigrationService } from './keycloak-migration.service';
+import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
+import { Account, AccountService } from '@modules/account';
+import { Test, TestingModule } from '@nestjs/testing';
+import { KeycloakAdministrationConfig } from '../../keycloak-administration/keycloak-administration.config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN } from '../keycloak-configuration.config';
+import { KeycloakMigrationService } from './keycloak-migration.service';
 
 describe('KeycloakMigrationService', () => {
 	let module: TestingModule;
@@ -61,6 +63,10 @@ describe('KeycloakMigrationService', () => {
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
+					useValue: KeycloakAdministrationConfig,
 				},
 			],
 		}).compile();

@@ -1,12 +1,20 @@
 import { faker } from '@faker-js/faker';
-import { createMock } from '@golevelup/ts-jest';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigProperty, Configuration } from '@infra/configuration';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { IsUrl } from 'class-validator';
 import { Request } from 'express';
 import { CoursesClientAdapter } from './courses-client.adapter';
+import { InternalCoursesClientConfig } from './courses-client.config';
 import { CoursesClientModule } from './courses-client.module';
 import { CoursesApi } from './generated';
+
+@Configuration()
+class TestConfig implements InternalCoursesClientConfig {
+	@ConfigProperty('API_HOST')
+	@IsUrl({ require_tld: false })
+	basePath = 'https://api.example.com/courses';
+}
 
 describe(CoursesClientModule.name, () => {
 	let module: TestingModule;
@@ -14,14 +22,8 @@ describe(CoursesClientModule.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [CoursesClientModule, ConfigModule.forRoot({ isGlobal: true })],
+			imports: [CoursesClientModule.register('COURSES_CLIENT_CONFIG', TestConfig)],
 		})
-			.overrideProvider(ConfigService)
-			.useValue(
-				createMock<ConfigService>({
-					getOrThrow: () => faker.internet.url(),
-				})
-			)
 			.overrideProvider(REQUEST)
 			.useValue({ headers: { authorization: `Bearer ${faker.string.alphanumeric(42)}` } } as Request)
 			.compile();
