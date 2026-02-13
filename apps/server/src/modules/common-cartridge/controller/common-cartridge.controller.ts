@@ -78,15 +78,7 @@ export class CommonCartridgeController {
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	@HttpCode(200)
-	public async importCourse(
-		@Req() req: Request,
-		@Body() startImportParams: CommonCartridgeStartImportBodyParams
-	): Promise<void> {
-		await this.commonCartridgeUC.startCourseImport(
-			req,
-			startImportParams.fileRecordId,
-			startImportParams.fileName,
-			startImportParams.fileUrl
-		);
+	public importCourse(@Body() startImportParams: CommonCartridgeStartImportBodyParams): void {
+		this.commonCartridgeUC.startCourseImport(startImportParams);
 	}
 }

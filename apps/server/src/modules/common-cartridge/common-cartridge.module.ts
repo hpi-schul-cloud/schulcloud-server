@@ -1,3 +1,4 @@
+import { CoreModule } from '@core/core.module';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { BoardsClientModule } from '@infra/boards-client';
 import { CardClientModule } from '@infra/cards-client';
@@ -8,6 +9,7 @@ import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { FilesStorageClientModule as FilesMetadataClientModule } from '@modules/files-storage-client';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 import { CardClientModule as OldCardClientModule } from './common-cartridge-client/card-client/card-client.module';
 import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
 import { CourseRoomsModule } from './common-cartridge-client/room-client';
@@ -15,7 +17,6 @@ import { CommonCartridgeExportService, CommonCartridgeImportConsumer, CommonCart
 import { CommonCartridgeExportMapper } from './service/common-cartridge-export.mapper';
 import { CommonCartridgeImportMapper } from './service/common-cartridge-import.mapper';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
-import { CoreModule } from '@core/core.module';
 
 @Module({
 	imports: [
@@ -37,6 +38,7 @@ import { CoreModule } from '@core/core.module';
 		ColumnClientModule,
 		CardClientModule,
 		HttpModule,
+		CqrsModule,
 	],
 	providers: [
 		CommonCartridgeExportMapper,

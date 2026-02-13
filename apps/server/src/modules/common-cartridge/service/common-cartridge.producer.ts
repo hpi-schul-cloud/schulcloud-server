@@ -1,28 +1,22 @@
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { ImportCourseParams, CommonCartridgeEvents, CommonCartridgeExchange } from '@infra/rabbitmq';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { EventBus } from '@nestjs/cqrs';
 import { JwtExtractor } from '@shared/common/utils';
-import { Options } from 'amqplib';
 import { Request } from 'express';
+import { ImportCourseEvent } from '../domain/events/import-course.event';
+import { ImportCourseParams } from '../domain/import-course.params';
 
 @Injectable()
 export class CommonCartridgeProducer {
-	constructor(private readonly amqpConnection: AmqpConnection) {}
+	constructor(private readonly eventBus: EventBus, @Inject(REQUEST) private readonly request: Request) {}
 
-	public async importCourse(req: Request, message: ImportCourseParams): Promise<void> {
-		await this.amqpConnection.publish(
-			CommonCartridgeExchange,
-			CommonCartridgeEvents.IMPORT_COURSE,
-			message,
-			this.getPublishOptions(req)
-		);
-	}
+	public importCourse(params: ImportCourseParams): void {
+		const jwt = JwtExtractor.extractJwtFromRequest(this.request);
 
-	private getPublishOptions(req: Request): Options.Publish {
-		const options: Options.Publish = {
-			headers: { 'x-jwt': JwtExtractor.extractJwtFromRequest(req) },
-		};
+		if (!jwt) {
+			throw new UnauthorizedException();
+		}
 
-		return options;
+		this.eventBus.publish(new ImportCourseEvent(jwt, params.fileRecordId, params.fileName, params.fileUrl));
 	}
 }

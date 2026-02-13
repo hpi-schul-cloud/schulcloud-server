@@ -278,11 +278,6 @@
 					"minimum": 0,
 					"default": 600000,
 					"description": "Timeout for incoming requests to the common cartridge service in milliseconds."
-				},
-				"EXCHANGE": {
-					"type": "string",
-					"default": "common-cartridge-service",
-					"description": "rabbitmq exchange name for common cartridge microservice"
 				}
 			},
 			"default": {}

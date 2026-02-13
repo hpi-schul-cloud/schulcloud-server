@@ -5,7 +5,6 @@ export const FilesStorageExchange = 'files-storage';
 export const MailSendExchange = Configuration.get('MAIL_SEND_EXCHANGE') as string;
 export const SchulconnexProvisioningExchange = Configuration.get('PROVISIONING_SCHULCONNEX_EXCHANGE') as string;
 export const H5pEditorExchange = Configuration.get('H5P_EDITOR__EXCHANGE') as string;
-export const CommonCartridgeExchange = Configuration.get('COMMON_CARTRIDGE__EXCHANGE') as string;
 export const RabbitMqURI = Configuration.get('RABBITMQ_URI') as string;
 export const HeartBeatIntervalInSeconds = Configuration.get('RABBITMQ_HEARTBEAT_INTERVAL_IN_SECONDS') as number;
 

@@ -4,7 +4,6 @@ export {
 	FilesStorageExchange,
 	H5pEditorExchange,
 	MailSendExchange,
-	CommonCartridgeExchange,
 	RabbitMqConfig,
 	RabbitMqURI,
 	SchulconnexProvisioningExchange,
