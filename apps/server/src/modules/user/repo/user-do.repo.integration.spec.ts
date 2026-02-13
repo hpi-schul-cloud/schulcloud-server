@@ -762,11 +762,11 @@ describe('UserRepo', () => {
 
 				const emFindAndCountSpy = jest.spyOn(em, 'findAndCount');
 
-				return { query, options, users, emFindAndCountSpy };
+				return { query, options, users, emFindAndCountSpy, deletedFilter };
 			};
 
 			it('should add query to scope', async () => {
-				const { query, options, emFindAndCountSpy } = await setup();
+				const { query, options, emFindAndCountSpy, deletedFilter } = await setup();
 
 				await repo.find(query, options);
 
@@ -807,13 +807,7 @@ describe('UserRepo', () => {
 									$eq: query.outdatedSince,
 								},
 							},
-							{
-								$or: [
-									{ deletedAt: { $exists: false } },
-									{ deletedAt: null },
-									{ deletedAt: { $gte: expect.any(Date) } },
-								],
-							},
+							deletedFilter,
 						],
 					},
 					expect.objectContaining<FindOptions<User>>({
