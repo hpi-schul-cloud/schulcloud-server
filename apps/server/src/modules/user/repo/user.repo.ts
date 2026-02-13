@@ -90,7 +90,7 @@ export class UserMikroOrmRepo extends BaseRepo<User> {
 
 	public async flagAsDeleted(userId: EntityId, deletedDate?: Date): Promise<void> {
 		const deletedAt = deletedDate ?? new Date();
-		const flaggedUser = await this._em.nativeUpdate(this.entityName, { id: userId }, { deletedAt });
+		await this._em.nativeUpdate(this.entityName, { id: userId }, { deletedAt });
 	}
 
 	public async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
