@@ -154,31 +154,8 @@ describe('SubmissionRule', () => {
 		});
 
 		describe('when user roles contain required permissions', () => {
-			describe('when task has no due date', () => {
-				describe('when user is creator', () => {
-					const setup = () => {
-						const permission = 'a' as Permission;
-						const user = buildUserWithPermission(permission);
-						const task = taskFactory.build({ dueDate: undefined });
-						const submission = submissionFactory.build({ task, student: user });
-						return { user, submission, permission };
-					};
-
-					it('should return true for write access', () => {
-						const { user, submission, permission } = setup();
-
-						const result = submissionRule.hasPermission(user, submission, {
-							action: Action.write,
-							requiredPermissions: [permission],
-						});
-
-						expect(result).toBe(true);
-					});
-				});
-			});
-
 			describe('when action is "write"', () => {
-				describe('when user is creator', () => {
+				describe('when user is submitter', () => {
 					const setup = () => {
 						const permission = 'a' as Permission;
 						const user = buildUserWithPermission(permission);
@@ -311,7 +288,7 @@ describe('SubmissionRule', () => {
 					});
 				});
 
-				describe('when due date is passed and user is creator', () => {
+				describe('when due date has passed and user is submitter', () => {
 					const setup = () => {
 						const permission = 'a' as Permission;
 						const user = buildUserWithPermission(permission);
@@ -335,14 +312,14 @@ describe('SubmissionRule', () => {
 					});
 				});
 
-				describe('when due date is passed but user is a teacher', () => {
+				describe('when due date has passed but user is a teacher', () => {
 					const setup = () => {
 						const permission = 'a' as Permission;
 						const user = buildUserWithPermission(permission);
 						const user2 = buildUserWithPermission(permission);
 						const course = courseEntityFactory.build({ students: [user2], teachers: [user] });
 						const task = taskFactory.build({ course, dueDate: new Date(Date.now() - 10000) });
-						const submission = submissionFactory.build({ task, student: user });
+						const submission = submissionFactory.build({ task, student: user2 });
 
 						return { user, submission, permission };
 					};
@@ -362,7 +339,7 @@ describe('SubmissionRule', () => {
 
 			describe('when action is "read"', () => {
 				describe('when submission is not submitted', () => {
-					describe('when user is creator', () => {
+					describe('when user is submitter', () => {
 						const setup = () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
@@ -507,7 +484,7 @@ describe('SubmissionRule', () => {
 						});
 					});
 
-					describe('when due date is passed and user is creator', () => {
+					describe('when due date has passed and user is submitter', () => {
 						const setup = () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
@@ -531,7 +508,7 @@ describe('SubmissionRule', () => {
 						});
 					});
 
-					describe('when due date is passed but user is a teacher', () => {
+					describe('when due date has passed but user is a teacher', () => {
 						const setup = () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
@@ -557,7 +534,7 @@ describe('SubmissionRule', () => {
 				});
 
 				describe('when submission is submitted', () => {
-					describe('when user is creator', () => {
+					describe('when user is submitter', () => {
 						const setup = () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
@@ -704,7 +681,7 @@ describe('SubmissionRule', () => {
 						});
 					});
 
-					describe('when due date is passed and user is creator', () => {
+					describe('when due date has passed and user is submitter', () => {
 						const setup = () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
@@ -732,7 +709,7 @@ describe('SubmissionRule', () => {
 						});
 					});
 
-					describe('when due date is passed but user is a teacher', () => {
+					describe('when due date has passed but user is a teacher', () => {
 						const setup = () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);

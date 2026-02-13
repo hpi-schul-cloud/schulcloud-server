@@ -52,7 +52,7 @@ export class SubmissionRule implements Rule<Submission> {
 
 	private hasWriteAccess(user: User, submission: Submission): boolean {
 		const hasWriteAccess =
-			(submission.isUserSubmitter(user) && !this.isDueDatePassed(submission)) ||
+			(submission.isUserSubmitter(user) && this.isDueDatePendingOrUndefined(submission)) ||
 			this.hasParentTaskWriteAccess(user, submission);
 
 		return hasWriteAccess;
@@ -90,10 +90,10 @@ export class SubmissionRule implements Rule<Submission> {
 		return hasParentTaskReadAccess;
 	}
 
-	private isDueDatePassed(submission: Submission): boolean {
+	private isDueDatePendingOrUndefined(submission: Submission): boolean {
 		const { dueDate } = submission.task;
 		const now = new Date();
 
-		return dueDate !== undefined && dueDate < now;
+		return dueDate === undefined || dueDate > now;
 	}
 }
